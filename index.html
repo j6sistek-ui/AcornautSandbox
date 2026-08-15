@@ -304,7 +304,10 @@
       for (const a of acorns) { a.x -= move; a.bob += dt * 4; }
       for (const a of powerups) { a.x -= move; a.bob += dt * 5; }
 
-      if (lastSpawnX - move < W + 40) spawnPair(lastSpawnX + gapSpacing());
+      lastSpawnX -= move;
+      while (lastSpawnX < W + 80) {
+        spawnPair(lastSpawnX + gapSpacing());
+      }
 
       planets = planets.filter(p => p.x > -80);
       acorns = acorns.filter(a => a.x > -40 && !a.got);
