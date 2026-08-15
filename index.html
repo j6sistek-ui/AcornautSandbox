@@ -1,1 +1,36 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Acornaut</title>
+<style>
+html,body{margin:0;height:100%;background:#05070f;color:#fff;font-family:system-ui,sans-serif}
+#boot{display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;opacity:.7}
+</style>
+</head>
+<body>
+<div id="boot">Loading Acornaut…</div>
+<script>
+(async () => {
+  try {
+    const [a,b] = await Promise.all([
+      fetch("https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/p1.txt").then(r=>r.text()),
+      fetch("https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/p2.txt").then(r=>r.text()),
+    ]);
+    const b64 = a.trim()+b.trim();
+    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const ds = new DecompressionStream("gzip");
+    const stream = new Blob([bin]).stream().pipeThrough(ds);
+    const html = await new Response(stream).text();
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (e) {
+    document.getElementById("boot").textContent = "Load failed: " + e.message;
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>
