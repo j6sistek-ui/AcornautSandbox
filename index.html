@@ -15,8 +15,13 @@ html,body{margin:0;height:100%;background:#05070f;color:#fff;font-family:system-
 (async () => {
   try {
     const base = "https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/";
-    const parts = await Promise.all(["p1a.txt","p1b.txt","p2a.txt","p2b.txt"].map(f => fetch(base+f).then(r => r.text())));
-    const b64 = parts.map(p => p.trim()).join("");
+    const parts = await Promise.all(
+      ["p1a.txt","p1b.txt","p2a.txt","p2b.txt"].map(f => fetch(base + f).then(r => {
+        if (!r.ok) throw new Error(f + " " + r.status);
+        return r.text();
+      }))
+    );
+    const b64 = parts.map(t => t.trim()).join("");
     const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     const ds = new DecompressionStream("gzip");
     const stream = new Blob([bin]).stream().pipeThrough(ds);
