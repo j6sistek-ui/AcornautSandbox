@@ -14,11 +14,7 @@ html,body{margin:0;height:100%;background:#05070f;color:#fff;font-family:system-
 <script>
 (async () => {
   try {
-    const [a,b] = await Promise.all([
-      fetch("https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/p1.txt").then(r=>r.text()),
-      fetch("https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/p2.txt").then(r=>r.text()),
-    ]);
-    const b64 = a.trim()+b.trim();
+    const b64 = "PLACEHOLDER_B64";
     const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     const ds = new DecompressionStream("gzip");
     const stream = new Blob([bin]).stream().pipeThrough(ds);
