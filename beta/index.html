@@ -63,6 +63,8 @@
     equippedTrail: 'sparks',
     unlockedPals: ['none'],
     equippedPal: 'none',
+    battery: false,   // shield battery mod: hold up to 3 charges
+    deepBest: 0,      // best score in Deep Space Flight mode
   });
   function loadSave() {
     try {
@@ -191,14 +193,16 @@
   let acorns = [];
   let powerups = [];
   let shields = [];          // rare shield-acorn pickups
+  let shieldCharges = 0;     // carried charges (max 1, or 3 with the battery)
   let blackholes = [];       // black-hole acorns: warp the world for a while
+  let deepSpace = false;     // Deep Space Flight mode for this run
+  let deepTimer = 0;         // time until the first orientation shift
   let warpT = 0;             // swirl-in transition (counts down from 1s)
   let warpLeft = 0;          // remaining warped-orientation time
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
   let warpMirror = true;     // whether this warp reverses the scroll
   let recoveryMsg = '';      // banner shown during freeze/slow recovery
   let pal = { x: 0, y: 0, dart: 0 };   // companion position (smoothed)
-  let hasShield = false;     // carrying a shield this run
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
   let shieldSlow = 0;        // slow-motion recovery window after the freeze
   let particles = [];
@@ -236,6 +240,16 @@
   ];
   let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
   const MOD_SHIELD_COST = 25;
+  const MOD_BATTERY_COST = 500;
+  // BETA: level/acorn gates are open so everything can be tested. For
+  // release, flip to false — the requirement text already shows in the UI.
+  const BETA_UNLOCK_GATES = true;
+  function deepSpaceUnlocked() {
+    return BETA_UNLOCK_GATES || (save.highScore >= 50 && save.acorns >= 1000);
+  }
+  function batteryUnlocked() {
+    return BETA_UNLOCK_GATES || (save.highScore >= 100 && save.acorns >= 2000);
+  }
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -247,7 +261,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (mode === 'title' || mode === 'hangar') initStars();
+    if (mode === 'title' || mode === 'hangar' || mode === 'help') initStars();
   }
 
   function initStars() {
@@ -264,7 +278,11 @@
     }
   }
 
-  function resetRun() {
+  function maxShieldCharges() { return save.battery ? 3 : 1; }
+
+  function resetRun(deep) {
+    deepSpace = !!deep;
+    deepTimer = 0;
     score = 0;
     runAcorns = 0;
     squirrel = { y: H * 0.45, vy: 0, rot: 0 };
@@ -278,7 +296,7 @@
     warpTilt = 0;
     warpMirror = true;
     recoveryMsg = '';
-    hasShield = !!save.startShield; // purchased modifier arms the run
+    shieldCharges = save.startShield ? 1 : 0; // purchased modifier arms the run
     pal = { x: W * SQUIRREL_X - 42, y: H * 0.45 - 20, dart: 0 };
     shieldFreeze = 0;
     shieldSlow = 0;
@@ -415,8 +433,9 @@
     }
     // black-hole acorn — BETA TESTING RATE: ~1 per 20 gates so the warp is
     // easy to reach while tuning. Intended release rate is ~1 per 70 (0.014).
-    // Never while a warp is pending or active: they'd be inert clutter.
-    if (warpT === 0 && warpLeft === 0 && Math.random() < 0.05) {
+    // Never while a warp is pending or active (inert clutter), and never in
+    // Deep Space Flight, where shifts come on a timer instead.
+    if (!deepSpace && warpT === 0 && warpLeft === 0 && Math.random() < 0.05) {
       blackholes.push({
         x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
@@ -517,11 +536,20 @@
     if (mode === 'title') {
       for (const b of titleButtons()) {
         if (hit(x, y, b)) {
-          if (b.id === 'fly') { resetRun(); mode = 'ready'; }
-          else mode = 'hangar';
+          if (b.id === 'fly') { resetRun(false); mode = 'ready'; }
+          else if (b.id === 'deep') {
+            if (deepSpaceUnlocked()) { resetRun(true); mode = 'ready'; }
+          }
+          else if (b.id === 'hangar') mode = 'hangar';
+          else mode = 'help';
           return;
         }
       }
+      return;
+    }
+    if (mode === 'help') {
+      const back = { x: 56, y: 44, w: 80, h: 36 };
+      if (hit(x, y, back)) mode = 'title';
       return;
     }
     if (mode === 'hangar') {
@@ -553,6 +581,13 @@
           save.startShield = true;
           writeSave(save);
         }
+        const bcard = { x: W / 2, y: SHOP_GRID_Y + 140 + 62, w: W - 48, h: 124 };
+        if (hit(x, y, bcard) && batteryUnlocked() && !save.battery &&
+            save.acorns >= MOD_BATTERY_COST) {
+          save.acorns -= MOD_BATTERY_COST;
+          save.battery = true;
+          writeSave(save);
+        }
       }
       return;
     }
@@ -569,7 +604,9 @@
   // whether or not the shield was used.
   function bankRun() {
     save.acorns += runAcorns;
-    if (score > save.highScore) save.highScore = score;
+    if (deepSpace) {
+      if (score > (save.deepBest || 0)) save.deepBest = score;
+    } else if (score > save.highScore) save.highScore = score;
     save.startShield = false;
     writeSave(save);
     mode = 'title';
@@ -631,6 +668,16 @@
 
       if (powerLeft > 0) {
         powerLeft = Math.max(0, powerLeft - dt);
+      }
+
+      // Deep Space Flight: the first orientation shift arrives 15s in;
+      // after that the warp-expiry chain keeps them coming back to back.
+      if (deepSpace && warpT === 0 && warpLeft === 0) {
+        deepTimer += dt;
+        if (deepTimer >= 15) {
+          pickWarpVariant();
+          warpT = 1.0;
+        }
       }
 
       // Black-hole warp: a one-second swirl (world frozen), then 15s of
@@ -711,7 +758,7 @@
         for (const b of (p.blockers || [])) {
           const bx = p.x + (b.xOff || 0);
           if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) {
-            if (hasShield) { absorbShield(bx, b.y); return; }
+            if (shieldCharges > 0) { absorbShield(bx, b.y); return; }
             die(); return;
           }
         }
@@ -745,15 +792,20 @@
 
       // acorn collect — the Acorn Buddy stretches the grab radius and darts
       // out to fetch anything inside it
-      const grabR = save.equippedPal === 'buddy' ? 75 : 28;
+      const buddyOn = save.equippedPal === 'buddy';
+      const grabR = buddyOn ? 75 : 28;
       for (const a of acorns) {
         if (a.got) continue;
-        const d = Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4));
+        const ay = a.y + Math.sin(a.bob) * 4;
+        const d = Math.hypot(sx - a.x, sy - ay);
+        // The buddy also dives after MISSED standard acorns: anything that
+        // slipped just behind the squirrel while reasonably close.
+        const missed = buddyOn && a.x < sx - 18 && a.x > sx - 105 && Math.abs(ay - sy) < 100;
         if (d < 28) {
           a.got = true;
           runAcorns += 1;
           spark(a.x, a.y, 'gold');
-        } else if (d < grabR) {
+        } else if (d < grabR || missed) {
           a.got = true;
           runAcorns += 1;
           pal.x = a.x;
@@ -772,7 +824,7 @@
       for (const a of shields) {
         if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
           a.got = true;
-          hasShield = true;
+          shieldCharges = Math.min(maxShieldCharges(), shieldCharges + 1);
           spark(a.x, a.y, 'shield');
         }
       }
@@ -784,11 +836,7 @@
           // five equally likely disorientations:
           //   0 backward · 1 backward tilt-up · 2 backward tilt-down
           //   3 forward tilt-up · 4 forward tilt-down
-          const variant = Math.floor(Math.random() * 5);
-          warpMirror = variant < 3;
-          const TILT = 25 * Math.PI / 180;
-          warpTilt = variant === 0 ? 0
-                   : (variant === 1 || variant === 3) ? TILT : -TILT;
+          pickWarpVariant();
           spark(a.x, a.y, 'warp');
         }
       }
@@ -829,6 +877,17 @@
     if (above ? squirrel.vy > 0 : squirrel.vy < 0) squirrel.vy = 0;
   }
 
+  // One of five equally likely disorientations:
+  //   0 backward · 1 backward tilt-up · 2 backward tilt-down
+  //   3 forward tilt-up · 4 forward tilt-down
+  function pickWarpVariant() {
+    const variant = Math.floor(Math.random() * 5);
+    warpMirror = variant < 3;
+    const TILT = 25 * Math.PI / 180;
+    warpTilt = variant === 0 ? 0
+             : (variant === 1 || variant === 3) ? TILT : -TILT;
+  }
+
   // Warp start: same fairness treatment as the shield recovery — recenter
   // the squirrel, vaporise debris around the respawn point, brief freeze.
   function enterWarp() {
@@ -848,6 +907,13 @@
   }
 
   function exitWarp() {
+    // Deep Space Flight never rests: each shift chains straight into the
+    // next swirl — no recovery window, no pickup needed.
+    if (deepSpace) {
+      pickWarpVariant();
+      warpT = 1.0;
+      return;
+    }
     warpTilt = 0;
     warpMirror = true;
     shieldFreeze = 0.7;
@@ -885,7 +951,7 @@
   // vaporise nearby debris so the respawn spot is fair, snap the squirrel
   // back to centre, freeze briefly, then give a slow-motion recovery window.
   function absorbShield(bx, by) {
-    hasShield = false;
+    shieldCharges -= 1;
     const sx = W * SQUIRREL_X;
     const cy = H * 0.45;
     spark(bx, by, 'shield');
@@ -978,6 +1044,7 @@
     ctx.globalAlpha = 1;
 
     if (mode === 'title') drawTitle();
+    else if (mode === 'help') drawHelp();
     else if (mode === 'hangar') drawShop();
     else {
       // Warp is a pure RENDER transform: the simulation still scrolls the
@@ -2776,7 +2843,7 @@
   function drawSquirrel(x, y, rot) {
     const flame = (flapBoost > 0 && (mode === 'play' || mode === 'ready')) ? flapBoost / 0.22 : 0;
     drawAstronaut(x, y, rot, 1, equippedHelmet(), equippedSuit(),
-                  { flame: flame, seed: 0, shield: hasShield && (mode === 'play' || mode === 'ready') });
+                  { flame: flame, seed: 0, shield: shieldCharges > 0 && (mode === 'play' || mode === 'ready') });
   }
 
   // Small acorn glyph for the HUD and shop headers — drawn rather than an
@@ -2826,17 +2893,19 @@
     drawAcornIcon(22, 23, 1);
     ctx.fillText(String(runAcorns), 32, 28);
 
-    // carried shield indicator
-    if (hasShield) {
-      ctx.strokeStyle = 'rgba(140,255,190,0.9)';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.arc(22, 47, 9, 0, Math.PI * 2);
-      ctx.stroke();
-      drawAcornIcon(22, 46, 0.65);
+    // carried shield indicator — one ring per charge
+    if (shieldCharges > 0) {
+      for (let i = 0; i < shieldCharges; i++) {
+        ctx.strokeStyle = 'rgba(140,255,190,0.9)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(22 + i * 23, 47, 9, 0, Math.PI * 2);
+        ctx.stroke();
+        drawAcornIcon(22 + i * 23, 46, 0.65);
+      }
       ctx.fillStyle = '#8cffbe';
       ctx.font = '600 12px system-ui';
-      ctx.fillText('SHIELD', 36, 51);
+      ctx.fillText(shieldCharges > 1 ? 'x' + shieldCharges : 'SHIELD', 22 + shieldCharges * 23 - 8, 51);
     }
 
     // region banner when the environment shifts
@@ -2858,7 +2927,13 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = '#c084fc';
       ctx.font = 'bold 14px system-ui';
-      ctx.fillText('BLACK HOLE  ' + Math.ceil(warpLeft) + 's', W / 2, 92);
+      ctx.fillText((deepSpace ? 'SHIFT  ' : 'BLACK HOLE  ') + Math.ceil(warpLeft) + 's', W / 2, 92);
+      ctx.textAlign = 'left';
+    } else if (deepSpace && mode === 'play' && warpT === 0) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(192,132,252,0.75)';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 15 - deepTimer)) + 's', W / 2, 92);
       ctx.textAlign = 'left';
     }
     if (warpT > 0) {
@@ -2937,12 +3012,14 @@
   // these rects and handleTap hit-tests the same ones, so the buttons and
   // their tap targets can never drift apart.
   function titleButtons() {
-    const bw = Math.min(216, W * 0.56), bh = 56;
+    const bw = Math.min(224, W * 0.6), bh = 50;
     const bx = W / 2;
-    const y0 = H * 0.58;
+    const y0 = H * 0.555;
     return [
-      { id: 'fly',    x: bx, y: y0,      w: bw, h: bh, label: 'FLY' },
-      { id: 'hangar', x: bx, y: y0 + 68, w: bw, h: bh, label: 'HANGAR' },
+      { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
+      { id: 'deep',   x: bx, y: y0 + 60,  w: bw, h: bh, label: 'DEEP SPACE' },
+      { id: 'hangar', x: bx, y: y0 + 120, w: bw, h: bh, label: 'HANGAR' },
+      { id: 'help',   x: bx, y: y0 + 180, w: bw, h: bh, label: 'HOW TO PLAY' },
     ];
   }
 
@@ -2964,7 +3041,8 @@
     // high score + acorns
     ctx.font = '600 15px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.fillText('BEST  ' + save.highScore, W / 2, H * 0.31);
+    ctx.fillText('BEST  ' + save.highScore +
+                 (save.deepBest ? '   ·   DEEP  ' + save.deepBest : ''), W / 2, H * 0.31);
     ctx.fillStyle = '#ffd080';
     const acTxt = save.acorns + ' acorns';
     const acW = ctx.measureText(acTxt).width;
@@ -2973,12 +3051,14 @@
     ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.31 + 24);
 
     // hero squirrel centred under the acorn count
-    drawAstronaut(W / 2 + 6, H * 0.445, Math.sin(titlePulse * 2) * 0.06, 1.85,
+    drawAstronaut(W / 2 + 6, H * 0.43, Math.sin(titlePulse * 2) * 0.06, 1.65,
                   equippedHelmet(), equippedSuit(), { seed: 3 });
 
     const btns = titleButtons();
     drawMenuBtn(btns[0], true, iconRocket);
-    drawMenuBtn(btns[1], false, iconHangar);
+    drawDeepBtn(btns[1]);
+    drawMenuBtn(btns[2], false, iconHangar);
+    drawMenuBtn(btns[3], false, iconHelp);
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -3060,6 +3140,69 @@
     ctx.fillText(b.label, b.x - b.w / 2 + 52, b.y + 1);
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
+  }
+
+  function drawDeepBtn(b) {
+    const unlocked = deepSpaceUnlocked();
+    ctx.fillStyle = unlocked ? 'rgba(122,58,255,0.55)' : 'rgba(122,58,255,0.16)';
+    roundRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h, 17);
+    ctx.fill();
+    ctx.strokeStyle = unlocked ? 'rgba(196,132,252,0.7)' : 'rgba(196,132,252,0.3)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    iconVortex(b.x - b.w / 2 + 27, b.y, unlocked ? 1 : 0.4);
+    ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
+    ctx.font = 'bold 17px system-ui';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, b.x - b.w / 2 + 48, b.y + (unlocked ? 1 : -5));
+    if (!unlocked) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '600 9.5px system-ui';
+      ctx.fillText('REACH LEVEL 50 · 1000 ACORNS', b.x - b.w / 2 + 48, b.y + 12);
+    }
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+  }
+
+  function iconVortex(cx, cy, a) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = '#e2ccff';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    for (let k = 0; k < 2; k++) {
+      ctx.beginPath();
+      for (let i = 0; i < 14; i++) {
+        const th = i * 0.42 + k * Math.PI;
+        const rr = 1.5 + i * 0.62;
+        const px = Math.cos(th) * rr;
+        const py = Math.sin(th) * rr * 0.8;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#0a0512';
+    ctx.beginPath();
+    ctx.arc(0, 0, 2.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function iconHelp(cx, cy) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.font = 'bold 13px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('?', cx, cy + 1);
+    ctx.textBaseline = 'alphabetic';
   }
 
   function iconRocket(cx, cy) {
@@ -3154,6 +3297,63 @@
     ctx.fillStyle = '#ffd080';
     drawAcornIcon(30, 73, 1);
     ctx.fillText(String(save.acorns), 42, 78);
+  }
+
+  function drawHelp() {
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    roundRect(16, 26, 80, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('← BACK', 28, 49);
+    ctx.font = 'bold 22px system-ui';
+    ctx.fillText('HOW TO PLAY', 110, 50);
+
+    const t = performance.now() / 1000;
+    let y = 108;
+
+    // the one rule
+    drawAstronaut(52, y + 6, Math.sin(t * 2) * 0.06, 0.9,
+                  equippedHelmet(), equippedSuit(), { seed: 5 });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.fillText('TAP to boost upward.', 100, y - 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = '600 12.5px system-ui';
+    ctx.fillText('Glide through the gaps between planets.', 100, y + 18);
+    ctx.fillText('Planets bounce you — debris ends the run.', 100, y + 36);
+
+    y += 84;
+    const item = (draw, name, text1, text2) => {
+      draw();
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13.5px system-ui';
+      ctx.fillText(name, 100, y + 1);
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.font = '600 12px system-ui';
+      ctx.fillText(text1, 100, y + 18);
+      if (text2) ctx.fillText(text2, 100, y + 34);
+      y += text2 ? 64 : 54;
+    };
+
+    item(() => drawAcorn(52, y + 6, false), 'ACORN',
+         'The currency. Spend it in the hangar on', 'helmets, suits, trails and companions.');
+    item(() => drawAcorn(52, y + 6, true), 'SLOW ACORN',
+         'Slows everything down for 6 seconds.');
+    item(() => drawAcorn(52, y + 6, 'shield'), 'SHIELD ACORN',
+         'Absorbs one debris hit, then gives you a', 'moment to recover. Rare — grab it.');
+    item(() => drawAcorn(52, y + 6, 'blackhole'), 'BLACK HOLE',
+         'Warps space for 15 seconds: reversed or', 'tilted flight. Survive it for the glory.');
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '600 11.5px system-ui';
+    ctx.fillText('DEEP SPACE FLIGHT: no pickups needed —', W / 2, y + 14);
+    ctx.fillText('space itself shifts every 15 seconds.', W / 2, y + 30);
+    ctx.textAlign = 'left';
   }
 
   // ——— tabbed shop ————————————————————————————————————————————
@@ -3424,10 +3624,58 @@
       drawAcornIcon(112 + ctx.measureText(ct).width + 8, cardY + 106, 0.8);
     }
 
+    // ——— shield battery ———
+    const bY = cardY + 140;
+    const owned = !!save.battery;
+    const open = batteryUnlocked();
+    const canBuy = open && !owned && save.acorns >= MOD_BATTERY_COST;
+
+    ctx.fillStyle = owned ? 'rgba(93,255,158,0.12)' : 'rgba(255,255,255,0.06)';
+    roundRect(24, bY, W - 48, 124, 14);
+    ctx.fill();
+    ctx.strokeStyle = owned ? 'rgba(93,255,158,0.7)' : 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1.5;
+    roundRect(24, bY, W - 48, 124, 14);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.globalAlpha = open ? 1 : 0.45;
+    for (let i = 0; i < 3; i++) {
+      ctx.save();
+      ctx.translate(48 + i * 17, bY + 56);
+      ctx.scale(0.72, 0.72);
+      drawAcorn(0, 0, 'shield');
+      ctx.restore();
+    }
+    ctx.restore();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = open ? '#fff' : 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('SHIELD BATTERY', 116, bY + 36);
+    ctx.font = '600 12px system-ui';
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.fillText('Hold up to 3 shield charges', 116, bY + 56);
+    ctx.fillText('at once. Permanent.', 116, bY + 72);
+
+    ctx.font = 'bold 13px system-ui';
+    if (owned) {
+      ctx.fillStyle = '#5dff9e';
+      ctx.fillText('OWNED', 116, bY + 102);
+    } else if (!open) {
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.fillText('REACH LEVEL 100 · 2000 ACORNS', 116, bY + 102);
+    } else {
+      ctx.fillStyle = canBuy ? '#ffd080' : 'rgba(255,208,128,0.45)';
+      const bt = 'BUY  ' + MOD_BATTERY_COST;
+      ctx.fillText(bt, 116, bY + 102);
+      drawAcornIcon(122 + ctx.measureText(bt).width + 8, bY + 98, 0.8);
+    }
+
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.35)';
     ctx.font = '600 12px system-ui';
-    ctx.fillText('More modifiers coming soon', W / 2, cardY + 160);
+    ctx.fillText('More modifiers coming soon', W / 2, bY + 156);
   }
 
   window.addEventListener('resize', resize);
@@ -3446,8 +3694,13 @@
     get H() { return H; },
     get SQUIRREL_X() { return SQUIRREL_X; },
     get shields() { return shields; },
-    get hasShield() { return hasShield; },
-    set hasShield(v) { hasShield = v; },
+    get hasShield() { return shieldCharges > 0; },
+    set hasShield(v) { shieldCharges = v ? 1 : 0; },
+    get shieldCharges() { return shieldCharges; },
+    set shieldCharges(v) { shieldCharges = v; },
+    get deepSpace() { return deepSpace; },
+    set deepTimer(v) { deepTimer = v; },
+    get deepTimer() { return deepTimer; },
     get shieldFreeze() { return shieldFreeze; },
     get shieldSlow() { return shieldSlow; },
     get save() { return save; },
