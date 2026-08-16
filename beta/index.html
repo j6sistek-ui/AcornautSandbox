@@ -46,6 +46,8 @@
   // —— persistence ——
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
+  // Update this with every PR so a hard refresh is verifiable on the menu.
+  const BETA_BUILD = 'PR #13';
   const BETA_ACORNS = 10000;
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
@@ -216,6 +218,7 @@
   let deadTimer = 0;
   let titlePulse = 0;
   let hitCooldown = 0;
+  let bounceUp = false;  // a planet bounce launched the squirrel upward
   let hangarScroll = 0;
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
 
@@ -524,13 +527,58 @@
   }
 
   // —— input ——
+  let swipe = null; // {y0, t0, fired} — tracks a possible downward swipe
+
   function onPointer(e) {
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     const t = e.changedTouches ? e.changedTouches[0] : e;
     const x = (t.clientX - rect.left) * (W / rect.width);
     const y = (t.clientY - rect.top) * (H / rect.height);
+    swipe = { y0: y, t0: performance.now(), fired: false };
     handleTap(x, y);
+  }
+
+  function onPointerMove(e) {
+    if (!swipe || swipe.fired) return;
+    const rect = canvas.getBoundingClientRect();
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    const y = (t.clientY - rect.top) * (H / rect.height);
+    if (performance.now() - swipe.t0 > 300) { swipe = null; return; }
+    if (y - swipe.y0 >= 35) {
+      swipe.fired = true;
+      bounceCancel();
+    }
+  }
+
+  function onPointerUp() {
+    swipe = null;
+  }
+
+  // Swipe down DURING an upward planet bounce to cancel it: the launch is
+  // replaced with a slight downward tap. The bounceUp flag (not the current
+  // velocity) is what qualifies the cancel, because the swipe's own
+  // pointerdown fires a flap first — outside an upward bounce the swipe
+  // never becomes a stray dive.
+  function bounceCancel() {
+    if (mode !== 'play') return;
+    if (!bounceUp || hitCooldown <= 0) return;
+    bounceUp = false;
+    squirrel.vy = 210;
+    squirrel.rot = 0.35;
+    const sx = W * SQUIRREL_X;
+    for (let i = 0; i < 6; i++) {
+      particles.push({
+        x: sx + (Math.random() - 0.5) * 14,
+        y: squirrel.y - 14,
+        vx: (Math.random() - 0.5) * 60,
+        vy: -40 - Math.random() * 60,
+        life: 0.25 + Math.random() * 0.15,
+        max: 0.4,
+        r: 1.5 + Math.random() * 2,
+        kind: 'poof',
+      });
+    }
   }
   function handleTap(x, y) {
     if (mode === 'title') {
@@ -617,6 +665,9 @@
   }
 
   canvas.addEventListener('pointerdown', onPointer, { passive: false });
+  canvas.addEventListener('pointermove', onPointerMove, { passive: false });
+  canvas.addEventListener('pointerup', onPointerUp, { passive: false });
+  canvas.addEventListener('pointercancel', onPointerUp, { passive: false });
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
       e.preventDefault();
@@ -736,6 +787,7 @@
       const sy = squirrel.y;
       // off screen
       if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - simDt);
+      if (hitCooldown <= 0) bounceUp = false;
 
       // Ceiling bounces you back down — only debris is lethal up there.
       // Falling off the bottom of the screen still ends the run.
@@ -935,6 +987,7 @@
     const impact = Math.abs(squirrel.vy);
     const mag = Math.min(560, 170 + impact * 0.5);
     squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
+    bounceUp = squirrel.vy < 0;   // an upward launch can be swipe-cancelled
     squirrel.y += dy * 14;
     squirrel.rot = dy >= 0 ? 0.85 : -0.55;
     hitCooldown = 0.55;
@@ -967,6 +1020,7 @@
     squirrel.vy = 0;
     squirrel.rot = 0;
     hitCooldown = 0;
+    bounceUp = false;
     shieldFreeze = 0.7;
     shieldSlow = 3;
     recoveryMsg = 'SHIELD ABSORBED!';
@@ -3036,7 +3090,7 @@
     ctx.fillText('SOAR THE COSMOS · GATHER THE ACORNS', W / 2, H * 0.2 + 26);
     ctx.fillStyle = '#ffb040';
     ctx.font = 'bold 12px system-ui';
-    ctx.fillText('BETA TEST BUILD', W / 2, H * 0.2 + 44);
+    ctx.fillText('BETA TEST BUILD · ' + BETA_BUILD, W / 2, H * 0.2 + 44);
 
     // high score + acorns
     ctx.font = '600 15px system-ui';
@@ -3705,6 +3759,9 @@
     get shieldSlow() { return shieldSlow; },
     get save() { return save; },
     get hitCooldown() { return hitCooldown; },
+    set hitCooldown(v) { hitCooldown = v; },
+    get bounceUp() { return bounceUp; },
+    set bounceUp(v) { bounceUp = v; },
     get shopTab() { return shopTab; },
     get blackholes() { return blackholes; },
     get warpT() { return warpT; },
