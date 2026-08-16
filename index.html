@@ -4,8 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Acornaut</title>
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -228,6 +226,26 @@
     };
   }
 
+  // Obstacle types for around-path seals (not planets)
+  const OB_TYPES = ['asteroid','debris','satellite','ufo','crystal','rock','junk'];
+
+  function makeObstacle(y, xOff) {
+    const type = OB_TYPES[Math.floor(Math.random() * OB_TYPES.length)];
+    // Larger hit/visual size so the flight lane is actually blocked
+    const r = type === 'ufo' ? 22 + Math.random() * 6
+            : type === 'satellite' ? 20 + Math.random() * 6
+            : type === 'crystal' ? 18 + Math.random() * 7
+            : type === 'debris' || type === 'junk' ? 17 + Math.random() * 7
+            : 20 + Math.random() * 9;
+    return {
+      y, r, type,
+      xOff: xOff,
+      rot: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.8,
+      seed: Math.floor(Math.random() * 1000),
+    };
+  }
+
   function spawnPair(x) {
     const d = difficulty();
     // Main gap UNCHANGED — only seal the around-path above/below
@@ -238,47 +256,33 @@
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
-    // Blockers ONLY outside the real gap. Spaced so they don't stack into clumps.
+    // Seal the vertical corridor ABOVE the top gate and BELOW the bottom gate.
+    // xOff stays small so objects sit in the flight lane (not pushed aside).
     const blockers = [];
-    // One solid blocker just above the top gate (offset sideways)
+    const topEdge = topY - PLANET_R;   // top of top planet
+    const botEdge = botY + PLANET_R;   // bottom of bottom planet
+
+    // Stack obstacles from just above the top planet up toward the screen top
     {
-      const off = 36 + Math.random() * 14;
-      blockers.push({
-        y: topY - PLANET_R - off,
-        r: 26 + Math.floor(Math.random() * 5),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 16),
-      });
+      let y = topEdge - (32 + Math.random() * 10);
+      let n = 0;
+      while (y > 28 && n < 4) {
+        const xOff = (n % 2 === 0 ? -1 : 1) * (4 + Math.random() * 12);
+        blockers.push(makeObstacle(y, xOff));
+        y -= (40 + Math.random() * 18);
+        n++;
+      }
     }
-    // One mid-high blocker toward top of screen (only if room)
-    const topRoom = topY - PLANET_R;
-    if (topRoom > 110) {
-      blockers.push({
-        y: 40 + Math.random() * Math.max(20, topRoom * 0.35),
-        r: 22 + Math.floor(Math.random() * 6),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 30,
-      });
-    }
-    // One solid blocker just below the bottom gate
+    // Stack obstacles from just below the bottom planet down toward the screen bottom
     {
-      const off = 36 + Math.random() * 14;
-      blockers.push({
-        y: botY + PLANET_R + off,
-        r: 26 + Math.floor(Math.random() * 5),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 16),
-      });
-    }
-    // One mid-low blocker toward bottom of screen (only if room)
-    const botRoom = H - (botY + PLANET_R);
-    if (botRoom > 110) {
-      blockers.push({
-        y: H - 40 - Math.random() * Math.max(20, botRoom * 0.35),
-        r: 22 + Math.floor(Math.random() * 6),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 30,
-      });
+      let y = botEdge + (32 + Math.random() * 10);
+      let n = 0;
+      while (y < H - 28 && n < 4) {
+        const xOff = (n % 2 === 0 ? 1 : -1) * (4 + Math.random() * 12);
+        blockers.push(makeObstacle(y, xOff));
+        y += (40 + Math.random() * 18);
+        n++;
+      }
     }
     planets.push({
       x, gapY: gapCenter, gap, r: PLANET_R,
@@ -627,7 +631,7 @@
       drawPlanet(p.x, p.gapY - p.gap / 2 - p.r, p.r, p.topKind);
       drawPlanet(p.x, p.gapY + p.gap / 2 + p.r, p.r, p.botKind);
       for (const b of (p.blockers || [])) {
-        drawPlanet(p.x + (b.xOff || 0), b.y, b.r, b.kind);
+        drawObstacle(p.x + (b.xOff || 0), b.y, b);
       }
     }
     for (const a of acorns) {
@@ -640,6 +644,273 @@
     }
     for (const p of particles) drawParticle(p);
     drawSquirrel(W * SQUIRREL_X, squirrel.y, squirrel.rot);
+  }
+
+
+  function drawObstacle(x, y, b) {
+    const r = b.r;
+    const type = b.type || 'asteroid';
+    const seed = b.seed || 0;
+    const rot = (b.rot || 0) + (b.spin || 0) * (performance.now() / 1000);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+
+    // soft contact shadow under every obstacle
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(2, r * 0.55, r * 0.7, r * 0.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (type === 'asteroid') {
+      // irregular body
+      const pts = 8;
+      ctx.beginPath();
+      for (let i = 0; i <= pts; i++) {
+        const a = (i / pts) * Math.PI * 2;
+        const jitter = 0.72 + ((seed * (i + 3)) % 9) / 22;
+        const px = Math.cos(a) * r * jitter;
+        const py = Math.sin(a) * r * jitter;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      const grd = ctx.createRadialGradient(-r * 0.35, -r * 0.35, r * 0.08, 0, 0, r);
+      grd.addColorStop(0, '#c8b8a0');
+      grd.addColorStop(0.45, '#8a7a64');
+      grd.addColorStop(1, '#3a3028');
+      ctx.fillStyle = grd;
+      ctx.fill();
+      // rim
+      ctx.strokeStyle = 'rgba(255,230,200,0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // craters with rims
+      for (let i = 0; i < 4; i++) {
+        const a = (seed * 0.7 + i * 1.7) % (Math.PI * 2);
+        const d = r * (0.2 + (i % 3) * 0.15);
+        const cr = r * (0.1 + (i % 3) * 0.05);
+        const cx = Math.cos(a) * d, cy = Math.sin(a) * d;
+        ctx.fillStyle = 'rgba(25,20,15,0.5)';
+        ctx.beginPath(); ctx.arc(cx, cy, cr, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(180,160,130,0.25)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    } else if (type === 'debris') {
+      // main plate
+      const grd = ctx.createLinearGradient(-r, -r, r, r);
+      grd.addColorStop(0, '#9aa2aa');
+      grd.addColorStop(0.5, '#5a626c');
+      grd.addColorStop(1, '#2a3038');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.95, -r * 0.25);
+      ctx.lineTo(r * 0.55, -r * 0.85);
+      ctx.lineTo(r * 0.95, r * 0.15);
+      ctx.lineTo(-r * 0.35, r * 0.8);
+      ctx.closePath();
+      ctx.fill();
+      // secondary shard
+      ctx.fillStyle = '#4a525c';
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.55, r * 0.05);
+      ctx.lineTo(r * 0.25, -r * 0.3);
+      ctx.lineTo(r * 0.1, r * 0.6);
+      ctx.closePath();
+      ctx.fill();
+      // heat edge
+      ctx.strokeStyle = 'rgba(255,100,30,0.55)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.95, -r * 0.25);
+      ctx.lineTo(r * 0.55, -r * 0.85);
+      ctx.stroke();
+      // rivets
+      ctx.fillStyle = '#c0c8d0';
+      [[-0.4,-0.1],[0.2,-0.4],[0.4,0.05],[-0.15,0.4]].forEach(([dx,dy]) => {
+        ctx.beginPath(); ctx.arc(dx * r, dy * r, 1.6, 0, Math.PI * 2); ctx.fill();
+      });
+    } else if (type === 'satellite') {
+      // body
+      const bg = ctx.createLinearGradient(-r * 0.4, -r * 0.5, r * 0.4, r * 0.5);
+      bg.addColorStop(0, '#e8eef4');
+      bg.addColorStop(1, '#687480');
+      ctx.fillStyle = bg;
+      ctx.fillRect(-r * 0.38, -r * 0.45, r * 0.76, r * 0.9);
+      // window
+      ctx.fillStyle = 'rgba(80,180,255,0.55)';
+      ctx.fillRect(-r * 0.18, -r * 0.25, r * 0.36, r * 0.28);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-r * 0.18, -r * 0.25, r * 0.36, r * 0.28);
+      // solar panels
+      const panel = (x0) => {
+        const pg = ctx.createLinearGradient(x0, 0, x0 + r * 0.55, 0);
+        pg.addColorStop(0, '#1a4a7a');
+        pg.addColorStop(0.5, '#3a8ad0');
+        pg.addColorStop(1, '#1a4a7a');
+        ctx.fillStyle = pg;
+        ctx.fillRect(x0, -r * 0.3, r * 0.55, r * 0.6);
+        ctx.strokeStyle = 'rgba(120,200,255,0.45)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 4; i++) {
+          const py = -r * 0.3 + i * r * 0.15;
+          ctx.beginPath(); ctx.moveTo(x0 + 2, py); ctx.lineTo(x0 + r * 0.53, py); ctx.stroke();
+        }
+        for (let i = 1; i < 3; i++) {
+          const px = x0 + i * r * 0.18;
+          ctx.beginPath(); ctx.moveTo(px, -r * 0.28); ctx.lineTo(px, r * 0.28); ctx.stroke();
+        }
+      };
+      panel(-r * 1.1);
+      panel(r * 0.55);
+      // dish / antenna
+      ctx.strokeStyle = '#d0d8e0';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, -r * 0.45); ctx.lineTo(0, -r * 0.95); ctx.stroke();
+      ctx.fillStyle = '#ff5050';
+      ctx.beginPath(); ctx.arc(0, -r * 1.0, r * 0.12, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(0, -r * 0.7, r * 0.22, -2.2, -0.6); ctx.stroke();
+    } else if (type === 'ufo') {
+      // hull
+      const hull = ctx.createRadialGradient(0, -r * 0.15, r * 0.1, 0, 0, r * 1.1);
+      hull.addColorStop(0, '#f0f4f8');
+      hull.addColorStop(0.4, '#90a0b8');
+      hull.addColorStop(1, '#303848');
+      ctx.fillStyle = hull;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 1.15, r * 0.42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // rim ring
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 1.05, r * 0.32, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      // dome
+      const dome = ctx.createRadialGradient(-r * 0.1, -r * 0.35, r * 0.05, 0, -r * 0.15, r * 0.5);
+      dome.addColorStop(0, 'rgba(180,240,255,0.85)');
+      dome.addColorStop(0.6, 'rgba(60,160,220,0.55)');
+      dome.addColorStop(1, 'rgba(20,60,100,0.35)');
+      ctx.fillStyle = dome;
+      ctx.beginPath();
+      ctx.ellipse(0, -r * 0.18, r * 0.5, r * 0.4, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(200,240,255,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // underglow lights
+      for (let i = 0; i < 6; i++) {
+        const a = -1.0 + i * 0.4;
+        ctx.fillStyle = i % 2 ? '#ffd040' : '#40f0ff';
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(Math.cos(a) * r * 0.75, Math.sin(a) * r * 0.22 + r * 0.05, r * 0.09, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+    } else if (type === 'crystal') {
+      // outer crystal
+      const cg = ctx.createLinearGradient(0, -r, 0, r);
+      cg.addColorStop(0, 'rgba(220,180,255,0.95)');
+      cg.addColorStop(0.45, 'rgba(140,70,230,0.9)');
+      cg.addColorStop(1, 'rgba(60,20,120,0.85)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 1.05);
+      ctx.lineTo(r * 0.6, -r * 0.1);
+      ctx.lineTo(r * 0.35, r * 0.9);
+      ctx.lineTo(-r * 0.4, r * 0.75);
+      ctx.lineTo(-r * 0.65, -r * 0.15);
+      ctx.closePath();
+      ctx.fill();
+      // inner highlight facet
+      ctx.fillStyle = 'rgba(255,240,255,0.45)';
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 0.75);
+      ctx.lineTo(r * 0.28, -r * 0.05);
+      ctx.lineTo(0, r * 0.35);
+      ctx.lineTo(-r * 0.28, -r * 0.05);
+      ctx.closePath();
+      ctx.fill();
+      // edge shine
+      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.2, -r * 0.55);
+      ctx.lineTo(r * 0.15, r * 0.25);
+      ctx.stroke();
+      // glow
+      ctx.strokeStyle = 'rgba(180,100,255,0.35)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 1.05);
+      ctx.lineTo(r * 0.6, -r * 0.1);
+      ctx.stroke();
+    } else if (type === 'rock') {
+      const rg = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
+      rg.addColorStop(0, '#9a9080');
+      rg.addColorStop(0.5, '#5a5048');
+      rg.addColorStop(1, '#2a2420');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 0.98, r * 0.82, 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      // lumps
+      ctx.fillStyle = '#7a7060';
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.25, -r * 0.28, r * 0.4, r * 0.32, -0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(20,16,12,0.45)';
+      ctx.beginPath(); ctx.arc(r * 0.3, r * 0.2, r * 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-r * 0.35, r * 0.28, r * 0.14, 0, Math.PI * 2); ctx.fill();
+      // highlight
+      ctx.strokeStyle = 'rgba(220,200,170,0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.15, -r * 0.35, r * 0.35, r * 0.2, -0.4, 0, Math.PI * 2);
+      ctx.stroke();
+    } else { // junk
+      // barrel body
+      const jg = ctx.createLinearGradient(-r * 0.7, 0, r * 0.7, 0);
+      jg.addColorStop(0, '#5a3a20');
+      jg.addColorStop(0.4, '#c08040');
+      jg.addColorStop(1, '#4a3018');
+      ctx.fillStyle = jg;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 0.72, r * 0.95, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // bands
+      ctx.strokeStyle = '#e0a860';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.ellipse(0, -r * 0.35, r * 0.72, r * 0.22, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, r * 0.35, r * 0.72, r * 0.22, 0, 0, Math.PI * 2); ctx.stroke();
+      // rust spots
+      ctx.fillStyle = 'rgba(80,40,10,0.4)';
+      ctx.beginPath(); ctx.arc(-r * 0.25, r * 0.1, r * 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.3, -r * 0.15, r * 0.1, 0, Math.PI * 2); ctx.fill();
+      // metal strut
+      ctx.strokeStyle = '#b0b8c0';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(r * 0.45, -r * 0.7);
+      ctx.lineTo(r * 1.15, r * 0.35);
+      ctx.stroke();
+      // joint ball
+      const bg2 = ctx.createRadialGradient(r * 1.1, r * 0.3, 1, r * 1.15, r * 0.35, r * 0.2);
+      bg2.addColorStop(0, '#e0e8f0');
+      bg2.addColorStop(1, '#505860');
+      ctx.fillStyle = bg2;
+      ctx.beginPath();
+      ctx.arc(r * 1.15, r * 0.35, r * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
   }
 
   function drawPlanet(x, y, r, kind) {
