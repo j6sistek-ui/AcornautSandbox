@@ -147,6 +147,8 @@
   let warpT = 0;             // swirl-in transition (counts down from 1s)
   let warpLeft = 0;          // remaining warped-orientation time
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
+  let warpMirror = true;     // whether this warp reverses the scroll
+  let recoveryMsg = '';      // banner shown during freeze/slow recovery
   let hasShield = false;     // carrying a shield this run
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
   let shieldSlow = 0;        // slow-motion recovery window after the freeze
@@ -203,6 +205,8 @@
     warpT = 0;
     warpLeft = 0;
     warpTilt = 0;
+    warpMirror = true;
+    recoveryMsg = '';
     hasShield = !!save.startShield; // purchased modifier arms the run
     shieldFreeze = 0;
     shieldSlow = 0;
@@ -617,7 +621,14 @@
             Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
           a.got = true;
           warpT = 1.0;                                  // swirl begins
-          warpTilt = (Math.random() < 0.5 ? 1 : -1) * (25 * Math.PI / 180);
+          // five equally likely disorientations:
+          //   0 backward · 1 backward tilt-up · 2 backward tilt-down
+          //   3 forward tilt-up · 4 forward tilt-down
+          const variant = Math.floor(Math.random() * 5);
+          warpMirror = variant < 3;
+          const TILT = 25 * Math.PI / 180;
+          warpTilt = variant === 0 ? 0
+                   : (variant === 1 || variant === 3) ? TILT : -TILT;
           spark(a.x, a.y, 'warp');
         }
       }
@@ -678,8 +689,10 @@
 
   function exitWarp() {
     warpTilt = 0;
+    warpMirror = true;
     shieldFreeze = 0.7;
     shieldSlow = 3;
+    recoveryMsg = 'ORIENTATION RESTORED';
     spark(W * SQUIRREL_X, squirrel.y, 'warp');
   }
 
@@ -730,6 +743,7 @@
     hitCooldown = 0;
     shieldFreeze = 0.7;
     shieldSlow = 3;
+    recoveryMsg = 'SHIELD ABSORBED!';
     spark(sx, cy, 'shield');
   }
 
@@ -801,7 +815,7 @@
         ctx.translate(W / 2, H / 2);
         const spin = warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
         ctx.rotate(warpTilt * wp + spin);
-        ctx.scale(1 - 2 * wp, 1);
+        ctx.scale(warpMirror ? 1 - 2 * wp : 1, 1);
         ctx.translate(-W / 2, -H / 2);
         drawWorld();
         ctx.restore();
@@ -2394,12 +2408,13 @@
       ctx.textAlign = 'left';
     }
 
-    // shield-break banner during the freeze and early recovery
-    if (warpT === 0 && (shieldFreeze > 0 || shieldSlow > 2.2)) {
+    // recovery banner — labelled by whatever caused the recovery, so the
+    // warp ending never claims a shield was spent
+    if (warpT === 0 && recoveryMsg && (shieldFreeze > 0 || shieldSlow > 2.2)) {
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#5dff9e';
+      ctx.fillStyle = recoveryMsg === 'SHIELD ABSORBED!' ? '#5dff9e' : '#c084fc';
       ctx.font = 'bold 22px system-ui';
-      ctx.fillText('SHIELD ABSORBED!', W / 2, H * 0.3);
+      ctx.fillText(recoveryMsg, W / 2, H * 0.3);
       ctx.font = '600 13px system-ui';
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fillText('get ready…', W / 2, H * 0.3 + 22);
@@ -2847,6 +2862,8 @@
     get warpLeft() { return warpLeft; },
     set warpLeft(v) { warpLeft = v; },
     get warpTilt() { return warpTilt; },
+    get warpMirror() { return warpMirror; },
+    get recoveryMsg() { return recoveryMsg; },
     resetRun,
     flap,
   };
