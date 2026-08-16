@@ -84,8 +84,8 @@
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit'];
   const defaultSave = () => ({
     highScore: 0,
-    acorns: 10000, // testing bank so suits can be unlocked freely
-    unlocked: HELMET_IDS.slice(), // all helmets unlocked for testing
+    acorns: 10000, // testing bank
+    unlocked: ['clear'], // only Clear free — rest cost acorns
     equipped: 'clear',
     unlockedSuits: ['flight'],
     equippedSuit: 'flight',
@@ -95,8 +95,9 @@
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return defaultSave();
       const s = { ...defaultSave(), ...JSON.parse(raw) };
-      // testing: keep all helmets unlocked; suits stay gated; give big acorn bank
-      s.unlocked = HELMET_IDS.slice();
+      // testing bank; helmets gated by cost; suits gated
+      if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
+      if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
       if (!Array.isArray(s.unlockedSuits) || !s.unlockedSuits.length) s.unlockedSuits = ['flight'];
       if (!s.unlockedSuits.includes('flight')) s.unlockedSuits.unshift('flight');
       if (!SUIT_IDS.includes(s.equippedSuit)) s.equippedSuit = 'flight';
@@ -212,7 +213,7 @@
   }
 
   function gapSpacing() {
-    return 210 + Math.min(40, distance * 0.004);
+    return 240 + Math.min(50, distance * 0.005);
   }
 
   function difficulty() {
@@ -225,54 +226,81 @@
 
   function spawnPair(x) {
     const d = difficulty();
-    // Slightly tighter gaps so the main opening is more deliberate
-    const gap = Math.max(GAP_MIN, d.gap - 8);
-    const margin = 80;
+    // Main gap UNCHANGED — only seal the around-path above/below
+    const gap = d.gap;
+    const margin = 70;
     const gapCenter = margin + gap / 2 + Math.random() * (H - 2 * margin - gap);
     const kindA = Math.floor(Math.random() * 9);
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
-    // Blockers only OUTSIDE the real gap. Closer + consistent so side fly-arounds are discouraged.
-    // No tiny planets floating inside the opening.
+    // Blockers ONLY outside the real gap — seal fly-around routes
+    // Never place anything inside the opening between the main pair.
     const blockers = [];
-    // Always put one solid blocker above the top gate (close, slightly offset)
+    // Top seal cluster (above the top gate planet)
     {
-      const off = 32 + Math.random() * 12;
+      const off = 30 + Math.random() * 12;
       blockers.push({
         y: topY - PLANET_R - off,
-        r: 24 + Math.floor(Math.random() * 5),
+        r: 26 + Math.floor(Math.random() * 6),
         kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 28,
+        xOff: -20 - Math.random() * 10,
+      });
+      blockers.push({
+        y: topY - PLANET_R - off - 6,
+        r: 22 + Math.floor(Math.random() * 5),
+        kind: Math.floor(Math.random() * 9),
+        xOff: 18 + Math.random() * 12,
       });
     }
-    // Sometimes a second higher one
-    if (Math.random() < 0.35) {
-      const off = 62 + Math.random() * 16;
+    // Fill toward top of screen so you can't slip over
+    if (topY - PLANET_R > 90) {
       blockers.push({
-        y: topY - PLANET_R - off,
-        r: 18 + Math.floor(Math.random() * 5),
+        y: Math.max(30, (topY - PLANET_R) * 0.45),
+        r: 24 + Math.floor(Math.random() * 8),
         kind: Math.floor(Math.random() * 9),
         xOff: (Math.random() - 0.5) * 20,
       });
     }
-    // Always one solid blocker below the bottom gate
-    {
-      const off = 32 + Math.random() * 12;
+    if (topY - PLANET_R > 160) {
       blockers.push({
-        y: botY + PLANET_R + off,
-        r: 24 + Math.floor(Math.random() * 5),
+        y: Math.max(50, (topY - PLANET_R) * 0.7),
+        r: 20 + Math.floor(Math.random() * 6),
         kind: Math.floor(Math.random() * 9),
         xOff: (Math.random() - 0.5) * 28,
       });
     }
-    if (Math.random() < 0.35) {
-      const off = 62 + Math.random() * 16;
+    // Bottom seal cluster (below the bottom gate planet)
+    {
+      const off = 30 + Math.random() * 12;
       blockers.push({
         y: botY + PLANET_R + off,
-        r: 18 + Math.floor(Math.random() * 5),
+        r: 26 + Math.floor(Math.random() * 6),
+        kind: Math.floor(Math.random() * 9),
+        xOff: 18 + Math.random() * 10,
+      });
+      blockers.push({
+        y: botY + PLANET_R + off + 6,
+        r: 22 + Math.floor(Math.random() * 5),
+        kind: Math.floor(Math.random() * 9),
+        xOff: -20 - Math.random() * 12,
+      });
+    }
+    // Fill toward bottom of screen so you can't slip under
+    if (H - (botY + PLANET_R) > 90) {
+      blockers.push({
+        y: Math.min(H - 30, botY + PLANET_R + (H - botY - PLANET_R) * 0.55),
+        r: 24 + Math.floor(Math.random() * 8),
         kind: Math.floor(Math.random() * 9),
         xOff: (Math.random() - 0.5) * 20,
+      });
+    }
+    if (H - (botY + PLANET_R) > 160) {
+      blockers.push({
+        y: Math.min(H - 50, botY + PLANET_R + (H - botY - PLANET_R) * 0.75),
+        r: 20 + Math.floor(Math.random() * 6),
+        kind: Math.floor(Math.random() * 9),
+        xOff: (Math.random() - 0.5) * 28,
       });
     }
     planets.push({
@@ -639,125 +667,204 @@
 
   function drawPlanet(x, y, r, kind) {
     const palettes = [
-      // 0 ocean earth-like
-      ['#2a6aa8', '#1a4068', '#6eb8e8', '#3a9a5a'],
+      // 0 ocean earth
+      ['#2a6aa8', '#1a4068', '#6eb8e8', '#3a9a5a', '#1a5a38'],
       // 1 golden ringed
-      ['#d4a84a', '#a07828', '#f0d88a', '#c9a04a'],
-      // 2 icy / moon
-      ['#b0c0d0', '#788898', '#e8f0f8', '#a0b0c0'],
+      ['#d4a84a', '#a07828', '#f0d88a', '#c9a04a', '#8a6020'],
+      // 2 icy moon
+      ['#b0c0d0', '#788898', '#e8f0f8', '#a0b0c0', '#606878'],
       // 3 lava / mars
-      ['#c04020', '#701808', '#e87040', '#a03018'],
+      ['#c04020', '#701808', '#e87040', '#a03018', '#ff9040'],
       // 4 teal gas
-      ['#1a9080', '#0c5848', '#5ad0b8', '#2a8070'],
-      // 5 rock / grey
-      ['#6a6e78', '#3c4048', '#a0a4ac', '#5a5e66'],
+      ['#1a9080', '#0c5848', '#5ad0b8', '#2a8070', '#0a4038'],
+      // 5 rock grey
+      ['#6a6e78', '#3c4048', '#a0a4ac', '#5a5e66', '#2a2c30'],
       // 6 desert
-      ['#b07030', '#704018', '#e0a060', '#986028'],
+      ['#b07030', '#704018', '#e0a060', '#986028', '#503010'],
       // 7 deep blue gas
-      ['#142850', '#081830', '#3a68a0', '#1e4070'],
+      ['#142850', '#081830', '#3a68a0', '#1e4070', '#0a1830'],
       // 8 pink alien
-      ['#c06078', '#782840', '#e8a0b0', '#a04858'],
+      ['#c06078', '#782840', '#e8a0b0', '#a04858', '#501828'],
     ];
-    const [c1, c2, c3, c4] = palettes[kind % palettes.length];
-    // base sphere
-    const grd = ctx.createRadialGradient(x - r * 0.32, y - r * 0.32, r * 0.08, x, y, r);
+    const [c1, c2, c3, c4, c5] = palettes[kind % palettes.length];
+
+    // soft outer atmosphere glow
+    ctx.beginPath();
+    ctx.arc(x, y, r * 1.12, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(180,210,255,0.08)';
+    ctx.fill();
+
+    // base sphere with 3-stop lighting
+    const grd = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.05, x, y, r);
     grd.addColorStop(0, c3);
-    grd.addColorStop(0.5, c1);
+    grd.addColorStop(0.45, c1);
     grd.addColorStop(1, c2);
     ctx.fillStyle = grd;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
 
-    // kind-specific surface detail
+    // surface detail (clipped)
     ctx.save();
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.clip();
 
-    if (kind === 0) { // continents
+    if (kind === 0) { // earth continents + clouds
       ctx.fillStyle = c4;
-      ctx.globalAlpha = 0.55;
-      ctx.beginPath();
-      ctx.ellipse(x - r * 0.15, y - r * 0.1, r * 0.45, r * 0.28, -0.4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(x + r * 0.25, y + r * 0.2, r * 0.3, r * 0.2, 0.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    } else if (kind === 1 || kind === 7) { // bands
-      ctx.strokeStyle = c4;
-      ctx.globalAlpha = 0.35;
-      ctx.lineWidth = r * 0.12;
-      for (let i = -2; i <= 2; i++) {
+      ctx.globalAlpha = 0.65;
+      [[-0.2,-0.15,0.5,0.32,-0.5],[0.28,0.18,0.35,0.22,0.4],[-0.05,0.35,0.28,0.18,0.1]].forEach(([dx,dy,rx,ry,rot]) => {
         ctx.beginPath();
-        ctx.ellipse(x, y + i * r * 0.22, r * 0.95, r * 0.18, 0, 0, Math.PI * 2);
+        ctx.ellipse(x+dx*r, y+dy*r, r*rx, r*ry, rot, 0, Math.PI*2);
+        ctx.fill();
+      });
+      // cloud wisps
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.22;
+      [[0.1,-0.3,0.3,0.1],[ -0.3,0.1,0.25,0.08],[0.25,0.3,0.2,0.07]].forEach(([dx,dy,rx,ry]) => {
+        ctx.beginPath();
+        ctx.ellipse(x+dx*r, y+dy*r, r*rx, r*ry, 0, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 1 || kind === 7) { // gas bands
+      for (let i = -3; i <= 3; i++) {
+        ctx.strokeStyle = i % 2 === 0 ? c4 : c5;
+        ctx.globalAlpha = 0.28 + (i % 2) * 0.1;
+        ctx.lineWidth = r * (0.1 + Math.abs(i) * 0.02);
+        ctx.beginPath();
+        ctx.ellipse(x, y + i * r * 0.18, r * 0.96, r * 0.16, 0, 0, Math.PI * 2);
         ctx.stroke();
       }
+      // storm oval
+      ctx.fillStyle = c3;
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      ctx.ellipse(x + r * 0.25, y + r * 0.1, r * 0.22, r * 0.14, 0.3, 0, Math.PI * 2);
+      ctx.fill();
       ctx.globalAlpha = 1;
-    } else if (kind === 2 || kind === 5) { // craters
-      ctx.fillStyle = c2;
-      ctx.globalAlpha = 0.45;
-      [[-0.25, -0.2, 0.18], [0.3, 0.15, 0.14], [-0.1, 0.35, 0.12], [0.2, -0.35, 0.1]].forEach(([dx, dy, s]) => {
+    } else if (kind === 2 || kind === 5) { // craters + maria
+      ctx.fillStyle = c5;
+      ctx.globalAlpha = 0.35;
+      [[-0.3,-0.25,0.22],[0.25,0.1,0.18],[-0.05,0.35,0.15],[0.35,-0.3,0.12],[-0.35,0.15,0.1],[0.1,-0.05,0.08]].forEach(([dx,dy,s]) => {
+        ctx.beginPath();
+        ctx.arc(x + dx * r, y + dy * r, r * s, 0, Math.PI * 2);
+        ctx.fill();
+        // rim highlight
+        ctx.strokeStyle = c3;
+        ctx.globalAlpha = 0.25;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = c5;
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 3) { // lava + cracks
+      ctx.fillStyle = c5;
+      ctx.globalAlpha = 0.55;
+      [[-0.15,-0.2,0.2],[0.2,0.15,0.18],[-0.25,0.25,0.12]].forEach(([dx,dy,s]) => {
         ctx.beginPath();
         ctx.arc(x + dx * r, y + dy * r, r * s, 0, Math.PI * 2);
         ctx.fill();
       });
-      ctx.globalAlpha = 1;
-    } else if (kind === 3) { // lava veins
       ctx.strokeStyle = '#ff9040';
-      ctx.globalAlpha = 0.5;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x - r * 0.4, y - r * 0.2);
-      ctx.quadraticCurveTo(x, y + r * 0.1, x + r * 0.35, y - r * 0.15);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x - r * 0.2, y + r * 0.3);
-      ctx.quadraticCurveTo(x + r * 0.1, y, x + r * 0.4, y + r * 0.25);
-      ctx.stroke();
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 2.2;
+      [[-0.45,-0.2,0.1,0.15,0.4,-0.1],[-0.2,0.3,0.15,0.05,0.45,0.2],[0.1,-0.35,0.0,-0.1,0.3,0.05]].forEach(([x1,y1,cx,cy,x2,y2]) => {
+        ctx.beginPath();
+        ctx.moveTo(x + x1 * r, y + y1 * r);
+        ctx.quadraticCurveTo(x + cx * r, y + cy * r, x + x2 * r, y + y2 * r);
+        ctx.stroke();
+      });
       ctx.globalAlpha = 1;
-    } else if (kind === 4 || kind === 8) { // soft spots
+    } else if (kind === 4 || kind === 8) { // soft spots + haze
       ctx.fillStyle = c4;
       ctx.globalAlpha = 0.3;
-      ctx.beginPath();
-      ctx.ellipse(x + r * 0.1, y - r * 0.15, r * 0.35, r * 0.25, 0.3, 0, Math.PI * 2);
-      ctx.fill();
+      [[0.15,-0.2,0.4,0.28],[ -0.25,0.15,0.3,0.22]].forEach(([dx,dy,rx,ry]) => {
+        ctx.beginPath();
+        ctx.ellipse(x + dx * r, y + dy * r, r * rx, r * ry, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 6) { // desert dunes
+      ctx.strokeStyle = c5;
+      ctx.globalAlpha = 0.4;
+      ctx.lineWidth = 2;
+      for (let i = -2; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x - r * 0.8, y + i * r * 0.22);
+        ctx.quadraticCurveTo(x, y + i * r * 0.22 - r * 0.08, x + r * 0.8, y + i * r * 0.22);
+        ctx.stroke();
+      }
       ctx.globalAlpha = 1;
     }
+
+    // terminator / night side soft shadow
+    const night = ctx.createLinearGradient(x - r, y, x + r, y);
+    night.addColorStop(0, 'rgba(0,0,0,0)');
+    night.addColorStop(0.55, 'rgba(0,0,0,0)');
+    night.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle = night;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.restore();
 
-    // rings (several kinds)
+    // rings (drawn outside clip)
     if (kind === 1) {
-      ctx.strokeStyle = 'rgba(212,175,55,0.75)';
-      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = 'rgba(212,175,55,0.8)';
+      ctx.lineWidth = Math.max(2.5, r * 0.08);
       ctx.beginPath();
-      ctx.ellipse(x, y, r * 1.4, r * 0.3, -0.25, 0, Math.PI * 2);
+      ctx.ellipse(x, y, r * 1.45, r * 0.28, -0.28, 0, Math.PI * 2);
       ctx.stroke();
       ctx.strokeStyle = 'rgba(212,175,55,0.35)';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = Math.max(1.2, r * 0.04);
       ctx.beginPath();
-      ctx.ellipse(x, y, r * 1.55, r * 0.34, -0.25, 0, Math.PI * 2);
+      ctx.ellipse(x, y, r * 1.62, r * 0.32, -0.28, 0, Math.PI * 2);
       ctx.stroke();
-    } else if (kind === 4) {
-      ctx.strokeStyle = 'rgba(100,220,200,0.45)';
-      ctx.lineWidth = 2.5;
+      // ring shadow on planet
+      ctx.save();
       ctx.beginPath();
-      ctx.ellipse(x, y, r * 1.3, r * 0.22, 0.15, 0, Math.PI * 2);
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.95, r * 0.2, -0.28, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    } else if (kind === 4) {
+      ctx.strokeStyle = 'rgba(100,220,200,0.5)';
+      ctx.lineWidth = Math.max(2, r * 0.06);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.35, r * 0.22, 0.18, 0, Math.PI * 2);
       ctx.stroke();
     } else if (kind === 7) {
-      ctx.strokeStyle = 'rgba(100,140,220,0.4)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(100,140,220,0.45)';
+      ctx.lineWidth = Math.max(1.8, r * 0.05);
       ctx.beginPath();
-      ctx.ellipse(x, y, r * 1.25, r * 0.2, -0.1, 0, Math.PI * 2);
+      ctx.ellipse(x, y, r * 1.3, r * 0.2, -0.12, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(100,140,220,0.25)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.42, r * 0.24, -0.12, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (kind === 2) {
+      // thin icy ring
+      ctx.strokeStyle = 'rgba(200,220,240,0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.25, r * 0.15, 0.1, 0, Math.PI * 2);
       ctx.stroke();
     }
 
-    // soft atmosphere rim
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-    ctx.lineWidth = 2;
+    // crisp limb highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(x, y, r - 1, 0, Math.PI * 2);
+    ctx.arc(x, y, r - 0.5, 0, Math.PI * 2);
     ctx.stroke();
   }
 
@@ -900,43 +1007,122 @@
     ctx.arc(8, -6, 15, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    // neck ring
+    // neck ring / seal
     ctx.strokeStyle = helm.rim;
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.ellipse(8, 4, 11, 3.5, 0, 0, Math.PI * 2);
     ctx.stroke();
-    // visor shine
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    // inner neck dark
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(4, -10, 8, -1.2, -0.2);
+    ctx.ellipse(8, 3.2, 9, 2.5, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    // visor shine
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(4, -10, 8, -1.25, -0.15);
+    ctx.stroke();
+    // secondary smaller shine
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(11, -9, 4, -0.8, 0.3);
     ctx.stroke();
 
-    // tiny antenna for ion
+    // —— per-helmet unique details ——
     if (helm.id === 'ion') {
+      // twin antenna
       ctx.strokeStyle = '#4ad8ff';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
-      ctx.moveTo(8, -21);
-      ctx.lineTo(8, -28);
+      ctx.moveTo(5, -20); ctx.lineTo(3, -29);
+      ctx.moveTo(11, -20); ctx.lineTo(13, -29);
       ctx.stroke();
       ctx.fillStyle = '#4ad8ff';
+      ctx.beginPath(); ctx.arc(3, -30, 2.2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(13, -30, 2.2, 0, Math.PI*2); ctx.fill();
+    } else if (helm.id === 'solar') {
+      // sun-ray fins
+      ctx.fillStyle = '#ffb040';
+      for (const ang of [-0.7, -0.35, 0.35, 0.7]) {
+        ctx.save();
+        ctx.translate(8, -6);
+        ctx.rotate(ang);
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(3, -22);
+        ctx.lineTo(-3, -22);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    } else if (helm.id === 'nebula') {
+      // swirl mark on visor
+      ctx.strokeStyle = 'rgba(255,150,255,0.55)';
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(8, -29, 2, 0, Math.PI * 2);
+      ctx.arc(8, -6, 7, 0.2, 2.2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(8, -6, 4, 1.0, 2.8);
+      ctx.stroke();
+    } else if (helm.id === 'lunar') {
+      // crater pockmarks on rim
+      ctx.fillStyle = 'rgba(80,90,110,0.45)';
+      [[2,-18,2.2],[12,-16,1.8],[6,-20,1.5]].forEach(([px,py,pr]) => {
+        ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI*2); ctx.fill();
+      });
+    } else if (helm.id === 'void') {
+      // dark matte + thin gold ring
+      ctx.strokeStyle = 'rgba(212,175,55,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(8, -6, 12.5, 0, Math.PI*2);
+      ctx.stroke();
+    } else if (helm.id === 'comet') {
+      // flame crest
+      ctx.fillStyle = '#ff6a28';
+      ctx.beginPath();
+      ctx.moveTo(5, -20);
+      ctx.quadraticCurveTo(8, -30, 11, -20);
+      ctx.quadraticCurveTo(8, -24, 5, -20);
       ctx.fill();
-    }
-    // crown for royal
-    if (helm.id === 'royal') {
+      ctx.fillStyle = '#ffd060';
+      ctx.beginPath();
+      ctx.moveTo(6.5, -21);
+      ctx.quadraticCurveTo(8, -27, 9.5, -21);
+      ctx.fill();
+    } else if (helm.id === 'cherry') {
+      // crystal facets
+      ctx.strokeStyle = 'rgba(255,180,200,0.5)';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(8, -18); ctx.lineTo(14, -8); ctx.lineTo(8, 2); ctx.lineTo(2, -8);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(8, -18); ctx.lineTo(8, 2);
+      ctx.stroke();
+    } else if (helm.id === 'royal') {
+      // crown
       ctx.fillStyle = '#d4af37';
       ctx.beginPath();
-      ctx.moveTo(2, -20);
-      ctx.lineTo(5, -26);
+      ctx.moveTo(1, -19);
+      ctx.lineTo(4, -27);
       ctx.lineTo(8, -21);
-      ctx.lineTo(11, -26);
-      ctx.lineTo(14, -20);
+      ctx.lineTo(12, -27);
+      ctx.lineTo(15, -19);
       ctx.closePath();
       ctx.fill();
+      // jewels
+      ctx.fillStyle = '#ff6080';
+      ctx.beginPath(); ctx.arc(4, -24, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(12, -24, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#60c0ff';
+      ctx.beginPath(); ctx.arc(8, -23, 1.5, 0, Math.PI*2); ctx.fill();
     }
 
     ctx.restore();
@@ -1150,18 +1336,43 @@
     ctx.beginPath();
     ctx.ellipse(6, 3.5, 8, 2.8, 0, 0, Math.PI * 2);
     ctx.stroke();
-    // ion antenna
+    // per-helmet mini details
     if (helm.id === 'ion') {
       ctx.strokeStyle = '#4ad8ff';
-      ctx.lineWidth = 1.4;
+      ctx.lineWidth = 1.3;
       ctx.beginPath();
-      ctx.moveTo(6, -14.5);
-      ctx.lineTo(6, -19);
+      ctx.moveTo(4, -14); ctx.lineTo(2.5, -19);
+      ctx.moveTo(8, -14); ctx.lineTo(9.5, -19);
       ctx.stroke();
       ctx.fillStyle = '#4ad8ff';
+      ctx.beginPath(); ctx.arc(2.5, -19.5, 1.3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(9.5, -19.5, 1.3, 0, Math.PI*2); ctx.fill();
+    } else if (helm.id === 'solar') {
+      ctx.fillStyle = '#ffb040';
+      for (const a of [-0.5, 0.5]) {
+        ctx.save(); ctx.translate(6, -4); ctx.rotate(a);
+        ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(2,-15); ctx.lineTo(-2,-15); ctx.fill();
+        ctx.restore();
+      }
+    } else if (helm.id === 'comet') {
+      ctx.fillStyle = '#ff6a28';
       ctx.beginPath();
-      ctx.arc(6, -19.5, 1.4, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(4, -14); ctx.quadraticCurveTo(6, -20, 8, -14); ctx.fill();
+    } else if (helm.id === 'royal') {
+      ctx.fillStyle = '#d4af37';
+      ctx.beginPath();
+      ctx.moveTo(2, -13); ctx.lineTo(4, -18); ctx.lineTo(6, -14);
+      ctx.lineTo(8, -18); ctx.lineTo(10, -13); ctx.fill();
+    } else if (helm.id === 'void') {
+      ctx.strokeStyle = 'rgba(212,175,55,0.5)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(6, -4, 8, 0, Math.PI*2); ctx.stroke();
+    } else if (helm.id === 'cherry') {
+      ctx.strokeStyle = 'rgba(255,180,200,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(6, -12); ctx.lineTo(10, -5); ctx.lineTo(6, 2); ctx.lineTo(2, -5);
+      ctx.closePath(); ctx.stroke();
     }
     ctx.restore();
   }
