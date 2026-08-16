@@ -477,22 +477,35 @@
       // off screen
       if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - simDt);
 
-      if (sy < -30 || sy > H + 30) {
+      // Ceiling bounces you back down — only debris is lethal up there.
+      // Falling off the bottom of the screen still ends the run.
+      if (sy < sr && squirrel.vy < 0) {
+        squirrel.y = sr;
+        squirrel.vy = Math.abs(squirrel.vy) * 0.45 + 90;
+        squirrel.rot = 0.5;
+        spark(sx, 4, 'poof');
+      }
+      if (sy > H + 30) {
         die(); return;
       }
 
+      // Debris ALWAYS kills — checked first, every frame, no cooldown.
+      // (The bounce cooldown below only stops planet bounces re-triggering;
+      // it must never grant safe passage through obstacles.)
+      for (const p of planets) {
+        for (const b of (p.blockers || [])) {
+          const bx = p.x + (b.xOff || 0);
+          if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) { die(); return; }
+        }
+      }
+
+      // Main planets: recoverable bounce
       if (hitCooldown <= 0) {
         for (const p of planets) {
           const topY = p.gapY - p.gap / 2 - p.r;
           const botY = p.gapY + p.gap / 2 + p.r;
-          // Main planets: recoverable bounce
           if (circleHit(sx, sy, sr, p.x, topY, p.r * 0.92)) { bounceOff(p.x, topY); break; }
           if (circleHit(sx, sy, sr, p.x, botY, p.r * 0.92)) { bounceOff(p.x, botY); break; }
-          // Debris / obstacles: instant crash
-          for (const b of (p.blockers || [])) {
-            const bx = p.x + (b.xOff || 0);
-            if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) { die(); return; }
-          }
         }
       }
 
@@ -542,7 +555,9 @@
     const dist = Math.hypot(dx, dy) || 1;
     dx /= dist; dy /= dist;
     // hard knockback; mostly vertical so recovery is possible but shaky
-    squirrel.vy = dy * 680 + (dy >= 0 ? 260 : -460);
+    // (impulse reduced 20% — the old values launched you across the screen
+    // even on a graze)
+    squirrel.vy = dy * 545 + (dy >= 0 ? 210 : -370);
     squirrel.y += dy * 18;
     squirrel.rot = dy >= 0 ? 1.05 : -0.7;
     hitCooldown = 0.55;
@@ -1234,10 +1249,13 @@
   // A tapered plume swept along a spline: thin at the hip, broad through the
   // middle, drawn to a point at the tip. The width modulation on the edges is
   // what makes it read as fur rather than as a wing.
+  // Width stays nearly constant along the plume and the tip is left broad —
+  // the discs give it a soft rounded cap. A thin→bulge→point profile reads
+  // as a snake that swallowed an egg, not fur.
   const TAIL_PTS = [
-    [-4, 14], [-14.5, 12], [-23, 2], [-24, -11], [-18, -21.5], [-8.5, -25.5],
+    [-2, 13], [-12, 12], [-20, 4.5], [-22.5, -6.5], [-18.5, -17], [-10.5, -23.5], [-4.5, -27.5],
   ];
-  const TAIL_W = [5.6, 8.8, 10.2, 9.6, 6.6, 1.4];
+  const TAIL_W = [4.2, 7.6, 9.0, 9.5, 9.5, 8.6, 6.4];
   // Sample count only needs to be dense enough that the discs overlap; the
   // spline is ~60px long, so 26 samples still leaves heavy overlap.
   const TAIL_N = 26;
@@ -1275,8 +1293,10 @@
       out.push({
         x: p[0], y: p[1], w: tailWidth(u),
         nx: -dy, ny: dx,
-        // phase normalised so the lobe count does not change with TAIL_N
-        lobe: 1 + 0.16 * Math.sin((k / TAIL_N) * 18 - 0.6),
+        // phase normalised so the lobe count does not change with TAIL_N;
+        // higher frequency + moderate depth = fur clumps, not smooth skin
+        lobe: 1 + 0.11 * Math.sin((k / TAIL_N) * 26 - 0.6)
+                + 0.05 * Math.sin((k / TAIL_N) * 47 + 1.7),
       });
     }
     return out;
@@ -1332,14 +1352,17 @@
     ctx.restore();
 
     // a few fur strands for texture
-    ctx.strokeStyle = withAlpha(suit.furDark, 0.35);
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.32);
     ctx.lineWidth = 1;
     ctx.lineCap = 'round';
-    for (let i = 1; i <= 4; i++) {
-      const s = TAIL_SAMPLES[Math.round((i / 5.5) * (TAIL_SAMPLES.length - 1))];
+    for (let i = 1; i <= 6; i++) {
+      const s = TAIL_SAMPLES[Math.round((i / 7.2) * (TAIL_SAMPLES.length - 1))];
+      // strands lean back along the plume like brushed fur
+      const lean = 0.35;
       ctx.beginPath();
-      ctx.moveTo(s.x + s.nx * s.w * 0.15, s.y + s.ny * s.w * 0.15);
-      ctx.lineTo(s.x + s.nx * s.w * 0.86, s.y + s.ny * s.w * 0.86);
+      ctx.moveTo(s.x + s.nx * s.w * 0.2, s.y + s.ny * s.w * 0.2);
+      ctx.lineTo(s.x + s.nx * s.w * 0.88 - s.ny * s.w * lean,
+                 s.y + s.ny * s.w * 0.88 + s.nx * s.w * lean);
       ctx.stroke();
     }
   }
@@ -2243,6 +2266,21 @@
   resize();
   initStars();
   requestAnimationFrame(frame);
+
+  // BETA ONLY: debug hook so automated tests can inspect and stage game
+  // state. Must never ship in the live build.
+  window.__acornautDebug = {
+    get mode() { return mode; },
+    set mode(m) { mode = m; },
+    get squirrel() { return squirrel; },
+    get planets() { return planets; },
+    get score() { return score; },
+    get W() { return W; },
+    get H() { return H; },
+    get SQUIRREL_X() { return SQUIRREL_X; },
+    resetRun,
+    flap,
+  };
 })();
 </script>
 
