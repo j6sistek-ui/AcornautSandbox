@@ -95,12 +95,14 @@
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return defaultSave();
       const s = { ...defaultSave(), ...JSON.parse(raw) };
-      // testing bank; helmets gated by cost; suits gated
-      if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
-      if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
+      // Force helmets locked (old saves had everything free). Keep testing acorn bank.
+      s.unlocked = ['clear'];
       if (!Array.isArray(s.unlockedSuits) || !s.unlockedSuits.length) s.unlockedSuits = ['flight'];
       if (!s.unlockedSuits.includes('flight')) s.unlockedSuits.unshift('flight');
       if (!SUIT_IDS.includes(s.equippedSuit)) s.equippedSuit = 'flight';
+      if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
+      // if they had a paid helmet equipped, fall back to clear until they rebuy
+      if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
       if ((s.acorns || 0) < 10000) s.acorns = 10000;
       return s;
     } catch { return defaultSave(); }
@@ -234,73 +236,46 @@
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
-    // Blockers ONLY outside the real gap — seal fly-around routes
-    // Never place anything inside the opening between the main pair.
+    // Blockers ONLY outside the real gap. Spaced so they don't stack into clumps.
     const blockers = [];
-    // Top seal cluster (above the top gate planet)
+    // One solid blocker just above the top gate (offset sideways)
     {
-      const off = 30 + Math.random() * 12;
+      const off = 36 + Math.random() * 14;
       blockers.push({
         y: topY - PLANET_R - off,
-        r: 26 + Math.floor(Math.random() * 6),
+        r: 26 + Math.floor(Math.random() * 5),
         kind: Math.floor(Math.random() * 9),
-        xOff: -20 - Math.random() * 10,
-      });
-      blockers.push({
-        y: topY - PLANET_R - off - 6,
-        r: 22 + Math.floor(Math.random() * 5),
-        kind: Math.floor(Math.random() * 9),
-        xOff: 18 + Math.random() * 12,
+        xOff: (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 16),
       });
     }
-    // Fill toward top of screen so you can't slip over
-    if (topY - PLANET_R > 90) {
+    // One mid-high blocker toward top of screen (only if room)
+    const topRoom = topY - PLANET_R;
+    if (topRoom > 110) {
       blockers.push({
-        y: Math.max(30, (topY - PLANET_R) * 0.45),
-        r: 24 + Math.floor(Math.random() * 8),
+        y: 40 + Math.random() * Math.max(20, topRoom * 0.35),
+        r: 22 + Math.floor(Math.random() * 6),
         kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 20,
+        xOff: (Math.random() - 0.5) * 30,
       });
     }
-    if (topY - PLANET_R > 160) {
-      blockers.push({
-        y: Math.max(50, (topY - PLANET_R) * 0.7),
-        r: 20 + Math.floor(Math.random() * 6),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 28,
-      });
-    }
-    // Bottom seal cluster (below the bottom gate planet)
+    // One solid blocker just below the bottom gate
     {
-      const off = 30 + Math.random() * 12;
+      const off = 36 + Math.random() * 14;
       blockers.push({
         y: botY + PLANET_R + off,
-        r: 26 + Math.floor(Math.random() * 6),
+        r: 26 + Math.floor(Math.random() * 5),
         kind: Math.floor(Math.random() * 9),
-        xOff: 18 + Math.random() * 10,
-      });
-      blockers.push({
-        y: botY + PLANET_R + off + 6,
-        r: 22 + Math.floor(Math.random() * 5),
-        kind: Math.floor(Math.random() * 9),
-        xOff: -20 - Math.random() * 12,
+        xOff: (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 16),
       });
     }
-    // Fill toward bottom of screen so you can't slip under
-    if (H - (botY + PLANET_R) > 90) {
+    // One mid-low blocker toward bottom of screen (only if room)
+    const botRoom = H - (botY + PLANET_R);
+    if (botRoom > 110) {
       blockers.push({
-        y: Math.min(H - 30, botY + PLANET_R + (H - botY - PLANET_R) * 0.55),
-        r: 24 + Math.floor(Math.random() * 8),
+        y: H - 40 - Math.random() * Math.max(20, botRoom * 0.35),
+        r: 22 + Math.floor(Math.random() * 6),
         kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 20,
-      });
-    }
-    if (H - (botY + PLANET_R) > 160) {
-      blockers.push({
-        y: Math.min(H - 50, botY + PLANET_R + (H - botY - PLANET_R) * 0.75),
-        r: 20 + Math.floor(Math.random() * 6),
-        kind: Math.floor(Math.random() * 9),
-        xOff: (Math.random() - 0.5) * 28,
+        xOff: (Math.random() - 0.5) * 30,
       });
     }
     planets.push({
