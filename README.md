@@ -11,6 +11,7 @@ https://htmlpreview.github.io/?https://raw.githubusercontent.com/j6sistek-ui/aco
 - Persistent high score + acorn bank (localStorage)
 - Hangar (helmets) + separate Suits page
 - DEV mode with live physics sliders + collision bypass
+- App icon (`icon.svg`)
 
 ## Helmets (Hangar)
 Clear (free), Ion, Solar, Nebula, Lunar, Void, Comet, Cherry, Royal
