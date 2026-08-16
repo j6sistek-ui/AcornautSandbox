@@ -6,6 +6,8 @@ Space squirrel flight game — fly through planets, collect acorns, unlock helme
 
 **Web:** https://j6sistek-ui.github.io/acornaut/
 
+**Web:** Beta: https://j6sistek-ui.github.io/acornaut/beta/
+
 ## Install on iPhone (Add to Home Screen)
 
 1. Open the link above in **Safari** (not Chrome)
