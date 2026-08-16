@@ -4,13 +4,36 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <title>Acornaut</title>
-<style>html,body{margin:0;height:100%;background:#05070f;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px} a{color:#3a9cff}</style>
+<style>
+html,body{margin:0;height:100%;background:#05070f;color:#fff;font-family:system-ui,sans-serif}
+#boot{display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;opacity:.7}
+</style>
 </head>
 <body>
-<div>
-  <h1>Acornaut</h1>
-  <p>Updating payload… hard-refresh in ~30s</p>
-  <p style="opacity:0.6;font-size:13px">Planet blockers cleaned + hangar squirrel previews fixed</p>
-</div>
+<div id="boot">Loading Acornaut…</div>
+<script>
+(async () => {
+  try {
+    const base = "https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/";
+    const parts = await Promise.all(
+      ["p1a.txt","p1b.txt","p2a.txt","p2b.txt"].map(f => fetch(base+f).then(r => {
+        if (!r.ok) throw new Error(f + " " + r.status);
+        return r.text();
+      }))
+    );
+    const b64 = parts.map(t => t.trim()).join("");
+    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const ds = new DecompressionStream("gzip");
+    const stream = new Blob([bin]).stream().pipeThrough(ds);
+    const html = await new Response(stream).text();
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (e) {
+    document.getElementById("boot").textContent = "Load failed: " + e.message;
+    console.error(e);
+  }
+})();
+</script>
 </body>
 </html>
