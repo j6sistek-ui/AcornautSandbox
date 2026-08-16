@@ -141,6 +141,10 @@
   let planets = [];
   let acorns = [];
   let powerups = [];
+  let shields = [];          // rare shield-acorn pickups
+  let hasShield = false;     // carrying a shield this run
+  let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
+  let shieldSlow = 0;        // slow-motion recovery window after the freeze
   let particles = [];
   let stars = [];
   let speed = BASE_SPEED;
@@ -187,6 +191,10 @@
     planets = [];
     acorns = [];
     powerups = [];
+    shields = [];
+    hasShield = false;
+    shieldFreeze = 0;
+    shieldSlow = 0;
     particles = [];
     speed = BASE_SPEED;
     distance = 0;
@@ -295,6 +303,15 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
+    // shield acorn — very rare, on average one per 100 gates
+    if (Math.random() < 0.01) {
+      shields.push({
+        x: x + 20,
+        y: gapCenter,
+        got: false,
+        bob: Math.random() * Math.PI * 2,
+      });
+    }
     lastSpawnX = x;
   }
 
@@ -332,12 +349,14 @@
   }
   function handleTap(x, y) {
     if (mode === 'title') {
-      const flyBtn = { x: W / 2, y: H * 0.58, w: 160, h: 44 };
-      const hangBtn = { x: W / 2, y: H * 0.58 + 50, w: 160, h: 38 };
-      const suitsBtn = { x: W / 2, y: H * 0.58 + 94, w: 160, h: 38 };
-      if (hit(x, y, flyBtn)) { resetRun(); mode = 'ready'; return; }
-      if (hit(x, y, hangBtn)) { mode = 'hangar'; return; }
-      if (hit(x, y, suitsBtn)) { mode = 'suits'; return; }
+      for (const b of titleButtons()) {
+        if (hit(x, y, b)) {
+          if (b.id === 'fly') { resetRun(); mode = 'ready'; }
+          else if (b.id === 'hangar') mode = 'hangar';
+          else mode = 'suits';
+          return;
+        }
+      }
       return;
     }
     if (mode === 'hangar' || mode === 'suits') {
@@ -428,8 +447,17 @@
     for (const s of stars) s.tw += dt * 2;
 
     if (mode === 'play') {
-      const slow = powerLeft > 0 ? SLOW_FACTOR : 1;
-      const simDt = dt * slow;
+      const slow = (powerLeft > 0 || shieldSlow > 0) ? SLOW_FACTOR : 1;
+      let simDt = dt * slow;
+
+      // Shield aftermath: a short full freeze, then a slow-motion window.
+      // The freeze runs on real time; the slow timer starts once it ends.
+      if (shieldFreeze > 0) {
+        shieldFreeze = Math.max(0, shieldFreeze - dt);
+        simDt = 0;
+      } else if (shieldSlow > 0) {
+        shieldSlow = Math.max(0, shieldSlow - dt);
+      }
 
       if (powerLeft > 0) {
         powerLeft = Math.max(0, powerLeft - dt);
@@ -450,6 +478,7 @@
       for (const p of planets) p.x -= move;
       for (const a of acorns) { a.x -= move; a.bob += dt * 4; }
       for (const a of powerups) { a.x -= move; a.bob += dt * 5; }
+      for (const a of shields) { a.x -= move; a.bob += dt * 3; }
 
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
@@ -461,6 +490,7 @@
       planets = planets.filter(p => p.x > -80);
       acorns = acorns.filter(a => a.x > -40 && !a.got);
       powerups = powerups.filter(a => a.x > -40 && !a.got);
+      shields = shields.filter(a => a.x > -40 && !a.got);
 
       // score
       const sx = W * SQUIRREL_X;
@@ -477,22 +507,40 @@
       // off screen
       if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - simDt);
 
-      if (sy < -30 || sy > H + 30) {
+      // Ceiling bounces you back down — only debris is lethal up there.
+      // Falling off the bottom of the screen still ends the run.
+      if (sy < sr && squirrel.vy < 0) {
+        squirrel.y = sr;
+        squirrel.vy = Math.abs(squirrel.vy) * 0.45 + 90;
+        squirrel.rot = 0.5;
+        spark(sx, 4, 'poof');
+      }
+      if (sy > H + 30) {
         die(); return;
       }
 
+      // Debris ALWAYS kills — checked first, every frame, no cooldown.
+      // (The bounce cooldown below only stops planet bounces re-triggering;
+      // it must never grant safe passage through obstacles.)
+      // The one exception is a carried shield acorn, which absorbs exactly
+      // one debris hit and is consumed doing it.
+      for (const p of planets) {
+        for (const b of (p.blockers || [])) {
+          const bx = p.x + (b.xOff || 0);
+          if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) {
+            if (hasShield) { absorbShield(bx, b.y); return; }
+            die(); return;
+          }
+        }
+      }
+
+      // Main planets: recoverable bounce
       if (hitCooldown <= 0) {
         for (const p of planets) {
           const topY = p.gapY - p.gap / 2 - p.r;
           const botY = p.gapY + p.gap / 2 + p.r;
-          // Main planets: recoverable bounce
           if (circleHit(sx, sy, sr, p.x, topY, p.r * 0.92)) { bounceOff(p.x, topY); break; }
           if (circleHit(sx, sy, sr, p.x, botY, p.r * 0.92)) { bounceOff(p.x, botY); break; }
-          // Debris / obstacles: instant crash
-          for (const b of (p.blockers || [])) {
-            const bx = p.x + (b.xOff || 0);
-            if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) { die(); return; }
-          }
         }
       }
 
@@ -509,6 +557,13 @@
           a.got = true;
           powerLeft = POWER_DURATION;
           spark(a.x, a.y, 'cyan');
+        }
+      }
+      for (const a of shields) {
+        if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          hasShield = true;
+          spark(a.x, a.y, 'shield');
         }
       }
     }
@@ -542,7 +597,9 @@
     const dist = Math.hypot(dx, dy) || 1;
     dx /= dist; dy /= dist;
     // hard knockback; mostly vertical so recovery is possible but shaky
-    squirrel.vy = dy * 680 + (dy >= 0 ? 260 : -460);
+    // (impulse reduced 20% — the old values launched you across the screen
+    // even on a graze)
+    squirrel.vy = dy * 545 + (dy >= 0 ? 210 : -370);
     squirrel.y += dy * 18;
     squirrel.rot = dy >= 0 ? 1.05 : -0.7;
     hitCooldown = 0.55;
@@ -555,8 +612,33 @@
     spark(W * SQUIRREL_X, squirrel.y, 'poof');
   }
 
+  // A carried shield absorbs one debris hit: burst at the impact point,
+  // vaporise nearby debris so the respawn spot is fair, snap the squirrel
+  // back to centre, freeze briefly, then give a slow-motion recovery window.
+  function absorbShield(bx, by) {
+    hasShield = false;
+    const sx = W * SQUIRREL_X;
+    const cy = H * 0.45;
+    spark(bx, by, 'shield');
+    spark(bx, by, 'poof');
+    for (const p of planets) {
+      p.blockers = (p.blockers || []).filter(b => {
+        const ax = p.x + (b.xOff || 0);
+        return Math.hypot(ax - bx, b.y - by) > 110 &&
+               Math.hypot(ax - sx, b.y - cy) > 150;
+      });
+    }
+    squirrel.y = cy;
+    squirrel.vy = 0;
+    squirrel.rot = 0;
+    hitCooldown = 0;
+    shieldFreeze = 0.7;
+    shieldSlow = 3;
+    spark(sx, cy, 'shield');
+  }
+
   function spark(x, y, kind) {
-    const n = kind === 'poof' ? 18 : 10;
+    const n = kind === 'poof' ? 18 : kind === 'shield' ? 16 : 10;
     for (let i = 0; i < n; i++) {
       const ang = Math.random() * Math.PI * 2;
       const sp = 40 + Math.random() * 120;
@@ -567,7 +649,8 @@
         life: 0.35 + Math.random() * 0.3,
         max: 0.6,
         r: 2 + Math.random() * 3,
-        kind: kind === 'cyan' ? 'cyan' : kind === 'gold' ? 'gold' : 'poof',
+        kind: kind === 'cyan' ? 'cyan' : kind === 'gold' ? 'gold'
+            : kind === 'shield' ? 'shield' : 'poof',
       });
     }
   }
@@ -634,6 +717,10 @@
     for (const a of powerups) {
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 5, true);
+    }
+    for (const a of shields) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'shield');
     }
     for (const p of particles) drawParticle(p);
     drawSquirrel(W * SQUIRREL_X, squirrel.y, squirrel.rot);
@@ -1115,9 +1202,30 @@
   }
 
   function drawAcorn(x, y, power) {
+    const shield = power === 'shield';
     ctx.save();
     ctx.translate(x, y);
-    if (power) {
+    if (shield) {
+      // protective bubble around the nut
+      const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, 24);
+      glow.addColorStop(0, 'rgba(110,255,170,0.4)');
+      glow.addColorStop(0.55, 'rgba(60,220,130,0.16)');
+      glow.addColorStop(1, 'rgba(60,220,130,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(140,255,190,0.85)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, 0, 17, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(0, 0, 17, -2.3, -1.2);
+      ctx.stroke();
+    } else if (power) {
       const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, 22);
       glow.addColorStop(0, 'rgba(100,230,255,0.45)');
       glow.addColorStop(0.5, 'rgba(60,180,255,0.18)');
@@ -1134,7 +1242,11 @@
     ctx.fill();
     // nut body with gradient
     const nut = ctx.createRadialGradient(-3, 0, 2, 0, 4, 12);
-    if (power) {
+    if (shield) {
+      nut.addColorStop(0, '#c8ffde');
+      nut.addColorStop(0.5, '#4ade80');
+      nut.addColorStop(1, '#14683a');
+    } else if (power) {
       nut.addColorStop(0, '#c0f0ff');
       nut.addColorStop(0.5, '#5ad0f0');
       nut.addColorStop(1, '#1a70a0');
@@ -1155,7 +1267,10 @@
     ctx.stroke();
     // cap
     const cap = ctx.createRadialGradient(0, -6, 1, 0, -4, 12);
-    if (power) {
+    if (shield) {
+      cap.addColorStop(0, '#3fbf74');
+      cap.addColorStop(1, '#0c4a28');
+    } else if (power) {
       cap.addColorStop(0, '#6ec8e8');
       cap.addColorStop(1, '#1a6088');
     } else {
@@ -1192,6 +1307,8 @@
       ctx.fillStyle = '#6ef0ff';
     } else if (p.kind === 'gold') {
       ctx.fillStyle = '#ffd060';
+    } else if (p.kind === 'shield') {
+      ctx.fillStyle = '#5dff9e';
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -1234,10 +1351,15 @@
   // A tapered plume swept along a spline: thin at the hip, broad through the
   // middle, drawn to a point at the tip. The width modulation on the edges is
   // what makes it read as fur rather than as a wing.
+  // Width stays nearly constant along the plume and the tip is left broad —
+  // the discs give it a soft rounded cap. A thin→bulge→point profile reads
+  // as a snake that swallowed an egg, not fur.
+  // Proportions follow a real squirrel: slim at the hip, a gentle swell
+  // through the middle, and a soft taper at the tip — not an even sausage.
   const TAIL_PTS = [
-    [-4, 14], [-14.5, 12], [-23, 2], [-24, -11], [-18, -21.5], [-8.5, -25.5],
+    [-2, 13], [-12, 12], [-20, 4.5], [-23, -7], [-19.5, -18], [-11.5, -25], [-4.5, -29],
   ];
-  const TAIL_W = [5.6, 8.8, 10.2, 9.6, 6.6, 1.4];
+  const TAIL_W = [3.2, 5.4, 6.6, 7.0, 6.6, 5.2, 2.8];
   // Sample count only needs to be dense enough that the discs overlap; the
   // spline is ~60px long, so 26 samples still leaves heavy overlap.
   const TAIL_N = 26;
@@ -1275,8 +1397,10 @@
       out.push({
         x: p[0], y: p[1], w: tailWidth(u),
         nx: -dy, ny: dx,
-        // phase normalised so the lobe count does not change with TAIL_N
-        lobe: 1 + 0.16 * Math.sin((k / TAIL_N) * 18 - 0.6),
+        // phase normalised so the lobe count does not change with TAIL_N;
+        // kept subtle — a hint of fur without looking like a cloud
+        lobe: 1 + 0.05 * Math.sin((k / TAIL_N) * 26 - 0.6)
+                + 0.025 * Math.sin((k / TAIL_N) * 47 + 1.7),
       });
     }
     return out;
@@ -1332,14 +1456,17 @@
     ctx.restore();
 
     // a few fur strands for texture
-    ctx.strokeStyle = withAlpha(suit.furDark, 0.35);
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.32);
     ctx.lineWidth = 1;
     ctx.lineCap = 'round';
-    for (let i = 1; i <= 4; i++) {
-      const s = TAIL_SAMPLES[Math.round((i / 5.5) * (TAIL_SAMPLES.length - 1))];
+    for (let i = 1; i <= 6; i++) {
+      const s = TAIL_SAMPLES[Math.round((i / 7.2) * (TAIL_SAMPLES.length - 1))];
+      // strands lean back along the plume like brushed fur
+      const lean = 0.35;
       ctx.beginPath();
-      ctx.moveTo(s.x + s.nx * s.w * 0.15, s.y + s.ny * s.w * 0.15);
-      ctx.lineTo(s.x + s.nx * s.w * 0.86, s.y + s.ny * s.w * 0.86);
+      ctx.moveTo(s.x + s.nx * s.w * 0.2, s.y + s.ny * s.w * 0.2);
+      ctx.lineTo(s.x + s.nx * s.w * 0.88 - s.ny * s.w * lean,
+                 s.y + s.ny * s.w * 0.88 + s.nx * s.w * lean);
       ctx.stroke();
     }
   }
@@ -1965,12 +2092,36 @@
     drawHelmet(helm, suit, t, seed);
     if (suit.dust) drawDust(suit.dust, t, seed, true);
 
+    // protective bubble while carrying a shield acorn
+    if (opts.shield) {
+      const pu = 0.94 + 0.06 * Math.sin(t * 3.2 + seed);
+      const r = 37 * pu;
+      const g = ctx.createRadialGradient(0, -5, r * 0.6, 0, -5, r);
+      g.addColorStop(0, 'rgba(93,255,158,0)');
+      g.addColorStop(1, 'rgba(93,255,158,0.16)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, -5, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(140,255,190,0.75)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, -5, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(0, -5, r - 2.5, -2.3, -1.3);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 
   function drawSquirrel(x, y, rot) {
     const flame = (flapBoost > 0 && (mode === 'play' || mode === 'ready')) ? flapBoost / 0.22 : 0;
-    drawAstronaut(x, y, rot, 1, equippedHelmet(), equippedSuit(), { flame: flame, seed: 0 });
+    drawAstronaut(x, y, rot, 1, equippedHelmet(), equippedSuit(),
+                  { flame: flame, seed: 0, shield: hasShield && (mode === 'play' || mode === 'ready') });
   }
 
   // Small acorn glyph for the HUD and shop headers — drawn rather than an
@@ -2019,6 +2170,31 @@
     ctx.fillStyle = '#ffd080';
     drawAcornIcon(22, 23, 1);
     ctx.fillText(String(runAcorns), 32, 28);
+
+    // carried shield indicator
+    if (hasShield) {
+      ctx.strokeStyle = 'rgba(140,255,190,0.9)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(22, 47, 9, 0, Math.PI * 2);
+      ctx.stroke();
+      drawAcornIcon(22, 46, 0.65);
+      ctx.fillStyle = '#8cffbe';
+      ctx.font = '600 12px system-ui';
+      ctx.fillText('SHIELD', 36, 51);
+    }
+
+    // shield-break banner during the freeze and early recovery
+    if (shieldFreeze > 0 || shieldSlow > 2.2) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#5dff9e';
+      ctx.font = 'bold 22px system-ui';
+      ctx.fillText('SHIELD ABSORBED!', W / 2, H * 0.3);
+      ctx.font = '600 13px system-ui';
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText('get ready…', W / 2, H * 0.3 + 22);
+      ctx.textAlign = 'left';
+    }
 
     // power-up timer
     if (powerLeft > 0) {
@@ -2071,59 +2247,141 @@
     }
   }
 
+  // Single source of truth for the title menu geometry — drawTitle renders
+  // these rects and handleTap hit-tests the same ones, so the buttons and
+  // their tap targets can never drift apart.
+  function titleButtons() {
+    const bw = Math.min(204, W * 0.52), bh = 56;
+    const bx = 22 + bw / 2;
+    const y0 = H * 0.56;
+    return [
+      { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
+      { id: 'hangar', x: bx, y: y0 + 68,  w: bw, h: bh, label: 'HANGAR' },
+      { id: 'suits',  x: bx, y: y0 + 136, w: bw, h: bh, label: 'SUITS' },
+    ];
+  }
+
   function drawTitle() {
     // decorative planets
-    drawPlanet(W * 0.15, H * 0.22, 28, 0);
-    drawPlanet(W * 0.88, H * 0.18, 22, 4);
-    drawPlanet(W * 0.78, H * 0.78, 36, 1);
+    drawPlanet(W * 0.15, H * 0.16, 28, 0);
+    drawPlanet(W * 0.88, H * 0.12, 22, 4);
+    drawPlanet(W * 0.82, H * 0.34, 36, 1);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 42px system-ui';
-    ctx.fillText('ACORNAUT', W / 2, H * 0.28);
+    ctx.font = 'bold 44px system-ui';
+    ctx.fillText('ACORNAUT', W / 2, H * 0.2);
     ctx.font = '600 13px system-ui';
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillText('FLAP THROUGH THE PLANETS', W / 2, H * 0.28 + 26);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('SOAR THE COSMOS · GATHER THE ACORNS', W / 2, H * 0.2 + 26);
     ctx.fillStyle = '#ffb040';
     ctx.font = 'bold 12px system-ui';
-    ctx.fillText('BETA TEST BUILD', W / 2, H * 0.28 + 44);
+    ctx.fillText('BETA TEST BUILD', W / 2, H * 0.2 + 44);
 
     // high score + acorns
     ctx.font = '600 15px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.fillText('BEST  ' + save.highScore, W / 2, H * 0.42);
+    ctx.fillText('BEST  ' + save.highScore, W / 2, H * 0.31);
     ctx.fillStyle = '#ffd080';
     const acTxt = save.acorns + ' acorns';
     const acW = ctx.measureText(acTxt).width;
     const acLeft = W / 2 - (acW + 18) / 2;
-    drawAcornIcon(acLeft + 6, H * 0.42 + 19, 1);
-    ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.42 + 24);
+    drawAcornIcon(acLeft + 6, H * 0.31 + 19, 1);
+    ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.31 + 24);
 
-    // mini squirrel
-    drawAstronaut(W / 2 - 4, H * 0.52, Math.sin(titlePulse * 2) * 0.07, 1.3,
+    // hero squirrel on the right, menu column on the left
+    drawAstronaut(W * 0.72, H * 0.66, Math.sin(titlePulse * 2) * 0.06, 2.05,
                   equippedHelmet(), equippedSuit(), { seed: 3 });
 
-    // buttons
-    drawBtn(W / 2, H * 0.58, 160, 44, 'FLY', '#3a9cff', true);
-    drawBtn(W / 2, H * 0.58 + 50, 160, 38, 'HANGAR', 'rgba(255,255,255,0.12)', false);
-    drawBtn(W / 2, H * 0.58 + 94, 160, 38, 'SUITS', 'rgba(255,255,255,0.12)', false);
+    const btns = titleButtons();
+    drawMenuBtn(btns[0], true, iconRocket);
+    drawMenuBtn(btns[1], false, iconHangar);
+    drawMenuBtn(btns[2], false, iconSuit);
   }
 
-  function drawBtn(x, y, w, h, label, fill, primary) {
-    ctx.fillStyle = fill;
-    roundRect(x - w / 2, y - h / 2, w, h, 14);
+  function drawMenuBtn(b, primary, icon) {
+    ctx.fillStyle = primary ? 'rgba(58,140,255,0.92)' : 'rgba(140,170,220,0.13)';
+    roundRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h, 17);
     ctx.fill();
-    if (primary) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-    ctx.fillStyle = primary ? '#fff' : 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 16px system-ui';
-    ctx.textAlign = 'center';
+    ctx.strokeStyle = primary ? 'rgba(255,255,255,0.4)' : 'rgba(160,190,230,0.28)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    icon(b.x - b.w / 2 + 29, b.y);
+    ctx.fillStyle = primary ? '#fff' : 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 19px system-ui';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, x, y + 1);
+    ctx.fillText(b.label, b.x - b.w / 2 + 52, b.y + 1);
     ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+  }
+
+  function iconRocket(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.beginPath();
+    ctx.moveTo(0, -11);
+    ctx.quadraticCurveTo(6, -4, 4.5, 4);
+    ctx.lineTo(-4.5, 4);
+    ctx.quadraticCurveTo(-6, -4, 0, -11);
+    ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-4.5, 0.5); ctx.lineTo(-8.5, 8); ctx.lineTo(-3.5, 5.5); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(4.5, 0.5); ctx.lineTo(8.5, 8); ctx.lineTo(3.5, 5.5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(20,45,90,0.9)';
+    ctx.beginPath(); ctx.arc(0, -3.5, 2.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(-2, 6);
+    ctx.quadraticCurveTo(0, 11.5, 2, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function iconHangar(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-9, 8);
+    ctx.lineTo(-9, -1);
+    ctx.quadraticCurveTo(-9, -9, 0, -9);
+    ctx.quadraticCurveTo(9, -9, 9, -1);
+    ctx.lineTo(9, 8);
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-11.5, 8); ctx.lineTo(11.5, 8); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-4, 8);
+    ctx.lineTo(-4, 2);
+    ctx.quadraticCurveTo(-4, -1.5, 0, -1.5);
+    ctx.quadraticCurveTo(4, -1.5, 4, 2);
+    ctx.lineTo(4, 8);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function iconSuit(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.arc(0, -6.5, 4, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-6.5, 9);
+    ctx.lineTo(-6.5, 2);
+    ctx.quadraticCurveTo(-6.5, -1, -3, -1);
+    ctx.lineTo(3, -1);
+    ctx.quadraticCurveTo(6.5, -1, 6.5, 2);
+    ctx.lineTo(6.5, 9);
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, -1); ctx.lineTo(0, 9); ctx.stroke();
+    ctx.restore();
   }
 
   function roundRect(x, y, w, h, r) {
@@ -2243,6 +2501,26 @@
   resize();
   initStars();
   requestAnimationFrame(frame);
+
+  // BETA ONLY: debug hook so automated tests can inspect and stage game
+  // state. Must never ship in the live build.
+  window.__acornautDebug = {
+    get mode() { return mode; },
+    set mode(m) { mode = m; },
+    get squirrel() { return squirrel; },
+    get planets() { return planets; },
+    get score() { return score; },
+    get W() { return W; },
+    get H() { return H; },
+    get SQUIRREL_X() { return SQUIRREL_X; },
+    get shields() { return shields; },
+    get hasShield() { return hasShield; },
+    set hasShield(v) { hasShield = v; },
+    get shieldFreeze() { return shieldFreeze; },
+    get shieldSlow() { return shieldSlow; },
+    resetRun,
+    flap,
+  };
 })();
 </script>
 
