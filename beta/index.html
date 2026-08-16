@@ -349,12 +349,14 @@
   }
   function handleTap(x, y) {
     if (mode === 'title') {
-      const flyBtn = { x: W / 2, y: H * 0.58, w: 160, h: 44 };
-      const hangBtn = { x: W / 2, y: H * 0.58 + 50, w: 160, h: 38 };
-      const suitsBtn = { x: W / 2, y: H * 0.58 + 94, w: 160, h: 38 };
-      if (hit(x, y, flyBtn)) { resetRun(); mode = 'ready'; return; }
-      if (hit(x, y, hangBtn)) { mode = 'hangar'; return; }
-      if (hit(x, y, suitsBtn)) { mode = 'suits'; return; }
+      for (const b of titleButtons()) {
+        if (hit(x, y, b)) {
+          if (b.id === 'fly') { resetRun(); mode = 'ready'; }
+          else if (b.id === 'hangar') mode = 'hangar';
+          else mode = 'suits';
+          return;
+        }
+      }
       return;
     }
     if (mode === 'hangar' || mode === 'suits') {
@@ -1352,10 +1354,12 @@
   // Width stays nearly constant along the plume and the tip is left broad —
   // the discs give it a soft rounded cap. A thin→bulge→point profile reads
   // as a snake that swallowed an egg, not fur.
+  // Proportions follow a real squirrel: slim at the hip, a gentle swell
+  // through the middle, and a soft taper at the tip — not an even sausage.
   const TAIL_PTS = [
-    [-2, 13], [-12, 12], [-20, 4.5], [-22.5, -6.5], [-18.5, -17], [-10.5, -23.5], [-4.5, -27.5],
+    [-2, 13], [-12, 12], [-20, 4.5], [-23, -7], [-19.5, -18], [-11.5, -25], [-4.5, -29],
   ];
-  const TAIL_W = [4.2, 7.6, 9.0, 9.5, 9.5, 8.6, 6.4];
+  const TAIL_W = [3.2, 5.4, 6.6, 7.0, 6.6, 5.2, 2.8];
   // Sample count only needs to be dense enough that the discs overlap; the
   // spline is ~60px long, so 26 samples still leaves heavy overlap.
   const TAIL_N = 26;
@@ -1394,9 +1398,9 @@
         x: p[0], y: p[1], w: tailWidth(u),
         nx: -dy, ny: dx,
         // phase normalised so the lobe count does not change with TAIL_N;
-        // higher frequency + moderate depth = fur clumps, not smooth skin
-        lobe: 1 + 0.11 * Math.sin((k / TAIL_N) * 26 - 0.6)
-                + 0.05 * Math.sin((k / TAIL_N) * 47 + 1.7),
+        // kept subtle — a hint of fur without looking like a cloud
+        lobe: 1 + 0.05 * Math.sin((k / TAIL_N) * 26 - 0.6)
+                + 0.025 * Math.sin((k / TAIL_N) * 47 + 1.7),
       });
     }
     return out;
@@ -2243,59 +2247,141 @@
     }
   }
 
+  // Single source of truth for the title menu geometry — drawTitle renders
+  // these rects and handleTap hit-tests the same ones, so the buttons and
+  // their tap targets can never drift apart.
+  function titleButtons() {
+    const bw = Math.min(204, W * 0.52), bh = 56;
+    const bx = 22 + bw / 2;
+    const y0 = H * 0.56;
+    return [
+      { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
+      { id: 'hangar', x: bx, y: y0 + 68,  w: bw, h: bh, label: 'HANGAR' },
+      { id: 'suits',  x: bx, y: y0 + 136, w: bw, h: bh, label: 'SUITS' },
+    ];
+  }
+
   function drawTitle() {
     // decorative planets
-    drawPlanet(W * 0.15, H * 0.22, 28, 0);
-    drawPlanet(W * 0.88, H * 0.18, 22, 4);
-    drawPlanet(W * 0.78, H * 0.78, 36, 1);
+    drawPlanet(W * 0.15, H * 0.16, 28, 0);
+    drawPlanet(W * 0.88, H * 0.12, 22, 4);
+    drawPlanet(W * 0.82, H * 0.34, 36, 1);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 42px system-ui';
-    ctx.fillText('ACORNAUT', W / 2, H * 0.28);
+    ctx.font = 'bold 44px system-ui';
+    ctx.fillText('ACORNAUT', W / 2, H * 0.2);
     ctx.font = '600 13px system-ui';
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillText('FLAP THROUGH THE PLANETS', W / 2, H * 0.28 + 26);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('SOAR THE COSMOS · GATHER THE ACORNS', W / 2, H * 0.2 + 26);
     ctx.fillStyle = '#ffb040';
     ctx.font = 'bold 12px system-ui';
-    ctx.fillText('BETA TEST BUILD', W / 2, H * 0.28 + 44);
+    ctx.fillText('BETA TEST BUILD', W / 2, H * 0.2 + 44);
 
     // high score + acorns
     ctx.font = '600 15px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.fillText('BEST  ' + save.highScore, W / 2, H * 0.42);
+    ctx.fillText('BEST  ' + save.highScore, W / 2, H * 0.31);
     ctx.fillStyle = '#ffd080';
     const acTxt = save.acorns + ' acorns';
     const acW = ctx.measureText(acTxt).width;
     const acLeft = W / 2 - (acW + 18) / 2;
-    drawAcornIcon(acLeft + 6, H * 0.42 + 19, 1);
-    ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.42 + 24);
+    drawAcornIcon(acLeft + 6, H * 0.31 + 19, 1);
+    ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.31 + 24);
 
-    // mini squirrel
-    drawAstronaut(W / 2 - 4, H * 0.52, Math.sin(titlePulse * 2) * 0.07, 1.3,
+    // hero squirrel on the right, menu column on the left
+    drawAstronaut(W * 0.72, H * 0.66, Math.sin(titlePulse * 2) * 0.06, 2.05,
                   equippedHelmet(), equippedSuit(), { seed: 3 });
 
-    // buttons
-    drawBtn(W / 2, H * 0.58, 160, 44, 'FLY', '#3a9cff', true);
-    drawBtn(W / 2, H * 0.58 + 50, 160, 38, 'HANGAR', 'rgba(255,255,255,0.12)', false);
-    drawBtn(W / 2, H * 0.58 + 94, 160, 38, 'SUITS', 'rgba(255,255,255,0.12)', false);
+    const btns = titleButtons();
+    drawMenuBtn(btns[0], true, iconRocket);
+    drawMenuBtn(btns[1], false, iconHangar);
+    drawMenuBtn(btns[2], false, iconSuit);
   }
 
-  function drawBtn(x, y, w, h, label, fill, primary) {
-    ctx.fillStyle = fill;
-    roundRect(x - w / 2, y - h / 2, w, h, 14);
+  function drawMenuBtn(b, primary, icon) {
+    ctx.fillStyle = primary ? 'rgba(58,140,255,0.92)' : 'rgba(140,170,220,0.13)';
+    roundRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h, 17);
     ctx.fill();
-    if (primary) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-    ctx.fillStyle = primary ? '#fff' : 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 16px system-ui';
-    ctx.textAlign = 'center';
+    ctx.strokeStyle = primary ? 'rgba(255,255,255,0.4)' : 'rgba(160,190,230,0.28)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    icon(b.x - b.w / 2 + 29, b.y);
+    ctx.fillStyle = primary ? '#fff' : 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 19px system-ui';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, x, y + 1);
+    ctx.fillText(b.label, b.x - b.w / 2 + 52, b.y + 1);
     ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+  }
+
+  function iconRocket(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.beginPath();
+    ctx.moveTo(0, -11);
+    ctx.quadraticCurveTo(6, -4, 4.5, 4);
+    ctx.lineTo(-4.5, 4);
+    ctx.quadraticCurveTo(-6, -4, 0, -11);
+    ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-4.5, 0.5); ctx.lineTo(-8.5, 8); ctx.lineTo(-3.5, 5.5); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(4.5, 0.5); ctx.lineTo(8.5, 8); ctx.lineTo(3.5, 5.5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(20,45,90,0.9)';
+    ctx.beginPath(); ctx.arc(0, -3.5, 2.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(-2, 6);
+    ctx.quadraticCurveTo(0, 11.5, 2, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function iconHangar(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-9, 8);
+    ctx.lineTo(-9, -1);
+    ctx.quadraticCurveTo(-9, -9, 0, -9);
+    ctx.quadraticCurveTo(9, -9, 9, -1);
+    ctx.lineTo(9, 8);
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-11.5, 8); ctx.lineTo(11.5, 8); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-4, 8);
+    ctx.lineTo(-4, 2);
+    ctx.quadraticCurveTo(-4, -1.5, 0, -1.5);
+    ctx.quadraticCurveTo(4, -1.5, 4, 2);
+    ctx.lineTo(4, 8);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function iconSuit(cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.arc(0, -6.5, 4, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-6.5, 9);
+    ctx.lineTo(-6.5, 2);
+    ctx.quadraticCurveTo(-6.5, -1, -3, -1);
+    ctx.lineTo(3, -1);
+    ctx.quadraticCurveTo(6.5, -1, 6.5, 2);
+    ctx.lineTo(6.5, 9);
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, -1); ctx.lineTo(0, 9); ctx.stroke();
+    ctx.restore();
   }
 
   function roundRect(x, y, w, h, r) {
