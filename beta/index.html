@@ -173,9 +173,9 @@
   let FLAP = -450;
   let SQUIRREL_X = 0.18;
   const BASE_SPEED = 165;
-  const MAX_SPEED = 320;
+  const MAX_SPEED = 280;   // capped: past this it's a marathon, not a ramp
   const GAP_BASE = 168;
-  const GAP_MIN = 118;
+  const GAP_MIN = 132;     // floor: the corridor never gets tighter than this
   const PLANET_R = 42;
   const POWER_DURATION = 6;
   const SLOW_FACTOR = 0.42;
@@ -206,6 +206,7 @@
   let speed = BASE_SPEED;
   let distance = 0;
   let lastSpawnX = 0;
+  let lastGapY = 0;
   let powerLeft = 0;
   let flapBoost = 0;
   let deadTimer = 0;
@@ -264,6 +265,7 @@
     speed = BASE_SPEED;
     distance = 0;
     lastSpawnX = W * 0.7;
+    lastGapY = H * 0.5;
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
@@ -276,7 +278,9 @@
   }
 
   function difficulty() {
-    const t = Math.min(1, distance / 12000);
+    // slower ramp, hard plateau — reaches the caps around gate ~60 and
+    // stays there
+    const t = Math.min(1, distance / 16000);
     return {
       speed: BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t,
       gap: GAP_BASE - (GAP_BASE - GAP_MIN) * t,
@@ -308,7 +312,17 @@
     // Main gap UNCHANGED — only seal the around-path above/below
     const gap = d.gap;
     const margin = 70;
-    const gapCenter = margin + gap / 2 + Math.random() * (H - 2 * margin - gap);
+    let gapCenter = margin + gap / 2 + Math.random() * (H - 2 * margin - gap);
+    // Reachability clamp: the next gap must be within what the squirrel can
+    // actually climb or dive in the time between gates. Without this, high
+    // speed could demand a bottom-to-top transition faster than the flap
+    // physics allow — difficulty should be a marathon, never impossible.
+    const dtGate = gapSpacing() / d.speed;
+    const climb = 230 * dtGate;   // sustainable upward pace, px/s
+    const dive = 520 * dtGate;    // gravity dive pace, px/s
+    gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
+    gapCenter = Math.max(margin + gap / 2, Math.min(H - margin - gap / 2, gapCenter));
+    lastGapY = gapCenter;
     const kindA = Math.floor(Math.random() * 9);
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
@@ -380,7 +394,8 @@
     }
     // black-hole acorn — BETA TESTING RATE: ~1 per 20 gates so the warp is
     // easy to reach while tuning. Intended release rate is ~1 per 70 (0.014).
-    if (Math.random() < 0.05) {
+    // Never while a warp is pending or active: they'd be inert clutter.
+    if (warpT === 0 && warpLeft === 0 && Math.random() < 0.05) {
       blackholes.push({
         x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
@@ -3323,6 +3338,10 @@
     get recoveryMsg() { return recoveryMsg; },
     get particles() { return particles; },
     get runAcorns() { return runAcorns; },
+    get distance() { return distance; },
+    set distance(v) { distance = v; },
+    get lastGapY() { return lastGapY; },
+    spawnPair,
     get pal() { return pal; },
     get acorns() { return acorns; },
     resetRun,
