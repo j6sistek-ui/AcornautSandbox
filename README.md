@@ -22,4 +22,4 @@ Flight (free), Ion, Copper, Frost, Void
 ## Defaults
 Tap lift −450 · Gravity 1300 · X-pos 0.18
 
-Hard-refresh the preview after updates (or clear cache) if you still see old planet stacks or circle-only hangar icons.
+Hard-refresh the preview after updates if you still see old planet stacks or circle-only hangar icons.
