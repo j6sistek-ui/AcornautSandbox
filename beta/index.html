@@ -173,9 +173,9 @@
   let FLAP = -450;
   let SQUIRREL_X = 0.18;
   const BASE_SPEED = 165;
-  const MAX_SPEED = 320;
+  const MAX_SPEED = 280;   // capped: past this it's a marathon, not a ramp
   const GAP_BASE = 168;
-  const GAP_MIN = 118;
+  const GAP_MIN = 132;     // floor: the corridor never gets tighter than this
   const PLANET_R = 42;
   const POWER_DURATION = 6;
   const SLOW_FACTOR = 0.42;
@@ -206,6 +206,7 @@
   let speed = BASE_SPEED;
   let distance = 0;
   let lastSpawnX = 0;
+  let lastGapY = 0;
   let powerLeft = 0;
   let flapBoost = 0;
   let deadTimer = 0;
@@ -264,6 +265,7 @@
     speed = BASE_SPEED;
     distance = 0;
     lastSpawnX = W * 0.7;
+    lastGapY = H * 0.5;
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
@@ -276,7 +278,9 @@
   }
 
   function difficulty() {
-    const t = Math.min(1, distance / 12000);
+    // slower ramp, hard plateau — reaches the caps around gate ~60 and
+    // stays there
+    const t = Math.min(1, distance / 16000);
     return {
       speed: BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t,
       gap: GAP_BASE - (GAP_BASE - GAP_MIN) * t,
@@ -308,7 +312,17 @@
     // Main gap UNCHANGED — only seal the around-path above/below
     const gap = d.gap;
     const margin = 70;
-    const gapCenter = margin + gap / 2 + Math.random() * (H - 2 * margin - gap);
+    let gapCenter = margin + gap / 2 + Math.random() * (H - 2 * margin - gap);
+    // Reachability clamp: the next gap must be within what the squirrel can
+    // actually climb or dive in the time between gates. Without this, high
+    // speed could demand a bottom-to-top transition faster than the flap
+    // physics allow — difficulty should be a marathon, never impossible.
+    const dtGate = gapSpacing() / d.speed;
+    const climb = 230 * dtGate;   // sustainable upward pace, px/s
+    const dive = 520 * dtGate;    // gravity dive pace, px/s
+    gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
+    gapCenter = Math.max(margin + gap / 2, Math.min(H - margin - gap / 2, gapCenter));
+    lastGapY = gapCenter;
     const kindA = Math.floor(Math.random() * 9);
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
@@ -380,7 +394,8 @@
     }
     // black-hole acorn — BETA TESTING RATE: ~1 per 20 gates so the warp is
     // easy to reach while tuning. Intended release rate is ~1 per 70 (0.014).
-    if (Math.random() < 0.05) {
+    // Never while a warp is pending or active: they'd be inert clutter.
+    if (warpT === 0 && warpLeft === 0 && Math.random() < 0.05) {
       blackholes.push({
         x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
@@ -2859,9 +2874,9 @@
   // these rects and handleTap hit-tests the same ones, so the buttons and
   // their tap targets can never drift apart.
   function titleButtons() {
-    const bw = Math.min(204, W * 0.52), bh = 56;
-    const bx = 22 + bw / 2;
-    const y0 = H * 0.56;
+    const bw = Math.min(216, W * 0.56), bh = 56;
+    const bx = W / 2;
+    const y0 = H * 0.58;
     return [
       { id: 'fly',    x: bx, y: y0,      w: bw, h: bh, label: 'FLY' },
       { id: 'hangar', x: bx, y: y0 + 68, w: bw, h: bh, label: 'HANGAR' },
@@ -2874,10 +2889,8 @@
     drawPlanet(W * 0.88, H * 0.12, 22, 4);
     drawPlanet(W * 0.82, H * 0.34, 36, 1);
 
+    drawWordmark(W / 2, H * 0.2 - 30, 36);
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 44px system-ui';
-    ctx.fillText('ACORNAUT', W / 2, H * 0.2);
     ctx.font = '600 13px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.fillText('SOAR THE COSMOS · GATHER THE ACORNS', W / 2, H * 0.2 + 26);
@@ -2896,13 +2909,77 @@
     drawAcornIcon(acLeft + 6, H * 0.31 + 19, 1);
     ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.31 + 24);
 
-    // hero squirrel on the right, menu column on the left
-    drawAstronaut(W * 0.72, H * 0.66, Math.sin(titlePulse * 2) * 0.06, 2.05,
+    // hero squirrel centred under the acorn count
+    drawAstronaut(W / 2 + 6, H * 0.445, Math.sin(titlePulse * 2) * 0.06, 1.85,
                   equippedHelmet(), equippedSuit(), { seed: 3 });
 
     const btns = titleButtons();
     drawMenuBtn(btns[0], true, iconRocket);
     drawMenuBtn(btns[1], false, iconHangar);
+  }
+
+  // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
+  // letterform that needs no font file, so it renders identically on every
+  // platform (system fonts can't be trusted for a logo).
+  const WORDMARK = {
+    A: [[[0, 10], [2.1, 0], [3.9, 0], [6, 10]], [[1.15, 6.5], [4.85, 6.5]]],
+    C: [[[6, 1.6], [4.4, 0], [1.6, 0], [0, 1.6], [0, 8.4], [1.6, 10], [4.4, 10], [6, 8.4]]],
+    O: [[[1.6, 0], [4.4, 0], [6, 1.6], [6, 8.4], [4.4, 10], [1.6, 10], [0, 8.4], [0, 1.6], [1.6, 0]]],
+    R: [[[0, 10], [0, 0], [4.6, 0], [6, 1.4], [6, 4.2], [4.6, 5.6], [0, 5.6]], [[3.2, 5.6], [6, 10]]],
+    N: [[[0, 10], [0, 0], [6, 10], [6, 0]]],
+    U: [[[0, 0], [0, 8.4], [1.6, 10], [4.4, 10], [6, 8.4], [6, 0]]],
+    T: [[[0, 0], [6, 0]], [[3, 0], [3, 10]]],
+  };
+
+  function drawWordmark(cx, top, h) {
+    const word = 'ACORNAUT';
+    const u = h / 10;
+    const lw = 6 * u;
+    const gapW = 3.2 * u;
+    const total = word.length * lw + (word.length - 1) * gapW;
+    let x = cx - total / 2;
+
+    const g = ctx.createLinearGradient(0, top, 0, top + h);
+    g.addColorStop(0, '#ffffff');
+    g.addColorStop(0.55, '#bfe6ff');
+    g.addColorStop(1, '#4ab8ff');
+
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.strokeStyle = pass === 0 ? 'rgba(80,180,255,0.28)' : g;
+      ctx.lineWidth = pass === 0 ? 0.62 * h * 0.28 : 0.36 * h * 0.28;
+      let lx = x;
+      for (const ch of word) {
+        for (const stroke of WORDMARK[ch]) {
+          ctx.beginPath();
+          for (let i = 0; i < stroke.length; i++) {
+            const px = lx + stroke[i][0] * u;
+            const py = top + stroke[i][1] * u;
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+        lx += lw + gapW;
+      }
+    }
+    // a small star dotting the wordmark
+    ctx.fillStyle = '#ffe27a';
+    const sx = cx + total / 2 + 8;
+    const sy = top - 2;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - 4);
+    ctx.lineTo(sx + 1.2, sy - 1.2);
+    ctx.lineTo(sx + 4, sy);
+    ctx.lineTo(sx + 1.2, sy + 1.2);
+    ctx.lineTo(sx, sy + 4);
+    ctx.lineTo(sx - 1.2, sy + 1.2);
+    ctx.lineTo(sx - 4, sy);
+    ctx.lineTo(sx - 1.2, sy - 1.2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
   }
 
   function drawMenuBtn(b, primary, icon) {
@@ -3323,6 +3400,10 @@
     get recoveryMsg() { return recoveryMsg; },
     get particles() { return particles; },
     get runAcorns() { return runAcorns; },
+    get distance() { return distance; },
+    set distance(v) { distance = v; },
+    get lastGapY() { return lastGapY; },
+    spawnPair,
     get pal() { return pal; },
     get acorns() { return acorns; },
     resetRun,
