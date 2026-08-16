@@ -1358,10 +1358,11 @@
   // as a snake that swallowed an egg, not fur.
   // Proportions follow a real squirrel: slim at the hip, a gentle swell
   // through the middle, and a soft taper at the tip — not an even sausage.
+  // The tip stops beside the helmet rather than curling over the head.
   const TAIL_PTS = [
-    [-2, 13], [-12, 12], [-20, 4.5], [-23, -7], [-19.5, -18], [-11.5, -25], [-4.5, -29],
+    [-2, 13], [-12, 12], [-20, 4.5], [-23, -7], [-19.5, -17.5], [-13.5, -23],
   ];
-  const TAIL_W = [3.2, 5.4, 6.6, 7.0, 6.6, 5.2, 2.8];
+  const TAIL_W = [3.2, 5.4, 6.6, 7.0, 5.8, 3.0];
   // Sample count only needs to be dense enough that the discs overlap; the
   // spline is ~60px long, so 26 samples still leaves heavy overlap.
   const TAIL_N = 26;
@@ -1481,19 +1482,31 @@
     ctx.ellipse(-6, 10, 8.4, 8.0, 0.18, 0, Math.PI * 2);
     ctx.fill();
 
-    // hind foot
-    ctx.fillStyle = suit.furDark;
-    ctx.beginPath();
-    ctx.ellipse(0.5, 17.2, 5.8, 3.0, 0.1, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = withAlpha(suit.suitDark, 0.75);
-    ctx.lineWidth = 0.8;
-    for (let i = -1; i <= 1; i++) {
+    // little legs dangling beneath the suit, trailing slightly in flight
+    const leg = (hx, hy, fx, fy, footR) => {
+      ctx.strokeStyle = suit.suitDark;
+      ctx.lineWidth = 4.2;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(3.4 + i * 1.5, 16.1);
-      ctx.lineTo(4.6 + i * 1.5, 18.3);
+      ctx.moveTo(hx, hy);
+      ctx.quadraticCurveTo((hx + fx) / 2 - 1.2, (hy + fy) / 2, fx, fy);
       ctx.stroke();
-    }
+      // paw
+      ctx.fillStyle = suit.furDark;
+      ctx.beginPath();
+      ctx.ellipse(fx + 1.1, fy + 0.6, footR, footR * 0.62, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(suit.suitDark, 0.75);
+      ctx.lineWidth = 0.7;
+      for (let i = 0; i < 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(fx + 2.2 + i * 1.4, fy - 0.6);
+        ctx.lineTo(fx + 3.0 + i * 1.4, fy + 1.4);
+        ctx.stroke();
+      }
+    };
+    leg(-3.5, 13, -2, 19.5, 3.4);   // hind leg off the haunch
+    leg(6, 13, 7.8, 18.5, 3.0);     // front leg under the chest
 
     // torso
     const g = ctx.createRadialGradient(-4, 2, 2, 1, 9, 18);
