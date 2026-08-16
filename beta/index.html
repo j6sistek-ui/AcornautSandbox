@@ -294,8 +294,9 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
-    // rarer power-up acorn
-    if (Math.random() < 0.05) {
+    // rarer power-up acorn (~1 per 50 gates; was 1 in 20 and felt like the
+    // run was spent in slow motion)
+    if (Math.random() < 0.02) {
       powerups.push({
         x: x + 40,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.25),
@@ -303,8 +304,8 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
-    // shield acorn — very rare, on average one per 100 gates
-    if (Math.random() < 0.01) {
+    // shield acorn — very rare, on average one per 200 gates
+    if (Math.random() < 0.005) {
       shields.push({
         x: x + 20,
         y: gapCenter,
