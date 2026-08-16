@@ -324,8 +324,9 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
-    // black-hole acorn — about one per 70 gates
-    if (Math.random() < 0.014) {
+    // black-hole acorn — BETA TESTING RATE: ~1 per 20 gates so the warp is
+    // easy to reach while tuning. Intended release rate is ~1 per 70 (0.014).
+    if (Math.random() < 0.05) {
       blackholes.push({
         x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
