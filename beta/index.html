@@ -52,6 +52,7 @@
   const defaultSave = () => ({
     highScore: 0,
     acorns: BETA_ACORNS,
+    startShield: false, // one-shot modifier: begin the next run shielded
     unlocked: ['clear'], // only Clear free — rest cost acorns
     equipped: 'clear',
     unlockedSuits: ['flight'],
@@ -142,6 +143,10 @@
   let acorns = [];
   let powerups = [];
   let shields = [];          // rare shield-acorn pickups
+  let blackholes = [];       // black-hole acorns: warp the world for a while
+  let warpT = 0;             // swirl-in transition (counts down from 1s)
+  let warpLeft = 0;          // remaining warped-orientation time
+  let warpTilt = 0;          // ±25° flight-lane tilt while warped
   let hasShield = false;     // carrying a shield this run
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
   let shieldSlow = 0;        // slow-motion recovery window after the freeze
@@ -156,6 +161,8 @@
   let titlePulse = 0;
   let hitCooldown = 0;
   let hangarScroll = 0;
+  let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
+  const MOD_SHIELD_COST = 25;
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -167,7 +174,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (mode === 'title' || mode === 'hangar' || mode === 'suits') initStars();
+    if (mode === 'title' || mode === 'hangar') initStars();
   }
 
   function initStars() {
@@ -192,7 +199,11 @@
     acorns = [];
     powerups = [];
     shields = [];
-    hasShield = false;
+    blackholes = [];
+    warpT = 0;
+    warpLeft = 0;
+    warpTilt = 0;
+    hasShield = !!save.startShield; // purchased modifier arms the run
     shieldFreeze = 0;
     shieldSlow = 0;
     particles = [];
@@ -313,6 +324,15 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
+    // black-hole acorn — about one per 70 gates
+    if (Math.random() < 0.014) {
+      blackholes.push({
+        x: x + 30,
+        y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
+        got: false,
+        bob: Math.random() * Math.PI * 2,
+      });
+    }
     lastSpawnX = x;
   }
 
@@ -353,50 +373,55 @@
       for (const b of titleButtons()) {
         if (hit(x, y, b)) {
           if (b.id === 'fly') { resetRun(); mode = 'ready'; }
-          else if (b.id === 'hangar') mode = 'hangar';
-          else mode = 'suits';
+          else mode = 'hangar';
           return;
         }
       }
       return;
     }
-    if (mode === 'hangar' || mode === 'suits') {
+    if (mode === 'hangar') {
       const back = { x: 56, y: 44, w: 80, h: 36 };
       if (hit(x, y, back)) { mode = 'title'; return; }
-      const list = mode === 'hangar' ? HELMETS : SUITS;
-      const cols = 3;
-      const cellW = (W - 48) / cols;
-      const startY = 96; // must match the value used when drawing the grid
-      list.forEach((item, i) => {
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        const cx = 24 + col * cellW + cellW / 2;
-        const cy = startY + row * 118 + 44;
-        if (Math.hypot(x - cx, y - cy) < 46) {
-          if (mode === 'hangar') {
-            if (save.unlocked.includes(item.id)) {
-              save.equipped = item.id;
-              writeSave(save);
-            } else if (save.acorns >= item.cost) {
-              save.acorns -= item.cost;
-              save.unlocked.push(item.id);
-              save.equipped = item.id;
-              writeSave(save);
-            }
-          } else {
-            const owned = save.unlockedSuits.includes(item.id);
-            if (owned) {
-              save.equippedSuit = item.id;
-              writeSave(save);
-            } else if (save.acorns >= item.cost) {
-              save.acorns -= item.cost;
-              save.unlockedSuits.push(item.id);
-              save.equippedSuit = item.id;
-              writeSave(save);
+      for (const t of shopTabRects()) {
+        if (hit(x, y, t)) { shopTab = t.id; return; }
+      }
+      if (shopTab === 'helmets' || shopTab === 'suits') {
+        const list = shopTab === 'helmets' ? HELMETS : SUITS;
+        list.forEach((item, i) => {
+          const c = shopCellRect(i);
+          if (Math.hypot(x - c.x, y - c.y) < 46) {
+            if (shopTab === 'helmets') {
+              if (save.unlocked.includes(item.id)) {
+                save.equipped = item.id;
+                writeSave(save);
+              } else if (save.acorns >= item.cost) {
+                save.acorns -= item.cost;
+                save.unlocked.push(item.id);
+                save.equipped = item.id;
+                writeSave(save);
+              }
+            } else {
+              const owned = save.unlockedSuits.includes(item.id);
+              if (owned) {
+                save.equippedSuit = item.id;
+                writeSave(save);
+              } else if (save.acorns >= item.cost) {
+                save.acorns -= item.cost;
+                save.unlockedSuits.push(item.id);
+                save.equippedSuit = item.id;
+                writeSave(save);
+              }
             }
           }
+        });
+      } else if (shopTab === 'mods') {
+        const card = { x: W / 2, y: SHOP_GRID_Y + 62, w: W - 48, h: 124 };
+        if (hit(x, y, card) && !save.startShield && save.acorns >= MOD_SHIELD_COST) {
+          save.acorns -= MOD_SHIELD_COST;
+          save.startShield = true;
+          writeSave(save);
         }
-      });
+      }
       return;
     }
     if (mode === 'ready' || mode === 'play') {
@@ -404,15 +429,20 @@
       return;
     }
     if (mode === 'dead') {
-      if (deadTimer > 0.6) {
-        // bank acorns
-        save.acorns += runAcorns;
-        if (score > save.highScore) save.highScore = score;
-        writeSave(save);
-        mode = 'title';
-      }
+      if (deadTimer > 0.6) bankRun();
     }
   }
+  // End-of-run banking, shared by tap and keyboard paths. The start-shield
+  // modifier is single-purchase: it expires when the run it armed ends,
+  // whether or not the shield was used.
+  function bankRun() {
+    save.acorns += runAcorns;
+    if (score > save.highScore) save.highScore = score;
+    save.startShield = false;
+    writeSave(save);
+    mode = 'title';
+  }
+
   function hit(x, y, b) {
     return x > b.x - b.w / 2 && x < b.x + b.w / 2 && y > b.y - b.h / 2 && y < b.y + b.h / 2;
   }
@@ -423,12 +453,7 @@
       e.preventDefault();
       if (mode === 'title') { resetRun(); mode = 'ready'; }
       else if (mode === 'ready' || mode === 'play') flap();
-      else if (mode === 'dead' && deadTimer > 0.6) {
-        save.acorns += runAcorns;
-        if (score > save.highScore) save.highScore = score;
-        writeSave(save);
-        mode = 'title';
-      }
+      else if (mode === 'dead' && deadTimer > 0.6) bankRun();
     }
   });
 
@@ -464,6 +489,17 @@
         powerLeft = Math.max(0, powerLeft - dt);
       }
 
+      // Black-hole warp: a one-second swirl (world frozen), then 15s of
+      // mirrored, tilted flight, ended with the shield-style recovery.
+      if (warpT > 0) {
+        warpT = Math.max(0, warpT - dt);
+        simDt = 0;
+        if (warpT === 0) enterWarp();
+      } else if (warpLeft > 0) {
+        warpLeft = Math.max(0, warpLeft - dt);
+        if (warpLeft === 0) exitWarp();
+      }
+
       const d = difficulty();
       speed = d.speed;
 
@@ -480,6 +516,7 @@
       for (const a of acorns) { a.x -= move; a.bob += dt * 4; }
       for (const a of powerups) { a.x -= move; a.bob += dt * 5; }
       for (const a of shields) { a.x -= move; a.bob += dt * 3; }
+      for (const a of blackholes) { a.x -= move; a.bob += dt * 2.2; }
 
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
@@ -492,6 +529,7 @@
       acorns = acorns.filter(a => a.x > -40 && !a.got);
       powerups = powerups.filter(a => a.x > -40 && !a.got);
       shields = shields.filter(a => a.x > -40 && !a.got);
+      blackholes = blackholes.filter(a => a.x > -40 && !a.got);
 
       // score
       const sx = W * SQUIRREL_X;
@@ -535,13 +573,19 @@
         }
       }
 
-      // Main planets: recoverable bounce
-      if (hitCooldown <= 0) {
-        for (const p of planets) {
-          const topY = p.gapY - p.gap / 2 - p.r;
-          const botY = p.gapY + p.gap / 2 + p.r;
-          if (circleHit(sx, sy, sr, p.x, topY, p.r * 0.92)) { bounceOff(p.x, topY); break; }
-          if (circleHit(sx, sy, sr, p.x, botY, p.r * 0.92)) { bounceOff(p.x, botY); break; }
+      // Main planets: recoverable bounce. During the bounce cooldown the
+      // planets stay SOLID — the squirrel is pushed out of any overlap
+      // instead of re-bounced. Skipping the check entirely let the player
+      // phase straight through a planet they had just bounced off.
+      outer:
+      for (const p of planets) {
+        const topY = p.gapY - p.gap / 2 - p.r;
+        const botY = p.gapY + p.gap / 2 + p.r;
+        for (const gy of [topY, botY]) {
+          if (circleHit(sx, sy, sr, p.x, gy, p.r * 0.92)) {
+            if (hitCooldown <= 0) { bounceOff(p.x, gy); break outer; }
+            pushOut(p.x, gy, p.r * 0.92, sr);
+          }
         }
       }
 
@@ -567,6 +611,15 @@
           spark(a.x, a.y, 'shield');
         }
       }
+      for (const a of blackholes) {
+        if (!a.got && warpT === 0 && warpLeft === 0 &&
+            Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          warpT = 1.0;                                  // swirl begins
+          warpTilt = (Math.random() < 0.5 ? 1 : -1) * (25 * Math.PI / 180);
+          spark(a.x, a.y, 'warp');
+        }
+      }
     }
 
     if (mode === 'dead') {
@@ -588,6 +641,45 @@
 
   function circleHit(x1, y1, r1, x2, y2, r2) {
     return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
+  }
+
+  // Resolve overlap with a planet without applying a new impulse: move the
+  // squirrel to the surface along its (fixed) x column and cancel velocity
+  // into the planet.
+  function pushOut(px, py, pr, sr) {
+    const sx = W * SQUIRREL_X;
+    const rr = pr + sr;
+    const dx = sx - px;
+    if (Math.abs(dx) >= rr) return;
+    const dyNeed = Math.sqrt(rr * rr - dx * dx);
+    const above = squirrel.y <= py;
+    squirrel.y = above ? py - dyNeed : py + dyNeed;
+    if (above ? squirrel.vy > 0 : squirrel.vy < 0) squirrel.vy = 0;
+  }
+
+  // Warp start: same fairness treatment as the shield recovery — recenter
+  // the squirrel, vaporise debris around the respawn point, brief freeze.
+  function enterWarp() {
+    const sx = W * SQUIRREL_X;
+    const cy = H * 0.45;
+    for (const p of planets) {
+      p.blockers = (p.blockers || []).filter(b =>
+        Math.hypot(p.x + (b.xOff || 0) - sx, b.y - cy) > 150);
+    }
+    squirrel.y = cy;
+    squirrel.vy = 0;
+    squirrel.rot = 0;
+    hitCooldown = 0;
+    warpLeft = 15;
+    shieldFreeze = 0.4;
+    spark(sx, cy, 'warp');
+  }
+
+  function exitWarp() {
+    warpTilt = 0;
+    shieldFreeze = 0.7;
+    shieldSlow = 3;
+    spark(W * SQUIRREL_X, squirrel.y, 'warp');
   }
 
   function bounceOff(px, py) {
@@ -641,7 +733,7 @@
   }
 
   function spark(x, y, kind) {
-    const n = kind === 'poof' ? 18 : kind === 'shield' ? 16 : 10;
+    const n = kind === 'poof' ? 18 : kind === 'shield' || kind === 'warp' ? 16 : 10;
     for (let i = 0; i < n; i++) {
       const ang = Math.random() * Math.PI * 2;
       const sp = 40 + Math.random() * 120;
@@ -653,7 +745,7 @@
         max: 0.6,
         r: 2 + Math.random() * 3,
         kind: kind === 'cyan' ? 'cyan' : kind === 'gold' ? 'gold'
-            : kind === 'shield' ? 'shield' : 'poof',
+            : kind === 'shield' ? 'shield' : kind === 'warp' ? 'warp' : 'poof',
       });
     }
   }
@@ -695,10 +787,27 @@
     ctx.globalAlpha = 1;
 
     if (mode === 'title') drawTitle();
-    else if (mode === 'hangar') drawHangar();
-    else if (mode === 'suits') drawSuits();
+    else if (mode === 'hangar') drawShop();
     else {
-      drawWorld();
+      // Warp is a pure RENDER transform: the simulation still scrolls the
+      // same way, so every collision rule keeps working untouched. The
+      // player sees the world mirrored (squirrel flying the other way) and
+      // tilted ±25°; during the one-second swirl the scene spins and folds
+      // through the mirror flip.
+      const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 ? 1 : 0);
+      if (wp > 0) {
+        ctx.save();
+        ctx.translate(W / 2, H / 2);
+        const spin = warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
+        ctx.rotate(warpTilt * wp + spin);
+        ctx.scale(1 - 2 * wp, 1);
+        ctx.translate(-W / 2, -H / 2);
+        drawWorld();
+        ctx.restore();
+        if (warpT > 0) drawVortex(1 - warpT);
+      } else {
+        drawWorld();
+      }
       drawHUD();
       if (mode === 'ready') drawReady();
       if (mode === 'dead') drawDead();
@@ -724,6 +833,10 @@
     for (const a of shields) {
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'shield');
+    }
+    for (const a of blackholes) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'blackhole');
     }
     for (const p of particles) drawParticle(p);
     drawSquirrel(W * SQUIRREL_X, squirrel.y, squirrel.rot);
@@ -1206,9 +1319,31 @@
 
   function drawAcorn(x, y, power) {
     const shield = power === 'shield';
+    const hole = power === 'blackhole';
     ctx.save();
     ctx.translate(x, y);
-    if (shield) {
+    if (hole) {
+      // dark core with a swirling accretion ring
+      const t = performance.now() / 1000;
+      const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(20,0,40,0.9)');
+      glow.addColorStop(0.5, 'rgba(120,40,200,0.28)');
+      glow.addColorStop(1, 'rgba(120,40,200,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(200,130,255,0.85)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 19, 6.5, t * 0.8 % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,190,90,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 14, 4.6, (t * 0.8 + 0.9) % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (shield) {
       // protective bubble around the nut
       const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, 24);
       glow.addColorStop(0, 'rgba(110,255,170,0.4)');
@@ -1245,7 +1380,11 @@
     ctx.fill();
     // nut body with gradient
     const nut = ctx.createRadialGradient(-3, 0, 2, 0, 4, 12);
-    if (shield) {
+    if (hole) {
+      nut.addColorStop(0, '#3a2a55');
+      nut.addColorStop(0.5, '#1a1030');
+      nut.addColorStop(1, '#05020c');
+    } else if (shield) {
       nut.addColorStop(0, '#c8ffde');
       nut.addColorStop(0.5, '#4ade80');
       nut.addColorStop(1, '#14683a');
@@ -1270,7 +1409,10 @@
     ctx.stroke();
     // cap
     const cap = ctx.createRadialGradient(0, -6, 1, 0, -4, 12);
-    if (shield) {
+    if (hole) {
+      cap.addColorStop(0, '#6a3aa8');
+      cap.addColorStop(1, '#241040');
+    } else if (shield) {
       cap.addColorStop(0, '#3fbf74');
       cap.addColorStop(1, '#0c4a28');
     } else if (power) {
@@ -1301,6 +1443,39 @@
     ctx.restore();
   }
 
+  function drawVortex(p) {
+    // swirling black hole overlay during the transition second
+    const cx = W / 2, cy = H / 2;
+    const grow = Math.sin(p * Math.PI);           // swells then fades
+    ctx.save();
+    ctx.globalAlpha = 0.85 * grow;
+    const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 120);
+    g.addColorStop(0, 'rgba(0,0,0,0.95)');
+    g.addColorStop(0.35, 'rgba(30,10,50,0.75)');
+    g.addColorStop(0.7, 'rgba(90,40,150,0.3)');
+    g.addColorStop(1, 'rgba(90,40,150,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 120, 0, Math.PI * 2);
+    ctx.fill();
+    // spiral arms
+    ctx.strokeStyle = 'rgba(180,92,255,0.8)';
+    ctx.lineWidth = 2;
+    for (let a = 0; a < 3; a++) {
+      ctx.beginPath();
+      for (let i = 0; i < 26; i++) {
+        const th = i * 0.32 + a * (Math.PI * 2 / 3) + p * 9;
+        const rr = 6 + i * 4 * grow;
+        const px = cx + Math.cos(th) * rr;
+        const py = cy + Math.sin(th) * rr * 0.8;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
   function drawParticle(p) {
     const t = p.life / p.max;
     ctx.globalAlpha = Math.max(0, t);
@@ -1312,6 +1487,8 @@
       ctx.fillStyle = '#ffd060';
     } else if (p.kind === 'shield') {
       ctx.fillStyle = '#5dff9e';
+    } else if (p.kind === 'warp') {
+      ctx.fillStyle = '#b45cff';
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -2200,8 +2377,24 @@
       ctx.fillText('SHIELD', 36, 51);
     }
 
+    // warp status
+    if (warpLeft > 0) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#c084fc';
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillText('BLACK HOLE  ' + Math.ceil(warpLeft) + 's', W / 2, 92);
+      ctx.textAlign = 'left';
+    }
+    if (warpT > 0) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#c084fc';
+      ctx.font = 'bold 22px system-ui';
+      ctx.fillText('BLACK HOLE!', W / 2, H * 0.3);
+      ctx.textAlign = 'left';
+    }
+
     // shield-break banner during the freeze and early recovery
-    if (shieldFreeze > 0 || shieldSlow > 2.2) {
+    if (warpT === 0 && (shieldFreeze > 0 || shieldSlow > 2.2)) {
       ctx.textAlign = 'center';
       ctx.fillStyle = '#5dff9e';
       ctx.font = 'bold 22px system-ui';
@@ -2271,9 +2464,8 @@
     const bx = 22 + bw / 2;
     const y0 = H * 0.56;
     return [
-      { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
-      { id: 'hangar', x: bx, y: y0 + 68,  w: bw, h: bh, label: 'HANGAR' },
-      { id: 'suits',  x: bx, y: y0 + 136, w: bw, h: bh, label: 'SUITS' },
+      { id: 'fly',    x: bx, y: y0,      w: bw, h: bh, label: 'FLY' },
+      { id: 'hangar', x: bx, y: y0 + 68, w: bw, h: bh, label: 'HANGAR' },
     ];
   }
 
@@ -2312,7 +2504,6 @@
     const btns = titleButtons();
     drawMenuBtn(btns[0], true, iconRocket);
     drawMenuBtn(btns[1], false, iconHangar);
-    drawMenuBtn(btns[2], false, iconSuit);
   }
 
   function drawMenuBtn(b, primary, icon) {
@@ -2426,92 +2617,205 @@
     ctx.fillText(String(save.acorns), 42, 78);
   }
 
-  function drawHangar() {
+  // ——— tabbed shop ————————————————————————————————————————————
+  const SHOP_TABS = [
+    { id: 'helmets', label: 'HELMETS' },
+    { id: 'suits',   label: 'SUITS' },
+    { id: 'mods',    label: 'MODS' },
+    { id: 'trails',  label: 'TRAILS' },
+    { id: 'pals',    label: 'PALS' },
+  ];
+  const SHOP_GRID_Y = 140;
+
+  // Geometry shared by drawing and tap handling, same pattern as the title
+  // menu — the tabs and their touch targets cannot drift apart.
+  function shopTabRects() {
+    const tw = (W - 32) / SHOP_TABS.length;
+    return SHOP_TABS.map((t, i) => ({
+      id: t.id, label: t.label,
+      x: 16 + i * tw + tw / 2, y: 100, w: tw - 5, h: 34,
+    }));
+  }
+
+  function shopCellRect(i) {
+    const cols = 3;
+    const cellW = (W - 48) / cols;
+    return {
+      x: 24 + (i % cols) * cellW + cellW / 2,
+      y: SHOP_GRID_Y + Math.floor(i / cols) * 118 + 44,
+    };
+  }
+
+  function drawShop() {
     drawShopHeader('HANGAR');
-    const cols = 3;
-    const cellW = (W - 48) / cols;
-    const startY = 96;
-    const suit = equippedSuit();
-    HELMETS.forEach((h, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const cx = 24 + col * cellW + cellW / 2;
-      const cy = startY + row * 118 + 44;
-      const unlocked = save.unlocked.includes(h.id);
-      const eq = save.equipped === h.id;
 
-      ctx.fillStyle = eq ? 'rgba(58,156,255,0.25)' : 'rgba(255,255,255,0.06)';
-      roundRect(cx - 50, cy - 48, 100, 100, 14);
+    for (const t of shopTabRects()) {
+      const active = shopTab === t.id;
+      ctx.fillStyle = active ? 'rgba(58,156,255,0.3)' : 'rgba(255,255,255,0.07)';
+      roundRect(t.x - t.w / 2, t.y - t.h / 2, t.w, t.h, 9);
       ctx.fill();
-      if (eq) {
+      if (active) {
         ctx.strokeStyle = '#3a9cff';
-        ctx.lineWidth = 2;
-        roundRect(cx - 50, cy - 48, 100, 100, 14);
+        ctx.lineWidth = 1.5;
         ctx.stroke();
       }
-
-      drawAstronaut(cx + 4.5, cy - 4, 0, 0.82, h, suit, { seed: i * 1.7 });
-
+      ctx.fillStyle = active ? '#fff' : 'rgba(255,255,255,0.6)';
+      ctx.font = 'bold 10.5px system-ui';
       ctx.textAlign = 'center';
-      ctx.font = '600 11px system-ui';
-      ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
-      ctx.fillText(h.name, cx, cy + 36);
-      if (!unlocked) {
-        ctx.fillStyle = '#ffd080';
-        const ct = String(h.cost);
-        const cw = ctx.measureText(ct).width;
-        ctx.fillText(ct, cx - 7, cy + 50);
-        drawAcornIcon(cx - 7 + cw / 2 + 8, cy + 46, 0.8);
-      } else if (eq) {
-        ctx.fillStyle = '#3a9cff';
-        ctx.fillText('EQUIPPED', cx, cy + 50);
-      }
-    });
+      ctx.fillText(t.label, t.x, t.y + 4);
+    }
+
+    if (shopTab === 'helmets') drawRoster(HELMETS, true);
+    else if (shopTab === 'suits') drawRoster(SUITS, false);
+    else if (shopTab === 'mods') drawModsTab();
+    else if (shopTab === 'trails') drawTrailsTab();
+    else drawPalsTab();
   }
 
-  function drawSuits() {
-    drawShopHeader('SUITS');
-    const cols = 3;
-    const cellW = (W - 48) / cols;
-    const startY = 96;
+  function drawRoster(list, isHelmets) {
     const helm = equippedHelmet();
-    SUITS.forEach((s, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const cx = 24 + col * cellW + cellW / 2;
-      const cy = startY + row * 118 + 44;
-      const unlocked = save.unlockedSuits.includes(s.id);
-      const eq = save.equippedSuit === s.id;
+    const suit = equippedSuit();
+    list.forEach((item, i) => {
+      const c = shopCellRect(i);
+      const unlocked = isHelmets ? save.unlocked.includes(item.id)
+                                 : save.unlockedSuits.includes(item.id);
+      const eq = isHelmets ? save.equipped === item.id
+                           : save.equippedSuit === item.id;
 
       ctx.fillStyle = eq ? 'rgba(58,156,255,0.25)' : 'rgba(255,255,255,0.06)';
-      roundRect(cx - 50, cy - 48, 100, 100, 14);
+      roundRect(c.x - 50, c.y - 48, 100, 100, 14);
       ctx.fill();
       if (eq) {
         ctx.strokeStyle = '#3a9cff';
         ctx.lineWidth = 2;
-        roundRect(cx - 50, cy - 48, 100, 100, 14);
+        roundRect(c.x - 50, c.y - 48, 100, 100, 14);
         ctx.stroke();
       }
 
-      drawAstronaut(cx + 4.5, cy - 4, 0, 0.82, helm, s, { seed: i * 2.3 });
+      if (isHelmets) drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, item, suit, { seed: i * 1.7 });
+      else drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, helm, item, { seed: i * 2.3 });
 
       ctx.textAlign = 'center';
       ctx.font = '600 11px system-ui';
       ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
-      ctx.fillText(s.name, cx, cy + 36);
+      ctx.fillText(item.name, c.x, c.y + 36);
       if (!unlocked) {
         ctx.fillStyle = '#ffd080';
-        const ct = String(s.cost);
+        const ct = String(item.cost);
         const cw = ctx.measureText(ct).width;
-        ctx.fillText(ct, cx - 7, cy + 50);
-        drawAcornIcon(cx - 7 + cw / 2 + 8, cy + 46, 0.8);
+        ctx.fillText(ct, c.x - 7, c.y + 50);
+        drawAcornIcon(c.x - 7 + cw / 2 + 8, c.y + 46, 0.8);
       } else if (eq) {
         ctx.fillStyle = '#3a9cff';
-        ctx.fillText('EQUIPPED', cx, cy + 50);
+        ctx.fillText('EQUIPPED', c.x, c.y + 50);
       }
     });
   }
 
+  function drawModsTab() {
+    const cardY = SHOP_GRID_Y;
+    const ready = !!save.startShield;
+    const affordable = save.acorns >= MOD_SHIELD_COST;
+
+    ctx.fillStyle = ready ? 'rgba(93,255,158,0.12)' : 'rgba(255,255,255,0.06)';
+    roundRect(24, cardY, W - 48, 124, 14);
+    ctx.fill();
+    ctx.strokeStyle = ready ? 'rgba(93,255,158,0.7)' : 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1.5;
+    roundRect(24, cardY, W - 48, 124, 14);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(64, cardY + 56);
+    ctx.scale(1.25, 1.25);
+    drawAcorn(0, 0, 'shield');
+    ctx.restore();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('SHIELD START', 106, cardY + 36);
+    ctx.font = '600 12px system-ui';
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.fillText('Begin your next run with a', 106, cardY + 56);
+    ctx.fillText('shield already active.', 106, cardY + 72);
+    ctx.fillText('One run only.', 106, cardY + 88);
+
+    if (ready) {
+      ctx.fillStyle = '#5dff9e';
+      ctx.font = 'bold 13px system-ui';
+      ctx.fillText('READY — next run', 106, cardY + 110);
+    } else {
+      ctx.fillStyle = affordable ? '#ffd080' : 'rgba(255,208,128,0.45)';
+      ctx.font = 'bold 13px system-ui';
+      const ct = 'BUY  ' + MOD_SHIELD_COST;
+      ctx.fillText(ct, 106, cardY + 110);
+      drawAcornIcon(112 + ctx.measureText(ct).width + 8, cardY + 106, 0.8);
+    }
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '600 12px system-ui';
+    ctx.fillText('More modifiers coming soon', W / 2, cardY + 160);
+  }
+
+  function drawTrailsTab() {
+    const cardY = SHOP_GRID_Y;
+    ctx.fillStyle = 'rgba(58,156,255,0.12)';
+    roundRect(24, cardY, W - 48, 104, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(58,156,255,0.5)';
+    ctx.lineWidth = 1.5;
+    roundRect(24, cardY, W - 48, 104, 14);
+    ctx.stroke();
+
+    // little preview of the default flame trail
+    ctx.save();
+    ctx.translate(64, cardY + 52);
+    const g = ctx.createLinearGradient(18, 0, -26, 0);
+    g.addColorStop(0, 'rgba(255,224,128,0.95)');
+    g.addColorStop(0.4, 'rgba(255,128,48,0.85)');
+    g.addColorStop(1, 'rgba(255,64,32,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(18, -7);
+    ctx.quadraticCurveTo(-26, 0, 18, 7);
+    ctx.quadraticCurveTo(8, 0, 18, -7);
+    ctx.fill();
+    ctx.fillStyle = '#ffe080';
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.arc(-4 - i * 9, (i % 2 ? -1 : 1) * (3 - i), 2.4 - i * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('ROCKET SPARKS', 106, cardY + 42);
+    ctx.fillStyle = '#3a9cff';
+    ctx.font = 'bold 13px system-ui';
+    ctx.fillText('EQUIPPED', 106, cardY + 64);
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = '600 12px system-ui';
+    ctx.fillText('The classic tap-boost trail.', 106, cardY + 84);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '600 12px system-ui';
+    ctx.fillText('More trails coming soon', W / 2, cardY + 140);
+  }
+
+  function drawPalsTab() {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = 'bold 18px system-ui';
+    ctx.fillText('COMPANIONS', W / 2, SHOP_GRID_Y + 60);
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('Coming soon', W / 2, SHOP_GRID_Y + 84);
+  }
 
   window.addEventListener('resize', resize);
   resize();
@@ -2534,6 +2838,14 @@
     set hasShield(v) { hasShield = v; },
     get shieldFreeze() { return shieldFreeze; },
     get shieldSlow() { return shieldSlow; },
+    get save() { return save; },
+    get hitCooldown() { return hitCooldown; },
+    get shopTab() { return shopTab; },
+    get blackholes() { return blackholes; },
+    get warpT() { return warpT; },
+    get warpLeft() { return warpLeft; },
+    set warpLeft(v) { warpLeft = v; },
+    get warpTilt() { return warpTilt; },
     resetRun,
     flap,
   };
