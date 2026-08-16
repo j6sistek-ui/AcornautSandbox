@@ -47,15 +47,14 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #13';
-  const BETA_ACORNS = 10000;
+  const BETA_BUILD = 'PR #14';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
   const PAL_IDS = ['none','bee','buddy','ufo'];
   const defaultSave = () => ({
     highScore: 0,
-    acorns: BETA_ACORNS,
+    acorns: 0,
     startShield: false, // one-shot modifier: begin the next run shielded
     unlocked: ['clear'], // only Clear free — rest cost acorns
     equipped: 'clear',
@@ -87,9 +86,6 @@
       if (!PAL_IDS.includes(s.equippedPal) || !s.unlockedPals.includes(s.equippedPal)) s.equippedPal = 'none';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
-      // BETA ONLY: keep the balance topped up so every helmet and suit
-      // can be bought and inspected while testing art changes.
-      if (s.acorns < BETA_ACORNS) s.acorns = BETA_ACORNS;
       return s;
     } catch { return defaultSave(); }
   }

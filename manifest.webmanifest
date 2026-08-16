@@ -1,7 +1,7 @@
 {
   "name": "Acornaut",
   "short_name": "Acornaut",
-  "description": "Space squirrel Flappy Bird — fly through planets, collect acorns, unlock helmets.",
+  "description": "Soar the cosmos, gather the acorns — a space squirrel adventure.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
