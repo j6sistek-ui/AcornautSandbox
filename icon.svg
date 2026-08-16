@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Space background -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1a2040"/>
+      <stop offset="100%" stop-color="#05070f"/>
+    </radialGradient>
+    <linearGradient id="visor" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(180,220,255,0.45)"/>
+      <stop offset="100%" stop-color="rgba(100,160,220,0.25)"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- stars -->
+  <circle cx="80" cy="60" r="3" fill="#fff" opacity="0.9"/>
+  <circle cx="420" cy="90" r="2.5" fill="#fff" opacity="0.8"/>
+  <circle cx="350" cy="40" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="50" cy="200" r="2" fill="#fff" opacity="0.6"/>
+  <circle cx="470" cy="250" r="3" fill="#fff" opacity="0.85"/>
+  <circle cx="100" cy="450" r="2.5" fill="#fff" opacity="0.7"/>
+  <circle cx="400" cy="420" r="2" fill="#fff" opacity="0.75"/>
+  <circle cx="200" cy="30" r="1.5" fill="#aaf" opacity="0.9"/>
+  <circle cx="300" cy="480" r="2" fill="#fff" opacity="0.6"/>
+  <!-- distant planet -->
+  <circle cx="430" cy="380" r="45" fill="#2a6aa8"/>
+  <circle cx="420" cy="370" r="12" fill="#3a9a5a" opacity="0.7"/>
+  <circle cx="445" cy="390" r="8" fill="#1a5a38" opacity="0.6"/>
+  <!-- squirrel body -->
+  <ellipse cx="256" cy="300" rx="70" ry="60" fill="#d4893a"/>
+  <!-- belly -->
+  <ellipse cx="270" cy="310" rx="40" ry="35" fill="#f0d2a8"/>
+  <!-- tail -->
+  <path d="M180 300 Q120 220 160 140 Q200 180 190 260 Z" fill="#c47828"/>
+  <path d="M185 290 Q140 230 165 160 Q190 200 185 255 Z" fill="#e0a050" opacity="0.5"/>
+  <!-- head -->
+  <ellipse cx="290" cy="200" rx="55" ry="50" fill="#d4893a"/>
+  <!-- ear -->
+  <ellipse cx="255" cy="145" rx="20" ry="28" fill="#d4893a" transform="rotate(-20 255 145)"/>
+  <ellipse cx="255" cy="145" rx="10" ry="14" fill="#f0c090" transform="rotate(-20 255 145)"/>
+  <!-- eye -->
+  <circle cx="315" cy="195" r="12" fill="#1a1208"/>
+  <circle cx="319" cy="190" r="4.5" fill="#fff"/>
+  <!-- helmet -->
+  <circle cx="290" cy="200" r="72" fill="url(#visor)" stroke="#c8d0dc" stroke-width="8"/>
+  <!-- visor shine -->
+  <path d="M250 160 Q270 145 300 155" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="4" stroke-linecap="round"/>
+  <!-- neck ring -->
+  <ellipse cx="290" cy="255" rx="55" ry="18" fill="none" stroke="#c8d0dc" stroke-width="10"/>
+  <!-- rocket flame -->
+  <path d="M180 340 Q140 360 160 390 Q180 370 185 350 Z" fill="#ff8030"/>
+  <path d="M185 345 Q160 360 170 380 Q185 365 188 350 Z" fill="#ffe080"/>
+  <!-- acorn -->
+  <ellipse cx="340" cy="320" rx="28" ry="35" fill="#c47a28"/>
+  <ellipse cx="340" cy="290" rx="32" ry="18" fill="#5a3a18"/>
+  <rect x="308" y="285" width="64" height="12" fill="#5a3a18"/>
+  <ellipse cx="330" cy="315" rx="6" ry="10" fill="rgba(255,255,255,0.35)"/>
+</svg>
