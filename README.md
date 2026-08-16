@@ -1,12 +1,11 @@
 # Acornaut
-
-Flappy-style squirrel-in-space-helmet game. Pure HTML5 canvas, fully self-contained.
+squirrel in space game. Pure HTML5 canvas, fully self-contained.
 
 **Play (htmlpreview):**  
 https://htmlpreview.github.io/?https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/index.html
 
 ## Features
-- Squirrel with rocket-butt flap, space helmets, and body suit variants
+- Squirrel with its rockets , space helmets, and body suit variants
 - Planets as obstacles (main pair + 0–2 small blockers **outside** the gap only)
 - Acorn collection for unlocks; rare power-up acorns (6s slow-mo)
 - Persistent high score + acorn bank (localStorage)
