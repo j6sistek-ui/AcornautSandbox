@@ -1,4 +1,4 @@
-const CACHE = 'acornaut-v1.0.0';
+const CACHE = 'acornaut-v1.0.1';
 const ASSETS = [
   './',
   './index.html',
@@ -26,6 +26,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  // Never intercept the beta test build — it must always come from the network
+  if (new URL(req.url).pathname.includes('/beta/')) return;
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
@@ -35,7 +37,10 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((cache) => cache.put(req, copy));
         }
         return res;
-      }).catch(() => caches.match('./index.html'));
+      }).catch(() => {
+        // Offline fallback only makes sense for page navigations
+        if (req.mode === 'navigate') return caches.match('./index.html');
+      });
     })
   );
 });
