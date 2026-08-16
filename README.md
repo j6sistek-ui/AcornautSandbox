@@ -1,6 +1,6 @@
 # Acornaut v1.0
 
-Space squirrel Flappy Bird — fly through planets, collect acorns, unlock helmets & suits.
+Space squirrel  — fly through planets, collect acorns, unlock helmets & suits.
 
 ## Play
 
