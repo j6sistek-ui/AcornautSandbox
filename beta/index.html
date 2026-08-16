@@ -41,14 +41,16 @@
 <script>
 (() => {
   const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d');
+  let ctx = canvas.getContext('2d'); // reassigned briefly when caching shop sprites
 
   // —— persistence ——
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   const BETA_ACORNS = 10000;
-  const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal'];
-  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit'];
+  const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
+  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
+  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
+  const PAL_IDS = ['none','bee','buddy','ufo'];
   const defaultSave = () => ({
     highScore: 0,
     acorns: BETA_ACORNS,
@@ -57,6 +59,10 @@
     equipped: 'clear',
     unlockedSuits: ['flight'],
     equippedSuit: 'flight',
+    unlockedTrails: ['sparks'],
+    equippedTrail: 'sparks',
+    unlockedPals: ['none'],
+    equippedPal: 'none',
   });
   function loadSave() {
     try {
@@ -69,6 +75,12 @@
       if (!Array.isArray(s.unlockedSuits) || !s.unlockedSuits.length) s.unlockedSuits = ['flight'];
       if (!s.unlockedSuits.includes('flight')) s.unlockedSuits.unshift('flight');
       if (!SUIT_IDS.includes(s.equippedSuit)) s.equippedSuit = 'flight';
+      if (!Array.isArray(s.unlockedTrails) || !s.unlockedTrails.length) s.unlockedTrails = ['sparks'];
+      if (!s.unlockedTrails.includes('sparks')) s.unlockedTrails.unshift('sparks');
+      if (!TRAIL_IDS.includes(s.equippedTrail) || !s.unlockedTrails.includes(s.equippedTrail)) s.equippedTrail = 'sparks';
+      if (!Array.isArray(s.unlockedPals) || !s.unlockedPals.length) s.unlockedPals = ['none'];
+      if (!s.unlockedPals.includes('none')) s.unlockedPals.unshift('none');
+      if (!PAL_IDS.includes(s.equippedPal) || !s.unlockedPals.includes(s.equippedPal)) s.equippedPal = 'none';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
       // BETA ONLY: keep the balance topped up so every helmet and suit
@@ -93,6 +105,9 @@
     { id: 'comet',  name: 'Comet',  cost: 120, visor: '#ff8a4a', tint: 0.20, rim: '#ff6a28', trim: '#8a2f0c', glow: '#ff7a30' },
     { id: 'cherry', name: 'Cherry', cost: 150, visor: '#ff9ec4', tint: 0.20, rim: '#ff8ab0', trim: '#a83a68', glow: '#ff7ab0' },
     { id: 'royal',  name: 'Royal',  cost: 200, visor: '#7fe0cf', tint: 0.18, rim: '#d4af37', trim: '#8a6a12', glow: '#ffd76a' },
+    { id: 'aurora', name: 'Aurora', cost: 300, visor: '#4de8b8', tint: 0.18, rim: '#57e6c2', trim: '#1c7a5e', glow: '#5dffd0' },
+    { id: 'meteor', name: 'Meteor', cost: 400, visor: '#c98a4e', tint: 0.2,  rim: '#b5713a', trim: '#6e3f18', glow: '#ff9d47' },
+    { id: 'chrono', name: 'Chrono', cost: 500, visor: '#e8d9a8', tint: 0.16, rim: '#c9a94f', trim: '#7a6428', glow: '#ffe27a' },
   ];
 
   // —— body / suit variants (separate from helmets) ——
@@ -117,6 +132,39 @@
       fur: '#544a63', furDark: '#312a3d', belly: '#8d7fa0',
       suit: '#241d33', suitLite: '#4f4270', suitDark: '#100c18',
       trim: '#d4af37', glow: '#b45cff', dust: '#e7b6ff' },
+    { id: 'aurorasuit', name: 'Aurora', cost: 250,
+      fur: '#cf8a3c', furDark: '#9c5f1d', belly: '#f4ddb4',
+      suit: '#0f5c4c', suitLite: '#2fae8f', suitDark: '#073a2f',
+      trim: '#5dffd0', glow: '#5dffd0', dust: '#a8ffe8' },
+    { id: 'ember', name: 'Ember', cost: 325,
+      fur: '#b5722f', furDark: '#7c481a', belly: '#eccb96',
+      suit: '#3a2a26', suitLite: '#7a4a3a', suitDark: '#1e1412',
+      trim: '#ff7a2e', glow: '#ff5a1e', dust: '#ffb066' },
+    { id: 'stardust', name: 'Stardust', cost: 400,
+      fur: '#c8873f', furDark: '#94601f', belly: '#f2dcb2',
+      suit: '#1a2560', suitLite: '#3d4fa8', suitDark: '#0c1233',
+      trim: '#ffd76a', glow: '#8fb8ff', dust: '#fff3b8' },
+  ];
+
+  // —— tap-boost trails (adapted from the asset catalog) ——
+  const TRAILS = [
+    { id: 'sparks', name: 'Rocket Sparks', cost: 0 },
+    { id: 'ion',    name: 'Ion Stream',    cost: 60 },
+    { id: 'bubble', name: 'Bubble Jets',   cost: 90 },
+    { id: 'bloom',  name: 'Nebula Bloom',  cost: 120 },
+    { id: 'comet',  name: 'Comet Booster', cost: 200 },
+  ];
+
+  // —— companions ——
+  const PALS = [
+    { id: 'none',  name: 'None',        cost: 0,
+      desc: 'Fly solo.' },
+    { id: 'bee',   name: 'Astro Bee',   cost: 80,
+      desc: 'A cheerful cosmetic escort.' },
+    { id: 'buddy', name: 'Acorn Buddy', cost: 150,
+      desc: 'Grabs nearby acorns for you.' },
+    { id: 'ufo',   name: 'Mini UFO',    cost: 250,
+      desc: 'A tiny cosmetic saucer wingman.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -149,6 +197,7 @@
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
   let warpMirror = true;     // whether this warp reverses the scroll
   let recoveryMsg = '';      // banner shown during freeze/slow recovery
+  let pal = { x: 0, y: 0, dart: 0 };   // companion position (smoothed)
   let hasShield = false;     // carrying a shield this run
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
   let shieldSlow = 0;        // slow-motion recovery window after the freeze
@@ -208,6 +257,7 @@
     warpMirror = true;
     recoveryMsg = '';
     hasShield = !!save.startShield; // purchased modifier arms the run
+    pal = { x: W * SQUIRREL_X - 42, y: H * 0.45 - 20, dart: 0 };
     shieldFreeze = 0;
     shieldSlow = 0;
     particles = [];
@@ -348,19 +398,73 @@
     if (mode !== 'play') return;
     squirrel.vy = FLAP;
     flapBoost = 0.22;
-    // rocket particles from butt
+    // tap-boost trail, shaped by the equipped trail cosmetic
     const sx = W * SQUIRREL_X - 10;
     const sy = squirrel.y + 6;
-    for (let i = 0; i < 10; i++) {
-      particles.push({
-        x: sx, y: sy,
-        vx: -80 - Math.random() * 120,
-        vy: (Math.random() - 0.5) * 90,
-        life: 0.25 + Math.random() * 0.2,
-        max: 0.45,
-        r: 2 + Math.random() * 3,
-        kind: 'flame',
-      });
+    spawnTrail(sx, sy, save.equippedTrail);
+  }
+
+  function spawnTrail(sx, sy, trail) {
+    if (trail === 'ion') {
+      for (let i = 0; i < 8; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 6,
+          vx: -150 - Math.random() * 160,
+          vy: (Math.random() - 0.5) * 30,
+          life: 0.22 + Math.random() * 0.15,
+          max: 0.37,
+          r: 1.4 + Math.random() * 1.6,
+          kind: 'ion',
+        });
+      }
+    } else if (trail === 'bubble') {
+      for (let i = 0; i < 7; i++) {
+        particles.push({
+          x: sx, y: sy,
+          vx: -50 - Math.random() * 70,
+          vy: -20 - Math.random() * 50,
+          life: 0.5 + Math.random() * 0.35,
+          max: 0.85,
+          r: 2 + Math.random() * 3.5,
+          kind: 'bubble',
+        });
+      }
+    } else if (trail === 'bloom') {
+      for (let i = 0; i < 6; i++) {
+        particles.push({
+          x: sx, y: sy,
+          vx: -55 - Math.random() * 70,
+          vy: (Math.random() - 0.5) * 70,
+          life: 0.4 + Math.random() * 0.3,
+          max: 0.7,
+          r: 1.5 + Math.random() * 2,
+          kind: 'bloom',
+        });
+      }
+    } else if (trail === 'comet') {
+      for (let i = 0; i < 9; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 5,
+          vx: -90 - Math.random() * 140,
+          vy: (Math.random() - 0.5) * 40,
+          life: 0.35 + Math.random() * 0.3,
+          max: 0.65,
+          r: 1.8 + Math.random() * 2.6,
+          kind: 'comet',
+        });
+      }
+    } else {
+      for (let i = 0; i < 10; i++) {
+        particles.push({
+          x: sx, y: sy,
+          vx: -80 - Math.random() * 120,
+          vy: (Math.random() - 0.5) * 90,
+          life: 0.25 + Math.random() * 0.2,
+          max: 0.45,
+          r: 2 + Math.random() * 3,
+          kind: 'flame',
+        });
+      }
     }
   }
 
@@ -390,32 +494,19 @@
       for (const t of shopTabRects()) {
         if (hit(x, y, t)) { shopTab = t.id; return; }
       }
-      if (shopTab === 'helmets' || shopTab === 'suits') {
-        const list = shopTab === 'helmets' ? HELMETS : SUITS;
-        list.forEach((item, i) => {
+      const roster = shopRoster();
+      if (roster) {
+        roster.list.forEach((item, i) => {
           const c = shopCellRect(i);
           if (Math.hypot(x - c.x, y - c.y) < 46) {
-            if (shopTab === 'helmets') {
-              if (save.unlocked.includes(item.id)) {
-                save.equipped = item.id;
-                writeSave(save);
-              } else if (save.acorns >= item.cost) {
-                save.acorns -= item.cost;
-                save.unlocked.push(item.id);
-                save.equipped = item.id;
-                writeSave(save);
-              }
-            } else {
-              const owned = save.unlockedSuits.includes(item.id);
-              if (owned) {
-                save.equippedSuit = item.id;
-                writeSave(save);
-              } else if (save.acorns >= item.cost) {
-                save.acorns -= item.cost;
-                save.unlockedSuits.push(item.id);
-                save.equippedSuit = item.id;
-                writeSave(save);
-              }
+            if (save[roster.own].includes(item.id)) {
+              save[roster.eq] = item.id;
+              writeSave(save);
+            } else if (save.acorns >= item.cost) {
+              save.acorns -= item.cost;
+              save[roster.own].push(item.id);
+              save[roster.eq] = item.id;
+              writeSave(save);
             }
           }
         });
@@ -594,11 +685,32 @@
         }
       }
 
-      // acorn collect
+      // companion drifts along beside the squirrel
+      if (save.equippedPal !== 'none') {
+        const tx = sx - 42;
+        const ty = sy - 22 + Math.sin(performance.now() / 1000 * 2.6) * 7;
+        const k = Math.min(1, dt * (pal.dart > 0 ? 14 : 5));
+        pal.x += (tx - pal.x) * k;
+        pal.y += (ty - pal.y) * k;
+        if (pal.dart > 0) pal.dart = Math.max(0, pal.dart - dt);
+      }
+
+      // acorn collect — the Acorn Buddy stretches the grab radius and darts
+      // out to fetch anything inside it
+      const grabR = save.equippedPal === 'buddy' ? 75 : 28;
       for (const a of acorns) {
-        if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 28) {
+        if (a.got) continue;
+        const d = Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4));
+        if (d < 28) {
           a.got = true;
           runAcorns += 1;
+          spark(a.x, a.y, 'gold');
+        } else if (d < grabR) {
+          a.got = true;
+          runAcorns += 1;
+          pal.x = a.x;
+          pal.y = a.y;
+          pal.dart = 0.35;
           spark(a.x, a.y, 'gold');
         }
       }
@@ -855,6 +967,9 @@
     }
     for (const p of particles) drawParticle(p);
     drawSquirrel(W * SQUIRREL_X, squirrel.y, squirrel.rot);
+    if (save.equippedPal !== 'none') {
+      drawPal(save.equippedPal, pal.x, pal.y, 1, performance.now() / 1000);
+    }
   }
 
 
@@ -1458,6 +1573,118 @@
     ctx.restore();
   }
 
+  function drawPal(id, x, y, s, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(s, s);
+    if (id === 'buddy') {
+      // small acorn person with a sparkle jet
+      ctx.fillStyle = 'rgba(255,220,120,0.5)';
+      ctx.beginPath();
+      ctx.arc(-8, 3 + Math.sin(t * 9) * 1.2, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+      const nut = ctx.createRadialGradient(-2, 0, 1, 0, 2, 8);
+      nut.addColorStop(0, '#e8b060');
+      nut.addColorStop(1, '#7a4515');
+      ctx.fillStyle = nut;
+      ctx.beginPath();
+      ctx.ellipse(0, 2, 6, 7.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      const cap = ctx.createRadialGradient(0, -4, 1, 0, -3, 8);
+      cap.addColorStop(0, '#8a5a28');
+      cap.addColorStop(1, '#3a2010');
+      ctx.fillStyle = cap;
+      ctx.beginPath();
+      ctx.ellipse(0, -3.4, 7.4, 4.8, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-7.4, -4, 14.8, 2.4);
+      ctx.strokeStyle = '#5a3a18';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, -6); ctx.lineTo(0, -8.4);
+      ctx.stroke();
+      // face
+      ctx.fillStyle = '#241207';
+      ctx.beginPath(); ctx.arc(-1.8, 1, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.4, 1, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#241207';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(0.3, 3.2, 1.7, 0.25, Math.PI - 0.25);
+      ctx.stroke();
+      // cheeks
+      ctx.fillStyle = 'rgba(255,140,110,0.4)';
+      ctx.beginPath(); ctx.arc(-3.6, 2.7, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(4.2, 2.7, 1, 0, Math.PI * 2); ctx.fill();
+    } else if (id === 'bee') {
+      // wings behind the body, flapping fast
+      const w = Math.sin(t * 26) * 0.6;
+      ctx.fillStyle = 'rgba(220,240,255,0.7)';
+      ctx.save();
+      ctx.rotate(-0.5 + w);
+      ctx.beginPath(); ctx.ellipse(-1, -6.5, 2.6, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.rotate(0.25 - w);
+      ctx.beginPath(); ctx.ellipse(2, -6, 2.2, 4.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      const bg = ctx.createRadialGradient(-2, -2, 1, 0, 0, 8);
+      bg.addColorStop(0, '#ffd95c');
+      bg.addColorStop(1, '#c88a10');
+      ctx.fillStyle = bg;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 7, 5.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#3a2808';
+      for (let i = -1; i <= 1; i++) {
+        ctx.beginPath();
+        ctx.ellipse(i * 2.6, 0, 1.1, 5.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // helmet dome (it IS an astro bee)
+      ctx.strokeStyle = 'rgba(200,230,255,0.8)';
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.arc(4.2, -1.6, 3.6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#241207';
+      ctx.beginPath(); ctx.arc(4.6, -1.8, 0.9, 0, Math.PI * 2); ctx.fill();
+      // stinger
+      ctx.fillStyle = '#3a2808';
+      ctx.beginPath();
+      ctx.moveTo(-6.8, 0); ctx.lineTo(-9.4, 0.8); ctx.lineTo(-6.6, 1.8);
+      ctx.closePath();
+      ctx.fill();
+    } else if (id === 'ufo') {
+      const hull = ctx.createRadialGradient(0, -2, 1, 0, 0, 9);
+      hull.addColorStop(0, '#eef4fa');
+      hull.addColorStop(0.5, '#93a3ba');
+      hull.addColorStop(1, '#39435a');
+      ctx.fillStyle = hull;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 9, 3.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      const dome = ctx.createRadialGradient(-1, -3.5, 0.5, 0, -2, 4.5);
+      dome.addColorStop(0, 'rgba(190,245,255,0.9)');
+      dome.addColorStop(1, 'rgba(40,120,190,0.5)');
+      ctx.fillStyle = dome;
+      ctx.beginPath();
+      ctx.ellipse(0, -1.6, 4.2, 3.4, 0, Math.PI, 0);
+      ctx.fill();
+      // pilot dot
+      ctx.fillStyle = '#2a4a2a';
+      ctx.beginPath(); ctx.arc(0.4, -2.6, 1.2, 0, Math.PI * 2); ctx.fill();
+      for (let i = 0; i < 4; i++) {
+        const on = Math.floor(t * 5 + i) % 4 === 0;
+        ctx.fillStyle = on ? '#40f0ff' : 'rgba(255,208,64,0.5)';
+        ctx.beginPath();
+        ctx.arc(-6 + i * 4, 1.6, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
   function drawVortex(p) {
     // swirling black hole overlay during the transition second
     const cx = W / 2, cy = H / 2;
@@ -1504,6 +1731,46 @@
       ctx.fillStyle = '#5dff9e';
     } else if (p.kind === 'warp') {
       ctx.fillStyle = '#b45cff';
+    } else if (p.kind === 'ion') {
+      // stretched plasma streak
+      ctx.strokeStyle = t > 0.5 ? '#c8f4ff' : '#3ac0f0';
+      ctx.lineWidth = Math.max(0.8, p.r * t);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 9, p.y);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'bubble') {
+      // hollow bubble that pops near the end of its life
+      ctx.strokeStyle = 'rgba(170,220,255,0.9)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      const br = t > 0.25 ? p.r : p.r * (1 + (0.25 - t) * 6);
+      ctx.arc(p.x, p.y, br, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(200,235,255,0.25)';
+      ctx.beginPath();
+      ctx.arc(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'bloom') {
+      // petal puff that expands as it fades
+      ctx.fillStyle = t > 0.5 ? '#f0b8ff' : '#a45cd8';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * (2 - t), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = Math.max(0, t) * 0.5;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'comet') {
+      ctx.fillStyle = t > 0.5 ? '#fff3c8' : '#ffb830';
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -2105,6 +2372,55 @@
       ctx.beginPath();
       ctx.arc(c.x, c.y, 6.5, 0, Math.PI * 2);
       ctx.stroke();
+    } else if (helm.id === 'aurora') {
+      // northern-lights curtains reflected in the glass
+      ctx.globalCompositeOperation = 'lighter';
+      for (let k = 0; k < 3; k++) {
+        ctx.strokeStyle = 'rgba(' + (60 + k * 30) + ',' + (200 - k * 25) + ',170,0.4)';
+        ctx.lineWidth = 3.2 - k * 0.8;
+        ctx.beginPath();
+        for (let i = 0; i <= 12; i++) {
+          const px = c.x - 12 + i * 2;
+          const py = c.y - 9 + k * 3.4 + Math.sin(i * 0.8 + t * 1.6 + k * 1.4) * 2.6;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+    } else if (helm.id === 'meteor') {
+      // shooting-star streaks
+      ctx.strokeStyle = 'rgba(255,200,130,0.5)';
+      ctx.lineWidth = 1.2;
+      for (let k = 0; k < 3; k++) {
+        const f = ((t * 0.8 + k * 0.37) % 1);
+        const px = c.x + 11 - f * 22;
+        const py = c.y - 11 + f * 15 + k * 2.5;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(px + 5.5, py - 4);
+        ctx.stroke();
+      }
+    } else if (helm.id === 'chrono') {
+      // ticking clock face
+      ctx.strokeStyle = 'rgba(255,232,160,0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y - 1, 8.5, 0, Math.PI * 2);
+      ctx.stroke();
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(c.x + Math.cos(a) * 7.2, c.y - 1 + Math.sin(a) * 7.2);
+        ctx.lineTo(c.x + Math.cos(a) * 8.5, c.y - 1 + Math.sin(a) * 8.5);
+        ctx.stroke();
+      }
+      const mins = Math.floor(t) % 60;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(c.x, c.y - 1);
+      ctx.lineTo(c.x + Math.cos(t * 0.6) * 6.5, c.y - 1 + Math.sin(t * 0.6) * 6.5);
+      ctx.moveTo(c.x, c.y - 1);
+      ctx.lineTo(c.x + Math.cos(mins * 0.5) * 4.2, c.y - 1 + Math.sin(mins * 0.5) * 4.2);
+      ctx.stroke();
     }
   }
 
@@ -2275,6 +2591,73 @@
         ctx.moveTo(sx, sy - 2.4 * k); ctx.lineTo(sx, sy + 2.4 * k);
         ctx.stroke();
       }
+
+    } else if (id === 'aurora') {
+      // flowing light ribbon above the dome
+      ctx.lineCap = 'round';
+      for (let k = 0; k < 2; k++) {
+        ctx.strokeStyle = withAlpha(k ? '#5dffd0' : '#8fffb8', 0.75 - k * 0.25);
+        ctx.lineWidth = 2.4 - k;
+        ctx.beginPath();
+        for (let i = 0; i <= 14; i++) {
+          const px = c.x - 14 + i * 2;
+          const py = c.y - c.r - 5 - k * 3 + Math.sin(i * 0.55 + t * 2.2 + k) * 3.2;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+
+    } else if (id === 'meteor') {
+      // bronze rivets on the rim + two tiny orbiting rocks
+      ctx.fillStyle = '#7a4a20';
+      for (let i = 0; i < 4; i++) {
+        const a = -2.2 + i * 0.55;
+        ctx.beginPath();
+        ctx.arc(c.x + Math.cos(a) * c.r, c.y + Math.sin(a) * c.r, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      for (let i = 0; i < 2; i++) {
+        const a = t * (i ? 1.1 : -0.8) + i * 2.6 + seed;
+        const mx = c.x + Math.cos(a) * (c.r + 6);
+        const my = c.y + Math.sin(a) * (c.r + 6) * 0.5;
+        const rg = ctx.createRadialGradient(mx - 1, my - 1, 0.4, mx, my, 3);
+        rg.addColorStop(0, '#c8a078');
+        rg.addColorStop(1, '#5a3a1c');
+        ctx.fillStyle = rg;
+        ctx.beginPath();
+        ctx.moveTo(mx + 2.6, my);
+        ctx.lineTo(mx + 0.8, my - 2.4);
+        ctx.lineTo(mx - 2.2, my - 1.2);
+        ctx.lineTo(mx - 2.4, my + 1.6);
+        ctx.lineTo(mx + 0.6, my + 2.5);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+    } else if (id === 'chrono') {
+      // brass gear crest, slowly turning
+      const a0 = t * 0.9;
+      const gx = c.x, gy = c.y - c.r - 6;
+      ctx.fillStyle = '#c9a94f';
+      for (let i = 0; i < 8; i++) {
+        const a = a0 + (i / 8) * Math.PI * 2;
+        ctx.save();
+        ctx.translate(gx + Math.cos(a) * 5.5, gy + Math.sin(a) * 5.5);
+        ctx.rotate(a);
+        ctx.fillRect(-1.4, -1.6, 2.8, 3.2);
+        ctx.restore();
+      }
+      const gg = ctx.createRadialGradient(gx - 1.5, gy - 1.5, 1, gx, gy, 6);
+      gg.addColorStop(0, '#ffe9a8');
+      gg.addColorStop(1, '#8a6a24');
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.arc(gx, gy, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#3a2c10';
+      ctx.beginPath();
+      ctx.arc(gx, gy, 2, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
@@ -2681,22 +3064,28 @@
       ctx.fillText(t.label, t.x, t.y + 4);
     }
 
-    if (shopTab === 'helmets') drawRoster(HELMETS, true);
-    else if (shopTab === 'suits') drawRoster(SUITS, false);
-    else if (shopTab === 'mods') drawModsTab();
-    else if (shopTab === 'trails') drawTrailsTab();
-    else drawPalsTab();
+    if (shopTab === 'mods') drawModsTab();
+    else drawRoster(shopRoster());
   }
 
-  function drawRoster(list, isHelmets) {
+  // Which purchasable roster the current tab shows, and which save fields
+  // hold its ownership + equipped state. Used by drawing AND tap handling.
+  function shopRoster() {
+    if (shopTab === 'helmets') return { list: HELMETS, own: 'unlocked', eq: 'equipped', kind: 'helmet' };
+    if (shopTab === 'suits') return { list: SUITS, own: 'unlockedSuits', eq: 'equippedSuit', kind: 'suit' };
+    if (shopTab === 'trails') return { list: TRAILS, own: 'unlockedTrails', eq: 'equippedTrail', kind: 'trail' };
+    if (shopTab === 'pals') return { list: PALS, own: 'unlockedPals', eq: 'equippedPal', kind: 'pal' };
+    return null;
+  }
+
+  function drawRoster(roster) {
     const helm = equippedHelmet();
     const suit = equippedSuit();
-    list.forEach((item, i) => {
+    const t = performance.now() / 1000;
+    roster.list.forEach((item, i) => {
       const c = shopCellRect(i);
-      const unlocked = isHelmets ? save.unlocked.includes(item.id)
-                                 : save.unlockedSuits.includes(item.id);
-      const eq = isHelmets ? save.equipped === item.id
-                           : save.equippedSuit === item.id;
+      const unlocked = save[roster.own].includes(item.id);
+      const eq = save[roster.eq] === item.id;
 
       ctx.fillStyle = eq ? 'rgba(58,156,255,0.25)' : 'rgba(255,255,255,0.06)';
       roundRect(c.x - 50, c.y - 48, 100, 100, 14);
@@ -2708,8 +3097,19 @@
         ctx.stroke();
       }
 
-      if (isHelmets) drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, item, suit, { seed: i * 1.7 });
-      else drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, helm, item, { seed: i * 2.3 });
+      // Grid cells render from a cached sprite (12 live characters per frame
+      // is too many gradients for low-end phones); the equipped one stays
+      // live so its glow and ornaments keep animating.
+      if (roster.kind === 'helmet' || roster.kind === 'suit') {
+        if (eq) {
+          if (roster.kind === 'helmet') drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, item, suit, { seed: i * 1.7 });
+          else drawAstronaut(c.x + 4.5, c.y - 4, 0, 0.82, helm, item, { seed: i * 2.3 });
+        } else {
+          ctx.drawImage(rosterSprite(roster.kind, item, i), c.x - 56, c.y - 60, 112, 112);
+        }
+      }
+      else if (roster.kind === 'trail') drawTrailPreview(item.id, c.x, c.y - 8, t);
+      else drawPalPreview(item.id, c.x, c.y - 8, t);
 
       ctx.textAlign = 'center';
       ctx.font = '600 11px system-ui';
@@ -2726,6 +3126,121 @@
         ctx.fillText('EQUIPPED', c.x, c.y + 50);
       }
     });
+
+    // one-line description under the pals grid
+    if (roster.kind === 'pal') {
+      const sel = PALS.find(p => p.id === save.equippedPal) || PALS[0];
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '600 12px system-ui';
+      const rows = Math.ceil(roster.list.length / 3);
+      ctx.fillText(sel.name.toUpperCase() + ' — ' + sel.desc,
+                   W / 2, SHOP_GRID_Y + rows * 118 + 14);
+    }
+  }
+
+  let spriteCache = {};
+  function rosterSprite(kind, item, i) {
+    const key = [kind, item.id, save.equipped, save.equippedSuit, dpr].join(':');
+    let cv = spriteCache[key];
+    if (!cv) {
+      if (Object.keys(spriteCache).length > 80) spriteCache = {};
+      cv = document.createElement('canvas');
+      cv.width = cv.height = Math.ceil(112 * dpr);
+      const main = ctx;
+      ctx = cv.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 51.5 * dpr, 56 * dpr);
+      if (kind === 'helmet') drawAstronaut(4.5, -4, 0, 0.82, item, equippedSuit(), { seed: i * 1.7 });
+      else drawAstronaut(4.5, -4, 0, 0.82, equippedHelmet(), item, { seed: i * 2.3 });
+      ctx = main;
+      spriteCache[key] = cv;
+    }
+    return cv;
+  }
+
+  function drawTrailPreview(id, cx, cy, t) {
+    // a stylised burst frozen mid-flap
+    const ph = (t * 2) % 1;
+    ctx.save();
+    ctx.translate(cx + 16, cy);
+    if (id === 'sparks') {
+      const g = ctx.createLinearGradient(0, 0, -34, 0);
+      g.addColorStop(0, 'rgba(255,224,128,0.95)');
+      g.addColorStop(0.5, 'rgba(255,128,48,0.8)');
+      g.addColorStop(1, 'rgba(255,64,32,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(0, -6);
+      ctx.quadraticCurveTo(-36, 0, 0, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffe080';
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(-8 - ((ph * 26 + i * 9) % 28), (i % 2 ? -1 : 1) * (4 - i), 2.2 - i * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (id === 'ion') {
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 4; i++) {
+        const off = (ph * 30 + i * 8) % 32;
+        ctx.strokeStyle = i % 2 ? '#c8f4ff' : '#3ac0f0';
+        ctx.lineWidth = 2 - i * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, -4 + i * 2.6);
+        ctx.lineTo(-12 - off, -4 + i * 2.6);
+        ctx.stroke();
+      }
+    } else if (id === 'bubble') {
+      ctx.strokeStyle = 'rgba(170,220,255,0.9)';
+      for (let i = 0; i < 4; i++) {
+        const off = (ph * 26 + i * 8) % 30;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(-4 - off, (i % 2 ? -1 : 1) * (5 - i), 2 + i, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else if (id === 'bloom') {
+      for (let i = 0; i < 4; i++) {
+        const off = (ph * 24 + i * 8) % 30;
+        ctx.fillStyle = i % 2 ? '#f0b8ff' : '#a45cd8';
+        ctx.beginPath();
+        ctx.arc(-4 - off, (i % 2 ? -1 : 1) * (4 - i * 0.5), 2 + i * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (id === 'comet') {
+      const g = ctx.createLinearGradient(0, 0, -36, 0);
+      g.addColorStop(0, 'rgba(255,243,200,0.95)');
+      g.addColorStop(0.5, 'rgba(255,184,48,0.7)');
+      g.addColorStop(1, 'rgba(255,140,20,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(2, -4.5);
+      ctx.quadraticCurveTo(-38, 0, 2, 4.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#fff3c8';
+      ctx.beginPath();
+      ctx.arc(1, 0, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawPalPreview(id, cx, cy, t) {
+    if (id === 'none') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx - 10, cy + 10);
+      ctx.lineTo(cx + 10, cy - 10);
+      ctx.stroke();
+    } else {
+      drawPal(id, cx, cy + Math.sin(t * 2.4) * 3, 1.9, t);
+    }
   }
 
   function drawModsTab() {
@@ -2775,64 +3290,6 @@
     ctx.fillText('More modifiers coming soon', W / 2, cardY + 160);
   }
 
-  function drawTrailsTab() {
-    const cardY = SHOP_GRID_Y;
-    ctx.fillStyle = 'rgba(58,156,255,0.12)';
-    roundRect(24, cardY, W - 48, 104, 14);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(58,156,255,0.5)';
-    ctx.lineWidth = 1.5;
-    roundRect(24, cardY, W - 48, 104, 14);
-    ctx.stroke();
-
-    // little preview of the default flame trail
-    ctx.save();
-    ctx.translate(64, cardY + 52);
-    const g = ctx.createLinearGradient(18, 0, -26, 0);
-    g.addColorStop(0, 'rgba(255,224,128,0.95)');
-    g.addColorStop(0.4, 'rgba(255,128,48,0.85)');
-    g.addColorStop(1, 'rgba(255,64,32,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.moveTo(18, -7);
-    ctx.quadraticCurveTo(-26, 0, 18, 7);
-    ctx.quadraticCurveTo(8, 0, 18, -7);
-    ctx.fill();
-    ctx.fillStyle = '#ffe080';
-    for (let i = 0; i < 3; i++) {
-      ctx.beginPath();
-      ctx.arc(-4 - i * 9, (i % 2 ? -1 : 1) * (3 - i), 2.4 - i * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px system-ui';
-    ctx.fillText('ROCKET SPARKS', 106, cardY + 42);
-    ctx.fillStyle = '#3a9cff';
-    ctx.font = 'bold 13px system-ui';
-    ctx.fillText('EQUIPPED', 106, cardY + 64);
-    ctx.fillStyle = 'rgba(255,255,255,0.65)';
-    ctx.font = '600 12px system-ui';
-    ctx.fillText('The classic tap-boost trail.', 106, cardY + 84);
-
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '600 12px system-ui';
-    ctx.fillText('More trails coming soon', W / 2, cardY + 140);
-  }
-
-  function drawPalsTab() {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = 'bold 18px system-ui';
-    ctx.fillText('COMPANIONS', W / 2, SHOP_GRID_Y + 60);
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '600 13px system-ui';
-    ctx.fillText('Coming soon', W / 2, SHOP_GRID_Y + 84);
-  }
-
   window.addEventListener('resize', resize);
   resize();
   initStars();
@@ -2864,6 +3321,10 @@
     get warpTilt() { return warpTilt; },
     get warpMirror() { return warpMirror; },
     get recoveryMsg() { return recoveryMsg; },
+    get particles() { return particles; },
+    get runAcorns() { return runAcorns; },
+    get pal() { return pal; },
+    get acorns() { return acorns; },
     resetRun,
     flap,
   };
