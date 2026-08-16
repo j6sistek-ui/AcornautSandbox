@@ -1,25 +1,32 @@
-# Acornaut
-squirrel in space game. Pure HTML5 canvas, fully self-contained.
+# Acornaut v1.0
 
-**Play (htmlpreview):**  
-https://htmlpreview.github.io/?https://raw.githubusercontent.com/j6sistek-ui/acornaut/main/index.html
+Space squirrel Flappy Bird — fly through planets, collect acorns, unlock helmets & suits.
 
-## Features
-- Squirrel with its rockets , space helmets, and body suit variants
-- Planets as obstacles (main pair + 0–2 small blockers **outside** the gap only)
-- Acorn collection for unlocks; rare power-up acorns (6s slow-mo)
-- Persistent high score + acorn bank (localStorage)
-- Hangar (helmets) + separate Suits page
-- DEV mode with live physics sliders + collision bypass
-- App icon (`icon.svg`)
+## Play
 
-## Helmets (Hangar)
-Clear (free), Ion, Solar, Nebula, Lunar, Void, Comet, Cherry, Royal
+**Web:** https://j6sistek-ui.github.io/acornaut/
 
-## Suits (separate page)
-Flight (free), Ion, Copper, Frost, Void
+## Install on iPhone (Add to Home Screen)
 
-## Defaults
-Tap lift −450 · Gravity 1300 · X-pos 0.18
+1. Open the link above in **Safari** (not Chrome)
+2. Tap the **Share** button
+3. Tap **Add to Home Screen**
+4. Confirm — Acornaut appears on your home screen with the app icon
+5. Opens full-screen, works **offline** after first visit
 
-Hard-refresh the preview after updates if you still see old planet stacks or circle-only hangar icons.
+## Files
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Full game + PWA hooks |
+| `manifest.webmanifest` | App name, icons, standalone display |
+| `sw.js` | Offline cache (v1.0.0) |
+| `icon.svg` | Source icon |
+| `apple-touch-icon.png` | iOS home screen icon (180) |
+| `icon-192.png` / `icon-512.png` | PWA icons |
+
+## Enable GitHub Pages
+
+Repo → **Settings → Pages → Source: Deploy from branch → main / root → Save**
+
+Then the site is at `https://j6sistek-ui.github.io/acornaut/`

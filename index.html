@@ -4,6 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Acornaut</title>
+<meta name="description" content="Acornaut — space squirrel Flappy Bird. Fly through planets, collect acorns, unlock helmets." />
+<meta name="theme-color" content="#05070f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Acornaut" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -187,11 +199,11 @@
   function makeObstacle(y, xOff) {
     const type = OB_TYPES[Math.floor(Math.random() * OB_TYPES.length)];
     // Larger hit/visual size so the flight lane is actually blocked
-    const r = type === 'ufo' ? 22 + Math.random() * 6
-            : type === 'satellite' ? 20 + Math.random() * 6
-            : type === 'crystal' ? 18 + Math.random() * 7
-            : type === 'debris' || type === 'junk' ? 17 + Math.random() * 7
-            : 20 + Math.random() * 9;
+    const r = type === 'ufo' ? 24 + Math.random() * 5
+            : type === 'satellite' ? 22 + Math.random() * 5
+            : type === 'crystal' ? 20 + Math.random() * 5
+            : type === 'debris' || type === 'junk' ? 19 + Math.random() * 5
+            : 22 + Math.random() * 6;
     return {
       y, r, type,
       xOff: xOff,
@@ -211,32 +223,37 @@
     const kindB = Math.floor(Math.random() * 9);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
-    // Seal the vertical corridor ABOVE the top gate and BELOW the bottom gate.
-    // xOff stays small so objects sit in the flight lane (not pushed aside).
+    // Fully seal the corridor ABOVE the top gate and BELOW the bottom gate.
+    // Tight vertical packing in the flight lane so you cannot slip around.
     const blockers = [];
-    const topEdge = topY - PLANET_R;   // top of top planet
-    const botEdge = botY + PLANET_R;   // bottom of bottom planet
+    const topEdge = topY - PLANET_R;
+    const botEdge = botY + PLANET_R;
+    // Step small enough that obstacle radii overlap the flight path
+    const step = 30;
 
-    // Stack obstacles from just above the top planet up toward the screen top
+    // From just above top planet → screen top
     {
-      let y = topEdge - (32 + Math.random() * 10);
+      let y = topEdge - 26;
       let n = 0;
-      while (y > 28 && n < 4) {
-        const xOff = (n % 2 === 0 ? -1 : 1) * (4 + Math.random() * 12);
+      while (y > 20) {
+        // tiny lateral jitter only — stay in the lane
+        const xOff = ((n % 2) * 2 - 1) * (2 + Math.random() * 5);
         blockers.push(makeObstacle(y, xOff));
-        y -= (40 + Math.random() * 18);
+        y -= step;
         n++;
+        if (n > 12) break; // safety
       }
     }
-    // Stack obstacles from just below the bottom planet down toward the screen bottom
+    // From just below bottom planet → screen bottom
     {
-      let y = botEdge + (32 + Math.random() * 10);
+      let y = botEdge + 26;
       let n = 0;
-      while (y < H - 28 && n < 4) {
-        const xOff = (n % 2 === 0 ? 1 : -1) * (4 + Math.random() * 12);
+      while (y < H - 20) {
+        const xOff = ((n % 2) * 2 - 1) * (2 + Math.random() * 5);
         blockers.push(makeObstacle(y, xOff));
-        y += (40 + Math.random() * 18);
+        y += step;
         n++;
+        if (n > 12) break;
       }
     }
     planets.push({
@@ -1758,6 +1775,14 @@
   initStars();
   requestAnimationFrame(frame);
 })();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
