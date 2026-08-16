@@ -25,54 +25,10 @@
     max-width: 480px;
     background: #05070f;
   }
-  #devPanel {
-    display: none;
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    z-index: 20;
-    padding: 10px 14px 16px;
-    background: rgba(8,12,24,0.92);
-    border-top: 1px solid rgba(255,255,255,0.12);
-    font-size: 12px;
-    max-width: 480px;
-    margin: 0 auto;
-    touch-action: manipulation;
-    user-select: none;
-  }
-  #devPanel.show { display: block; }
-  #devPanel label {
-    display: flex; align-items: center; gap: 8px;
-    margin: 6px 0; color: rgba(255,255,255,0.85);
-  }
-  #devPanel label span { width: 72px; flex-shrink: 0; }
-  #devPanel label b { width: 48px; text-align: right; font-variant-numeric: tabular-nums; color: #6ef0ff; }
-  #devPanel input[type=range] { flex: 1; accent-color: #3a9cff; }
-  #devPanel .row { display: flex; gap: 8px; margin-top: 8px; }
-  #devPanel button {
-    flex: 1; padding: 8px; border: 0; border-radius: 10px;
-    background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; font-size: 12px;
-  }
-  #devBadge {
-    display: none;
-    position: fixed; top: 8px; right: 8px; z-index: 15;
-    background: #ff6a28; color: #fff; font-size: 11px; font-weight: 700;
-    padding: 4px 8px; border-radius: 6px;
-  }
-  #devBadge.show { display: block; }
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="c"></canvas></div>
-<div id="devBadge">DEV</div>
-<div id="devPanel">
-  <label><span>Tap</span><input id="slFlap" type="range" min="200" max="1000" step="10" value="450"><b id="vFlap">450</b></label>
-  <label><span>Gravity</span><input id="slGrav" type="range" min="600" max="2500" step="25" value="1300"><b id="vGrav">1300</b></label>
-  <label><span>X pos</span><input id="slX" type="range" min="10" max="50" step="1" value="18"><b id="vX">0.18</b></label>
-  <div class="row">
-    <button id="btnResetPhys" type="button">Reset physics</button>
-    <button id="btnExitDev" type="button">Exit DEV</button>
-  </div>
-</div>
 <script>
 (() => {
   const canvas = document.getElementById('c');
@@ -84,7 +40,7 @@
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit'];
   const defaultSave = () => ({
     highScore: 0,
-    acorns: 10000, // testing bank
+    acorns: 0,
     unlocked: ['clear'], // only Clear free — rest cost acorns
     equipped: 'clear',
     unlockedSuits: ['flight'],
@@ -95,15 +51,14 @@
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return defaultSave();
       const s = { ...defaultSave(), ...JSON.parse(raw) };
-      // Force helmets locked (old saves had everything free). Keep testing acorn bank.
-      s.unlocked = ['clear'];
+      // Ensure defaults; do not wipe purchased unlocks
+      if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
+      if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
       if (!Array.isArray(s.unlockedSuits) || !s.unlockedSuits.length) s.unlockedSuits = ['flight'];
       if (!s.unlockedSuits.includes('flight')) s.unlockedSuits.unshift('flight');
       if (!SUIT_IDS.includes(s.equippedSuit)) s.equippedSuit = 'flight';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
-      // if they had a paid helmet equipped, fall back to clear until they rebuy
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
-      if ((s.acorns || 0) < 10000) s.acorns = 10000;
       return s;
     } catch { return defaultSave(); }
   }
@@ -135,7 +90,7 @@
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
-  // Defaults tuned from DEV session: Tap 450, Gravity 1300, X 0.18
+  // Defaults: Tap 450, Gravity 1300, X 0.18
   let GRAVITY = 1300;
   let FLAP = -450;
   let SQUIRREL_X = 0.18;
@@ -151,7 +106,6 @@
   // —— state ——
   let W = 0, H = 0, dpr = 1;
   let mode = 'title'; // title | hangar | suits | ready | play | dead
-  let devMode = false;
   let score = 0;
   let runAcorns = 0;
   let squirrel = { y: 0, vy: 0, rot: 0 };
@@ -346,11 +300,9 @@
       const flyBtn = { x: W / 2, y: H * 0.58, w: 160, h: 44 };
       const hangBtn = { x: W / 2, y: H * 0.58 + 50, w: 160, h: 38 };
       const suitsBtn = { x: W / 2, y: H * 0.58 + 94, w: 160, h: 38 };
-      const devBtn = { x: W / 2, y: H * 0.58 + 138, w: 160, h: 34 };
       if (hit(x, y, flyBtn)) { resetRun(); mode = 'ready'; return; }
       if (hit(x, y, hangBtn)) { mode = 'hangar'; return; }
       if (hit(x, y, suitsBtn)) { mode = 'suits'; return; }
-      if (hit(x, y, devBtn)) { enterDev(); return; }
       return;
     }
     if (mode === 'hangar' || mode === 'suits') {
@@ -491,10 +443,7 @@
       if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - simDt);
 
       if (sy < -30 || sy > H + 30) {
-        if (devMode) {
-          squirrel.y = Math.max(20, Math.min(H - 20, squirrel.y));
-          squirrel.vy *= -0.4;
-        } else { die(); return; }
+        die(); return;
       }
 
       if (hitCooldown <= 0) {
@@ -564,11 +513,6 @@
   }
 
   function die() {
-    if (devMode) {
-      squirrel.vy = Math.min(squirrel.vy, -220);
-      spark(W * SQUIRREL_X, squirrel.y, 'poof');
-      return;
-    }
     mode = 'dead';
     deadTimer = 0;
     spark(W * SQUIRREL_X, squirrel.y, 'poof');
@@ -1473,7 +1417,6 @@
     drawBtn(W / 2, H * 0.58, 160, 44, 'FLY', '#3a9cff', true);
     drawBtn(W / 2, H * 0.58 + 50, 160, 38, 'HANGAR', 'rgba(255,255,255,0.12)', false);
     drawBtn(W / 2, H * 0.58 + 94, 160, 38, 'SUITS', 'rgba(255,255,255,0.12)', false);
-    drawBtn(W / 2, H * 0.58 + 138, 160, 34, 'DEV FLIGHT', 'rgba(255,106,40,0.35)', false);
   }
 
   function drawBtn(x, y, w, h, label, fill, primary) {
@@ -1705,59 +1648,6 @@
     });
   }
 
-  function syncDevUI() {
-    document.getElementById('slFlap').value = String(Math.round(-FLAP));
-    document.getElementById('vFlap').textContent = String(Math.round(-FLAP));
-    document.getElementById('slGrav').value = String(Math.round(GRAVITY));
-    document.getElementById('vGrav').textContent = String(Math.round(GRAVITY));
-    document.getElementById('slX').value = String(Math.round(SQUIRREL_X * 100));
-    document.getElementById('vX').textContent = SQUIRREL_X.toFixed(2);
-  }
-
-  function enterDev() {
-    devMode = true;
-    document.getElementById('devPanel').classList.add('show');
-    document.getElementById('devBadge').classList.add('show');
-    syncDevUI();
-    resetRun();
-    mode = 'ready';
-  }
-
-  function exitDev() {
-    devMode = false;
-    document.getElementById('devPanel').classList.remove('show');
-    document.getElementById('devBadge').classList.remove('show');
-    GRAVITY = DEF_GRAVITY;
-    FLAP = DEF_FLAP;
-    SQUIRREL_X = DEF_X;
-    mode = 'title';
-  }
-
-  document.getElementById('slFlap').addEventListener('input', (e) => {
-    FLAP = -Number(e.target.value);
-    document.getElementById('vFlap').textContent = e.target.value;
-  });
-  document.getElementById('slGrav').addEventListener('input', (e) => {
-    GRAVITY = Number(e.target.value);
-    document.getElementById('vGrav').textContent = e.target.value;
-  });
-  document.getElementById('slX').addEventListener('input', (e) => {
-    SQUIRREL_X = Number(e.target.value) / 100;
-    document.getElementById('vX').textContent = SQUIRREL_X.toFixed(2);
-  });
-  document.getElementById('btnResetPhys').addEventListener('click', (e) => {
-    e.stopPropagation();
-    GRAVITY = DEF_GRAVITY;
-    FLAP = DEF_FLAP;
-    SQUIRREL_X = DEF_X;
-    syncDevUI();
-  });
-  document.getElementById('btnExitDev').addEventListener('click', (e) => {
-    e.stopPropagation();
-    exitDev();
-  });
-  // stop flaps when interacting with panel
-  document.getElementById('devPanel').addEventListener('pointerdown', (e) => e.stopPropagation());
 
   window.addEventListener('resize', resize);
   resize();
