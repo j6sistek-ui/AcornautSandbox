@@ -214,6 +214,27 @@
   let hitCooldown = 0;
   let hangarScroll = 0;
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
+
+  // —— background environments (worlds from the asset catalog) ——
+  // Every ENV_GATES gates the space around the run shifts to a new palette.
+  // Deliberately subtle: dark bases and low-alpha washes so gates, debris
+  // and pickups keep full contrast.
+  const ENV_GATES = 20; // testing cadence; raise for release milestones
+  const ENVS = [
+    { name: 'DEEP SPACE',     top: [7, 11, 24],  bot: [12, 18, 40],
+      wash: [40, 60, 110, 0.12],  wash2: [70, 90, 160, 0.05] },
+    { name: 'NEBULA NURSERY', top: [18, 9, 38],  bot: [30, 14, 54],
+      wash: [150, 70, 210, 0.13], wash2: [255, 110, 180, 0.07] },
+    { name: 'ICE MOON',       top: [5, 16, 28],  bot: [10, 28, 44],
+      wash: [90, 180, 220, 0.1],  wash2: [160, 230, 255, 0.05] },
+    { name: 'SOLAR FURNACE',  top: [26, 11, 6],  bot: [40, 16, 8],
+      wash: [255, 120, 40, 0.09], wash2: [255, 80, 60, 0.06] },
+    { name: 'CRYSTAL BELT',   top: [13, 10, 32], bot: [16, 26, 48],
+      wash: [140, 220, 255, 0.09], wash2: [200, 140, 255, 0.06] },
+    { name: 'TIME FRACTURE',  top: [6, 20, 16],  bot: [10, 30, 24],
+      wash: [90, 255, 180, 0.07], wash2: [200, 255, 120, 0.04] },
+  ];
+  let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
   const MOD_SHIELD_COST = 25;
 
   function resize() {
@@ -583,6 +604,18 @@
     // ambient stars
     for (const s of stars) s.tw += dt * 2;
 
+    // environment shifts with progress and crossfades over a couple of
+    // seconds; a short banner announces the new region mid-run
+    const envTarget = Math.floor(score / ENV_GATES) % ENVS.length;
+    if (envTarget !== envB) {
+      envA = envB;
+      envB = envTarget;
+      envBlend = 0;
+      envMsgT = mode === 'play' ? 3 : 0;
+    }
+    if (envBlend < 1) envBlend = Math.min(1, envBlend + dt / 2);
+    if (envMsgT > 0) envMsgT = Math.max(0, envMsgT - dt);
+
     if (mode === 'play') {
       const slow = (powerLeft > 0 || shieldSlow > 0) ? SLOW_FACTOR : 1;
       let simDt = dt * slow;
@@ -893,18 +926,34 @@
   }
 
   // —— draw ——
+  function envMix(key, idx) {
+    const a = ENVS[envA][key], b = ENVS[envB][key];
+    return a[idx] + (b[idx] - a[idx]) * envBlend;
+  }
+  function envRgb(key) {
+    return 'rgb(' + (envMix(key, 0) | 0) + ',' + (envMix(key, 1) | 0) + ',' + (envMix(key, 2) | 0) + ')';
+  }
+  function envRgba(key) {
+    return 'rgba(' + (envMix(key, 0) | 0) + ',' + (envMix(key, 1) | 0) + ',' +
+           (envMix(key, 2) | 0) + ',' + envMix(key, 3).toFixed(3) + ')';
+  }
+
   function draw() {
-    // space bg
+    // space bg, tinted by the current environment
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#070b18');
-    g.addColorStop(1, '#0c1228');
+    g.addColorStop(0, envRgb('top'));
+    g.addColorStop(1, envRgb('bot'));
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    // nebula wash
-    ctx.fillStyle = 'rgba(40,60,110,0.12)';
+    // nebula washes
+    ctx.fillStyle = envRgba('wash');
     ctx.beginPath();
     ctx.ellipse(W * 0.7, H * 0.3, W * 0.5, H * 0.25, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = envRgba('wash2');
+    ctx.beginPath();
+    ctx.ellipse(W * 0.24, H * 0.68, W * 0.42, H * 0.2, -0.25, 0, Math.PI * 2);
     ctx.fill();
 
     for (const s of stars) {
@@ -2790,6 +2839,20 @@
       ctx.fillText('SHIELD', 36, 51);
     }
 
+    // region banner when the environment shifts
+    if (envMsgT > 0 && mode === 'play') {
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = Math.min(1, envMsgT / 0.8);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '600 11px system-ui';
+      ctx.fillText('ENTERING', W / 2, 108);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 17px system-ui';
+      ctx.fillText(ENVS[envB].name, W / 2, 128);
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left';
+    }
+
     // warp status
     if (warpLeft > 0) {
       ctx.textAlign = 'center';
@@ -3379,7 +3442,6 @@
     set mode(m) { mode = m; },
     get squirrel() { return squirrel; },
     get planets() { return planets; },
-    get score() { return score; },
     get W() { return W; },
     get H() { return H; },
     get SQUIRREL_X() { return SQUIRREL_X; },
@@ -3402,6 +3464,11 @@
     get runAcorns() { return runAcorns; },
     get distance() { return distance; },
     set distance(v) { distance = v; },
+    get score() { return score; },
+    set score(v) { score = v; },
+    get envB() { return envB; },
+    get envBlend() { return envBlend; },
+    get envName() { return ENVS[envB].name; },
     get lastGapY() { return lastGapY; },
     spawnPair,
     get pal() { return pal; },
