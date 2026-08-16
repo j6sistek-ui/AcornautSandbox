@@ -1,6 +1,6 @@
 # Acornaut v1.0
 
-Space squirrel  — fly through planets, collect acorns, unlock helmets & suits.
+Space squirrel flight game — fly through planets, collect acorns, unlock helmets & suits.
 
 ## Play
 
@@ -30,3 +30,7 @@ Space squirrel  — fly through planets, collect acorns, unlock helmets & suits.
 Repo → **Settings → Pages → Source: Deploy from branch → main / root → Save**
 
 Then the site is at `https://j6sistek-ui.github.io/acornaut/`
+
+## License
+
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) — free to share and adapt **with credit**, **non-commercial** only. See [LICENSE](LICENSE).
