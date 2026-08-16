@@ -590,18 +590,20 @@
   }
 
   function bounceOff(px, py) {
-    // severe destabilize — recoverable, not instant death
+    // destabilize — recoverable, not instant death
     const sx = W * SQUIRREL_X;
     const sy = squirrel.y;
     let dx = sx - px, dy = sy - py;
     const dist = Math.hypot(dx, dy) || 1;
     dx /= dist; dy /= dist;
-    // hard knockback; mostly vertical so recovery is possible but shaky
-    // (impulse reduced 20% — the old values launched you across the screen
-    // even on a graze)
-    squirrel.vy = dy * 545 + (dy >= 0 ? 210 : -370);
-    squirrel.y += dy * 18;
-    squirrel.rot = dy >= 0 ? 1.05 : -0.7;
+    // Knockback scales with how hard the squirrel actually hit: a slow graze
+    // gets a nudge, a full-speed dive gets a real bounce. A fixed impulse
+    // here made every touch launch the squirrel across the screen.
+    const impact = Math.abs(squirrel.vy);
+    const mag = Math.min(560, 170 + impact * 0.5);
+    squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
+    squirrel.y += dy * 14;
+    squirrel.rot = dy >= 0 ? 0.85 : -0.55;
     hitCooldown = 0.55;
     spark(sx, sy, 'poof');
   }
