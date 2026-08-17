@@ -1,4 +1,6 @@
-const CACHE = 'acornaut-v1.0.1';
+// Cache version — MUST change on every release or installed apps keep
+// serving the old files. Decoupled from the game version string.
+const CACHE = 'acornaut-v1.0.2';
 const ASSETS = [
   './',
   './index.html',
