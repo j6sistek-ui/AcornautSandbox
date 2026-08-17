@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #32';
+  const BETA_BUILD = 'PR #35';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy','aurora','frost','voidsmoke','supernova'];
@@ -67,11 +67,13 @@
     battery: false,   // shield battery mod: hold up to 3 charges
     deepBest: 0,      // best score in Deep Space Flight mode
     lostBest: 0,      // best score in Lost in Space mode
+    xp: 0,            // lifetime pilot experience
   });
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
-      const s = raw ? { ...defaultSave(), ...JSON.parse(raw) } : defaultSave();
+      const parsed = raw ? JSON.parse(raw) : null;
+      const s = parsed ? { ...defaultSave(), ...parsed } : defaultSave();
       // Ensure defaults; do not wipe purchased unlocks
       if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
       if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
@@ -86,6 +88,20 @@
       if (!PAL_IDS.includes(s.equippedPal) || !s.unlockedPals.includes(s.equippedPal)) s.equippedPal = 'none';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
+      // Pilot Level migration: saves from before the XP system get a
+      // one-time grant derived from lifetime stats. Uses PRE-floor acorns
+      // (fresh saves start at level 1) and ~200 XP per owned shop item as
+      // a stand-in for spent acorns (item tables initialise later).
+      if (parsed && !(typeof parsed.xp === 'number' && isFinite(parsed.xp))) {
+        const ownedExtra =
+          Math.max(0, (s.unlocked || []).length - 1) +
+          Math.max(0, (s.unlockedSuits || []).length - 1) +
+          Math.max(0, (s.unlockedTrails || []).length - 1) +
+          Math.max(0, (s.unlockedPals || []).length - 1);
+        s.xp = Math.round(
+          4 * ((s.highScore || 0) + (s.deepBest || 0) + (s.lostBest || 0)) +
+          (s.acorns || 0) + 200 * ownedExtra);
+      }
       // BETA ONLY: every tester keeps at least 10,000 acorns so the whole
       // shop stays purchasable. The release build must strip this floor.
       if (!(s.acorns >= 10000)) s.acorns = 10000;
@@ -280,6 +296,11 @@
   let hitCooldown = 0;
   let bounceUp = false;  // a planet bounce launched the squirrel upward
   let hangarScroll = 0;
+  let lastRunXp = 0;         // XP the last run earned (dead-screen meter)
+  let lastXpFrom = 0;        // total XP before that run banked
+  let lastLevelFrom = 1, lastLevelTo = 1;
+  let flightScroll = 0;      // FLIGHT LOG scroll offset
+  let flightDrag = null;     // pointer drag state on the flight log
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
 
   // —— background environments (worlds from the asset catalog) ——
@@ -456,14 +477,100 @@
   // BETA: level/acorn gates are open so everything can be tested. For
   // release, flip to false — the requirement text already shows in the UI.
   const BETA_UNLOCK_GATES = true;
-  function deepSpaceUnlocked() {
-    return BETA_UNLOCK_GATES || (save.highScore >= 50 && save.acorns >= 1000);
+  // ——— PILOT LEVEL progression ———
+  // XP per run = score + acorns collected, plus milestone badges at
+  // 25/50/75/100 gates, times a mode multiplier (deep 1.25x, lost 1.5x).
+  // Levels gate everything with gameplay meaning: modes, mods, pals and
+  // titles. Acorns stay the cosmetics currency.
+  const XP_STEPS = [60, 100, 150, 200, 260, 320, 390, 460, 540, 620,
+                    710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720,
+                    1860, 2000, 2150, 2300, 2460, 2620, 2790, 2960, 3140];
+  const MAX_LEVEL = XP_STEPS.length + 1; // 30
+  function xpCumulative(level) {
+    let acc = 0;
+    for (let i = 0; i < level - 1 && i < XP_STEPS.length; i++) acc += XP_STEPS[i];
+    return acc;
   }
-  function batteryUnlocked() {
-    return BETA_UNLOCK_GATES || (save.highScore >= 100 && save.acorns >= 2000);
+  function levelForXp(xp) {
+    let l = 1, acc = 0;
+    for (const s of XP_STEPS) {
+      if (xp < acc + s) break;
+      acc += s;
+      l++;
+    }
+    return l;
   }
-  function lostSpaceUnlocked() {
-    return BETA_UNLOCK_GATES || (save.highScore >= 75 && save.acorns >= 1500);
+  function pilotLevel() { return levelForXp(save.xp || 0); }
+
+  const TITLES = [[1, 'CADET'], [5, 'PILOT'], [10, 'VOIDFARER'], [15, 'ACE'],
+                  [18, 'COMET CHASER'], [25, 'EVENT HORIZON'], [30, 'ACORNAUT']];
+  function pilotTitle() {
+    const l = pilotLevel();
+    let t = 'CADET';
+    for (const [lv, name] of TITLES) if (l >= lv) t = name;
+    return t;
+  }
+
+  // Pals unlock FREE at their level — the level is the price.
+  const PAL_LEVELS = { none: 1, bee: 2, buddy: 4, voidjelly: 6, cometsprite: 7,
+                       meteorcore: 9, pocketmoon: 11, ufo: 12, starpup: 13,
+                       tinbot: 14, wisp: 15, nutsack: 16 };
+  // Premium full-skin suits are REVEALED by level, then bought with acorns.
+  const SUIT_REVEAL = { robo: 12, alien: 16, ghost: 20, bigbooty: 24 };
+
+  function palUnlocked(id) {
+    return BETA_UNLOCK_GATES || save.unlockedPals.includes(id) ||
+           pilotLevel() >= (PAL_LEVELS[id] || 1);
+  }
+  function suitRevealed(id) {
+    return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevel() >= SUIT_REVEAL[id];
+  }
+  function startShieldUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 3; }
+  function deepSpaceUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 5; }
+  function batteryUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 8; }
+  function lostSpaceUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 10; }
+
+  // The FLIGHT LOG track: every reward on the road, in level order.
+  const TRACK = [
+    { lvl: 2,  kind: 'pal',   id: 'bee' },
+    { lvl: 3,  kind: 'mod',   name: 'Start Shield',
+      desc: 'Arm any run with a shield from the hangar.' },
+    { lvl: 4,  kind: 'pal',   id: 'buddy' },
+    { lvl: 5,  kind: 'mode',  name: 'Deep Space Flight',
+      desc: 'Space itself shifts every 10s. Survive the chain.' },
+    { lvl: 5,  kind: 'title', name: 'PILOT' },
+    { lvl: 6,  kind: 'pal',   id: 'voidjelly' },
+    { lvl: 7,  kind: 'pal',   id: 'cometsprite' },
+    { lvl: 8,  kind: 'mod',   name: 'Shield Battery',
+      desc: 'Carry three shield charges at once.' },
+    { lvl: 9,  kind: 'pal',   id: 'meteorcore' },
+    { lvl: 10, kind: 'mode',  name: 'Lost in Space',
+      desc: 'The sky rotates, drifts and mirrors.' },
+    { lvl: 10, kind: 'title', name: 'VOIDFARER' },
+    { lvl: 11, kind: 'pal',   id: 'pocketmoon' },
+    { lvl: 12, kind: 'pal',   id: 'ufo' },
+    { lvl: 12, kind: 'suit',  id: 'robo', name: 'Robo Suit',
+      desc: 'Full chrome, scanning visor. Now in the shop.' },
+    { lvl: 13, kind: 'pal',   id: 'starpup' },
+    { lvl: 14, kind: 'pal',   id: 'tinbot' },
+    { lvl: 15, kind: 'pal',   id: 'wisp' },
+    { lvl: 15, kind: 'title', name: 'ACE' },
+    { lvl: 16, kind: 'pal',   id: 'nutsack' },
+    { lvl: 16, kind: 'suit',  id: 'alien', name: 'Alien Suit',
+      desc: 'The visitor look, antennae included. In the shop.' },
+    { lvl: 18, kind: 'title', name: 'COMET CHASER' },
+    { lvl: 20, kind: 'suit',  id: 'ghost', name: 'Ghost Suit',
+      desc: 'Spectral tail, cyan-burning eyes. In the shop.' },
+    { lvl: 24, kind: 'suit',  id: 'bigbooty', name: 'Big Booty Suit',
+      desc: 'Maximum silhouette. Real jiggle. In the shop.' },
+    { lvl: 25, kind: 'title', name: 'EVENT HORIZON' },
+    { lvl: 30, kind: 'title', name: 'ACORNAUT' },
+  ];
+  function trackName(u) {
+    return u.kind === 'pal' ? (PALS.find(p => p.id === u.id) || {}).name : u.name;
+  }
+  function trackDesc(u) {
+    return u.kind === 'pal' ? (PALS.find(p => p.id === u.id) || {}).desc : u.desc;
   }
 
   function resize() {
@@ -476,7 +583,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (mode === 'title' || mode === 'hangar' || mode === 'help' || mode === 'social') initStars();
+    if (mode === 'title' || mode === 'hangar' || mode === 'help' || mode === 'social' || mode === 'flightlog') initStars();
   }
 
   function initStars() {
@@ -965,11 +1072,21 @@
     const t = e.changedTouches ? e.changedTouches[0] : e;
     const x = (t.clientX - rect.left) * (W / rect.width);
     const y = (t.clientY - rect.top) * (H / rect.height);
+    if (mode === 'flightlog') flightDrag = { y0: y, s0: flightScroll };
     swipe = { y0: y, t0: performance.now(), fired: false };
     handleTap(x, y);
   }
 
   function onPointerMove(e) {
+    if (mode === 'flightlog' && flightDrag) {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      const yy = (t.clientY - rect.top) * (H / rect.height);
+      flightScroll = Math.max(0, Math.min(
+        Math.max(0, flightContentH() - (H - 150)),
+        flightDrag.s0 - (yy - flightDrag.y0)));
+      return;
+    }
     if (!swipe || swipe.fired) return;
     const rect = canvas.getBoundingClientRect();
     const t = e.changedTouches ? e.changedTouches[0] : e;
@@ -983,6 +1100,7 @@
 
   function onPointerUp() {
     swipe = null;
+    flightDrag = null;
   }
 
   // Swipe down is a universal control:
@@ -1048,9 +1166,12 @@
       if (Math.hypot(x - hc.x, y - hc.y) < hc.r + 6) { mode = 'help'; return; }
       return;
     }
-    if (mode === 'help' || mode === 'social') {
+    if (mode === 'help' || mode === 'social' || mode === 'flightlog') {
       const back = { x: 56, y: 44, w: 80, h: 36 };
-      if (hit(x, y, back)) mode = 'title';
+      if (hit(x, y, back)) { mode = mode === 'flightlog' ? 'social' : 'title'; return; }
+      if (mode === 'social' && hit(x, y, { x: W / 2, y: 132, w: W - 32, h: 96 })) {
+        openFlightLog();
+      }
       return;
     }
     if (mode === 'hangar') {
@@ -1064,9 +1185,18 @@
         roster.list.forEach((item, i) => {
           const c = shopCellRect(i);
           if (Math.hypot(x - c.x, y - c.y) < 46) {
-            if (save[roster.own].includes(item.id)) {
+            if (roster.kind === 'pal') {
+              // pals unlock by pilot level — the level is the price
+              if (palUnlocked(item.id)) {
+                if (!save.unlockedPals.includes(item.id)) save.unlockedPals.push(item.id);
+                save.equippedPal = item.id;
+                writeSave(save);
+              }
+            } else if (save[roster.own].includes(item.id)) {
               save[roster.eq] = item.id;
               writeSave(save);
+            } else if (roster.kind === 'suit' && !suitRevealed(item.id)) {
+              // premium skin still sealed behind its level
             } else if (save.acorns >= item.cost) {
               save.acorns -= item.cost;
               save[roster.own].push(item.id);
@@ -1077,7 +1207,7 @@
         });
       } else if (shopTab === 'mods') {
         const card = { x: W / 2, y: SHOP_GRID_Y + 62, w: W - 48, h: 124 };
-        if (hit(x, y, card) && !save.startShield && save.acorns >= MOD_SHIELD_COST) {
+        if (hit(x, y, card) && startShieldUnlocked() && !save.startShield && save.acorns >= MOD_SHIELD_COST) {
           save.acorns -= MOD_SHIELD_COST;
           save.startShield = true;
           writeSave(save);
@@ -1562,6 +1692,18 @@
   function die() {
     mode = 'dead';
     deadTimer = 0;
+    // bank the run's XP now so the dead screen can pour it into the meter
+    lastXpFrom = save.xp || 0;
+    lastLevelFrom = levelForXp(lastXpFrom);
+    let xp = score + runAcorns;
+    if (score >= 25) xp += 10;
+    if (score >= 50) xp += 15;
+    if (score >= 75) xp += 20;
+    if (score >= 100) xp += 25;
+    xp = Math.round(xp * (lostSpace ? 1.5 : deepSpace ? 1.25 : 1));
+    lastRunXp = xp;
+    save.xp = lastXpFrom + xp;
+    lastLevelTo = levelForXp(save.xp);
     spark(W * SQUIRREL_X, squirrel.y, 'poof');
   }
 
@@ -1730,6 +1872,7 @@
     if (mode === 'title') drawTitle();
     else if (mode === 'help') drawHelp();
     else if (mode === 'social') drawSocial();
+    else if (mode === 'flightlog') drawFlightLog();
     else if (mode === 'hangar') drawShop();
     else {
       // Warp is a pure RENDER transform: the simulation still scrolls the
@@ -4792,10 +4935,64 @@
       ctx.font = '600 14px system-ui';
       ctx.fillText('NEW BEST', W / 2, H * 0.36 + 88);
     }
+
+    // ——— the run's XP pours into the pilot meter ———
+    const fillP = Math.min(1, Math.max(0, (deadTimer - 0.35) / 1.1));
+    const shown = lastXpFrom + lastRunXp * fillP;
+    const lv = levelForXp(shown);
+    const into = shown - xpCumulative(lv);
+    const need = lv >= MAX_LEVEL ? 1 : XP_STEPS[lv - 1];
+    const bw2 = Math.min(230, W * 0.6);
+    const bx2 = W / 2 - bw2 / 2, by2 = H * 0.36 + 122;
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.fillText('+' + lastRunXp + ' XP', W / 2, by2 - 12);
+    ctx.fillStyle = 'rgba(160,120,255,0.18)';
+    roundRect(bx2, by2, bw2, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(bx2, by2, Math.max(4, bw2 * Math.min(1, into / need)), 10, 5);
+    ctx.fill();
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillStyle = '#e0d0ff';
+    ctx.textAlign = 'right';
+    ctx.fillText('LV ' + lv, bx2 - 8, by2 + 9);
+    ctx.textAlign = 'left';
+    if (lv < MAX_LEVEL) ctx.fillText('LV ' + (lv + 1), bx2 + bw2 + 8, by2 + 9);
+    ctx.textAlign = 'center';
+
+    // level-up: celebration burst plus the unlock reveal cards
+    if (lastLevelTo > lastLevelFrom && fillP >= 1) {
+      const pulse2 = 1 + 0.05 * Math.sin(deadTimer * 6);
+      ctx.fillStyle = '#ffd23f';
+      ctx.font = 'bold ' + Math.round(20 * pulse2) + 'px system-ui';
+      ctx.fillText('PILOT LEVEL ' + lastLevelTo + '!', W / 2, by2 + 46);
+      const gained = TRACK.filter(u => u.lvl > lastLevelFrom && u.lvl <= lastLevelTo);
+      let uy = by2 + 72;
+      gained.slice(0, 2).forEach((u) => {
+        const kick = u.kind === 'mode' ? 'NEW MODE' : u.kind === 'pal' ? 'NEW COMPANION'
+                   : u.kind === 'suit' ? 'SUIT UNLOCKED IN SHOP'
+                   : u.kind === 'title' ? 'NEW TITLE' : 'NEW MOD';
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = '600 10px system-ui';
+        ctx.fillText(kick, W / 2, uy);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px system-ui';
+        ctx.fillText('\u2605 ' + (trackName(u) || '').toUpperCase() + ' \u2605', W / 2, uy + 17);
+        uy += 42;
+      });
+      if (gained.length > 2) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '600 11px system-ui';
+        ctx.fillText('+' + (gained.length - 2) + ' more \u2014 see the FLIGHT LOG', W / 2, uy);
+      }
+    }
+
     if (deadTimer > 0.6) {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '600 15px system-ui';
-      ctx.fillText('tap to continue', W / 2, H * 0.62);
+      ctx.fillText('tap to continue', W / 2,
+                   Math.max(H * 0.62, H * 0.36 + (lastLevelTo > lastLevelFrom ? 305 : 170)));
     }
   }
 
@@ -4836,6 +5033,11 @@
     ctx.fillText('BETA TEST BUILD · ' + BETA_BUILD, W / 2, H * 0.2 + 44);
 
     // high score + acorns
+    ctx.font = '600 15px system-ui';
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('PILOT LV ' + pilotLevel() + ' · ' + pilotTitle(), W / 2, H * 0.31 - 21);
     ctx.font = '600 15px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.fillText('BEST  ' + save.highScore +
@@ -4974,7 +5176,7 @@
     if (!unlocked) {
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
       ctx.font = '600 9.5px system-ui';
-      ctx.fillText('REACH LEVEL 50 · 1000 ACORNS', b.x - b.w / 2 + 48, b.y + 12);
+      ctx.fillText('REACH PILOT LEVEL 5', b.x - b.w / 2 + 48, b.y + 12);
     }
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
@@ -4997,7 +5199,7 @@
     if (!unlocked) {
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
       ctx.font = '600 9.5px system-ui';
-      ctx.fillText('REACH LEVEL 75 · 1500 ACORNS', b.x - b.w / 2 + 48, b.y + 12);
+      ctx.fillText('REACH PILOT LEVEL 10', b.x - b.w / 2 + 48, b.y + 12);
     }
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
@@ -5299,10 +5501,10 @@
 
   // ——— social hub: pilot profile, connections, leaderboards, news ———
   const NEWS = [
-    'Pal powers: Star Pup doubles golden time, Tin Bot',
-    'clears holes (and shields), Nebula Wisp moves gates.',
-    '4 new trails · faster Deep Space shifts (every 10s).',
-    'Earlier: 16 planet kinds, premium suits, 26 themes.',
+    'PILOT LEVELS are here: every run earns XP. Modes,',
+    'mods, pals and titles now unlock on the FLIGHT LOG',
+    '\u2014 tap the pilot card above to see your road.',
+    'Earlier: pal powers, 12 trails, 16 planet kinds.',
   ];
 
   function drawSocial() {
@@ -5330,17 +5532,26 @@
     ctx.textAlign = 'left';
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 15px system-ui';
-    ctx.fillText('PILOT', 104, 108);
+    ctx.fillText('LV ' + pilotLevel() + ' \u00b7 ' + pilotTitle(), 104, 108);
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.font = '600 12px system-ui';
-    ctx.fillText('BEST ' + save.highScore + '  ·  DEEP ' + (save.deepBest || 0) +
-                 '  ·  LOST ' + (save.lostBest || 0), 104, 128);
+    ctx.fillText('BEST ' + save.highScore + '  \u00b7  DEEP ' + (save.deepBest || 0) +
+                 '  \u00b7  LOST ' + (save.lostBest || 0), 104, 128);
     ctx.fillStyle = '#ffd080';
     ctx.fillText(save.acorns + ' acorns banked', 104, 146);
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillText((save.unlocked.length + save.unlockedSuits.length +
-                  save.unlockedTrails.length + save.unlockedPals.length) +
-                 ' items unlocked', 104, 164);
+    // XP progress and the door to the roadmap
+    const lvS = pilotLevel();
+    const intoS = (save.xp || 0) - xpCumulative(lvS);
+    const needS = lvS >= MAX_LEVEL ? 1 : XP_STEPS[lvS - 1];
+    ctx.fillStyle = 'rgba(160,120,255,0.2)';
+    roundRect(104, 155, 176, 8, 4);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(104, 155, Math.max(3, 176 * Math.min(1, intoS / needS)), 8, 4);
+    ctx.fill();
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 10.5px system-ui';
+    ctx.fillText('FLIGHT LOG \u203a', 292, 163);
 
     // connect
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
@@ -5401,6 +5612,240 @@
     NEWS.forEach((line, i) => {
       ctx.fillText(line, 30, 476 + i * 18);
     });
+  }
+
+  // ——— FLIGHT LOG: the reward road ———
+  // A climbing track, not a table: a glowing spine runs up the screen,
+  // one node per level, and every reward rides its node as a card — art,
+  // a kicker, and one line that sells what it does. Earned rewards carry
+  // a check; the next node glows; the future sits in full colour behind
+  // a small lock, so the road itself advertises what's coming.
+  function trackItemsFor(lvl) {
+    const out = [];
+    for (const u of TRACK) if (u.lvl === lvl) out.push(u);
+    return out;
+  }
+  function flightRowH(lvl) {
+    const n = trackItemsFor(lvl).length;
+    return n === 0 ? 46 : n * 96 + 18;
+  }
+  function flightContentH() {
+    let h = 30;
+    for (let l = 2; l <= MAX_LEVEL; l++) h += flightRowH(l);
+    return h + 60;
+  }
+  function openFlightLog() {
+    mode = 'flightlog';
+    // land the view just below the pilot's current position on the road
+    const lvl = pilotLevel();
+    let y = 30;
+    for (let l = 2; l <= Math.min(lvl, MAX_LEVEL); l++) y += flightRowH(l);
+    flightScroll = Math.max(0, Math.min(
+      Math.max(0, flightContentH() - (H - 150)), y - H * 0.25));
+  }
+
+  function drawTrackArt(u, cx, cy, t) {
+    if (u.kind === 'pal') {
+      drawPalPreview(u.id, cx, cy - 4, t);
+    } else if (u.kind === 'mode') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.5, 1.5);
+      if (u.id === 'deep') iconVortex(0, 0, 1);
+      else iconWormhole(0, 0, 1);
+      ctx.restore();
+    } else if (u.kind === 'suit') {
+      const s = SUITS.find(q => q.id === u.id);
+      if (s) drawAstronaut(cx + 2, cy + 6, 0, 0.62, equippedHelmet(), s, { seed: 6 });
+    } else if (u.kind === 'mod') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.1, 1.1);
+      drawAcorn(0, 0, 'shield');
+      ctx.restore();
+    } else {
+      // title laurel star
+      ctx.fillStyle = '#ffd23f';
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const rr = i % 2 === 0 ? 14 : 6.5;
+        const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#7a5a00';
+      ctx.font = 'bold 9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('T', cx, cy + 3);
+    }
+  }
+
+  function drawFlightLog() {
+    const t = performance.now() / 1000;
+    const myLvl = pilotLevel();
+
+    // scrollable road
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 138, W, H - 138);
+    ctx.clip();
+    ctx.translate(0, 150 - flightScroll);
+
+    const spineX = 44;
+    const totalH = flightContentH();
+    const spine = ctx.createLinearGradient(0, 0, 0, totalH);
+    spine.addColorStop(0, 'rgba(160,107,255,0.8)');
+    spine.addColorStop(1, 'rgba(58,140,255,0.25)');
+    ctx.strokeStyle = spine;
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(spineX, 6);
+    ctx.lineTo(spineX, totalH - 30);
+    ctx.stroke();
+
+    let y = 30;
+    for (let lvl = 2; lvl <= MAX_LEVEL; lvl++) {
+      const items = trackItemsFor(lvl);
+      const rowH = flightRowH(lvl);
+      // skip rows that are far off screen
+      if (y + rowH - flightScroll > -160 && y - flightScroll < H) {
+        const earned = myLvl >= lvl;
+        const isNext = lvl === myLvl + 1;
+        // node
+        ctx.save();
+        ctx.translate(spineX, y + 14);
+        ctx.rotate(Math.PI / 4);
+        const ns = isNext ? 15 : 12;
+        ctx.fillStyle = earned ? '#ffb84d' : isNext ? '#a06bff' : 'rgba(90,100,140,0.75)';
+        roundRect(-ns, -ns, ns * 2, ns * 2, 5);
+        ctx.fill();
+        if (isNext) {
+          ctx.strokeStyle = 'rgba(201,178,255,' + (0.5 + 0.4 * Math.sin(t * 3)).toFixed(2) + ')';
+          ctx.lineWidth = 2.5;
+          roundRect(-ns - 4, -ns - 4, ns * 2 + 8, ns * 2 + 8, 7);
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.fillStyle = earned ? '#3a2402' : '#fff';
+        ctx.font = 'bold ' + (lvl >= 10 ? 12 : 14) + 'px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(lvl), spineX, y + 19);
+        if (earned && items.length) {
+          ctx.fillStyle = '#5dff9e';
+          ctx.font = 'bold 12px system-ui';
+          ctx.fillText('\u2713', spineX + 20, y + 2);
+        }
+
+        // reward cards
+        items.forEach((u, k) => {
+          const cy = y + k * 96;
+          const cardX = 76, cardW = W - cardX - 14;
+          ctx.fillStyle = earned ? 'rgba(93,255,158,0.07)'
+                        : isNext ? 'rgba(160,107,255,0.14)'
+                        : 'rgba(140,170,220,0.08)';
+          roundRect(cardX, cy - 12, cardW, 84, 13);
+          ctx.fill();
+          ctx.strokeStyle = earned ? 'rgba(93,255,158,0.3)'
+                          : isNext ? 'rgba(201,178,255,0.6)'
+                          : 'rgba(160,190,230,0.18)';
+          ctx.lineWidth = 1.3;
+          ctx.stroke();
+
+          drawTrackArt(u, cardX + 33, cy + 30, t);
+
+          const kickC = u.kind === 'mode' ? '#c084fc' : u.kind === 'pal' ? '#ffd080'
+                      : u.kind === 'suit' ? '#6ef0ff' : u.kind === 'title' ? '#ffd23f' : '#5dff9e';
+          const kick = u.kind === 'mode' ? 'NEW MODE' : u.kind === 'pal' ? 'NEW COMPANION'
+                     : u.kind === 'suit' ? 'PREMIUM SUIT \u00b7 SHOP' : u.kind === 'title' ? 'NEW TITLE'
+                     : 'HANGAR MOD';
+          ctx.textAlign = 'left';
+          ctx.fillStyle = kickC;
+          ctx.font = 'bold 9px system-ui';
+          ctx.fillText(kick, cardX + 64, cy + 8);
+          ctx.fillStyle = earned ? 'rgba(255,255,255,0.75)' : '#fff';
+          ctx.font = 'bold 14px system-ui';
+          ctx.fillText((trackName(u) || '').toUpperCase(), cardX + 64, cy + 26);
+          const d = trackDesc(u);
+          if (d) {
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '600 10.5px system-ui';
+            ctx.fillText(d, cardX + 64, cy + 44);
+          } else if (u.kind === 'title') {
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '600 10.5px system-ui';
+            ctx.fillText('Worn on your pilot card with pride.', cardX + 64, cy + 44);
+          }
+          if (earned) {
+            ctx.fillStyle = '#5dff9e';
+            ctx.font = 'bold 11px system-ui';
+            ctx.fillText('\u2713 EARNED', cardX + 64, cy + 62);
+          } else if (isNext) {
+            ctx.fillStyle = '#c9b2ff';
+            ctx.font = 'bold 11px system-ui';
+            const needN = xpCumulative(lvl) - (save.xp || 0);
+            ctx.fillText(needN + ' XP TO GO', cardX + 64, cy + 62);
+          } else {
+            // small lock badge
+            ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+            ctx.lineWidth = 1.6;
+            const lx = cardX + cardW - 20, ly = cy - 1;
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4, Math.PI, 0);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.35)';
+            roundRect(lx - 5.5, ly, 11, 8.5, 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = 'bold 10.5px system-ui';
+            ctx.fillText('LV ' + lvl, cardX + 64, cy + 62);
+          }
+        });
+      }
+      y += rowH;
+    }
+    // road's end
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('\u2026the road grows with every update', W / 2, totalH - 4);
+    ctx.restore();
+
+    // header ON TOP of the scroll area
+    ctx.fillStyle = 'rgba(5,7,15,0.92)';
+    ctx.fillRect(0, 0, W, 138);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    roundRect(16, 26, 80, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('\u2190 BACK', 28, 49);
+    ctx.font = 'bold 22px system-ui';
+    ctx.fillText('FLIGHT LOG', 110, 50);
+
+    const lv = pilotLevel();
+    const into = (save.xp || 0) - xpCumulative(lv);
+    const need = lv >= MAX_LEVEL ? 1 : XP_STEPS[lv - 1];
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 13px system-ui';
+    ctx.fillText('LV ' + lv + ' \u00b7 ' + pilotTitle(), 20, 92);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 11px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText(lv >= MAX_LEVEL ? 'MAX LEVEL' : into + ' / ' + need + ' XP', W - 20, 92);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(160,120,255,0.2)';
+    roundRect(20, 102, W - 40, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(20, 102, Math.max(4, (W - 40) * Math.min(1, into / need)), 10, 5);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '600 10.5px system-ui';
+    ctx.fillText('Every run earns XP \u2014 score + acorns, boosted in the harder skies.', 20, 128);
   }
 
   // ——— tabbed shop ————————————————————————————————————————————
@@ -5471,7 +5916,14 @@
     const t = performance.now() / 1000;
     roster.list.forEach((item, i) => {
       const c = shopCellRect(i);
-      const unlocked = save[roster.own].includes(item.id);
+      let unlocked = save[roster.own].includes(item.id);
+      let lockLevel = 0;
+      if (roster.kind === 'pal') {
+        unlocked = palUnlocked(item.id);
+        if (!unlocked) lockLevel = PAL_LEVELS[item.id] || 1;
+      } else if (roster.kind === 'suit' && !unlocked && !suitRevealed(item.id)) {
+        lockLevel = SUIT_REVEAL[item.id];
+      }
       const eq = save[roster.eq] === item.id;
 
       ctx.fillStyle = eq ? 'rgba(58,156,255,0.25)' : 'rgba(255,255,255,0.06)';
@@ -5510,7 +5962,11 @@
         ctx.font = '600 11px system-ui';
       }
       const costY = roster.kind === 'pal' ? c.y + 48 : c.y + 50;
-      if (!unlocked) {
+      if (!unlocked && lockLevel) {
+        // level-gated: the FLIGHT LOG is the price tag
+        ctx.fillStyle = '#c9b2ff';
+        ctx.fillText('LV ' + lockLevel, c.x, costY);
+      } else if (!unlocked) {
         ctx.fillStyle = '#ffd080';
         const ct = String(item.cost);
         const cw = ctx.measureText(ct).width;
@@ -5801,6 +6257,10 @@
       ctx.fillStyle = '#5dff9e';
       ctx.font = 'bold 13px system-ui';
       ctx.fillText('READY — next run', 106, cardY + 110);
+    } else if (!startShieldUnlocked()) {
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.font = 'bold 13px system-ui';
+      ctx.fillText('REACH PILOT LEVEL 3', 106, cardY + 110);
     } else {
       ctx.fillStyle = affordable ? '#ffd080' : 'rgba(255,208,128,0.45)';
       ctx.font = 'bold 13px system-ui';
@@ -5849,7 +6309,7 @@
       ctx.fillText('OWNED', 116, bY + 102);
     } else if (!open) {
       ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.fillText('REACH LEVEL 100 · 2000 ACORNS', 116, bY + 102);
+      ctx.fillText('REACH PILOT LEVEL 8', 116, bY + 102);
     } else {
       ctx.fillStyle = canBuy ? '#ffd080' : 'rgba(255,208,128,0.45)';
       const bt = 'BUY  ' + MOD_BATTERY_COST;
@@ -5908,6 +6368,21 @@
     get recoveryMsg() { return recoveryMsg; },
     get particles() { return particles; },
     get runAcorns() { return runAcorns; },
+    set runAcorns(v) { runAcorns = v; },
+    pilotLevel,
+    levelForXp,
+    xpCumulative,
+    get XP_STEPS() { return XP_STEPS; },
+    get TRACK() { return TRACK; },
+    get PAL_LEVELS() { return PAL_LEVELS; },
+    get SUIT_REVEAL() { return SUIT_REVEAL; },
+    get lastRunXp() { return lastRunXp; },
+    get lastLevelFrom() { return lastLevelFrom; },
+    get lastLevelTo() { return lastLevelTo; },
+    get flightScroll() { return flightScroll; },
+    set flightScroll(v) { flightScroll = v; },
+    flightContentH,
+    openFlightLog,
     get distance() { return distance; },
     set distance(v) { distance = v; },
     get score() { return score; },
