@@ -49,11 +49,11 @@
   // —— persistence ——
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_v2';
-  const GAME_VERSION = 'v1.0.3';
+  const GAME_VERSION = 'v1.1.0';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
-  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
-  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
-  const PAL_IDS = ['none','bee','buddy','ufo'];
+  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
+  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy','aurora','frost','voidsmoke','supernova'];
+  const PAL_IDS = ['none','bee','buddy','ufo','nutsack','meteorcore','cometsprite','pocketmoon','voidjelly','starpup','tinbot','wisp'];
   const defaultSave = () => ({
     highScore: 0,
     acorns: 0,
@@ -68,12 +68,14 @@
     equippedPal: 'none',
     battery: false,   // shield battery mod: hold up to 3 charges
     deepBest: 0,      // best score in Deep Space Flight mode
+    lostBest: 0,      // best score in Lost in Space mode
+    xp: 0,            // lifetime pilot experience
   });
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return defaultSave();
-      const s = { ...defaultSave(), ...JSON.parse(raw) };
+      const parsed = raw ? JSON.parse(raw) : null;
+      const s = parsed ? { ...defaultSave(), ...parsed } : defaultSave();
       // Ensure defaults; do not wipe purchased unlocks
       if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
       if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
@@ -88,6 +90,20 @@
       if (!PAL_IDS.includes(s.equippedPal) || !s.unlockedPals.includes(s.equippedPal)) s.equippedPal = 'none';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
+      // Pilot Level migration: saves from before the XP system get a
+      // one-time grant derived from lifetime stats. Uses PRE-floor acorns
+      // (fresh saves start at level 1) and ~200 XP per owned shop item as
+      // a stand-in for spent acorns (item tables initialise later).
+      if (parsed && !(typeof parsed.xp === 'number' && isFinite(parsed.xp))) {
+        const ownedExtra =
+          Math.max(0, (s.unlocked || []).length - 1) +
+          Math.max(0, (s.unlockedSuits || []).length - 1) +
+          Math.max(0, (s.unlockedTrails || []).length - 1) +
+          Math.max(0, (s.unlockedPals || []).length - 1);
+        s.xp = Math.round(
+          4 * ((s.highScore || 0) + (s.deepBest || 0) + (s.lostBest || 0)) +
+          (s.acorns || 0) + 200 * ownedExtra);
+      }
       return s;
     } catch { return defaultSave(); }
   }
@@ -146,6 +162,23 @@
       fur: '#c8873f', furDark: '#94601f', belly: '#f2dcb2',
       suit: '#1a2560', suitLite: '#3d4fa8', suitDark: '#0c1233',
       trim: '#ffd76a', glow: '#8fb8ff', dust: '#fff3b8' },
+    { id: 'robo', name: 'Robo', cost: 500, robo: true,
+      fur: '#9aa6b4', furDark: '#525d6c', belly: '#cfd8e2',
+      suit: '#37414f', suitLite: '#7f93a6', suitDark: '#1d242e',
+      trim: '#35e0ff', glow: '#35e0ff', dust: '#9be8ff' },
+    // ——— premium full skins: whole-body transformations, like Robo ———
+    { id: 'alien', name: 'Alien', cost: 650, alien: true,
+      fur: '#7ed957', furDark: '#3e8a2a', belly: '#d6f7b0',
+      suit: '#2e6b5a', suitLite: '#57b09a', suitDark: '#173a2e',
+      trim: '#c8ff6a', glow: '#7dff4d', dust: '#b6ff8a' },
+    { id: 'ghost', name: 'Ghost', cost: 800, ghost: true,
+      fur: '#dfe9f5', furDark: '#9fb4cf', belly: '#ffffff',
+      suit: '#b9c8e0', suitLite: '#e8f0fb', suitDark: '#7f93b3',
+      trim: '#bfe9ff', glow: '#9fd8ff', dust: '#dff2ff' },
+    { id: 'bigbooty', name: 'Big Booty', cost: 1000, booty: true,
+      fur: '#e09a45', furDark: '#a86a1f', belly: '#ffe9c4',
+      suit: '#8a3fd4', suitLite: '#b876ff', suitDark: '#54258c',
+      trim: '#ffd23f', glow: '#ffb84d', dust: '#ffe08a' },
   ];
 
   // —— tap-boost trails (adapted from the asset catalog) ——
@@ -155,18 +188,41 @@
     { id: 'bubble', name: 'Bubble Jets',   cost: 90 },
     { id: 'bloom',  name: 'Nebula Bloom',  cost: 120 },
     { id: 'comet',  name: 'Comet Booster', cost: 200 },
+    { id: 'prism',  name: 'Prism Shards',  cost: 260 },
+    { id: 'plasma', name: 'Plasma Arc',    cost: 320 },
+    { id: 'galaxy', name: 'Galaxy Dust',   cost: 400 },
+    { id: 'aurora',    name: 'Aurora Ribbon', cost: 460 },
+    { id: 'frost',     name: 'Frostbite',     cost: 520 },
+    { id: 'voidsmoke', name: 'Void Smoke',    cost: 580 },
+    { id: 'supernova', name: 'Supernova',     cost: 650 },
   ];
 
-  // —— companions ——
+  // —— companions — every pal changes the run ——
   const PALS = [
-    { id: 'none',  name: 'None',        cost: 0,
-      desc: 'Fly solo.' },
-    { id: 'bee',   name: 'Astro Bee',   cost: 80,
-      desc: 'A cheerful cosmetic escort.' },
-    { id: 'buddy', name: 'Acorn Buddy', cost: 150,
-      desc: 'Grabs nearby acorns for you.' },
-    { id: 'ufo',   name: 'Mini UFO',    cost: 250,
+    { id: 'none',        name: 'None',         cost: 0,   tag: 'SOLO',
+      desc: 'Fly solo. The classic run.' },
+    { id: 'bee',         name: 'Astro Bee',    cost: 80,  tag: 'VANILLA',
+      desc: 'Nothing spawns at all. Pure flying.' },
+    { id: 'buddy',       name: 'Acorn Buddy',  cost: 150, tag: 'MAGNET',
+      desc: 'Reels in nearby acorns, even behind you.' },
+    { id: 'voidjelly',   name: 'Void Jelly',   cost: 160, tag: 'SOFT BOUNCE',
+      desc: 'Planet bounces are much gentler.' },
+    { id: 'cometsprite', name: 'Comet Sprite', cost: 180, tag: 'LONG SLOW',
+      desc: 'Slow acorns last twice as long.' },
+    { id: 'meteorcore',  name: 'Meteor Core',  cost: 200, tag: '2X SPECIALS',
+      desc: 'Special acorns appear twice as often.' },
+    { id: 'pocketmoon',  name: 'Pocket Moon',  cost: 220, tag: 'LOW GRAV',
+      desc: 'Lighter gravity, floatier flight.' },
+    { id: 'ufo',         name: 'Mini UFO',     cost: 250, tag: 'WARP SLOW',
       desc: 'Slows time inside black-hole warps.' },
+    { id: 'nutsack',     name: '"Nut-Sack"',   cost: 300, tag: '2X NUTS',
+      desc: 'Nuts double. Weak taps, heavy, no shields.' },
+    { id: 'starpup',     name: 'Star Pup',     cost: 260, tag: 'LONG GOLD',
+      desc: 'Golden acorns last twice as long.' },
+    { id: 'tinbot',      name: 'Tin Bot',      cost: 270, tag: 'NO HOLES',
+      desc: 'No black holes or wormholes. No shields either.' },
+    { id: 'wisp',        name: 'Nebula Wisp',  cost: 280, tag: 'GATE DRIFT',
+      desc: 'Gates drift up and down — moving targets.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -178,6 +234,16 @@
   const MAX_SPEED = 280;   // capped: past this it's a marathon, not a ramp
   const GAP_BASE = 168;
   const GAP_MIN = 132;     // floor: the corridor never gets tighter than this
+  // OVERDRIVE: past gate 100 the caps themselves stretch — top speed
+  // +10%, smallest gap −20% — phased in together over the next 50 gates.
+  // Feasibility: the reachability clamp reads the live speed, so gate
+  // transitions always stay inside the climb/dive budget. The tightest
+  // gap (105.6px) sits below a sustained-hover band (~110px) but is a
+  // TIMING move, not a hover: the 84px planet zone crosses in ~0.27s at
+  // top speed, during which a well-timed entry drifts well under half
+  // the opening — hard, deliberate, and flyable.
+  const OVERDRIVE_GATE = 100;
+  const OVERDRIVE_SPAN = 50;
   const PLANET_R = 42;
   const POWER_DURATION = 6;
   const SLOW_FACTOR = 0.42;
@@ -193,15 +259,25 @@
   let acorns = [];
   let powerups = [];
   let shields = [];          // rare shield-acorn pickups
+  let goldens = [];          // golden acorns: 10s of invulnerability
+  let invulnLeft = 0;        // golden time remaining
   let shieldCharges = 0;     // carried charges (max 1, or 3 with the battery)
   let absorbGrace = 0;       // post-hit mercy: debris can't chain-drain charges
+  let startShieldArmed = false; // whether the start-shield modifier actually fired
   let blackholes = [];       // black-hole acorns: warp the world for a while
   let deepSpace = false;     // Deep Space Flight mode for this run
   let deepTimer = 0;         // time until the first orientation shift
+  let lostSpace = false;     // Lost in Space mode for this run
+  let wormholes = [];        // wormhole pickups (Lost in Space only)
+  let driftPhase = 0;        // scroll-drift oscillator phase
+  let driftFactor = 1;       // current scroll multiplier, 0.65–1.35
+  let tiltPhase = 0;         // world-rotation oscillator phase
   let warpT = 0;             // swirl-in transition (counts down from 1s)
   let warpLeft = 0;          // remaining warped-orientation time
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
   let warpMirror = true;     // whether this warp reverses the scroll
+  let prevMirror = false;    // mirror state a swirl is folding FROM
+  let prevTilt = 0;          // tilt a swirl is easing FROM
   let recoveryMsg = '';      // banner shown during freeze/slow recovery
   let pal = { x: 0, y: 0, dart: 0 };   // companion position (smoothed)
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
@@ -219,37 +295,281 @@
   let hitCooldown = 0;
   let bounceUp = false;  // a planet bounce launched the squirrel upward
   let hangarScroll = 0;
+  let lastRunXp = 0;         // XP the last run earned (dead-screen meter)
+  let lastXpFrom = 0;        // total XP before that run banked
+  let lastLevelFrom = 1, lastLevelTo = 1;
+  let flightScroll = 0;      // FLIGHT LOG scroll offset
+  let flightDrag = null;     // pointer drag state on the flight log
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
 
   // —— background environments (worlds from the asset catalog) ——
   // Every ENV_GATES gates the space around the run shifts to a new palette.
   // Deliberately subtle: dark bases and low-alpha washes so gates, debris
   // and pickups keep full contrast.
-  const ENV_GATES = 20; // testing cadence; raise for release milestones
+  const ENV_GATES = 20; // every-20 cadence, confirmed good — continues past
+  // gate 100 all the way to 500+ (26 themes, then the cycle restarts).
+  // Optional per-theme extras: rays [r,g,b] paints sweeping light shafts,
+  // pulse throbs the washes (glowing lights), dim breathes a dark
+  // vignette (dimming lights). One law binds every theme: the squirrel
+  // NEVER recolors to match the environment — even in black and white,
+  // the astronaut stays in full color. (Env values only ever feed the
+  // background, obstacle auras and crystal palettes, never the suit.)
+  // Each environment also owns its debris: which obstacle types spawn
+  // there, the aura colour behind them, and how its crystals are cut.
   const ENVS = [
     { name: 'DEEP SPACE',     top: [7, 11, 24],  bot: [12, 18, 40],
-      wash: [40, 60, 110, 0.12],  wash2: [70, 90, 160, 0.05] },
+      wash: [40, 60, 110, 0.12],  wash2: [70, 90, 160, 0.05],
+      obTypes: ['asteroid', 'debris', 'satellite', 'ufo', 'crystal', 'rock', 'junk'],
+      obAccent: null, crystal: null },
     { name: 'NEBULA NURSERY', top: [18, 9, 38],  bot: [30, 14, 54],
-      wash: [150, 70, 210, 0.13], wash2: [255, 110, 180, 0.07] },
+      wash: [150, 70, 210, 0.13], wash2: [255, 110, 180, 0.07],
+      obTypes: ['crystal', 'crystal', 'debris', 'ufo', 'asteroid'],
+      obAccent: '#c060ff',
+      crystal: ['rgba(255,190,250,0.95)', 'rgba(210,80,235,0.9)', 'rgba(110,25,150,0.85)'] },
     { name: 'ICE MOON',       top: [5, 16, 28],  bot: [10, 28, 44],
-      wash: [90, 180, 220, 0.1],  wash2: [160, 230, 255, 0.05] },
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'satellite'],
+      wash: [90, 180, 220, 0.1],  wash2: [160, 230, 255, 0.05],
+      obAccent: '#9ad8ee',
+      crystal: ['rgba(235,250,255,0.95)', 'rgba(140,210,240,0.9)', 'rgba(40,110,160,0.85)'] },
     { name: 'SOLAR FURNACE',  top: [26, 11, 6],  bot: [40, 16, 8],
-      wash: [255, 120, 40, 0.09], wash2: [255, 80, 60, 0.06] },
+      wash: [255, 120, 40, 0.09], wash2: [255, 80, 60, 0.06],
+      obTypes: ['asteroid', 'rock', 'rock', 'junk', 'debris'],
+      obAccent: '#ff7a30',
+      crystal: ['rgba(255,230,170,0.95)', 'rgba(255,140,50,0.9)', 'rgba(150,40,10,0.85)'] },
     { name: 'CRYSTAL BELT',   top: [13, 10, 32], bot: [16, 26, 48],
-      wash: [140, 220, 255, 0.09], wash2: [200, 140, 255, 0.06] },
+      wash: [140, 220, 255, 0.09], wash2: [200, 140, 255, 0.06],
+      obTypes: ['crystal', 'crystal', 'crystal', 'satellite', 'asteroid'],
+      obAccent: '#8fd0ff',
+      crystal: ['rgba(220,245,255,0.95)', 'rgba(130,180,255,0.9)', 'rgba(60,70,180,0.85)'] },
     { name: 'TIME FRACTURE',  top: [6, 20, 16],  bot: [10, 30, 24],
-      wash: [90, 255, 180, 0.07], wash2: [200, 255, 120, 0.04] },
+      wash: [90, 255, 180, 0.07], wash2: [200, 255, 120, 0.04],
+      obTypes: ['junk', 'satellite', 'ufo', 'crystal', 'debris'],
+      obAccent: '#5dffa0',
+      crystal: ['rgba(220,255,230,0.95)', 'rgba(90,230,160,0.9)', 'rgba(20,110,70,0.85)'] },
+    // ——— gates 120+ · the deep run (every 20, up to 500 and beyond) ———
+    { name: 'MONOCHROME VOID', top: [10, 10, 12], bot: [26, 26, 30],
+      wash: [255, 255, 255, 0.07], wash2: [140, 140, 150, 0.05],
+      obTypes: ['asteroid', 'rock', 'debris', 'satellite', 'crystal'],
+      obAccent: '#cfcfd6',
+      crystal: ['rgba(250,250,252,0.95)', 'rgba(170,170,180,0.9)', 'rgba(70,70,80,0.85)'] },
+    { name: 'EMERALD EXPANSE', top: [3, 20, 10],  bot: [6, 36, 18],
+      wash: [40, 255, 120, 0.1],  wash2: [140, 255, 80, 0.05],
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'debris'],
+      obAccent: '#4dff88',
+      crystal: ['rgba(220,255,225,0.95)', 'rgba(80,240,140,0.9)', 'rgba(12,110,50,0.85)'] },
+    { name: 'CRIMSON STORM',   top: [26, 4, 6],   bot: [44, 8, 10],
+      wash: [255, 50, 50, 0.11],  wash2: [255, 110, 60, 0.06],
+      obTypes: ['asteroid', 'rock', 'junk', 'debris', 'crystal'],
+      obAccent: '#ff5548',
+      crystal: ['rgba(255,220,215,0.95)', 'rgba(245,90,75,0.9)', 'rgba(120,18,20,0.85)'] },
+    { name: 'SAPPHIRE ABYSS',  top: [3, 8, 30],   bot: [6, 16, 52],
+      wash: [50, 110, 255, 0.12], wash2: [90, 180, 255, 0.06],
+      obTypes: ['crystal', 'satellite', 'asteroid', 'debris', 'ufo'],
+      obAccent: '#4d8cff',
+      crystal: ['rgba(215,235,255,0.95)', 'rgba(80,140,250,0.9)', 'rgba(18,40,140,0.85)'] },
+    { name: 'VIOLET REALM',    top: [16, 4, 30],  bot: [28, 8, 50],
+      wash: [170, 60, 255, 0.12], wash2: [220, 120, 255, 0.06],
+      obTypes: ['crystal', 'crystal', 'ufo', 'satellite', 'asteroid'],
+      obAccent: '#b45cff',
+      crystal: ['rgba(240,220,255,0.95)', 'rgba(180,95,250,0.9)', 'rgba(70,20,130,0.85)'] },
+    { name: 'GOLDEN HOUR',     top: [30, 18, 4],  bot: [48, 30, 8],
+      wash: [255, 190, 60, 0.1],  wash2: [255, 150, 40, 0.06],
+      rays: [255, 210, 110],
+      obTypes: ['asteroid', 'rock', 'satellite', 'debris', 'crystal'],
+      obAccent: '#ffc95c',
+      crystal: ['rgba(255,242,205,0.95)', 'rgba(250,185,70,0.9)', 'rgba(140,90,15,0.85)'] },
+    { name: 'SOLAR CORONA',    top: [34, 22, 10], bot: [20, 10, 4],
+      wash: [255, 240, 180, 0.12], wash2: [255, 180, 80, 0.07],
+      rays: [255, 245, 200], pulse: 0.5,
+      obTypes: ['rock', 'rock', 'asteroid', 'junk', 'debris'],
+      obAccent: '#ffe9a8',
+      crystal: ['rgba(255,252,235,0.95)', 'rgba(255,215,120,0.9)', 'rgba(160,110,30,0.85)'] },
+    { name: 'HYPERVIVID',      top: [20, 0, 40],  bot: [0, 40, 44],
+      wash: [255, 0, 150, 0.16],  wash2: [0, 255, 200, 0.12], pulse: 0.35,
+      obTypes: ['crystal', 'crystal', 'ufo', 'satellite', 'junk'],
+      obAccent: '#ff4fd8',
+      crystal: ['rgba(255,225,250,0.95)', 'rgba(255,60,190,0.9)', 'rgba(0,150,140,0.85)'] },
+    { name: 'NEON BAZAAR',     top: [12, 2, 24],  bot: [4, 20, 34],
+      wash: [0, 229, 255, 0.14],  wash2: [255, 60, 190, 0.1],
+      obTypes: ['ufo', 'satellite', 'junk', 'crystal', 'debris'],
+      obAccent: '#39e6ff',
+      crystal: ['rgba(220,250,255,0.95)', 'rgba(60,225,255,0.9)', 'rgba(160,20,120,0.85)'] },
+    { name: 'ALIEN JUNGLE',    top: [4, 18, 6],   bot: [10, 32, 14],
+      wash: [90, 255, 60, 0.09],  wash2: [200, 90, 255, 0.06],
+      obTypes: ['crystal', 'rock', 'rock', 'asteroid', 'debris'],
+      obAccent: '#7dff4d',
+      crystal: ['rgba(230,255,215,0.95)', 'rgba(130,240,80,0.9)', 'rgba(90,30,140,0.85)'] },
+    { name: 'ACID SWAMP',      top: [14, 18, 2],  bot: [24, 30, 6],
+      wash: [190, 255, 40, 0.1],  wash2: [90, 200, 30, 0.06], dim: 0.25,
+      obTypes: ['rock', 'junk', 'junk', 'debris', 'crystal'],
+      obAccent: '#c8f03c',
+      crystal: ['rgba(245,255,210,0.95)', 'rgba(190,235,60,0.9)', 'rgba(80,110,10,0.85)'] },
+    { name: 'CORAL SHALLOWS',  top: [2, 16, 24],  bot: [4, 30, 40],
+      wash: [40, 220, 210, 0.11], wash2: [255, 120, 110, 0.07],
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'satellite'],
+      obAccent: '#3fe0cf',
+      crystal: ['rgba(225,255,250,0.95)', 'rgba(70,225,205,0.9)', 'rgba(190,80,70,0.85)'] },
+    { name: 'BONE DESERT',     top: [22, 20, 16], bot: [38, 34, 26],
+      wash: [230, 220, 190, 0.08], wash2: [180, 150, 110, 0.05], dim: 0.3,
+      obTypes: ['rock', 'rock', 'asteroid', 'debris', 'junk'],
+      obAccent: '#d9cfae',
+      crystal: ['rgba(250,246,232,0.95)', 'rgba(215,200,160,0.9)', 'rgba(110,95,60,0.85)'] },
+    { name: 'PULSAR FIELD',    top: [6, 8, 22],   bot: [10, 14, 36],
+      wash: [120, 160, 255, 0.14], wash2: [200, 220, 255, 0.08], pulse: 1.0,
+      obTypes: ['satellite', 'satellite', 'crystal', 'debris', 'asteroid'],
+      obAccent: '#9db8ff',
+      crystal: ['rgba(235,242,255,0.95)', 'rgba(150,180,255,0.9)', 'rgba(50,60,150,0.85)'] },
+    { name: 'BLACKOUT ZONE',   top: [2, 2, 4],    bot: [6, 6, 10],
+      wash: [60, 70, 110, 0.08],  wash2: [30, 34, 60, 0.05],
+      dim: 0.85, pulse: 0.6,
+      obTypes: ['debris', 'junk', 'asteroid', 'satellite', 'rock'],
+      obAccent: '#5a6a9a',
+      crystal: ['rgba(200,210,235,0.95)', 'rgba(90,105,160,0.9)', 'rgba(25,30,55,0.85)'] },
+    { name: 'AURORA CROWN',    top: [3, 12, 20],  bot: [8, 24, 30],
+      wash: [60, 255, 190, 0.12], wash2: [140, 120, 255, 0.07],
+      rays: [110, 255, 200],
+      obTypes: ['crystal', 'crystal', 'satellite', 'asteroid', 'ufo'],
+      obAccent: '#5affc8',
+      crystal: ['rgba(225,255,245,0.95)', 'rgba(90,240,195,0.9)', 'rgba(80,60,180,0.85)'] },
+    { name: 'RUST BELT',       top: [20, 10, 6],  bot: [34, 18, 10],
+      wash: [200, 110, 50, 0.09], wash2: [140, 70, 40, 0.06],
+      obTypes: ['junk', 'junk', 'satellite', 'debris', 'rock'],
+      obAccent: '#cf7a3a',
+      crystal: ['rgba(250,230,210,0.95)', 'rgba(205,125,60,0.9)', 'rgba(95,50,25,0.85)'] },
+    { name: 'GHOST NEBULA',    top: [12, 14, 20], bot: [20, 24, 32],
+      wash: [200, 210, 235, 0.07], wash2: [150, 160, 200, 0.05], dim: 0.45,
+      obTypes: ['debris', 'crystal', 'asteroid', 'satellite', 'ufo'],
+      obAccent: '#c4ccdf',
+      crystal: ['rgba(240,244,252,0.95)', 'rgba(185,195,225,0.9)', 'rgba(85,95,130,0.85)'] },
+    { name: 'PRISM STORM',     top: [10, 6, 24],  bot: [24, 6, 30],
+      wash: [255, 220, 0, 0.1],   wash2: [0, 190, 255, 0.1], pulse: 0.4,
+      obTypes: ['crystal', 'crystal', 'crystal', 'ufo', 'satellite'],
+      obAccent: '#ffd23f',
+      crystal: ['rgba(255,250,220,0.95)', 'rgba(80,200,255,0.9)', 'rgba(200,40,180,0.85)'] },
+    { name: 'EVENT HORIZON',   top: [4, 2, 8],    bot: [10, 4, 18],
+      wash: [140, 40, 255, 0.12], wash2: [40, 0, 80, 0.08],
+      dim: 0.6, pulse: 0.8, rays: [170, 90, 255],
+      obTypes: ['debris', 'asteroid', 'crystal', 'junk', 'ufo'],
+      obAccent: '#9a4dff',
+      crystal: ['rgba(235,220,255,0.95)', 'rgba(155,80,250,0.9)', 'rgba(50,10,95,0.85)'] },
   ];
   let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
+  // Every run walks the catalogue in its OWN order: DEEP SPACE always
+  // opens the first 20 gates, the middle 24 themes shuffle fresh each
+  // run, and the journey always ends on EVENT HORIZON — gate 500 and
+  // beyond hold it permanently (no wrap).
+  let envOrder = Array.from({ length: 26 }, (_, i) => i);
+  function shuffleEnvOrder() {
+    const mid = [];
+    for (let i = 1; i < ENVS.length - 1; i++) mid.push(i);
+    for (let i = mid.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mid[i], mid[j]] = [mid[j], mid[i]];
+    }
+    envOrder = [0, ...mid, ENVS.length - 1];
+  }
+  function envIndexFor(s) {
+    return envOrder[Math.min(Math.floor(s / ENV_GATES), ENVS.length - 1)];
+  }
   const MOD_SHIELD_COST = 25;
   const MOD_BATTERY_COST = 500;
-  // Release: unlock gates are live — requirements show on locked items.
+  // Release: pilot-level gates are live — requirements show in the UI
+  // and on the FLIGHT LOG.
   const BETA_UNLOCK_GATES = false;
-  function deepSpaceUnlocked() {
-    return BETA_UNLOCK_GATES || (save.highScore >= 50 && save.acorns >= 1000);
+  // ——— PILOT LEVEL progression ———
+  // XP per run = score + acorns collected, plus milestone badges at
+  // 25/50/75/100 gates, times a mode multiplier (deep 1.25x, lost 1.5x).
+  // Levels gate everything with gameplay meaning: modes, mods, pals and
+  // titles. Acorns stay the cosmetics currency.
+  const XP_STEPS = [60, 100, 150, 200, 260, 320, 390, 460, 540, 620,
+                    710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720,
+                    1860, 2000, 2150, 2300, 2460, 2620, 2790, 2960, 3140];
+  const MAX_LEVEL = XP_STEPS.length + 1; // 30
+  function xpCumulative(level) {
+    let acc = 0;
+    for (let i = 0; i < level - 1 && i < XP_STEPS.length; i++) acc += XP_STEPS[i];
+    return acc;
   }
-  function batteryUnlocked() {
-    return BETA_UNLOCK_GATES || (save.highScore >= 100 && save.acorns >= 2000);
+  function levelForXp(xp) {
+    let l = 1, acc = 0;
+    for (const s of XP_STEPS) {
+      if (xp < acc + s) break;
+      acc += s;
+      l++;
+    }
+    return l;
+  }
+  function pilotLevel() { return levelForXp(save.xp || 0); }
+
+  const TITLES = [[1, 'CADET'], [5, 'PILOT'], [10, 'VOIDFARER'], [15, 'ACE'],
+                  [18, 'COMET CHASER'], [25, 'EVENT HORIZON'], [30, 'ACORNAUT']];
+  function pilotTitle() {
+    const l = pilotLevel();
+    let t = 'CADET';
+    for (const [lv, name] of TITLES) if (l >= lv) t = name;
+    return t;
+  }
+
+  // Pals unlock FREE at their level — the level is the price.
+  const PAL_LEVELS = { none: 1, bee: 2, buddy: 4, voidjelly: 6, cometsprite: 7,
+                       meteorcore: 9, pocketmoon: 11, ufo: 12, starpup: 13,
+                       tinbot: 14, wisp: 15, nutsack: 16 };
+  // Premium full-skin suits are REVEALED by level, then bought with acorns.
+  const SUIT_REVEAL = { robo: 12, alien: 16, ghost: 20, bigbooty: 24 };
+
+  function palUnlocked(id) {
+    return BETA_UNLOCK_GATES || save.unlockedPals.includes(id) ||
+           pilotLevel() >= (PAL_LEVELS[id] || 1);
+  }
+  function suitRevealed(id) {
+    return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevel() >= SUIT_REVEAL[id];
+  }
+  function startShieldUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 3; }
+  function deepSpaceUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 5; }
+  function batteryUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 8; }
+  function lostSpaceUnlocked() { return BETA_UNLOCK_GATES || pilotLevel() >= 10; }
+
+  // The FLIGHT LOG track: every reward on the road, in level order.
+  const TRACK = [
+    { lvl: 2,  kind: 'pal',   id: 'bee' },
+    { lvl: 3,  kind: 'mod',   name: 'Start Shield',
+      desc: 'Arm any run with a shield from the hangar.' },
+    { lvl: 4,  kind: 'pal',   id: 'buddy' },
+    { lvl: 5,  kind: 'mode',  name: 'Deep Space Flight',
+      desc: 'Space itself shifts every 10s. Survive the chain.' },
+    { lvl: 5,  kind: 'title', name: 'PILOT' },
+    { lvl: 6,  kind: 'pal',   id: 'voidjelly' },
+    { lvl: 7,  kind: 'pal',   id: 'cometsprite' },
+    { lvl: 8,  kind: 'mod',   name: 'Shield Battery',
+      desc: 'Carry three shield charges at once.' },
+    { lvl: 9,  kind: 'pal',   id: 'meteorcore' },
+    { lvl: 10, kind: 'mode',  name: 'Lost in Space',
+      desc: 'The sky rotates, drifts and mirrors.' },
+    { lvl: 10, kind: 'title', name: 'VOIDFARER' },
+    { lvl: 11, kind: 'pal',   id: 'pocketmoon' },
+    { lvl: 12, kind: 'pal',   id: 'ufo' },
+    { lvl: 12, kind: 'suit',  id: 'robo', name: 'Robo Suit',
+      desc: 'Full chrome, scanning visor. Now in the shop.' },
+    { lvl: 13, kind: 'pal',   id: 'starpup' },
+    { lvl: 14, kind: 'pal',   id: 'tinbot' },
+    { lvl: 15, kind: 'pal',   id: 'wisp' },
+    { lvl: 15, kind: 'title', name: 'ACE' },
+    { lvl: 16, kind: 'pal',   id: 'nutsack' },
+    { lvl: 16, kind: 'suit',  id: 'alien', name: 'Alien Suit',
+      desc: 'The visitor look, antennae included. In the shop.' },
+    { lvl: 18, kind: 'title', name: 'COMET CHASER' },
+    { lvl: 20, kind: 'suit',  id: 'ghost', name: 'Ghost Suit',
+      desc: 'Spectral tail, cyan-burning eyes. In the shop.' },
+    { lvl: 24, kind: 'suit',  id: 'bigbooty', name: 'Big Booty Suit',
+      desc: 'Maximum silhouette. Real jiggle. In the shop.' },
+    { lvl: 25, kind: 'title', name: 'EVENT HORIZON' },
+    { lvl: 30, kind: 'title', name: 'ACORNAUT' },
+  ];
+  function trackName(u) {
+    return u.kind === 'pal' ? (PALS.find(p => p.id === u.id) || {}).name : u.name;
+  }
+  function trackDesc(u) {
+    return u.kind === 'pal' ? (PALS.find(p => p.id === u.id) || {}).desc : u.desc;
   }
 
   function resize() {
@@ -262,7 +582,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (mode === 'title' || mode === 'hangar' || mode === 'help') initStars();
+    if (mode === 'title' || mode === 'hangar' || mode === 'help' || mode === 'social' || mode === 'flightlog') initStars();
   }
 
   function initStars() {
@@ -281,8 +601,17 @@
 
   function maxShieldCharges() { return save.battery ? 3 : 1; }
 
-  function resetRun(deep) {
-    deepSpace = !!deep;
+  // Lost in Space: the world's tilt is ALIVE — it rotates continuously,
+  // wandering anywhere between −40° and +40°. Two slow sines beat against
+  // each other so the rotation never settles and never repeats a rhythm.
+  function lostTiltAt(p) {
+    return (40 * Math.PI / 180) *
+           (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
+  }
+
+  function resetRun(kind) {
+    deepSpace = kind === true || kind === 'deep';
+    lostSpace = kind === 'lost';
     deepTimer = 0;
     score = 0;
     runAcorns = 0;
@@ -291,13 +620,32 @@
     acorns = [];
     powerups = [];
     shields = [];
+    goldens = [];
+    invulnLeft = 0;
     blackholes = [];
+    wormholes = [];
     warpT = 0;
     warpLeft = 0;
     warpTilt = 0;
     warpMirror = true;
+    prevMirror = false;
+    prevTilt = 0;
+    driftPhase = Math.random() * 100;
+    driftFactor = 1;
+    tiltPhase = Math.random() * 100;
+    // Lost in Space: the rotating tilt is live from the very first frame
+    // and keeps wandering for the whole run. Wormholes flip the mirror.
+    if (lostSpace) {
+      warpMirror = false;
+      warpTilt = lostTiltAt(tiltPhase);
+    }
     recoveryMsg = '';
-    shieldCharges = save.startShield ? 1 : 0; // purchased modifier arms the run
+    // The start-shield modifier arms the run — unless the Nut-Sack or
+    // Tin Bot is equipped (neither can hold shields); the purchase is
+    // then NOT consumed.
+    startShieldArmed = save.startShield &&
+      save.equippedPal !== 'nutsack' && save.equippedPal !== 'tinbot';
+    shieldCharges = startShieldArmed ? 1 : 0;
     absorbGrace = 0;
     pal = { x: W * SQUIRREL_X - 42, y: H * 0.45 - 20, dart: 0 };
     shieldFreeze = 0;
@@ -307,24 +655,36 @@
     distance = 0;
     lastSpawnX = W * 0.7;
     lastGapY = H * 0.5;
+    // this run's own walk through the catalogue
+    shuffleEnvOrder();
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
     hitCooldown = 0;
-    for (let i = 0; i < 3; i++) spawnPair(W + 80 + i * gapSpacing());
+    for (let i = 0; i < 3; i++) spawnPair(i === 0 ? W + 80 : lastSpawnX + nextGapSpacing());
   }
 
   function gapSpacing() {
     return 240 + Math.min(50, distance * 0.005);
   }
 
+  // Gates are no longer metronome-even. Normal flight scatters them from
+  // 100% to 115% of the base spacing — never TIGHTER than the classic
+  // rhythm, which got punishing fast. Lost in Space keeps the full
+  // 85%–115% spread: the rotation there gives tight pairs room to read.
+  function nextGapSpacing() {
+    return lostSpace ? gapSpacing() * (0.85 + Math.random() * 0.3)
+                     : gapSpacing() * (1 + Math.random() * 0.15);
+  }
+
   function difficulty() {
     // slower ramp, hard plateau — reaches the caps around gate ~60 and
-    // stays there
+    // holds there until the overdrive begins stretching them at gate 100
     const t = Math.min(1, distance / 16000);
+    const od = Math.min(1, Math.max(0, (score - OVERDRIVE_GATE) / OVERDRIVE_SPAN));
     return {
-      speed: BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t,
-      gap: GAP_BASE - (GAP_BASE - GAP_MIN) * t,
+      speed: (BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t) * (1 + 0.10 * od),
+      gap: (GAP_BASE - (GAP_BASE - GAP_MIN) * t) * (1 - 0.20 * od),
     };
   }
 
@@ -332,7 +692,10 @@
   const OB_TYPES = ['asteroid','debris','satellite','ufo','crystal','rock','junk'];
 
   function makeObstacle(y, xOff) {
-    const type = OB_TYPES[Math.floor(Math.random() * OB_TYPES.length)];
+    // debris identity follows the environment the gate spawns into
+    const env = ENVS[envIndexFor(score)];
+    const pool = env.obTypes || OB_TYPES;
+    const type = pool[Math.floor(Math.random() * pool.length)];
     // Larger hit/visual size so the flight lane is actually blocked
     const r = type === 'ufo' ? 24 + Math.random() * 5
             : type === 'satellite' ? 22 + Math.random() * 5
@@ -345,6 +708,7 @@
       rot: Math.random() * Math.PI * 2,
       spin: (Math.random() - 0.5) * 0.8,
       seed: Math.floor(Math.random() * 1000),
+      env: Math.floor(score / ENV_GATES) % ENVS.length, // keeps its birth look
     };
   }
 
@@ -358,14 +722,27 @@
     // actually climb or dive in the time between gates. Without this, high
     // speed could demand a bottom-to-top transition faster than the flap
     // physics allow — difficulty should be a marathon, never impossible.
-    const dtGate = gapSpacing() / d.speed;
-    const climb = 230 * dtGate;   // sustainable upward pace, px/s
-    const dive = 520 * dtGate;    // gravity dive pace, px/s
+    // Clamp against the ACTUAL distance from the previous gate — spacing
+    // is randomized now — and, in Lost in Space, against the drift's
+    // FASTEST (+40%): always the worst case, never the average.
+    const dx = Math.max(120, x - lastSpawnX);
+    // Lost in Space stacks three post-spawn perturbations on top of the
+    // clamp: the sway can pull neighbouring gates up to 48px CLOSER
+    // (24px amplitude each), and the vertical drift can push their gaps
+    // up to 30px further APART (15px each). At the drift's fastest, the
+    // old clamp had zero margin left, so the worst phase alignment of
+    // all three was flat-out impossible (~1 in 100 gates). Reserve that
+    // headroom here: brutally hard stays the goal — impossible doesn't.
+    const dxWorst = lostSpace ? Math.max(100, dx - 48) : dx;
+    const dtGate = dxWorst / (d.speed * (lostSpace ? 1.4 : 1));
+    const vMargin = lostSpace ? 30 : 0;
+    const climb = Math.max(40, 230 * dtGate - vMargin);  // sustainable upward pace
+    const dive = Math.max(60, 520 * dtGate - vMargin);   // gravity dive pace
     gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
     gapCenter = Math.max(margin + gap / 2, Math.min(H - margin - gap / 2, gapCenter));
     lastGapY = gapCenter;
-    const kindA = Math.floor(Math.random() * 9);
-    const kindB = Math.floor(Math.random() * 9);
+    const kindA = Math.floor(Math.random() * 16);
+    const kindB = Math.floor(Math.random() * 16);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
     // Fully seal the corridor ABOVE the top gate and BELOW the bottom gate.
@@ -401,12 +778,34 @@
         if (n > 12) break;
       }
     }
-    planets.push({
+    const pair = {
       x, gapY: gapCenter, gap, r: PLANET_R,
       topKind: kindA, botKind: kindB, scored: false,
       blockers,
-    });
-    if (Math.random() < 0.55) {
+    };
+    // Lost in Space: gates BREATHE — each pair sways on its own rhythm,
+    // drifting toward and away from its neighbours (whole column moves,
+    // debris included) to deepen the distortion.
+    if (lostSpace) {
+      pair.swayA = 12 + Math.random() * 12;
+      pair.swayP = Math.random() * Math.PI * 2;
+      pair.swayT = 0;
+      pair.swayLast = 0;
+    }
+    // Vertical gate drift: the Nebula Wisp turns every gate into a
+    // moving target (strong); Lost in Space always has a subtle version.
+    const wispPal = save.equippedPal === 'wisp';
+    if (wispPal || lostSpace) {
+      pair.vA = wispPal ? 22 + Math.random() * 8 : 9 + Math.random() * 6;
+      pair.vR = wispPal ? 1.7 : 1.1;
+      pair.vP = Math.random() * Math.PI * 2;
+      pair.vT = 0;
+      pair.vLast = 0;
+    }
+    planets.push(pair);
+    // Astro Bee's vanilla mode: nothing spawns at all
+    const vanilla = save.equippedPal === 'bee';
+    if (!vanilla && Math.random() < 0.55) {
       acorns.push({
         x: x + 8,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.35),
@@ -414,35 +813,35 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
-    // rarer power-up acorn (~1 per 50 gates; was 1 in 20 and felt like the
-    // run was spent in slow motion)
-    if (Math.random() < 0.02) {
-      powerups.push({
-        x: x + 40,
+    // —— special pickups: ONE universal roll ——
+    // 1 in 10 gates spawns a special; which one is random among whatever
+    // is currently eligible. Adding new specials never inflates the total
+    // pickup population — they just share the same slot.
+    // The Meteor Core's ability: specials surface twice as often.
+    const specialChance = save.equippedPal === 'meteorcore' ? 0.2 : 0.1;
+    if (!vanilla && Math.random() < specialChance) {
+      // Tin Bot: no black holes, no wormholes — and no shields either
+      const tinbot = save.equippedPal === 'tinbot';
+      const kinds = tinbot ? ['slow', 'golden'] : ['slow', 'shield', 'golden'];
+      // black holes are pointless while a warp is pending/active, in
+      // Deep Space Flight (shifts come on a timer there), and in Lost in
+      // Space (wormholes own the disorientation slot there)
+      if (!tinbot && !deepSpace && !lostSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
+      // Lost in Space: wormholes take the black hole's place, weighted
+      // double — they are the mode's signature hazard
+      if (!tinbot && lostSpace && warpT === 0) kinds.push('wormhole', 'wormhole');
+      const kind = kinds[Math.floor(Math.random() * kinds.length)];
+      const spec = {
+        x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.25),
         got: false,
         bob: Math.random() * Math.PI * 2,
-      });
-    }
-    // shield acorn — very rare, on average one per 200 gates
-    if (Math.random() < 0.005) {
-      shields.push({
-        x: x + 20,
-        y: gapCenter,
-        got: false,
-        bob: Math.random() * Math.PI * 2,
-      });
-    }
-    // black-hole acorn — about one per 70 gates. Never while a warp is
-    // pending or active (inert clutter), and never in Deep Space Flight,
-    // where shifts come on a timer instead.
-    if (!deepSpace && warpT === 0 && warpLeft === 0 && Math.random() < 0.014) {
-      blackholes.push({
-        x: x + 30,
-        y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
-        got: false,
-        bob: Math.random() * Math.PI * 2,
-      });
+      };
+      if (kind === 'slow') powerups.push(spec);
+      else if (kind === 'shield') shields.push(spec);
+      else if (kind === 'golden') goldens.push(spec);
+      else if (kind === 'wormhole') wormholes.push(spec);
+      else blackholes.push(spec);
     }
     lastSpawnX = x;
   }
@@ -452,7 +851,8 @@
       mode = 'play';
     }
     if (mode !== 'play') return;
-    squirrel.vy = FLAP;
+    // Nut-Sack: taps lift to half the normal height (impulse * 1/sqrt(2))
+    squirrel.vy = FLAP * (save.equippedPal === 'nutsack' ? 0.71 : 1);
     flapBoost = 0.22;
     // tap-boost trail, shaped by the equipped trail cosmetic
     const sx = W * SQUIRREL_X - 10;
@@ -498,15 +898,153 @@
         });
       }
     } else if (trail === 'comet') {
+      // a real comet: long blazing streaks plus a white-hot core burst
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 7,
+          vx: -160 - Math.random() * 240,
+          vy: (Math.random() - 0.5) * 50,
+          life: 0.5 + Math.random() * 0.4,
+          max: 0.9,
+          r: 2.4 + Math.random() * 3.2,
+          kind: 'comet',
+        });
+      }
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: sx + (Math.random() - 0.5) * 6, y: sy + (Math.random() - 0.5) * 6,
+          vx: -60 - Math.random() * 80,
+          vy: (Math.random() - 0.5) * 30,
+          life: 0.2 + Math.random() * 0.12,
+          max: 0.32,
+          r: 3 + Math.random() * 2,
+          kind: 'cometcore',
+        });
+      }
+    } else if (trail === 'prism') {
+      // rainbow shards, each its own hue, tumbling as they fly
       for (let i = 0; i < 9; i++) {
         particles.push({
-          x: sx, y: sy + (Math.random() - 0.5) * 5,
-          vx: -90 - Math.random() * 140,
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -90 - Math.random() * 150,
+          vy: (Math.random() - 0.5) * 80,
+          life: 0.35 + Math.random() * 0.25,
+          max: 0.6,
+          r: 2 + Math.random() * 2.4,
+          hue: Math.random() * 360,
+          spin: (Math.random() - 0.5) * 12,
+          kind: 'prism',
+        });
+      }
+    } else if (trail === 'plasma') {
+      // jagged violet lightning with a white-hot core
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -140 - Math.random() * 180,
           vy: (Math.random() - 0.5) * 40,
-          life: 0.35 + Math.random() * 0.3,
-          max: 0.65,
-          r: 1.8 + Math.random() * 2.6,
-          kind: 'comet',
+          life: 0.16 + Math.random() * 0.12,
+          max: 0.28,
+          r: 1.6 + Math.random() * 1.4,
+          seed: Math.random() * 10,
+          kind: 'plasma',
+        });
+      }
+      particles.push({
+        x: sx, y: sy,
+        vx: -60, vy: 0,
+        life: 0.14, max: 0.14,
+        r: 3.4,
+        kind: 'plasmacore',
+      });
+    } else if (trail === 'galaxy') {
+      // a wake of tiny twinkling stars in nebula colors
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 10,
+          vx: -40 - Math.random() * 90,
+          vy: (Math.random() - 0.5) * 55,
+          life: 0.55 + Math.random() * 0.45,
+          max: 1.0,
+          r: 1 + Math.random() * 1.8,
+          tw: Math.random() * Math.PI * 2,
+          tint: i % 3,
+          kind: 'galaxy',
+        });
+      }
+    } else if (trail === 'aurora') {
+      // flowing curtain ribbons in polar greens and violets
+      for (let i = 0; i < 6; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -70 - Math.random() * 110,
+          vy: (Math.random() - 0.5) * 30,
+          life: 0.45 + Math.random() * 0.3,
+          max: 0.75,
+          r: 2 + Math.random() * 2,
+          tint: i % 3,
+          tw: Math.random() * Math.PI * 2,
+          kind: 'aurora',
+        });
+      }
+    } else if (trail === 'frost') {
+      // spinning snowflakes and a puff of ice glitter
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -60 - Math.random() * 90,
+          vy: (Math.random() - 0.5) * 60,
+          life: 0.5 + Math.random() * 0.35,
+          max: 0.85,
+          r: 2.2 + Math.random() * 1.8,
+          spin: (Math.random() - 0.5) * 8,
+          kind: 'frost',
+        });
+      }
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 10,
+          vx: -40 - Math.random() * 70,
+          vy: (Math.random() - 0.5) * 40,
+          life: 0.3 + Math.random() * 0.2,
+          max: 0.5,
+          r: 0.8 + Math.random() * 1,
+          kind: 'frostdust',
+        });
+      }
+    } else if (trail === 'voidsmoke') {
+      // slow dark rings with a violet rim, swelling as they fade
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: sx - i * 3, y: sy + (Math.random() - 0.5) * 6,
+          vx: -35 - Math.random() * 50,
+          vy: (Math.random() - 0.5) * 25,
+          life: 0.6 + Math.random() * 0.4,
+          max: 1.0,
+          r: 2.5 + Math.random() * 2.5,
+          kind: 'voidsmoke',
+        });
+      }
+    } else if (trail === 'supernova') {
+      // a shockwave ring plus white-hot ejecta
+      particles.push({
+        x: sx, y: sy,
+        vx: -50, vy: 0,
+        life: 0.4, max: 0.4,
+        r: 4,
+        kind: 'nova',
+      });
+      for (let i = 0; i < 7; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = 60 + Math.random() * 130;
+        particles.push({
+          x: sx, y: sy,
+          vx: Math.cos(a) * sp - 90,
+          vy: Math.sin(a) * sp,
+          life: 0.25 + Math.random() * 0.2,
+          max: 0.45,
+          r: 1.2 + Math.random() * 1.6,
+          kind: 'novaspark',
         });
       }
     } else {
@@ -533,11 +1071,21 @@
     const t = e.changedTouches ? e.changedTouches[0] : e;
     const x = (t.clientX - rect.left) * (W / rect.width);
     const y = (t.clientY - rect.top) * (H / rect.height);
+    if (mode === 'flightlog') flightDrag = { y0: y, s0: flightScroll };
     swipe = { y0: y, t0: performance.now(), fired: false };
     handleTap(x, y);
   }
 
   function onPointerMove(e) {
+    if (mode === 'flightlog' && flightDrag) {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      const yy = (t.clientY - rect.top) * (H / rect.height);
+      flightScroll = Math.max(0, Math.min(
+        Math.max(0, flightContentH() - (H - 150)),
+        flightDrag.s0 - (yy - flightDrag.y0)));
+      return;
+    }
     if (!swipe || swipe.fired) return;
     const rect = canvas.getBoundingClientRect();
     const t = e.changedTouches ? e.changedTouches[0] : e;
@@ -551,16 +1099,34 @@
 
   function onPointerUp() {
     swipe = null;
+    flightDrag = null;
   }
 
-  // Swipe down DURING an upward planet bounce to cancel it: the launch is
-  // replaced with a slight downward tap. The bounceUp flag (not the current
-  // velocity) is what qualifies the cancel, because the swipe's own
-  // pointerdown fires a flap first — outside an upward bounce the swipe
-  // never becomes a stray dive.
+  // Swipe down is a universal control:
+  //  - during an upward planet bounce it CANCELS the launch (gentle settle)
+  //  - anywhere else it's a DIVE tap — the downward mirror of the flap,
+  //    added so floaty runs (Pocket Moon) can push down on demand.
   function bounceCancel() {
     if (mode !== 'play') return;
-    if (!bounceUp || hitCooldown <= 0) return;
+    if (!bounceUp || hitCooldown <= 0) {
+      // dive tap
+      squirrel.vy = 380;
+      squirrel.rot = 0.5;
+      const dx = W * SQUIRREL_X;
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: dx + (Math.random() - 0.5) * 14,
+          y: squirrel.y - 16,
+          vx: (Math.random() - 0.5) * 50,
+          vy: -50 - Math.random() * 50,
+          life: 0.2 + Math.random() * 0.12,
+          max: 0.32,
+          r: 1.4 + Math.random() * 1.8,
+          kind: 'poof',
+        });
+      }
+      return;
+    }
     bounceUp = false;
     squirrel.vy = 210;
     squirrel.rot = 0.35;
@@ -586,14 +1152,24 @@
           else if (b.id === 'deep') {
             if (deepSpaceUnlocked()) { resetRun(true); mode = 'ready'; }
           }
-          else if (b.id === 'hangar') mode = 'hangar';
+          else if (b.id === 'lost') {
+            if (lostSpaceUnlocked()) { resetRun('lost'); mode = 'ready'; }
+          }
+          return;
+        }
+      }
+      for (const b of bottomIcons()) {
+        if (Math.hypot(x - b.x, y - b.y) < b.r + 8) {
+          if (b.id === 'hangar') mode = 'hangar';
+          else if (b.id === 'log') openFlightLog();
+          else if (b.id === 'social') mode = 'social';
           else mode = 'help';
           return;
         }
       }
       return;
     }
-    if (mode === 'help') {
+    if (mode === 'help' || mode === 'social' || mode === 'flightlog') {
       const back = { x: 56, y: 44, w: 80, h: 36 };
       if (hit(x, y, back)) mode = 'title';
       return;
@@ -609,9 +1185,18 @@
         roster.list.forEach((item, i) => {
           const c = shopCellRect(i);
           if (Math.hypot(x - c.x, y - c.y) < 46) {
-            if (save[roster.own].includes(item.id)) {
+            if (roster.kind === 'pal') {
+              // pals unlock by pilot level — the level is the price
+              if (palUnlocked(item.id)) {
+                if (!save.unlockedPals.includes(item.id)) save.unlockedPals.push(item.id);
+                save.equippedPal = item.id;
+                writeSave(save);
+              }
+            } else if (save[roster.own].includes(item.id)) {
               save[roster.eq] = item.id;
               writeSave(save);
+            } else if (roster.kind === 'suit' && !suitRevealed(item.id)) {
+              // premium skin still sealed behind its level
             } else if (save.acorns >= item.cost) {
               save.acorns -= item.cost;
               save[roster.own].push(item.id);
@@ -622,7 +1207,7 @@
         });
       } else if (shopTab === 'mods') {
         const card = { x: W / 2, y: SHOP_GRID_Y + 62, w: W - 48, h: 124 };
-        if (hit(x, y, card) && !save.startShield && save.acorns >= MOD_SHIELD_COST) {
+        if (hit(x, y, card) && startShieldUnlocked() && !save.startShield && save.acorns >= MOD_SHIELD_COST) {
           save.acorns -= MOD_SHIELD_COST;
           save.startShield = true;
           writeSave(save);
@@ -652,8 +1237,10 @@
     save.acorns += runAcorns;
     if (deepSpace) {
       if (score > (save.deepBest || 0)) save.deepBest = score;
+    } else if (lostSpace) {
+      if (score > (save.lostBest || 0)) save.lostBest = score;
     } else if (score > save.highScore) save.highScore = score;
-    save.startShield = false;
+    if (startShieldArmed) save.startShield = false; // only consumed if it fired
     writeSave(save);
     mode = 'title';
   }
@@ -692,7 +1279,7 @@
 
     // environment shifts with progress and crossfades over a couple of
     // seconds; a short banner announces the new region mid-run
-    const envTarget = Math.floor(score / ENV_GATES) % ENVS.length;
+    const envTarget = envIndexFor(score);
     if (envTarget !== envB) {
       envA = envB;
       envB = envTarget;
@@ -722,12 +1309,13 @@
         powerLeft = Math.max(0, powerLeft - dt);
       }
       if (absorbGrace > 0) absorbGrace = Math.max(0, absorbGrace - dt);
+      if (invulnLeft > 0) invulnLeft = Math.max(0, invulnLeft - dt);
 
-      // Deep Space Flight: the first orientation shift arrives 15s in;
+      // Deep Space Flight: the first orientation shift arrives 10s in;
       // after that the warp-expiry chain keeps them coming back to back.
       if (deepSpace && warpT === 0 && warpLeft === 0) {
         deepTimer += dt;
-        if (deepTimer >= 15) {
+        if (deepTimer >= 10) {
           pickWarpVariant();
           warpT = 1.0;
         }
@@ -736,7 +1324,9 @@
       // Black-hole warp: a one-second swirl (world frozen), then 15s of
       // mirrored, tilted flight, ended with the shield-style recovery.
       if (warpT > 0) {
-        warpT = Math.max(0, warpT - dt);
+        // Deep Space runs its swirl at double speed — shifts come every
+        // 10s there, so the transition can't eat the flying time.
+        warpT = Math.max(0, warpT - dt * (deepSpace ? 2 : 1));
         simDt = 0;
         if (warpT === 0) enterWarp();
       } else if (warpLeft > 0) {
@@ -747,25 +1337,67 @@
       const d = difficulty();
       speed = d.speed;
 
-      squirrel.vy += GRAVITY * simDt;
+      // Lost in Space: the scroll never holds a rhythm. Two slow sine
+      // waves beat against each other so the speed wanders anywhere from
+      // −40% to +40% of normal — gradual enough to feel like a current,
+      // fast enough that you must keep re-reading your approach speed.
+      if (lostSpace) {
+        driftPhase += simDt;
+        driftFactor = 1 + 0.40 * (0.62 * Math.sin(driftPhase * 0.42) +
+                                  0.38 * Math.sin(driftPhase * 0.11 + 2.1));
+        // the world visibly ROTATES, sweeping between −40° and +40° —
+        // paused only while a wormhole swirl owns the screen
+        tiltPhase += simDt;
+        warpTilt = lostTiltAt(tiltPhase);
+        // gate sway: applied as a delta so the scroll math stays untouched
+        for (const p of planets) {
+          if (p.swayA) {
+            p.swayT += simDt;
+            const s = Math.sin(p.swayT * 0.9 + p.swayP) * p.swayA;
+            p.x += s - p.swayLast;
+            p.swayLast = s;
+          }
+        }
+      }
+
+      // Pocket Moon floats (0.85x); the Nut-Sack is heavy (1.2x) — part of
+      // its price for double acorns
+      const grav = GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85
+                            : save.equippedPal === 'nutsack' ? 1.2 : 1);
+      squirrel.vy += grav * simDt;
       squirrel.y += squirrel.vy * simDt;
       squirrel.rot = Math.max(-0.55, Math.min(0.9, squirrel.vy / 700));
 
       if (flapBoost > 0) flapBoost = Math.max(0, flapBoost - dt);
 
-      const move = speed * simDt;
+      const move = speed * (lostSpace ? driftFactor : 1) * simDt;
       distance += move;
 
       for (const p of planets) p.x -= move;
       for (const a of acorns) { a.x -= move; a.bob += dt * 4; }
       for (const a of powerups) { a.x -= move; a.bob += dt * 5; }
       for (const a of shields) { a.x -= move; a.bob += dt * 3; }
+      for (const a of goldens) { a.x -= move; a.bob += dt * 3.6; }
       for (const a of blackholes) { a.x -= move; a.bob += dt * 2.2; }
+      for (const a of wormholes) { a.x -= move; a.bob += dt * 2.4; }
+
+      // vertical gate drift (Nebula Wisp everywhere, Lost in Space always):
+      // applied as a delta to the whole column, debris included, so the
+      // scroll and collision math stay untouched
+      for (const p of planets) {
+        if (!p.vA) continue;
+        p.vT += simDt;
+        const s = Math.sin(p.vT * p.vR + p.vP) * p.vA;
+        const dy = s - p.vLast;
+        p.gapY += dy;
+        for (const b of (p.blockers || [])) b.y += dy;
+        p.vLast = s;
+      }
 
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
       while (lastSpawnX < W + 80) {
-        spawnPair(lastSpawnX + gapSpacing());
+        spawnPair(lastSpawnX + nextGapSpacing());
       }
 
       // cull
@@ -773,7 +1405,9 @@
       acorns = acorns.filter(a => a.x > -40 && !a.got);
       powerups = powerups.filter(a => a.x > -40 && !a.got);
       shields = shields.filter(a => a.x > -40 && !a.got);
+      goldens = goldens.filter(a => a.x > -40 && !a.got);
       blackholes = blackholes.filter(a => a.x > -40 && !a.got);
+      wormholes = wormholes.filter(a => a.x > -40 && !a.got);
 
       // score
       const sx = W * SQUIRREL_X;
@@ -806,10 +1440,11 @@
       // Debris ALWAYS kills — checked first, every frame, no cooldown.
       // (The bounce cooldown below only stops planet bounces re-triggering;
       // it must never grant safe passage through obstacles.)
-      // Exceptions: a carried shield charge absorbs exactly one hit, and a
+      // Exceptions: a carried shield charge absorbs exactly one hit, a
       // short post-absorb grace (blinking squirrel) stops the recovery from
-      // chain-draining every charge into the same debris wall.
-      if (absorbGrace <= 0) {
+      // chain-draining every charge, and GOLDEN invulnerability phases
+      // through everything — though the bottom of the screen still kills.
+      if (absorbGrace <= 0 && invulnLeft <= 0) {
         for (const p of planets) {
           for (const b of (p.blockers || [])) {
             const bx = p.x + (b.xOff || 0);
@@ -823,10 +1458,10 @@
 
       // Main planets: recoverable bounce. During the bounce cooldown the
       // planets stay SOLID — the squirrel is pushed out of any overlap
-      // instead of re-bounced. Skipping the check entirely let the player
-      // phase straight through a planet they had just bounced off.
+      // instead of re-bounced. Golden invulnerability phases through them.
       outer:
       for (const p of planets) {
+        if (invulnLeft > 0) break outer;
         const topY = p.gapY - p.gap / 2 - p.r;
         const botY = p.gapY + p.gap / 2 + p.r;
         for (const gy of [topY, botY]) {
@@ -884,7 +1519,7 @@
         }
         if (d < 28) {
           a.got = true;
-          runAcorns += 1;
+          runAcorns += save.equippedPal === 'nutsack' ? 2 : 1;
           if (a.pulled) {
             pal.x = a.x;
             pal.y = a.y;
@@ -896,15 +1531,28 @@
       for (const a of powerups) {
         if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 5)) < 30) {
           a.got = true;
-          powerLeft = POWER_DURATION;
+          // the Comet Sprite stretches slow time to double length
+          powerLeft = POWER_DURATION * (save.equippedPal === 'cometsprite' ? 2 : 1);
           spark(a.x, a.y, 'cyan');
         }
       }
       for (const a of shields) {
         if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
           a.got = true;
-          shieldCharges = Math.min(maxShieldCharges(), shieldCharges + 1);
+          // the Nut-Sack and Tin Bot can't hold a shield — the pickup fizzles
+          if (save.equippedPal !== 'nutsack' && save.equippedPal !== 'tinbot') {
+            shieldCharges = Math.min(maxShieldCharges(), shieldCharges + 1);
+          }
           spark(a.x, a.y, 'shield');
+        }
+      }
+      for (const a of goldens) {
+        if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          // Star Pup: golden invulnerability lasts twice as long
+          invulnLeft = save.equippedPal === 'starpup' ? 20 : 10;
+          spark(a.x, a.y, 'gold');
+          spark(a.x, a.y, 'gold');
         }
       }
       for (const a of blackholes) {
@@ -916,6 +1564,20 @@
           //   0 backward · 1 backward tilt-up · 2 backward tilt-down
           //   3 forward tilt-up · 4 forward tilt-down
           pickWarpVariant();
+          spark(a.x, a.y, 'warp');
+        }
+      }
+      // Wormholes (Lost in Space): the swirl transition plays, then the
+      // scroll direction MIRRORS — and stays mirrored until the next
+      // wormhole flips it back. The tilt re-rolls too; it never rests.
+      for (const a of wormholes) {
+        if (!a.got && warpT === 0 &&
+            Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          prevMirror = warpMirror;
+          prevTilt = warpTilt;
+          warpMirror = !warpMirror;
+          warpT = 1.0;
           spark(a.x, a.y, 'warp');
         }
       }
@@ -980,9 +1642,12 @@
     squirrel.vy = 0;
     squirrel.rot = 0;
     hitCooldown = 0;
-    warpLeft = 15;
-    shieldFreeze = 0.4;
-    absorbGrace = 1.6;
+    // Lost in Space: no countdown — the new orientation simply IS the
+    // orientation now, until the next wormhole. Deep Space shifts every
+    // 10s with a snappier recovery; everywhere else it's the 15s clock.
+    warpLeft = lostSpace ? 0 : deepSpace ? 10 : 15;
+    shieldFreeze = deepSpace ? 0.2 : 0.4;
+    absorbGrace = deepSpace ? 0.9 : 1.6;
     spark(sx, cy, 'warp');
   }
 
@@ -1013,7 +1678,9 @@
     // gets a nudge, a full-speed dive gets a real bounce. A fixed impulse
     // here made every touch launch the squirrel across the screen.
     const impact = Math.abs(squirrel.vy);
-    const mag = Math.min(560, 170 + impact * 0.5);
+    // Void Jelly: bounces land much softer
+    const jelly = save.equippedPal === 'voidjelly' ? 0.55 : 1;
+    const mag = Math.min(560, 170 + impact * 0.5) * jelly;
     squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
     bounceUp = squirrel.vy < 0;   // an upward launch can be swipe-cancelled
     squirrel.y += dy * 14;
@@ -1025,6 +1692,18 @@
   function die() {
     mode = 'dead';
     deadTimer = 0;
+    // bank the run's XP now so the dead screen can pour it into the meter
+    lastXpFrom = save.xp || 0;
+    lastLevelFrom = levelForXp(lastXpFrom);
+    let xp = score + runAcorns;
+    if (score >= 25) xp += 10;
+    if (score >= 50) xp += 15;
+    if (score >= 75) xp += 20;
+    if (score >= 100) xp += 25;
+    xp = Math.round(xp * (lostSpace ? 1.5 : deepSpace ? 1.25 : 1));
+    lastRunXp = xp;
+    save.xp = lastXpFrom + xp;
+    lastLevelTo = levelForXp(save.xp);
     spark(W * SQUIRREL_X, squirrel.y, 'poof');
   }
 
@@ -1100,6 +1779,35 @@
     return 'rgba(' + (envMix(key, 0) | 0) + ',' + (envMix(key, 1) | 0) + ',' +
            (envMix(key, 2) | 0) + ',' + envMix(key, 3).toFixed(3) + ')';
   }
+  // Optional scalar effects (pulse/dim) blend across the crossfade; a
+  // theme without the field simply contributes zero.
+  function envScalar(key) {
+    const a = ENVS[envA][key] || 0, b = ENVS[envB][key] || 0;
+    return a + (b - a) * envBlend;
+  }
+  // Light shafts sweep down from a high sun; each crossfading theme with
+  // rays draws its own set at its own weight.
+  function drawRays(env, weight) {
+    if (!env.rays || weight <= 0.01) return;
+    const t = performance.now() / 1000;
+    const [r, gc, b] = env.rays;
+    ctx.save();
+    const sx = W * 0.82, sy = -H * 0.06;
+    for (let i = 0; i < 5; i++) {
+      const ang = 1.55 + i * 0.22 + Math.sin(t * 0.13 + i * 1.7) * 0.05;
+      const halfW = 0.045 + (i % 2) * 0.02;
+      const len = H * 1.25;
+      ctx.fillStyle = 'rgba(' + r + ',' + gc + ',' + b + ',' +
+                      (weight * (0.05 + 0.02 * Math.sin(t * 0.4 + i))).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx + Math.cos(ang - halfW) * len, sy + Math.sin(ang - halfW) * len);
+      ctx.lineTo(sx + Math.cos(ang + halfW) * len, sy + Math.sin(ang + halfW) * len);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 
   function draw() {
     // space bg, tinted by the current environment
@@ -1109,7 +1817,12 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    // nebula washes
+    // nebula washes — a theme with pulse makes them THROB (glowing lights)
+    const throb = envScalar('pulse');
+    if (throb > 0) {
+      ctx.globalAlpha = Math.max(0.25,
+        1 + Math.sin(performance.now() / 1000 * 2.1) * 0.55 * throb);
+    }
     ctx.fillStyle = envRgba('wash');
     ctx.beginPath();
     ctx.ellipse(W * 0.7, H * 0.3, W * 0.5, H * 0.25, 0.3, 0, Math.PI * 2);
@@ -1118,6 +1831,22 @@
     ctx.beginPath();
     ctx.ellipse(W * 0.24, H * 0.68, W * 0.42, H * 0.2, -0.25, 0, Math.PI * 2);
     ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // sun rays, per crossfading theme
+    drawRays(ENVS[envA], (1 - envBlend));
+    drawRays(ENVS[envB], envBlend);
+
+    // dimming lights: a dark vignette that slowly BREATHES
+    const dim = envScalar('dim');
+    if (dim > 0.01) {
+      const breathe = dim * (0.55 + 0.45 * Math.sin(performance.now() / 1000 * 0.7));
+      const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.22, W / 2, H / 2, H * 0.75);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,' + (breathe * 0.55).toFixed(3) + ')');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     for (const s of stars) {
       const pulse = 0.55 + 0.45 * Math.sin(s.tw);
@@ -1142,6 +1871,8 @@
 
     if (mode === 'title') drawTitle();
     else if (mode === 'help') drawHelp();
+    else if (mode === 'social') drawSocial();
+    else if (mode === 'flightlog') drawFlightLog();
     else if (mode === 'hangar') drawShop();
     else {
       // Warp is a pure RENDER transform: the simulation still scrolls the
@@ -1149,13 +1880,22 @@
       // player sees the world mirrored (squirrel flying the other way) and
       // tilted ±25°; during the one-second swirl the scene spins and folds
       // through the mirror flip.
-      const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 ? 1 : 0);
+      const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 || lostSpace ? 1 : 0);
       if (wp > 0) {
         ctx.save();
         ctx.translate(W / 2, H / 2);
         const spin = warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
-        ctx.rotate(warpTilt * wp + spin);
-        ctx.scale(warpMirror ? 1 - 2 * wp : 1, 1);
+        // The swirl eases from the PREVIOUS orientation to the new one.
+        // Outside Lost in Space the previous state is always upright, so
+        // this reduces exactly to the original black-hole fold.
+        // NOTE: no screen-edge pan here — an attempt to keep the squirrel
+        // inside a screen band coupled the world's position to the
+        // squirrel's height and wrecked the scroll feel. At extreme
+        // tilts the squirrel may near the edge; that's the better tradeoff.
+        ctx.rotate(prevTilt + (warpTilt - prevTilt) * wp + spin);
+        const mFrom = prevMirror ? -1 : 1;
+        const mTo = warpMirror ? -1 : 1;
+        ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
         ctx.translate(-W / 2, -H / 2);
         drawWorld();
         ctx.restore();
@@ -1189,11 +1929,41 @@
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'shield');
     }
+    for (const a of goldens) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'golden');
+    }
+    for (const a of wormholes) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'wormhole');
+    }
     for (const a of blackholes) {
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'blackhole');
     }
     for (const p of particles) drawParticle(p);
+    // golden radiance around the invulnerable squirrel
+    if (invulnLeft > 0 && mode === 'play') {
+      const gt = performance.now() / 1000;
+      const gr = 40 + Math.sin(gt * 5) * 4;
+      const gg = ctx.createRadialGradient(W * SQUIRREL_X, squirrel.y, 10, W * SQUIRREL_X, squirrel.y, gr);
+      gg.addColorStop(0, 'rgba(255,215,80,0.28)');
+      gg.addColorStop(0.7, 'rgba(255,190,40,0.1)');
+      gg.addColorStop(1, 'rgba(255,190,40,0)');
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.arc(W * SQUIRREL_X, squirrel.y, gr, 0, Math.PI * 2);
+      ctx.fill();
+      if (Math.random() < 0.4) {
+        particles.push({
+          x: W * SQUIRREL_X + (Math.random() - 0.5) * 44,
+          y: squirrel.y + (Math.random() - 0.5) * 44,
+          vx: (Math.random() - 0.5) * 30, vy: -20 - Math.random() * 40,
+          life: 0.3 + Math.random() * 0.2, max: 0.5,
+          r: 1.2 + Math.random() * 1.8, kind: 'gold',
+        });
+      }
+    }
     if (absorbGrace > 0 && mode === 'play') {
       ctx.globalAlpha = 0.6 + 0.4 * Math.sin(performance.now() / 1000 * 18);
     }
@@ -1210,6 +1980,19 @@
     const type = b.type || 'asteroid';
     const seed = b.seed || 0;
     const rot = (b.rot || 0) + (b.spin || 0) * (performance.now() / 1000);
+    const bEnv = ENVS[b.env || 0];
+
+    // environment aura behind the obstacle — the region's colour signature
+    if (bEnv.obAccent) {
+      const ag = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 1.6);
+      ag.addColorStop(0, withAlpha(bEnv.obAccent, 0.16));
+      ag.addColorStop(1, withAlpha(bEnv.obAccent, 0));
+      ctx.fillStyle = ag;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rot);
@@ -1371,11 +2154,12 @@
       }
       ctx.shadowBlur = 0;
     } else if (type === 'crystal') {
-      // outer crystal
+      // outer crystal, cut in the environment's colours
+      const cc = bEnv.crystal || ['rgba(220,180,255,0.95)', 'rgba(140,70,230,0.9)', 'rgba(60,20,120,0.85)'];
       const cg = ctx.createLinearGradient(0, -r, 0, r);
-      cg.addColorStop(0, 'rgba(220,180,255,0.95)');
-      cg.addColorStop(0.45, 'rgba(140,70,230,0.9)');
-      cg.addColorStop(1, 'rgba(60,20,120,0.85)');
+      cg.addColorStop(0, cc[0]);
+      cg.addColorStop(0.45, cc[1]);
+      cg.addColorStop(1, cc[2]);
       ctx.fillStyle = cg;
       ctx.beginPath();
       ctx.moveTo(0, -r * 1.05);
@@ -1491,6 +2275,20 @@
       ['#142850', '#081830', '#3a68a0', '#1e4070', '#0a1830'],
       // 8 pink alien
       ['#c06078', '#782840', '#e8a0b0', '#a04858', '#501828'],
+      // 9 jungle canopy
+      ['#3f8f3a', '#245c1e', '#8ed17a', '#5cae4e', '#173d12'],
+      // 10 amethyst crystal
+      ['#8f6fd0', '#5a3f96', '#cbb2ff', '#a98fe8', '#3a2668'],
+      // 11 night city
+      ['#2e3a52', '#18202e', '#5a739c', '#3d4f70', '#0e131c'],
+      // 12 watcher (eyeball)
+      ['#d8cfc0', '#a89a88', '#f4efe4', '#c7bcab', '#6e6353'],
+      // 13 candy stripe
+      ['#e86a8a', '#b03a58', '#ffb6c8', '#f090a8', '#7c2340'],
+      // 14 shattered core
+      ['#7a6a5a', '#4a3e32', '#b0a08c', '#93816d', '#2c241c'],
+      // 15 aurora ice giant
+      ['#3a7fa8', '#1e4e70', '#8fd4f0', '#5aa8cc', '#12324a'],
     ];
     const [c1, c2, c3, c4, c5] = palettes[kind % palettes.length];
 
@@ -1608,6 +2406,166 @@
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
+    } else if (kind === 9) { // jungle canopy: vine spirals + mist banks
+      ctx.strokeStyle = c5;
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1.8;
+      [[-0.25,-0.15],[0.2,0.1],[-0.05,0.32]].forEach(([dx,dy], k) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 14; i++) {
+          const th = i * 0.5 + k * 2;
+          const rr = r * 0.05 + i * r * 0.018;
+          const px = x + dx * r + Math.cos(th) * rr;
+          const py = y + dy * r + Math.sin(th) * rr * 0.75;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      });
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.14;
+      [[0.05,-0.35,0.4,0.09],[-0.3,0.05,0.3,0.08]].forEach(([dx,dy,rx,ry]) => {
+        ctx.beginPath();
+        ctx.ellipse(x+dx*r, y+dy*r, r*rx, r*ry, 0.1, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 10) { // amethyst: geodesic facets with a glint
+      ctx.globalAlpha = 0.4;
+      [[-0.4,-0.3,0.15,-0.55,0.3,-0.2,c3],[-0.1,0.05,0.4,-0.15,0.35,0.35,c5],
+       [-0.55,0.2,-0.15,0.1,-0.25,0.5,c4],[0.15,-0.6,0.5,-0.45,0.45,-0.1,c5]].forEach(([x1,y1,x2,y2,x3,y3,cc]) => {
+        ctx.fillStyle = cc;
+        ctx.beginPath();
+        ctx.moveTo(x + x1*r, y + y1*r);
+        ctx.lineTo(x + x2*r, y + y2*r);
+        ctx.lineTo(x + x3*r, y + y3*r);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.strokeStyle = '#ffffff';
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.5, y - r * 0.42);
+      ctx.lineTo(x + r * 0.15, y - r * 0.1);
+      ctx.lineTo(x - r * 0.1, y + r * 0.45);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else if (kind === 11) { // night city: light grids on the dark side
+      ctx.fillStyle = '#ffd76a';
+      ctx.globalAlpha = 0.75;
+      for (let gx = -4; gx <= 4; gx++) {
+        for (let gy = -4; gy <= 4; gy++) {
+          const px = gx * r * 0.16 + ((gy % 2) * r * 0.05);
+          const py = gy * r * 0.15;
+          if (px * px + py * py > r * r * 0.72) continue;
+          if ((gx * 7 + gy * 13 + 5) % 4 === 0) continue; // dark blocks
+          ctx.fillRect(x + px, y + py, Math.max(1, r * 0.035), Math.max(1, r * 0.028));
+        }
+      }
+      // a glowing river of light
+      ctx.strokeStyle = '#ffb84d';
+      ctx.globalAlpha = 0.55;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.7, y + r * 0.25);
+      ctx.quadraticCurveTo(x - r * 0.1, y - r * 0.15, x + r * 0.65, y + r * 0.1);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else if (kind === 12) { // the watcher: a great planetary eye
+      ctx.fillStyle = '#3aa8a0';
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.52, r * 0.52, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#1a6a64';
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.4, r * 0.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0a0e12';
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.2, r * 0.3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.beginPath();
+      ctx.arc(x - r * 0.08, y - r * 0.14, r * 0.07, 0, Math.PI * 2);
+      ctx.fill();
+      // bloodshot veins reaching in from the limb
+      ctx.strokeStyle = '#b05a4a';
+      ctx.globalAlpha = 0.4;
+      ctx.lineWidth = 1;
+      [[-0.85,-0.25,-0.6,-0.1],[-0.8,0.35,-0.58,0.18],[0.82,-0.3,0.58,-0.14],[0.85,0.28,0.6,0.15]].forEach(([x1,y1,x2,y2]) => {
+        ctx.beginPath();
+        ctx.moveTo(x + x1*r, y + y1*r);
+        ctx.quadraticCurveTo(x + (x1+x2)/2*r, y + y1*r*0.6, x + x2*r, y + y2*r);
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 13) { // candy stripes, rolled at an angle
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.5);
+      for (let i = -3; i <= 3; i++) {
+        ctx.fillStyle = i % 2 === 0 ? c3 : c5;
+        ctx.globalAlpha = i % 2 === 0 ? 0.4 : 0.3;
+        ctx.fillRect(-r, i * r * 0.28 - r * 0.11, r * 2, r * 0.22);
+      }
+      ctx.restore();
+      // sugar glints
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.5;
+      [[-0.3,-0.2],[0.25,0.05],[-0.05,0.38]].forEach(([dx,dy]) => {
+        ctx.beginPath();
+        ctx.arc(x + dx*r, y + dy*r, r * 0.035, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 14) { // shattered core: fissures glowing from inside
+      ctx.strokeStyle = '#ff7a30';
+      ctx.globalAlpha = 0.75;
+      ctx.lineWidth = 2;
+      [[-0.7,-0.3,-0.2,-0.1,0.15,-0.45],[-0.2,-0.1,0.1,0.25,0.6,0.1],
+       [-0.2,-0.1,-0.35,0.4],[0.1,0.25,-0.05,0.65]].forEach((seg) => {
+        ctx.beginPath();
+        ctx.moveTo(x + seg[0]*r, y + seg[1]*r);
+        for (let i = 2; i < seg.length; i += 2) ctx.lineTo(x + seg[i]*r, y + seg[i+1]*r);
+        ctx.stroke();
+      });
+      ctx.strokeStyle = '#ffd76a';
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.7, y - r * 0.3);
+      ctx.lineTo(x - r * 0.2, y - r * 0.1);
+      ctx.lineTo(x + r * 0.6, y + r * 0.1);
+      ctx.stroke();
+      // dark shadow plates between the cracks
+      ctx.fillStyle = c5;
+      ctx.globalAlpha = 0.35;
+      [[0.3,-0.35,0.25],[-0.4,0.25,0.2]].forEach(([dx,dy,s]) => {
+        ctx.beginPath();
+        ctx.arc(x + dx*r, y + dy*r, r*s, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 15) { // aurora ice giant: polar light curtains
+      for (let i = 0; i < 3; i++) {
+        ctx.strokeStyle = i === 1 ? '#c58aff' : '#5dffc8';
+        ctx.globalAlpha = 0.4 - i * 0.08;
+        ctx.lineWidth = r * (0.07 - i * 0.015);
+        ctx.beginPath();
+        ctx.ellipse(x, y - r * 0.55, r * (0.55 + i * 0.14), r * (0.16 + i * 0.05), 0.06, Math.PI * 1.05, Math.PI * 1.95);
+        ctx.stroke();
+      }
+      // frost bands
+      ctx.strokeStyle = c3;
+      ctx.globalAlpha = 0.25;
+      ctx.lineWidth = r * 0.1;
+      for (let i = 0; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.ellipse(x, y + (i + 0.5) * r * 0.25, r * 0.94, r * 0.15, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
     }
 
     // terminator / night side soft shadow
@@ -1669,6 +2627,40 @@
       ctx.beginPath();
       ctx.ellipse(x, y, r * 1.25, r * 0.15, 0.1, 0, Math.PI * 2);
       ctx.stroke();
+    } else if (kind === 15) {
+      // broad double ice ring
+      ctx.strokeStyle = 'rgba(143,212,240,0.5)';
+      ctx.lineWidth = Math.max(2.5, r * 0.09);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.5, r * 0.26, -0.22, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(197,138,255,0.3)';
+      ctx.lineWidth = Math.max(1.2, r * 0.04);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.68, r * 0.3, -0.22, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (kind === 14) {
+      // orbiting shards blasted off the shattered surface
+      ctx.fillStyle = 'rgba(176,160,140,0.7)';
+      [[1.28,0.12,-0.4],[1.38,-0.06,0.9],[1.32,0.2,2.2],[1.45,0.02,3.6]].forEach(([rr,tilt,th]) => {
+        const px = x + Math.cos(th) * r * rr;
+        const py = y + Math.sin(th) * r * rr * 0.32 + tilt * r;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(1.2, r * 0.06), 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (kind === 10) {
+      // a scatter of glinting crystal motes
+      ctx.fillStyle = 'rgba(203,178,255,0.8)';
+      [[1.3,0.4],[1.35,2.1],[1.28,4.2]].forEach(([rr,th]) => {
+        const px = x + Math.cos(th) * r * rr;
+        const py = y + Math.sin(th) * r * rr * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(px, py - 2.4); ctx.lineTo(px + 1.6, py);
+        ctx.lineTo(px, py + 2.4); ctx.lineTo(px - 1.6, py);
+        ctx.closePath();
+        ctx.fill();
+      });
     }
 
     // crisp limb highlight
@@ -1682,9 +2674,60 @@
   function drawAcorn(x, y, power) {
     const shield = power === 'shield';
     const hole = power === 'blackhole';
+    const golden = power === 'golden';
+    const worm = power === 'wormhole';
     ctx.save();
     ctx.translate(x, y);
-    if (hole) {
+    if (golden) {
+      // radiant star-ring
+      const t = performance.now() / 1000;
+      const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(255,230,120,0.55)');
+      glow.addColorStop(0.55, 'rgba(255,190,40,0.2)');
+      glow.addColorStop(1, 'rgba(255,190,40,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,240,170,0.95)';
+      for (let i = 0; i < 5; i++) {
+        const a = t * 1.2 + (i / 5) * Math.PI * 2;
+        const px = Math.cos(a) * 18, py = Math.sin(a) * 18 * 0.8;
+        ctx.beginPath();
+        ctx.moveTo(px, py - 2.6);
+        ctx.lineTo(px + 1, py - 0.8);
+        ctx.lineTo(px + 2.8, py);
+        ctx.lineTo(px + 1, py + 0.8);
+        ctx.lineTo(px, py + 2.6);
+        ctx.lineTo(px - 1, py + 0.8);
+        ctx.lineTo(px - 2.8, py);
+        ctx.lineTo(px - 1, py - 0.8);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    if (worm) {
+      // teal portal — two counter-rotating rings, the mirror made visible
+      const t = performance.now() / 1000;
+      const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(0,45,40,0.9)');
+      glow.addColorStop(0.5, 'rgba(45,220,200,0.3)');
+      glow.addColorStop(1, 'rgba(45,220,200,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(110,240,220,0.9)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 19, 6.5, (t * 0.9) % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(190,255,245,0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 14, 4.6, (-t * 0.9 - 0.9) % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (hole) {
       // dark core with a swirling accretion ring
       const t = performance.now() / 1000;
       const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
@@ -1742,7 +2785,15 @@
     ctx.fill();
     // nut body with gradient
     const nut = ctx.createRadialGradient(-3, 0, 2, 0, 4, 12);
-    if (hole) {
+    if (golden) {
+      nut.addColorStop(0, '#fff3c0');
+      nut.addColorStop(0.5, '#ffce45');
+      nut.addColorStop(1, '#a06a08');
+    } else if (worm) {
+      nut.addColorStop(0, '#bffff2');
+      nut.addColorStop(0.5, '#2ec4ad');
+      nut.addColorStop(1, '#0a4a40');
+    } else if (hole) {
       nut.addColorStop(0, '#3a2a55');
       nut.addColorStop(0.5, '#1a1030');
       nut.addColorStop(1, '#05020c');
@@ -1771,7 +2822,13 @@
     ctx.stroke();
     // cap
     const cap = ctx.createRadialGradient(0, -6, 1, 0, -4, 12);
-    if (hole) {
+    if (golden) {
+      cap.addColorStop(0, '#ffe27a');
+      cap.addColorStop(1, '#b07c10');
+    } else if (worm) {
+      cap.addColorStop(0, '#39a08c');
+      cap.addColorStop(1, '#0c3a32');
+    } else if (hole) {
       cap.addColorStop(0, '#6a3aa8');
       cap.addColorStop(1, '#241040');
     } else if (shield) {
@@ -1887,6 +2944,141 @@
       ctx.moveTo(-6.8, 0); ctx.lineTo(-9.4, 0.8); ctx.lineTo(-6.6, 1.8);
       ctx.closePath();
       ctx.fill();
+    } else if (id === 'nutsack') {
+      // burlap sack, tied at the neck, stitched, with a shy face
+      const bag = ctx.createRadialGradient(-2, -2, 2, 0, 2, 10);
+      bag.addColorStop(0, '#c49a5c');
+      bag.addColorStop(1, '#7a5a2a');
+      ctx.fillStyle = bag;
+      ctx.beginPath();
+      ctx.moveTo(-6.5, -4);
+      ctx.quadraticCurveTo(-9, 6, -4.5, 8.5);
+      ctx.quadraticCurveTo(0, 10, 4.5, 8.5);
+      ctx.quadraticCurveTo(9, 6, 6.5, -4);
+      ctx.quadraticCurveTo(2, -6.5, -6.5, -4);
+      ctx.fill();
+      // tied neck + ears of the sack
+      ctx.fillStyle = '#8a6632';
+      ctx.beginPath();
+      ctx.ellipse(0, -5, 4.4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#5a3f18';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(-3.5, -6.5); ctx.lineTo(-5, -9.5);
+      ctx.moveTo(3.5, -6.5); ctx.lineTo(5, -9.5);
+      ctx.stroke();
+      // stitches
+      ctx.strokeStyle = 'rgba(60,40,15,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(-4, 2); ctx.lineTo(-2.4, 3.2);
+      ctx.moveTo(2.2, 5.4); ctx.lineTo(3.8, 4.2);
+      ctx.stroke();
+      // face
+      ctx.fillStyle = '#241207';
+      ctx.beginPath(); ctx.arc(-2, 0.5, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.4, 0.5, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#241207';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(0.2, 2.6, 1.5, 0.3, Math.PI - 0.3); ctx.stroke();
+
+    } else if (id === 'meteorcore') {
+      // green glowing rock, cracks lit from inside
+      const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, 13);
+      glow.addColorStop(0, 'rgba(93,255,158,0.5)');
+      glow.addColorStop(1, 'rgba(93,255,158,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill();
+      const rock = ctx.createRadialGradient(-2, -3, 1, 0, 0, 9);
+      rock.addColorStop(0, '#5a7a5a');
+      rock.addColorStop(1, '#22321f');
+      ctx.fillStyle = rock;
+      ctx.beginPath();
+      ctx.moveTo(-7.5, -1); ctx.lineTo(-3.5, -7); ctx.lineTo(3, -6.5);
+      ctx.lineTo(7.5, -0.5); ctx.lineTo(4.5, 6.5); ctx.lineTo(-3.5, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#5dff9e';
+      ctx.lineWidth = 1.1;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-4.5, -2); ctx.lineTo(-1, 0.5); ctx.lineTo(-2, 4);
+      ctx.moveTo(1.5, -4.5); ctx.lineTo(2.5, -0.5); ctx.lineTo(5.5, 1);
+      ctx.stroke();
+      ctx.fillStyle = '#0c1a0c';
+      ctx.beginPath(); ctx.arc(-1.5, -2.2, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.6, -2.2, 1, 0, Math.PI * 2); ctx.fill();
+
+    } else if (id === 'cometsprite') {
+      // little comet with a streaking tail and starry eyes
+      for (let i = 0; i < 3; i++) {
+        ctx.strokeStyle = 'rgba(140,210,255,' + (0.6 - i * 0.16) + ')';
+        ctx.lineWidth = 2.4 - i * 0.6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-3 - i * 1.5, -1 + i * 2.2);
+        ctx.quadraticCurveTo(-9 - i * 3, 0 + i * 2, -14 - i * 3.5, 3 + i * 2);
+        ctx.stroke();
+      }
+      const head = ctx.createRadialGradient(1, -1.5, 1, 0, 0, 7);
+      head.addColorStop(0, '#ffffff');
+      head.addColorStop(0.55, '#bfe6ff');
+      head.addColorStop(1, '#4a9ad8');
+      ctx.fillStyle = head;
+      ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#12365a';
+      ctx.beginPath(); ctx.arc(-1.5, -1, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.5, -1, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#12365a';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(0.5, 1.6, 1.6, 0.25, Math.PI - 0.25); ctx.stroke();
+
+    } else if (id === 'pocketmoon') {
+      const m = ctx.createRadialGradient(-2.5, -3, 1, 0, 0, 8.5);
+      m.addColorStop(0, '#f0f4fa');
+      m.addColorStop(0.6, '#b8c4d4');
+      m.addColorStop(1, '#6a7688');
+      ctx.fillStyle = m;
+      ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(90,100,120,0.5)';
+      ctx.beginPath(); ctx.arc(-3.5, 2, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(3, 3.5, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(4, -3.5, 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#2a3242';
+      ctx.beginPath(); ctx.arc(-1.8, -1.5, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(1.8, -1.5, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#2a3242';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(0, 0.8, 1.5, 0.3, Math.PI - 0.3); ctx.stroke();
+
+    } else if (id === 'voidjelly') {
+      // translucent jelly dome with drifting tentacles
+      const wob = Math.sin(t * 3);
+      const dome = ctx.createRadialGradient(-1, -3, 1, 0, -1, 8);
+      dome.addColorStop(0, 'rgba(230,190,255,0.9)');
+      dome.addColorStop(0.6, 'rgba(160,90,220,0.6)');
+      dome.addColorStop(1, 'rgba(90,40,150,0.35)');
+      ctx.fillStyle = dome;
+      ctx.beginPath();
+      ctx.arc(0, -1, 7.5, Math.PI, 0);
+      ctx.quadraticCurveTo(7.5, 3.5, 5.5, 3.5);
+      ctx.lineTo(-5.5, 3.5);
+      ctx.quadraticCurveTo(-7.5, 3.5, -7.5, -1);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(220,180,255,0.7)';
+      ctx.lineWidth = 1;
+      ctx.lineCap = 'round';
+      for (let i = -2; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 2.6, 3.5);
+        ctx.quadraticCurveTo(i * 2.6 + wob * 2, 7, i * 2.6 - wob * 2.4, 10.5);
+        ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(40,10,80,0.85)';
+      ctx.beginPath(); ctx.arc(-2, -2, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2, -2, 1, 0, Math.PI * 2); ctx.fill();
+
     } else if (id === 'ufo') {
       const hull = ctx.createRadialGradient(0, -2, 1, 0, 0, 9);
       hull.addColorStop(0, '#eef4fa');
@@ -1913,6 +3105,130 @@
         ctx.arc(-6 + i * 4, 1.6, 0.9, 0, Math.PI * 2);
         ctx.fill();
       }
+    } else if (id === 'starpup') {
+      // a five-point star with a puppy face and a wagging spark tail
+      const wag = Math.sin(t * 9) * 0.35;
+      ctx.fillStyle = 'rgba(255,214,90,0.55)';
+      ctx.beginPath();
+      ctx.arc(-8, 4 + wag * 4, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.save();
+      ctx.rotate(wag * 0.25);
+      const sg = ctx.createRadialGradient(-1.5, -2, 1, 0, 0, 9);
+      sg.addColorStop(0, '#fff3c0');
+      sg.addColorStop(0.6, '#ffce45');
+      sg.addColorStop(1, '#c98a10');
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const rr = i % 2 === 0 ? 8.6 : 4.1;
+        const px = Math.cos(a) * rr, py = Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(150,95,10,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // puppy face: floppy highlight ears, wide eyes, tongue
+      ctx.fillStyle = '#3a2410';
+      ctx.beginPath(); ctx.arc(-2, -0.8, 1.1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2, -0.8, 1.1, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(-1.6, -1.2, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.4, -1.2, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3a2410';
+      ctx.beginPath(); ctx.ellipse(0, 1.2, 0.9, 0.7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ff8a9a';
+      ctx.beginPath(); ctx.ellipse(0.4, 2.8, 0.9, 1.2, 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if (id === 'tinbot') {
+      // little rivet-and-solder robot with one earnest eye
+      const hover = Math.sin(t * 4) * 0.8;
+      ctx.save();
+      ctx.translate(0, hover);
+      // thruster flame
+      ctx.fillStyle = 'rgba(110,240,255,' + (0.4 + 0.3 * Math.sin(t * 16)).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(-2, 8.5); ctx.lineTo(0, 12 + Math.sin(t * 16)); ctx.lineTo(2, 8.5);
+      ctx.closePath();
+      ctx.fill();
+      const body = ctx.createLinearGradient(-6, -6, 6, 8);
+      body.addColorStop(0, '#cfd8e2');
+      body.addColorStop(0.5, '#8b98a8');
+      body.addColorStop(1, '#525d6c');
+      ctx.fillStyle = body;
+      roundRect(-5.5, -2, 11, 10.5, 2.5);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(40,48,60,0.7)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // rivets
+      ctx.fillStyle = 'rgba(40,48,60,0.8)';
+      [[-4, -0.5], [4, -0.5], [-4, 7], [4, 7]].forEach(([px, py]) => {
+        ctx.beginPath(); ctx.arc(px, py, 0.6, 0, Math.PI * 2); ctx.fill();
+      });
+      // chest bolt light
+      ctx.fillStyle = Math.floor(t * 3) % 2 ? '#ffd23f' : 'rgba(255,210,63,0.35)';
+      ctx.beginPath(); ctx.arc(0, 4, 1.4, 0, Math.PI * 2); ctx.fill();
+      // dome head with a single big eye
+      ctx.fillStyle = body;
+      ctx.beginPath(); ctx.arc(0, -5, 5, Math.PI, 0); ctx.fill();
+      ctx.strokeStyle = 'rgba(40,48,60,0.7)';
+      ctx.beginPath(); ctx.arc(0, -5, 5, Math.PI, 0); ctx.stroke();
+      ctx.fillStyle = '#0c1118';
+      ctx.beginPath(); ctx.arc(1, -6, 2.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#40f0ff';
+      ctx.beginPath(); ctx.arc(1 + Math.sin(t * 2) * 0.8, -6, 1.2, 0, Math.PI * 2); ctx.fill();
+      // antenna
+      ctx.strokeStyle = '#525d6c';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-2.5, -9.5); ctx.lineTo(-3.5, -13); ctx.stroke();
+      ctx.fillStyle = '#ff5050';
+      ctx.beginPath(); ctx.arc(-3.7, -13.8, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if (id === 'wisp') {
+      // a translucent spirit flame that never quite holds one shape
+      const sway = Math.sin(t * 2.2);
+      const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, 12);
+      glow.addColorStop(0, 'rgba(190,255,245,0.8)');
+      glow.addColorStop(0.5, 'rgba(90,220,205,0.35)');
+      glow.addColorStop(1, 'rgba(60,180,170,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 12, 0, Math.PI * 2);
+      ctx.fill();
+      const core = ctx.createRadialGradient(-1, -2, 0.5, 0, 0, 7);
+      core.addColorStop(0, 'rgba(235,255,250,0.95)');
+      core.addColorStop(0.7, 'rgba(120,230,215,0.55)');
+      core.addColorStop(1, 'rgba(80,200,190,0.15)');
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.moveTo(0, -9 + sway);
+      ctx.quadraticCurveTo(5.5, -4, 5, 1.5);
+      ctx.quadraticCurveTo(4.5, 6, 0, 6.5);
+      ctx.quadraticCurveTo(-4.5, 6, -5, 1.5);
+      ctx.quadraticCurveTo(-5.5, -4, 0, -9 + sway);
+      ctx.fill();
+      // trailing wisps peel off behind
+      ctx.strokeStyle = 'rgba(150,240,225,0.5)';
+      ctx.lineWidth = 1.1;
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const k = (t * 1.1 + i * 0.33) % 1;
+        ctx.globalAlpha = 0.6 * (1 - k);
+        ctx.beginPath();
+        ctx.moveTo(-4 - k * 6, 2 + Math.sin(i * 2.1 + t * 3) * 2.5);
+        ctx.quadraticCurveTo(-7 - k * 8, 0, -9 - k * 10, 3 + Math.sin(i) * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      // sleepy contented eyes
+      ctx.strokeStyle = 'rgba(20,70,65,0.85)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(-2, -2, 1.4, 0.15, Math.PI - 0.15); ctx.stroke();
+      ctx.beginPath(); ctx.arc(2, -2, 1.4, 0.15, Math.PI - 0.15); ctx.stroke();
     }
     ctx.restore();
   }
@@ -2002,7 +3318,178 @@
       ctx.globalAlpha = 1;
       return;
     } else if (p.kind === 'comet') {
-      ctx.fillStyle = t > 0.5 ? '#fff3c8' : '#ffb830';
+      // blazing streak with a bright head
+      const len = 10 + p.r * 3;
+      const grad = ctx.createLinearGradient(p.x, p.y, p.x + len, p.y);
+      grad.addColorStop(0, t > 0.55 ? 'rgba(255,246,210,0.95)' : 'rgba(255,190,60,0.9)');
+      grad.addColorStop(1, 'rgba(255,120,20,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = Math.max(1, p.r * t);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + len, p.y);
+      ctx.stroke();
+      ctx.fillStyle = t > 0.55 ? '#fff6d2' : '#ffc340';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.6, p.r * t * 0.55), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'cometcore') {
+      const cg = ctx.createRadialGradient(p.x, p.y, 0.5, p.x, p.y, p.r * (1.6 - t * 0.5));
+      cg.addColorStop(0, 'rgba(255,255,240,0.95)');
+      cg.addColorStop(0.5, 'rgba(255,214,90,0.7)');
+      cg.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * (1.6 - t * 0.5), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'prism') {
+      // tumbling rainbow shard
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.spin || 0) * t * 2);
+      ctx.fillStyle = 'hsla(' + ((p.hue || 0) | 0) + ',95%,68%,' + (t * 0.95).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(0, -p.r * 1.4);
+      ctx.lineTo(p.r, p.r * 0.9);
+      ctx.lineTo(-p.r, p.r * 0.9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,' + (t * 0.4).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(0, -p.r * 0.7);
+      ctx.lineTo(p.r * 0.45, p.r * 0.4);
+      ctx.lineTo(-p.r * 0.45, p.r * 0.4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'plasma') {
+      // a jagged little bolt, kinked by its own seed
+      const s = p.seed || 0;
+      const k1 = Math.sin(s * 3.7) * 5, k2 = Math.sin(s * 7.1) * 5;
+      ctx.strokeStyle = 'rgba(199,125,255,' + (t * 0.95).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.8, p.r * t);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 5, p.y + k1);
+      ctx.lineTo(p.x + 10, p.y - k2);
+      ctx.lineTo(p.x + 15, p.y + k1 * 0.4);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,' + (t * 0.6).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.5, p.r * t * 0.4);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 5, p.y + k1);
+      ctx.lineTo(p.x + 10, p.y - k2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'plasmacore') {
+      const cg = ctx.createRadialGradient(p.x, p.y, 0.5, p.x, p.y, p.r * 1.8);
+      cg.addColorStop(0, 'rgba(255,255,255,0.9)');
+      cg.addColorStop(0.5, 'rgba(199,125,255,0.6)');
+      cg.addColorStop(1, 'rgba(140,60,255,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'galaxy') {
+      // four-point star twinkling in nebula tints
+      const tint = p.tint === 0 ? '255,255,255' : p.tint === 1 ? '190,150,255' : '140,190,255';
+      const tw = 0.6 + 0.4 * Math.sin((p.tw || 0) + t * 14);
+      ctx.fillStyle = 'rgba(' + tint + ',' + (t * tw).toFixed(2) + ')';
+      const s = p.r * (1 + (1 - t) * 0.6);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - s * 1.7);
+      ctx.lineTo(p.x + s * 0.45, p.y - s * 0.45);
+      ctx.lineTo(p.x + s * 1.7, p.y);
+      ctx.lineTo(p.x + s * 0.45, p.y + s * 0.45);
+      ctx.lineTo(p.x, p.y + s * 1.7);
+      ctx.lineTo(p.x - s * 0.45, p.y + s * 0.45);
+      ctx.lineTo(p.x - s * 1.7, p.y);
+      ctx.lineTo(p.x - s * 0.45, p.y - s * 0.45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'aurora') {
+      // a short waving ribbon segment in polar light colors
+      const col = p.tint === 0 ? '93,255,200' : p.tint === 1 ? '197,138,255' : '110,240,255';
+      const wave = Math.sin((p.tw || 0) + t * 8) * 3;
+      ctx.strokeStyle = 'rgba(' + col + ',' + (t * 0.85).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(1, p.r * t * 1.4);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.quadraticCurveTo(p.x + 7, p.y + wave, p.x + 14, p.y - wave * 0.6);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'frost') {
+      // six-arm snowflake, spinning as it drifts
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.spin || 0) * t * 2);
+      ctx.strokeStyle = 'rgba(210,240,255,' + (t * 0.9).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.7, p.r * 0.28);
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const a = i * Math.PI / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * p.r * 1.5, Math.sin(a) * p.r * 1.5);
+        ctx.lineTo(-Math.cos(a) * p.r * 1.5, -Math.sin(a) * p.r * 1.5);
+        ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(255,255,255,' + (t * 0.8).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'frostdust') {
+      ctx.fillStyle = '#dff5ff';
+    } else if (p.kind === 'voidsmoke') {
+      // hollow ring that swells as it dies, violet rim on black smoke
+      const swell = p.r * (1 + (1 - t) * 2.2);
+      ctx.fillStyle = 'rgba(10,6,20,' + (t * 0.55).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, swell, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(180,92,255,' + (t * 0.6).toFixed(2) + ')';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, swell, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'nova') {
+      // expanding shockwave ring with a hot core
+      const ring = p.r * (1 + (1 - t) * 5);
+      ctx.strokeStyle = 'rgba(255,240,200,' + (t * 0.9).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(1, 3 * t);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ring, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,150,60,' + (t * 0.5).toFixed(2) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ring * 1.25, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'novaspark') {
+      ctx.fillStyle = t > 0.5 ? '#ffffff' : '#ffcf6a';
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -2118,7 +3605,79 @@
     }
   }
 
+  // Robot tail: articulated metal segments following the same spline, so
+  // the silhouette matches the furry tail everywhere it appears.
+  function drawRoboTail(suit) {
+    if (suit.glow) {
+      tailPath(1.16, 0, false);
+      ctx.fillStyle = withAlpha(suit.glow, 0.18);
+      ctx.fill();
+    }
+    const step = 4;
+    for (let k = TAIL_SAMPLES.length - 1; k >= 0; k -= step) {
+      const sSeg = TAIL_SAMPLES[k];
+      const r = sSeg.w * 1.02;
+      const g = ctx.createRadialGradient(sSeg.x - r * 0.4, sSeg.y - r * 0.4, r * 0.2, sSeg.x, sSeg.y, r);
+      g.addColorStop(0, suit.belly);
+      g.addColorStop(0.55, suit.fur);
+      g.addColorStop(1, suit.furDark);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(sSeg.x, sSeg.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // joint bolt
+      ctx.fillStyle = withAlpha(suit.trim, 0.65);
+      ctx.beginPath();
+      ctx.arc(sSeg.x, sSeg.y, Math.max(0.9, r * 0.16), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // glowing tail-tip light
+    const tip = TAIL_SAMPLES[TAIL_SAMPLES.length - 1];
+    const t = performance.now() / 1000;
+    const pulse = 0.6 + 0.4 * Math.sin(t * 4);
+    ctx.fillStyle = withAlpha(suit.trim, 0.9 * pulse);
+    ctx.beginPath();
+    ctx.arc(tip.x, tip.y, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Ghost tail: no fur at all — three overlapping spectral plumes that
+  // waver on their own beats, with ecto-motes rising off the tip.
+  function drawGhostTail(suit) {
+    const t = performance.now() / 1000;
+    ctx.save();
+    for (let k = 0; k < 3; k++) {
+      const sway = Math.sin(t * 1.6 + k * 1.9) * 3.5;
+      const g = ctx.createLinearGradient(-34, 6, -4, -14);
+      g.addColorStop(0, withAlpha(suit.glow || '#9fd8ff', 0));
+      g.addColorStop(0.45, withAlpha(suit.glow || '#9fd8ff', 0.22));
+      g.addColorStop(1, withAlpha(suit.belly, 0.75));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(-6, 9);
+      ctx.quadraticCurveTo(-20 - k * 3, 12 + sway, -30 - k * 4, 2 + sway * 1.4 - k * 5);
+      ctx.quadraticCurveTo(-34 - k * 4, -6 + sway - k * 5, -26 - k * 3, -12 - k * 4 + sway);
+      ctx.quadraticCurveTo(-14, -14, -5, -6);
+      ctx.closePath();
+      ctx.fill();
+    }
+    for (let i = 0; i < 4; i++) {
+      const kf = (t * 0.7 + i * 0.25) % 1;
+      ctx.fillStyle = withAlpha(suit.glow || '#9fd8ff', 0.5 * (1 - kf));
+      ctx.beginPath();
+      ctx.arc(-14 - i * 5, -2 - kf * 14 + Math.sin(i * 3 + t * 2) * 2,
+              1.1 + (1 - kf), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   function drawTail(suit) {
+    if (suit.robo) { drawRoboTail(suit); return; }
+    if (suit.ghost) { drawGhostTail(suit); return; }
     // emissive edge, drawn as a slightly larger silhouette behind the tail
     if (suit.glow) {
       tailPath(1.16, 0, true);
@@ -2168,6 +3727,61 @@
 
   // —— body ——————————————————————————————————————————————————
   function drawSuitBody(suit) {
+    // BIG BOOTY: the haunches go ABSOLUTELY MAXIMUM — twin planetoid
+    // cheeks, each bouncing on its own beat with cartoon squash-and-
+    // stretch, a deep seam, juicy double shine, and the gold waistband
+    // of shorts that never stood a chance. Silhouette first, always.
+    if (suit.booty) {
+      const t = performance.now() / 1000;
+      // out-of-phase beats so the cheeks BOUNCE independently, not slide
+      const jigL = Math.sin(t * 7) * 1.8;
+      const jigR = Math.sin(t * 7 + 0.7) * 1.8;
+      const cheek = (cx, cy, rr, jig) => {
+        // squash & stretch: wider as it lands, taller as it rises
+        const sqx = 1 + Math.abs(jig) * 0.022;
+        const sqy = 1 - Math.abs(jig) * 0.022;
+        const g = ctx.createRadialGradient(cx - rr * 0.32, cy - rr * 0.4, 1, cx, cy, rr + 4);
+        g.addColorStop(0, suit.suitLite);
+        g.addColorStop(0.5, suit.suit);
+        g.addColorStop(1, suit.suitDark);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + jig, rr * sqx, rr * 0.96 * sqy, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        // juicy double shine: big top gleam + a small kiss of rim light
+        ctx.fillStyle = withAlpha('#ffffff', 0.3);
+        ctx.beginPath();
+        ctx.ellipse(cx - rr * 0.32, cy - rr * 0.4 + jig,
+                    rr * 0.4, rr * 0.26, -0.45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = withAlpha('#ffffff', 0.16);
+        ctx.beginPath();
+        ctx.ellipse(cx + rr * 0.25, cy + rr * 0.35 + jig,
+                    rr * 0.2, rr * 0.12, 0.35, 0, Math.PI * 2);
+        ctx.fill();
+        // under-cheek shadow arc so it reads perfectly ROUND
+        ctx.strokeStyle = withAlpha(suit.suitDark, 0.7);
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(cx, cy + jig, rr * 0.92, 0.5, 1.8);
+        ctx.stroke();
+      };
+      // FAR cheek first: tucked up behind the body so the near cheek and
+      // torso cover almost all of it — only its top crescent peeks out.
+      // (Two full bubbles hanging below read as… something else.)
+      cheek(-6.5, 5, 13, jigR);
+      // NEAR cheek: the giant one that owns the whole silhouette
+      cheek(-14, 13.5, 15.5, jigL);
+      // gold waistband riding the top of all that curve
+      ctx.strokeStyle = suit.trim;
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-27, 5);
+      ctx.quadraticCurveTo(-10, -3, 5, 5);
+      ctx.stroke();
+    }
+
     // hind haunch
     ctx.fillStyle = suit.suitDark;
     ctx.beginPath();
@@ -2259,6 +3873,27 @@
       ctx.stroke();
     }
 
+    // robo: panel seams + a power core light on the torso
+    if (suit.robo) {
+      ctx.strokeStyle = withAlpha(suit.furDark, 0.7);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-11, 3); ctx.quadraticCurveTo(0, 6.5, 11, 3.5);
+      ctx.moveTo(-9.5, 11); ctx.quadraticCurveTo(0, 14, 9.5, 11.5);
+      ctx.stroke();
+      const t = performance.now() / 1000;
+      const corePulse = 0.65 + 0.35 * Math.sin(t * 3);
+      ctx.fillStyle = withAlpha(suit.trim, corePulse);
+      ctx.beginPath();
+      ctx.arc(-3, 7.5, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(suit.trim, 0.5);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(-3, 7.5, 3.6, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
     // rim light so the silhouette separates from the starfield
     ctx.strokeStyle = suit.glow ? withAlpha(suit.glow, 0.8) : 'rgba(255,236,200,0.32)';
     ctx.lineWidth = 1.8;
@@ -2267,8 +3902,177 @@
     ctx.stroke();
   }
 
+  // Robot head: metal cranium with a glowing visor eye, fin ears and an
+  // antenna — same position and size as the furry head so helmets fit.
+  function drawRoboHead(suit) {
+    const t = performance.now() / 1000;
+    // fin ears where the furry ears sit
+    ctx.fillStyle = suit.furDark;
+    ctx.beginPath();
+    ctx.moveTo(4, -17); ctx.lineTo(6.5, -24); ctx.lineTo(9, -17.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = suit.fur;
+    ctx.beginPath();
+    ctx.moveTo(9.5, -17); ctx.lineTo(12, -25); ctx.lineTo(14.5, -17.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.trim, 0.8);
+    ctx.beginPath();
+    ctx.moveTo(10.8, -19); ctx.lineTo(12, -23); ctx.lineTo(13.2, -19.2);
+    ctx.closePath();
+    ctx.fill();
+
+    // cranium
+    const hg = ctx.createRadialGradient(7, -15, 2, 11, -9, 15);
+    hg.addColorStop(0, suit.belly);
+    hg.addColorStop(0.5, suit.fur);
+    hg.addColorStop(1, suit.furDark);
+    ctx.fillStyle = hg;
+    roundRect(0.5, -20, 19.5, 17.5, 7);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.8);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // visor eye band with a scanning glow
+    ctx.fillStyle = '#0c1118';
+    roundRect(6, -15.5, 13, 6, 3);
+    ctx.fill();
+    const scan = 8 + Math.sin(t * 2.4) * 4;
+    ctx.fillStyle = suit.trim;
+    ctx.beginPath();
+    ctx.arc(6 + scan, -12.5, 1.9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.trim, 0.35);
+    ctx.beginPath();
+    ctx.arc(6 + scan, -12.5, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // muzzle plate with speaker grille (where the teeth would be)
+    ctx.fillStyle = suit.furDark;
+    roundRect(13, -8, 8.5, 6.5, 2.5);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.belly, 0.6);
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(14.8, -6.2 + i * 1.8);
+      ctx.lineTo(20, -6.2 + i * 1.8);
+      ctx.stroke();
+    }
+
+    // antenna
+    ctx.strokeStyle = suit.furDark;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(3.5, -19.5); ctx.lineTo(1.5, -26);
+    ctx.stroke();
+    const blink = Math.floor(t * 2) % 2 === 0;
+    ctx.fillStyle = blink ? '#ff5050' : withAlpha('#ff5050', 0.35);
+    ctx.beginPath();
+    ctx.arc(1.2, -27.2, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Alien head: teardrop cranium, one huge obsidian almond eye (plus a
+  // hint of a second), glowing antennae — but the ears, muzzle and buck
+  // teeth stay, so it's still recognisably OUR squirrel.
+  function drawAlienHead(suit) {
+    const t = performance.now() / 1000;
+    // far ear
+    ctx.fillStyle = suit.furDark;
+    ctx.beginPath();
+    ctx.ellipse(5.4, -20.2, 2.6, 4.4, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+    // swept teardrop cranium, wider at the back like a classic grey
+    const hg = ctx.createRadialGradient(7.5, -15, 2, 11, -9, 16);
+    hg.addColorStop(0, suit.belly);
+    hg.addColorStop(0.45, suit.fur);
+    hg.addColorStop(1, suit.furDark);
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.ellipse(9, -12.5, 10.6, 9.6, -0.12, 0, Math.PI * 2);
+    ctx.fill();
+    // near ear + inner
+    ctx.fillStyle = suit.fur;
+    ctx.beginPath();
+    ctx.ellipse(11, -20.6, 3.2, 4.8, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.furDark, 0.6);
+    ctx.beginPath();
+    ctx.ellipse(11.2, -20.2, 1.5, 2.7, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    // antennae with pulsing tips
+    ctx.strokeStyle = suit.furDark;
+    ctx.lineWidth = 1.3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(6.5, -21); ctx.quadraticCurveTo(4.5, -27, 5.8, -30);
+    ctx.moveTo(13.5, -21); ctx.quadraticCurveTo(15.5, -27, 14.4, -30.5);
+    ctx.stroke();
+    const pulse = 0.55 + 0.45 * Math.sin(t * 3.4);
+    for (const [bx, by] of [[5.8, -31], [14.4, -31.5]]) {
+      ctx.fillStyle = withAlpha(suit.glow || suit.trim, 0.35 * pulse);
+      ctx.beginPath(); ctx.arc(bx, by, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = withAlpha(suit.trim, 0.6 + 0.4 * pulse);
+      ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI * 2); ctx.fill();
+    }
+    // muzzle + buck teeth: the squirrel stays a squirrel
+    ctx.fillStyle = suit.belly;
+    ctx.beginPath();
+    ctx.ellipse(16.4, -8.4, 5.0, 4.0, 0.16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fffaf0';
+    roundRect(17.2, -6.2, 3.6, 4.0, 1.2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(60,110,60,0.5)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(19, -6); ctx.lineTo(19, -2.4);
+    ctx.stroke();
+    // tiny slit nostrils instead of a nose
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(19.4, -10.4); ctx.lineTo(20.4, -10.0);
+    ctx.moveTo(19.0, -9.2); ctx.lineTo(20.0, -8.8);
+    ctx.stroke();
+    // the EYE: huge obsidian almond with a wet shine and a green glint
+    ctx.save();
+    ctx.translate(11.6, -12.6);
+    ctx.rotate(-0.35);
+    const eg = ctx.createRadialGradient(-1, -1.5, 0.5, 0, 0, 6.4);
+    eg.addColorStop(0, '#2c3a44');
+    eg.addColorStop(0.5, '#101820');
+    eg.addColorStop(1, '#05080c');
+    ctx.fillStyle = eg;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 6.2, 3.9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.ellipse(-2.2, -1.5, 1.6, 1.0, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(190,255,190,0.5)';
+    ctx.beginPath(); ctx.arc(2.4, 0.8, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    // hint of the second eye further back
+    ctx.fillStyle = '#0a1014';
+    ctx.beginPath();
+    ctx.ellipse(3.6, -14.4, 2.0, 1.3, -0.35, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath(); ctx.arc(3.0, -14.8, 0.5, 0, Math.PI * 2); ctx.fill();
+  }
+
   // —— head ——————————————————————————————————————————————————
   function drawHead(suit) {
+    if (suit.robo) { drawRoboHead(suit); return; }
+    if (suit.alien) { drawAlienHead(suit); return; }
     // far ear (behind the head)
     ctx.fillStyle = suit.furDark;
     ctx.beginPath();
@@ -2342,12 +4146,18 @@
     ctx.moveTo(19.2, -7.6); ctx.lineTo(23.4, -6.7);
     ctx.stroke();
 
-    // eye
-    ctx.fillStyle = '#181008';
+    // eye — the Ghost skin's eyes burn spectral cyan
+    if (suit.ghost) {
+      ctx.fillStyle = withAlpha('#8ff4ff', 0.35);
+      ctx.beginPath();
+      ctx.arc(13.4, -13.0, 4.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = suit.ghost ? '#0f2a33' : '#181008';
     ctx.beginPath();
     ctx.arc(13.4, -13.0, 2.9, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = suit.ghost ? '#8ff4ff' : '#fff';
     ctx.beginPath();
     ctx.arc(14.3, -13.9, 1.15, 0, Math.PI * 2);
     ctx.fill();
@@ -3009,6 +4819,18 @@
       ctx.fillText(shieldCharges > 1 ? 'x' + shieldCharges : 'SHIELD', 22 + shieldCharges * 23 - 8, 51);
     }
 
+    // golden invulnerability timer
+    if (invulnLeft > 0 && mode === 'play') {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffd750';
+      ctx.font = 'bold 14px system-ui';
+      // drop below the mode's own status line: warp countdowns, Deep
+      // Space's shift timer and Lost in Space's drift readout all own y=92
+      ctx.fillText('GOLDEN  ' + Math.ceil(invulnLeft) + 's', W / 2,
+                   (warpLeft > 0 || deepSpace || lostSpace) ? 112 : 92);
+      ctx.textAlign = 'left';
+    }
+
     // region banner when the environment shifts
     if (envMsgT > 0 && mode === 'play') {
       ctx.textAlign = 'center';
@@ -3036,14 +4858,23 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(192,132,252,0.75)';
       ctx.font = 'bold 12px system-ui';
-      ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 15 - deepTimer)) + 's', W / 2, 92);
+      ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 10 - deepTimer)) + 's', W / 2, 92);
+      ctx.textAlign = 'left';
+    } else if (lostSpace && mode === 'play' && warpT === 0) {
+      // live drift readout, plus which way the world currently runs
+      const pct = Math.round((driftFactor - 1) * 100);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#6ef0d8';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText('LOST IN SPACE · DRIFT ' + (pct >= 0 ? '+' : '') + pct + '%' +
+                   (warpMirror ? ' · REVERSED' : ''), W / 2, 92);
       ctx.textAlign = 'left';
     }
     if (warpT > 0) {
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#c084fc';
+      ctx.fillStyle = lostSpace ? '#6ef0d8' : '#c084fc';
       ctx.font = 'bold 22px system-ui';
-      ctx.fillText('BLACK HOLE!', W / 2, H * 0.3);
+      ctx.fillText(lostSpace ? 'WORMHOLE!' : 'BLACK HOLE!', W / 2, H * 0.3);
       ctx.textAlign = 'left';
     }
 
@@ -3104,10 +4935,64 @@
       ctx.font = '600 14px system-ui';
       ctx.fillText('NEW BEST', W / 2, H * 0.36 + 88);
     }
+
+    // ——— the run's XP pours into the pilot meter ———
+    const fillP = Math.min(1, Math.max(0, (deadTimer - 0.35) / 1.1));
+    const shown = lastXpFrom + lastRunXp * fillP;
+    const lv = levelForXp(shown);
+    const into = shown - xpCumulative(lv);
+    const need = lv >= MAX_LEVEL ? 1 : XP_STEPS[lv - 1];
+    const bw2 = Math.min(230, W * 0.6);
+    const bx2 = W / 2 - bw2 / 2, by2 = H * 0.36 + 122;
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.fillText('+' + lastRunXp + ' XP', W / 2, by2 - 12);
+    ctx.fillStyle = 'rgba(160,120,255,0.18)';
+    roundRect(bx2, by2, bw2, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(bx2, by2, Math.max(4, bw2 * Math.min(1, into / need)), 10, 5);
+    ctx.fill();
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillStyle = '#e0d0ff';
+    ctx.textAlign = 'right';
+    ctx.fillText('LV ' + lv, bx2 - 8, by2 + 9);
+    ctx.textAlign = 'left';
+    if (lv < MAX_LEVEL) ctx.fillText('LV ' + (lv + 1), bx2 + bw2 + 8, by2 + 9);
+    ctx.textAlign = 'center';
+
+    // level-up: celebration burst plus the unlock reveal cards
+    if (lastLevelTo > lastLevelFrom && fillP >= 1) {
+      const pulse2 = 1 + 0.05 * Math.sin(deadTimer * 6);
+      ctx.fillStyle = '#ffd23f';
+      ctx.font = 'bold ' + Math.round(20 * pulse2) + 'px system-ui';
+      ctx.fillText('PILOT LEVEL ' + lastLevelTo + '!', W / 2, by2 + 46);
+      const gained = TRACK.filter(u => u.lvl > lastLevelFrom && u.lvl <= lastLevelTo);
+      let uy = by2 + 72;
+      gained.slice(0, 2).forEach((u) => {
+        const kick = u.kind === 'mode' ? 'NEW MODE' : u.kind === 'pal' ? 'NEW COMPANION'
+                   : u.kind === 'suit' ? 'SUIT UNLOCKED IN SHOP'
+                   : u.kind === 'title' ? 'NEW TITLE' : 'NEW MOD';
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = '600 10px system-ui';
+        ctx.fillText(kick, W / 2, uy);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px system-ui';
+        ctx.fillText('\u2605 ' + (trackName(u) || '').toUpperCase() + ' \u2605', W / 2, uy + 17);
+        uy += 42;
+      });
+      if (gained.length > 2) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '600 11px system-ui';
+        ctx.fillText('+' + (gained.length - 2) + ' more \u2014 see the FLIGHT LOG', W / 2, uy);
+      }
+    }
+
     if (deadTimer > 0.6) {
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '600 15px system-ui';
-      ctx.fillText('tap to continue', W / 2, H * 0.62);
+      ctx.fillText('tap to continue', W / 2,
+                   Math.max(H * 0.62, H * 0.36 + (lastLevelTo > lastLevelFrom ? 305 : 170)));
     }
   }
 
@@ -3117,13 +5002,76 @@
   function titleButtons() {
     const bw = Math.min(224, W * 0.6), bh = 50;
     const bx = W / 2;
-    const y0 = H * 0.555;
+    const y0 = H * 0.56;
     return [
       { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
-      { id: 'deep',   x: bx, y: y0 + 60,  w: bw, h: bh, label: 'DEEP SPACE' },
-      { id: 'hangar', x: bx, y: y0 + 120, w: bw, h: bh, label: 'HANGAR' },
-      { id: 'help',   x: bx, y: y0 + 180, w: bw, h: bh, label: 'HOW TO PLAY' },
+      { id: 'deep',   x: bx, y: y0 + 70,  w: bw, h: bh, label: 'DEEP SPACE' },
+      { id: 'lost',   x: bx, y: y0 + 140, w: bw, h: bh, label: 'LOST IN SPACE' },
     ];
+  }
+
+  // The bottom bar: four round icons splitting the width — hangar,
+  // flight log, social, help. Everything that isn't a game mode lives
+  // down here now; the centre of the screen belongs to flying.
+  function bottomIcons() {
+    const y = H - 46, r = 26;
+    return [
+      { id: 'hangar', x: W * 0.14, y, r, label: 'HANGAR' },
+      { id: 'log',    x: W * 0.38, y, r, label: 'LOG' },
+      { id: 'social', x: W * 0.62, y, r, label: 'SOCIAL' },
+      { id: 'help',   x: W * 0.86, y, r, label: 'HELP' },
+    ];
+  }
+
+  function drawBottomBar() {
+    for (const b of bottomIcons()) {
+      ctx.fillStyle = 'rgba(140,170,220,0.13)';
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(160,190,230,0.3)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      if (b.id === 'hangar') iconHangar(b.x, b.y);
+      else if (b.id === 'log') iconLog(b.x, b.y);
+      else if (b.id === 'social') iconSocial(b.x, b.y);
+      else {
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.font = 'bold 19px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('?', b.x, b.y + 1);
+        ctx.textBaseline = 'alphabetic';
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '600 8.5px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(b.label, b.x, b.y + b.r + 12);
+    }
+  }
+
+  // mini roadmap glyph for the flight log
+  function iconLog(cx, cy) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 7, cy - 10);
+    ctx.lineTo(cx - 7, cy + 10);
+    ctx.stroke();
+    for (let i = -1; i <= 1; i++) {
+      const ny = cy + i * 7;
+      ctx.save();
+      ctx.translate(cx - 7, ny);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = i === 0 ? '#ffb84d' : 'rgba(255,255,255,0.95)';
+      ctx.fillRect(-2.6, -2.6, 5.2, 5.2);
+      ctx.restore();
+      ctx.beginPath();
+      ctx.moveTo(cx - 1, ny);
+      ctx.lineTo(cx + 9, ny);
+      ctx.stroke();
+    }
   }
 
   function drawTitle() {
@@ -3132,36 +5080,45 @@
     drawPlanet(W * 0.88, H * 0.12, 22, 4);
     drawPlanet(W * 0.82, H * 0.34, 36, 1);
 
+    // beta stamp — top middle, out of the composition's way
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '600 10px system-ui';
+    ctx.fillText('ACORNAUT ' + GAME_VERSION, W / 2, 26);
+
+    // acorn bank — a formal currency badge, top right
+    ctx.font = 'bold 14px system-ui';
+    const bankTxt = String(save.acorns);
+    const bankW = ctx.measureText(bankTxt).width + 40;
+    const bankX = W - 12 - bankW;
+    ctx.fillStyle = 'rgba(20,26,44,0.85)';
+    roundRect(bankX, 40, bankW, 28, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,208,128,0.45)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    drawAcornIcon(bankX + 15, 54, 1);
+    ctx.fillStyle = '#ffd080';
+    ctx.textAlign = 'left';
+    ctx.fillText(bankTxt, bankX + 27, 59);
+
     drawWordmark(W / 2, H * 0.2 - 30, 36);
     ctx.textAlign = 'center';
     ctx.font = '600 13px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.fillText('SOAR THE COSMOS · GATHER THE ACORNS', W / 2, H * 0.2 + 26);
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '600 11px system-ui';
-    ctx.fillText(GAME_VERSION, W / 2, H * 0.2 + 44);
 
-    // high score + acorns
-    ctx.font = '600 15px system-ui';
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.fillText('BEST  ' + save.highScore +
-                 (save.deepBest ? '   ·   DEEP  ' + save.deepBest : ''), W / 2, H * 0.31);
-    ctx.fillStyle = '#ffd080';
-    const acTxt = save.acorns + ' acorns';
-    const acW = ctx.measureText(acTxt).width;
-    const acLeft = W / 2 - (acW + 18) / 2;
-    drawAcornIcon(acLeft + 6, H * 0.31 + 19, 1);
-    ctx.fillText(acTxt, acLeft + 18 + acW / 2, H * 0.31 + 24);
-
-    // hero squirrel centred under the acorn count
-    drawAstronaut(W / 2 + 6, H * 0.43, Math.sin(titlePulse * 2) * 0.06, 1.65,
+    // hero squirrel — the records now live on the SOCIAL profile
+    drawAstronaut(W / 2 + 6, H * 0.4, Math.sin(titlePulse * 2) * 0.06, 1.75,
                   equippedHelmet(), equippedSuit(), { seed: 3 });
 
+    // only the three ways to fly hold the centre
     const btns = titleButtons();
     drawMenuBtn(btns[0], true, iconRocket);
     drawDeepBtn(btns[1]);
-    drawMenuBtn(btns[2], false, iconHangar);
-    drawMenuBtn(btns[3], false, iconHelp);
+    drawLostBtn(btns[2]);
+
+    drawBottomBar();
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -3262,10 +5219,54 @@
     if (!unlocked) {
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
       ctx.font = '600 9.5px system-ui';
-      ctx.fillText('REACH LEVEL 50 · 1000 ACORNS', b.x - b.w / 2 + 48, b.y + 12);
+      ctx.fillText('REACH PILOT LEVEL 5', b.x - b.w / 2 + 48, b.y + 12);
     }
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
+  }
+
+  function drawLostBtn(b) {
+    const unlocked = lostSpaceUnlocked();
+    ctx.fillStyle = unlocked ? 'rgba(20,150,135,0.5)' : 'rgba(20,150,135,0.14)';
+    roundRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h, 17);
+    ctx.fill();
+    ctx.strokeStyle = unlocked ? 'rgba(110,240,220,0.7)' : 'rgba(110,240,220,0.3)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    iconWormhole(b.x - b.w / 2 + 27, b.y, unlocked ? 1 : 0.4);
+    ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
+    ctx.font = 'bold 16px system-ui';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, b.x - b.w / 2 + 48, b.y + (unlocked ? 1 : -5));
+    if (!unlocked) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '600 9.5px system-ui';
+      ctx.fillText('REACH PILOT LEVEL 10', b.x - b.w / 2 + 48, b.y + 12);
+    }
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+  }
+
+  function iconWormhole(cx, cy, a) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = '#9df2e2';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 9, 3.6, 0.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 6, 2.4, -0.7, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#04211c';
+    ctx.beginPath();
+    ctx.arc(0, 0, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   function iconVortex(cx, cy, a) {
@@ -3292,6 +5293,18 @@
     ctx.fill();
     ctx.globalAlpha = 1;
     ctx.restore();
+  }
+
+  function iconSocial(cx, cy) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 4.5, 4.4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy + 9.5, 8.4, Math.PI + 0.35, -0.35);
+    ctx.stroke();
   }
 
   function iconHelp(cx, cy) {
@@ -3413,22 +5426,86 @@
     ctx.font = 'bold 22px system-ui';
     ctx.fillText('HOW TO PLAY', 110, 50);
 
-    const t = performance.now() / 1000;
-    let y = 108;
+    // ——— the two controls, as two SEPARATE cards — tap and swipe must
+    // never read as one combined instruction ———
+    const cw = (W - 44) / 2;
+    const cardY = 88, cardH = 92;
 
-    // the one rule
-    drawAstronaut(52, y + 6, Math.sin(t * 2) * 0.06, 0.9,
-                  equippedHelmet(), equippedSuit(), { seed: 5 });
-    ctx.textAlign = 'left';
+    // TAP — boost (left, blue)
+    ctx.fillStyle = 'rgba(58,140,255,0.14)';
+    roundRect(16, cardY, cw, cardH, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(90,160,255,0.6)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    const c1 = 16 + cw / 2;
+    ctx.fillStyle = '#5aa0ff';
+    ctx.beginPath();
+    ctx.moveTo(c1, cardY + 10);
+    ctx.lineTo(c1 + 9, cardY + 24);
+    ctx.lineTo(c1 + 3.5, cardY + 24);
+    ctx.lineTo(c1 + 3.5, cardY + 36);
+    ctx.lineTo(c1 - 3.5, cardY + 36);
+    ctx.lineTo(c1 - 3.5, cardY + 24);
+    ctx.lineTo(c1 - 9, cardY + 24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 15px system-ui';
-    ctx.fillText('TAP to boost upward.', 100, y - 2);
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('TAP', c1, cardY + 58);
+    ctx.fillStyle = '#9cc4ff';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('BOOST UP', c1, cardY + 73);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 9.5px system-ui';
+    ctx.fillText('anywhere, any time', c1, cardY + 86);
+
+    // SWIPE DOWN — dive (right, orange)
+    const x2 = 16 + cw + 12;
+    ctx.fillStyle = 'rgba(255,150,60,0.12)';
+    roundRect(x2, cardY, cw, cardH, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,170,80,0.55)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    const c2 = x2 + cw / 2;
+    ctx.fillStyle = '#ffb060';
+    ctx.beginPath();
+    ctx.moveTo(c2, cardY + 36);
+    ctx.lineTo(c2 + 9, cardY + 22);
+    ctx.lineTo(c2 + 3.5, cardY + 22);
+    ctx.lineTo(c2 + 3.5, cardY + 10);
+    ctx.lineTo(c2 - 3.5, cardY + 10);
+    ctx.lineTo(c2 - 3.5, cardY + 22);
+    ctx.lineTo(c2 - 9, cardY + 22);
+    ctx.closePath();
+    ctx.fill();
+    // motion dashes so the arrow reads as a drag, not a button
+    ctx.strokeStyle = 'rgba(255,176,96,0.5)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(c2 - 16, cardY + 14); ctx.lineTo(c2 - 16, cardY + 23); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(c2 + 16, cardY + 14); ctx.lineTo(c2 + 16, cardY + 23); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('SWIPE DOWN', c2, cardY + 58);
+    ctx.fillStyle = '#ffc080';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('DIVE', c2, cardY + 73);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 9.5px system-ui';
+    ctx.fillText('also cancels a bounce', c2, cardY + 86);
+
+    // the one rule, under the controls
+    let y = cardY + cardH + 24;
     ctx.fillStyle = 'rgba(255,255,255,0.65)';
     ctx.font = '600 12.5px system-ui';
-    ctx.fillText('Glide through the gaps between planets.', 100, y + 18);
-    ctx.fillText('Planets bounce you — debris ends the run.', 100, y + 36);
+    ctx.fillText('Glide through the gaps between planets.', W / 2, y - 6);
+    ctx.fillText('Planets bounce you — debris ends the run.', W / 2, y + 11);
+    ctx.textAlign = 'left';
 
-    y += 84;
+    y += 42;
     const item = (draw, name, text1, text2) => {
       draw();
       ctx.textAlign = 'left';
@@ -3450,13 +5527,366 @@
          'Absorbs one debris hit, then gives you a', 'moment to recover. Rare — grab it.');
     item(() => drawAcorn(52, y + 6, 'blackhole'), 'BLACK HOLE',
          'Warps space for 15 seconds: reversed or', 'tilted flight. Survive it for the glory.');
+    item(() => drawAcorn(52, y + 6, 'wormhole'), 'WORMHOLE',
+         'Lost in Space only: mirrors your heading', 'until the next one flips it back.');
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '600 11.5px system-ui';
-    ctx.fillText('DEEP SPACE FLIGHT: no pickups needed —', W / 2, y + 14);
-    ctx.fillText('space itself shifts every 15 seconds.', W / 2, y + 30);
+    ctx.fillText('DEEP SPACE: space itself shifts every 10s.', W / 2, y + 14);
+    ctx.fillText('LOST IN SPACE: drifting speed, a tilt that', W / 2, y + 30);
+    ctx.fillText('never rests, wormholes that mirror it all.', W / 2, y + 46);
+    ctx.fillStyle = '#ffd080';
+    ctx.fillText('BRING A PAL: every companion adds its own', W / 2, y + 66);
+    ctx.fillText('fun modifier — browse them in the hangar.', W / 2, y + 82);
     ctx.textAlign = 'left';
+  }
+
+  // ——— social hub: pilot profile, connections, leaderboards, news ———
+  const NEWS = [
+    'PILOT LEVELS are here: every run earns XP. Modes,',
+    'mods, pals and titles now unlock on the FLIGHT LOG',
+    '\u2014 tap the pilot card above to see your road.',
+    'Earlier: pal powers, 12 trails, 16 planet kinds.',
+  ];
+
+  function drawSocial() {
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    roundRect(16, 26, 80, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('← BACK', 28, 49);
+    ctx.font = 'bold 22px system-ui';
+    ctx.fillText('SOCIAL', 110, 50);
+
+    const t = performance.now() / 1000;
+
+    // pilot card
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 84, W - 32, 96, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.25)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    drawAstronaut(58, 134, Math.sin(t * 2) * 0.05, 1.0,
+                  equippedHelmet(), equippedSuit(), { seed: 8 });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.fillText('LV ' + pilotLevel() + ' \u00b7 ' + pilotTitle(), 104, 108);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '600 12px system-ui';
+    ctx.fillText('BEST ' + save.highScore + '  \u00b7  DEEP ' + (save.deepBest || 0) +
+                 '  \u00b7  LOST ' + (save.lostBest || 0), 104, 128);
+    ctx.fillStyle = '#ffd080';
+    ctx.fillText(save.acorns + ' acorns banked', 104, 146);
+    // XP progress and the door to the roadmap
+    const lvS = pilotLevel();
+    const intoS = (save.xp || 0) - xpCumulative(lvS);
+    const needS = lvS >= MAX_LEVEL ? 1 : XP_STEPS[lvS - 1];
+    ctx.fillStyle = 'rgba(160,120,255,0.2)';
+    roundRect(104, 155, 176, 8, 4);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(104, 155, Math.max(3, 176 * Math.min(1, intoS / needS)), 8, 4);
+    ctx.fill();
+
+
+    // connect
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('CONNECT', 20, 208);
+    const socials = ['X / TWITTER', 'DISCORD', 'INSTAGRAM'];
+    const swid = (W - 32 - 16) / 3;
+    socials.forEach((name, i) => {
+      const sx = 16 + i * (swid + 8);
+      ctx.fillStyle = 'rgba(140,170,220,0.1)';
+      roundRect(sx, 220, swid, 54, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = 'bold 10.5px system-ui';
+      ctx.fillText(name, sx + swid / 2, 244);
+      ctx.fillStyle = 'rgba(255,208,128,0.6)';
+      ctx.font = '600 8.5px system-ui';
+      ctx.fillText('COMING SOON', sx + swid / 2, 260);
+      ctx.textAlign = 'left';
+    });
+
+    // leaderboards
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('LEADERBOARDS', 20, 306);
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 318, W - 32, 72, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '600 12.5px system-ui';
+    ctx.fillText('Global leaderboards are coming soon.', W / 2, 348);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('Your records are safe on this device until then.', W / 2, 368);
+    ctx.textAlign = 'left';
+
+    // news & updates
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('NEWS & UPDATES', 20, 422);
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 434, W - 32, 36 + NEWS.length * 18, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+    ctx.stroke();
+    ctx.fillStyle = '#ffb040';
+    ctx.font = 'bold 11px system-ui';
+    ctx.fillText('ACORNAUT ' + GAME_VERSION, 30, 456);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '600 11px system-ui';
+    NEWS.forEach((line, i) => {
+      ctx.fillText(line, 30, 476 + i * 18);
+    });
+  }
+
+  // ——— FLIGHT LOG: the reward road ———
+  // A climbing track, not a table: a glowing spine runs up the screen,
+  // one node per level, and every reward rides its node as a card — art,
+  // a kicker, and one line that sells what it does. Earned rewards carry
+  // a check; the next node glows; the future sits in full colour behind
+  // a small lock, so the road itself advertises what's coming.
+  function trackItemsFor(lvl) {
+    const out = [];
+    for (const u of TRACK) if (u.lvl === lvl) out.push(u);
+    return out;
+  }
+  function flightRowH(lvl) {
+    const n = trackItemsFor(lvl).length;
+    return n === 0 ? 46 : n * 96 + 18;
+  }
+  function flightContentH() {
+    let h = 30;
+    for (let l = 2; l <= MAX_LEVEL; l++) h += flightRowH(l);
+    return h + 60;
+  }
+  function openFlightLog() {
+    mode = 'flightlog';
+    // land the view just below the pilot's current position on the road
+    const lvl = pilotLevel();
+    let y = 30;
+    for (let l = 2; l <= Math.min(lvl, MAX_LEVEL); l++) y += flightRowH(l);
+    flightScroll = Math.max(0, Math.min(
+      Math.max(0, flightContentH() - (H - 150)), y - H * 0.25));
+  }
+
+  function drawTrackArt(u, cx, cy, t) {
+    if (u.kind === 'pal') {
+      drawPalPreview(u.id, cx, cy - 4, t);
+    } else if (u.kind === 'mode') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.5, 1.5);
+      if (u.id === 'deep') iconVortex(0, 0, 1);
+      else iconWormhole(0, 0, 1);
+      ctx.restore();
+    } else if (u.kind === 'suit') {
+      const s = SUITS.find(q => q.id === u.id);
+      if (s) drawAstronaut(cx + 2, cy + 6, 0, 0.62, equippedHelmet(), s, { seed: 6 });
+    } else if (u.kind === 'mod') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.1, 1.1);
+      drawAcorn(0, 0, 'shield');
+      ctx.restore();
+    } else {
+      // title laurel star
+      ctx.fillStyle = '#ffd23f';
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const rr = i % 2 === 0 ? 14 : 6.5;
+        const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#7a5a00';
+      ctx.font = 'bold 9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('T', cx, cy + 3);
+    }
+  }
+
+  function drawFlightLog() {
+    const t = performance.now() / 1000;
+    const myLvl = pilotLevel();
+
+    // scrollable road
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 138, W, H - 138);
+    ctx.clip();
+    ctx.translate(0, 150 - flightScroll);
+
+    const spineX = 44;
+    const totalH = flightContentH();
+    const spine = ctx.createLinearGradient(0, 0, 0, totalH);
+    spine.addColorStop(0, 'rgba(160,107,255,0.8)');
+    spine.addColorStop(1, 'rgba(58,140,255,0.25)');
+    ctx.strokeStyle = spine;
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(spineX, 6);
+    ctx.lineTo(spineX, totalH - 30);
+    ctx.stroke();
+
+    let y = 30;
+    for (let lvl = 2; lvl <= MAX_LEVEL; lvl++) {
+      const items = trackItemsFor(lvl);
+      const rowH = flightRowH(lvl);
+      // skip rows that are far off screen
+      if (y + rowH - flightScroll > -160 && y - flightScroll < H) {
+        const earned = myLvl >= lvl;
+        const isNext = lvl === myLvl + 1;
+        // node
+        ctx.save();
+        ctx.translate(spineX, y + 14);
+        ctx.rotate(Math.PI / 4);
+        const ns = isNext ? 15 : 12;
+        ctx.fillStyle = earned ? '#ffb84d' : isNext ? '#a06bff' : 'rgba(90,100,140,0.75)';
+        roundRect(-ns, -ns, ns * 2, ns * 2, 5);
+        ctx.fill();
+        if (isNext) {
+          ctx.strokeStyle = 'rgba(201,178,255,' + (0.5 + 0.4 * Math.sin(t * 3)).toFixed(2) + ')';
+          ctx.lineWidth = 2.5;
+          roundRect(-ns - 4, -ns - 4, ns * 2 + 8, ns * 2 + 8, 7);
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.fillStyle = earned ? '#3a2402' : '#fff';
+        ctx.font = 'bold ' + (lvl >= 10 ? 12 : 14) + 'px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(lvl), spineX, y + 19);
+        if (earned && items.length) {
+          ctx.fillStyle = '#5dff9e';
+          ctx.font = 'bold 12px system-ui';
+          ctx.fillText('\u2713', spineX + 20, y + 2);
+        }
+
+        // reward cards
+        items.forEach((u, k) => {
+          const cy = y + k * 96;
+          const cardX = 76, cardW = W - cardX - 14;
+          ctx.fillStyle = earned ? 'rgba(93,255,158,0.07)'
+                        : isNext ? 'rgba(160,107,255,0.14)'
+                        : 'rgba(140,170,220,0.08)';
+          roundRect(cardX, cy - 12, cardW, 84, 13);
+          ctx.fill();
+          ctx.strokeStyle = earned ? 'rgba(93,255,158,0.3)'
+                          : isNext ? 'rgba(201,178,255,0.6)'
+                          : 'rgba(160,190,230,0.18)';
+          ctx.lineWidth = 1.3;
+          ctx.stroke();
+
+          drawTrackArt(u, cardX + 33, cy + 30, t);
+
+          const kickC = u.kind === 'mode' ? '#c084fc' : u.kind === 'pal' ? '#ffd080'
+                      : u.kind === 'suit' ? '#6ef0ff' : u.kind === 'title' ? '#ffd23f' : '#5dff9e';
+          const kick = u.kind === 'mode' ? 'NEW MODE' : u.kind === 'pal' ? 'NEW COMPANION'
+                     : u.kind === 'suit' ? 'PREMIUM SUIT \u00b7 SHOP' : u.kind === 'title' ? 'NEW TITLE'
+                     : 'HANGAR MOD';
+          ctx.textAlign = 'left';
+          ctx.fillStyle = kickC;
+          ctx.font = 'bold 9px system-ui';
+          ctx.fillText(kick, cardX + 64, cy + 8);
+          ctx.fillStyle = earned ? 'rgba(255,255,255,0.75)' : '#fff';
+          ctx.font = 'bold 14px system-ui';
+          ctx.fillText((trackName(u) || '').toUpperCase(), cardX + 64, cy + 26);
+          const d = trackDesc(u);
+          if (d) {
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '600 10.5px system-ui';
+            ctx.fillText(d, cardX + 64, cy + 44);
+          } else if (u.kind === 'title') {
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '600 10.5px system-ui';
+            ctx.fillText('Worn on your pilot card with pride.', cardX + 64, cy + 44);
+          }
+          if (earned) {
+            ctx.fillStyle = '#5dff9e';
+            ctx.font = 'bold 11px system-ui';
+            ctx.fillText('\u2713 EARNED', cardX + 64, cy + 62);
+          } else if (isNext) {
+            ctx.fillStyle = '#c9b2ff';
+            ctx.font = 'bold 11px system-ui';
+            const needN = xpCumulative(lvl) - (save.xp || 0);
+            ctx.fillText(needN + ' XP TO GO', cardX + 64, cy + 62);
+          } else {
+            // small lock badge
+            ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+            ctx.lineWidth = 1.6;
+            const lx = cardX + cardW - 20, ly = cy - 1;
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4, Math.PI, 0);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.35)';
+            roundRect(lx - 5.5, ly, 11, 8.5, 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = 'bold 10.5px system-ui';
+            ctx.fillText('LV ' + lvl, cardX + 64, cy + 62);
+          }
+        });
+      }
+      y += rowH;
+    }
+    // road's end
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('\u2026the road grows with every update', W / 2, totalH - 4);
+    ctx.restore();
+
+    // header ON TOP of the scroll area
+    ctx.fillStyle = 'rgba(5,7,15,0.92)';
+    ctx.fillRect(0, 0, W, 138);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    roundRect(16, 26, 80, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('\u2190 BACK', 28, 49);
+    ctx.font = 'bold 22px system-ui';
+    ctx.fillText('FLIGHT LOG', 110, 50);
+
+    const lv = pilotLevel();
+    const into = (save.xp || 0) - xpCumulative(lv);
+    const need = lv >= MAX_LEVEL ? 1 : XP_STEPS[lv - 1];
+    ctx.fillStyle = '#c9b2ff';
+    ctx.font = 'bold 13px system-ui';
+    ctx.fillText('LV ' + lv + ' \u00b7 ' + pilotTitle(), 20, 92);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 11px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText(lv >= MAX_LEVEL ? 'MAX LEVEL' : into + ' / ' + need + ' XP', W - 20, 92);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(160,120,255,0.2)';
+    roundRect(20, 102, W - 40, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = '#a06bff';
+    roundRect(20, 102, Math.max(4, (W - 40) * Math.min(1, into / need)), 10, 5);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '600 10.5px system-ui';
+    ctx.fillText('Every run earns XP \u2014 score + acorns, boosted in the harder skies.', 20, 128);
   }
 
   // ——— tabbed shop ————————————————————————————————————————————
@@ -3527,7 +5957,14 @@
     const t = performance.now() / 1000;
     roster.list.forEach((item, i) => {
       const c = shopCellRect(i);
-      const unlocked = save[roster.own].includes(item.id);
+      let unlocked = save[roster.own].includes(item.id);
+      let lockLevel = 0;
+      if (roster.kind === 'pal') {
+        unlocked = palUnlocked(item.id);
+        if (!unlocked) lockLevel = PAL_LEVELS[item.id] || 1;
+      } else if (roster.kind === 'suit' && !unlocked && !suitRevealed(item.id)) {
+        lockLevel = SUIT_REVEAL[item.id];
+      }
       const eq = save[roster.eq] === item.id;
 
       ctx.fillStyle = eq ? 'rgba(58,156,255,0.25)' : 'rgba(255,255,255,0.06)';
@@ -3552,21 +5989,33 @@
         }
       }
       else if (roster.kind === 'trail') drawTrailPreview(item.id, c.x, c.y - 8, t);
-      else drawPalPreview(item.id, c.x, c.y - 8, t);
+      else drawPalPreview(item.id, c.x, c.y - 14, t);
 
       ctx.textAlign = 'center';
       ctx.font = '600 11px system-ui';
       ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
-      ctx.fillText(item.name, c.x, c.y + 36);
-      if (!unlocked) {
+      const nameY = roster.kind === 'pal' ? c.y + 24 : c.y + 36;
+      ctx.fillText(item.name, c.x, nameY);
+      if (roster.kind === 'pal' && item.tag) {
+        ctx.font = 'bold 8.5px system-ui';
+        ctx.fillStyle = eq ? '#8fd0ff' : 'rgba(255,208,128,0.85)';
+        ctx.fillText(item.tag, c.x, c.y + 36);
+        ctx.font = '600 11px system-ui';
+      }
+      const costY = roster.kind === 'pal' ? c.y + 48 : c.y + 50;
+      if (!unlocked && lockLevel) {
+        // level-gated: the FLIGHT LOG is the price tag
+        ctx.fillStyle = '#c9b2ff';
+        ctx.fillText('LV ' + lockLevel, c.x, costY);
+      } else if (!unlocked) {
         ctx.fillStyle = '#ffd080';
         const ct = String(item.cost);
         const cw = ctx.measureText(ct).width;
-        ctx.fillText(ct, c.x - 7, c.y + 50);
-        drawAcornIcon(c.x - 7 + cw / 2 + 8, c.y + 46, 0.8);
+        ctx.fillText(ct, c.x - 7, costY);
+        drawAcornIcon(c.x - 7 + cw / 2 + 8, costY - 4, 0.8);
       } else if (eq) {
         ctx.fillStyle = '#3a9cff';
-        ctx.fillText('EQUIPPED', c.x, c.y + 50);
+        ctx.fillText('EQUIPPED', c.x, costY);
       }
     });
 
@@ -3652,20 +6101,150 @@
         ctx.fill();
       }
     } else if (id === 'comet') {
-      const g = ctx.createLinearGradient(0, 0, -36, 0);
-      g.addColorStop(0, 'rgba(255,243,200,0.95)');
-      g.addColorStop(0.5, 'rgba(255,184,48,0.7)');
-      g.addColorStop(1, 'rgba(255,140,20,0)');
+      const g = ctx.createLinearGradient(4, 0, -44, 0);
+      g.addColorStop(0, 'rgba(255,250,225,1)');
+      g.addColorStop(0.35, 'rgba(255,190,50,0.85)');
+      g.addColorStop(1, 'rgba(255,110,10,0)');
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.moveTo(2, -4.5);
-      ctx.quadraticCurveTo(-38, 0, 2, 4.5);
+      ctx.moveTo(4, -6.5);
+      ctx.quadraticCurveTo(-46, 0, 4, 6.5);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#fff3c8';
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 30 + i * 11) % 34;
+        ctx.strokeStyle = i % 2 ? 'rgba(255,246,210,0.9)' : 'rgba(255,180,40,0.85)';
+        ctx.lineWidth = 2.4 - i * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, (i - 1) * 3.4);
+        ctx.lineTo(-14 - off, (i - 1) * 3.4);
+        ctx.stroke();
+      }
+      const core = ctx.createRadialGradient(3, 0, 1, 3, 0, 7);
+      core.addColorStop(0, '#ffffff');
+      core.addColorStop(0.5, '#ffe27a');
+      core.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.fillStyle = core;
       ctx.beginPath();
-      ctx.arc(1, 0, 4, 0, Math.PI * 2);
+      ctx.arc(3, 0, 7, 0, Math.PI * 2);
       ctx.fill();
+    } else if (id === 'prism') {
+      for (let i = 0; i < 5; i++) {
+        const off = (ph * 26 + i * 8) % 34;
+        ctx.save();
+        ctx.translate(-4 - off, (i % 2 ? -1 : 1) * (5 - i * 0.8));
+        ctx.rotate(ph * 6 + i * 1.3);
+        ctx.fillStyle = 'hsla(' + ((i * 72) % 360) + ',95%,68%,0.9)';
+        ctx.beginPath();
+        ctx.moveTo(0, -3.4); ctx.lineTo(2.6, 2.2); ctx.lineTo(-2.6, 2.2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    } else if (id === 'plasma') {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      for (let i = 0; i < 2; i++) {
+        const off = (ph * 34 + i * 14) % 34;
+        ctx.strokeStyle = i ? 'rgba(255,255,255,0.8)' : '#c77dff';
+        ctx.lineWidth = 2 - i * 0.9;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, 0);
+        ctx.lineTo(-7 - off, -4);
+        ctx.lineTo(-12 - off, 3);
+        ctx.lineTo(-17 - off, -2);
+        ctx.stroke();
+      }
+      const pg = ctx.createRadialGradient(0, 0, 0.5, 0, 0, 6);
+      pg.addColorStop(0, 'rgba(255,255,255,0.9)');
+      pg.addColorStop(0.6, 'rgba(199,125,255,0.5)');
+      pg.addColorStop(1, 'rgba(140,60,255,0)');
+      ctx.fillStyle = pg;
+      ctx.beginPath();
+      ctx.arc(0, 0, 6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (id === 'galaxy') {
+      for (let i = 0; i < 6; i++) {
+        const off = (ph * 22 + i * 7) % 36;
+        const tint = i % 3 === 0 ? '255,255,255' : i % 3 === 1 ? '190,150,255' : '140,190,255';
+        const tw = 0.55 + 0.45 * Math.sin(ph * 12 + i * 2.2);
+        const s = 1.4 + (i % 3) * 0.7;
+        const px = -3 - off, py = (i % 2 ? -1 : 1) * (6 - i * 0.9);
+        ctx.fillStyle = 'rgba(' + tint + ',' + tw.toFixed(2) + ')';
+        ctx.beginPath();
+        ctx.moveTo(px, py - s * 1.6);
+        ctx.lineTo(px + s * 0.4, py - s * 0.4);
+        ctx.lineTo(px + s * 1.6, py);
+        ctx.lineTo(px + s * 0.4, py + s * 0.4);
+        ctx.lineTo(px, py + s * 1.6);
+        ctx.lineTo(px - s * 0.4, py + s * 0.4);
+        ctx.lineTo(px - s * 1.6, py);
+        ctx.lineTo(px - s * 0.4, py - s * 0.4);
+        ctx.closePath();
+        ctx.fill();
+      }
+    } else if (id === 'aurora') {
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 26 + i * 11) % 34;
+        const col = i === 0 ? '93,255,200' : i === 1 ? '197,138,255' : '110,240,255';
+        ctx.strokeStyle = 'rgba(' + col + ',0.85)';
+        ctx.lineWidth = 2.4 - i * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, (i - 1) * 5);
+        ctx.quadraticCurveTo(-8 - off, (i - 1) * 5 + 4, -14 - off, (i - 1) * 5 - 2);
+        ctx.stroke();
+      }
+    } else if (id === 'frost') {
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 24 + i * 10) % 32;
+        ctx.save();
+        ctx.translate(-4 - off, (i % 2 ? -1 : 1) * (5 - i));
+        ctx.rotate(ph * 5 + i);
+        ctx.strokeStyle = 'rgba(210,240,255,0.9)';
+        ctx.lineWidth = 1;
+        ctx.lineCap = 'round';
+        for (let k = 0; k < 3; k++) {
+          const a = k * Math.PI / 3;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a) * 3.6, Math.sin(a) * 3.6);
+          ctx.lineTo(-Math.cos(a) * 3.6, -Math.sin(a) * 3.6);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    } else if (id === 'voidsmoke') {
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 20 + i * 9) % 30;
+        const rr = 3 + i * 1.6 + ph * 2;
+        ctx.fillStyle = 'rgba(10,6,20,0.55)';
+        ctx.beginPath();
+        ctx.arc(-4 - off, (i % 2 ? -1 : 1) * (3 - i), rr, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(180,92,255,0.6)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+    } else if (id === 'supernova') {
+      const ring = 3 + ((ph * 18) % 16);
+      ctx.strokeStyle = 'rgba(255,240,200,' + (1 - ring / 19).toFixed(2) + ')';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(-8, 0, ring, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,150,60,' + (0.6 - ring / 32).toFixed(2) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(-8, 0, ring * 1.3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 4; i++) {
+        const a = i * 1.7 + 0.4;
+        ctx.beginPath();
+        ctx.arc(-8 + Math.cos(a) * ring * 0.8, Math.sin(a) * ring * 0.8, 1.1, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
@@ -3719,6 +6298,10 @@
       ctx.fillStyle = '#5dff9e';
       ctx.font = 'bold 13px system-ui';
       ctx.fillText('READY — next run', 106, cardY + 110);
+    } else if (!startShieldUnlocked()) {
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.font = 'bold 13px system-ui';
+      ctx.fillText('REACH PILOT LEVEL 3', 106, cardY + 110);
     } else {
       ctx.fillStyle = affordable ? '#ffd080' : 'rgba(255,208,128,0.45)';
       ctx.font = 'bold 13px system-ui';
@@ -3767,7 +6350,7 @@
       ctx.fillText('OWNED', 116, bY + 102);
     } else if (!open) {
       ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.fillText('REACH LEVEL 100 · 2000 ACORNS', 116, bY + 102);
+      ctx.fillText('REACH PILOT LEVEL 8', 116, bY + 102);
     } else {
       ctx.fillStyle = canBuy ? '#ffd080' : 'rgba(255,208,128,0.45)';
       const bt = 'BUY  ' + MOD_BATTERY_COST;
