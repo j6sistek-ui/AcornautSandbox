@@ -47,10 +47,10 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #28';
+  const BETA_BUILD = 'PR #29';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
-  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy'];
+  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy','aurora','frost','voidsmoke','supernova'];
   const PAL_IDS = ['none','bee','buddy','ufo','nutsack','meteorcore','cometsprite','pocketmoon','voidjelly','starpup','tinbot','wisp'];
   const defaultSave = () => ({
     highScore: 0,
@@ -176,6 +176,10 @@
     { id: 'prism',  name: 'Prism Shards',  cost: 260 },
     { id: 'plasma', name: 'Plasma Arc',    cost: 320 },
     { id: 'galaxy', name: 'Galaxy Dust',   cost: 400 },
+    { id: 'aurora',    name: 'Aurora Ribbon', cost: 460 },
+    { id: 'frost',     name: 'Frostbite',     cost: 520 },
+    { id: 'voidsmoke', name: 'Void Smoke',    cost: 580 },
+    { id: 'supernova', name: 'Supernova',     cost: 650 },
   ];
 
   // —— companions — every pal changes the run ——
@@ -198,13 +202,12 @@
       desc: 'Slows time inside black-hole warps.' },
     { id: 'nutsack',     name: '"Nut-Sack"',   cost: 300, tag: '2X NUTS',
       desc: 'Nuts double. Weak taps, heavy, no shields.' },
-    // blank companions — pure company today, effect slots for the future
-    { id: 'starpup',     name: 'Star Pup',     cost: 120, tag: 'NO EFFECT',
-      desc: 'A loyal little star. Effect slot open.' },
-    { id: 'tinbot',      name: 'Tin Bot',      cost: 130, tag: 'NO EFFECT',
-      desc: 'Beeps supportively. Effect slot open.' },
-    { id: 'wisp',        name: 'Nebula Wisp',  cost: 140, tag: 'NO EFFECT',
-      desc: 'Drifts alongside you. Effect slot open.' },
+    { id: 'starpup',     name: 'Star Pup',     cost: 260, tag: 'LONG GOLD',
+      desc: 'Golden acorns last twice as long.' },
+    { id: 'tinbot',      name: 'Tin Bot',      cost: 270, tag: 'NO HOLES',
+      desc: 'No black holes or wormholes. No shields either.' },
+    { id: 'wisp',        name: 'Nebula Wisp',  cost: 280, tag: 'GATE DRIFT',
+      desc: 'Gates drift up and down — moving targets.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -471,7 +474,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (mode === 'title' || mode === 'hangar' || mode === 'help') initStars();
+    if (mode === 'title' || mode === 'hangar' || mode === 'help' || mode === 'social') initStars();
   }
 
   function initStars() {
@@ -529,9 +532,11 @@
       warpTilt = lostTiltAt(tiltPhase);
     }
     recoveryMsg = '';
-    // The start-shield modifier arms the run — unless the Nut-Sack is
-    // equipped (it can't hold shields); the purchase is then NOT consumed.
-    startShieldArmed = save.startShield && save.equippedPal !== 'nutsack';
+    // The start-shield modifier arms the run — unless the Nut-Sack or
+    // Tin Bot is equipped (neither can hold shields); the purchase is
+    // then NOT consumed.
+    startShieldArmed = save.startShield &&
+      save.equippedPal !== 'nutsack' && save.equippedPal !== 'tinbot';
     shieldCharges = startShieldArmed ? 1 : 0;
     absorbGrace = 0;
     pal = { x: W * SQUIRREL_X - 42, y: H * 0.45 - 20, dart: 0 };
@@ -670,6 +675,16 @@
       pair.swayT = 0;
       pair.swayLast = 0;
     }
+    // Vertical gate drift: the Nebula Wisp turns every gate into a
+    // moving target (strong); Lost in Space always has a subtle version.
+    const wispPal = save.equippedPal === 'wisp';
+    if (wispPal || lostSpace) {
+      pair.vA = wispPal ? 22 + Math.random() * 8 : 9 + Math.random() * 6;
+      pair.vR = wispPal ? 1.7 : 1.1;
+      pair.vP = Math.random() * Math.PI * 2;
+      pair.vT = 0;
+      pair.vLast = 0;
+    }
     planets.push(pair);
     // Astro Bee's vanilla mode: nothing spawns at all
     const vanilla = save.equippedPal === 'bee';
@@ -688,14 +703,16 @@
     // The Meteor Core's ability: specials surface twice as often.
     const specialChance = save.equippedPal === 'meteorcore' ? 0.2 : 0.1;
     if (!vanilla && Math.random() < specialChance) {
-      const kinds = ['slow', 'shield', 'golden'];
+      // Tin Bot: no black holes, no wormholes — and no shields either
+      const tinbot = save.equippedPal === 'tinbot';
+      const kinds = tinbot ? ['slow', 'golden'] : ['slow', 'shield', 'golden'];
       // black holes are pointless while a warp is pending/active, in
       // Deep Space Flight (shifts come on a timer there), and in Lost in
       // Space (wormholes own the disorientation slot there)
-      if (!deepSpace && !lostSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
+      if (!tinbot && !deepSpace && !lostSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
       // Lost in Space: wormholes take the black hole's place, weighted
       // double — they are the mode's signature hazard
-      if (lostSpace && warpT === 0) kinds.push('wormhole', 'wormhole');
+      if (!tinbot && lostSpace && warpT === 0) kinds.push('wormhole', 'wormhole');
       const kind = kinds[Math.floor(Math.random() * kinds.length)];
       const spec = {
         x: x + 30,
@@ -838,6 +855,81 @@
           kind: 'galaxy',
         });
       }
+    } else if (trail === 'aurora') {
+      // flowing curtain ribbons in polar greens and violets
+      for (let i = 0; i < 6; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -70 - Math.random() * 110,
+          vy: (Math.random() - 0.5) * 30,
+          life: 0.45 + Math.random() * 0.3,
+          max: 0.75,
+          r: 2 + Math.random() * 2,
+          tint: i % 3,
+          tw: Math.random() * Math.PI * 2,
+          kind: 'aurora',
+        });
+      }
+    } else if (trail === 'frost') {
+      // spinning snowflakes and a puff of ice glitter
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -60 - Math.random() * 90,
+          vy: (Math.random() - 0.5) * 60,
+          life: 0.5 + Math.random() * 0.35,
+          max: 0.85,
+          r: 2.2 + Math.random() * 1.8,
+          spin: (Math.random() - 0.5) * 8,
+          kind: 'frost',
+        });
+      }
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 10,
+          vx: -40 - Math.random() * 70,
+          vy: (Math.random() - 0.5) * 40,
+          life: 0.3 + Math.random() * 0.2,
+          max: 0.5,
+          r: 0.8 + Math.random() * 1,
+          kind: 'frostdust',
+        });
+      }
+    } else if (trail === 'voidsmoke') {
+      // slow dark rings with a violet rim, swelling as they fade
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: sx - i * 3, y: sy + (Math.random() - 0.5) * 6,
+          vx: -35 - Math.random() * 50,
+          vy: (Math.random() - 0.5) * 25,
+          life: 0.6 + Math.random() * 0.4,
+          max: 1.0,
+          r: 2.5 + Math.random() * 2.5,
+          kind: 'voidsmoke',
+        });
+      }
+    } else if (trail === 'supernova') {
+      // a shockwave ring plus white-hot ejecta
+      particles.push({
+        x: sx, y: sy,
+        vx: -50, vy: 0,
+        life: 0.4, max: 0.4,
+        r: 4,
+        kind: 'nova',
+      });
+      for (let i = 0; i < 7; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = 60 + Math.random() * 130;
+        particles.push({
+          x: sx, y: sy,
+          vx: Math.cos(a) * sp - 90,
+          vy: Math.sin(a) * sp,
+          life: 0.25 + Math.random() * 0.2,
+          max: 0.45,
+          r: 1.2 + Math.random() * 1.6,
+          kind: 'novaspark',
+        });
+      }
     } else {
       for (let i = 0; i < 10; i++) {
         particles.push({
@@ -936,13 +1028,16 @@
             if (lostSpaceUnlocked()) { resetRun('lost'); mode = 'ready'; }
           }
           else if (b.id === 'hangar') mode = 'hangar';
-          else mode = 'help';
+          else mode = 'social';
           return;
         }
       }
+      // corner ? button → how to play
+      const hc = helpCorner();
+      if (Math.hypot(x - hc.x, y - hc.y) < hc.r + 6) { mode = 'help'; return; }
       return;
     }
-    if (mode === 'help') {
+    if (mode === 'help' || mode === 'social') {
       const back = { x: 56, y: 44, w: 80, h: 36 };
       if (hit(x, y, back)) mode = 'title';
       return;
@@ -1075,11 +1170,11 @@
       if (absorbGrace > 0) absorbGrace = Math.max(0, absorbGrace - dt);
       if (invulnLeft > 0) invulnLeft = Math.max(0, invulnLeft - dt);
 
-      // Deep Space Flight: the first orientation shift arrives 15s in;
+      // Deep Space Flight: the first orientation shift arrives 10s in;
       // after that the warp-expiry chain keeps them coming back to back.
       if (deepSpace && warpT === 0 && warpLeft === 0) {
         deepTimer += dt;
-        if (deepTimer >= 15) {
+        if (deepTimer >= 10) {
           pickWarpVariant();
           warpT = 1.0;
         }
@@ -1088,7 +1183,9 @@
       // Black-hole warp: a one-second swirl (world frozen), then 15s of
       // mirrored, tilted flight, ended with the shield-style recovery.
       if (warpT > 0) {
-        warpT = Math.max(0, warpT - dt);
+        // Deep Space runs its swirl at double speed — shifts come every
+        // 10s there, so the transition can't eat the flying time.
+        warpT = Math.max(0, warpT - dt * (deepSpace ? 2 : 1));
         simDt = 0;
         if (warpT === 0) enterWarp();
       } else if (warpLeft > 0) {
@@ -1142,6 +1239,19 @@
       for (const a of goldens) { a.x -= move; a.bob += dt * 3.6; }
       for (const a of blackholes) { a.x -= move; a.bob += dt * 2.2; }
       for (const a of wormholes) { a.x -= move; a.bob += dt * 2.4; }
+
+      // vertical gate drift (Nebula Wisp everywhere, Lost in Space always):
+      // applied as a delta to the whole column, debris included, so the
+      // scroll and collision math stay untouched
+      for (const p of planets) {
+        if (!p.vA) continue;
+        p.vT += simDt;
+        const s = Math.sin(p.vT * p.vR + p.vP) * p.vA;
+        const dy = s - p.vLast;
+        p.gapY += dy;
+        for (const b of (p.blockers || [])) b.y += dy;
+        p.vLast = s;
+      }
 
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
@@ -1288,8 +1398,8 @@
       for (const a of shields) {
         if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
           a.got = true;
-          // the Nut-Sack can't hold a shield — the pickup fizzles
-          if (save.equippedPal !== 'nutsack') {
+          // the Nut-Sack and Tin Bot can't hold a shield — the pickup fizzles
+          if (save.equippedPal !== 'nutsack' && save.equippedPal !== 'tinbot') {
             shieldCharges = Math.min(maxShieldCharges(), shieldCharges + 1);
           }
           spark(a.x, a.y, 'shield');
@@ -1298,7 +1408,8 @@
       for (const a of goldens) {
         if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
           a.got = true;
-          invulnLeft = 10;
+          // Star Pup: golden invulnerability lasts twice as long
+          invulnLeft = save.equippedPal === 'starpup' ? 20 : 10;
           spark(a.x, a.y, 'gold');
           spark(a.x, a.y, 'gold');
         }
@@ -1391,11 +1502,11 @@
     squirrel.rot = 0;
     hitCooldown = 0;
     // Lost in Space: no countdown — the new orientation simply IS the
-    // orientation now, until the next wormhole. Everywhere else the warp
-    // runs on its 15-second clock.
-    warpLeft = lostSpace ? 0 : 15;
-    shieldFreeze = 0.4;
-    absorbGrace = 1.6;
+    // orientation now, until the next wormhole. Deep Space shifts every
+    // 10s with a snappier recovery; everywhere else it's the 15s clock.
+    warpLeft = lostSpace ? 0 : deepSpace ? 10 : 15;
+    shieldFreeze = deepSpace ? 0.2 : 0.4;
+    absorbGrace = deepSpace ? 0.9 : 1.6;
     spark(sx, cy, 'warp');
   }
 
@@ -1607,6 +1718,7 @@
 
     if (mode === 'title') drawTitle();
     else if (mode === 'help') drawHelp();
+    else if (mode === 'social') drawSocial();
     else if (mode === 'hangar') drawShop();
     else {
       // Warp is a pure RENDER transform: the simulation still scrolls the
@@ -3152,6 +3264,74 @@
       ctx.fill();
       ctx.globalAlpha = 1;
       return;
+    } else if (p.kind === 'aurora') {
+      // a short waving ribbon segment in polar light colors
+      const col = p.tint === 0 ? '93,255,200' : p.tint === 1 ? '197,138,255' : '110,240,255';
+      const wave = Math.sin((p.tw || 0) + t * 8) * 3;
+      ctx.strokeStyle = 'rgba(' + col + ',' + (t * 0.85).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(1, p.r * t * 1.4);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.quadraticCurveTo(p.x + 7, p.y + wave, p.x + 14, p.y - wave * 0.6);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'frost') {
+      // six-arm snowflake, spinning as it drifts
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.spin || 0) * t * 2);
+      ctx.strokeStyle = 'rgba(210,240,255,' + (t * 0.9).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.7, p.r * 0.28);
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const a = i * Math.PI / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * p.r * 1.5, Math.sin(a) * p.r * 1.5);
+        ctx.lineTo(-Math.cos(a) * p.r * 1.5, -Math.sin(a) * p.r * 1.5);
+        ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(255,255,255,' + (t * 0.8).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'frostdust') {
+      ctx.fillStyle = '#dff5ff';
+    } else if (p.kind === 'voidsmoke') {
+      // hollow ring that swells as it dies, violet rim on black smoke
+      const swell = p.r * (1 + (1 - t) * 2.2);
+      ctx.fillStyle = 'rgba(10,6,20,' + (t * 0.55).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, swell, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(180,92,255,' + (t * 0.6).toFixed(2) + ')';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, swell, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'nova') {
+      // expanding shockwave ring with a hot core
+      const ring = p.r * (1 + (1 - t) * 5);
+      ctx.strokeStyle = 'rgba(255,240,200,' + (t * 0.9).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(1, 3 * t);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ring, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,150,60,' + (t * 0.5).toFixed(2) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ring * 1.25, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'novaspark') {
+      ctx.fillStyle = t > 0.5 ? '#ffffff' : '#ffcf6a';
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -3428,22 +3608,19 @@
         ctx.arc(cx, cy + jig, rr * 0.92, 0.5, 1.8);
         ctx.stroke();
       };
-      cheek(-15, 13, 15.5, jigL);
-      cheek(-3.5, 17.5, 13.5, jigR);
-      // the seam, deep between the cheeks
-      ctx.strokeStyle = withAlpha(suit.suitDark, 0.9);
-      ctx.lineWidth = 1.8;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(-9, 2.5 + jigL * 0.5);
-      ctx.quadraticCurveTo(-7.5, 14, -9.5, 30 + jigR * 0.5);
-      ctx.stroke();
+      // FAR cheek first: tucked up behind the body so the near cheek and
+      // torso cover almost all of it — only its top crescent peeks out.
+      // (Two full bubbles hanging below read as… something else.)
+      cheek(-6.5, 5, 13, jigR);
+      // NEAR cheek: the giant one that owns the whole silhouette
+      cheek(-14, 13.5, 15.5, jigL);
       // gold waistband riding the top of all that curve
       ctx.strokeStyle = suit.trim;
       ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(-27, 6);
-      ctx.quadraticCurveTo(-10, -1, 5, 5.5);
+      ctx.moveTo(-27, 5);
+      ctx.quadraticCurveTo(-10, -3, 5, 5);
       ctx.stroke();
     }
 
@@ -4523,7 +4700,7 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(192,132,252,0.75)';
       ctx.font = 'bold 12px system-ui';
-      ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 15 - deepTimer)) + 's', W / 2, 92);
+      ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 10 - deepTimer)) + 's', W / 2, 92);
       ctx.textAlign = 'left';
     } else if (lostSpace && mode === 'play' && warpT === 0) {
       // live drift readout, plus which way the world currently runs
@@ -4619,8 +4796,13 @@
       { id: 'deep',   x: bx, y: y0 + 60,  w: bw, h: bh, label: 'DEEP SPACE' },
       { id: 'lost',   x: bx, y: y0 + 120, w: bw, h: bh, label: 'LOST IN SPACE' },
       { id: 'hangar', x: bx, y: y0 + 180, w: bw, h: bh, label: 'HANGAR' },
-      { id: 'help',   x: bx, y: y0 + 240, w: bw, h: bh, label: 'HOW TO PLAY' },
+      { id: 'social', x: bx, y: y0 + 240, w: bw, h: bh, label: 'SOCIAL' },
     ];
+  }
+
+  // How-to-play lives in a small corner button now — just the ? mark.
+  function helpCorner() {
+    return { x: W - 34, y: H - 34, r: 20 };
   }
 
   function drawTitle() {
@@ -4660,7 +4842,23 @@
     drawDeepBtn(btns[1]);
     drawLostBtn(btns[2]);
     drawMenuBtn(btns[3], false, iconHangar);
-    drawMenuBtn(btns[4], false, iconHelp);
+    drawMenuBtn(btns[4], false, iconSocial);
+
+    // the ? corner button
+    const hc = helpCorner();
+    ctx.fillStyle = 'rgba(140,170,220,0.13)';
+    ctx.beginPath();
+    ctx.arc(hc.x, hc.y, hc.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.35)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 19px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('?', hc.x, hc.y + 1);
+    ctx.textBaseline = 'alphabetic';
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -4835,6 +5033,18 @@
     ctx.fill();
     ctx.globalAlpha = 1;
     ctx.restore();
+  }
+
+  function iconSocial(cx, cy) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 4.5, 4.4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy + 9.5, 8.4, Math.PI + 0.35, -0.35);
+    ctx.stroke();
   }
 
   function iconHelp(cx, cy) {
@@ -5063,10 +5273,119 @@
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '600 11.5px system-ui';
-    ctx.fillText('DEEP SPACE: space itself shifts every 15s.', W / 2, y + 14);
+    ctx.fillText('DEEP SPACE: space itself shifts every 10s.', W / 2, y + 14);
     ctx.fillText('LOST IN SPACE: drifting speed, a tilt that', W / 2, y + 30);
     ctx.fillText('never rests, wormholes that mirror it all.', W / 2, y + 46);
+    ctx.fillStyle = '#ffd080';
+    ctx.fillText('BRING A PAL: every companion adds its own', W / 2, y + 66);
+    ctx.fillText('fun modifier — browse them in the hangar.', W / 2, y + 82);
     ctx.textAlign = 'left';
+  }
+
+  // ——— social hub: pilot profile, connections, leaderboards, news ———
+  const NEWS = [
+    'Pal powers: Star Pup doubles golden time, Tin Bot',
+    'clears holes (and shields), Nebula Wisp moves gates.',
+    '4 new trails · faster Deep Space shifts (every 10s).',
+    'Earlier: 16 planet kinds, premium suits, 26 themes.',
+  ];
+
+  function drawSocial() {
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    roundRect(16, 26, 80, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 13px system-ui';
+    ctx.fillText('← BACK', 28, 49);
+    ctx.font = 'bold 22px system-ui';
+    ctx.fillText('SOCIAL', 110, 50);
+
+    const t = performance.now() / 1000;
+
+    // pilot card
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 84, W - 32, 96, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.25)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    drawAstronaut(58, 134, Math.sin(t * 2) * 0.05, 1.0,
+                  equippedHelmet(), equippedSuit(), { seed: 8 });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.fillText('PILOT', 104, 108);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '600 12px system-ui';
+    ctx.fillText('BEST ' + save.highScore + '  ·  DEEP ' + (save.deepBest || 0) +
+                 '  ·  LOST ' + (save.lostBest || 0), 104, 128);
+    ctx.fillStyle = '#ffd080';
+    ctx.fillText(save.acorns + ' acorns banked', 104, 146);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillText((save.unlocked.length + save.unlockedSuits.length +
+                  save.unlockedTrails.length + save.unlockedPals.length) +
+                 ' items unlocked', 104, 164);
+
+    // connect
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('CONNECT', 20, 208);
+    const socials = ['X / TWITTER', 'DISCORD', 'INSTAGRAM'];
+    const swid = (W - 32 - 16) / 3;
+    socials.forEach((name, i) => {
+      const sx = 16 + i * (swid + 8);
+      ctx.fillStyle = 'rgba(140,170,220,0.1)';
+      roundRect(sx, 220, swid, 54, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = 'bold 10.5px system-ui';
+      ctx.fillText(name, sx + swid / 2, 244);
+      ctx.fillStyle = 'rgba(255,208,128,0.6)';
+      ctx.font = '600 8.5px system-ui';
+      ctx.fillText('COMING SOON', sx + swid / 2, 260);
+      ctx.textAlign = 'left';
+    });
+
+    // leaderboards
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('LEADERBOARDS', 20, 306);
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 318, W - 32, 72, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = '600 12.5px system-ui';
+    ctx.fillText('Global leaderboards are coming soon.', W / 2, 348);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('Your records are safe on this device until then.', W / 2, 368);
+    ctx.textAlign = 'left';
+
+    // news & updates
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText('NEWS & UPDATES', 20, 422);
+    ctx.fillStyle = 'rgba(140,170,220,0.1)';
+    roundRect(16, 434, W - 32, 36 + NEWS.length * 18, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(160,190,230,0.22)';
+    ctx.stroke();
+    ctx.fillStyle = '#ffb040';
+    ctx.font = 'bold 11px system-ui';
+    ctx.fillText('BETA · ' + BETA_BUILD, 30, 456);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '600 11px system-ui';
+    NEWS.forEach((line, i) => {
+      ctx.fillText(line, 30, 476 + i * 18);
+    });
   }
 
   // ——— tabbed shop ————————————————————————————————————————————
@@ -5351,6 +5670,67 @@
         ctx.lineTo(px - s * 1.6, py);
         ctx.lineTo(px - s * 0.4, py - s * 0.4);
         ctx.closePath();
+        ctx.fill();
+      }
+    } else if (id === 'aurora') {
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 26 + i * 11) % 34;
+        const col = i === 0 ? '93,255,200' : i === 1 ? '197,138,255' : '110,240,255';
+        ctx.strokeStyle = 'rgba(' + col + ',0.85)';
+        ctx.lineWidth = 2.4 - i * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, (i - 1) * 5);
+        ctx.quadraticCurveTo(-8 - off, (i - 1) * 5 + 4, -14 - off, (i - 1) * 5 - 2);
+        ctx.stroke();
+      }
+    } else if (id === 'frost') {
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 24 + i * 10) % 32;
+        ctx.save();
+        ctx.translate(-4 - off, (i % 2 ? -1 : 1) * (5 - i));
+        ctx.rotate(ph * 5 + i);
+        ctx.strokeStyle = 'rgba(210,240,255,0.9)';
+        ctx.lineWidth = 1;
+        ctx.lineCap = 'round';
+        for (let k = 0; k < 3; k++) {
+          const a = k * Math.PI / 3;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a) * 3.6, Math.sin(a) * 3.6);
+          ctx.lineTo(-Math.cos(a) * 3.6, -Math.sin(a) * 3.6);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    } else if (id === 'voidsmoke') {
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 20 + i * 9) % 30;
+        const rr = 3 + i * 1.6 + ph * 2;
+        ctx.fillStyle = 'rgba(10,6,20,0.55)';
+        ctx.beginPath();
+        ctx.arc(-4 - off, (i % 2 ? -1 : 1) * (3 - i), rr, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(180,92,255,0.6)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+    } else if (id === 'supernova') {
+      const ring = 3 + ((ph * 18) % 16);
+      ctx.strokeStyle = 'rgba(255,240,200,' + (1 - ring / 19).toFixed(2) + ')';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(-8, 0, ring, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,150,60,' + (0.6 - ring / 32).toFixed(2) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(-8, 0, ring * 1.3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 4; i++) {
+        const a = i * 1.7 + 0.4;
+        ctx.beginPath();
+        ctx.arc(-8 + Math.cos(a) * ring * 0.8, Math.sin(a) * ring * 0.8, 1.1, 0, Math.PI * 2);
         ctx.fill();
       }
     }
