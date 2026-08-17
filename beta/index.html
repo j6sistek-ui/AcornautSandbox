@@ -407,6 +407,23 @@
       crystal: ['rgba(235,220,255,0.95)', 'rgba(155,80,250,0.9)', 'rgba(50,10,95,0.85)'] },
   ];
   let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
+  // Every run walks the catalogue in its OWN order: DEEP SPACE always
+  // opens the first 20 gates, the middle 24 themes shuffle fresh each
+  // run, and the journey always ends on EVENT HORIZON — gate 500 and
+  // beyond hold it permanently (no wrap).
+  let envOrder = Array.from({ length: 26 }, (_, i) => i);
+  function shuffleEnvOrder() {
+    const mid = [];
+    for (let i = 1; i < ENVS.length - 1; i++) mid.push(i);
+    for (let i = mid.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mid[i], mid[j]] = [mid[j], mid[i]];
+    }
+    envOrder = [0, ...mid, ENVS.length - 1];
+  }
+  function envIndexFor(s) {
+    return envOrder[Math.min(Math.floor(s / ENV_GATES), ENVS.length - 1)];
+  }
   const MOD_SHIELD_COST = 25;
   const MOD_BATTERY_COST = 500;
   // BETA: level/acorn gates are open so everything can be tested. For
@@ -503,13 +520,15 @@
     distance = 0;
     lastSpawnX = W * 0.7;
     lastGapY = H * 0.5;
+    // this run's own walk through the catalogue
+    shuffleEnvOrder();
     // BETA test tool: start the run deep in the progression — the chosen
     // century sets the score, the difficulty, and the theme, with no
     // crossfade-in from the wrong region.
     if (BETA_UNLOCK_GATES && startGate > 0) {
       score = startGate;
       distance = 16000;
-      const idx = Math.floor(score / ENV_GATES) % ENVS.length;
+      const idx = envIndexFor(score);
       envA = idx; envB = idx; envBlend = 1;
     }
     powerLeft = 0;
@@ -548,7 +567,7 @@
 
   function makeObstacle(y, xOff) {
     // debris identity follows the environment the gate spawns into
-    const env = ENVS[Math.floor(score / ENV_GATES) % ENVS.length];
+    const env = ENVS[envIndexFor(score)];
     const pool = env.obTypes || OB_TYPES;
     const type = pool[Math.floor(Math.random() * pool.length)];
     // Larger hit/visual size so the flight lane is actually blocked
@@ -968,7 +987,7 @@
 
     // environment shifts with progress and crossfades over a couple of
     // seconds; a short banner announces the new region mid-run
-    const envTarget = Math.floor(score / ENV_GATES) % ENVS.length;
+    const envTarget = envIndexFor(score);
     if (envTarget !== envB) {
       envA = envB;
       envB = envTarget;
@@ -4834,6 +4853,8 @@
     get envBlend() { return envBlend; },
     get envName() { return ENVS[envB].name; },
     get ENVS() { return ENVS; },
+    get envOrder() { return envOrder; },
+    set envOrder(v) { envOrder = v; },
     get startGate() { return startGate; },
     set startGate(v) { startGate = v; },
     get lastGapY() { return lastGapY; },
