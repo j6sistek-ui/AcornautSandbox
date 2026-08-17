@@ -172,8 +172,8 @@
       desc: 'Planet bounces are much gentler.' },
     { id: 'cometsprite', name: 'Comet Sprite', cost: 180, tag: 'LONG SLOW',
       desc: 'Slow acorns last twice as long.' },
-    { id: 'meteorcore',  name: 'Meteor Core',  cost: 200, tag: 'MAX SPEED',
-      desc: 'Starts the run at full speed.' },
+    { id: 'meteorcore',  name: 'Meteor Core',  cost: 200, tag: '2X SPECIALS',
+      desc: 'Special acorns appear twice as often.' },
     { id: 'pocketmoon',  name: 'Pocket Moon',  cost: 220, tag: 'LOW GRAV',
       desc: 'Lighter gravity, floatier flight.' },
     { id: 'ufo',         name: 'Mini UFO',     cost: 250, tag: 'WARP SLOW',
@@ -191,6 +191,14 @@
   const MAX_SPEED = 280;   // capped: past this it's a marathon, not a ramp
   const GAP_BASE = 168;
   const GAP_MIN = 132;     // floor: the corridor never gets tighter than this
+  // OVERDRIVE: past gate 100 the caps themselves stretch — top speed
+  // +10%, smallest gap −10% — phased in together over the next 50 gates.
+  // Feasibility: the reachability clamp reads the live speed, so gate
+  // transitions always stay inside the climb/dive budget; the tightest
+  // gap (118.8px) still clears the ~110px a perfect tap cycle needs
+  // (78px flap rise + 32px squirrel).
+  const OVERDRIVE_GATE = 100;
+  const OVERDRIVE_SPAN = 50;
   const PLANET_R = 42;
   const POWER_DURATION = 6;
   const SLOW_FACTOR = 0.42;
@@ -371,8 +379,6 @@
     distance = 0;
     lastSpawnX = W * 0.7;
     lastGapY = H * 0.5;
-    // Meteor Core: the run begins at the difficulty cap
-    if (save.equippedPal === 'meteorcore') distance = 16000;
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
@@ -386,11 +392,12 @@
 
   function difficulty() {
     // slower ramp, hard plateau — reaches the caps around gate ~60 and
-    // stays there
+    // holds there until the overdrive begins stretching them at gate 100
     const t = Math.min(1, distance / 16000);
+    const od = Math.min(1, Math.max(0, (score - OVERDRIVE_GATE) / OVERDRIVE_SPAN));
     return {
-      speed: BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t,
-      gap: GAP_BASE - (GAP_BASE - GAP_MIN) * t,
+      speed: (BASE_SPEED + (MAX_SPEED - BASE_SPEED) * t) * (1 + 0.10 * od),
+      gap: (GAP_BASE - (GAP_BASE - GAP_MIN) * t) * (1 - 0.10 * od),
     };
   }
 
@@ -492,7 +499,9 @@
     // 1 in 10 gates spawns a special; which one is random among whatever
     // is currently eligible. Adding new specials never inflates the total
     // pickup population — they just share the same slot.
-    if (!vanilla && Math.random() < 0.1) {
+    // The Meteor Core's ability: specials surface twice as often.
+    const specialChance = save.equippedPal === 'meteorcore' ? 0.2 : 0.1;
+    if (!vanilla && Math.random() < specialChance) {
       const kinds = ['slow', 'shield', 'golden'];
       // black holes are pointless while a warp is pending/active, in
       // Deep Space Flight (shifts come on a timer there), and in Lost in
@@ -4496,12 +4505,14 @@
     get envBlend() { return envBlend; },
     get envName() { return ENVS[envB].name; },
     get lastGapY() { return lastGapY; },
+    get powerups() { return powerups; },
     get lostSpace() { return lostSpace; },
     get wormholes() { return wormholes; },
     get driftFactor() { return driftFactor; },
     get driftPhase() { return driftPhase; },
     set driftPhase(v) { driftPhase = v; },
     get prevMirror() { return prevMirror; },
+    difficulty,
     spawnPair,
     get pal() { return pal; },
     get acorns() { return acorns; },
