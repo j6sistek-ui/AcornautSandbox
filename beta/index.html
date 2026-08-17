@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #17';
+  const BETA_BUILD = 'PR #18';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -224,19 +224,38 @@
   // Deliberately subtle: dark bases and low-alpha washes so gates, debris
   // and pickups keep full contrast.
   const ENV_GATES = 20; // testing cadence; raise for release milestones
+  // Each environment also owns its debris: which obstacle types spawn
+  // there, the aura colour behind them, and how its crystals are cut.
   const ENVS = [
     { name: 'DEEP SPACE',     top: [7, 11, 24],  bot: [12, 18, 40],
-      wash: [40, 60, 110, 0.12],  wash2: [70, 90, 160, 0.05] },
+      wash: [40, 60, 110, 0.12],  wash2: [70, 90, 160, 0.05],
+      obTypes: ['asteroid', 'debris', 'satellite', 'ufo', 'crystal', 'rock', 'junk'],
+      obAccent: null, crystal: null },
     { name: 'NEBULA NURSERY', top: [18, 9, 38],  bot: [30, 14, 54],
-      wash: [150, 70, 210, 0.13], wash2: [255, 110, 180, 0.07] },
+      wash: [150, 70, 210, 0.13], wash2: [255, 110, 180, 0.07],
+      obTypes: ['crystal', 'crystal', 'debris', 'ufo', 'asteroid'],
+      obAccent: '#c060ff',
+      crystal: ['rgba(255,190,250,0.95)', 'rgba(210,80,235,0.9)', 'rgba(110,25,150,0.85)'] },
     { name: 'ICE MOON',       top: [5, 16, 28],  bot: [10, 28, 44],
-      wash: [90, 180, 220, 0.1],  wash2: [160, 230, 255, 0.05] },
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'satellite'],
+      wash: [90, 180, 220, 0.1],  wash2: [160, 230, 255, 0.05],
+      obAccent: '#9ad8ee',
+      crystal: ['rgba(235,250,255,0.95)', 'rgba(140,210,240,0.9)', 'rgba(40,110,160,0.85)'] },
     { name: 'SOLAR FURNACE',  top: [26, 11, 6],  bot: [40, 16, 8],
-      wash: [255, 120, 40, 0.09], wash2: [255, 80, 60, 0.06] },
+      wash: [255, 120, 40, 0.09], wash2: [255, 80, 60, 0.06],
+      obTypes: ['asteroid', 'rock', 'rock', 'junk', 'debris'],
+      obAccent: '#ff7a30',
+      crystal: ['rgba(255,230,170,0.95)', 'rgba(255,140,50,0.9)', 'rgba(150,40,10,0.85)'] },
     { name: 'CRYSTAL BELT',   top: [13, 10, 32], bot: [16, 26, 48],
-      wash: [140, 220, 255, 0.09], wash2: [200, 140, 255, 0.06] },
+      wash: [140, 220, 255, 0.09], wash2: [200, 140, 255, 0.06],
+      obTypes: ['crystal', 'crystal', 'crystal', 'satellite', 'asteroid'],
+      obAccent: '#8fd0ff',
+      crystal: ['rgba(220,245,255,0.95)', 'rgba(130,180,255,0.9)', 'rgba(60,70,180,0.85)'] },
     { name: 'TIME FRACTURE',  top: [6, 20, 16],  bot: [10, 30, 24],
-      wash: [90, 255, 180, 0.07], wash2: [200, 255, 120, 0.04] },
+      wash: [90, 255, 180, 0.07], wash2: [200, 255, 120, 0.04],
+      obTypes: ['junk', 'satellite', 'ufo', 'crystal', 'debris'],
+      obAccent: '#5dffa0',
+      crystal: ['rgba(220,255,230,0.95)', 'rgba(90,230,160,0.9)', 'rgba(20,110,70,0.85)'] },
   ];
   let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
   const MOD_SHIELD_COST = 25;
@@ -331,7 +350,10 @@
   const OB_TYPES = ['asteroid','debris','satellite','ufo','crystal','rock','junk'];
 
   function makeObstacle(y, xOff) {
-    const type = OB_TYPES[Math.floor(Math.random() * OB_TYPES.length)];
+    // debris identity follows the environment the gate spawns into
+    const env = ENVS[Math.floor(score / ENV_GATES) % ENVS.length];
+    const pool = env.obTypes || OB_TYPES;
+    const type = pool[Math.floor(Math.random() * pool.length)];
     // Larger hit/visual size so the flight lane is actually blocked
     const r = type === 'ufo' ? 24 + Math.random() * 5
             : type === 'satellite' ? 22 + Math.random() * 5
@@ -344,6 +366,7 @@
       rot: Math.random() * Math.PI * 2,
       spin: (Math.random() - 0.5) * 0.8,
       seed: Math.floor(Math.random() * 1000),
+      env: Math.floor(score / ENV_GATES) % ENVS.length, // keeps its birth look
     };
   }
 
@@ -1210,6 +1233,19 @@
     const type = b.type || 'asteroid';
     const seed = b.seed || 0;
     const rot = (b.rot || 0) + (b.spin || 0) * (performance.now() / 1000);
+    const bEnv = ENVS[b.env || 0];
+
+    // environment aura behind the obstacle — the region's colour signature
+    if (bEnv.obAccent) {
+      const ag = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 1.6);
+      ag.addColorStop(0, withAlpha(bEnv.obAccent, 0.16));
+      ag.addColorStop(1, withAlpha(bEnv.obAccent, 0));
+      ctx.fillStyle = ag;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rot);
@@ -1371,11 +1407,12 @@
       }
       ctx.shadowBlur = 0;
     } else if (type === 'crystal') {
-      // outer crystal
+      // outer crystal, cut in the environment's colours
+      const cc = bEnv.crystal || ['rgba(220,180,255,0.95)', 'rgba(140,70,230,0.9)', 'rgba(60,20,120,0.85)'];
       const cg = ctx.createLinearGradient(0, -r, 0, r);
-      cg.addColorStop(0, 'rgba(220,180,255,0.95)');
-      cg.addColorStop(0.45, 'rgba(140,70,230,0.9)');
-      cg.addColorStop(1, 'rgba(60,20,120,0.85)');
+      cg.addColorStop(0, cc[0]);
+      cg.addColorStop(0.45, cc[1]);
+      cg.addColorStop(1, cc[2]);
       ctx.fillStyle = cg;
       ctx.beginPath();
       ctx.moveTo(0, -r * 1.05);
