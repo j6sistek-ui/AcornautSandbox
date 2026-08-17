@@ -4059,22 +4059,86 @@
     ctx.font = 'bold 22px system-ui';
     ctx.fillText('HOW TO PLAY', 110, 50);
 
-    const t = performance.now() / 1000;
-    let y = 108;
+    // ——— the two controls, as two SEPARATE cards — tap and swipe must
+    // never read as one combined instruction ———
+    const cw = (W - 44) / 2;
+    const cardY = 88, cardH = 92;
 
-    // the one rule
-    drawAstronaut(52, y + 6, Math.sin(t * 2) * 0.06, 0.9,
-                  equippedHelmet(), equippedSuit(), { seed: 5 });
-    ctx.textAlign = 'left';
+    // TAP — boost (left, blue)
+    ctx.fillStyle = 'rgba(58,140,255,0.14)';
+    roundRect(16, cardY, cw, cardH, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(90,160,255,0.6)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    const c1 = 16 + cw / 2;
+    ctx.fillStyle = '#5aa0ff';
+    ctx.beginPath();
+    ctx.moveTo(c1, cardY + 10);
+    ctx.lineTo(c1 + 9, cardY + 24);
+    ctx.lineTo(c1 + 3.5, cardY + 24);
+    ctx.lineTo(c1 + 3.5, cardY + 36);
+    ctx.lineTo(c1 - 3.5, cardY + 36);
+    ctx.lineTo(c1 - 3.5, cardY + 24);
+    ctx.lineTo(c1 - 9, cardY + 24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 15px system-ui';
-    ctx.fillText('TAP to boost. SWIPE DOWN to dive.', 100, y - 2);
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('TAP', c1, cardY + 58);
+    ctx.fillStyle = '#9cc4ff';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('BOOST UP', c1, cardY + 73);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 9.5px system-ui';
+    ctx.fillText('anywhere, any time', c1, cardY + 86);
+
+    // SWIPE DOWN — dive (right, orange)
+    const x2 = 16 + cw + 12;
+    ctx.fillStyle = 'rgba(255,150,60,0.12)';
+    roundRect(x2, cardY, cw, cardH, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,170,80,0.55)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    const c2 = x2 + cw / 2;
+    ctx.fillStyle = '#ffb060';
+    ctx.beginPath();
+    ctx.moveTo(c2, cardY + 36);
+    ctx.lineTo(c2 + 9, cardY + 22);
+    ctx.lineTo(c2 + 3.5, cardY + 22);
+    ctx.lineTo(c2 + 3.5, cardY + 10);
+    ctx.lineTo(c2 - 3.5, cardY + 10);
+    ctx.lineTo(c2 - 3.5, cardY + 22);
+    ctx.lineTo(c2 - 9, cardY + 22);
+    ctx.closePath();
+    ctx.fill();
+    // motion dashes so the arrow reads as a drag, not a button
+    ctx.strokeStyle = 'rgba(255,176,96,0.5)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(c2 - 16, cardY + 14); ctx.lineTo(c2 - 16, cardY + 23); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(c2 + 16, cardY + 14); ctx.lineTo(c2 + 16, cardY + 23); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText('SWIPE DOWN', c2, cardY + 58);
+    ctx.fillStyle = '#ffc080';
+    ctx.font = '600 11px system-ui';
+    ctx.fillText('DIVE', c2, cardY + 73);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '600 9.5px system-ui';
+    ctx.fillText('also cancels a bounce', c2, cardY + 86);
+
+    // the one rule, under the controls
+    let y = cardY + cardH + 24;
     ctx.fillStyle = 'rgba(255,255,255,0.65)';
     ctx.font = '600 12.5px system-ui';
-    ctx.fillText('Glide through the gaps between planets.', 100, y + 18);
-    ctx.fillText('Planets bounce you — debris ends the run.', 100, y + 36);
+    ctx.fillText('Glide through the gaps between planets.', W / 2, y - 6);
+    ctx.fillText('Planets bounce you — debris ends the run.', W / 2, y + 11);
+    ctx.textAlign = 'left';
 
-    y += 84;
+    y += 42;
     const item = (draw, name, text1, text2) => {
       draw();
       ctx.textAlign = 'left';
