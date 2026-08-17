@@ -24,6 +24,8 @@ Checked against live `index.html` (v1.1.0) and `beta/index.html`.
 
 ## Still thinner than the original canvas renderer
 
+- Hangar uses illustrated squirrel / pal sprites, not the live procedural astronaut
+
 - Shop is HTML cards, not the canvas roster cache
 - Tutorial bounce is staged, not the full computed-gate choreography
 - No offline service worker on the illustrated build yet

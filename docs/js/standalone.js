@@ -1,6 +1,5 @@
 import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js";
-import { paintPortrait, paintTrailPreview } from "./draw.js";
-import { drawPalPreviewOn } from "./cosmetics.js";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js";
 import { createEngine } from "./engine.js";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js";
 function el(tag, cls = "", text) {
@@ -131,7 +130,7 @@ export async function bootStandalone(root) {
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
         if (ctx && engine.art)
-            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px * 0.58, px * 0.78);
+            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.92);
         return c;
     }
     function drawHangar() {
@@ -151,7 +150,7 @@ export async function bootStandalone(root) {
         if (pal) {
             const { c, ctx } = miniCanvas(40, 40);
             if (ctx)
-                drawPalPreviewOn(ctx, pal.id, 20, 22, 0.2);
+                paintPalPreview(ctx, engine.art, pal.id, 20, 20, 36);
             load.append(c);
         }
         box.append(load);
@@ -202,7 +201,7 @@ export async function bootStandalone(root) {
                 const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
                 const { c, ctx } = miniCanvas(64, 56);
                 if (ctx)
-                    drawPalPreviewOn(ctx, p.id, 32, 28, 0.2);
+                    paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
                 b.append(c, document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
                 b.onclick = () => engine.equipPal(p.id);
                 grid.append(b);

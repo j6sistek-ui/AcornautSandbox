@@ -1,6 +1,6 @@
 import { ENVS, HELMETS, PHYS, SUITS, TRAILS } from "./catalog";
-import { drawAstronautOn, drawPalOn, drawTrailPreviewOn } from "./cosmetics";
-import { drawSprite, type ArtBank } from "./art";
+import { drawTrailPreviewOn } from "./cosmetics";
+import { drawSprite, type ArtBank, type Sprite } from "./art";
 import type { SaveData } from "./save";
 import type { Particle, World } from "./sim";
 
@@ -26,17 +26,15 @@ function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
   ctx.translate(-w.W / 2, -w.H / 2);
 }
 
-export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
+function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const { W, H } = w;
-  ctx.save();
-  if (w.shake > 0) {
-    const mag = w.shake * 10;
-    ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
-  }
-  applyWarp(ctx, w);
-
   if (art.sky) {
-    ctx.drawImage(art.sky, 0, 0, W, H);
+    const sw = art.sky.naturalWidth || art.sky.width;
+    const sh = art.sky.naturalHeight || art.sky.height;
+    const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
+    const dw = sw * scale;
+    const dh = sh * scale;
+    ctx.drawImage(art.sky, (W - dw) / 2, (H - dh) / 2, dw, dh);
     ctx.fillStyle = "rgba(7,11,22,0.28)";
     ctx.fillRect(0, 0, W, H);
   } else {
@@ -69,6 +67,21 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     ctx.fill();
   }
   ctx.globalAlpha = 1;
+}
+
+export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
+  const { W, H } = w;
+  ctx.save();
+  if (w.shake > 0) {
+    const mag = w.shake * 10;
+    ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
+  }
+
+  // Sky stays upright. Warp only tilts the playfield (live does the same).
+  drawBackdrop(ctx, w, art);
+
+  ctx.save();
+  applyWarp(ctx, w);
 
   for (const p of w.planets) {
     const gy = liveGapY(p);
@@ -113,10 +126,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
       : save.equippedPal;
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
-    drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1.15, w.time);
+    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 36);
   }
 
   drawPilot(ctx, w, save, art);
+  ctx.restore();
   ctx.restore();
 
   if (w.invulnLeft > 0) {
@@ -293,30 +307,161 @@ function drawPlanet(
   ctx.fill();
 }
 
-function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, _art: ArtBank) {
+/** Visor glass on idle-1.png (128 source). Overlay stays on the painted helmet. */
+const VISOR = { sx: 64, sy: 46, rx: 22, ry: 16 };
+const BODY = { sx: 64, sy: 74, rx: 30, ry: 24 };
+
+function spriteLayout(spr: Sprite | HTMLImageElement, x: number, y: number, size: number) {
+  const box = (spr as Sprite).box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
+  const dim = Math.max(box.w, box.h);
+  const scale = size / Math.max(1, dim);
+  return {
+    scale,
+    map(sx: number, sy: number) {
+      return {
+        x: x - (box.w * scale) / 2 + (sx - box.x) * scale,
+        y: y - (box.h * scale) / 2 + (sy - box.y) * scale,
+      };
+    },
+  };
+}
+
+let pilotSheet: HTMLCanvasElement | null = null;
+function getPilotSheet(px: number) {
+  if (!pilotSheet) pilotSheet = document.createElement("canvas");
+  if (pilotSheet.width !== px || pilotSheet.height !== px) {
+    pilotSheet.width = px;
+    pilotSheet.height = px;
+  }
+  return pilotSheet;
+}
+
+function paintIllustrated(
+  ctx: CanvasRenderingContext2D,
+  spr: Sprite | HTMLImageElement | null | undefined,
+  x: number,
+  y: number,
+  size: number,
+  helmet: (typeof HELMETS)[number],
+  suit: (typeof SUITS)[number],
+) {
+  if (!spr) return;
+  const pad = Math.ceil(size * 0.18);
+  const out = Math.ceil(size + pad * 2);
+  const sheet = getPilotSheet(Math.max(8, out));
+  const octx = sheet.getContext("2d");
+  if (!octx) {
+    drawSprite(ctx, spr, x, y, size);
+    return;
+  }
+  octx.setTransform(1, 0, 0, 1, 0, 0);
+  octx.clearRect(0, 0, sheet.width, sheet.height);
+  const cx = out / 2;
+  const cy = out / 2;
+  drawSprite(octx, spr, cx, cy, size);
+  const lay = spriteLayout(spr, cx, cy, size);
+  const visor = lay.map(VISOR.sx, VISOR.sy);
+  const body = lay.map(BODY.sx, BODY.sy);
+  const vrx = VISOR.rx * lay.scale;
+  const vry = VISOR.ry * lay.scale;
+
+  octx.save();
+  octx.globalCompositeOperation = "source-atop";
+  if (suit.id !== "flight") {
+    octx.fillStyle = suit.suit;
+    octx.globalAlpha = 0.55;
+    octx.beginPath();
+    octx.ellipse(body.x, body.y, BODY.rx * lay.scale, BODY.ry * lay.scale, 0, 0, Math.PI * 2);
+    octx.fill();
+    if (suit.glow) {
+      octx.fillStyle = suit.glow;
+      octx.globalAlpha = 0.18;
+      octx.fill();
+    }
+  }
+  octx.fillStyle = helmet.visor;
+  octx.globalAlpha = helmet.id === "clear" ? 0.22 : Math.min(0.82, helmet.tint + 0.52);
+  octx.beginPath();
+  octx.ellipse(visor.x, visor.y, vrx, vry, 0, 0, Math.PI * 2);
+  octx.fill();
+  if (helmet.glow) {
+    octx.strokeStyle = helmet.glow;
+    octx.lineWidth = Math.max(1.2, size * 0.035);
+    octx.globalAlpha = 0.8;
+    octx.shadowColor = helmet.glow;
+    octx.shadowBlur = Math.max(4, size * 0.08);
+    octx.beginPath();
+    octx.ellipse(visor.x, visor.y, vrx * 1.08, vry * 1.12, 0, 0, Math.PI * 2);
+    octx.stroke();
+  }
+  octx.restore();
+
+  ctx.drawImage(sheet, 0, 0, out, out, x - out / 2, y - out / 2, out, out);
+}
+
+function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const x = w.W * PHYS.squirrelX;
   const y = w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-  const flame = w.flapBoost > 0 ? w.flapBoost / 0.22 : 0;
-  drawAstronautOn(ctx, x, y, w.squirrel.rot, 1, helm, suit, {
-    flame,
-    seed: 0,
-    shield: w.shieldCharges > 0,
-  });
+  const spr =
+    w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(w.squirrel.rot);
+  paintIllustrated(ctx, spr, 0, 0, 52, helm, suit);
+  ctx.restore();
+}
+
+function paintPal(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank | null | undefined,
+  id: string,
+  x: number,
+  y: number,
+  size: number,
+) {
+  const spr = art?.pals?.[id];
+  if (spr) {
+    drawSprite(ctx, spr, x, y, size, "box");
+    return;
+  }
+  if (id === "none") {
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, size * 0.32, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x - size * 0.2, y + size * 0.2);
+    ctx.lineTo(x + size * 0.2, y - size * 0.2);
+    ctx.stroke();
+  }
 }
 
 export function paintPortrait(
   ctx: CanvasRenderingContext2D,
-  _art: ArtBank | null,
+  art: ArtBank | null,
   helmet: (typeof HELMETS)[number],
   suit: (typeof SUITS)[number],
   cx: number,
   cy: number,
   size: number,
-  t = 0,
+  _t = 0,
 ) {
-  drawAstronautOn(ctx, cx, cy + 4, 0, size / 52, helmet, suit, { seed: t, flame: 0.15 });
+  const spr = art?.squirrelIdle?.[0] ?? art?.squirrelIdle?.[0];
+  paintIllustrated(ctx, spr, cx, cy, size, helmet, suit);
+}
+
+export function paintPalPreview(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank | null | undefined,
+  id: string,
+  cx: number,
+  cy: number,
+  size: number,
+) {
+  paintPal(ctx, art, id, cx, cy, size);
 }
 
 export function paintTrailPreview(
