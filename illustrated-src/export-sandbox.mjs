@@ -14,6 +14,7 @@ execSync(
     "npx tsc",
     "src/game/catalog.ts src/game/save.ts src/game/sim.ts src/game/draw.ts",
     "src/game/art.ts src/game/audio.ts src/game/engine.ts src/game/standalone.ts",
+    "src/game/cosmetics.ts",
     "--outDir sandbox_assets/js --module es2015 --target es2020",
     "--skipLibCheck --moduleResolution bundler --declaration false --strict false",
   ].join(" "),

@@ -1,4 +1,5 @@
 import { ENVS, HELMETS, PHYS, SUITS, TRAILS } from "./catalog";
+import { drawAstronautOn, drawPalOn, drawTrailPreviewOn } from "./cosmetics";
 import { drawSprite, type ArtBank } from "./art";
 import type { SaveData } from "./save";
 import type { Particle, World } from "./sim";
@@ -12,6 +13,19 @@ function liveGapY(p: World["planets"][number]) {
   return p.gapY + Math.sin(p.drift) * p.driftAmp;
 }
 
+function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
+  const lost = w.flight === "lost";
+  const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+  if (wp <= 0) return;
+  ctx.translate(w.W / 2, w.H / 2);
+  const spin = w.warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
+  ctx.rotate(w.prevTilt + (w.warpTilt - w.prevTilt) * wp + spin);
+  const mFrom = w.prevMirror ? -1 : 1;
+  const mTo = w.warpMirror ? -1 : 1;
+  ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
+  ctx.translate(-w.W / 2, -w.H / 2);
+}
+
 export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const { W, H } = w;
   ctx.save();
@@ -19,11 +33,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     const mag = w.shake * 10;
     ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
   }
-  if (w.warpTilt) {
-    ctx.translate(W / 2, H / 2);
-    ctx.rotate(w.warpTilt * (w.warpT > 0 ? 1 - w.warpT : 1));
-    ctx.translate(-W / 2, -H / 2);
-  }
+  applyWarp(ctx, w);
 
   if (art.sky) {
     ctx.drawImage(art.sky, 0, 0, W, H);
@@ -101,9 +111,9 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
       ? "buddy"
       : save.equippedPal;
-  if (pal && pal !== "none" && art.pals[pal]) {
+  if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
-    drawSprite(ctx, art.pals[pal], w.palPos.x, w.palPos.y + bob, 40);
+    drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1.15, w.time);
   }
 
   drawPilot(ctx, w, save, art);
@@ -283,158 +293,22 @@ function drawPlanet(
   ctx.fill();
 }
 
-function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
+function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, _art: ArtBank) {
   const x = w.W * PHYS.squirrelX;
   const y = w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-  const list = w.flapBoost > 0 ? art.squirrelFlap : art.squirrelIdle;
-  const img = frameOf(list, w.time, w.flapBoost > 0 ? 14 : 5);
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(w.squirrel.rot);
-  if (w.flapBoost > 0) {
-    const trail = TRAILS.find((t) => t.id === save.equippedTrail) ?? TRAILS[0];
-    const f = w.flapBoost / 0.22;
-    ctx.fillStyle = trail.colors[1];
-    ctx.globalAlpha = 0.85 * f;
-    ctx.beginPath();
-    ctx.moveTo(-16, 8);
-    ctx.quadraticCurveTo(-30 - 12 * f, 12, -18, 18);
-    ctx.quadraticCurveTo(-22, 12, -16, 10);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-  if (img) {
-    ctx.filter = `hue-rotate(${suit.hue}deg) saturate(${suit.sat})`;
-    if (suit.premium === "ghost") ctx.globalAlpha = 0.72 + 0.12 * Math.sin(w.time * 4);
-    const booty = suit.premium === "booty";
-    drawSprite(ctx, img, 0, 2, booty ? 56 : 50);
-    ctx.filter = "none";
-    ctx.globalAlpha = 1;
-    drawHelmet(ctx, helm, w.time);
-    drawPremium(ctx, suit.premium, w.time);
-  }
-  ctx.restore();
-}
-
-function drawHelmet(ctx: CanvasRenderingContext2D, helm: (typeof HELMETS)[number], t: number) {
-  ctx.fillStyle = helm.visor;
-  ctx.globalAlpha = helm.tint;
-  ctx.beginPath();
-  ctx.ellipse(8, -8, 13, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.globalAlpha = 1;
-  ctx.strokeStyle = helm.rim;
-  ctx.lineWidth = 1.4;
-  ctx.beginPath();
-  ctx.ellipse(8, -8, 13.5, 12.5, 0, 0, Math.PI * 2);
-  ctx.stroke();
-  if (helm.glow) {
-    ctx.strokeStyle = helm.glow;
-    ctx.globalAlpha = 0.45 + 0.15 * Math.sin(t * 6);
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.ellipse(8, -8, 15, 14, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }
-  if (helm.id === "solar") {
-    ctx.fillStyle = "#ffb040";
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2 + t;
-      ctx.beginPath();
-      ctx.arc(8 + Math.cos(a) * 16, -8 + Math.sin(a) * 15, 1.6, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  } else if (helm.id === "royal") {
-    ctx.fillStyle = "#d4af37";
-    ctx.beginPath();
-    ctx.moveTo(-2, -20);
-    ctx.lineTo(2, -28);
-    ctx.lineTo(6, -20);
-    ctx.lineTo(10, -26);
-    ctx.lineTo(14, -20);
-    ctx.lineTo(18, -27);
-    ctx.lineTo(20, -18);
-    ctx.closePath();
-    ctx.fill();
-  } else if (helm.id === "cherry") {
-    ctx.fillStyle = "#ff7ab0";
-    ctx.beginPath();
-    ctx.ellipse(2, -22, 5, 3.5, -0.4, 0, Math.PI * 2);
-    ctx.ellipse(12, -22, 5, 3.5, 0.4, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (helm.id === "lunar") {
-    ctx.strokeStyle = "#cfe0ff";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(18, -16, 5, 0.4, 4.2);
-    ctx.stroke();
-  } else if (helm.id === "chrono") {
-    ctx.strokeStyle = "#ffe27a";
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(8, -8, 7, 0, Math.PI * 2);
-    ctx.moveTo(8, -8);
-    ctx.lineTo(8, -13);
-    ctx.moveTo(8, -8);
-    ctx.lineTo(12, -8);
-    ctx.stroke();
-  } else if (helm.id === "comet") {
-    ctx.fillStyle = "#ff7a30";
-    ctx.beginPath();
-    ctx.moveTo(18, -16);
-    ctx.lineTo(28, -22);
-    ctx.lineTo(20, -12);
-    ctx.fill();
-  }
-}
-
-function drawPremium(
-  ctx: CanvasRenderingContext2D,
-  premium: "robo" | "alien" | "ghost" | "booty" | undefined,
-  t: number,
-) {
-  if (premium === "robo") {
-    ctx.strokeStyle = "#8fd4ff";
-    ctx.lineWidth = 1.4;
-    ctx.strokeRect(0, -16, 16, 8);
-    ctx.fillStyle = "#4ad8ff";
-    ctx.fillRect(2, -14, 12, 2);
-    ctx.beginPath();
-    ctx.moveTo(8, -16);
-    ctx.lineTo(8, -24);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(8, -25, 2, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (premium === "alien") {
-    ctx.strokeStyle = "#7dff6a";
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(2, -18);
-    ctx.quadraticCurveTo(-6, -32, -2, -36);
-    ctx.moveTo(14, -18);
-    ctx.quadraticCurveTo(22, -32, 18, -36);
-    ctx.stroke();
-    ctx.fillStyle = "#b8ff7a";
-    ctx.beginPath();
-    ctx.arc(-2, -36, 2.4, 0, Math.PI * 2);
-    ctx.arc(18, -36, 2.4, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (premium === "ghost") {
-    ctx.fillStyle = `rgba(120,230,255,${0.35 + 0.2 * Math.sin(t * 5)})`;
-    ctx.beginPath();
-    ctx.ellipse(6, -10, 3, 4, 0, 0, Math.PI * 2);
-    ctx.ellipse(13, -10, 3, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  const flame = w.flapBoost > 0 ? w.flapBoost / 0.22 : 0;
+  drawAstronautOn(ctx, x, y, w.squirrel.rot, 1, helm, suit, {
+    flame,
+    seed: 0,
+    shield: w.shieldCharges > 0,
+  });
 }
 
 export function paintPortrait(
   ctx: CanvasRenderingContext2D,
-  art: ArtBank,
+  _art: ArtBank | null,
   helmet: (typeof HELMETS)[number],
   suit: (typeof SUITS)[number],
   cx: number,
@@ -442,20 +316,7 @@ export function paintPortrait(
   size: number,
   t = 0,
 ) {
-  const img = art.squirrelIdle[0];
-  if (!img) return;
-  ctx.save();
-  ctx.translate(cx, cy);
-  const s = size / 50;
-  ctx.scale(s, s);
-  ctx.filter = `hue-rotate(${suit.hue}deg) saturate(${suit.sat})`;
-  if (suit.premium === "ghost") ctx.globalAlpha = 0.72 + 0.12 * Math.sin(t * 4);
-  drawSprite(ctx, img, 0, 2, suit.premium === "booty" ? 56 : 50);
-  ctx.filter = "none";
-  ctx.globalAlpha = 1;
-  drawHelmet(ctx, helmet, t);
-  drawPremium(ctx, suit.premium, t);
-  ctx.restore();
+  drawAstronautOn(ctx, cx, cy + 4, 0, size / 52, helmet, suit, { seed: t, flame: 0.15 });
 }
 
 export function paintTrailPreview(
@@ -465,27 +326,7 @@ export function paintTrailPreview(
   cy: number,
   t = 0,
 ) {
-  const [c0, c1] = trail.colors;
-  const ph = (t * 2) % 1;
-  ctx.save();
-  ctx.translate(cx + 12, cy);
-  const g = ctx.createLinearGradient(0, 0, -40, 0);
-  g.addColorStop(0, c0);
-  g.addColorStop(0.5, c1);
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.moveTo(0, -8);
-  ctx.quadraticCurveTo(-42, 0, 0, 8);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = c0;
-  for (let i = 0; i < 4; i++) {
-    ctx.beginPath();
-    ctx.arc(-6 - ((ph * 28 + i * 8) % 32), (i % 2 ? -1 : 1) * (5 - i * 0.6), 2.3 - i * 0.3, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.restore();
+  drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 
 export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
@@ -533,6 +374,28 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
     ctx.fillStyle = "#fff";
     ctx.font = "800 15px Figtree, system-ui";
     ctx.fillText(w.recoveryMsg, W / 2, w.H * 0.22);
+  }
+  if (w.warpT > 0) {
+    ctx.textAlign = "center";
+    ctx.fillStyle = w.warpKind === "worm" || w.flight === "lost" ? "#6ef0d8" : "#c084fc";
+    ctx.font = "800 22px Figtree, system-ui";
+    ctx.fillText(w.warpKind === "worm" || w.flight === "lost" ? "WORMHOLE!" : "BLACK HOLE!", W / 2, w.H * 0.3);
+  } else if (w.warpLeft > 0) {
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#c084fc";
+    ctx.font = "700 13px Figtree, system-ui";
+    ctx.fillText((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", W / 2, 92);
+  } else if (w.flight === "deep") {
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(192,132,252,0.8)";
+    ctx.font = "700 12px Figtree, system-ui";
+    ctx.fillText("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", W / 2, 92);
+  } else if (w.flight === "lost") {
+    const pct = Math.round((w.driftFactor - 1) * 100);
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#6ef0d8";
+    ctx.font = "700 12px Figtree, system-ui";
+    ctx.fillText("LOST IN SPACE · DRIFT " + (pct >= 0 ? "+" : "") + pct + "%" + (w.warpMirror ? " · REVERSED" : ""), W / 2, 92);
   }
   if (w.ready && !w.tut) {
     ctx.textAlign = "center";

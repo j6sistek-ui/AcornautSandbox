@@ -29,6 +29,7 @@ import {
 } from "@/game/catalog";
 import { createEngine, type Engine } from "@/game/engine";
 import { paintPortrait, paintTrailPreview } from "@/game/draw";
+import { drawPalPreviewOn } from "@/game/cosmetics";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -312,9 +313,9 @@ function Hangar({ engine }: { engine: Engine }) {
             ))}
           </div>
         </div>
-        {pal?.art && <img src={`/art/thumbs/pals/${pal.art}.png`} alt="" className="h-10 w-10 object-contain" />}
+        {pal && <PalMark id={pal.id} size={40} />}
       </div>
-      <div className="mb-4 flex gap-1.5 overflow-x-auto">
+      <div className="mb-4 flex shrink-0 flex-wrap gap-1.5">
         {(["helmets", "suits", "trails", "pals", "mods"] as const).map((t) => (
           <button
             key={t}
@@ -402,11 +403,7 @@ function Hangar({ engine }: { engine: Engine }) {
                 locked={!open}
                 onClick={() => engine.equipPal(p.id)}
               >
-                {p.art ? (
-                  <img src={`/art/thumbs/pals/${p.art}.png`} alt="" className="h-12 w-12 object-contain" />
-                ) : (
-                  <img src="/art/thumbs/squirrel.png" alt="" className="h-10 w-10 object-contain opacity-70" />
-                )}
+                <PalMark id={p.id} size={48} />
               </Card>
             );
           })}
@@ -524,6 +521,23 @@ function TrailMark({ engine, trail }: { engine: Engine; trail: (typeof TRAILS)[n
   return <canvas ref={ref} width={64} height={36} className="h-9 w-16" />;
 }
 
+function PalMark({ id, size = 48 }: { id: string; size?: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = size * dpr;
+    c.height = size * dpr;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+    drawPalPreviewOn(ctx, id, size / 2, size * 0.55, 0.2);
+  }, [id, size]);
+  return <canvas ref={ref} width={size} height={size} style={{ width: size, height: size }} />;
+}
+
 function ModRow({
   name,
   desc,
@@ -592,7 +606,7 @@ function FlightLog({ engine }: { engine: Engine }) {
                   LV {item.lvl} · {item.kind}
                 </p>
                 <div className="flex items-center gap-2">
-                  {pal?.art && <img src={`/art/thumbs/pals/${pal.art}.png`} alt="" className="h-8 w-8 object-contain" />}
+                  {pal && <PalMark id={pal.id} size={32} />}
                   <p className="font-display text-base font-bold text-cream">{name}</p>
                 </div>
                 <p className="text-xs text-fog">{desc}</p>

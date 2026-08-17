@@ -119,6 +119,10 @@ export type World = {
   warpLeft: number;
   warpTilt: number;
   warpMirror: boolean;
+  prevTilt: number;
+  prevMirror: boolean;
+  deepTimer: number;
+  warpKind: "hole" | "worm" | "shift" | null;
   recoveryMsg: string;
   palPos: { x: number; y: number; dart: number };
   shake: number;
@@ -177,6 +181,10 @@ export function makeWorld(W: number, H: number): World {
     warpLeft: 0,
     warpTilt: 0,
     warpMirror: true,
+    prevTilt: 0,
+    prevMirror: false,
+    deepTimer: 0,
+    warpKind: null,
     recoveryMsg: "",
     palPos: { x: 0, y: 0, dart: 0 },
     shake: 0,
@@ -375,9 +383,13 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.warpLeft = 0;
   w.warpTilt = 0;
   w.warpMirror = true;
-  w.driftPhase = 0;
+  w.prevTilt = 0;
+  w.prevMirror = false;
+  w.deepTimer = 0;
+  w.warpKind = null;
+  w.driftPhase = Math.random() * 100;
   w.driftFactor = 1;
-  w.tiltPhase = 0;
+  w.tiltPhase = Math.random() * 100;
   w.recoveryMsg = "";
   w.envA = 0;
   w.envB = 0;
@@ -386,7 +398,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.palPos = { x: w.W * PHYS.squirrelX - 42, y: w.H * 0.45 - 20, dart: 0 };
   if (flight === "lost") {
     w.warpMirror = false;
-    w.warpTilt = lostTiltAt(0);
+    w.warpTilt = lostTiltAt(w.tiltPhase);
   }
   shuffleEnv(w);
   for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * gapSpacing(w));
@@ -753,7 +765,16 @@ function pickWarpVariant(w: World) {
   w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
 }
 
-function beginWarp(w: World, save: SaveData, worm: boolean) {
+function startSwirl(w: World, kind: "hole" | "worm" | "shift") {
+  w.prevMirror = w.warpMirror;
+  w.prevTilt = w.warpTilt;
+  if (kind === "worm") w.warpMirror = !w.warpMirror;
+  else pickWarpVariant(w);
+  w.warpKind = kind;
+  w.warpT = 1;
+}
+
+function enterWarp(w: World, save: SaveData) {
   const sx = w.W * PHYS.squirrelX;
   const cy = safeY(w);
   clearDebrisNear(w, sx, cy, 150, sx, cy, 150);
@@ -761,26 +782,24 @@ function beginWarp(w: World, save: SaveData, worm: boolean) {
   w.squirrel.vy = 0;
   w.squirrel.rot = 0;
   w.hitCooldown = 0;
-  pickWarpVariant(w);
-  w.warpT = 1;
   w.warpLeft = w.flight === "lost" ? 0 : w.flight === "deep" ? 10 : 15;
   w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
   w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
-  w.recoveryMsg = worm ? "WORMHOLE" : "BLACK HOLE";
-  if (palId(save, w) === "ufo") w.powerLeft = Math.max(w.powerLeft, 2.4);
-  w.shake = 0.28;
+  if (palId(save, w) === "ufo" && w.flight !== "deep") w.powerLeft = Math.max(w.powerLeft, 2.4);
+  w.shake = 0.18;
   spark(w, sx, cy, ["#b45cff", "#fff", "#4ad8ff"], 18, "warp");
 }
 
 function exitWarp(w: World) {
   if (w.flight === "deep") {
-    pickWarpVariant(w);
-    w.warpT = 1;
-    w.warpLeft = 10;
+    startSwirl(w, "shift");
     return;
   }
+  w.prevTilt = w.warpTilt;
+  w.prevMirror = w.warpMirror;
   w.warpTilt = 0;
   w.warpMirror = true;
+  w.warpKind = null;
   w.shieldFreeze = 0.7;
   w.shieldSlow = 3;
   w.recoveryMsg = "ORIENTATION RESTORED";
@@ -911,7 +930,20 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
 
   const frozen = (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
-  if (frozen) return null;
+
+  if (w.flight === "deep" && w.warpT <= 0 && w.warpLeft <= 0) {
+    w.deepTimer += dt;
+    if (w.deepTimer >= 10) startSwirl(w, "shift");
+  }
+  if (w.warpT > 0) {
+    w.warpT = Math.max(0, w.warpT - dt * (w.flight === "deep" ? 2 : 1));
+    if (w.warpT === 0) enterWarp(w, save);
+  } else if (w.warpLeft > 0) {
+    w.warpLeft = Math.max(0, w.warpLeft - dt);
+    if (w.warpLeft === 0) exitWarp(w);
+  }
+
+  if (frozen || w.warpT > 0) return null;
 
   let slow = w.powerLeft > 0 ? PHYS.slowFactor : 1;
   if (w.shieldSlow > 0) {
@@ -921,18 +953,10 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   if (w.flight === "lost") {
     w.driftPhase += dt * 0.7;
-    w.driftFactor = 1 + Math.sin(w.driftPhase) * 0.4;
+    w.driftFactor = 1 + 0.4 * (0.62 * Math.sin(w.driftPhase * 0.42) + 0.38 * Math.sin(w.driftPhase * 0.11 + 2.1));
     w.tiltPhase += dt * 0.45;
     w.warpTilt = lostTiltAt(w.tiltPhase);
   }
-  if (w.flight === "deep") {
-    w.warpLeft -= dt;
-    if (w.warpLeft <= 0 && w.warpT <= 0) beginWarp(w, save, false);
-  } else if (w.warpLeft > 0) {
-    w.warpLeft -= dt;
-    if (w.warpLeft <= 0) exitWarp(w);
-  }
-  if (w.warpT > 0) w.warpT = Math.max(0, w.warpT - dt * (w.flight === "deep" ? 2 : 1));
 
   const simDt = dt * slow;
   if (w.powerLeft > 0) w.powerLeft = Math.max(0, w.powerLeft - dt);
@@ -948,8 +972,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
 
-  const dir = w.warpMirror ? 1 : -1;
-  const move = w.speed * w.driftFactor * dir * simDt;
+  const move = w.speed * w.driftFactor * simDt;
   w.distance += Math.abs(move);
   for (const p of w.planets) {
     p.x -= move;
@@ -1086,7 +1109,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");
       snd = "shield";
     } else if (a.kind === "hole" || a.kind === "worm") {
-      beginWarp(w, save, a.kind === "worm");
+      startSwirl(w, a.kind === "worm" ? "worm" : "hole");
       snd = "shield";
     }
   }

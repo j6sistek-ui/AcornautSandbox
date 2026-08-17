@@ -2,17 +2,20 @@
 
 Illustrated rewrite of [Acornaut](https://github.com/j6sistek-ui/acornaut).
 
-## PLAY HERE (GitHub Pages)
+The live game stays in the `acornaut` repo. All illustrated hangar / mode work lives **here**.
 
-# https://j6sistek-ui.github.io/acornaut/illustrated/
+## PLAY HERE
 
-That is the playable game, same host pattern as live + beta.
+https://j6sistek-ui.github.io/AcornautSandbox/
 
-Do **not** use this repo’s file tree or `sandbox_assets/` as a play link — GitHub will show source code. Open the github.io URL above.
+That is the playable GitHub Pages build. Do **not** open this repo’s file tree as a play link — GitHub will show source code.
 
-## Also here
+Live game (untouched): https://j6sistek-ui.github.io/acornaut/
 
-- `sandbox_assets/` — standalone build that Pages serves from `/illustrated/`
+## What’s in this repo
+
+- `docs/` — GitHub Pages root (standalone illustrated build)
+- `sandbox_assets/` — same standalone build (source of the Pages copy)
 - `illustrated-src/` — TypeScript engine
 - `PARITY.md` — what’s matched vs still thinner
-- root + `beta/` — original canvas game copies
+- root + `beta/` — original canvas copies, for reference only

@@ -1,5 +1,6 @@
 import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog";
 import { paintPortrait, paintTrailPreview } from "./draw";
+import { drawPalPreviewOn } from "./cosmetics";
 import { createEngine } from "./engine";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save";
 
@@ -155,6 +156,11 @@ export async function bootStandalone(root: HTMLElement) {
     loadTxt.append(el("p", "", `${helm.name} · ${suit.name}`));
     loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
     load.append(loadTxt);
+    if (pal) {
+      const { c, ctx } = miniCanvas(40, 40);
+      if (ctx) drawPalPreviewOn(ctx, pal.id, 20, 22, 0.2);
+      load.append(c);
+    }
     box.append(load);
     box.append(el("p", "ac-sub", `${s.acorns} acorns · LV ${pilotLevelOf(s)} ${pilotTitleOf(s)}`));
     const tabs = el("div", "ac-tabs");
@@ -164,8 +170,8 @@ export async function bootStandalone(root: HTMLElement) {
       tabs.append(b);
     }
     box.append(tabs);
+    const scroll = el("div", "ac-sheet-scroll");
     const grid = el("div", "ac-grid");
-    const art = (window.__ACORNAUT_ART__ || "./art").replace(/\/$/, "");
     if (engine.shopTab === "helmets") {
       for (const h of HELMETS) {
         const owned = s.unlocked.includes(h.id);
@@ -200,9 +206,9 @@ export async function bootStandalone(root: HTMLElement) {
       for (const p of PALS) {
         const open = palUnlocked(s, p.id);
         const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
-        const img = document.createElement("img");
-        img.src = p.art ? `${art}/thumbs/pals/${p.art}.png` : `${art}/thumbs/squirrel.png`;
-        b.append(img, document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
+        const { c, ctx } = miniCanvas(64, 56);
+        if (ctx) drawPalPreviewOn(ctx, p.id, 32, 28, 0.2);
+        b.append(c, document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
         b.onclick = () => engine.equipPal(p.id);
         grid.append(b);
       }
@@ -211,9 +217,10 @@ export async function bootStandalone(root: HTMLElement) {
       sh.onclick = () => engine.toggleMod("shield");
       const bat = el("button", "ac-ghost", s.battery ? "Battery OWNED" : "Buy Shield Battery");
       bat.onclick = () => engine.toggleMod("battery");
-      box.append(sh, bat);
+      scroll.append(sh, bat);
     }
-    if (engine.shopTab !== "mods") box.append(grid);
+    if (engine.shopTab !== "mods") scroll.append(grid);
+    box.append(scroll);
     return box;
   }
 
