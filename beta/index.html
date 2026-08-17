@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #20';
+  const BETA_BUILD = 'PR #21';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -66,6 +66,7 @@
     equippedPal: 'none',
     battery: false,   // shield battery mod: hold up to 3 charges
     deepBest: 0,      // best score in Deep Space Flight mode
+    lostBest: 0,      // best score in Lost in Space mode
   });
   function loadSave() {
     try {
@@ -213,10 +214,16 @@
   let blackholes = [];       // black-hole acorns: warp the world for a while
   let deepSpace = false;     // Deep Space Flight mode for this run
   let deepTimer = 0;         // time until the first orientation shift
+  let lostSpace = false;     // Lost in Space mode for this run
+  let wormholes = [];        // wormhole pickups (Lost in Space only)
+  let driftPhase = 0;        // scroll-drift oscillator phase
+  let driftFactor = 1;       // current scroll multiplier, 0.65–1.35
   let warpT = 0;             // swirl-in transition (counts down from 1s)
   let warpLeft = 0;          // remaining warped-orientation time
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
   let warpMirror = true;     // whether this warp reverses the scroll
+  let prevMirror = false;    // mirror state a swirl is folding FROM
+  let prevTilt = 0;          // tilt a swirl is easing FROM
   let recoveryMsg = '';      // banner shown during freeze/slow recovery
   let pal = { x: 0, y: 0, dart: 0 };   // companion position (smoothed)
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
@@ -288,6 +295,9 @@
   function batteryUnlocked() {
     return BETA_UNLOCK_GATES || (save.highScore >= 100 && save.acorns >= 2000);
   }
+  function lostSpaceUnlocked() {
+    return BETA_UNLOCK_GATES || (save.highScore >= 75 && save.acorns >= 1500);
+  }
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -318,8 +328,9 @@
 
   function maxShieldCharges() { return save.battery ? 3 : 1; }
 
-  function resetRun(deep) {
-    deepSpace = !!deep;
+  function resetRun(kind) {
+    deepSpace = kind === true || kind === 'deep';
+    lostSpace = kind === 'lost';
     deepTimer = 0;
     score = 0;
     runAcorns = 0;
@@ -331,10 +342,21 @@
     goldens = [];
     invulnLeft = 0;
     blackholes = [];
+    wormholes = [];
     warpT = 0;
     warpLeft = 0;
     warpTilt = 0;
     warpMirror = true;
+    prevMirror = false;
+    prevTilt = 0;
+    driftPhase = Math.random() * 100;
+    driftFactor = 1;
+    // Lost in Space: the tilt is live from the very first frame — a
+    // permanent ±25° lean that never rests. Wormholes re-roll it later.
+    if (lostSpace) {
+      warpMirror = false;
+      warpTilt = (Math.random() < 0.5 ? -1 : 1) * 25 * Math.PI / 180;
+    }
     recoveryMsg = '';
     // The start-shield modifier arms the run — unless the Nut-Sack is
     // equipped (it can't hold shields); the purchase is then NOT consumed.
@@ -406,7 +428,9 @@
     // actually climb or dive in the time between gates. Without this, high
     // speed could demand a bottom-to-top transition faster than the flap
     // physics allow — difficulty should be a marathon, never impossible.
-    const dtGate = gapSpacing() / d.speed;
+    // Lost in Space: gates must stay reachable at the drift's FASTEST
+    // (+35%) — clamp against the worst case, not the average.
+    const dtGate = gapSpacing() / (d.speed * (lostSpace ? 1.35 : 1));
     const climb = 230 * dtGate;   // sustainable upward pace, px/s
     const dive = 520 * dtGate;    // gravity dive pace, px/s
     gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
@@ -470,9 +494,13 @@
     // pickup population — they just share the same slot.
     if (!vanilla && Math.random() < 0.1) {
       const kinds = ['slow', 'shield', 'golden'];
-      // black holes are pointless while a warp is pending/active or in
-      // Deep Space Flight (shifts come on a timer there)
-      if (!deepSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
+      // black holes are pointless while a warp is pending/active, in
+      // Deep Space Flight (shifts come on a timer there), and in Lost in
+      // Space (wormholes own the disorientation slot there)
+      if (!deepSpace && !lostSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
+      // Lost in Space: wormholes take the black hole's place, weighted
+      // double — they are the mode's signature hazard
+      if (lostSpace && warpT === 0) kinds.push('wormhole', 'wormhole');
       const kind = kinds[Math.floor(Math.random() * kinds.length)];
       const spec = {
         x: x + 30,
@@ -483,6 +511,7 @@
       if (kind === 'slow') powerups.push(spec);
       else if (kind === 'shield') shields.push(spec);
       else if (kind === 'golden') goldens.push(spec);
+      else if (kind === 'wormhole') wormholes.push(spec);
       else blackholes.push(spec);
     }
     lastSpawnX = x;
@@ -657,6 +686,9 @@
           else if (b.id === 'deep') {
             if (deepSpaceUnlocked()) { resetRun(true); mode = 'ready'; }
           }
+          else if (b.id === 'lost') {
+            if (lostSpaceUnlocked()) { resetRun('lost'); mode = 'ready'; }
+          }
           else if (b.id === 'hangar') mode = 'hangar';
           else mode = 'help';
           return;
@@ -723,6 +755,8 @@
     save.acorns += runAcorns;
     if (deepSpace) {
       if (score > (save.deepBest || 0)) save.deepBest = score;
+    } else if (lostSpace) {
+      if (score > (save.lostBest || 0)) save.lostBest = score;
     } else if (score > save.highScore) save.highScore = score;
     if (startShieldArmed) save.startShield = false; // only consumed if it fired
     writeSave(save);
@@ -819,6 +853,16 @@
       const d = difficulty();
       speed = d.speed;
 
+      // Lost in Space: the scroll never holds a rhythm. Two slow sine
+      // waves beat against each other so the speed wanders anywhere from
+      // −35% to +35% of normal — gradual enough to feel like a current,
+      // fast enough that you must keep re-reading your approach speed.
+      if (lostSpace) {
+        driftPhase += simDt;
+        driftFactor = 1 + 0.35 * (0.62 * Math.sin(driftPhase * 0.42) +
+                                  0.38 * Math.sin(driftPhase * 0.11 + 2.1));
+      }
+
       // Pocket Moon floats (0.85x); the Nut-Sack is heavy (1.2x) — part of
       // its price for double acorns
       const grav = GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85
@@ -829,7 +873,7 @@
 
       if (flapBoost > 0) flapBoost = Math.max(0, flapBoost - dt);
 
-      const move = speed * simDt;
+      const move = speed * (lostSpace ? driftFactor : 1) * simDt;
       distance += move;
 
       for (const p of planets) p.x -= move;
@@ -838,6 +882,7 @@
       for (const a of shields) { a.x -= move; a.bob += dt * 3; }
       for (const a of goldens) { a.x -= move; a.bob += dt * 3.6; }
       for (const a of blackholes) { a.x -= move; a.bob += dt * 2.2; }
+      for (const a of wormholes) { a.x -= move; a.bob += dt * 2.4; }
 
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
@@ -852,6 +897,7 @@
       shields = shields.filter(a => a.x > -40 && !a.got);
       goldens = goldens.filter(a => a.x > -40 && !a.got);
       blackholes = blackholes.filter(a => a.x > -40 && !a.got);
+      wormholes = wormholes.filter(a => a.x > -40 && !a.got);
 
       // score
       const sx = W * SQUIRREL_X;
@@ -1010,6 +1056,21 @@
           spark(a.x, a.y, 'warp');
         }
       }
+      // Wormholes (Lost in Space): the swirl transition plays, then the
+      // scroll direction MIRRORS — and stays mirrored until the next
+      // wormhole flips it back. The tilt re-rolls too; it never rests.
+      for (const a of wormholes) {
+        if (!a.got && warpT === 0 &&
+            Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          prevMirror = warpMirror;
+          prevTilt = warpTilt;
+          warpMirror = !warpMirror;
+          warpTilt = (Math.random() < 0.5 ? -1 : 1) * 25 * Math.PI / 180;
+          warpT = 1.0;
+          spark(a.x, a.y, 'warp');
+        }
+      }
     }
 
     if (mode === 'dead') {
@@ -1071,7 +1132,10 @@
     squirrel.vy = 0;
     squirrel.rot = 0;
     hitCooldown = 0;
-    warpLeft = 15;
+    // Lost in Space: no countdown — the new orientation simply IS the
+    // orientation now, until the next wormhole. Everywhere else the warp
+    // runs on its 15-second clock.
+    warpLeft = lostSpace ? 0 : 15;
     shieldFreeze = 0.4;
     absorbGrace = 1.6;
     spark(sx, cy, 'warp');
@@ -1242,13 +1306,18 @@
       // player sees the world mirrored (squirrel flying the other way) and
       // tilted ±25°; during the one-second swirl the scene spins and folds
       // through the mirror flip.
-      const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 ? 1 : 0);
+      const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 || lostSpace ? 1 : 0);
       if (wp > 0) {
         ctx.save();
         ctx.translate(W / 2, H / 2);
         const spin = warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
-        ctx.rotate(warpTilt * wp + spin);
-        ctx.scale(warpMirror ? 1 - 2 * wp : 1, 1);
+        // The swirl eases from the PREVIOUS orientation to the new one.
+        // Outside Lost in Space the previous state is always upright, so
+        // this reduces exactly to the original black-hole fold.
+        ctx.rotate(prevTilt + (warpTilt - prevTilt) * wp + spin);
+        const mFrom = prevMirror ? -1 : 1;
+        const mTo = warpMirror ? -1 : 1;
+        ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
         ctx.translate(-W / 2, -H / 2);
         drawWorld();
         ctx.restore();
@@ -1285,6 +1354,10 @@
     for (const a of goldens) {
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'golden');
+    }
+    for (const a of wormholes) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'wormhole');
     }
     for (const a of blackholes) {
       if (a.got) continue;
@@ -1816,6 +1889,7 @@
     const shield = power === 'shield';
     const hole = power === 'blackhole';
     const golden = power === 'golden';
+    const worm = power === 'wormhole';
     ctx.save();
     ctx.translate(x, y);
     if (golden) {
@@ -1846,7 +1920,28 @@
         ctx.fill();
       }
     }
-    if (hole) {
+    if (worm) {
+      // teal portal — two counter-rotating rings, the mirror made visible
+      const t = performance.now() / 1000;
+      const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(0,45,40,0.9)');
+      glow.addColorStop(0.5, 'rgba(45,220,200,0.3)');
+      glow.addColorStop(1, 'rgba(45,220,200,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(110,240,220,0.9)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 19, 6.5, (t * 0.9) % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(190,255,245,0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 14, 4.6, (-t * 0.9 - 0.9) % (Math.PI * 2), 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (hole) {
       // dark core with a swirling accretion ring
       const t = performance.now() / 1000;
       const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
@@ -1908,6 +2003,10 @@
       nut.addColorStop(0, '#fff3c0');
       nut.addColorStop(0.5, '#ffce45');
       nut.addColorStop(1, '#a06a08');
+    } else if (worm) {
+      nut.addColorStop(0, '#bffff2');
+      nut.addColorStop(0.5, '#2ec4ad');
+      nut.addColorStop(1, '#0a4a40');
     } else if (hole) {
       nut.addColorStop(0, '#3a2a55');
       nut.addColorStop(0.5, '#1a1030');
@@ -1940,6 +2039,9 @@
     if (golden) {
       cap.addColorStop(0, '#ffe27a');
       cap.addColorStop(1, '#b07c10');
+    } else if (worm) {
+      cap.addColorStop(0, '#39a08c');
+      cap.addColorStop(1, '#0c3a32');
     } else if (hole) {
       cap.addColorStop(0, '#6a3aa8');
       cap.addColorStop(1, '#241040');
@@ -3481,7 +3583,10 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = '#ffd750';
       ctx.font = 'bold 14px system-ui';
-      ctx.fillText('GOLDEN  ' + Math.ceil(invulnLeft) + 's', W / 2, warpLeft > 0 ? 112 : 92);
+      // drop below the mode's own status line: warp countdowns, Deep
+      // Space's shift timer and Lost in Space's drift readout all own y=92
+      ctx.fillText('GOLDEN  ' + Math.ceil(invulnLeft) + 's', W / 2,
+                   (warpLeft > 0 || deepSpace || lostSpace) ? 112 : 92);
       ctx.textAlign = 'left';
     }
 
@@ -3514,12 +3619,21 @@
       ctx.font = 'bold 12px system-ui';
       ctx.fillText('FIRST SHIFT IN ' + Math.ceil(Math.max(0, 15 - deepTimer)) + 's', W / 2, 92);
       ctx.textAlign = 'left';
+    } else if (lostSpace && mode === 'play' && warpT === 0) {
+      // live drift readout, plus which way the world currently runs
+      const pct = Math.round((driftFactor - 1) * 100);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#6ef0d8';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText('LOST IN SPACE · DRIFT ' + (pct >= 0 ? '+' : '') + pct + '%' +
+                   (warpMirror ? ' · REVERSED' : ''), W / 2, 92);
+      ctx.textAlign = 'left';
     }
     if (warpT > 0) {
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#c084fc';
+      ctx.fillStyle = lostSpace ? '#6ef0d8' : '#c084fc';
       ctx.font = 'bold 22px system-ui';
-      ctx.fillText('BLACK HOLE!', W / 2, H * 0.3);
+      ctx.fillText(lostSpace ? 'WORMHOLE!' : 'BLACK HOLE!', W / 2, H * 0.3);
       ctx.textAlign = 'left';
     }
 
@@ -3597,8 +3711,9 @@
     return [
       { id: 'fly',    x: bx, y: y0,       w: bw, h: bh, label: 'FLY' },
       { id: 'deep',   x: bx, y: y0 + 60,  w: bw, h: bh, label: 'DEEP SPACE' },
-      { id: 'hangar', x: bx, y: y0 + 120, w: bw, h: bh, label: 'HANGAR' },
-      { id: 'help',   x: bx, y: y0 + 180, w: bw, h: bh, label: 'HOW TO PLAY' },
+      { id: 'lost',   x: bx, y: y0 + 120, w: bw, h: bh, label: 'LOST IN SPACE' },
+      { id: 'hangar', x: bx, y: y0 + 180, w: bw, h: bh, label: 'HANGAR' },
+      { id: 'help',   x: bx, y: y0 + 240, w: bw, h: bh, label: 'HOW TO PLAY' },
     ];
   }
 
@@ -3621,7 +3736,8 @@
     ctx.font = '600 15px system-ui';
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.fillText('BEST  ' + save.highScore +
-                 (save.deepBest ? '   ·   DEEP  ' + save.deepBest : ''), W / 2, H * 0.31);
+                 (save.deepBest ? '   ·   DEEP  ' + save.deepBest : '') +
+                 (save.lostBest ? '   ·   LOST  ' + save.lostBest : ''), W / 2, H * 0.31);
     ctx.fillStyle = '#ffd080';
     const acTxt = save.acorns + ' acorns';
     const acW = ctx.measureText(acTxt).width;
@@ -3636,8 +3752,9 @@
     const btns = titleButtons();
     drawMenuBtn(btns[0], true, iconRocket);
     drawDeepBtn(btns[1]);
-    drawMenuBtn(btns[2], false, iconHangar);
-    drawMenuBtn(btns[3], false, iconHelp);
+    drawLostBtn(btns[2]);
+    drawMenuBtn(btns[3], false, iconHangar);
+    drawMenuBtn(btns[4], false, iconHelp);
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -3742,6 +3859,50 @@
     }
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
+  }
+
+  function drawLostBtn(b) {
+    const unlocked = lostSpaceUnlocked();
+    ctx.fillStyle = unlocked ? 'rgba(20,150,135,0.5)' : 'rgba(20,150,135,0.14)';
+    roundRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h, 17);
+    ctx.fill();
+    ctx.strokeStyle = unlocked ? 'rgba(110,240,220,0.7)' : 'rgba(110,240,220,0.3)';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    iconWormhole(b.x - b.w / 2 + 27, b.y, unlocked ? 1 : 0.4);
+    ctx.fillStyle = unlocked ? '#fff' : 'rgba(255,255,255,0.45)';
+    ctx.font = 'bold 16px system-ui';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, b.x - b.w / 2 + 48, b.y + (unlocked ? 1 : -5));
+    if (!unlocked) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '600 9.5px system-ui';
+      ctx.fillText('REACH LEVEL 75 · 1500 ACORNS', b.x - b.w / 2 + 48, b.y + 12);
+    }
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+  }
+
+  function iconWormhole(cx, cy, a) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = '#9df2e2';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 9, 3.6, 0.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 6, 2.4, -0.7, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#04211c';
+    ctx.beginPath();
+    ctx.arc(0, 0, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   function iconVortex(cx, cy, a) {
@@ -3926,12 +4087,15 @@
          'Absorbs one debris hit, then gives you a', 'moment to recover. Rare — grab it.');
     item(() => drawAcorn(52, y + 6, 'blackhole'), 'BLACK HOLE',
          'Warps space for 15 seconds: reversed or', 'tilted flight. Survive it for the glory.');
+    item(() => drawAcorn(52, y + 6, 'wormhole'), 'WORMHOLE',
+         'Lost in Space only: mirrors your heading', 'until the next one flips it back.');
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '600 11.5px system-ui';
-    ctx.fillText('DEEP SPACE FLIGHT: no pickups needed —', W / 2, y + 14);
-    ctx.fillText('space itself shifts every 15 seconds.', W / 2, y + 30);
+    ctx.fillText('DEEP SPACE: space itself shifts every 15s.', W / 2, y + 14);
+    ctx.fillText('LOST IN SPACE: drifting speed, a tilt that', W / 2, y + 30);
+    ctx.fillText('never rests, wormholes that mirror it all.', W / 2, y + 46);
     ctx.textAlign = 'left';
   }
 
@@ -4332,6 +4496,12 @@
     get envBlend() { return envBlend; },
     get envName() { return ENVS[envB].name; },
     get lastGapY() { return lastGapY; },
+    get lostSpace() { return lostSpace; },
+    get wormholes() { return wormholes; },
+    get driftFactor() { return driftFactor; },
+    get driftPhase() { return driftPhase; },
+    set driftPhase(v) { driftPhase = v; },
+    get prevMirror() { return prevMirror; },
     spawnPair,
     get pal() { return pal; },
     get acorns() { return acorns; },
