@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #21';
+  const BETA_BUILD = 'PR #22';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -226,6 +226,7 @@
   let wormholes = [];        // wormhole pickups (Lost in Space only)
   let driftPhase = 0;        // scroll-drift oscillator phase
   let driftFactor = 1;       // current scroll multiplier, 0.65–1.35
+  let tiltPhase = 0;         // world-rotation oscillator phase
   let warpT = 0;             // swirl-in transition (counts down from 1s)
   let warpLeft = 0;          // remaining warped-orientation time
   let warpTilt = 0;          // ±25° flight-lane tilt while warped
@@ -336,6 +337,14 @@
 
   function maxShieldCharges() { return save.battery ? 3 : 1; }
 
+  // Lost in Space: the world's tilt is ALIVE — it rotates continuously,
+  // wandering anywhere between −35° and +35°. Two slow sines beat against
+  // each other so the rotation never settles and never repeats a rhythm.
+  function lostTiltAt(p) {
+    return (35 * Math.PI / 180) *
+           (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
+  }
+
   function resetRun(kind) {
     deepSpace = kind === true || kind === 'deep';
     lostSpace = kind === 'lost';
@@ -359,11 +368,12 @@
     prevTilt = 0;
     driftPhase = Math.random() * 100;
     driftFactor = 1;
-    // Lost in Space: the tilt is live from the very first frame — a
-    // permanent ±25° lean that never rests. Wormholes re-roll it later.
+    tiltPhase = Math.random() * 100;
+    // Lost in Space: the rotating tilt is live from the very first frame
+    // and keeps wandering for the whole run. Wormholes flip the mirror.
     if (lostSpace) {
       warpMirror = false;
-      warpTilt = (Math.random() < 0.5 ? -1 : 1) * 25 * Math.PI / 180;
+      warpTilt = lostTiltAt(tiltPhase);
     }
     recoveryMsg = '';
     // The start-shield modifier arms the run — unless the Nut-Sack is
@@ -870,6 +880,10 @@
         driftPhase += simDt;
         driftFactor = 1 + 0.35 * (0.62 * Math.sin(driftPhase * 0.42) +
                                   0.38 * Math.sin(driftPhase * 0.11 + 2.1));
+        // the world visibly ROTATES, sweeping between −35° and +35° —
+        // paused only while a wormhole swirl owns the screen
+        tiltPhase += simDt;
+        warpTilt = lostTiltAt(tiltPhase);
       }
 
       // Pocket Moon floats (0.85x); the Nut-Sack is heavy (1.2x) — part of
@@ -1075,7 +1089,6 @@
           prevMirror = warpMirror;
           prevTilt = warpTilt;
           warpMirror = !warpMirror;
-          warpTilt = (Math.random() < 0.5 ? -1 : 1) * 25 * Math.PI / 180;
           warpT = 1.0;
           spark(a.x, a.y, 'warp');
         }
@@ -4575,6 +4588,8 @@
     get driftFactor() { return driftFactor; },
     get driftPhase() { return driftPhase; },
     set driftPhase(v) { driftPhase = v; },
+    get tiltPhase() { return tiltPhase; },
+    set tiltPhase(v) { tiltPhase = v; },
     get prevMirror() { return prevMirror; },
     difficulty,
     spawnPair,
