@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #23';
+  const BETA_BUILD = 'PR #24';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -402,10 +402,13 @@
     return 240 + Math.min(50, distance * 0.005);
   }
 
-  // Gates are no longer metronome-even: each new pair lands anywhere from
-  // 85% to 115% of the base spacing, so the run never settles into a beat.
+  // Gates are no longer metronome-even. Normal flight scatters them from
+  // 100% to 115% of the base spacing — never TIGHTER than the classic
+  // rhythm, which got punishing fast. Lost in Space keeps the full
+  // 85%–115% spread: the rotation there gives tight pairs room to read.
   function nextGapSpacing() {
-    return gapSpacing() * (0.85 + Math.random() * 0.3);
+    return lostSpace ? gapSpacing() * (0.85 + Math.random() * 0.3)
+                     : gapSpacing() * (1 + Math.random() * 0.15);
   }
 
   function difficulty() {
