@@ -47,9 +47,9 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #19';
+  const BETA_BUILD = 'PR #20';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
-  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
+  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
   const PAL_IDS = ['none','bee','buddy','ufo','nutsack','meteorcore','cometsprite','pocketmoon','voidjelly'];
   const defaultSave = () => ({
@@ -144,6 +144,10 @@
       fur: '#c8873f', furDark: '#94601f', belly: '#f2dcb2',
       suit: '#1a2560', suitLite: '#3d4fa8', suitDark: '#0c1233',
       trim: '#ffd76a', glow: '#8fb8ff', dust: '#fff3b8' },
+    { id: 'robo', name: 'Robo', cost: 500, robo: true,
+      fur: '#9aa6b4', furDark: '#525d6c', belly: '#cfd8e2',
+      suit: '#37414f', suitLite: '#7f93a6', suitDark: '#1d242e',
+      trim: '#35e0ff', glow: '#35e0ff', dust: '#9be8ff' },
   ];
 
   // —— tap-boost trails (adapted from the asset catalog) ——
@@ -174,7 +178,7 @@
     { id: 'ufo',         name: 'Mini UFO',     cost: 250, tag: 'WARP SLOW',
       desc: 'Slows time inside black-hole warps.' },
     { id: 'nutsack',     name: '"Nut-Sack"',   cost: 300, tag: '2X NUTS',
-      desc: 'Nuts count double. Weak taps, no shields.' },
+      desc: 'Nuts double. Weak taps, heavy, no shields.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -201,6 +205,8 @@
   let acorns = [];
   let powerups = [];
   let shields = [];          // rare shield-acorn pickups
+  let goldens = [];          // golden acorns: 10s of invulnerability
+  let invulnLeft = 0;        // golden time remaining
   let shieldCharges = 0;     // carried charges (max 1, or 3 with the battery)
   let absorbGrace = 0;       // post-hit mercy: debris can't chain-drain charges
   let startShieldArmed = false; // whether the start-shield modifier actually fired
@@ -322,6 +328,8 @@
     acorns = [];
     powerups = [];
     shields = [];
+    goldens = [];
+    invulnLeft = 0;
     blackholes = [];
     warpT = 0;
     warpLeft = 0;
@@ -456,36 +464,26 @@
         bob: Math.random() * Math.PI * 2,
       });
     }
-    // rarer power-up acorn (~1 per 50 gates; was 1 in 20 and felt like the
-    // run was spent in slow motion)
-    if (!vanilla && Math.random() < 0.02) {
-      powerups.push({
-        x: x + 40,
+    // —— special pickups: ONE universal roll ——
+    // 1 in 10 gates spawns a special; which one is random among whatever
+    // is currently eligible. Adding new specials never inflates the total
+    // pickup population — they just share the same slot.
+    if (!vanilla && Math.random() < 0.1) {
+      const kinds = ['slow', 'shield', 'golden'];
+      // black holes are pointless while a warp is pending/active or in
+      // Deep Space Flight (shifts come on a timer there)
+      if (!deepSpace && warpT === 0 && warpLeft === 0) kinds.push('blackhole');
+      const kind = kinds[Math.floor(Math.random() * kinds.length)];
+      const spec = {
+        x: x + 30,
         y: gapCenter + (Math.random() - 0.5) * (gap * 0.25),
         got: false,
         bob: Math.random() * Math.PI * 2,
-      });
-    }
-    // shield acorn — very rare, on average one per 200 gates
-    if (!vanilla && Math.random() < 0.005) {
-      shields.push({
-        x: x + 20,
-        y: gapCenter,
-        got: false,
-        bob: Math.random() * Math.PI * 2,
-      });
-    }
-    // black-hole acorn — BETA TESTING RATE: ~1 per 20 gates so the warp is
-    // easy to reach while tuning. Intended release rate is ~1 per 70 (0.014).
-    // Never while a warp is pending or active (inert clutter), and never in
-    // Deep Space Flight, where shifts come on a timer instead.
-    if (!vanilla && !deepSpace && warpT === 0 && warpLeft === 0 && Math.random() < 0.05) {
-      blackholes.push({
-        x: x + 30,
-        y: gapCenter + (Math.random() - 0.5) * (gap * 0.2),
-        got: false,
-        bob: Math.random() * Math.PI * 2,
-      });
+      };
+      if (kind === 'slow') powerups.push(spec);
+      else if (kind === 'shield') shields.push(spec);
+      else if (kind === 'golden') goldens.push(spec);
+      else blackholes.push(spec);
     }
     lastSpawnX = x;
   }
@@ -542,15 +540,27 @@
         });
       }
     } else if (trail === 'comet') {
-      for (let i = 0; i < 9; i++) {
+      // a real comet: long blazing streaks plus a white-hot core burst
+      for (let i = 0; i < 12; i++) {
         particles.push({
-          x: sx, y: sy + (Math.random() - 0.5) * 5,
-          vx: -90 - Math.random() * 140,
-          vy: (Math.random() - 0.5) * 40,
-          life: 0.35 + Math.random() * 0.3,
-          max: 0.65,
-          r: 1.8 + Math.random() * 2.6,
+          x: sx, y: sy + (Math.random() - 0.5) * 7,
+          vx: -160 - Math.random() * 240,
+          vy: (Math.random() - 0.5) * 50,
+          life: 0.5 + Math.random() * 0.4,
+          max: 0.9,
+          r: 2.4 + Math.random() * 3.2,
           kind: 'comet',
+        });
+      }
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: sx + (Math.random() - 0.5) * 6, y: sy + (Math.random() - 0.5) * 6,
+          vx: -60 - Math.random() * 80,
+          vy: (Math.random() - 0.5) * 30,
+          life: 0.2 + Math.random() * 0.12,
+          max: 0.32,
+          r: 3 + Math.random() * 2,
+          kind: 'cometcore',
         });
       }
     } else {
@@ -783,6 +793,7 @@
         powerLeft = Math.max(0, powerLeft - dt);
       }
       if (absorbGrace > 0) absorbGrace = Math.max(0, absorbGrace - dt);
+      if (invulnLeft > 0) invulnLeft = Math.max(0, invulnLeft - dt);
 
       // Deep Space Flight: the first orientation shift arrives 15s in;
       // after that the warp-expiry chain keeps them coming back to back.
@@ -808,8 +819,10 @@
       const d = difficulty();
       speed = d.speed;
 
-      // Pocket Moon: lighter gravity, floatier arcs
-      const grav = GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85 : 1);
+      // Pocket Moon floats (0.85x); the Nut-Sack is heavy (1.2x) — part of
+      // its price for double acorns
+      const grav = GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85
+                            : save.equippedPal === 'nutsack' ? 1.2 : 1);
       squirrel.vy += grav * simDt;
       squirrel.y += squirrel.vy * simDt;
       squirrel.rot = Math.max(-0.55, Math.min(0.9, squirrel.vy / 700));
@@ -823,6 +836,7 @@
       for (const a of acorns) { a.x -= move; a.bob += dt * 4; }
       for (const a of powerups) { a.x -= move; a.bob += dt * 5; }
       for (const a of shields) { a.x -= move; a.bob += dt * 3; }
+      for (const a of goldens) { a.x -= move; a.bob += dt * 3.6; }
       for (const a of blackholes) { a.x -= move; a.bob += dt * 2.2; }
 
       // spawn — scroll tracker, keep at least one planet ahead
@@ -836,6 +850,7 @@
       acorns = acorns.filter(a => a.x > -40 && !a.got);
       powerups = powerups.filter(a => a.x > -40 && !a.got);
       shields = shields.filter(a => a.x > -40 && !a.got);
+      goldens = goldens.filter(a => a.x > -40 && !a.got);
       blackholes = blackholes.filter(a => a.x > -40 && !a.got);
 
       // score
@@ -869,10 +884,11 @@
       // Debris ALWAYS kills — checked first, every frame, no cooldown.
       // (The bounce cooldown below only stops planet bounces re-triggering;
       // it must never grant safe passage through obstacles.)
-      // Exceptions: a carried shield charge absorbs exactly one hit, and a
+      // Exceptions: a carried shield charge absorbs exactly one hit, a
       // short post-absorb grace (blinking squirrel) stops the recovery from
-      // chain-draining every charge into the same debris wall.
-      if (absorbGrace <= 0) {
+      // chain-draining every charge, and GOLDEN invulnerability phases
+      // through everything — though the bottom of the screen still kills.
+      if (absorbGrace <= 0 && invulnLeft <= 0) {
         for (const p of planets) {
           for (const b of (p.blockers || [])) {
             const bx = p.x + (b.xOff || 0);
@@ -886,10 +902,10 @@
 
       // Main planets: recoverable bounce. During the bounce cooldown the
       // planets stay SOLID — the squirrel is pushed out of any overlap
-      // instead of re-bounced. Skipping the check entirely let the player
-      // phase straight through a planet they had just bounced off.
+      // instead of re-bounced. Golden invulnerability phases through them.
       outer:
       for (const p of planets) {
+        if (invulnLeft > 0) break outer;
         const topY = p.gapY - p.gap / 2 - p.r;
         const botY = p.gapY + p.gap / 2 + p.r;
         for (const gy of [topY, botY]) {
@@ -972,6 +988,14 @@
             shieldCharges = Math.min(maxShieldCharges(), shieldCharges + 1);
           }
           spark(a.x, a.y, 'shield');
+        }
+      }
+      for (const a of goldens) {
+        if (!a.got && Math.hypot(sx - a.x, sy - (a.y + Math.sin(a.bob) * 4)) < 30) {
+          a.got = true;
+          invulnLeft = 10;
+          spark(a.x, a.y, 'gold');
+          spark(a.x, a.y, 'gold');
         }
       }
       for (const a of blackholes) {
@@ -1258,11 +1282,37 @@
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'shield');
     }
+    for (const a of goldens) {
+      if (a.got) continue;
+      drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'golden');
+    }
     for (const a of blackholes) {
       if (a.got) continue;
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'blackhole');
     }
     for (const p of particles) drawParticle(p);
+    // golden radiance around the invulnerable squirrel
+    if (invulnLeft > 0 && mode === 'play') {
+      const gt = performance.now() / 1000;
+      const gr = 40 + Math.sin(gt * 5) * 4;
+      const gg = ctx.createRadialGradient(W * SQUIRREL_X, squirrel.y, 10, W * SQUIRREL_X, squirrel.y, gr);
+      gg.addColorStop(0, 'rgba(255,215,80,0.28)');
+      gg.addColorStop(0.7, 'rgba(255,190,40,0.1)');
+      gg.addColorStop(1, 'rgba(255,190,40,0)');
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.arc(W * SQUIRREL_X, squirrel.y, gr, 0, Math.PI * 2);
+      ctx.fill();
+      if (Math.random() < 0.4) {
+        particles.push({
+          x: W * SQUIRREL_X + (Math.random() - 0.5) * 44,
+          y: squirrel.y + (Math.random() - 0.5) * 44,
+          vx: (Math.random() - 0.5) * 30, vy: -20 - Math.random() * 40,
+          life: 0.3 + Math.random() * 0.2, max: 0.5,
+          r: 1.2 + Math.random() * 1.8, kind: 'gold',
+        });
+      }
+    }
     if (absorbGrace > 0 && mode === 'play') {
       ctx.globalAlpha = 0.6 + 0.4 * Math.sin(performance.now() / 1000 * 18);
     }
@@ -1765,8 +1815,37 @@
   function drawAcorn(x, y, power) {
     const shield = power === 'shield';
     const hole = power === 'blackhole';
+    const golden = power === 'golden';
     ctx.save();
     ctx.translate(x, y);
+    if (golden) {
+      // radiant star-ring
+      const t = performance.now() / 1000;
+      const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(255,230,120,0.55)');
+      glow.addColorStop(0.55, 'rgba(255,190,40,0.2)');
+      glow.addColorStop(1, 'rgba(255,190,40,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,240,170,0.95)';
+      for (let i = 0; i < 5; i++) {
+        const a = t * 1.2 + (i / 5) * Math.PI * 2;
+        const px = Math.cos(a) * 18, py = Math.sin(a) * 18 * 0.8;
+        ctx.beginPath();
+        ctx.moveTo(px, py - 2.6);
+        ctx.lineTo(px + 1, py - 0.8);
+        ctx.lineTo(px + 2.8, py);
+        ctx.lineTo(px + 1, py + 0.8);
+        ctx.lineTo(px, py + 2.6);
+        ctx.lineTo(px - 1, py + 0.8);
+        ctx.lineTo(px - 2.8, py);
+        ctx.lineTo(px - 1, py - 0.8);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
     if (hole) {
       // dark core with a swirling accretion ring
       const t = performance.now() / 1000;
@@ -1825,7 +1904,11 @@
     ctx.fill();
     // nut body with gradient
     const nut = ctx.createRadialGradient(-3, 0, 2, 0, 4, 12);
-    if (hole) {
+    if (golden) {
+      nut.addColorStop(0, '#fff3c0');
+      nut.addColorStop(0.5, '#ffce45');
+      nut.addColorStop(1, '#a06a08');
+    } else if (hole) {
       nut.addColorStop(0, '#3a2a55');
       nut.addColorStop(0.5, '#1a1030');
       nut.addColorStop(1, '#05020c');
@@ -1854,7 +1937,10 @@
     ctx.stroke();
     // cap
     const cap = ctx.createRadialGradient(0, -6, 1, 0, -4, 12);
-    if (hole) {
+    if (golden) {
+      cap.addColorStop(0, '#ffe27a');
+      cap.addColorStop(1, '#b07c10');
+    } else if (hole) {
       cap.addColorStop(0, '#6a3aa8');
       cap.addColorStop(1, '#241040');
     } else if (shield) {
@@ -2220,7 +2306,35 @@
       ctx.globalAlpha = 1;
       return;
     } else if (p.kind === 'comet') {
-      ctx.fillStyle = t > 0.5 ? '#fff3c8' : '#ffb830';
+      // blazing streak with a bright head
+      const len = 10 + p.r * 3;
+      const grad = ctx.createLinearGradient(p.x, p.y, p.x + len, p.y);
+      grad.addColorStop(0, t > 0.55 ? 'rgba(255,246,210,0.95)' : 'rgba(255,190,60,0.9)');
+      grad.addColorStop(1, 'rgba(255,120,20,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = Math.max(1, p.r * t);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + len, p.y);
+      ctx.stroke();
+      ctx.fillStyle = t > 0.55 ? '#fff6d2' : '#ffc340';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.6, p.r * t * 0.55), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'cometcore') {
+      const cg = ctx.createRadialGradient(p.x, p.y, 0.5, p.x, p.y, p.r * (1.6 - t * 0.5));
+      cg.addColorStop(0, 'rgba(255,255,240,0.95)');
+      cg.addColorStop(0.5, 'rgba(255,214,90,0.7)');
+      cg.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * (1.6 - t * 0.5), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
     } else {
       ctx.fillStyle = '#e8dcc8';
     }
@@ -2336,7 +2450,47 @@
     }
   }
 
+  // Robot tail: articulated metal segments following the same spline, so
+  // the silhouette matches the furry tail everywhere it appears.
+  function drawRoboTail(suit) {
+    if (suit.glow) {
+      tailPath(1.16, 0, false);
+      ctx.fillStyle = withAlpha(suit.glow, 0.18);
+      ctx.fill();
+    }
+    const step = 4;
+    for (let k = TAIL_SAMPLES.length - 1; k >= 0; k -= step) {
+      const sSeg = TAIL_SAMPLES[k];
+      const r = sSeg.w * 1.02;
+      const g = ctx.createRadialGradient(sSeg.x - r * 0.4, sSeg.y - r * 0.4, r * 0.2, sSeg.x, sSeg.y, r);
+      g.addColorStop(0, suit.belly);
+      g.addColorStop(0.55, suit.fur);
+      g.addColorStop(1, suit.furDark);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(sSeg.x, sSeg.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // joint bolt
+      ctx.fillStyle = withAlpha(suit.trim, 0.65);
+      ctx.beginPath();
+      ctx.arc(sSeg.x, sSeg.y, Math.max(0.9, r * 0.16), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // glowing tail-tip light
+    const tip = TAIL_SAMPLES[TAIL_SAMPLES.length - 1];
+    const t = performance.now() / 1000;
+    const pulse = 0.6 + 0.4 * Math.sin(t * 4);
+    ctx.fillStyle = withAlpha(suit.trim, 0.9 * pulse);
+    ctx.beginPath();
+    ctx.arc(tip.x, tip.y, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   function drawTail(suit) {
+    if (suit.robo) { drawRoboTail(suit); return; }
     // emissive edge, drawn as a slightly larger silhouette behind the tail
     if (suit.glow) {
       tailPath(1.16, 0, true);
@@ -2477,6 +2631,27 @@
       ctx.stroke();
     }
 
+    // robo: panel seams + a power core light on the torso
+    if (suit.robo) {
+      ctx.strokeStyle = withAlpha(suit.furDark, 0.7);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-11, 3); ctx.quadraticCurveTo(0, 6.5, 11, 3.5);
+      ctx.moveTo(-9.5, 11); ctx.quadraticCurveTo(0, 14, 9.5, 11.5);
+      ctx.stroke();
+      const t = performance.now() / 1000;
+      const corePulse = 0.65 + 0.35 * Math.sin(t * 3);
+      ctx.fillStyle = withAlpha(suit.trim, corePulse);
+      ctx.beginPath();
+      ctx.arc(-3, 7.5, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(suit.trim, 0.5);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(-3, 7.5, 3.6, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
     // rim light so the silhouette separates from the starfield
     ctx.strokeStyle = suit.glow ? withAlpha(suit.glow, 0.8) : 'rgba(255,236,200,0.32)';
     ctx.lineWidth = 1.8;
@@ -2485,8 +2660,82 @@
     ctx.stroke();
   }
 
+  // Robot head: metal cranium with a glowing visor eye, fin ears and an
+  // antenna — same position and size as the furry head so helmets fit.
+  function drawRoboHead(suit) {
+    const t = performance.now() / 1000;
+    // fin ears where the furry ears sit
+    ctx.fillStyle = suit.furDark;
+    ctx.beginPath();
+    ctx.moveTo(4, -17); ctx.lineTo(6.5, -24); ctx.lineTo(9, -17.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = suit.fur;
+    ctx.beginPath();
+    ctx.moveTo(9.5, -17); ctx.lineTo(12, -25); ctx.lineTo(14.5, -17.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.trim, 0.8);
+    ctx.beginPath();
+    ctx.moveTo(10.8, -19); ctx.lineTo(12, -23); ctx.lineTo(13.2, -19.2);
+    ctx.closePath();
+    ctx.fill();
+
+    // cranium
+    const hg = ctx.createRadialGradient(7, -15, 2, 11, -9, 15);
+    hg.addColorStop(0, suit.belly);
+    hg.addColorStop(0.5, suit.fur);
+    hg.addColorStop(1, suit.furDark);
+    ctx.fillStyle = hg;
+    roundRect(0.5, -20, 19.5, 17.5, 7);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.8);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // visor eye band with a scanning glow
+    ctx.fillStyle = '#0c1118';
+    roundRect(6, -15.5, 13, 6, 3);
+    ctx.fill();
+    const scan = 8 + Math.sin(t * 2.4) * 4;
+    ctx.fillStyle = suit.trim;
+    ctx.beginPath();
+    ctx.arc(6 + scan, -12.5, 1.9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.trim, 0.35);
+    ctx.beginPath();
+    ctx.arc(6 + scan, -12.5, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // muzzle plate with speaker grille (where the teeth would be)
+    ctx.fillStyle = suit.furDark;
+    roundRect(13, -8, 8.5, 6.5, 2.5);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.belly, 0.6);
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(14.8, -6.2 + i * 1.8);
+      ctx.lineTo(20, -6.2 + i * 1.8);
+      ctx.stroke();
+    }
+
+    // antenna
+    ctx.strokeStyle = suit.furDark;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(3.5, -19.5); ctx.lineTo(1.5, -26);
+    ctx.stroke();
+    const blink = Math.floor(t * 2) % 2 === 0;
+    ctx.fillStyle = blink ? '#ff5050' : withAlpha('#ff5050', 0.35);
+    ctx.beginPath();
+    ctx.arc(1.2, -27.2, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   // —— head ——————————————————————————————————————————————————
   function drawHead(suit) {
+    if (suit.robo) { drawRoboHead(suit); return; }
     // far ear (behind the head)
     ctx.fillStyle = suit.furDark;
     ctx.beginPath();
@@ -3227,6 +3476,15 @@
       ctx.fillText(shieldCharges > 1 ? 'x' + shieldCharges : 'SHIELD', 22 + shieldCharges * 23 - 8, 51);
     }
 
+    // golden invulnerability timer
+    if (invulnLeft > 0 && mode === 'play') {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffd750';
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillText('GOLDEN  ' + Math.ceil(invulnLeft) + 's', W / 2, warpLeft > 0 ? 112 : 92);
+      ctx.textAlign = 'left';
+    }
+
     // region banner when the environment shifts
     if (envMsgT > 0 && mode === 'play') {
       ctx.textAlign = 'center';
@@ -3878,19 +4136,33 @@
         ctx.fill();
       }
     } else if (id === 'comet') {
-      const g = ctx.createLinearGradient(0, 0, -36, 0);
-      g.addColorStop(0, 'rgba(255,243,200,0.95)');
-      g.addColorStop(0.5, 'rgba(255,184,48,0.7)');
-      g.addColorStop(1, 'rgba(255,140,20,0)');
+      const g = ctx.createLinearGradient(4, 0, -44, 0);
+      g.addColorStop(0, 'rgba(255,250,225,1)');
+      g.addColorStop(0.35, 'rgba(255,190,50,0.85)');
+      g.addColorStop(1, 'rgba(255,110,10,0)');
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.moveTo(2, -4.5);
-      ctx.quadraticCurveTo(-38, 0, 2, 4.5);
+      ctx.moveTo(4, -6.5);
+      ctx.quadraticCurveTo(-46, 0, 4, 6.5);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#fff3c8';
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const off = (ph * 30 + i * 11) % 34;
+        ctx.strokeStyle = i % 2 ? 'rgba(255,246,210,0.9)' : 'rgba(255,180,40,0.85)';
+        ctx.lineWidth = 2.4 - i * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, (i - 1) * 3.4);
+        ctx.lineTo(-14 - off, (i - 1) * 3.4);
+        ctx.stroke();
+      }
+      const core = ctx.createRadialGradient(3, 0, 1, 3, 0, 7);
+      core.addColorStop(0, '#ffffff');
+      core.addColorStop(0.5, '#ffe27a');
+      core.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.fillStyle = core;
       ctx.beginPath();
-      ctx.arc(1, 0, 4, 0, Math.PI * 2);
+      ctx.arc(3, 0, 7, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -4041,6 +4313,9 @@
     set bounceUp(v) { bounceUp = v; },
     get shopTab() { return shopTab; },
     get blackholes() { return blackholes; },
+    get goldens() { return goldens; },
+    get invulnLeft() { return invulnLeft; },
+    set invulnLeft(v) { invulnLeft = v; },
     get warpT() { return warpT; },
     get warpLeft() { return warpLeft; },
     set warpLeft(v) { warpLeft = v; },
