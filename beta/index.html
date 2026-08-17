@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #31';
+  const BETA_BUILD = 'PR #32';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy','aurora','frost','voidsmoke','supernova'];
@@ -263,7 +263,6 @@
   let warpMirror = true;     // whether this warp reverses the scroll
   let prevMirror = false;    // mirror state a swirl is folding FROM
   let prevTilt = 0;          // tilt a swirl is easing FROM
-  let squirrelSX = 0;        // squirrel's rendered screen x (post-tilt pan)
   let recoveryMsg = '';      // banner shown during freeze/slow recovery
   let pal = { x: 0, y: 0, dart: 0 };   // companion position (smoothed)
   let shieldFreeze = 0;      // world frozen just after a shield absorbs a hit
@@ -1740,36 +1739,25 @@
       // through the mirror flip.
       const wp = warpT > 0 ? 1 - warpT : (warpLeft > 0 || lostSpace ? 1 : 0);
       if (wp > 0) {
+        ctx.save();
+        ctx.translate(W / 2, H / 2);
         const spin = warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
         // The swirl eases from the PREVIOUS orientation to the new one.
         // Outside Lost in Space the previous state is always upright, so
         // this reduces exactly to the original black-hole fold.
-        const th = prevTilt + (warpTilt - prevTilt) * wp + spin;
+        // NOTE: no screen-edge pan here — an attempt to keep the squirrel
+        // inside a screen band coupled the world's position to the
+        // squirrel's height and wrecked the scroll feel. At extreme
+        // tilts the squirrel may near the edge; that's the better tradeoff.
+        ctx.rotate(prevTilt + (warpTilt - prevTilt) * wp + spin);
         const mFrom = prevMirror ? -1 : 1;
         const mTo = warpMirror ? -1 : 1;
-        const mir = mFrom + (mTo - mFrom) * wp;
-        // Rotating the scene about the centre swings the squirrel's
-        // SCREEN position — at big tilts, a squirrel far from vertical
-        // centre used to end up half off the edge. Pan the whole scene
-        // just enough to keep it inside a comfortable band; the pan is
-        // continuous in the tilt, so it eases with the rotation itself.
-        const sx0 = W * SQUIRREL_X - W / 2;
-        const sy0 = squirrel.y - H / 2;
-        const rx = mir * sx0 * Math.cos(th) - sy0 * Math.sin(th) + W / 2;
-        const lo = W * 0.12, hi = W * 0.88;
-        const tx = rx < lo ? lo - rx : rx > hi ? hi - rx : 0;
-        squirrelSX = rx + tx;
-        ctx.save();
-        ctx.translate(tx, 0);
-        ctx.translate(W / 2, H / 2);
-        ctx.rotate(th);
-        ctx.scale(mir, 1);
+        ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
         ctx.translate(-W / 2, -H / 2);
         drawWorld();
         ctx.restore();
         if (warpT > 0) drawVortex(1 - warpT);
       } else {
-        squirrelSX = W * SQUIRREL_X;
         drawWorld();
       }
       drawHUD();
@@ -5940,7 +5928,6 @@
     get tiltPhase() { return tiltPhase; },
     set tiltPhase(v) { tiltPhase = v; },
     get prevMirror() { return prevMirror; },
-    get squirrelSX() { return squirrelSX; },
     difficulty,
     spawnPair,
     get pal() { return pal; },
