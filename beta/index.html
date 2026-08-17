@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #22';
+  const BETA_BUILD = 'PR #23';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -71,8 +71,7 @@
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return defaultSave();
-      const s = { ...defaultSave(), ...JSON.parse(raw) };
+      const s = raw ? { ...defaultSave(), ...JSON.parse(raw) } : defaultSave();
       // Ensure defaults; do not wipe purchased unlocks
       if (!Array.isArray(s.unlocked) || !s.unlocked.length) s.unlocked = ['clear'];
       if (!s.unlocked.includes('clear')) s.unlocked.unshift('clear');
@@ -87,6 +86,9 @@
       if (!PAL_IDS.includes(s.equippedPal) || !s.unlockedPals.includes(s.equippedPal)) s.equippedPal = 'none';
       if (!HELMET_IDS.includes(s.equipped)) s.equipped = 'clear';
       if (s.equipped !== 'clear' && !s.unlocked.includes(s.equipped)) s.equipped = 'clear';
+      // BETA ONLY: every tester keeps at least 10,000 acorns so the whole
+      // shop stays purchasable. The release build must strip this floor.
+      if (!(s.acorns >= 10000)) s.acorns = 10000;
       return s;
     } catch { return defaultSave(); }
   }
@@ -338,10 +340,10 @@
   function maxShieldCharges() { return save.battery ? 3 : 1; }
 
   // Lost in Space: the world's tilt is ALIVE — it rotates continuously,
-  // wandering anywhere between −35° and +35°. Two slow sines beat against
+  // wandering anywhere between −40° and +40°. Two slow sines beat against
   // each other so the rotation never settles and never repeats a rhythm.
   function lostTiltAt(p) {
-    return (35 * Math.PI / 180) *
+    return (40 * Math.PI / 180) *
            (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
   }
 
@@ -393,11 +395,17 @@
     flapBoost = 0;
     deadTimer = 0;
     hitCooldown = 0;
-    for (let i = 0; i < 3; i++) spawnPair(W + 80 + i * gapSpacing());
+    for (let i = 0; i < 3; i++) spawnPair(i === 0 ? W + 80 : lastSpawnX + nextGapSpacing());
   }
 
   function gapSpacing() {
     return 240 + Math.min(50, distance * 0.005);
+  }
+
+  // Gates are no longer metronome-even: each new pair lands anywhere from
+  // 85% to 115% of the base spacing, so the run never settles into a beat.
+  function nextGapSpacing() {
+    return gapSpacing() * (0.85 + Math.random() * 0.3);
   }
 
   function difficulty() {
@@ -445,9 +453,11 @@
     // actually climb or dive in the time between gates. Without this, high
     // speed could demand a bottom-to-top transition faster than the flap
     // physics allow — difficulty should be a marathon, never impossible.
-    // Lost in Space: gates must stay reachable at the drift's FASTEST
-    // (+35%) — clamp against the worst case, not the average.
-    const dtGate = gapSpacing() / (d.speed * (lostSpace ? 1.35 : 1));
+    // Clamp against the ACTUAL distance from the previous gate — spacing
+    // is randomized now — and, in Lost in Space, against the drift's
+    // FASTEST (+40%): always the worst case, never the average.
+    const dx = Math.max(120, x - lastSpawnX);
+    const dtGate = dx / (d.speed * (lostSpace ? 1.4 : 1));
     const climb = 230 * dtGate;   // sustainable upward pace, px/s
     const dive = 520 * dtGate;    // gravity dive pace, px/s
     gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
@@ -490,11 +500,21 @@
         if (n > 12) break;
       }
     }
-    planets.push({
+    const pair = {
       x, gapY: gapCenter, gap, r: PLANET_R,
       topKind: kindA, botKind: kindB, scored: false,
       blockers,
-    });
+    };
+    // Lost in Space: gates BREATHE — each pair sways on its own rhythm,
+    // drifting toward and away from its neighbours (whole column moves,
+    // debris included) to deepen the distortion.
+    if (lostSpace) {
+      pair.swayA = 12 + Math.random() * 12;
+      pair.swayP = Math.random() * Math.PI * 2;
+      pair.swayT = 0;
+      pair.swayLast = 0;
+    }
+    planets.push(pair);
     // Astro Bee's vanilla mode: nothing spawns at all
     const vanilla = save.equippedPal === 'bee';
     if (!vanilla && Math.random() < 0.55) {
@@ -874,16 +894,25 @@
 
       // Lost in Space: the scroll never holds a rhythm. Two slow sine
       // waves beat against each other so the speed wanders anywhere from
-      // −35% to +35% of normal — gradual enough to feel like a current,
+      // −40% to +40% of normal — gradual enough to feel like a current,
       // fast enough that you must keep re-reading your approach speed.
       if (lostSpace) {
         driftPhase += simDt;
-        driftFactor = 1 + 0.35 * (0.62 * Math.sin(driftPhase * 0.42) +
+        driftFactor = 1 + 0.40 * (0.62 * Math.sin(driftPhase * 0.42) +
                                   0.38 * Math.sin(driftPhase * 0.11 + 2.1));
-        // the world visibly ROTATES, sweeping between −35° and +35° —
+        // the world visibly ROTATES, sweeping between −40° and +40° —
         // paused only while a wormhole swirl owns the screen
         tiltPhase += simDt;
         warpTilt = lostTiltAt(tiltPhase);
+        // gate sway: applied as a delta so the scroll math stays untouched
+        for (const p of planets) {
+          if (p.swayA) {
+            p.swayT += simDt;
+            const s = Math.sin(p.swayT * 0.9 + p.swayP) * p.swayA;
+            p.x += s - p.swayLast;
+            p.swayLast = s;
+          }
+        }
       }
 
       // Pocket Moon floats (0.85x); the Nut-Sack is heavy (1.2x) — part of
@@ -910,7 +939,7 @@
       // spawn — scroll tracker, keep at least one planet ahead
       lastSpawnX -= move;
       while (lastSpawnX < W + 80) {
-        spawnPair(lastSpawnX + gapSpacing());
+        spawnPair(lastSpawnX + nextGapSpacing());
       }
 
       // cull
