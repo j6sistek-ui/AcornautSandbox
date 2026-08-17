@@ -1137,12 +1137,56 @@
   function tutSafe() { return !!tut && tut.stage !== 'free'; }
   function tutBuddy() { return !!tut && (tut.stage === 'pal' || tut.stage === 'palDemo'); }
 
+  // After the guided tap, the world is quietly rearranged so the pilot
+  // LANDS on a planet: the bounce mechanic shows itself, launches them
+  // too high for the next (deliberately low) gap — and the swipe-down
+  // prompt arrives as the solution, not a lecture.
+  function stageTutorialBounce() {
+    const sx = W * SQUIRREL_X;
+    const margin = 70;
+    let target = null;
+    for (const p of planets) {
+      if (p.x < sx + 80) continue;
+      if (!target || p.x < target.x) target = p;
+    }
+    if (!target) return;
+    const want = Math.max(margin + target.gap / 2,
+                 Math.min(H - margin - target.gap / 2, squirrel.y - 110));
+    const dy = want - target.gapY;
+    target.gapY = want;
+    for (const b of (target.blockers || [])) b.y += dy;
+    // the gap AFTER the bounce sits low — the swipe has a job to do
+    let next = null;
+    for (const p of planets) {
+      if (p.x <= target.x + 40) continue;
+      if (!next || p.x < next.x) next = p;
+    }
+    if (next) {
+      const want2 = Math.max(margin + next.gap / 2,
+                    Math.min(H - margin - next.gap / 2, squirrel.y + 70));
+      const d2 = want2 - next.gapY;
+      next.gapY = want2;
+      for (const b of (next.blockers || [])) b.y += d2;
+    }
+  }
+
   function tickTutorial(dt) {
     tut.t += dt;
     if (tut.stage === 'intro' && tut.t > 0.8) {
       tut.stage = 'tap'; tut.hold = true; tut.t = 0;
-    } else if (tut.stage === 'tapdone' && tut.t > 1.1) {
-      tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
+    } else if (tut.stage === 'tapdone') {
+      if (!tut.staged && tut.t > 0.3) {
+        stageTutorialBounce();
+        tut.staged = true;
+      }
+      if (tut.t > 0.8) { tut.stage = 'bounce'; tut.t = 0; }
+    } else if (tut.stage === 'bounce') {
+      if (bounceUp && !tut.bounced) { tut.bounced = true; tut.t = 0; }
+      // freeze at the top of the launch — or after 6s if they somehow
+      // never touched the planet (the lesson still works as words)
+      if ((tut.bounced && tut.t > 0.45) || (!tut.bounced && tut.t > 6)) {
+        tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
+      }
     } else if (tut.stage === 'gates' && score - tut.g0 >= 3) {
       tut.stage = 'pal'; tut.hold = true; tut.t = 0;
     } else if (tut.stage === 'palDemo' && score - tut.g1 >= 2) {
@@ -1159,6 +1203,7 @@
     // tutorial: the swipe prompt waits for exactly this gesture
     if (tut && tut.hold && tut.stage === 'swipe') {
       tut.hold = false; tut.stage = 'gates'; tut.t = 0; tut.g0 = score;
+      bounceUp = false;          // the launch is cancelled — that's the lesson
       squirrel.vy = 380;
       squirrel.rot = 0.5;
       return;
@@ -5010,7 +5055,9 @@
       ctx.fillStyle = 'rgba(5,8,16,0.6)';
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = 'center';
-      const cy = H * 0.4;
+      // the swipe prompt sits lower — the pilot is parked high after the
+      // bounce, and the prompt shouldn't cover them
+      const cy = tut.stage === 'swipe' ? H * 0.55 : H * 0.4;
       if (tut.stage === 'tap') {
         // tap ripple glyph
         for (let i = 0; i < 2; i++) {
@@ -5071,12 +5118,15 @@
         ctx.lineTo(W / 2 - 10, cy - 46);
         ctx.closePath();
         ctx.fill();
+        ctx.fillStyle = '#ffb84d';
+        ctx.font = 'bold 16px system-ui';
+        ctx.fillText(tut.bounced ? 'BOUNCED TOO HIGH!' : 'FLYING TOO HIGH!', W / 2, cy - 26);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 28px system-ui';
         ctx.fillText('SWIPE DOWN', W / 2, cy + 4);
         ctx.fillStyle = 'rgba(255,255,255,0.75)';
         ctx.font = '600 15px system-ui';
-        ctx.fillText('a fast dive — it also cancels bounces', W / 2, cy + 30);
+        ctx.fillText('dive back down and make the gap', W / 2, cy + 30);
         ctx.globalAlpha = 0.7 + 0.3 * Math.sin(t * 4);
         ctx.fillStyle = '#ffb84d';
         ctx.font = '600 13px system-ui';
@@ -5103,7 +5153,12 @@
     }
     // flying banners
     ctx.textAlign = 'center';
-    if (tut.stage === 'gates') {
+    if (tut.stage === 'bounce') {
+      ctx.fillStyle = '#ffb84d';
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillText(tut.bounced ? 'BOING! PLANETS BOUNCE YOU'
+                               : 'PLANET AHEAD — LAND ON IT', W / 2, 112);
+    } else if (tut.stage === 'gates') {
       ctx.fillStyle = '#6ef0ff';
       ctx.font = 'bold 14px system-ui';
       ctx.fillText('FLY THE GAPS · GRAB THE ACORNS', W / 2, 112);
