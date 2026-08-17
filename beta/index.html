@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #24';
+  const BETA_BUILD = 'PR #25';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -253,14 +253,20 @@
   let bounceUp = false;  // a planet bounce launched the squirrel upward
   let hangarScroll = 0;
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
+  let startGate = 0;       // BETA test tool: begin runs at gate 0/100/…/400
 
   // —— background environments (worlds from the asset catalog) ——
   // Every ENV_GATES gates the space around the run shifts to a new palette.
   // Deliberately subtle: dark bases and low-alpha washes so gates, debris
   // and pickups keep full contrast.
-  const ENV_GATES = 20; // every-20 cadence confirmed good through gate 100
-  // ROADMAP: after gate 100 the plan is more extreme themes on an every-50
-  // cadence (keep the first six on every-20 below 100).
+  const ENV_GATES = 20; // every-20 cadence, confirmed good — continues past
+  // gate 100 all the way to 500+ (26 themes, then the cycle restarts).
+  // Optional per-theme extras: rays [r,g,b] paints sweeping light shafts,
+  // pulse throbs the washes (glowing lights), dim breathes a dark
+  // vignette (dimming lights). One law binds every theme: the squirrel
+  // NEVER recolors to match the environment — even in black and white,
+  // the astronaut stays in full color. (Env values only ever feed the
+  // background, obstacle auras and crystal palettes, never the suit.)
   // Each environment also owns its debris: which obstacle types spawn
   // there, the aura colour behind them, and how its crystals are cut.
   const ENVS = [
@@ -293,8 +299,131 @@
       obTypes: ['junk', 'satellite', 'ufo', 'crystal', 'debris'],
       obAccent: '#5dffa0',
       crystal: ['rgba(220,255,230,0.95)', 'rgba(90,230,160,0.9)', 'rgba(20,110,70,0.85)'] },
+    // ——— gates 120+ · the deep run (every 20, up to 500 and beyond) ———
+    { name: 'MONOCHROME VOID', top: [10, 10, 12], bot: [26, 26, 30],
+      wash: [255, 255, 255, 0.07], wash2: [140, 140, 150, 0.05],
+      obTypes: ['asteroid', 'rock', 'debris', 'satellite', 'crystal'],
+      obAccent: '#cfcfd6',
+      crystal: ['rgba(250,250,252,0.95)', 'rgba(170,170,180,0.9)', 'rgba(70,70,80,0.85)'] },
+    { name: 'EMERALD EXPANSE', top: [3, 20, 10],  bot: [6, 36, 18],
+      wash: [40, 255, 120, 0.1],  wash2: [140, 255, 80, 0.05],
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'debris'],
+      obAccent: '#4dff88',
+      crystal: ['rgba(220,255,225,0.95)', 'rgba(80,240,140,0.9)', 'rgba(12,110,50,0.85)'] },
+    { name: 'CRIMSON STORM',   top: [26, 4, 6],   bot: [44, 8, 10],
+      wash: [255, 50, 50, 0.11],  wash2: [255, 110, 60, 0.06],
+      obTypes: ['asteroid', 'rock', 'junk', 'debris', 'crystal'],
+      obAccent: '#ff5548',
+      crystal: ['rgba(255,220,215,0.95)', 'rgba(245,90,75,0.9)', 'rgba(120,18,20,0.85)'] },
+    { name: 'SAPPHIRE ABYSS',  top: [3, 8, 30],   bot: [6, 16, 52],
+      wash: [50, 110, 255, 0.12], wash2: [90, 180, 255, 0.06],
+      obTypes: ['crystal', 'satellite', 'asteroid', 'debris', 'ufo'],
+      obAccent: '#4d8cff',
+      crystal: ['rgba(215,235,255,0.95)', 'rgba(80,140,250,0.9)', 'rgba(18,40,140,0.85)'] },
+    { name: 'VIOLET REALM',    top: [16, 4, 30],  bot: [28, 8, 50],
+      wash: [170, 60, 255, 0.12], wash2: [220, 120, 255, 0.06],
+      obTypes: ['crystal', 'crystal', 'ufo', 'satellite', 'asteroid'],
+      obAccent: '#b45cff',
+      crystal: ['rgba(240,220,255,0.95)', 'rgba(180,95,250,0.9)', 'rgba(70,20,130,0.85)'] },
+    { name: 'GOLDEN HOUR',     top: [30, 18, 4],  bot: [48, 30, 8],
+      wash: [255, 190, 60, 0.1],  wash2: [255, 150, 40, 0.06],
+      rays: [255, 210, 110],
+      obTypes: ['asteroid', 'rock', 'satellite', 'debris', 'crystal'],
+      obAccent: '#ffc95c',
+      crystal: ['rgba(255,242,205,0.95)', 'rgba(250,185,70,0.9)', 'rgba(140,90,15,0.85)'] },
+    { name: 'SOLAR CORONA',    top: [34, 22, 10], bot: [20, 10, 4],
+      wash: [255, 240, 180, 0.12], wash2: [255, 180, 80, 0.07],
+      rays: [255, 245, 200], pulse: 0.5,
+      obTypes: ['rock', 'rock', 'asteroid', 'junk', 'debris'],
+      obAccent: '#ffe9a8',
+      crystal: ['rgba(255,252,235,0.95)', 'rgba(255,215,120,0.9)', 'rgba(160,110,30,0.85)'] },
+    { name: 'HYPERVIVID',      top: [20, 0, 40],  bot: [0, 40, 44],
+      wash: [255, 0, 150, 0.16],  wash2: [0, 255, 200, 0.12], pulse: 0.35,
+      obTypes: ['crystal', 'crystal', 'ufo', 'satellite', 'junk'],
+      obAccent: '#ff4fd8',
+      crystal: ['rgba(255,225,250,0.95)', 'rgba(255,60,190,0.9)', 'rgba(0,150,140,0.85)'] },
+    { name: 'NEON BAZAAR',     top: [12, 2, 24],  bot: [4, 20, 34],
+      wash: [0, 229, 255, 0.14],  wash2: [255, 60, 190, 0.1],
+      obTypes: ['ufo', 'satellite', 'junk', 'crystal', 'debris'],
+      obAccent: '#39e6ff',
+      crystal: ['rgba(220,250,255,0.95)', 'rgba(60,225,255,0.9)', 'rgba(160,20,120,0.85)'] },
+    { name: 'ALIEN JUNGLE',    top: [4, 18, 6],   bot: [10, 32, 14],
+      wash: [90, 255, 60, 0.09],  wash2: [200, 90, 255, 0.06],
+      obTypes: ['crystal', 'rock', 'rock', 'asteroid', 'debris'],
+      obAccent: '#7dff4d',
+      crystal: ['rgba(230,255,215,0.95)', 'rgba(130,240,80,0.9)', 'rgba(90,30,140,0.85)'] },
+    { name: 'ACID SWAMP',      top: [14, 18, 2],  bot: [24, 30, 6],
+      wash: [190, 255, 40, 0.1],  wash2: [90, 200, 30, 0.06], dim: 0.25,
+      obTypes: ['rock', 'junk', 'junk', 'debris', 'crystal'],
+      obAccent: '#c8f03c',
+      crystal: ['rgba(245,255,210,0.95)', 'rgba(190,235,60,0.9)', 'rgba(80,110,10,0.85)'] },
+    { name: 'CORAL SHALLOWS',  top: [2, 16, 24],  bot: [4, 30, 40],
+      wash: [40, 220, 210, 0.11], wash2: [255, 120, 110, 0.07],
+      obTypes: ['crystal', 'crystal', 'rock', 'asteroid', 'satellite'],
+      obAccent: '#3fe0cf',
+      crystal: ['rgba(225,255,250,0.95)', 'rgba(70,225,205,0.9)', 'rgba(190,80,70,0.85)'] },
+    { name: 'BONE DESERT',     top: [22, 20, 16], bot: [38, 34, 26],
+      wash: [230, 220, 190, 0.08], wash2: [180, 150, 110, 0.05], dim: 0.3,
+      obTypes: ['rock', 'rock', 'asteroid', 'debris', 'junk'],
+      obAccent: '#d9cfae',
+      crystal: ['rgba(250,246,232,0.95)', 'rgba(215,200,160,0.9)', 'rgba(110,95,60,0.85)'] },
+    { name: 'PULSAR FIELD',    top: [6, 8, 22],   bot: [10, 14, 36],
+      wash: [120, 160, 255, 0.14], wash2: [200, 220, 255, 0.08], pulse: 1.0,
+      obTypes: ['satellite', 'satellite', 'crystal', 'debris', 'asteroid'],
+      obAccent: '#9db8ff',
+      crystal: ['rgba(235,242,255,0.95)', 'rgba(150,180,255,0.9)', 'rgba(50,60,150,0.85)'] },
+    { name: 'BLACKOUT ZONE',   top: [2, 2, 4],    bot: [6, 6, 10],
+      wash: [60, 70, 110, 0.08],  wash2: [30, 34, 60, 0.05],
+      dim: 0.85, pulse: 0.6,
+      obTypes: ['debris', 'junk', 'asteroid', 'satellite', 'rock'],
+      obAccent: '#5a6a9a',
+      crystal: ['rgba(200,210,235,0.95)', 'rgba(90,105,160,0.9)', 'rgba(25,30,55,0.85)'] },
+    { name: 'AURORA CROWN',    top: [3, 12, 20],  bot: [8, 24, 30],
+      wash: [60, 255, 190, 0.12], wash2: [140, 120, 255, 0.07],
+      rays: [110, 255, 200],
+      obTypes: ['crystal', 'crystal', 'satellite', 'asteroid', 'ufo'],
+      obAccent: '#5affc8',
+      crystal: ['rgba(225,255,245,0.95)', 'rgba(90,240,195,0.9)', 'rgba(80,60,180,0.85)'] },
+    { name: 'RUST BELT',       top: [20, 10, 6],  bot: [34, 18, 10],
+      wash: [200, 110, 50, 0.09], wash2: [140, 70, 40, 0.06],
+      obTypes: ['junk', 'junk', 'satellite', 'debris', 'rock'],
+      obAccent: '#cf7a3a',
+      crystal: ['rgba(250,230,210,0.95)', 'rgba(205,125,60,0.9)', 'rgba(95,50,25,0.85)'] },
+    { name: 'GHOST NEBULA',    top: [12, 14, 20], bot: [20, 24, 32],
+      wash: [200, 210, 235, 0.07], wash2: [150, 160, 200, 0.05], dim: 0.45,
+      obTypes: ['debris', 'crystal', 'asteroid', 'satellite', 'ufo'],
+      obAccent: '#c4ccdf',
+      crystal: ['rgba(240,244,252,0.95)', 'rgba(185,195,225,0.9)', 'rgba(85,95,130,0.85)'] },
+    { name: 'PRISM STORM',     top: [10, 6, 24],  bot: [24, 6, 30],
+      wash: [255, 220, 0, 0.1],   wash2: [0, 190, 255, 0.1], pulse: 0.4,
+      obTypes: ['crystal', 'crystal', 'crystal', 'ufo', 'satellite'],
+      obAccent: '#ffd23f',
+      crystal: ['rgba(255,250,220,0.95)', 'rgba(80,200,255,0.9)', 'rgba(200,40,180,0.85)'] },
+    { name: 'EVENT HORIZON',   top: [4, 2, 8],    bot: [10, 4, 18],
+      wash: [140, 40, 255, 0.12], wash2: [40, 0, 80, 0.08],
+      dim: 0.6, pulse: 0.8, rays: [170, 90, 255],
+      obTypes: ['debris', 'asteroid', 'crystal', 'junk', 'ufo'],
+      obAccent: '#9a4dff',
+      crystal: ['rgba(235,220,255,0.95)', 'rgba(155,80,250,0.9)', 'rgba(50,10,95,0.85)'] },
   ];
   let envA = 0, envB = 0, envBlend = 1, envMsgT = 0;
+  // Every run walks the catalogue in its OWN order: DEEP SPACE always
+  // opens the first 20 gates, the middle 24 themes shuffle fresh each
+  // run, and the journey always ends on EVENT HORIZON — gate 500 and
+  // beyond hold it permanently (no wrap).
+  let envOrder = Array.from({ length: 26 }, (_, i) => i);
+  function shuffleEnvOrder() {
+    const mid = [];
+    for (let i = 1; i < ENVS.length - 1; i++) mid.push(i);
+    for (let i = mid.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mid[i], mid[j]] = [mid[j], mid[i]];
+    }
+    envOrder = [0, ...mid, ENVS.length - 1];
+  }
+  function envIndexFor(s) {
+    return envOrder[Math.min(Math.floor(s / ENV_GATES), ENVS.length - 1)];
+  }
   const MOD_SHIELD_COST = 25;
   const MOD_BATTERY_COST = 500;
   // BETA: level/acorn gates are open so everything can be tested. For
@@ -391,6 +520,17 @@
     distance = 0;
     lastSpawnX = W * 0.7;
     lastGapY = H * 0.5;
+    // this run's own walk through the catalogue
+    shuffleEnvOrder();
+    // BETA test tool: start the run deep in the progression — the chosen
+    // century sets the score, the difficulty, and the theme, with no
+    // crossfade-in from the wrong region.
+    if (BETA_UNLOCK_GATES && startGate > 0) {
+      score = startGate;
+      distance = 16000;
+      const idx = envIndexFor(score);
+      envA = idx; envB = idx; envBlend = 1;
+    }
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
@@ -427,7 +567,7 @@
 
   function makeObstacle(y, xOff) {
     // debris identity follows the environment the gate spawns into
-    const env = ENVS[Math.floor(score / ENV_GATES) % ENVS.length];
+    const env = ENVS[envIndexFor(score)];
     const pool = env.obTypes || OB_TYPES;
     const type = pool[Math.floor(Math.random() * pool.length)];
     // Larger hit/visual size so the flight lane is actually blocked
@@ -722,6 +862,11 @@
   }
   function handleTap(x, y) {
     if (mode === 'title') {
+      if (BETA_UNLOCK_GATES) {
+        for (const c of startChips()) {
+          if (hit(x, y, c)) { startGate = c.v; return; }
+        }
+      }
       for (const b of titleButtons()) {
         if (hit(x, y, b)) {
           if (b.id === 'fly') { resetRun(false); mode = 'ready'; }
@@ -795,7 +940,10 @@
   // whether or not the shield was used.
   function bankRun() {
     save.acorns += runAcorns;
-    if (deepSpace) {
+    // BETA test-start runs never touch the record books
+    if (BETA_UNLOCK_GATES && startGate > 0) {
+      // acorns still bank; scores don't
+    } else if (deepSpace) {
       if (score > (save.deepBest || 0)) save.deepBest = score;
     } else if (lostSpace) {
       if (score > (save.lostBest || 0)) save.lostBest = score;
@@ -839,7 +987,7 @@
 
     // environment shifts with progress and crossfades over a couple of
     // seconds; a short banner announces the new region mid-run
-    const envTarget = Math.floor(score / ENV_GATES) % ENVS.length;
+    const envTarget = envIndexFor(score);
     if (envTarget !== envB) {
       envA = envB;
       envB = envTarget;
@@ -1311,6 +1459,35 @@
     return 'rgba(' + (envMix(key, 0) | 0) + ',' + (envMix(key, 1) | 0) + ',' +
            (envMix(key, 2) | 0) + ',' + envMix(key, 3).toFixed(3) + ')';
   }
+  // Optional scalar effects (pulse/dim) blend across the crossfade; a
+  // theme without the field simply contributes zero.
+  function envScalar(key) {
+    const a = ENVS[envA][key] || 0, b = ENVS[envB][key] || 0;
+    return a + (b - a) * envBlend;
+  }
+  // Light shafts sweep down from a high sun; each crossfading theme with
+  // rays draws its own set at its own weight.
+  function drawRays(env, weight) {
+    if (!env.rays || weight <= 0.01) return;
+    const t = performance.now() / 1000;
+    const [r, gc, b] = env.rays;
+    ctx.save();
+    const sx = W * 0.82, sy = -H * 0.06;
+    for (let i = 0; i < 5; i++) {
+      const ang = 1.55 + i * 0.22 + Math.sin(t * 0.13 + i * 1.7) * 0.05;
+      const halfW = 0.045 + (i % 2) * 0.02;
+      const len = H * 1.25;
+      ctx.fillStyle = 'rgba(' + r + ',' + gc + ',' + b + ',' +
+                      (weight * (0.05 + 0.02 * Math.sin(t * 0.4 + i))).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx + Math.cos(ang - halfW) * len, sy + Math.sin(ang - halfW) * len);
+      ctx.lineTo(sx + Math.cos(ang + halfW) * len, sy + Math.sin(ang + halfW) * len);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 
   function draw() {
     // space bg, tinted by the current environment
@@ -1320,7 +1497,12 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    // nebula washes
+    // nebula washes — a theme with pulse makes them THROB (glowing lights)
+    const throb = envScalar('pulse');
+    if (throb > 0) {
+      ctx.globalAlpha = Math.max(0.25,
+        1 + Math.sin(performance.now() / 1000 * 2.1) * 0.55 * throb);
+    }
     ctx.fillStyle = envRgba('wash');
     ctx.beginPath();
     ctx.ellipse(W * 0.7, H * 0.3, W * 0.5, H * 0.25, 0.3, 0, Math.PI * 2);
@@ -1329,6 +1511,22 @@
     ctx.beginPath();
     ctx.ellipse(W * 0.24, H * 0.68, W * 0.42, H * 0.2, -0.25, 0, Math.PI * 2);
     ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // sun rays, per crossfading theme
+    drawRays(ENVS[envA], (1 - envBlend));
+    drawRays(ENVS[envB], envBlend);
+
+    // dimming lights: a dark vignette that slowly BREATHES
+    const dim = envScalar('dim');
+    if (dim > 0.01) {
+      const breathe = dim * (0.55 + 0.45 * Math.sin(performance.now() / 1000 * 0.7));
+      const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.22, W / 2, H / 2, H * 0.75);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,' + (breathe * 0.55).toFixed(3) + ')');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     for (const s of stars) {
       const pulse = 0.55 + 0.45 * Math.sin(s.tw);
@@ -3729,6 +3927,15 @@
     ctx.globalAlpha = pulse;
     ctx.fillText('TAP TO FLY', W / 2, H * 0.38);
     ctx.globalAlpha = 1;
+    if (BETA_UNLOCK_GATES && startGate > 0) {
+      ctx.fillStyle = 'rgba(255,176,64,0.85)';
+      ctx.font = '600 12px system-ui';
+      ctx.fillText('TEST START · GATE ' + startGate + ' · ' + ENVS[envB].name,
+                   W / 2, H * 0.38 + 24);
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.font = '600 10px system-ui';
+      ctx.fillText('scores not banked on test starts', W / 2, H * 0.38 + 40);
+    }
   }
 
   function drawDead() {
@@ -3752,6 +3959,37 @@
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '600 15px system-ui';
       ctx.fillText('tap to continue', W / 2, H * 0.62);
+    }
+  }
+
+  // BETA test tool: pick which century of the progression runs start at.
+  // Shares geometry between draw and tap, like every other control.
+  function startChips() {
+    const opts = [0, 100, 200, 300, 400];
+    const cw = 62, gap = 8;
+    const total = opts.length * cw + (opts.length - 1) * gap;
+    const x0 = W / 2 - total / 2;
+    return opts.map((v, i) => ({
+      v, x: x0 + i * (cw + gap) + cw / 2, y: H - 26, w: cw, h: 24,
+    }));
+  }
+
+  function drawStartChips() {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,176,64,0.65)';
+    ctx.font = '600 9.5px system-ui';
+    ctx.fillText('BETA · START RUN AT GATE', W / 2, H - 44);
+    for (const c of startChips()) {
+      const on = startGate === c.v;
+      ctx.fillStyle = on ? 'rgba(255,176,64,0.85)' : 'rgba(140,170,220,0.12)';
+      roundRect(c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 8);
+      ctx.fill();
+      ctx.strokeStyle = on ? 'rgba(255,220,150,0.9)' : 'rgba(160,190,230,0.25)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = on ? '#1a1002' : 'rgba(255,255,255,0.8)';
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillText(String(c.v), c.x, c.y + 4);
     }
   }
 
@@ -3809,6 +4047,7 @@
     drawLostBtn(btns[2]);
     drawMenuBtn(btns[3], false, iconHangar);
     drawMenuBtn(btns[4], false, iconHelp);
+    if (BETA_UNLOCK_GATES) drawStartChips();
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -4613,6 +4852,11 @@
     get envB() { return envB; },
     get envBlend() { return envBlend; },
     get envName() { return ENVS[envB].name; },
+    get ENVS() { return ENVS; },
+    get envOrder() { return envOrder; },
+    set envOrder(v) { envOrder = v; },
+    get startGate() { return startGate; },
+    set startGate(v) { startGate = v; },
     get lastGapY() { return lastGapY; },
     get powerups() { return powerups; },
     get lostSpace() { return lostSpace; },
