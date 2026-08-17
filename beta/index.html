@@ -1181,10 +1181,17 @@
       }
       if (tut.t > 0.8) { tut.stage = 'bounce'; tut.t = 0; }
     } else if (tut.stage === 'bounce') {
-      if (bounceUp && !tut.bounced) { tut.bounced = true; tut.t = 0; }
-      // freeze at the top of the launch — or after 6s if they somehow
-      // never touched the planet (the lesson still works as words)
-      if ((tut.bounced && tut.t > 0.45) || (!tut.bounced && tut.t > 6)) {
+      if (bounceUp && !tut.bounced) {
+        tut.bounced = true;
+        tut.t = 0;
+        // make the demo launch cinematic — a strong, readable spring
+        squirrel.vy = -640;
+      }
+      // let the WHOLE launch play out and freeze at the top of the arc,
+      // squirrel parked high above the planet it just bounced off — or
+      // after 6s if they somehow never touched it (words still teach)
+      if ((tut.bounced && (squirrel.vy > -60 || tut.t > 1.1)) ||
+          (!tut.bounced && tut.t > 6)) {
         tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
       }
     } else if (tut.stage === 'gates' && score - tut.g0 >= 3) {
