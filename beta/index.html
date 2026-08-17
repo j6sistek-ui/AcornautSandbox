@@ -597,14 +597,31 @@
     swipe = null;
   }
 
-  // Swipe down DURING an upward planet bounce to cancel it: the launch is
-  // replaced with a slight downward tap. The bounceUp flag (not the current
-  // velocity) is what qualifies the cancel, because the swipe's own
-  // pointerdown fires a flap first — outside an upward bounce the swipe
-  // never becomes a stray dive.
+  // Swipe down is a universal control:
+  //  - during an upward planet bounce it CANCELS the launch (gentle settle)
+  //  - anywhere else it's a DIVE tap — the downward mirror of the flap,
+  //    added so floaty runs (Pocket Moon) can push down on demand.
   function bounceCancel() {
     if (mode !== 'play') return;
-    if (!bounceUp || hitCooldown <= 0) return;
+    if (!bounceUp || hitCooldown <= 0) {
+      // dive tap
+      squirrel.vy = 380;
+      squirrel.rot = 0.5;
+      const dx = W * SQUIRREL_X;
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: dx + (Math.random() - 0.5) * 14,
+          y: squirrel.y - 16,
+          vx: (Math.random() - 0.5) * 50,
+          vy: -50 - Math.random() * 50,
+          life: 0.2 + Math.random() * 0.12,
+          max: 0.32,
+          r: 1.4 + Math.random() * 1.8,
+          kind: 'poof',
+        });
+      }
+      return;
+    }
     bounceUp = false;
     squirrel.vy = 210;
     squirrel.rot = 0.35;
@@ -3623,7 +3640,7 @@
     ctx.textAlign = 'left';
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 15px system-ui';
-    ctx.fillText('TAP to boost upward.', 100, y - 2);
+    ctx.fillText('TAP to boost. SWIPE DOWN to dive.', 100, y - 2);
     ctx.fillStyle = 'rgba(255,255,255,0.65)';
     ctx.font = '600 12.5px system-ui';
     ctx.fillText('Glide through the gaps between planets.', 100, y + 18);
