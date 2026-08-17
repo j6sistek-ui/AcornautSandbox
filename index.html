@@ -49,7 +49,7 @@
   // —— persistence ——
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_v2';
-  const GAME_VERSION = 'v1.0.3';
+  const GAME_VERSION = 'v1.0.2';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -851,31 +851,17 @@
       // the squirrel until it lands in the normal pickup radius. The pull
       // outruns the world scroll, so near-misses behind you get reeled in.
       const buddyOn = save.equippedPal === 'buddy';
-      const MAGNET_R = 200;      // realistic miss distances are 150-250px
-      const MAGNET_PULL = 560;
+      const MAGNET_R = 140;
+      const MAGNET_PULL = 460;
       for (const a of acorns) {
         if (a.got) continue;
         let ay = a.y + Math.sin(a.bob) * 4;
         let d = Math.hypot(sx - a.x, sy - ay);
-        // Sticky: once hooked, an acorn stays hooked until collected, even
-        // if the squirrel darts away — what the magnet touched, it keeps.
-        if (buddyOn && (d < MAGNET_R || a.pulled) && d > 1) {
+        if (buddyOn && d < MAGNET_R && d > 1) {
           const pull = Math.min(d, MAGNET_PULL * simDt);
           a.x += ((sx - a.x) / d) * pull;
           a.y += ((sy - ay) / d) * pull;
           a.pulled = true;
-          // gold streak so the reel-in reads clearly
-          if (Math.random() < 0.35) {
-            particles.push({
-              x: a.x, y: a.y,
-              vx: ((sx - a.x) / d) * 140 + (Math.random() - 0.5) * 30,
-              vy: ((sy - ay) / d) * 140 + (Math.random() - 0.5) * 30,
-              life: 0.22 + Math.random() * 0.12,
-              max: 0.34,
-              r: 1.2 + Math.random() * 1.6,
-              kind: 'gold',
-            });
-          }
           ay = a.y + Math.sin(a.bob) * 4;
           d = Math.hypot(sx - a.x, sy - ay);
         }
