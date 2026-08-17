@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #14';
+  const BETA_BUILD = 'PR #15';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -192,6 +192,7 @@
   let powerups = [];
   let shields = [];          // rare shield-acorn pickups
   let shieldCharges = 0;     // carried charges (max 1, or 3 with the battery)
+  let absorbGrace = 0;       // post-hit mercy: debris can't chain-drain charges
   let blackholes = [];       // black-hole acorns: warp the world for a while
   let deepSpace = false;     // Deep Space Flight mode for this run
   let deepTimer = 0;         // time until the first orientation shift
@@ -296,6 +297,7 @@
     warpMirror = true;
     recoveryMsg = '';
     shieldCharges = save.startShield ? 1 : 0; // purchased modifier arms the run
+    absorbGrace = 0;
     pal = { x: W * SQUIRREL_X - 42, y: H * 0.45 - 20, dart: 0 };
     shieldFreeze = 0;
     shieldSlow = 0;
@@ -716,6 +718,7 @@
       if (powerLeft > 0) {
         powerLeft = Math.max(0, powerLeft - dt);
       }
+      if (absorbGrace > 0) absorbGrace = Math.max(0, absorbGrace - dt);
 
       // Deep Space Flight: the first orientation shift arrives 15s in;
       // after that the warp-expiry chain keeps them coming back to back.
@@ -800,14 +803,17 @@
       // Debris ALWAYS kills — checked first, every frame, no cooldown.
       // (The bounce cooldown below only stops planet bounces re-triggering;
       // it must never grant safe passage through obstacles.)
-      // The one exception is a carried shield acorn, which absorbs exactly
-      // one debris hit and is consumed doing it.
-      for (const p of planets) {
-        for (const b of (p.blockers || [])) {
-          const bx = p.x + (b.xOff || 0);
-          if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) {
-            if (shieldCharges > 0) { absorbShield(bx, b.y); return; }
-            die(); return;
+      // Exceptions: a carried shield charge absorbs exactly one hit, and a
+      // short post-absorb grace (blinking squirrel) stops the recovery from
+      // chain-draining every charge into the same debris wall.
+      if (absorbGrace <= 0) {
+        for (const p of planets) {
+          for (const b of (p.blockers || [])) {
+            const bx = p.x + (b.xOff || 0);
+            if (circleHit(sx, sy, sr, bx, b.y, b.r * 0.92)) {
+              if (shieldCharges > 0) { absorbShield(bx, b.y); return; }
+              die(); return;
+            }
           }
         }
       }
@@ -940,7 +946,7 @@
   // the squirrel, vaporise debris around the respawn point, brief freeze.
   function enterWarp() {
     const sx = W * SQUIRREL_X;
-    const cy = H * 0.45;
+    const cy = safeRespawnY();
     for (const p of planets) {
       p.blockers = (p.blockers || []).filter(b =>
         Math.hypot(p.x + (b.xOff || 0) - sx, b.y - cy) > 150);
@@ -951,6 +957,7 @@
     hitCooldown = 0;
     warpLeft = 15;
     shieldFreeze = 0.4;
+    absorbGrace = 1.6;
     spark(sx, cy, 'warp');
   }
 
@@ -996,13 +1003,27 @@
     spark(W * SQUIRREL_X, squirrel.y, 'poof');
   }
 
+  // The y of the nearest upcoming gap — respawning there puts the squirrel
+  // ON the flight line instead of inside a sealed debris corridor, which is
+  // what used to chain-drain shield charges during recovery.
+  function safeRespawnY() {
+    const sx = W * SQUIRREL_X;
+    let best = null;
+    for (const p of planets) {
+      if (p.x + p.r < sx - 20) continue;   // already behind the squirrel
+      if (!best || p.x < best.x) best = p;
+    }
+    return best ? best.gapY : H * 0.45;
+  }
+
   // A carried shield absorbs one debris hit: burst at the impact point,
-  // vaporise nearby debris so the respawn spot is fair, snap the squirrel
-  // back to centre, freeze briefly, then give a slow-motion recovery window.
+  // vaporise nearby debris, snap the squirrel onto the upcoming flight
+  // line, freeze briefly, then give a slow-motion recovery window with a
+  // short debris grace.
   function absorbShield(bx, by) {
     shieldCharges -= 1;
     const sx = W * SQUIRREL_X;
-    const cy = H * 0.45;
+    const cy = safeRespawnY();
     spark(bx, by, 'shield');
     spark(bx, by, 'poof');
     for (const p of planets) {
@@ -1019,6 +1040,7 @@
     bounceUp = false;
     shieldFreeze = 0.7;
     shieldSlow = 3;
+    absorbGrace = 2.2;   // freeze (0.7) + 1.5s of protected recovery
     recoveryMsg = 'SHIELD ABSORBED!';
     spark(sx, cy, 'shield');
   }
@@ -1147,7 +1169,11 @@
       drawAcorn(a.x, a.y + Math.sin(a.bob) * 4, 'blackhole');
     }
     for (const p of particles) drawParticle(p);
+    if (absorbGrace > 0 && mode === 'play') {
+      ctx.globalAlpha = 0.6 + 0.4 * Math.sin(performance.now() / 1000 * 18);
+    }
     drawSquirrel(W * SQUIRREL_X, squirrel.y, squirrel.rot);
+    ctx.globalAlpha = 1;
     if (save.equippedPal !== 'none') {
       drawPal(save.equippedPal, pal.x, pal.y, 1, performance.now() / 1000);
     }
@@ -3748,6 +3774,8 @@
     set hasShield(v) { shieldCharges = v ? 1 : 0; },
     get shieldCharges() { return shieldCharges; },
     set shieldCharges(v) { shieldCharges = v; },
+    get absorbGrace() { return absorbGrace; },
+    set absorbGrace(v) { absorbGrace = v; },
     get deepSpace() { return deepSpace; },
     set deepTimer(v) { deepTimer = v; },
     get deepTimer() { return deepTimer; },

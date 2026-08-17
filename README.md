@@ -1,4 +1,4 @@
-# Acornaut v1.0.1
+# Acornaut v1.0.2
 
 Space squirrel flight game — fly through planets, collect acorns, unlock helmets & suits.
 
