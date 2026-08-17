@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #29';
+  const BETA_BUILD = 'PR #30';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy','aurora','frost','voidsmoke','supernova'];
@@ -618,9 +618,18 @@
     // is randomized now — and, in Lost in Space, against the drift's
     // FASTEST (+40%): always the worst case, never the average.
     const dx = Math.max(120, x - lastSpawnX);
-    const dtGate = dx / (d.speed * (lostSpace ? 1.4 : 1));
-    const climb = 230 * dtGate;   // sustainable upward pace, px/s
-    const dive = 520 * dtGate;    // gravity dive pace, px/s
+    // Lost in Space stacks three post-spawn perturbations on top of the
+    // clamp: the sway can pull neighbouring gates up to 48px CLOSER
+    // (24px amplitude each), and the vertical drift can push their gaps
+    // up to 30px further APART (15px each). At the drift's fastest, the
+    // old clamp had zero margin left, so the worst phase alignment of
+    // all three was flat-out impossible (~1 in 100 gates). Reserve that
+    // headroom here: brutally hard stays the goal — impossible doesn't.
+    const dxWorst = lostSpace ? Math.max(100, dx - 48) : dx;
+    const dtGate = dxWorst / (d.speed * (lostSpace ? 1.4 : 1));
+    const vMargin = lostSpace ? 30 : 0;
+    const climb = Math.max(40, 230 * dtGate - vMargin);  // sustainable upward pace
+    const dive = Math.max(60, 520 * dtGate - vMargin);   // gravity dive pace
     gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
     gapCenter = Math.max(margin + gap / 2, Math.min(H - margin - gap / 2, gapCenter));
     lastGapY = gapCenter;
