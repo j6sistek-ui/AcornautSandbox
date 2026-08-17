@@ -47,11 +47,11 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #26';
+  const BETA_BUILD = 'PR #27';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
-  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
-  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
-  const PAL_IDS = ['none','bee','buddy','ufo','nutsack','meteorcore','cometsprite','pocketmoon','voidjelly'];
+  const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
+  const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy'];
+  const PAL_IDS = ['none','bee','buddy','ufo','nutsack','meteorcore','cometsprite','pocketmoon','voidjelly','starpup','tinbot','wisp'];
   const defaultSave = () => ({
     highScore: 0,
     acorns: 0,
@@ -151,6 +151,19 @@
       fur: '#9aa6b4', furDark: '#525d6c', belly: '#cfd8e2',
       suit: '#37414f', suitLite: '#7f93a6', suitDark: '#1d242e',
       trim: '#35e0ff', glow: '#35e0ff', dust: '#9be8ff' },
+    // ——— premium full skins: whole-body transformations, like Robo ———
+    { id: 'alien', name: 'Alien', cost: 650, alien: true,
+      fur: '#7ed957', furDark: '#3e8a2a', belly: '#d6f7b0',
+      suit: '#2e6b5a', suitLite: '#57b09a', suitDark: '#173a2e',
+      trim: '#c8ff6a', glow: '#7dff4d', dust: '#b6ff8a' },
+    { id: 'ghost', name: 'Ghost', cost: 800, ghost: true,
+      fur: '#dfe9f5', furDark: '#9fb4cf', belly: '#ffffff',
+      suit: '#b9c8e0', suitLite: '#e8f0fb', suitDark: '#7f93b3',
+      trim: '#bfe9ff', glow: '#9fd8ff', dust: '#dff2ff' },
+    { id: 'bigbooty', name: 'Big Booty', cost: 1000, booty: true,
+      fur: '#e09a45', furDark: '#a86a1f', belly: '#ffe9c4',
+      suit: '#8a3fd4', suitLite: '#b876ff', suitDark: '#54258c',
+      trim: '#ffd23f', glow: '#ffb84d', dust: '#ffe08a' },
   ];
 
   // —— tap-boost trails (adapted from the asset catalog) ——
@@ -160,6 +173,9 @@
     { id: 'bubble', name: 'Bubble Jets',   cost: 90 },
     { id: 'bloom',  name: 'Nebula Bloom',  cost: 120 },
     { id: 'comet',  name: 'Comet Booster', cost: 200 },
+    { id: 'prism',  name: 'Prism Shards',  cost: 260 },
+    { id: 'plasma', name: 'Plasma Arc',    cost: 320 },
+    { id: 'galaxy', name: 'Galaxy Dust',   cost: 400 },
   ];
 
   // —— companions — every pal changes the run ——
@@ -182,6 +198,13 @@
       desc: 'Slows time inside black-hole warps.' },
     { id: 'nutsack',     name: '"Nut-Sack"',   cost: 300, tag: '2X NUTS',
       desc: 'Nuts double. Weak taps, heavy, no shields.' },
+    // blank companions — pure company today, effect slots for the future
+    { id: 'starpup',     name: 'Star Pup',     cost: 120, tag: 'NO EFFECT',
+      desc: 'A loyal little star. Effect slot open.' },
+    { id: 'tinbot',      name: 'Tin Bot',      cost: 130, tag: 'NO EFFECT',
+      desc: 'Beeps supportively. Effect slot open.' },
+    { id: 'wisp',        name: 'Nebula Wisp',  cost: 140, tag: 'NO EFFECT',
+      desc: 'Drifts alongside you. Effect slot open.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -596,8 +619,8 @@
     gapCenter = Math.max(lastGapY - climb, Math.min(lastGapY + dive, gapCenter));
     gapCenter = Math.max(margin + gap / 2, Math.min(H - margin - gap / 2, gapCenter));
     lastGapY = gapCenter;
-    const kindA = Math.floor(Math.random() * 9);
-    const kindB = Math.floor(Math.random() * 9);
+    const kindA = Math.floor(Math.random() * 16);
+    const kindB = Math.floor(Math.random() * 16);
     const topY = gapCenter - gap / 2 - PLANET_R;
     const botY = gapCenter + gap / 2 + PLANET_R;
     // Fully seal the corridor ABOVE the top gate and BELOW the bottom gate.
@@ -762,6 +785,57 @@
           max: 0.32,
           r: 3 + Math.random() * 2,
           kind: 'cometcore',
+        });
+      }
+    } else if (trail === 'prism') {
+      // rainbow shards, each its own hue, tumbling as they fly
+      for (let i = 0; i < 9; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -90 - Math.random() * 150,
+          vy: (Math.random() - 0.5) * 80,
+          life: 0.35 + Math.random() * 0.25,
+          max: 0.6,
+          r: 2 + Math.random() * 2.4,
+          hue: Math.random() * 360,
+          spin: (Math.random() - 0.5) * 12,
+          kind: 'prism',
+        });
+      }
+    } else if (trail === 'plasma') {
+      // jagged violet lightning with a white-hot core
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 8,
+          vx: -140 - Math.random() * 180,
+          vy: (Math.random() - 0.5) * 40,
+          life: 0.16 + Math.random() * 0.12,
+          max: 0.28,
+          r: 1.6 + Math.random() * 1.4,
+          seed: Math.random() * 10,
+          kind: 'plasma',
+        });
+      }
+      particles.push({
+        x: sx, y: sy,
+        vx: -60, vy: 0,
+        life: 0.14, max: 0.14,
+        r: 3.4,
+        kind: 'plasmacore',
+      });
+    } else if (trail === 'galaxy') {
+      // a wake of tiny twinkling stars in nebula colors
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x: sx, y: sy + (Math.random() - 0.5) * 10,
+          vx: -40 - Math.random() * 90,
+          vy: (Math.random() - 0.5) * 55,
+          life: 0.55 + Math.random() * 0.45,
+          max: 1.0,
+          r: 1 + Math.random() * 1.8,
+          tw: Math.random() * Math.PI * 2,
+          tint: i % 3,
+          kind: 'galaxy',
         });
       }
     } else {
@@ -1931,6 +2005,20 @@
       ['#142850', '#081830', '#3a68a0', '#1e4070', '#0a1830'],
       // 8 pink alien
       ['#c06078', '#782840', '#e8a0b0', '#a04858', '#501828'],
+      // 9 jungle canopy
+      ['#3f8f3a', '#245c1e', '#8ed17a', '#5cae4e', '#173d12'],
+      // 10 amethyst crystal
+      ['#8f6fd0', '#5a3f96', '#cbb2ff', '#a98fe8', '#3a2668'],
+      // 11 night city
+      ['#2e3a52', '#18202e', '#5a739c', '#3d4f70', '#0e131c'],
+      // 12 watcher (eyeball)
+      ['#d8cfc0', '#a89a88', '#f4efe4', '#c7bcab', '#6e6353'],
+      // 13 candy stripe
+      ['#e86a8a', '#b03a58', '#ffb6c8', '#f090a8', '#7c2340'],
+      // 14 shattered core
+      ['#7a6a5a', '#4a3e32', '#b0a08c', '#93816d', '#2c241c'],
+      // 15 aurora ice giant
+      ['#3a7fa8', '#1e4e70', '#8fd4f0', '#5aa8cc', '#12324a'],
     ];
     const [c1, c2, c3, c4, c5] = palettes[kind % palettes.length];
 
@@ -2048,6 +2136,166 @@
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
+    } else if (kind === 9) { // jungle canopy: vine spirals + mist banks
+      ctx.strokeStyle = c5;
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1.8;
+      [[-0.25,-0.15],[0.2,0.1],[-0.05,0.32]].forEach(([dx,dy], k) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 14; i++) {
+          const th = i * 0.5 + k * 2;
+          const rr = r * 0.05 + i * r * 0.018;
+          const px = x + dx * r + Math.cos(th) * rr;
+          const py = y + dy * r + Math.sin(th) * rr * 0.75;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      });
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.14;
+      [[0.05,-0.35,0.4,0.09],[-0.3,0.05,0.3,0.08]].forEach(([dx,dy,rx,ry]) => {
+        ctx.beginPath();
+        ctx.ellipse(x+dx*r, y+dy*r, r*rx, r*ry, 0.1, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 10) { // amethyst: geodesic facets with a glint
+      ctx.globalAlpha = 0.4;
+      [[-0.4,-0.3,0.15,-0.55,0.3,-0.2,c3],[-0.1,0.05,0.4,-0.15,0.35,0.35,c5],
+       [-0.55,0.2,-0.15,0.1,-0.25,0.5,c4],[0.15,-0.6,0.5,-0.45,0.45,-0.1,c5]].forEach(([x1,y1,x2,y2,x3,y3,cc]) => {
+        ctx.fillStyle = cc;
+        ctx.beginPath();
+        ctx.moveTo(x + x1*r, y + y1*r);
+        ctx.lineTo(x + x2*r, y + y2*r);
+        ctx.lineTo(x + x3*r, y + y3*r);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.strokeStyle = '#ffffff';
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.5, y - r * 0.42);
+      ctx.lineTo(x + r * 0.15, y - r * 0.1);
+      ctx.lineTo(x - r * 0.1, y + r * 0.45);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else if (kind === 11) { // night city: light grids on the dark side
+      ctx.fillStyle = '#ffd76a';
+      ctx.globalAlpha = 0.75;
+      for (let gx = -4; gx <= 4; gx++) {
+        for (let gy = -4; gy <= 4; gy++) {
+          const px = gx * r * 0.16 + ((gy % 2) * r * 0.05);
+          const py = gy * r * 0.15;
+          if (px * px + py * py > r * r * 0.72) continue;
+          if ((gx * 7 + gy * 13 + 5) % 4 === 0) continue; // dark blocks
+          ctx.fillRect(x + px, y + py, Math.max(1, r * 0.035), Math.max(1, r * 0.028));
+        }
+      }
+      // a glowing river of light
+      ctx.strokeStyle = '#ffb84d';
+      ctx.globalAlpha = 0.55;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.7, y + r * 0.25);
+      ctx.quadraticCurveTo(x - r * 0.1, y - r * 0.15, x + r * 0.65, y + r * 0.1);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else if (kind === 12) { // the watcher: a great planetary eye
+      ctx.fillStyle = '#3aa8a0';
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.52, r * 0.52, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#1a6a64';
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.4, r * 0.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0a0e12';
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 0.2, r * 0.3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.beginPath();
+      ctx.arc(x - r * 0.08, y - r * 0.14, r * 0.07, 0, Math.PI * 2);
+      ctx.fill();
+      // bloodshot veins reaching in from the limb
+      ctx.strokeStyle = '#b05a4a';
+      ctx.globalAlpha = 0.4;
+      ctx.lineWidth = 1;
+      [[-0.85,-0.25,-0.6,-0.1],[-0.8,0.35,-0.58,0.18],[0.82,-0.3,0.58,-0.14],[0.85,0.28,0.6,0.15]].forEach(([x1,y1,x2,y2]) => {
+        ctx.beginPath();
+        ctx.moveTo(x + x1*r, y + y1*r);
+        ctx.quadraticCurveTo(x + (x1+x2)/2*r, y + y1*r*0.6, x + x2*r, y + y2*r);
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 13) { // candy stripes, rolled at an angle
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.5);
+      for (let i = -3; i <= 3; i++) {
+        ctx.fillStyle = i % 2 === 0 ? c3 : c5;
+        ctx.globalAlpha = i % 2 === 0 ? 0.4 : 0.3;
+        ctx.fillRect(-r, i * r * 0.28 - r * 0.11, r * 2, r * 0.22);
+      }
+      ctx.restore();
+      // sugar glints
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.5;
+      [[-0.3,-0.2],[0.25,0.05],[-0.05,0.38]].forEach(([dx,dy]) => {
+        ctx.beginPath();
+        ctx.arc(x + dx*r, y + dy*r, r * 0.035, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 14) { // shattered core: fissures glowing from inside
+      ctx.strokeStyle = '#ff7a30';
+      ctx.globalAlpha = 0.75;
+      ctx.lineWidth = 2;
+      [[-0.7,-0.3,-0.2,-0.1,0.15,-0.45],[-0.2,-0.1,0.1,0.25,0.6,0.1],
+       [-0.2,-0.1,-0.35,0.4],[0.1,0.25,-0.05,0.65]].forEach((seg) => {
+        ctx.beginPath();
+        ctx.moveTo(x + seg[0]*r, y + seg[1]*r);
+        for (let i = 2; i < seg.length; i += 2) ctx.lineTo(x + seg[i]*r, y + seg[i+1]*r);
+        ctx.stroke();
+      });
+      ctx.strokeStyle = '#ffd76a';
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(x - r * 0.7, y - r * 0.3);
+      ctx.lineTo(x - r * 0.2, y - r * 0.1);
+      ctx.lineTo(x + r * 0.6, y + r * 0.1);
+      ctx.stroke();
+      // dark shadow plates between the cracks
+      ctx.fillStyle = c5;
+      ctx.globalAlpha = 0.35;
+      [[0.3,-0.35,0.25],[-0.4,0.25,0.2]].forEach(([dx,dy,s]) => {
+        ctx.beginPath();
+        ctx.arc(x + dx*r, y + dy*r, r*s, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else if (kind === 15) { // aurora ice giant: polar light curtains
+      for (let i = 0; i < 3; i++) {
+        ctx.strokeStyle = i === 1 ? '#c58aff' : '#5dffc8';
+        ctx.globalAlpha = 0.4 - i * 0.08;
+        ctx.lineWidth = r * (0.07 - i * 0.015);
+        ctx.beginPath();
+        ctx.ellipse(x, y - r * 0.55, r * (0.55 + i * 0.14), r * (0.16 + i * 0.05), 0.06, Math.PI * 1.05, Math.PI * 1.95);
+        ctx.stroke();
+      }
+      // frost bands
+      ctx.strokeStyle = c3;
+      ctx.globalAlpha = 0.25;
+      ctx.lineWidth = r * 0.1;
+      for (let i = 0; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.ellipse(x, y + (i + 0.5) * r * 0.25, r * 0.94, r * 0.15, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
     }
 
     // terminator / night side soft shadow
@@ -2109,6 +2357,40 @@
       ctx.beginPath();
       ctx.ellipse(x, y, r * 1.25, r * 0.15, 0.1, 0, Math.PI * 2);
       ctx.stroke();
+    } else if (kind === 15) {
+      // broad double ice ring
+      ctx.strokeStyle = 'rgba(143,212,240,0.5)';
+      ctx.lineWidth = Math.max(2.5, r * 0.09);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.5, r * 0.26, -0.22, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(197,138,255,0.3)';
+      ctx.lineWidth = Math.max(1.2, r * 0.04);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.68, r * 0.3, -0.22, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (kind === 14) {
+      // orbiting shards blasted off the shattered surface
+      ctx.fillStyle = 'rgba(176,160,140,0.7)';
+      [[1.28,0.12,-0.4],[1.38,-0.06,0.9],[1.32,0.2,2.2],[1.45,0.02,3.6]].forEach(([rr,tilt,th]) => {
+        const px = x + Math.cos(th) * r * rr;
+        const py = y + Math.sin(th) * r * rr * 0.32 + tilt * r;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(1.2, r * 0.06), 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (kind === 10) {
+      // a scatter of glinting crystal motes
+      ctx.fillStyle = 'rgba(203,178,255,0.8)';
+      [[1.3,0.4],[1.35,2.1],[1.28,4.2]].forEach(([rr,th]) => {
+        const px = x + Math.cos(th) * r * rr;
+        const py = y + Math.sin(th) * r * rr * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(px, py - 2.4); ctx.lineTo(px + 1.6, py);
+        ctx.lineTo(px, py + 2.4); ctx.lineTo(px - 1.6, py);
+        ctx.closePath();
+        ctx.fill();
+      });
     }
 
     // crisp limb highlight
@@ -2553,6 +2835,130 @@
         ctx.arc(-6 + i * 4, 1.6, 0.9, 0, Math.PI * 2);
         ctx.fill();
       }
+    } else if (id === 'starpup') {
+      // a five-point star with a puppy face and a wagging spark tail
+      const wag = Math.sin(t * 9) * 0.35;
+      ctx.fillStyle = 'rgba(255,214,90,0.55)';
+      ctx.beginPath();
+      ctx.arc(-8, 4 + wag * 4, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.save();
+      ctx.rotate(wag * 0.25);
+      const sg = ctx.createRadialGradient(-1.5, -2, 1, 0, 0, 9);
+      sg.addColorStop(0, '#fff3c0');
+      sg.addColorStop(0.6, '#ffce45');
+      sg.addColorStop(1, '#c98a10');
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const rr = i % 2 === 0 ? 8.6 : 4.1;
+        const px = Math.cos(a) * rr, py = Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(150,95,10,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // puppy face: floppy highlight ears, wide eyes, tongue
+      ctx.fillStyle = '#3a2410';
+      ctx.beginPath(); ctx.arc(-2, -0.8, 1.1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2, -0.8, 1.1, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(-1.6, -1.2, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.4, -1.2, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3a2410';
+      ctx.beginPath(); ctx.ellipse(0, 1.2, 0.9, 0.7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ff8a9a';
+      ctx.beginPath(); ctx.ellipse(0.4, 2.8, 0.9, 1.2, 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if (id === 'tinbot') {
+      // little rivet-and-solder robot with one earnest eye
+      const hover = Math.sin(t * 4) * 0.8;
+      ctx.save();
+      ctx.translate(0, hover);
+      // thruster flame
+      ctx.fillStyle = 'rgba(110,240,255,' + (0.4 + 0.3 * Math.sin(t * 16)).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(-2, 8.5); ctx.lineTo(0, 12 + Math.sin(t * 16)); ctx.lineTo(2, 8.5);
+      ctx.closePath();
+      ctx.fill();
+      const body = ctx.createLinearGradient(-6, -6, 6, 8);
+      body.addColorStop(0, '#cfd8e2');
+      body.addColorStop(0.5, '#8b98a8');
+      body.addColorStop(1, '#525d6c');
+      ctx.fillStyle = body;
+      roundRect(-5.5, -2, 11, 10.5, 2.5);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(40,48,60,0.7)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // rivets
+      ctx.fillStyle = 'rgba(40,48,60,0.8)';
+      [[-4, -0.5], [4, -0.5], [-4, 7], [4, 7]].forEach(([px, py]) => {
+        ctx.beginPath(); ctx.arc(px, py, 0.6, 0, Math.PI * 2); ctx.fill();
+      });
+      // chest bolt light
+      ctx.fillStyle = Math.floor(t * 3) % 2 ? '#ffd23f' : 'rgba(255,210,63,0.35)';
+      ctx.beginPath(); ctx.arc(0, 4, 1.4, 0, Math.PI * 2); ctx.fill();
+      // dome head with a single big eye
+      ctx.fillStyle = body;
+      ctx.beginPath(); ctx.arc(0, -5, 5, Math.PI, 0); ctx.fill();
+      ctx.strokeStyle = 'rgba(40,48,60,0.7)';
+      ctx.beginPath(); ctx.arc(0, -5, 5, Math.PI, 0); ctx.stroke();
+      ctx.fillStyle = '#0c1118';
+      ctx.beginPath(); ctx.arc(1, -6, 2.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#40f0ff';
+      ctx.beginPath(); ctx.arc(1 + Math.sin(t * 2) * 0.8, -6, 1.2, 0, Math.PI * 2); ctx.fill();
+      // antenna
+      ctx.strokeStyle = '#525d6c';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-2.5, -9.5); ctx.lineTo(-3.5, -13); ctx.stroke();
+      ctx.fillStyle = '#ff5050';
+      ctx.beginPath(); ctx.arc(-3.7, -13.8, 1, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if (id === 'wisp') {
+      // a translucent spirit flame that never quite holds one shape
+      const sway = Math.sin(t * 2.2);
+      const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, 12);
+      glow.addColorStop(0, 'rgba(190,255,245,0.8)');
+      glow.addColorStop(0.5, 'rgba(90,220,205,0.35)');
+      glow.addColorStop(1, 'rgba(60,180,170,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 12, 0, Math.PI * 2);
+      ctx.fill();
+      const core = ctx.createRadialGradient(-1, -2, 0.5, 0, 0, 7);
+      core.addColorStop(0, 'rgba(235,255,250,0.95)');
+      core.addColorStop(0.7, 'rgba(120,230,215,0.55)');
+      core.addColorStop(1, 'rgba(80,200,190,0.15)');
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.moveTo(0, -9 + sway);
+      ctx.quadraticCurveTo(5.5, -4, 5, 1.5);
+      ctx.quadraticCurveTo(4.5, 6, 0, 6.5);
+      ctx.quadraticCurveTo(-4.5, 6, -5, 1.5);
+      ctx.quadraticCurveTo(-5.5, -4, 0, -9 + sway);
+      ctx.fill();
+      // trailing wisps peel off behind
+      ctx.strokeStyle = 'rgba(150,240,225,0.5)';
+      ctx.lineWidth = 1.1;
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {
+        const k = (t * 1.1 + i * 0.33) % 1;
+        ctx.globalAlpha = 0.6 * (1 - k);
+        ctx.beginPath();
+        ctx.moveTo(-4 - k * 6, 2 + Math.sin(i * 2.1 + t * 3) * 2.5);
+        ctx.quadraticCurveTo(-7 - k * 8, 0, -9 - k * 10, 3 + Math.sin(i) * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      // sleepy contented eyes
+      ctx.strokeStyle = 'rgba(20,70,65,0.85)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(-2, -2, 1.4, 0.15, Math.PI - 0.15); ctx.stroke();
+      ctx.beginPath(); ctx.arc(2, -2, 1.4, 0.15, Math.PI - 0.15); ctx.stroke();
     }
     ctx.restore();
   }
@@ -2668,6 +3074,81 @@
       ctx.fillStyle = cg;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r * (1.6 - t * 0.5), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'prism') {
+      // tumbling rainbow shard
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.spin || 0) * t * 2);
+      ctx.fillStyle = 'hsla(' + ((p.hue || 0) | 0) + ',95%,68%,' + (t * 0.95).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(0, -p.r * 1.4);
+      ctx.lineTo(p.r, p.r * 0.9);
+      ctx.lineTo(-p.r, p.r * 0.9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,' + (t * 0.4).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.moveTo(0, -p.r * 0.7);
+      ctx.lineTo(p.r * 0.45, p.r * 0.4);
+      ctx.lineTo(-p.r * 0.45, p.r * 0.4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'plasma') {
+      // a jagged little bolt, kinked by its own seed
+      const s = p.seed || 0;
+      const k1 = Math.sin(s * 3.7) * 5, k2 = Math.sin(s * 7.1) * 5;
+      ctx.strokeStyle = 'rgba(199,125,255,' + (t * 0.95).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.8, p.r * t);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 5, p.y + k1);
+      ctx.lineTo(p.x + 10, p.y - k2);
+      ctx.lineTo(p.x + 15, p.y + k1 * 0.4);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,' + (t * 0.6).toFixed(2) + ')';
+      ctx.lineWidth = Math.max(0.5, p.r * t * 0.4);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 5, p.y + k1);
+      ctx.lineTo(p.x + 10, p.y - k2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'plasmacore') {
+      const cg = ctx.createRadialGradient(p.x, p.y, 0.5, p.x, p.y, p.r * 1.8);
+      cg.addColorStop(0, 'rgba(255,255,255,0.9)');
+      cg.addColorStop(0.5, 'rgba(199,125,255,0.6)');
+      cg.addColorStop(1, 'rgba(140,60,255,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      return;
+    } else if (p.kind === 'galaxy') {
+      // four-point star twinkling in nebula tints
+      const tint = p.tint === 0 ? '255,255,255' : p.tint === 1 ? '190,150,255' : '140,190,255';
+      const tw = 0.6 + 0.4 * Math.sin((p.tw || 0) + t * 14);
+      ctx.fillStyle = 'rgba(' + tint + ',' + (t * tw).toFixed(2) + ')';
+      const s = p.r * (1 + (1 - t) * 0.6);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - s * 1.7);
+      ctx.lineTo(p.x + s * 0.45, p.y - s * 0.45);
+      ctx.lineTo(p.x + s * 1.7, p.y);
+      ctx.lineTo(p.x + s * 0.45, p.y + s * 0.45);
+      ctx.lineTo(p.x, p.y + s * 1.7);
+      ctx.lineTo(p.x - s * 0.45, p.y + s * 0.45);
+      ctx.lineTo(p.x - s * 1.7, p.y);
+      ctx.lineTo(p.x - s * 0.45, p.y - s * 0.45);
+      ctx.closePath();
       ctx.fill();
       ctx.globalAlpha = 1;
       return;
@@ -2825,8 +3306,40 @@
     ctx.fill();
   }
 
+  // Ghost tail: no fur at all — three overlapping spectral plumes that
+  // waver on their own beats, with ecto-motes rising off the tip.
+  function drawGhostTail(suit) {
+    const t = performance.now() / 1000;
+    ctx.save();
+    for (let k = 0; k < 3; k++) {
+      const sway = Math.sin(t * 1.6 + k * 1.9) * 3.5;
+      const g = ctx.createLinearGradient(-34, 6, -4, -14);
+      g.addColorStop(0, withAlpha(suit.glow || '#9fd8ff', 0));
+      g.addColorStop(0.45, withAlpha(suit.glow || '#9fd8ff', 0.22));
+      g.addColorStop(1, withAlpha(suit.belly, 0.75));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(-6, 9);
+      ctx.quadraticCurveTo(-20 - k * 3, 12 + sway, -30 - k * 4, 2 + sway * 1.4 - k * 5);
+      ctx.quadraticCurveTo(-34 - k * 4, -6 + sway - k * 5, -26 - k * 3, -12 - k * 4 + sway);
+      ctx.quadraticCurveTo(-14, -14, -5, -6);
+      ctx.closePath();
+      ctx.fill();
+    }
+    for (let i = 0; i < 4; i++) {
+      const kf = (t * 0.7 + i * 0.25) % 1;
+      ctx.fillStyle = withAlpha(suit.glow || '#9fd8ff', 0.5 * (1 - kf));
+      ctx.beginPath();
+      ctx.arc(-14 - i * 5, -2 - kf * 14 + Math.sin(i * 3 + t * 2) * 2,
+              1.1 + (1 - kf), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   function drawTail(suit) {
     if (suit.robo) { drawRoboTail(suit); return; }
+    if (suit.ghost) { drawGhostTail(suit); return; }
     // emissive edge, drawn as a slightly larger silhouette behind the tail
     if (suit.glow) {
       tailPath(1.16, 0, true);
@@ -2876,6 +3389,45 @@
 
   // —— body ——————————————————————————————————————————————————
   function drawSuitBody(suit) {
+    // BIG BOOTY: the haunches go maximum — twin bubble cheeks with a
+    // real jiggle, drawn behind the torso so the silhouette reads from
+    // across the room. The gold trim is the waistband of tiny shorts.
+    if (suit.booty) {
+      const t = performance.now() / 1000;
+      const jig = Math.sin(t * 7) * 0.7;
+      const cheek = (cx, cy, rr) => {
+        const g = ctx.createRadialGradient(cx - 3, cy - 4, 1, cx, cy, rr + 3);
+        g.addColorStop(0, suit.suitLite);
+        g.addColorStop(0.55, suit.suit);
+        g.addColorStop(1, suit.suitDark);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + jig * 0.5, rr, rr * 0.94, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = withAlpha('#ffffff', 0.22);
+        ctx.beginPath();
+        ctx.ellipse(cx - rr * 0.3, cy - rr * 0.35 + jig * 0.5,
+                    rr * 0.34, rr * 0.22, -0.4, 0, Math.PI * 2);
+        ctx.fill();
+      };
+      cheek(-11, 12, 10.5);
+      cheek(-4, 15, 9.2);
+      // seam between the cheeks, then the shorts' gold waistband
+      ctx.strokeStyle = withAlpha(suit.suitDark, 0.85);
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-7.5, 6.5 + jig * 0.5);
+      ctx.quadraticCurveTo(-6.5, 13, -7.8, 22 + jig * 0.5);
+      ctx.stroke();
+      ctx.strokeStyle = suit.trim;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-19.5, 7);
+      ctx.quadraticCurveTo(-8, 2.5, 3, 6.5);
+      ctx.stroke();
+    }
+
     // hind haunch
     ctx.fillStyle = suit.suitDark;
     ctx.beginPath();
@@ -3069,9 +3621,104 @@
     ctx.fill();
   }
 
+  // Alien head: teardrop cranium, one huge obsidian almond eye (plus a
+  // hint of a second), glowing antennae — but the ears, muzzle and buck
+  // teeth stay, so it's still recognisably OUR squirrel.
+  function drawAlienHead(suit) {
+    const t = performance.now() / 1000;
+    // far ear
+    ctx.fillStyle = suit.furDark;
+    ctx.beginPath();
+    ctx.ellipse(5.4, -20.2, 2.6, 4.4, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+    // swept teardrop cranium, wider at the back like a classic grey
+    const hg = ctx.createRadialGradient(7.5, -15, 2, 11, -9, 16);
+    hg.addColorStop(0, suit.belly);
+    hg.addColorStop(0.45, suit.fur);
+    hg.addColorStop(1, suit.furDark);
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.ellipse(9, -12.5, 10.6, 9.6, -0.12, 0, Math.PI * 2);
+    ctx.fill();
+    // near ear + inner
+    ctx.fillStyle = suit.fur;
+    ctx.beginPath();
+    ctx.ellipse(11, -20.6, 3.2, 4.8, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = withAlpha(suit.furDark, 0.6);
+    ctx.beginPath();
+    ctx.ellipse(11.2, -20.2, 1.5, 2.7, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    // antennae with pulsing tips
+    ctx.strokeStyle = suit.furDark;
+    ctx.lineWidth = 1.3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(6.5, -21); ctx.quadraticCurveTo(4.5, -27, 5.8, -30);
+    ctx.moveTo(13.5, -21); ctx.quadraticCurveTo(15.5, -27, 14.4, -30.5);
+    ctx.stroke();
+    const pulse = 0.55 + 0.45 * Math.sin(t * 3.4);
+    for (const [bx, by] of [[5.8, -31], [14.4, -31.5]]) {
+      ctx.fillStyle = withAlpha(suit.glow || suit.trim, 0.35 * pulse);
+      ctx.beginPath(); ctx.arc(bx, by, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = withAlpha(suit.trim, 0.6 + 0.4 * pulse);
+      ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI * 2); ctx.fill();
+    }
+    // muzzle + buck teeth: the squirrel stays a squirrel
+    ctx.fillStyle = suit.belly;
+    ctx.beginPath();
+    ctx.ellipse(16.4, -8.4, 5.0, 4.0, 0.16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fffaf0';
+    roundRect(17.2, -6.2, 3.6, 4.0, 1.2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(60,110,60,0.5)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(19, -6); ctx.lineTo(19, -2.4);
+    ctx.stroke();
+    // tiny slit nostrils instead of a nose
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(19.4, -10.4); ctx.lineTo(20.4, -10.0);
+    ctx.moveTo(19.0, -9.2); ctx.lineTo(20.0, -8.8);
+    ctx.stroke();
+    // the EYE: huge obsidian almond with a wet shine and a green glint
+    ctx.save();
+    ctx.translate(11.6, -12.6);
+    ctx.rotate(-0.35);
+    const eg = ctx.createRadialGradient(-1, -1.5, 0.5, 0, 0, 6.4);
+    eg.addColorStop(0, '#2c3a44');
+    eg.addColorStop(0.5, '#101820');
+    eg.addColorStop(1, '#05080c');
+    ctx.fillStyle = eg;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 6.2, 3.9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(suit.furDark, 0.9);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.ellipse(-2.2, -1.5, 1.6, 1.0, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(190,255,190,0.5)';
+    ctx.beginPath(); ctx.arc(2.4, 0.8, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    // hint of the second eye further back
+    ctx.fillStyle = '#0a1014';
+    ctx.beginPath();
+    ctx.ellipse(3.6, -14.4, 2.0, 1.3, -0.35, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath(); ctx.arc(3.0, -14.8, 0.5, 0, Math.PI * 2); ctx.fill();
+  }
+
   // —— head ——————————————————————————————————————————————————
   function drawHead(suit) {
     if (suit.robo) { drawRoboHead(suit); return; }
+    if (suit.alien) { drawAlienHead(suit); return; }
     // far ear (behind the head)
     ctx.fillStyle = suit.furDark;
     ctx.beginPath();
@@ -3145,12 +3792,18 @@
     ctx.moveTo(19.2, -7.6); ctx.lineTo(23.4, -6.7);
     ctx.stroke();
 
-    // eye
-    ctx.fillStyle = '#181008';
+    // eye — the Ghost skin's eyes burn spectral cyan
+    if (suit.ghost) {
+      ctx.fillStyle = withAlpha('#8ff4ff', 0.35);
+      ctx.beginPath();
+      ctx.arc(13.4, -13.0, 4.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = suit.ghost ? '#0f2a33' : '#181008';
     ctx.beginPath();
     ctx.arc(13.4, -13.0, 2.9, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = suit.ghost ? '#8ff4ff' : '#fff';
     ctx.beginPath();
     ctx.arc(14.3, -13.9, 1.15, 0, Math.PI * 2);
     ctx.fill();
@@ -4626,6 +5279,61 @@
       ctx.beginPath();
       ctx.arc(3, 0, 7, 0, Math.PI * 2);
       ctx.fill();
+    } else if (id === 'prism') {
+      for (let i = 0; i < 5; i++) {
+        const off = (ph * 26 + i * 8) % 34;
+        ctx.save();
+        ctx.translate(-4 - off, (i % 2 ? -1 : 1) * (5 - i * 0.8));
+        ctx.rotate(ph * 6 + i * 1.3);
+        ctx.fillStyle = 'hsla(' + ((i * 72) % 360) + ',95%,68%,0.9)';
+        ctx.beginPath();
+        ctx.moveTo(0, -3.4); ctx.lineTo(2.6, 2.2); ctx.lineTo(-2.6, 2.2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    } else if (id === 'plasma') {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      for (let i = 0; i < 2; i++) {
+        const off = (ph * 34 + i * 14) % 34;
+        ctx.strokeStyle = i ? 'rgba(255,255,255,0.8)' : '#c77dff';
+        ctx.lineWidth = 2 - i * 0.9;
+        ctx.beginPath();
+        ctx.moveTo(-2 - off, 0);
+        ctx.lineTo(-7 - off, -4);
+        ctx.lineTo(-12 - off, 3);
+        ctx.lineTo(-17 - off, -2);
+        ctx.stroke();
+      }
+      const pg = ctx.createRadialGradient(0, 0, 0.5, 0, 0, 6);
+      pg.addColorStop(0, 'rgba(255,255,255,0.9)');
+      pg.addColorStop(0.6, 'rgba(199,125,255,0.5)');
+      pg.addColorStop(1, 'rgba(140,60,255,0)');
+      ctx.fillStyle = pg;
+      ctx.beginPath();
+      ctx.arc(0, 0, 6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (id === 'galaxy') {
+      for (let i = 0; i < 6; i++) {
+        const off = (ph * 22 + i * 7) % 36;
+        const tint = i % 3 === 0 ? '255,255,255' : i % 3 === 1 ? '190,150,255' : '140,190,255';
+        const tw = 0.55 + 0.45 * Math.sin(ph * 12 + i * 2.2);
+        const s = 1.4 + (i % 3) * 0.7;
+        const px = -3 - off, py = (i % 2 ? -1 : 1) * (6 - i * 0.9);
+        ctx.fillStyle = 'rgba(' + tint + ',' + tw.toFixed(2) + ')';
+        ctx.beginPath();
+        ctx.moveTo(px, py - s * 1.6);
+        ctx.lineTo(px + s * 0.4, py - s * 0.4);
+        ctx.lineTo(px + s * 1.6, py);
+        ctx.lineTo(px + s * 0.4, py + s * 0.4);
+        ctx.lineTo(px, py + s * 1.6);
+        ctx.lineTo(px - s * 0.4, py + s * 0.4);
+        ctx.lineTo(px - s * 1.6, py);
+        ctx.lineTo(px - s * 0.4, py - s * 0.4);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
