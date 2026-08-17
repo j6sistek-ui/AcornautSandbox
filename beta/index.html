@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #27';
+  const BETA_BUILD = 'PR #28';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo','alien','ghost','bigbooty'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet','prism','plasma','galaxy'];
@@ -3389,42 +3389,61 @@
 
   // —— body ——————————————————————————————————————————————————
   function drawSuitBody(suit) {
-    // BIG BOOTY: the haunches go maximum — twin bubble cheeks with a
-    // real jiggle, drawn behind the torso so the silhouette reads from
-    // across the room. The gold trim is the waistband of tiny shorts.
+    // BIG BOOTY: the haunches go ABSOLUTELY MAXIMUM — twin planetoid
+    // cheeks, each bouncing on its own beat with cartoon squash-and-
+    // stretch, a deep seam, juicy double shine, and the gold waistband
+    // of shorts that never stood a chance. Silhouette first, always.
     if (suit.booty) {
       const t = performance.now() / 1000;
-      const jig = Math.sin(t * 7) * 0.7;
-      const cheek = (cx, cy, rr) => {
-        const g = ctx.createRadialGradient(cx - 3, cy - 4, 1, cx, cy, rr + 3);
+      // out-of-phase beats so the cheeks BOUNCE independently, not slide
+      const jigL = Math.sin(t * 7) * 1.8;
+      const jigR = Math.sin(t * 7 + 0.7) * 1.8;
+      const cheek = (cx, cy, rr, jig) => {
+        // squash & stretch: wider as it lands, taller as it rises
+        const sqx = 1 + Math.abs(jig) * 0.022;
+        const sqy = 1 - Math.abs(jig) * 0.022;
+        const g = ctx.createRadialGradient(cx - rr * 0.32, cy - rr * 0.4, 1, cx, cy, rr + 4);
         g.addColorStop(0, suit.suitLite);
-        g.addColorStop(0.55, suit.suit);
+        g.addColorStop(0.5, suit.suit);
         g.addColorStop(1, suit.suitDark);
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.ellipse(cx, cy + jig * 0.5, rr, rr * 0.94, 0.15, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy + jig, rr * sqx, rr * 0.96 * sqy, 0.15, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = withAlpha('#ffffff', 0.22);
+        // juicy double shine: big top gleam + a small kiss of rim light
+        ctx.fillStyle = withAlpha('#ffffff', 0.3);
         ctx.beginPath();
-        ctx.ellipse(cx - rr * 0.3, cy - rr * 0.35 + jig * 0.5,
-                    rr * 0.34, rr * 0.22, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(cx - rr * 0.32, cy - rr * 0.4 + jig,
+                    rr * 0.4, rr * 0.26, -0.45, 0, Math.PI * 2);
         ctx.fill();
+        ctx.fillStyle = withAlpha('#ffffff', 0.16);
+        ctx.beginPath();
+        ctx.ellipse(cx + rr * 0.25, cy + rr * 0.35 + jig,
+                    rr * 0.2, rr * 0.12, 0.35, 0, Math.PI * 2);
+        ctx.fill();
+        // under-cheek shadow arc so it reads perfectly ROUND
+        ctx.strokeStyle = withAlpha(suit.suitDark, 0.7);
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(cx, cy + jig, rr * 0.92, 0.5, 1.8);
+        ctx.stroke();
       };
-      cheek(-11, 12, 10.5);
-      cheek(-4, 15, 9.2);
-      // seam between the cheeks, then the shorts' gold waistband
-      ctx.strokeStyle = withAlpha(suit.suitDark, 0.85);
-      ctx.lineWidth = 1.4;
+      cheek(-15, 13, 15.5, jigL);
+      cheek(-3.5, 17.5, 13.5, jigR);
+      // the seam, deep between the cheeks
+      ctx.strokeStyle = withAlpha(suit.suitDark, 0.9);
+      ctx.lineWidth = 1.8;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(-7.5, 6.5 + jig * 0.5);
-      ctx.quadraticCurveTo(-6.5, 13, -7.8, 22 + jig * 0.5);
+      ctx.moveTo(-9, 2.5 + jigL * 0.5);
+      ctx.quadraticCurveTo(-7.5, 14, -9.5, 30 + jigR * 0.5);
       ctx.stroke();
+      // gold waistband riding the top of all that curve
       ctx.strokeStyle = suit.trim;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.4;
       ctx.beginPath();
-      ctx.moveTo(-19.5, 7);
-      ctx.quadraticCurveTo(-8, 2.5, 3, 6.5);
+      ctx.moveTo(-27, 6);
+      ctx.quadraticCurveTo(-10, -1, 5, 5.5);
       ctx.stroke();
     }
 
