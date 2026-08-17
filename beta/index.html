@@ -846,25 +846,33 @@
 
       // acorn collect — the Acorn Buddy stretches the grab radius and darts
       // out to fetch anything inside it
+      // The Acorn Buddy is a magnet: any standard acorn that comes within
+      // range — including ones that just slipped past — is DRAGGED toward
+      // the squirrel until it lands in the normal pickup radius. The pull
+      // outruns the world scroll, so near-misses behind you get reeled in.
       const buddyOn = save.equippedPal === 'buddy';
-      const grabR = buddyOn ? 75 : 28;
+      const MAGNET_R = 140;
+      const MAGNET_PULL = 460;
       for (const a of acorns) {
         if (a.got) continue;
-        const ay = a.y + Math.sin(a.bob) * 4;
-        const d = Math.hypot(sx - a.x, sy - ay);
-        // The buddy also dives after MISSED standard acorns: anything that
-        // slipped just behind the squirrel while reasonably close.
-        const missed = buddyOn && a.x < sx - 18 && a.x > sx - 105 && Math.abs(ay - sy) < 100;
+        let ay = a.y + Math.sin(a.bob) * 4;
+        let d = Math.hypot(sx - a.x, sy - ay);
+        if (buddyOn && d < MAGNET_R && d > 1) {
+          const pull = Math.min(d, MAGNET_PULL * simDt);
+          a.x += ((sx - a.x) / d) * pull;
+          a.y += ((sy - ay) / d) * pull;
+          a.pulled = true;
+          ay = a.y + Math.sin(a.bob) * 4;
+          d = Math.hypot(sx - a.x, sy - ay);
+        }
         if (d < 28) {
           a.got = true;
           runAcorns += 1;
-          spark(a.x, a.y, 'gold');
-        } else if (d < grabR || missed) {
-          a.got = true;
-          runAcorns += 1;
-          pal.x = a.x;
-          pal.y = a.y;
-          pal.dart = 0.35;
+          if (a.pulled) {
+            pal.x = a.x;
+            pal.y = a.y;
+            pal.dart = 0.35;
+          }
           spark(a.x, a.y, 'gold');
         }
       }
