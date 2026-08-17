@@ -1,32 +1,42 @@
-# Acornaut v1.1.0
+# Acornaut Sandbox
 
-Space squirrel flight game — fly through planets, collect acorns, unlock helmets & suits.
+Private workshop for the **illustrated rewrite** of [Acornaut](https://github.com/j6sistek-ui/acornaut).
+
+The live painted build is here:
+
+**[sandbox_assets/index.html](sandbox_assets/index.html)**
+
+Same physics and feature set as v1.1.0 / beta (modes, hangar, pals, XP road, warps, tutorial), redrawn with sprite art.
 
 ## Play
 
-**LIVE GAME LINK:** https://j6sistek-ui.github.io/acornaut/
+Open `sandbox_assets/index.html` from any static server (GitHub Pages, `npx serve`, etc.).  
+Art lives in `sandbox_assets/art/`. Game modules live in `sandbox_assets/js/`.
 
-BETA TESTER: https://j6sistek-ui.github.io/acornaut/beta/
+The **original canvas game** remains at the repo root (`index.html`) and `beta/`.
 
-## Install on iPhone (Add to Home Screen)
+## What's in this pass
 
-1. Open the link above in **Safari** (not Chrome)
-2. Tap the **Share** button
-3. Tap **Add to Home Screen**
-4. Confirm — Acornaut appears on your home screen with the app icon
-5. Opens full-screen, works **offline** after first visit
+- Illustrated squirrel, planets, debris, acorns, shields, pals
+- Debris **kills**; planets **bounce**; swipe **cancels** a bounce
+- Five warp variants, Deep Space chains, Lost in Space tilt/drift
+- All 12 helmets, 12 suits (premium overlays), 12 trails, 12 pals
+- Hangar, flight log, social (news + records), help, first-flight tutorial
+- Start shield + battery mods, XP / titles, pause
 
-## Files
+## Source
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Full game + PWA hooks |
-| `manifest.webmanifest` | App name, icons, standalone display |
-| `sw.js` | Offline cache (v1.0.0) |
-| `icon.svg` | Source icon |
-| `apple-touch-icon.png` | iOS home screen icon (180) |
-| `icon-192.png` / `icon-512.png` | PWA icons |
+TypeScript engine used by the Grok Build preview:
+
+- `illustrated-src/game/` — sim, draw, catalog, save, audio, engine
+- `illustrated-src/Acornaut.tsx` — React overlay UI
+
+Regenerate the standalone from that source:
+
+```
+node scripts/export-sandbox.mjs
+```
 
 ## License
 
-[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) — free to share and adapt **with credit**, **non-commercial** only. See [LICENSE](LICENSE).
+[CC BY-NC 4.0](LICENSE) — same as the live game.
