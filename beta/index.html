@@ -1131,7 +1131,7 @@
   //  - anywhere else it's a DIVE tap — the downward mirror of the flap,
   //    added so floaty runs (Pocket Moon) can push down on demand.
   function startTutorial() {
-    tut = { stage: 'intro', hold: false, t: 0, g0: 0, g1: 0, gD: 0, nudge: 0 };
+    tut = { stage: 'intro', hold: false, t: 0, g0: 0, g1: 0, gD: 0, nudge: 0, retries: 0, springs: 0 };
     tutPending = false;
   }
   function tutSafe() { return !!tut && tut.stage !== 'free'; }
@@ -1142,13 +1142,10 @@
   // landing point is computable. These two stagers move real gates to the
   // computed points — the bounce and the dive land where we calculated,
   // every time, for every pilot.
-  function tutPhysics() {
+  function tutGrav() {
     // an existing pilot may replay with a pal equipped — match live physics
-    return {
-      grav: GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85
-                     : save.equippedPal === 'nutsack' ? 1.2 : 1),
-      flapV: FLAP * (save.equippedPal === 'nutsack' ? 0.71 : 1),
-    };
+    return GRAVITY * (save.equippedPal === 'pocketmoon' ? 0.85
+                    : save.equippedPal === 'nutsack' ? 1.2 : 1);
   }
 
   // Called at the SECOND guided tap: predict where the fall lands ~0.9s
@@ -1156,9 +1153,10 @@
   // exactly there when the squirrel arrives.
   function stageTutorialBounce() {
     const sx = W * SQUIRREL_X;
-    const ph = tutPhysics();
+    // predict from the CURRENT velocity, so a mid-glide re-aim (after a
+    // missed touchdown) is just as exact as the first staging
     const tA = 0.9;                          // seconds until touchdown
-    const yPred = squirrel.y + ph.flapV * tA + 0.5 * ph.grav * tA * tA;
+    const yPred = squirrel.y + squirrel.vy * tA + 0.5 * tutGrav() * tA * tA;
     const margin = 70;
     let target = null;
     for (const p of planets) {
@@ -1187,9 +1185,8 @@
   // next gate to the recovery point, one leveling tap away.
   function stageTutorialDive() {
     const sx = W * SQUIRREL_X;
-    const ph = tutPhysics();
     const tA = 0.5;                          // seconds of dive to the gate
-    const yPred = squirrel.y + 380 * tA + 0.5 * ph.grav * tA * tA;
+    const yPred = squirrel.y + 380 * tA + 0.5 * tutGrav() * tA * tA;
     const margin = 70;
     let target = null;
     for (const p of planets) {
@@ -1198,8 +1195,12 @@
     }
     if (!target) return;
     target.x = sx + speed * tA;
-    target.gapY = Math.max(margin + target.gap / 2,
-                  Math.min(H - margin - target.gap / 2, yPred));
+    let want = Math.max(margin + target.gap / 2,
+               Math.min(H - margin - target.gap / 2, yPred));
+    // the dive gate must sit BELOW the pilot — that's the whole lesson
+    want = Math.max(want, Math.min(H - margin - target.gap / 2,
+                                   squirrel.y + 60));
+    target.gapY = want;
     target.blockers = [];
   }
 
@@ -1215,15 +1216,35 @@
         tut.stage = 'bounce'; tut.t = 0;
         // make the demo launch cinematic — a strong, readable spring
         squirrel.vy = -640;
-      } else if (tut.t > 6) {
-        // somehow never touched the planet — the words still teach
-        tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
+      } else if (tut.t > 1.6) {
+        // touchdown was due at 0.9s — it missed, so re-aim from wherever
+        // the squirrel is now. After a few tries, spring them up anyway:
+        // the swipe prompt must always arrive with the pilot up HIGH,
+        // never near the floor with the gate sitting overhead.
+        if (tut.retries < 3) {
+          tut.retries += 1;
+          stageTutorialBounce();
+          tut.t = 0.7;                       // next arrival ~0.9s out
+        } else {
+          tut.bounced = true;
+          tut.stage = 'bounce'; tut.t = 0;
+          bounceUp = false;
+          squirrel.vy = -640;
+        }
       }
     } else if (tut.stage === 'bounce') {
       // let the WHOLE launch play out and freeze at the top of the arc,
-      // squirrel parked high above the planet it just bounced off
+      // squirrel parked high above the planet it just bounced off. If the
+      // apex is still low (a floor-level rescue), boing again — the swipe
+      // prompt must always fire with real room to dive below.
       if (squirrel.vy > -60 || tut.t > 1.1) {
-        tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
+        if (squirrel.y > H * 0.55 && tut.springs < 3) {
+          tut.springs += 1;
+          squirrel.vy = -640;
+          tut.t = 0;
+        } else {
+          tut.stage = 'swipe'; tut.hold = true; tut.t = 0;
+        }
       }
     } else if (tut.stage === 'dive' && (score - tut.gD >= 1 || tut.t > 3)) {
       tut.stage = 'yourturn'; tut.hold = true; tut.t = 0;
@@ -1612,9 +1633,16 @@
       }
       if (sy > H + 30) {
         if (tutSafe()) {
-          squirrel.y = H - 30;
-          squirrel.vy = -320;
-          squirrel.rot = -0.3;
+          if (tut.stage === 'dive' || tut.stage === 'gates' ||
+              tut.stage === 'palDemo') {
+            // practice time: scoop them straight back onto the flight
+            // line — no floundering along the floor
+            tutReset(sx, H + 10);
+          } else {
+            squirrel.y = H - 30;
+            squirrel.vy = -320;
+            squirrel.rot = -0.3;
+          }
         } else {
           die(); return;
         }
@@ -5233,12 +5261,11 @@
         ctx.fillStyle = 'rgba(255,255,255,0.8)';
         ctx.font = '600 14px system-ui';
         ctx.fillText('The Acorn Buddy reels in nearby acorns.', W / 2, cy + 28);
-        ctx.fillText('Companions live in the hangar — each one', W / 2, cy + 48);
-        ctx.fillText('changes your run. Watch this one work.', W / 2, cy + 66);
+        ctx.fillText('Find more companions in the hangar.', W / 2, cy + 48);
         ctx.globalAlpha = 0.7 + 0.3 * Math.sin(t * 4);
         ctx.fillStyle = '#6ef0ff';
         ctx.font = '600 13px system-ui';
-        ctx.fillText('tap to continue', W / 2, cy + 98);
+        ctx.fillText('tap to continue', W / 2, cy + 80);
         ctx.globalAlpha = 1;
       }
       ctx.textAlign = 'left';
@@ -5898,25 +5925,23 @@
     };
 
     item(() => drawAcorn(52, y + 6, false), 'ACORN',
-         'The currency. Spend it in the hangar on', 'helmets, suits, trails and companions.');
+         'Currency — spend it in the hangar.');
     item(() => drawAcorn(52, y + 6, true), 'SLOW ACORN',
-         'Slows everything down for 6 seconds.');
+         'Slows everything for 6 seconds.');
     item(() => drawAcorn(52, y + 6, 'shield'), 'SHIELD ACORN',
-         'Absorbs one debris hit, then gives you a', 'moment to recover. Rare — grab it.');
+         'Absorbs one debris hit. Rare — grab it.');
     item(() => drawAcorn(52, y + 6, 'blackhole'), 'BLACK HOLE',
-         'Warps space for 15 seconds: reversed or', 'tilted flight. Survive it for the glory.');
+         'Warps flight for 15s — reversed or tilted.');
     item(() => drawAcorn(52, y + 6, 'wormhole'), 'WORMHOLE',
-         'Lost in Space only: mirrors your heading', 'until the next one flips it back.');
+         'Lost in Space: mirrors your heading.');
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '600 11.5px system-ui';
-    ctx.fillText('DEEP SPACE: space itself shifts every 10s.', W / 2, y + 14);
-    ctx.fillText('LOST IN SPACE: drifting speed, a tilt that', W / 2, y + 30);
-    ctx.fillText('never rests, wormholes that mirror it all.', W / 2, y + 46);
+    ctx.fillText('DEEP SPACE: space shifts every 10s.', W / 2, y + 14);
+    ctx.fillText('LOST IN SPACE: drift, tilt, wormholes.', W / 2, y + 30);
     ctx.fillStyle = '#ffd080';
-    ctx.fillText('BRING A PAL: every companion adds its own', W / 2, y + 66);
-    ctx.fillText('fun modifier — browse them in the hangar.', W / 2, y + 82);
+    ctx.fillText('BRING A PAL: each adds a fun modifier.', W / 2, y + 50);
 
     // replay the first-flight tutorial any time
     const rb = helpReplayBtn();
