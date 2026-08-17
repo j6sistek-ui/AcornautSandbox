@@ -62,7 +62,7 @@ export function drawWorld(ctx, w, save, art) {
             const bx = p.x + b.xOff;
             const img = art.debris[b.debris];
             if (img)
-                drawSprite(ctx, img, bx, by, b.r * 2.05);
+                drawSprite(ctx, img, bx, by, b.r * 2, "core");
             else
                 drawPlanet(ctx, art, bx, by, b.r, b.kind);
         }
@@ -272,7 +272,7 @@ function drawParticle(ctx, p) {
 function drawPlanet(ctx, art, x, y, r, kind) {
     const img = art.planets[kind % art.planets.length];
     if (img) {
-        drawSprite(ctx, img, x, y, r * 2.08);
+        drawSprite(ctx, img, x, y, r * 2, "core");
         return;
     }
     ctx.fillStyle = "#3a6aa8";
@@ -429,6 +429,47 @@ function drawPremium(ctx, premium, t) {
         ctx.ellipse(13, -10, 3, 4, 0, 0, Math.PI * 2);
         ctx.fill();
     }
+}
+export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, t = 0) {
+    const img = art.squirrelIdle[0];
+    if (!img)
+        return;
+    ctx.save();
+    ctx.translate(cx, cy);
+    const s = size / 50;
+    ctx.scale(s, s);
+    ctx.filter = `hue-rotate(${suit.hue}deg) saturate(${suit.sat})`;
+    if (suit.premium === "ghost")
+        ctx.globalAlpha = 0.72 + 0.12 * Math.sin(t * 4);
+    drawSprite(ctx, img, 0, 2, suit.premium === "booty" ? 56 : 50);
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+    drawHelmet(ctx, helmet, t);
+    drawPremium(ctx, suit.premium, t);
+    ctx.restore();
+}
+export function paintTrailPreview(ctx, trail, cx, cy, t = 0) {
+    const [c0, c1] = trail.colors;
+    const ph = (t * 2) % 1;
+    ctx.save();
+    ctx.translate(cx + 12, cy);
+    const g = ctx.createLinearGradient(0, 0, -40, 0);
+    g.addColorStop(0, c0);
+    g.addColorStop(0.5, c1);
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(0, -8);
+    ctx.quadraticCurveTo(-42, 0, 0, 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = c0;
+    for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.arc(-6 - ((ph * 28 + i * 8) % 32), (i % 2 ? -1 : 1) * (5 - i * 0.6), 2.3 - i * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
 }
 export function drawHud(ctx, w) {
     const { W } = w;

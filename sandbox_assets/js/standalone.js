@@ -1,4 +1,5 @@
 import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js";
+import { paintPortrait, paintTrailPreview } from "./draw.js";
 import { createEngine } from "./engine.js";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js";
 function el(tag, cls = "", text) {
@@ -114,10 +115,39 @@ export async function bootStandalone(root) {
         box.append(fly, deep, lost, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
         return box;
     }
+    function miniCanvas(w, h) {
+        const c = document.createElement("canvas");
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        c.width = Math.ceil(w * dpr);
+        c.height = Math.ceil(h * dpr);
+        c.style.width = `${w}px`;
+        c.style.height = `${h}px`;
+        const ctx = c.getContext("2d");
+        if (ctx)
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { c, ctx };
+    }
+    function portraitOf(helmet, suit, px = 56) {
+        const { c, ctx } = miniCanvas(px, px);
+        if (ctx && engine.art)
+            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px * 0.58, px * 0.78);
+        return c;
+    }
     function drawHangar() {
         const s = engine.save;
+        const helm = HELMETS.find((h) => h.id === s.equipped) ?? HELMETS[0];
+        const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
+        const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+        const pal = PALS.find((p) => p.id === s.equippedPal);
         const box = el("div", "ac-sheet");
         box.append(header("Hangar"));
+        const load = el("div", "ac-loadout");
+        load.append(portraitOf(helm, suit, 64));
+        const loadTxt = el("div");
+        loadTxt.append(el("p", "", `${helm.name} · ${suit.name}`));
+        loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
+        load.append(loadTxt);
+        box.append(load);
         box.append(el("p", "ac-sub", `${s.acorns} acorns · LV ${pilotLevelOf(s)} ${pilotTitleOf(s)}`));
         const tabs = el("div", "ac-tabs");
         for (const t of ["helmets", "suits", "trails", "pals", "mods"]) {
@@ -132,10 +162,7 @@ export async function bootStandalone(root) {
             for (const h of HELMETS) {
                 const owned = s.unlocked.includes(h.id);
                 const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-                const vis = el("span", "ac-helm");
-                vis.style.background = h.visor;
-                vis.style.boxShadow = h.glow ? `0 0 10px ${h.glow}` : "";
-                b.append(vis, document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
+                b.append(portraitOf(h, suit), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
                 b.onclick = () => engine.buyHelmet(h.id);
                 grid.append(b);
             }
@@ -143,21 +170,21 @@ export async function bootStandalone(root) {
         else if (engine.shopTab === "suits") {
             for (const u of SUITS) {
                 const open = suitRevealed(s, u.id);
+                const owned = s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
-                const img = document.createElement("img");
-                img.src = `${art}/thumbs/squirrel.png`;
-                img.style.filter = `hue-rotate(${u.hue}deg) saturate(${u.sat})`;
-                b.append(img, document.createTextNode(`${u.name}\n${open ? u.cost : "LOCKED"}`));
+                b.append(portraitOf(helm, u), document.createTextNode(`${u.name}\n${!open ? "LOCKED" : owned ? "OWNED" : u.cost}`));
                 b.onclick = () => engine.buySuit(u.id);
                 grid.append(b);
             }
         }
         else if (engine.shopTab === "trails") {
             for (const t of TRAILS) {
+                const owned = s.unlockedTrails.includes(t.id);
                 const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
-                const bar = el("span", "ac-trail");
-                bar.style.background = `linear-gradient(90deg, ${t.colors.join(",")})`;
-                b.append(bar, document.createTextNode(`${t.name}\n${t.cost}`));
+                const { c, ctx } = miniCanvas(64, 36);
+                if (ctx)
+                    paintTrailPreview(ctx, t, 28, 18, 0.2);
+                b.append(c, document.createTextNode(`${t.name}\n${owned ? "OWNED" : t.cost}`));
                 b.onclick = () => engine.buyTrail(t.id);
                 grid.append(b);
             }

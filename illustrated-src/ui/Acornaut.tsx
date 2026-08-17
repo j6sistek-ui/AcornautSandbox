@@ -28,6 +28,7 @@ import {
   xpCumulative,
 } from "@/game/catalog";
 import { createEngine, type Engine } from "@/game/engine";
+import { paintPortrait, paintTrailPreview } from "@/game/draw";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -297,7 +298,7 @@ function Hangar({ engine }: { engine: Engine }) {
         </p>
       </div>
       <div className="mb-4 flex items-center gap-3 rounded-2xl border border-line bg-panel p-3">
-        <img src="/art/thumbs/squirrel.png" alt="" className="h-16 w-16 object-contain" />
+        <Portrait engine={engine} helmet={helm ?? HELMETS[0]} suit={suit ?? SUITS[0]} size={64} />
         <div className="min-w-0 flex-1">
           <p className="font-display text-sm font-bold text-cream">
             {helm?.name} · {suit?.name}
@@ -311,6 +312,7 @@ function Hangar({ engine }: { engine: Engine }) {
             ))}
           </div>
         </div>
+        {pal?.art && <img src={`/art/thumbs/pals/${pal.art}.png`} alt="" className="h-10 w-10 object-contain" />}
       </div>
       <div className="mb-4 flex gap-1.5 overflow-x-auto">
         {(["helmets", "suits", "trails", "pals", "mods"] as const).map((t) => (
@@ -340,7 +342,7 @@ function Hangar({ engine }: { engine: Engine }) {
                 active={eq}
                 onClick={() => engine.buyHelmet(h.id)}
               >
-                <HelmetSwatch visor={h.visor} rim={h.rim} glow={h.glow} />
+                <Portrait engine={engine} helmet={h} suit={suit ?? SUITS[0]} size={56} />
               </Card>
             );
           })}
@@ -361,12 +363,7 @@ function Hangar({ engine }: { engine: Engine }) {
                 locked={!revealed}
                 onClick={() => engine.buySuit(s.id)}
               >
-                <img
-                  src="/art/thumbs/squirrel.png"
-                  alt=""
-                  className="h-12 w-12 object-contain"
-                  style={{ filter: `hue-rotate(${s.hue}deg) saturate(${s.sat})` }}
-                />
+                <Portrait engine={engine} helmet={helm ?? HELMETS[0]} suit={s} size={56} />
               </Card>
             );
           })}
@@ -385,7 +382,7 @@ function Hangar({ engine }: { engine: Engine }) {
                 active={eq}
                 onClick={() => engine.buyTrail(t.id)}
               >
-                <TrailSwatch colors={t.colors} />
+                <TrailMark engine={engine} trail={t} />
               </Card>
             );
           })}
@@ -467,39 +464,64 @@ function Card({
       type="button"
       onClick={onClick}
       className={
-        "flex min-h-[116px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-2 " +
+        "flex min-h-[128px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-2 " +
         (active ? "border-ion bg-ion/15" : "border-line bg-panel") +
         (locked ? " opacity-50" : "")
       }
     >
-      <span className="mb-1 flex h-12 w-12 items-center justify-center">{children}</span>
+      <span className="mb-1 flex h-14 w-14 items-center justify-center overflow-visible">{children}</span>
       <span className="text-center text-[11px] font-bold text-cream">{name}</span>
       <span className="text-[10px] font-semibold text-copper">{meta}</span>
     </button>
   );
 }
 
-function HelmetSwatch({ visor, rim, glow }: { visor: string; rim: string; glow: string | null }) {
-  return (
-    <span className="relative block h-11 w-11">
-      <span className="absolute inset-x-1 top-0 h-9 rounded-t-full border-2 bg-[#2a3454]" style={{ borderColor: rim }} />
-      <span
-        className="absolute inset-x-2 top-2 h-6 rounded-t-full"
-        style={{ background: visor, boxShadow: glow ? `0 0 10px ${glow}` : undefined }}
-      />
-    </span>
-  );
+function Portrait({
+  engine,
+  helmet,
+  suit,
+  size = 56,
+}: {
+  engine: Engine;
+  helmet: (typeof HELMETS)[number];
+  suit: (typeof SUITS)[number];
+  size?: number;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    const art = engine.art;
+    if (!c || !art) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = size * dpr;
+    c.height = size * dpr;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+    paintPortrait(ctx, art, helmet, suit, size / 2, size * 0.58, size * 0.78);
+  }, [engine.art, helmet, suit, size]);
+  return <canvas ref={ref} width={size} height={size} style={{ width: size, height: size }} />;
 }
 
-function TrailSwatch({ colors }: { colors: string[] }) {
-  return (
-    <span
-      className="block h-3 w-12 rounded-full"
-      style={{
-        background: `linear-gradient(90deg, ${colors[0]}, ${colors[1] ?? colors[0]}, ${colors[2] ?? colors[0]})`,
-      }}
-    />
-  );
+function TrailMark({ engine, trail }: { engine: Engine; trail: (typeof TRAILS)[number] }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = 64;
+    const h = 36;
+    c.width = w * dpr;
+    c.height = h * dpr;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    paintTrailPreview(ctx, trail, w * 0.42, h * 0.5, 0.2);
+    void engine;
+  }, [engine, trail]);
+  return <canvas ref={ref} width={64} height={36} className="h-9 w-16" />;
 }
 
 function ModRow({
