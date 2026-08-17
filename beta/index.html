@@ -47,7 +47,7 @@
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_beta';
   // Update this with every PR so a hard refresh is verifiable on the menu.
-  const BETA_BUILD = 'PR #25';
+  const BETA_BUILD = 'PR #26';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust','robo'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -253,7 +253,6 @@
   let bounceUp = false;  // a planet bounce launched the squirrel upward
   let hangarScroll = 0;
   let shopTab = 'helmets'; // helmets | suits | mods | trails | pals
-  let startGate = 0;       // BETA test tool: begin runs at gate 0/100/…/400
 
   // —— background environments (worlds from the asset catalog) ——
   // Every ENV_GATES gates the space around the run shifts to a new palette.
@@ -522,15 +521,6 @@
     lastGapY = H * 0.5;
     // this run's own walk through the catalogue
     shuffleEnvOrder();
-    // BETA test tool: start the run deep in the progression — the chosen
-    // century sets the score, the difficulty, and the theme, with no
-    // crossfade-in from the wrong region.
-    if (BETA_UNLOCK_GATES && startGate > 0) {
-      score = startGate;
-      distance = 16000;
-      const idx = envIndexFor(score);
-      envA = idx; envB = idx; envBlend = 1;
-    }
     powerLeft = 0;
     flapBoost = 0;
     deadTimer = 0;
@@ -862,11 +852,6 @@
   }
   function handleTap(x, y) {
     if (mode === 'title') {
-      if (BETA_UNLOCK_GATES) {
-        for (const c of startChips()) {
-          if (hit(x, y, c)) { startGate = c.v; return; }
-        }
-      }
       for (const b of titleButtons()) {
         if (hit(x, y, b)) {
           if (b.id === 'fly') { resetRun(false); mode = 'ready'; }
@@ -940,10 +925,7 @@
   // whether or not the shield was used.
   function bankRun() {
     save.acorns += runAcorns;
-    // BETA test-start runs never touch the record books
-    if (BETA_UNLOCK_GATES && startGate > 0) {
-      // acorns still bank; scores don't
-    } else if (deepSpace) {
+    if (deepSpace) {
       if (score > (save.deepBest || 0)) save.deepBest = score;
     } else if (lostSpace) {
       if (score > (save.lostBest || 0)) save.lostBest = score;
@@ -3927,15 +3909,6 @@
     ctx.globalAlpha = pulse;
     ctx.fillText('TAP TO FLY', W / 2, H * 0.38);
     ctx.globalAlpha = 1;
-    if (BETA_UNLOCK_GATES && startGate > 0) {
-      ctx.fillStyle = 'rgba(255,176,64,0.85)';
-      ctx.font = '600 12px system-ui';
-      ctx.fillText('TEST START · GATE ' + startGate + ' · ' + ENVS[envB].name,
-                   W / 2, H * 0.38 + 24);
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.font = '600 10px system-ui';
-      ctx.fillText('scores not banked on test starts', W / 2, H * 0.38 + 40);
-    }
   }
 
   function drawDead() {
@@ -3959,37 +3932,6 @@
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = '600 15px system-ui';
       ctx.fillText('tap to continue', W / 2, H * 0.62);
-    }
-  }
-
-  // BETA test tool: pick which century of the progression runs start at.
-  // Shares geometry between draw and tap, like every other control.
-  function startChips() {
-    const opts = [0, 100, 200, 300, 400];
-    const cw = 62, gap = 8;
-    const total = opts.length * cw + (opts.length - 1) * gap;
-    const x0 = W / 2 - total / 2;
-    return opts.map((v, i) => ({
-      v, x: x0 + i * (cw + gap) + cw / 2, y: H - 26, w: cw, h: 24,
-    }));
-  }
-
-  function drawStartChips() {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,176,64,0.65)';
-    ctx.font = '600 9.5px system-ui';
-    ctx.fillText('BETA · START RUN AT GATE', W / 2, H - 44);
-    for (const c of startChips()) {
-      const on = startGate === c.v;
-      ctx.fillStyle = on ? 'rgba(255,176,64,0.85)' : 'rgba(140,170,220,0.12)';
-      roundRect(c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 8);
-      ctx.fill();
-      ctx.strokeStyle = on ? 'rgba(255,220,150,0.9)' : 'rgba(160,190,230,0.25)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-      ctx.fillStyle = on ? '#1a1002' : 'rgba(255,255,255,0.8)';
-      ctx.font = 'bold 12px system-ui';
-      ctx.fillText(String(c.v), c.x, c.y + 4);
     }
   }
 
@@ -4047,7 +3989,6 @@
     drawLostBtn(btns[2]);
     drawMenuBtn(btns[3], false, iconHangar);
     drawMenuBtn(btns[4], false, iconHelp);
-    if (BETA_UNLOCK_GATES) drawStartChips();
   }
 
   // 'ACORNAUT' drawn as a geometric vector wordmark — a space-style
@@ -4855,8 +4796,6 @@
     get ENVS() { return ENVS; },
     get envOrder() { return envOrder; },
     set envOrder(v) { envOrder = v; },
-    get startGate() { return startGate; },
-    set startGate(v) { startGate = v; },
     get lastGapY() { return lastGapY; },
     get powerups() { return powerups; },
     get lostSpace() { return lostSpace; },
