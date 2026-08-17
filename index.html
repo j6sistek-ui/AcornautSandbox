@@ -49,7 +49,7 @@
   // —— persistence ——
   // Beta uses its own save slot so testing never touches the live game's progress
   const SAVE_KEY = 'acornaut_v2';
-  const GAME_VERSION = 'v1.0.2';
+  const GAME_VERSION = 'v1.0.3';
   const HELMET_IDS = ['clear','ion','solar','nebula','lunar','void','comet','cherry','royal','aurora','meteor','chrono'];
   const SUIT_IDS = ['flight','iontrim','copper','frost','voidsuit','aurorasuit','ember','stardust'];
   const TRAIL_IDS = ['sparks','ion','bubble','bloom','comet'];
@@ -166,7 +166,7 @@
     { id: 'buddy', name: 'Acorn Buddy', cost: 150,
       desc: 'Grabs nearby acorns for you.' },
     { id: 'ufo',   name: 'Mini UFO',    cost: 250,
-      desc: 'A tiny cosmetic saucer wingman.' },
+      desc: 'Slows time inside black-hole warps.' },
   ];
 
   // —— tunable physics (dev sliders mutate these) ——
@@ -703,7 +703,10 @@
     if (envMsgT > 0) envMsgT = Math.max(0, envMsgT - dt);
 
     if (mode === 'play') {
-      const slow = (powerLeft > 0 || shieldSlow > 0) ? SLOW_FACTOR : 1;
+      // The Mini UFO's ability: inside a black-hole warp (not Deep Space's
+      // timed shifts) it slows time for the whole ride, like a slow acorn.
+      const ufoSlow = save.equippedPal === 'ufo' && !deepSpace && warpLeft > 0;
+      const slow = (powerLeft > 0 || shieldSlow > 0 || ufoSlow) ? SLOW_FACTOR : 1;
       let simDt = dt * slow;
 
       // Shield aftermath: a short full freeze, then a slow-motion window.
@@ -851,17 +854,31 @@
       // the squirrel until it lands in the normal pickup radius. The pull
       // outruns the world scroll, so near-misses behind you get reeled in.
       const buddyOn = save.equippedPal === 'buddy';
-      const MAGNET_R = 140;
-      const MAGNET_PULL = 460;
+      const MAGNET_R = 200;      // realistic miss distances are 150-250px
+      const MAGNET_PULL = 560;
       for (const a of acorns) {
         if (a.got) continue;
         let ay = a.y + Math.sin(a.bob) * 4;
         let d = Math.hypot(sx - a.x, sy - ay);
-        if (buddyOn && d < MAGNET_R && d > 1) {
+        // Sticky: once hooked, an acorn stays hooked until collected, even
+        // if the squirrel darts away — what the magnet touched, it keeps.
+        if (buddyOn && (d < MAGNET_R || a.pulled) && d > 1) {
           const pull = Math.min(d, MAGNET_PULL * simDt);
           a.x += ((sx - a.x) / d) * pull;
           a.y += ((sy - ay) / d) * pull;
           a.pulled = true;
+          // gold streak so the reel-in reads clearly
+          if (Math.random() < 0.35) {
+            particles.push({
+              x: a.x, y: a.y,
+              vx: ((sx - a.x) / d) * 140 + (Math.random() - 0.5) * 30,
+              vy: ((sy - ay) / d) * 140 + (Math.random() - 0.5) * 30,
+              life: 0.22 + Math.random() * 0.12,
+              max: 0.34,
+              r: 1.2 + Math.random() * 1.6,
+              kind: 'gold',
+            });
+          }
           ay = a.y + Math.sin(a.bob) * 4;
           d = Math.hypot(sx - a.x, sy - ay);
         }
@@ -3008,10 +3025,12 @@
 
     // warp status
     if (warpLeft > 0) {
+      const ufoSlowing = save.equippedPal === 'ufo' && !deepSpace;
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#c084fc';
+      ctx.fillStyle = ufoSlowing ? '#6ef0ff' : '#c084fc';
       ctx.font = 'bold 14px system-ui';
-      ctx.fillText((deepSpace ? 'SHIFT  ' : 'BLACK HOLE  ') + Math.ceil(warpLeft) + 's', W / 2, 92);
+      ctx.fillText((deepSpace ? 'SHIFT  ' : 'BLACK HOLE  ') + Math.ceil(warpLeft) + 's' +
+                   (ufoSlowing ? '  · UFO SLOW' : ''), W / 2, 92);
       ctx.textAlign = 'left';
     } else if (deepSpace && mode === 'play' && warpT === 0) {
       ctx.textAlign = 'center';
