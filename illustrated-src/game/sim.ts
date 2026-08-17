@@ -268,23 +268,36 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const topY = gapY - gap / 2 - r;
   const botY = gapY + gap / 2 + r;
   const blockers: PlanetCol["blockers"] = [];
-  const push = (y: number, rr: number, xOff: number) => {
+  const topEdge = topY - r;
+  const botEdge = botY + r;
+  const step = 30;
+  const makeBlock = (y: number, n: number) => {
     blockers.push({
       y,
-      r: rr,
+      r: 19 + Math.random() * 7,
       kind: pickKind(w),
-      xOff,
+      xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
       debris: Math.floor(Math.random() * 9),
     });
   };
-  push(topY - r - 34, 26, -18);
-  push(topY - r - 40, 22, 20);
-  if (topY - r > 90) push(Math.max(28, (topY - r) * 0.45), 24, (Math.random() - 0.5) * 20);
-  if (topY - r > 160) push(Math.max(48, (topY - r) * 0.7), 20, (Math.random() - 0.5) * 26);
-  push(botY + r + 34, 26, 18);
-  push(botY + r + 40, 22, -20);
-  if (w.H - (botY + r) > 90) push(Math.min(w.H - 28, botY + r + (w.H - botY - r) * 0.55), 24, (Math.random() - 0.5) * 20);
-  if (w.H - (botY + r) > 160) push(Math.min(w.H - 48, botY + r + (w.H - botY - r) * 0.75), 20, (Math.random() - 0.5) * 26);
+  {
+    let y = topEdge - 26;
+    let n = 0;
+    while (y > 20 && n < 12) {
+      makeBlock(y, n);
+      y -= step;
+      n++;
+    }
+  }
+  {
+    let y = botEdge + 26;
+    let n = 0;
+    while (y < w.H - 20 && n < 12) {
+      makeBlock(y, n);
+      y += step;
+      n++;
+    }
+  }
 
   const wisp = palId(save, w) === "wisp" || w.flight === "lost";
   w.planets.push({

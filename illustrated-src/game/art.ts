@@ -1,13 +1,17 @@
+export type Box = { x: number; y: number; w: number; h: number };
+
+export type Sprite = HTMLImageElement & { box: Box };
+
 export type ArtBank = {
   ready: boolean;
-  squirrelIdle: HTMLImageElement[];
-  squirrelFlap: HTMLImageElement[];
-  acorn: HTMLImageElement[];
-  golden: HTMLImageElement[];
-  shield: HTMLImageElement[];
-  planets: HTMLImageElement[];
-  debris: HTMLImageElement[];
-  pals: Record<string, HTMLImageElement>;
+  squirrelIdle: Sprite[];
+  squirrelFlap: Sprite[];
+  acorn: Sprite[];
+  golden: Sprite[];
+  shield: Sprite[];
+  planets: Sprite[];
+  debris: Sprite[];
+  pals: Record<string, Sprite>;
   sky: HTMLImageElement | null;
   hero: HTMLImageElement | null;
 };
@@ -33,10 +37,64 @@ function loadImg(src: string) {
   });
 }
 
+function measureBox(img: HTMLImageElement): Box {
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return { x: 0, y: 0, w, h };
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, w, h).data;
+  let minX = w;
+  let minY = h;
+  let maxX = 0;
+  let maxY = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (data[(y * w + x) * 4 + 3] < 16) continue;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (maxX < minX) return { x: 0, y: 0, w, h };
+  const pad = 2;
+  return {
+    x: Math.max(0, minX - pad),
+    y: Math.max(0, minY - pad),
+    w: Math.min(w, maxX - minX + 1 + pad * 2),
+    h: Math.min(h, maxY - minY + 1 + pad * 2),
+  };
+}
+
+function asSprite(img: HTMLImageElement): Sprite {
+  const s = img as Sprite;
+  s.box = measureBox(img);
+  return s;
+}
+
 async function many(prefix: string, n: number, start = 1) {
-  const out: HTMLImageElement[] = [];
-  for (let i = 0; i < n; i++) out.push(await loadImg(`${prefix}${start + i}.png`));
+  const out: Sprite[] = [];
+  for (let i = 0; i < n; i++) out.push(asSprite(await loadImg(`${prefix}${start + i}.png`)));
   return out;
+}
+
+export function drawSprite(
+  ctx: CanvasRenderingContext2D,
+  spr: Sprite | HTMLImageElement | null | undefined,
+  x: number,
+  y: number,
+  size: number,
+) {
+  if (!spr) return;
+  const box = (spr as Sprite).box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
+  const scale = size / Math.max(box.w, box.h);
+  const dw = box.w * scale;
+  const dh = box.h * scale;
+  ctx.drawImage(spr, box.x, box.y, box.w, box.h, x - dw / 2, y - dh / 2, dw, dh);
 }
 
 export async function loadArt(): Promise<ArtBank> {
@@ -67,9 +125,9 @@ export async function loadArt(): Promise<ArtBank> {
       loadImg(`${base}/hero.jpg`).catch(() => null),
       ...palIds.map((id) => loadImg(`${base}/pals/${id}.png`)),
     ]);
-  const pals: Record<string, HTMLImageElement> = {};
+  const pals: Record<string, Sprite> = {};
   palIds.forEach((id, i) => {
-    pals[id] = palImgs[i] as HTMLImageElement;
+    pals[id] = asSprite(palImgs[i] as HTMLImageElement);
   });
   return {
     ready: true,

@@ -1,4 +1,5 @@
 import { ENVS, HELMETS, PHYS, SUITS, TRAILS } from "./catalog.js";
+import { drawSprite } from "./art.js";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -57,16 +58,13 @@ export function drawWorld(ctx, w, save, art) {
         drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
         drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
         for (const b of p.blockers) {
-            const img = art.debris[b.debris];
             const by = b.y + Math.sin(p.drift) * p.driftAmp;
             const bx = p.x + b.xOff;
-            if (img) {
-                const s = b.r * 2.15;
-                ctx.drawImage(img, bx - s / 2, by - s / 2, s, s);
-            }
-            else {
+            const img = art.debris[b.debris];
+            if (img)
+                drawSprite(ctx, img, bx, by, b.r * 2.05);
+            else
                 drawPlanet(ctx, art, bx, by, b.r, b.kind);
-            }
         }
     }
     for (const a of w.pickups) {
@@ -74,11 +72,11 @@ export function drawWorld(ctx, w, save, art) {
             continue;
         const y = a.y + Math.sin(a.bob) * 4;
         if (a.kind === "acorn")
-            drawSheet(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 34);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
         else if (a.kind === "gold")
-            drawSheet(ctx, frameOf(art.golden, w.time, 6), a.x, y, 38);
+            drawSprite(ctx, frameOf(art.golden, w.time, 6), a.x, y, 32);
         else if (a.kind === "slow") {
-            drawSheet(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 34);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 28);
             ctx.strokeStyle = "rgba(110,240,255,0.7)";
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -90,7 +88,7 @@ export function drawWorld(ctx, w, save, art) {
             ctx.stroke();
         }
         else if (a.kind === "shield")
-            drawSheet(ctx, frameOf(art.shield, w.time, 5), a.x, y, 40);
+            drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
         else if (a.kind === "hole" || a.kind === "worm") {
             drawVortex(ctx, a.x, y, a.kind === "worm", w.time);
         }
@@ -101,9 +99,8 @@ export function drawWorld(ctx, w, save, art) {
         ? "buddy"
         : save.equippedPal;
     if (pal && pal !== "none" && art.pals[pal]) {
-        const img = art.pals[pal];
         const bob = Math.sin(w.time * 2.6) * 2;
-        ctx.drawImage(img, w.palPos.x - 22, w.palPos.y - 22 + bob, 44, 44);
+        drawSprite(ctx, art.pals[pal], w.palPos.x, w.palPos.y + bob, 40);
     }
     drawPilot(ctx, w, save, art);
     ctx.restore();
@@ -272,16 +269,10 @@ function drawParticle(ctx, p) {
     }
     ctx.globalAlpha = 1;
 }
-function drawSheet(ctx, img, x, y, size) {
-    if (!img)
-        return;
-    ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
-}
 function drawPlanet(ctx, art, x, y, r, kind) {
     const img = art.planets[kind % art.planets.length];
     if (img) {
-        const s = r * 2.25;
-        ctx.drawImage(img, x - s / 2, y - s / 2, s, s);
+        drawSprite(ctx, img, x, y, r * 2.08);
         return;
     }
     ctx.fillStyle = "#3a6aa8";
@@ -316,7 +307,7 @@ function drawPilot(ctx, w, save, art) {
         if (suit.premium === "ghost")
             ctx.globalAlpha = 0.72 + 0.12 * Math.sin(w.time * 4);
         const booty = suit.premium === "booty";
-        ctx.drawImage(img, booty ? -40 : -36, -36, booty ? 80 : 72, booty ? 76 : 72);
+        drawSprite(ctx, img, 0, 2, booty ? 56 : 50);
         ctx.filter = "none";
         ctx.globalAlpha = 1;
         drawHelmet(ctx, helm, w.time);

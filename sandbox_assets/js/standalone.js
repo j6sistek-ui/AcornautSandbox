@@ -127,10 +127,15 @@ export async function bootStandalone(root) {
         }
         box.append(tabs);
         const grid = el("div", "ac-grid");
+        const art = (window.__ACORNAUT_ART__ || "./art").replace(/\/$/, "");
         if (engine.shopTab === "helmets") {
             for (const h of HELMETS) {
                 const owned = s.unlocked.includes(h.id);
-                const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card", `${h.name}\n${owned ? "OWNED" : h.cost}`);
+                const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
+                const vis = el("span", "ac-helm");
+                vis.style.background = h.visor;
+                vis.style.boxShadow = h.glow ? `0 0 10px ${h.glow}` : "";
+                b.append(vis, document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
                 b.onclick = () => engine.buyHelmet(h.id);
                 grid.append(b);
             }
@@ -138,14 +143,21 @@ export async function bootStandalone(root) {
         else if (engine.shopTab === "suits") {
             for (const u of SUITS) {
                 const open = suitRevealed(s, u.id);
-                const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card", `${u.name}\n${open ? u.cost : "LOCKED"}`);
+                const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
+                const img = document.createElement("img");
+                img.src = `${art}/thumbs/squirrel.png`;
+                img.style.filter = `hue-rotate(${u.hue}deg) saturate(${u.sat})`;
+                b.append(img, document.createTextNode(`${u.name}\n${open ? u.cost : "LOCKED"}`));
                 b.onclick = () => engine.buySuit(u.id);
                 grid.append(b);
             }
         }
         else if (engine.shopTab === "trails") {
             for (const t of TRAILS) {
-                const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card", `${t.name}\n${t.cost}`);
+                const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
+                const bar = el("span", "ac-trail");
+                bar.style.background = `linear-gradient(90deg, ${t.colors.join(",")})`;
+                b.append(bar, document.createTextNode(`${t.name}\n${t.cost}`));
                 b.onclick = () => engine.buyTrail(t.id);
                 grid.append(b);
             }
@@ -153,7 +165,10 @@ export async function bootStandalone(root) {
         else if (engine.shopTab === "pals") {
             for (const p of PALS) {
                 const open = palUnlocked(s, p.id);
-                const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card", `${p.name}\n${open ? p.tag : "LOCKED"}`);
+                const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
+                const img = document.createElement("img");
+                img.src = p.art ? `${art}/thumbs/pals/${p.art}.png` : `${art}/thumbs/squirrel.png`;
+                b.append(img, document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
                 b.onclick = () => engine.equipPal(p.id);
                 grid.append(b);
             }

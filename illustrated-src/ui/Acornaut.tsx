@@ -297,7 +297,7 @@ function Hangar({ engine }: { engine: Engine }) {
         </p>
       </div>
       <div className="mb-4 flex items-center gap-3 rounded-2xl border border-line bg-panel p-3">
-        <img src="/art/squirrel/idle-1.png" alt="" className="h-16 w-16 object-contain" />
+        <img src="/art/thumbs/squirrel.png" alt="" className="h-16 w-16 object-contain" />
         <div className="min-w-0 flex-1">
           <p className="font-display text-sm font-bold text-cream">
             {helm?.name} · {suit?.name}
@@ -338,10 +338,10 @@ function Hangar({ engine }: { engine: Engine }) {
                 name={h.name}
                 meta={owned ? (eq ? "EQUIPPED" : "OWNED") : `${h.cost}`}
                 active={eq}
-                swatch={h.visor}
-                glow={h.glow}
                 onClick={() => engine.buyHelmet(h.id)}
-              />
+              >
+                <HelmetSwatch visor={h.visor} rim={h.rim} glow={h.glow} />
+              </Card>
             );
           })}
         </Grid>
@@ -359,9 +359,15 @@ function Hangar({ engine }: { engine: Engine }) {
                 meta={!revealed ? `LV ${SUIT_REVEAL[s.id]}` : owned ? (eq ? "EQUIPPED" : "OWNED") : `${s.cost}`}
                 active={eq}
                 locked={!revealed}
-                art="/art/squirrel/idle-1.png"
                 onClick={() => engine.buySuit(s.id)}
-              />
+              >
+                <img
+                  src="/art/thumbs/squirrel.png"
+                  alt=""
+                  className="h-12 w-12 object-contain"
+                  style={{ filter: `hue-rotate(${s.hue}deg) saturate(${s.sat})` }}
+                />
+              </Card>
             );
           })}
         </Grid>
@@ -377,10 +383,10 @@ function Hangar({ engine }: { engine: Engine }) {
                 name={t.name}
                 meta={owned ? (eq ? "EQUIPPED" : "OWNED") : `${t.cost}`}
                 active={eq}
-                swatch={t.colors[0]}
-                glow={t.colors[1]}
                 onClick={() => engine.buyTrail(t.id)}
-              />
+              >
+                <TrailSwatch colors={t.colors} />
+              </Card>
             );
           })}
         </Grid>
@@ -397,9 +403,14 @@ function Hangar({ engine }: { engine: Engine }) {
                 meta={!open ? `LV ${PAL_LEVELS[p.id]}` : p.tag}
                 active={eq}
                 locked={!open}
-                art={p.art ? `/art/pals/${p.art}.png` : undefined}
                 onClick={() => engine.equipPal(p.id)}
-              />
+              >
+                {p.art ? (
+                  <img src={`/art/thumbs/pals/${p.art}.png`} alt="" className="h-12 w-12 object-contain" />
+                ) : (
+                  <img src="/art/thumbs/squirrel.png" alt="" className="h-10 w-10 object-contain opacity-70" />
+                )}
+              </Card>
             );
           })}
         </Grid>
@@ -441,18 +452,14 @@ function Card({
   meta,
   active,
   locked,
-  swatch,
-  glow,
-  art,
+  children,
   onClick,
 }: {
   name: string;
   meta: string;
   active?: boolean;
   locked?: boolean;
-  swatch?: string;
-  glow?: string | null;
-  art?: string;
+  children?: ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -460,25 +467,38 @@ function Card({
       type="button"
       onClick={onClick}
       className={
-        "flex min-h-[108px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-3 " +
+        "flex min-h-[116px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-2 " +
         (active ? "border-ion bg-ion/15" : "border-line bg-panel") +
         (locked ? " opacity-50" : "")
       }
     >
-      {art ? (
-        <img src={art} alt="" className="mb-1 h-12 w-12 object-contain" />
-      ) : (
-        <span
-          className="mb-2 h-8 w-8 rounded-full border border-white/20"
-          style={{
-            background: swatch ?? "#2a3454",
-            boxShadow: glow ? `0 0 12px ${glow}` : undefined,
-          }}
-        />
-      )}
+      <span className="mb-1 flex h-12 w-12 items-center justify-center">{children}</span>
       <span className="text-center text-[11px] font-bold text-cream">{name}</span>
       <span className="text-[10px] font-semibold text-copper">{meta}</span>
     </button>
+  );
+}
+
+function HelmetSwatch({ visor, rim, glow }: { visor: string; rim: string; glow: string | null }) {
+  return (
+    <span className="relative block h-11 w-11">
+      <span className="absolute inset-x-1 top-0 h-9 rounded-t-full border-2 bg-[#2a3454]" style={{ borderColor: rim }} />
+      <span
+        className="absolute inset-x-2 top-2 h-6 rounded-t-full"
+        style={{ background: visor, boxShadow: glow ? `0 0 10px ${glow}` : undefined }}
+      />
+    </span>
+  );
+}
+
+function TrailSwatch({ colors }: { colors: string[] }) {
+  return (
+    <span
+      className="block h-3 w-12 rounded-full"
+      style={{
+        background: `linear-gradient(90deg, ${colors[0]}, ${colors[1] ?? colors[0]}, ${colors[2] ?? colors[0]})`,
+      }}
+    />
   );
 }
 
@@ -550,7 +570,7 @@ function FlightLog({ engine }: { engine: Engine }) {
                   LV {item.lvl} · {item.kind}
                 </p>
                 <div className="flex items-center gap-2">
-                  {pal?.art && <img src={`/art/pals/${pal.art}.png`} alt="" className="h-8 w-8 object-contain" />}
+                  {pal?.art && <img src={`/art/thumbs/pals/${pal.art}.png`} alt="" className="h-8 w-8 object-contain" />}
                   <p className="font-display text-base font-bold text-cream">{name}</p>
                 </div>
                 <p className="text-xs text-fog">{desc}</p>
@@ -570,7 +590,7 @@ function Social({ engine }: { engine: Engine }) {
     <Sheet title="Social" onBack={() => engine.open("title")}>
       <div className="rounded-2xl border border-line bg-panel p-4">
         <div className="flex items-center justify-between gap-3">
-          <img src="/art/squirrel/idle-1.png" alt="" className="h-14 w-14 object-contain" />
+          <img src="/art/thumbs/squirrel.png" alt="" className="h-14 w-14 object-contain" />
           <div className="min-w-0 flex-1">
             <p className="font-display text-2xl font-bold text-cream">
               LV {lv} {pilotTitleOf(save)}
