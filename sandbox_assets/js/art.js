@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=29";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=30";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
