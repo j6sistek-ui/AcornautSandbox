@@ -23,6 +23,10 @@ export type ArtBank = {
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
   shieldnut: Sprite | null;
+  // Suits that ship a hinged tail carry two extra layers, both on the
+  // full canvas so they register against the whole-suit sprite.
+  suitTail: Record<string, Sprite>;
+  suitBody: Record<string, Sprite>;
 };
 
 declare global {
@@ -140,6 +144,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
     suits: {}, sky: null, hero: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+    suitTail: {}, suitBody: {},
   };
 }
 
@@ -243,6 +248,8 @@ export async function loadArt(): Promise<ArtBank> {
     "chrono",
     "catbubble",
   ];
+  // suits cut into a hinged tail + body; others draw as one piece
+  const RIGGED_SUITS = ["catsuit"];
   const suitIds = [
     "flight",
     "iontrim",
@@ -275,7 +282,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -294,6 +301,8 @@ export async function loadArt(): Promise<ArtBank> {
       optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
       optional(`${base}/pickups/frozen.png?v=${ART_VER}`),
       optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
+      named(RIGGED_SUITS, "suits", "-tail"),
+      named(RIGGED_SUITS, "suits", "-body"),
     ]);
   return {
     ready: true,
@@ -314,6 +323,8 @@ export async function loadArt(): Promise<ArtBank> {
     arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn as HTMLImageElement) : null,
     frozen: frozen ? asSprite(frozen as HTMLImageElement) : null,
     shieldnut: shieldnut ? asSprite(shieldnut as HTMLImageElement) : null,
+    suitTail,
+    suitBody,
   };
 }
 

@@ -489,6 +489,7 @@ const DOME: Record<string, [number, number, number]> = {
   "flap-2": [164, 93, 50],
   "flap-3": [164, 79, 48],
   "flap-4": [163, 80, 45],
+  "suit:flight": [195, 97, 51],
   "suit:iontrim": [199, 97, 46],
   "suit:copper": [195, 97, 51],
   "suit:frost": [197, 96, 49],
@@ -510,14 +511,14 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   comet: [129, 129, 112],
   "clear": [129, 128, 111],
   "ion": [129, 128, 109],
-  "solar": [146, 123, 94],
+  "solar": [128, 128, 110],
   "nebula": [129, 129, 112],
   "lunar": [129, 126, 112],
   "void": [125, 128, 108],
   "cherry": [126, 128, 109],
   "royal": [129, 156, 86],
-  "aurora": [143, 116, 94],
-  "meteor": [143, 116, 94],
+  "aurora": [128, 127, 110],
+  "meteor": [128, 127, 110],
   "chrono": [132, 126, 110],
   "catbubble": [175, 137, 95],
 };
@@ -545,6 +546,48 @@ function punchedHelm(spr: Sprite, id: string) {
   cc.globalCompositeOperation = "source-over";
   punchedCache.set(id, c);
   return c;
+}
+
+// Where each rigged suit's tail hinges, in its own 256px canvas.
+const TAIL_PIVOT: Record<string, [number, number]> = {
+  catsuit: [112, 156],
+};
+
+// Draw one layer of a rigged suit. Both layers are full-canvas, so they
+// are placed against the WHOLE suit's trimmed box — that is what keeps
+// tail and body registered to each other however either one is cropped.
+function drawRigLayer(
+  ctx: CanvasRenderingContext2D,
+  layer: Sprite | HTMLImageElement,
+  ref: { x: number; y: number; w: number; h: number },
+  x: number,
+  y: number,
+  size: number,
+  rot = 0,
+  pivot?: [number, number],
+) {
+  const scale = size / Math.max(1, Math.max(ref.w, ref.h));
+  // top-left of the full canvas, in screen space
+  const ox = x - (ref.w * scale) / 2 - ref.x * scale;
+  const oy = y - (ref.h * scale) / 2 - ref.y * scale;
+  ctx.save();
+  if (rot && pivot) {
+    const px = ox + pivot[0] * scale;
+    const py = oy + pivot[1] * scale;
+    ctx.translate(px, py);
+    ctx.rotate(rot);
+    ctx.translate(-px, -py);
+  }
+  ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
+  ctx.restore();
+}
+
+// Suits whose painting already includes headgear — the cat's ears and
+// bubble are part of its render — take no helmet at all. Stacking a
+// second dome on one was never going to line up, and most of them read
+// as broken; the head IS the cosmetic.
+function wearsOwnHead(suit: (typeof SUITS)[number]) {
+  return suit.cat === true;
 }
 
 function paintDome(
@@ -616,12 +659,26 @@ function paintIllustrated(
   keyNext?: string,
   blend = 0,
   halo: "dark" | "light" = "dark",
+  tailRot = 0,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
   const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
   const body = suited ?? spr;
   if (!body) return;
+
+  // A rigged suit draws as two pieces with the tail hinged, so a tap
+  // actually moves something. The tail goes down first — it sits behind
+  // the pilot — then the body over it.
+  const rigT = suited ? art?.suitTail?.[suit.id] : null;
+  const rigB = suited ? art?.suitBody?.[suit.id] : null;
+  if (rigT && rigB && suited) {
+    const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
+    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id]);
+    drawRigLayer(ctx, rigB, ref, x, y, size);
+    if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    return;
+  }
   // frames crossfade instead of hard-switching — the four paintings blend
   // through each other so the cycle reads as motion, not a slideshow
   const f = suited ? 0 : blend;
@@ -639,7 +696,7 @@ function paintIllustrated(
     drawSprite(ctx, body, x, y, size, "box", halo);
   }
   if (suited) {
-    paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
+    if (!wearsOwnHead(suit)) paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
     return;
   }
   // the dome anchor glides between the two frames' measured positions
@@ -691,7 +748,7 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
   if (sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
-    frames[nxt] ?? null, keyNext, blend, skyLuma(w) > 0.42 ? "dark" : "light");
+    frames[nxt] ?? null, keyNext, blend, skyLuma(w) > 0.42 ? "dark" : "light", w.tailA);
   ctx.restore();
 }
 
@@ -745,7 +802,7 @@ export function paintPortrait(
   if (!body) return;
   drawSprite(ctx, body, cx, cy + 2, size);
   const key = art?.suits?.[suit.id] ? "suit:" + suit.id : "idle-1";
-  paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
+  if (!wearsOwnHead(suit)) paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
 }
 
 export function paintPalPreview(

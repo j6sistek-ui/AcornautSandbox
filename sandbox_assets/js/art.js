@@ -108,6 +108,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
         suits: {}, sky: null, hero: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+        suitTail: {}, suitBody: {},
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -199,6 +200,8 @@ export async function loadArt() {
         "chrono",
         "catbubble",
     ];
+    // suits cut into a hinged tail + body; others draw as one piece
+    const RIGGED_SUITS = ["catsuit"];
     const suitIds = [
         "flight",
         "iontrim",
@@ -229,7 +232,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -247,6 +250,8 @@ export async function loadArt() {
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
         optional(`${base}/pickups/frozen.png?v=${ART_VER}`),
         optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
+        named(RIGGED_SUITS, "suits", "-tail"),
+        named(RIGGED_SUITS, "suits", "-body"),
     ]);
     return {
         ready: true,
@@ -267,5 +272,7 @@ export async function loadArt() {
         arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn) : null,
         frozen: frozen ? asSprite(frozen) : null,
         shieldnut: shieldnut ? asSprite(shieldnut) : null,
+        suitTail,
+        suitBody,
     };
 }

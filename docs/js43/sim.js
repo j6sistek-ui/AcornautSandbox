@@ -1,4 +1,4 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=43";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=43";
 import { writeSave } from "./save.js?v=43";
 export function makeWorld(W, H) {
     return {
@@ -50,6 +50,8 @@ export function makeWorld(W, H) {
         retro: false,
         retroShifts: 0,
         retroPending: false,
+        tailA: 0,
+        tailV: 0,
         recoveryMsg: "",
         palPos: { x: 0, y: 0, dart: 0 },
         shake: 0,
@@ -362,6 +364,8 @@ export function resetRun(w, save, flight, tutorial) {
     w.retro = flight === "arcade";
     w.retroShifts = 0;
     w.retroPending = false;
+    w.tailA = 0;
+    w.tailV = 0;
     w.score = 0;
     w.runAcorns = 0;
     w.squirrel = { y: w.H * 0.45, vy: 0, rot: 0 };
@@ -682,12 +686,17 @@ export function flap(w, save) {
         return "none";
     w.squirrel.vy = flapOf(save, w);
     w.flapBoost = 0.22;
+    // the tail drags DOWN as the pilot shoots up, then whips back
+    w.tailV += TAIL.flap;
     spawnTrail(w, save);
     return "flap";
 }
 export function dive(w) {
     if (w.screen !== "play" || w.ready)
         return "none";
+    // a dive throws the tail the other way, harder — it over-rotates past
+    // home on the way back and rings down, which reads as weight falling
+    w.tailV -= TAIL.dive;
     if (w.tut?.hold && w.tut.t < TUT_ARM)
         return "none";
     if (w.tut?.hold && w.tut.stage === "swipe") {
@@ -1030,6 +1039,18 @@ export function updateWorld(w, save, dt) {
     // already running, so a player who read it before tapping was already
     // falling. w.time still advances above, so the pilot idles and the
     // world breathes — it just does not move or pull.
+    // the tail keeps swinging through freezes and warps — it is the
+    // pilot's own motion, not the world's
+    w.tailV += (-TAIL.stiffness * w.tailA - TAIL.damping * w.tailV) * dt;
+    w.tailA += w.tailV * dt;
+    if (w.tailA > TAIL.maxA) {
+        w.tailA = TAIL.maxA;
+        w.tailV *= -0.35;
+    }
+    if (w.tailA < -TAIL.maxA) {
+        w.tailA = -TAIL.maxA;
+        w.tailV *= -0.35;
+    }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
         w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
@@ -1103,7 +1124,10 @@ export function updateWorld(w, save, dt) {
     w.distance += Math.abs(move);
     for (const p of w.planets) {
         p.x -= move;
-        p.drift += simDt * (palId(save, w) === "wisp" ? 1.7 : 1.05);
+        // how FAST the gate sways. Free Flight breathes at about half the
+        // rate — the travel was right, the frequency read as fidgety.
+        const driftRate = palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05;
+        p.drift += simDt * driftRate;
     }
     for (const a of w.pickups) {
         a.x -= move;
