@@ -1,6 +1,6 @@
 import { loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio } from "./audio";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS } from "./catalog";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -260,7 +260,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       swipe = { y0: p.y, t0: performance.now(), fired: false };
       const ev = flap(world, save);
       if (ev === "flap") sfx.flap();
-      if (world.tut?.stage === "pal" && world.tut.hold) {
+      if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
         world.tut.hold = false;
         world.tut.t = 0;
       }

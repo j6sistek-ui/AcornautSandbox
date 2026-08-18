@@ -423,9 +423,9 @@ function Hangar({ engine }: { engine: Engine }) {
                   <img
                     src={artUrl(`pals/${p.art || p.id}.png`)}
                     alt={p.name}
-                    width={48}
-                    height={48}
-                    className="h-16 w-16 object-contain"
+                    width={80}
+                    height={80}
+                    className="h-20 w-20 object-contain"
                     draggable={false}
                   />
                 )}

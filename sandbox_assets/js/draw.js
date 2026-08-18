@@ -1,4 +1,4 @@
-import { ENVS, HELMETS, PHYS, SUITS } from "./catalog.js";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js";
 import { drawTrailPreviewOn, drawHelmetOn, helmetCenter } from "./cosmetics.js";
 import { drawSprite } from "./art.js";
 function frameOf(list, t, speed = 6) {
@@ -421,10 +421,8 @@ function drawPilot(ctx, w, save, art) {
     ctx.beginPath();
     ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
     ctx.fill();
-    const bank = Math.max(-0.11, Math.min(0.13, w.squirrel.vy / 1800));
+    const bank = Math.max(-0.08, Math.min(0.1, w.squirrel.vy / 2200));
     ctx.rotate(bank);
-    const boost = w.flapBoost > 0;
-    ctx.scale(boost ? 1.07 : 1 + Math.abs(bank) * 0.08, boost ? 0.9 : 1 - Math.abs(bank) * 0.12);
     paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art);
     ctx.restore();
 }
@@ -586,7 +584,7 @@ export function drawHud(ctx, w) {
 }
 function drawPrompt(ctx, w, title, body, cy) {
     const bw = Math.min(320, w.W - 40);
-    const bh = 92;
+    const bh = 108;
     ctx.fillStyle = "rgba(12,18,36,0.82)";
     ctx.strokeStyle = "rgba(232,164,74,0.45)";
     ctx.lineWidth = 1.5;
@@ -600,6 +598,16 @@ function drawPrompt(ctx, w, title, body, cy) {
     ctx.fillStyle = "rgba(243,239,228,0.72)";
     ctx.font = "600 12px Figtree, system-ui";
     ctx.fillText(body, w.W / 2, cy + 16);
+    if (w.tut?.hold) {
+        const armA = Math.max(0, Math.min(1, (w.tut.t - TUT_ARM) / 0.3));
+        if (armA > 0) {
+            ctx.globalAlpha = armA * (0.7 + 0.3 * Math.sin(w.time * 4));
+            ctx.fillStyle = w.tut.stage === "swipe" ? "#ffb84d" : "#6ef0ff";
+            ctx.font = "700 12px Figtree, system-ui";
+            ctx.fillText(w.tut.stage === "swipe" ? "try it now" : "tap to continue", w.W / 2, cy + 36);
+            ctx.globalAlpha = 1;
+        }
+    }
 }
 function round(ctx, x, y, w, h, r) {
     ctx.beginPath();

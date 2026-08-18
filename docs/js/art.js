@@ -148,7 +148,21 @@ export async function loadArt() {
         "bigbooty",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, ...rest] = await Promise.all([
+    async function named(ids, folder, suffix = "", required = false) {
+        const out = {};
+        await Promise.all(ids.map(async (id) => {
+            const src = `${base}/${folder}/${id}${suffix}.png`;
+            try {
+                out[id] = asSprite(await loadImg(src));
+            }
+            catch (err) {
+                if (required)
+                    throw err;
+            }
+        }));
+        return out;
+    }
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -158,33 +172,11 @@ export async function loadArt() {
         many(`${base}/debris/`, 9, 0),
         optional(`${base}/sky.jpg`),
         optional(`${base}/hero.jpg`),
-        ...palIds.map((id) => loadImg(`${base}/pals/${id}.png`)),
-        ...helmIds.map((id) => optional(`${base}/helmets/${id}.png`)),
-        ...helmIds.map((id) => optional(`${base}/helmets/${id}-over.png`)),
-        ...suitIds.map((id) => optional(`${base}/suits/${id}.png`)),
+        named(palIds, "pals", "", true),
+        named(helmIds, "helmets"),
+        named(helmIds, "helmets", "-over"),
+        named(suitIds, "suits"),
     ]);
-    const pals = {};
-    palIds.forEach((id, i) => {
-        pals[id] = asSprite(rest[i]);
-    });
-    const helmets = {};
-    const helmOver = {};
-    const suits = {};
-    const helmStart = palIds.length;
-    helmIds.forEach((id, i) => {
-        const img = rest[helmStart + i];
-        if (img)
-            helmets[id] = asSprite(img);
-        const ov = rest[helmStart + helmIds.length + i];
-        if (ov)
-            helmOver[id] = asSprite(ov);
-    });
-    const suitStart = helmStart + helmIds.length * 2;
-    suitIds.forEach((id, i) => {
-        const img = rest[suitStart + i];
-        if (img)
-            suits[id] = asSprite(img);
-    });
     return {
         ready: true,
         squirrelIdle,

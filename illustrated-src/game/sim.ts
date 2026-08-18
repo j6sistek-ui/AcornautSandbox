@@ -1,4 +1,4 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, levelForXp, runXp } from "./catalog";
+import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import type { SaveData } from "./save";
 
 export type Screen = "title" | "hangar" | "log" | "social" | "help" | "play" | "dead" | "pause";
@@ -631,6 +631,7 @@ export function spawnTrail(w: World, save: SaveData) {
 export function flap(w: World, save: SaveData) {
   if (w.screen === "pause") return "none";
   if (w.screen !== "play") return "none";
+  if (w.tut?.hold && w.tut.t < TUT_ARM) return "none";
   if (w.tut?.hold && w.tut.stage === "swipe") {
     w.tut.nudge = "drag downward — not a tap";
     return "none";
@@ -650,6 +651,7 @@ export function flap(w: World, save: SaveData) {
 
 export function dive(w: World) {
   if (w.screen !== "play" || w.ready) return "none";
+  if (w.tut?.hold && w.tut.t < TUT_ARM) return "none";
   if (w.tut?.hold && w.tut.stage === "swipe") {
     w.tut.hold = false;
     w.tut.stage = "gates";
@@ -1059,22 +1061,21 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  if (w.invulnLeft <= 0) {
-    for (const p of w.planets) {
-      const gy = liveGapY(p);
-      const topY = gy - p.gap / 2 - p.r;
-      const botY = gy + p.gap / 2 + p.r;
-      for (const py of [topY, botY]) {
-        if (!circleHit(sx, sy, sr, p.x, py, p.r * 0.92)) continue;
-        if (w.hitCooldown <= 0) {
-          if (w.shieldCharges > 0 && w.tut?.stage === "free") {
-            /* planets bounce even with a shield — shields save debris / fall */
-          }
-          bounceOff(w, save, p.x, py);
-          return "bounce";
+  // Golden invuln phases debris only. Planet bounces stay live (live PR #42).
+  for (const p of w.planets) {
+    const gy = liveGapY(p);
+    const topY = gy - p.gap / 2 - p.r;
+    const botY = gy + p.gap / 2 + p.r;
+    for (const py of [topY, botY]) {
+      if (!circleHit(sx, sy, sr, p.x, py, p.r * 0.92)) continue;
+      if (w.hitCooldown <= 0) {
+        if (w.shieldCharges > 0 && w.tut?.stage === "free") {
+          /* planets bounce even with a shield — shields save debris / fall */
         }
-        pushOut(w, p.x, py, p.r * 0.92, sr);
+        bounceOff(w, save, p.x, py);
+        return "bounce";
       }
+      pushOut(w, p.x, py, p.r * 0.92, sr);
     }
   }
 

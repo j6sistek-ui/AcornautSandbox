@@ -1,6 +1,6 @@
 import { loadArt } from "./art.js";
 import { sfx, unlockAudio } from "./audio.js";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS } from "./catalog.js";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js";
 import { drawHud, drawWorld } from "./draw.js";
 import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js";
 import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js";
@@ -219,7 +219,7 @@ export async function createEngine(canvas) {
         const ev = flap(world, save);
         if (ev === "flap")
             sfx.flap();
-        if (world.tut?.stage === "pal" && world.tut.hold) {
+        if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
             world.tut.hold = false;
             world.tut.t = 0;
         }

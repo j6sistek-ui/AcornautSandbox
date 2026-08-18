@@ -1,8 +1,10 @@
-export const BUILD = "Illustrated · sandbox v9";
+export const BUILD = "Illustrated · sandbox v10";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "9";
+export const ART_VER = "10";
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
+export const TUT_ARM = 2;
+
 
 export const PHYS = {
   gravity: 1300,
@@ -25,12 +27,13 @@ export const PHYS = {
 };
 
 export const NEWS = [
-  "Illustrated rewrite: hangar pals, helmets, and suits are real art.",
+  "v10: pals rematched from the original painted sheet.",
+  "Golden acorns still bounce off planets. Debris phases.",
   "PILOT LEVELS: every run earns XP. Modes, mods, pals",
   "and titles unlock on the FLIGHT LOG.",
   "Debris kills. Planets bounce. Swipe cancels a bounce.",
-  "Deep Space chains warps. Lost in Space tilts and drifts.",
 ];
+
 
 export type Helmet = {
   id: string;
@@ -131,6 +134,21 @@ export const PALS: Pal[] = [
   { id: "tinbot", name: "Tin Bot", tag: "NO HOLES", desc: "No black holes or wormholes. No shields either.", art: "tinbot" },
   { id: "wisp", name: "Nebula Wisp", tag: "GATE DRIFT", desc: "Gates drift up and down — moving targets.", art: "wisp" },
 ];
+
+// Original imagine sheet (3x4, 400px cells) → these filenames. Never remap by index.
+export const PAL_SHEET = {
+  bee: "row2 col1 — yellow astro bee",
+  buddy: "row3 col1 — acorn with a face",
+  voidjelly: "row3 col0 — purple tentacle jelly",
+  cometsprite: "row2 col2 — orange comet creature",
+  meteorcore: "row1 col0 — lava meteor with a crater face",
+  pocketmoon: "row2 col0 — crater moon face",
+  ufo: "row0 col2 — classic saucer",
+  nutsack: "row1 col2 — burlap sack of acorns",
+  starpup: "row1 col1 — yellow star face",
+  tinbot: "row0 col1 — rivet robot",
+  wisp: "row3 col2 — pink nebula ghost",
+} as const;
 
 export type Env = {
   name: string;
