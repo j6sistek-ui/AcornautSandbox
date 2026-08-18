@@ -480,11 +480,10 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   const y = w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-  // Always fly the idle cycle: the flap-N paintings are four unrelated
-  // poses at unrelated angles, and cycling them on every tap read as a
-  // flat spin. The tap reads as MOTION instead — a nose-up kick and a
-  // little scale pop that decay with the boost.
-  const spr = frameOf(art.squirrelIdle, w.time, 5);
+  // The repainted flap frames are one coherent character, so the tap
+  // cycles them again — plus a soft nose-up kick and scale pop for punch.
+  const spr =
+    w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
   ctx.save();
   ctx.translate(x, y);
   ctx.fillStyle = "rgba(0,0,0,0.28)";
@@ -493,8 +492,8 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   ctx.fill();
   const bank = Math.max(-0.08, Math.min(0.1, w.squirrel.vy / 2200));
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
-  ctx.rotate(bank - kick * 0.22);
-  const pop = 1 + kick * 0.07;
+  ctx.rotate(bank - kick * 0.12);
+  const pop = 1 + kick * 0.05;
   ctx.scale(pop, pop);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art);
   ctx.restore();
@@ -510,7 +509,8 @@ function paintPal(
 ) {
   const spr = art?.pals?.[id];
   if (spr) {
-    drawSprite(ctx, spr, x, y, size, "core");
+    // box fit, not core: companions are sidekicks, smaller than the pilot
+    drawSprite(ctx, spr, x, y, size);
     return;
   }
   if (id !== "none") {
