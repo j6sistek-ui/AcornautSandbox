@@ -1,4 +1,4 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=11";
+import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=12";
 export function makeWorld(W, H) {
     return {
         W,

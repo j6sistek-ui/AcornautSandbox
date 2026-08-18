@@ -1,8 +1,8 @@
-import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=11";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=11";
-import { artUrl } from "./art.js?v=11";
-import { createEngine } from "./engine.js?v=11";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=11";
+import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=12";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=12";
+import { artUrl } from "./art.js?v=12";
+import { createEngine } from "./engine.js?v=12";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=12";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -158,7 +158,7 @@ export async function bootStandalone(root) {
         loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
         load.append(loadTxt);
         if (pal && pal.id !== "none") {
-            load.append(shopImg(artUrl(`pals/${pal.art || pal.id}.png`), pal.name));
+            load.append(shopImg(artUrl(`mates/${pal.art || pal.id}.png`), pal.name));
         }
         else if (pal) {
             const { c, ctx } = miniCanvas(40, 40);
@@ -219,7 +219,7 @@ export async function bootStandalone(root) {
                     b.append(c);
                 }
                 else {
-                    b.append(shopImg(artUrl(`pals/${p.art || p.id}.png`), p.name));
+                    b.append(shopImg(artUrl(`mates/${p.art || p.id}.png`), p.name));
                 }
                 b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
                 b.onclick = () => engine.equipPal(p.id);

@@ -207,7 +207,7 @@ export async function loadArt(): Promise<ArtBank> {
       many(`${base}/debris/`, 9, 0),
       optional(`${base}/sky.jpg`),
       optional(`${base}/hero.jpg`),
-      named(palIds, "pals", "", true),
+      named(palIds, "mates", "", true),
       named(helmIds, "helmets"),
       named(helmIds, "helmets", "-over"),
       named(suitIds, "suits"),
