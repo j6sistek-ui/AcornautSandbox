@@ -314,7 +314,9 @@ function spawnPair(w, save, x) {
         if (!w.tut && !noShield && Math.random() < 0.03 * specialMul) {
             w.pickups.push({ x: x + 20, y: gapY + (Math.random() - 0.5) * gap * 0.18, got: false, bob: Math.random() * 6, kind: "shield" });
         }
-        if (!w.tut && !noHoles && w.flight !== "lost" && Math.random() < 0.018) {
+        // Deep Space runs its own shift on a timer, so a black hole there does
+        // nothing but clutter the lane — live excludes them and so do we.
+        if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole" });
         }
         if (!w.tut && !noHoles && w.flight === "lost" && Math.random() < 0.05) {

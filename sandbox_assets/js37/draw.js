@@ -470,7 +470,7 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     ctx.stroke();
     ctx.restore();
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark") {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
@@ -489,7 +489,10 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         ctx.globalAlpha = prevA;
     }
     else {
-        drawSprite(ctx, body, x, y, size, "box", "dark");
+        // the pilot's separation follows the sky like everything else — a
+        // hardcoded dark halo left dark suits (the Void skin especially)
+        // with no edge at all against a dark backdrop
+        drawSprite(ctx, body, x, y, size, "box", halo);
     }
     if (suited) {
         paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
@@ -544,7 +547,7 @@ function drawPilot(ctx, w, save, art) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, skyLuma(w) > 0.42 ? "dark" : "light");
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
