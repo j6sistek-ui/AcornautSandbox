@@ -1,5 +1,5 @@
-import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=33";
-import { writeSave } from "./save.js?v=33";
+import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=34";
+import { writeSave } from "./save.js?v=34";
 export function makeWorld(W, H) {
     return {
         W,
@@ -90,6 +90,14 @@ function flapOf(save, w) {
 }
 function gapSpacing(w) {
     return 230 + Math.min(50, w.distance * 0.004);
+}
+// Gates are not metronome-even: normal flight scatters them across
+// 100%–115% of the base rhythm, and Lost in Space keeps the full
+// 85%–115% spread because its rotation gives tight pairs room to read.
+function nextGapSpacing(w) {
+    return w.flight === "lost"
+        ? gapSpacing(w) * (0.85 + Math.random() * 0.3)
+        : gapSpacing(w) * (1 + Math.random() * 0.15);
 }
 function overdriveT(score) {
     if (score < PHYS.overdriveGate)
@@ -258,14 +266,22 @@ function spawnPair(w, save, x) {
     const margin = 72;
     let gapY = margin + gap / 2 + Math.random() * (w.H - 2 * margin - gap);
     const dx = Math.max(80, x - w.lastSpawnX);
+    // Reachability, on the live game's tuned model. The two budgets are NOT
+    // symmetric and must not be swapped: climbing is the slow direction
+    // (230px/s of sustainable lift) while gravity makes diving fast
+    // (520px/s). Smaller y is higher, so climb bounds how far UP the next
+    // gate may sit and dive bounds how far DOWN. Having these inverted made
+    // the sandbox demand climbs the pilot could not make while flattening
+    // every descent. Lost in Space reserves headroom for its sway + drift.
     const speed = Math.max(d.speed, 1);
-    const t = dx / (speed * (w.flight === "lost" ? 1.4 : 1));
-    const climb = Math.abs(flapOf(save, w)) * 0.55 * t;
-    const diveAmt = PHYS.dive * 0.55 * t;
-    const reserve = w.flight === "lost" ? 30 : 8;
-    const lo = w.lastGapY - diveAmt + reserve;
-    const hi = w.lastGapY + climb - reserve;
-    gapY = Math.max(margin + gap / 2, Math.min(w.H - margin - gap / 2, Math.max(lo, Math.min(hi, gapY))));
+    const lost = w.flight === "lost";
+    const dxWorst = lost ? Math.max(100, dx - 48) : dx;
+    const dtGate = dxWorst / (speed * (lost ? 1.4 : 1));
+    const vMargin = lost ? 30 : 0;
+    const climb = Math.max(40, 230 * dtGate - vMargin);
+    const diveAmt = Math.max(60, 520 * dtGate - vMargin);
+    gapY = Math.max(w.lastGapY - climb, Math.min(w.lastGapY + diveAmt, gapY));
+    gapY = Math.max(margin + gap / 2, Math.min(w.H - margin - gap / 2, gapY));
     const r = PHYS.planetR;
     const topY = gapY - gap / 2 - r;
     const botY = gapY + gap / 2 + r;
@@ -364,7 +380,7 @@ export function resetRun(w, save, flight, tutorial) {
     }
     shuffleEnv(w);
     for (let i = 0; i < 3; i++)
-        spawnPair(w, save, w.W + 90 + i * gapSpacing(w));
+        spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
     w.tut = tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
             retries: 0, springs: 0, bounced: false }
@@ -1020,7 +1036,7 @@ export function updateWorld(w, save, dt) {
     }
     w.lastSpawnX -= move;
     while (w.lastSpawnX < w.W + 90)
-        spawnPair(w, save, w.lastSpawnX + gapSpacing(w));
+        spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
     w.planets = w.planets.filter((p) => p.x > -90);
     w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
     const targetEnv = envIndexFor(w, w.score);
@@ -1063,7 +1079,14 @@ export function updateWorld(w, save, dt) {
             }
         }
     }
-    if (sy < -36 || sy > w.H + 36) {
+    // Ceiling bounces you back down — only debris is lethal up there.
+    if (sy < PHYS.squirrelR && w.squirrel.vy < 0) {
+        w.squirrel.y = PHYS.squirrelR;
+        w.squirrel.vy = Math.abs(w.squirrel.vy) * 0.45 + 90;
+        w.squirrel.rot = 0.5;
+        spark(w, sx, 4, ["#e8dcc8", "#fff"], 8, "poof");
+    }
+    if (sy > w.H + 36) {
         if (tutSafe(w)) {
             const st = w.tut.stage;
             if (st === "dive" || st === "gates" || st === "palDemo") {
@@ -1158,7 +1181,7 @@ export function updateWorld(w, save, dt) {
             spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");
             snd = "shield";
         }
-        else if (a.kind === "hole" || a.kind === "worm") {
+        else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0) {
             startSwirl(w, a.kind === "worm" ? "worm" : "hole");
             snd = "shield";
         }
