@@ -115,59 +115,51 @@ export async function bootStandalone(root) {
         return h;
     }
     function drawTitle() {
-        const s = engine.save;
-        const box = el("div", "ac-sheet");
-        const top = el("div", "ac-row");
-        const brand = el("div");
-        brand.append(el("p", "ac-kicker", "Illustrated rewrite"), el("h1", "", "Acornaut"));
-        const nuts = el("div", "ac-chip");
-        const coin = document.createElement("img");
-        coin.src = artUrl("acorn/1.png");
-        coin.className = "ac-coin";
-        coin.alt = "";
-        nuts.append(coin, document.createTextNode(`${s.acorns}`));
-        top.append(brand, nuts);
-        const hero = document.createElement("img");
-        hero.src = `${(window.__ACORNAUT_ART__ || "/art").replace(/\/$/, "")}/hero.jpg`;
-        hero.className = "ac-hero";
-        hero.alt = "";
-        box.append(top, hero);
-        // The one launch button — it flies whichever mode is selected below.
-        const mode = MODES[selectedMode];
-        const take = el("button", "ac-primary", "TAKE FLIGHT");
-        take.onclick = () => engine.fly(mode.id);
-        // The mode selector: one bar that cycles the four on tap. Left label
-        // names the axis, right side shows the current pick with a ⟲ cue.
-        const modeBar = el("button", "ac-modebar");
-        const modeName = el("span", "ac-modeval", mode.label);
-        modeBar.append(el("span", "ac-modekey", "MODE"), modeName, el("span", "ac-modecue", "⟲"));
-        modeBar.onclick = () => {
-            selectedMode = (selectedMode + 1) % MODES.length;
-            render();
-        };
-        const modeBlurb = el("p", "ac-modeblurb", mode.blurb);
-        // the live game's bottom bar: four round icons pinned to the bottom
-        const ICONS = {
-            hangar: '<svg viewBox="0 0 24 24"><path d="M20.5 7.5a4.9 4.9 0 0 1-6.4 4.6L7 19.2a2 2 0 0 1-2.8-2.8l7.1-7.1a4.9 4.9 0 0 1 6-6.1L14.6 6l3.2 3.2 2.5-2.6z"/></svg>',
-            log: '<svg viewBox="0 0 24 24"><path d="M6 3v18M6 4h11l-2.5 3.5L17 11H6"/></svg>',
-            social: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>',
-            help: '<svg viewBox="0 0 24 24"><path d="M8.8 9.2a3.2 3.2 0 1 1 4.9 2.7c-1 .7-1.7 1.2-1.7 2.6"/><circle cx="12" cy="18" r=".6"/></svg>',
-        };
-        const nav = el("nav", "ac-dock2");
-        for (const [label, screen] of [
-            ["Hangar", "hangar"],
-            ["Log", "log"],
-            ["Social", "social"],
-            ["Help", "help"],
-        ]) {
-            const b = el("button", "ac-dockicon");
-            const ring = el("span", "ac-ring");
-            ring.innerHTML = ICONS[screen];
-            b.append(ring, document.createTextNode(label));
-            b.onclick = () => engine.open(screen);
-            nav.append(b);
+        void engine.save;
+        const artRoot = (window.__ACORNAUT_ART__ || "/art").replace(/\/$/, "");
+        const box = el("div", "ac-sheet ac-titlefull");
+        // The whole painted mockup IS the screen. A wrapper sized to the
+        // image holds transparent hit targets over each painted control, so
+        // the layout in the art is exactly the layout you tap. Positions are
+        // percentages of the image, measured from it, so they stay aligned
+        // as it scales.
+        const wrap = el("div", "ac-titlewrap");
+        const bg = document.createElement("img");
+        bg.src = `${artRoot}/title-full.jpg`;
+        bg.className = "ac-titlefullimg";
+        bg.alt = "Acornaut";
+        wrap.append(bg);
+        // The four painted buttons are the four modes. Each carries a wood
+        // label plate over the painted word so it reads its true name; the
+        // acorn ornament to its left stays painted.
+        const BTN_TOPS = [60.9, 66.6, 72.1, 77.5]; // % — PLAY, OPTIONS, CREDITS, QUIT bands
+        MODES.forEach((m, i) => {
+            const b = el("button", "ac-titlebtn");
+            b.style.top = BTN_TOPS[i] + "%";
+            const lbl = el("span", "ac-titlelbl", m.label);
+            b.append(lbl);
+            b.onclick = () => engine.fly(m.id);
+            wrap.append(b);
+        });
+        // The painted dock, remapped to the real screens. Five icons:
+        // Home, Missions, Shop, Collection, Profile.
+        const DOCK = [
+            [12, "title"],
+            [31, "help"],
+            [50, "hangar"],
+            [69, "log"],
+            [88, "social"],
+        ];
+        for (const [cx, screen] of DOCK) {
+            const d = el("button", "ac-titledock");
+            d.style.left = cx - 9 + "%";
+            d.onclick = () => {
+                if (screen !== "title")
+                    engine.open(screen);
+            };
+            wrap.append(d);
         }
-        box.append(take, modeBar, modeBlurb, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
+        box.append(wrap, el("p", "ac-fine ac-titlefine", `${BUILD} · ${GAME_VERSION}`));
         return box;
     }
     function miniCanvas(w, h) {
