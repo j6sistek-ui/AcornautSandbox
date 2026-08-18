@@ -1,5 +1,5 @@
-import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=32";
-import { writeSave } from "./save.js?v=32";
+import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=33";
+import { writeSave } from "./save.js?v=33";
 export function makeWorld(W, H) {
     return {
         W,

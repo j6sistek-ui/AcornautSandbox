@@ -1,4 +1,4 @@
-import { loadArt, type ArtBank } from "./art";
+import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio } from "./audio";
 import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
@@ -354,8 +354,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   resize();
   initStars(world);
-  art = await loadArt();
+  // paint from frame one with an empty bank, then swap the real art in as
+  // it arrives — and if the whole load fails, the game still runs
+  art = emptyArt();
   engine.art = art;
+  loadArt()
+    .then((bank) => {
+      art = bank;
+      engine.art = bank;
+      notify();
+    })
+    .catch(() => {});
   notify();
   return engine;
 }

@@ -113,11 +113,31 @@ function asSprite(img: HTMLImageElement): Sprite {
   return s;
 }
 
+// One missing file must never sink the bank: a 404 among sixty-odd
+// sprites used to reject loadArt, and the game then drew NOTHING at all.
 async function many(prefix: string, n: number, start = 1) {
   const out: Sprite[] = [];
-  for (let i = 0; i < n; i++)
-    out.push(asSprite(await loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)));
+  const loaded = await Promise.all(
+    Array.from({ length: n }, (_, i) =>
+      loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)
+        .then(asSprite)
+        .catch(() => null),
+    ),
+  );
+  for (const s of loaded) if (s) out.push(s);
   return out;
+}
+
+/** An empty bank the renderer can draw with immediately — every draw
+ *  path already null-guards, so the game paints from the first frame
+ *  instead of waiting on megabytes of panorama. */
+export function emptyArt(): ArtBank {
+  return {
+    ready: false,
+    squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
+    planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
+    suits: {}, sky: null, hero: null,
+  };
 }
 
 // Painted skies load ON DEMAND — a run only ever needs the handful of
