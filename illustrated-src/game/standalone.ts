@@ -137,7 +137,7 @@ export async function bootStandalone(root: HTMLElement) {
 
   function portraitOf(helmet: (typeof HELMETS)[number], suit: (typeof SUITS)[number], px = 56) {
     const { c, ctx } = miniCanvas(px, px);
-    if (ctx && engine.art) paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.92);
+    if (ctx && engine.art) paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.88);
     return c;
   }
 

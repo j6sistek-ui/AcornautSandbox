@@ -1,5 +1,5 @@
 import { ENVS, HELMETS, PHYS, SUITS } from "./catalog.js";
-import { drawTrailPreviewOn } from "./cosmetics.js";
+import { drawTrailPreviewOn, drawHelmetOn, helmetCenter } from "./cosmetics.js";
 import { drawSprite } from "./art.js";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
@@ -303,7 +303,7 @@ function drawPlanet(ctx, art, x, y, r, kind) {
     ctx.fill();
 }
 /** Visor glass on idle-1.png (128 source). Overlay stays on the painted helmet. */
-const VISOR = { sx: 64, sy: 46, rx: 22, ry: 16 };
+const VISOR = { sx: 66, sy: 44, rx: 21, ry: 17 };
 const BODY = { sx: 64, sy: 74, rx: 30, ry: 24 };
 function spriteLayout(spr, x, y, size) {
     const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
@@ -319,20 +319,60 @@ function spriteLayout(spr, x, y, size) {
         },
     };
 }
-let pilotSheet = null;
+const sheets = new Map();
 function getPilotSheet(px) {
-    if (!pilotSheet)
-        pilotSheet = document.createElement("canvas");
-    if (pilotSheet.width !== px || pilotSheet.height !== px) {
-        pilotSheet.width = px;
-        pilotSheet.height = px;
+    let sheet = sheets.get(px);
+    if (!sheet) {
+        sheet = document.createElement("canvas");
+        sheets.set(px, sheet);
     }
-    return pilotSheet;
+    if (sheet.width !== px || sheet.height !== px) {
+        sheet.width = px;
+        sheet.height = px;
+    }
+    return sheet;
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit) {
+function hexRgb(hex) {
+    const h = hex.replace("#", "");
+    const full = h.length === 3 ? h[0] + h[0] + h[1] + h[1] + h[2] + h[2] : h;
+    const n = parseInt(full, 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function tintSuitFabric(octx, w, h, suit) {
+    if (suit.id === "flight")
+        return;
+    const img = octx.getImageData(0, 0, w, h);
+    const d = img.data;
+    const tgt = hexRgb(suit.suit);
+    const trim = hexRgb(suit.trim);
+    const k = suit.robo || suit.ghost || suit.alien ? 0.72 : 0.58;
+    for (let i = 0; i < d.length; i += 4) {
+        const a = d[i + 3];
+        if (a < 24)
+            continue;
+        const r = d[i];
+        const g = d[i + 1];
+        const b = d[i + 2];
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const sat = max - min;
+        const lum = 0.3 * r + 0.59 * g + 0.11 * b;
+        const orangeFur = r > g + 18 && g > b + 8 && sat > 48 && r > 110;
+        if (orangeFur && !suit.robo && !suit.alien && !suit.ghost)
+            continue;
+        if (lum < 36)
+            continue;
+        const toward = lum > 188 && sat < 70 ? trim : tgt;
+        d[i] = r * (1 - k) + toward.r * k;
+        d[i + 1] = g * (1 - k) + toward.g * k;
+        d[i + 2] = b * (1 - k) + toward.b * k;
+    }
+    octx.putImageData(img, 0, 0);
+}
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, t = 0) {
     if (!spr)
         return;
-    const pad = Math.ceil(size * 0.18);
+    const pad = Math.ceil(size * 0.28);
     const out = Math.ceil(size + pad * 2);
     const sheet = getPilotSheet(Math.max(8, out));
     const octx = sheet.getContext("2d");
@@ -343,42 +383,18 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit) {
     octx.setTransform(1, 0, 0, 1, 0, 0);
     octx.clearRect(0, 0, sheet.width, sheet.height);
     const cx = out / 2;
-    const cy = out / 2;
+    const cy = out / 2 + size * 0.06;
     drawSprite(octx, spr, cx, cy, size);
+    tintSuitFabric(octx, out, out, suit);
     const lay = spriteLayout(spr, cx, cy, size);
     const visor = lay.map(VISOR.sx, VISOR.sy);
-    const body = lay.map(BODY.sx, BODY.sy);
-    const vrx = VISOR.rx * lay.scale;
-    const vry = VISOR.ry * lay.scale;
+    const hc = helmetCenter();
+    const hs = (VISOR.rx * lay.scale) / hc.r;
     octx.save();
-    octx.globalCompositeOperation = "source-atop";
-    if (suit.id !== "flight") {
-        octx.fillStyle = suit.suit;
-        octx.globalAlpha = 0.55;
-        octx.beginPath();
-        octx.ellipse(body.x, body.y, BODY.rx * lay.scale, BODY.ry * lay.scale, 0, 0, Math.PI * 2);
-        octx.fill();
-        if (suit.glow) {
-            octx.fillStyle = suit.glow;
-            octx.globalAlpha = 0.18;
-            octx.fill();
-        }
-    }
-    octx.fillStyle = helmet.visor;
-    octx.globalAlpha = helmet.id === "clear" ? 0.22 : Math.min(0.82, helmet.tint + 0.52);
-    octx.beginPath();
-    octx.ellipse(visor.x, visor.y, vrx, vry, 0, 0, Math.PI * 2);
-    octx.fill();
-    if (helmet.glow) {
-        octx.strokeStyle = helmet.glow;
-        octx.lineWidth = Math.max(1.2, size * 0.035);
-        octx.globalAlpha = 0.8;
-        octx.shadowColor = helmet.glow;
-        octx.shadowBlur = Math.max(4, size * 0.08);
-        octx.beginPath();
-        octx.ellipse(visor.x, visor.y, vrx * 1.08, vry * 1.12, 0, 0, Math.PI * 2);
-        octx.stroke();
-    }
+    octx.translate(visor.x, visor.y);
+    octx.scale(hs, hs);
+    octx.translate(-hc.x, -hc.y);
+    drawHelmetOn(octx, helmet, suit, t, size);
     octx.restore();
     ctx.drawImage(sheet, 0, 0, out, out, x - out / 2, y - out / 2, out, out);
 }
@@ -390,8 +406,11 @@ function drawPilot(ctx, w, save, art) {
     const spr = w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(w.squirrel.rot);
-    paintIllustrated(ctx, spr, 0, 0, 52, helm, suit);
+    const lean = Math.max(-0.24, Math.min(0.28, w.squirrel.rot * 0.3));
+    ctx.rotate(lean);
+    const depth = 1 - Math.abs(lean) * 0.22;
+    ctx.scale(1 + Math.abs(lean) * 0.1, depth);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
@@ -413,8 +432,30 @@ function paintPal(ctx, art, id, x, y, size) {
     }
 }
 export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
-    const spr = art?.squirrelIdle?.[0] ?? art?.squirrelIdle?.[0];
-    paintIllustrated(ctx, spr, cx, cy, size, helmet, suit);
+    const spr = art?.squirrelIdle?.[0];
+    if (!spr)
+        return;
+    drawSprite(ctx, spr, cx, cy + 2, size);
+    if (suit.id !== "flight") {
+        ctx.save();
+        ctx.globalCompositeOperation = "source-atop";
+        ctx.fillStyle = suit.suit;
+        ctx.globalAlpha = 0.42;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + size * 0.16, size * 0.28, size * 0.22, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    const lay = spriteLayout(spr, cx, cy + 2, size);
+    const visor = lay.map(VISOR.sx, VISOR.sy);
+    const hc = helmetCenter();
+    const hs = (VISOR.rx * lay.scale) / hc.r;
+    ctx.save();
+    ctx.translate(visor.x, visor.y);
+    ctx.scale(hs, hs);
+    ctx.translate(-hc.x, -hc.y);
+    drawHelmetOn(ctx, helmet, suit, _t, size);
+    ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {
     paintPal(ctx, art, id, cx, cy, size);

@@ -1,4 +1,4 @@
-export const BUILD = "Illustrated · sandbox v7";
+export const BUILD = "Illustrated · sandbox v8";
 export const GAME_VERSION = "v1.2.0-illust";
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];

@@ -1896,3 +1896,18 @@ export function drawTrailPreviewOn(
   use(c);
   drawTrailPreview(id, cx, cy, t);
 }
+
+export function drawHelmetOn(
+  c: CanvasRenderingContext2D,
+  helm: HelmDraw,
+  suit: SuitDraw,
+  t = 0,
+  seed = 0,
+) {
+  use(c);
+  drawHelmet(helm, suit, t, seed);
+}
+
+export function helmetCenter() {
+  return { x: 11, y: -11, r: 15.2 };
+}

@@ -123,7 +123,7 @@ export async function loadArt() {
         many(`${base}/debris/`, 9, 0),
         loadImg(`${base}/sky.jpg`).catch(() => null),
         loadImg(`${base}/hero.jpg`).catch(() => null),
-        ...palIds.map((id) => loadImg(`${base}/pals/${id}.png`)),
+        ...palIds.map((id) => loadImg(`${base}/thumbs/pals/${id}.png`).catch(() => loadImg(`${base}/pals/${id}.png`))),
     ]);
     const pals = {};
     palIds.forEach((id, i) => {

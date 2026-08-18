@@ -460,12 +460,12 @@ function Card({
       type="button"
       onClick={onClick}
       className={
-        "flex min-h-[128px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-2 " +
+        "flex min-h-[148px] flex-col items-center justify-end rounded-2xl border px-1.5 pb-2 pt-3 " +
         (active ? "border-ion bg-ion/15" : "border-line bg-panel") +
         (locked ? " opacity-50" : "")
       }
     >
-      <span className="mb-1 flex h-14 w-14 items-center justify-center overflow-visible">{children}</span>
+      <span className="mb-1 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden">{children}</span>
       <span className="text-center text-[11px] font-bold text-cream">{name}</span>
       <span className="text-[10px] font-semibold text-copper">{meta}</span>
     </button>
@@ -495,7 +495,7 @@ function Portrait({
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, size, size);
-    paintPortrait(ctx, art, helmet, suit, size / 2, size / 2, size * 0.92);
+    paintPortrait(ctx, art, helmet, suit, size / 2, size / 2, size * 0.88);
   }, [engine.art, helmet, suit, size]);
   return <canvas ref={ref} width={size} height={size} style={{ width: size, height: size }} />;
 }

@@ -130,7 +130,7 @@ export async function bootStandalone(root) {
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
         if (ctx && engine.art)
-            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.92);
+            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.88);
         return c;
     }
     function drawHangar() {
