@@ -1,6 +1,7 @@
 import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, skyIdFor, washScale } from "./catalog";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { drawSprite, skyImage, type ArtBank, type Sprite } from "./art";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import type { Particle, World } from "./sim";
 
@@ -129,10 +130,18 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   }
 
   // Sky stays upright. Warp only tilts the playfield (live does the same).
-  drawBackdrop(ctx, w, art);
+  if (w.retro) retroBackdrop(ctx, W, H, w.envA, w.envB, w.envBlend, w.stars);
+  else drawBackdrop(ctx, w, art);
 
   ctx.save();
   applyWarp(ctx, w);
+
+  if (w.retro) {
+    drawRetroWorld(ctx, w, save, art);
+    ctx.restore();
+    ctx.restore();
+    return;
+  }
 
   // Everything you can hit gets a separation halo keyed to the sky: a
   // dark drop shadow on bright skies, a faint light rim on dark ones.
@@ -170,6 +179,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     } else if (a.kind === "shield") drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
     else if (a.kind === "hole" || a.kind === "worm") {
       drawVortex(ctx, a.x, y, a.kind === "worm", w.time);
+    } else if (a.kind === "retro") {
+      drawShiftAcorn(ctx, art, a.x, y, w.time);
     }
   }
 
@@ -206,6 +217,91 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   }
   ctx.restore();
   ctx.restore();
+}
+
+// The other timeline. Same planets in the same places, same rocks with
+// the same seeds — only the hand painting them changes. Everything a
+// player can touch comes from the identical world objects, so a shift
+// never changes what is solid, only what it looks like.
+function drawRetroWorld(
+  ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank,
+) {
+  const { W } = w;
+  for (const p of w.planets) {
+    const gy = liveGapY(p);
+    retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
+    retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
+    for (const b of p.blockers) {
+      const by = b.y + Math.sin(p.drift) * p.driftAmp;
+      retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
+    }
+  }
+
+  for (const a of w.pickups) {
+    if (a.got) continue;
+    const y = a.y + Math.sin(a.bob) * 4;
+    if (a.kind === "retro") {
+      drawShiftAcorn(ctx, art, a.x, y, w.time);
+      continue;
+    }
+    const power =
+      a.kind === "gold" ? "golden"
+        : a.kind === "shield" ? "shield"
+          : a.kind === "hole" ? "blackhole"
+            : a.kind === "worm" ? "wormhole"
+              : a.kind === "slow";
+    retroAcorn(ctx, a.x, y, power);
+  }
+
+  for (const p of w.particles) drawParticle(ctx, p);
+
+  const pal =
+    w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
+      ? "buddy"
+      : save.equippedPal;
+  if (pal && pal !== "none") {
+    const bob = Math.sin(w.time * 2.6) * 2;
+    // live draws its pals at unit SCALE, not at a pixel size
+    drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
+  }
+
+  const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
+  const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
+  drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
+    flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
+    seed: 0,
+    shield: w.shieldCharges > 0,
+  });
+}
+
+// The door itself. Painted in the arcade's own pixels either way, so it
+// reads the same from both sides — this is the one object that belongs
+// to neither timeline.
+function drawShiftAcorn(
+  ctx: CanvasRenderingContext2D, art: ArtBank, x: number, y: number, t: number,
+) {
+  const spr = art.arcadeAcorn;
+  const glow = 20 + Math.sin(t * 5) * 4;
+  const g = ctx.createRadialGradient(x, y, 2, x, y, glow + 12);
+  g.addColorStop(0, "rgba(255,214,96,0.55)");
+  g.addColorStop(0.5, "rgba(255,170,40,0.22)");
+  g.addColorStop(1, "rgba(255,170,40,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x, y, glow + 12, 0, Math.PI * 2);
+  ctx.fill();
+  // the four cardinal sparks from the source art, kept as real pixels
+  ctx.fillStyle = "#ffd83f";
+  const d = 20 + Math.sin(t * 5) * 2;
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + t * 0.8;
+    ctx.fillRect(Math.round(x + Math.cos(a) * d) - 2, Math.round(y + Math.sin(a) * d) - 2, 4, 4);
+  }
+  if (spr) {
+    ctx.imageSmoothingEnabled = false;
+    drawSprite(ctx, spr, x, y, 30);
+    ctx.imageSmoothingEnabled = true;
+  }
 }
 
 function drawVortex(ctx: CanvasRenderingContext2D, x: number, y: number, worm: boolean, t: number) {
@@ -393,7 +489,7 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:voidsuit": [193, 97, 52],
   "suit:aurorasuit": [195, 102, 54],
   "suit:ember": [192, 100, 49],
-  "suit:stardust": [194, 97, 51],
+  "suit:stardust": [196, 95, 50],
   "suit:robo": [195, 97, 52],
   "suit:alien": [197, 102, 50],
   "suit:ghost": [191, 99, 49],
@@ -779,7 +875,14 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
     ctx.textAlign = "center";
     ctx.fillStyle = w.warpKind === "worm" || w.flight === "lost" ? "#6ef0d8" : "#c084fc";
     ctx.font = "800 22px Figtree, system-ui";
-    ctx.fillText(w.warpKind === "worm" || w.flight === "lost" ? "WORMHOLE!" : "BLACK HOLE!", W / 2, w.H * 0.3);
+    ctx.fillText(
+      w.warpKind === "timeline"
+        ? "TIMELINE SHIFT!"
+        : w.warpKind === "worm" || w.flight === "lost"
+          ? "WORMHOLE!"
+          : "BLACK HOLE!",
+      W / 2, w.H * 0.3,
+    );
   }
   if (w.ready && !w.tut) {
     ctx.textAlign = "center";
