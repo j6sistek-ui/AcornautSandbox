@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "37";
+export const ART_VER = "38";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -111,7 +111,42 @@ export const SKY_RGB = {
     neon: [0.23, 0.20, 0.51],
     vortex: [0.09, 0.06, 0.15],
     gold: [0.76, 0.49, 0.14],
+    // The fourteen deep-space plates. Every one sits under luma 0.18, so
+    // anything painted lands on top of them instead of into them.
+    dark1: [0.051, 0.067, 0.134],
+    dark2: [0.114, 0.154, 0.236],
+    dark3: [0.092, 0.094, 0.112],
+    dark4: [0.107, 0.131, 0.176],
+    dark5: [0.168, 0.176, 0.184],
+    dark6: [0.078, 0.113, 0.165],
+    dark7: [0.088, 0.124, 0.185],
+    dark8: [0.072, 0.097, 0.187],
+    dark9: [0.081, 0.092, 0.162],
+    dark10: [0.093, 0.097, 0.099],
+    dark11: [0.083, 0.102, 0.216],
+    dark12: [0.085, 0.134, 0.212],
+    dark13: [0.041, 0.058, 0.127],
+    dark14: [0.052, 0.081, 0.139],
 };
+// Deep Space and Lost in Space fly under the dark plates only — no
+// vibrant sky, no jewel-tone grade, just space. Free Flight keeps its
+// painted colour zones. A zone still owns ONE plate, so a shift still
+// reads as arriving somewhere, and 26 zones spread across 14 skies.
+export const DARK_SKIES = [
+    "dark1", "dark2", "dark3", "dark4", "dark5", "dark6", "dark7",
+    "dark8", "dark9", "dark10", "dark11", "dark12", "dark13", "dark14",
+];
+export function skyIdFor(flight, envIdx) {
+    if (flight === "deep" || flight === "lost")
+        return DARK_SKIES[((envIdx % DARK_SKIES.length) + DARK_SKIES.length) % DARK_SKIES.length];
+    return ENVS[envIdx].sky;
+}
+// How much of the environment's colour wash survives. Under the dark
+// plates it is dialled right back: the tint still names the zone, but it
+// no longer paints the whole void turquoise.
+export function washScale(flight) {
+    return flight === "deep" || flight === "lost" ? 0.45 : 1;
+}
 export const PLANET_COUNT = 33;
 export const DEBRIS_COUNT = 27;
 export const PLANET_RGB = [

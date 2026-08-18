@@ -1,4 +1,4 @@
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=37";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=38";
 export function defaultSave() {
     return {
         highScore: 0,

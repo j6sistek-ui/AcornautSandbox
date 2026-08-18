@@ -1,6 +1,6 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=37";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=37";
-import { drawSprite, skyImage } from "./art.js?v=37";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=38";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=38";
+import { drawSprite, skyImage } from "./art.js?v=38";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -36,15 +36,15 @@ export function skyLuma(w) {
         const c = SKY_RGB[id] ?? [0.1, 0.1, 0.2];
         return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
     };
-    const a = lum(ENVS[w.envA].sky);
-    const b = lum(ENVS[w.envB].sky);
+    const a = lum(skyIdFor(w.flight, w.envA));
+    const b = lum(skyIdFor(w.flight, w.envB));
     return a + (b - a) * w.envBlend;
 }
 function drawBackdrop(ctx, w, art) {
     const { W, H } = w;
     // each environment flies under its own painted sky; shifts crossfade
-    const skyA = skyImage(ENVS[w.envA].sky);
-    const skyB = skyImage(ENVS[w.envB].sky);
+    const skyA = skyImage(skyIdFor(w.flight, w.envA));
+    const skyB = skyImage(skyIdFor(w.flight, w.envB));
     const painted = skyB ?? skyA;
     if (painted) {
         coverDraw(ctx, skyA ?? painted, W, H);
@@ -58,7 +58,10 @@ function drawBackdrop(ctx, w, art) {
         // it, a black void barely any. This is what stops the white-on-white
         // blindness without dulling the art everywhere.
         const lum = skyLuma(w);
-        const veil = Math.max(0.16, Math.min(0.52, 0.16 + (lum - 0.2) * 0.62));
+        // A plate that is already void-dark needs almost no scrim — flooring
+        // it at 0.16 only greys out the nebula it was chosen for.
+        const floor = Math.min(0.16, lum * 0.8);
+        const veil = Math.max(floor, Math.min(0.52, 0.16 + (lum - 0.2) * 0.62));
         ctx.fillStyle = `rgba(7,11,22,${veil.toFixed(3)})`;
         ctx.fillRect(0, 0, W, H);
     }
@@ -77,12 +80,13 @@ function drawBackdrop(ctx, w, art) {
     const env = ENVS[w.envB];
     const envA = ENVS[w.envA];
     const blend = w.envBlend;
-    const wash = env.wash.map((v, i) => envA.wash[i] + (v - envA.wash[i]) * blend);
+    const ws = washScale(w.flight);
+    const wash = env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1));
     ctx.fillStyle = `rgba(${wash[0]},${wash[1]},${wash[2]},${wash[3]})`;
     ctx.beginPath();
     ctx.ellipse(W * 0.68, H * 0.28, W * 0.55, H * 0.28, 0.25, 0, Math.PI * 2);
     ctx.fill();
-    const wash2 = env.wash2.map((v, i) => envA.wash2[i] + (v - envA.wash2[i]) * blend);
+    const wash2 = env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1));
     ctx.fillStyle = `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${wash2[3]})`;
     ctx.beginPath();
     ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
@@ -373,7 +377,7 @@ const DOME = {
     "suit:iontrim": [199, 97, 46],
     "suit:copper": [195, 97, 51],
     "suit:frost": [197, 96, 49],
-    "suit:voidsuit": [192, 97, 50],
+    "suit:voidsuit": [193, 97, 52],
     "suit:aurorasuit": [195, 102, 54],
     "suit:ember": [192, 100, 49],
     "suit:stardust": [194, 97, 51],
@@ -470,7 +474,7 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     ctx.stroke();
     ctx.restore();
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark") {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
@@ -489,7 +493,10 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         ctx.globalAlpha = prevA;
     }
     else {
-        drawSprite(ctx, body, x, y, size, "box", "dark");
+        // the pilot's separation follows the sky like everything else — a
+        // hardcoded dark halo left dark suits (the Void skin especially)
+        // with no edge at all against a dark backdrop
+        drawSprite(ctx, body, x, y, size, "box", halo);
     }
     if (suited) {
         paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
@@ -544,7 +551,7 @@ function drawPilot(ctx, w, save, art) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, skyLuma(w) > 0.42 ? "dark" : "light");
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {

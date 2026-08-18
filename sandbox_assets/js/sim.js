@@ -1,5 +1,5 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=37";
-import { writeSave } from "./save.js?v=37";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=38";
+import { writeSave } from "./save.js?v=38";
 export function makeWorld(W, H) {
     return {
         W,
@@ -115,12 +115,13 @@ function difficulty(w) {
     };
 }
 function pickKind(w) {
-    const env = ENVS[envIndexFor(w, w.score)];
+    const idx = envIndexFor(w, w.score);
+    const env = ENVS[idx];
     if (Math.random() < 0.55)
         return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
     // free pick, but never one that would vanish into this sky: reject
     // planets whose luminance sits too close to the backdrop's
-    const sky = SKY_RGB[env.sky];
+    const sky = SKY_RGB[skyIdFor(w.flight, idx)];
     for (let i = 0; i < 10; i++) {
         const k = Math.floor(Math.random() * PLANET_COUNT);
         if (sep(sky, PLANET_RGB[k]) >= MIN_SEP)
@@ -314,7 +315,9 @@ function spawnPair(w, save, x) {
         if (!w.tut && !noShield && Math.random() < 0.03 * specialMul) {
             w.pickups.push({ x: x + 20, y: gapY + (Math.random() - 0.5) * gap * 0.18, got: false, bob: Math.random() * 6, kind: "shield" });
         }
-        if (!w.tut && !noHoles && w.flight !== "lost" && Math.random() < 0.018) {
+        // Deep Space runs its own shift on a timer, so a black hole there does
+        // nothing but clutter the lane — live excludes them and so do we.
+        if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole" });
         }
         if (!w.tut && !noHoles && w.flight === "lost" && Math.random() < 0.05) {
