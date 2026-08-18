@@ -29,6 +29,7 @@ import {
 } from "@/game/catalog";
 import { createEngine, type Engine } from "@/game/engine";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "@/game/draw";
+import { artUrl } from "@/game/art";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -342,7 +343,14 @@ function Hangar({ engine }: { engine: Engine }) {
                 active={eq}
                 onClick={() => engine.buyHelmet(h.id)}
               >
-                <Portrait engine={engine} helmet={h} suit={suit ?? SUITS[0]} size={56} />
+                <img
+                  src={artUrl(`helmets/${h.id}.png`)}
+                  alt={h.name}
+                  width={56}
+                  height={56}
+                  className="h-16 w-16 object-contain"
+                  draggable={false}
+                />
               </Card>
             );
           })}
@@ -363,7 +371,14 @@ function Hangar({ engine }: { engine: Engine }) {
                 locked={!revealed}
                 onClick={() => engine.buySuit(s.id)}
               >
-                <Portrait engine={engine} helmet={helm ?? HELMETS[0]} suit={s} size={56} />
+                <img
+                  src={artUrl(`suits/${s.id}.png`)}
+                  alt={s.name}
+                  width={56}
+                  height={56}
+                  className="h-16 w-16 object-contain"
+                  draggable={false}
+                />
               </Card>
             );
           })}
@@ -402,7 +417,18 @@ function Hangar({ engine }: { engine: Engine }) {
                 locked={!open}
                 onClick={() => engine.equipPal(p.id)}
               >
-                <PalMark engine={engine} id={p.id} size={48} />
+                {p.id === "none" ? (
+                  <PalMark engine={engine} id={p.id} size={48} />
+                ) : (
+                  <img
+                    src={artUrl(`pals/${p.art || p.id}.png`)}
+                    alt={p.name}
+                    width={48}
+                    height={48}
+                    className="h-16 w-16 object-contain"
+                    draggable={false}
+                  />
+                )}
               </Card>
             );
           })}
@@ -465,7 +491,7 @@ function Card({
         (locked ? " opacity-50" : "")
       }
     >
-      <span className="mb-1 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden">{children}</span>
+      <span className="mb-1 flex h-16 w-16 shrink-0 items-center justify-center overflow-visible">{children}</span>
       <span className="text-center text-[11px] font-bold text-cream">{name}</span>
       <span className="text-[10px] font-semibold text-copper">{meta}</span>
     </button>

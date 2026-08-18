@@ -302,8 +302,8 @@ function drawPlanet(ctx, art, x, y, r, kind) {
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
 }
-/** Visor glass on idle-1.png (128 source). Overlay stays on the painted helmet. */
-const VISOR = { sx: 66, sy: 44, rx: 21, ry: 17 };
+/** Painted visor bubble on idle-1.png (128 source). Not the face. */
+const VISOR = { sx: 102, sy: 42, rx: 22, ry: 20 };
 const BODY = { sx: 64, sy: 74, rx: 30, ry: 24 };
 function spriteLayout(spr, x, y, size) {
     const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
@@ -369,7 +369,7 @@ function tintSuitFabric(octx, w, h, suit) {
     }
     octx.putImageData(img, 0, 0);
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, t = 0) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, t = 0, art) {
     if (!spr)
         return;
     const pad = Math.ceil(size * 0.28);
@@ -386,16 +386,27 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, t = 0) {
     const cy = out / 2 + size * 0.06;
     drawSprite(octx, spr, cx, cy, size);
     tintSuitFabric(octx, out, out, suit);
-    const lay = spriteLayout(spr, cx, cy, size);
-    const visor = lay.map(VISOR.sx, VISOR.sy);
-    const hc = helmetCenter();
-    const hs = (VISOR.rx * lay.scale) / hc.r;
-    octx.save();
-    octx.translate(visor.x, visor.y);
-    octx.scale(hs, hs);
-    octx.translate(-hc.x, -hc.y);
-    drawHelmetOn(octx, helmet, suit, t, size);
-    octx.restore();
+    const over = art?.helmOver?.[helmet.id];
+    if (over) {
+        const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
+        const dim = Math.max(box.w, box.h);
+        const scale = size / Math.max(1, dim);
+        const dw = box.w * scale;
+        const dh = box.h * scale;
+        octx.drawImage(over, box.x, box.y, box.w, box.h, cx - dw / 2, cy - dh / 2, dw, dh);
+    }
+    else {
+        const lay = spriteLayout(spr, cx, cy, size);
+        const visor = lay.map(VISOR.sx, VISOR.sy);
+        const hc = helmetCenter();
+        const hs = (VISOR.rx * lay.scale) / hc.r;
+        octx.save();
+        octx.translate(visor.x, visor.y);
+        octx.scale(hs, hs);
+        octx.translate(-hc.x, -hc.y);
+        drawHelmetOn(octx, helmet, suit, t, size);
+        octx.restore();
+    }
     ctx.drawImage(sheet, 0, 0, out, out, x - out / 2, y - out / 2, out, out);
 }
 function drawPilot(ctx, w, save, art) {
@@ -406,17 +417,22 @@ function drawPilot(ctx, w, save, art) {
     const spr = w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
     ctx.save();
     ctx.translate(x, y);
-    const lean = Math.max(-0.24, Math.min(0.28, w.squirrel.rot * 0.3));
-    ctx.rotate(lean);
-    const depth = 1 - Math.abs(lean) * 0.22;
-    ctx.scale(1 + Math.abs(lean) * 0.1, depth);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time);
+    ctx.fillStyle = "rgba(0,0,0,0.28)";
+    ctx.beginPath();
+    ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    const bank = Math.max(-0.11, Math.min(0.13, w.squirrel.vy / 1800));
+    ctx.rotate(bank);
+    const boost = w.flapBoost > 0;
+    ctx.scale(boost ? 1.07 : 1 + Math.abs(bank) * 0.08, boost ? 0.9 : 1 - Math.abs(bank) * 0.12);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
     const spr = art?.pals?.[id];
     if (spr) {
-        drawSprite(ctx, spr, x, y, size, "box");
+        const s = size;
+        ctx.drawImage(spr, x - s / 2, y - s / 2, s, s);
         return;
     }
     if (id === "none") {
@@ -432,30 +448,20 @@ function paintPal(ctx, art, id, x, y, size) {
     }
 }
 export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
-    const spr = art?.squirrelIdle?.[0];
-    if (!spr)
+    const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
+    if (!body)
         return;
-    drawSprite(ctx, spr, cx, cy + 2, size);
-    if (suit.id !== "flight") {
-        ctx.save();
-        ctx.globalCompositeOperation = "source-atop";
-        ctx.fillStyle = suit.suit;
-        ctx.globalAlpha = 0.42;
-        ctx.beginPath();
-        ctx.ellipse(cx, cy + size * 0.16, size * 0.28, size * 0.22, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+    drawSprite(ctx, body, cx, cy + 2, size);
+    const over = art?.helmOver?.[helmet.id];
+    if (over && helmet.id !== "clear") {
+        drawSprite(ctx, over, cx, cy + 2, size);
+        return;
     }
-    const lay = spriteLayout(spr, cx, cy + 2, size);
-    const visor = lay.map(VISOR.sx, VISOR.sy);
-    const hc = helmetCenter();
-    const hs = (VISOR.rx * lay.scale) / hc.r;
-    ctx.save();
-    ctx.translate(visor.x, visor.y);
-    ctx.scale(hs, hs);
-    ctx.translate(-hc.x, -hc.y);
-    drawHelmetOn(ctx, helmet, suit, _t, size);
-    ctx.restore();
+    const painted = art?.helmets?.[helmet.id];
+    if (painted && suit.id === "flight") {
+        ctx.clearRect(cx - size / 2, cy - size / 2, size, size);
+        drawSprite(ctx, painted, cx, cy + 2, size);
+    }
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {
     paintPal(ctx, art, id, cx, cy, size);

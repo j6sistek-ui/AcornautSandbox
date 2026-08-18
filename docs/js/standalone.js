@@ -1,5 +1,6 @@
 import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js";
+import { artUrl } from "./art.js";
 import { createEngine } from "./engine.js";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js";
 function el(tag, cls = "", text) {
@@ -127,6 +128,15 @@ export async function bootStandalone(root) {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         return { c, ctx };
     }
+    function shopImg(src, alt) {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = alt;
+        img.draggable = false;
+        img.width = 64;
+        img.height = 64;
+        return img;
+    }
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
         if (ctx && engine.art)
@@ -147,7 +157,10 @@ export async function bootStandalone(root) {
         loadTxt.append(el("p", "", `${helm.name} · ${suit.name}`));
         loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
         load.append(loadTxt);
-        if (pal) {
+        if (pal && pal.id !== "none") {
+            load.append(shopImg(artUrl(`pals/${pal.art || pal.id}.png`), pal.name));
+        }
+        else if (pal) {
             const { c, ctx } = miniCanvas(40, 40);
             if (ctx)
                 paintPalPreview(ctx, engine.art, pal.id, 20, 20, 36);
@@ -168,7 +181,7 @@ export async function bootStandalone(root) {
             for (const h of HELMETS) {
                 const owned = s.unlocked.includes(h.id);
                 const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-                b.append(portraitOf(h, suit), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
+                b.append(shopImg(artUrl(`helmets/${h.id}.png`), h.name), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
                 b.onclick = () => engine.buyHelmet(h.id);
                 grid.append(b);
             }
@@ -178,7 +191,7 @@ export async function bootStandalone(root) {
                 const open = suitRevealed(s, u.id);
                 const owned = s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
-                b.append(portraitOf(helm, u), document.createTextNode(`${u.name}\n${!open ? "LOCKED" : owned ? "OWNED" : u.cost}`));
+                b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name), document.createTextNode(`${u.name}\n${!open ? "LOCKED" : owned ? "OWNED" : u.cost}`));
                 b.onclick = () => engine.buySuit(u.id);
                 grid.append(b);
             }
@@ -199,10 +212,16 @@ export async function bootStandalone(root) {
             for (const p of PALS) {
                 const open = palUnlocked(s, p.id);
                 const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
-                const { c, ctx } = miniCanvas(64, 56);
-                if (ctx)
-                    paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
-                b.append(c, document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
+                if (p.id === "none") {
+                    const { c, ctx } = miniCanvas(64, 56);
+                    if (ctx)
+                        paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
+                    b.append(c);
+                }
+                else {
+                    b.append(shopImg(artUrl(`pals/${p.art || p.id}.png`), p.name));
+                }
+                b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
                 b.onclick = () => engine.equipPal(p.id);
                 grid.append(b);
             }

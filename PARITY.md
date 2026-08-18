@@ -29,3 +29,9 @@ Checked against live `index.html` (v1.1.0) and `beta/index.html`.
 - Shop is HTML cards, not the canvas roster cache
 - Tutorial bounce is staged, not the full computed-gate choreography
 - No offline service worker on the illustrated build yet
+
+
+## sandbox v9
+- Hangar pals are `<img>` files keyed by id (no canvas remap).
+- Helmet/suit PNG art lives in `art/helmets` and `art/suits`.
+- Flap uses a small bank + squash, not full sprite spin.

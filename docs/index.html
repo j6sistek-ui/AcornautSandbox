@@ -19,7 +19,6 @@
     .ac-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; pointer-events: none; }
     .ac-overlay > * { pointer-events: auto; }
     .ac-sheet { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px 18px 18px; background: rgba(7,11,22,0.9); overflow: hidden; }
-    .ac-sheet-scroll { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; }
     .ac-center { align-items: center; justify-content: center; text-align: center; }
     .ac-head { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     h1 { font-family: Fraunces, serif; font-size: 42px; line-height: 0.95; }
@@ -40,8 +39,9 @@
     .ac-tab { background: #141b30; color: #8b95b0; border: 1px solid #2a3454; border-radius: 999px; padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; min-height: 36px; }
     .ac-tab.on { background: #4ab4ff; color: #0c1224; border-color: transparent; }
     .ac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .ac-card { min-height: 124px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 16px; padding: 10px 6px; font-size: 11px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
-    .ac-card img, .ac-card canvas { width: 56px; height: 56px; object-fit: contain; }
+    .ac-card { min-height: 140px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 16px; padding: 12px 6px 10px; font-size: 11px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; overflow: visible; }
+    .ac-card img, .ac-card canvas { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
+    .ac-sheet-scroll { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; padding-top: 6px; }
     .ac-loadout { display: flex; align-items: center; gap: 12px; background: #141b30; border: 1px solid #2a3454; border-radius: 16px; padding: 10px 12px; }
     .ac-loadout canvas { width: 64px; height: 64px; }
     .ac-helm { width: 36px; height: 28px; border-radius: 18px 18px 8px 8px; display: block; margin-bottom: 4px; }
@@ -57,7 +57,7 @@
   <div id="app"></div>
   <script>window.__ACORNAUT_ART__ = "./art";</script>
   <script type="module">
-    import { bootStandalone } from "./js/standalone.js";
+    import { bootStandalone } from "./js/standalone.js?v=9";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

@@ -1,3 +1,5 @@
+import { ART_VER } from "./catalog";
+
 export type Box = { x: number; y: number; w: number; h: number };
 
 export type Sprite = HTMLImageElement & { box: Box; core: number };
@@ -12,6 +14,9 @@ export type ArtBank = {
   planets: Sprite[];
   debris: Sprite[];
   pals: Record<string, Sprite>;
+  helmets: Record<string, Sprite>;
+  helmOver: Record<string, Sprite>;
+  suits: Record<string, Sprite>;
   sky: HTMLImageElement | null;
   hero: HTMLImageElement | null;
 };
@@ -27,13 +32,19 @@ export function artBase() {
   return raw.replace(/\/$/, "");
 }
 
+export function artUrl(path: string) {
+  const p = path.replace(/^\//, "");
+  return `${artBase()}/${p}?v=${ART_VER}`;
+}
+
 function loadImg(src: string) {
+  const url = src.includes("?") ? src : `${src}?v=${ART_VER}`;
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(src));
-    img.src = src;
+    img.src = url;
   });
 }
 
@@ -140,7 +151,36 @@ export async function loadArt(): Promise<ArtBank> {
     "tinbot",
     "wisp",
   ];
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, ...palImgs] =
+  const helmIds = [
+    "clear",
+    "ion",
+    "solar",
+    "nebula",
+    "lunar",
+    "void",
+    "comet",
+    "cherry",
+    "royal",
+    "aurora",
+    "meteor",
+    "chrono",
+  ];
+  const suitIds = [
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "aurorasuit",
+    "ember",
+    "stardust",
+    "robo",
+    "alien",
+    "ghost",
+    "bigbooty",
+  ];
+  const optional = (src: string) => loadImg(src).catch(() => null);
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, ...rest] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -149,13 +189,31 @@ export async function loadArt(): Promise<ArtBank> {
       many(`${base}/shield/`, 4),
       many(`${base}/planets/`, 18, 0),
       many(`${base}/debris/`, 9, 0),
-      loadImg(`${base}/sky.jpg`).catch(() => null),
-      loadImg(`${base}/hero.jpg`).catch(() => null),
-      ...palIds.map((id) => loadImg(`${base}/thumbs/pals/${id}.png`).catch(() => loadImg(`${base}/pals/${id}.png`))),
+      optional(`${base}/sky.jpg`),
+      optional(`${base}/hero.jpg`),
+      ...palIds.map((id) => loadImg(`${base}/pals/${id}.png`)),
+      ...helmIds.map((id) => optional(`${base}/helmets/${id}.png`)),
+      ...helmIds.map((id) => optional(`${base}/helmets/${id}-over.png`)),
+      ...suitIds.map((id) => optional(`${base}/suits/${id}.png`)),
     ]);
   const pals: Record<string, Sprite> = {};
   palIds.forEach((id, i) => {
-    pals[id] = asSprite(palImgs[i] as HTMLImageElement);
+    pals[id] = asSprite(rest[i] as HTMLImageElement);
+  });
+  const helmets: Record<string, Sprite> = {};
+  const helmOver: Record<string, Sprite> = {};
+  const suits: Record<string, Sprite> = {};
+  const helmStart = palIds.length;
+  helmIds.forEach((id, i) => {
+    const img = rest[helmStart + i] as HTMLImageElement | null;
+    if (img) helmets[id] = asSprite(img);
+    const ov = rest[helmStart + helmIds.length + i] as HTMLImageElement | null;
+    if (ov) helmOver[id] = asSprite(ov);
+  });
+  const suitStart = helmStart + helmIds.length * 2;
+  suitIds.forEach((id, i) => {
+    const img = rest[suitStart + i] as HTMLImageElement | null;
+    if (img) suits[id] = asSprite(img);
   });
   return {
     ready: true,
@@ -167,6 +225,9 @@ export async function loadArt(): Promise<ArtBank> {
     planets,
     debris,
     pals,
+    helmets,
+    helmOver,
+    suits,
     sky: sky as HTMLImageElement | null,
     hero: hero as HTMLImageElement | null,
   };
