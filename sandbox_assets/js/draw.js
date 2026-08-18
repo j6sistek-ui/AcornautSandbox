@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=24";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=24";
-import { drawSprite } from "./art.js?v=24";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=25";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=25";
+import { drawSprite } from "./art.js?v=25";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -333,7 +333,48 @@ const DOME = {
     "suit:ghost": [191, 99, 49],
     "suit:bigbooty": [194, 86, 51],
 };
-function paintDome(ctx, body, key, helmet, x, y, size) {
+// Where the GLASS circle sits inside each helmet-only render (x, y, r).
+// Comet has no solo render yet — it keeps the tinted-ring fallback.
+const HELM_GLASS = {
+    "clear": [129, 128, 111],
+    "ion": [129, 128, 109],
+    "solar": [146, 123, 94],
+    "nebula": [129, 129, 112],
+    "lunar": [129, 126, 112],
+    "void": [125, 128, 108],
+    "cherry": [126, 128, 109],
+    "royal": [129, 156, 86],
+    "aurora": [143, 116, 94],
+    "meteor": [143, 116, 94],
+    "chrono": [132, 126, 110],
+};
+// The real helmet art, its glass centre punched translucent once so the
+// pilot's face shows through when it is composited onto the head.
+const punchedCache = new Map();
+function punchedHelm(spr, id) {
+    const hit = punchedCache.get(id);
+    if (hit)
+        return hit;
+    const g = HELM_GLASS[id];
+    const c = document.createElement("canvas");
+    c.width = spr.width;
+    c.height = spr.height;
+    const cc = c.getContext("2d");
+    if (!cc || !g)
+        return null;
+    cc.drawImage(spr, 0, 0);
+    const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * 0.82);
+    grad.addColorStop(0, "rgba(0,0,0,0.55)");
+    grad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    cc.globalCompositeOperation = "destination-out";
+    cc.fillStyle = grad;
+    cc.fillRect(0, 0, c.width, c.height);
+    cc.globalCompositeOperation = "source-over";
+    punchedCache.set(id, c);
+    return c;
+}
+function paintDome(ctx, body, key, helmet, x, y, size, art) {
     if (helmet.id === "clear")
         return; // the painted dome already reads clear
     const a = DOME[key];
@@ -344,6 +385,18 @@ function paintDome(ctx, body, key, helmet, x, y, size) {
     const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
     const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
     const r = a[2] * scale;
+    // the REAL helmet render sits on the head — scaled so its glass circle
+    // matches the painted dome exactly
+    const helmSpr = art?.helms?.[helmet.id];
+    const g = HELM_GLASS[helmet.id];
+    if (helmSpr && g) {
+        const punched = punchedHelm(helmSpr, helmet.id);
+        if (punched) {
+            const s2 = (r * 1.04) / g[2];
+            ctx.drawImage(punched, hx - g[0] * s2, hy - g[1] * s2, punched.width * s2, punched.height * s2);
+            return;
+        }
+    }
     const v = hexRgb(helmet.visor);
     ctx.save();
     const grad = ctx.createRadialGradient(hx - r * 0.25, hy - r * 0.3, r * 0.2, hx, hy, r);
@@ -388,7 +441,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         drawSprite(ctx, body, x, y, size);
     }
     if (suited) {
-        paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size);
+        paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
         return;
     }
     // the dome anchor glides between the two frames' measured positions
@@ -401,11 +454,11 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             a1[2] + (a2[2] - a1[2]) * f,
         ];
         DOME.__mix = mix;
-        paintDome(ctx, body, "__mix", helmet, x, y, size);
+        paintDome(ctx, body, "__mix", helmet, x, y, size, art);
         delete DOME.__mix;
     }
     else {
-        paintDome(ctx, body, frameKey, helmet, x, y, size);
+        paintDome(ctx, body, frameKey, helmet, x, y, size, art);
     }
 }
 function drawPilot(ctx, w, save, art) {
@@ -478,7 +531,7 @@ export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
         return;
     drawSprite(ctx, body, cx, cy + 2, size);
     const key = art?.suits?.[suit.id] ? "suit:" + suit.id : "idle-1";
-    paintDome(ctx, body, key, helmet, cx, cy + 2, size);
+    paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {
     paintPal(ctx, art, id, cx, cy, size);
