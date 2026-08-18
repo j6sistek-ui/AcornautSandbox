@@ -332,6 +332,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       sfx.shield();
       notify();
     }
+    if (ev === "shift") {
+      sfx.shift();
+      notify();
+    }
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {

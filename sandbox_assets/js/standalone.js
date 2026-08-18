@@ -1,8 +1,8 @@
-import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=38";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=38";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=38";
-import { createEngine } from "./engine.js?v=38";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=38";
+import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=39";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=39";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=39";
+import { createEngine } from "./engine.js?v=39";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=39";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -128,6 +128,8 @@ export async function bootStandalone(root) {
         deep.onclick = () => engine.fly("deep");
         const lost = el("button", "ac-ghost", "LOST IN SPACE");
         lost.onclick = () => engine.fly("lost");
+        const arcade = el("button", "ac-ghost", "ARCADE");
+        arcade.onclick = () => engine.fly("arcade");
         // the live game's bottom bar: four round icons pinned to the bottom
         const ICONS = {
             hangar: '<svg viewBox="0 0 24 24"><path d="M20.5 7.5a4.9 4.9 0 0 1-6.4 4.6L7 19.2a2 2 0 0 1-2.8-2.8l7.1-7.1a4.9 4.9 0 0 1 6-6.1L14.6 6l3.2 3.2 2.5-2.6z"/></svg>',
@@ -149,7 +151,7 @@ export async function bootStandalone(root) {
             b.onclick = () => engine.open(screen);
             nav.append(b);
         }
-        box.append(fly, deep, lost, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
+        box.append(fly, deep, lost, arcade, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
         return box;
     }
     function miniCanvas(w, h) {
@@ -461,7 +463,7 @@ export async function bootStandalone(root) {
         const box = el("div", "ac-sheet");
         box.append(header("Social"));
         box.append(el("h3", "", `LV ${pilotLevelOf(s)} ${pilotTitleOf(s)}`));
-        box.append(el("p", "ac-sub", `BEST ${s.highScore} · DEEP ${s.deepBest} · LOST ${s.lostBest}`));
+        box.append(el("p", "ac-sub", `BEST ${s.highScore} · DEEP ${s.deepBest} · LOST ${s.lostBest} · ARCADE ${s.arcadeBest}`));
         box.append(el("h4", "", "NEWS"));
         for (const line of NEWS)
             box.append(el("p", "ac-sub", line));
@@ -530,6 +532,7 @@ export async function bootStandalone(root) {
             ctx.fill();
         }), "WORMHOLE", "Lost in Space: mirrors your heading.");
         scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
+        scroll.append(el("p", "ac-sub ac-mid", "ARCADE: catch the 8-bit acorn to shift between the illustrated game and the original. Same flight, other timeline — catch another to come back."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
         scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
         box.append(scroll);

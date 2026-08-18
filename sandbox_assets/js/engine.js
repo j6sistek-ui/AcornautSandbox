@@ -1,9 +1,9 @@
-import { emptyArt, loadArt } from "./art.js?v=38";
-import { sfx, unlockAudio } from "./audio.js?v=38";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=38";
-import { drawHud, drawWorld } from "./draw.js?v=38";
-import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=38";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=38";
+import { emptyArt, loadArt } from "./art.js?v=39";
+import { sfx, unlockAudio } from "./audio.js?v=39";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=39";
+import { drawHud, drawWorld } from "./draw.js?v=39";
+import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=39";
+import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=39";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -297,6 +297,10 @@ export async function createEngine(canvas) {
             sfx.shield();
             notify();
         }
+        if (ev === "shift") {
+            sfx.shift();
+            notify();
+        }
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
@@ -337,4 +341,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=38";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=39";
