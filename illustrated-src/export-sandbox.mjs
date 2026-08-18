@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import { execSync } from "node:child_process";
-import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, "sandbox_assets");
+const catalog = readFileSync(join(root, "src/game/catalog.ts"), "utf8");
+const ver = (catalog.match(/ART_VER = "([^"]+)"/) || [])[1] || "0";
 mkdirSync(join(out, "js"), { recursive: true });
 mkdirSync(join(out, "art"), { recursive: true });
 
@@ -26,10 +28,18 @@ for (const name of readdirSync(join(out, "js"))) {
   const p = join(out, "js", name);
   const next = readFileSync(p, "utf8").replace(
     /from (['"])(\.\/[^'"]+)(\1)/g,
-    (_, q, spec, q2) => `from ${q}${spec.endsWith(".js") ? spec : spec + ".js"}${q2}`,
+    (_, q, spec, q2) => {
+      const file = spec.endsWith(".js") ? spec : `${spec}.js`;
+      const bare = file.replace(/\?.*$/, "");
+      return `from ${q}${bare}?v=${ver}${q2}`;
+    },
   );
   writeFileSync(p, next);
 }
 
+const stamped = join(out, `js${ver}`);
+rmSync(stamped, { recursive: true, force: true });
+cpSync(join(out, "js"), stamped, { recursive: true });
+
 cpSync(join(root, "public/art"), join(out, "art"), { recursive: true });
-console.log("exported sandbox_assets");
+console.log(`exported sandbox_assets (js + js${ver})`);

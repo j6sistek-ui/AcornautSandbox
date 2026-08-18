@@ -1,8 +1,8 @@
-import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js";
-import { artUrl } from "./art.js";
-import { createEngine } from "./engine.js";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js";
+import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=11";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=11";
+import { artUrl } from "./art.js?v=11";
+import { createEngine } from "./engine.js?v=11";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=11";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)

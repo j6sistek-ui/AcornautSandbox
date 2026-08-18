@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Acornaut — Illustrated</title>
+  <title>Acornaut — Illustrated v11</title>
   <meta name="description" content="Illustrated Acornaut rewrite. Fly the gaps. Grab the acorns." />
   <meta name="theme-color" content="#070b16" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -55,9 +57,17 @@
 </head>
 <body>
   <div id="app"></div>
-  <script>window.__ACORNAUT_ART__ = "./art";</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister()));
+    }
+    if (window.caches) {
+      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+    }
+    window.__ACORNAUT_ART__ = "./art";
+  </script>
   <script type="module">
-    import { bootStandalone } from "./js/standalone.js?v=10";
+    import { bootStandalone } from "./js11/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
