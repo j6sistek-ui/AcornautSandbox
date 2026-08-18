@@ -1,4 +1,4 @@
-import { ART_VER } from "./catalog.js?v=23";
+import { ART_VER } from "./catalog.js?v=24";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -90,7 +90,7 @@ function asSprite(img) {
 async function many(prefix, n, start = 1) {
     const out = [];
     for (let i = 0; i < n; i++)
-        out.push(asSprite(await loadImg(`${prefix}${start + i}.png`)));
+        out.push(asSprite(await loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)));
     return out;
 }
 export function drawSprite(ctx, spr, x, y, size, fit = "box") {
@@ -151,7 +151,7 @@ export async function loadArt() {
     async function named(ids, folder, suffix = "", required = false) {
         const out = {};
         await Promise.all(ids.map(async (id) => {
-            const src = `${base}/${folder}/${id}${suffix}.png`;
+            const src = `${base}/${folder}/${id}${suffix}.png?v=${ART_VER}`;
             try {
                 out[id] = asSprite(await loadImg(src));
             }
@@ -162,7 +162,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -176,6 +176,7 @@ export async function loadArt() {
         named(helmIds, "helmets"),
         named(helmIds, "helmets", "-over"),
         named(suitIds, "suits"),
+        named(helmIds, "helms"),
     ]);
     return {
         ready: true,
@@ -187,6 +188,7 @@ export async function loadArt() {
         planets,
         debris,
         pals,
+        helms,
         helmets,
         helmOver,
         suits,

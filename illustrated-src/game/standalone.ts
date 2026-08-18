@@ -1,6 +1,6 @@
 import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
-import { artUrl } from "./art";
+import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save";
 
@@ -146,6 +146,15 @@ export async function bootStandalone(root: HTMLElement) {
     return img;
   }
 
+  function helmCardOf(helmet: (typeof HELMETS)[number], px = 56) {
+    // the dedicated helmet render IS the card — no shrunken squirrel
+    const spr = engine.art?.helms?.[helmet.id];
+    if (!spr) return portraitOf(helmet, SUITS[0], px);
+    const { c, ctx } = miniCanvas(px, px);
+    if (ctx) drawSpriteOn(ctx, spr, px / 2, px / 2, px * 0.92);
+    return c;
+  }
+
   function portraitOf(helmet: (typeof HELMETS)[number], suit: (typeof SUITS)[number], px = 56) {
     const { c, ctx } = miniCanvas(px, px);
     if (ctx && engine.art) paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.88);
@@ -186,7 +195,7 @@ export async function bootStandalone(root: HTMLElement) {
       for (const h of HELMETS) {
         const owned = s.unlocked.includes(h.id);
         const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-        b.append(portraitOf(h, SUITS[0], 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
+        b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
         b.onclick = () => engine.buyHelmet(h.id);
         grid.append(b);
       }
