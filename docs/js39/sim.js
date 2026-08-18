@@ -1225,7 +1225,7 @@ export function updateWorld(w, save, dt) {
             w.retroPending = true;
             startSwirl(w, "timeline");
             spark(w, a.x, ay, ["#ffd060", "#fff", "#b45cff"], 20, "warp");
-            snd = "shield";
+            snd = "shift";
         }
     }
     return snd;
