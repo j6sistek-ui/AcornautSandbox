@@ -1,4 +1,4 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=22";
+import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=23";
 export function makeWorld(W, H) {
     return {
         W,
@@ -243,7 +243,8 @@ export function resetRun(w, save, flight, tutorial) {
     w.envA = 0;
     w.envB = 0;
     w.envBlend = 1;
-    w.envMsgT = 2.4;
+    w.envMsgT = 0; // the opening environment never announces itself —
+    // its name (DEEP SPACE) reads as a mode label; shifts still toast
     w.palPos = { x: w.W * PHYS.squirrelX - 42, y: w.H * 0.45 - 20, dart: 0 };
     if (flight === "lost") {
         w.warpMirror = false;

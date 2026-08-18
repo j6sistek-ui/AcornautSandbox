@@ -1,4 +1,4 @@
-import { ART_VER } from "./catalog.js?v=22";
+import { ART_VER } from "./catalog.js?v=23";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
