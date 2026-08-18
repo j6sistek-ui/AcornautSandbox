@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=16";
-import { drawTrailPreviewOn, drawHelmetOn, drawPalOn, helmetCenter } from "./cosmetics.js?v=16";
-import { drawSprite } from "./art.js?v=16";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=17";
+import { drawTrailPreviewOn, drawHelmetOn, drawPalOn, helmetCenter } from "./cosmetics.js?v=17";
+import { drawSprite } from "./art.js?v=17";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -496,10 +496,12 @@ export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
     const painted = art?.helmets?.[helmet.id];
     const over = art?.helmOver?.[helmet.id];
     if (suit.id === "flight" && painted) {
-        // the painting that MATCHES this dome overlay — tint lands on glass
         drawSprite(ctx, painted, cx, cy + 2, size);
-        if (over)
+        // hi-res renders carry their identity baked in; only the legacy
+        // whisper-glaze paintings need the aligned tinted dome on top
+        if (over && painted.width < 200) {
             drawAlignedOver(ctx, painted, over, helmet, cx, cy + 2, size);
+        }
         return;
     }
     const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];

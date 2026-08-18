@@ -545,9 +545,12 @@ export function paintPortrait(
   const painted = art?.helmets?.[helmet.id];
   const over = art?.helmOver?.[helmet.id];
   if (suit.id === "flight" && painted) {
-    // the painting that MATCHES this dome overlay — tint lands on glass
     drawSprite(ctx, painted, cx, cy + 2, size);
-    if (over) drawAlignedOver(ctx, painted, over, helmet, cx, cy + 2, size);
+    // hi-res renders carry their identity baked in; only the legacy
+    // whisper-glaze paintings need the aligned tinted dome on top
+    if (over && painted.width < 200) {
+      drawAlignedOver(ctx, painted, over, helmet, cx, cy + 2, size);
+    }
     return;
   }
   const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
