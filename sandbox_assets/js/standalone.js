@@ -1,8 +1,8 @@
-import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=36";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=36";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=36";
-import { createEngine } from "./engine.js?v=36";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=36";
+import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=37";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=37";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=37";
+import { createEngine } from "./engine.js?v=37";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=37";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)

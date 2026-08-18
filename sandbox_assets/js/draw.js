@@ -1,6 +1,6 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=36";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=36";
-import { drawSprite, skyImage } from "./art.js?v=36";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=37";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=37";
+import { drawSprite, skyImage } from "./art.js?v=37";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -169,8 +169,10 @@ export function drawWorld(ctx, w, save, art) {
         paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
     }
     drawPilot(ctx, w, save, art);
-    ctx.restore();
-    ctx.restore();
+    // The shield and golden rings belong to the PILOT, so they must be
+    // drawn inside the warp transform with him. Outside it they were laid
+    // down in untransformed screen space, and in Lost in Space — where the
+    // world rotates continuously — they drifted off on their own.
     if (w.invulnLeft > 0) {
         ctx.strokeStyle = `rgba(255,208,96,${0.35 + 0.25 * Math.sin(w.time * 10)})`;
         ctx.lineWidth = 3;
@@ -185,6 +187,8 @@ export function drawWorld(ctx, w, save, art) {
         ctx.arc(W * PHYS.squirrelX, w.squirrel.y, 26, 0, Math.PI * 2);
         ctx.stroke();
     }
+    ctx.restore();
+    ctx.restore();
 }
 function drawVortex(ctx, x, y, worm, t) {
     const pulse = 12 + Math.sin(t * 6) * 3;

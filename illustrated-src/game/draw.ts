@@ -181,9 +181,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   }
 
   drawPilot(ctx, w, save, art);
-  ctx.restore();
-  ctx.restore();
 
+  // The shield and golden rings belong to the PILOT, so they must be
+  // drawn inside the warp transform with him. Outside it they were laid
+  // down in untransformed screen space, and in Lost in Space — where the
+  // world rotates continuously — they drifted off on their own.
   if (w.invulnLeft > 0) {
     ctx.strokeStyle = `rgba(255,208,96,${0.35 + 0.25 * Math.sin(w.time * 10)})`;
     ctx.lineWidth = 3;
@@ -198,6 +200,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     ctx.arc(W * PHYS.squirrelX, w.squirrel.y, 26, 0, Math.PI * 2);
     ctx.stroke();
   }
+  ctx.restore();
+  ctx.restore();
 }
 
 function drawVortex(ctx: CanvasRenderingContext2D, x: number, y: number, worm: boolean, t: number) {
