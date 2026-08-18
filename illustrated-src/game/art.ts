@@ -247,9 +247,24 @@ export async function loadArt(): Promise<ArtBank> {
     "meteor",
     "chrono",
     "catbubble",
+    "gemmie",
+    "phoenix",
+    "sammie",
+    "seraph",
+    "chronarch",
+    "leviathan",
+    "paladin",
+    "princess",
   ];
   // suits cut into a hinged tail + body; others draw as one piece
-  const RIGGED_SUITS = ["catsuit"];
+  // Suits cut into a hinged tail + body. Every same-pose suit qualifies;
+  // Seraph does not, because its wing crosses the tail and would swing
+  // with it. Unrigged suits simply draw as one piece.
+  const RIGGED_SUITS = [
+    "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
+    "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
+    "catsuit", "gemmie", "sammie",
+  ];
   const suitIds = [
     "flight",
     "iontrim",
@@ -264,6 +279,9 @@ export async function loadArt(): Promise<ArtBank> {
     "ghost",
     "bigbooty",
     "catsuit",
+    "gemmie",
+    "sammie",
+    "seraph",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
 

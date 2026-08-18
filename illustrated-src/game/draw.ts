@@ -502,6 +502,10 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:ghost": [191, 99, 49],
   "suit:bigbooty": [194, 86, 51],
   "suit:catsuit": [212, 86, 50],
+  "suit:gemmie": [207, 97, 52],
+  "suit:phoenix": [207, 92, 41],
+  "suit:sammie": [188, 98, 50],
+  "suit:seraph": [216, 84, 46],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -521,6 +525,14 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   "meteor": [128, 127, 110],
   "chrono": [132, 126, 110],
   "catbubble": [175, 137, 95],
+  "gemmie": [128, 128, 110],
+  "phoenix": [128, 128, 110],
+  "sammie": [128, 128, 110],
+  "seraph": [128, 128, 110],
+  "chronarch": [128, 128, 106],
+  "leviathan": [128, 128, 86],
+  "paladin": [128, 128, 101],
+  "princess": [128, 128, 110],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
@@ -550,7 +562,21 @@ function punchedHelm(spr: Sprite, id: string) {
 
 // Where each rigged suit's tail hinges, in its own 256px canvas.
 const TAIL_PIVOT: Record<string, [number, number]> = {
-  catsuit: [112, 156],
+  flight: [97, 177],
+  iontrim: [98, 178],
+  copper: [98, 178],
+  frost: [97, 177],
+  voidsuit: [97, 178],
+  aurorasuit: [99, 178],
+  ember: [97, 177],
+  stardust: [97, 178],
+  robo: [98, 178],
+  alien: [96, 177],
+  ghost: [98, 178],
+  bigbooty: [94, 180],
+  catsuit: [96, 179],
+  gemmie: [97, 178],
+  sammie: [98, 178],
 };
 
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
