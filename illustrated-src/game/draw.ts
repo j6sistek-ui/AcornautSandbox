@@ -512,27 +512,32 @@ const DOME: Record<string, [number, number, number]> = {
 // All twelve helmets have a solo render; the tinted-ring path below
 // stays as the fallback for any helmet added later.
 const HELM_GLASS: Record<string, [number, number, number]> = {
-  comet: [129, 129, 112],
+  comet: [129, 129, 125],
   "clear": [129, 128, 111],
-  "ion": [129, 128, 109],
-  "solar": [128, 128, 110],
-  "nebula": [129, 129, 112],
-  "lunar": [129, 126, 112],
-  "void": [125, 128, 108],
-  "cherry": [126, 128, 109],
-  "royal": [129, 156, 86],
-  "aurora": [128, 127, 110],
-  "meteor": [128, 127, 110],
-  "chrono": [132, 126, 110],
+  "ion": [129, 128, 125],
+  "solar": [128, 128, 125],
+  "nebula": [129, 129, 125],
+  "lunar": [129, 126, 125],
+  "void": [125, 128, 125],
+  "cherry": [126, 128, 125],
+  "royal": [129, 156, 125],
+  "aurora": [128, 127, 125],
+  "meteor": [128, 127, 125],
+  "chrono": [132, 126, 125],
   "catbubble": [175, 137, 95],
-  "gemmie": [128, 128, 110],
-  "phoenix": [128, 128, 110],
-  "sammie": [128, 128, 110],
-  "seraph": [128, 128, 110],
-  "chronarch": [128, 128, 106],
-  "leviathan": [128, 128, 86],
-  "paladin": [128, 128, 101],
-  "princess": [128, 128, 110],
+  // measured off the corrected art. These renders are three-quarter
+  // views, so the visor sits right of frame centre — that offset is real
+  // and paintDome relies on it to seat the helmet on the head.
+  "gemmie": [155, 122, 108],
+  "phoenix": [152, 125, 105],
+  "seraph": [166, 119, 105],
+  "chronarch": [158, 125, 104],
+  "paladin": [129, 144, 112],
+  "princess": [122, 131, 119],
+  // Sammie's visor is a dark samurai slit and Leviathan's is deep teal,
+  // so a brightness fit cannot see either; both take the family default.
+  "sammie": [140, 126, 110],
+  "leviathan": [140, 126, 110],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
