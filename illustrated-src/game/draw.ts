@@ -1,5 +1,5 @@
 import { ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM } from "./catalog";
-import { drawTrailPreviewOn, drawHelmetOn, helmetCenter } from "./cosmetics";
+import { drawTrailPreviewOn, drawHelmetOn, drawPalOn, helmetCenter } from "./cosmetics";
 import { drawSprite, type ArtBank, type Sprite } from "./art";
 import type { SaveData } from "./save";
 import type { Particle, World } from "./sim";
@@ -409,12 +409,7 @@ function paintIllustrated(
 
   const over = art?.helmOver?.[helmet.id];
   if (over) {
-    const box = (spr as Sprite).box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
-    const dim = Math.max(box.w, box.h);
-    const scale = size / Math.max(1, dim);
-    const dw = box.w * scale;
-    const dh = box.h * scale;
-    octx.drawImage(over, box.x, box.y, box.w, box.h, cx - dw / 2, cy - dh / 2, dw, dh);
+    drawAlignedOver(octx, spr as Sprite, over, helmet, cx, cy, size);
   } else {
     const lay = spriteLayout(spr, cx, cy, size);
     const visor = lay.map(VISOR.sx, VISOR.sy);
@@ -431,13 +426,65 @@ function paintIllustrated(
   ctx.drawImage(sheet, 0, 0, out, out, x - out / 2, y - out / 2, out, out);
 }
 
+// The painted helmet domes differ only by a whisper of glaze, so every
+// helmet card read as the same squirrel. Bake each helmet's catalog
+// colour into its dome overlay once, and draw the overlay through the
+// SAME box mapping as the sprite under it so the tint lands exactly on
+// the glass — in the hangar and in flight alike.
+const tintedOverCache = new Map<string, HTMLCanvasElement>();
+function tintedOver(over: Sprite, helmet: (typeof HELMETS)[number]) {
+  const hit = tintedOverCache.get(helmet.id);
+  if (hit) return hit;
+  const c = document.createElement("canvas");
+  c.width = over.width;
+  c.height = over.height;
+  const cc = c.getContext("2d");
+  if (!cc) return null;
+  cc.drawImage(over, 0, 0);
+  cc.globalCompositeOperation = "source-atop";
+  cc.globalAlpha = helmet.id === "clear" ? 0.15 : 0.45;
+  cc.fillStyle = helmet.visor;
+  cc.fillRect(0, 0, c.width, c.height);
+  cc.globalAlpha = 1;
+  cc.globalCompositeOperation = "source-over";
+  tintedOverCache.set(helmet.id, c);
+  return c;
+}
+
+function drawAlignedOver(
+  ctx: CanvasRenderingContext2D,
+  base: Sprite,
+  over: Sprite,
+  helmet: (typeof HELMETS)[number],
+  x: number,
+  y: number,
+  size: number,
+) {
+  const box = base.box ?? { x: 0, y: 0, w: base.width, h: base.height };
+  const dim = Math.max(box.w, box.h);
+  const scale = size / Math.max(1, dim);
+  const dw = box.w * scale;
+  const dh = box.h * scale;
+  const img = tintedOver(over, helmet) ?? over;
+  ctx.save();
+  if (helmet.glow) {
+    ctx.shadowColor = helmet.glow;
+    ctx.shadowBlur = size * 0.12;
+  }
+  ctx.drawImage(img, box.x, box.y, box.w, box.h, x - dw / 2, y - dh / 2, dw, dh);
+  ctx.restore();
+}
+
 function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const x = w.W * PHYS.squirrelX;
   const y = w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-  const spr =
-    w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
+  // Always fly the idle cycle: the flap-N paintings are four unrelated
+  // poses at unrelated angles, and cycling them on every tap read as a
+  // flat spin. The tap reads as MOTION instead — a nose-up kick and a
+  // little scale pop that decay with the boost.
+  const spr = frameOf(art.squirrelIdle, w.time, 5);
   ctx.save();
   ctx.translate(x, y);
   ctx.fillStyle = "rgba(0,0,0,0.28)";
@@ -445,7 +492,10 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
   ctx.fill();
   const bank = Math.max(-0.08, Math.min(0.1, w.squirrel.vy / 2200));
-  ctx.rotate(bank);
+  const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
+  ctx.rotate(bank - kick * 0.22);
+  const pop = 1 + kick * 0.07;
+  ctx.scale(pop, pop);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art);
   ctx.restore();
 }
@@ -460,8 +510,13 @@ function paintPal(
 ) {
   const spr = art?.pals?.[id];
   if (spr) {
-    const s = size;
-    ctx.drawImage(spr, x - s / 2, y - s / 2, s, s);
+    drawSprite(ctx, spr, x, y, size, "core");
+    return;
+  }
+  if (id !== "none") {
+    // no painted portrait for this companion — the vector renderer from
+    // the live game draws it (comet sprite, nebula wisp)
+    drawPalOn(ctx, id, x, y, size / 32, performance.now() / 1000);
     return;
   }
   if (id === "none") {
@@ -487,18 +542,19 @@ export function paintPortrait(
   size: number,
   _t = 0,
 ) {
+  const painted = art?.helmets?.[helmet.id];
+  const over = art?.helmOver?.[helmet.id];
+  if (suit.id === "flight" && painted) {
+    // the painting that MATCHES this dome overlay — tint lands on glass
+    drawSprite(ctx, painted, cx, cy + 2, size);
+    if (over) drawAlignedOver(ctx, painted, over, helmet, cx, cy + 2, size);
+    return;
+  }
   const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
   if (!body) return;
   drawSprite(ctx, body, cx, cy + 2, size);
-  const over = art?.helmOver?.[helmet.id];
   if (over && helmet.id !== "clear") {
-    drawSprite(ctx, over, cx, cy + 2, size);
-    return;
-  }
-  const painted = art?.helmets?.[helmet.id];
-  if (painted && suit.id === "flight") {
-    ctx.clearRect(cx - size / 2, cy - size / 2, size, size);
-    drawSprite(ctx, painted, cx, cy + 2, size);
+    drawAlignedOver(ctx, body, over, helmet, cx, cy + 2, size);
   }
 }
 
