@@ -10,8 +10,6 @@ https://j6sistek-ui.github.io/AcornautSandbox/
 
 That is the playable GitHub Pages build. Do **not** open this repo’s file tree as a play link — GitHub will show source code.
 
-Live game (untouched): https://j6sistek-ui.github.io/acornaut/
-
 ## What’s in this repo
 
 - `docs/` — GitHub Pages root (standalone illustrated build)
