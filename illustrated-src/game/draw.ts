@@ -393,8 +393,10 @@ const DOME: Record<string, [number, number, number]> = {
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
-// Comet has no solo render yet — it keeps the tinted-ring fallback.
+// All twelve helmets have a solo render; the tinted-ring path below
+// stays as the fallback for any helmet added later.
 const HELM_GLASS: Record<string, [number, number, number]> = {
+  comet: [129, 129, 112],
   "clear": [129, 128, 111],
   "ion": [129, 128, 109],
   "solar": [146, 123, 94],

@@ -1,6 +1,6 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=30";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=30";
-import { drawSprite, skyImage } from "./art.js?v=30";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=31";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=31";
+import { drawSprite, skyImage } from "./art.js?v=31";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -379,8 +379,10 @@ const DOME = {
     "suit:bigbooty": [194, 86, 51],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
-// Comet has no solo render yet — it keeps the tinted-ring fallback.
+// All twelve helmets have a solo render; the tinted-ring path below
+// stays as the fallback for any helmet added later.
 const HELM_GLASS = {
+    comet: [129, 129, 112],
     "clear": [129, 128, 111],
     "ion": [129, 128, 109],
     "solar": [146, 123, 94],
