@@ -1,9 +1,9 @@
-import { loadArt } from "./art.js?v=31";
-import { sfx, unlockAudio } from "./audio.js?v=31";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=31";
-import { drawHud, drawWorld } from "./draw.js?v=31";
-import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=31";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=31";
+import { emptyArt, loadArt } from "./art.js?v=37";
+import { sfx, unlockAudio } from "./audio.js?v=37";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=37";
+import { drawHud, drawWorld } from "./draw.js?v=37";
+import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=37";
+import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=37";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -323,9 +323,18 @@ export async function createEngine(canvas) {
     }
     resize();
     initStars(world);
-    art = await loadArt();
+    // paint from frame one with an empty bank, then swap the real art in as
+    // it arrives — and if the whole load fails, the game still runs
+    art = emptyArt();
     engine.art = art;
+    loadArt()
+        .then((bank) => {
+        art = bank;
+        engine.art = bank;
+        notify();
+    })
+        .catch(() => { });
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=31";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=37";

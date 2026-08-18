@@ -1,9 +1,9 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "31";
+export const ART_VER = "37";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
-export const TUT_ARM = 2;
+export const TUT_ARM = 1.25;
 
 
 export const PHYS = {
@@ -187,28 +187,28 @@ export const DEBRIS_COUNT = 27;
 
 export const PLANET_RGB: RGB[] = [
   [0.34, 0.45, 0.47], [0.68, 0.49, 0.25], [0.63, 0.66, 0.68],
-  [0.35, 0.17, 0.12], [0.21, 0.50, 0.49], [0.46, 0.44, 0.43],
-  [0.65, 0.42, 0.20], [0.13, 0.30, 0.48], [0.56, 0.29, 0.43],
+  [0.35, 0.17, 0.12], [0.20, 0.51, 0.50], [0.46, 0.44, 0.43],
+  [0.65, 0.42, 0.20], [0.13, 0.31, 0.49], [0.56, 0.29, 0.43],
   [0.25, 0.34, 0.13], [0.39, 0.23, 0.49], [0.18, 0.22, 0.27],
-  [0.36, 0.27, 0.18], [0.68, 0.52, 0.57], [0.38, 0.18, 0.11],
+  [0.36, 0.27, 0.18], [0.67, 0.51, 0.58], [0.38, 0.18, 0.11],
   [0.39, 0.54, 0.70], [0.40, 0.19, 0.09], [0.29, 0.16, 0.39],
-  [0.30, 0.18, 0.11], [0.33, 0.37, 0.47], [0.14, 0.30, 0.39],
-  [0.43, 0.09, 0.13], [0.51, 0.39, 0.73], [0.71, 0.62, 0.57],
+  [0.30, 0.18, 0.11], [0.33, 0.37, 0.48], [0.14, 0.31, 0.39],
+  [0.43, 0.09, 0.13], [0.52, 0.40, 0.75], [0.71, 0.62, 0.57],
   [0.78, 0.74, 0.66], [0.13, 0.16, 0.24], [0.92, 0.65, 0.74],
-  [0.12, 0.11, 0.26], [0.23, 0.58, 0.79], [0.16, 0.21, 0.47],
-  [0.41, 0.26, 0.63], [0.34, 0.56, 0.67], [0.30, 0.15, 0.09],
+  [0.15, 0.11, 0.28], [0.24, 0.60, 0.81], [0.16, 0.21, 0.48],
+  [0.43, 0.26, 0.64], [0.36, 0.58, 0.69], [0.30, 0.15, 0.09],
 ];
 
 export const DEBRIS_RGB: RGB[] = [
-  [0.28, 0.25, 0.25], [0.30, 0.22, 0.19], [0.63, 0.68, 0.77],
+  [0.27, 0.25, 0.25], [0.30, 0.22, 0.19], [0.63, 0.68, 0.77],
   [0.28, 0.25, 0.23], [0.29, 0.26, 0.24], [0.31, 0.29, 0.28],
-  [0.73, 0.54, 0.83], [0.27, 0.22, 0.22], [0.23, 0.22, 0.23],
-  [0.51, 0.27, 0.59], [0.33, 0.35, 0.38], [0.55, 0.71, 0.79],
-  [0.22, 0.16, 0.14], [0.19, 0.48, 0.73], [0.29, 0.07, 0.09],
-  [0.58, 0.39, 0.10], [0.10, 0.25, 0.59], [0.21, 0.32, 0.20],
-  [0.32, 0.33, 0.59], [0.38, 0.49, 0.64], [0.58, 0.60, 0.64],
-  [0.43, 0.44, 0.44], [0.14, 0.13, 0.27], [0.39, 0.39, 0.54],
-  [0.44, 0.49, 0.10], [0.70, 0.51, 0.15], [0.39, 0.23, 0.14],
+  [0.73, 0.54, 0.83], [0.27, 0.22, 0.22], [0.23, 0.22, 0.24],
+  [0.54, 0.28, 0.61], [0.33, 0.35, 0.38], [0.57, 0.73, 0.81],
+  [0.22, 0.16, 0.15], [0.19, 0.49, 0.75], [0.29, 0.07, 0.09],
+  [0.58, 0.38, 0.10], [0.10, 0.25, 0.61], [0.21, 0.32, 0.20],
+  [0.33, 0.34, 0.61], [0.40, 0.52, 0.66], [0.60, 0.62, 0.66],
+  [0.43, 0.44, 0.45], [0.14, 0.13, 0.27], [0.39, 0.40, 0.55],
+  [0.44, 0.49, 0.11], [0.70, 0.51, 0.15], [0.39, 0.23, 0.14],
 ];
 
 /** Perceptual separation in a luma + opponent-colour space. Luminance
@@ -228,32 +228,32 @@ export function sep(a: RGB, b: RGB) {
 export const MIN_SEP = 0.3;
 
 export const ENVS: Env[] = [
-  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 2, 15, 1], debrisBias: [1, 3, 26, 21], sky: "indigo" },
-  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 9, 20, 28], debrisBias: [11, 2, 25, 20], sky: "magenta" },
-  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [3, 14, 32, 12], debrisBias: [12, 14, 22, 7], sky: "ice" },
-  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [7, 29, 15, 10], debrisBias: [16, 19, 13, 11], sky: "inferno" },
-  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [24, 2, 12, 6], debrisBias: [21, 20, 10, 25], sky: "neon" },
-  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 8, 21, 13], debrisBias: [19, 9, 23, 13], sky: "verdant" },
-  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [0, 19, 13, 23], debrisBias: [11, 20, 21, 25], sky: "mono" },
-  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [8, 21, 30, 1], debrisBias: [9, 19, 23, 13], sky: "verdant" },
-  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [7, 29, 15, 4], debrisBias: [16, 13, 19, 11], sky: "inferno" },
-  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [24, 6, 1, 26], debrisBias: [20, 21, 26, 11], sky: "indigo" },
-  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 24, 1], debrisBias: [11, 26, 19, 25], sky: "vortex" },
-  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [7, 29, 30, 10], debrisBias: [12, 14, 22, 16], sky: "gold" },
-  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 27, 32, 7], debrisBias: [22, 12, 14, 16], sky: "gold" },
-  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [24, 2, 5, 12], debrisBias: [21, 10, 20, 1], sky: "neon" },
-  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [12, 6, 24, 26], debrisBias: [12, 14, 1, 25], sky: "neon" },
-  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [8, 30, 21, 10], debrisBias: [9, 19, 23, 25], sky: "verdant" },
-  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [30, 21, 8, 27], debrisBias: [19, 9, 23, 20], sky: "verdant" },
-  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [4, 28, 20, 15], debrisBias: [13, 11, 19, 25], sky: "magenta" },
-  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [29, 7, 27, 32], debrisBias: [22, 12, 14, 16], sky: "gold" },
-  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [3, 21, 16, 14], debrisBias: [12, 14, 22, 16], sky: "ice" },
-  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [11, 20, 25, 21], sky: "mono" },
-  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 19, 13, 23], sky: "verdant" },
-  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 13, 19, 11], sky: "inferno" },
-  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 32, 25, 17], debrisBias: [12, 14, 22, 16], sky: "ghost" },
-  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [21, 10, 20, 1], sky: "neon" },
-  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 26, 19], sky: "vortex" },
+  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 2, 15, 1], debrisBias: [1, 6, 26], sky: "indigo" },
+  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 9, 20, 28], debrisBias: [11, 2, 20], sky: "magenta" },
+  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [3, 14, 32, 12], debrisBias: [8, 14, 22], sky: "ice" },
+  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [7, 29, 15, 10], debrisBias: [16, 13, 19], sky: "inferno" },
+  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [24, 2, 12, 6], debrisBias: [21, 0, 3], sky: "neon" },
+  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 8, 21, 13], debrisBias: [19, 9, 23], sky: "verdant" },
+  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [0, 19, 13, 23], debrisBias: [25, 18, 23], sky: "mono" },
+  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [8, 21, 30, 1], debrisBias: [9, 19, 13], sky: "verdant" },
+  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [7, 29, 15, 4], debrisBias: [16, 13, 11], sky: "inferno" },
+  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [24, 6, 1, 26], debrisBias: [20, 25, 2], sky: "indigo" },
+  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 24, 1], debrisBias: [11, 20, 15], sky: "vortex" },
+  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [7, 29, 30, 10], debrisBias: [12, 14, 22], sky: "gold" },
+  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 27, 32, 7], debrisBias: [22, 12, 16], sky: "gold" },
+  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [24, 2, 5, 12], debrisBias: [21, 10, 5], sky: "neon" },
+  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [12, 6, 24, 26], debrisBias: [12, 14, 26], sky: "neon" },
+  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [8, 30, 21, 10], debrisBias: [24, 9, 11], sky: "verdant" },
+  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [30, 21, 8, 27], debrisBias: [24, 19, 11], sky: "verdant" },
+  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [4, 28, 20, 15], debrisBias: [13, 11, 16], sky: "magenta" },
+  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [29, 7, 27, 32], debrisBias: [22, 12, 14], sky: "gold" },
+  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [3, 21, 16, 14], debrisBias: [12, 14, 7], sky: "ice" },
+  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [25, 11, 20], sky: "mono" },
+  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 13, 23], sky: "verdant" },
+  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 19, 11], sky: "inferno" },
+  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 32, 25, 17], debrisBias: [17, 14, 4], sky: "ghost" },
+  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [23, 21, 11], sky: "neon" },
+  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 15], sky: "vortex" },
 ];
 
 export const ENV_GATES = 20;

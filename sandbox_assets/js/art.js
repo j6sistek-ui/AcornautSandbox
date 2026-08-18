@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=31";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=37";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -87,11 +87,28 @@ function asSprite(img) {
     s.core = m.core;
     return s;
 }
+// One missing file must never sink the bank: a 404 among sixty-odd
+// sprites used to reject loadArt, and the game then drew NOTHING at all.
 async function many(prefix, n, start = 1) {
     const out = [];
-    for (let i = 0; i < n; i++)
-        out.push(asSprite(await loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)));
+    const loaded = await Promise.all(Array.from({ length: n }, (_, i) => loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)
+        .then(asSprite)
+        .catch(() => null)));
+    for (const s of loaded)
+        if (s)
+            out.push(s);
     return out;
+}
+/** An empty bank the renderer can draw with immediately — every draw
+ *  path already null-guards, so the game paints from the first frame
+ *  instead of waiting on megabytes of panorama. */
+export function emptyArt() {
+    return {
+        ready: false,
+        squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
+        planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
+        suits: {}, sky: null, hero: null,
+    };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
 // environments it flies through, so the first paint is never held up by
@@ -125,10 +142,11 @@ function haloOf(spr, mode) {
         haloCache.set(key, null);
         return null;
     }
-    cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.9)" : "rgba(170,200,255,0.5)";
-    cc.shadowBlur = mode === "dark" ? 15 : 11;
+    // one soft pass, not two hard ones: doubled up at 0.9 alpha this read
+    // as a drawn ring around every planet rather than separation
+    cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.5)" : "rgba(170,200,255,0.28)";
+    cc.shadowBlur = mode === "dark" ? 24 : 16;
     cc.shadowOffsetX = c.width * 2; // keep only the shadow
-    cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
     cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
     haloCache.set(key, c);
     return c;
