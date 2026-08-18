@@ -1176,7 +1176,12 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  const frozen = (w.tut?.hold ?? false) || w.shieldFreeze > 0;
+  // TAP TO FLY means exactly that: until the first tap the run is held
+  // still. The banner was being shown while gravity and the scroll were
+  // already running, so a player who read it before tapping was already
+  // falling. w.time still advances above, so the pilot idles and the
+  // world breathes — it just does not move or pull.
+  const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
 
   if (w.flight === "deep" && w.warpT <= 0 && w.warpLeft <= 0) {
