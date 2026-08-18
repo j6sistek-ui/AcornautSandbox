@@ -136,6 +136,8 @@ export async function bootStandalone(root: HTMLElement) {
     deep.onclick = () => engine.fly("deep");
     const lost = el("button", "ac-ghost", "LOST IN SPACE");
     lost.onclick = () => engine.fly("lost");
+    const arcade = el("button", "ac-ghost", "ARCADE");
+    arcade.onclick = () => engine.fly("arcade");
     // the live game's bottom bar: four round icons pinned to the bottom
     const ICONS: Record<string, string> = {
       hangar:
@@ -161,7 +163,7 @@ export async function bootStandalone(root: HTMLElement) {
       b.onclick = () => engine.open(screen);
       nav.append(b);
     }
-    box.append(fly, deep, lost, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
+    box.append(fly, deep, lost, arcade, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
     return box;
   }
 
@@ -461,7 +463,7 @@ export async function bootStandalone(root: HTMLElement) {
     const box = el("div", "ac-sheet");
     box.append(header("Social"));
     box.append(el("h3", "", `LV ${pilotLevelOf(s)} ${pilotTitleOf(s)}`));
-    box.append(el("p", "ac-sub", `BEST ${s.highScore} · DEEP ${s.deepBest} · LOST ${s.lostBest}`));
+    box.append(el("p", "ac-sub", `BEST ${s.highScore} · DEEP ${s.deepBest} · LOST ${s.lostBest} · ARCADE ${s.arcadeBest}`));
     box.append(el("h4", "", "NEWS"));
     for (const line of NEWS) box.append(el("p", "ac-sub", line));
     box.append(el("p", "ac-fine", GAME_VERSION));
@@ -524,6 +526,7 @@ export async function bootStandalone(root: HTMLElement) {
     }), "WORMHOLE", "Lost in Space: mirrors your heading.");
 
     scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
+    scroll.append(el("p", "ac-sub ac-mid", "ARCADE: catch the 8-bit acorn to shift between the illustrated game and the original. Same flight, other timeline — catch another to come back."));
     scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
     scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
     box.append(scroll);

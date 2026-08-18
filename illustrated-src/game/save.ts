@@ -16,6 +16,7 @@ export type SaveData = {
   highScore: number;
   deepBest: number;
   lostBest: number;
+  arcadeBest: number;
   acorns: number;
   xp: number;
   startShield: boolean;
@@ -36,6 +37,7 @@ export function defaultSave(): SaveData {
     highScore: 0,
     deepBest: 0,
     lostBest: 0,
+    arcadeBest: 0,
     acorns: 0,
     xp: 0,
     startShield: false,

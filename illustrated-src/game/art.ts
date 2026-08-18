@@ -20,6 +20,7 @@ export type ArtBank = {
   suits: Record<string, Sprite>;
   sky: HTMLImageElement | null;
   hero: HTMLImageElement | null;
+  arcadeAcorn: Sprite | null;
 };
 
 declare global {
@@ -136,7 +137,7 @@ export function emptyArt(): ArtBank {
     ready: false,
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
-    suits: {}, sky: null, hero: null,
+    suits: {}, sky: null, hero: null, arcadeAcorn: null,
   };
 }
 
@@ -270,7 +271,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -286,6 +287,7 @@ export async function loadArt(): Promise<ArtBank> {
       named(helmIds, "helmets", "-over"),
       named(suitIds, "suits"),
       named(helmIds, "helms"),
+      optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
     ]);
   return {
     ready: true,
@@ -303,6 +305,7 @@ export async function loadArt(): Promise<ArtBank> {
     suits,
     sky: sky as HTMLImageElement | null,
     hero: hero as HTMLImageElement | null,
+    arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn as HTMLImageElement) : null,
   };
 }
 

@@ -2,7 +2,7 @@ import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COU
 import { writeSave, type SaveData } from "./save";
 
 export type Screen = "title" | "hangar" | "log" | "social" | "help" | "play" | "dead" | "pause";
-export type FlightMode = "fly" | "deep" | "lost";
+export type FlightMode = "fly" | "deep" | "lost" | "arcade";
 export type TutStage =
   | "intro"
   | "tap"
@@ -37,7 +37,7 @@ export type Pickup = {
   y: number;
   got: boolean;
   bob: number;
-  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm";
+  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro";
   pulled?: boolean;
 };
 
@@ -126,7 +126,13 @@ export type World = {
   prevTilt: number;
   prevMirror: boolean;
   deepTimer: number;
-  warpKind: "hole" | "worm" | "shift" | null;
+  warpKind: "hole" | "worm" | "shift" | "timeline" | null;
+  // Arcade only: which of the two games you are currently flying in.
+  // The simulation is identical either way — this switches the hand that
+  // paints it, so a shift is a change of timeline, not of rules.
+  retro: boolean;
+  retroShifts: number;
+  retroPending: boolean;
   recoveryMsg: string;
   palPos: { x: number; y: number; dart: number };
   shake: number;
@@ -192,6 +198,9 @@ export function makeWorld(W: number, H: number): World {
     prevMirror: false,
     deepTimer: 0,
     warpKind: null,
+    retro: false,
+    retroShifts: 0,
+    retroPending: false,
     recoveryMsg: "",
     palPos: { x: 0, y: 0, dart: 0 },
     shake: 0,
@@ -478,6 +487,12 @@ function spawnPair(w: World, save: SaveData, x: number) {
     if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole" });
     }
+    // Arcade's own door between the two games. It is not a hazard and
+    // not a power — it is a way across, so it spawns on the flight line
+    // like an acorn rather than in the gate mouth like a black hole.
+    if (!w.tut && w.flight === "arcade" && Math.random() < 0.05) {
+      w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
+    }
     if (!w.tut && !noHoles && w.flight === "lost" && Math.random() < 0.05) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm" });
     }
@@ -488,6 +503,10 @@ function spawnPair(w: World, save: SaveData, x: number) {
 
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean) {
   w.flight = flight;
+  // every run starts in this game; the arcade acorn is the only way out
+  w.retro = false;
+  w.retroShifts = 0;
+  w.retroPending = false;
   w.score = 0;
   w.runAcorns = 0;
   w.squirrel = { y: w.H * 0.45, vy: 0, rot: 0 };
@@ -914,10 +933,14 @@ function pickWarpVariant(w: World) {
   w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
 }
 
-function startSwirl(w: World, kind: "hole" | "worm" | "shift") {
+function startSwirl(w: World, kind: "hole" | "worm" | "shift" | "timeline") {
   w.prevMirror = w.warpMirror;
   w.prevTilt = w.warpTilt;
-  if (kind === "worm") w.warpMirror = !w.warpMirror;
+  // A timeline shift is a fold, not a reorientation: the world spins
+  // through the crossing and comes back exactly as it was. Only the hand
+  // painting it is different on the far side.
+  if (kind === "timeline") { /* prev === current, so the fold returns home */ }
+  else if (kind === "worm") w.warpMirror = !w.warpMirror;
   else pickWarpVariant(w);
   w.warpKind = kind;
   w.warpT = 1;
@@ -980,12 +1003,15 @@ function die(w: World, save: SaveData) {
         ? w.score >= save.deepBest
         : w.flight === "lost"
           ? w.score >= save.lostBest
-          : w.score >= save.highScore,
+          : w.flight === "arcade"
+            ? w.score >= save.arcadeBest
+            : w.score >= save.highScore,
   };
   save.xp = fromXp + xp;
   save.acorns += w.runAcorns;
   if (w.flight === "deep") save.deepBest = Math.max(save.deepBest, w.score);
   else if (w.flight === "lost") save.lostBest = Math.max(save.lostBest, w.score);
+  else if (w.flight === "arcade") save.arcadeBest = Math.max(save.arcadeBest, w.score);
   else save.highScore = Math.max(save.highScore, w.score);
   if (w.startShieldArmed) save.startShield = false;
   spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
@@ -1115,7 +1141,17 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   if (w.warpT > 0) {
     w.warpT = Math.max(0, w.warpT - dt * (w.flight === "deep" ? 2 : 1));
-    if (w.warpT === 0) enterWarp(w, save);
+    // the games swap at the fold's midpoint, while the screen is edge-on,
+    // so you never see one dissolve into the other
+    if (w.retroPending && w.warpT <= 0.5) {
+      w.retroPending = false;
+      w.retro = !w.retro;
+      w.recoveryMsg = w.retro ? "TIMELINE: ARCADE" : "TIMELINE: ILLUSTRATED";
+    }
+    if (w.warpT === 0) {
+      if (w.warpKind === "timeline") w.warpKind = null;
+      else enterWarp(w, save);
+    }
   } else if (w.warpLeft > 0) {
     w.warpLeft = Math.max(0, w.warpLeft - dt);
     if (w.warpLeft === 0) exitWarp(w);
@@ -1308,6 +1344,16 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       snd = "shield";
     } else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0) {
       startSwirl(w, a.kind === "worm" ? "worm" : "hole");
+      snd = "shield";
+    } else if (a.kind === "retro" && w.warpT <= 0) {
+      // Through the fold and out the other side, in the other game. The
+      // crossing borrows the wormhole's swirl so it reads as a crossing,
+      // but it leaves no warp behind it: nothing about the flight changes,
+      // only who is drawing it.
+      w.retroShifts++;
+      w.retroPending = true;
+      startSwirl(w, "timeline");
+      spark(w, a.x, ay, ["#ffd060", "#fff", "#b45cff"], 20, "warp");
       snd = "shield";
     }
   }
