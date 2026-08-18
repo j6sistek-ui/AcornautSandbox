@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=13";
-import { drawTrailPreviewOn, drawHelmetOn, helmetCenter } from "./cosmetics.js?v=13";
-import { drawSprite } from "./art.js?v=13";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=14";
+import { drawTrailPreviewOn, drawHelmetOn, helmetCenter } from "./cosmetics.js?v=14";
+import { drawSprite } from "./art.js?v=14";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;

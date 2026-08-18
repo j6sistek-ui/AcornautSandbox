@@ -1,6 +1,6 @@
-export const BUILD = "Illustrated · sandbox v13";
+export const BUILD = "Illustrated · sandbox v14";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "13";
+export const ART_VER = "14";
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
 export const TUT_ARM = 2;
@@ -27,7 +27,7 @@ export const PHYS = {
 };
 
 export const NEWS = [
-  "v13: pal portraits, pink sheet backdrop removed.",
+  "v14: one painted pal per card. No sheet scraps.",
   "Golden acorns still bounce off planets. Debris phases.",
   "PILOT LEVELS: every run earns XP. Modes, mods, pals",
   "and titles unlock on the FLIGHT LOG.",

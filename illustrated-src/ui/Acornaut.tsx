@@ -421,7 +421,7 @@ function Hangar({ engine }: { engine: Engine }) {
                   <PalMark engine={engine} id={p.id} size={48} />
                 ) : (
                   <img
-                    src={artUrl(`cutouts/${p.art || p.id}.png`)}
+                    src={artUrl(`solo/${p.art || p.id}.png`)}
                     alt={p.name}
                     width={80}
                     height={80}
