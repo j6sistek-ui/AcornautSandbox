@@ -1,5 +1,4 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=27";
-import { writeSave } from "./save.js?v=27";
+import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=26";
 export function makeWorld(W, H) {
     return {
         W,
@@ -540,7 +539,7 @@ export function dive(w) {
     w.squirrel.vy = PHYS.dive;
     w.squirrel.rot = 0.5;
     w.bounceUp = false;
-    spark(w, w.W * PHYS.squirrelX, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
+    spark(w, w.W * PHYS.squirrelX, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 5, "poof");
     return "dive";
 }
 function liveGapY(p) {
@@ -565,7 +564,7 @@ function bounceOff(w, save, px, py) {
     w.squirrel.rot = dy >= 0 ? 0.85 : -0.55;
     w.hitCooldown = 0.55;
     w.shake = 0.18;
-    spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
+    spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"]);
 }
 function pushOut(w, px, py, pr, sr) {
     const sx = w.W * PHYS.squirrelX;
@@ -775,12 +774,6 @@ export function updateWorld(w, save, dt) {
                     w.tut.t = 0;
                 }
             }
-        }
-        if (w.tut.stage === "gates" && !save.tutorialDone) {
-            // controls are learned the moment gate practice begins — persist
-            // NOW, so quitting mid-tutorial never re-runs it on the next load
-            save.tutorialDone = true;
-            writeSave(save);
         }
         if (w.tut.stage === "gates" && w.tut.gates >= 3) {
             w.tut.stage = "pal";

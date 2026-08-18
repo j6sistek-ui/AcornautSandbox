@@ -58,6 +58,14 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   ctx.beginPath();
   ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
   ctx.fill();
+  // the environment owns the WHOLE sky, not two soft pools — a graded
+  // full-screen tint makes each 20-gate shift unmistakable
+  const grade = ctx.createLinearGradient(0, 0, 0, H);
+  grade.addColorStop(0, `rgba(${wash[0]},${wash[1]},${wash[2]},${Math.min(0.42, wash[3] * 1.9)})`);
+  grade.addColorStop(0.55, `rgba(${wash[0]},${wash[1]},${wash[2]},${Math.min(0.2, wash[3] * 0.9)})`);
+  grade.addColorStop(1, `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${Math.min(0.4, wash2[3] * 2.2)})`);
+  ctx.fillStyle = grade;
+  ctx.fillRect(0, 0, W, H);
 
   for (const s of w.stars) {
     ctx.globalAlpha = s.a * (0.55 + 0.45 * Math.sin(s.tw));
@@ -514,11 +522,16 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   ctx.beginPath();
   ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
   ctx.fill();
-  const bank = Math.max(-0.08, Math.min(0.1, w.squirrel.vy / 2200));
+  // the sim's real pitch — dives nose down, bounces kick the body over;
+  // the old ±6° bank made every impact read as nothing happening
+  const bank = w.squirrel.rot * 0.8;
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
   ctx.rotate(bank - kick * 0.12);
   const pop = 1 + kick * 0.05;
   ctx.scale(pop, pop);
+  // fresh planet bounce: a squash-and-stretch pulse sells the impact
+  const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
+  if (sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend);
   ctx.restore();
