@@ -1,8 +1,8 @@
-import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=14";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=14";
-import { artUrl } from "./art.js?v=14";
-import { createEngine } from "./engine.js?v=14";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=14";
+import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=22";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=22";
+import { artUrl } from "./art.js?v=22";
+import { createEngine } from "./engine.js?v=22";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=22";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -157,10 +157,7 @@ export async function bootStandalone(root) {
         loadTxt.append(el("p", "", `${helm.name} · ${suit.name}`));
         loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
         load.append(loadTxt);
-        if (pal && pal.id !== "none") {
-            load.append(shopImg(artUrl(`solo/${pal.art || pal.id}.png`), pal.name));
-        }
-        else if (pal) {
+        if (pal) {
             const { c, ctx } = miniCanvas(40, 40);
             if (ctx)
                 paintPalPreview(ctx, engine.art, pal.id, 20, 20, 36);
@@ -181,7 +178,7 @@ export async function bootStandalone(root) {
             for (const h of HELMETS) {
                 const owned = s.unlocked.includes(h.id);
                 const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-                b.append(shopImg(artUrl(`helmets/${h.id}.png`), h.name), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
+                b.append(portraitOf(h, SUITS[0], 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
                 b.onclick = () => engine.buyHelmet(h.id);
                 grid.append(b);
             }
@@ -212,15 +209,10 @@ export async function bootStandalone(root) {
             for (const p of PALS) {
                 const open = palUnlocked(s, p.id);
                 const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
-                if (p.id === "none") {
-                    const { c, ctx } = miniCanvas(64, 56);
-                    if (ctx)
-                        paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
-                    b.append(c);
-                }
-                else {
-                    b.append(shopImg(artUrl(`solo/${p.art || p.id}.png`), p.name));
-                }
+                const { c, ctx } = miniCanvas(64, 56);
+                if (ctx)
+                    paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
+                b.append(c);
                 b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
                 b.onclick = () => engine.equipPal(p.id);
                 grid.append(b);

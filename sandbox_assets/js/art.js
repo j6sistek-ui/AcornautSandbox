@@ -1,4 +1,4 @@
-import { ART_VER } from "./catalog.js?v=14";
+import { ART_VER } from "./catalog.js?v=22";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -172,7 +172,7 @@ export async function loadArt() {
         many(`${base}/debris/`, 9, 0),
         optional(`${base}/sky.jpg`),
         optional(`${base}/hero.jpg`),
-        named(palIds, "solo", "", true),
+        named(palIds, "solo"),
         named(helmIds, "helmets"),
         named(helmIds, "helmets", "-over"),
         named(suitIds, "suits"),
