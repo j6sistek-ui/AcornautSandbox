@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=39";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=43";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -107,7 +107,7 @@ export function emptyArt() {
         ready: false,
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
-        suits: {}, sky: null, hero: null, arcadeAcorn: null,
+        suits: {}, sky: null, hero: null, arcadeAcorn: null, frozen: null, shieldnut: null,
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -229,7 +229,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -245,6 +245,8 @@ export async function loadArt() {
         named(suitIds, "suits"),
         named(helmIds, "helms"),
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
+        optional(`${base}/pickups/frozen.png?v=${ART_VER}`),
+        optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
     ]);
     return {
         ready: true,
@@ -263,5 +265,7 @@ export async function loadArt() {
         sky: sky,
         hero: hero,
         arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn) : null,
+        frozen: frozen ? asSprite(frozen) : null,
+        shieldnut: shieldnut ? asSprite(shieldnut) : null,
     };
 }

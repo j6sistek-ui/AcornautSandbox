@@ -1,4 +1,4 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=39";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=39";
 import { writeSave } from "./save.js?v=39";
 export function makeWorld(W, H) {
     return {
@@ -286,7 +286,16 @@ function spawnPair(w, save, x) {
     const topY = gapY - gap / 2 - r;
     const botY = gapY + gap / 2 + r;
     const blockers = sealBlockers(w, env, gapY, gap);
-    const wisp = palId(save, w) === "wisp" || w.flight === "lost";
+    // Vertical drift: the gate itself breathes up and down. Free Flight
+    // now carries a gentle 15%-of-gap sway so a run is never a static
+    // ladder; the wisp pal and Lost in Space push it further. Horizontal
+    // drift — the scroll speed wobbling — is NOT here: that stays a Lost
+    // in Space signature (see driftFactor, gated to "lost" alone).
+    const pilot = palId(save, w);
+    const driftAmp = pilot === "wisp" ? 26
+        : w.flight === "lost" ? 12
+            : w.tut ? 0
+                : gap * 0.15;
     w.planets.push({
         x,
         gapY,
@@ -296,7 +305,7 @@ function spawnPair(w, save, x) {
         botKind: pickKind(w),
         scored: false,
         drift: Math.random() * Math.PI * 2,
-        driftAmp: wisp ? (palId(save, w) === "wisp" ? 26 : 12) : 0,
+        driftAmp,
         blockers,
     });
     const pal = palId(save, w);
@@ -329,8 +338,10 @@ function spawnPair(w, save, x) {
         // one place you can leave the illustrated game and slip into the
         // arcade for a stretch. It spawns on the flight line like an acorn
         // rather than in the gate mouth like a black hole, because it is a
-        // way across, not a hazard.
-        if (!w.tut && w.flight === "fly" && Math.random() < 0.05) {
+        // way across, not a hazard. It stays shut until gate 100: crossing
+        // timelines is a late-run reward, not something you meet on your
+        // second gate before you have seen this game properly.
+        if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && Math.random() < 0.05) {
             w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
         }
         // Wormholes flip your heading in Lost in Space and — now — in Arcade,
@@ -789,6 +800,13 @@ function pickWarpVariant(w) {
     const TILT = (25 * Math.PI) / 180;
     w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
 }
+// The playfield is only visibly warped when it is mirrored or tilted.
+// Upright and unmirrored is the identity transform — it looks exactly
+// like no warp at all, which is why a warp that lands there feels like
+// nothing happened and then announces that it is over.
+function warpVisible(tilt, mirror) {
+    return mirror || Math.abs(tilt) > 1e-3;
+}
 function startSwirl(w, kind) {
     w.prevMirror = w.warpMirror;
     w.prevTilt = w.warpTilt;
@@ -800,6 +818,13 @@ function startSwirl(w, kind) {
         w.warpMirror = !w.warpMirror;
     else
         pickWarpVariant(w);
+    // Outside Lost in Space — where the tilt is driven continuously — a
+    // flip can land on upright-and-unmirrored, which draws identically to
+    // no warp. Catching one then had no effect for fifteen seconds. Give
+    // it a tilt so a wormhole always reorients something.
+    if (kind !== "timeline" && w.flight !== "lost" && !warpVisible(w.warpTilt, w.warpMirror)) {
+        w.warpTilt = ((25 * Math.PI) / 180) * (Math.random() < 0.5 ? 1 : -1);
+    }
     w.warpKind = kind;
     w.warpT = 1;
 }
@@ -824,6 +849,10 @@ function exitWarp(w) {
         startSwirl(w, "shift");
         return;
     }
+    // Only claim to have restored something if the flight was actually
+    // reoriented. A warp that drew upright and unmirrored changed nothing,
+    // and announcing its end just reads as a phantom message.
+    const wasWarped = warpVisible(w.warpTilt, w.warpMirror);
     w.prevTilt = w.warpTilt;
     w.prevMirror = w.warpMirror;
     w.warpTilt = 0;
@@ -831,7 +860,8 @@ function exitWarp(w) {
     w.warpKind = null;
     w.shieldFreeze = 0.7;
     w.shieldSlow = 3;
-    w.recoveryMsg = "ORIENTATION RESTORED";
+    if (wasWarped)
+        w.recoveryMsg = "ORIENTATION RESTORED";
     spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#b45cff", "#fff"], 14, "warp");
 }
 function die(w, save) {

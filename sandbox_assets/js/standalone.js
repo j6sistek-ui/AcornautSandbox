@@ -1,8 +1,8 @@
-import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=39";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=39";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=39";
-import { createEngine } from "./engine.js?v=39";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=39";
+import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS, isIap } from "./catalog.js?v=43";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=43";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=43";
+import { createEngine } from "./engine.js?v=43";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned } from "./save.js?v=43";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -114,52 +114,66 @@ export async function bootStandalone(root) {
         h.append(back, el("h2", "", title));
         return h;
     }
+    // Seven painted rank frames, one per five levels, topping out at 30+.
+    function rankTierOf(level) {
+        return Math.max(0, Math.min(6, Math.floor((level - 1) / 5)));
+    }
     function drawTitle() {
-        void engine.save;
+        const s = engine.save;
         const artRoot = (window.__ACORNAUT_ART__ || "/art").replace(/\/$/, "");
         const box = el("div", "ac-sheet ac-titlefull");
-        // The whole painted mockup IS the screen. A wrapper sized to the
-        // image holds transparent hit targets over each painted control, so
-        // the layout in the art is exactly the layout you tap. Positions are
-        // percentages of the image, measured from it, so they stay aligned
-        // as it scales.
-        const wrap = el("div", "ac-titlewrap");
-        const bg = document.createElement("img");
-        bg.src = `${artRoot}/title-full.jpg`;
-        bg.className = "ac-titlefullimg";
-        bg.alt = "Acornaut";
-        wrap.append(bg);
-        // The four painted buttons are the four modes. Each carries a wood
-        // label plate over the painted word so it reads its true name; the
-        // acorn ornament to its left stays painted.
-        const BTN_TOPS = [60.9, 66.6, 72.1, 77.5]; // % — PLAY, OPTIONS, CREDITS, QUIT bands
-        MODES.forEach((m, i) => {
-            const b = el("button", "ac-titlebtn");
-            b.style.top = BTN_TOPS[i] + "%";
-            const lbl = el("span", "ac-titlelbl", m.label);
-            b.append(lbl);
+        // The key art fills the screen edge to edge as a background — it
+        // carries the logo, the hero and the starfield and nothing else.
+        // Every control on top of it is its own painted PNG.
+        box.style.backgroundImage = `url("${artRoot}/title-full.jpg")`;
+        const spacer = el("div", "ac-titlespacer");
+        // Live acorn count, painted plate with the number set into its panel.
+        const chip = el("div", "ac-acornchip");
+        const chipImg = document.createElement("img");
+        chipImg.src = `${artRoot}/ui/chip-acorns.png`;
+        chipImg.alt = "";
+        chip.append(chipImg, el("span", "ac-acornnum", `${s.acorns}`));
+        // Pilot rank, in the frame its tier earned. Seven painted frames
+        // cover levels 1-4, 5-9, 10-14, 15-19, 20-24, 25-29 and 30 up.
+        const lv = pilotLevelOf(s);
+        const badge = el("div", "ac-rankbadge");
+        const badgeImg = document.createElement("img");
+        badgeImg.src = `${artRoot}/ranks/rank${rankTierOf(lv)}.png`;
+        badgeImg.alt = "";
+        badge.append(badgeImg, el("span", "ac-ranknum", `${lv}`));
+        // The four mode plates, each its own painted button.
+        const menu = el("div", "ac-titlemenu");
+        for (const m of MODES) {
+            const b = el("button", "ac-plate");
+            const img = document.createElement("img");
+            img.src = `${artRoot}/ui/btn-${m.id}.png`;
+            img.alt = m.label;
+            b.append(img);
             b.onclick = () => engine.fly(m.id);
-            wrap.append(b);
-        });
-        // The painted dock, remapped to the real screens. Five icons:
-        // Home, Missions, Shop, Collection, Profile.
-        const DOCK = [
-            [12, "title"],
-            [31, "help"],
-            [50, "hangar"],
-            [69, "log"],
-            [88, "social"],
-        ];
-        for (const [cx, screen] of DOCK) {
-            const d = el("button", "ac-titledock");
-            d.style.left = cx - 9 + "%";
-            d.onclick = () => {
-                if (screen !== "title")
-                    engine.open(screen);
-            };
-            wrap.append(d);
+            menu.append(b);
         }
-        box.append(wrap, el("p", "ac-fine ac-titlefine", `${BUILD} · ${GAME_VERSION}`));
+        // The dock: four painted icons, each carrying its own painted label,
+        // mapped to the four real screens.
+        const nav = el("nav", "ac-titledock2");
+        for (const [icon, screen] of [
+            ["hangar", "hangar"],
+            ["log", "log"],
+            ["social", "social"],
+            ["help", "help"],
+        ]) {
+            const b = el("button", "ac-dockplate");
+            const img = document.createElement("img");
+            img.src = `${artRoot}/ui/dock-${icon}.png`;
+            img.alt = screen;
+            b.append(img);
+            b.onclick = () => engine.open(screen);
+            nav.append(b);
+        }
+        // chip and rank sit in their own band above the art, so neither
+        // ever crosses the logo
+        const bar = el("div", "ac-titlebar");
+        bar.append(chip, badge);
+        box.append(bar, spacer, menu, nav, el("p", "ac-fine ac-titlefine", `${BUILD} · ${GAME_VERSION}`));
         return box;
     }
     function miniCanvas(w, h) {
@@ -232,20 +246,28 @@ export async function bootStandalone(root) {
         const grid = el("div", "ac-grid");
         if (engine.shopTab === "helmets") {
             for (const h of HELMETS) {
-                const owned = s.unlocked.includes(h.id);
+                const premium = isIap(h.id);
+                const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
                 const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
-                b.onclick = () => engine.buyHelmet(h.id);
+                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : h.cost}`));
+                if (premium)
+                    b.classList.add("ac-premium");
+                b.onclick = () => { if (!premium || owned)
+                    engine.buyHelmet(h.id); };
                 grid.append(b);
             }
         }
         else if (engine.shopTab === "suits") {
             for (const u of SUITS) {
+                const premium = isIap(u.id);
                 const open = suitRevealed(s, u.id);
-                const owned = s.unlockedSuits.includes(u.id);
+                const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
-                b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name), document.createTextNode(`${u.name}\n${!open ? "LOCKED" : owned ? "OWNED" : u.cost}`));
-                b.onclick = () => engine.buySuit(u.id);
+                b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM") : !open ? "LOCKED" : owned ? "OWNED" : u.cost}`));
+                if (premium)
+                    b.classList.add("ac-premium");
+                b.onclick = () => { if (!premium || owned)
+                    engine.buySuit(u.id); };
                 grid.append(b);
             }
         }
@@ -253,10 +275,7 @@ export async function bootStandalone(root) {
             for (const t of TRAILS) {
                 const owned = s.unlockedTrails.includes(t.id);
                 const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
-                const { c, ctx } = miniCanvas(64, 36);
-                if (ctx)
-                    paintTrailPreview(ctx, t, 28, 18, 0.2);
-                b.append(c, document.createTextNode(`${t.name}\n${owned ? "OWNED" : t.cost}`));
+                b.append(shopImg(artUrl(`trails/${t.id}.png`), t.name), document.createTextNode(`${t.name}\n${owned ? "OWNED" : t.cost}`));
                 b.onclick = () => engine.buyTrail(t.id);
                 grid.append(b);
             }

@@ -1,7 +1,7 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=39";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=39";
-import { drawSprite, skyImage } from "./art.js?v=39";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=39";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=43";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=43";
+import { drawSprite, skyImage } from "./art.js?v=43";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=43";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -156,21 +156,26 @@ export function drawWorld(ctx, w, save, art) {
         else if (a.kind === "gold")
             drawSprite(ctx, frameOf(art.golden, w.time, 6), a.x, y, 32);
         else if (a.kind === "slow") {
-            drawSprite(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 28);
-            ctx.strokeStyle = "rgba(110,240,255,0.7)";
-            ctx.lineWidth = 2;
+            // the frozen acorn is its own painting now — no ring needed to say
+            // what it does, the frost says it
+            if (art.frozen)
+                drawSprite(ctx, art.frozen, a.x, y, 32);
+            else
+                drawSprite(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 28);
+            ctx.strokeStyle = `rgba(150,225,255,${0.28 + 0.16 * Math.sin(w.time * 6)})`;
+            ctx.lineWidth = 1.6;
             ctx.beginPath();
-            ctx.arc(a.x, y, 16, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.strokeStyle = "rgba(110,240,255,0.35)";
-            ctx.beginPath();
-            ctx.arc(a.x, y, 20 + Math.sin(w.time * 6) * 2, 0, Math.PI * 2);
+            ctx.arc(a.x, y, 20 + Math.sin(w.time * 6) * 1.6, 0, Math.PI * 2);
             ctx.stroke();
         }
-        else if (a.kind === "shield")
-            drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
+        else if (a.kind === "shield") {
+            if (art.shieldnut)
+                drawSprite(ctx, art.shieldnut, a.x, y, 34);
+            else
+                drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
+        }
         else if (a.kind === "hole" || a.kind === "worm") {
-            drawVortex(ctx, a.x, y, a.kind === "worm", w.time);
+            drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
         }
         else if (a.kind === "retro") {
             drawShiftAcorn(ctx, art, a.x, y, w.time);
@@ -282,24 +287,26 @@ function drawShiftAcorn(ctx, art, x, y, t) {
         ctx.imageSmoothingEnabled = true;
     }
 }
-function drawVortex(ctx, x, y, worm, t) {
-    const pulse = 12 + Math.sin(t * 6) * 3;
-    const grd = ctx.createRadialGradient(x, y, 2, x, y, pulse + 14);
+function drawVortex(ctx, x, y, worm, t, reach = 28) {
+    // the swirl fills its reach: a hazard you can see the full width of
+    const k = reach / 28;
+    const pulse = (12 + Math.sin(t * 6) * 3) * k;
+    const grd = ctx.createRadialGradient(x, y, 2 * k, x, y, pulse + 14 * k);
     grd.addColorStop(0, worm ? "#d8f6ff" : "#1a1028");
     grd.addColorStop(0.45, worm ? "#4ad8ff" : "#6a2a9a");
     grd.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = grd;
     ctx.beginPath();
-    ctx.arc(x, y, pulse + 14, 0, Math.PI * 2);
+    ctx.arc(x, y, pulse + 14 * k, 0, Math.PI * 2);
     ctx.fill();
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(t * (worm ? 3 : -2.2));
     ctx.strokeStyle = worm ? "rgba(180,240,255,0.55)" : "rgba(180,90,255,0.45)";
-    ctx.lineWidth = 1.4;
-    for (let i = 0; i < 3; i++) {
+    ctx.lineWidth = 1.4 * Math.max(1, k * 0.7);
+    for (let i = 0; i < 4; i++) {
         ctx.beginPath();
-        ctx.arc(0, 0, 6 + i * 5, i, i + 2.2);
+        ctx.arc(0, 0, (6 + i * 5) * k, i, i + 2.2);
         ctx.stroke();
     }
     ctx.restore();
@@ -491,7 +498,7 @@ const HELM_GLASS = {
     "aurora": [143, 116, 94],
     "meteor": [143, 116, 94],
     "chrono": [132, 126, 110],
-    "catbubble": [175, 137, 61],
+    "catbubble": [175, 137, 95],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
@@ -670,12 +677,9 @@ function paintPal(ctx, art, id, x, y, size) {
     }
 }
 export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
-    const painted = art?.helmets?.[helmet.id];
-    if (suit.id === "flight" && painted) {
-        // every helmet painting is a hi-res render with its identity baked in
-        drawSprite(ctx, painted, cx, cy + 2, size);
-        return;
-    }
+    // Always paint the PILOT wearing the helmet. Helmet-only art belongs
+    // on the helmet cards, which have their own path — short-circuiting
+    // here left the Flight suit showing a floating helmet and no squirrel.
     const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
     if (!body)
         return;

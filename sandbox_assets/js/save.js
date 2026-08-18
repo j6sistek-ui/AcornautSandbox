@@ -1,10 +1,11 @@
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=39";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=43";
 export function defaultSave() {
     return {
         highScore: 0,
         deepBest: 0,
         lostBest: 0,
         arcadeBest: 0,
+        purchased: [],
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -72,7 +73,14 @@ export function palUnlocked(s, id) {
     return BETA_UNLOCK_GATES || s.unlockedPals.includes(id) || pilotLevelOf(s) >= (PAL_LEVELS[id] || 1);
 }
 export function suitRevealed(s, id) {
+    if (isIap(id))
+        return iapOwned(s, id);
     return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevelOf(s) >= SUIT_REVEAL[id];
+}
+// Premium items are owned only once bought for real money. The beta
+// grants them outright so they can be flown and judged before release.
+export function iapOwned(s, id) {
+    return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
 }
 export function deepUnlocked(s) {
     return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 5;
