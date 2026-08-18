@@ -218,6 +218,17 @@ export const ENVS = [
     { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [23, 21, 11], sky: "neon" },
     { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 15], sky: "vortex" },
 ];
+// The tail hinge. A damped spring, not a keyframe set: stiffness sets
+// how fast it returns, damping how many times it rings on the way. At
+// these values it overshoots once, crosses home, and settles in about a
+// second — the gravity bounce, for free.
+export const TAIL = {
+    stiffness: 55,
+    damping: 6.2,
+    flap: 8.0, // impulse when the pilot taps
+    dive: 11.0, // harder, and the other way, when the pilot dives
+    maxA: 0.75, // radians — the plume never folds through the body
+};
 export const ENV_GATES = 20;
 // Free Flight keeps the door to the arcade shut until this gate. The
 // crossing is a late-run reward — meeting it on gate two would sell the

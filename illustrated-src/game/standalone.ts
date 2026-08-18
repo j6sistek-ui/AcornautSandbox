@@ -42,8 +42,14 @@ export async function bootStandalone(root: HTMLElement) {
   ];
   let selectedMode = 0;
 
+  // BUG: every re-render rebuilt the overlay from scratch, so buying or
+  // equipping something near the bottom of the hangar threw you back to
+  // the top. Remember where the list was and put it back after the swap.
+  let keptScroll = 0;
   const render = () => {
     const snap = engine.snap();
+    const prevScroll = overlay.querySelector(".ac-sheet-scroll");
+    if (prevScroll) keptScroll = prevScroll.scrollTop;
     overlay.innerHTML = "";
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
@@ -95,11 +101,14 @@ export async function bootStandalone(root: HTMLElement) {
       return;
     }
     if (snap.screen === "title") {
+      keptScroll = 0;
       overlay.append(drawTitle());
       return;
     }
     if (snap.screen === "hangar") {
       overlay.append(drawHangar());
+      const sc = overlay.querySelector(".ac-sheet-scroll");
+      if (sc && keptScroll) sc.scrollTop = keptScroll;
       return;
     }
     if (snap.screen === "log") {
