@@ -26,6 +26,9 @@ export async function bootStandalone(root: HTMLElement) {
   root.append(stage);
 
   const engine = await createEngine(canvas);
+  // sandbox is a test bed: expose the engine so runs can be driven and
+  // certified from a harness (env sweeps, cosmetic matrices, replays)
+  (window as unknown as { __sandbox?: unknown }).__sandbox = engine;
   engine.start();
 
   const render = () => {
@@ -282,6 +285,116 @@ export async function bootStandalone(root: HTMLElement) {
     return box;
   }
 
+  // Every rank earns its OWN emblem — a cadet chevron through the
+  // acornaut crown — so the Flight Log reads as a ladder of insignia
+  // rather than seven identical coins.
+  const RANKS: Record<string, { ring: [string, string]; face: string; mark: string }> = {
+    CADET:           { ring: ["#cfd8e8", "#7f8ca4"], face: "#39445c", mark: "chevron" },
+    PILOT:           { ring: ["#9fd8ff", "#3f7fb8"], face: "#123049", mark: "wings" },
+    VOIDFARER:       { ring: ["#c9a6ff", "#6a3fb8"], face: "#2a1550", mark: "orbit" },
+    ACE:             { ring: ["#ffe08a", "#c9861f"], face: "#4a3208", mark: "star" },
+    "COMET CHASER":  { ring: ["#ffc48a", "#d1621f"], face: "#4c2208", mark: "comet" },
+    "EVENT HORIZON": { ring: ["#d0a8ff", "#4a1f8a"], face: "#120424", mark: "hole" },
+    ACORNAUT:        { ring: ["#fff0b0", "#b8860b"], face: "#3d2a06", mark: "acorn" },
+  };
+
+  function drawRankBadge(ctx: CanvasRenderingContext2D, name: string, px: number) {
+    const spec = RANKS[name] ?? RANKS.CADET;
+    const c = px / 2;
+    const r = px * 0.4;
+    const ring = ctx.createLinearGradient(0, c - r, 0, c + r);
+    ring.addColorStop(0, spec.ring[0]);
+    ring.addColorStop(1, spec.ring[1]);
+    ctx.save();
+    ctx.fillStyle = ring;
+    ctx.beginPath();
+    ctx.arc(c, c, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = spec.face;
+    ctx.beginPath();
+    ctx.arc(c, c, r * 0.78, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = spec.ring[0];
+    ctx.lineWidth = Math.max(1, px * 0.03);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.fillStyle = spec.ring[0];
+    const u = r * 0.52;
+    if (spec.mark === "chevron") {
+      for (const dy of [-u * 0.34, u * 0.42]) {
+        ctx.beginPath();
+        ctx.moveTo(c - u * 0.8, c + dy);
+        ctx.lineTo(c, c + dy - u * 0.62);
+        ctx.lineTo(c + u * 0.8, c + dy);
+        ctx.stroke();
+      }
+    } else if (spec.mark === "wings") {
+      for (const s2 of [-1, 1]) {
+        ctx.beginPath();
+        ctx.moveTo(c, c);
+        ctx.quadraticCurveTo(c + s2 * u * 0.7, c - u * 0.75, c + s2 * u * 1.15, c - u * 0.05);
+        ctx.quadraticCurveTo(c + s2 * u * 0.6, c + u * 0.2, c, c + u * 0.12);
+        ctx.fill();
+      }
+    } else if (spec.mark === "orbit") {
+      ctx.beginPath();
+      ctx.arc(c, c, u * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(-0.5);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, u * 1.06, u * 0.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    } else if (spec.mark === "star" || spec.mark === "acorn") {
+      if (spec.mark === "acorn") {
+        ctx.beginPath();
+        ctx.moveTo(c, c + u * 0.95);
+        ctx.quadraticCurveTo(c - u * 0.78, c + u * 0.1, c - u * 0.62, c - u * 0.3);
+        ctx.lineTo(c + u * 0.62, c - u * 0.3);
+        ctx.quadraticCurveTo(c + u * 0.78, c + u * 0.1, c, c + u * 0.95);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(c, c - u * 0.42, u * 0.78, u * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const rad = i % 2 ? u * 0.44 : u * 1.02;
+          const a = -Math.PI / 2 + (i * Math.PI) / 5;
+          const px2 = c + Math.cos(a) * rad;
+          const py2 = c + Math.sin(a) * rad;
+          i ? ctx.lineTo(px2, py2) : ctx.moveTo(px2, py2);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+    } else if (spec.mark === "comet") {
+      ctx.beginPath();
+      ctx.arc(c + u * 0.42, c - u * 0.28, u * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(c + u * 0.16, c - u * 0.6);
+      ctx.lineTo(c - u * 1.05, c + u * 0.75);
+      ctx.lineTo(c + u * 0.2, c + u * 0.08);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(c, c, u * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = spec.face;
+      ctx.beginPath();
+      ctx.arc(c, c, u * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(c, c, u * 1.0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function rewardArt(item: (typeof TRACK)[number], px = 52) {
     const { c, ctx } = miniCanvas(px, px);
     const art = engine.art;
@@ -298,21 +411,7 @@ export async function bootStandalone(root: HTMLElement) {
     } else if (item.kind === "mod") {
       drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "title") {
-      // rank medallion
-      const g = ctx.createRadialGradient(px / 2, px / 2, 2, px / 2, px / 2, px / 2);
-      g.addColorStop(0, "#ffd98a");
-      g.addColorStop(1, "#c9861f");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(px / 2, px / 2, px * 0.4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#8a5a10";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.fillStyle = "#5b3a08";
-      ctx.font = `900 ${px * 0.34}px Fraunces, serif`;
-      ctx.textAlign = "center";
-      ctx.fillText((item.name ?? "?").slice(0, 1), px / 2, px / 2 + px * 0.12);
+      drawRankBadge(ctx, item.name ?? "", px);
     }
     return c;
   }
@@ -371,9 +470,64 @@ export async function bootStandalone(root: HTMLElement) {
 
   function drawHelp() {
     const box = el("div", "ac-sheet");
-    box.append(header("Help"));
-    box.append(el("p", "", "TAP — boost up. SWIPE DOWN — dive / cancel bounce."));
-    box.append(el("p", "ac-sub", "Planets bounce. Debris kills. Shields eat one hit. Gold is invulnerable."));
+    box.append(header("How to Play"));
+    const scroll = el("div", "ac-sheet-scroll");
+
+    // the two controls, as two SEPARATE cards — tap and swipe must never
+    // read as one combined instruction
+    const controls = el("div", "ac-ctrls");
+    for (const [glyph, title, sub, note, cls] of [
+      ["\u25B2", "TAP", "BOOST UP", "anywhere, any time", "ac-ctrl ac-tap"],
+      ["\u25BC", "SWIPE DOWN", "DIVE", "also cancels a bounce", "ac-ctrl ac-swipe"],
+    ] as const) {
+      const card = el("div", cls);
+      card.append(el("div", "ac-glyph", glyph));
+      card.append(el("p", "ac-ctrltitle", title));
+      card.append(el("p", "ac-ctrlsub", sub));
+      card.append(el("p", "ac-fine", note));
+      controls.append(card);
+    }
+    scroll.append(controls);
+    scroll.append(el("p", "ac-sub ac-mid", "Glide through the gaps between planets."));
+    scroll.append(el("p", "ac-sub ac-mid", "Planets bounce you \u2014 debris ends the run."));
+
+    const item = (art: HTMLElement, name: string, desc: string) => {
+      const row = el("div", "ac-helprow");
+      row.append(art);
+      const t = el("div");
+      t.append(el("p", "", name));
+      t.append(el("p", "ac-sub", desc));
+      row.append(t);
+      scroll.append(row);
+    };
+    const pic = (draw: (ctx: CanvasRenderingContext2D, px: number) => void, px = 40) => {
+      const { c, ctx } = miniCanvas(px, px);
+      if (ctx) draw(ctx, px);
+      return c;
+    };
+    const spr = (bank: "acorn" | "golden" | "shield") => (ctx: CanvasRenderingContext2D, px: number) =>
+      drawSpriteOn(ctx, engine.art?.[bank]?.[0] ?? null, px / 2, px / 2, px * 0.92);
+
+    item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
+    item(pic(spr("acorn")), "SLOW ACORN", "Slows everything for 6 seconds.");
+    item(pic(spr("shield")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
+    item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce.");
+    item(pic((ctx, px) => {
+      const g = ctx.createRadialGradient(px/2, px/2, 1, px/2, px/2, px/2);
+      g.addColorStop(0, "#120424"); g.addColorStop(0.6, "#6a3fb8"); g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px/2, px/2, px*0.46, 0, Math.PI*2); ctx.fill();
+    }), "BLACK HOLE", "Warps flight for 15s \u2014 reversed or tilted.");
+    item(pic((ctx, px) => {
+      const g = ctx.createRadialGradient(px/2, px/2, 1, px/2, px/2, px/2);
+      g.addColorStop(0, "#042a24"); g.addColorStop(0.6, "#6ef0d8"); g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px/2, px/2, px*0.46, 0, Math.PI*2); ctx.fill();
+    }), "WORMHOLE", "Lost in Space: mirrors your heading.");
+
+    scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
+    scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
+    scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
+    box.append(scroll);
+
     const replay = el("button", "ac-primary", "REPLAY TUTORIAL");
     replay.onclick = () => engine.replayTutorial();
     box.append(replay);

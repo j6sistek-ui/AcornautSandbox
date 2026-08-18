@@ -1,4 +1,4 @@
-import { ART_VER } from "./catalog.js?v=27";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=31";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -93,7 +93,47 @@ async function many(prefix, n, start = 1) {
         out.push(asSprite(await loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)));
     return out;
 }
-export function drawSprite(ctx, spr, x, y, size, fit = "box") {
+// Painted skies load ON DEMAND — a run only ever needs the handful of
+// environments it flies through, so the first paint is never held up by
+// two megabytes of panorama. Until one arrives the gradient stands in.
+const skyCache = new Map();
+export function skyImage(id) {
+    const hit = skyCache.get(id);
+    if (hit !== undefined)
+        return hit;
+    skyCache.set(id, null);
+    loadImg(artUrl(`skies/${id}.jpg`))
+        .then((img) => skyCache.set(id, img))
+        .catch(() => skyCache.set(id, null));
+    return null;
+}
+// A separation halo, baked ONCE per sprite per mode. Doing this with a
+// live ctx.shadowBlur cost a blur on every gate and every rock, every
+// frame — a phone-framerate killer. Baked, it is one extra drawImage.
+const HALO_PAD = 20;
+const haloCache = new Map();
+function haloOf(spr, mode) {
+    const key = (spr.src || "") + "|" + mode;
+    const hit = haloCache.get(key);
+    if (hit !== undefined)
+        return hit;
+    const c = document.createElement("canvas");
+    c.width = spr.width + HALO_PAD * 2;
+    c.height = spr.height + HALO_PAD * 2;
+    const cc = c.getContext("2d");
+    if (!cc) {
+        haloCache.set(key, null);
+        return null;
+    }
+    cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.9)" : "rgba(170,200,255,0.5)";
+    cc.shadowBlur = mode === "dark" ? 15 : 11;
+    cc.shadowOffsetX = c.width * 2; // keep only the shadow
+    cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
+    cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
+    haloCache.set(key, c);
+    return c;
+}
+export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
     if (!spr)
         return;
     const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
@@ -102,6 +142,13 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box") {
     const scale = size / Math.max(1, dim);
     const dw = box.w * scale;
     const dh = box.h * scale;
+    if (halo) {
+        const h = haloOf(spr, halo);
+        if (h) {
+            const m = HALO_PAD * scale;
+            ctx.drawImage(h, box.x, box.y, box.w + HALO_PAD * 2, box.h + HALO_PAD * 2, x - dw / 2 - m, y - dh / 2 - m, dw + m * 2, dh + m * 2);
+        }
+    }
     ctx.drawImage(spr, box.x, box.y, box.w, box.h, x - dw / 2, y - dh / 2, dw, dh);
 }
 export async function loadArt() {
@@ -168,8 +215,8 @@ export async function loadArt() {
         many(`${base}/acorn/`, 4),
         many(`${base}/golden/`, 4),
         many(`${base}/shield/`, 4),
-        many(`${base}/planets/`, 18, 0),
-        many(`${base}/debris/`, 9, 0),
+        many(`${base}/planets/`, PLANET_COUNT, 0),
+        many(`${base}/debris/`, DEBRIS_COUNT, 0),
         optional(`${base}/sky.jpg`),
         optional(`${base}/hero.jpg`),
         named(palIds, "solo"),

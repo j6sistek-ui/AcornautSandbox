@@ -1,5 +1,5 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=27";
-import { writeSave } from "./save.js?v=27";
+import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=31";
+import { writeSave } from "./save.js?v=31";
 export function makeWorld(W, H) {
     return {
         W,
@@ -22,6 +22,7 @@ export function makeWorld(W, H) {
         invulnLeft: 0,
         flapBoost: 0,
         hitCooldown: 0,
+        trailT: 0,
         bounceUp: false,
         shieldCharges: 0,
         absorbGrace: 0,
@@ -108,10 +109,31 @@ function difficulty(w) {
 function pickKind(w) {
     const env = ENVS[envIndexFor(w, w.score)];
     if (Math.random() < 0.55)
-        return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % 18;
-    return Math.floor(Math.random() * 18);
+        return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+    // free pick, but never one that would vanish into this sky: reject
+    // planets whose luminance sits too close to the backdrop's
+    const sky = SKY_RGB[env.sky];
+    for (let i = 0; i < 10; i++) {
+        const k = Math.floor(Math.random() * PLANET_COUNT);
+        if (sep(sky, PLANET_RGB[k]) >= MIN_SEP)
+            return k;
+    }
+    return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+}
+// Debris follows the zone's palette, and never blends into its sky.
+function pickDebris(env) {
+    const sky = SKY_RGB[env.sky];
+    if (Math.random() < 0.7)
+        return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
+    for (let i = 0; i < 10; i++) {
+        const k = Math.floor(Math.random() * DEBRIS_COUNT);
+        if (sep(sky, DEBRIS_RGB[k]) >= MIN_SEP)
+            return k;
+    }
+    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
 }
 function spawnPair(w, save, x) {
+    const env = ENVS[w.envB];
     const d = difficulty(w);
     let gap = d.gap;
     const margin = 72;
@@ -138,7 +160,7 @@ function spawnPair(w, save, x) {
             r: 19 + Math.random() * 7,
             kind: pickKind(w),
             xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
-            debris: Math.floor(Math.random() * 9),
+            debris: pickDebris(env),
         });
     };
     {
@@ -275,9 +297,13 @@ function spark(w, x, y, colors, n = 12, kind = "spark") {
         });
     }
 }
-export function spawnTrail(w, save) {
-    const sx = w.W * PHYS.squirrelX - 10;
-    const sy = w.squirrel.y + 6;
+export function spawnTrail(w, save, scale = 1) {
+    // the painted pilot's tail sweeps far to the left — emit behind it or
+    // the whole plume is swallowed by the sprite
+    const sx = w.W * PHYS.squirrelX - 34;
+    const sy = w.squirrel.y + 8;
+    if (scale < 1 && Math.random() > scale)
+        return;
     const trail = save.equippedTrail;
     const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
     if (trail === "ion") {
@@ -740,6 +766,8 @@ export function updateWorld(w, save, dt) {
         p.life -= dt;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
+        if (p.kind === "flame")
+            p.vy -= 40 * dt; // exhaust rises as it fades
         if (p.spin)
             p.hue = (p.hue || 0) + p.spin * dt * 40;
     }
@@ -842,6 +870,13 @@ export function updateWorld(w, save, dt) {
         w.absorbGrace = Math.max(0, w.absorbGrace - simDt);
     if (w.flapBoost > 0)
         w.flapBoost = Math.max(0, w.flapBoost - dt);
+    // a live exhaust plume: the trail keeps streaming between taps instead
+    // of puffing once and dying, so every trail reads as an engine
+    w.trailT = (w.trailT ?? 0) + dt;
+    if (!w.ready && w.trailT > 0.085) {
+        w.trailT = 0;
+        spawnTrail(w, save, 0.45);
+    }
     if (w.hitCooldown > 0)
         w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
     if (w.envMsgT > 0)

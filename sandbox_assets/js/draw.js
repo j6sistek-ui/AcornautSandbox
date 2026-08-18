@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=27";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=27";
-import { drawSprite } from "./art.js?v=27";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=31";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=31";
+import { drawSprite, skyImage } from "./art.js?v=31";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -22,15 +22,48 @@ function applyWarp(ctx, w) {
     ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
     ctx.translate(-w.W / 2, -w.H / 2);
 }
+function coverDraw(ctx, img, W, H) {
+    const sw = img.naturalWidth || img.width;
+    const sh = img.naturalHeight || img.height;
+    const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
+    const dw = sw * scale;
+    const dh = sh * scale;
+    ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+}
+/** How bright the sky is right now, across an environment crossfade. */
+export function skyLuma(w) {
+    const lum = (id) => {
+        const c = SKY_RGB[id] ?? [0.1, 0.1, 0.2];
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    const a = lum(ENVS[w.envA].sky);
+    const b = lum(ENVS[w.envB].sky);
+    return a + (b - a) * w.envBlend;
+}
 function drawBackdrop(ctx, w, art) {
     const { W, H } = w;
-    if (art.sky) {
-        const sw = art.sky.naturalWidth || art.sky.width;
-        const sh = art.sky.naturalHeight || art.sky.height;
-        const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
-        const dw = sw * scale;
-        const dh = sh * scale;
-        ctx.drawImage(art.sky, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    // each environment flies under its own painted sky; shifts crossfade
+    const skyA = skyImage(ENVS[w.envA].sky);
+    const skyB = skyImage(ENVS[w.envB].sky);
+    const painted = skyB ?? skyA;
+    if (painted) {
+        coverDraw(ctx, skyA ?? painted, W, H);
+        if (skyB && skyA && skyB !== skyA && w.envBlend > 0) {
+            ctx.globalAlpha = w.envBlend;
+            coverDraw(ctx, skyB, W, H);
+            ctx.globalAlpha = 1;
+        }
+        // Readability scrim, scaled to how bright this sky is: a white
+        // nebula gets a real veil so gates and debris stay readable against
+        // it, a black void barely any. This is what stops the white-on-white
+        // blindness without dulling the art everywhere.
+        const lum = skyLuma(w);
+        const veil = Math.max(0.16, Math.min(0.52, 0.16 + (lum - 0.2) * 0.62));
+        ctx.fillStyle = `rgba(7,11,22,${veil.toFixed(3)})`;
+        ctx.fillRect(0, 0, W, H);
+    }
+    else if (art.sky) {
+        coverDraw(ctx, art.sky, W, H);
         ctx.fillStyle = "rgba(7,11,22,0.28)";
         ctx.fillRect(0, 0, W, H);
     }
@@ -82,18 +115,22 @@ export function drawWorld(ctx, w, save, art) {
     drawBackdrop(ctx, w, art);
     ctx.save();
     applyWarp(ctx, w);
+    // Everything you can hit gets a separation halo keyed to the sky: a
+    // dark drop shadow on bright skies, a faint light rim on dark ones.
+    // Gates and debris then read as solid objects against any backdrop.
+    const halo = skyLuma(w) > 0.42 ? "dark" : "light";
     for (const p of w.planets) {
         const gy = liveGapY(p);
-        drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
-        drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
+        drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
+        drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
         for (const b of p.blockers) {
             const by = b.y + Math.sin(p.drift) * p.driftAmp;
             const bx = p.x + b.xOff;
             const img = art.debris[b.debris];
             if (img)
-                drawSprite(ctx, img, bx, by, b.r * 2, "core");
+                drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
             else
-                drawPlanet(ctx, art, bx, by, b.r, b.kind);
+                drawPlanet(ctx, art, bx, by, b.r, b.kind, halo);
         }
     }
     for (const a of w.pickups) {
@@ -129,7 +166,7 @@ export function drawWorld(ctx, w, save, art) {
         : save.equippedPal;
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 36);
+        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
     }
     drawPilot(ctx, w, save, art);
     ctx.restore();
@@ -299,10 +336,10 @@ function drawParticle(ctx, p) {
     }
     ctx.globalAlpha = 1;
 }
-function drawPlanet(ctx, art, x, y, r, kind) {
+function drawPlanet(ctx, art, x, y, r, kind, halo) {
     const img = art.planets[kind % art.planets.length];
     if (img) {
-        drawSprite(ctx, img, x, y, r * 2, "core");
+        drawSprite(ctx, img, x, y, r * 2, "core", halo);
         return;
     }
     ctx.fillStyle = "#3a6aa8";
@@ -342,8 +379,10 @@ const DOME = {
     "suit:bigbooty": [194, 86, 51],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
-// Comet has no solo render yet — it keeps the tinted-ring fallback.
+// All twelve helmets have a solo render; the tinted-ring path below
+// stays as the fallback for any helmet added later.
 const HELM_GLASS = {
+    comet: [129, 129, 112],
     "clear": [129, 128, 111],
     "ion": [129, 128, 109],
     "solar": [146, 123, 94],
@@ -446,7 +485,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         ctx.globalAlpha = prevA;
     }
     else {
-        drawSprite(ctx, body, x, y, size);
+        drawSprite(ctx, body, x, y, size, "box", "dark");
     }
     if (suited) {
         paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size, art);
@@ -490,10 +529,6 @@ function drawPilot(ctx, w, save, art) {
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillStyle = "rgba(0,0,0,0.28)";
-    ctx.beginPath();
-    ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
-    ctx.fill();
     // the sim's real pitch — dives nose down, bounces kick the body over;
     // the old ±6° bank made every impact read as nothing happening
     const bank = w.squirrel.rot * 0.8;
@@ -553,6 +588,65 @@ export function paintPalPreview(ctx, art, id, cx, cy, size) {
 export function paintTrailPreview(ctx, trail, cx, cy, t = 0) {
     drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
+/** The vortex that eats the screen while a black hole or wormhole
+ *  takes hold — spiral arms winding in, a dark core, a colour bloom.
+ *  Purely procedural: no art needed. */
+function drawSwirl(ctx, w) {
+    const { W, H } = w;
+    const t = 1 - w.warpT; // 0 -> 1 over the transition
+    const worm = w.warpKind === "worm" || w.flight === "lost";
+    const cx = W / 2;
+    const cy = H * 0.46;
+    const reach = Math.hypot(W, H) * 0.62;
+    const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const hue = worm ? [110, 240, 216] : [192, 132, 252];
+    ctx.save();
+    // colour bloom washing over the sky
+    const bloom = ctx.createRadialGradient(cx, cy, 0, cx, cy, reach);
+    bloom.addColorStop(0, `rgba(${hue[0]},${hue[1]},${hue[2]},${(0.55 * ease).toFixed(3)})`);
+    bloom.addColorStop(0.55, `rgba(${hue[0]},${hue[1]},${hue[2]},${(0.16 * ease).toFixed(3)})`);
+    bloom.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = bloom;
+    ctx.fillRect(0, 0, W, H);
+    // spiral arms
+    ctx.translate(cx, cy);
+    ctx.rotate(t * Math.PI * 2.4 * (worm ? -1 : 1));
+    ctx.lineCap = "round";
+    for (let a = 0; a < 5; a++) {
+        ctx.beginPath();
+        const off = (a / 5) * Math.PI * 2;
+        for (let k = 0; k <= 42; k++) {
+            const f = k / 42;
+            const rad = reach * (0.06 + f * 0.95) * (1 - ease * 0.45);
+            const ang = off + f * 4.4;
+            const px = Math.cos(ang) * rad;
+            const py = Math.sin(ang) * rad * 0.92;
+            if (k === 0)
+                ctx.moveTo(px, py);
+            else
+                ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = `rgba(${hue[0]},${hue[1]},${hue[2]},${(0.5 * ease).toFixed(3)})`;
+        ctx.lineWidth = 2 + 5 * ease;
+        ctx.stroke();
+    }
+    // the core opens up and swallows the middle
+    const coreR = reach * 0.30 * ease;
+    const core = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(1, coreR));
+    core.addColorStop(0, `rgba(4,2,10,${(0.96 * ease).toFixed(3)})`);
+    core.addColorStop(0.72, `rgba(8,4,20,${(0.7 * ease).toFixed(3)})`);
+    core.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(1, coreR), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = `rgba(255,255,255,${(0.5 * ease).toFixed(3)})`;
+    ctx.lineWidth = 1.5 + 2 * ease;
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(1, coreR * 1.04), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+}
 export function drawHud(ctx, w) {
     const { W } = w;
     ctx.textAlign = "center";
@@ -581,18 +675,24 @@ export function drawHud(ctx, w) {
             ctx.stroke();
         }
     }
-    if (w.powerLeft > 0) {
+    // status lines stack instead of colliding — mode line first, then any
+    // live power-ups beneath it
+    let hudY = 88;
+    const hudLine = (text, color) => {
         ctx.textAlign = "center";
-        ctx.fillStyle = "#6ef0ff";
+        ctx.fillStyle = color;
         ctx.font = "700 13px Figtree, system-ui";
-        ctx.fillText(`SLOW  ${Math.ceil(w.powerLeft)}s`, W / 2, 88);
-    }
-    if (w.invulnLeft > 0) {
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#ffd060";
-        ctx.font = "700 13px Figtree, system-ui";
-        ctx.fillText(`GOLD  ${Math.ceil(w.invulnLeft)}s`, W / 2, w.powerLeft > 0 ? 106 : 88);
-    }
+        ctx.fillText(text, W / 2, hudY);
+        hudY += 18;
+    };
+    if (w.warpLeft > 0)
+        hudLine((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", "#c084fc");
+    else if (w.flight === "deep" && w.warpT <= 0)
+        hudLine("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", "rgba(192,132,252,0.8)");
+    if (w.powerLeft > 0)
+        hudLine(`SLOW  ${Math.ceil(w.powerLeft)}s`, "#6ef0ff");
+    if (w.invulnLeft > 0)
+        hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
     if (w.recoveryMsg) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#fff";
@@ -600,29 +700,11 @@ export function drawHud(ctx, w) {
         ctx.fillText(w.recoveryMsg, W / 2, w.H * 0.22);
     }
     if (w.warpT > 0) {
+        drawSwirl(ctx, w);
         ctx.textAlign = "center";
         ctx.fillStyle = w.warpKind === "worm" || w.flight === "lost" ? "#6ef0d8" : "#c084fc";
         ctx.font = "800 22px Figtree, system-ui";
         ctx.fillText(w.warpKind === "worm" || w.flight === "lost" ? "WORMHOLE!" : "BLACK HOLE!", W / 2, w.H * 0.3);
-    }
-    else if (w.warpLeft > 0) {
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#c084fc";
-        ctx.font = "700 13px Figtree, system-ui";
-        ctx.fillText((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", W / 2, 92);
-    }
-    else if (w.flight === "deep") {
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(192,132,252,0.8)";
-        ctx.font = "700 12px Figtree, system-ui";
-        ctx.fillText("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", W / 2, 92);
-    }
-    else if (w.flight === "lost") {
-        const pct = Math.round((w.driftFactor - 1) * 100);
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#6ef0d8";
-        ctx.font = "700 12px Figtree, system-ui";
-        ctx.fillText("LOST IN SPACE · DRIFT " + (pct >= 0 ? "+" : "") + pct + "%" + (w.warpMirror ? " · REVERSED" : ""), W / 2, 92);
     }
     if (w.ready && !w.tut) {
         ctx.textAlign = "center";
