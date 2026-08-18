@@ -327,12 +327,12 @@ const DOME: Record<string, [number, number, number]> = {
   "flap-2": [164, 93, 50],
   "flap-3": [164, 79, 48],
   "flap-4": [163, 80, 45],
-  "suit:iontrim": [102, 42, 24],   // legacy 128px render
-  "suit:copper": [190, 78, 46],
+  "suit:iontrim": [199, 97, 46],
+  "suit:copper": [195, 97, 51],
   "suit:frost": [197, 96, 49],
   "suit:voidsuit": [192, 97, 50],
   "suit:aurorasuit": [195, 102, 54],
-  "suit:ember": [185, 75, 44],
+  "suit:ember": [192, 100, 49],
   "suit:stardust": [194, 97, 51],
   "suit:robo": [195, 97, 52],
   "suit:alien": [197, 102, 50],
@@ -396,13 +396,8 @@ function paintIllustrated(
   blend = 0,
 ) {
   // the equipped suit IS the body: its painted render replaces the
-  // default flight frames, carried by the pilot's motion. Copper and
-  // ember renders came out headless — until they are regenerated, those
-  // two fly the default body so nothing decapitated ships.
-  const suited =
-    suit.id !== "flight" && suit.id !== "copper" && suit.id !== "ember"
-      ? (art?.suits?.[suit.id] ?? null)
-      : null;
+  // default flight frames, carried by the pilot's motion
+  const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
   const body = suited ?? spr;
   if (!body) return;
   // frames crossfade instead of hard-switching — the four paintings blend

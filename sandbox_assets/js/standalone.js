@@ -1,8 +1,8 @@
-import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=23";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=23";
-import { artUrl } from "./art.js?v=23";
-import { createEngine } from "./engine.js?v=23";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=23";
+import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog.js?v=24";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=24";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=24";
+import { createEngine } from "./engine.js?v=24";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed } from "./save.js?v=24";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -137,6 +137,16 @@ export async function bootStandalone(root) {
         img.height = 64;
         return img;
     }
+    function helmCardOf(helmet, px = 56) {
+        // the dedicated helmet render IS the card — no shrunken squirrel
+        const spr = engine.art?.helms?.[helmet.id];
+        if (!spr)
+            return portraitOf(helmet, SUITS[0], px);
+        const { c, ctx } = miniCanvas(px, px);
+        if (ctx)
+            drawSpriteOn(ctx, spr, px / 2, px / 2, px * 0.92);
+        return c;
+    }
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
         if (ctx && engine.art)
@@ -178,7 +188,7 @@ export async function bootStandalone(root) {
             for (const h of HELMETS) {
                 const owned = s.unlocked.includes(h.id);
                 const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
-                b.append(portraitOf(h, SUITS[0], 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
+                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : h.cost}`));
                 b.onclick = () => engine.buyHelmet(h.id);
                 grid.append(b);
             }

@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=23";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=23";
-import { drawSprite } from "./art.js?v=23";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=24";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=24";
+import { drawSprite } from "./art.js?v=24";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -321,12 +321,12 @@ const DOME = {
     "flap-2": [164, 93, 50],
     "flap-3": [164, 79, 48],
     "flap-4": [163, 80, 45],
-    "suit:iontrim": [102, 42, 24], // legacy 128px render
-    "suit:copper": [190, 78, 46],
+    "suit:iontrim": [199, 97, 46],
+    "suit:copper": [195, 97, 51],
     "suit:frost": [197, 96, 49],
     "suit:voidsuit": [192, 97, 50],
     "suit:aurorasuit": [195, 102, 54],
-    "suit:ember": [185, 75, 44],
+    "suit:ember": [192, 100, 49],
     "suit:stardust": [194, 97, 51],
     "suit:robo": [195, 97, 52],
     "suit:alien": [197, 102, 50],
@@ -368,12 +368,8 @@ function paintDome(ctx, body, key, helmet, x, y, size) {
 }
 function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0) {
     // the equipped suit IS the body: its painted render replaces the
-    // default flight frames, carried by the pilot's motion. Copper and
-    // ember renders came out headless — until they are regenerated, those
-    // two fly the default body so nothing decapitated ships.
-    const suited = suit.id !== "flight" && suit.id !== "copper" && suit.id !== "ember"
-        ? (art?.suits?.[suit.id] ?? null)
-        : null;
+    // default flight frames, carried by the pilot's motion
+    const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
     const body = suited ?? spr;
     if (!body)
         return;

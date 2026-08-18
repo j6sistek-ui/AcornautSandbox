@@ -14,6 +14,7 @@ export type ArtBank = {
   planets: Sprite[];
   debris: Sprite[];
   pals: Record<string, Sprite>;
+  helms: Record<string, Sprite>;
   helmets: Record<string, Sprite>;
   helmOver: Record<string, Sprite>;
   suits: Record<string, Sprite>;
@@ -114,7 +115,8 @@ function asSprite(img: HTMLImageElement): Sprite {
 
 async function many(prefix: string, n: number, start = 1) {
   const out: Sprite[] = [];
-  for (let i = 0; i < n; i++) out.push(asSprite(await loadImg(`${prefix}${start + i}.png`)));
+  for (let i = 0; i < n; i++)
+    out.push(asSprite(await loadImg(`${prefix}${start + i}.png?v=${ART_VER}`)));
   return out;
 }
 
@@ -185,7 +187,7 @@ export async function loadArt(): Promise<ArtBank> {
     const out: Record<string, Sprite> = {};
     await Promise.all(
       ids.map(async (id) => {
-        const src = `${base}/${folder}/${id}${suffix}.png`;
+        const src = `${base}/${folder}/${id}${suffix}.png?v=${ART_VER}`;
         try {
           out[id] = asSprite(await loadImg(src));
         } catch (err) {
@@ -196,7 +198,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -211,6 +213,7 @@ export async function loadArt(): Promise<ArtBank> {
       named(helmIds, "helmets"),
       named(helmIds, "helmets", "-over"),
       named(suitIds, "suits"),
+      named(helmIds, "helms"),
     ]);
   return {
     ready: true,
@@ -222,6 +225,7 @@ export async function loadArt(): Promise<ArtBank> {
     planets,
     debris,
     pals,
+    helms,
     helmets,
     helmOver,
     suits,
