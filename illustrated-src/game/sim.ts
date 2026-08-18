@@ -283,14 +283,11 @@ function pickKind(w: World) {
 }
 
 // Debris follows the zone's palette, and never blends into its sky.
+// Debris comes ONLY from the zone's own three-rock family. Rolling the
+// whole pool put six materials on one screen and the eye had nowhere to
+// rest — a zone should read as one place. All 27 rocks still fly; they
+// are spread ACROSS the 26 zones instead of stacked inside each one.
 function pickDebris(env: (typeof ENVS)[number]) {
-  const sky = SKY_RGB[env.sky];
-  if (Math.random() < 0.7)
-    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
-  for (let i = 0; i < 10; i++) {
-    const k = Math.floor(Math.random() * DEBRIS_COUNT);
-    if (sep(sky, DEBRIS_RGB[k]) >= MIN_SEP) return k;
-  }
   return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
 }
 

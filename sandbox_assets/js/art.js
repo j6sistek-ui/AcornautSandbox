@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=34";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=35";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -142,10 +142,11 @@ function haloOf(spr, mode) {
         haloCache.set(key, null);
         return null;
     }
-    cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.9)" : "rgba(170,200,255,0.5)";
-    cc.shadowBlur = mode === "dark" ? 15 : 11;
+    // one soft pass, not two hard ones: doubled up at 0.9 alpha this read
+    // as a drawn ring around every planet rather than separation
+    cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.5)" : "rgba(170,200,255,0.28)";
+    cc.shadowBlur = mode === "dark" ? 24 : 16;
     cc.shadowOffsetX = c.width * 2; // keep only the shadow
-    cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
     cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
     haloCache.set(key, c);
     return c;

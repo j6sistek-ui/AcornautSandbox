@@ -1,5 +1,5 @@
-import { MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=34";
-import { writeSave } from "./save.js?v=34";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=35";
+import { writeSave } from "./save.js?v=35";
 export function makeWorld(W, H) {
     return {
         W,
@@ -129,15 +129,11 @@ function pickKind(w) {
     return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
 }
 // Debris follows the zone's palette, and never blends into its sky.
+// Debris comes ONLY from the zone's own three-rock family. Rolling the
+// whole pool put six materials on one screen and the eye had nowhere to
+// rest — a zone should read as one place. All 27 rocks still fly; they
+// are spread ACROSS the 26 zones instead of stacked inside each one.
 function pickDebris(env) {
-    const sky = SKY_RGB[env.sky];
-    if (Math.random() < 0.7)
-        return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
-    for (let i = 0; i < 10; i++) {
-        const k = Math.floor(Math.random() * DEBRIS_COUNT);
-        if (sep(sky, DEBRIS_RGB[k]) >= MIN_SEP)
-            return k;
-    }
     return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
 }
 // Fully seal the corridor above the top gate and below the bottom one,
