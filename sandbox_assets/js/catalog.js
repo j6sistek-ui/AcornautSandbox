@@ -44,6 +44,14 @@ export const HELMETS = [
     { id: "meteor", name: "Meteor", cost: 400, visor: "#c98a4e", tint: 0.2, rim: "#b5713a", trim: "#6e3f18", glow: "#ff9d47" },
     { id: "chrono", name: "Chrono", cost: 500, visor: "#e8d9a8", tint: 0.16, rim: "#c9a94f", trim: "#7a6428", glow: "#ffe27a" },
     { id: "catbubble", name: "Cat Ears", cost: 350, visor: "#cfe0ee", tint: 0.16, rim: "#c8d2dc", trim: "#8a94a0", glow: null, ears: true },
+    { id: "gemmie", name: "Opal", cost: 0, visor: "#eddcff", tint: 0.16, rim: "#e0c8ff", trim: "#9a86b8", glow: "#ffb8f0" },
+    { id: "phoenix", name: "Phoenix", cost: 0, visor: "#ffd2b0", tint: 0.18, rim: "#c4362a", trim: "#7a1d14", glow: "#ff6a1e" },
+    { id: "sammie", name: "Samurai", cost: 0, visor: "#e6dccf", tint: 0.18, rim: "#7d1b20", trim: "#d4af37", glow: null },
+    { id: "seraph", name: "Seraph", cost: 0, visor: "#fff4d8", tint: 0.14, rim: "#e8c66a", trim: "#a8853a", glow: "#ffe9a8" },
+    { id: "chronarch", name: "Chronarch", cost: 0, visor: "#f0e6d2", tint: 0.16, rim: "#8a5a2a", trim: "#d4af37", glow: null },
+    { id: "leviathan", name: "Leviathan", cost: 0, visor: "#d6fbff", tint: 0.18, rim: "#1c8f96", trim: "#0d5257", glow: "#3fe8f0" },
+    { id: "paladin", name: "Paladin", cost: 0, visor: "#f4efe4", tint: 0.15, rim: "#d8cfae", trim: "#8d8256", glow: null },
+    { id: "princess", name: "Rose", cost: 0, visor: "#fdeef6", tint: 0.16, rim: "#6b3f9e", trim: "#c0348a", glow: "#ff8ad0" },
 ];
 export const SUITS = [
     { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
@@ -59,6 +67,9 @@ export const SUITS = [
     { id: "ghost", name: "Ghost", cost: 800, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
     { id: "bigbooty", name: "Big Booty", cost: 1000, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
     { id: "catsuit", name: "Cat", cost: 750, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
+    { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
+    { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
+    { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
 ];
 export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
@@ -265,7 +276,11 @@ export const PAL_LEVELS = {
 // Premium items. These never appear on the level track — no amount of
 // flying reveals them — and acorns cannot buy them; they are bought for
 // real money. The beta hands them over so they can be played and judged.
-export const IAP_ITEMS = ["catsuit", "catbubble"];
+export const IAP_ITEMS = [
+    "catsuit", "catbubble",
+    "gemmie", "phoenix", "sammie", "seraph",
+    "chronarch", "leviathan", "paladin", "princess",
+];
 export function isIap(id) {
     return IAP_ITEMS.includes(id);
 }
