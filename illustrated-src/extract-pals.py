@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
-"""Cut the ORIGINAL imagine pal portraits (raw-sheet.jpg) into named files.
+"""Cut the painted pal sheet and drop the hot-pink backdrop.
 
-raw-sheet.jpg is the 3x4 painted companion sheet (one character per 400px cell).
-raw-sheet.png is a later generate2dsprite pass — overlapping frames, do not use.
+raw-sheet.jpg cells are ~75% RGB(213,11,117). That pink is the sheet
+backdrop, not space art. Key it out, keep the character, center on a
+transparent 256px square.
 """
 from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 SHEET = Path("/workspace/assets/sprites/pals/raw-sheet.jpg")
 OUTS = [
+    Path("/workspace/public/art/cutouts"),
     Path("/workspace/public/art/mates"),
     Path("/workspace/public/art/pals"),
     Path("/workspace/public/art/thumbs/pals"),
 ]
 SIZE = 256
+PINK = np.array([213.0, 11.0, 117.0])
 
-# row-major, 3 columns — visual identity of each painted cell on the jpg.
 CELLS = {
     (0, 0): "rocket",
     (0, 1): "tinbot",
@@ -35,22 +38,92 @@ CELLS = {
 }
 
 
+def knock_pink(rgb: np.ndarray) -> np.ndarray:
+    """Return alpha 0-255. Hot-pink sheet backdrop goes to 0."""
+    pix = rgb.astype(np.float32)
+    dist = np.linalg.norm(pix - PINK, axis=2)
+    # also treat near-magenta with very low green as backdrop
+    g = pix[:, :, 1]
+    r = pix[:, :, 0]
+    b = pix[:, :, 2]
+    magenta = (r > 170) & (g < 45) & (b > 70) & (b < 170)
+    alpha = np.clip((dist - 28.0) * (255.0 / 36.0), 0, 255)
+    alpha[magenta & (dist < 80)] = np.minimum(alpha[magenta & (dist < 80)], 0)
+    # hard kill obvious backdrop
+    alpha[dist < 42] = 0
+    return alpha.astype(np.uint8)
+
+
+def drop_specks(alpha: np.ndarray, min_area: int = 80) -> np.ndarray:
+    """Clear tiny leftover islands (stars / jpeg crumbs)."""
+    h, w = alpha.shape
+    solid = alpha > 20
+    seen = np.zeros_like(solid)
+    out = alpha.copy()
+    for y in range(h):
+        for x in range(w):
+            if not solid[y, x] or seen[y, x]:
+                continue
+            stack = [(y, x)]
+            seen[y, x] = True
+            blob: list[tuple[int, int]] = []
+            while stack:
+                cy, cx = stack.pop()
+                blob.append((cy, cx))
+                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                    if 0 <= ny < h and 0 <= nx < w and solid[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+            if len(blob) < min_area:
+                for by, bx in blob:
+                    out[by, bx] = 0
+    return out
+
+
+def trim_center(rgba: np.ndarray, size: int) -> Image.Image:
+    a = rgba[:, :, 3]
+    ys, xs = np.where(a > 18)
+    if len(xs) == 0:
+        return Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    pad = 8
+    x0 = max(0, int(xs.min()) - pad)
+    y0 = max(0, int(ys.min()) - pad)
+    x1 = min(rgba.shape[1], int(xs.max()) + 1 + pad)
+    y1 = min(rgba.shape[0], int(ys.max()) + 1 + pad)
+    crop = rgba[y0:y1, x0:x1]
+    ch, cw = crop.shape[:2]
+    side = max(cw, ch)
+    square = np.zeros((side, side, 4), dtype=np.uint8)
+    ox = (side - cw) // 2
+    oy = (side - ch) // 2
+    square[oy : oy + ch, ox : ox + cw] = crop
+    img = Image.fromarray(square, "RGBA")
+    inner = int(size * 0.9)
+    fitted = img.resize((inner, inner), Image.Resampling.LANCZOS)
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    off = (size - inner) // 2
+    out.paste(fitted, (off, off), fitted)
+    return out
+
+
 def main() -> None:
-    sheet = Image.open(SHEET).convert("RGBA")
+    sheet = Image.open(SHEET).convert("RGB")
     assert sheet.size == (1200, 1600), sheet.size
-    for dest_dir in OUTS:
-        dest_dir.mkdir(parents=True, exist_ok=True)
-    contact = Image.new("RGBA", (SIZE * 3 + 16, SIZE * 4 + 16), (8, 12, 24, 255))
+    arr = np.array(sheet)
+    for dest in OUTS:
+        dest.mkdir(parents=True, exist_ok=True)
     for (row, col), name in CELLS.items():
-        cell = sheet.crop((col * 400, row * 400, col * 400 + 400, row * 400 + 400))
-        img = cell.resize((SIZE, SIZE), Image.Resampling.LANCZOS)
-        for dest_dir in OUTS:
-            img.save(dest_dir / f"{name}.png", "PNG")
-        contact.paste(img, (col * SIZE + 8, row * SIZE + 8))
-        print(f"{name:12} {img.size}")
-    qa = Path("/workspace/screenshots/pal-source-contact.png")
-    contact.save(qa, "PNG")
-    print("qa", qa)
+        cell = arr[row * 400 : (row + 1) * 400, col * 400 : (col + 1) * 400]
+        alpha = drop_specks(knock_pink(cell))
+        rgba = np.dstack([cell, alpha])
+        img = trim_center(rgba, SIZE)
+        for dest in OUTS:
+            img.save(dest / f"{name}.png", "PNG")
+        a = np.array(img)[:, :, 3]
+        rgb = np.array(img)[:, :, :3].astype(np.float32)
+        dist = np.linalg.norm(rgb - PINK, axis=2)
+        leftover = int(((a > 16) & (dist < 42)).sum())
+        print(f"{name:12} solid={int((a > 16).sum()):5d} leftover_pink={leftover}")
 
 
 if __name__ == "__main__":

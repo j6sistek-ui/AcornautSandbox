@@ -167,7 +167,7 @@ export async function bootStandalone(root: HTMLElement) {
     loadTxt.append(el("p", "ac-sub", `${trail.name} · ${pal?.name ?? "None"}`));
     load.append(loadTxt);
     if (pal && pal.id !== "none") {
-      load.append(shopImg(artUrl(`mates/${pal.art || pal.id}.png`), pal.name));
+      load.append(shopImg(artUrl(`cutouts/${pal.art || pal.id}.png`), pal.name));
     } else if (pal) {
       const { c, ctx } = miniCanvas(40, 40);
       if (ctx) paintPalPreview(ctx, engine.art, pal.id, 20, 20, 36);
@@ -223,7 +223,7 @@ export async function bootStandalone(root: HTMLElement) {
           if (ctx) paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
           b.append(c);
         } else {
-          b.append(shopImg(artUrl(`mates/${p.art || p.id}.png`), p.name));
+          b.append(shopImg(artUrl(`cutouts/${p.art || p.id}.png`), p.name));
         }
         b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
         b.onclick = () => engine.equipPal(p.id);
