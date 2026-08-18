@@ -1,6 +1,6 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=35";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=35";
-import { drawSprite, skyImage } from "./art.js?v=35";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=36";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=36";
+import { drawSprite, skyImage } from "./art.js?v=36";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
