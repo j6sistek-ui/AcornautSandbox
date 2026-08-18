@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=22";
-import { drawTrailPreviewOn, drawHelmetOn, drawPalOn, helmetCenter } from "./cosmetics.js?v=22";
-import { drawSprite } from "./art.js?v=22";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=23";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=23";
+import { drawSprite } from "./art.js?v=23";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -302,148 +302,115 @@ function drawPlanet(ctx, art, x, y, r, kind) {
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
 }
-/** Painted visor bubble on idle-1.png (128 source). Not the face. */
-const VISOR = { sx: 102, sy: 42, rx: 22, ry: 20 };
-const BODY = { sx: 64, sy: 74, rx: 30, ry: 24 };
-function spriteLayout(spr, x, y, size) {
-    const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
-    const dim = Math.max(box.w, box.h);
-    const scale = size / Math.max(1, dim);
-    return {
-        scale,
-        map(sx, sy) {
-            return {
-                x: x - (box.w * scale) / 2 + (sx - box.x) * scale,
-                y: y - (box.h * scale) / 2 + (sy - box.y) * scale,
-            };
-        },
-    };
-}
-const sheets = new Map();
-function getPilotSheet(px) {
-    let sheet = sheets.get(px);
-    if (!sheet) {
-        sheet = document.createElement("canvas");
-        sheets.set(px, sheet);
-    }
-    if (sheet.width !== px || sheet.height !== px) {
-        sheet.width = px;
-        sheet.height = px;
-    }
-    return sheet;
-}
 function hexRgb(hex) {
     const h = hex.replace("#", "");
     const full = h.length === 3 ? h[0] + h[0] + h[1] + h[1] + h[2] + h[2] : h;
     const n = parseInt(full, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
-function tintSuitFabric(octx, w, h, suit) {
-    if (suit.id === "flight")
+// Where the glass dome sits in each 256px body render (x, y, radius),
+// measured from the paintings themselves. Flight frames key by frame
+// name, suit renders by suit id. The equipped helmet paints its
+// identity — tinted glass, rim, glow — exactly onto the painted dome.
+const DOME = {
+    "idle-1": [191, 103, 51],
+    "idle-2": [192, 103, 51],
+    "idle-3": [192, 102, 53],
+    "idle-4": [194, 99, 51],
+    "flap-1": [166, 96, 52],
+    "flap-2": [164, 93, 50],
+    "flap-3": [164, 79, 48],
+    "flap-4": [163, 80, 45],
+    "suit:iontrim": [102, 42, 24], // legacy 128px render
+    "suit:copper": [190, 78, 46],
+    "suit:frost": [197, 96, 49],
+    "suit:voidsuit": [192, 97, 50],
+    "suit:aurorasuit": [195, 102, 54],
+    "suit:ember": [185, 75, 44],
+    "suit:stardust": [194, 97, 51],
+    "suit:robo": [195, 97, 52],
+    "suit:alien": [197, 102, 50],
+    "suit:ghost": [191, 99, 49],
+    "suit:bigbooty": [194, 86, 51],
+};
+function paintDome(ctx, body, key, helmet, x, y, size) {
+    if (helmet.id === "clear")
+        return; // the painted dome already reads clear
+    const a = DOME[key];
+    if (!a)
         return;
-    const img = octx.getImageData(0, 0, w, h);
-    const d = img.data;
-    const tgt = hexRgb(suit.suit);
-    const trim = hexRgb(suit.trim);
-    const k = suit.robo || suit.ghost || suit.alien ? 0.72 : 0.58;
-    for (let i = 0; i < d.length; i += 4) {
-        const a = d[i + 3];
-        if (a < 24)
-            continue;
-        const r = d[i];
-        const g = d[i + 1];
-        const b = d[i + 2];
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const sat = max - min;
-        const lum = 0.3 * r + 0.59 * g + 0.11 * b;
-        const orangeFur = r > g + 18 && g > b + 8 && sat > 48 && r > 110;
-        if (orangeFur && !suit.robo && !suit.alien && !suit.ghost)
-            continue;
-        if (lum < 36)
-            continue;
-        const toward = lum > 188 && sat < 70 ? trim : tgt;
-        d[i] = r * (1 - k) + toward.r * k;
-        d[i + 1] = g * (1 - k) + toward.g * k;
-        d[i + 2] = b * (1 - k) + toward.b * k;
-    }
-    octx.putImageData(img, 0, 0);
-}
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, t = 0, art) {
-    if (!spr)
-        return;
-    const pad = Math.ceil(size * 0.28);
-    const out = Math.ceil(size + pad * 2);
-    const sheet = getPilotSheet(Math.max(8, out));
-    const octx = sheet.getContext("2d");
-    if (!octx) {
-        drawSprite(ctx, spr, x, y, size);
-        return;
-    }
-    octx.setTransform(1, 0, 0, 1, 0, 0);
-    octx.clearRect(0, 0, sheet.width, sheet.height);
-    const cx = out / 2;
-    const cy = out / 2 + size * 0.06;
-    drawSprite(octx, spr, cx, cy, size);
-    tintSuitFabric(octx, out, out, suit);
-    const over = art?.helmOver?.[helmet.id];
-    if (over) {
-        drawAlignedOver(octx, spr, over, helmet, cx, cy, size);
-    }
-    else {
-        const lay = spriteLayout(spr, cx, cy, size);
-        const visor = lay.map(VISOR.sx, VISOR.sy);
-        const hc = helmetCenter();
-        const hs = (VISOR.rx * lay.scale) / hc.r;
-        octx.save();
-        octx.translate(visor.x, visor.y);
-        octx.scale(hs, hs);
-        octx.translate(-hc.x, -hc.y);
-        drawHelmetOn(octx, helmet, suit, t, size);
-        octx.restore();
-    }
-    ctx.drawImage(sheet, 0, 0, out, out, x - out / 2, y - out / 2, out, out);
-}
-// The painted helmet domes differ only by a whisper of glaze, so every
-// helmet card read as the same squirrel. Bake each helmet's catalog
-// colour into its dome overlay once, and draw the overlay through the
-// SAME box mapping as the sprite under it so the tint lands exactly on
-// the glass — in the hangar and in flight alike.
-const tintedOverCache = new Map();
-function tintedOver(over, helmet) {
-    const hit = tintedOverCache.get(helmet.id);
-    if (hit)
-        return hit;
-    const c = document.createElement("canvas");
-    c.width = over.width;
-    c.height = over.height;
-    const cc = c.getContext("2d");
-    if (!cc)
-        return null;
-    cc.drawImage(over, 0, 0);
-    cc.globalCompositeOperation = "source-atop";
-    cc.globalAlpha = helmet.id === "clear" ? 0.15 : 0.45;
-    cc.fillStyle = helmet.visor;
-    cc.fillRect(0, 0, c.width, c.height);
-    cc.globalAlpha = 1;
-    cc.globalCompositeOperation = "source-over";
-    tintedOverCache.set(helmet.id, c);
-    return c;
-}
-function drawAlignedOver(ctx, base, over, helmet, x, y, size) {
-    const box = base.box ?? { x: 0, y: 0, w: base.width, h: base.height };
-    const dim = Math.max(box.w, box.h);
-    const scale = size / Math.max(1, dim);
-    const dw = box.w * scale;
-    const dh = box.h * scale;
-    const img = tintedOver(over, helmet) ?? over;
+    const box = body.box ?? { x: 0, y: 0, w: body.width, h: body.height };
+    const scale = size / Math.max(1, Math.max(box.w, box.h));
+    const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
+    const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
+    const r = a[2] * scale;
+    const v = hexRgb(helmet.visor);
     ctx.save();
+    const grad = ctx.createRadialGradient(hx - r * 0.25, hy - r * 0.3, r * 0.2, hx, hy, r);
+    grad.addColorStop(0, `rgba(${v.r},${v.g},${v.b},0.08)`);
+    grad.addColorStop(0.7, `rgba(${v.r},${v.g},${v.b},0.26)`);
+    grad.addColorStop(1, `rgba(${v.r},${v.g},${v.b},0.4)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(hx, hy, r, 0, Math.PI * 2);
+    ctx.fill();
     if (helmet.glow) {
         ctx.shadowColor = helmet.glow;
-        ctx.shadowBlur = size * 0.12;
+        ctx.shadowBlur = r * 0.55;
     }
-    ctx.drawImage(img, box.x, box.y, box.w, box.h, x - dw / 2, y - dh / 2, dw, dh);
+    ctx.lineWidth = Math.max(1.5, r * 0.09);
+    ctx.strokeStyle = helmet.rim;
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.arc(hx, hy, r * 0.97, 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
+}
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0) {
+    // the equipped suit IS the body: its painted render replaces the
+    // default flight frames, carried by the pilot's motion. Copper and
+    // ember renders came out headless — until they are regenerated, those
+    // two fly the default body so nothing decapitated ships.
+    const suited = suit.id !== "flight" && suit.id !== "copper" && suit.id !== "ember"
+        ? (art?.suits?.[suit.id] ?? null)
+        : null;
+    const body = suited ?? spr;
+    if (!body)
+        return;
+    // frames crossfade instead of hard-switching — the four paintings blend
+    // through each other so the cycle reads as motion, not a slideshow
+    const f = suited ? 0 : blend;
+    if (!suited && sprNext && f > 0.02) {
+        const prevA = ctx.globalAlpha;
+        ctx.globalAlpha = prevA * (1 - f);
+        drawSprite(ctx, body, x, y, size);
+        ctx.globalAlpha = prevA * f;
+        drawSprite(ctx, sprNext, x, y, size);
+        ctx.globalAlpha = prevA;
+    }
+    else {
+        drawSprite(ctx, body, x, y, size);
+    }
+    if (suited) {
+        paintDome(ctx, body, "suit:" + suit.id, helmet, x, y, size);
+        return;
+    }
+    // the dome anchor glides between the two frames' measured positions
+    const a1 = DOME[frameKey];
+    const a2 = keyNext ? DOME[keyNext] : null;
+    if (a1 && a2 && f > 0.02) {
+        const mix = [
+            a1[0] + (a2[0] - a1[0]) * f,
+            a1[1] + (a2[1] - a1[1]) * f,
+            a1[2] + (a2[2] - a1[2]) * f,
+        ];
+        DOME.__mix = mix;
+        paintDome(ctx, body, "__mix", helmet, x, y, size);
+        delete DOME.__mix;
+    }
+    else {
+        paintDome(ctx, body, frameKey, helmet, x, y, size);
+    }
 }
 function drawPilot(ctx, w, save, art) {
     const x = w.W * PHYS.squirrelX;
@@ -452,7 +419,18 @@ function drawPilot(ctx, w, save, art) {
     const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
     // The repainted flap frames are one coherent character, so the tap
     // cycles them again — plus a soft nose-up kick and scale pop for punch.
-    const spr = w.flapBoost > 0 ? frameOf(art.squirrelFlap, w.time, 12) : frameOf(art.squirrelIdle, w.time, 5);
+    const flapping = w.flapBoost > 0;
+    const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
+    const speed = flapping ? 10 : 5;
+    const ft = w.time * speed;
+    const idx = frames.length ? Math.floor(ft) % frames.length : 0;
+    const nxt = frames.length ? (idx + 1) % frames.length : 0;
+    // smoothstep eases the crossfade so each pose still gets its moment
+    const fr = ft - Math.floor(ft);
+    const blend = fr * fr * (3 - 2 * fr);
+    const spr = frames[idx] ?? null;
+    const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
+    const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     ctx.save();
     ctx.translate(x, y);
     ctx.fillStyle = "rgba(0,0,0,0.28)";
@@ -464,7 +442,7 @@ function drawPilot(ctx, w, save, art) {
     ctx.rotate(bank - kick * 0.12);
     const pop = 1 + kick * 0.05;
     ctx.scale(pop, pop);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
@@ -494,23 +472,17 @@ function paintPal(ctx, art, id, x, y, size) {
 }
 export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
     const painted = art?.helmets?.[helmet.id];
-    const over = art?.helmOver?.[helmet.id];
     if (suit.id === "flight" && painted) {
+        // every helmet painting is a hi-res render with its identity baked in
         drawSprite(ctx, painted, cx, cy + 2, size);
-        // hi-res renders carry their identity baked in; only the legacy
-        // whisper-glaze paintings need the aligned tinted dome on top
-        if (over && painted.width < 200) {
-            drawAlignedOver(ctx, painted, over, helmet, cx, cy + 2, size);
-        }
         return;
     }
     const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
     if (!body)
         return;
     drawSprite(ctx, body, cx, cy + 2, size);
-    if (over && helmet.id !== "clear") {
-        drawAlignedOver(ctx, body, over, helmet, cx, cy + 2, size);
-    }
+    const key = art?.suits?.[suit.id] ? "suit:" + suit.id : "idle-1";
+    paintDome(ctx, body, key, helmet, cx, cy + 2, size);
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {
     paintPal(ctx, art, id, cx, cy, size);
