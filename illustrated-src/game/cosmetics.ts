@@ -574,9 +574,91 @@ function drawAlienHead(suit) {
 }
 
 // —— head ——————————————————————————————————————————————————
+// The retro counterpart to the illustrated cat suit. Same head base as
+// the squirrel, but with the two cues that flip the animal: pointed
+// triangular ears in place of the rounded tufts, and a small pink
+// triangle nose with no buck teeth (the buck teeth are what read as
+// "rodent"). Everything else — muzzle, eye, whiskers — carries over.
+function drawCatHead(suit) {
+  // far ear (behind the head) — a back-swept triangle
+  ctx.fillStyle = suit.furDark;
+  ctx.beginPath();
+  ctx.moveTo(3.4, -18.6); ctx.lineTo(6.2, -27.8); ctx.lineTo(9.6, -20.2);
+  ctx.closePath();
+  ctx.fill();
+
+  // head
+  const hg = ctx.createRadialGradient(7.5, -15, 2, 11, -9, 15);
+  hg.addColorStop(0, suit.fur);
+  hg.addColorStop(0.62, suit.fur);
+  hg.addColorStop(1, suit.furDark);
+  ctx.fillStyle = hg;
+  ctx.beginPath();
+  ctx.ellipse(10, -11, 9.6, 9.0, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // cheek fluff
+  ctx.fillStyle = withAlpha(suit.belly, 0.5);
+  ctx.beginPath();
+  ctx.ellipse(11.4, -6.8, 5.0, 3.3, 0.25, 0, Math.PI * 2);
+  ctx.fill();
+
+  // near ear — an upright triangle with a pink inner
+  ctx.fillStyle = suit.fur;
+  ctx.beginPath();
+  ctx.moveTo(9.2, -19.0); ctx.lineTo(13.0, -29.2); ctx.lineTo(16.4, -18.4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#eeae94';
+  ctx.beginPath();
+  ctx.moveTo(11.2, -19.4); ctx.lineTo(13.1, -26.0); ctx.lineTo(14.8, -19.0);
+  ctx.closePath();
+  ctx.fill();
+
+  // muzzle
+  ctx.fillStyle = suit.belly;
+  ctx.beginPath();
+  ctx.ellipse(16.4, -8.6, 5.2, 4.2, 0.16, 0, Math.PI * 2);
+  ctx.fill();
+
+  // small pink triangle nose — no buck teeth
+  ctx.fillStyle = '#c9776a';
+  ctx.beginPath();
+  ctx.moveTo(19.0, -10.4); ctx.lineTo(21.6, -10.0); ctx.lineTo(20.2, -7.8);
+  ctx.closePath();
+  ctx.fill();
+  // mouth split under the nose
+  ctx.strokeStyle = withAlpha(suit.furDark, 0.6);
+  ctx.lineWidth = 0.7;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(20.2, -7.8); ctx.lineTo(20.2, -5.6);
+  ctx.stroke();
+
+  // whiskers — longer and more of them than the squirrel's
+  ctx.strokeStyle = withAlpha('#fff', 0.6);
+  ctx.lineWidth = 0.7;
+  ctx.beginPath();
+  ctx.moveTo(19.6, -8.8); ctx.lineTo(25.4, -10.6);
+  ctx.moveTo(19.8, -7.8); ctx.lineTo(25.6, -7.8);
+  ctx.moveTo(19.6, -6.8); ctx.lineTo(25.0, -5.2);
+  ctx.stroke();
+
+  // eye
+  ctx.fillStyle = '#181008';
+  ctx.beginPath();
+  ctx.arc(13.4, -13.0, 2.9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(14.3, -13.9, 1.15, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 function drawHead(suit) {
   if (suit.robo) { drawRoboHead(suit); return; }
   if (suit.alien) { drawAlienHead(suit); return; }
+  if (suit.cat) { drawCatHead(suit); return; }
   // far ear (behind the head)
   ctx.fillStyle = suit.furDark;
   ctx.beginPath();
@@ -736,6 +818,30 @@ const HELM_C = { x: 11, y: -11, r: 15.2 };
 
 function drawHelmet(helm, suit, t, seed) {
   const c = HELM_C;
+
+  // Cat-ear helmets grow two metal ears from behind the dome — drawn
+  // first so the glass rim overlaps their base. Silver shell, warm inner,
+  // to match the illustrated cat helmet render.
+  if (helm.ears) {
+    const ear = (bx, by, tx, ty, ox, oy) => {
+      ctx.fillStyle = helm.rim;
+      ctx.beginPath();
+      ctx.moveTo(c.x + bx - 3.4, c.y + by);
+      ctx.lineTo(c.x + tx, c.y + ty);
+      ctx.lineTo(c.x + bx + 3.4, c.y + by);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#e79a5a';
+      ctx.beginPath();
+      ctx.moveTo(c.x + ox - 1.6, c.y + oy + 3.2);
+      ctx.lineTo(c.x + ox, c.y + oy - 3.0);
+      ctx.lineTo(c.x + ox + 1.6, c.y + oy + 3.2);
+      ctx.closePath();
+      ctx.fill();
+    };
+    ear(-6.5, -11, -9.5, -21, -7, -12);
+    ear(6.5, -11, 9.5, -21, 7, -12);
+  }
 
   if (helm.glow) {
     const pulse = 0.9 + 0.1 * Math.sin(t * 2 + seed);

@@ -25,6 +25,16 @@ export async function bootStandalone(root) {
     // certified from a harness (env sweeps, cosmetic matrices, replays)
     window.__sandbox = engine;
     engine.start();
+    // The title picks ONE mode at a time: TAKE FLIGHT launches it, the
+    // MODE bar cycles through the four. Selection lives here so it survives
+    // a re-render of the title.
+    const MODES = [
+        { id: "fly", label: "NORMAL", blurb: "The illustrated game." },
+        { id: "deep", label: "DEEP SPACE", blurb: "Dark skies, a shift every 10s." },
+        { id: "lost", label: "LOST IN SPACE", blurb: "Drift, tilt, wormholes." },
+        { id: "arcade", label: "ARCADE", blurb: "The original game, in 8-bit." },
+    ];
+    let selectedMode = 0;
     const render = () => {
         const snap = engine.snap();
         overlay.innerHTML = "";
@@ -122,14 +132,20 @@ export async function bootStandalone(root) {
         hero.className = "ac-hero";
         hero.alt = "";
         box.append(top, hero);
-        const fly = el("button", "ac-primary", "FLY");
-        fly.onclick = () => engine.fly("fly");
-        const deep = el("button", "ac-ghost", "DEEP SPACE");
-        deep.onclick = () => engine.fly("deep");
-        const lost = el("button", "ac-ghost", "LOST IN SPACE");
-        lost.onclick = () => engine.fly("lost");
-        const arcade = el("button", "ac-ghost", "ARCADE");
-        arcade.onclick = () => engine.fly("arcade");
+        // The one launch button — it flies whichever mode is selected below.
+        const mode = MODES[selectedMode];
+        const take = el("button", "ac-primary", "TAKE FLIGHT");
+        take.onclick = () => engine.fly(mode.id);
+        // The mode selector: one bar that cycles the four on tap. Left label
+        // names the axis, right side shows the current pick with a ⟲ cue.
+        const modeBar = el("button", "ac-modebar");
+        const modeName = el("span", "ac-modeval", mode.label);
+        modeBar.append(el("span", "ac-modekey", "MODE"), modeName, el("span", "ac-modecue", "⟲"));
+        modeBar.onclick = () => {
+            selectedMode = (selectedMode + 1) % MODES.length;
+            render();
+        };
+        const modeBlurb = el("p", "ac-modeblurb", mode.blurb);
         // the live game's bottom bar: four round icons pinned to the bottom
         const ICONS = {
             hangar: '<svg viewBox="0 0 24 24"><path d="M20.5 7.5a4.9 4.9 0 0 1-6.4 4.6L7 19.2a2 2 0 0 1-2.8-2.8l7.1-7.1a4.9 4.9 0 0 1 6-6.1L14.6 6l3.2 3.2 2.5-2.6z"/></svg>',
@@ -151,7 +167,7 @@ export async function bootStandalone(root) {
             b.onclick = () => engine.open(screen);
             nav.append(b);
         }
-        box.append(fly, deep, lost, arcade, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
+        box.append(take, modeBar, modeBlurb, nav, el("p", "ac-fine", `${BUILD} · ${GAME_VERSION}`));
         return box;
     }
     function miniCanvas(w, h) {
@@ -530,9 +546,10 @@ export async function bootStandalone(root) {
             ctx.beginPath();
             ctx.arc(px / 2, px / 2, px * 0.46, 0, Math.PI * 2);
             ctx.fill();
-        }), "WORMHOLE", "Lost in Space: mirrors your heading.");
+        }), "WORMHOLE", "Lost in Space & Arcade: mirrors your heading.");
         scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
-        scroll.append(el("p", "ac-sub ac-mid", "ARCADE: catch the 8-bit acorn to shift between the illustrated game and the original. Same flight, other timeline — catch another to come back."));
+        scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
+        scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
         scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
         box.append(scroll);

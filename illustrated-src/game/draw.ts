@@ -494,6 +494,7 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:alien": [197, 102, 50],
   "suit:ghost": [191, 99, 49],
   "suit:bigbooty": [194, 86, 51],
+  "suit:catsuit": [212, 86, 50],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -512,6 +513,7 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   "aurora": [143, 116, 94],
   "meteor": [143, 116, 94],
   "chrono": [132, 126, 110],
+  "catbubble": [175, 137, 61],
 };
 
 // The real helmet art, its glass centre punched translucent once so the

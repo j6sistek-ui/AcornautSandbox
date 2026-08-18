@@ -44,6 +44,7 @@ export type Helmet = {
   rim: string;
   trim: string;
   glow: string | null;
+  ears?: boolean;
 };
 
 export const HELMETS: Helmet[] = [
@@ -59,6 +60,7 @@ export const HELMETS: Helmet[] = [
   { id: "aurora", name: "Aurora", cost: 300, visor: "#4de8b8", tint: 0.18, rim: "#57e6c2", trim: "#1c7a5e", glow: "#5dffd0" },
   { id: "meteor", name: "Meteor", cost: 400, visor: "#c98a4e", tint: 0.2, rim: "#b5713a", trim: "#6e3f18", glow: "#ff9d47" },
   { id: "chrono", name: "Chrono", cost: 500, visor: "#e8d9a8", tint: 0.16, rim: "#c9a94f", trim: "#7a6428", glow: "#ffe27a" },
+  { id: "catbubble", name: "Cat Ears", cost: 350, visor: "#cfe0ee", tint: 0.16, rim: "#c8d2dc", trim: "#8a94a0", glow: null, ears: true },
 ];
 
 export type Suit = {
@@ -78,6 +80,7 @@ export type Suit = {
   alien?: boolean;
   ghost?: boolean;
   booty?: boolean;
+  cat?: boolean;
 };
 
 export const SUITS: Suit[] = [
@@ -93,6 +96,7 @@ export const SUITS: Suit[] = [
   { id: "alien", name: "Alien", cost: 650, alien: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
   { id: "ghost", name: "Ghost", cost: 800, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 1000, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
+  { id: "catsuit", name: "Cat", cost: 750, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
 ];
 
 export type Trail = { id: string; name: string; cost: number; colors: string[] };

@@ -197,6 +197,7 @@ export async function loadArt() {
         "aurora",
         "meteor",
         "chrono",
+        "catbubble",
     ];
     const suitIds = [
         "flight",
@@ -211,6 +212,7 @@ export async function loadArt() {
         "alien",
         "ghost",
         "bigbooty",
+        "catsuit",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     async function named(ids, folder, suffix = "", required = false) {
