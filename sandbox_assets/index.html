@@ -51,6 +51,18 @@
     .ac-card.on { border-color: #4ab4ff; background: rgba(74,180,255,.15); }
     .ac-log { border: 1px solid #2a3454; border-radius: 16px; padding: 10px 12px; }
     .ac-coin { width: 20px; height: 20px; vertical-align: -4px; margin-right: 5px; }
+    .ac-ctrls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .ac-ctrl { border-radius: 16px; padding: 12px 8px; text-align: center; border: 1px solid; }
+    .ac-tap { background: rgba(58,140,255,.14); border-color: rgba(90,160,255,.6); }
+    .ac-swipe { background: rgba(255,150,60,.12); border-color: rgba(255,170,80,.55); }
+    .ac-glyph { font-size: 20px; line-height: 1; margin-bottom: 6px; }
+    .ac-tap .ac-glyph { color: #5aa0ff; }
+    .ac-swipe .ac-glyph { color: #ffb060; }
+    .ac-ctrltitle { font-weight: 800; font-size: 15px; }
+    .ac-tap .ac-ctrlsub { color: #9cc4ff; font-size: 11px; font-weight: 700; }
+    .ac-swipe .ac-ctrlsub { color: #ffc080; font-size: 11px; font-weight: 700; }
+    .ac-mid { text-align: center; }
+    .ac-helprow { display: flex; align-items: center; gap: 12px; padding: 7px 2px; }
     .ac-dock2 { margin-top: auto; display: flex; justify-content: space-around; padding: 6px 0 2px; }
     .ac-dockicon { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #8b95b0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .ac-dockicon .ac-ring { width: 52px; height: 52px; border-radius: 50%; background: #141b30; border: 1px solid #2a3454; display: flex; align-items: center; justify-content: center; }
@@ -88,7 +100,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js27/standalone.js";
+    import { bootStandalone } from "./js29/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

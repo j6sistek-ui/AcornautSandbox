@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "27";
+export const ART_VER = "29";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -155,35 +155,105 @@ export type Env = {
   wash: [number, number, number, number];
   wash2: [number, number, number, number];
   planetBias: number[];
+  debrisBias: number[];
+  sky: SkyId;
 };
 
+// Painted sky panoramas. Each carries its MEAN COLOUR, measured from
+// the art, and so does every planet and rock. Legibility is then a
+// perceptual question, not a brightness one: a pink planet on a green
+// sky is perfectly readable at the same brightness, while grey on grey
+// is not. sep() answers it, and nothing illegible is ever spawned.
+export type SkyId =
+  | "indigo" | "ice" | "inferno" | "mono" | "magenta"
+  | "verdant" | "ghost" | "neon" | "vortex" | "gold";
+export type RGB = [number, number, number];
+
+export const SKY_RGB: Record<SkyId, RGB> = {
+  indigo: [0.11, 0.14, 0.34],
+  ice: [0.57, 0.73, 0.83],
+  inferno: [0.42, 0.18, 0.11],
+  mono: [0.17, 0.17, 0.18],
+  magenta: [0.38, 0.20, 0.48],
+  verdant: [0.09, 0.33, 0.24],
+  ghost: [0.76, 0.76, 0.78],
+  neon: [0.23, 0.20, 0.51],
+  vortex: [0.09, 0.06, 0.15],
+  gold: [0.76, 0.49, 0.14],
+};
+
+export const PLANET_COUNT = 33;
+export const DEBRIS_COUNT = 26;
+
+export const PLANET_RGB: RGB[] = [
+  [0.34, 0.45, 0.47], [0.68, 0.49, 0.25], [0.63, 0.66, 0.68],
+  [0.35, 0.17, 0.12], [0.21, 0.50, 0.49], [0.46, 0.44, 0.43],
+  [0.65, 0.42, 0.20], [0.13, 0.30, 0.48], [0.56, 0.29, 0.43],
+  [0.25, 0.34, 0.13], [0.39, 0.23, 0.49], [0.18, 0.22, 0.27],
+  [0.36, 0.27, 0.18], [0.68, 0.52, 0.57], [0.38, 0.18, 0.11],
+  [0.39, 0.54, 0.70], [0.40, 0.19, 0.09], [0.29, 0.16, 0.39],
+  [0.30, 0.18, 0.11], [0.33, 0.37, 0.47], [0.14, 0.30, 0.39],
+  [0.43, 0.09, 0.13], [0.51, 0.39, 0.73], [0.71, 0.62, 0.57],
+  [0.78, 0.74, 0.66], [0.13, 0.16, 0.24], [0.92, 0.65, 0.74],
+  [0.12, 0.11, 0.26], [0.23, 0.58, 0.79], [0.16, 0.21, 0.47],
+  [0.41, 0.26, 0.63], [0.34, 0.56, 0.67], [0.30, 0.15, 0.09],
+];
+
+export const DEBRIS_RGB: RGB[] = [
+  [0.28, 0.25, 0.25], [0.30, 0.22, 0.19], [0.63, 0.68, 0.77],
+  [0.28, 0.25, 0.23], [0.29, 0.26, 0.24], [0.31, 0.29, 0.28],
+  [0.73, 0.54, 0.83], [0.27, 0.22, 0.22], [0.23, 0.22, 0.23],
+  [0.51, 0.27, 0.59], [0.33, 0.35, 0.38], [0.55, 0.71, 0.79],
+  [0.22, 0.16, 0.14], [0.19, 0.48, 0.73], [0.29, 0.07, 0.09],
+  [0.58, 0.39, 0.10], [0.10, 0.25, 0.59], [0.21, 0.32, 0.20],
+  [0.32, 0.33, 0.59], [0.38, 0.49, 0.64], [0.58, 0.60, 0.64],
+  [0.43, 0.44, 0.45], [0.14, 0.13, 0.27], [0.39, 0.39, 0.54],
+  [0.44, 0.49, 0.10], [0.70, 0.51, 0.15],
+];
+
+/** Perceptual separation in a luma + opponent-colour space. Luminance
+ *  is weighted heaviest because form reads by brightness first, but hue
+ *  gets its say — which is what makes pink-on-green legible. Calibrated
+ *  against the art: orange-on-orange 0.04, black-on-black 0.13,
+ *  white-on-white 0.13, grey-on-white 0.24, green-on-green 0.26 all sit
+ *  below the bar; pink-on-green 0.55, blue-on-orange 0.63 and
+ *  lava-on-ice 1.14 sit far above it. */
+export function sep(a: RGB, b: RGB) {
+  const l = (c: RGB) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  const dL = 2.1 * (l(a) - l(b));
+  const dA = a[0] - a[1] - (b[0] - b[1]);
+  const dB = a[2] - (a[0] + a[1]) / 2 - (b[2] - (b[0] + b[1]) / 2);
+  return Math.sqrt(dL * dL + dA * dA + dB * dB);
+}
+export const MIN_SEP = 0.3;
+
 export const ENVS: Env[] = [
-  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 5, 7] },
-  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [8, 10, 13] },
-  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [2, 15, 4] },
-  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [3, 6, 16] },
-  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [10, 4, 2] },
-  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [14, 9, 7] },
-  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [5, 17, 2] },
-  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [9, 4, 13] },
-  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [3, 8, 16] },
-  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [7, 4, 11] },
-  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [10, 17, 8] },
-  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [1, 6, 16] },
-  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [1, 3, 6] },
-  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [13, 8, 10] },
-  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [11, 13, 8] },
-  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [9, 12, 4] },
-  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [9, 14, 16] },
-  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [0, 8, 13] },
-  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [6, 5, 16] },
-  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [7, 15, 10] },
-  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [5, 17, 7] },
-  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [15, 9, 10] },
-  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [16, 6, 5] },
-  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [2, 17, 5] },
-  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [13, 10, 1] },
-  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [17, 14, 12] },
+  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 2, 15, 1], debrisBias: [1, 3, 10, 21], sky: "indigo" },
+  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 9, 20, 28], debrisBias: [11, 2, 25, 20], sky: "magenta" },
+  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [3, 14, 32, 12], debrisBias: [12, 14, 22, 7], sky: "ice" },
+  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [7, 29, 15, 10], debrisBias: [16, 19, 13, 11], sky: "inferno" },
+  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [24, 2, 12, 6], debrisBias: [21, 20, 10, 25], sky: "neon" },
+  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 8, 21, 13], debrisBias: [19, 9, 23, 13], sky: "verdant" },
+  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [0, 19, 13, 23], debrisBias: [11, 20, 21, 25], sky: "mono" },
+  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [8, 21, 30, 1], debrisBias: [9, 19, 23, 13], sky: "verdant" },
+  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [7, 29, 15, 4], debrisBias: [16, 13, 19, 11], sky: "inferno" },
+  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [24, 6, 1, 26], debrisBias: [20, 21, 25, 11], sky: "indigo" },
+  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 24, 1], debrisBias: [11, 20, 19, 25], sky: "vortex" },
+  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [7, 29, 30, 10], debrisBias: [12, 14, 22, 16], sky: "gold" },
+  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 27, 32, 7], debrisBias: [22, 12, 14, 16], sky: "gold" },
+  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [24, 2, 5, 12], debrisBias: [21, 10, 20, 1], sky: "neon" },
+  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [12, 6, 24, 26], debrisBias: [12, 14, 1, 25], sky: "neon" },
+  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [8, 30, 21, 10], debrisBias: [9, 19, 23, 25], sky: "verdant" },
+  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [30, 21, 8, 27], debrisBias: [19, 9, 23, 20], sky: "verdant" },
+  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [4, 28, 20, 15], debrisBias: [13, 11, 19, 25], sky: "magenta" },
+  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [29, 7, 27, 32], debrisBias: [22, 12, 14, 16], sky: "gold" },
+  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [3, 21, 16, 14], debrisBias: [12, 14, 22, 16], sky: "ice" },
+  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [11, 20, 25, 21], sky: "mono" },
+  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 19, 13, 23], sky: "verdant" },
+  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 13, 19, 11], sky: "inferno" },
+  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 32, 25, 17], debrisBias: [12, 14, 22, 16], sky: "ghost" },
+  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [21, 10, 20, 1], sky: "neon" },
+  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 25, 19], sky: "vortex" },
 ];
 
 export const ENV_GATES = 20;

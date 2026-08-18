@@ -1,4 +1,4 @@
-import { ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { writeSave, type SaveData } from "./save";
 
 export type Screen = "title" | "hangar" | "log" | "social" | "help" | "play" | "dead" | "pause";
@@ -99,6 +99,7 @@ export type World = {
   invulnLeft: number;
   flapBoost: number;
   hitCooldown: number;
+  trailT: number;
   bounceUp: boolean;
   shieldCharges: number;
   absorbGrace: number;
@@ -161,6 +162,7 @@ export function makeWorld(W: number, H: number): World {
     invulnLeft: 0,
     flapBoost: 0,
     hitCooldown: 0,
+    trailT: 0,
     bounceUp: false,
     shieldCharges: 0,
     absorbGrace: 0,
@@ -254,11 +256,32 @@ function difficulty(w: World) {
 
 function pickKind(w: World) {
   const env = ENVS[envIndexFor(w, w.score)];
-  if (Math.random() < 0.55) return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % 18;
-  return Math.floor(Math.random() * 18);
+  if (Math.random() < 0.55)
+    return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+  // free pick, but never one that would vanish into this sky: reject
+  // planets whose luminance sits too close to the backdrop's
+  const sky = SKY_RGB[env.sky];
+  for (let i = 0; i < 10; i++) {
+    const k = Math.floor(Math.random() * PLANET_COUNT);
+    if (sep(sky, PLANET_RGB[k]) >= MIN_SEP) return k;
+  }
+  return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+}
+
+// Debris follows the zone's palette, and never blends into its sky.
+function pickDebris(env: (typeof ENVS)[number]) {
+  const sky = SKY_RGB[env.sky];
+  if (Math.random() < 0.7)
+    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
+  for (let i = 0; i < 10; i++) {
+    const k = Math.floor(Math.random() * DEBRIS_COUNT);
+    if (sep(sky, DEBRIS_RGB[k]) >= MIN_SEP) return k;
+  }
+  return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
 }
 
 function spawnPair(w: World, save: SaveData, x: number) {
+  const env = ENVS[w.envB];
   const d = difficulty(w);
   let gap = d.gap;
   const margin = 72;
@@ -285,7 +308,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
       r: 19 + Math.random() * 7,
       kind: pickKind(w),
       xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
-      debris: Math.floor(Math.random() * 9),
+      debris: pickDebris(env),
     });
   };
   {
@@ -426,9 +449,12 @@ function spark(w: World, x: number, y: number, colors: string[], n = 12, kind = 
   }
 }
 
-export function spawnTrail(w: World, save: SaveData) {
-  const sx = w.W * PHYS.squirrelX - 10;
-  const sy = w.squirrel.y + 6;
+export function spawnTrail(w: World, save: SaveData, scale = 1) {
+  // the painted pilot's tail sweeps far to the left — emit behind it or
+  // the whole plume is swallowed by the sprite
+  const sx = w.W * PHYS.squirrelX - 34;
+  const sy = w.squirrel.y + 8;
+  if (scale < 1 && Math.random() > scale) return;
   const trail = save.equippedTrail;
   const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
   if (trail === "ion") {
@@ -877,6 +903,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     p.life -= dt;
     p.x += p.vx * dt;
     p.y += p.vy * dt;
+    if (p.kind === "flame") p.vy -= 40 * dt;   // exhaust rises as it fades
     if (p.spin) p.hue = (p.hue || 0) + p.spin * dt * 40;
   }
   w.particles = w.particles.filter((p) => p.life > 0);
@@ -972,6 +999,13 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.invulnLeft > 0) w.invulnLeft = Math.max(0, w.invulnLeft - dt);
   if (w.absorbGrace > 0) w.absorbGrace = Math.max(0, w.absorbGrace - simDt);
   if (w.flapBoost > 0) w.flapBoost = Math.max(0, w.flapBoost - dt);
+  // a live exhaust plume: the trail keeps streaming between taps instead
+  // of puffing once and dying, so every trail reads as an engine
+  w.trailT = (w.trailT ?? 0) + dt;
+  if (!w.ready && w.trailT > 0.085) {
+    w.trailT = 0;
+    spawnTrail(w, save, 0.45);
+  }
   if (w.hitCooldown > 0) w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
   if (w.envMsgT > 0) w.envMsgT = Math.max(0, w.envMsgT - dt);
 
