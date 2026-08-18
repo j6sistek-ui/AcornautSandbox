@@ -1,6 +1,6 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=31";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=31";
-import { drawSprite, skyImage } from "./art.js?v=31";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=32";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=32";
+import { drawSprite, skyImage } from "./art.js?v=32";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -715,27 +715,40 @@ export function drawHud(ctx, w) {
         ctx.globalAlpha = 1;
     }
     if (w.tut?.hold) {
-        const title = w.tut.stage === "tap" || w.tut.stage === "tap2"
-            ? w.tut.stage === "tap"
-                ? "TAP — boost upward"
-                : "TAP AGAIN"
-            : w.tut.stage === "swipe"
-                ? "SWIPE DOWN — dive"
-                : w.tut.stage === "pal"
-                    ? "A COMPANION APPEARS"
-                    : "FLY THE GAPS";
-        const body = w.tut.stage === "swipe"
-            ? "Bounced too high! Drag down to make the gap."
-            : w.tut.stage === "pal"
-                ? "Acorn Buddy reels in nearby nuts."
-                : "One tap, one lift.";
-        drawPrompt(ctx, w, title, body, w.tut.stage === "swipe" ? w.H * 0.58 : w.H * 0.36);
+        const st = w.tut.stage;
+        const title = st === "tap" ? "TAP"
+            : st === "tap2" ? "TAP AGAIN"
+                : st === "swipe" ? "SWIPE DOWN"
+                    : st === "yourturn" ? "YOUR TURN!"
+                        : "A COMPANION APPEARS!";
+        const body = st === "tap" ? "anywhere — a boost upward"
+            : st === "tap2" ? "one more boost — then just watch"
+                : st === "swipe" ? "dive back down and make the gap"
+                    : st === "yourturn" ? "fly the gaps · grab the acorns"
+                        : "The Acorn Buddy reels in nearby acorns.";
+        drawPrompt(ctx, w, title, body, st === "swipe" ? w.H * 0.58 : w.H * 0.36);
         if (w.tut.nudge) {
             ctx.fillStyle = "#ffd080";
             ctx.font = "700 13px Figtree, system-ui";
             ctx.textAlign = "center";
             ctx.fillText(w.tut.nudge, W / 2, w.H * 0.68);
         }
+    }
+    else if (w.tut?.stage === "glide" || w.tut?.stage === "bounce") {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffb84d";
+        ctx.font = "800 14px Figtree, system-ui";
+        ctx.fillText(w.tut.stage === "bounce" ? "BOING! PLANETS BOUNCE YOU"
+            : "PLANET AHEAD — LAND ON IT", W / 2, 86);
+    }
+    else if (w.tut?.stage === "dive") {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffb84d";
+        ctx.font = "800 14px Figtree, system-ui";
+        ctx.fillText("MAKE THE GAP", W / 2, 86);
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.font = "700 12px Figtree, system-ui";
+        ctx.fillText("a tap levels you off", W / 2, 104);
     }
     else if (w.tut?.stage === "gates" || w.tut?.stage === "palDemo") {
         ctx.textAlign = "center";
@@ -772,7 +785,8 @@ function drawPrompt(ctx, w, title, body, cy) {
             ctx.globalAlpha = armA * (0.7 + 0.3 * Math.sin(w.time * 4));
             ctx.fillStyle = w.tut.stage === "swipe" ? "#ffb84d" : "#6ef0ff";
             ctx.font = "700 12px Figtree, system-ui";
-            ctx.fillText(w.tut.stage === "swipe" ? "try it now" : "tap to continue", w.W / 2, cy + 36);
+            ctx.fillText(w.tut.stage === "swipe" ? "try it now"
+                : w.tut.stage === "yourturn" ? "tap to begin" : "tap to continue", w.W / 2, cy + 36);
             ctx.globalAlpha = 1;
         }
     }
