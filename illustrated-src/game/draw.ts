@@ -522,11 +522,16 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   ctx.beginPath();
   ctx.ellipse(2, 20, 13, 4.2, 0, 0, Math.PI * 2);
   ctx.fill();
-  const bank = Math.max(-0.08, Math.min(0.1, w.squirrel.vy / 2200));
+  // the sim's real pitch — dives nose down, bounces kick the body over;
+  // the old ±6° bank made every impact read as nothing happening
+  const bank = w.squirrel.rot * 0.8;
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
   ctx.rotate(bank - kick * 0.12);
   const pop = 1 + kick * 0.05;
   ctx.scale(pop, pop);
+  // fresh planet bounce: a squash-and-stretch pulse sells the impact
+  const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
+  if (sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend);
   ctx.restore();

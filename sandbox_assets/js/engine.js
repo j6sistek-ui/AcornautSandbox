@@ -1,9 +1,9 @@
-import { loadArt } from "./art.js?v=26";
-import { sfx, unlockAudio } from "./audio.js?v=26";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=26";
-import { drawHud, drawWorld } from "./draw.js?v=26";
-import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=26";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=26";
+import { loadArt } from "./art.js?v=27";
+import { sfx, unlockAudio } from "./audio.js?v=27";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=27";
+import { drawHud, drawWorld } from "./draw.js?v=27";
+import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=27";
+import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=27";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -328,4 +328,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=26";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=27";
