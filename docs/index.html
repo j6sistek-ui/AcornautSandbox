@@ -50,6 +50,27 @@
     .ac-trail { width: 48px; height: 10px; border-radius: 999px; display: block; margin-bottom: 6px; }
     .ac-card.on { border-color: #4ab4ff; background: rgba(74,180,255,.15); }
     .ac-log { border: 1px solid #2a3454; border-radius: 16px; padding: 10px 12px; }
+    .ac-coin { width: 20px; height: 20px; vertical-align: -4px; margin-right: 5px; }
+    .ac-dock2 { margin-top: auto; display: flex; justify-content: space-around; padding: 6px 0 2px; }
+    .ac-dockicon { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #8b95b0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .ac-dockicon .ac-ring { width: 52px; height: 52px; border-radius: 50%; background: #141b30; border: 1px solid #2a3454; display: flex; align-items: center; justify-content: center; }
+    .ac-dockicon svg { width: 24px; height: 24px; fill: none; stroke: #cfd8ee; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .ac-road { position: relative; padding-left: 30px; }
+    .ac-road::before { content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#2a3454, rgba(232,164,74,.5), #2a3454); }
+    .ac-roaditem { position: relative; display: flex; align-items: center; gap: 12px; border: 1px solid #2a3454; border-radius: 16px; padding: 8px 12px; margin: 10px 0; background: rgba(12,18,36,.55); }
+    .ac-roaditem::before { content: ""; position: absolute; left: -25px; top: 50%; width: 10px; height: 10px; background: #2a3454; transform: translateY(-50%) rotate(45deg); border-radius: 2px; }
+    .ac-roaditem.on { border-color: rgba(93,255,158,.45); }
+    .ac-roaditem.on::before { background: #5dff9e; }
+    .ac-roaditem.next { border-color: rgba(232,164,74,.8); box-shadow: 0 0 14px rgba(232,164,74,.25); animation: ac-pulse 1.6s ease-in-out infinite; }
+    .ac-roaditem.next::before { background: #e8a44a; }
+    .ac-roaditem.future { opacity: .55; }
+    .ac-roadtxt p { margin: 0; }
+    .ac-roadlvl { font-size: 10px; font-weight: 800; color: #8b95b0; letter-spacing: .06em; }
+    .ac-check { margin-left: auto; color: #5dff9e; font-weight: 900; }
+    .ac-togo { margin-left: auto; color: #e8a44a; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .ac-xpbar { width: 100%; max-width: 260px; height: 10px; border-radius: 999px; background: #141b30; border: 1px solid #2a3454; overflow: hidden; margin: 8px auto; }
+    .ac-xpbar > div { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #e8a44a, #ffd080); transition: width 1.1s cubic-bezier(.2,.8,.3,1); }
+    @keyframes ac-pulse { 0%,100% { box-shadow: 0 0 8px rgba(232,164,74,.18); } 50% { box-shadow: 0 0 18px rgba(232,164,74,.4); } }
     .ac-log.on { border-color: rgba(232,164,74,.4); background: #141b30; }
     .ac-playbar { display: flex; justify-content: flex-end; padding: 12px; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
@@ -67,7 +88,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js25/standalone.js";
+    import { bootStandalone } from "./js26/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

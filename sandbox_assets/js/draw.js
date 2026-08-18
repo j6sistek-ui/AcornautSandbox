@@ -1,6 +1,6 @@
-import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=25";
-import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=25";
-import { drawSprite } from "./art.js?v=25";
+import { ENVS, HELMETS, PHYS, SUITS, TUT_ARM } from "./catalog.js?v=26";
+import { drawTrailPreviewOn, drawPalOn } from "./cosmetics.js?v=26";
+import { drawSprite } from "./art.js?v=26";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -54,6 +54,14 @@ function drawBackdrop(ctx, w, art) {
     ctx.beginPath();
     ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
     ctx.fill();
+    // the environment owns the WHOLE sky, not two soft pools — a graded
+    // full-screen tint makes each 20-gate shift unmistakable
+    const grade = ctx.createLinearGradient(0, 0, 0, H);
+    grade.addColorStop(0, `rgba(${wash[0]},${wash[1]},${wash[2]},${Math.min(0.42, wash[3] * 1.9)})`);
+    grade.addColorStop(0.55, `rgba(${wash[0]},${wash[1]},${wash[2]},${Math.min(0.2, wash[3] * 0.9)})`);
+    grade.addColorStop(1, `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${Math.min(0.4, wash2[3] * 2.2)})`);
+    ctx.fillStyle = grade;
+    ctx.fillRect(0, 0, W, H);
     for (const s of w.stars) {
         ctx.globalAlpha = s.a * (0.55 + 0.45 * Math.sin(s.tw));
         ctx.fillStyle = "#fff";

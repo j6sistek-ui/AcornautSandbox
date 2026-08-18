@@ -1,4 +1,4 @@
-import { BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog";
+import { xpCumulative, BUILD, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS } from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -55,6 +55,25 @@ export async function bootStandalone(root: HTMLElement) {
       sheet.append(el("h2", "", "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
       if (snap.dead.best && snap.dead.score > 0) sheet.append(el("p", "ac-gold", "NEW BEST"));
       sheet.append(el("p", "ac-sub", `+${snap.dead.xp} XP · LV ${snap.dead.toLv}`));
+      if (snap.dead.toLv > snap.dead.fromLv) sheet.append(el("p", "ac-gold", `LEVEL UP — LV ${snap.dead.toLv}!`));
+      {
+        // the run's XP pours into the level meter
+        const lo = xpCumulative(snap.dead.toLv);
+        const hi = xpCumulative(snap.dead.toLv + 1);
+        const span = Math.max(1, hi - lo);
+        const fromPct = Math.max(0, Math.min(1, (snap.dead.fromXp - lo) / span));
+        const toPct = Math.max(0, Math.min(1, (engine.save.xp - lo) / span));
+        const bar = el("div", "ac-xpbar");
+        const fill = el("div", "");
+        fill.style.width = `${(fromPct * 100).toFixed(1)}%`;
+        bar.append(fill);
+        sheet.append(bar);
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            fill.style.width = `${(toPct * 100).toFixed(1)}%`;
+          }),
+        );
+      }
       const go = el("button", "ac-primary", "CONTINUE");
       go.onclick = () => engine.dismissDead();
       sheet.append(go);
@@ -96,7 +115,12 @@ export async function bootStandalone(root: HTMLElement) {
     const top = el("div", "ac-row");
     const brand = el("div");
     brand.append(el("p", "ac-kicker", "Illustrated rewrite"), el("h1", "", "Acornaut"));
-    const nuts = el("div", "ac-chip", `${s.acorns}`);
+    const nuts = el("div", "ac-chip");
+    const coin = document.createElement("img");
+    coin.src = artUrl("acorn/1.png");
+    coin.className = "ac-coin";
+    coin.alt = "";
+    nuts.append(coin, document.createTextNode(`${s.acorns}`));
     top.append(brand, nuts);
     const hero = document.createElement("img");
     hero.src = `${(window.__ACORNAUT_ART__ || "/art").replace(/\/$/, "")}/hero.jpg`;
@@ -109,14 +133,28 @@ export async function bootStandalone(root: HTMLElement) {
     deep.onclick = () => engine.fly("deep");
     const lost = el("button", "ac-ghost", "LOST IN SPACE");
     lost.onclick = () => engine.fly("lost");
-    const nav = el("nav", "ac-dock");
+    // the live game's bottom bar: four round icons pinned to the bottom
+    const ICONS: Record<string, string> = {
+      hangar:
+        '<svg viewBox="0 0 24 24"><path d="M20.5 7.5a4.9 4.9 0 0 1-6.4 4.6L7 19.2a2 2 0 0 1-2.8-2.8l7.1-7.1a4.9 4.9 0 0 1 6-6.1L14.6 6l3.2 3.2 2.5-2.6z"/></svg>',
+      log:
+        '<svg viewBox="0 0 24 24"><path d="M6 3v18M6 4h11l-2.5 3.5L17 11H6"/></svg>',
+      social:
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>',
+      help:
+        '<svg viewBox="0 0 24 24"><path d="M8.8 9.2a3.2 3.2 0 1 1 4.9 2.7c-1 .7-1.7 1.2-1.7 2.6"/><circle cx="12" cy="18" r=".6"/></svg>',
+    };
+    const nav = el("nav", "ac-dock2");
     for (const [label, screen] of [
       ["Hangar", "hangar"],
       ["Log", "log"],
       ["Social", "social"],
       ["Help", "help"],
     ] as const) {
-      const b = el("button", "ac-dockbtn", label);
+      const b = el("button", "ac-dockicon");
+      const ring = el("span", "ac-ring");
+      ring.innerHTML = ICONS[screen];
+      b.append(ring, document.createTextNode(label));
       b.onclick = () => engine.open(screen);
       nav.append(b);
     }
@@ -244,17 +282,78 @@ export async function bootStandalone(root: HTMLElement) {
     return box;
   }
 
+  function rewardArt(item: (typeof TRACK)[number], px = 52) {
+    const { c, ctx } = miniCanvas(px, px);
+    const art = engine.art;
+    if (!ctx || !art) return c;
+    if (item.kind === "pal" && item.id) {
+      paintPalPreview(ctx, art, item.id, px / 2, px / 2, px * 0.86);
+    } else if (item.kind === "suit" && item.id) {
+      drawSpriteOn(ctx, art.suits?.[item.id] ?? null, px / 2, px / 2, px * 0.92);
+    } else if (item.kind === "mode") {
+      // mode emblems from the exotic planet art: the black hole for Deep
+      // Space, the blue vortex for Lost in Space
+      const idx = item.name === "Lost in Space" ? 8 : 17;
+      drawSpriteOn(ctx, art.planets?.[idx] ?? null, px / 2, px / 2, px * 0.9);
+    } else if (item.kind === "mod") {
+      drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
+    } else if (item.kind === "title") {
+      // rank medallion
+      const g = ctx.createRadialGradient(px / 2, px / 2, 2, px / 2, px / 2, px / 2);
+      g.addColorStop(0, "#ffd98a");
+      g.addColorStop(1, "#c9861f");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(px / 2, px / 2, px * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#8a5a10";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = "#5b3a08";
+      ctx.font = `900 ${px * 0.34}px Fraunces, serif`;
+      ctx.textAlign = "center";
+      ctx.fillText((item.name ?? "?").slice(0, 1), px / 2, px / 2 + px * 0.12);
+    }
+    return c;
+  }
+
   function drawLog() {
     const box = el("div", "ac-sheet");
     box.append(header("Flight Log"));
-    const lv = pilotLevelOf(engine.save);
+    const sv = engine.save;
+    const lv = pilotLevelOf(sv);
+    box.append(el("p", "ac-sub", `LV ${lv} ${pilotTitleOf(sv)} · ${sv.xp} XP`));
+    const scroll = el("div", "ac-sheet-scroll");
+    const road = el("div", "ac-road");
+    let nextMarked = false;
     for (const item of TRACK) {
       const pal = item.kind === "pal" ? PALS.find((p) => p.id === item.id) : null;
-      const row = el("div", lv >= item.lvl ? "ac-log on" : "ac-log");
-      row.append(el("p", "", `LV ${item.lvl} · ${pal?.name ?? item.name ?? ""}`));
-      row.append(el("p", "ac-sub", pal?.desc ?? item.desc ?? ""));
-      box.append(row);
+      const earned = lv >= item.lvl;
+      let cls = "ac-roaditem" + (earned ? " on" : " future");
+      const row = el("div", cls);
+      row.append(rewardArt(item));
+      const txt = el("div", "ac-roadtxt");
+      txt.append(el("p", "ac-roadlvl", `LV ${item.lvl}`));
+      txt.append(el("p", "", pal?.name ?? item.name ?? ""));
+      txt.append(el("p", "ac-sub", pal?.desc ?? item.desc ?? ""));
+      row.append(txt);
+      if (earned) {
+        row.append(el("span", "ac-check", "\u2713"));
+      } else if (!nextMarked) {
+        nextMarked = true;
+        row.className = "ac-roaditem next";
+        const toGo = Math.max(0, xpCumulative(item.lvl) - sv.xp);
+        row.append(el("span", "ac-togo", `${toGo} XP TO GO`));
+      }
+      road.append(row);
     }
+    scroll.append(road);
+    box.append(scroll);
+    // land the view on the next reward
+    requestAnimationFrame(() => {
+      const nxt = road.querySelector(".next");
+      if (nxt) (nxt as HTMLElement).scrollIntoView({ block: "center" });
+    });
     return box;
   }
 
