@@ -71,6 +71,94 @@ export function unlockAudio() {
         /* ignore */
     }
 }
+// ————— Music: the retro timeline's soundtrack —————
+// A streamed loop, kept OUTSIDE the WebAudio graph on purpose. Decoding
+// five megabytes of AAC into a buffer would cost real memory for no gain;
+// an <audio> element streams it and loops seamlessly. It plays only while
+// the retro renderer is active — the whole arcade run, and only the
+// shifted stretches of Free Flight — and never in the illustrated game.
+let musicEl = null;
+let musicFade = 0; // rAF id for the current fade
+let musicWanted = false;
+let musicMuted = false;
+const MUSIC_VOL = 0.5;
+function musicUrl() {
+    const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
+    return `${raw.replace(/\/$/, "")}/music/cosmos.m4a`;
+}
+function ensureMusic() {
+    if (musicEl || typeof Audio === "undefined")
+        return musicEl;
+    const el = new Audio(musicUrl());
+    el.loop = true;
+    el.preload = "none";
+    el.volume = 0;
+    // attach it (muted, off-layout) so mobile browsers treat it as a real
+    // media element and keep the loop alive when the tab is backgrounded
+    el.setAttribute("aria-hidden", "true");
+    el.style.display = "none";
+    if (typeof document !== "undefined" && document.body)
+        document.body.appendChild(el);
+    musicEl = el;
+    return el;
+}
+function fadeMusic(to, ms) {
+    const el = musicEl;
+    if (!el)
+        return;
+    if (musicFade)
+        cancelAnimationFrame(musicFade);
+    const from = el.volume;
+    const start = performance.now();
+    const step = (now) => {
+        const k = Math.min(1, (now - start) / ms);
+        el.volume = from + (to - from) * k;
+        if (k < 1) {
+            musicFade = requestAnimationFrame(step);
+        }
+        else {
+            musicFade = 0;
+            if (to === 0)
+                el.pause();
+        }
+    };
+    musicFade = requestAnimationFrame(step);
+}
+export const music = {
+    // Called every frame with whether the retro renderer is live right now.
+    // It debounces itself, so the engine can call it unconditionally.
+    set(active) {
+        if (active === musicWanted)
+            return;
+        musicWanted = active;
+        const el = ensureMusic();
+        if (!el)
+            return;
+        if (active && !musicMuted) {
+            void el.play().catch(() => {
+                /* autoplay may be blocked until the first gesture; the next
+                   call after a tap will succeed */
+            });
+            fadeMusic(MUSIC_VOL, 600);
+        }
+        else {
+            fadeMusic(0, 450);
+        }
+    },
+    setMuted(m) {
+        musicMuted = m;
+        if (m)
+            fadeMusic(0, 200);
+        else if (musicWanted) {
+            const el = ensureMusic();
+            if (el) {
+                void el.play().catch(() => { });
+                fadeMusic(MUSIC_VOL, 400);
+            }
+        }
+    },
+    muted: () => musicMuted,
+};
 function out(c, node, dry, wet) {
     const d = c.createGain();
     d.gain.value = dry;
@@ -141,33 +229,39 @@ function guard(fn) {
 // burn is nudged in pitch and level so a run of them breathes.
 let lastFlap = -1;
 export const sfx = {
-    // A BURN, not a chirp. Three layers, because that is what a thruster
-    // is: a lowpassed BODY that carries the weight, a bandpassed JET that
-    // opens from a cough into a hiss as the filter sweeps up, and a low
-    // sine THUMP for the shove in the back. The plate carries the tail off
-    // into the distance. Bandpassed noise is quiet by nature — most of the
-    // spectrum is thrown away — so these gains are much higher than a
-    // tone's and still sit at the same loudness.
+    // A deep THRUST, not a high burst. The first pass sat too high — a
+    // bright jet sweeping up to ~2kHz over and over is fatiguing. This one
+    // keeps its weight low: a lowpassed roar of exhaust that stays under
+    // 700Hz, a firm low-sine thump for the kick in the back, and only a
+    // whisper of bandpassed air on top so it still reads as a jet, not a
+    // rumble. No high hiss layer at all. Bandpassed/lowpassed noise is
+    // quiet by nature, so these gains run high and still sit right.
     flap: () => guard(() => {
         const c = ac();
         const now = c.currentTime;
-        // a rapid double-tap would otherwise pile two full burns on top of
-        // each other; the second one contributes only its jet
+        // a rapid double-tap would otherwise pile two full thrusts on top
+        // of each other; the second one is just the roar, softer
         const dense = now - lastFlap < 0.09;
         lastFlap = now;
-        const v = 0.9 + Math.random() * 0.2;
+        const v = 0.94 + Math.random() * 0.12;
+        // the body of the thrust: a low roar of exhaust, opening only a
+        // little so the energy stays down where a rocket lives
         burst({
-            dur: dense ? 0.14 : 0.26,
-            from: 300 * v,
-            to: 1900 * v,
-            q: 1.3,
-            gain: (dense ? 0.34 : 0.62) * v,
-            wet: 0.16,
+            dur: dense ? 0.16 : 0.3,
+            from: 150 * v,
+            to: 680 * v,
+            q: 0.7,
+            type: "lowpass",
+            gain: (dense ? 0.5 : 0.9) * v,
+            wet: 0.12,
         });
+        // the shove in the back: a firm low sine, dropping into sub
+        // territory. A softer attack keeps its onset from clicking bright.
+        tone({ freq: 132 * v, to: 46, dur: dense ? 0.16 : 0.26, gain: dense ? 0.16 : 0.26, attack: 0.01, wet: 0.06 });
         if (!dense) {
-            burst({ dur: 0.22, from: 420, to: 2100, type: "lowpass", q: 0.6, gain: 0.12, wet: 0.1 });
-            burst({ dur: 0.34, from: 3200, to: 1200, q: 0.6, type: "highpass", gain: 0.05, wet: 0.3 });
-            tone({ freq: 96 * v, to: 52, dur: 0.2, gain: 0.13, attack: 0.004, wet: 0.08 });
+            // a breath of low-mid air so it still reads as a jet — quiet, and
+            // it sweeps DOWN, kept under 900Hz so nothing ever gets shrill
+            burst({ dur: 0.24, from: 820, to: 360, q: 0.8, gain: 0.05, wet: 0.14 });
         }
     }),
     // Falling: the burn inverted — a long lowpassed whoosh dropping away.

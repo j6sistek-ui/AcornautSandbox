@@ -239,6 +239,7 @@ export async function loadArt(): Promise<ArtBank> {
     "aurora",
     "meteor",
     "chrono",
+    "catbubble",
   ];
   const suitIds = [
     "flight",
@@ -253,6 +254,7 @@ export async function loadArt(): Promise<ArtBank> {
     "alien",
     "ghost",
     "bigbooty",
+    "catsuit",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
 

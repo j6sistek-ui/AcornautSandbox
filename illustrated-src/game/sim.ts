@@ -465,7 +465,9 @@ function spawnPair(w: World, save: SaveData, x: number) {
 
   const pal = palId(save, w);
   const noPick = pal === "bee" || (w.tut && w.tut.stage !== "palDemo" && w.tut.stage !== "free" && w.tut.stage !== "ready");
-  const specialMul = pal === "meteorcore" ? 2 : 1;
+  // Arcade is the generous mode: power-ups spawn twice as often by
+  // default, on top of any pal bonus.
+  const specialMul = (pal === "meteorcore" ? 2 : 1) * (w.flight === "arcade" ? 2 : 1);
   const noShield = pal === "nutsack" || pal === "tinbot";
   const noHoles = pal === "tinbot";
   if (!noPick) {
@@ -487,13 +489,17 @@ function spawnPair(w: World, save: SaveData, x: number) {
     if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole" });
     }
-    // Arcade's own door between the two games. It is not a hazard and
-    // not a power — it is a way across, so it spawns on the flight line
-    // like an acorn rather than in the gate mouth like a black hole.
-    if (!w.tut && w.flight === "arcade" && Math.random() < 0.05) {
+    // The door to the other game. It rides in Free Flight only — the
+    // one place you can leave the illustrated game and slip into the
+    // arcade for a stretch. It spawns on the flight line like an acorn
+    // rather than in the gate mouth like a black hole, because it is a
+    // way across, not a hazard.
+    if (!w.tut && w.flight === "fly" && Math.random() < 0.05) {
       w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
     }
-    if (!w.tut && !noHoles && w.flight === "lost" && Math.random() < 0.05) {
+    // Wormholes flip your heading in Lost in Space and — now — in Arcade,
+    // where they are the reversal hazard the retro game runs on.
+    if (!w.tut && !noHoles && (w.flight === "lost" || w.flight === "arcade") && Math.random() < 0.05) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm" });
     }
   }
@@ -504,7 +510,10 @@ function spawnPair(w: World, save: SaveData, x: number) {
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean) {
   w.flight = flight;
   // every run starts in this game; the arcade acorn is the only way out
-  w.retro = false;
+  // Arcade IS the retro game — it starts there and never leaves. Every
+  // other mode starts illustrated; in Free Flight the 8-bit acorn is the
+  // only way across, and it always returns you home before the run ends.
+  w.retro = flight === "arcade";
   w.retroShifts = 0;
   w.retroPending = false;
   w.score = 0;

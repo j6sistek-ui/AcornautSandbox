@@ -1,5 +1,5 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
-import { sfx, unlockAudio } from "./audio";
+import { sfx, unlockAudio, music } from "./audio";
 import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
@@ -336,6 +336,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       sfx.shift();
       notify();
     }
+    // The retro soundtrack rides the retro renderer: on for the whole
+    // arcade run and for the shifted stretches of Free Flight, off the
+    // instant you are back in the illustrated game or out of a live run.
+    const inRun = world.screen === "play" || world.screen === "pause";
+    music.set(world.retro && inRun);
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
