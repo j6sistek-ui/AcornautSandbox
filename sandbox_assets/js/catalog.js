@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "39";
+export const ART_VER = "43";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -15,7 +15,7 @@ export const PHYS = {
     gapBase: 168,
     gapMin: 132,
     planetR: 42,
-    powerDuration: 6,
+    powerDuration: 3.5,
     slowFactor: 0.42,
     goldDuration: 10,
     overdriveGate: 100,
@@ -219,6 +219,10 @@ export const ENVS = [
     { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 15], sky: "vortex" },
 ];
 export const ENV_GATES = 20;
+// Free Flight keeps the door to the arcade shut until this gate. The
+// crossing is a late-run reward — meeting it on gate two would sell the
+// illustrated game short before it has been seen.
+export const RETRO_GATE = 100;
 export const XP_STEPS = [
     60, 100, 150, 200, 260, 320, 390, 460, 540, 620, 710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720, 1860, 2000,
     2150, 2300, 2460, 2620, 2790, 2960, 3140,
@@ -247,6 +251,13 @@ export const PAL_LEVELS = {
     wisp: 15,
     nutsack: 16,
 };
+// Premium items. These never appear on the level track — no amount of
+// flying reveals them — and acorns cannot buy them; they are bought for
+// real money. The beta hands them over so they can be played and judged.
+export const IAP_ITEMS = ["catsuit", "catbubble"];
+export function isIap(id) {
+    return IAP_ITEMS.includes(id);
+}
 export const SUIT_REVEAL = {
     robo: 12,
     alien: 16,

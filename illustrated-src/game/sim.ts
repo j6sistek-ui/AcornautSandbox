@@ -1,4 +1,4 @@
-import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { writeSave, type SaveData } from "./save";
 
 export type Screen = "title" | "hangar" | "log" | "social" | "help" | "play" | "dead" | "pause";
@@ -39,6 +39,10 @@ export type Pickup = {
   bob: number;
   kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro";
   pulled?: boolean;
+  // Hazards carry their own reach. A black hole or wormhole spans the
+  // whole gate mouth, so meeting one is a matter of arriving — not of
+  // threading past it. Only the pal that suppresses them lets you through.
+  r?: number;
 };
 
 export type Particle = {
@@ -449,7 +453,17 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const botY = gapY + gap / 2 + r;
   const blockers = sealBlockers(w, env, gapY, gap);
 
-  const wisp = palId(save, w) === "wisp" || w.flight === "lost";
+  // Vertical drift: the gate itself breathes up and down. Free Flight
+  // now carries a gentle 15%-of-gap sway so a run is never a static
+  // ladder; the wisp pal and Lost in Space push it further. Horizontal
+  // drift — the scroll speed wobbling — is NOT here: that stays a Lost
+  // in Space signature (see driftFactor, gated to "lost" alone).
+  const pilot = palId(save, w);
+  const driftAmp =
+    pilot === "wisp" ? 26
+      : w.flight === "lost" ? 12
+        : w.tut ? 0
+          : gap * 0.15;
   w.planets.push({
     x,
     gapY,
@@ -459,7 +473,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
     botKind: pickKind(w),
     scored: false,
     drift: Math.random() * Math.PI * 2,
-    driftAmp: wisp ? (palId(save, w) === "wisp" ? 26 : 12) : 0,
+    driftAmp,
     blockers,
   });
 
@@ -487,20 +501,22 @@ function spawnPair(w: World, save: SaveData, x: number) {
     // Deep Space runs its own shift on a timer, so a black hole there does
     // nothing but clutter the lane — live excludes them and so do we.
     if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
-      w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole" });
+      w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
     }
     // The door to the other game. It rides in Free Flight only — the
     // one place you can leave the illustrated game and slip into the
     // arcade for a stretch. It spawns on the flight line like an acorn
     // rather than in the gate mouth like a black hole, because it is a
-    // way across, not a hazard.
-    if (!w.tut && w.flight === "fly" && Math.random() < 0.05) {
+    // way across, not a hazard. It stays shut until gate 100: crossing
+    // timelines is a late-run reward, not something you meet on your
+    // second gate before you have seen this game properly.
+    if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && Math.random() < 0.05) {
       w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
     }
     // Wormholes flip your heading in Lost in Space and — now — in Arcade,
     // where they are the reversal hazard the retro game runs on.
     if (!w.tut && !noHoles && (w.flight === "lost" || w.flight === "arcade") && Math.random() < 0.05) {
-      w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm" });
+      w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
     }
   }
   w.lastSpawnX = x;
@@ -942,6 +958,14 @@ function pickWarpVariant(w: World) {
   w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
 }
 
+// The playfield is only visibly warped when it is mirrored or tilted.
+// Upright and unmirrored is the identity transform — it looks exactly
+// like no warp at all, which is why a warp that lands there feels like
+// nothing happened and then announces that it is over.
+function warpVisible(tilt: number, mirror: boolean) {
+  return mirror || Math.abs(tilt) > 1e-3;
+}
+
 function startSwirl(w: World, kind: "hole" | "worm" | "shift" | "timeline") {
   w.prevMirror = w.warpMirror;
   w.prevTilt = w.warpTilt;
@@ -951,6 +975,13 @@ function startSwirl(w: World, kind: "hole" | "worm" | "shift" | "timeline") {
   if (kind === "timeline") { /* prev === current, so the fold returns home */ }
   else if (kind === "worm") w.warpMirror = !w.warpMirror;
   else pickWarpVariant(w);
+  // Outside Lost in Space — where the tilt is driven continuously — a
+  // flip can land on upright-and-unmirrored, which draws identically to
+  // no warp. Catching one then had no effect for fifteen seconds. Give
+  // it a tilt so a wormhole always reorients something.
+  if (kind !== "timeline" && w.flight !== "lost" && !warpVisible(w.warpTilt, w.warpMirror)) {
+    w.warpTilt = ((25 * Math.PI) / 180) * (Math.random() < 0.5 ? 1 : -1);
+  }
   w.warpKind = kind;
   w.warpT = 1;
 }
@@ -976,6 +1007,10 @@ function exitWarp(w: World) {
     startSwirl(w, "shift");
     return;
   }
+  // Only claim to have restored something if the flight was actually
+  // reoriented. A warp that drew upright and unmirrored changed nothing,
+  // and announcing its end just reads as a phantom message.
+  const wasWarped = warpVisible(w.warpTilt, w.warpMirror);
   w.prevTilt = w.warpTilt;
   w.prevMirror = w.warpMirror;
   w.warpTilt = 0;
@@ -983,7 +1018,7 @@ function exitWarp(w: World) {
   w.warpKind = null;
   w.shieldFreeze = 0.7;
   w.shieldSlow = 3;
-  w.recoveryMsg = "ORIENTATION RESTORED";
+  if (wasWarped) w.recoveryMsg = "ORIENTATION RESTORED";
   spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#b45cff", "#fff"], 14, "warp");
 }
 
@@ -1141,7 +1176,12 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  const frozen = (w.tut?.hold ?? false) || w.shieldFreeze > 0;
+  // TAP TO FLY means exactly that: until the first tap the run is held
+  // still. The banner was being shown while gravity and the scroll were
+  // already running, so a player who read it before tapping was already
+  // falling. w.time still advances above, so the pilot idles and the
+  // world breathes — it just does not move or pull.
+  const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
 
   if (w.flight === "deep" && w.warpT <= 0 && w.warpLeft <= 0) {
@@ -1325,7 +1365,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   for (const a of w.pickups) {
     if (a.got) continue;
     const ay = a.y + Math.sin(a.bob) * 4;
-    if (Math.hypot(sx - a.x, sy - ay) > 28) continue;
+    if (Math.hypot(sx - a.x, sy - ay) > (a.r ?? 28)) continue;
     a.got = true;
     if (a.kind === "acorn") {
       w.runAcorns += pal === "nutsack" ? 2 : 1;

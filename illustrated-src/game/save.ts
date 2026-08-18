@@ -7,6 +7,7 @@ import {
   SAVE_KEY,
   SUITS,
   SUIT_REVEAL,
+  isIap,
   TRAILS,
   levelForXp,
   titleForLevel,
@@ -17,6 +18,7 @@ export type SaveData = {
   deepBest: number;
   lostBest: number;
   arcadeBest: number;
+  purchased: string[];
   acorns: number;
   xp: number;
   startShield: boolean;
@@ -38,6 +40,7 @@ export function defaultSave(): SaveData {
     deepBest: 0,
     lostBest: 0,
     arcadeBest: 0,
+    purchased: [],
     acorns: 0,
     xp: 0,
     startShield: false,
@@ -103,7 +106,14 @@ export function palUnlocked(s: SaveData, id: string) {
 }
 
 export function suitRevealed(s: SaveData, id: string) {
+  if (isIap(id)) return iapOwned(s, id);
   return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevelOf(s) >= SUIT_REVEAL[id];
+}
+
+// Premium items are owned only once bought for real money. The beta
+// grants them outright so they can be flown and judged before release.
+export function iapOwned(s: SaveData, id: string) {
+  return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
 }
 
 export function deepUnlocked(s: SaveData) {
