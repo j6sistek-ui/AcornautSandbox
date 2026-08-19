@@ -428,11 +428,59 @@ export const TRACK: TrackItem[] = [
   { lvl: 24, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle. In the shop." },
   { lvl: 25, kind: "title", name: "EVENT HORIZON" },
   { lvl: 30, kind: "title", name: "ACORNAUT" },
+  { lvl: 30, kind: "mod", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
 ];
 
 export const MOD_SHIELD_COST = 25;
 export const MOD_BATTERY_COST = 500;
 export const BETA_UNLOCK_GATES = true;
+
+// Flight mods: bought once with acorns and kept, unlike the start shield,
+// which is charged for every arming. Owning one does not make it
+// compulsory — each stays a switch. `save` names the flag it owns.
+//
+// Steady Gates and Rough Air are opposites and cancel: turning one on
+// turns the other off, because a run cannot have both a still ladder and
+// a turbulent one.
+export type Mod = {
+  id: string;
+  save: "steadyGates" | "roughAir" | "thrillSeeker";
+  name: string;
+  cost: number;
+  tag: string;
+  desc: string;
+  /** the mod this one switches off when it comes on */
+  opposes?: "steadyGates" | "roughAir" | "thrillSeeker";
+};
+
+export const MODS: Mod[] = [
+  {
+    id: "steadyGates",
+    save: "steadyGates",
+    name: "Steady Gates",
+    cost: 400,
+    tag: "NORMAL",
+    desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
+    opposes: "roughAir",
+  },
+  {
+    id: "roughAir",
+    save: "roughAir",
+    name: "Rough Air",
+    cost: 400,
+    tag: "NORMAL",
+    desc: "Doubles how far the gates drift in Normal, and how fast they do it.",
+    opposes: "steadyGates",
+  },
+  {
+    id: "thrillSeeker",
+    save: "thrillSeeker",
+    name: "Thrill Seeker",
+    cost: 1200,
+    tag: "EVERY MODE",
+    desc: "The whole world runs at double speed. The same flight, half the time to read it. Power-ups still last as long — you just cover twice the ground.",
+  },
+];
 
 export function xpCumulative(level: number) {
   let acc = 0;

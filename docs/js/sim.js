@@ -1,5 +1,5 @@
 import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=50";
-import { writeSave } from "./save.js?v=50";
+import { modsUnlocked, writeSave } from "./save.js?v=50";
 export function makeWorld(W, H) {
     return {
         W,
@@ -84,6 +84,27 @@ function palId(save, w) {
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo"))
         return "buddy";
     return save.equippedPal;
+}
+// A mod never touches a TUTORIAL run. The tutorial is teaching the game as
+// designed, and a pilot who armed Thrill Seeker and then replayed it would
+// be taught a different game. It is also gated on level, so a new pilot
+// cannot have one on in the first place — this is the belt to that braces.
+function modsLive(save, w) {
+    return !w.tut && modsUnlocked(save);
+}
+/** How hard the gates sway in Normal: 0 with Steady Gates, 2 with Rough Air. */
+function driftModOf(save, w) {
+    if (!modsLive(save, w))
+        return 1;
+    if (save.steadyGates)
+        return 0;
+    if (save.roughAir)
+        return 2;
+    return 1;
+}
+/** Thrill Seeker runs the whole world at double speed. See updateWorld. */
+function paceOf(save, w) {
+    return modsLive(save, w) && save.thrillSeeker ? 2 : 1;
 }
 function gravOf(save, w) {
     const id = palId(save, w);
@@ -293,11 +314,16 @@ function spawnPair(w, save, x) {
     // ladder; the wisp pal and Lost in Space push it further. Horizontal
     // drift — the scroll speed wobbling — is NOT here: that stays a Lost
     // in Space signature (see driftFactor, gated to "lost" alone).
+    // Two mods buy a say in this, and only in Normal: Steady Gates stills the
+    // sway entirely, Rough Air doubles it. They do not touch Lost in Space,
+    // whose drift is the mode's whole identity, and neither touches a black
+    // hole's tilt — that is orientation, not drift, and it stays either way.
     const pilot = palId(save, w);
+    const normalDrift = w.flight === "fly" ? driftModOf(save, w) : 1;
     const driftAmp = pilot === "wisp" ? 26
         : w.flight === "lost" ? 12
             : w.tut ? 0
-                : gap * 0.15;
+                : gap * 0.15 * normalDrift;
     w.planets.push({
         x,
         gapY,
@@ -1106,15 +1132,24 @@ export function updateWorld(w, save, dt) {
         w.tiltPhase += dt * 0.45;
         w.warpTilt = lostTiltAt(w.tiltPhase);
     }
-    const simDt = dt * slow;
+    // Thrill Seeker doubles the WORLD's clock, not the wall clock. Everything
+    // the player reacts to — scroll, gravity, the arc of a tap, the gates'
+    // sway — runs off simDt and so runs twice as fast. Power-up timers below
+    // tick on plain dt, so a freeze still lasts its full 3.5 seconds; you
+    // just cover twice the ground in it. And because `slow` multiplies in
+    // here, freezing still halves the pace you are actually flying at rather
+    // than dropping you back to normal speed.
+    const simDt = dt * slow * paceOf(save, w);
     if (w.powerLeft > 0)
         w.powerLeft = Math.max(0, w.powerLeft - dt);
     if (w.invulnLeft > 0)
         w.invulnLeft = Math.max(0, w.invulnLeft - dt);
     if (w.absorbGrace > 0)
         w.absorbGrace = Math.max(0, w.absorbGrace - simDt);
+    // the tap animation belongs to the world's clock, not the wall's, so it
+    // keeps up with the pilot under Thrill Seeker
     if (w.flapBoost > 0)
-        w.flapBoost = Math.max(0, w.flapBoost - dt);
+        w.flapBoost = Math.max(0, w.flapBoost - dt * paceOf(save, w));
     // a live exhaust plume: the trail keeps streaming between taps instead
     // of puffing once and dying, so every trail reads as an engine
     w.trailT = (w.trailT ?? 0) + dt;
@@ -1137,7 +1172,10 @@ export function updateWorld(w, save, dt) {
         p.x -= move;
         // how FAST the gate sways. Free Flight breathes at about half the
         // rate — the travel was right, the frequency read as fidgety.
-        const driftRate = palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05;
+        // Rough Air doubles how FAST a gate sways as well as how far, so the
+        // two together read as turbulence rather than a slow deep breath.
+        const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
+            * (w.flight === "fly" && save.roughAir && modsLive(save, w) ? 2 : 1);
         p.drift += simDt * driftRate;
     }
     for (const a of w.pickups) {

@@ -1,8 +1,8 @@
 import { emptyArt, loadArt } from "./art.js?v=50";
 import { sfx, unlockAudio, music } from "./audio.js?v=50";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=50";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=50";
 import { drawHud, drawWorld } from "./draw.js?v=50";
-import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=50";
+import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=50";
 import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=50";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
@@ -53,6 +53,7 @@ export async function createEngine(canvas) {
         buyTrail: (id) => transactTrail(id),
         equipPal: (id) => transactPal(id),
         toggleMod,
+        setMod,
         dismissDead() {
             world.screen = "title";
             world.lastRun = null;
@@ -183,6 +184,36 @@ export async function createEngine(canvas) {
         writeSave(save);
         notify();
         return "buy";
+    }
+    // A flight mod is bought once and then switched, so one call covers both:
+    // if you do not own it this is a purchase, and if you do it is a toggle.
+    // Turning one on turns its opposite off — Steady Gates and Rough Air
+    // cannot both describe the same run.
+    function setMod(id) {
+        const mod = MODS.find((m) => m.id === id);
+        if (!mod)
+            return "unknown";
+        if (!modsUnlocked(save))
+            return "locked";
+        if (save[mod.save]) {
+            save[mod.save] = false;
+            writeSave(save);
+            notify();
+            return "off";
+        }
+        const owned = save.purchased.includes(mod.id);
+        if (!owned) {
+            if (save.acorns < mod.cost)
+                return "poor";
+            save.acorns -= mod.cost;
+            save.purchased.push(mod.id);
+        }
+        save[mod.save] = true;
+        if (mod.opposes)
+            save[mod.opposes] = false;
+        writeSave(save);
+        notify();
+        return owned ? "on" : "buy";
     }
     function resize() {
         const parent = canvas.parentElement;

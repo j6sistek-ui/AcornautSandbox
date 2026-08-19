@@ -323,10 +323,39 @@ export const TRACK = [
     { lvl: 24, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle. In the shop." },
     { lvl: 25, kind: "title", name: "EVENT HORIZON" },
     { lvl: 30, kind: "title", name: "ACORNAUT" },
+    { lvl: 30, kind: "mod", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
 ];
 export const MOD_SHIELD_COST = 25;
 export const MOD_BATTERY_COST = 500;
 export const BETA_UNLOCK_GATES = true;
+export const MODS = [
+    {
+        id: "steadyGates",
+        save: "steadyGates",
+        name: "Steady Gates",
+        cost: 400,
+        tag: "NORMAL",
+        desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
+        opposes: "roughAir",
+    },
+    {
+        id: "roughAir",
+        save: "roughAir",
+        name: "Rough Air",
+        cost: 400,
+        tag: "NORMAL",
+        desc: "Doubles how far the gates drift in Normal, and how fast they do it.",
+        opposes: "steadyGates",
+    },
+    {
+        id: "thrillSeeker",
+        save: "thrillSeeker",
+        name: "Thrill Seeker",
+        cost: 1200,
+        tag: "EVERY MODE",
+        desc: "The whole world runs at double speed. The same flight, half the time to read it. Power-ups still last as long — you just cover twice the ground.",
+    },
+];
 export function xpCumulative(level) {
     let acc = 0;
     for (let i = 0; i < level - 1 && i < XP_STEPS.length; i++)

@@ -9,8 +9,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg?v=3" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png?v=3" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=3" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -170,6 +173,27 @@
 
     /* --- the four side menus --- */
     .ac-menu { display: flex; flex-direction: column; height: 100%; background: #070b16; overflow: hidden; }
+
+    /* Help left the tab bar for the "?" every other game puts in a corner.
+       44px so it clears the touch-target floor on a phone. */
+    .ac-helpdot { flex: none; width: 34px; height: 34px; padding: 0; display: grid; place-items: center;
+      background: rgba(10,16,32,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+      color: #cfd8ea; cursor: pointer; }
+    .ac-helpdot:active { transform: scale(.94); }
+    .ac-home-pillgroup { display: flex; align-items: center; gap: 7px; }
+    .ac-headaside { display: flex; align-items: center; gap: 8px; flex: none; }
+
+    /* a mod or bundle card is a row, not a tile: it has to carry a
+       sentence of explanation that a 3-up grid cannot hold */
+    .ac-bundle { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; gap: 12px; text-align: left; position: relative; }
+    .ac-bundlestrip { display: flex; align-items: center; gap: 4px; }
+    .ac-bundlestrip img, .ac-bundlestrip canvas { width: 40px; height: 40px; }
+    .ac-bundlemore { font-size: 11px; font-weight: 800; color: #8b95b0; }
+    .ac-bundlecount { position: absolute; right: 12px; bottom: 8px; font-size: 9px;
+      letter-spacing: .14em; color: #6f7ba0; }
+    .ac-cardoff { opacity: .42; }
+    .ac-modlock { grid-column: 1 / -1; margin: 2px 0 8px; line-height: 1.45; }
     .ac-menuhead { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 16px 16px 10px; }
     .ac-menuheadtext { min-width: 0; }
     .ac-menutitle { font-family: Fraunces, serif; font-weight: 800; font-size: 24px; line-height: 1.1; }
