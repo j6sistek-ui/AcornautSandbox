@@ -1,4 +1,4 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=50";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=50";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=50";
 import { drawSprite, skyImage } from "./art.js?v=50";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=50";
@@ -484,18 +484,21 @@ const DOME = {
     "flap-2": [164, 93, 50],
     "flap-3": [164, 79, 48],
     "flap-4": [163, 80, 45],
-    "suit:flight": [195, 97, 51],
-    "suit:iontrim": [199, 97, 46],
-    "suit:copper": [195, 97, 51],
-    "suit:frost": [197, 96, 49],
-    "suit:voidsuit": [193, 97, 52],
-    "suit:aurorasuit": [195, 102, 54],
-    "suit:ember": [192, 100, 49],
-    "suit:stardust": [196, 95, 50],
-    "suit:robo": [195, 97, 52],
-    "suit:alien": [197, 102, 50],
+    // The twelve originals were re-rendered bare-headed, so every one of
+    // these was measured again against flight's face. Ghost is the exception
+    // and still wears a painted dome -- see bakedDome in catalog.ts.
+    "suit:flight": [194, 97, 50],
+    "suit:iontrim": [197, 100, 58],
+    "suit:copper": [196, 99, 54],
+    "suit:frost": [196, 109, 50],
+    "suit:voidsuit": [191, 110, 47],
+    "suit:aurorasuit": [194, 107, 53],
+    "suit:ember": [195, 106, 49],
+    "suit:stardust": [194, 107, 52],
+    "suit:robo": [194, 105, 50],
+    "suit:alien": [193, 112, 54],
     "suit:ghost": [191, 99, 49],
-    "suit:bigbooty": [194, 86, 51],
+    "suit:bigbooty": [190, 115, 54],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
     "suit:phoenix": [207, 92, 41],
@@ -521,11 +524,6 @@ const HELM_GLASS = {
     "aurora": [128, 127, 125],
     "meteor": [128, 127, 125],
     "chrono": [132, 126, 125],
-    // The cat helmet's glass is a teardrop, not a sphere, so an inscribed
-    // circle lands on the wrong feature — the shell's widest point, well
-    // back and up from the opening — and seated the helmet most of a head to
-    // the left. Fitted against real heads instead.
-    "catbubble": [128, 106, 100],
     // measured off the corrected art. These renders are three-quarter
     // views, so the visor sits right of frame centre — that offset is real
     // and paintDome relies on it to seat the helmet on the head.
@@ -594,6 +592,10 @@ const TAIL_PIVOT = {
     catsuit: [96, 179],
     gemmie: [97, 178],
     sammie: [98, 178],
+    // Seraph and Leviathan stand rather than fly, so their tail meets the hip
+    // higher and further forward than the flying pose's shared 95,179.
+    seraph: [101, 173],
+    leviathan: [91, 162],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
 // are placed against the WHOLE suit's trimmed box — that is what keeps
@@ -614,16 +616,24 @@ function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot) {
     ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
     ctx.restore();
 }
-// Suits whose painting already includes headgear — the cat's ears and
-// bubble are part of its render — take no helmet at all. Stacking a
-// second dome on one was never going to line up, and most of them read
-// as broken; the head IS the cosmetic.
-function wearsOwnHead(suit) {
-    return suit.cat === true || suit.ownHead === true;
+// Which art still has a helmet painted into it. The eight flight animation
+// frames do (they were never re-rendered), and so does any suit flagged
+// bakedDome in the catalog. Everything else ships bare-headed and needs a
+// helmet drawn on it — including Clear.
+function bakedDome(key) {
+    if (!key.startsWith("suit:"))
+        return true;
+    const id = key.slice(5);
+    return SUITS.some((u) => u.id === id && u.bakedDome === true);
 }
 function paintDome(ctx, body, key, helmet, x, y, size, art) {
-    if (helmet.id === "clear")
-        return; // the painted dome already reads clear
+    // The Clear helmet used to draw nothing at all, because every suit render
+    // had a clear dome painted into it. Most are bare-headed now, so Clear has
+    // to paint its own — otherwise picking it leaves the pilot in a vacuum
+    // bare-faced. Only the art that still carries a dome skips it: the eight
+    // flight animation frames, and the suits flagged bakedDome.
+    if (helmet.id === "clear" && bakedDome(key))
+        return;
     const a = DOME[key];
     if (!a)
         return;

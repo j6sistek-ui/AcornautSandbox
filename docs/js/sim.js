@@ -1181,14 +1181,25 @@ export function updateWorld(w, save, dt) {
     if (w.palPos.dart > 0)
         w.palPos.dart = Math.max(0, w.palPos.dart - dt);
     if (pal === "buddy" || (w.tut && (w.tut.stage === "palDemo" || w.tut.stage === "ready"))) {
+        // Pull at a fixed speed, not in proportion to the distance. A
+        // proportional pull looks right and never lands: the world drags the
+        // acorn LEFT at w.speed while the magnet drags it right at dx * 4.2, so
+        // it settles where those cancel — about speed / 4.2, which is 39px at
+        // the opening pace and grows from there. The pickup radius is 28. Every
+        // acorn the buddy touched parked just out of reach and rode along for
+        // the rest of the run, and because it never scrolled off it was never
+        // culled either.
+        const pull = Math.max(360, w.speed * 2.2);
         for (const a of w.pickups) {
             if (a.got || a.kind !== "acorn")
                 continue;
             const dy = sy - a.y;
             const dx = sx - a.x;
-            if (Math.hypot(dx, dy) < PHYS.magnetR) {
-                a.x += dx * dt * 4.2;
-                a.y += dy * dt * 4.2;
+            const d = Math.hypot(dx, dy);
+            if (d < PHYS.magnetR) {
+                const step = Math.min(d, pull * dt);
+                a.x += (dx / (d || 1)) * step;
+                a.y += (dy / (d || 1)) * step;
                 a.pulled = true;
             }
         }
