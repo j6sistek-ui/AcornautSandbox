@@ -35,19 +35,30 @@ The base game's two, plus the one this mode needs:
 |---|---|
 | **Tap** | thrust |
 | **Swipe down** | dive |
-| **Swipe left / right** | **lunge** — a short horizontal dash on a half-second cooldown |
+| **Swipe right** | **lunge** forward — a short dash on a half-second cooldown, then a slow drift back |
 | **PULSE** button | shatters everything close, once the meter is full |
 
-Keyboard: space/↑ thrust, ↓ dive, ←/→ lunge, P pulse.
+Keyboard: space/↑ thrust, ↓ dive, → lunge, P pulse.
 
 **Why the lunge earns its place.** Every other control trades height. In a
 field that arrives at an angle, height is often not the axis with an answer
 in it — the gap is behind the piece, or in front of it. The lunge is the
-only move that spends horizontal room, and horizontal room is finite: the
-pilot roams the left 8%–62% of the screen and no further. Forward closes on
-an acorn stream and on the edge where debris is newest and least readable;
-back buys reading time and crowds you toward a wall you cannot pass. That
-tension is the mode.
+only move that spends horizontal room.
+
+**Forward only, and it does not stay bought.** A backward lunge was a free
+retreat: two of them parked the pilot in a corner with the whole field ahead
+and nothing able to reach it. Forward costs you the safe end of the screen
+to gain reach, it stops at the halfway line, and the pilot drifts back to
+its lane over the next several seconds. Ground a lunge wins is yours for a
+moment, not for the run.
+
+**The floor is not a wall.** Riding the bottom was a hiding place, and a
+survival mode cannot have one. Brushing it is free; more than a quarter of a
+second on it is fatal. That number is chosen, not guessed: a bounce off the
+bottom while recovering from a dive lasts one or two frames — under 50ms —
+and camping is continuous, so 0.25s sits well clear of the first and well
+under the second. The bottom of the screen glows red from 0.1s, so the rule
+is visible before it is fatal rather than after.
 
 ## What makes a run go somewhere
 
@@ -61,6 +72,10 @@ tension is the mode.
   the comeback move and the greed move at once.
 - **Acorns** spill in arcs and build a multiplier that decays in 2.6s, so a
   stream is a line you fly rather than a dot you touch.
+- **Gold acorns** drift past alone every 16–30s and pay double.
+- **Shield acorns** are the rare one — roughly one in five of those drifts —
+  and eat a hit. Both travel slower than the field, so taking one is a
+  decision about where you want to be, not a reflex.
 - **Surges** every ~30s, announced, briefly denser and faster.
 - **Milestones** every 30s.
 
@@ -122,6 +137,9 @@ when the beta freezes**, unless the mode has been promoted by then.
   uses on dark skies. The first rim attempt used a fixed 13px blur, which
   survives as under three pixels once a 256px painting is drawn at 50px;
   the pad and blur scale with the sprite now.
+- **Banners used to sit at 30% height**, right in the debris, and pulled the
+  eye off the field at exactly the wrong moment. They sit under the meters
+  now.
 - The pilot is the original animated squirrel, not an equipped suit. Suits
   ship bare-headed now and the game paints a helmet over them from a table
   this file deliberately does not import — a suit here would fly a debris

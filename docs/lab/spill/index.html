@@ -32,8 +32,10 @@
     background: linear-gradient(90deg, #6fd8ff, #b98bff); transition: width .12s linear; }
   .sp-combo { font-size: 15px; font-weight: 800; color: #ffd76a; min-width: 28px; text-align: right; }
 
-  .sp-banner { position: absolute; top: 30%; left: 0; right: 0; text-align: center;
-    font-family: Fraunces, Georgia, serif; font-weight: 800; font-size: 27px; letter-spacing: .04em;
+  /* Messages sit just under the meters, not over the field: at 30% they
+     landed in the middle of the debris and pulled the eye off it. */
+  .sp-banner { position: absolute; top: calc(62px + env(safe-area-inset-top)); left: 0; right: 0; text-align: center;
+    font-family: Fraunces, Georgia, serif; font-weight: 800; font-size: 22px; letter-spacing: .04em;
     text-shadow: 0 3px 18px rgba(0,0,0,.9); transition: opacity .25s; opacity: 0; }
 
   .sp-pulse { position: absolute; right: 16px; bottom: calc(22px + env(safe-area-inset-bottom));
