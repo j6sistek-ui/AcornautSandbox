@@ -246,7 +246,6 @@ export async function loadArt(): Promise<ArtBank> {
     "aurora",
     "meteor",
     "chrono",
-    "catbubble",
     "gemmie",
     "phoenix",
     "sammie",

@@ -1,4 +1,4 @@
-import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, skyIdFor, washScale } from "./catalog";
+import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { drawSprite, skyImage, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
@@ -542,11 +542,6 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   "aurora": [128, 127, 125],
   "meteor": [128, 127, 125],
   "chrono": [132, 126, 125],
-  // The cat helmet's glass is a teardrop, not a sphere, so an inscribed
-  // circle lands on the wrong feature — the shell's widest point, well
-  // back and up from the opening — and seated the helmet most of a head to
-  // the left. Fitted against real heads instead.
-  "catbubble": [128, 106, 100],
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
@@ -615,6 +610,10 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   catsuit: [96, 179],
   gemmie: [97, 178],
   sammie: [98, 178],
+  // Seraph and Leviathan stand rather than fly, so their tail meets the hip
+  // higher and further forward than the flying pose's shared 95,179.
+  seraph: [101, 173],
+  leviathan: [91, 162],
 };
 
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
@@ -646,13 +645,6 @@ function drawRigLayer(
   ctx.restore();
 }
 
-// Suits whose painting already includes headgear — the cat's ears and
-// bubble are part of its render — take no helmet at all. Stacking a
-// second dome on one was never going to line up, and most of them read
-// as broken; the head IS the cosmetic.
-function wearsOwnHead(suit: (typeof SUITS)[number]) {
-  return suit.cat === true || suit.ownHead === true;
-}
 
 function paintDome(
   ctx: CanvasRenderingContext2D,

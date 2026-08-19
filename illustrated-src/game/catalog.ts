@@ -60,7 +60,6 @@ export const HELMETS: Helmet[] = [
   { id: "aurora", name: "Aurora", cost: 300, visor: "#4de8b8", tint: 0.18, rim: "#57e6c2", trim: "#1c7a5e", glow: "#5dffd0" },
   { id: "meteor", name: "Meteor", cost: 400, visor: "#c98a4e", tint: 0.2, rim: "#b5713a", trim: "#6e3f18", glow: "#ff9d47" },
   { id: "chrono", name: "Chrono", cost: 500, visor: "#e8d9a8", tint: 0.16, rim: "#c9a94f", trim: "#7a6428", glow: "#ffe27a" },
-  { id: "catbubble", name: "Cat Ears", cost: 350, visor: "#cfe0ee", tint: 0.16, rim: "#c8d2dc", trim: "#8a94a0", glow: null, ears: true },
   { id: "gemmie", name: "Opal", cost: 0, visor: "#eddcff", tint: 0.16, rim: "#e0c8ff", trim: "#9a86b8", glow: "#ffb8f0" },
   { id: "phoenix", name: "Phoenix", cost: 0, visor: "#ffd2b0", tint: 0.18, rim: "#c4362a", trim: "#7a1d14", glow: "#ff6a1e" },
   { id: "sammie", name: "Samurai", cost: 0, visor: "#e6dccf", tint: 0.18, rim: "#7d1b20", trim: "#d4af37", glow: null },
@@ -92,6 +91,14 @@ export type Suit = {
   /** the art already wears a head, so no helmet is painted over it */
   ownHead?: boolean;
 };
+
+// Some characters ARE their headgear: the Cat's ears and bubble are part
+// of its painting, and a helmet stacked on one never lined up. Those suits
+// take no helmet at all, and the Hangar will not let you pick one for them
+// -- the head IS the cosmetic. Mark a new one with `ownHead: true`.
+export function wearsOwnHead(suit: { cat?: boolean; ownHead?: boolean }) {
+  return suit.cat === true || suit.ownHead === true;
+}
 
 export const SUITS: Suit[] = [
   { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
@@ -368,7 +375,7 @@ export const PAL_LEVELS: Record<string, number> = {
 // flying reveals them — and acorns cannot buy them; they are bought for
 // real money. The beta hands them over so they can be played and judged.
 export const IAP_ITEMS = [
-  "catsuit", "catbubble",
+  "catsuit",
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "leviathan", "paladin", "princess",
 ];

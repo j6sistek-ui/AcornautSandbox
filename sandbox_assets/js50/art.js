@@ -198,7 +198,6 @@ export async function loadArt() {
         "aurora",
         "meteor",
         "chrono",
-        "catbubble",
         "gemmie",
         "phoenix",
         "sammie",

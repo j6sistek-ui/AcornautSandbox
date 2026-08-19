@@ -1,4 +1,4 @@
-import { xpCumulative, BUILD, ENVS, GAME_VERSION, HELMETS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap } from "./catalog";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -22,7 +22,11 @@ export async function bootStandalone(root: HTMLElement) {
   const canvas = document.createElement("canvas");
   canvas.className = "ac-canvas";
   const overlay = el("div", "ac-overlay");
-  stage.append(canvas, overlay);
+  // The launch film lives on the STAGE, not in the overlay: render() clears
+  // the overlay wholesale on every notify, and a film mounted inside it
+  // would restart from frame one each time the engine so much as ticked.
+  const filmHost = el("div", "ac-filmhost");
+  stage.append(canvas, overlay, filmHost);
   root.append(stage);
 
   // Screen 1 of the cold open. The acorn IS the progress bar: a drained
@@ -294,8 +298,72 @@ export async function bootStandalone(root: HTMLElement) {
     stack.append(tap);
     box.append(stack);
     box.append(el("p", "ac-fine ac-splash-fine", `${BUILD} · ${GAME_VERSION}`));
-    box.onclick = () => engine.open("title");
+    box.onclick = () => {
+      engine.open("title");
+      playFilm();
+    };
     return box;
+  }
+
+  // The launch film, once per app open, straight off the tap. It is mounted
+  // OVER the finished home screen and dissolves away, so the film's last
+  // frame hands off to the home plate — the same moment, painted larger —
+  // with nothing blank in between.
+  let filmShown = false;
+  function playFilm() {
+    if (filmShown) return;
+    filmShown = true;
+    const box = el("div", "ac-film");
+    const v = document.createElement("video");
+    // Two encodes, because no single one plays everywhere: Safari and iOS
+    // need H.264 in MP4, and it is the format that matters most for a phone
+    // game — but a Chromium built without proprietary codecs (which is what
+    // the headless browser this is tested in uses) refuses it outright. The
+    // browser takes the first source it can decode.
+    for (const [file, type] of [
+      ["intro.webm", 'video/webm; codecs="vp9"'],
+      ["intro.mp4", 'video/mp4; codecs="avc1.4D401E"'],
+    ] as const) {
+      const src = document.createElement("source");
+      src.src = `${artRootUrl()}/${file}?v=${ART_VER}`;
+      src.type = type;
+      v.append(src);
+    }
+    v.preload = "auto";
+    // muted + playsinline is the only combination every mobile browser will
+    // start without a fight, and the menu music is what carries this anyway
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute("muted", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    box.append(v, el("button", "ac-filmskip", "SKIP"));
+    filmHost.append(box);
+
+    let over = false;
+    const end = () => {
+      if (over) return;
+      over = true;
+      window.clearTimeout(guard);
+      box.classList.add("out");
+      window.setTimeout(() => box.remove(), 460);
+    };
+    // Nothing may strand the player in front of a film. Three ways out on
+    // top of the film simply finishing: it never starts (no codec, autoplay
+    // refused, network down), it starts and stalls, or the player skips.
+    // A <source> list is what makes the first one need its own watch: when
+    // every source fails the error lands on the <source> elements, not on
+    // the video, so waiting for v.onerror alone would hold a black screen.
+    const guard = window.setTimeout(end, 11000);
+    const start = window.setTimeout(() => { if (v.paused || !v.currentTime) end(); }, 3500);
+    const clear = () => { window.clearTimeout(guard); window.clearTimeout(start); };
+    v.onended = () => { clear(); end(); };
+    v.onerror = () => { clear(); over = true; box.remove(); };
+    box.onclick = () => { clear(); end(); };
+    requestAnimationFrame(() => box.classList.add("ready"));
+    const started = v.play();
+    if (started && typeof started.catch === "function")
+      started.catch(() => { clear(); end(); });
   }
 
   function drawHome() {
@@ -386,6 +454,42 @@ export async function bootStandalone(root: HTMLElement) {
     return img;
   }
 
+  // The battery has no render of its own, so it is drawn: a cell stacked
+  // with three charges, which is exactly what buying it gives you.
+  function batteryIcon(px = 56) {
+    const { c, ctx } = miniCanvas(px, px);
+    if (!ctx) return c;
+    const w = px * 0.44;
+    const h = px * 0.66;
+    const x = (px - w) / 2;
+    const y = (px - h) / 2 + px * 0.03;
+    const r = px * 0.07;
+    ctx.fillStyle = "#8fa2c4";
+    ctx.fillRect(x + w * 0.3, y - px * 0.07, w * 0.4, px * 0.07);
+    const body = ctx.createLinearGradient(x, y, x + w, y + h);
+    body.addColorStop(0, "#2b3350");
+    body.addColorStop(1, "#161d33");
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+    ctx.strokeStyle = "#7f8db0";
+    ctx.lineWidth = Math.max(1, px * 0.026);
+    ctx.stroke();
+    for (let i = 0; i < 3; i++) {
+      const ch = h / 3.9;
+      const cy = y + h - (i + 1) * (ch + h * 0.045) + h * 0.03;
+      const g = ctx.createLinearGradient(0, cy, 0, cy + ch);
+      g.addColorStop(0, "#8de2ff");
+      g.addColorStop(1, "#3aa8e0");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.roundRect(x + w * 0.17, cy, w * 0.66, ch, r * 0.5);
+      ctx.fill();
+    }
+    return c;
+  }
+
   function helmCardOf(helmet: (typeof HELMETS)[number], px = 56) {
     // the dedicated helmet render IS the card — no shrunken squirrel
     const spr = engine.art?.helms?.[helmet.id];
@@ -441,14 +545,27 @@ export async function bootStandalone(root: HTMLElement) {
     const scroll = el("div", "ac-sheet-scroll");
     const grid = el("div", "ac-grid");
     if (engine.shopTab === "helmets") {
+      // A character whose head is part of its own painting wears no helmet
+      // at all, so the shelf is closed rather than misleading — picking one
+      // here would have changed nothing you could see.
+      const locked = wearsOwnHead(suit);
+      if (locked) {
+        const note = el("div", "ac-lockednote");
+        note.append(
+          el("p", "ac-lockedhead", `${suit.name} wears its own helmet`),
+          el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."),
+        );
+        scroll.append(note);
+      }
       for (const h of HELMETS) {
         const premium = isIap(h.id);
         const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
-        const b = el("button", s.equipped === h.id ? "ac-card on" : "ac-card");
+        const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
         b.append(helmCardOf(h, 64), document.createTextNode(
           `${h.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : h.cost}`));
         if (premium) b.classList.add("ac-premium");
-        b.onclick = () => { if (!premium || owned) engine.buyHelmet(h.id); };
+        if (locked) b.classList.add("ac-cardoff");
+        b.onclick = () => { if (!locked && (!premium || owned)) engine.buyHelmet(h.id); };
         grid.append(b);
       }
     } else if (engine.shopTab === "suits") {
@@ -487,13 +604,40 @@ export async function bootStandalone(root: HTMLElement) {
         grid.append(b);
       }
     } else {
-      const sh = el("button", "ac-ghost", s.startShield ? "Start Shield ARMED" : "Arm Start Shield");
-      sh.onclick = () => engine.toggleMod("shield");
-      const bat = el("button", "ac-ghost", s.battery ? "Battery OWNED" : "Buy Shield Battery");
-      bat.onclick = () => engine.toggleMod("battery");
-      scroll.append(sh, bat);
+      // Mods are BOUGHT, like everything else on this screen, so they get
+      // the same card with the same price on it. They used to be two bare
+      // switches parked in the Profile, which read as free settings — the
+      // start shield in particular is charged for every single arming.
+      const mod = (
+        id: string,
+        name: string,
+        blurb: string,
+        cost: number,
+        state: string | null,
+        pic: HTMLElement,
+        hit: () => void,
+      ) => {
+        const b = el("button", state ? "ac-card ac-modcard on" : "ac-card ac-modcard");
+        b.append(pic);
+        const txt = el("div", "ac-modtxt");
+        txt.append(el("p", "ac-modname", name), el("p", "ac-sub", blurb));
+        b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
+        b.onclick = () => hit();
+        grid.append(b);
+      };
+      const shieldNut = () => {
+        const { c, ctx } = miniCanvas(56, 56);
+        if (ctx && engine.art?.shieldnut) drawSpriteOn(ctx, engine.art.shieldnut, 28, 28, 52);
+        return c;
+      };
+      mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.",
+          MOD_SHIELD_COST, s.startShield ? "ARMED" : null, shieldNut(),
+          () => engine.toggleMod("shield"));
+      mod("battery", "Shield Battery", "Stack up to three shield charges instead of one. Bought once.",
+          MOD_BATTERY_COST, s.battery ? "OWNED" : null, batteryIcon(56),
+          () => engine.toggleMod("battery"));
     }
-    if (engine.shopTab !== "mods") scroll.append(grid);
+    scroll.append(grid);
     box.append(scroll, tabbar("hangar"));
     return box;
   }
@@ -733,23 +877,10 @@ export async function bootStandalone(root: HTMLElement) {
     }
     scroll.append(bests);
 
-    scroll.append(el("p", "ac-kicker ac-secthead", "Flight deck"));
-    const deck = el("div", "ac-rows");
-    const toggle = (label: string, on: boolean, hit: () => void) => {
-      const r = el("button", "ac-row ac-rowbtn");
-      r.append(el("span", "", label));
-      const sw = el("span", on ? "ac-switch on" : "ac-switch");
-      sw.append(el("span", "ac-knob"));
-      r.append(sw);
-      r.onclick = () => {
-        hit();
-        render();
-      };
-      deck.append(r);
-    };
-    toggle("Arm a start shield", !!s.startShield, () => engine.toggleMod("shield"));
-    toggle("Shield battery", !!s.battery, () => engine.toggleMod("battery"));
-    scroll.append(deck);
+    // The start shield and the battery used to sit here as two switches.
+    // They are not settings — both cost acorns, and the shield is charged
+    // every time it is armed — so they belong on the Hangar's MODS shelf
+    // with a price on them, next to everything else you buy.
 
     scroll.append(el("p", "ac-kicker ac-secthead", "News"));
     const news = el("div", "ac-rows");
