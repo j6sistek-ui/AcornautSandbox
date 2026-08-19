@@ -1,6 +1,6 @@
 // Cache version — MUST change on every release or installed apps keep
 // serving the old files. Decoupled from the game version string.
-const CACHE = 'acornaut-v1.1.0';
+const CACHE = 'acornaut-v1.2.0';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,9 @@ const ASSETS = [
   './icon.svg',
   './apple-touch-icon.png',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
