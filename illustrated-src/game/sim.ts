@@ -666,14 +666,18 @@ function appendTunnelNode(w: World) {
   const targetHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 10;
   const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : targetHalf;
   const half = Math.max(minHalf, Math.min(maxHalf, previousHalf + Math.max(-8, Math.min(8, targetHalf - previousHalf))));
+  const room = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
+  // Wide sections slither visibly across the screen. As the walls close,
+  // both amplitude and turn rate are damped so a tight passage asks for
+  // precision rather than forcing an impossible full-height chase.
+  const slitherAmp = w.H * (0.055 + room * 0.12);
+  const slitherRate = 0.105 + room * 0.08;
   const centerWave =
-    Math.sin(index * (0.105 + progress * 0.035) + t.seed) * w.H * (0.09 + progress * 0.055) +
-    Math.sin(index * 0.041 + 2.3) * w.H * 0.045;
+    Math.sin(index * slitherRate + t.seed) * slitherAmp +
+    Math.sin(index * 0.047 + 2.3) * w.H * (0.018 + room * 0.032);
   const desiredCenter = w.H * 0.5 + centerWave;
   const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
-  // The centerline cannot turn faster than the pilot's capped vertical
-  // speed can follow. Difficulty changes frequency, never this bound.
-  const maxTurn = 6 + progress * 2;
+  const maxTurn = 4 + room * 5.5;
   let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, desiredCenter - previousCenter));
   const safeHalf = half;
   center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));

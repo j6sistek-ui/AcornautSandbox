@@ -30,6 +30,10 @@ try {
   let debrisSeen = 0;
   let slowestTwoMinuteSpeed = Infinity;
   let widestTwoMinuteGap = 0;
+  let wideMotion = 0;
+  let wideMotionNodes = 0;
+  let tightMotion = 0;
+  let tightMotionNodes = 0;
 
   for (let run = 0; run < 40; run++) {
     let seed = run + 1;
@@ -40,6 +44,7 @@ try {
     flap(world, save);
     let framesSinceTap = 0;
     const seenHazards = new Set();
+    const seenNodes = new Set();
     let lastDebrisDistance = -Infinity;
     for (let frame = 0; frame < 60 * 180; frame++) {
       const bounds = tunnelBoundsAt(world, world.W * 0.18 + 70);
@@ -78,8 +83,15 @@ try {
       for (let i = 1; i < world.tunnel.nodes.length; i++) {
         const a = world.tunnel.nodes[i - 1];
         const b = world.tunnel.nodes[i];
-        minGap = Math.min(minGap, b.bottom - b.top);
-        maxTurn = Math.max(maxTurn, Math.abs((b.top + b.bottom - a.top - a.bottom) * 0.5));
+        const gap = b.bottom - b.top;
+        const turn = Math.abs((b.top + b.bottom - a.top - a.bottom) * 0.5);
+        minGap = Math.min(minGap, gap);
+        maxTurn = Math.max(maxTurn, turn);
+        if (!seenNodes.has(b.index)) {
+          seenNodes.add(b.index);
+          if (gap >= 260) { wideMotion += turn; wideMotionNodes++; }
+          if (gap <= 200) { tightMotion += turn; tightMotionNodes++; }
+        }
       }
       if (frame === 60 * 120 - 1) {
         const here = tunnelBoundsAt(world, sx);
@@ -93,6 +105,10 @@ try {
   if (slowestTwoMinuteSpeed < 360 || widestTwoMinuteGap > 205)
     throw new Error(`two-minute challenge too low: speed=${slowestTwoMinuteSpeed}, gap=${widestTwoMinuteGap}`);
   if (debrisSeen < 100) throw new Error(`lethal debris spawned too rarely: ${debrisSeen}`);
+  const wideAverageTurn = wideMotion / Math.max(1, wideMotionNodes);
+  const tightAverageTurn = tightMotion / Math.max(1, tightMotionNodes);
+  if (wideAverageTurn < tightAverageTurn * 1.45)
+    throw new Error(`slither damping too weak: wide=${wideAverageTurn}, tight=${tightAverageTurn}`);
 
   Math.random = originalRandom;
   const world = makeWorld(360, 640);
@@ -134,6 +150,8 @@ try {
     slowestTwoMinuteSpeed: Number(slowestTwoMinuteSpeed.toFixed(2)),
     widestTwoMinuteGap: Number(widestTwoMinuteGap.toFixed(2)),
     debrisSeen,
+    wideAverageTurn: Number(wideAverageTurn.toFixed(2)),
+    tightAverageTurn: Number(tightAverageTurn.toFixed(2)),
     multiplierAndSaveChecks: "passed",
   }));
 } finally {
