@@ -207,14 +207,14 @@ export async function loadArt() {
         "paladin",
         "princess",
     ];
-    // suits cut into a hinged tail + body; others draw as one piece
-    // Suits cut into a hinged tail + body. Every same-pose suit qualifies;
-    // Seraph does not, because its wing crosses the tail and would swing
-    // with it. Unrigged suits simply draw as one piece.
+    // Suits cut into a hinged tail + body, so a tap actually moves something.
+    // Seraph and Leviathan stand rather than fly and were left out at first;
+    // both are cut now, and their tails swing clear of the wings. An unrigged
+    // suit simply draws as one piece.
     const RIGGED_SUITS = [
         "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
-        "catsuit", "gemmie", "sammie",
+        "catsuit", "gemmie", "sammie", "seraph", "leviathan",
     ];
     const suitIds = [
         "flight",

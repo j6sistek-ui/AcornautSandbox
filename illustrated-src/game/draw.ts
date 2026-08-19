@@ -504,18 +504,21 @@ const DOME: Record<string, [number, number, number]> = {
   "flap-2": [164, 93, 50],
   "flap-3": [164, 79, 48],
   "flap-4": [163, 80, 45],
-  "suit:flight": [195, 97, 51],
-  "suit:iontrim": [199, 97, 46],
-  "suit:copper": [195, 97, 51],
-  "suit:frost": [197, 96, 49],
-  "suit:voidsuit": [193, 97, 52],
-  "suit:aurorasuit": [195, 102, 54],
-  "suit:ember": [192, 100, 49],
-  "suit:stardust": [196, 95, 50],
-  "suit:robo": [195, 97, 52],
-  "suit:alien": [197, 102, 50],
+  // The twelve originals were re-rendered bare-headed, so every one of
+  // these was measured again against flight's face. Ghost is the exception
+  // and still wears a painted dome -- see bakedDome in catalog.ts.
+  "suit:flight": [194, 97, 50],
+  "suit:iontrim": [197, 100, 58],
+  "suit:copper": [196, 99, 54],
+  "suit:frost": [196, 109, 50],
+  "suit:voidsuit": [191, 110, 47],
+  "suit:aurorasuit": [194, 107, 53],
+  "suit:ember": [195, 106, 49],
+  "suit:stardust": [194, 107, 52],
+  "suit:robo": [194, 105, 50],
+  "suit:alien": [193, 112, 54],
   "suit:ghost": [191, 99, 49],
-  "suit:bigbooty": [194, 86, 51],
+  "suit:bigbooty": [190, 115, 54],
   "suit:catsuit": [212, 86, 50],
   "suit:gemmie": [204, 92, 58],
   "suit:phoenix": [207, 92, 41],
@@ -646,6 +649,16 @@ function drawRigLayer(
 }
 
 
+// Which art still has a helmet painted into it. The eight flight animation
+// frames do (they were never re-rendered), and so does any suit flagged
+// bakedDome in the catalog. Everything else ships bare-headed and needs a
+// helmet drawn on it — including Clear.
+function bakedDome(key: string) {
+  if (!key.startsWith("suit:")) return true;
+  const id = key.slice(5);
+  return SUITS.some((u) => u.id === id && u.bakedDome === true);
+}
+
 function paintDome(
   ctx: CanvasRenderingContext2D,
   body: Sprite | HTMLImageElement,
@@ -656,7 +669,12 @@ function paintDome(
   size: number,
   art?: ArtBank | null,
 ) {
-  if (helmet.id === "clear") return; // the painted dome already reads clear
+  // The Clear helmet used to draw nothing at all, because every suit render
+  // had a clear dome painted into it. Most are bare-headed now, so Clear has
+  // to paint its own — otherwise picking it leaves the pilot in a vacuum
+  // bare-faced. Only the art that still carries a dome skips it: the eight
+  // flight animation frames, and the suits flagged bakedDome.
+  if (helmet.id === "clear" && bakedDome(key)) return;
   const a = DOME[key];
   if (!a) return;
   const box = (body as Sprite).box ?? { x: 0, y: 0, w: body.width, h: body.height };

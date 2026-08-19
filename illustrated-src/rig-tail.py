@@ -2,7 +2,8 @@
 """Cut a suit render into a hinged tail layer and a body layer, or repair a
 pair that was cut badly.
 
-    python3 illustrated-src/rig-tail.py cut    docs/art/suits/leviathan.png
+    python3 illustrated-src/rig-tail.py cut      docs/art/suits/leviathan.png
+    python3 illustrated-src/rig-tail.py transfer old/flight.png new/flight.png
     python3 illustrated-src/rig-tail.py repair docs/art/suits            # all pairs
     python3 illustrated-src/rig-tail.py audit  docs/art/suits
 
@@ -179,6 +180,80 @@ def repair(stem, min_blob=MIN_BLOB, alpha=ALPHA):
     return int(moved.sum())
 
 
+
+def transfer(old_suit, old_tail, new_suit):
+    """carry a known-good tail/body split onto a re-render of the same pose
+
+    The twelve originals were re-rendered bare-headed. Their tails could not
+    be cut by colour -- these suits are orange ON orange fur, and Frost, Robo
+    and Alien have no orange in them at all -- but the pose is unchanged, so
+    the old split still describes where the tail is. Align the old silhouette
+    to the new one and carry the mask across.
+
+    The two layers deliberately OVERLAP at the hip, the way the hand cuts
+    did: the tail takes a generous mask, the body keeps everything outside a
+    conservative one. A seam cut to a single line opens a gap the moment the
+    tail swings.
+    """
+    A = np.asarray(Image.open(old_suit).convert("RGBA"))[:, :, 3] > 20
+    T = np.asarray(Image.open(old_tail).convert("RGBA"))[:, :, 3] > 20
+    Bimg = Image.open(new_suit).convert("RGBA")
+    B = np.asarray(Bimg)[:, :, 3] > 20
+
+    ya, xa = np.where(A)
+    yb, xb = np.where(B)
+    span_a = max(xa.max() - xa.min(), ya.max() - ya.min())
+    span_b = max(xb.max() - xb.min(), yb.max() - yb.min())
+    guess = span_b / max(1, span_a)
+    ca = ((xa.min() + xa.max()) / 2, (ya.min() + ya.max()) / 2)
+    cb = ((xb.min() + xb.max()) / 2, (yb.min() + yb.max()) / 2)
+
+    best = None
+    for s in np.arange(guess * 0.92, guess * 1.09, 0.01):
+        warped = warp(A, s, 0, 0, ca, cb, B.shape)
+        for dy in range(-10, 11, 2):
+            for dx in range(-10, 11, 2):
+                m = np.roll(np.roll(warped, dy, 0), dx, 1)
+                iou = (m & B).sum() / max(1, (m | B).sum())
+                if best is None or iou > best[0]:
+                    best = (iou, s, dx, dy)
+    iou, s, dx, dy = best
+    Tw = np.roll(np.roll(warp(T, s, 0, 0, ca, cb, B.shape), dy, 0), dx, 1)
+
+    # The tail's claim is deliberately WIDE and the body's is narrow. Which
+    # layer a pixel lands in only matters where the two disagree, and near
+    # the plume's outer edge there is no body to disagree with -- so a
+    # generous tail mask costs nothing and catches the fur wisps that a
+    # tight one strands in the body as a hairy outline of where the tail
+    # used to be. At the hip, where it would matter, the body draws on top.
+    core = ndimage.binary_erosion(Tw, iterations=3)
+    gen = ndimage.binary_dilation(Tw, iterations=13)
+    a = np.asarray(Bimg).astype(np.float32)
+    tail = a.copy()
+    tail[:, :, 3] = np.where(gen, a[:, :, 3], 0)
+    body = a.copy()
+    body[:, :, 3] = np.where(core, 0, a[:, :, 3])
+
+    stem = new_suit[:-4]
+    save(tail, stem + "-tail.png")
+    save(body, stem + "-body.png")
+    repair(stem, min_blob=1, alpha=3)
+    px, py = pivot_of(np.asarray(Image.open(stem + "-tail.png").convert("RGBA"))[:, :, 3] > 20)
+    print("  %s: aligned at IoU %.3f (scale %.2f), pivot [%d, %d]"
+          % (os.path.basename(stem), iou, s, px, py))
+    return px, py
+
+
+def warp(mask, s, _dx, _dy, ca, cb, shape):
+    """scale about the old centroid and land it on the new one"""
+    h, w = shape
+    im = Image.fromarray((mask * 255).astype(np.uint8))
+    n = im.resize((max(1, int(round(w * s))), max(1, int(round(h * s)))), Image.NEAREST)
+    out = Image.new("L", (w, h), 0)
+    out.paste(n, (int(round(cb[0] - ca[0] * s)), int(round(cb[1] - ca[1] * s))))
+    return np.asarray(out) > 127
+
+
 def audit(folder):
     bad = 0
     for p in sorted(glob.glob(os.path.join(folder, "*-body.png"))):
@@ -201,11 +276,16 @@ def audit(folder):
 
 
 def main():
+    if len(sys.argv) == 4 and sys.argv[1] == "transfer":
+        old = sys.argv[2]
+        transfer(old, old[:-4] + "-tail.png", sys.argv[3])
+        return
     if len(sys.argv) != 3:
         sys.exit(__doc__)
     mode, target = sys.argv[1], sys.argv[2]
     if mode == "cut":
         sys.exit(0 if cut(target) else "no tail found in " + target)
+
     if mode == "repair":
         total = 0
         for p in sorted(glob.glob(os.path.join(target, "*-body.png"))):
