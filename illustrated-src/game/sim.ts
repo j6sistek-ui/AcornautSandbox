@@ -102,7 +102,6 @@ export type World = {
   tunnel: {
     nodes: { x: number; top: number; bottom: number; index: number }[];
     hazards: { x: number; y: number; r: number; side: -1 | 1; kind: "ripple" | "debris" }[];
-    thrust: boolean;
     scoreFloat: number;
     multiplier: number;
     multiplierLeft: number;
@@ -674,7 +673,7 @@ function appendTunnelNode(w: World) {
   const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
   // The centerline cannot turn faster than the pilot's capped vertical
   // speed can follow. Difficulty changes frequency, never this bound.
-  const maxTurn = 13 + progress * 3;
+  const maxTurn = 7 + progress * 2;
   let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, desiredCenter - previousCenter));
   const safeHalf = half;
   center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
@@ -695,7 +694,7 @@ function appendTunnelNode(w: World) {
     const r = 19 + tunnelNoise(t.seed, index, 3) * 7;
     t.hazards.push({
       x: node.x,
-      y: side < 0 ? node.top + r * 0.7 : node.bottom - r * 0.7,
+      y: side < 0 ? node.top + r * 0.1 : node.bottom - r * 0.1,
       r,
       side,
       kind: index % 3 === 0 ? "debris" : "ripple",
@@ -712,7 +711,7 @@ function appendTunnelNode(w: World) {
 
 function initTunnel(w: World) {
   w.tunnel = {
-    nodes: [], hazards: [], thrust: false, scoreFloat: 0,
+    nodes: [], hazards: [], scoreFloat: 0,
     multiplier: 1, multiplierLeft: 0, nextHazardAt: 950,
     seed: Math.floor(Math.random() * 1000000) + 1,
   };
@@ -737,24 +736,13 @@ export function tunnelBoundsAt(w: World, x: number) {
   return { top: a.top + (b.top - a.top) * f, bottom: a.bottom + (b.bottom - a.bottom) * f };
 }
 
-export function setTunnelThrust(w: World, held: boolean) {
-  if (w.flight !== "tunnel" || w.screen !== "play") return "none";
-  if (w.tunnel?.thrust === held && !(held && w.ready)) return "none";
-  if (held && w.ready) w.ready = false;
-  if (w.tunnel) w.tunnel.thrust = held;
-  if (held) {
-    w.flapBoost = 0.12;
-    w.tailV += TAIL.flap * 0.18;
-  }
-  return held ? "flap" : "none";
-}
-
 function updateTunnel(w: World, save: SaveData, dt: number): string | null {
   const t = w.tunnel!;
   const progress = Math.min(1, w.distance / 60000);
   w.speed = 175 + progress * 145;
-  const accel = t.thrust ? -1660 : 980;
-  w.squirrel.vy = Math.max(-410, Math.min(410, w.squirrel.vy + accel * dt));
+  // Tunnel flight deliberately reuses the main game's gravity and flap
+  // impulse. A tap resets upward velocity; gravity owns the descent.
+  w.squirrel.vy = Math.min(620, w.squirrel.vy + gravOf(save, w) * dt);
   w.squirrel.y += w.squirrel.vy * dt;
   w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
   const move = w.speed * dt;
@@ -778,7 +766,7 @@ function updateTunnel(w: World, save: SaveData, dt: number): string | null {
   const bounds = tunnelBoundsAt(w, sx);
   if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom) return die(w, save);
   for (const h of t.hazards) {
-    if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.88)) return die(w, save);
+    if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.78)) return die(w, save);
   }
 
   let sound: string | null = null;
@@ -1246,7 +1234,6 @@ function die(w: World, save: SaveData) {
     return "shield";
   }
   w.screen = "dead";
-  if (w.tunnel) w.tunnel.thrust = false;
   w.deadTimer = 0;
   w.tut = null;
   w.shake = 0.35;

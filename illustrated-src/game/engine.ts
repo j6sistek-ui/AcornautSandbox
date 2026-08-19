@@ -20,7 +20,6 @@ import {
   pausePlay,
   resetRun,
   resumePlay,
-  setTunnelThrust,
   snapshot,
   updateWorld,
   type FlightMode,
@@ -98,7 +97,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     },
     open(s) {
-      if (s !== "play" && world.flight === "tunnel") setTunnelThrust(world, false);
       world.screen = s;
       if (s === "title") world.tut = null;
       notify();
@@ -110,7 +108,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     toggleMod,
     setMod,
     dismissDead() {
-      if (world.flight === "tunnel") setTunnelThrust(world, false);
       world.screen = "title";
       world.lastRun = null;
       writeSave(save);
@@ -123,7 +120,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     },
     pause() {
-      if (world.flight === "tunnel") setTunnelThrust(world, false);
       pausePlay(world);
       notify();
     },
@@ -293,13 +289,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     (e) => {
       if (world.screen !== "play") return;
       e.preventDefault();
-      if (world.flight === "tunnel") {
-        canvas.setPointerCapture?.(e.pointerId);
-        const ev = setTunnelThrust(world, true);
-        if (ev === "flap") sfx.flap();
-        notify();
-        return;
-      }
       const p = pos(e);
       swipe = { y0: p.y, t0: performance.now(), fired: false };
       const ev = flap(world, save);
@@ -315,7 +304,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   canvas.addEventListener(
     "pointermove",
     (e) => {
-      if (!swipe || swipe.fired || world.screen !== "play") return;
+      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
         swipe = null;
@@ -331,7 +320,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     { passive: true },
   );
   const end = () => {
-    if (world.flight === "tunnel") setTunnelThrust(world, false);
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
@@ -350,7 +338,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       else if (world.screen === "title") engine.fly("fly");
       else if (world.screen === "pause") engine.resume();
       else if (world.screen === "play") {
-        const ev = world.flight === "tunnel" ? setTunnelThrust(world, true) : flap(world, save);
+        const ev = flap(world, save);
         if (ev === "flap") sfx.flap();
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
@@ -361,13 +349,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     }
   });
-  window.addEventListener("keyup", (e) => {
-    if ((e.code === "Space" || e.code === "ArrowUp") && world.flight === "tunnel") {
-      setTunnelThrust(world, false);
-      notify();
-    }
-  });
-
   function loop(now: number) {
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;

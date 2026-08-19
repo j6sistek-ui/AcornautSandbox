@@ -94,7 +94,7 @@ export async function bootStandalone(root: HTMLElement) {
     { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
     { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
     { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
-    { id: "tunnel", label: "WORMHOLE RUN", short: "TUNNEL", blurb: "Hold to rise. Release to fall. Survive the tunnel." },
+    { id: "tunnel", label: "WORMHOLE RUN", short: "TUNNEL", blurb: "Tap to rise. Keep flying inside the tunnel." },
   ];
   let selectedMode = 0;
 
@@ -1177,7 +1177,7 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
     scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
     scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-    scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: hold to rise, release to fall. Stay between the glowing walls; distance is score."));
+    scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap to rise, then gravity pulls you down. Stay between the glowing walls; distance is score."));
     scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
     box.append(scroll);
 

@@ -21,7 +21,7 @@ try {
 
   globalThis.localStorage = { getItem: () => null, setItem: () => {} };
   const require = createRequire(import.meta.url);
-  const { makeWorld, resetRun, setTunnelThrust, tunnelBoundsAt, updateWorld } = require(join(out, "sim.js"));
+  const { flap, makeWorld, resetRun, tunnelBoundsAt, updateWorld } = require(join(out, "sim.js"));
   const { defaultSave } = require(join(out, "save.js"));
   const originalRandom = Math.random;
   let minGap = Infinity;
@@ -34,19 +34,21 @@ try {
     const world = makeWorld(360, 640);
     const save = defaultSave();
     resetRun(world, save, "tunnel", false);
-    setTunnelThrust(world, true);
-    let held = true;
+    flap(world, save);
+    let framesSinceTap = 0;
     for (let frame = 0; frame < 60 * 180; frame++) {
-      const bounds = tunnelBoundsAt(world, world.W * 0.18 + 45);
+      const bounds = tunnelBoundsAt(world, world.W * 0.18 + 100);
       const target = (bounds.top + bounds.bottom) * 0.5;
-      const projectedY = world.squirrel.y + world.squirrel.vy * 0.16;
-      const nextHeld = projectedY > target;
-      if (nextHeld !== held) {
-        held = nextHeld;
-        setTunnelThrust(world, held);
+      if (world.squirrel.y > target + 44 && world.squirrel.vy > 0 && framesSinceTap >= 7) {
+        flap(world, save);
+        framesSinceTap = 0;
       }
       const event = updateWorld(world, save, 1 / 60);
-      if (event === "die") throw new Error(`hold/release pilot died in run ${run} at frame ${frame}`);
+      framesSinceTap++;
+      if (event === "die") throw new Error(
+        `tap pilot died in run ${run} at frame ${frame}; y=${world.squirrel.y.toFixed(1)}, ` +
+        `target=${target.toFixed(1)}, bounds=${bounds.top.toFixed(1)}..${bounds.bottom.toFixed(1)}`,
+      );
       for (let i = 1; i < world.tunnel.nodes.length; i++) {
         const a = world.tunnel.nodes[i - 1];
         const b = world.tunnel.nodes[i];
@@ -62,7 +64,7 @@ try {
   const world = makeWorld(360, 640);
   const save = defaultSave();
   resetRun(world, save, "tunnel", false);
-  setTunnelThrust(world, true);
+  flap(world, save);
   world.pickups.push({ x: world.W * 0.18 + world.speed / 60, y: world.squirrel.y, got: false, bob: 0, kind: "multiplier" });
   if (updateWorld(world, save, 1 / 60) !== "gold" || world.tunnel.multiplier !== 2)
     throw new Error("multiplier acorn did not activate ×2 scoring");

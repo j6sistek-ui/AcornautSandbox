@@ -1138,7 +1138,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = "700 18px Figtree, system-ui";
     ctx.globalAlpha = 0.75 + 0.25 * Math.sin(w.time * 4);
-    ctx.fillText(w.flight === "tunnel" ? "HOLD TO RISE · RELEASE TO FALL" : "TAP TO FLY", W / 2, w.H * 0.38);
+    ctx.fillText(w.flight === "tunnel" ? "TAP TO RISE" : "TAP TO FLY", W / 2, w.H * 0.38);
     ctx.globalAlpha = 1;
   }
   if (w.tut?.hold) {
