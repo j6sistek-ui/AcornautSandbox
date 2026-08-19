@@ -506,6 +506,7 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:phoenix": [207, 92, 41],
   "suit:sammie": [188, 98, 50],
   "suit:seraph": [216, 84, 46],
+  "suit:leviathan": [200, 82, 50],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -520,7 +521,9 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   "lunar": [129, 126, 125],
   "void": [125, 128, 125],
   "cherry": [126, 128, 125],
-  "royal": [129, 156, 125],
+  // Royal wears a crown, so its sphere is scaled down inside the frame
+  // and never measured 125 like the bare bubbles. Measured off the art.
+  "royal": [143, 154, 81],
   "aurora": [128, 127, 125],
   "meteor": [128, 127, 125],
   "chrono": [132, 126, 125],
@@ -528,9 +531,9 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
-  "gemmie": [155, 122, 108],
+  "gemmie": [155, 123, 107],
   "phoenix": [152, 125, 105],
-  "seraph": [166, 119, 105],
+  "seraph": [159, 137, 91],
   "chronarch": [158, 125, 104],
   "paladin": [129, 144, 112],
   "princess": [122, 131, 119],

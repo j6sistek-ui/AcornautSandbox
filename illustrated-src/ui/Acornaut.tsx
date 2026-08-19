@@ -97,7 +97,7 @@ export function Acornaut() {
             {screen === "title" && <Title engine={engine} userPending={isPending} userName={user?.displayName} />}
             {screen === "hangar" && <Hangar engine={engine} />}
             {screen === "log" && <FlightLog engine={engine} />}
-            {screen === "social" && <Social engine={engine} />}
+            {screen === "profile" && <Social engine={engine} />}
             {screen === "help" && <Help engine={engine} />}
           </div>
         )}
@@ -187,7 +187,7 @@ function Title({
       <nav className="mt-4 grid grid-cols-4 gap-2">
         <Dock icon={Warehouse} label="Hangar" onClick={() => engine.open("hangar")} />
         <Dock icon={BookOpen} label="Log" onClick={() => engine.open("log")} />
-        <Dock icon={UserRound} label="Social" onClick={() => engine.open("social")} />
+        <Dock icon={UserRound} label="Social" onClick={() => engine.open("profile")} />
         <Dock icon={CircleHelp} label="Help" onClick={() => engine.open("help")} />
       </nav>
       <p className="mt-2 text-center text-[10px] tracking-wide text-fog/70">

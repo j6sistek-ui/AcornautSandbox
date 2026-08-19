@@ -32,6 +32,11 @@ export type SaveData = {
   equippedTrail: string;
   unlockedPals: string[];
   equippedPal: string;
+  // lifetime tallies — the Profile screen's three tiles. These only ever
+  // grow; acorns spent in the hangar come off `acorns`, never off these.
+  runs: number;
+  lifetimeAcorns: number;
+  zonesSeen: string[];
 };
 
 export function defaultSave(): SaveData {
@@ -54,6 +59,9 @@ export function defaultSave(): SaveData {
     equippedTrail: "sparks",
     unlockedPals: ["none"],
     equippedPal: "none",
+    runs: 0,
+    lifetimeAcorns: 0,
+    zonesSeen: [],
   };
 }
 
@@ -77,6 +85,10 @@ export function loadSave(): SaveData {
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
+  // saves written before the lifetime tallies existed
+  if (typeof s.runs !== "number") s.runs = 0;
+  if (typeof s.lifetimeAcorns !== "number") s.lifetimeAcorns = s.acorns;
+  if (!Array.isArray(s.zonesSeen)) s.zonesSeen = [];
   if (parsed && typeof parsed.xp !== "number") {
     const owned =
       Math.max(0, (s.unlocked?.length || 1) - 1) +

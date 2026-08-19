@@ -1,4 +1,4 @@
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=43";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=48";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -19,6 +19,9 @@ export function defaultSave() {
         equippedTrail: "sparks",
         unlockedPals: ["none"],
         equippedPal: "none",
+        runs: 0,
+        lifetimeAcorns: 0,
+        zonesSeen: [],
     };
 }
 function readRaw(key) {
@@ -49,6 +52,13 @@ export function loadSave() {
         s.equippedTrail = "sparks";
     if (!PALS.some((p) => p.id === s.equippedPal))
         s.equippedPal = "none";
+    // saves written before the lifetime tallies existed
+    if (typeof s.runs !== "number")
+        s.runs = 0;
+    if (typeof s.lifetimeAcorns !== "number")
+        s.lifetimeAcorns = s.acorns;
+    if (!Array.isArray(s.zonesSeen))
+        s.zonesSeen = [];
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
             Math.max(0, (s.unlockedSuits?.length || 1) - 1) +
