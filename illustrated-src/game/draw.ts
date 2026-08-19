@@ -506,7 +506,9 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:phoenix": [207, 92, 41],
   "suit:sammie": [188, 98, 50],
   "suit:seraph": [216, 84, 46],
-  "suit:leviathan": [200, 82, 50],
+  // its own bubble is wider than the family's — a helmet sized to 50
+  // left the baked rim showing around every other dome
+  "suit:leviathan": [201, 85, 58],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
