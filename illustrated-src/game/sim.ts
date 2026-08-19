@@ -2,7 +2,7 @@ import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COU
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause";
-export type FlightMode = "fly" | "deep" | "lost" | "arcade";
+export type FlightMode = "fly" | "deep" | "lost" | "arcade" | "tunnel";
 export type TutStage =
   | "intro"
   | "tap"
@@ -37,7 +37,7 @@ export type Pickup = {
   y: number;
   got: boolean;
   bob: number;
-  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro";
+  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro" | "multiplier";
   pulled?: boolean;
   // Hazards carry their own reach. A black hole or wormhole spans the
   // whole gate mouth, so meeting one is a matter of arriving — not of
@@ -69,6 +69,8 @@ export type Snapshot = {
   powerLeft: number;
   invulnLeft: number;
   shieldCharges: number;
+  scoreMultiplier: number;
+  multiplierLeft: number;
   recoveryMsg: string;
   tutStage: TutStage | null;
   tutHold: boolean;
@@ -97,6 +99,16 @@ export type World = {
   planets: PlanetCol[];
   pickups: Pickup[];
   particles: Particle[];
+  tunnel: {
+    nodes: { x: number; top: number; bottom: number; index: number }[];
+    hazards: { x: number; y: number; r: number; side: -1 | 1; kind: "ripple" | "debris" }[];
+    thrust: boolean;
+    scoreFloat: number;
+    multiplier: number;
+    multiplierLeft: number;
+    nextHazardAt: number;
+    seed: number;
+  } | null;
   stars: { x: number; y: number; r: number; a: number; tw: number }[];
   speed: number;
   distance: number;
@@ -174,6 +186,7 @@ export function makeWorld(W: number, H: number): World {
     planets: [],
     pickups: [],
     particles: [],
+    tunnel: null,
     stars: [],
     speed: PHYS.baseSpeed,
     distance: 0,
@@ -583,6 +596,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.planets = [];
   w.pickups = [];
   w.particles = [];
+  w.tunnel = null;
   w.speed = PHYS.baseSpeed;
   w.distance = 0;
   w.lastSpawnX = w.W * 0.55;
@@ -626,12 +640,165 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.warpTilt = lostTiltAt(w.tiltPhase);
   }
   shuffleEnv(w);
-  for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
-  w.tut = tutorial
+  if (flight === "tunnel") initTunnel(w);
+  else for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
+  w.tut = flight === "tunnel" ? null : tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
         retries: 0, springs: 0, bounced: false }
     : null;
-  if (tutorial) buildTutorialCourse(w, save);
+  if (w.tut) buildTutorialCourse(w, save);
+}
+
+const TUNNEL_STEP = 56;
+
+function tunnelNoise(seed: number, index: number, salt = 0) {
+  const x = Math.sin(seed * 0.001 + index * 91.733 + salt * 37.119) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+function appendTunnelNode(w: World) {
+  const t = w.tunnel!;
+  const prev = t.nodes[t.nodes.length - 1];
+  const index = prev ? prev.index + 1 : 0;
+  const progress = Math.min(1, index * TUNNEL_STEP / 60000);
+  const minHalf = Math.max(82, Math.min(108, w.H * 0.19));
+  const maxHalf = Math.max(minHalf + 44, Math.min(190, w.H * 0.34));
+  const wave = Math.sin(index * 0.31 + t.seed) * 0.62 + Math.sin(index * 0.117 + 1.8) * 0.38;
+  const targetHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 13;
+  const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : targetHalf;
+  const half = Math.max(minHalf, Math.min(maxHalf, previousHalf + Math.max(-8, Math.min(8, targetHalf - previousHalf))));
+  const centerWave =
+    Math.sin(index * (0.105 + progress * 0.035) + t.seed) * w.H * (0.09 + progress * 0.055) +
+    Math.sin(index * 0.041 + 2.3) * w.H * 0.045;
+  const desiredCenter = w.H * 0.5 + centerWave;
+  const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
+  // The centerline cannot turn faster than the pilot's capped vertical
+  // speed can follow. Difficulty changes frequency, never this bound.
+  const maxTurn = 13 + progress * 3;
+  let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, desiredCenter - previousCenter));
+  const safeHalf = half;
+  center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
+  const node = {
+    x: prev ? prev.x + TUNNEL_STEP : -TUNNEL_STEP,
+    top: center - safeHalf,
+    bottom: center + safeHalf,
+    index,
+  };
+  t.nodes.push(node);
+
+  // Hazards are only admitted in expanded chambers. Each occupies one
+  // wall and leaves a central/opposite-side corridor wider than the
+  // tightest hazard-free tunnel, so the generated course retains a route.
+  const absoluteX = index * TUNNEL_STEP;
+  if (absoluteX >= t.nextHazardAt && safeHalf >= minHalf + 34 && node.x > w.W * 0.7) {
+    const side: -1 | 1 = tunnelNoise(t.seed, index, 2) < 0.5 ? -1 : 1;
+    const r = 19 + tunnelNoise(t.seed, index, 3) * 7;
+    t.hazards.push({
+      x: node.x,
+      y: side < 0 ? node.top + r * 0.7 : node.bottom - r * 0.7,
+      r,
+      side,
+      kind: index % 3 === 0 ? "debris" : "ripple",
+    });
+    t.nextHazardAt = absoluteX + 430 + tunnelNoise(t.seed, index, 4) * 420;
+  }
+
+  if (node.x > w.W * 0.55 && tunnelNoise(t.seed, index, 5) < 0.19) {
+    const special = tunnelNoise(t.seed, index, 6) < 0.13;
+    const lane = (node.top + node.bottom) * 0.5 + (tunnelNoise(t.seed, index, 7) - 0.5) * safeHalf * 0.5;
+    w.pickups.push({ x: node.x, y: lane, got: false, bob: tunnelNoise(t.seed, index, 8) * 6, kind: special ? "multiplier" : "acorn" });
+  }
+}
+
+function initTunnel(w: World) {
+  w.tunnel = {
+    nodes: [], hazards: [], thrust: false, scoreFloat: 0,
+    multiplier: 1, multiplierLeft: 0, nextHazardAt: 950,
+    seed: Math.floor(Math.random() * 1000000) + 1,
+  };
+  while (w.tunnel.nodes.length < Math.ceil((w.W + 360) / TUNNEL_STEP) + 2) appendTunnelNode(w);
+  w.squirrel.y = w.H * 0.5;
+  w.lastGapY = w.H * 0.5;
+  w.speed = 175;
+  w.planets = [];
+  w.startShieldArmed = false;
+  w.shieldCharges = 0;
+}
+
+export function tunnelBoundsAt(w: World, x: number) {
+  const nodes = w.tunnel?.nodes;
+  if (!nodes?.length) return { top: 0, bottom: w.H };
+  let a = nodes[0];
+  let b = nodes[nodes.length - 1];
+  for (let i = 1; i < nodes.length; i++) {
+    if (nodes[i].x >= x) { a = nodes[i - 1]; b = nodes[i]; break; }
+  }
+  const f = Math.max(0, Math.min(1, (x - a.x) / Math.max(1, b.x - a.x)));
+  return { top: a.top + (b.top - a.top) * f, bottom: a.bottom + (b.bottom - a.bottom) * f };
+}
+
+export function setTunnelThrust(w: World, held: boolean) {
+  if (w.flight !== "tunnel" || w.screen !== "play") return "none";
+  if (w.tunnel?.thrust === held && !(held && w.ready)) return "none";
+  if (held && w.ready) w.ready = false;
+  if (w.tunnel) w.tunnel.thrust = held;
+  if (held) {
+    w.flapBoost = 0.12;
+    w.tailV += TAIL.flap * 0.18;
+  }
+  return held ? "flap" : "none";
+}
+
+function updateTunnel(w: World, save: SaveData, dt: number): string | null {
+  const t = w.tunnel!;
+  const progress = Math.min(1, w.distance / 60000);
+  w.speed = 175 + progress * 145;
+  const accel = t.thrust ? -1660 : 980;
+  w.squirrel.vy = Math.max(-410, Math.min(410, w.squirrel.vy + accel * dt));
+  w.squirrel.y += w.squirrel.vy * dt;
+  w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
+  const move = w.speed * dt;
+  w.distance += move;
+  t.scoreFloat += move / 100 * t.multiplier;
+  w.score = Math.floor(t.scoreFloat);
+  if (t.multiplierLeft > 0) {
+    t.multiplierLeft = Math.max(0, t.multiplierLeft - dt);
+    if (t.multiplierLeft === 0) t.multiplier = 1;
+  }
+  for (const n of t.nodes) n.x -= move;
+  for (const h of t.hazards) h.x -= move;
+  for (const a of w.pickups) { a.x -= move; a.bob += dt * 4; }
+  while (t.nodes[t.nodes.length - 1].x < w.W + 280) appendTunnelNode(w);
+  t.nodes = t.nodes.filter((n, i) => n.x > -TUNNEL_STEP * 2 || i >= t.nodes.length - 2);
+  t.hazards = t.hazards.filter((h) => h.x > -80);
+  w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
+
+  const sx = w.W * PHYS.squirrelX;
+  const sy = w.squirrel.y;
+  const bounds = tunnelBoundsAt(w, sx);
+  if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom) return die(w, save);
+  for (const h of t.hazards) {
+    if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.88)) return die(w, save);
+  }
+
+  let sound: string | null = null;
+  for (const a of w.pickups) {
+    if (a.got) continue;
+    const ay = a.y + Math.sin(a.bob) * 4;
+    if (!circleHit(sx, sy, PHYS.squirrelR, a.x, ay, 18)) continue;
+    a.got = true;
+    if (a.kind === "multiplier") {
+      t.multiplier = 2;
+      t.multiplierLeft = 8;
+      spark(w, a.x, ay, ["#fff4a8", "#ffd060", "#b45cff"], 18, "gold");
+      sound = "gold";
+    } else {
+      w.runAcorns += 1;
+      spark(w, a.x, ay, ["#ffd060", "#fff"], 10, "gold");
+      sound = "acorn";
+    }
+  }
+  return sound;
 }
 
 function spark(w: World, x: number, y: number, colors: string[], n = 12, kind = "spark") {
@@ -1079,6 +1246,7 @@ function die(w: World, save: SaveData) {
     return "shield";
   }
   w.screen = "dead";
+  if (w.tunnel) w.tunnel.thrust = false;
   w.deadTimer = 0;
   w.tut = null;
   w.shake = 0.35;
@@ -1099,6 +1267,8 @@ function die(w: World, save: SaveData) {
           ? w.score >= save.lostBest
           : w.flight === "arcade"
             ? w.score >= save.arcadeBest
+            : w.flight === "tunnel"
+              ? w.score >= save.tunnelBest
             : w.score >= save.highScore,
   };
   save.xp = fromXp + xp;
@@ -1109,6 +1279,7 @@ function die(w: World, save: SaveData) {
   if (w.flight === "deep") save.deepBest = Math.max(save.deepBest, w.score);
   else if (w.flight === "lost") save.lostBest = Math.max(save.lostBest, w.score);
   else if (w.flight === "arcade") save.arcadeBest = Math.max(save.arcadeBest, w.score);
+  else if (w.flight === "tunnel") save.tunnelBest = Math.max(save.tunnelBest, w.score);
   else save.highScore = Math.max(save.highScore, w.score);
   if (w.startShieldArmed) save.startShield = false;
   spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
@@ -1304,6 +1475,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   if (w.hitCooldown > 0) w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
   if (w.envMsgT > 0) w.envMsgT = Math.max(0, w.envMsgT - dt);
+
+  if (w.flight === "tunnel" && w.tunnel) return updateTunnel(w, save, dt);
 
   const d = difficulty(w);
   w.speed = d.speed;
@@ -1508,6 +1681,8 @@ export function snapshot(w: World): Snapshot {
     powerLeft: w.powerLeft,
     invulnLeft: w.invulnLeft,
     shieldCharges: w.shieldCharges,
+    scoreMultiplier: w.tunnel?.multiplier ?? 1,
+    multiplierLeft: w.tunnel?.multiplierLeft ?? 0,
     recoveryMsg: w.recoveryMsg,
     tutStage: w.tut?.stage ?? null,
     tutHold: !!w.tut?.hold,

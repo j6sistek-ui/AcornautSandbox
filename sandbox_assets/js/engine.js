@@ -1,9 +1,9 @@
-import { emptyArt, loadArt } from "./art.js?v=50";
-import { sfx, unlockAudio, music } from "./audio.js?v=50";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=50";
-import { drawHud, drawWorld } from "./draw.js?v=50";
-import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=50";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=50";
+import { emptyArt, loadArt } from "./art.js?v=51";
+import { sfx, unlockAudio, music } from "./audio.js?v=51";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=51";
+import { drawHud, drawWorld } from "./draw.js?v=51";
+import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=51";
+import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, setTunnelThrust, snapshot, updateWorld, } from "./sim.js?v=51";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -43,6 +43,8 @@ export async function createEngine(canvas) {
             notify();
         },
         open(s) {
+            if (s !== "play" && world.flight === "tunnel")
+                setTunnelThrust(world, false);
             world.screen = s;
             if (s === "title")
                 world.tut = null;
@@ -55,6 +57,8 @@ export async function createEngine(canvas) {
         toggleMod,
         setMod,
         dismissDead() {
+            if (world.flight === "tunnel")
+                setTunnelThrust(world, false);
             world.screen = "title";
             world.lastRun = null;
             writeSave(save);
@@ -67,6 +71,8 @@ export async function createEngine(canvas) {
             notify();
         },
         pause() {
+            if (world.flight === "tunnel")
+                setTunnelThrust(world, false);
             pausePlay(world);
             notify();
         },
@@ -245,6 +251,14 @@ export async function createEngine(canvas) {
         if (world.screen !== "play")
             return;
         e.preventDefault();
+        if (world.flight === "tunnel") {
+            canvas.setPointerCapture?.(e.pointerId);
+            const ev = setTunnelThrust(world, true);
+            if (ev === "flap")
+                sfx.flap();
+            notify();
+            return;
+        }
         const p = pos(e);
         swipe = { y0: p.y, t0: performance.now(), fired: false };
         const ev = flap(world, save);
@@ -273,6 +287,8 @@ export async function createEngine(canvas) {
         }
     }, { passive: true });
     const end = () => {
+        if (world.flight === "tunnel")
+            setTunnelThrust(world, false);
         swipe = null;
     };
     canvas.addEventListener("pointerup", end);
@@ -296,7 +312,7 @@ export async function createEngine(canvas) {
             else if (world.screen === "pause")
                 engine.resume();
             else if (world.screen === "play") {
-                const ev = flap(world, save);
+                const ev = world.flight === "tunnel" ? setTunnelThrust(world, true) : flap(world, save);
                 if (ev === "flap")
                     sfx.flap();
             }
@@ -304,10 +320,16 @@ export async function createEngine(canvas) {
                 engine.dismissDead();
             notify();
         }
-        if (e.code === "ArrowDown" && world.screen === "play") {
+        if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
             const ev = dive(world);
             if (ev === "dive")
                 sfx.dive();
+            notify();
+        }
+    });
+    window.addEventListener("keyup", (e) => {
+        if ((e.code === "Space" || e.code === "ArrowUp") && world.flight === "tunnel") {
+            setTunnelThrust(world, false);
             notify();
         }
     });
@@ -382,4 +404,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=50";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=51";

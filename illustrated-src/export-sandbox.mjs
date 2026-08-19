@@ -13,7 +13,7 @@ mkdirSync(join(out, "art"), { recursive: true });
 
 execSync(
   [
-    "npx tsc",
+    "npx --yes --package typescript@5.9.2 tsc",
     "illustrated-src/game/catalog.ts illustrated-src/game/save.ts illustrated-src/game/sim.ts illustrated-src/game/draw.ts",
     "illustrated-src/game/art.ts illustrated-src/game/audio.ts illustrated-src/game/engine.ts illustrated-src/game/standalone.ts",
     "illustrated-src/game/cosmetics.ts",

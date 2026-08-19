@@ -1,8 +1,8 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=50";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=50";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=50";
-import { createEngine } from "./engine.js?v=50";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save.js?v=50";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=51";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=51";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=51";
+import { createEngine } from "./engine.js?v=51";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save.js?v=51";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -80,13 +80,14 @@ export async function bootStandalone(root) {
     window.__sandbox = engine;
     engine.start();
     // The title picks ONE mode at a time: TAKE FLIGHT launches it, the
-    // MODE bar cycles through the four. Selection lives here so it survives
+    // MODE bar cycles through the five. Selection lives here so it survives
     // a re-render of the title.
     const MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
         { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
         { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
+        { id: "tunnel", label: "WORMHOLE RUN", short: "TUNNEL", blurb: "Hold to rise. Release to fall. Survive the tunnel." },
     ];
     let selectedMode = 0;
     // BUG: every re-render rebuilt the overlay from scratch, so buying or
@@ -120,7 +121,7 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "dead" && snap.dead) {
             const sheet = el("div", "ac-sheet ac-center");
-            sheet.append(el("h2", "", "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
+            sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID" : "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
             if (snap.dead.best && snap.dead.score > 0)
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
             sheet.append(el("p", "ac-sub", `+${snap.dead.xp} XP · LV ${snap.dead.toLv}`));
@@ -421,7 +422,7 @@ export async function bootStandalone(root) {
         launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
         launch.onclick = () => engine.fly(MODES[selectedMode].id);
         controls.append(launch);
-        // All four modes visible at once — no cycling to reach Arcade.
+        // All modes visible at once — the experiment is one deliberate tap away.
         const modes = el("div", "ac-modes");
         MODES.forEach((m, i) => {
             const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode", m.short);
@@ -1050,6 +1051,7 @@ export async function bootStandalone(root) {
             ["Best · Deep Space", s.deepBest],
             ["Best · Lost in Space", s.lostBest],
             ["Best · Arcade", s.arcadeBest],
+            ["Best · Wormhole Run", s.tunnelBest],
         ]) {
             const r = el("div", "ac-row");
             r.append(el("span", "", label), el("span", "ac-rowgold", `${v ?? 0}`));
@@ -1137,6 +1139,7 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
         scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
+        scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: hold to rise, release to fall. Stay between the glowing walls; distance is score."));
         scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");

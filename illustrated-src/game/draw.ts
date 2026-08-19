@@ -129,6 +129,12 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
   }
 
+  if (w.flight === "tunnel" && w.tunnel) {
+    drawTunnelWorld(ctx, w, save, art);
+    ctx.restore();
+    return;
+  }
+
   // Sky stays upright. Warp only tilts the playfield (live does the same).
   if (w.retro) retroBackdrop(ctx, W, H, w.envA, w.envB, w.envBlend, w.stars);
   else drawBackdrop(ctx, w, art);
@@ -219,6 +225,111 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   }
   ctx.restore();
   ctx.restore();
+}
+
+function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
+  const { W, H } = w;
+  const tunnel = w.tunnel!;
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#07051a");
+  bg.addColorStop(0.5, "#101147");
+  bg.addColorStop(1, "#220c3d");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Longitudinal light makes the space read as a tube moving left-to-right.
+  for (let i = 0; i < 16; i++) {
+    const x = ((i * 97 - w.distance * (0.32 + (i % 3) * 0.09)) % (W + 120) + W + 120) % (W + 120) - 60;
+    ctx.strokeStyle = `rgba(${i % 2 ? "115,230,255" : "198,112,255"},${0.1 + (i % 4) * 0.025})`;
+    ctx.lineWidth = 1 + (i % 3);
+    ctx.beginPath();
+    ctx.moveTo(x, H * 0.24);
+    ctx.lineTo(x - 65, H * 0.76);
+    ctx.stroke();
+  }
+
+  const wall = (top: boolean) => {
+    const g = ctx.createLinearGradient(0, top ? 0 : H, 0, top ? H * 0.45 : H * 0.55);
+    g.addColorStop(0, "#13051f");
+    g.addColorStop(0.58, top ? "#4c176c" : "#182d6e");
+    g.addColorStop(1, top ? "#b044c8" : "#237bb1");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(tunnel.nodes[0].x, top ? 0 : H);
+    for (const n of tunnel.nodes) ctx.lineTo(n.x, top ? n.top : n.bottom);
+    ctx.lineTo(tunnel.nodes[tunnel.nodes.length - 1].x, top ? 0 : H);
+    ctx.closePath();
+    ctx.fill();
+  };
+  wall(true);
+  wall(false);
+
+  for (const top of [true, false]) {
+    ctx.strokeStyle = top ? "rgba(244,126,255,.92)" : "rgba(88,220,255,.92)";
+    ctx.shadowColor = top ? "#cf4aff" : "#47d8ff";
+    ctx.shadowBlur = 12;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    tunnel.nodes.forEach((n, i) => {
+      const y = top ? n.top : n.bottom;
+      if (i === 0) ctx.moveTo(n.x, y); else ctx.lineTo(n.x, y);
+    });
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+
+  // Receding hoops provide the wormhole's pulse without becoming collision.
+  for (let x = -40 + ((-w.distance * 0.72) % 94); x < W + 60; x += 94) {
+    const near = Math.max(0, Math.min(1, x / W));
+    ctx.strokeStyle = `rgba(132,214,255,${0.08 + near * 0.16})`;
+    ctx.lineWidth = 1 + near * 2;
+    ctx.beginPath();
+    ctx.ellipse(x, H * 0.5, 13 + near * 17, H * (0.18 + near * 0.13), 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  for (const h of tunnel.hazards) {
+    if (h.kind === "ripple") {
+      ctx.strokeStyle = h.side < 0 ? "#ff7cf0" : "#63ddff";
+      ctx.shadowColor = ctx.strokeStyle;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, h.r, h.side < 0 ? 0.1 : Math.PI + 0.1, h.side < 0 ? Math.PI - 0.1 : Math.PI * 2 - 0.1);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    } else {
+      ctx.save();
+      ctx.translate(h.x, h.y);
+      ctx.rotate(w.time * 0.7 * h.side);
+      ctx.fillStyle = "#503d63";
+      ctx.strokeStyle = "#be9bd8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) {
+        const a = i / 8 * Math.PI * 2;
+        const r = h.r * (i % 2 ? 0.72 : 1);
+        if (!i) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+        else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    }
+  }
+
+  for (const a of w.pickups) {
+    if (a.got) continue;
+    const y = a.y + Math.sin(a.bob) * 4;
+    if (a.kind === "multiplier") {
+      ctx.strokeStyle = "rgba(255,238,128,.85)";
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(a.x, y, 21 + Math.sin(w.time * 5) * 2, 0, Math.PI * 2); ctx.stroke();
+      drawSprite(ctx, frameOf(art.golden, w.time, 6) ?? frameOf(art.acorn, w.time, 5), a.x, y, 33);
+      ctx.fillStyle = "#fff"; ctx.font = "900 10px Figtree, system-ui"; ctx.textAlign = "center";
+      ctx.fillText("×2", a.x, y + 4);
+    } else drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
+  }
+  for (const p of w.particles) drawParticle(ctx, p);
+  drawPilot(ctx, w, save, art);
 }
 
 // The other timeline. Same planets in the same places, same rocks with
@@ -1000,6 +1111,8 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
   else if (w.flight === "deep" && w.warpT <= 0) hudLine("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", "rgba(192,132,252,0.8)");
   if (w.powerLeft > 0) hudLine(`SLOW  ${Math.ceil(w.powerLeft)}s`, "#6ef0ff");
   if (w.invulnLeft > 0) hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
+  if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplier > 1)
+    hudLine(`×${w.tunnel.multiplier} SCORE  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
   if (w.recoveryMsg) {
     ctx.textAlign = "center";
     ctx.fillStyle = "#fff";
@@ -1025,7 +1138,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = "700 18px Figtree, system-ui";
     ctx.globalAlpha = 0.75 + 0.25 * Math.sin(w.time * 4);
-    ctx.fillText("TAP TO FLY", W / 2, w.H * 0.38);
+    ctx.fillText(w.flight === "tunnel" ? "HOLD TO RISE · RELEASE TO FALL" : "TAP TO FLY", W / 2, w.H * 0.38);
     ctx.globalAlpha = 1;
   }
   if (w.tut?.hold) {
