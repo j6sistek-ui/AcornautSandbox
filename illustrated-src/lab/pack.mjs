@@ -43,8 +43,12 @@ const inlined = js.replace(
   'img.src = PACK ? (PACK[src.replace(/^\\/+/, "")] || src) : src;',
 );
 
+// The Google Fonts link STAYS. It is the one external host an Artifact's
+// CSP admits, and both faces already declare a real fallback stack, so an
+// offline copy degrades to Georgia/system-ui instead of silently losing the
+// type it was designed with.
 const html = page
-  .replace(/<link rel="stylesheet" href="https:\/\/fonts[^>]*>/, "")
+  .replace(/<title>[^<]*<\/title>/, "<title>The Spill</title>")
   .replace(/<script>\s*\/\/ the lab sits[\s\S]*?<\/script>/, shim)
   .replace(
     /<script type="module">[\s\S]*?<\/script>/,

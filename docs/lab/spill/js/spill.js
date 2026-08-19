@@ -21,10 +21,15 @@ const PHYS = {
     gravity: 1250,
     flap: -430,
     dive: 360,
-    /** how fast the pilot slides when lunging, and how long the dash lasts */
-    lungeSpeed: 900,
-    lungeTime: 0.16,
-    lungeCooldown: 0.5,
+    /** how fast the pilot slides when lunging, and how long the dash lasts.
+     *  900 x 0.16s covered 144px of a 210px band — one dash crossed two
+     *  thirds of everywhere you are allowed to be, which made the horizontal
+     *  axis free rather than a resource. Measure the whole move, not the dash:
+     *  the slide-out afterwards carries it half as far again. About a third of
+     *  the band, all in. */
+    lungeSpeed: 320,
+    lungeTime: 0.15,
+    lungeCooldown: 0.55,
     /** the pilot may roam this share of the screen width */
     bandLeft: 0.08,
     bandRight: 0.62,
@@ -39,8 +44,11 @@ function intensity(t) {
     // Opens gently and keeps climbing rather than plateauing into safety. The
     // first version reached full pressure in 75s and an autopilot could not
     // survive nine, because density is not the only thing that scales — the
-    // pieces get faster too, and the two multiply.
-    return Math.min(1, t / 110) * 0.72 + Math.min(1, t / 300) * 0.28;
+    // pieces get faster too, and the two multiply. Eased again after the lunge
+    // was cut to a third of its reach: the field had been balanced around a
+    // dash that could cross most of the band, and taking that away without
+    // touching the ramp halved how long the same bot lasted.
+    return Math.min(1, t / 135) * 0.72 + Math.min(1, t / 320) * 0.28;
 }
 function makeSpill(W, H) {
     return {
@@ -142,6 +150,15 @@ function pathClear(s, cand) {
     }
     return true;
 }
+/** a debris index the player can actually see against deep space */
+function readableSprite() {
+    for (let i = 0; i < 24; i++) {
+        const n = Math.floor(Math.random() * 27);
+        if (!UNREADABLE.has(n))
+            return n;
+    }
+    return 0;
+}
 function spawnRock(s) {
     const I = intensity(s.t);
     const surging = s.surgeT > 0;
@@ -169,7 +186,7 @@ function spawnRock(s) {
         vy: Math.sin(ang) * speed,
         r,
         kind,
-        sprite: Math.floor(Math.random() * 27),
+        sprite: readableSprite(),
         spin: (Math.random() - 0.5) * (kind === "tumbler" ? 2.4 : kind === "hulk" ? 0.5 : 1.2),
         rot: Math.random() * Math.PI * 2,
         arc: kind === "spinner" ? 26 + Math.random() * 26 : 0,
@@ -340,7 +357,7 @@ function step(s, dt) {
     }
     else {
         // slides to a stop rather than stopping dead, so a dash has weight
-        s.pilot.vx *= 1 - Math.min(1, dt * 7);
+        s.pilot.vx *= 1 - Math.min(1, dt * 8.5);
     }
     s.pilot.vy += PHYS.gravity * dt;
     s.pilot.y += s.pilot.vy * dt;
@@ -464,6 +481,14 @@ function loadBest() {
         return 0;
     }
 }
+// ---------------------------------------------------------------- art
+/**
+ * Four of the twenty-seven debris paintings are near-black or deep purple —
+ * mean luminance 31 to 58 where the backdrop sits at 12 to 28. Against deep
+ * space they are not dark objects, they are invisible ones, and a piece you
+ * cannot see is not a piece you can dodge. They are left out of the pool.
+ */
+const UNREADABLE = new Set([8, 12, 14, 22]);
 function loadImg(src) {
     return new Promise((done) => {
         const img = new Image();
@@ -486,7 +511,38 @@ async function loadBank() {
         Promise.all([1, 2, 3, 4].map((i) => loadImg(`${ART}/squirrel/idle-${i}.png`))),
         Promise.all([1, 2, 3, 4].map((i) => loadImg(`${ART}/squirrel/flap-${i}.png`))),
     ]);
-    return { debris, acorn, idle, flap };
+    return { debris, lit: debris.map(rim), acorn, idle, flap };
+}
+/**
+ * A separation rim, baked once per sprite. The main game does the same thing
+ * for exactly this reason — a dark object on a dark sky has no edge — and
+ * baking it beats a live shadowBlur, which would cost a blur per rock per
+ * frame. Drawn by offsetting the sprite far off-canvas and keeping only the
+ * shadow it casts back.
+ */
+function rim(img) {
+    if (!img)
+        return null;
+    // The pad and the blur both scale with the SPRITE, because the sprite is
+    // then scaled down to rock size on draw. A fixed 13px blur on a 256px
+    // painting survives as under three pixels on a 50px rock — which is why
+    // the first attempt looked like nothing had changed.
+    const pad = Math.round(img.width * 0.14);
+    const c = document.createElement("canvas");
+    c.width = img.width + pad * 2;
+    c.height = img.height + pad * 2;
+    const cc = c.getContext("2d");
+    if (!cc)
+        return null;
+    cc.shadowColor = "rgba(170,200,255,0.95)";
+    cc.shadowBlur = img.width * 0.075;
+    cc.shadowOffsetX = c.width * 2;
+    // twice, so the rim has body against a starfield rather than a whisper
+    cc.drawImage(img, pad - c.width * 2, pad);
+    cc.drawImage(img, pad - c.width * 2, pad);
+    cc.shadowColor = "transparent";
+    cc.drawImage(img, pad, pad);
+    return c;
 }
 // ---------------------------------------------------------------- draw
 function backdrop(ctx, s) {
@@ -529,12 +585,15 @@ function backdrop(ctx, s) {
     ctx.globalAlpha = 1;
 }
 function drawRock(ctx, bank, r) {
-    const img = bank.debris[r.sprite % bank.debris.length];
+    const img = bank.lit[r.sprite % bank.lit.length] ?? bank.debris[r.sprite % bank.debris.length];
     ctx.save();
     ctx.translate(r.x, r.y);
     ctx.rotate(r.rot);
     if (img) {
-        ctx.drawImage(img, -r.r, -r.r, r.r * 2, r.r * 2);
+        // the rimmed canvas is RIM larger on every side, so scale to match
+        const grow = img.width / Math.max(1, (bank.debris[r.sprite % bank.debris.length]?.width || img.width));
+        const d = r.r * 2 * grow;
+        ctx.drawImage(img, -d / 2, -d / 2, d, d);
     }
     else {
         ctx.fillStyle = "#6b6357";

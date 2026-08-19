@@ -1181,6 +1181,18 @@ export async function bootStandalone(root: HTMLElement) {
     const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
     replay.onclick = () => engine.replayTutorial();
     scroll.append(replay);
+
+    // A door to the lab, parked at the bottom of Help where nothing sends
+    // you by accident. THE SPILL is a prototype on its own page — it shares
+    // this game's art folder and nothing else, keeps its own best score, and
+    // cannot touch a real save. It is here so it can be TESTED, not because
+    // it has earned a place in the game.
+    //
+    // DELETE THIS BLOCK when the beta freezes, unless the mode has been
+    // promoted to a real one by then.
+    const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
+    lab.onclick = () => { window.location.href = "./lab/spill/"; };
+    scroll.append(lab, el("p", "ac-fine ac-labnote", "Prototype \u00b7 not part of the game"));
     box.append(tabbar("none"));
     return box;
   }

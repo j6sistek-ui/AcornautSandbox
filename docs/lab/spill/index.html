@@ -61,9 +61,13 @@
     animation: sp-pulse 1.7s ease-in-out infinite; }
   @keyframes sp-pulse { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 
-  .sp-tag { position: absolute; left: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
-    font-size: 9px; letter-spacing: .18em; color: #4d5878; pointer-events: none; }
-  .sp-tag a { color: #6b7ba0; }
+  /* sits ABOVE the canvas and takes clicks: the canvas covers the whole
+     stage, so without a stacking context of its own the way back out of the
+     prototype is unclickable */
+  .sp-tag { position: fixed; left: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 20; font-size: 9px; letter-spacing: .18em; color: #4d5878; }
+  .sp-tag a { color: #8b9bc4; padding: 8px 4px; text-decoration-thickness: 1px; }
+  .sp-tag a:focus-visible { outline: 2px solid #8b9bc4; outline-offset: 3px; border-radius: 3px; }
 </style>
 </head>
 <body>

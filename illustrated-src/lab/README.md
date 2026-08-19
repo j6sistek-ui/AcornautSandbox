@@ -1,10 +1,11 @@
 # The Lab
 
-Prototypes. Nothing here is imported by the game, nothing here is in the
-main build, and nothing on the menu links to it. A lab experiment can be
-kept, reworked or deleted without touching a build that is close to
-shipping — that isolation is the point, and it is why `build-lab.mjs` is
-separate from `export-sandbox.mjs`.
+Prototypes. Nothing here is imported by the game and nothing here is in the
+main build; the only thread back is one hidden button at the bottom of
+Help, which is a link to a separate page rather than a dependency. A lab
+experiment can be kept, reworked or deleted without touching a build that
+is close to shipping — that isolation is the point, and it is why
+`build-lab.mjs` is separate from `export-sandbox.mjs`.
 
 ```bash
 node illustrated-src/build-lab.mjs        # -> docs/lab/spill/js
@@ -81,6 +82,13 @@ flashing chevron before they enter. Dying to something you could not yet
 see is the one death that is not the player's fault, and this mode has no
 gates to read the field by.
 
+## Getting to it
+
+Help (the "?" in the corner) → **SURVIVAL TEST MODE**, under REPLAY
+TUTORIAL. Nothing else links to it and it is not on the home menu. The
+button is marked in `standalone.ts` with a delete-me note: **it comes out
+when the beta freezes**, unless the mode has been promoted by then.
+
 ## Tuning notes, so the next pass does not repeat them
 
 - The first build was unsurvivable — an autopilot that actively dodged
@@ -89,13 +97,31 @@ gates to read the field by.
   ten, still outnumbered every other kind ON SCREEN, because they are slow
   and therefore linger: 196 hulk-frames against 511 tumbler. Two of them
   together sealed the column.
-- Fixed by ramping over 110s, making hulks rare, late, smaller and capped
-  at one at a time, and putting a hard ceiling on concurrent pieces. Same
-  autopilot now reaches **58 seconds**, and a human should beat that.
+- Fixed by easing the ramp, making hulks rare, late, smaller and capped at
+  one at a time, and putting a hard ceiling on concurrent pieces. The same
+  autopilot went from nine seconds to thirty-eight.
 - Debris used to bounce off the top and bottom of the screen. It does not
   any more: a piece you had already read could come back at you from a
   direction nothing telegraphed, and debris flung across deep space does
   not bounce off anything.
+- **The lunge was far too strong at first.** 900px/s for 0.16s covered
+  144px of a 210px band, and the slide-out carried it further — one dash
+  crossed most of everywhere you are allowed to be, which made horizontal
+  room free rather than a resource. Now 320px/s: about a third of the band,
+  measured end to end including the slide.
+- **Cutting it made the mode harder**, because the density had been balanced
+  around a dash that could get you out of anything. The ramp was eased from
+  110s to 135s to compensate. Do not read too much into the bot here: its
+  median swings between 12s and 18s run to run, which is wider than the
+  change being measured. It is a smoke test for "is this survivable at
+  all", not a tuning instrument.
+- **Four debris paintings were invisible.** Sprites 8, 12, 14 and 22 have a
+  mean luminance of 31-58 against a backdrop of 12-28 — not dark objects,
+  invisible ones. They are out of the pool, and every remaining sprite now
+  gets a light rim baked behind it, the same separation trick the main game
+  uses on dark skies. The first rim attempt used a fixed 13px blur, which
+  survives as under three pixels once a 256px painting is drawn at 50px;
+  the pad and blur scale with the sprite now.
 - The pilot is the original animated squirrel, not an equipped suit. Suits
   ship bare-headed now and the game paints a helmet over them from a table
   this file deliberately does not import — a suit here would fly a debris
