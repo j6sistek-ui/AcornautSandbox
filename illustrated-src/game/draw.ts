@@ -484,14 +484,17 @@ function hexRgb(hex: string) {
 // Seraph, Leviathan, Gemmie and Sammie ship bare-headed — their art
 // carries no helmet of its own.
 //
-// The RADIUS is 51 on all four, and that is not laziness. Every suit is
-// the same squirrel, and every sprite is fit to the same 242px box, so
-// the head is the same size in all of them and the helmet must be too.
-// Deriving each one separately from its own fur blob is what made the
-// helmets vary between 51 and 69 — the same dome reading huge on one
-// suit and small on the next. Only the CENTRE is measured per suit,
-// from the face box, offset the way flight's hand-tuned anchor sits
-// against its own.
+// MEASURED, not assumed. Flight's anchor is the reference: r 51. Every
+// other suit's head is found by matching flight's face against it — the
+// face is the same drawing in every render, so this works whether the suit
+// is orange, chrome, white or green, and it reads straight through a clear
+// dome.
+//
+// The thirteen original suits all measure 48.5-52.5 (median 51), so they
+// were already right. The four bare-headed renders are drawn 111-116% of
+// that, because a render with no dome and a different tail sweep normalises
+// differently into the same 242px box. Assuming one radius for all of them
+// is what made the same helmet read huge on one suit and small on the next.
 const DOME: Record<string, [number, number, number]> = {
   "idle-1": [191, 103, 51],
   "idle-2": [192, 103, 51],
@@ -514,11 +517,11 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:ghost": [191, 99, 49],
   "suit:bigbooty": [194, 86, 51],
   "suit:catsuit": [212, 86, 50],
-  "suit:gemmie": [198, 103, 51],
+  "suit:gemmie": [204, 92, 58],
   "suit:phoenix": [207, 92, 41],
-  "suit:sammie": [194, 100, 51],
-  "suit:seraph": [192, 83, 51],
-  "suit:leviathan": [205, 80, 51],
+  "suit:sammie": [206, 90, 59],
+  "suit:seraph": [204, 85, 57],
+  "suit:leviathan": [207, 81, 57],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -535,29 +538,29 @@ const HELM_GLASS: Record<string, [number, number, number]> = {
   "cherry": [126, 128, 125],
   // Royal wears a crown, so its sphere is scaled down inside the frame
   // and never measured 125 like the bare bubbles. Measured off the art.
-  "royal": [143, 154, 81],
+  "royal": [124, 156, 98],
   "aurora": [128, 127, 125],
   "meteor": [128, 127, 125],
   "chrono": [132, 126, 125],
-  "catbubble": [175, 137, 95],
+  "catbubble": [168, 130, 100],
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
-  "gemmie": [155, 123, 107],
-  "phoenix": [152, 125, 105],
-  "seraph": [159, 137, 91],
-  "chronarch": [158, 125, 104],
-  "paladin": [129, 144, 112],
-  "princess": [122, 131, 119],
+  "gemmie": [128, 128, 104],
+  "phoenix": [128, 128, 106],
+  "seraph": [125, 151, 110],
+  "chronarch": [127, 128, 136],
+  "paladin": [130, 144, 115],
+  "princess": [114, 131, 86],
   // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
   // its visor field gave 78, which drew the helmet half again too big — the
   // shell hides most of the sphere's edge, so the visible visor is nothing
   // like the glass radius. Fitted instead by drawing it against a fixed head
   // circle beside comet, whose 125 is known good.
-  "sammie": [145, 126, 124],
+  "sammie": [127, 110, 90],
   // Leviathan's visor is deep teal, too dark for a brightness fit to see,
   // so it keeps the family default.
-  "leviathan": [140, 126, 110],
+  "leviathan": [134, 126, 85],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
