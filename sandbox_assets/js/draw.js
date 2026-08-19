@@ -1,7 +1,7 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=49";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=49";
-import { drawSprite, skyImage } from "./art.js?v=49";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=49";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=50";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=50";
+import { drawSprite, skyImage } from "./art.js?v=50";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=50";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -521,7 +521,11 @@ const HELM_GLASS = {
     "aurora": [128, 127, 125],
     "meteor": [128, 127, 125],
     "chrono": [132, 126, 125],
-    "catbubble": [168, 130, 100],
+    // The cat helmet's glass is a teardrop, not a sphere, so an inscribed
+    // circle lands on the wrong feature — the shell's widest point, well
+    // back and up from the opening — and seated the helmet most of a head to
+    // the left. Fitted against real heads instead.
+    "catbubble": [128, 106, 100],
     // measured off the corrected art. These renders are three-quarter
     // views, so the visor sits right of frame centre — that offset is real
     // and paintDome relies on it to seat the helmet on the head.
@@ -530,13 +534,19 @@ const HELM_GLASS = {
     "seraph": [125, 151, 110],
     "chronarch": [127, 128, 136],
     "paladin": [130, 144, 115],
-    "princess": [114, 131, 86],
+    // Princess is a shell with a face opening, not a bubble, so the head does
+    // not sit at the shell's centre — it sits behind the opening, back from it
+    // by about a fifth of its own radius, because the squirrel's face is
+    // forward of its head centre. Centred on the shell it put the whole face
+    // behind cream lacquer.
+    "princess": [174, 121, 126],
     // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
     // its visor field gave 78, which drew the helmet half again too big — the
     // shell hides most of the sphere's edge, so the visible visor is nothing
-    // like the glass radius. Fitted instead by drawing it against a fixed head
-    // circle beside comet, whose 125 is known good.
-    "sammie": [127, 110, 90],
+    // like the glass radius. Like princess it is a shell with an opening, so
+    // its centre sits behind that opening rather than in the middle of the
+    // frame; centred, the muzzle hung over the rim on every suit.
+    "sammie": [150, 114, 102],
     // Leviathan's visor is deep teal, too dark for a brightness fit to see,
     // so it keeps the family default.
     "leviathan": [134, 126, 85],

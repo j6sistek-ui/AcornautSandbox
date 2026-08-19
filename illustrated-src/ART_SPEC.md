@@ -42,7 +42,13 @@ from a plausible-looking proxy, and the plausible proxies all lie:
 - **Suits ship bare-headed.** No dome, no halo, no horns, no ears. Anything
   the art wears on its head shows through every other helmet the player puts
   on, and nothing in code can cover a halo — it sits outside any helmet's
-  footprint.
+  footprint. Seraph shipped with one baked in and wore two whenever the
+  player picked the Seraph helmet; `cut-seraph-halo.py` is the repair, and
+  it is far more work than re-rendering the suit would have been.
+- **No ground plane, and no contact shadow either.** Phoenix kept the cream
+  backing paper as a slab between its legs and a grey smear under each foot,
+  because a shape enclosed by the figure is indistinguishable from a hole
+  the figure is meant to have.
 - Helmets ship alone, facing the same three-quarter direction as the others.
 
 ## The head standard
@@ -69,6 +75,13 @@ an inscribed circle finds the wrong feature on them. **catbubble** and
 **leviathan** were both fitted by eye instead — draw the helmet against a
 fixed head circle at a spread of candidate radii and take the one that sits
 on it.
+
+catbubble is the cautionary case. Its glass is a teardrop, so the inscribed
+circle settles on the shell's widest point, up and back from the opening,
+and the printed centre seated the helmet most of a head to the LEFT on
+every suit. The radius it printed was fine; the centre was not. **Sweep the
+centre as well as the radius**, and sweep it on three or four real suits —
+one is not enough to see a small offset.
 
 ## Adding a model
 
