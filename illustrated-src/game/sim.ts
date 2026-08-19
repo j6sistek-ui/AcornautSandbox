@@ -488,8 +488,17 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const pal = palId(save, w);
   const noPick = pal === "bee" || (w.tut && w.tut.stage !== "palDemo" && w.tut.stage !== "free" && w.tut.stage !== "ready");
   // Arcade is the generous mode: power-ups spawn twice as often by
-  // default, on top of any pal bonus.
-  const specialMul = (pal === "meteorcore" ? 2 : 1) * (w.flight === "arcade" ? 2 : 1);
+  // default. Free Flight is the opposite — at the old rate a run was
+  // carrying a freeze or a shield almost continuously, which is not a
+  // power-up any more, it is the baseline. Halved there, and there only.
+  // The pal bonus still multiplies on top of whichever mode you are in.
+  // NOTE: this scales the three power-ups (freeze, golden, shield). The
+  // black hole is a hazard and the 8-bit acorn is the door to the other
+  // game, so neither rides this multiplier.
+  const specialMul =
+    (pal === "meteorcore" ? 2 : 1) *
+    (w.flight === "arcade" ? 2 : 1) *
+    (w.flight === "fly" ? 0.5 : 1);
   const noShield = pal === "nutsack" || pal === "tinbot";
   const noHoles = pal === "tinbot";
   if (!noPick) {

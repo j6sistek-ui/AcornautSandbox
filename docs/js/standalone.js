@@ -1,8 +1,8 @@
-import { xpCumulative, BUILD, ENVS, GAME_VERSION, HELMETS, NEWS, PALS, SUITS, TRACK, TRAILS, isIap } from "./catalog.js?v=48";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=48";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=48";
-import { createEngine } from "./engine.js?v=48";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned } from "./save.js?v=48";
+import { xpCumulative, BUILD, ENVS, GAME_VERSION, HELMETS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap } from "./catalog.js?v=49";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=49";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=49";
+import { createEngine } from "./engine.js?v=49";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned } from "./save.js?v=49";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -41,12 +41,26 @@ export async function bootStandalone(root) {
     boot.append(bootNut, el("h1", "ac-boottitle", "ACORNAUT"), el("p", "ac-bootsub", "Prepping the launch pad"));
     boot.append(el("p", "ac-fine ac-bootfine", `${BUILD} · ${GAME_VERSION}`));
     overlay.append(boot);
-    // creep the fill while the art decodes, then finish it on arrival
-    let bootPct = 8;
+    // The acorn fills, empties and fills again for as long as the load takes,
+    // the way a barber's pole keeps turning — a bar that creeps to 88% and
+    // stops there reads as a stall, not as progress.
+    let bootPct = 6;
     const bootTick = window.setInterval(() => {
-        bootPct = Math.min(88, bootPct + 6);
+        bootPct += 7;
+        if (bootPct > 100) {
+            // drop back without animating, so the refill reads as a new sweep
+            // rather than the level draining away
+            fillBox.style.transition = "none";
+            bootPct = 6;
+            fillBox.style.height = "0%";
+            requestAnimationFrame(() => {
+                fillBox.style.transition = "";
+                fillBox.style.height = `${bootPct}%`;
+            });
+            return;
+        }
         fillBox.style.height = `${bootPct}%`;
-    }, 140);
+    }, 130);
     const engine = await createEngine(canvas);
     // Hold the loading screen until the art is actually decoded — otherwise
     // the first menu paints with empty sprite banks. Capped so a stalled
@@ -758,9 +772,10 @@ export async function bootStandalone(root) {
             return c;
         };
         const spr = (bank) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[bank]?.[0] ?? null, px / 2, px / 2, px * 0.92);
+        const one = (pick) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[pick] ?? null, px / 2, px / 2, px * 0.92);
         item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
-        item(pic(spr("acorn")), "SLOW ACORN", "Slows everything for 6 seconds.");
-        item(pic(spr("shield")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
+        item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
+        item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
