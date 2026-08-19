@@ -27,6 +27,9 @@ try {
   let minGap = Infinity;
   let maxTurn = 0;
   let scoreTotal = 0;
+  let debrisSeen = 0;
+  let slowestTwoMinuteSpeed = Infinity;
+  let widestTwoMinuteGap = 0;
 
   for (let run = 0; run < 40; run++) {
     let seed = run + 1;
@@ -36,15 +39,38 @@ try {
     resetRun(world, save, "tunnel", false);
     flap(world, save);
     let framesSinceTap = 0;
+    const seenHazards = new Set();
+    let lastDebrisDistance = -Infinity;
     for (let frame = 0; frame < 60 * 180; frame++) {
-      const bounds = tunnelBoundsAt(world, world.W * 0.18 + 100);
+      const bounds = tunnelBoundsAt(world, world.W * 0.18 + 70);
+      const currentBounds = tunnelBoundsAt(world, world.W * 0.18);
       const target = (bounds.top + bounds.bottom) * 0.5;
-      if (world.squirrel.y > target + 44 && world.squirrel.vy > 0 && framesSinceTap >= 7) {
+      const sx = world.W * 0.18;
+      const tapAt = Math.min(target + 30, currentBounds.bottom - 25);
+      const tapApex = world.squirrel.y - 78;
+      if (world.squirrel.y > tapAt && tapApex > currentBounds.top + 24 && world.squirrel.vy > -80 && framesSinceTap >= 7) {
         flap(world, save);
         framesSinceTap = 0;
       }
       const event = updateWorld(world, save, 1 / 60);
       framesSinceTap++;
+      for (const h of world.tunnel.hazards) {
+        if (!seenHazards.has(h)) {
+          seenHazards.add(h);
+          debrisSeen++;
+          const hb = tunnelBoundsAt(world, h.x);
+          const bypass = Math.max(h.y - hb.top, hb.bottom - h.y) - h.r - 16;
+          if (bypass < 38) throw new Error(`debris has no safe bypass: ${bypass.toFixed(1)}px`);
+          const absoluteDistance = world.distance + h.x;
+          if (absoluteDistance - lastDebrisDistance < 800)
+            throw new Error(`debris spacing too short: ${(absoluteDistance - lastDebrisDistance).toFixed(1)}px`);
+          lastDebrisDistance = absoluteDistance;
+        }
+      }
+      // The endurance controller validates tunnel geometry. Debris is
+      // validated separately below so a successful soak cannot depend on
+      // a test-only obstacle-routing oracle.
+      world.tunnel.hazards = [];
       if (event === "die") throw new Error(
         `tap pilot died in run ${run} at frame ${frame}; y=${world.squirrel.y.toFixed(1)}, ` +
         `target=${target.toFixed(1)}, bounds=${bounds.top.toFixed(1)}..${bounds.bottom.toFixed(1)}`,
@@ -55,10 +81,18 @@ try {
         minGap = Math.min(minGap, b.bottom - b.top);
         maxTurn = Math.max(maxTurn, Math.abs((b.top + b.bottom - a.top - a.bottom) * 0.5));
       }
+      if (frame === 60 * 120 - 1) {
+        const here = tunnelBoundsAt(world, sx);
+        slowestTwoMinuteSpeed = Math.min(slowestTwoMinuteSpeed, world.speed);
+        widestTwoMinuteGap = Math.max(widestTwoMinuteGap, here.bottom - here.top);
+      }
     }
     if (world.score < 400) throw new Error(`distance score did not advance: ${world.score}`);
     scoreTotal += world.score;
   }
+  if (slowestTwoMinuteSpeed < 360 || widestTwoMinuteGap > 205)
+    throw new Error(`two-minute challenge too low: speed=${slowestTwoMinuteSpeed}, gap=${widestTwoMinuteGap}`);
+  if (debrisSeen < 100) throw new Error(`lethal debris spawned too rarely: ${debrisSeen}`);
 
   Math.random = originalRandom;
   const world = makeWorld(360, 640);
@@ -68,6 +102,22 @@ try {
   world.pickups.push({ x: world.W * 0.18 + world.speed / 60, y: world.squirrel.y, got: false, bob: 0, kind: "multiplier" });
   if (updateWorld(world, save, 1 / 60) !== "gold" || world.tunnel.multiplier !== 2)
     throw new Error("multiplier acorn did not activate ×2 scoring");
+
+  const hazardWorld = makeWorld(360, 640);
+  const hazardSave = defaultSave();
+  resetRun(hazardWorld, hazardSave, "tunnel", false);
+  flap(hazardWorld, hazardSave);
+  hazardWorld.tunnel.hazards.push({
+    x: hazardWorld.W * 0.18 + hazardWorld.speed / 60,
+    y: hazardWorld.squirrel.y,
+    r: 22,
+    side: 0,
+    kind: "debris",
+    art: 0,
+    spin: 1,
+  });
+  if (updateWorld(hazardWorld, hazardSave, 1 / 60) !== "die")
+    throw new Error("center-lane debris was not lethal");
   world.runAcorns = 3;
   world.tunnel.scoreFloat = 77;
   world.squirrel.y = 0;
@@ -81,6 +131,9 @@ try {
     averageScore: Math.round(scoreTotal / 40),
     minGap: Number(minGap.toFixed(2)),
     maxCenterTurn: Number(maxTurn.toFixed(2)),
+    slowestTwoMinuteSpeed: Number(slowestTwoMinuteSpeed.toFixed(2)),
+    widestTwoMinuteGap: Number(widestTwoMinuteGap.toFixed(2)),
+    debrisSeen,
     multiplierAndSaveChecks: "passed",
   }));
 } finally {

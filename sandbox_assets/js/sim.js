@@ -472,11 +472,11 @@ function appendTunnelNode(w) {
     const t = w.tunnel;
     const prev = t.nodes[t.nodes.length - 1];
     const index = prev ? prev.index + 1 : 0;
-    const progress = Math.min(1, index * TUNNEL_STEP / 60000);
-    const minHalf = Math.max(82, Math.min(108, w.H * 0.19));
-    const maxHalf = Math.max(minHalf + 44, Math.min(190, w.H * 0.34));
+    const progress = Math.min(1, index * TUNNEL_STEP / 30000);
+    const minHalf = Math.max(72, Math.min(88, w.H * 0.15));
+    const maxHalf = Math.max(minHalf + 38, Math.min(150, w.H * 0.27));
     const wave = Math.sin(index * 0.31 + t.seed) * 0.62 + Math.sin(index * 0.117 + 1.8) * 0.38;
-    const targetHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 13;
+    const targetHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 10;
     const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : targetHalf;
     const half = Math.max(minHalf, Math.min(maxHalf, previousHalf + Math.max(-8, Math.min(8, targetHalf - previousHalf))));
     const centerWave = Math.sin(index * (0.105 + progress * 0.035) + t.seed) * w.H * (0.09 + progress * 0.055) +
@@ -485,7 +485,7 @@ function appendTunnelNode(w) {
     const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
     // The centerline cannot turn faster than the pilot's capped vertical
     // speed can follow. Difficulty changes frequency, never this bound.
-    const maxTurn = 7 + progress * 2;
+    const maxTurn = 6 + progress * 2;
     let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, desiredCenter - previousCenter));
     const safeHalf = half;
     center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
@@ -496,39 +496,42 @@ function appendTunnelNode(w) {
         index,
     };
     t.nodes.push(node);
-    // Hazards are only admitted in expanded chambers. Each occupies one
-    // wall and leaves a central/opposite-side corridor wider than the
-    // tightest hazard-free tunnel, so the generated course retains a route.
     const absoluteX = index * TUNNEL_STEP;
-    if (absoluteX >= t.nextHazardAt && safeHalf >= minHalf + 34 && node.x > w.W * 0.7) {
-        const side = tunnelNoise(t.seed, index, 2) < 0.5 ? -1 : 1;
-        const r = 19 + tunnelNoise(t.seed, index, 3) * 7;
-        t.hazards.push({
-            x: node.x,
-            y: side < 0 ? node.top + r * 0.1 : node.bottom - r * 0.1,
-            r,
-            side,
-            kind: index % 3 === 0 ? "debris" : "ripple",
-        });
-        t.nextHazardAt = absoluteX + 430 + tunnelNoise(t.seed, index, 4) * 420;
-    }
-    if (node.x > w.W * 0.55 && tunnelNoise(t.seed, index, 5) < 0.19) {
+    if (node.x > w.W * 0.55 && tunnelNoise(t.seed, index, 5) < 0.13) {
         const special = tunnelNoise(t.seed, index, 6) < 0.13;
         const lane = (node.top + node.bottom) * 0.5 + (tunnelNoise(t.seed, index, 7) - 0.5) * safeHalf * 0.5;
-        w.pickups.push({ x: node.x, y: lane, got: false, bob: tunnelNoise(t.seed, index, 8) * 6, kind: special ? "multiplier" : "acorn" });
+        // Some otherwise-collectible acorn slots become lethal debris. They
+        // occupy the flight lane (not the wall) and are spaced far enough
+        // apart to leave time for a deliberate tap response.
+        const debrisSlot = absoluteX >= t.nextHazardAt && tunnelNoise(t.seed, index, 9) < 0.28;
+        if (debrisSlot) {
+            t.hazards.push({
+                x: node.x,
+                y: lane,
+                r: 19 + tunnelNoise(t.seed, index, 3) * 5,
+                side: 0,
+                kind: "debris",
+                art: Math.floor(tunnelNoise(t.seed, index, 10) * DEBRIS_COUNT),
+                spin: (tunnelNoise(t.seed, index, 11) < 0.5 ? -1 : 1) * (0.35 + tunnelNoise(t.seed, index, 12) * 0.75),
+            });
+            t.nextHazardAt = absoluteX + 850 + tunnelNoise(t.seed, index, 4) * 650;
+        }
+        else {
+            w.pickups.push({ x: node.x, y: lane, got: false, bob: tunnelNoise(t.seed, index, 8) * 6, kind: special ? "multiplier" : "acorn" });
+        }
     }
 }
 function initTunnel(w) {
     w.tunnel = {
         nodes: [], hazards: [], scoreFloat: 0,
-        multiplier: 1, multiplierLeft: 0, nextHazardAt: 950,
+        multiplier: 1, multiplierLeft: 0, nextHazardAt: 1200,
         seed: Math.floor(Math.random() * 1000000) + 1,
     };
     while (w.tunnel.nodes.length < Math.ceil((w.W + 360) / TUNNEL_STEP) + 2)
         appendTunnelNode(w);
     w.squirrel.y = w.H * 0.5;
     w.lastGapY = w.H * 0.5;
-    w.speed = 175;
+    w.speed = 220;
     w.planets = [];
     w.startShieldArmed = false;
     w.shieldCharges = 0;
@@ -551,8 +554,8 @@ export function tunnelBoundsAt(w, x) {
 }
 function updateTunnel(w, save, dt) {
     const t = w.tunnel;
-    const progress = Math.min(1, w.distance / 60000);
-    w.speed = 175 + progress * 145;
+    const progress = Math.min(1, w.distance / 30000);
+    w.speed = 220 + progress * 160;
     // Tunnel flight deliberately reuses the main game's gravity and flap
     // impulse. A tap resets upward velocity; gravity owns the descent.
     w.squirrel.vy = Math.min(620, w.squirrel.vy + gravOf(save, w) * dt);
@@ -586,7 +589,7 @@ function updateTunnel(w, save, dt) {
     if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom)
         return die(w, save);
     for (const h of t.hazards) {
-        if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.78))
+        if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.65))
             return die(w, save);
     }
     let sound = null;

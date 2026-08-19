@@ -3,7 +3,7 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { drawSprite, skyImage, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
-import type { Particle, World } from "./sim";
+import { tunnelBoundsAt, type Particle, type World } from "./sim";
 
 function frameOf<T>(list: T[], t: number, speed = 6) {
   if (!list.length) return null;
@@ -230,29 +230,70 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const { W, H } = w;
   const tunnel = w.tunnel!;
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, "#07051a");
-  bg.addColorStop(0.5, "#101147");
-  bg.addColorStop(1, "#220c3d");
+  const mouth = tunnelBoundsAt(w, W * 0.94);
+  const vanishingY = (mouth.top + mouth.bottom) * 0.5;
+  const bg = ctx.createRadialGradient(W * 1.04, vanishingY, 8, W * 0.96, vanishingY, Math.max(W, H) * 0.9);
+  bg.addColorStop(0, "#7438d6");
+  bg.addColorStop(0.18, "#251269");
+  bg.addColorStop(0.56, "#0b1234");
+  bg.addColorStop(1, "#03040d");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Longitudinal light makes the space read as a tube moving left-to-right.
-  for (let i = 0; i < 16; i++) {
-    const x = ((i * 97 - w.distance * (0.32 + (i % 3) * 0.09)) % (W + 120) + W + 120) % (W + 120) - 60;
-    ctx.strokeStyle = `rgba(${i % 2 ? "115,230,255" : "198,112,255"},${0.1 + (i % 4) * 0.025})`;
-    ctx.lineWidth = 1 + (i % 3);
+  const tunnelPath = () => {
     ctx.beginPath();
-    ctx.moveTo(x, H * 0.24);
-    ctx.lineTo(x - 65, H * 0.76);
+    tunnel.nodes.forEach((n, i) => i ? ctx.lineTo(n.x, n.top) : ctx.moveTo(n.x, n.top));
+    for (let i = tunnel.nodes.length - 1; i >= 0; i--) ctx.lineTo(tunnel.nodes[i].x, tunnel.nodes[i].bottom);
+    ctx.closePath();
+  };
+
+  // All depth cues are clipped to the playable corridor, so the painted
+  // wormhole and the collision geometry always agree.
+  ctx.save();
+  tunnelPath();
+  ctx.clip();
+  const core = ctx.createRadialGradient(W * 1.03, vanishingY, 0, W * 1.03, vanishingY, W * 1.15);
+  core.addColorStop(0, "rgba(151,102,255,.8)");
+  core.addColorStop(0.2, "rgba(53,224,255,.22)");
+  core.addColorStop(0.55, "rgba(34,21,87,.12)");
+  core.addColorStop(1, "rgba(0,0,0,.48)");
+  ctx.fillStyle = core;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.globalCompositeOperation = "screen";
+  for (let i = 0; i < 22; i++) {
+    const phase = ((i * 73 - w.distance * (0.55 + (i % 5) * 0.05)) % (W + 180) + W + 180) % (W + 180) - 90;
+    const b = tunnelBoundsAt(w, phase);
+    const y = b.top + (b.bottom - b.top) * ((i * 0.417) % 1);
+    const len = 22 + (i % 6) * 9 + w.speed * 0.055;
+    ctx.strokeStyle = i % 3 === 0 ? "rgba(119,237,255,.34)" : "rgba(211,123,255,.25)";
+    ctx.lineWidth = 0.8 + (i % 3) * 0.65;
+    ctx.beginPath();
+    ctx.moveTo(phase - len, y + (y - vanishingY) * 0.035);
+    ctx.lineTo(phase + 5, y);
     ctx.stroke();
   }
 
+  for (let x = W + 40 - ((w.distance * 0.82) % 76); x > -55; x -= 76) {
+    const b = tunnelBoundsAt(w, x);
+    const cy = (b.top + b.bottom) * 0.5;
+    const half = (b.bottom - b.top) * 0.5;
+    const depth = Math.max(0, Math.min(1, (x + 55) / (W + 95)));
+    ctx.strokeStyle = `rgba(${depth > 0.55 ? "151,222,255" : "187,113,255"},${0.07 + depth * 0.16})`;
+    ctx.lineWidth = 0.8 + depth * 1.7;
+    ctx.beginPath();
+    ctx.ellipse(x, cy, 8 + depth * 17, Math.max(12, half * 0.94), 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.globalCompositeOperation = "source-over";
+  ctx.restore();
+
   const wall = (top: boolean) => {
-    const g = ctx.createLinearGradient(0, top ? 0 : H, 0, top ? H * 0.45 : H * 0.55);
-    g.addColorStop(0, "#13051f");
-    g.addColorStop(0.58, top ? "#4c176c" : "#182d6e");
-    g.addColorStop(1, top ? "#b044c8" : "#237bb1");
+    const g = ctx.createLinearGradient(0, 0, W, H * 0.25);
+    g.addColorStop(0, "#090713");
+    g.addColorStop(0.45, "#17102d");
+    g.addColorStop(0.78, "#38205f");
+    g.addColorStop(1, "#51308a");
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.moveTo(tunnel.nodes[0].x, top ? 0 : H);
@@ -264,11 +305,24 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
   wall(true);
   wall(false);
 
+  // Layered contours give the walls thickness without adding fake hitboxes.
+  for (const offset of [12, 28, 48]) {
+    for (const top of [true, false]) {
+      ctx.strokeStyle = `rgba(${top ? "203,107,255" : "89,202,255"},${0.17 - offset * 0.0018})`;
+      ctx.lineWidth = offset === 12 ? 2 : 1;
+      ctx.beginPath();
+      tunnel.nodes.forEach((n, i) => {
+        const y = (top ? n.top - offset : n.bottom + offset) + Math.sin(n.index * 0.52 + w.time * 1.8) * 2;
+        if (i === 0) ctx.moveTo(n.x, y); else ctx.lineTo(n.x, y);
+      });
+      ctx.stroke();
+    }
+  }
   for (const top of [true, false]) {
-    ctx.strokeStyle = top ? "rgba(244,126,255,.92)" : "rgba(88,220,255,.92)";
-    ctx.shadowColor = top ? "#cf4aff" : "#47d8ff";
-    ctx.shadowBlur = 12;
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = top ? "rgba(224,145,255,.96)" : "rgba(104,224,255,.96)";
+    ctx.shadowColor = top ? "#b64cff" : "#42cfff";
+    ctx.shadowBlur = 14;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     tunnel.nodes.forEach((n, i) => {
       const y = top ? n.top : n.bottom;
@@ -278,42 +332,20 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
   }
   ctx.shadowBlur = 0;
 
-  // Receding hoops provide the wormhole's pulse without becoming collision.
-  for (let x = -40 + ((-w.distance * 0.72) % 94); x < W + 60; x += 94) {
-    const near = Math.max(0, Math.min(1, x / W));
-    ctx.strokeStyle = `rgba(132,214,255,${0.08 + near * 0.16})`;
-    ctx.lineWidth = 1 + near * 2;
-    ctx.beginPath();
-    ctx.ellipse(x, H * 0.5, 13 + near * 17, H * (0.18 + near * 0.13), 0, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
   for (const h of tunnel.hazards) {
-    if (h.kind === "ripple") {
-      ctx.strokeStyle = h.side < 0 ? "#ff7cf0" : "#63ddff";
-      ctx.shadowColor = ctx.strokeStyle;
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(h.x, h.y, h.r, h.side < 0 ? 0.1 : Math.PI + 0.1, h.side < 0 ? Math.PI - 0.1 : Math.PI * 2 - 0.1);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    } else {
-      ctx.save();
-      ctx.translate(h.x, h.y);
-      ctx.rotate(w.time * 0.7 * h.side);
-      ctx.fillStyle = "#503d63";
-      ctx.strokeStyle = "#be9bd8";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let i = 0; i < 8; i++) {
-        const a = i / 8 * Math.PI * 2;
-        const r = h.r * (i % 2 ? 0.72 : 1);
-        if (!i) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
-        else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-      }
-      ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save();
+    ctx.translate(h.x, h.y);
+    ctx.rotate(w.time * h.spin);
+    const rock = art.debris[h.art % Math.max(1, art.debris.length)];
+    if (rock) drawSprite(ctx, rock, 0, 0, h.r * 2.35, "core", "light");
+    else {
+      ctx.fillStyle = "#6e5a79";
+      ctx.beginPath(); ctx.arc(0, 0, h.r, 0, Math.PI * 2); ctx.fill();
     }
+    ctx.restore();
+    ctx.strokeStyle = `rgba(255,143,112,${0.22 + 0.1 * Math.sin(w.time * 5)})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(h.x, h.y, h.r + 5, 0, Math.PI * 2); ctx.stroke();
   }
 
   for (const a of w.pickups) {
