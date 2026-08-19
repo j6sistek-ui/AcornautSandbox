@@ -306,7 +306,8 @@ export async function bootStandalone(root) {
         port.append(portraitOf(helm, suit, 38));
         const stxt = el("div", "ac-loadtxt");
         stxt.append(el("p", "ac-kicker", "Loadout"));
-        stxt.append(el("p", "ac-loadname", `${suit.name} \u00b7 ${helm.name} \u00b7 ${trail.name}`));
+        const head = suit.cat || suit.ownHead ? "Own helmet" : helm.name;
+        stxt.append(el("p", "ac-loadname", `${suit.name} \u00b7 ${head} \u00b7 ${trail.name}`));
         strip.append(port, stxt, icon(I_CHEV, 16));
         strip.onclick = () => engine.open("hangar");
         controls.append(strip);
@@ -384,7 +385,8 @@ export async function bootStandalone(root) {
         load.append(rigArt);
         const loadTxt = el("div", "ac-rigtxt");
         loadTxt.append(el("p", "ac-rigname", suit.name));
-        loadTxt.append(el("p", "ac-sub", `${helm.name} · ${trail.name} · ${pal?.name ?? "No pal"}`));
+        const headline = suit.cat || suit.ownHead ? "Own helmet" : helm.name;
+        loadTxt.append(el("p", "ac-sub", `${headline} · ${trail.name} · ${pal?.name ?? "No pal"}`));
         const tags = el("div", "ac-rigtags");
         tags.append(el("span", "ac-tagpill", "EQUIPPED"));
         if (s.startShield)

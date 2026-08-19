@@ -89,6 +89,8 @@ export type Suit = {
   ghost?: boolean;
   booty?: boolean;
   cat?: boolean;
+  /** the art already wears a head, so no helmet is painted over it */
+  ownHead?: boolean;
 };
 
 export const SUITS: Suit[] = [

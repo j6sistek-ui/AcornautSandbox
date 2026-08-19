@@ -460,6 +460,18 @@ function hexRgb(hex) {
 // measured from the paintings themselves. Flight frames key by frame
 // name, suit renders by suit id. The equipped helmet paints its
 // identity — tinted glass, rim, glow — exactly onto the painted dome.
+// Where the painted helmet sits on each body (x, y, r in sprite space).
+// Seraph, Leviathan, Gemmie and Sammie ship bare-headed — their art
+// carries no helmet of its own.
+//
+// The RADIUS is 51 on all four, and that is not laziness. Every suit is
+// the same squirrel, and every sprite is fit to the same 242px box, so
+// the head is the same size in all of them and the helmet must be too.
+// Deriving each one separately from its own fur blob is what made the
+// helmets vary between 51 and 69 — the same dome reading huge on one
+// suit and small on the next. Only the CENTRE is measured per suit,
+// from the face box, offset the way flight's hand-tuned anchor sits
+// against its own.
 const DOME = {
     "idle-1": [191, 103, 51],
     "idle-2": [192, 103, 51],
@@ -482,13 +494,11 @@ const DOME = {
     "suit:ghost": [191, 99, 49],
     "suit:bigbooty": [194, 86, 51],
     "suit:catsuit": [212, 86, 50],
-    "suit:gemmie": [207, 97, 52],
+    "suit:gemmie": [198, 103, 51],
     "suit:phoenix": [207, 92, 41],
-    "suit:sammie": [188, 98, 50],
-    "suit:seraph": [216, 84, 46],
-    // its own bubble is wider than the family's — a helmet sized to 50
-    // left the baked rim showing around every other dome
-    "suit:leviathan": [201, 85, 58],
+    "suit:sammie": [194, 100, 51],
+    "suit:seraph": [192, 83, 51],
+    "suit:leviathan": [205, 80, 51],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
@@ -518,9 +528,14 @@ const HELM_GLASS = {
     "chronarch": [158, 125, 104],
     "paladin": [129, 144, 112],
     "princess": [122, 131, 119],
-    // Sammie's visor is a dark samurai slit and Leviathan's is deep teal,
-    // so a brightness fit cannot see either; both take the family default.
-    "sammie": [140, 126, 110],
+    // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
+    // its visor field gave 78, which drew the helmet half again too big — the
+    // shell hides most of the sphere's edge, so the visible visor is nothing
+    // like the glass radius. Fitted instead by drawing it against a fixed head
+    // circle beside comet, whose 125 is known good.
+    "sammie": [145, 126, 124],
+    // Leviathan's visor is deep teal, too dark for a brightness fit to see,
+    // so it keeps the family default.
     "leviathan": [140, 126, 110],
 };
 // The real helmet art, its glass centre punched translucent once so the
@@ -591,7 +606,7 @@ function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot) {
 // second dome on one was never going to line up, and most of them read
 // as broken; the head IS the cosmetic.
 function wearsOwnHead(suit) {
-    return suit.cat === true;
+    return suit.cat === true || suit.ownHead === true;
 }
 function paintDome(ctx, body, key, helmet, x, y, size, art) {
     if (helmet.id === "clear")
