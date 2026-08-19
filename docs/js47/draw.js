@@ -1,7 +1,7 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=43";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=43";
-import { drawSprite, skyImage } from "./art.js?v=43";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=43";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale } from "./catalog.js?v=47";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=47";
+import { drawSprite, skyImage } from "./art.js?v=47";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=47";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;

@@ -32,30 +32,186 @@
     .ac-row { display: flex; justify-content: space-between; align-items: flex-start; }
     .ac-chip { border: 1px solid rgba(232,164,74,.4); border-radius: 999px; padding: 6px 12px; color: #e8a44a; font-weight: 700; }
     .ac-hero { display: block; height: 32%; width: auto; max-width: 78%; margin: 8px auto; object-fit: contain; }
-    .ac-titlefull { padding: 0 0 4px; position: relative; justify-content: flex-start; align-items: center; gap: 0;
-      background-color: #05020e; background-size: cover; background-position: center top; background-repeat: no-repeat; }
-    .ac-titlebar { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 12px 0; flex: none; }
-    .ac-acornchip { position: relative; width: 34%; max-width: 132px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.75)); }
-    .ac-acornchip img { display: block; width: 100%; }
-    .ac-acornnum { position: absolute; left: 32%; right: 5%; top: 49%; transform: translateY(-50%); text-align: center; font-weight: 800; font-size: 12px; color: #ffdf9a; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
-    .ac-rankbadge { position: relative; width: 17%; max-width: 68px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.75)); }
-    .ac-rankbadge img { display: block; width: 100%; }
-    .ac-ranknum { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: #ffdf9a; text-shadow: 0 1px 3px rgba(0,0,0,0.95);
-      /* the badge art’s wooden face sits above the frame’s centre */
-      padding-bottom: 12%; }
-    /* the art's logo and hero live here — the menu starts below them */
-    .ac-titlespacer { flex: 1 1 auto; min-height: 6vh; }
-    .ac-titlemenu { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; flex: none; }
-    .ac-plate { background: transparent; border: 0; padding: 0; cursor: pointer; display: block; height: 9.6vh;
-      filter: drop-shadow(0 3px 8px rgba(0,0,0,0.6)); transition: transform .08s ease, filter .08s ease; }
-    .ac-plate img { display: block; height: 100%; width: auto; max-width: 88vw; }
-    .ac-plate:active { transform: scale(0.96); filter: brightness(1.2) drop-shadow(0 3px 8px rgba(0,0,0,0.6)); }
-    .ac-titledock2 { display: flex; justify-content: space-around; align-items: flex-end; width: 100%; padding: 6px 6px 0; flex: none; }
-    .ac-dockplate { background: transparent; border: 0; padding: 0; width: 18%; max-width: 74px; cursor: pointer;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); transition: transform .08s ease, filter .08s ease; }
-    .ac-dockplate img { display: block; width: 100%; }
-    .ac-dockplate:active { transform: scale(0.93); filter: brightness(1.2) drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
-    .ac-titlefine { flex: none; margin-top: 3px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+    /* ================= THE MENU SHELL =================
+       Five tabs on one bar, every tab its own full screen. Two button
+       materials: HELMET GLASS on the home screen (the visor off the
+       suit, so the launch button belongs to the art) and GALAXY on the
+       side menus. Gold is reserved for what you EARN — acorn counts,
+       prices, the Flight Log's rungs and its XP bar.            */
+
+    /* --- 1 · the cold open: loading --- */
+    .ac-boot { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+      background: radial-gradient(120% 62% at 50% 42%, #16123a 0%, #0a0620 52%, #05020e 100%); }
+    .ac-bootnut { position: relative; width: 150px; height: 150px; }
+    /* the drained shell, waiting to be filled */
+    .ac-bootshell { position: absolute; inset: 0; width: 150px; height: 150px; object-fit: contain;
+      filter: grayscale(1) brightness(.8) contrast(.75); opacity: .44; }
+    /* THIS BOX'S HEIGHT IS THE PROGRESS VALUE. It is masked by the
+       acorn's own alpha so the waterline stops at the shell instead of
+       running off as a rectangle. */
+    .ac-bootfill { position: absolute; left: 0; bottom: 0; width: 150px; height: 8%; overflow: hidden;
+      transition: height .28s ease;
+      -webkit-mask-image: var(--nut); mask-image: var(--nut);
+      -webkit-mask-size: 150px 150px; mask-size: 150px 150px;
+      -webkit-mask-position: center bottom; mask-position: center bottom;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+    .ac-bootfill img { position: absolute; left: 0; bottom: 0; width: 150px; height: 150px; object-fit: contain; }
+    .ac-bootline { position: absolute; left: 0; right: 0; top: 0; height: 26px;
+      background: linear-gradient(rgba(255,230,163,.45), transparent); border-top: 2px solid #fff2cf; }
+    .ac-boottitle { margin-top: 14px; font-family: Fraunces, serif; font-weight: 800; font-size: 40px; line-height: .95;
+      background: linear-gradient(#ffe6a3 12%, #e8a44a 54%, #a86a1f 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .ac-bootsub { margin-top: 9px; font-size: 10px; letter-spacing: .34em; text-transform: uppercase; color: #8b95b0; }
+    .ac-bootfine { position: absolute; left: 0; right: 0; bottom: 22px; }
+
+    /* --- 2 · tap to start. The tap also unlocks audio. --- */
+    .ac-splash { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+      background-color: #05020e; background-size: cover; background-position: center; cursor: pointer; overflow: hidden; }
+    .ac-splash-ink { position: absolute; left: 0; right: 0; bottom: 0; height: 54%;
+      background: linear-gradient(transparent, rgba(5,2,14,.55) 42%, rgba(5,2,14,.9) 78%, #05020e 100%); }
+    .ac-splash-stack { position: relative; display: flex; flex-direction: column; align-items: center; padding: 0 24px 92px; }
+    .ac-splash-title { font-family: Fraunces, serif; font-weight: 800; font-size: 51px; line-height: .92; color: #fff;
+      text-shadow: 0 3px 22px rgba(5,2,14,.9), 0 0 44px rgba(120,150,220,.35); }
+    .ac-splash-tap { display: flex; align-items: center; gap: 9px; margin-top: 18px; color: #ffd76a;
+      animation: ac-tappulse 1.9s ease-in-out infinite; }
+    .ac-splash-tap span { font-size: 13px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: #fff;
+      text-shadow: 0 1px 10px rgba(5,2,14,.95); }
+    .ac-splash-fine { position: relative; padding-bottom: 22px; }
+    @keyframes ac-tappulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+
+    /* --- 3 · HOME --- */
+    .ac-home { position: relative; height: 100%; display: flex; flex-direction: column; background: #05020e; overflow: hidden; }
+    .ac-home-art { position: absolute; left: 0; top: 0; right: 0; height: 74%;
+      background-size: cover; background-position: 50% 34%;
+      -webkit-mask-image: linear-gradient(#000 0%, #000 58%, rgba(0,0,0,.35) 84%, transparent 100%);
+      mask-image: linear-gradient(#000 0%, #000 58%, rgba(0,0,0,.35) 84%, transparent 100%); }
+    /* a touch of ink so the pills and wordmark hold on any frame */
+    .ac-home-scrim { position: absolute; left: 0; right: 0; top: 0; height: 26%;
+      background: linear-gradient(rgba(5,2,14,.74), rgba(5,2,14,.3) 55%, transparent); }
+    .ac-home-pills { position: relative; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0; }
+    .ac-pill { display: flex; align-items: center; gap: 6px; background: rgba(10,16,32,.72);
+      border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 5px 11px; font-size: 13px; font-weight: 800; color: #fff; }
+    .ac-pill-gold { color: #ffdf9a; }
+    .ac-pill-key { font-size: 9px; font-weight: 800; letter-spacing: .14em; color: #8b95b0; }
+    .ac-pill-num { font-size: 13px; font-weight: 800; }
+    .ac-home-titlewrap { position: relative; flex: none; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+    .ac-home-title { font-family: Fraunces, serif; font-weight: 800; font-size: 46px; line-height: .92; color: #fff;
+      text-shadow: 0 2px 16px rgba(5,2,14,.85), 0 0 34px rgba(120,150,220,.35); }
+    .ac-home-kicker { margin-top: 6px; font-size: 10px; letter-spacing: .34em; text-transform: uppercase;
+      color: rgba(255,255,255,.72); text-shadow: 0 1px 8px rgba(5,2,14,.9); }
+    .ac-home-gap { flex: 1 1 auto; min-height: 0; }
+    .ac-controls { position: relative; flex: none; display: flex; flex-direction: column; gap: 9px; padding: 0 18px 10px; }
+
+    /* the second door into the Hangar */
+    .ac-loadstrip { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
+      background: rgba(20,27,48,.82); border: 1px solid #2a3454; border-radius: 16px; min-height: 56px; padding: 0 13px; color: #f3efe4; }
+    .ac-loadport { width: 40px; height: 40px; flex: none; border-radius: 11px; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 38%, #1b2547 0%, #0a1024 74%); }
+    .ac-loadport canvas { width: 38px; height: 38px; }
+    .ac-loadtxt { flex: 1 1 auto; min-width: 0; }
+    .ac-loadname { font-size: 13px; font-weight: 700; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* HELMET GLASS — home only */
+    .ac-launch { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+      border-radius: 16px; min-height: 60px; font-family: Fraunces, serif; font-weight: 800; font-size: 23px; color: #17203A;
+      background:
+        radial-gradient(72% 120% at 22% -14%, rgba(255,255,255,.99), transparent 62%),
+        linear-gradient(196deg, #F4F8FF 0%, #DDE8F8 32%, #B9CCE6 66%, #D8E5F6 100%);
+      box-shadow: 0 8px 22px rgba(120,152,196,.34), inset 0 1px 0 rgba(255,255,255,1), inset 0 -2px 0 rgba(116,148,190,.5);
+      transition: transform .08s ease, filter .08s ease; }
+    .ac-launch:active { transform: translateY(1px) scale(.99); filter: brightness(.96); }
+    .ac-modes { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 5px;
+      background: rgba(16,22,42,.9); border: 1px solid #2a3454; border-radius: 14px; padding: 4px; }
+    .ac-mode { min-height: 44px; border-radius: 10px; background: transparent; color: #98a2bd;
+      font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+    .ac-mode.on { color: #17203A; font-weight: 800;
+      background: linear-gradient(196deg, #F4F8FF, #C4D5EC); box-shadow: inset 0 1px 0 rgba(255,255,255,1); }
+
+    /* --- the tab bar, on every menu --- */
+    .ac-tabbar { position: relative; flex: none; display: grid; grid-template-columns: repeat(5, minmax(0,1fr));
+      align-items: end; background: #0a1020; border-top: 1px solid #1a2238; padding: 7px 6px 9px; }
+    .ac-tab5 { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 2px;
+      background: transparent; color: #7d879f; }
+    .ac-tab5 span { font-size: 9px; font-weight: 700; letter-spacing: .06em; }
+    .ac-tab5.on { color: #A99BE8; }
+    .ac-tab5.on span { font-weight: 800; }
+    /* HOME is the raised dome: the biggest target, and glass on EVERY
+       screen because it is the home button — the white is its identity,
+       not the current screen's colour. */
+    .ac-dome { justify-self: center; width: 66px; height: 66px; margin-top: -32px; border-radius: 999px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; color: #17203A;
+      border: 3px solid #0a1020;
+      background:
+        radial-gradient(66% 110% at 26% -6%, rgba(255,255,255,1), transparent 60%),
+        linear-gradient(196deg, #F4F8FF 0%, #DDE8F8 34%, #B9CCE6 100%);
+      box-shadow: 0 8px 22px rgba(120,152,196,.4), inset 0 -2px 0 rgba(116,148,190,.45);
+      transition: transform .08s ease; }
+    .ac-dome span { font-size: 8px; font-weight: 800; letter-spacing: .1em; margin-top: -1px; }
+    .ac-dome:active { transform: scale(.95); }
+
+    /* --- the four side menus --- */
+    .ac-menu { display: flex; flex-direction: column; height: 100%; background: #070b16; overflow: hidden; }
+    .ac-menuhead { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 16px 16px 10px; }
+    .ac-menuheadtext { min-width: 0; }
+    .ac-menutitle { font-family: Fraunces, serif; font-weight: 800; font-size: 24px; line-height: 1.1; }
+    .ac-menu .ac-kicker { color: #8b95b0; font-size: 9px; }
+    .ac-menu .ac-sheet-scroll { padding: 0 16px 10px; }
+    .ac-secthead { margin: 12px 0 8px; letter-spacing: .24em; }
+
+    /* the equipped rig, pinned above the categories so the preview is
+       never a mystery while you shop */
+    .ac-rig { flex: none; display: flex; align-items: center; gap: 14px; margin: 0 16px;
+      background: linear-gradient(#0f1730, #0b1124); border: 1px solid #2a3454; border-radius: 16px; padding: 12px 14px; }
+    .ac-rigart { width: 86px; height: 86px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 38%, #1b2547 0%, #0a1024 72%); }
+    .ac-rigart canvas { width: 74px; height: 74px; }
+    .ac-rigtxt { flex: 1 1 auto; min-width: 0; }
+    .ac-rigname { font-size: 16px; font-weight: 800; }
+    .ac-rigtags { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+    .ac-tagpill { background: #141b30; border: 1px solid #2a3454; border-radius: 999px; padding: 4px 8px;
+      font-size: 9px; font-weight: 700; letter-spacing: .08em; color: #98a2bd; }
+    .ac-tagblue { background: rgba(74,180,255,.12); border-color: rgba(74,180,255,.4); color: #4ab4ff; }
+    .ac-taggold { background: rgba(212,175,55,.12); border-color: rgba(212,175,55,.4); color: #d4af37; }
+
+    /* GALAXY — the side menus' material */
+    .ac-cats { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 6px; padding: 12px 16px 10px; }
+    .ac-cat { min-height: 36px; border-radius: 999px; background: #141b30; border: 1px solid #2a3454; color: #98a2bd;
+      font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+    .ac-cat.on { color: #fff; font-weight: 800; border-color: transparent;
+      background:
+        radial-gradient(120% 180% at 18% -20%, rgba(116,150,255,.34), transparent 60%),
+        linear-gradient(180deg, #6C5FB6, #463C86);
+      box-shadow: inset 0 1px 0 rgba(206,214,255,.55); }
+
+    .ac-rankmeter { flex: none; margin: 0 16px 8px; }
+    .ac-rankrow { display: flex; align-items: baseline; justify-content: space-between; }
+    .ac-rankname { font-size: 13px; font-weight: 800; }
+    .ac-tiles { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+    .ac-tile { background: #0c1224; border: 1px solid #2a3454; border-radius: 14px; padding: 10px 8px; text-align: center; }
+    .ac-tilenum { font-size: 18px; font-weight: 800; }
+    .ac-tilelabel { font-size: 9px; letter-spacing: .1em; color: #8b95b0; margin-top: 3px; }
+    .ac-rows { background: #0c1224; border: 1px solid #2a3454; border-radius: 16px; padding: 2px 14px; margin-top: 8px; }
+    .ac-rows .ac-row { align-items: center; padding: 11px 0; border-bottom: 1px solid #1a2238; font-size: 13px; font-weight: 700; width: 100%; }
+    .ac-rows .ac-row:last-child { border-bottom: 0; }
+    .ac-rowbtn { background: transparent; color: #f3efe4; text-align: left; }
+    .ac-rownote { font-weight: 400; }
+    .ac-rowgold { color: #ffd76a; font-weight: 800; }
+    .ac-switch { width: 42px; height: 25px; flex: none; border-radius: 999px; background: #1a2238; border: 1px solid #2a3454;
+      display: flex; align-items: center; padding: 0 3px; }
+    .ac-switch.on { border-color: transparent; justify-content: flex-end;
+      background: radial-gradient(120% 180% at 18% -20%, rgba(116,150,255,.34), transparent 60%), linear-gradient(180deg, #6C5FB6, #463C86);
+      box-shadow: inset 0 1px 0 rgba(206,214,255,.55); }
+    .ac-knob { width: 19px; height: 19px; border-radius: 999px; background: #4d5674; }
+    .ac-switch.on .ac-knob { background: #fff8ea; }
+    .ac-idcard { display: flex; align-items: center; gap: 13px; background: linear-gradient(#0f1730, #0b1124);
+      border: 1px solid #2a3454; border-radius: 16px; padding: 13px; }
+    .ac-idface { width: 66px; height: 66px; flex: none; border-radius: 999px; border: 1px solid #2a3454;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 36%, #1b2547 0%, #0a1024 74%); }
+    .ac-idface canvas { width: 58px; height: 58px; }
+    .ac-idtxt { min-width: 0; }
+    .ac-idname { font-size: 18px; font-weight: 800; }
+    .ac-replay { width: 100%; margin: 12px 0 4px; }
     .ac-premium { border-color: #d4af37 !important; box-shadow: inset 0 0 0 1px rgba(212,175,55,0.35); }
     .ac-premium::after { content: "★"; position: absolute; top: 6px; right: 8px; color: #ffd76a; font-size: 12px; }
     .ac-card { position: relative; }
@@ -80,7 +236,7 @@
     .ac-loadout canvas { width: 64px; height: 64px; }
     .ac-helm { width: 36px; height: 28px; border-radius: 18px 18px 8px 8px; display: block; margin-bottom: 4px; }
     .ac-trail { width: 48px; height: 10px; border-radius: 999px; display: block; margin-bottom: 6px; }
-    .ac-card.on { border-color: #4ab4ff; background: rgba(74,180,255,.15); }
+    .ac-card.on { border-color: #A99BE8; background: rgba(153,142,177,.14); box-shadow: 0 0 0 3px rgba(169,155,232,.16); }
     .ac-log { border: 1px solid #2a3454; border-radius: 16px; padding: 10px 12px; }
     .ac-coin { width: 20px; height: 20px; vertical-align: -4px; margin-right: 5px; }
     .ac-ctrls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -132,7 +288,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js43/standalone.js";
+    import { bootStandalone } from "./js47/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

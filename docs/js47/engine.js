@@ -1,9 +1,9 @@
-import { emptyArt, loadArt } from "./art.js?v=43";
-import { sfx, unlockAudio, music } from "./audio.js?v=43";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=43";
-import { drawHud, drawWorld } from "./draw.js?v=43";
-import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=43";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=43";
+import { emptyArt, loadArt } from "./art.js?v=47";
+import { sfx, unlockAudio, music } from "./audio.js?v=47";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=47";
+import { drawHud, drawWorld } from "./draw.js?v=47";
+import { batteryUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=47";
+import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=47";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -258,7 +258,9 @@ export async function createEngine(canvas) {
         }
         if (e.code === "Space" || e.code === "ArrowUp") {
             e.preventDefault();
-            if (world.screen === "title")
+            if (world.screen === "splash")
+                engine.open("title");
+            else if (world.screen === "title")
                 engine.fly("fly");
             else if (world.screen === "pause")
                 engine.resume();
@@ -336,7 +338,10 @@ export async function createEngine(canvas) {
     // it arrives — and if the whole load fails, the game still runs
     art = emptyArt();
     engine.art = art;
-    loadArt()
+    // The art bank arrives after the engine does, so the loading screen
+    // needs its own signal. This resolves either way — a failed load must
+    // never leave the app stuck behind a progress bar.
+    engine.artReady = loadArt()
         .then((bank) => {
         art = bank;
         engine.art = bank;
@@ -346,4 +351,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=43";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=47";

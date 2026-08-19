@@ -1,7 +1,7 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { writeSave, type SaveData } from "./save";
 
-export type Screen = "title" | "hangar" | "log" | "social" | "help" | "play" | "dead" | "pause";
+export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "play" | "dead" | "pause";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade";
 export type TutStage =
   | "intro"
@@ -165,7 +165,7 @@ export function makeWorld(W: number, H: number): World {
   return {
     W,
     H,
-    screen: "title",
+    screen: "splash",
     flight: "fly",
     ready: false,
     score: 0,
@@ -1068,6 +1068,9 @@ function die(w: World, save: SaveData) {
   };
   save.xp = fromXp + xp;
   save.acorns += w.runAcorns;
+  // lifetime tallies for the Profile screen: these only ever grow
+  save.runs = (save.runs ?? 0) + 1;
+  save.lifetimeAcorns = (save.lifetimeAcorns ?? 0) + w.runAcorns;
   if (w.flight === "deep") save.deepBest = Math.max(save.deepBest, w.score);
   else if (w.flight === "lost") save.lostBest = Math.max(save.lostBest, w.score);
   else if (w.flight === "arcade") save.arcadeBest = Math.max(save.arcadeBest, w.score);
@@ -1288,6 +1291,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     w.envB = targetEnv;
     w.envBlend = 0;
     w.envMsgT = 2.2;
+    // the Profile screen counts zones the pilot has actually reached
+    const zone = ENVS[targetEnv]?.name;
+    if (zone && !save.zonesSeen.includes(zone)) save.zonesSeen.push(zone);
   }
   if (w.envBlend < 1) w.envBlend = Math.min(1, w.envBlend + dt * 0.55);
 

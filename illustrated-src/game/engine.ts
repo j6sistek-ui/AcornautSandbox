@@ -50,6 +50,8 @@ export type Engine = {
   pause: () => void;
   resume: () => void;
   setShopTab: (t: ShopTab) => void;
+  /** settles once the art bank has loaded (or failed to) */
+  artReady?: Promise<void>;
   subscribe: (fn: () => void) => () => void;
   snap: () => Snapshot;
 };
@@ -301,7 +303,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
     if (e.code === "Space" || e.code === "ArrowUp") {
       e.preventDefault();
-      if (world.screen === "title") engine.fly("fly");
+      if (world.screen === "splash") engine.open("title");
+      else if (world.screen === "title") engine.fly("fly");
       else if (world.screen === "pause") engine.resume();
       else if (world.screen === "play") {
         const ev = flap(world, save);
@@ -367,7 +370,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // it arrives — and if the whole load fails, the game still runs
   art = emptyArt();
   engine.art = art;
-  loadArt()
+  // The art bank arrives after the engine does, so the loading screen
+  // needs its own signal. This resolves either way — a failed load must
+  // never leave the app stuck behind a progress bar.
+  engine.artReady = loadArt()
     .then((bank) => {
       art = bank;
       engine.art = bank;
