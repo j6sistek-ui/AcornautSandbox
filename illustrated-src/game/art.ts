@@ -282,6 +282,7 @@ export async function loadArt(): Promise<ArtBank> {
     "gemmie",
     "sammie",
     "seraph",
+    "leviathan",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
 

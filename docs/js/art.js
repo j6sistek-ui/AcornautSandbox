@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=47";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=48";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -234,6 +234,7 @@ export async function loadArt() {
         "gemmie",
         "sammie",
         "seraph",
+        "leviathan",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     async function named(ids, folder, suffix = "", required = false) {
