@@ -10,6 +10,9 @@ export function defaultSave() {
         xp: 0,
         startShield: false,
         battery: false,
+        steadyGates: false,
+        roughAir: false,
+        thrillSeeker: false,
         tutorialDone: false,
         unlocked: ["clear"],
         equipped: "clear",
@@ -52,6 +55,15 @@ export function loadSave() {
         s.equippedTrail = "sparks";
     if (!PALS.some((p) => p.id === s.equippedPal))
         s.equippedPal = "none";
+    // saves written before the flight mods existed
+    for (const k of ["steadyGates", "roughAir", "thrillSeeker"]) {
+        if (typeof s[k] !== "boolean")
+            s[k] = false;
+    }
+    // Steady Gates and Rough Air are opposites; a save carrying both is
+    // incoherent, and stilling the gates is the safer of the two to honour.
+    if (s.steadyGates && s.roughAir)
+        s.roughAir = false;
     // saves written before the lifetime tallies existed
     if (typeof s.runs !== "number")
         s.runs = 0;
@@ -91,6 +103,15 @@ export function suitRevealed(s, id) {
 // grants them outright so they can be flown and judged before release.
 export function iapOwned(s, id) {
     return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
+}
+// Flight mods change how the game FEELS, so they are held back until a
+// player has flown enough to have an opinion about it. Deliberately NOT
+// bypassed by BETA_UNLOCK_GATES the way cosmetics are: the point of the
+// gate is that a new pilot flies the game as designed first. Level 30 is a
+// holding position — move MOD_UNLOCK_LEVEL when the curve is tuned.
+export const MOD_UNLOCK_LEVEL = 30;
+export function modsUnlocked(s) {
+    return pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
 }
 export function deepUnlocked(s) {
     return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 5;

@@ -1,9 +1,10 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
+  modsUnlocked,
   loadSave,
   palUnlocked,
   startShieldUnlocked,
@@ -45,6 +46,8 @@ export type Engine = {
   buyTrail: (id: string) => string;
   equipPal: (id: string) => string;
   toggleMod: (which: "shield" | "battery") => string;
+  /** buy a flight mod if unowned, otherwise switch it on or off */
+  setMod: (id: string) => string;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -103,6 +106,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     buyTrail: (id) => transactTrail(id),
     equipPal: (id) => transactPal(id),
     toggleMod,
+    setMod,
     dismissDead() {
       world.screen = "title";
       world.lastRun = null;
@@ -224,6 +228,33 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     writeSave(save);
     notify();
     return "buy";
+  }
+
+  // A flight mod is bought once and then switched, so one call covers both:
+  // if you do not own it this is a purchase, and if you do it is a toggle.
+  // Turning one on turns its opposite off — Steady Gates and Rough Air
+  // cannot both describe the same run.
+  function setMod(id: string) {
+    const mod = MODS.find((m) => m.id === id);
+    if (!mod) return "unknown";
+    if (!modsUnlocked(save)) return "locked";
+    if (save[mod.save]) {
+      save[mod.save] = false;
+      writeSave(save);
+      notify();
+      return "off";
+    }
+    const owned = save.purchased.includes(mod.id);
+    if (!owned) {
+      if (save.acorns < mod.cost) return "poor";
+      save.acorns -= mod.cost;
+      save.purchased.push(mod.id);
+    }
+    save[mod.save] = true;
+    if (mod.opposes) save[mod.opposes] = false;
+    writeSave(save);
+    notify();
+    return owned ? "on" : "buy";
   }
 
   function resize() {

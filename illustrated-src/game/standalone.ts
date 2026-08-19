@@ -1,8 +1,8 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned } from "./save";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -179,6 +179,12 @@ export async function bootStandalone(root: HTMLElement) {
       overlay.append(drawProfile());
       return;
     }
+    if (snap.screen === "shop") {
+      overlay.append(drawShop());
+      const sc = overlay.querySelector(".ac-sheet-scroll");
+      if (sc && keptScroll) sc.scrollTop = keptScroll;
+      return;
+    }
     if (snap.screen === "help") {
       overlay.append(drawHelp());
     }
@@ -221,6 +227,11 @@ export async function bootStandalone(root: HTMLElement) {
     "M9.7 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.3 1.9-2.3 3.3",
     "M12 16.8h.01",
   ];
+  // A shopping bag: the fifth tab is the store now, not Help.
+  const I_SHOP = [
+    "M6 8h12l-1 12H7L6 8z",
+    "M9.2 8V6.4a2.8 2.8 0 0 1 5.6 0V8",
+  ];
   // The acorn silhouette the home dome wears.
   const I_ACORN = [
     "M13.5 2.2a.75.75 0 0 1 .5 1.3c-.75.55-1.1 1.1-1.2 1.7 3.9.25 6.8 2.05 6.8 3.6 0 .8-.7 1.45-1.6 1.45H6c-.9 0-1.6-.65-1.6-1.45 0-1.6 2.95-3.4 6.85-3.6.1-1.05.75-1.95 1.9-2.7a.75.75 0 0 1 .35-.3z",
@@ -241,6 +252,18 @@ export async function bootStandalone(root: HTMLElement) {
     return h;
   }
 
+
+  // Help stopped being a tab and became the "?" every other game puts in a
+  // corner: it is a reference you reach for once, not a place you live, and
+  // the fifth tab slot is worth more as the Shop.
+  function helpDot() {
+    const b = el("button", "ac-helpdot");
+    b.setAttribute("aria-label", "How to fly");
+    b.append(icon(I_HELP, 19));
+    b.onclick = () => engine.open("help");
+    return b;
+  }
+
   function acornPill(n: number) {
     const pill = el("div", "ac-pill ac-pill-gold");
     pill.append(icon(I_NUT, 13), el("span", "", n.toLocaleString()));
@@ -250,10 +273,20 @@ export async function bootStandalone(root: HTMLElement) {
   // Five tabs on one bar. HOME is the raised dome in the middle: the
   // biggest target, and glass on every screen because it IS home —
   // the white is its identity, not the current screen's colour.
-  function tabbar(active: "hangar" | "log" | "title" | "profile" | "help") {
+
+  /** every menu header carries the same right-hand pair: acorns, then help */
+  function headAside(acorns: number) {
+    const wrap = el("div", "ac-headaside");
+    wrap.append(acornPill(acorns), helpDot());
+    return wrap;
+  }
+
+  // `active` may be "none": Help is reached from the "?" on any screen, so
+  // it belongs to no tab and must not light one up.
+  function tabbar(active: "hangar" | "log" | "title" | "profile" | "shop" | "none") {
     const bar = el("nav", "ac-tabbar");
     const side = (
-      screen: "hangar" | "log" | "profile" | "help",
+      screen: "hangar" | "log" | "profile" | "shop",
       paths: string[],
       label: string,
     ) => {
@@ -270,7 +303,7 @@ export async function bootStandalone(root: HTMLElement) {
       side("log", I_ROAD, "LOG"),
       dome,
       side("profile", I_PILOT, "PROFILE"),
-      side("help", I_HELP, "HELP"),
+      side("shop", I_SHOP, "SHOP"),
     );
     return bar;
   }
@@ -376,13 +409,17 @@ export async function bootStandalone(root: HTMLElement) {
     art.style.backgroundImage = `url("${artRootUrl()}/menu-home.jpg")`;
     box.append(art, el("div", "ac-home-scrim"));
 
-    // Acorns left, level right. Flat pills, not painted plates — the
-    // launch screen is the art's, and these only have to be readable.
+    // Help takes the left corner and the two counters group on the right,
+    // beside the level badge they belong with. Flat pills, not painted
+    // plates — the launch screen is the art's, and these only have to be
+    // readable over it.
     const pills = el("div", "ac-home-pills");
     const lv = pilotLevelOf(s);
     const lvPill = el("div", "ac-pill");
     lvPill.append(el("span", "ac-pill-key", "LV"), el("span", "ac-pill-num", `${lv}`));
-    pills.append(acornPill(s.acorns), lvPill);
+    const right = el("div", "ac-home-pillgroup");
+    right.append(acornPill(s.acorns), lvPill);
+    pills.append(helpDot(), right);
     box.append(pills);
 
     const title = el("div", "ac-home-titlewrap");
@@ -444,13 +481,13 @@ export async function bootStandalone(root: HTMLElement) {
     return { c, ctx };
   }
 
-  function shopImg(src: string, alt: string) {
+  function shopImg(src: string, alt: string, px = 64) {
     const img = document.createElement("img");
     img.src = src;
     img.alt = alt;
     img.draggable = false;
-    img.width = 64;
-    img.height = 64;
+    img.width = px;
+    img.height = px;
     return img;
   }
 
@@ -490,6 +527,74 @@ export async function bootStandalone(root: HTMLElement) {
     return c;
   }
 
+  // Each flight mod draws what it DOES to a gate: a pair of gate discs with
+  // the flight line between them held flat, thrown into waves, or streaked
+  // out to twice the speed. Cheaper than three more paintings, and it reads
+  // at 56px, which a painting of "double speed" would struggle to.
+  function modIcon(id: string, px = 56) {
+    const { c, ctx } = miniCanvas(px, px);
+    if (!ctx) return c;
+    const mid = px / 2;
+    const gap = px * 0.30;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    const disc = (cy: number) => {
+      const g = ctx.createLinearGradient(0, cy - px * 0.13, 0, cy + px * 0.13);
+      g.addColorStop(0, "#5c6a92");
+      g.addColorStop(1, "#2b3350");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(mid, cy, px * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#8fa2c4";
+      ctx.lineWidth = Math.max(1, px * 0.024);
+      ctx.stroke();
+    };
+
+    if (id === "thrillSeeker") {
+      // three streaks and a chevron: speed, not gates
+      ctx.strokeStyle = "#ffb45c";
+      ctx.lineWidth = Math.max(1.5, px * 0.055);
+      for (let i = 0; i < 3; i++) {
+        const y = mid + (i - 1) * px * 0.20;
+        const len = px * (i === 1 ? 0.46 : 0.32);
+        ctx.beginPath();
+        ctx.moveTo(px * 0.12, y);
+        ctx.lineTo(px * 0.12 + len, y);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "#ffd88a";
+      ctx.lineWidth = Math.max(1.5, px * 0.07);
+      for (const dx of [0, px * 0.16]) {
+        ctx.beginPath();
+        ctx.moveTo(px * 0.60 + dx, mid - px * 0.20);
+        ctx.lineTo(px * 0.76 + dx, mid);
+        ctx.lineTo(px * 0.60 + dx, mid + px * 0.20);
+        ctx.stroke();
+      }
+      return c;
+    }
+
+    disc(mid - gap);
+    disc(mid + gap);
+    ctx.strokeStyle = id === "roughAir" ? "#ff9a5c" : "#7fe0b0";
+    ctx.lineWidth = Math.max(1.5, px * 0.06);
+    ctx.beginPath();
+    if (id === "roughAir") {
+      for (let i = 0; i <= 24; i++) {
+        const t = i / 24;
+        const x = px * 0.12 + t * px * 0.76;
+        const y = mid + Math.sin(t * Math.PI * 3) * px * 0.13;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+    } else {
+      ctx.moveTo(px * 0.12, mid);
+      ctx.lineTo(px * 0.88, mid);
+    }
+    ctx.stroke();
+    return c;
+  }
+
   function helmCardOf(helmet: (typeof HELMETS)[number], px = 56) {
     // the dedicated helmet render IS the card — no shrunken squirrel
     const spr = engine.art?.helms?.[helmet.id];
@@ -512,7 +617,7 @@ export async function bootStandalone(root: HTMLElement) {
     const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
     const pal = PALS.find((p) => p.id === s.equippedPal);
     const box = el("div", "ac-menu");
-    box.append(header("Customize your squirrel", "Hangar", acornPill(s.acorns)));
+    box.append(header("Customize your squirrel", "Hangar", headAside(s.acorns)));
 
     // The equipped rig stays pinned above the categories, so the preview
     // is never a mystery while you shop.
@@ -624,6 +729,7 @@ export async function bootStandalone(root: HTMLElement) {
         b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
         b.onclick = () => hit();
         grid.append(b);
+        return b;
       };
       const shieldNut = () => {
         const { c, ctx } = miniCanvas(56, 56);
@@ -636,6 +742,25 @@ export async function bootStandalone(root: HTMLElement) {
       mod("battery", "Shield Battery", "Stack up to three shield charges instead of one. Bought once.",
           MOD_BATTERY_COST, s.battery ? "OWNED" : null, batteryIcon(56),
           () => engine.toggleMod("battery"));
+
+      // Flight mods change how a run FLIES rather than what you survive, so
+      // they say ON / OFF rather than OWNED: buying one does not force you
+      // to fly with it. They stay locked until LV 30 — a pilot should have
+      // flown the game as designed before rewriting how it moves.
+      const modsOpen = modsUnlocked(s);
+      if (!modsOpen) {
+        scroll.append(el("p", "ac-sub ac-modlock",
+          `Flight mods unlock at LV ${MOD_UNLOCK_LEVEL}. They change how the game moves — fly it as built first.`));
+      }
+      for (const m of MODS) {
+        const owned = s.purchased.includes(m.id);
+        const on = !!s[m.save];
+        const b = mod(m.id, m.name, m.desc, m.cost,
+            !modsOpen ? `LV ${MOD_UNLOCK_LEVEL}` : on ? "ON" : owned ? "OFF" : null,
+            modIcon(m.id, 56),
+            () => { if (modsOpen) engine.setMod(m.id); });
+        if (!modsOpen) b.classList.add("ac-cardoff");
+      }
     }
     scroll.append(grid);
     box.append(scroll, tabbar("hangar"));
@@ -829,6 +954,100 @@ export async function bootStandalone(root: HTMLElement) {
 
   // Profile carries everything the Flight Log is no longer about: the
   // lifetime tallies, the per-mode bests, and the flight deck settings.
+  // The Shop is where premium content is sold, and it is deliberately NOT
+  // the Hangar: the Hangar is for changing what you already own, the Shop
+  // for acquiring. Premium items still appear in the Hangar so a loadout
+  // reads complete, but the pitch lives here.
+  let storeTab: "bundles" | "suits" | "helmets" | "pals" = "bundles";
+
+  // Bundles are priced under the sum of their parts — that IS the pitch, so
+  // the saving is stated on the card rather than left to be worked out.
+  const BUNDLES: { id: string; name: string; blurb: string; items: string[] }[] = [
+    { id: "bundle-founders", name: "Founder's Pack", blurb: "Every premium suit and the helmets cut for them.",
+      items: ["catsuit", "gemmie", "sammie", "seraph", "leviathan", "chronarch", "paladin", "princess", "phoenix"] },
+    { id: "bundle-suits", name: "Suit Collection", blurb: "All five premium squirrels.",
+      items: ["catsuit", "gemmie", "sammie", "seraph", "leviathan"] },
+    { id: "bundle-helmets", name: "Helmet Collection", blurb: "The four shaped helmets.",
+      items: ["chronarch", "paladin", "princess", "phoenix"] },
+  ];
+
+  function drawShop() {
+    const s = engine.save;
+    const box = el("div", "ac-menu");
+    box.append(header("Premium", "Shop", headAside(s.acorns)));
+
+    const tabs = el("div", "ac-cats");
+    for (const t of ["bundles", "suits", "helmets", "pals"] as const) {
+      const b = el("button", t === storeTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
+      b.onclick = () => { storeTab = t; keptScroll = 0; render(); };
+      tabs.append(b);
+    }
+    box.append(tabs);
+
+    const scroll = el("div", "ac-sheet-scroll");
+    const grid = el("div", "ac-grid");
+
+    if (storeTab === "bundles") {
+      for (const bn of BUNDLES) {
+        const owned = bn.items.every((i) => iapOwned(s, i));
+        const card = el("button", "ac-card ac-bundle");
+        const strip = el("div", "ac-bundlestrip");
+        // show what is in it, up to four faces, then a count
+        for (const id of bn.items.slice(0, 4)) {
+          const suit = SUITS.find((u) => u.id === id);
+          const helm = HELMETS.find((h) => h.id === id);
+          if (suit) strip.append(shopImg(artUrl(`suits/${id}.png`), suit.name, 40));
+          else if (helm) strip.append(helmCardOf(helm, 40));
+        }
+        if (bn.items.length > 4) strip.append(el("span", "ac-bundlemore", `+${bn.items.length - 4}`));
+        card.append(strip);
+        const txt = el("div", "ac-modtxt");
+        txt.append(el("p", "ac-modname", bn.name), el("p", "ac-sub", bn.blurb));
+        card.append(txt, el("span", "ac-modprice", owned ? "OWNED" : "PREMIUM"));
+        if (owned) card.classList.add("on");
+        card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
+        grid.append(card);
+      }
+    } else if (storeTab === "suits") {
+      for (const u of SUITS.filter((x) => isIap(x.id))) {
+        const owned = iapOwned(s, u.id);
+        const b = el("button", s.equippedSuit === u.id ? "ac-card ac-premium on" : "ac-card ac-premium");
+        b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name),
+                 document.createTextNode(`${u.name}\n${owned ? "OWNED" : "PREMIUM"}`));
+        b.onclick = () => { if (owned) engine.buySuit(u.id); };
+        grid.append(b);
+      }
+    } else if (storeTab === "helmets") {
+      for (const h of HELMETS.filter((x) => isIap(x.id))) {
+        const owned = iapOwned(s, h.id);
+        const b = el("button", s.equipped === h.id ? "ac-card ac-premium on" : "ac-card ac-premium");
+        b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : "PREMIUM"}`));
+        b.onclick = () => { if (owned) engine.buyHelmet(h.id); };
+        grid.append(b);
+      }
+    } else {
+      // Pals are earned by flying, not bought. The Shop still lists them so
+      // the shelf is not a mystery — each says what unlocks it.
+      for (const pl of PALS.filter((x) => x.id !== "none")) {
+        const open = palUnlocked(s, pl.id);
+        const b = el("button", s.equippedPal === pl.id ? "ac-card on" : "ac-card");
+        const { c, ctx } = miniCanvas(64, 56);
+        if (ctx) paintPalPreview(ctx, engine.art, pl.id, 32, 28, 48);
+        b.append(c, document.createTextNode(`${pl.name}\n${open ? pl.tag : "EARNED BY FLYING"}`));
+        if (!open) b.classList.add("ac-cardoff");
+        b.onclick = () => { if (open) engine.equipPal(pl.id); };
+        grid.append(b);
+      }
+    }
+
+    scroll.append(grid);
+    if (storeTab !== "pals") {
+      scroll.append(el("p", "ac-fine", "Premium items are unlocked for everyone during the beta."));
+    }
+    box.append(scroll, tabbar("shop"));
+    return box;
+  }
+
   function drawProfile() {
     const s = engine.save;
     const box = el("div", "ac-menu");
@@ -962,7 +1181,7 @@ export async function bootStandalone(root: HTMLElement) {
     const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
     replay.onclick = () => engine.replayTutorial();
     scroll.append(replay);
-    box.append(tabbar("help"));
+    box.append(tabbar("none"));
     return box;
   }
 
