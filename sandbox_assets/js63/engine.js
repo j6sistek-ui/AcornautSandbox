@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=62";
-import { sfx, unlockAudio, music } from "./audio.js?v=62";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=62";
-import { drawHud, drawWorld } from "./draw.js?v=62";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=62";
-import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=62";
-import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=62";
+import { emptyArt, loadArt } from "./art.js?v=63";
+import { sfx, unlockAudio, music } from "./audio.js?v=63";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=63";
+import { drawHud, drawWorld } from "./draw.js?v=63";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=63";
+import { emptyStats, levelById, levelUnlocked } from "./campaign.js?v=63";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=63";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -18,6 +18,26 @@ export async function createEngine(canvas) {
     let running = false;
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
+    // A finished Spill mission left its result in the hallway on the way
+    // back. Bank it before the first render: stars land, and the pilot
+    // walks straight into the result sheet instead of the title.
+    try {
+        const raw = localStorage.getItem("acornaut_spill_result");
+        if (raw) {
+            localStorage.removeItem("acornaut_spill_result");
+            const r = JSON.parse(raw);
+            const def = levelById(String(r.id));
+            if (def && def.base === "spill") {
+                world.lvl = {
+                    def,
+                    stats: { ...emptyStats(), score: Math.max(0, Math.floor(Number(r.score) || 0)) },
+                    portal: false, strobeT: 0, goldGates: [], spawnOrd: 0,
+                };
+                settleLevel(world, save, r.finished === true);
+            }
+        }
+    }
+    catch { /* a malformed record is dropped, never fatal */ }
     let shopTab = "helmets";
     const engine = {
         canvas,
@@ -79,12 +99,26 @@ export async function createEngine(canvas) {
             const def = levelById(id);
             if (!def)
                 return false;
-            if (!levelUnlocked(def, save.stars || {}, totalStars(save.stars || {})))
+            // starsOf, not the raw tally: Briella's code opens chapters here too
+            if (!levelUnlocked(def, save.stars || {}, starsOf(save)))
                 return false;
             unlockAudio();
+            // A SPILL mission lives on the lab page: hand it the mission card
+            // and go. It writes one result record at the end, and the boot code
+            // banks the stars the moment the pilot is back.
+            if (def.base === "spill") {
+                const s2 = def.goals[1].kind === "score" ? def.goals[1].n : 0;
+                const s3 = def.goals[2].kind === "score" ? def.goals[2].n : 0;
+                guideStep("level");
+                window.location.href =
+                    `../lab/spill/?mission=${def.id}&target=${def.gates}&s2=${s2}&s3=${s3}`;
+                return true;
+            }
             // levels never run the tutorial: the chart itself is gated behind
-            // having a save, and a first-timer meets the tutorial in endless
-            resetRun(world, save, def.base, false, def);
+            // having a save, and a first-timer meets the tutorial in endless.
+            // A Wormhole mission flies a FIXED corridor: the seed is the level's
+            // ordinal, so mission 3-4 is the same test for every pilot, forever.
+            resetRun(world, save, def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
             guideStep("level");
             notify();
             return true;
@@ -478,4 +512,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=62";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=63";

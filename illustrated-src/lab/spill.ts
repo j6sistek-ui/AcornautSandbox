@@ -887,6 +887,26 @@ function draw(ctx: CanvasRenderingContext2D, s: Spill, bank: Bank) {
 // ---------------------------------------------------------------- boot
 
 export async function bootSpill(root: HTMLElement) {
+  // MISSION MODE (beta story integration): the Star Chart hands this page
+  // a mission card in the URL — survive `target` seconds; score goals ride
+  // along for display. The run writes ONE result record at the end and the
+  // game banks the stars when the pilot walks back in. Without params the
+  // page is the same free prototype it always was.
+  const q = new URLSearchParams(window.location.search);
+  const mission = q.get("mission");
+  const missionTarget = Math.max(0, Number(q.get("target")) || 0);
+  const missionS2 = Number(q.get("s2")) || 0;
+  const missionS3 = Number(q.get("s3")) || 0;
+  let missionSent = false;
+  function sendMissionResult(sp: Spill, finished: boolean) {
+    if (!mission || missionSent) return;
+    missionSent = true;
+    try {
+      localStorage.setItem("acornaut_spill_result", JSON.stringify({
+        id: mission, finished, score: Math.floor(sp.score), time: Math.floor(sp.t),
+      }));
+    } catch { /* private mode: the run still played */ }
+  }
   root.innerHTML = "";
   const canvas = document.createElement("canvas");
   canvas.className = "sp-canvas";
@@ -942,7 +962,12 @@ export async function bootSpill(root: HTMLElement) {
     const dy = e.clientY - down.y;
     const quick = performance.now() - down.t < 400;
     down = null;
-    if (s.phase === "over") { if (s.deadFor > 0.6) reset(s); return; }
+    if (s.phase === "over") {
+      if (s.deadFor <= 0.6) return;
+      if (mission) { window.location.href = "../../beta/"; return; }
+      reset(s);
+      return;
+    }
     if (quick && Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy)) doLunge(s, dx > 0 ? 1 : -1);
     else if (quick && dy > 44 && dy > Math.abs(dx)) dive(s);
     else flap(s);
@@ -951,7 +976,12 @@ export async function bootSpill(root: HTMLElement) {
 
   window.addEventListener("keydown", (e) => {
     if (e.repeat) return;
-    if (s.phase === "over" && (e.code === "Space" || e.code === "Enter")) { if (s.deadFor > 0.6) reset(s); return; }
+    if (s.phase === "over" && (e.code === "Space" || e.code === "Enter")) {
+      if (s.deadFor <= 0.6) return;
+      if (mission) { window.location.href = "../../beta/"; return; }
+      reset(s);
+      return;
+    }
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); flap(s); }
     else if (e.code === "ArrowDown") { e.preventDefault(); dive(s); }
     else if (e.code === "ArrowRight") { e.preventDefault(); doLunge(s, 1); }
@@ -971,9 +1001,21 @@ export async function bootSpill(root: HTMLElement) {
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
     step(s, dt);
+    // Mission complete the instant the clock crosses the target — the run
+    // ends on a win, not on the crash that was coming eventually.
+    if (mission && s.phase === "play" && s.t >= missionTarget) {
+      s.phase = "over";
+      s.deadFor = 0;
+      s.cause = "MISSION COMPLETE";
+      s.best = Math.max(s.best, Math.floor(s.score));
+      sendMissionResult(s, true);
+    }
+    if (mission && s.phase === "over" && !missionSent) sendMissionResult(s, false);
     draw(ctx, s, bank);
 
-    $time.textContent = `${s.t.toFixed(1)}s`;
+    $time.textContent = mission && s.phase !== "over"
+      ? `${Math.max(0, missionTarget - s.t).toFixed(1)}s`
+      : `${s.t.toFixed(1)}s`;
     $score.textContent = `${Math.floor(s.score)}`;
     $charge.style.width = `${(s.charge * 100).toFixed(0)}%`;
     pulseBtn.classList.toggle("ready", s.charge >= 1);
@@ -984,7 +1026,8 @@ export async function bootSpill(root: HTMLElement) {
     if (s.phase === "ready") {
       $card.className = "sp-card show";
       $card.innerHTML =
-        '<h1>THE SPILL</h1>' +
+        `<h1>${mission ? `MISSION ${mission}` : "THE SPILL"}</h1>` +
+        `${mission ? `<p class="sp-best">SURVIVE ${missionTarget} SECONDS</p>` : ""}` +
         '<p>A mining rig let go one system over. What reached us is travelling one way.</p>' +
         '<ul><li><b>Tap</b> — thrust</li><li><b>Swipe down</b> — dive</li>' +
         '<li><b>Swipe right</b> — <b>lunge</b> forward, then drift back</li>' +
@@ -992,6 +1035,15 @@ export async function bootSpill(root: HTMLElement) {
         '<p class="sp-fine">Graze debris to charge the meter. Gold acorns pay double; shields are rare. <b>Do not ride the floor.</b></p>' +
         `${s.best ? `<p class="sp-best">BEST ${s.best}</p>` : ""}` +
         '<p class="sp-go">TAP TO LAUNCH</p>';
+    } else if (s.phase === "over" && mission) {
+      const won = s.cause === "MISSION COMPLETE";
+      $card.className = "sp-card show";
+      $card.innerHTML =
+        `<h1>${won ? "MISSION COMPLETE" : s.cause === "GROUNDED" ? "GROUNDED" : "LOST"}</h1>` +
+        `<p class="sp-stat"><b>${Math.floor(s.score)}</b> points</p>` +
+        `<p class="sp-sub">Mission ${mission} \u00b7 ${won ? `${missionTarget}s survived` : `${s.t.toFixed(1)}s of ${missionTarget}s`}</p>` +
+        `${missionS2 ? `<p class="sp-sub">\u2605 goals: ${missionS2} pts \u00b7 ${missionS3} pts</p>` : ""}` +
+        '<p class="sp-go">TAP TO RETURN</p>';
     } else if (s.phase === "over") {
       $card.className = "sp-card show";
       $card.innerHTML =
