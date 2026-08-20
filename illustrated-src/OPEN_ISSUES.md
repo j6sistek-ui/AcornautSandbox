@@ -133,7 +133,7 @@ Shipping as-is by decision. The real fix is a re-render with the wing and
 the tail clearly apart, or a parts-separated Seraph. Anything cleverer in
 `neck-cut.py` would be over-fitting one suit.
 
-## Big Booty (fixed)
+## Big Booty (fixed, twice)
 
 The straight seam clipped a wedge of the purple suit and a sliver of the
 hind leg into the tail, and they swung away with the plume. The seam colour
@@ -142,6 +142,21 @@ colour belongs to the body. Two traps on the way — the tail's five-pixel lip
 quietly re-copied the wedge into the tail, and the body's fringe sweep then
 deleted the paint the guard had handed back (297 px on Big Booty, 421 on
 Seraph). Both are named in the source.
+
+And a third, which is the one that actually shipped a visible defect: the
+colour reference is sampled from the plume's BRIGHT outer fur, so deep
+shadow inside the plume failed the test and 261 px were punched out of the
+middle of the tail. A hole in a swinging tail is about the most visible
+thing this rig can produce. Two rules now stop it: anything enclosed by
+plume is plume (fill holes, but only where the source has paint, so the
+artwork's own transparent gaps survive), and the same fill runs again after
+the lip, because subtracting the rejected paint can enclose a gap all over
+again. Robo and Gemmie were quietly carrying 30 px and 14 px of the same
+fault.
+
+The check that catches this class: count enclosed gaps in the tail layer and
+compare against the count in the WHOLE-SUIT render. Anything above the
+source's own number is self-inflicted. All seventeen now sit at zero.
 
 ## neck-cut.py is NOT idempotent
 

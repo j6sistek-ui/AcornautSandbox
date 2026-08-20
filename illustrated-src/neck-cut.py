@@ -245,6 +245,13 @@ def cut_one(path, piv_hint, dome=None):
                 # body is derived from tail below, so shrinking the tail is
                 # all that is needed -- what is dropped returns to the body
                 tail = lb2 == lb2[plume[1], plume[0]]
+                # NEVER PUNCH A HOLE IN THE PLUME. The reference is sampled
+                # from the plume's bright outer fur, so deep shadow inside it
+                # can fail the colour test -- 261 px of Big Booty's tail went
+                # that way, a hole the body's stationary copy then showed
+                # through. Only paint on the plume's EDGE can belong to
+                # something else; anything enclosed by plume is plume.
+                tail = ndimage.binary_fill_holes(tail) & mask
                 rejected = mask & ~tail & ndimage.binary_dilation(alien_px)
 
     # a small lip over the body, hidden under it at rest, so the seam cannot
@@ -253,6 +260,14 @@ def cut_one(path, piv_hint, dome=None):
     # did on Big Booty: the purple wedge went to the body, then the five-pixel
     # lip re-copied it into the tail, and the sliver was travelling again.
     tail_l = ndimage.binary_dilation(tail, iterations=LIP) & mask & ~rejected
+    # Subtracting the rejected paint can enclose a gap all over again -- the
+    # lip reaches round it and closes behind it. Fill what the lip encloses,
+    # but ONLY where the source has paint, so the artwork's own transparent
+    # gaps survive untouched. Robo lost 30 px and Gemmie 14 this way before it
+    # was caught, and a hole in a swinging tail is about the most visible
+    # defect available.
+    tail_l = tail_l | (ndimage.binary_fill_holes(tail_l) & mask)
+    rejected = rejected & ~tail_l
 
     body = mask & ~tail
     # ... and a pad of real body paint at the hinge, same reason
