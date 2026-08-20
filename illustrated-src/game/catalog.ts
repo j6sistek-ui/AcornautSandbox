@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "63";
+export const ART_VER = "64";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -213,21 +213,6 @@ export const PALS: Pal[] = [
   { id: "nightglider", name: "Nightglider", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "nightglider" },
 ];
 
-// Original imagine sheet (3x4, 400px cells) → these filenames. Never remap by index.
-export const PAL_SHEET = {
-  bee: "row2 col1 — yellow astro bee",
-  buddy: "row3 col1 — acorn with a face",
-  voidjelly: "row3 col0 — purple tentacle jelly",
-  cometsprite: "row2 col2 — orange comet creature",
-  meteorcore: "row1 col0 — lava meteor with a crater face",
-  pocketmoon: "row2 col0 — crater moon face",
-  ufo: "row0 col2 — classic saucer",
-  nutsack: "row1 col2 — burlap sack of acorns",
-  starpup: "row1 col1 — yellow star face",
-  tinbot: "row0 col1 — rivet robot",
-  wisp: "row3 col2 — pink nebula ghost",
-} as const;
-
 export type Env = {
   name: string;
   wash: [number, number, number, number];
@@ -408,21 +393,6 @@ export const TITLES: [number, string][] = [
   [25, "EVENT HORIZON"],
   [30, "ACORNAUT"],
 ];
-
-export const PAL_LEVELS: Record<string, number> = {
-  none: 1,
-  bee: 2,
-  buddy: 4,
-  voidjelly: 6,
-  cometsprite: 7,
-  meteorcore: 9,
-  pocketmoon: 11,
-  ufo: 12,
-  starpup: 13,
-  tinbot: 14,
-  wisp: 15,
-  nutsack: 16,
-};
 
 // Premium items. These never appear on the level track — no amount of
 // flying reveals them — and acorns cannot buy them; they are bought for
