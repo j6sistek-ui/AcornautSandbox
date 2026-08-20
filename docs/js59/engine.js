@@ -1,8 +1,8 @@
 import { emptyArt, loadArt } from "./art.js?v=59";
 import { sfx, unlockAudio, music } from "./audio.js?v=59";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=59";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=59";
 import { drawHud, drawWorld } from "./draw.js?v=59";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=59";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=59";
 import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=59";
 import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=59";
 export async function createEngine(canvas) {
@@ -153,7 +153,10 @@ export async function createEngine(canvas) {
             return "suitOnly";
         if (!helmetRevealed(save, id))
             return "locked";
-        if (save.unlocked.includes(id)) {
+        // A premium item that is OWNED equips — it never re-enters the buy
+        // path, whatever its cost field says. The Cat carried a stale acorn
+        // price from before it went premium, and "owned" met "poor".
+        if (save.unlocked.includes(id) || (isIap(id) && iapOwned(save, id))) {
             save.equipped = id;
             guideStep("helm");
             writeSave(save);
@@ -176,7 +179,7 @@ export async function createEngine(canvas) {
             return "missing";
         if (!suitRevealed(save, id))
             return "locked";
-        if (save.unlockedSuits.includes(id)) {
+        if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id))) {
             save.equippedSuit = id;
             dropOrphanedHelmet();
             guideStep("suit");

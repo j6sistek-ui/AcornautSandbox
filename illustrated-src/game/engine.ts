@@ -1,11 +1,12 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
   deepUnlocked,
   helmetRevealed,
+  iapOwned,
   eraseSave,
   lostUnlocked,
   modsUnlocked,
@@ -204,7 +205,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (!helmetRevealed(save, id)) return "locked";
-    if (save.unlocked.includes(id)) {
+    // A premium item that is OWNED equips — it never re-enters the buy
+    // path, whatever its cost field says. The Cat carried a stale acorn
+    // price from before it went premium, and "owned" met "poor".
+    if (save.unlocked.includes(id) || (isIap(id) && iapOwned(save, id))) {
       save.equipped = id;
       guideStep("helm");
       writeSave(save);
@@ -225,7 +229,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const item = SUITS.find((h) => h.id === id);
     if (!item) return "missing";
     if (!suitRevealed(save, id)) return "locked";
-    if (save.unlockedSuits.includes(id)) {
+    if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id))) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
       guideStep("suit");

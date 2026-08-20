@@ -154,7 +154,7 @@ export const SUITS: Suit[] = [
   { id: "alien", name: "Alien", cost: 650, alien: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
   { id: "ghost", name: "Ghost", cost: 800, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 1000, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
-  { id: "catsuit", name: "Cat", cost: 750, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
+  { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
   { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
   { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
   { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
