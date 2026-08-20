@@ -41,6 +41,7 @@ what was matched and what was added.
 | **9 premium items** | Cat suit plus 8 helmets, behind `IAP_ITEMS` |
 | **Suit reveals** | Robo, Alien, Ghost, Big Booty unlock through the level track |
 | **Installable** | Manifest and maskable icons |
+| **The Star Chart** | 100-level campaign in ten stages: portal finish lines, three stars a level, star-total progression replacing the XP ladder. Replaces the Flight Log tab. See `ROADMAP.md` |
 
 ## Still thinner, or deliberately different
 

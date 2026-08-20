@@ -1,7 +1,8 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
+import { countBits, emptyStats, goalMet, type LevelDef, type RunStats } from "./campaign";
 
-export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause";
+export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade";
 export type TutStage =
   | "intro"
@@ -37,7 +38,7 @@ export type Pickup = {
   y: number;
   got: boolean;
   bob: number;
-  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro";
+  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro" | "portal";
   pulled?: boolean;
   // Hazards carry their own reach. A black hole or wormhole spans the
   // whole gate mouth, so meeting one is a matter of arriving — not of
@@ -147,6 +148,27 @@ export type World = {
   palPos: { x: number; y: number; dart: number };
   shake: number;
   pausedFrom: Screen | null;
+  // A CAMPAIGN LEVEL run. null on every endless run — nothing below may
+  // change how an endless run plays. `stats` counts what the level's three
+  // goals are judged on; `portal` flips once the finish spawns; `strobeT`
+  // is the time since the last tap, which THE BLACKOUT draws by.
+  lvl: {
+    def: LevelDef;
+    stats: RunStats;
+    portal: boolean;
+    strobeT: number;
+  } | null;
+  // the result sheet's payload — survives the world being reset
+  lastLevel: {
+    def: LevelDef;
+    finished: boolean;
+    met: [boolean, boolean, boolean];
+    newMask: number;    // stars owned on this level after the run
+    gained: number;     // stars newly earned by this run
+    totalBefore: number;
+    totalAfter: number;
+    stats: RunStats;
+  } | null;
   tut: {
     stage: TutStage;
     hold: boolean;
@@ -219,6 +241,8 @@ export function makeWorld(W: number, H: number): World {
     pausedFrom: null,
     tut: null,
     lastRun: null,
+    lvl: null,
+    lastLevel: null,
   };
 }
 
@@ -242,6 +266,9 @@ function shuffleEnv(w: World) {
 }
 
 export function envIndexFor(w: World, score: number) {
+  // a level is ten-to-thirty gates under ONE sky — the stage's identity —
+  // so the zone ladder does not apply inside one
+  if (w.lvl && w.lvl.def.fx.env !== undefined) return w.lvl.def.fx.env;
   return w.envOrder[Math.min(Math.floor(score / ENV_GATES), ENVS.length - 1)];
 }
 
@@ -254,8 +281,13 @@ function palId(save: SaveData, w: World) {
 // designed, and a pilot who armed Thrill Seeker and then replayed it would
 // be taught a different game. It is also gated on level, so a new pilot
 // cannot have one on in the first place — this is the belt to that braces.
+//
+// Mods never touch a CAMPAIGN LEVEL either: a star has to certify the same
+// flight for every pilot, and Steady Gates would quietly buy the no-bounce
+// star while Thrill Seeker would double a level tuned at 1x. The level's
+// own fx are the only dials.
 function modsLive(save: SaveData, w: World) {
-  return !w.tut && modsUnlocked(save);
+  return !w.tut && !w.lvl && modsUnlocked(save);
 }
 
 /** How hard the gates sway in Normal: 0 with Steady Gates, 2 with Rough Air. */
@@ -266,8 +298,11 @@ function driftModOf(save: SaveData, w: World) {
   return 1;
 }
 
-/** Thrill Seeker runs the whole world at double speed. See updateWorld. */
+/** Thrill Seeker runs the whole world at double speed. See updateWorld.
+ *  A level's fx.pace rides the same lever, so SOLAR FURNACE is Thrill
+ *  Seeker at 1.2 rather than a second clock to reason about. */
 function paceOf(save: SaveData, w: World) {
+  if (w.lvl) return w.lvl.def.fx.pace ?? 1;
   return modsLive(save, w) && save.thrillSeeker ? 2 : 1;
 }
 
@@ -457,7 +492,7 @@ function tutSafe(w: World) {
 function spawnPair(w: World, save: SaveData, x: number) {
   const env = ENVS[w.envB];
   const d = difficulty(w);
-  let gap = d.gap;
+  let gap = d.gap * (w.lvl?.def.fx.gapScale ?? 1);
   const margin = 72;
   let gapY = margin + gap / 2 + Math.random() * (w.H - 2 * margin - gap);
   const dx = Math.max(80, x - w.lastSpawnX);
@@ -493,11 +528,14 @@ function spawnPair(w: World, save: SaveData, x: number) {
   // hole's tilt — that is orientation, not drift, and it stays either way.
   const pilot = palId(save, w);
   const normalDrift = w.flight === "fly" ? driftModOf(save, w) : 1;
+  // a level's fx sway rides on top of the mode's own; CRIMSON STORM is
+  // Rough Air with the volume knob exposed
+  const lvlDrift = w.lvl?.def.fx.driftScale ?? 1;
   const driftAmp =
-    pilot === "wisp" ? 26
+    (pilot === "wisp" ? 26
       : w.flight === "lost" ? 12
         : w.tut ? 0
-          : gap * 0.15 * normalDrift;
+          : gap * 0.15 * normalDrift) * lvlDrift;
   w.planets.push({
     x,
     gapY,
@@ -513,6 +551,10 @@ function spawnPair(w: World, save: SaveData, x: number) {
 
   const pal = palId(save, w);
   const noPick = pal === "bee" || (w.tut && w.tut.stage !== "palDemo" && w.tut.stage !== "free" && w.tut.stage !== "ready");
+  // A collection star must never be lost to the spawn dice: a level with
+  // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
+  // achievable inside the level's own gate count with room to miss a few.
+  const acornOdds = w.lvl?.def.fx.acornEvery ? 1 : 0.58;
   // Arcade is the generous mode: power-ups spawn twice as often by
   // default. Free Flight is the opposite — at the old rate a run was
   // carrying a freeze or a shield almost continuously, which is not a
@@ -528,7 +570,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const noShield = pal === "nutsack" || pal === "tinbot";
   const noHoles = pal === "tinbot";
   if (!noPick) {
-    if (w.tut || Math.random() < 0.58) {
+    if (w.tut || Math.random() < acornOdds) {
       const off = w.tut?.stage === "palDemo" ? (Math.random() < 0.5 ? -1 : 1) * gap * 0.32 : (Math.random() - 0.5) * gap * 0.35;
       w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
     }
@@ -566,8 +608,11 @@ function spawnPair(w: World, save: SaveData, x: number) {
   w.lastGapY = gapY;
 }
 
-export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean) {
+export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, level?: LevelDef) {
   w.flight = flight;
+  // A campaign level is an ordinary run wearing a finish line. It is set
+  // up FIRST because everything below (env order, spawn fx) reads it.
+  w.lvl = level ? { def: level, stats: emptyStats(), portal: false, strobeT: 9 } : null;
   // every run starts in this game; the arcade acorn is the only way out
   // Arcade IS the retro game — it starts there and never leaves. Every
   // other mode starts illustrated; in Free Flight the 8-bit acorn is the
@@ -626,6 +671,11 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.warpTilt = lostTiltAt(w.tiltPhase);
   }
   shuffleEnv(w);
+  if (w.lvl && w.lvl.def.fx.env !== undefined) {
+    // the level opens already under its stage's sky — no crossfade in
+    w.envA = w.lvl.def.fx.env;
+    w.envB = w.lvl.def.fx.env;
+  }
   for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
   w.tut = tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
@@ -878,6 +928,10 @@ export function flap(w: World, save: SaveData) {
   }
   if (w.ready) w.ready = false;
   if (w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce")) return "none";
+  if (w.lvl) {
+    w.lvl.stats.taps += 1;
+    w.lvl.strobeT = 0;      // THE BLACKOUT: a tap is a flashbulb
+  }
   w.squirrel.vy = flapOf(save, w);
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
@@ -943,6 +997,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   w.squirrel.rot = dy >= 0 ? 0.85 : -0.55;
   w.hitCooldown = 0.55;
   w.shake = 0.18;
+  if (w.lvl) w.lvl.stats.bounces += 1;
   spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
 }
 
@@ -980,6 +1035,7 @@ function absorb(w: World, bx?: number, by?: number) {
   const sx = w.W * PHYS.squirrelX;
   const cy = safeY(w);
   w.shieldCharges -= 1;
+  if (w.lvl) w.lvl.stats.shieldsSpent += 1;
   if (bx !== undefined && by !== undefined) {
     spark(w, bx, by, ["#7ad8ff", "#5dff9e", "#fff"], 16, "shield");
     clearDebrisNear(w, bx, by, 110, sx, cy, 150);
@@ -1072,11 +1128,57 @@ function exitWarp(w: World) {
   spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#b45cff", "#fff"], 14, "warp");
 }
 
+// The level is over — the portal was flown or the pilot was lost. Stars
+// are a BITMASK per level and only ever gain bits: goal 2 earned today and
+// goal 3 earned on Tuesday add up to the same three stars, which is what
+// lets a hard level be chipped at instead of demanding one perfect run.
+function settleLevel(w: World, save: SaveData, finished: boolean) {
+  const lvl = w.lvl!;
+  const def = lvl.def;
+  const met: [boolean, boolean, boolean] = finished
+    ? [goalMet(def.goals[0], lvl.stats), goalMet(def.goals[1], lvl.stats), goalMet(def.goals[2], lvl.stats)]
+    : [false, false, false];
+  const mask = (met[0] ? 1 : 0) | (met[1] ? 2 : 0) | (met[2] ? 4 : 0);
+  const before = save.stars?.[def.id] || 0;
+  const totalBefore = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
+  if (!save.stars) save.stars = {};
+  save.stars[def.id] = before | mask;
+  const totalAfter = Object.values(save.stars).reduce((n, m) => n + countBits(m), 0);
+  // the run still banks like any other: acorns are real, XP keeps the
+  // pilot's title alive, lifetime tallies grow
+  save.acorns += w.runAcorns;
+  save.runs = (save.runs ?? 0) + 1;
+  save.lifetimeAcorns = (save.lifetimeAcorns ?? 0) + w.runAcorns;
+  save.xp = (save.xp || 0) + runXp(w.score, w.runAcorns, def.base === "deep", def.base === "lost");
+  if (w.startShieldArmed) save.startShield = false;
+  writeSave(save);
+  w.lastLevel = {
+    def,
+    finished,
+    met,
+    newMask: before | mask,
+    gained: countBits((before | mask) & ~before),
+    totalBefore,
+    totalAfter,
+    stats: { ...lvl.stats },
+  };
+  w.lvl = null;
+  w.tut = null;
+  w.screen = "lvldone";
+  w.deadTimer = 0;
+}
+
 function die(w: World, save: SaveData) {
   if (w.tut && w.tut.stage !== "free") {
     absorb(w);
     w.shieldCharges = Math.max(w.shieldCharges, 1);
     return "shield";
+  }
+  if (w.lvl) {
+    w.shake = 0.35;
+    spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
+    settleLevel(w, save, false);
+    return "die";
   }
   w.screen = "dead";
   w.deadTimer = 0;
@@ -1135,7 +1237,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.time += dt;
   if (w.shake > 0) w.shake = Math.max(0, w.shake - dt * 2.4);
   for (const s of w.stars) s.tw += dt * 2;
-  if (w.screen === "pause") return null;
+  if (w.screen === "pause" || w.screen === "lvldone") return null;
   if (w.screen === "dead") {
     w.deadTimer += dt;
     w.squirrel.vy += PHYS.gravity * dt * 0.55;
@@ -1304,6 +1406,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   if (w.hitCooldown > 0) w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
   if (w.envMsgT > 0) w.envMsgT = Math.max(0, w.envMsgT - dt);
+  if (w.lvl) w.lvl.strobeT += dt;
 
   const d = difficulty(w);
   w.speed = d.speed;
@@ -1320,7 +1423,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     // Rough Air doubles how FAST a gate sways as well as how far, so the
     // two together read as turbulence rather than a slow deep breath.
     const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
-      * (w.flight === "fly" && save.roughAir && modsLive(save, w) ? 2 : 1);
+      * (w.flight === "fly" && save.roughAir && modsLive(save, w) ? 2 : 1)
+      * (w.lvl?.def.fx.driftRate ?? 1);
     p.drift += simDt * driftRate;
   }
   for (const a of w.pickups) {
@@ -1328,7 +1432,22 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     a.bob += dt * 4;
   }
   w.lastSpawnX -= move;
-  while (w.lastSpawnX < w.W + 90) spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+  const lineReached = !!w.lvl && w.score >= w.lvl.def.gates;
+  if (!lineReached) {
+    while (w.lastSpawnX < w.W + 90) spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+  } else if (w.lvl && !w.lvl.portal) {
+    // the last gate is passed: the field goes quiet and the FINISH portal
+    // stands alone in clear sky — an arrival, not another obstacle
+    w.lvl.portal = true;
+    w.pickups.push({
+      x: Math.max(w.lastSpawnX + nextGapSpacing(w), w.W + 140),
+      y: w.H * 0.45,
+      got: false,
+      bob: 0,
+      kind: "portal",
+      r: 64,
+    });
+  }
   w.planets = w.planets.filter((p) => p.x > -90);
   w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
 
@@ -1458,6 +1577,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     a.got = true;
     if (a.kind === "acorn") {
       w.runAcorns += pal === "nutsack" ? 2 : 1;
+      if (w.lvl) w.lvl.stats.acorns += pal === "nutsack" ? 2 : 1;
       if (a.pulled) {
         w.palPos.x = a.x;
         w.palPos.y = a.y;
@@ -1470,6 +1590,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       spark(w, a.x, ay, ["#6ef0ff", "#fff"], 12, "cyan");
       snd = "gold";
     } else if (a.kind === "gold") {
+      if (w.lvl) w.lvl.stats.gold += 1;
       w.invulnLeft = PHYS.goldDuration * (pal === "starpup" ? 2 : 1);
       spark(w, a.x, ay, ["#ffe080", "#ffd060"], 14, "gold");
       snd = "gold";
@@ -1483,6 +1604,10 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     } else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0) {
       startSwirl(w, a.kind === "worm" ? "worm" : "hole");
       snd = "shield";
+    } else if (a.kind === "portal" && w.lvl) {
+      spark(w, a.x, ay, ["#ffd060", "#5dff9e", "#fff"], 26, "warp");
+      settleLevel(w, save, true);
+      return "shift";
     } else if (a.kind === "retro" && w.warpT <= 0) {
       // Through the fold and out the other side, in the other game. The
       // crossing borrows the wormhole's swirl so it reads as a crossing,

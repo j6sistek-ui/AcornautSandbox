@@ -12,6 +12,7 @@ import {
   writeSave,
   type SaveData,
 } from "./save";
+import { levelById, levelUnlocked, totalStars, type LevelDef } from "./campaign";
 import {
   dive,
   flap,
@@ -40,6 +41,8 @@ export type Engine = {
   stop: () => void;
   resize: () => void;
   fly: (mode: FlightMode) => void;
+  /** start a Star Chart level; returns false if it is still locked */
+  flyLevel: (id: string) => boolean;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
   buySuit: (id: string) => string;
@@ -95,6 +98,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
       notify();
+    },
+    flyLevel(id) {
+      const def = levelById(id);
+      if (!def) return false;
+      if (!levelUnlocked(def, save.stars || {}, totalStars(save.stars || {}))) return false;
+      unlockAudio();
+      // levels never run the tutorial: the chart itself is gated behind
+      // having a save, and a first-timer meets the tutorial in endless
+      resetRun(world, save, def.base, false, def);
+      notify();
+      return true;
     },
     open(s) {
       world.screen = s;

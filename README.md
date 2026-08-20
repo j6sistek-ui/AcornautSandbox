@@ -31,6 +31,7 @@ are generated. Edit `illustrated-src/` and rebuild.
 ```bash
 node illustrated-src/export-sandbox.mjs   # the game -> docs/ and sandbox_assets/
 node illustrated-src/build-lab.mjs        # the lab  -> docs/lab/{spill,rig}/
+node illustrated-src/build-roadmap.mjs    # the campaign -> ROADMAP.md
 ```
 
 `ART_VER` in `illustrated-src/game/catalog.ts` is the cache-buster: it names
@@ -59,3 +60,5 @@ Design notes for both: `illustrated-src/lab/README.md`.
 - `illustrated-src/OPEN_ISSUES.md` — what is known broken, what was fixed and
   why, and the check that catches each class of fault.
 - `PARITY.md` — what is matched against the original canvas game.
+- `ROADMAP.md` — the Star Chart campaign: all 100 levels, generated from
+  `campaign.ts` so it cannot drift.
