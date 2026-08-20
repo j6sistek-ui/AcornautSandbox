@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=56";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=56";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=57";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=57";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -110,6 +110,8 @@ export function starsOf(s) {
 // old XP thresholds are kept as an OR so no existing save loses anything
 // it already had; they are not shown anywhere any more.
 export function palUnlocked(s, id) {
+    if (isIap(id))
+        return iapOwned(s, id);
     if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id])
         return true;
     return BETA_UNLOCK_GATES || s.unlockedPals.includes(id) || pilotLevelOf(s) >= (PAL_LEVELS[id] || 1);

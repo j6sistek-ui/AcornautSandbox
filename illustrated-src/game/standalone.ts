@@ -719,13 +719,15 @@ export async function bootStandalone(root: HTMLElement) {
       }
     } else if (engine.shopTab === "pals") {
       for (const p of PALS) {
-        const open = palUnlocked(s, p.id);
+        const premium = isIap(p.id);
+        const open = premium ? iapOwned(s, p.id) : palUnlocked(s, p.id);
         const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
         const { c, ctx } = miniCanvas(64, 56);
         if (ctx) paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
         b.append(c);
-        b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
-        b.onclick = () => engine.equipPal(p.id);
+        b.append(document.createTextNode(`${p.name}\n${open ? p.tag : premium ? "PREMIUM" : "LOCKED"}`));
+        if (premium) b.classList.add("ac-premium");
+        b.onclick = () => { if (open) engine.equipPal(p.id); };
         grid.append(b);
       }
     } else {
@@ -1174,14 +1176,16 @@ export async function bootStandalone(root: HTMLElement) {
         grid.append(b);
       }
     } else {
-      // Pals are earned by flying, not bought. The Shop still lists them so
-      // the shelf is not a mystery — each says what unlocks it.
+      // Standard pals are earned by flying; premium pals share the same
+      // shelf but keep the same purchase/ownership contract as premium art.
       for (const pl of PALS.filter((x) => x.id !== "none")) {
-        const open = palUnlocked(s, pl.id);
+        const premium = isIap(pl.id);
+        const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
         const b = el("button", s.equippedPal === pl.id ? "ac-card on" : "ac-card");
         const { c, ctx } = miniCanvas(64, 56);
         if (ctx) paintPalPreview(ctx, engine.art, pl.id, 32, 28, 48);
-        b.append(c, document.createTextNode(`${pl.name}\n${open ? pl.tag : "EARNED BY FLYING"}`));
+        b.append(c, document.createTextNode(`${pl.name}\n${premium ? (open ? "OWNED" : "PREMIUM") : open ? pl.tag : "EARNED BY FLYING"}`));
+        if (premium) b.classList.add("ac-premium");
         if (!open) b.classList.add("ac-cardoff");
         b.onclick = () => { if (open) engine.equipPal(pl.id); };
         grid.append(b);

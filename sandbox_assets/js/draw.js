@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=56";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=56";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=56";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=56";
-import { tunnelBoundsAt } from "./sim.js?v=56";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=57";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=57";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=57";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=57";
+import { tunnelBoundsAt } from "./sim.js?v=57";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1172,7 +1172,15 @@ function paintPal(ctx, art, id, x, y, size) {
     const spr = art?.pals?.[id];
     if (spr) {
         // box fit, not core: companions are sidekicks, smaller than the pilot
-        drawSprite(ctx, spr, x, y, size);
+        // The premium silhouettes carry more transparent negative space than
+        // the round original pals. Small visual-only lifts keep their faces at
+        // the same apparent card/live scale without changing their hitboxes or
+        // any gameplay value (pals have neither).
+        const fit = size * (id === "nightglider" ? 1.32
+            : id === "clockling" ? 1.12
+                : id === "prismwing" ? 1.08
+                    : 1);
+        drawSprite(ctx, spr, x, y, fit);
         return;
     }
     if (id !== "none") {

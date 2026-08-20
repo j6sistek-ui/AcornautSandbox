@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "56";
+export const ART_VER = "57";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -181,6 +181,9 @@ export const PALS: Pal[] = [
   { id: "starpup", name: "Star Pup", tag: "LONG GOLD", desc: "Golden acorns last twice as long.", art: "starpup" },
   { id: "tinbot", name: "Tin Bot", tag: "NO HOLES", desc: "No black holes or wormholes. No shields either.", art: "tinbot" },
   { id: "wisp", name: "Nebula Wisp", tag: "GATE DRIFT", desc: "Gates drift up and down — moving targets.", art: "wisp" },
+  { id: "prismwing", name: "Prismwing", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "prismwing" },
+  { id: "clockling", name: "Clockling", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "clockling" },
+  { id: "nightglider", name: "Nightglider", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "nightglider" },
 ];
 
 // Original imagine sheet (3x4, 400px cells) → these filenames. Never remap by index.
@@ -402,6 +405,7 @@ export const IAP_ITEMS = [
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "leviathan", "paladin", "princess",
   "verdant", "cryostar", "eclipse",
+  "prismwing", "clockling", "nightglider",
 ];
 export function isIap(id: string) {
   return IAP_ITEMS.includes(id);

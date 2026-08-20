@@ -1228,7 +1228,17 @@ function paintPal(
   const spr = art?.pals?.[id];
   if (spr) {
     // box fit, not core: companions are sidekicks, smaller than the pilot
-    drawSprite(ctx, spr, x, y, size);
+    // The premium silhouettes carry more transparent negative space than
+    // the round original pals. Small visual-only lifts keep their faces at
+    // the same apparent card/live scale without changing their hitboxes or
+    // any gameplay value (pals have neither).
+    const fit = size * (
+      id === "nightglider" ? 1.32
+        : id === "clockling" ? 1.12
+          : id === "prismwing" ? 1.08
+            : 1
+    );
+    drawSprite(ctx, spr, x, y, fit);
     return;
   }
   if (id !== "none") {

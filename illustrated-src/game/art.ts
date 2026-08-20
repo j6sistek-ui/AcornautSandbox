@@ -251,6 +251,9 @@ export async function loadArt(): Promise<ArtBank> {
     "starpup",
     "tinbot",
     "wisp",
+    "prismwing",
+    "clockling",
+    "nightglider",
   ];
   const helmIds = [
     "clear",
