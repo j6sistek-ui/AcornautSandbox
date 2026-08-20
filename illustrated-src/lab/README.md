@@ -187,12 +187,13 @@ Same delete-when-frozen rule as the Spill.
 Two tables, and only two:
 
 - **DOME** — where each suit's head is, and how big, in that suit's own
-  256px canvas. 17 suits plus the 8 flight-animation frames.
+  256px canvas. 17 suits. The eight baked-Clear Flight frames are reviewed
+  separately; custom helmets use the bare Flight rig.
 - **HELM_GLASS** — where each helmet's glass circle is, and how big, in
   the helmet's own canvas. 20 helmets.
 
-That is 45 triples covering 480 pairings, and keeping it that way is the
-whole point. A per-pair table would be 480 entries that every new suit
+That is 37 triples covering 320 helmet-wearing pairings, and keeping it that
+way is the whole point. A per-pair table would be 320 entries that every new suit
 grows by twenty, and no two of them would ever be checked against each
 other again.
 

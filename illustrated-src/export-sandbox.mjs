@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,17 +11,34 @@ const ver = (catalog.match(/ART_VER = "([^"]+)"/) || [])[1] || "0";
 mkdirSync(join(out, "js"), { recursive: true });
 mkdirSync(join(out, "art"), { recursive: true });
 
-execSync(
-  [
-    "npx tsc",
-    "illustrated-src/game/catalog.ts illustrated-src/game/campaign.ts illustrated-src/game/save.ts illustrated-src/game/sim.ts illustrated-src/game/draw.ts",
-    "illustrated-src/game/art.ts illustrated-src/game/audio.ts illustrated-src/game/engine.ts illustrated-src/game/standalone.ts",
-    "illustrated-src/game/cosmetics.ts",
-    "--outDir sandbox_assets/js --module es2015 --target es2020",
-    "--skipLibCheck --moduleResolution bundler --declaration false --strict false",
-  ].join(" "),
-  { cwd: root, stdio: "inherit" },
-);
+const sources = [
+  "illustrated-src/game/catalog.ts",
+  "illustrated-src/game/campaign.ts",
+  "illustrated-src/game/save.ts",
+  "illustrated-src/game/sim.ts",
+  "illustrated-src/game/draw.ts",
+  "illustrated-src/game/art.ts",
+  "illustrated-src/game/audio.ts",
+  "illustrated-src/game/engine.ts",
+  "illustrated-src/game/standalone.ts",
+  "illustrated-src/game/cosmetics.ts",
+];
+const tscArgs = [
+  ...sources,
+  "--outDir", "sandbox_assets/js",
+  "--module", "es2015",
+  "--target", "es2020",
+  "--skipLibCheck",
+  "--moduleResolution", "bundler",
+  "--declaration", "false",
+  "--strict", "false",
+];
+const tscModule = process.env.ACORNAUT_TSC;
+if (tscModule) {
+  execFileSync(process.execPath, [tscModule, ...tscArgs], { cwd: root, stdio: "inherit" });
+} else {
+  execFileSync("npx", ["tsc", ...tscArgs], { cwd: root, stdio: "inherit" });
+}
 
 for (const name of readdirSync(join(out, "js"))) {
   if (!name.endsWith(".js")) continue;

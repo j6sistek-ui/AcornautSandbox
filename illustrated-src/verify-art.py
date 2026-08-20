@@ -5,9 +5,10 @@ Run from anywhere in the repository:
 
     python3 illustrated-src/verify-art.py
 
-This gate checks contracts that can be decided mechanically. Helmet seating
-is deliberately not one of them: shaped glass openings and unusual heads
-still need the 17-suit x 20-helmet visual matrix described in ART_SPEC.md.
+This gate checks contracts that can be decided mechanically, including the
+base suits' normalized on-screen helmet scale. Helmet seating is deliberately
+not one of them: shaped glass openings and unusual heads still need the
+17-suit x 20-helmet visual matrix described in ART_SPEC.md.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ DOCS_ART = ROOT / "docs" / "art"
 SANDBOX_ART = ROOT / "sandbox_assets" / "art"
 CATALOG = ROOT / "illustrated-src" / "game" / "catalog.ts"
 ART_SOURCE = ROOT / "illustrated-src" / "game" / "art.ts"
+DRAW_SOURCE = ROOT / "illustrated-src" / "game" / "draw.ts"
 RIG_AUDIT = ROOT / "illustrated-src" / "rig-tail.py"
 EDGE_AUDIT = ROOT / "illustrated-src" / "clean-raster-edges.py"
 
@@ -55,6 +57,23 @@ STRICT_256_DIRS = {
 # canvas. Keep every alpha-bearing pixel near the main painting so the
 # runtime content box cannot silently double in height again.
 COMPACT_PALS = {"cometsprite", "pocketmoon"}
+BASE_SUIT_IDS = (
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "aurorasuit",
+    "ember",
+    "stardust",
+    "robo",
+    "alien",
+    "ghost",
+    "bigbooty",
+)
+BASE_HELMET_SCALE_MIN = 0.235
+BASE_HELMET_SCALE_MAX = 0.243
+BASE_HELMET_SCALE_SPREAD_MAX = 0.005
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -395,6 +414,78 @@ def verify_pal_bounds(qa: QA, pal_ids: list[str]) -> None:
         qa.ok(f"pal cutouts have no remote components ({detail})")
 
 
+def verify_base_helmet_scale(qa: QA) -> None:
+    """Keep one helmet visually stable while switching among base suits.
+
+    drawSprite normalizes each suit by its alpha-trimmed bounding box, so the
+    meaningful helmet scale is DOME radius / max(trimmed width, trimmed height),
+    not the raw source radius. Positions remain a visual-review concern.
+    """
+    try:
+        source = DRAW_SOURCE.read_text(encoding="utf-8")
+    except OSError as exc:
+        qa.fail(f"could not read helmet scale table: {exc}")
+        return
+    table = re.search(
+        r"\bconst\s+DOME(?:\s*:[^=]+)?\s*=\s*\{(.*?)\}\s*;",
+        source,
+        re.DOTALL,
+    )
+    if not table:
+        qa.fail("could not find DOME table for helmet scale audit")
+        return
+    entries = {
+        suit: float(radius)
+        for suit, radius in re.findall(
+            r'"suit:([^"]+)"\s*:\s*\[\s*[-\d.]+\s*,\s*[-\d.]+\s*,\s*([-\d.]+)\s*\]',
+            table.group(1),
+        )
+    }
+    scales: dict[str, float] = {}
+    problems: list[str] = []
+    for suit in BASE_SUIT_IDS:
+        radius = entries.get(suit)
+        path = DOCS_ART / "suits" / f"{suit}.png"
+        if radius is None:
+            problems.append(f"missing DOME radius for {suit}")
+            continue
+        if not path.exists():
+            problems.append(f"missing suits/{suit}.png")
+            continue
+        with Image.open(path) as image:
+            alpha = image.convert("RGBA").getchannel("A")
+            mask = alpha.point(lambda value: 255 if value >= 16 else 0)
+            box = mask.getbbox()
+            if not box:
+                problems.append(f"suits/{suit}.png has no alpha bounds")
+                continue
+            width = min(image.width, box[2] - box[0] + 4)
+            height = min(image.height, box[3] - box[1] + 4)
+        scales[suit] = radius / max(width, height)
+    if problems:
+        qa.fail("base helmet scale contract\n" + "\n".join(problems))
+        return
+    low = min(scales.values())
+    high = max(scales.values())
+    spread = high - low
+    outliers = [
+        f"{suit} {scale:.4f}"
+        for suit, scale in scales.items()
+        if scale < BASE_HELMET_SCALE_MIN or scale > BASE_HELMET_SCALE_MAX
+    ]
+    if outliers or spread > BASE_HELMET_SCALE_SPREAD_MAX:
+        detail = ", ".join(f"{suit} {scale:.4f}" for suit, scale in scales.items())
+        qa.fail(
+            "base helmet display scale drift\n"
+            f"range {low:.4f}-{high:.4f}, spread {spread:.4f}; {detail}"
+        )
+        return
+    qa.ok(
+        "base helmet display scale harmonized "
+        f"({low:.4f}-{high:.4f}, {spread / low * 100:.1f}% spread)"
+    )
+
+
 def run_edge_audit(qa: QA) -> None:
     result = subprocess.run(
         [sys.executable, str(EDGE_AUDIT), "audit", str(DOCS_ART)],
@@ -435,6 +526,7 @@ def main() -> int:
     _, _, pals, rigged = verify_catalog_assets(qa, files)
     if pals:
         verify_pal_bounds(qa, pals)
+    verify_base_helmet_scale(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()

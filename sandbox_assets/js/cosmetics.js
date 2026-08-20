@@ -1344,7 +1344,8 @@ function drawAstronaut(x, y, rot, scale, helm, suit, opts) {
     drawTail(suit);
     drawSuitBody(suit);
     drawHead(suit);
-    drawHelmet(helm, suit, t, seed);
+    if (!suit.cat && !suit.ownHead)
+        drawHelmet(helm, suit, t, seed);
     if (suit.dust)
         drawDust(suit.dust, t, seed, true);
     // protective bubble while carrying a shield acorn
