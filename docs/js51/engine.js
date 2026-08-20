@@ -3,6 +3,7 @@ import { sfx, unlockAudio, music } from "./audio.js?v=51";
 import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=51";
 import { drawHud, drawWorld } from "./draw.js?v=51";
 import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=51";
+import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=51";
 import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=51";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
@@ -41,6 +42,19 @@ export async function createEngine(canvas) {
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
             notify();
+        },
+        flyLevel(id) {
+            const def = levelById(id);
+            if (!def)
+                return false;
+            if (!levelUnlocked(def, save.stars || {}, totalStars(save.stars || {})))
+                return false;
+            unlockAudio();
+            // levels never run the tutorial: the chart itself is gated behind
+            // having a save, and a first-timer meets the tutorial in endless
+            resetRun(world, save, def.base, false, def);
+            notify();
+            return true;
         },
         open(s) {
             world.screen = s;

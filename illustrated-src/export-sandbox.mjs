@@ -14,7 +14,7 @@ mkdirSync(join(out, "art"), { recursive: true });
 execSync(
   [
     "npx tsc",
-    "illustrated-src/game/catalog.ts illustrated-src/game/save.ts illustrated-src/game/sim.ts illustrated-src/game/draw.ts",
+    "illustrated-src/game/catalog.ts illustrated-src/game/campaign.ts illustrated-src/game/save.ts illustrated-src/game/sim.ts illustrated-src/game/draw.ts",
     "illustrated-src/game/art.ts illustrated-src/game/audio.ts illustrated-src/game/engine.ts illustrated-src/game/standalone.ts",
     "illustrated-src/game/cosmetics.ts",
     "--outDir sandbox_assets/js --module es2015 --target es2020",

@@ -177,12 +177,41 @@ export function drawWorld(ctx, w, save, art) {
         else if (a.kind === "hole" || a.kind === "worm") {
             drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
         }
+        else if (a.kind === "portal") {
+            drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64);
+        }
         else if (a.kind === "retro") {
             drawShiftAcorn(ctx, art, a.x, y, w.time);
         }
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
+    if (w.lvl) {
+        const fx = w.lvl.def.fx;
+        const px = W * PHYS.squirrelX;
+        const py = w.squirrel.y;
+        if (fx.fog) {
+            // a sight circle: the world exists as far as you can see it
+            const sight = Math.max(90, w.H * (0.62 - 0.4 * fx.fog));
+            const g = ctx.createRadialGradient(px, py, sight * 0.55, px, py, sight * 1.5);
+            g.addColorStop(0, "rgba(4,6,14,0)");
+            g.addColorStop(1, `rgba(4,6,14,${(0.55 + 0.43 * fx.fog).toFixed(3)})`);
+            ctx.fillStyle = g;
+            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+        }
+        if (fx.strobe && !w.ready) {
+            // THE BLACKOUT: a tap is a flashbulb. Light for a beat, a fast
+            // fade, then darkness the memory has to fly through. The world
+            // stays faintly embered (0.94, not 1.0) so the screen never reads
+            // as broken — just unlit.
+            const t = w.lvl.strobeT;
+            const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+            if (a > 0) {
+                ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+                ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+            }
+        }
+    }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
         ? "buddy"
         : save.equippedPal;
@@ -244,6 +273,32 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
+    if (w.lvl) {
+        const fx = w.lvl.def.fx;
+        const px = W * PHYS.squirrelX;
+        const py = w.squirrel.y;
+        if (fx.fog) {
+            // a sight circle: the world exists as far as you can see it
+            const sight = Math.max(90, w.H * (0.62 - 0.4 * fx.fog));
+            const g = ctx.createRadialGradient(px, py, sight * 0.55, px, py, sight * 1.5);
+            g.addColorStop(0, "rgba(4,6,14,0)");
+            g.addColorStop(1, `rgba(4,6,14,${(0.55 + 0.43 * fx.fog).toFixed(3)})`);
+            ctx.fillStyle = g;
+            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+        }
+        if (fx.strobe && !w.ready) {
+            // THE BLACKOUT: a tap is a flashbulb. Light for a beat, a fast
+            // fade, then darkness the memory has to fly through. The world
+            // stays faintly embered (0.94, not 1.0) so the screen never reads
+            // as broken — just unlit.
+            const t = w.lvl.strobeT;
+            const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+            if (a > 0) {
+                ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+                ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+            }
+        }
+    }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
         ? "buddy"
         : save.equippedPal;
@@ -286,6 +341,38 @@ function drawShiftAcorn(ctx, art, x, y, t) {
         drawSprite(ctx, spr, x, y, 30);
         ctx.imageSmoothingEnabled = true;
     }
+}
+// The finish line. It borrows the wormhole's language — a swirl you fly
+// into — but in gold and green, the game's reward colours, so it reads as
+// an arrival on first sight.
+function drawFinishPortal(ctx, x, y, t, reach = 64) {
+    const k = reach / 28;
+    const pulse = (12 + Math.sin(t * 4) * 3) * k;
+    const grd = ctx.createRadialGradient(x, y, 2 * k, x, y, pulse + 14 * k);
+    grd.addColorStop(0, "#fff8dc");
+    grd.addColorStop(0.4, "#ffd060");
+    grd.addColorStop(0.75, "rgba(93,255,158,0.5)");
+    grd.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(x, y, pulse + 14 * k, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(t * 1.6);
+    ctx.strokeStyle = "rgba(255,224,128,0.75)";
+    ctx.lineWidth = 2.2;
+    for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc(0, 0, (7 + i * 5.5) * k * 0.55, i * 1.3, i * 1.3 + 2.4);
+        ctx.stroke();
+    }
+    ctx.restore();
+    ctx.textAlign = "center";
+    ctx.font = "800 13px Figtree, system-ui";
+    ctx.fillStyle = `rgba(255,236,180,${0.75 + 0.25 * Math.sin(t * 5)})`;
+    ctx.fillText("FINISH", x, y - reach - 8);
+    ctx.textAlign = "left";
 }
 function drawVortex(ctx, x, y, worm, t, reach = 28) {
     // the swirl fills its reach: a hazard you can see the full width of
@@ -898,7 +985,17 @@ export function drawHud(ctx, w) {
     ctx.textAlign = "center";
     ctx.fillStyle = "#fff";
     ctx.font = "800 36px Figtree, system-ui";
-    ctx.fillText(String(w.score), W / 2, 46);
+    if (w.lvl) {
+        // a level counts DOWN to the finish, not up into the void
+        const total = w.lvl.def.gates;
+        ctx.fillText(`${Math.min(w.score, total)}/${total}`, W / 2, 46);
+        ctx.font = "700 11px Figtree, system-ui";
+        ctx.fillStyle = "rgba(255,224,128,0.9)";
+        ctx.fillText(w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.id} · ${w.lvl.def.name}`, W / 2, 64);
+    }
+    else {
+        ctx.fillText(String(w.score), W / 2, 46);
+    }
     if (w.envMsgT > 0) {
         ctx.globalAlpha = Math.min(1, w.envMsgT);
         ctx.fillStyle = "rgba(232,164,74,0.95)";

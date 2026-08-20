@@ -1,8 +1,9 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=51";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=51";
 import { paintPortrait, paintPalPreview } from "./draw.js?v=51";
 import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=51";
 import { createEngine } from "./engine.js?v=51";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save.js?v=51";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL, starsOf } from "./save.js?v=51";
+import { LEVELS, STAGES, STAR_REWARDS, countBits, fxText, goalText, levelUnlocked, stageUnlocked } from "./campaign.js?v=51";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -148,6 +149,10 @@ export async function bootStandalone(root) {
             overlay.append(sheet);
             return;
         }
+        if (snap.screen === "lvldone" && engine.world.lastLevel) {
+            overlay.append(drawLevelDone(engine.world.lastLevel));
+            return;
+        }
         if (snap.screen === "splash") {
             keptScroll = 0;
             overlay.append(drawSplash());
@@ -215,6 +220,7 @@ export async function bootStandalone(root) {
         "M3.4 12.6h.6M20 12.6h.6",
     ];
     const I_ROAD = ["M6 20V9a3 3 0 0 1 6 0v6a3 3 0 0 0 6 0V4"];
+    const I_STAR = ["M12 3.6l2.5 5.1 5.6.8-4 4 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-4 5.6-.8z"];
     const I_PILOT = ["M12 5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7z", "M5.5 19.5a6.5 6.5 0 0 1 13 0"];
     const I_HELP = [
         "M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z",
@@ -282,7 +288,7 @@ export async function bootStandalone(root) {
         const dome = el("button", "ac-dome");
         dome.append(icon(I_ACORN, 26, true), el("span", "", "HOME"));
         dome.onclick = () => engine.open("title");
-        bar.append(side("hangar", I_HELMET, "HANGAR"), side("log", I_ROAD, "LOG"), dome, side("profile", I_PILOT, "PROFILE"), side("shop", I_SHOP, "SHOP"));
+        bar.append(side("hangar", I_HELMET, "HANGAR"), side("log", I_STAR, "LEVELS"), dome, side("profile", I_PILOT, "PROFILE"), side("shop", I_SHOP, "SHOP"));
         return bar;
     }
     // Seven painted rank frames, one per five levels, topping out at 30+.
@@ -858,59 +864,182 @@ export async function bootStandalone(root) {
         }
         return c;
     }
-    function drawLog() {
-        const box = el("div", "ac-menu");
-        box.append(header("The road ahead", "Flight Log"));
-        const sv = engine.save;
-        const lv = pilotLevelOf(sv);
-        // rank, and how far the next rung is
-        const meter = el("div", "ac-rankmeter");
-        const row = el("div", "ac-rankrow");
-        row.append(el("span", "ac-rankname", `LV ${lv} · ${pilotTitleOf(sv)}`));
-        const lo = xpCumulative(lv);
-        const hi = xpCumulative(lv + 1);
-        row.append(el("span", "ac-sub", `${sv.xp - lo} / ${Math.max(1, hi - lo)} XP`));
-        meter.append(row);
-        const bar = el("div", "ac-xpbar");
-        const fill = el("div", "");
-        fill.style.width = `${(Math.max(0, Math.min(1, (sv.xp - lo) / Math.max(1, hi - lo))) * 100).toFixed(1)}%`;
-        bar.append(fill);
-        meter.append(bar);
-        box.append(meter);
-        const scroll = el("div", "ac-sheet-scroll");
-        const road = el("div", "ac-road");
-        let nextMarked = false;
-        for (const item of TRACK) {
-            const pal = item.kind === "pal" ? PALS.find((p) => p.id === item.id) : null;
-            const earned = lv >= item.lvl;
-            let cls = "ac-roaditem" + (earned ? " on" : " future");
-            const row = el("div", cls);
-            row.append(rewardArt(item));
-            const txt = el("div", "ac-roadtxt");
-            txt.append(el("p", "ac-roadlvl", `LV ${item.lvl}`));
-            txt.append(el("p", "", pal?.name ?? item.name ?? ""));
-            txt.append(el("p", "ac-sub", pal?.desc ?? item.desc ?? ""));
-            row.append(txt);
-            if (earned) {
-                row.append(el("span", "ac-check", "\u2713"));
-            }
-            else if (!nextMarked) {
-                nextMarked = true;
-                row.className = "ac-roaditem next";
-                const toGo = Math.max(0, xpCumulative(item.lvl) - sv.xp);
-                row.append(el("span", "ac-togo", `${toGo} XP TO GO`));
-            }
-            road.append(row);
+    // ------------------------------------------------------------ star chart
+    // The Flight Log used to live here: an XP meter and a list of things
+    // that would eventually happen to you. The Star Chart replaces it with
+    // things you can DO — a hundred levels in ten stages, three stars each,
+    // and the rewards hung on star totals instead of mileage.
+    function starPips(mask, size = "") {
+        const wrap = el("span", "ac-pips" + (size ? " " + size : ""));
+        for (let b = 0; b < 3; b++) {
+            wrap.append(el("span", (mask >> b) & 1 ? "ac-pip on" : "ac-pip", "\u2605"));
         }
-        scroll.append(road);
+        return wrap;
+    }
+    let chartStage = 0; // which stage panel is open; sticky per visit
+    let chartLevel = null; // level detail overlay
+    function drawLog() {
+        const sv = engine.save;
+        const stars = sv.stars || {};
+        const total = starsOf(sv);
+        const box = el("div", "ac-menu");
+        const totalPill = el("div", "ac-pill ac-pill-gold");
+        totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / 300`));
+        box.append(header("The road ahead", "Star Chart", totalPill));
+        const scroll = el("div", "ac-sheet-scroll");
+        // default the open panel to the furthest unlocked stage
+        if (!chartStage) {
+            let open = 1;
+            for (const st of STAGES)
+                if (stageUnlocked(st.num, total))
+                    open = st.num;
+            chartStage = open;
+        }
+        for (const st of STAGES) {
+            const open = stageUnlocked(st.num, total);
+            const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
+            const head = el("button", "ac-stagehead");
+            const ttl = el("div", "ac-stagetitle");
+            ttl.append(el("p", "ac-kicker", `STAGE ${st.num}`), el("p", "ac-stagename", st.name));
+            head.append(ttl);
+            const earned = LEVELS.filter((l) => l.stage === st.num)
+                .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
+            if (open) {
+                head.append(el("span", "ac-stagestars", `\u2605 ${earned}/30`));
+                head.onclick = () => { chartStage = chartStage === st.num ? 0 : st.num; render(); };
+            }
+            else {
+                head.append(el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
+            }
+            card.append(head);
+            if (open && chartStage === st.num) {
+                card.append(el("p", "ac-sub ac-stagetag", st.tagline));
+                const grid = el("div", "ac-lvlgrid");
+                for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
+                    const mask = stars[lvl.id] || 0;
+                    const can = levelUnlocked(lvl, stars, total);
+                    const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
+                    b.append(el("span", "ac-lvlnum", String(lvl.n)));
+                    b.append(starPips(mask, "sm"));
+                    if (can)
+                        b.onclick = () => { chartLevel = lvl.id; render(); };
+                    grid.append(b);
+                }
+                card.append(grid);
+            }
+            scroll.append(card);
+        }
+        // the reward ladder, folded under the stages: what stars BUY
+        const ladder = el("div", "ac-stagecard");
+        const lhead = el("button", "ac-stagehead");
+        lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", "what stars unlock"));
+        lhead.onclick = () => { chartStage = chartStage === -1 ? 0 : -1; render(); };
+        ladder.append(lhead);
+        if (chartStage === -1) {
+            for (const r of STAR_REWARDS) {
+                const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
+                if (r.kind !== "stage") {
+                    row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }));
+                }
+                const txt = el("div", "ac-roadtxt");
+                txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
+                txt.append(el("p", "", r.name));
+                txt.append(el("p", "ac-sub", r.desc));
+                row.append(txt);
+                if (total >= r.stars)
+                    row.append(el("span", "ac-check", "\u2713"));
+                ladder.append(row);
+            }
+        }
+        scroll.append(ladder);
         box.append(scroll, tabbar("log"));
-        // land the view on the next reward
-        requestAnimationFrame(() => {
-            const nxt = road.querySelector(".next");
-            if (nxt)
-                nxt.scrollIntoView({ block: "center" });
-        });
+        // level detail: goals, modifiers, and the FLY button
+        if (chartLevel) {
+            const def = LEVELS.find((l) => l.id === chartLevel);
+            if (def)
+                box.append(drawLevelSheet(def, stars[def.id] || 0));
+        }
         return box;
+    }
+    function drawLevelSheet(def, mask) {
+        const wrap = el("div", "ac-lvlsheet");
+        const sheet = el("div", "ac-lvlcard");
+        sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${ENVS[def.fx.env ?? 0]?.name ?? ""}`));
+        sheet.append(el("h2", "ac-lvlname", def.name));
+        const mode = def.base === "deep" ? "DEEP SPACE RULES" :
+            def.base === "lost" ? "LOST IN SPACE RULES" :
+                def.base === "arcade" ? "ARCADE TIMELINE" : "";
+        const fxs = fxText(def.fx);
+        if (mode || fxs.length) {
+            const tags = el("div", "ac-lvltags");
+            if (mode)
+                tags.append(el("span", "ac-lvltag mode", mode));
+            for (const t of fxs)
+                tags.append(el("span", "ac-lvltag", t));
+            sheet.append(tags);
+        }
+        const goals = el("div", "ac-lvlgoals");
+        def.goals.forEach((g, i) => {
+            const row = el("div", (mask >> i) & 1 ? "ac-goal on" : "ac-goal");
+            row.append(el("span", (mask >> i) & 1 ? "ac-pip on" : "ac-pip", "\u2605"));
+            row.append(el("span", "", goalText(g, def)));
+            goals.append(row);
+        });
+        sheet.append(goals);
+        const fly = el("button", "ac-primary", mask & 1 ? "FLY AGAIN" : "FLY");
+        fly.onclick = () => { chartLevel = null; engine.flyLevel(def.id); };
+        const back = el("button", "ac-ghost", "BACK");
+        back.onclick = () => { chartLevel = null; render(); };
+        sheet.append(fly, back);
+        wrap.append(sheet);
+        wrap.onclick = (e) => { if (e.target === wrap) {
+            chartLevel = null;
+            render();
+        } };
+        return wrap;
+    }
+    function drawLevelDone(last) {
+        const sheet = el("div", "ac-sheet ac-center");
+        sheet.append(el("p", "ac-kicker", `LEVEL ${last.def.id} \u00b7 ${last.def.name}`));
+        sheet.append(el("h2", "", last.finished ? "LEVEL COMPLETE" : "LOST"));
+        const pips = el("div", "ac-bigpips");
+        last.met.forEach((ok, i) => {
+            const owned = (last.newMask >> i) & 1;
+            const p = el("span", ok ? "ac-bigpip earned" : owned ? "ac-bigpip kept" : "ac-bigpip", "\u2605");
+            pips.append(p);
+        });
+        sheet.append(pips);
+        const goals = el("div", "ac-lvlgoals");
+        last.def.goals.forEach((g, i) => {
+            const row = el("div", last.met[i] ? "ac-goal on" : (last.newMask >> i) & 1 ? "ac-goal kept" : "ac-goal");
+            row.append(el("span", (last.newMask >> i) & 1 ? "ac-pip on" : "ac-pip", "\u2605"));
+            row.append(el("span", "", goalText(g, last.def)));
+            goals.append(row);
+        });
+        sheet.append(goals);
+        if (last.gained > 0)
+            sheet.append(el("p", "ac-gold", `+${last.gained} STAR${last.gained > 1 ? "S" : ""} \u00b7 ${last.totalAfter} TOTAL`));
+        // anything the new total just paid for gets its moment
+        for (const r of STAR_REWARDS) {
+            if (r.stars > last.totalBefore && r.stars <= last.totalAfter) {
+                sheet.append(el("p", "ac-gold", `UNLOCKED \u2014 ${r.name}`));
+            }
+        }
+        // the next level, if the finish just opened it
+        const next = LEVELS.find((l) => l.stage === last.def.stage && l.n === last.def.n + 1)
+            ?? LEVELS.find((l) => l.stage === last.def.stage + 1 && l.n === 1);
+        const stars = engine.save.stars || {};
+        if (last.finished && next && levelUnlocked(next, stars, last.totalAfter)) {
+            const go = el("button", "ac-primary", `NEXT \u2014 ${next.id} ${next.name.toUpperCase()}`);
+            go.onclick = () => engine.flyLevel(next.id);
+            sheet.append(go);
+        }
+        const retry = el("button", last.finished ? "ac-ghost" : "ac-primary", last.finished ? "FLY IT AGAIN" : "RETRY");
+        retry.onclick = () => engine.flyLevel(last.def.id);
+        const chart = el("button", "ac-ghost", "STAR CHART");
+        chart.onclick = () => engine.open("log");
+        sheet.append(retry, chart);
+        return sheet;
     }
     // Profile carries everything the Flight Log is no longer about: the
     // lifetime tallies, the per-mode bests, and the flight deck settings.

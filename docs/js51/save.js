@@ -1,3 +1,4 @@
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=51";
 import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=51";
 export function defaultSave() {
     return {
@@ -25,6 +26,7 @@ export function defaultSave() {
         runs: 0,
         lifetimeAcorns: 0,
         zonesSeen: [],
+        stars: {},
     };
 }
 function readRaw(key) {
@@ -71,6 +73,8 @@ export function loadSave() {
         s.lifetimeAcorns = s.acorns;
     if (!Array.isArray(s.zonesSeen))
         s.zonesSeen = [];
+    if (!s.stars || typeof s.stars !== "object" || Array.isArray(s.stars))
+        s.stars = {};
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
             Math.max(0, (s.unlockedSuits?.length || 1) - 1) +
@@ -91,12 +95,22 @@ export function pilotLevelOf(s) {
 export function pilotTitleOf(s) {
     return titleForLevel(pilotLevelOf(s));
 }
+export function starsOf(s) {
+    return totalStars(s.stars || {});
+}
+// Progression is EARNED BY STARS now — the Star Chart is the ladder. The
+// old XP thresholds are kept as an OR so no existing save loses anything
+// it already had; they are not shown anywhere any more.
 export function palUnlocked(s, id) {
+    if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id])
+        return true;
     return BETA_UNLOCK_GATES || s.unlockedPals.includes(id) || pilotLevelOf(s) >= (PAL_LEVELS[id] || 1);
 }
 export function suitRevealed(s, id) {
     if (isIap(id))
         return iapOwned(s, id);
+    if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id])
+        return true;
     return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevelOf(s) >= SUIT_REVEAL[id];
 }
 // Premium items are owned only once bought for real money. The beta
@@ -111,17 +125,17 @@ export function iapOwned(s, id) {
 // holding position — move MOD_UNLOCK_LEVEL when the curve is tuned.
 export const MOD_UNLOCK_LEVEL = 30;
 export function modsUnlocked(s) {
-    return pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
+    return starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
 }
 export function deepUnlocked(s) {
-    return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 5;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep || pilotLevelOf(s) >= 5;
 }
 export function lostUnlocked(s) {
-    return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 10;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.lost || pilotLevelOf(s) >= 10;
 }
 export function startShieldUnlocked(s) {
-    return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 3;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.startShield || pilotLevelOf(s) >= 3;
 }
 export function batteryUnlocked(s) {
-    return BETA_UNLOCK_GATES || pilotLevelOf(s) >= 8;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery || pilotLevelOf(s) >= 8;
 }
