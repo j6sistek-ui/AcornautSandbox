@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acornaut visual QA matrix</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #080d1a; color: #edf4ff; }
+    header { position: sticky; top: 0; z-index: 2; padding: 14px 18px; background: rgba(8,13,26,.94); border-bottom: 1px solid #26334d; backdrop-filter: blur(12px); }
+    h1 { margin: 0 0 4px; font-size: 20px; }
+    p { margin: 0; color: #a8b5cd; font-size: 13px; }
+    a { color: #ffd36a; }
+    main { padding: 18px; }
+    h2 { margin: 26px 0 10px; font-size: 16px; }
+    .matrix { display: grid; gap: 5px; width: max-content; }
+    .row-label { grid-column: 1 / -1; position: sticky; left: 0; padding: 10px 2px 2px; color: #ffd36a; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .cell { width: 112px; min-height: 132px; padding: 5px; border: 1px solid #26334d; border-radius: 8px; background: #111827; text-align: center; }
+    .cell canvas { display: block; width: 100px; height: 100px; border-radius: 5px; background: linear-gradient(135deg,#eef2f7 0 50%,#0c1424 50%); }
+    .cell span { display: block; padding-top: 4px; overflow: hidden; text-overflow: ellipsis; font-size: 10px; white-space: nowrap; color: #b8c5dc; }
+    .assets { display: grid; grid-template-columns: repeat(auto-fill,minmax(116px,1fr)); gap: 7px; }
+    .assets .cell { width: auto; }
+    .assets .cell canvas { margin: auto; }
+    .own { opacity: .62; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Acornaut visual QA matrix</h1>
+    <p>Every shipping suit × helmet, baked-Clear Flight frames, and collision-sized planet/debris renders on a split light/dark plate. <a href="../../">Play this branch</a></p>
+  </header>
+  <main>
+    <h2>Suit / helmet fit</h2>
+    <div id="matrix" class="matrix" aria-busy="true"></div>
+    <h2>Flight / Clear animation frames</h2>
+    <div id="flight" class="assets"></div>
+    <h2>Planets — rendered with gameplay core fit</h2>
+    <div id="planets" class="assets"></div>
+    <h2>Debris — rendered with gameplay core fit</h2>
+    <div id="debris" class="assets"></div>
+  </main>
+  <script>
+    window.__ACORNAUT_ART__ = "../../art";
+  </script>
+  <script type="module">
+    import { loadArt, drawSprite } from "../../js/art.js";
+    import { HELMETS, SUITS, wearsOwnHead } from "../../js/catalog.js";
+    import { paintPortrait } from "../../js/draw.js";
+
+    const matrix = document.querySelector("#matrix");
+    matrix.style.gridTemplateColumns = `repeat(${HELMETS.length}, 112px)`;
+    const art = await loadArt();
+
+    function canvas() {
+      const c = document.createElement("canvas");
+      c.width = c.height = 200;
+      const ctx = c.getContext("2d");
+      ctx.scale(2, 2);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      return [c, ctx];
+    }
+
+    function plate(ctx) {
+      ctx.fillStyle = "#eef2f7";
+      ctx.fillRect(0, 0, 50, 100);
+      ctx.fillStyle = "#0c1424";
+      ctx.fillRect(50, 0, 50, 100);
+      ctx.strokeStyle = "rgba(255,211,106,.7)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(50, 50, 34, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    for (const suit of SUITS) {
+      const label = document.createElement("div");
+      label.className = "row-label";
+      label.textContent = suit.name;
+      matrix.append(label);
+      for (const helmet of HELMETS) {
+        const cell = document.createElement("div");
+        cell.className = `cell${wearsOwnHead(suit) ? " own" : ""}`;
+        const [c, ctx] = canvas();
+        plate(ctx);
+        paintPortrait(ctx, art, helmet, suit, 50, 49, 82);
+        const text = document.createElement("span");
+        text.textContent = wearsOwnHead(suit) ? `${helmet.name} (own head)` : helmet.name;
+        cell.append(c, text);
+        matrix.append(cell);
+      }
+    }
+    matrix.setAttribute("aria-busy", "false");
+
+    const flight = document.querySelector("#flight");
+    for (const [kind, bank] of [["Glide", art.squirrelIdle], ["Flap", art.squirrelFlap]]) {
+      bank.forEach((spr, i) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        const [c, ctx] = canvas();
+        plate(ctx);
+        drawSprite(ctx, spr, 50, 50, 68);
+        const text = document.createElement("span");
+        text.textContent = `${kind} ${i + 1} · baked Clear`;
+        cell.append(c, text);
+        flight.append(cell);
+      });
+    }
+
+    function renderBank(target, bank) {
+      bank.forEach((spr, i) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        const [c, ctx] = canvas();
+        plate(ctx);
+        drawSprite(ctx, spr, 50, 50, 68, "core");
+        const text = document.createElement("span");
+        text.textContent = String(i);
+        cell.append(c, text);
+        target.append(cell);
+      });
+    }
+    renderBank(document.querySelector("#planets"), art.planets);
+    renderBank(document.querySelector("#debris"), art.debris);
+    window.__VISUAL_QA_READY__ = true;
+  </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 {
- "artVer": "54",
+ "artVer": "56",
  "suits": [
   {
    "id": "flight",
@@ -23,7 +23,7 @@
    "dome": [
     178,
     88,
-    50
+    48
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -37,7 +37,7 @@
    "dome": [
     183,
     85,
-    51
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -51,7 +51,7 @@
    "dome": [
     186,
     98,
-    46
+    43
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -65,7 +65,7 @@
    "dome": [
     181,
     102,
-    43
+    42
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -79,7 +79,7 @@
    "dome": [
     181,
     101,
-    43
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -93,7 +93,7 @@
    "dome": [
     182,
     100,
-    45
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -121,7 +121,7 @@
    "dome": [
     180,
     99,
-    46
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -135,7 +135,7 @@
    "dome": [
     188,
     102,
-    46
+    43
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -163,7 +163,7 @@
    "dome": [
     175,
     107,
-    43
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -240,116 +240,46 @@
    "frame": false
   },
   {
-   "id": "idle-1",
-   "name": "Glide 1",
-   "key": "idle-1",
-   "file": "squirrel/idle-1.png",
+   "id": "verdant",
+   "name": "Verdant",
+   "key": "suit:verdant",
+   "file": "suits/verdant.png",
    "dome": [
-    192,
-    106,
-    56
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-2",
-   "name": "Glide 2",
-   "key": "idle-2",
-   "file": "squirrel/idle-2.png",
-   "dome": [
-    192,
-    103,
-    51
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-3",
-   "name": "Glide 3",
-   "key": "idle-3",
-   "file": "squirrel/idle-3.png",
-   "dome": [
-    192,
-    102,
-    53
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-4",
-   "name": "Glide 4",
-   "key": "idle-4",
-   "file": "squirrel/idle-4.png",
-   "dome": [
-    194,
-    99,
-    51
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-1",
-   "name": "Flap 1",
-   "key": "flap-1",
-   "file": "squirrel/flap-1.png",
-   "dome": [
-    169,
-    86,
-    48
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-2",
-   "name": "Flap 2",
-   "key": "flap-2",
-   "file": "squirrel/flap-2.png",
-   "dome": [
-    164,
+    204,
     93,
-    50
+    58
    ],
    "ownHead": false,
-   "bakedDome": true,
-   "frame": true
+   "bakedDome": false,
+   "frame": false
   },
   {
-   "id": "flap-3",
-   "name": "Flap 3",
-   "key": "flap-3",
-   "file": "squirrel/flap-3.png",
+   "id": "cryostar",
+   "name": "Cryostar",
+   "key": "suit:cryostar",
+   "file": "suits/cryostar.png",
    "dome": [
-    164,
-    79,
-    48
+    207,
+    93,
+    58
    ],
    "ownHead": false,
-   "bakedDome": true,
-   "frame": true
+   "bakedDome": false,
+   "frame": false
   },
   {
-   "id": "flap-4",
-   "name": "Flap 4",
-   "key": "flap-4",
-   "file": "squirrel/flap-4.png",
+   "id": "eclipse",
+   "name": "Eclipse",
+   "key": "suit:eclipse",
+   "file": "suits/eclipse.png",
    "dome": [
-    163,
-    80,
-    45
+    204,
+    86,
+    58
    ],
    "ownHead": false,
-   "bakedDome": true,
-   "frame": true
+   "bakedDome": false,
+   "frame": false
   }
  ],
  "helmets": [
@@ -360,7 +290,7 @@
    "glass": [
     129,
     128,
-    111,
+    125,
     0
    ]
   },
@@ -570,6 +500,39 @@
     119.3,
     91.8,
     126,
+    0
+   ]
+  },
+  {
+   "id": "verdant",
+   "name": "Verdant",
+   "file": "helms/verdant.png",
+   "glass": [
+    125,
+    129,
+    137,
+    0
+   ]
+  },
+  {
+   "id": "cryostar",
+   "name": "Cryostar",
+   "file": "helms/cryostar.png",
+   "glass": [
+    126,
+    125,
+    132,
+    0
+   ]
+  },
+  {
+   "id": "eclipse",
+   "name": "Eclipse",
+   "file": "helms/eclipse.png",
+   "glass": [
+    121,
+    132,
+    133,
     0
    ]
   }

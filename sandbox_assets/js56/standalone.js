@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=54";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=54";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=54";
-import { createEngine } from "./engine.js?v=54";
-import { palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=54";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=54";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=56";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=56";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=56";
+import { createEngine } from "./engine.js?v=56";
+import { palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=56";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=56";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -574,10 +574,18 @@ export async function bootStandalone(root) {
             drawSpriteOn(ctx, spr, px / 2, px / 2, px * 0.92);
         return c;
     }
+    function suitCardOf(suit, px = 56) {
+        // Fit the painted subject's measured bounds instead of shrinking its
+        // whole source canvas (whose transparent margins vary from suit to suit).
+        const { c, ctx } = miniCanvas(px, px);
+        if (ctx)
+            drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
+        return c;
+    }
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
         if (ctx && engine.art)
-            paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.88);
+            paintPortrait(ctx, engine.art, helmet, suit, px * 0.45, px / 2, px * 0.78);
         return c;
     }
     function drawHangar() {
@@ -654,7 +662,7 @@ export async function bootStandalone(root) {
                 const open = suitRevealed(s, u.id);
                 const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
-                b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
+                b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
                         : owned ? "OWNED" : u.cost}`));
                 if (premium)
@@ -845,15 +853,17 @@ export async function bootStandalone(root) {
         ctx.restore();
     }
     function rewardArt(item, px = 52) {
+        if (item.kind === "suit" && item.id) {
+            const suit = SUITS.find((u) => u.id === item.id);
+            if (suit)
+                return suitCardOf(suit, px);
+        }
         const { c, ctx } = miniCanvas(px, px);
         const art = engine.art;
         if (!ctx || !art)
             return c;
         if (item.kind === "pal" && item.id) {
             paintPalPreview(ctx, art, item.id, px / 2, px / 2, px * 0.86);
-        }
-        else if (item.kind === "suit" && item.id) {
-            drawSpriteOn(ctx, art.suits?.[item.id] ?? null, px / 2, px / 2, px * 0.92);
         }
         else if (item.kind === "mode") {
             // mode emblems from the exotic planet art: the black hole for Deep
@@ -1086,7 +1096,7 @@ export async function bootStandalone(root) {
                     const suit = SUITS.find((u) => u.id === id);
                     const helm = HELMETS.find((h) => h.id === id);
                     if (suit)
-                        strip.append(shopImg(artUrl(`suits/${id}.png`), suit.name, 40));
+                        strip.append(suitCardOf(suit, 40));
                     else if (helm)
                         strip.append(helmCardOf(helm, 40));
                 }
@@ -1106,7 +1116,7 @@ export async function bootStandalone(root) {
             for (const u of SUITS.filter((x) => isIap(x.id))) {
                 const owned = iapOwned(s, u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card ac-premium on" : "ac-card ac-premium");
-                b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name), document.createTextNode(`${u.name}\n${owned ? "OWNED" : "PREMIUM"}`));
+                b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${owned ? "OWNED" : "PREMIUM"}`));
                 b.onclick = () => { if (owned)
                     engine.buySuit(u.id); };
                 grid.append(b);

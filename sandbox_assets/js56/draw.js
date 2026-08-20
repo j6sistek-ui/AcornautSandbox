@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=54";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=54";
-import { drawSprite, skyImage } from "./art.js?v=54";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=54";
-import { tunnelBoundsAt } from "./sim.js?v=54";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=56";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=56";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=56";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=56";
+import { tunnelBoundsAt } from "./sim.js?v=56";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -815,17 +815,16 @@ function hexRgb(hex) {
 // Seraph, Leviathan, Gemmie and Sammie ship bare-headed — their art
 // carries no helmet of its own.
 //
-// MEASURED, not assumed. Flight's anchor is the reference: r 51. Every
-// other suit's head is found by matching flight's face against it — the
-// face is the same drawing in every render, so this works whether the suit
-// is orange, chrome, white or green, and it reads straight through a clear
-// dome.
+// Position and scale solve two different problems here. The x/y values are
+// the hand-fitted centres from the rig editor. The radius is normalised by
+// each suit's runtime-trimmed box, because the renderer scales that box to a
+// common display size. Keeping raw radii equal would therefore make a helmet
+// grow and shrink as the player switches suits.
 //
-// The thirteen original suits all measure 48.5-52.5 (median 51), so they
-// were already right. The four bare-headed renders are drawn 111-116% of
-// that, because a render with no dome and a different tail sweep normalises
-// differently into the same 242px box. Assuming one radius for all of them
-// is what made the same helmet read huge on one suit and small on the next.
+// Gemmie and Sammie are the approved visual reference. The twelve base suits
+// target r / max(trimmed box) ~= 0.239, within one source pixel of that target.
+// Their helmet footprint now varies by less than 2% on screen; small raw-radius
+// differences remain only to compensate for each painting's crop.
 const DOME = {
     "idle-1": [192, 106, 56],
     "idle-2": [192, 103, 51],
@@ -839,26 +838,29 @@ const DOME = {
     // these was measured again against flight's face. Ghost is the exception
     // and still wears a painted dome -- see bakedDome in catalog.ts.
     "suit:flight": [185, 82, 44],
-    "suit:iontrim": [178, 88, 50],
-    "suit:copper": [183, 85, 51],
-    "suit:frost": [186, 98, 46],
-    "suit:voidsuit": [181, 102, 43],
-    "suit:aurorasuit": [181, 101, 43],
-    "suit:ember": [182, 100, 45],
+    "suit:iontrim": [178, 88, 48],
+    "suit:copper": [183, 85, 45],
+    "suit:frost": [186, 98, 43],
+    "suit:voidsuit": [181, 102, 42],
+    "suit:aurorasuit": [181, 101, 44],
+    "suit:ember": [182, 100, 44],
     "suit:stardust": [179, 95, 44],
-    "suit:robo": [180, 99, 46],
-    "suit:alien": [188, 102, 46],
+    "suit:robo": [180, 99, 44],
+    "suit:alien": [188, 102, 43],
     // re-rendered bare-headed on a black plate (the pale-on-cream key was
     // unrecoverable); measured against the new art, and near-identical to
     // flight, which is the same pose in the same framing
     "suit:ghost": [182, 93, 44],
-    "suit:bigbooty": [175, 107, 43],
+    "suit:bigbooty": [175, 107, 44],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
     "suit:phoenix": [207, 92, 41],
     "suit:sammie": [206, 90, 59],
     "suit:seraph": [207, 97, 57],
     "suit:leviathan": [207, 81, 57],
+    "suit:verdant": [204, 93, 58],
+    "suit:cryostar": [207, 93, 58],
+    "suit:eclipse": [204, 86, 58],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
@@ -871,7 +873,7 @@ const DOME = {
 // exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS = {
     comet: [129, 129, 125],
-    "clear": [129, 128, 111],
+    "clear": [129, 128, 125],
     "ion": [129, 128, 125],
     "solar": [128, 128, 125],
     "nebula": [129, 129, 125],
@@ -910,10 +912,17 @@ const HELM_GLASS = {
     // suit (suitOnly in catalog.ts), so this number never has to sit right
     // on anyone else.
     "leviathan": [129.8, 110.6, 103.6, 12],
+    "verdant": [125, 129, 137],
+    "cryostar": [126, 125, 132],
+    "eclipse": [121, 132, 133],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
 const punchedCache = new Map();
+const LIGHT_OPAQUE_VISORS = new Set([
+    "gemmie", "phoenix", "sammie", "seraph",
+    "chronarch", "paladin", "princess",
+]);
 function punchedHelm(spr, id) {
     const hit = punchedCache.get(id);
     if (hit)
@@ -926,9 +935,10 @@ function punchedHelm(spr, id) {
     if (!cc || !g)
         return null;
     cc.drawImage(spr, 0, 0);
-    const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * 0.82);
-    grad.addColorStop(0, "rgba(0,0,0,0.55)");
-    grad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+    const strong = LIGHT_OPAQUE_VISORS.has(id);
+    const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * (strong ? 0.88 : 0.82));
+    grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
+    grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
     grad.addColorStop(1, "rgba(0,0,0,0)");
     cc.globalCompositeOperation = "destination-out";
     cc.fillStyle = grad;
@@ -961,11 +971,14 @@ const TAIL_PIVOT = {
     seraph: [105, 138],
     stardust: [104, 140],
     voidsuit: [105, 142],
+    verdant: [103, 149],
+    cryostar: [103, 151],
+    eclipse: [105, 143],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
 // are placed against the WHOLE suit's trimmed box — that is what keeps
 // tail and body registered to each other however either one is cropped.
-function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot) {
+function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot, halo) {
     const scale = size / Math.max(1, Math.max(ref.w, ref.h));
     // top-left of the full canvas, in screen space
     const ox = x - (ref.w * scale) / 2 - ref.x * scale;
@@ -977,6 +990,13 @@ function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot) {
         ctx.translate(px, py);
         ctx.rotate(rot);
         ctx.translate(-px, -py);
+    }
+    if (halo) {
+        const h = spriteHalo(layer, halo);
+        if (h) {
+            const pad = SPRITE_HALO_PAD * scale;
+            ctx.drawImage(h, ox - pad, oy - pad, h.width * scale, h.height * scale);
+        }
     }
     ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
     ctx.restore();
@@ -1053,7 +1073,11 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
 function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
-    const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
+    // Flight's animation frames already wear the Clear dome. Any other helmet
+    // needs the bare rigged Flight painting so it does not stack two helmets.
+    const suited = suit.id !== "flight" || helmet.id !== "clear"
+        ? (art?.suits?.[suit.id] ?? null)
+        : null;
     const body = suited ?? spr;
     if (!body)
         return;
@@ -1064,8 +1088,8 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
     const rigB = suited ? art?.suitBody?.[suit.id] : null;
     if (rigT && rigB && suited) {
         const ref = suited.box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
-        drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id]);
-        drawRigLayer(ctx, rigB, ref, x, y, size);
+        drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id], halo);
+        drawRigLayer(ctx, rigB, ref, x, y, size, 0, undefined, halo);
         if (!wearsOwnHead(suit))
             paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
         return;

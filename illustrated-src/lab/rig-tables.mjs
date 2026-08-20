@@ -82,23 +82,10 @@ export function buildTables(root) {
       frame: false,
     });
   }
-  // The eight flight-animation frames are heads too — they still carry a
-  // painted dome, but every helmet but Clear is drawn over them, so a
-  // wrong number here shows up on the pilot you fly with by default.
-  for (const key of Object.keys(dome)) {
-    if (key.startsWith("suit:")) continue;
-    const [kind, n] = key.split("-");
-    suits.push({
-      id: key,
-      name: `${kind === "idle" ? "Glide" : "Flap"} ${n}`,
-      key,
-      file: `squirrel/${key}.png`,
-      dome: dome[key].slice(0, 3),
-      ownHead: false,
-      bakedDome: true,
-      frame: true,
-    });
-  }
+  // Flight animation frames retain their baked Clear dome. The shipping
+  // renderer uses bare `suits/flight.png` for every custom helmet, so those
+  // eight frames no longer form another 160 helmet combinations. They are
+  // reviewed as Clear-only animation art in the visual-audit page instead.
 
   const helmets = helmRows
     .filter((r) => glass[r.id])

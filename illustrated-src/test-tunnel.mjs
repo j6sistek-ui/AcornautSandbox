@@ -37,12 +37,18 @@ try {
   const gameFiles = readdirSync(gameDir)
     .filter((name) => name.endsWith(".ts"))
     .map((name) => join("illustrated-src", "game", name));
-  execFileSync("npx", [
-    "--yes", "--package", "typescript@5.9.2", "tsc", ...gameFiles,
+  const tscArgs = [
+    ...gameFiles,
     "--outDir", out, "--module", "commonjs", "--target", "es2020",
     "--skipLibCheck", "--moduleResolution", "node", "--declaration", "false",
     "--strict", "false", "--noEmitOnError",
-  ], {
+  ];
+  const tscModule = process.env.ACORNAUT_TSC;
+  const command = tscModule ? process.execPath : "npx";
+  const args = tscModule
+    ? [tscModule, ...tscArgs]
+    : ["--yes", "--package", "typescript@5.9.2", "tsc", ...tscArgs];
+  execFileSync(command, args, {
     cwd: root,
     stdio: "inherit",
     env: { ...process.env, NPM_CONFIG_CACHE: npmCache },

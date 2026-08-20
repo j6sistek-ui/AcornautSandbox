@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "54";
+export const ART_VER = "56";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -70,6 +70,9 @@ export const HELMETS: Helmet[] = [
   { id: "leviathan", suitOnly: "leviathan", name: "Leviathan", cost: 0, visor: "#d6fbff", tint: 0.18, rim: "#1c8f96", trim: "#0d5257", glow: "#3fe8f0" },
   { id: "paladin", name: "Paladin", cost: 0, visor: "#f4efe4", tint: 0.15, rim: "#d8cfae", trim: "#8d8256", glow: null },
   { id: "princess", name: "Rose", cost: 0, visor: "#fdeef6", tint: 0.16, rim: "#6b3f9e", trim: "#c0348a", glow: "#ff8ad0" },
+  { id: "verdant", name: "Verdant", cost: 0, visor: "#d8fff3", tint: 0.14, rim: "#d7b85a", trim: "#087a50", glow: "#38ff9a" },
+  { id: "cryostar", name: "Cryostar", cost: 0, visor: "#dff8ff", tint: 0.15, rim: "#dcecf7", trim: "#168bd1", glow: "#54d8ff" },
+  { id: "eclipse", name: "Eclipse", cost: 0, visor: "#eee6ff", tint: 0.17, rim: "#c98a72", trim: "#43206f", glow: "#b552ff" },
 ];
 
 export type Suit = {
@@ -135,6 +138,9 @@ export const SUITS: Suit[] = [
   { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
   { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
   { id: "leviathan", name: "Leviathan", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f2e0c0", suit: "#127f7d", suitLite: "#3fd8cf", suitDark: "#06413f", trim: "#5ce6dc", glow: "#4fe8dd", dust: "#a8fff6" },
+  { id: "verdant", name: "Verdant", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c6844", suitLite: "#45b977", suitDark: "#063e2a", trim: "#d7b85a", glow: "#38ff9a", dust: "#a8ffd1" },
+  { id: "cryostar", name: "Cryostar", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#eaf6ff", suitLite: "#ffffff", suitDark: "#2f86ba", trim: "#56ceff", glow: "#54d8ff", dust: "#d8f8ff" },
+  { id: "eclipse", name: "Eclipse", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#171126", suitLite: "#503274", suitDark: "#090611", trim: "#c98a72", glow: "#b552ff", dust: "#e2b5ff" },
 ];
 
 export type Trail = { id: string; name: string; cost: number; colors: string[] };
@@ -395,6 +401,7 @@ export const IAP_ITEMS = [
   "catsuit",
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "leviathan", "paladin", "princess",
+  "verdant", "cryostar", "eclipse",
 ];
 export function isIap(id: string) {
   return IAP_ITEMS.includes(id);

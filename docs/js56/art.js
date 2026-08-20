@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=54";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=56";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -25,7 +25,9 @@ function measureSprite(img) {
     c.height = h;
     const ctx = c.getContext("2d", { willReadFrequently: true });
     if (!ctx)
-        return { box: { x: 0, y: 0, w, h }, core: Math.max(w, h) };
+        return {
+            box: { x: 0, y: 0, w, h }, core: Math.max(w, h), coreX: w / 2, coreY: h / 2,
+        };
     ctx.drawImage(img, 0, 0);
     const data = ctx.getImageData(0, 0, w, h).data;
     let minX = w;
@@ -58,7 +60,9 @@ function measureSprite(img) {
         }
     }
     if (maxX < minX)
-        return { box: { x: 0, y: 0, w, h }, core: Math.max(w, h) };
+        return {
+            box: { x: 0, y: 0, w, h }, core: Math.max(w, h), coreX: w / 2, coreY: h / 2,
+        };
     const pad = 2;
     const box = {
         x: Math.max(0, minX - pad),
@@ -67,7 +71,9 @@ function measureSprite(img) {
         h: Math.min(h, maxY - minY + 1 + pad * 2),
     };
     if (!sn)
-        return { box, core: Math.max(box.w, box.h) };
+        return {
+            box, core: Math.max(box.w, box.h), coreX: box.x + box.w / 2, coreY: box.y + box.h / 2,
+        };
     const cx = sx / sn;
     const cy = sy / sn;
     const dists = [];
@@ -78,13 +84,15 @@ function measureSprite(img) {
     }
     dists.sort((a, b) => a - b);
     const r80 = dists[Math.min(dists.length - 1, Math.floor(dists.length * 0.8))];
-    return { box, core: Math.max(8, r80 * 2) };
+    return { box, core: Math.max(8, r80 * 2), coreX: cx, coreY: cy };
 }
 function asSprite(img) {
     const s = img;
     const m = measureSprite(img);
     s.box = m.box;
     s.core = m.core;
+    s.coreX = m.coreX;
+    s.coreY = m.coreY;
     return s;
 }
 // One missing file must never sink the bank: a 404 among sixty-odd
@@ -106,8 +114,8 @@ export function emptyArt() {
     return {
         ready: false,
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
-        planets: [], debris: [], pals: {}, helms: {}, helmets: {}, helmOver: {},
-        suits: {}, sky: null, hero: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+        planets: [], debris: [], pals: {}, helms: {},
+        suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
         suitTail: {}, suitBody: {},
     };
 }
@@ -128,16 +136,16 @@ export function skyImage(id) {
 // A separation halo, baked ONCE per sprite per mode. Doing this with a
 // live ctx.shadowBlur cost a blur on every gate and every rock, every
 // frame — a phone-framerate killer. Baked, it is one extra drawImage.
-const HALO_PAD = 20;
+export const SPRITE_HALO_PAD = 20;
 const haloCache = new Map();
-function haloOf(spr, mode) {
+export function spriteHalo(spr, mode) {
     const key = (spr.src || "") + "|" + mode;
     const hit = haloCache.get(key);
     if (hit !== undefined)
         return hit;
     const c = document.createElement("canvas");
-    c.width = spr.width + HALO_PAD * 2;
-    c.height = spr.height + HALO_PAD * 2;
+    c.width = spr.width + SPRITE_HALO_PAD * 2;
+    c.height = spr.height + SPRITE_HALO_PAD * 2;
     const cc = c.getContext("2d");
     if (!cc) {
         haloCache.set(key, null);
@@ -148,7 +156,7 @@ function haloOf(spr, mode) {
     cc.shadowColor = mode === "dark" ? "rgba(5,8,16,0.5)" : "rgba(170,200,255,0.28)";
     cc.shadowBlur = mode === "dark" ? 24 : 16;
     cc.shadowOffsetX = c.width * 2; // keep only the shadow
-    cc.drawImage(spr, HALO_PAD - c.width * 2, HALO_PAD);
+    cc.drawImage(spr, SPRITE_HALO_PAD - c.width * 2, SPRITE_HALO_PAD);
     haloCache.set(key, c);
     return c;
 }
@@ -161,14 +169,22 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
     const scale = size / Math.max(1, dim);
     const dw = box.w * scale;
     const dh = box.h * scale;
+    const centerX = fit === "core" && Number.isFinite(spr.coreX)
+        ? spr.coreX
+        : box.x + box.w / 2;
+    const centerY = fit === "core" && Number.isFinite(spr.coreY)
+        ? spr.coreY
+        : box.y + box.h / 2;
+    const dx = x - (centerX - box.x) * scale;
+    const dy = y - (centerY - box.y) * scale;
     if (halo) {
-        const h = haloOf(spr, halo);
+        const h = spriteHalo(spr, halo);
         if (h) {
-            const m = HALO_PAD * scale;
-            ctx.drawImage(h, box.x, box.y, box.w + HALO_PAD * 2, box.h + HALO_PAD * 2, x - dw / 2 - m, y - dh / 2 - m, dw + m * 2, dh + m * 2);
+            const m = SPRITE_HALO_PAD * scale;
+            ctx.drawImage(h, box.x, box.y, box.w + SPRITE_HALO_PAD * 2, box.h + SPRITE_HALO_PAD * 2, dx - m, dy - m, dw + m * 2, dh + m * 2);
         }
     }
-    ctx.drawImage(spr, box.x, box.y, box.w, box.h, x - dw / 2, y - dh / 2, dw, dh);
+    ctx.drawImage(spr, box.x, box.y, box.w, box.h, dx, dy, dw, dh);
 }
 export async function loadArt() {
     const base = artBase();
@@ -206,15 +222,18 @@ export async function loadArt() {
         "leviathan",
         "paladin",
         "princess",
+        "verdant",
+        "cryostar",
+        "eclipse",
     ];
-    // Suits cut into a hinged tail + body, so a tap actually moves something.
-    // Seraph and Leviathan stand rather than fly and were left out at first;
-    // both are cut now, and their tails swing clear of the wings. An unrigged
-    // suit simply draws as one piece.
+    // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
+    // still touches its plume in the source, but the guarded mainline cut is
+    // safer than the earlier colour split and remains an active rig.
     const RIGGED_SUITS = [
         "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
         "catsuit", "gemmie", "sammie", "seraph", "leviathan",
+        "verdant", "cryostar", "eclipse",
     ];
     const suitIds = [
         "flight",
@@ -234,6 +253,9 @@ export async function loadArt() {
         "sammie",
         "seraph",
         "leviathan",
+        "verdant",
+        "cryostar",
+        "eclipse",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     async function named(ids, folder, suffix = "", required = false) {
@@ -250,7 +272,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, hero, pals, helmets, helmOver, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -259,10 +281,7 @@ export async function loadArt() {
         many(`${base}/planets/`, PLANET_COUNT, 0),
         many(`${base}/debris/`, DEBRIS_COUNT, 0),
         optional(`${base}/sky.jpg`),
-        optional(`${base}/hero.jpg`),
         named(palIds, "solo"),
-        named(helmIds, "helmets"),
-        named(helmIds, "helmets", "-over"),
         named(suitIds, "suits"),
         named(helmIds, "helms"),
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
@@ -282,11 +301,8 @@ export async function loadArt() {
         debris,
         pals,
         helms,
-        helmets,
-        helmOver,
         suits,
         sky: sky,
-        hero: hero,
         arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn) : null,
         frozen: frozen ? asSprite(frozen) : null,
         shieldnut: shieldnut ? asSprite(shieldnut) : null,
