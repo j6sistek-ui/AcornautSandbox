@@ -1,7 +1,8 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=51";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=51";
-import { drawSprite, skyImage } from "./art.js?v=51";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=51";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=52";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=52";
+import { drawSprite, skyImage } from "./art.js?v=52";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=52";
+import { tunnelBoundsAt } from "./sim.js?v=52";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -115,6 +116,11 @@ export function drawWorld(ctx, w, save, art) {
     if (w.shake > 0) {
         const mag = w.shake * 10;
         ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
+    }
+    if (w.flight === "tunnel" && w.tunnel) {
+        drawTunnelWorld(ctx, w, save, art);
+        ctx.restore();
+        return;
     }
     // Sky stays upright. Warp only tilts the playfield (live does the same).
     if (w.retro)
@@ -240,6 +246,264 @@ export function drawWorld(ctx, w, save, art) {
     }
     ctx.restore();
     ctx.restore();
+}
+const TUNNEL_PALETTES = [
+    { bg: [[116, 56, 214], [37, 18, 105], [11, 18, 52], [3, 4, 13]], core: [151, 102, 255], streakA: [119, 237, 255], streakB: [211, 123, 255], ringA: [151, 222, 255], ringB: [187, 113, 255], wall: [[9, 7, 19], [23, 16, 45], [56, 32, 95], [81, 48, 138]], top: [203, 107, 255], bottom: [89, 202, 255] },
+    { bg: [[20, 174, 198], [11, 86, 118], [5, 32, 61], [2, 9, 18]], core: [77, 235, 255], streakA: [133, 255, 238], streakB: [83, 173, 255], ringA: [135, 255, 239], ringB: [83, 172, 255], wall: [[3, 13, 22], [5, 35, 53], [8, 78, 95], [17, 116, 132]], top: [103, 255, 222], bottom: [83, 174, 255] },
+    { bg: [[213, 83, 58], [104, 28, 72], [39, 12, 48], [9, 4, 15]], core: [255, 143, 92], streakA: [255, 215, 130], streakB: [255, 97, 181], ringA: [255, 208, 132], ringB: [255, 105, 183], wall: [[19, 7, 13], [48, 13, 29], [101, 29, 50], [142, 49, 65]], top: [255, 174, 101], bottom: [255, 92, 177] },
+    { bg: [[27, 170, 120], [8, 91, 78], [4, 40, 42], [2, 10, 16]], core: [92, 255, 195], streakA: [153, 255, 184], streakB: [73, 220, 216], ringA: [142, 255, 183], ringB: [73, 222, 216], wall: [[4, 16, 17], [6, 42, 38], [10, 79, 64], [17, 118, 87]], top: [143, 255, 179], bottom: [70, 224, 216] },
+    { bg: [[117, 31, 160], [28, 10, 59], [8, 7, 24], [1, 2, 7]], core: [225, 170, 255], streakA: [255, 226, 145], streakB: [198, 108, 255], ringA: [255, 226, 148], ringB: [199, 112, 255], wall: [[6, 4, 12], [17, 9, 31], [42, 17, 64], [73, 28, 94]], top: [255, 218, 133], bottom: [197, 106, 255] },
+];
+const mixChannel = (a, b, f) => Math.round(a + (b - a) * f);
+function mixRgb(a, b, f) {
+    return [mixChannel(a[0], b[0], f), mixChannel(a[1], b[1], f), mixChannel(a[2], b[2], f)];
+}
+const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function tunnelPalette(w) {
+    const t = w.tunnel;
+    const from = TUNNEL_PALETTES[t.previousRegion % TUNNEL_PALETTES.length];
+    const to = TUNNEL_PALETTES[t.activeRegion % TUNNEL_PALETTES.length];
+    const f = t.regionBlend;
+    return {
+        bg: from.bg.map((c, i) => mixRgb(c, to.bg[i], f)),
+        core: mixRgb(from.core, to.core, f),
+        streakA: mixRgb(from.streakA, to.streakA, f),
+        streakB: mixRgb(from.streakB, to.streakB, f),
+        ringA: mixRgb(from.ringA, to.ringA, f),
+        ringB: mixRgb(from.ringB, to.ringB, f),
+        wall: from.wall.map((c, i) => mixRgb(c, to.wall[i], f)),
+        top: mixRgb(from.top, to.top, f),
+        bottom: mixRgb(from.bottom, to.bottom, f),
+    };
+}
+function drawTunnelWorld(ctx, w, save, art) {
+    const { W, H } = w;
+    const tunnel = w.tunnel;
+    const palette = tunnelPalette(w);
+    const flowGlow = tunnel.multiplier === 3 ? 1.34 : tunnel.multiplier === 2 ? 1.16 : 1;
+    const mouth = tunnelBoundsAt(w, W * 0.94);
+    const vanishingY = (mouth.top + mouth.bottom) * 0.5;
+    const bg = ctx.createRadialGradient(W * 1.04, vanishingY, 8, W * 0.96, vanishingY, Math.max(W, H) * 0.9);
+    bg.addColorStop(0, rgb(palette.bg[0]));
+    bg.addColorStop(0.18, rgb(palette.bg[1]));
+    bg.addColorStop(0.56, rgb(palette.bg[2]));
+    bg.addColorStop(1, rgb(palette.bg[3]));
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    const tunnelPath = () => {
+        ctx.beginPath();
+        tunnel.nodes.forEach((n, i) => i ? ctx.lineTo(n.x, n.top) : ctx.moveTo(n.x, n.top));
+        for (let i = tunnel.nodes.length - 1; i >= 0; i--)
+            ctx.lineTo(tunnel.nodes[i].x, tunnel.nodes[i].bottom);
+        ctx.closePath();
+    };
+    // All depth cues are clipped to the playable corridor, so the painted
+    // wormhole and the collision geometry always agree.
+    ctx.save();
+    tunnelPath();
+    ctx.clip();
+    const core = ctx.createRadialGradient(W * 1.03, vanishingY, 0, W * 1.03, vanishingY, W * 1.15);
+    core.addColorStop(0, rgba(palette.core, Math.min(0.94, 0.72 * flowGlow)));
+    core.addColorStop(0.2, rgba(palette.bottom, 0.22 * flowGlow));
+    core.addColorStop(0.55, rgba(palette.bg[2], 0.12));
+    core.addColorStop(1, "rgba(0,0,0,.48)");
+    ctx.fillStyle = core;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = "screen";
+    for (let i = 0; i < 22; i++) {
+        const phase = ((i * 73 - w.distance * (0.55 + (i % 5) * 0.05)) % (W + 180) + W + 180) % (W + 180) - 90;
+        const b = tunnelBoundsAt(w, phase);
+        const y = b.top + (b.bottom - b.top) * ((i * 0.417) % 1);
+        const len = 22 + (i % 6) * 9 + w.speed * 0.055;
+        ctx.strokeStyle = i % 3 === 0 ? rgba(palette.streakA, 0.34 * flowGlow) : rgba(palette.streakB, 0.25 * flowGlow);
+        ctx.lineWidth = 0.8 + (i % 3) * 0.65;
+        ctx.beginPath();
+        ctx.moveTo(phase - len, y + (y - vanishingY) * 0.035);
+        ctx.lineTo(phase + 5, y);
+        ctx.stroke();
+    }
+    for (let x = W + 40 - ((w.distance * 0.82) % 76); x > -55; x -= 76) {
+        const b = tunnelBoundsAt(w, x);
+        const cy = (b.top + b.bottom) * 0.5;
+        const half = (b.bottom - b.top) * 0.5;
+        const depth = Math.max(0, Math.min(1, (x + 55) / (W + 95)));
+        ctx.strokeStyle = rgba(depth > 0.55 ? palette.ringA : palette.ringB, (0.07 + depth * 0.16) * flowGlow);
+        ctx.lineWidth = 0.8 + depth * 1.7;
+        ctx.beginPath();
+        ctx.ellipse(x, cy, 8 + depth * 17, Math.max(12, half * 0.94), 0, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    ctx.restore();
+    const wall = (top) => {
+        // Both walls run dark at the outer screen edge to bright at the live
+        // collision boundary. Mirroring the gradient keeps the lower wall
+        // from collapsing into one flat final-stop color.
+        const g = top
+            ? ctx.createLinearGradient(0, 0, W, H * 0.28)
+            : ctx.createLinearGradient(0, H, W, H * 0.72);
+        g.addColorStop(0, rgb(palette.wall[0]));
+        g.addColorStop(0.45, rgb(palette.wall[1]));
+        g.addColorStop(0.78, rgb(palette.wall[2]));
+        g.addColorStop(1, rgb(palette.wall[3]));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(tunnel.nodes[0].x, top ? 0 : H);
+        for (const n of tunnel.nodes)
+            ctx.lineTo(n.x, top ? n.top : n.bottom);
+        ctx.lineTo(tunnel.nodes[tunnel.nodes.length - 1].x, top ? 0 : H);
+        ctx.closePath();
+        ctx.fill();
+    };
+    wall(true);
+    wall(false);
+    // Layered contours give the walls thickness without adding fake hitboxes.
+    for (const offset of [12, 28, 48]) {
+        for (const top of [true, false]) {
+            ctx.strokeStyle = rgba(top ? palette.top : palette.bottom, (0.17 - offset * 0.0018) * flowGlow);
+            ctx.lineWidth = offset === 12 ? 2 : 1;
+            ctx.beginPath();
+            tunnel.nodes.forEach((n, i) => {
+                const y = (top ? n.top - offset : n.bottom + offset) + Math.sin(n.index * 0.52 + tunnel.visualT * 1.8) * 2;
+                if (i === 0)
+                    ctx.moveTo(n.x, y);
+                else
+                    ctx.lineTo(n.x, y);
+            });
+            ctx.stroke();
+        }
+    }
+    for (const top of [true, false]) {
+        ctx.strokeStyle = rgba(top ? palette.top : palette.bottom, 0.96);
+        ctx.shadowColor = rgb(top ? palette.top : palette.bottom);
+        ctx.shadowBlur = 14 * flowGlow;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        tunnel.nodes.forEach((n, i) => {
+            const y = top ? n.top : n.bottom;
+            if (i === 0)
+                ctx.moveTo(n.x, y);
+            else
+                ctx.lineTo(n.x, y);
+        });
+        ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    // Debris is born beyond the right edge. This edge beacon appears about
+    // a second before impact range, buying reaction time without drawing a
+    // fake safe path through the real collision geometry.
+    for (const h of tunnel.hazards) {
+        if (h.x < W - 28 || h.x > W + 190)
+            continue;
+        const eta = Math.max(0, Math.min(1, (h.x - (W - 28)) / 218));
+        const pulse = 0.58 + Math.sin(w.time * 9) * 0.22;
+        ctx.save();
+        ctx.globalAlpha = (1 - eta * 0.45) * pulse;
+        const guide = () => {
+            ctx.beginPath();
+            ctx.moveTo(W - 25, h.y);
+            ctx.lineTo(W, h.y);
+            ctx.stroke();
+        };
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "rgba(18,3,15,.96)";
+        ctx.lineWidth = 5;
+        guide();
+        ctx.strokeStyle = "#fff0d2";
+        ctx.lineWidth = 1.8;
+        guide();
+        ctx.setLineDash([]);
+        const chevron = () => {
+            ctx.beginPath();
+            ctx.moveTo(W - 22, h.y);
+            ctx.lineTo(W - 8, h.y - 9);
+            ctx.lineTo(W - 8, h.y + 9);
+            ctx.closePath();
+        };
+        chevron();
+        ctx.fillStyle = "rgba(255,90,76,.72)";
+        ctx.fill();
+        chevron();
+        ctx.strokeStyle = "rgba(18,3,15,.96)";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        chevron();
+        ctx.strokeStyle = "#fff0d2";
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.restore();
+    }
+    for (const h of tunnel.hazards) {
+        ctx.save();
+        ctx.translate(h.x, h.y);
+        ctx.rotate(tunnel.visualT * h.spin);
+        const rock = art.debris[h.art % Math.max(1, art.debris.length)];
+        if (rock)
+            drawSprite(ctx, rock, 0, 0, h.r * 2.35, "core", "light");
+        else {
+            ctx.fillStyle = "#6e5a79";
+            ctx.beginPath();
+            ctx.arc(0, 0, h.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+        ctx.strokeStyle = "rgba(18,3,15,.88)";
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r + 5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = `rgba(255,244,218,${0.68 + 0.18 * Math.sin(w.time * 5)})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r + 5, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    for (const a of w.pickups) {
+        if (a.got)
+            continue;
+        const y = a.y + Math.sin(a.bob) * 4;
+        if (a.kind === "multiplier") {
+            ctx.strokeStyle = "rgba(255,238,128,.85)";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(a.x, y, 21 + Math.sin(w.time * 5) * 2, 0, Math.PI * 2);
+            ctx.stroke();
+            drawSprite(ctx, frameOf(art.golden, w.time, 6) ?? frameOf(art.acorn, w.time, 5), a.x, y, 33);
+            ctx.fillStyle = "#fff";
+            ctx.font = "900 10px Figtree, system-ui";
+            ctx.textAlign = "center";
+            ctx.fillText("FLOW", a.x, y + 4);
+        }
+        else if (a.kind === "slow") {
+            if (art.frozen)
+                drawSprite(ctx, art.frozen, a.x, y, 33);
+            else
+                drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 29);
+            ctx.strokeStyle = `rgba(150,225,255,${0.35 + 0.2 * Math.sin(w.time * 6)})`;
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.arc(a.x, y, 21 + Math.sin(w.time * 6) * 2, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        else
+            drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
+    }
+    for (const p of w.particles)
+        drawParticle(ctx, p);
+    if (w.powerLeft > 0) {
+        const frost = ctx.createRadialGradient(W * PHYS.squirrelX, w.squirrel.y, 25, W * PHYS.squirrelX, w.squirrel.y, Math.max(W, H) * 0.72);
+        frost.addColorStop(0, "rgba(130,225,255,0)");
+        frost.addColorStop(1, "rgba(82,188,255,.13)");
+        ctx.fillStyle = frost;
+        ctx.fillRect(0, 0, W, H);
+    }
+    const pal = save.equippedPal;
+    if (pal && pal !== "none") {
+        const bob = Math.sin(w.time * 2.6) * 2;
+        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
+    }
+    drawPilot(ctx, w, save, art);
 }
 // The other timeline. Same planets in the same places, same rocks with
 // the same seeds — only the hand painting them changes. Everything a
@@ -875,7 +1139,7 @@ function drawPilot(ctx, w, save, art) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, skyLuma(w) > 0.42 ? "dark" : "light", w.tailA);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
@@ -996,6 +1260,28 @@ export function drawHud(ctx, w) {
     else {
         ctx.fillText(String(w.score), W / 2, 46);
     }
+    if (w.flight === "tunnel" && w.tunnel) {
+        const t = w.tunnel;
+        const flowColor = t.multiplier >= 3 ? "#f3b4ff" : t.multiplier === 2 ? "#ffe680" : "#78dfff";
+        ctx.fillStyle = flowColor;
+        ctx.font = "800 10px Figtree, system-ui";
+        ctx.fillText(`FLOW  ×${t.multiplier}`, W / 2, 64);
+        const barW = 80;
+        const barX = W / 2 - barW / 2;
+        ctx.fillStyle = "rgba(255,255,255,.15)";
+        ctx.fillRect(barX, 69, barW, 3);
+        ctx.fillStyle = flowColor;
+        ctx.fillRect(barX, 69, barW * (t.flow / 100), 3);
+        if (t.bannerLeft > 0) {
+            ctx.globalAlpha = Math.min(1, t.bannerLeft);
+            ctx.fillStyle = t.bannerKind === "region" || t.bannerKind === "milestone"
+                ? "#f2b653"
+                : t.bannerKind === "reward" ? "#ffe680" : "rgba(225,232,255,.9)";
+            ctx.font = "800 11px Figtree, system-ui";
+            ctx.fillText(t.banner, W / 2, 88);
+            ctx.globalAlpha = 1;
+        }
+    }
     if (w.envMsgT > 0) {
         ctx.globalAlpha = Math.min(1, w.envMsgT);
         ctx.fillStyle = "rgba(232,164,74,0.95)";
@@ -1020,7 +1306,7 @@ export function drawHud(ctx, w) {
     }
     // status lines stack instead of colliding — mode line first, then any
     // live power-ups beneath it
-    let hudY = 88;
+    let hudY = w.flight === "tunnel" ? 108 : 88;
     const hudLine = (text, color) => {
         ctx.textAlign = "center";
         ctx.fillStyle = color;
@@ -1033,9 +1319,11 @@ export function drawHud(ctx, w) {
     else if (w.flight === "deep" && w.warpT <= 0)
         hudLine("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", "rgba(192,132,252,0.8)");
     if (w.powerLeft > 0)
-        hudLine(`SLOW  ${Math.ceil(w.powerLeft)}s`, "#6ef0ff");
+        hudLine(`${w.flight === "tunnel" ? "FREEZE" : "SLOW"}  ${Math.ceil(w.powerLeft)}s`, "#6ef0ff");
     if (w.invulnLeft > 0)
         hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
+    if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
+        hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     if (w.recoveryMsg) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#fff";
@@ -1058,7 +1346,7 @@ export function drawHud(ctx, w) {
         ctx.fillStyle = "rgba(255,255,255,0.85)";
         ctx.font = "700 18px Figtree, system-ui";
         ctx.globalAlpha = 0.75 + 0.25 * Math.sin(w.time * 4);
-        ctx.fillText("TAP TO FLY", W / 2, w.H * 0.38);
+        ctx.fillText(w.flight === "tunnel" ? "TAP TO RISE" : "TAP TO FLY", W / 2, w.H * 0.38);
         ctx.globalAlpha = 1;
     }
     if (w.tut?.hold) {

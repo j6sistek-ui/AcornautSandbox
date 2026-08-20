@@ -11,5 +11,9 @@ buttons at the bottom of Help, both marked delete-when-the-beta-freezes.
 
 Design notes for both: `illustrated-src/lab/README.md`.
 
+A third experiment, **Wormhole Run**, is NOT here: it lives in the engine
+itself as a hidden FlightMode (its door is also at the bottom of Help).
+Its verification suite is `illustrated-src/test-tunnel.mjs`.
+
 Built by `node illustrated-src/build-lab.mjs`, deliberately separate from
 the game's build so a prototype cannot break something close to shipping.

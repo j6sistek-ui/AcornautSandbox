@@ -244,7 +244,13 @@ for everyone.
   rise within each stage, modifiers sharpen across stages, and the star
   goals tighten. A pilot who only ever takes ★1 can still walk the whole
   chart; the last stages' unlock totals demand roughly two stars a level.
-- **Refinement path**: the Spill (lab) is the obvious stage 11 once it is
-  promoted — its survive-T-seconds shape drops straight into the goal
-  system. New modifiers (mirror-only, tiny-pilot, heavy-gravity) are one
-  line each in `LevelFx`.
+- **Refinement path**: two experiments are queued as future stages once
+  they earn promotion, both reachable today from the bottom of Help.
+  **Wormhole Run** is the nearer fit — it already lives in the engine as a
+  FlightMode with sections, a deterministic seed and its own counters
+  (sections, Flow tier, chains, near misses), so a Wormhole stage's goals
+  write themselves: *reach section N* is the portal, *best Flow x3* and
+  *no near-miss spent* are the discipline stars. **The Spill** (lab page)
+  needs engine integration first; its survive-T-seconds shape drops
+  straight into the goal system after that. New modifiers (mirror-only,
+  tiny-pilot, heavy-gravity) are one line each in `LevelFx`.

@@ -42,6 +42,7 @@ what was matched and what was added.
 | **Suit reveals** | Robo, Alien, Ghost, Big Booty unlock through the level track |
 | **Installable** | Manifest and maskable icons |
 | **The Star Chart** | 100-level campaign in ten stages: portal finish lines, three stars a level, star-total progression replacing the XP ladder. Replaces the Flight Log tab. See `ROADMAP.md` |
+| **Wormhole Run** *(experiment)* | Tap-only tunnel endurance: authored pattern director, Flow multiplier, five palette regions, deterministic seeds. Hidden at the bottom of Help beside the other experiments |
 
 ## Still thinner, or deliberately different
 
