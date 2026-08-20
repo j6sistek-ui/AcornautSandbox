@@ -1,7 +1,7 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=50";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=50";
-import { drawSprite, skyImage } from "./art.js?v=50";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=50";
+import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=51";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=51";
+import { drawSprite, skyImage } from "./art.js?v=51";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=51";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -497,7 +497,10 @@ const DOME = {
     "suit:stardust": [194, 107, 52],
     "suit:robo": [194, 105, 50],
     "suit:alien": [193, 112, 54],
-    "suit:ghost": [191, 99, 49],
+    // re-rendered bare-headed on a black plate (the pale-on-cream key was
+    // unrecoverable); measured against the new art, and near-identical to
+    // flight, which is the same pose in the same framing
+    "suit:ghost": [195, 96, 50],
     "suit:bigbooty": [190, 115, 54],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
@@ -583,25 +586,28 @@ function punchedHelm(spr, id) {
 }
 // Where each rigged suit's tail hinges, in its own 256px canvas.
 const TAIL_PIVOT = {
-    flight: [97, 177],
-    iontrim: [98, 178],
-    copper: [98, 178],
-    frost: [97, 177],
-    voidsuit: [97, 178],
-    aurorasuit: [99, 178],
-    ember: [97, 177],
-    stardust: [97, 178],
-    robo: [98, 178],
-    alien: [96, 177],
-    ghost: [98, 178],
-    bigbooty: [94, 180],
-    catsuit: [96, 179],
-    gemmie: [97, 178],
-    sammie: [98, 178],
-    // Seraph and Leviathan stand rather than fly, so their tail meets the hip
-    // higher and further forward than the flying pose's shared 95,179.
-    seraph: [101, 173],
-    leviathan: [91, 162],
+    // The middle of the NECK -- the narrowest crossing of the silhouette
+    // where the plume meets the rump -- found by neck-cut.py rather than set
+    // by hand. The old values sat on the outer edge of the tail mask, which
+    // is why a swing tore a piece off the animal instead of sweeping along
+    // it. Re-cut the art and these must be re-read from the same run.
+    alien: [106, 145],
+    aurorasuit: [99, 139],
+    bigbooty: [94, 136],
+    catsuit: [90, 146],
+    copper: [99, 131],
+    ember: [107, 136],
+    flight: [102, 130],
+    frost: [107, 140],
+    gemmie: [101, 149],
+    ghost: [103, 128],
+    iontrim: [100, 130],
+    leviathan: [101, 131],
+    robo: [99, 138],
+    sammie: [99, 148],
+    seraph: [105, 138],
+    stardust: [104, 140],
+    voidsuit: [105, 142],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
 // are placed against the WHOLE suit's trimmed box — that is what keeps

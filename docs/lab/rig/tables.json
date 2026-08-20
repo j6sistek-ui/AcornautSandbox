@@ -1,5 +1,5 @@
 {
- "artVer": "50",
+ "artVer": "51",
  "suits": [
   {
    "id": "flight",
@@ -147,12 +147,12 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    191,
-    99,
-    49
+    195,
+    96,
+    50
    ],
    "ownHead": false,
-   "bakedDome": true,
+   "bakedDome": false,
    "frame": false
   },
   {

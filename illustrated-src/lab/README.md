@@ -1,15 +1,15 @@
 # The Lab
 
 Prototypes. Nothing here is imported by the game and nothing here is in the
-main build; the only thread back is one hidden button at the bottom of
-Help, which is a link to a separate page rather than a dependency. A lab
+main build; the only threads back are two hidden buttons at the bottom of
+Help, each a link to a separate page rather than a dependency. A lab
 experiment can be kept, reworked or deleted without touching a build that
 is close to shipping — that isolation is the point, and it is why
 `build-lab.mjs` is separate from `export-sandbox.mjs`.
 
 ```bash
-node illustrated-src/build-lab.mjs        # -> docs/lab/spill/js
-node illustrated-src/lab/pack.mjs         # -> one self-contained .html
+node illustrated-src/build-lab.mjs   # -> docs/lab/spill/js and docs/lab/rig/js
+node illustrated-src/lab/pack.mjs    # -> the Spill as one self-contained .html
 ```
 
 ---

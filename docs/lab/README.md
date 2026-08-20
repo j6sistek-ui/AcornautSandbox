@@ -1,7 +1,15 @@
 # docs/lab
 
 Prototypes, served alongside the game but not part of it. The game imports
-none of it; the only way in is one hidden button at the bottom of Help.
+none of it; the only way in is two hidden
+buttons at the bottom of Help, both marked delete-when-the-beta-freezes.
 
 - `spill/` — THE SPILL, a debris-field survival mode.
-  Design notes: `illustrated-src/lab/README.md`.
+- `rig/` — the rig editor, a fitting bench for heads and helmets. Reads the
+  shipping `DOME` / `HELM_GLASS` values out of `draw.ts` at build time and
+  hands edited ones back as text.
+
+Design notes for both: `illustrated-src/lab/README.md`.
+
+Built by `node illustrated-src/build-lab.mjs`, deliberately separate from
+the game's build so a prototype cannot break something close to shipping.
