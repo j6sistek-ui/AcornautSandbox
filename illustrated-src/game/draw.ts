@@ -1483,9 +1483,11 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
   ctx.fillStyle = "#fff";
   ctx.font = "800 36px Figtree, system-ui";
 if (w.lvl) {
-    // a level counts DOWN to the finish, not up into the void
+    // a level counts DOWN to the finish, not up into the void — and a
+    // Wormhole mission counts SECTIONS, its own unit of survival
     const total = w.lvl.def.gates;
-    ctx.fillText(`${Math.min(w.score, total)}/${total}`, W / 2, 46);
+    const done = w.lvl.def.base === "tunnel" && w.tunnel ? w.tunnel.sectionsCleared : w.score;
+    ctx.fillText(`${Math.min(done, total)}/${total}`, W / 2, 46);
     ctx.font = "700 11px Figtree, system-ui";
     ctx.fillStyle = "rgba(255,224,128,0.9)";
     ctx.fillText(

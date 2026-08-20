@@ -1,7 +1,7 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=62";
-import { modsUnlocked, writeSave } from "./save.js?v=62";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=62";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=62";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=63";
+import { modsUnlocked, writeSave } from "./save.js?v=63";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=63";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=63";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -943,6 +943,12 @@ function updateTunnel(w, save, simDt, realDt) {
         }
     }
     t.nodes = t.nodes.filter((n, i) => n.x > -TUNNEL_STEP * 2 || i >= t.nodes.length - 2);
+    // A Wormhole MISSION has a finish line: clear the level's section count
+    // and the run completes on the spot — stars bank, the sheet comes up.
+    if (w.lvl && t.sectionsCleared >= w.lvl.def.gates) {
+        settleLevel(w, save, true);
+        return null;
+    }
     const sx = w.W * PHYS.squirrelX;
     const sy = w.squirrel.y;
     // Pals travel with the pilot visually, but their abilities remain off in
@@ -1569,7 +1575,14 @@ function exitWarp(w) {
 // are a BITMASK per level and only ever gain bits: goal 2 earned today and
 // goal 3 earned on Tuesday add up to the same three stars, which is what
 // lets a hard level be chipped at instead of demanding one perfect run.
-function settleLevel(w, save, finished) {
+export function settleLevel(w, save, finished) {
+    // A Wormhole mission grades off the tunnel's own ledger; sync it here so
+    // the numbers on the result sheet are the numbers the run actually flew.
+    if (w.lvl && w.lvl.def.base === "tunnel" && w.tunnel) {
+        w.lvl.stats.acorns = w.runAcorns;
+        w.lvl.stats.score = w.score;
+        w.lvl.stats.flow = w.tunnel.bestMultiplier;
+    }
     const lvl = w.lvl;
     const def = lvl.def;
     const met = finished

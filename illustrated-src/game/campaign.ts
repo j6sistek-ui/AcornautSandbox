@@ -35,7 +35,9 @@
 // hand. The generated result is deliberately data, not code: the whole
 // 100 is printed into ROADMAP.md by build-roadmap.mjs for review.
 
-export type FlightBase = "fly" | "deep" | "lost" | "arcade";
+// "tunnel" and "spill" are MISSION bases the BETA grafts onto the chart —
+// the live page never generates them (see the IS_BETA block under LEVELS).
+export type FlightBase = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill";
 
 export type LevelFx = {
   env?: number;        // pin the run to one environment (index into ENVS)
@@ -55,7 +57,10 @@ export type Goal =
   | { kind: "noBounce" }
   | { kind: "noShield" }
   | { kind: "flawless" }            // no bounces AND no shields spent
-  | { kind: "maxTaps"; n: number };
+  | { kind: "maxTaps"; n: number }
+  // mission-base goals (beta): Wormhole Flow multiplier, Spill score
+  | { kind: "flow"; n: number }
+  | { kind: "score"; n: number };
 
 export type LevelDef = {
   id: string;          // "3-7"
@@ -354,19 +359,66 @@ export const LEVELS: LevelDef[] = STAGES.flatMap((st) =>
   }),
 );
 
+// ---------------------------------------------------- the BETA divergence
+//
+// Read here rather than imported from catalog.ts: build-roadmap.mjs
+// compiles this file ALONE, and in node there is no window — so the
+// roadmap always documents the LIVE chart, which is the point.
+const IS_BETA =
+  typeof window !== "undefined" &&
+  (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
+//
+// BETA ONLY — the first deliberate fork between the two pages. On the
+// beta, every chapter from 2 on gives two of its levels to the test
+// modes: level N-4 becomes a WORMHOLE RUN mission, level N-8 a SPILL
+// mission. Level ids and star masks are unchanged, so one save reads
+// identically on both pages, and reverting is deleting this block —
+// the live chart underneath is the fallback, untouched.
+//
+// Tunnel targets are SECTIONS; spill targets are SECONDS. Both climb
+// with the chapter. Tune freely — the level spreadsheet mirrors this.
+if (IS_BETA) {
+  for (const l of LEVELS) {
+    if (l.stage < 2) continue;
+    if (l.n === 4) {
+      l.base = "tunnel";
+      l.gates = 3 + l.stage;                      // 5..13 sections
+      l.goals = [
+        { kind: "finish" },
+        { kind: "acorns", n: 4 + l.stage * 2 },   // 8..24 acorns
+        { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
+      ];
+      l.fx = { env: l.fx.env };                   // missions run their own physics
+    } else if (l.n === 8) {
+      l.base = "spill";
+      l.gates = 20 + l.stage * 5;                 // 30..70 seconds
+      l.goals = [
+        { kind: "finish" },
+        { kind: "score", n: 200 + l.stage * 100 },
+        { kind: "score", n: 500 + l.stage * 250 },
+      ];
+      l.fx = { env: l.fx.env };
+    }
+  }
+}
+
 export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null;
 
 // ------------------------------------------------------------------ prose
 
 export function goalText(g: Goal, def: LevelDef): string {
   switch (g.kind) {
-    case "finish": return `Reach the portal — ${def.gates} gates`;
+    case "finish": return def.base === "tunnel" ? `Survive ${def.gates} wormhole sections`
+      : def.base === "spill" ? `Survive ${def.gates} seconds in the Spill`
+      : `Reach the portal — ${def.gates} gates`;
     case "acorns": return `Collect ${g.n} acorns`;
     case "gold": return g.n === 1 ? "Catch a golden acorn" : `Catch ${g.n} golden acorns`;
     case "noBounce": return "Touch no planet";
     case "noShield": return "Spend no shield";
     case "flawless": return "Flawless — no bounces, no shields spent";
     case "maxTaps": return `At most ${g.n} taps`;
+    case "flow": return `Reach Flow \u00d7${g.n}`;
+    case "score": return `Score ${g.n} points`;
   }
 }
 
@@ -391,9 +443,13 @@ export type RunStats = {
   bounces: number;
   shieldsSpent: number;
   taps: number;
+  /** Wormhole missions: best Flow multiplier reached */
+  flow: number;
+  /** Spill missions: the run's score */
+  score: number;
 };
 
-export const emptyStats = (): RunStats => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0 });
+export const emptyStats = (): RunStats => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0 });
 
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def: LevelDef) {
@@ -427,6 +483,8 @@ export function goalMet(g: Goal, s: RunStats): boolean {
     case "noShield": return s.shieldsSpent === 0;
     case "flawless": return s.bounces === 0 && s.shieldsSpent === 0;
     case "maxTaps": return s.taps <= g.n;
+    case "flow": return s.flow >= g.n;
+    case "score": return s.score >= g.n;
   }
 }
 

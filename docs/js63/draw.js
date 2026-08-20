@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=62";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=62";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=62";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=62";
-import { tunnelBoundsAt } from "./sim.js?v=62";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=63";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=63";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=63";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=63";
+import { tunnelBoundsAt } from "./sim.js?v=63";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1428,9 +1428,11 @@ export function drawHud(ctx, w) {
     ctx.fillStyle = "#fff";
     ctx.font = "800 36px Figtree, system-ui";
     if (w.lvl) {
-        // a level counts DOWN to the finish, not up into the void
+        // a level counts DOWN to the finish, not up into the void — and a
+        // Wormhole mission counts SECTIONS, its own unit of survival
         const total = w.lvl.def.gates;
-        ctx.fillText(`${Math.min(w.score, total)}/${total}`, W / 2, 46);
+        const done = w.lvl.def.base === "tunnel" && w.tunnel ? w.tunnel.sectionsCleared : w.score;
+        ctx.fillText(`${Math.min(done, total)}/${total}`, W / 2, 46);
         ctx.font = "700 11px Figtree, system-ui";
         ctx.fillStyle = "rgba(255,224,128,0.9)";
         ctx.fillText(w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.id} · ${w.lvl.def.name}`, W / 2, 64);

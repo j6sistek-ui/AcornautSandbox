@@ -1163,12 +1163,17 @@ export async function bootStandalone(root: HTMLElement) {
   function drawLevelSheet(def: LevelDef, mask: number) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard");
-    sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${ENVS[def.fx.env ?? 0]?.name ?? ""}`));
+    const place = def.base === "tunnel" ? "WORMHOLE RUN"
+      : def.base === "spill" ? "THE SPILL"
+      : ENVS[def.fx.env ?? 0]?.name ?? "";
+    sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${place}`));
     sheet.append(el("h2", "ac-lvlname", def.name));
     const mode =
       def.base === "deep" ? "DEEP SPACE RULES" :
       def.base === "lost" ? "LOST IN SPACE RULES" :
-      def.base === "arcade" ? "ARCADE TIMELINE" : "";
+      def.base === "arcade" ? "ARCADE TIMELINE" :
+      def.base === "tunnel" ? "WORMHOLE MISSION" :
+      def.base === "spill" ? "SPILL MISSION" : "";
     const fxs = fxText(def.fx);
     if (mode || fxs.length) {
       const tags = el("div", "ac-lvltags");

@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=62";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=62";
-import { drawSprite as drawSpriteOn } from "./art.js?v=62";
-import { createEngine } from "./engine.js?v=62";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=62";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=62";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=63";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=63";
+import { drawSprite as drawSpriteOn } from "./art.js?v=63";
+import { createEngine } from "./engine.js?v=63";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=63";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=63";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1136,11 +1136,16 @@ export async function bootStandalone(root) {
     function drawLevelSheet(def, mask) {
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard");
-        sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${ENVS[def.fx.env ?? 0]?.name ?? ""}`));
+        const place = def.base === "tunnel" ? "WORMHOLE RUN"
+            : def.base === "spill" ? "THE SPILL"
+                : ENVS[def.fx.env ?? 0]?.name ?? "";
+        sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${place}`));
         sheet.append(el("h2", "ac-lvlname", def.name));
         const mode = def.base === "deep" ? "DEEP SPACE RULES" :
             def.base === "lost" ? "LOST IN SPACE RULES" :
-                def.base === "arcade" ? "ARCADE TIMELINE" : "";
+                def.base === "arcade" ? "ARCADE TIMELINE" :
+                    def.base === "tunnel" ? "WORMHOLE MISSION" :
+                        def.base === "spill" ? "SPILL MISSION" : "";
         const fxs = fxText(def.fx);
         if (mode || fxs.length) {
             const tags = el("div", "ac-lvltags");
