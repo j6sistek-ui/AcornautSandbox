@@ -74,3 +74,8 @@ Design notes for both: `illustrated-src/lab/README.md`.
 - `PARITY.md` — what is matched against the original canvas game.
 - `ROADMAP.md` — the Star Chart campaign: all 100 levels, generated from
   `campaign.ts` so it cannot drift.
+
+## License
+
+Proprietary — **all rights reserved**. The code, art, characters and name
+are not licensed for reuse or redistribution. See [LICENSE](LICENSE).
