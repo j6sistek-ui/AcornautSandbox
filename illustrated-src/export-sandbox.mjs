@@ -72,4 +72,23 @@ for (const dir of [root, pages]) {
     writeFileSync(idx, html.replace(/\.\/js\d*\/standalone\.js/g, `./js${ver}/standalone.js`));
   } catch {}
 }
-console.log(`exported js + js${ver} to sandbox_assets and docs`);
+
+// The BETA page: the same document, one flag and one directory deeper.
+// Regenerated from the production page on every export so the two can
+// never drift. The flag must be set before the module loads — catalog.ts
+// reads it at import time — so it rides the same script tag that already
+// runs ahead of the loader.
+for (const dir of [root, pages]) {
+  const srcIdx = join(dir, dir === pages ? "index.html" : "sandbox_assets/index.html");
+  const outDir = join(dir, dir === pages ? "beta" : "sandbox_assets/beta");
+  const html = readFileSync(srcIdx, "utf8")
+    .replaceAll('"./', '"../')
+    .replace(/<title>[^<]*<\/title>/, "<title>Acornaut · Beta</title>")
+    .replace(
+      'window.__ACORNAUT_ART__',
+      'window.__ACORNAUT_BETA__ = true;\n    window.__ACORNAUT_ART__',
+    );
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(join(outDir, "index.html"), html);
+}
+console.log(`exported js + js${ver} to sandbox_assets and docs (+ beta pages)`);
