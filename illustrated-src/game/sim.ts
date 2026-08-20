@@ -43,6 +43,113 @@ export type Pickup = {
   // whole gate mouth, so meeting one is a matter of arriving — not of
   // threading past it. Only the pal that suppresses them lets you through.
   r?: number;
+  tunnelSection?: number;
+  tunnelPattern?: TunnelPattern;
+  missed?: boolean;
+};
+
+export type TunnelPattern =
+  | "launch"
+  | "ribbon"
+  | "acornArc"
+  | "sweep"
+  | "breather"
+  | "squeeze"
+  | "ripples"
+  | "debrisWeave"
+  | "surge";
+
+export const TUNNEL_PATTERNS: TunnelPattern[] = [
+  "launch", "ribbon", "acornArc", "sweep", "breather",
+  "squeeze", "ripples", "debrisWeave", "surge",
+];
+
+export const TUNNEL_PATTERN_NAMES: Record<TunnelPattern, string> = {
+  launch: "ENTRY VECTOR",
+  ribbon: "RIBBON SLITHER",
+  acornArc: "ACORN CURRENT",
+  sweep: "GRAVITY SWEEP",
+  breather: "STABLE FLOW",
+  squeeze: "PULSE SQUEEZE",
+  ripples: "RIPPLE RUN",
+  debrisWeave: "DEBRIS WEAVE",
+  surge: "WORMHOLE SURGE",
+};
+
+export const TUNNEL_REGION_NAMES = [
+  "VIOLET FOLD",
+  "ION CURRENT",
+  "EMBER RIFT",
+  "EMERALD SLIP",
+  "EVENT HORIZON",
+] as const;
+
+export type TunnelNode = {
+  x: number;
+  top: number;
+  bottom: number;
+  centerRatio: number;
+  halfRatio: number;
+  index: number;
+  section: number;
+  pattern: TunnelPattern;
+  region: number;
+  sectionStart: boolean;
+  sectionEnd: boolean;
+  announced: boolean;
+  cleared: boolean;
+};
+
+export type TunnelHazard = {
+  x: number;
+  y: number;
+  r: number;
+  side: -1 | 0 | 1;
+  kind: "debris";
+  art: number;
+  spin: number;
+  nearMissed: boolean;
+  warned: boolean;
+  section: number;
+  pattern: TunnelPattern;
+};
+
+export type TunnelState = {
+  nodes: TunnelNode[];
+  hazards: TunnelHazard[];
+  scoreFloat: number;
+  multiplier: number;
+  bestMultiplier: number;
+  multiplierLeft: number;
+  flow: number;
+  flowBest: number;
+  flowGrace: number;
+  chain: number;
+  bestChain: number;
+  sectionsCleared: number;
+  nearMisses: number;
+  nextHazardAt: number;
+  nextPickupAt: number;
+  seed: number;
+  buildSection: number;
+  buildPattern: TunnelPattern;
+  buildRegion: number;
+  patternPos: number;
+  patternLength: number;
+  patternStartCenter: number;
+  patternStartHalf: number;
+  patternStartCenterRatio: number;
+  patternStartHalfRatio: number;
+  patternDirection: -1 | 1;
+  activePattern: TunnelPattern;
+  activeRegion: number;
+  previousRegion: number;
+  regionBlend: number;
+  visualT: number;
+  banner: string;
+  bannerKind: "pattern" | "region" | "reward" | "milestone";
+  bannerLeft: number;
+  nextMilestone: number;
 };
 
 export type Particle = {
@@ -83,6 +190,11 @@ export type Snapshot = {
     fromLv: number;
     toLv: number;
     best: boolean;
+    flowBest: number;
+    bestChain: number;
+    sections: number;
+    nearMisses: number;
+    bestMultiplier: number;
   } | null;
   squirrel: { y: number; rot: number; vy: number };
 };
@@ -99,15 +211,7 @@ export type World = {
   planets: PlanetCol[];
   pickups: Pickup[];
   particles: Particle[];
-  tunnel: {
-    nodes: { x: number; top: number; bottom: number; index: number }[];
-    hazards: { x: number; y: number; r: number; side: -1 | 0 | 1; kind: "debris"; art: number; spin: number }[];
-    scoreFloat: number;
-    multiplier: number;
-    multiplierLeft: number;
-    nextHazardAt: number;
-    seed: number;
-  } | null;
+  tunnel: TunnelState | null;
   stars: { x: number; y: number; r: number; a: number; tw: number }[];
   speed: number;
   distance: number;
@@ -244,6 +348,62 @@ export function initStars(w: World) {
   }));
 }
 
+/**
+ * Resize a live world without making a tunnel run jump lanes or silently
+ * move its next obstacle closer to the pilot. The normal modes keep their
+ * historic resize behaviour; Wormhole additionally remaps its authored
+ * track around the fixed player anchor.
+ */
+export function resizeWorld(w: World, W: number, H: number) {
+  const oldW = w.W;
+  const oldH = w.H;
+  if (!Number.isFinite(W) || !Number.isFinite(H) || W <= 0 || H <= 0) return;
+  if (w.flight === "tunnel" && w.tunnel && oldW > 0 && oldH > 0 && (oldW !== W || oldH !== H)) {
+    const scaleY = H / oldH;
+    const shiftX = W * PHYS.squirrelX - oldW * PHYS.squirrelX;
+    const minHalf = Math.max(72, Math.min(88, H * 0.15));
+    const maxHalf = Math.max(minHalf + 38, Math.min(150, H * 0.27));
+    w.tunnel.patternStartCenter = Math.max(
+      minHalf + 18,
+      Math.min(H - minHalf - 18, w.tunnel.patternStartCenterRatio * H),
+    );
+    w.tunnel.patternStartHalf = Math.max(
+      minHalf,
+      Math.min(maxHalf, w.tunnel.patternStartHalfRatio * H),
+    );
+    for (const n of w.tunnel.nodes) {
+      let center = n.centerRatio * H;
+      const half = Math.max(minHalf, Math.min(maxHalf, n.halfRatio * H));
+      center = Math.max(half + 18, Math.min(H - half - 18, center));
+      n.x += shiftX;
+      n.top = center - half;
+      n.bottom = center + half;
+    }
+    for (const hazard of w.tunnel.hazards) {
+      hazard.x += shiftX;
+      hazard.y *= scaleY;
+    }
+    for (const pickup of w.pickups) {
+      pickup.x += shiftX;
+      pickup.y *= scaleY;
+    }
+    for (const particle of w.particles) {
+      particle.x += shiftX;
+      particle.y *= scaleY;
+    }
+    const resizedBounds = tunnelBoundsAt(w, W * PHYS.squirrelX);
+    w.squirrel.y = Math.max(
+      resizedBounds.top + PHYS.squirrelR + 2,
+      Math.min(resizedBounds.bottom - PHYS.squirrelR - 2, w.squirrel.y * scaleY),
+    );
+    w.palPos.x += shiftX;
+    w.palPos.y *= scaleY;
+    w.lastGapY *= scaleY;
+  }
+  w.W = W;
+  w.H = H;
+}
+
 function shuffleEnv(w: World) {
   const mid = ENVS.map((_, i) => i).slice(1, -1);
   for (let i = mid.length - 1; i > 0; i--) {
@@ -280,15 +440,21 @@ function driftModOf(save: SaveData, w: World) {
 
 /** Thrill Seeker runs the whole world at double speed. See updateWorld. */
 function paceOf(save: SaveData, w: World) {
+  // Wormhole scores compare one shared control model. Cosmetics still
+  // travel with the pilot, but global mods do not silently change its
+  // reaction window or invalidate a generated safe path.
+  if (w.flight === "tunnel") return 1;
   return modsLive(save, w) && save.thrillSeeker ? 2 : 1;
 }
 
 function gravOf(save: SaveData, w: World) {
+  if (w.flight === "tunnel") return PHYS.gravity;
   const id = palId(save, w);
   return PHYS.gravity * (id === "pocketmoon" ? 0.85 : id === "nutsack" ? 1.2 : 1);
 }
 
 function flapOf(save: SaveData, w: World) {
+  if (w.flight === "tunnel") return PHYS.flap;
   const id = palId(save, w);
   return PHYS.flap * (id === "nutsack" ? 0.71 : 1);
 }
@@ -578,7 +744,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
   w.lastGapY = gapY;
 }
 
-export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean) {
+export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, tunnelSeed?: number) {
   w.flight = flight;
   // every run starts in this game; the arcade acorn is the only way out
   // Arcade IS the retro game — it starts there and never leaves. Every
@@ -639,7 +805,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.warpTilt = lostTiltAt(w.tiltPhase);
   }
   shuffleEnv(w);
-  if (flight === "tunnel") initTunnel(w);
+  if (flight === "tunnel") initTunnel(w, tunnelSeed);
   else for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
   w.tut = flight === "tunnel" ? null : tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
@@ -650,75 +816,259 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
 
 const TUNNEL_STEP = 56;
 
+const TUNNEL_PATTERN_LENGTH: Record<TunnelPattern, number> = {
+  launch: 44,
+  ribbon: 54,
+  acornArc: 48,
+  sweep: 48,
+  breather: 40,
+  squeeze: 46,
+  ripples: 50,
+  debrisWeave: 54,
+  surge: 48,
+};
+
+const TUNNEL_SEQUENCE: TunnelPattern[] = [
+  "ribbon",
+  "acornArc",
+  "sweep",
+  "breather",
+  "squeeze",
+  "ripples",
+  "breather",
+  "debrisWeave",
+  "surge",
+  "breather",
+];
+
 function tunnelNoise(seed: number, index: number, salt = 0) {
   const x = Math.sin(seed * 0.001 + index * 91.733 + salt * 37.119) * 43758.5453;
   return x - Math.floor(x);
+}
+
+function beginTunnelSection(w: World) {
+  const t = w.tunnel!;
+  t.buildSection += 1;
+  t.buildPattern = t.buildSection === 0
+    ? "launch"
+    : TUNNEL_SEQUENCE[(t.buildSection - 1) % TUNNEL_SEQUENCE.length];
+  const cycle = Math.floor(Math.max(0, t.buildSection - 1) / TUNNEL_SEQUENCE.length);
+  t.patternLength = Math.max(36, TUNNEL_PATTERN_LENGTH[t.buildPattern] - Math.min(8, cycle * 2));
+  t.patternPos = 0;
+  t.buildRegion = Math.floor(t.buildSection / 2) % TUNNEL_REGION_NAMES.length;
+  const prev = t.nodes[t.nodes.length - 1];
+  t.patternStartCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
+  t.patternStartHalf = prev ? (prev.bottom - prev.top) * 0.5 : Math.min(150, w.H * 0.27);
+  t.patternStartCenterRatio = prev ? prev.centerRatio : 0.5;
+  t.patternStartHalfRatio = prev ? prev.halfRatio : t.patternStartHalf / w.H;
+  t.patternDirection = tunnelNoise(t.seed, t.buildSection, 21) < 0.5 ? -1 : 1;
+}
+
+function tunnelPatternShape(
+  w: World,
+  pattern: TunnelPattern,
+  u: number,
+  baseHalf: number,
+  room: number,
+  startCenter: number,
+  direction: -1 | 1,
+) {
+  const smooth = u * u * (3 - 2 * u);
+  const amp = w.H * (0.065 + room * 0.075);
+  let center = startCenter;
+  let half = baseHalf;
+  switch (pattern) {
+    case "launch":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 1.5) * w.H * 0.035;
+      half += 24 * (1 - smooth);
+      break;
+    case "ribbon":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 2.2 + direction * 0.6) * amp;
+      half += 10;
+      break;
+    case "acornArc":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 1.8 - direction * 0.8) * amp * 0.72;
+      half += 13;
+      break;
+    case "sweep": {
+      const target = w.H * 0.5 + direction * w.H * (0.15 + room * 0.045);
+      center = startCenter + (target - startCenter) * smooth;
+      half += 8;
+      break;
+    }
+    case "breather":
+      center = startCenter + (w.H * 0.5 - startCenter) * smooth + Math.sin(u * Math.PI * 2) * w.H * 0.018;
+      half += 25;
+      break;
+    case "squeeze":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 1.35 + direction) * amp * 0.48;
+      half -= Math.sin(u * Math.PI) * (12 + room * 8);
+      break;
+    case "ripples":
+      center = startCenter + Math.sin(u * Math.PI * 4.2) * amp * 0.48;
+      half -= (0.5 + 0.5 * Math.sin(u * Math.PI * 6.2)) * (7 + room * 6);
+      break;
+    case "debrisWeave":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 1.6 - direction) * amp * 0.42;
+      half += 16;
+      break;
+    case "surge":
+      center = w.H * 0.5 + Math.sin(u * Math.PI * 2.7 + direction) * amp * 1.08;
+      half += 22;
+      break;
+  }
+  return { center, half };
+}
+
+function addTunnelPickup(w: World, node: TunnelNode, kind: "acorn" | "slow" | "multiplier", lane: number, salt: number) {
+  const t = w.tunnel!;
+  w.pickups.push({
+    x: node.x,
+    y: lane,
+    got: false,
+    bob: tunnelNoise(t.seed, node.index, salt) * 6,
+    kind,
+    tunnelSection: node.section,
+    tunnelPattern: node.pattern,
+  });
+}
+
+function addTunnelHazard(w: World, node: TunnelNode, lane: number, salt: number) {
+  const t = w.tunnel!;
+  const absoluteX = node.index * TUNNEL_STEP;
+  if (absoluteX < t.nextHazardAt) return false;
+  t.hazards.push({
+    x: node.x,
+    y: lane,
+    r: 19 + tunnelNoise(t.seed, node.index, salt) * 5,
+    side: lane < (node.top + node.bottom) * 0.5 ? -1 : 1,
+    kind: "debris",
+    art: Math.floor(tunnelNoise(t.seed, node.index, salt + 1) * DEBRIS_COUNT),
+    spin: (tunnelNoise(t.seed, node.index, salt + 2) < 0.5 ? -1 : 1) *
+      (0.35 + tunnelNoise(t.seed, node.index, salt + 3) * 0.75),
+    nearMissed: false,
+    warned: false,
+    section: node.section,
+    pattern: node.pattern,
+  });
+  t.nextHazardAt = absoluteX + 820 + tunnelNoise(t.seed, node.index, salt + 4) * 300;
+  return true;
+}
+
+function populateTunnelNode(w: World, node: TunnelNode, patternPos: number, patternLength: number) {
+  const t = w.tunnel!;
+  if (node.x <= w.W * 0.55) return;
+  const center = (node.top + node.bottom) * 0.5;
+  const half = (node.bottom - node.top) * 0.5;
+  const u = patternPos / Math.max(1, patternLength - 1);
+  let occupied = false;
+
+  if (node.pattern === "debrisWeave") {
+    const marks = [Math.round(patternLength * 0.31), Math.round(patternLength * 0.69)];
+    const hazardIndex = marks.indexOf(patternPos);
+    if (hazardIndex >= 0) {
+      const side = (hazardIndex + node.section) % 2 ? -1 : 1;
+      occupied = addTunnelHazard(w, node, center + side * half * 0.34, 31 + hazardIndex * 7);
+    }
+    // A Freeze Acorn appears before the weave, giving the player a clear
+    // strategic choice without changing the one-tap control or removing
+    // the lethal consequence of a collision.
+    if (patternPos === marks[0] - 5) {
+      addTunnelPickup(w, node, "slow", center, 48);
+      occupied = true;
+    }
+  } else if (
+    (node.pattern === "ribbon" && patternPos === Math.round(patternLength * 0.72)) ||
+    (node.pattern === "sweep" && patternPos === Math.round(patternLength * 0.68)) ||
+    (node.pattern === "surge" && patternPos === Math.round(patternLength * 0.57))
+  ) {
+    const side = (node.section + (node.pattern === "sweep" ? 1 : 0)) % 2 ? -1 : 1;
+    occupied = addTunnelHazard(w, node, center + side * half * 0.32, 60);
+  }
+
+  if (occupied) return;
+  if (node.pattern === "acornArc" && patternPos >= 5 && patternPos <= patternLength - 5 && patternPos % 4 === 0) {
+    const lane = center + Math.sin(u * Math.PI * 2.15) * half * 0.55;
+    const special = Math.abs(patternPos - Math.round(patternLength * 0.5)) <= 2;
+    addTunnelPickup(w, node, special ? "multiplier" : "acorn", lane, 71);
+    return;
+  }
+
+  const absoluteX = node.index * TUNNEL_STEP;
+  if (absoluteX < t.nextPickupAt) return;
+  const lane = center + (tunnelNoise(t.seed, node.index, 7) - 0.5) * half * 0.62;
+  const roll = tunnelNoise(t.seed, node.index, 6);
+  addTunnelPickup(w, node, roll < 0.08 ? "multiplier" : "acorn", lane, 8);
+  t.nextPickupAt = absoluteX + 330 + tunnelNoise(t.seed, node.index, 52) * 210;
 }
 
 function appendTunnelNode(w: World) {
   const t = w.tunnel!;
   const prev = t.nodes[t.nodes.length - 1];
   const index = prev ? prev.index + 1 : 0;
+  if (t.patternLength <= 0 || t.patternPos >= t.patternLength) beginTunnelSection(w);
+  const patternPos = t.patternPos;
+  const patternLength = t.patternLength;
+  const pattern = t.buildPattern;
   const progress = Math.min(1, index * TUNNEL_STEP / 30000);
   const minHalf = Math.max(72, Math.min(88, w.H * 0.15));
   const maxHalf = Math.max(minHalf + 38, Math.min(150, w.H * 0.27));
   const wave = Math.sin(index * 0.31 + t.seed) * 0.62 + Math.sin(index * 0.117 + 1.8) * 0.38;
-  const targetHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 10;
-  const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : targetHalf;
+  const baseHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 5;
+  const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : t.patternStartHalf;
+  const room = Math.max(0, Math.min(1, (baseHalf - minHalf) / Math.max(1, maxHalf - minHalf)));
+  const shape = tunnelPatternShape(
+    w, pattern, patternPos / Math.max(1, patternLength - 1), baseHalf, room,
+    t.patternStartCenter, t.patternDirection,
+  );
+  const targetHalf = Math.max(minHalf, Math.min(maxHalf, shape.half));
   const half = Math.max(minHalf, Math.min(maxHalf, previousHalf + Math.max(-8, Math.min(8, targetHalf - previousHalf))));
-  const room = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
-  // Wide sections slither visibly across the screen. As the walls close,
-  // both amplitude and turn rate are damped so a tight passage asks for
-  // precision rather than forcing an impossible full-height chase.
-  const slitherAmp = w.H * (0.055 + room * 0.12);
-  const slitherRate = 0.105 + room * 0.08;
-  const centerWave =
-    Math.sin(index * slitherRate + t.seed) * slitherAmp +
-    Math.sin(index * 0.047 + 2.3) * w.H * (0.018 + room * 0.032);
-  const desiredCenter = w.H * 0.5 + centerWave;
   const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
-  const maxTurn = 4 + room * 5.5;
-  let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, desiredCenter - previousCenter));
+  // Tight corridors turn more slowly. This is the core feasibility rule:
+  // visual intensity can rise, but required vertical travel never rises at
+  // the same time as the available space falls.
+  const widthRoom = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
+  const maxTurn = 3.8 + widthRoom * 5.8;
+  let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, shape.center - previousCenter));
   const safeHalf = half;
   center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
-  const node = {
+  const node: TunnelNode = {
     x: prev ? prev.x + TUNNEL_STEP : -TUNNEL_STEP,
     top: center - safeHalf,
     bottom: center + safeHalf,
+    centerRatio: center / w.H,
+    halfRatio: safeHalf / w.H,
     index,
+    section: t.buildSection,
+    pattern,
+    region: t.buildRegion,
+    sectionStart: patternPos === 0,
+    sectionEnd: patternPos === patternLength - 1,
+    announced: false,
+    cleared: false,
   };
   t.nodes.push(node);
-
-  const absoluteX = index * TUNNEL_STEP;
-  if (node.x > w.W * 0.55 && tunnelNoise(t.seed, index, 5) < 0.13) {
-    const special = tunnelNoise(t.seed, index, 6) < 0.13;
-    const lane = (node.top + node.bottom) * 0.5 + (tunnelNoise(t.seed, index, 7) - 0.5) * safeHalf * 0.5;
-    // Some otherwise-collectible acorn slots become lethal debris. They
-    // occupy the flight lane (not the wall) and are spaced far enough
-    // apart to leave time for a deliberate tap response.
-    const debrisSlot = absoluteX >= t.nextHazardAt && tunnelNoise(t.seed, index, 9) < 0.28;
-    if (debrisSlot) {
-      t.hazards.push({
-        x: node.x,
-        y: lane,
-        r: 19 + tunnelNoise(t.seed, index, 3) * 5,
-        side: 0,
-        kind: "debris",
-        art: Math.floor(tunnelNoise(t.seed, index, 10) * DEBRIS_COUNT),
-        spin: (tunnelNoise(t.seed, index, 11) < 0.5 ? -1 : 1) * (0.35 + tunnelNoise(t.seed, index, 12) * 0.75),
-      });
-      t.nextHazardAt = absoluteX + 850 + tunnelNoise(t.seed, index, 4) * 650;
-    } else {
-      w.pickups.push({ x: node.x, y: lane, got: false, bob: tunnelNoise(t.seed, index, 8) * 6, kind: special ? "multiplier" : "acorn" });
-    }
-  }
+  populateTunnelNode(w, node, patternPos, patternLength);
+  t.patternPos += 1;
 }
 
-function initTunnel(w: World) {
+function initTunnel(w: World, forcedSeed?: number) {
   w.tunnel = {
     nodes: [], hazards: [], scoreFloat: 0,
-    multiplier: 1, multiplierLeft: 0, nextHazardAt: 1200,
-    seed: Math.floor(Math.random() * 1000000) + 1,
+    multiplier: 1, bestMultiplier: 1, multiplierLeft: 0,
+    flow: 0, flowBest: 0, flowGrace: 0, chain: 0, bestChain: 0,
+    sectionsCleared: 0, nearMisses: 0,
+    nextHazardAt: 1800, nextPickupAt: 720,
+    seed: Math.max(1, Math.floor(forcedSeed ?? (Math.random() * 1000000 + 1))),
+    buildSection: -1, buildPattern: "launch", buildRegion: 0,
+    patternPos: 0, patternLength: 0,
+    patternStartCenter: w.H * 0.5, patternStartHalf: Math.min(150, w.H * 0.27),
+    patternStartCenterRatio: 0.5,
+    patternStartHalfRatio: Math.min(150, w.H * 0.27) / w.H,
+    patternDirection: 1,
+    activePattern: "launch", activeRegion: 0, previousRegion: 0, regionBlend: 1, visualT: 0,
+    banner: `${TUNNEL_REGION_NAMES[0]} · ${TUNNEL_PATTERN_NAMES.launch}`,
+    bannerKind: "region", bannerLeft: 2.8, nextMilestone: 50,
   };
   while (w.tunnel.nodes.length < Math.ceil((w.W + 360) / TUNNEL_STEP) + 2) appendTunnelNode(w);
   w.squirrel.y = w.H * 0.5;
@@ -727,6 +1077,34 @@ function initTunnel(w: World) {
   w.planets = [];
   w.startShieldArmed = false;
   w.shieldCharges = 0;
+}
+
+function addTunnelFlow(t: TunnelState, amount: number) {
+  t.flow = Math.max(0, Math.min(100, t.flow + amount));
+  t.flowBest = Math.max(t.flowBest, t.flow);
+  t.flowGrace = 2.2;
+}
+
+function refreshTunnelMultiplier(t: TunnelState) {
+  const flowTier = t.flow >= 72 ? 3 : t.flow >= 30 ? 2 : 1;
+  t.multiplier = Math.max(flowTier, t.multiplierLeft > 0 ? 2 : 1);
+  t.bestMultiplier = Math.max(t.bestMultiplier, t.multiplier);
+}
+
+function sweptCircleHit(
+  ax0: number, ay0: number, ax1: number, ay1: number,
+  bx0: number, by0: number, bx1: number, by1: number,
+  radius: number,
+) {
+  const rx0 = ax0 - bx0;
+  const ry0 = ay0 - by0;
+  const rvx = (ax1 - ax0) - (bx1 - bx0);
+  const rvy = (ay1 - ay0) - (by1 - by0);
+  const speedSq = rvx * rvx + rvy * rvy;
+  const u = speedSq > 0 ? Math.max(0, Math.min(1, -(rx0 * rvx + ry0 * rvy) / speedSq)) : 0;
+  const dx = rx0 + rvx * u;
+  const dy = ry0 + rvy * u;
+  return dx * dx + dy * dy < radius * radius;
 }
 
 export function tunnelBoundsAt(w: World, x: number) {
@@ -741,56 +1119,142 @@ export function tunnelBoundsAt(w: World, x: number) {
   return { top: a.top + (b.top - a.top) * f, bottom: a.bottom + (b.bottom - a.bottom) * f };
 }
 
-function updateTunnel(w: World, save: SaveData, dt: number): string | null {
+function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): string | null {
   const t = w.tunnel!;
   const progress = Math.min(1, w.distance / 30000);
-  w.speed = 220 + progress * 160;
+  const baseSpeed = 220 + progress * 160;
+  // Surge is a real speed event, not just a louder-looking Ribbon. Its
+  // corridor is deliberately wide and it never adds extra debris beyond
+  // its one authored obstacle.
+  w.speed = baseSpeed * (t.activePattern === "surge" ? 1.08 : 1);
   // Tunnel flight deliberately reuses the main game's gravity and flap
   // impulse. A tap resets upward velocity; gravity owns the descent.
-  w.squirrel.vy = Math.min(620, w.squirrel.vy + gravOf(save, w) * dt);
-  w.squirrel.y += w.squirrel.vy * dt;
+  const oldSy = w.squirrel.y;
+  w.squirrel.vy = Math.min(620, w.squirrel.vy + gravOf(save, w) * simDt);
+  w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
-  const move = w.speed * dt;
+  const move = w.speed * simDt;
   w.distance += move;
+  t.visualT += simDt;
+  refreshTunnelMultiplier(t);
   t.scoreFloat += move / 100 * t.multiplier;
   w.score = Math.floor(t.scoreFloat);
   if (t.multiplierLeft > 0) {
-    t.multiplierLeft = Math.max(0, t.multiplierLeft - dt);
-    if (t.multiplierLeft === 0) t.multiplier = 1;
+    t.multiplierLeft = Math.max(0, t.multiplierLeft - realDt);
   }
+  if (t.flowGrace > 0) t.flowGrace = Math.max(0, t.flowGrace - realDt);
+  else t.flow = Math.max(0, t.flow - realDt * 3.5);
+  if (t.bannerLeft > 0) t.bannerLeft = Math.max(0, t.bannerLeft - realDt);
+  if (t.regionBlend < 1) t.regionBlend = Math.min(1, t.regionBlend + realDt * 0.8);
   for (const n of t.nodes) n.x -= move;
   for (const h of t.hazards) h.x -= move;
-  for (const a of w.pickups) { a.x -= move; a.bob += dt * 4; }
+  for (const a of w.pickups) { a.x -= move; a.bob += simDt * 4; }
   while (t.nodes[t.nodes.length - 1].x < w.W + 280) appendTunnelNode(w);
+
+  let sound: string | null = null;
+  for (const n of t.nodes) {
+    if (n.sectionStart && !n.announced && n.x <= w.W * 0.82) {
+      n.announced = true;
+      t.activePattern = n.pattern;
+      t.banner = TUNNEL_PATTERN_NAMES[n.pattern];
+      t.bannerKind = "pattern";
+      t.bannerLeft = 2.2;
+      if (t.activeRegion !== n.region) {
+        t.previousRegion = t.activeRegion;
+        t.activeRegion = n.region;
+        t.regionBlend = 0;
+        t.banner = `${TUNNEL_REGION_NAMES[n.region]} · ${TUNNEL_PATTERN_NAMES[n.pattern]}`;
+        t.bannerKind = "region";
+        t.bannerLeft = 2.8;
+        sound = "region";
+      } else if (!sound) sound = "section";
+    }
+    if (n.sectionEnd && !n.cleared && n.x <= w.W * PHYS.squirrelX) {
+      n.cleared = true;
+      t.sectionsCleared += 1;
+      addTunnelFlow(t, 4);
+    }
+  }
   t.nodes = t.nodes.filter((n, i) => n.x > -TUNNEL_STEP * 2 || i >= t.nodes.length - 2);
-  t.hazards = t.hazards.filter((h) => h.x > -80);
-  w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
 
   const sx = w.W * PHYS.squirrelX;
   const sy = w.squirrel.y;
+  // Pals travel with the pilot visually, but their abilities remain off in
+  // this score-normalized mode.
+  const palTargetX = sx - 42;
+  const palTargetY = sy - 22 + Math.sin(w.time * 2.6) * 7;
+  const palFollow = Math.min(1, realDt * 5);
+  w.palPos.x += (palTargetX - w.palPos.x) * palFollow;
+  w.palPos.y += (palTargetY - w.palPos.y) * palFollow;
   const bounds = tunnelBoundsAt(w, sx);
   if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom) return die(w, save);
   for (const h of t.hazards) {
-    if (circleHit(sx, sy, PHYS.squirrelR, h.x, h.y, h.r * 0.65)) return die(w, save);
+    if (!h.warned && h.x <= w.W + 150) {
+      h.warned = true;
+      if (!sound) sound = "warning";
+    }
+    const hitRadius = PHYS.squirrelR + h.r * 0.65;
+    if (sweptCircleHit(sx, oldSy, sx, sy, h.x + move, h.y, h.x, h.y, hitRadius)) return die(w, save);
+    if (!h.nearMissed && h.x <= sx && h.x + move > sx) {
+      h.nearMissed = true;
+      const cross = move > 0 ? Math.max(0, Math.min(1, (h.x + move - sx) / move)) : 1;
+      const passY = oldSy + (sy - oldSy) * cross;
+      const clearance = Math.abs(passY - h.y) - hitRadius;
+      if (clearance >= 0 && clearance <= 19) {
+        t.nearMisses += 1;
+        addTunnelFlow(t, 15);
+        t.banner = "NEAR MISS  +FLOW";
+        t.bannerKind = "reward";
+        t.bannerLeft = 1.15;
+        if (!sound) sound = "near";
+      }
+    }
   }
+  t.hazards = t.hazards.filter((h) => h.x > -80);
 
-  let sound: string | null = null;
   for (const a of w.pickups) {
     if (a.got) continue;
     const ay = a.y + Math.sin(a.bob) * 4;
     if (!circleHit(sx, sy, PHYS.squirrelR, a.x, ay, 18)) continue;
     a.got = true;
     if (a.kind === "multiplier") {
-      t.multiplier = 2;
       t.multiplierLeft = 8;
+      addTunnelFlow(t, 28);
       spark(w, a.x, ay, ["#fff4a8", "#ffd060", "#b45cff"], 18, "gold");
       sound = "gold";
+    } else if (a.kind === "slow") {
+      w.powerLeft = PHYS.powerDuration;
+      addTunnelFlow(t, 10);
+      spark(w, a.x, ay, ["#6ef0ff", "#fff", "#8ad8ff"], 16, "cyan");
+      sound = "freeze";
     } else {
       w.runAcorns += 1;
+      t.chain += 1;
+      t.bestChain = Math.max(t.bestChain, t.chain);
+      addTunnelFlow(t, 4 + Math.min(3, t.chain * 0.25));
       spark(w, a.x, ay, ["#ffd060", "#fff"], 10, "gold");
       sound = "acorn";
     }
   }
+  for (const a of w.pickups) {
+    if (!a.got && !a.missed && a.x < sx - 22 && a.kind === "acorn") {
+      a.missed = true;
+      t.chain = 0;
+      t.flow = Math.max(0, t.flow - 12);
+    }
+  }
+  w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got && !a.missed);
+
+  const rawDepth = Math.floor(w.distance / 100);
+  if (rawDepth >= t.nextMilestone) {
+    const reached = t.nextMilestone;
+    t.nextMilestone += reached < 200 ? 50 : 100;
+    t.banner = reached === 50 ? "CURRENT LOCKED" : reached === 100 ? "DEEP RUN" : reached === 200 ? "LONG HAUL" : `RANGE ${reached}`;
+    t.bannerKind = "milestone";
+    t.bannerLeft = 2.4;
+    if (!sound) sound = "milestone";
+  }
+  refreshTunnelMultiplier(t);
   return sound;
 }
 
@@ -1260,8 +1724,13 @@ function die(w: World, save: SaveData) {
           : w.flight === "arcade"
             ? w.score >= save.arcadeBest
             : w.flight === "tunnel"
-              ? w.score >= save.tunnelBest
+              ? w.score > save.tunnelBest
             : w.score >= save.highScore,
+    flowBest: w.tunnel?.flowBest ?? 0,
+    bestChain: w.tunnel?.bestChain ?? 0,
+    sections: w.tunnel?.sectionsCleared ?? 0,
+    nearMisses: w.tunnel?.nearMisses ?? 0,
+    bestMultiplier: w.tunnel?.bestMultiplier ?? 1,
   };
   save.xp = fromXp + xp;
   save.acorns += w.runAcorns;
@@ -1468,7 +1937,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.hitCooldown > 0) w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
   if (w.envMsgT > 0) w.envMsgT = Math.max(0, w.envMsgT - dt);
 
-  if (w.flight === "tunnel" && w.tunnel) return updateTunnel(w, save, dt);
+  if (w.flight === "tunnel" && w.tunnel) return updateTunnel(w, save, simDt, dt);
 
   const d = difficulty(w);
   w.speed = d.speed;

@@ -127,9 +127,16 @@ export async function bootStandalone(root: HTMLElement) {
       return;
     }
     if (snap.screen === "dead" && snap.dead) {
-      const sheet = el("div", "ac-sheet ac-center");
+      const sheet = el("div", "ac-sheet ac-center ac-result");
       sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID" : "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
       if (snap.dead.best && snap.dead.score > 0) sheet.append(el("p", "ac-gold", "NEW BEST"));
+      if (snap.flight === "tunnel") {
+        const count = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+        sheet.append(
+          el("p", "ac-sub", `${count(snap.dead.acorns, "acorn")} · ${count(snap.dead.sections, "section")}`),
+          el("p", "ac-sub", `Best Flow ×${snap.dead.bestMultiplier} · Best chain ${snap.dead.bestChain} · ${count(snap.dead.nearMisses, "near miss")}`),
+        );
+      }
       sheet.append(el("p", "ac-sub", `+${snap.dead.xp} XP · LV ${snap.dead.toLv}`));
       if (snap.dead.toLv > snap.dead.fromLv) sheet.append(el("p", "ac-gold", `LEVEL UP — LV ${snap.dead.toLv}!`));
       {
@@ -150,9 +157,17 @@ export async function bootStandalone(root: HTMLElement) {
           }),
         );
       }
-      const go = el("button", "ac-primary", "CONTINUE");
-      go.onclick = () => engine.dismissDead();
-      sheet.append(go);
+      if (snap.flight === "tunnel") {
+        const replay = el("button", "ac-primary", "FLY AGAIN");
+        replay.onclick = () => engine.fly("tunnel");
+        const go = el("button", "ac-ghost", "CONTINUE");
+        go.onclick = () => engine.dismissDead();
+        sheet.append(replay, go);
+      } else {
+        const go = el("button", "ac-primary", "CONTINUE");
+        go.onclick = () => engine.dismissDead();
+        sheet.append(go);
+      }
       overlay.append(sheet);
       return;
     }
@@ -1161,7 +1176,8 @@ export async function bootStandalone(root: HTMLElement) {
     item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
     item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
     item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
-    item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce.");
+    item(pic(spr("golden")), "GOLDEN ACORN", "Other modes: invulnerable to debris \u2014 planets still bounce.");
+    item(pic(spr("golden")), "FLOW ACORN", "Wormhole Run: fills Flow and guarantees at least ×2 score for 8 seconds.");
     item(pic((ctx, px) => {
       const g = ctx.createRadialGradient(px/2, px/2, 1, px/2, px/2, px/2);
       g.addColorStop(0, "#120424"); g.addColorStop(0.6, "#6a3fb8"); g.addColorStop(1, "rgba(0,0,0,0)");
@@ -1177,8 +1193,8 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
     scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
     scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-    scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap to rise, then gravity pulls you down. Stay between the walls, collect acorns, and dodge lethal debris."));
-    scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
+    scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+    scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
     box.append(scroll);
 
     const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");

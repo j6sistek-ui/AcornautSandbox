@@ -18,6 +18,7 @@ import {
   initStars,
   makeWorld,
   pausePlay,
+  resizeWorld,
   resetRun,
   resumePlay,
   snapshot,
@@ -269,8 +270,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     canvas.style.width = `${W}px`;
     canvas.style.height = `${H}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    world.W = W;
-    world.H = H;
+    resizeWorld(world, W, H);
     if (!world.stars.length) initStars(world);
   }
 
@@ -355,6 +355,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const ev = updateWorld(world, save, dt);
     if (ev === "acorn") sfx.acorn();
     if (ev === "gold") sfx.gold();
+    if (ev === "freeze") sfx.freeze();
+    if (ev === "section") sfx.section();
+    if (ev === "region") sfx.region();
+    if (ev === "warning") sfx.warning();
+    if (ev === "near") sfx.near();
+    if (ev === "milestone") sfx.milestone();
     if (ev === "bounce") sfx.bounce();
     if (ev === "die") {
       writeSave(save);

@@ -25,6 +25,8 @@
     .ac-overlay > * { pointer-events: auto; }
     .ac-sheet { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px 18px 18px; background: rgba(7,11,22,0.9); overflow: hidden; }
     .ac-center { align-items: center; justify-content: center; text-align: center; }
+    .ac-result { overflow-y: auto; justify-content: safe center; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+    @media (max-height: 540px) { .ac-result { justify-content: flex-start; } }
     .ac-head { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     h1 { font-family: Fraunces, serif; font-size: 42px; line-height: 0.95; }
     h2 { font-family: Fraunces, serif; font-size: 28px; }
