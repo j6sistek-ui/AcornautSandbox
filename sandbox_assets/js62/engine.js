@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=61";
-import { sfx, unlockAudio, music } from "./audio.js?v=61";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=61";
-import { drawHud, drawWorld } from "./draw.js?v=61";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=61";
-import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=61";
-import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=61";
+import { emptyArt, loadArt } from "./art.js?v=62";
+import { sfx, unlockAudio, music } from "./audio.js?v=62";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=62";
+import { drawHud, drawWorld } from "./draw.js?v=62";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=62";
+import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=62";
+import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=62";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -55,15 +55,25 @@ export async function createEngine(canvas) {
             window.location.reload();
         },
         redeemAccessCode(code) {
-            if (code.trim() !== "120189")
-                return "denied";
-            save.purchased = save.purchased || [];
-            for (const id of IAP_ITEMS)
-                if (!save.purchased.includes(id))
-                    save.purchased.push(id);
-            writeSave(save);
-            notify();
-            return "ok";
+            const entered = code.trim();
+            if (entered === "120189") {
+                save.purchased = save.purchased || [];
+                for (const id of IAP_ITEMS)
+                    if (!save.purchased.includes(id))
+                        save.purchased.push(id);
+                writeSave(save);
+                notify();
+                return "ok";
+            }
+            // Briella's code. The game believes it has every star, all the
+            // gates open, and Dad gets to watch her fly whatever she wants.
+            if (entered === "033017") {
+                save.allStars = true;
+                writeSave(save);
+                notify();
+                return "love";
+            }
+            return "denied";
         },
         flyLevel(id) {
             const def = levelById(id);
@@ -208,30 +218,17 @@ export async function createEngine(canvas) {
         const item = TRAILS.find((h) => h.id === id);
         if (!item)
             return "missing";
-        if (isIap(id)) {
-            if (!iapOwned(save, id))
-                return "locked";
-            save.equippedTrail = id;
-            if (!save.unlockedTrails.includes(id))
-                save.unlockedTrails.push(id);
-            writeSave(save);
-            notify();
-            return "equip";
-        }
-        if (save.unlockedTrails.includes(id)) {
-            save.equippedTrail = id;
-            writeSave(save);
-            notify();
-            return "equip";
-        }
-        if (save.acorns < item.cost)
-            return "poor";
-        save.acorns -= item.cost;
-        save.unlockedTrails.push(id);
+        // Trails are never bought with acorns any more — a rung on the Star
+        // Chart's ladder opens each one, premium ones come with the pack, and
+        // an open trail simply equips.
+        if (!trailUnlocked(save, id))
+            return "locked";
         save.equippedTrail = id;
+        if (!save.unlockedTrails.includes(id))
+            save.unlockedTrails.push(id);
         writeSave(save);
         notify();
-        return "buy";
+        return "equip";
     }
     function transactPal(id) {
         if (!palUnlocked(save, id))
@@ -481,4 +478,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=61";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=62";

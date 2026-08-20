@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=61";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=61";
-import { drawSprite as drawSpriteOn } from "./art.js?v=61";
-import { createEngine } from "./engine.js?v=61";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=61";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=61";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=62";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=62";
+import { drawSprite as drawSpriteOn } from "./art.js?v=62";
+import { createEngine } from "./engine.js?v=62";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=62";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=62";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -670,6 +670,36 @@ export async function bootStandalone(root) {
             engine.equipPal(pl.id); };
         return b;
     }
+    // Briella's screen. Five seconds of hearts, then a tap sends it away.
+    function showLoveNote() {
+        const wrap = document.createElement("div");
+        wrap.className = "ac-love";
+        const msg = document.createElement("p");
+        msg.className = "ac-lovemsg";
+        msg.textContent = "\u2764\uFE0F\u2764\uFE0F\u2764\uFE0F I love you Briella -Dad \u2764\uFE0F\u2764\uFE0F\u2764\uFE0F";
+        wrap.append(msg);
+        for (let i = 0; i < 26; i++) {
+            const h = document.createElement("span");
+            h.className = "ac-loveheart";
+            h.textContent = ["\u2764\uFE0F", "\u{1F496}", "\u{1F49E}", "\u{1F497}"][i % 4];
+            h.style.left = `${4 + Math.random() * 92}%`;
+            h.style.animationDelay = `${(Math.random() * 3.4).toFixed(2)}s`;
+            h.style.animationDuration = `${(1.6 + Math.random() * 1.4).toFixed(2)}s`;
+            h.style.fontSize = `${18 + Math.round(Math.random() * 26)}px`;
+            wrap.append(h);
+        }
+        let armed = false;
+        setTimeout(() => {
+            armed = true;
+            const hint = document.createElement("p");
+            hint.className = "ac-lovehint";
+            hint.textContent = "tap to continue";
+            wrap.append(hint);
+        }, 5000);
+        wrap.addEventListener("pointerdown", () => { if (armed)
+            wrap.remove(); });
+        document.body.append(wrap);
+    }
     function drawHangar() {
         const s = engine.save;
         const helm = helmetWornBy(s.equipped, s.equippedSuit);
@@ -756,7 +786,7 @@ export async function bootStandalone(root) {
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
-                        : owned ? "OWNED" : u.cost}`));
+                        : owned ? "OWNED" : u.cost === 0 ? "EARNED" : u.cost}`));
                 if (premium)
                     b.classList.add("ac-premium");
                 if (s.guide === "hangar" && u.id === GUIDE_SUIT)
@@ -769,17 +799,21 @@ export async function bootStandalone(root) {
         else if (engine.shopTab === "trails") {
             for (const t of TRAILS) {
                 const premium = isIap(t.id);
-                const owned = premium ? iapOwned(s, t.id) : s.unlockedTrails.includes(t.id);
+                const open = trailUnlocked(s, t.id);
                 const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
                 const { c, ctx } = miniCanvas(64, 56);
                 c.setAttribute("role", "img");
                 c.setAttribute("aria-label", `${t.name} trail preview`);
                 if (ctx)
                     paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
-                b.append(c, document.createTextNode(`${t.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : t.cost}`));
+                b.append(c, document.createTextNode(`${t.name}\n${open ? (premium ? "OWNED" : "EARNED")
+                    : premium ? "PREMIUM"
+                        : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
                 if (premium)
                     b.classList.add("ac-premium");
-                b.onclick = () => { if (!premium || owned)
+                if (!open)
+                    b.classList.add("ac-cardoff");
+                b.onclick = () => { if (open)
                     engine.buyTrail(t.id); };
                 grid.append(b);
             }
@@ -965,6 +999,15 @@ export async function bootStandalone(root) {
             const helm = HELMETS.find((h) => h.id === item.id);
             if (helm)
                 return helmCardOf(helm, px);
+        }
+        if (item.kind === "trail" && item.id) {
+            const t = TRAILS.find((x) => x.id === item.id);
+            if (t) {
+                const { c, ctx } = miniCanvas(px, px);
+                if (ctx)
+                    paintTrailPreview(ctx, t, px / 2, px / 2, performance.now() / 1000);
+                return c;
+            }
         }
         const { c, ctx } = miniCanvas(px, px);
         const art = engine.art;
@@ -1235,9 +1278,16 @@ export async function bootStandalone(root) {
                     input.className = "ac-codein";
                     const go = el("button", "ac-primary ac-codego", "REDEEM");
                     go.onclick = () => {
-                        if (engine.redeemAccessCode(input.value) === "ok") {
+                        const res = engine.redeemAccessCode(input.value);
+                        if (res === "ok") {
                             foundersOpen = false;
                             foundersMsg = "";
+                        }
+                        else if (res === "love") {
+                            foundersOpen = false;
+                            foundersMsg = "";
+                            showLoveNote();
+                            render();
                         }
                         else {
                             foundersMsg = "That code doesn't open this door.";

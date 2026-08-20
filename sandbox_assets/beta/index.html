@@ -340,6 +340,17 @@
     .ac-codein::placeholder { color: #566180; letter-spacing: .1em; }
     .ac-codego { width: auto; padding: 10px 18px; }
     .ac-codemsg { grid-column: 1 / -1; color: #ff8a8a; }
+    .ac-love { position: fixed; inset: 0; z-index: 200; background: rgba(9,6,20,.86); display: flex;
+      align-items: center; justify-content: center; overflow: hidden; }
+    .ac-lovemsg { font-family: Fraunces, serif; font-size: 22px; font-weight: 800; color: #ffd7e8;
+      text-align: center; padding: 0 28px; line-height: 1.5; text-shadow: 0 2px 18px rgba(255,80,150,.55);
+      animation: acLoveIn .6s ease; }
+    .ac-lovehint { position: absolute; bottom: 48px; left: 0; right: 0; text-align: center;
+      color: #d8a8c0; font-size: 12px; letter-spacing: .18em; animation: acLoveIn .4s ease; }
+    .ac-loveheart { position: absolute; bottom: -40px; animation: acHeart 2s ease-in forwards; }
+    @keyframes acLoveIn { from { opacity: 0; transform: scale(.9); } }
+    @keyframes acHeart { 0% { transform: translateY(0) scale(.6) rotate(-8deg); opacity: 0; }
+      12% { opacity: 1; } 100% { transform: translateY(-92vh) scale(1.15) rotate(10deg); opacity: 0; } }
     .ac-coach { position: absolute; left: 18px; right: 18px; bottom: 96px; z-index: 40;
       background: #1a2340; border: 1px solid #d4af37; border-radius: 14px; padding: 11px 14px;
       font-size: 12px; font-weight: 800; letter-spacing: .03em; color: #ffe9a8; text-align: center;
@@ -412,7 +423,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js61/standalone.js";
+    import { bootStandalone } from "../js62/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

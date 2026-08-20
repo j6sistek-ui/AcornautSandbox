@@ -24,6 +24,7 @@ for everyone.
 | ★ | Reward |
 |---:|---|
 | 3 | **Astrolobee** — Powerup/Acorns Disabled |
+| 5 | **Ion Stream** — A trail of charged sky. |
 | 6 | **Start Shield** — Arm any run with a shield from the hangar. |
 | 8 | **Void Helmet** — Obsidian glass, gold rim. In the shop. |
 | 10 | **Acorn** — Magnet Effect |
@@ -31,31 +32,41 @@ for everyone.
 | 12 | **Deep Space Flight** — Endless mode: space shifts every 10s. |
 | 14 | **Comet Helmet** — Molten amber glass. In the shop. |
 | 16 | **Jelly** — Bounce Softer |
+| 18 | **Bubble Jets** — A wake of glass beads. |
 | 21 | **Comet** — 2x Freeze Duration |
 | 24 | **Cherry Helmet** — Rose-tinted glass. In the shop. |
 | 27 | **Chapter 3 — ICE MOON** — The narrows open. |
 | 27 | **Shield Battery** — Carry three shield charges at once. |
+| 30 | **Nebula Bloom** — Petals of nebula light. |
 | 33 | **Meteor Core** — 2x Power Ups |
 | 38 | **Royal Helmet** — Crowned. Obviously. In the shop. |
+| 42 | **Comet Booster** — Burn like the real thing. |
 | 45 | **Lost in Space** — Endless mode: the sky rotates, drifts and mirrors. |
 | 45 | **Chapter 4 — SOLAR FURNACE** — The heat opens. |
 | 45 | **Moon** — Lower Gravity |
 | 48 | **Aurora Helmet** — Polar light under glass. In the shop. |
 | 52 | **UFO** — Slow Effect in blackholes |
+| 56 | **Prism Shards** — Light, broken beautifully. |
 | 60 | **Robo Suit** — Full chrome, scanning visor. Now in the shop. |
 | 66 | **Chapter 5 — MIDNIGHT RUN** — The dark opens. |
 | 66 | **Star Child** — Double Golden Effect |
 | 70 | **Meteor Helmet** — Burnished impact glass. In the shop. |
+| 72 | **Plasma Arc** — A live violet current. |
 | 75 | **TinTin** — Disables Blackholes |
 | 84 | **Wisp** — More gate movement |
+| 88 | **Galaxy Dust** — A spiral arm behind you. |
 | 90 | **Chapter 6 — CRYSTAL BELT** — Deep-space levels open. |
 | 90 | **Nut-Sack** — 2x Acorns but the sack is heavy |
 | 95 | **Chrono Helmet** — Brass clockwork glass. In the shop. |
 | 100 | **Alien Suit** — The visitor look, antennae included. |
+| 105 | **Aurora Ribbon** — The polar sky, towed. |
 | 117 | **Chapter 7 — CRIMSON STORM** — The turbulence opens. |
+| 125 | **Frostbite** — A wake of hoarfrost. |
+| 140 | **Void Smoke** — What the dark exhales. |
 | 130 | **Ghost Suit** — Spectral tail, cyan-burning eyes. |
 | 147 | **Chapter 8 — LOST REACHES** — Lost-in-space levels open. |
 | 160 | **Big Booty Suit** — Maximum silhouette. Real jiggle. |
+| 170 | **Supernova** — The loudest exit there is. |
 | 180 | **Chapter 9 — THE BLACKOUT** — Lights out. |
 | 180 | **Flight Mods** — Steady Gates, Rough Air and Thrill Seeker unlock in the hangar. |
 | 216 | **Chapter 10 — EVENT HORIZON** — The last ten. |

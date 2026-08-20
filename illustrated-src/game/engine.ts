@@ -7,6 +7,7 @@ import {
   deepUnlocked,
   helmetRevealed,
   iapOwned,
+  trailUnlocked,
   eraseSave,
   lostUnlocked,
   modsUnlocked,
@@ -49,8 +50,8 @@ export type Engine = {
   fly: (mode: FlightMode) => void;
   /** wipe this build's save slot and reboot into a fresh game */
   startOver: () => void;
-  /** the Founder's Pack door: the right code marks every premium item bought */
-  redeemAccessCode: (code: string) => "ok" | "denied";
+  /** the Founder's Pack door — and one more code that is a love letter */
+  redeemAccessCode: (code: string) => "ok" | "love" | "denied";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   open: (s: Screen) => void;
@@ -119,12 +120,23 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       window.location.reload();
     },
     redeemAccessCode(code) {
-      if (code.trim() !== "120189") return "denied";
-      save.purchased = save.purchased || [];
-      for (const id of IAP_ITEMS) if (!save.purchased.includes(id)) save.purchased.push(id);
-      writeSave(save);
-      notify();
-      return "ok";
+      const entered = code.trim();
+      if (entered === "120189") {
+        save.purchased = save.purchased || [];
+        for (const id of IAP_ITEMS) if (!save.purchased.includes(id)) save.purchased.push(id);
+        writeSave(save);
+        notify();
+        return "ok";
+      }
+      // Briella's code. The game believes it has every star, all the
+      // gates open, and Dad gets to watch her fly whatever she wants.
+      if (entered === "033017") {
+        save.allStars = true;
+        writeSave(save);
+        notify();
+        return "love";
+      }
+      return "denied";
     },
     flyLevel(id) {
       const def = levelById(id);
@@ -257,27 +269,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactTrail(id: string) {
     const item = TRAILS.find((h) => h.id === id);
     if (!item) return "missing";
-    if (isIap(id)) {
-      if (!iapOwned(save, id)) return "locked";
-      save.equippedTrail = id;
-      if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
-      writeSave(save);
-      notify();
-      return "equip";
-    }
-    if (save.unlockedTrails.includes(id)) {
-      save.equippedTrail = id;
-      writeSave(save);
-      notify();
-      return "equip";
-    }
-    if (save.acorns < item.cost) return "poor";
-    save.acorns -= item.cost;
-    save.unlockedTrails.push(id);
+    // Trails are never bought with acorns any more — a rung on the Star
+    // Chart's ladder opens each one, premium ones come with the pack, and
+    // an open trail simply equips.
+    if (!trailUnlocked(save, id)) return "locked";
     save.equippedTrail = id;
+    if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
     writeSave(save);
     notify();
-    return "buy";
+    return "equip";
   }
 
   function transactPal(id: string) {

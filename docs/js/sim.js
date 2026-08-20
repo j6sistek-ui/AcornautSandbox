@@ -1,7 +1,7 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=61";
-import { modsUnlocked, writeSave } from "./save.js?v=61";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=61";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=61";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=62";
+import { modsUnlocked, writeSave } from "./save.js?v=62";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=62";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=62";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
