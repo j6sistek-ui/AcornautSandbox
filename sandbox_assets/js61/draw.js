@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=60";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=60";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=60";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=60";
-import { tunnelBoundsAt } from "./sim.js?v=60";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=61";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=61";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=61";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=61";
+import { tunnelBoundsAt } from "./sim.js?v=61";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -184,7 +184,7 @@ export function drawWorld(ctx, w, save, art) {
             drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
         }
         else if (a.kind === "portal") {
-            drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64);
+            drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
         }
         else if (a.kind === "retro") {
             drawShiftAcorn(ctx, art, a.x, y, w.time);
@@ -609,7 +609,20 @@ function drawShiftAcorn(ctx, art, x, y, t) {
 // The finish line. It borrows the wormhole's language — a swirl you fly
 // into — but in gold and green, the game's reward colours, so it reads as
 // an arrival on first sight.
-function drawFinishPortal(ctx, x, y, t, reach = 64) {
+// Whether applyWarp() has the playfield horizontally mirrored RIGHT NOW —
+// the same wp math it uses, reduced to the sign of its x-scale. World-space
+// text must counter-flip by this, or a black hole near the finish leaves
+// the FINISH banner reading backwards.
+function warpMirroredNow(w) {
+    const lost = w.flight === "lost";
+    const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+    if (wp <= 0)
+        return false;
+    const mFrom = w.prevMirror ? -1 : 1;
+    const mTo = w.warpMirror ? -1 : 1;
+    return mFrom + (mTo - mFrom) * wp < 0;
+}
+function drawFinishPortal(ctx, x, y, t, reach = 64, mirrored = false) {
     const k = reach / 28;
     const pulse = (12 + Math.sin(t * 4) * 3) * k;
     const grd = ctx.createRadialGradient(x, y, 2 * k, x, y, pulse + 14 * k);
@@ -635,7 +648,12 @@ function drawFinishPortal(ctx, x, y, t, reach = 64) {
     ctx.textAlign = "center";
     ctx.font = "800 13px Figtree, system-ui";
     ctx.fillStyle = `rgba(255,236,180,${0.75 + 0.25 * Math.sin(t * 5)})`;
-    ctx.fillText("FINISH", x, y - reach - 8);
+    ctx.save();
+    ctx.translate(x, y - reach - 8);
+    if (mirrored)
+        ctx.scale(-1, 1);
+    ctx.fillText("FINISH", 0, 0);
+    ctx.restore();
     ctx.textAlign = "left";
 }
 function drawVortex(ctx, x, y, worm, t, reach = 28) {
