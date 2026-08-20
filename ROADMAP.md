@@ -23,33 +23,33 @@ for everyone.
 
 | ★ | Reward |
 |---:|---|
-| 3 | **Bee** — Your first wingmate. |
+| 3 | **Astrolobee** — Powerup/Acorns Disabled |
 | 6 | **Start Shield** — Arm any run with a shield from the hangar. |
 | 8 | **Void Helmet** — Obsidian glass, gold rim. In the shop. |
-| 10 | **Acorn Buddy** — Pulls nearby acorns to you. |
+| 10 | **Acorn** — Magnet Effect |
 | 12 | **Chapter 2 — NURSERY BLOOM** — The nebula opens. |
 | 12 | **Deep Space Flight** — Endless mode: space shifts every 10s. |
 | 14 | **Comet Helmet** — Molten amber glass. In the shop. |
-| 16 | **Void Jelly** — Softens planet bounces. |
-| 21 | **Comet Sprite** — Freeze pickups last twice as long. |
+| 16 | **Jelly** — Bounce Softer |
+| 21 | **Comet** — 2x Freeze Duration |
 | 24 | **Cherry Helmet** — Rose-tinted glass. In the shop. |
 | 27 | **Chapter 3 — ICE MOON** — The narrows open. |
 | 27 | **Shield Battery** — Carry three shield charges at once. |
-| 33 | **Meteor Core** — A tougher travelling companion. |
+| 33 | **Meteor Core** — 2x Power Ups |
 | 38 | **Royal Helmet** — Crowned. Obviously. In the shop. |
 | 45 | **Lost in Space** — Endless mode: the sky rotates, drifts and mirrors. |
 | 45 | **Chapter 4 — SOLAR FURNACE** — The heat opens. |
-| 45 | **Pocket Moon** — A small steady light. |
+| 45 | **Moon** — Lower Gravity |
 | 48 | **Aurora Helmet** — Polar light under glass. In the shop. |
-| 52 | **UFO** — A burst of slow-time out of every warp. |
+| 52 | **UFO** — Slow Effect in blackholes |
 | 60 | **Robo Suit** — Full chrome, scanning visor. Now in the shop. |
 | 66 | **Chapter 5 — MIDNIGHT RUN** — The dark opens. |
-| 66 | **Star Pup** — Golden acorns burn twice as long. |
+| 66 | **Star Child** — Double Golden Effect |
 | 70 | **Meteor Helmet** — Burnished impact glass. In the shop. |
-| 75 | **Tin Bot** — Flies without shields, pays double. |
-| 84 | **Wisp** — The gates sway to its song. |
+| 75 | **TinTin** — Disables Blackholes |
+| 84 | **Wisp** — More gate movement |
 | 90 | **Chapter 6 — CRYSTAL BELT** — Deep-space levels open. |
-| 90 | **Nutsack** — Every acorn counts double. No shields. |
+| 90 | **Nut-Sack** — 2x Acorns but the sack is heavy |
 | 95 | **Chrono Helmet** — Brass clockwork glass. In the shop. |
 | 100 | **Alien Suit** — The visitor look, antennae included. |
 | 117 | **Chapter 7 — CRIMSON STORM** — The turbulence opens. |

@@ -611,11 +611,15 @@ export async function bootStandalone(root) {
             paintPalPreview(ctx, engine.art, pl.id, 36, 30, 54);
         b.append(c);
         b.append(el("p", "ac-paldesc", pl.desc));
+        // The card is NAME, painting, DESCRIPTION. The foot line only exists
+        // when it says something the description does not: the star price, the
+        // premium state — never a redundant tag.
         const status = premium ? (open ? "OWNED" : "PREMIUM")
-            : open ? pl.tag
+            : open ? ""
                 : STAR_UNLOCKS.pals[pl.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.pals[pl.id]}`
                     : forShop ? "EARNED BY FLYING" : "LOCKED";
-        b.append(el("p", "ac-palstat", status));
+        if (status)
+            b.append(el("p", "ac-palstat", status));
         b.onclick = () => { if (open)
             engine.equipPal(pl.id); };
         return b;

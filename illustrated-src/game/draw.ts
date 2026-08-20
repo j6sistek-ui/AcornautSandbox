@@ -1478,7 +1478,7 @@ if (w.lvl) {
       : st === "tap2" ? "one more boost — then just watch"
       : st === "swipe" ? "dive back down and make the gap"
       : st === "yourturn" ? "fly the gaps · grab the acorns"
-      : "The Acorn Buddy reels in nearby acorns.";
+      : "The Acorn pal reels in nearby acorns.";
     drawPrompt(ctx, w, title, body, st === "swipe" ? w.H * 0.58 : w.H * 0.36);
     if (w.tut.nudge) {
       ctx.fillStyle = "#ffd080";
