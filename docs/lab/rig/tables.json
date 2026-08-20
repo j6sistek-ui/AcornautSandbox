@@ -1,5 +1,5 @@
 {
- "artVer": "52",
+ "artVer": "53",
  "suits": [
   {
    "id": "flight",
@@ -238,118 +238,6 @@
    "ownHead": false,
    "bakedDome": false,
    "frame": false
-  },
-  {
-   "id": "idle-1",
-   "name": "Glide 1",
-   "key": "idle-1",
-   "file": "squirrel/idle-1.png",
-   "dome": [
-    191,
-    103,
-    51
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-2",
-   "name": "Glide 2",
-   "key": "idle-2",
-   "file": "squirrel/idle-2.png",
-   "dome": [
-    192,
-    103,
-    51
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-3",
-   "name": "Glide 3",
-   "key": "idle-3",
-   "file": "squirrel/idle-3.png",
-   "dome": [
-    192,
-    102,
-    53
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "idle-4",
-   "name": "Glide 4",
-   "key": "idle-4",
-   "file": "squirrel/idle-4.png",
-   "dome": [
-    194,
-    99,
-    51
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-1",
-   "name": "Flap 1",
-   "key": "flap-1",
-   "file": "squirrel/flap-1.png",
-   "dome": [
-    166,
-    96,
-    52
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-2",
-   "name": "Flap 2",
-   "key": "flap-2",
-   "file": "squirrel/flap-2.png",
-   "dome": [
-    164,
-    93,
-    50
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-3",
-   "name": "Flap 3",
-   "key": "flap-3",
-   "file": "squirrel/flap-3.png",
-   "dome": [
-    164,
-    79,
-    48
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
-  },
-  {
-   "id": "flap-4",
-   "name": "Flap 4",
-   "key": "flap-4",
-   "file": "squirrel/flap-4.png",
-   "dome": [
-    163,
-    80,
-    45
-   ],
-   "ownHead": false,
-   "bakedDome": true,
-   "frame": true
   }
  ],
  "helmets": [
@@ -360,7 +248,7 @@
    "glass": [
     129,
     128,
-    111,
+    125,
     0
    ]
   },
@@ -492,7 +380,7 @@
    "glass": [
     128,
     128,
-    104,
+    133,
     0
    ]
   },
@@ -503,7 +391,7 @@
    "glass": [
     128,
     128,
-    106,
+    136,
     0
    ]
   },
@@ -514,7 +402,7 @@
    "glass": [
     150,
     114,
-    102,
+    115,
     0
    ]
   },
@@ -545,9 +433,9 @@
    "name": "Leviathan",
    "file": "helms/leviathan.png",
    "glass": [
-    134,
-    126,
-    85,
+    135,
+    100,
+    110,
     0
    ]
   },
@@ -569,7 +457,7 @@
    "glass": [
     174,
     121,
-    126,
+    136,
     0
    ]
   }

@@ -3,7 +3,7 @@
 // build, and nothing here is imported by the game.
 //
 //   node illustrated-src/build-lab.mjs
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,12 +13,22 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function tsc(entry, outDir) {
   mkdirSync(outDir, { recursive: true });
-  execSync(
-    `npx tsc ${entry} --outDir ${JSON.stringify(outDir)} ` +
-      "--module es2020 --target es2020 --skipLibCheck --moduleResolution bundler " +
-      "--declaration false --strict false",
-    { cwd: root, stdio: "inherit" },
-  );
+  const args = [
+    entry,
+    "--outDir", outDir,
+    "--module", "es2020",
+    "--target", "es2020",
+    "--skipLibCheck",
+    "--moduleResolution", "bundler",
+    "--declaration", "false",
+    "--strict", "false",
+  ];
+  const tscModule = process.env.ACORNAUT_TSC;
+  if (tscModule) {
+    execFileSync(process.execPath, [tscModule, ...args], { cwd: root, stdio: "inherit" });
+  } else {
+    execFileSync("npx", ["tsc", ...args], { cwd: root, stdio: "inherit" });
+  }
 }
 
 tsc("illustrated-src/lab/spill.ts", join(root, "docs/lab/spill/js"));

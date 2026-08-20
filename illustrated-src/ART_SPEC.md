@@ -1,10 +1,10 @@
 # Acornaut art spec — heads and helmets
 
-Every helmet has to sit on every suit. There are 17 suits — one of which,
-the Cat, wears its own head — and 20 helmets, so that is 320 combinations
-plus 160 more across the eight flight-animation frames, and no one is going
-to eyeball them all. This is the contract that makes them work without
-checking.
+Every helmet has to sit on every helmet-wearing suit. There are 17 suits —
+one of which, the Cat, wears its own head — and 20 helmets, so that is 320
+shipping combinations. Flight's eight animation frames keep their baked
+Clear dome; any custom helmet uses the bare Flight rig, avoiding another
+160 stacked-dome combinations.
 
 The **rig editor** (`docs/lab/rig/`, reachable from Help) is the bench for
 setting these two tables by hand. It draws every pairing the way the game
@@ -116,9 +116,8 @@ python3 illustrated-src/measure-art.py helmet docs/art/helms/newhelm.png
 # 5. cut the tail off at the neck, and paste the printed TAIL_PIVOT back
 python3 illustrated-src/neck-cut.py docs/art/suits newsuit
 
-# 6. re-check everything, then bump ART_VER and rebuild
-python3 illustrated-src/measure-art.py audit
-python3 illustrated-src/rig-tail.py audit docs/art/suits
+# 6. re-check everything, inspect the contact sheets, then bump ART_VER
+python3 illustrated-src/verify-art.py
 ```
 
 `fit-suit.py` exists because `key-render.py` keeps whatever framing the
@@ -136,6 +135,35 @@ measures from the new hinge. Always cut from the original art, and pass
 The tool prints a confidence for suits. **Below 0.80, fit it by eye** rather
 than trusting the number — that is the signal that the face match did not
 find the face.
+
+`measure-art.py` is a diagnostic, not a release gate. Its percentage is a
+useful clue for one file, but shaped helmets and unusual heads still require
+the rendered contact sheet.
+
+## Release QA
+
+Run the mechanical gate from the repository root:
+
+```bash
+python3 illustrated-src/verify-art.py
+```
+
+It verifies that `docs/art` and `sandbox_assets/art` are byte-identical,
+decodes every shipping raster, enforces runtime dimensions and alpha,
+checks catalog/load coverage, audits the reviewed planet/debris cutouts,
+and runs the full tail-rig audit.
+
+Then inspect `docs/lab/visual-audit/` on both halves of its light/dark plate.
+It renders all 320 suit/helmet combinations, the eight baked-Clear Flight
+frames, and every planet and debris sprite using gameplay's measured fit.
+The rig editor at `docs/lab/rig/` remains the authoritative place to adjust
+head and helmet circles.
+
+New or changed runtime art must be published to both public art trees. Do
+not treat a passing mirror check as provenance: keep the high-resolution,
+transparent or contrasting-plate master in `art-src/` as well. Most current
+planet, debris, helmet and companion files have no source master, so repairs
+to those derived 256px cutouts must stay conservative.
 
 ## Suits that keep their own head
 

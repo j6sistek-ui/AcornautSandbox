@@ -629,9 +629,17 @@ export async function bootStandalone(root: HTMLElement) {
     return c;
   }
 
+  function suitCardOf(suit: (typeof SUITS)[number], px = 56) {
+    // Fit the painted subject's measured bounds instead of shrinking its
+    // whole source canvas (whose transparent margins vary from suit to suit).
+    const { c, ctx } = miniCanvas(px, px);
+    if (ctx) drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
+    return c;
+  }
+
   function portraitOf(helmet: (typeof HELMETS)[number], suit: (typeof SUITS)[number], px = 56) {
     const { c, ctx } = miniCanvas(px, px);
-    if (ctx && engine.art) paintPortrait(ctx, engine.art, helmet, suit, px / 2, px / 2, px * 0.88);
+    if (ctx && engine.art) paintPortrait(ctx, engine.art, helmet, suit, px * 0.45, px / 2, px * 0.78);
     return c;
   }
 
@@ -705,7 +713,7 @@ export async function bootStandalone(root: HTMLElement) {
         const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
         const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
         b.append(
-          shopImg(artUrl(`suits/${u.id}.png`), u.name),
+          suitCardOf(u, 64),
           document.createTextNode(
             `${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM") : !open ? "LOCKED" : owned ? "OWNED" : u.cost}`),
         );
@@ -903,13 +911,15 @@ export async function bootStandalone(root: HTMLElement) {
   }
 
   function rewardArt(item: (typeof TRACK)[number], px = 52) {
+    if (item.kind === "suit" && item.id) {
+      const suit = SUITS.find((u) => u.id === item.id);
+      if (suit) return suitCardOf(suit, px);
+    }
     const { c, ctx } = miniCanvas(px, px);
     const art = engine.art;
     if (!ctx || !art) return c;
     if (item.kind === "pal" && item.id) {
       paintPalPreview(ctx, art, item.id, px / 2, px / 2, px * 0.86);
-    } else if (item.kind === "suit" && item.id) {
-      drawSpriteOn(ctx, art.suits?.[item.id] ?? null, px / 2, px / 2, px * 0.92);
     } else if (item.kind === "mode") {
       // mode emblems from the exotic planet art: the black hole for Deep
       // Space, the blue vortex for Lost in Space
@@ -1147,7 +1157,7 @@ export async function bootStandalone(root: HTMLElement) {
         for (const id of bn.items.slice(0, 4)) {
           const suit = SUITS.find((u) => u.id === id);
           const helm = HELMETS.find((h) => h.id === id);
-          if (suit) strip.append(shopImg(artUrl(`suits/${id}.png`), suit.name, 40));
+          if (suit) strip.append(suitCardOf(suit, 40));
           else if (helm) strip.append(helmCardOf(helm, 40));
         }
         if (bn.items.length > 4) strip.append(el("span", "ac-bundlemore", `+${bn.items.length - 4}`));
@@ -1163,7 +1173,7 @@ export async function bootStandalone(root: HTMLElement) {
       for (const u of SUITS.filter((x) => isIap(x.id))) {
         const owned = iapOwned(s, u.id);
         const b = el("button", s.equippedSuit === u.id ? "ac-card ac-premium on" : "ac-card ac-premium");
-        b.append(shopImg(artUrl(`suits/${u.id}.png`), u.name),
+        b.append(suitCardOf(u, 64),
                  document.createTextNode(`${u.name}\n${owned ? "OWNED" : "PREMIUM"}`));
         b.onclick = () => { if (owned) engine.buySuit(u.id); };
         grid.append(b);

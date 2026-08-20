@@ -1,6 +1,6 @@
 import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
-import { drawSprite, skyImage, type ArtBank, type Sprite } from "./art";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import { tunnelBoundsAt, type Particle, type World } from "./sim";
@@ -844,9 +844,9 @@ const DOME: Record<string, [number, number, number]> = {
   "flap-2": [164, 93, 50],
   "flap-3": [164, 79, 48],
   "flap-4": [163, 80, 45],
-  // The twelve originals were re-rendered bare-headed, so every one of
-  // these was measured again against flight's face. Ghost is the exception
-  // and still wears a painted dome -- see bakedDome in catalog.ts.
+  // The original flight-family suits were re-rendered bare-headed, so every
+  // one of these was measured again against flight's face. Ghost now uses a
+  // clean bare-headed black-plate render as well.
   "suit:flight": [194, 97, 50],
   "suit:iontrim": [197, 100, 58],
   "suit:copper": [196, 99, 54],
@@ -881,7 +881,7 @@ const DOME: Record<string, [number, number, number]> = {
 // exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS: Record<string, [number, number, number] | [number, number, number, number]> = {
   comet: [129, 129, 125],
-  "clear": [129, 128, 111],
+  "clear": [129, 128, 125],
   "ion": [129, 128, 125],
   "solar": [128, 128, 125],
   "nebula": [129, 129, 125],
@@ -897,8 +897,8 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
-  "gemmie": [128, 128, 104],
-  "phoenix": [128, 128, 106],
+  "gemmie": [128, 128, 133],
+  "phoenix": [128, 128, 136],
   "seraph": [125, 151, 110],
   "chronarch": [127, 128, 136],
   "paladin": [130, 144, 115],
@@ -907,22 +907,26 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // by about a fifth of its own radius, because the squirrel's face is
   // forward of its head centre. Centred on the shell it put the whole face
   // behind cream lacquer.
-  "princess": [174, 121, 126],
+  "princess": [174, 121, 136],
   // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
   // its visor field gave 78, which drew the helmet half again too big — the
   // shell hides most of the sphere's edge, so the visible visor is nothing
   // like the glass radius. Like princess it is a shell with an opening, so
   // its centre sits behind that opening rather than in the middle of the
   // frame; centred, the muzzle hung over the rim on every suit.
-  "sammie": [150, 114, 102],
-  // Leviathan's visor is deep teal, too dark for a brightness fit to see,
-  // so it keeps the family default.
-  "leviathan": [134, 126, 85],
+  "sammie": [150, 114, 115],
+  // Leviathan's deep chin and offset opening need a manual fit; brightness
+  // measurement cannot find its dark teal visor reliably.
+  "leviathan": [135, 100, 110],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
 const punchedCache = new Map<string, HTMLCanvasElement>();
+const LIGHT_OPAQUE_VISORS = new Set([
+  "gemmie", "phoenix", "sammie", "seraph",
+  "chronarch", "paladin", "princess",
+]);
 function punchedHelm(spr: Sprite, id: string) {
   const hit = punchedCache.get(id);
   if (hit) return hit;
@@ -933,9 +937,13 @@ function punchedHelm(spr: Sprite, id: string) {
   const cc = c.getContext("2d");
   if (!cc || !g) return null;
   cc.drawImage(spr, 0, 0);
-  const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * 0.82);
-  grad.addColorStop(0, "rgba(0,0,0,0.55)");
-  grad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+  const strong = LIGHT_OPAQUE_VISORS.has(id);
+  const grad = cc.createRadialGradient(
+    g[0], g[1], g[2] * 0.1,
+    g[0], g[1], g[2] * (strong ? 0.88 : 0.82),
+  );
+  grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
+  grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
   grad.addColorStop(1, "rgba(0,0,0,0)");
   cc.globalCompositeOperation = "destination-out";
   cc.fillStyle = grad;
@@ -983,6 +991,7 @@ function drawRigLayer(
   size: number,
   rot = 0,
   pivot?: [number, number],
+  halo?: "dark" | "light",
 ) {
   const scale = size / Math.max(1, Math.max(ref.w, ref.h));
   // top-left of the full canvas, in screen space
@@ -995,6 +1004,13 @@ function drawRigLayer(
     ctx.translate(px, py);
     ctx.rotate(rot);
     ctx.translate(-px, -py);
+  }
+  if (halo) {
+    const h = spriteHalo(layer, halo);
+    if (h) {
+      const pad = SPRITE_HALO_PAD * scale;
+      ctx.drawImage(h, ox - pad, oy - pad, h.width * scale, h.height * scale);
+    }
   }
   ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
   ctx.restore();
@@ -1097,7 +1113,11 @@ function paintIllustrated(
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
-  const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
+  // Flight's animation frames already wear the Clear dome. Any other helmet
+  // needs the bare rigged Flight painting so it does not stack two helmets.
+  const suited = suit.id !== "flight" || helmet.id !== "clear"
+    ? (art?.suits?.[suit.id] ?? null)
+    : null;
   const body = suited ?? spr;
   if (!body) return;
 
@@ -1108,8 +1128,8 @@ function paintIllustrated(
   const rigB = suited ? art?.suitBody?.[suit.id] : null;
   if (rigT && rigB && suited) {
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
-    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id]);
-    drawRigLayer(ctx, rigB, ref, x, y, size);
+    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id], halo);
+    drawRigLayer(ctx, rigB, ref, x, y, size, 0, undefined, halo);
     if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     return;
   }
