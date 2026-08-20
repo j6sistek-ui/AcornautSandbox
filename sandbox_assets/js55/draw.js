@@ -870,7 +870,7 @@ const DOME = {
 // exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS = {
     comet: [129, 129, 125],
-    "clear": [129, 128, 111],
+    "clear": [129, 128, 125],
     "ion": [129, 128, 125],
     "solar": [128, 128, 125],
     "nebula": [129, 129, 125],
