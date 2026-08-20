@@ -4,6 +4,9 @@ import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_AR
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
+  deepUnlocked,
+  eraseSave,
+  lostUnlocked,
   modsUnlocked,
   loadSave,
   palUnlocked,
@@ -42,6 +45,8 @@ export type Engine = {
   stop: () => void;
   resize: () => void;
   fly: (mode: FlightMode) => void;
+  /** wipe this build's save slot and reboot into a fresh game */
+  startOver: () => void;
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   open: (s: Screen) => void;
@@ -95,10 +100,19 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     resize,
     fly(mode) {
+      // The mode bar refuses a locked chip, but the gate has to live here
+      // too: a stale render, a harness, or a bookmark must not launch a
+      // mode the save has not earned.
+      if (mode === "deep" && !deepUnlocked(save)) return;
+      if (mode === "lost" && !lostUnlocked(save)) return;
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
       notify();
+    },
+    startOver() {
+      eraseSave();
+      window.location.reload();
     },
     flyLevel(id) {
       const def = levelById(id);

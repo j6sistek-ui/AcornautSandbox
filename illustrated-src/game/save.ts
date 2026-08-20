@@ -4,7 +4,6 @@ import {
   HELMETS,
   LEGACY_KEYS,
   PALS,
-  PAL_LEVELS,
   SAVE_KEY,
   SUITS,
   SUIT_REVEAL,
@@ -95,6 +94,12 @@ export function loadSave(): SaveData {
   if (!s.unlockedTrails?.includes("sparks")) s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
   if (!s.unlockedPals?.includes("none")) s.unlockedPals = ["none", ...(s.unlockedPals || [])];
   if (!HELMETS.some((h) => h.id === s.equipped)) s.equipped = "clear";
+  // A save can arrive wearing things this build does not grant — the open
+  // beta hands premium out, production does not, and the two share a
+  // browser. Anything equipped but not owned HERE comes off; it is not
+  // deleted from the save, so a real purchase puts it straight back on.
+  if (isIap(s.equippedSuit) && !iapOwned(s, s.equippedSuit)) s.equippedSuit = "flight";
+  if (isIap(s.equipped) && !iapOwned(s, s.equipped)) s.equipped = "clear";
   // a matched-set helmet stranded on the wrong suit (saved before the rule
   // existed, or edited by hand) comes off rather than half-fitting
   {
@@ -104,6 +109,7 @@ export function loadSave(): SaveData {
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
+  if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
   // saves written before the flight mods existed
   for (const k of ["steadyGates", "roughAir", "thrillSeeker"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
@@ -132,6 +138,13 @@ export function writeSave(s: SaveData) {
   localStorage.setItem(SAVE_KEY, JSON.stringify(s));
 }
 
+// The one deliberate way to start over. Writes a FRESH save into this
+// build's own slot — never a bare delete, because the beta slot would
+// quietly re-seed itself from the production save on the next load.
+export function eraseSave() {
+  writeSave(defaultSave());
+}
+
 export function pilotLevelOf(s: SaveData) {
   return levelForXp(s.xp || 0);
 }
@@ -144,18 +157,18 @@ export function starsOf(s: SaveData) {
   return totalStars(s.stars || {});
 }
 
-// Progression is EARNED BY STARS now — the Star Chart is the ladder. The
-// old XP thresholds are kept as an OR so no existing save loses anything
-// it already had; they are not shown anywhere any more.
+// Progression is EARNED BY STARS now — the Star Chart is the one ladder.
+// The old XP thresholds are retired for good with the production split:
+// a gate is stars, a stored unlock, or the beta. Nothing else opens one.
 export function palUnlocked(s: SaveData, id: string) {
   if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id]) return true;
-  return BETA_UNLOCK_GATES || s.unlockedPals.includes(id) || pilotLevelOf(s) >= (PAL_LEVELS[id] || 1);
+  return BETA_UNLOCK_GATES || s.unlockedPals.includes(id);
 }
 
 export function suitRevealed(s: SaveData, id: string) {
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id]) return true;
-  return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES || pilotLevelOf(s) >= SUIT_REVEAL[id];
+  return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
 
 // Premium items are owned only once bought for real money. The beta
@@ -165,29 +178,23 @@ export function iapOwned(s: SaveData, id: string) {
 }
 
 // Flight mods change how the game FEELS, so they are held back until a
-// player has flown enough to have an opinion about it. Deliberately NOT
-// bypassed by BETA_UNLOCK_GATES the way cosmetics are: the point of the
-// gate is that a new pilot flies the game as designed first. Level 30 is a
-// holding position — move MOD_UNLOCK_LEVEL when the curve is tuned.
-export const MOD_UNLOCK_LEVEL = 30;
+// player has flown enough of the chart to have an opinion about it.
 export function modsUnlocked(s: SaveData) {
-  // beta opens these now (was held back deliberately; overruled) — the
-  // real gate for release is the star threshold
-  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods;
 }
 
 export function deepUnlocked(s: SaveData) {
-  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep || pilotLevelOf(s) >= 5;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep;
 }
 
 export function lostUnlocked(s: SaveData) {
-  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.lost || pilotLevelOf(s) >= 10;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.lost;
 }
 
 export function startShieldUnlocked(s: SaveData) {
-  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.startShield || pilotLevelOf(s) >= 3;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.startShield;
 }
 
 export function batteryUnlocked(s: SaveData) {
-  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery || pilotLevelOf(s) >= 8;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
 }

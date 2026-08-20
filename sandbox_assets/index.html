@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Acornaut — Illustrated v14</title>
+  <title>Acornaut</title>
   <meta name="description" content="Illustrated Acornaut rewrite. Fly the gaps. Grab the acorns." />
   <meta name="theme-color" content="#070b16" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -291,6 +291,9 @@
     .ac-idtxt { min-width: 0; }
     .ac-idname { font-size: 18px; font-weight: 800; }
     .ac-replay { width: 100%; margin: 12px 0 4px; }
+    .ac-reset { width: 100%; margin: 10px 0 2px; }
+    .ac-resetarmed { color: #ff8a8a; border-color: #a84444; }
+    .ac-resetnote { margin-bottom: 72px; }
     .ac-premium { border-color: #d4af37 !important; box-shadow: inset 0 0 0 1px rgba(212,175,55,0.35); }
     .ac-premium::after { content: "★"; position: absolute; top: 6px; right: 8px; color: #ffd76a; font-size: 12px; }
     .ac-card { position: relative; }
@@ -380,7 +383,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js56/standalone.js";
+    import { bootStandalone } from "./js57/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

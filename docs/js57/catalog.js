@@ -1,8 +1,21 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "56";
-export const BUILD = `Illustrated · sandbox v${ART_VER}`;
-export const SAVE_KEY = "acornaut_illust_v1";
-export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
+export const ART_VER = "57";
+// TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
+// nothing: every gate is real and everything is earned on the Star Chart.
+// beta/index.html sets this global before importing the same bundle and
+// gets the open TEST build: gates open, premium handed over, prototype
+// doors on the Help sheet — and its own save slot, so an open-gate save
+// can never leak into the production one.
+export const IS_BETA = typeof window !== "undefined" &&
+    window.__ACORNAUT_BETA__ === true;
+export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}`;
+// The production key predates the split and keeps every player's save.
+// The beta seeds ITS key from the production save on first visit (so
+// testers keep their progress) but writes only to its own slot after.
+export const SAVE_KEY = IS_BETA ? "acornaut_illust_beta" : "acornaut_illust_v1";
+export const LEGACY_KEYS = IS_BETA
+    ? ["acornaut_illust_v1", "acornaut_beta", "acornaut_v2"]
+    : ["acornaut_beta", "acornaut_v2"];
 export const TUT_ARM = 1.25;
 export const PHYS = {
     gravity: 1300,
@@ -24,10 +37,9 @@ export const PHYS = {
     squirrelR: 16,
 };
 export const NEWS = [
-    "v14: one painted pal per card. No sheet scraps.",
+    "THE STAR CHART: a hundred levels, three stars each.",
+    "Stars unlock pals, mods, suits and modes.",
     "Golden acorns still bounce off planets. Debris phases.",
-    "PILOT LEVELS: every run earns XP. Modes, mods, pals",
-    "and titles unlock on the FLIGHT LOG.",
     "Debris kills. Planets bounce. Swipe cancels a bounce.",
 ];
 export const HELMETS = [
@@ -345,7 +357,10 @@ export const TRACK = [
 ];
 export const MOD_SHIELD_COST = 25;
 export const MOD_BATTERY_COST = 500;
-export const BETA_UNLOCK_GATES = true;
+// The beta page's master switch. Production leaves it off and every
+// gate below it is earned; flipping it by hand is never needed again —
+// it follows the page, not the build.
+export const BETA_UNLOCK_GATES = IS_BETA;
 export const MODS = [
     {
         id: "steadyGates",

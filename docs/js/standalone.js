@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=56";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=56";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=56";
-import { createEngine } from "./engine.js?v=56";
-import { palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=56";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=56";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=57";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=57";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=57";
+import { createEngine } from "./engine.js?v=57";
+import { deepUnlocked, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=57";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=57";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -426,11 +426,19 @@ export async function bootStandalone(root) {
         launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
         launch.onclick = () => engine.fly(MODES[selectedMode].id);
         controls.append(launch);
-        // All modes visible at once — the experiment is one deliberate tap away.
+        // All modes visible at once. A mode the save has not earned stays on
+        // the bar — dimmed and inert, so the bar never has a blank slot — and
+        // the Star Chart's reward ladder is where its unlock is named.
+        const modeOpen = (id) => id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
         const modes = el("div", "ac-modes");
         MODES.forEach((m, i) => {
+            const open = modeOpen(m.id);
             const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode", m.short);
+            if (!open)
+                b.classList.add("ac-cardoff");
             b.onclick = () => {
+                if (!open)
+                    return;
                 selectedMode = i;
                 render();
             };
@@ -1151,7 +1159,9 @@ export async function bootStandalone(root) {
         }
         scroll.append(grid);
         if (storeTab !== "pals") {
-            scroll.append(el("p", "ac-fine", "Premium items are unlocked for everyone during the beta."));
+            scroll.append(el("p", "ac-fine", IS_BETA
+                ? "Premium items are unlocked for everyone during the beta."
+                : "Premium items arrive with the full release."));
         }
         box.append(scroll, tabbar("shop"));
         return box;
@@ -1171,7 +1181,8 @@ export async function bootStandalone(root) {
         idTxt.append(el("p", "ac-idname", "Nutcracker"));
         idTxt.append(el("p", "ac-sub", `\u2605 ${starsOf(s)} \u00b7 ${starTitle(starsOf(s))}`));
         const tags = el("div", "ac-rigtags");
-        tags.append(el("span", "ac-tagpill ac-taggold", "BETA PILOT"));
+        if (IS_BETA)
+            tags.append(el("span", "ac-tagpill ac-taggold", "BETA PILOT"));
         idTxt.append(tags);
         id.append(idTxt);
         scroll.append(id);
@@ -1283,33 +1294,41 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
         scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-        scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+        if (IS_BETA)
+            scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
         scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
         scroll.append(replay);
-        // A door to the lab, parked at the bottom of Help where nothing sends
-        // you by accident. THE SPILL is a prototype on its own page — it shares
-        // this game's art folder and nothing else, keeps its own best score, and
-        // cannot touch a real save. It is here so it can be TESTED, not because
-        // it has earned a place in the game.
-        //
-        // DELETE THIS BLOCK when the beta freezes, unless the mode has been
-        // promoted to a real one by then.
-        const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
-        lab.onclick = () => { window.location.href = "./lab/spill/"; };
-        // The rig editor is a WORKBENCH, not a mode: it fits helmets to heads
-        // and hands the numbers back as text. It changes nothing in the game
-        // and cannot touch a save either \u2014 same delete-when-frozen rule.
-        const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
-        rig.onclick = () => { window.location.href = "./lab/rig/"; };
-        // Wormhole Run is the third experiment, and the only one that lives in
-        // the engine itself rather than on a lab page — it is a FlightMode, so
-        // its door is a fly() call. Same delete-when-frozen rule as the others.
-        const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
-        worm.onclick = () => engine.fly("tunnel");
-        scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+        // The prototype doors are the BETA's: the Spill, the rig editor and
+        // Wormhole Run stay one deliberate tap away for testers, and the
+        // production page simply never grows them. The pages themselves still
+        // exist at their own URLs — this only removes the doors.
+        if (IS_BETA) {
+            const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
+            lab.onclick = () => { window.location.href = "../lab/spill/"; };
+            const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
+            rig.onclick = () => { window.location.href = "../lab/rig/"; };
+            const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
+            worm.onclick = () => engine.fly("tunnel");
+            scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+        }
+        // Starting over is a real feature, not a debug door: progression can
+        // be flown from zero, in either build, without touching the browser.
+        // Two taps, and the armed state disarms on any re-render.
+        const reset = el("button", "ac-ghost ac-reset", "START OVER");
+        let armed = false;
+        reset.onclick = () => {
+            if (!armed) {
+                armed = true;
+                reset.textContent = "ERASE SAVE AND START OVER?";
+                reset.classList.add("ac-resetarmed");
+                return;
+            }
+            engine.startOver();
+        };
+        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
         box.append(tabbar("none"));
         return box;
     }
