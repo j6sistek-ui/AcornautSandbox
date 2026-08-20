@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=57";
-import { sfx, unlockAudio, music } from "./audio.js?v=57";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=57";
-import { drawHud, drawWorld } from "./draw.js?v=57";
-import { batteryUnlocked, deepUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=57";
-import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=57";
-import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=57";
+import { emptyArt, loadArt } from "./art.js?v=58";
+import { sfx, unlockAudio, music } from "./audio.js?v=58";
+import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=58";
+import { drawHud, drawWorld } from "./draw.js?v=58";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=58";
+import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=58";
+import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=58";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -53,6 +53,17 @@ export async function createEngine(canvas) {
         startOver() {
             eraseSave();
             window.location.reload();
+        },
+        redeemAccessCode(code) {
+            if (code.trim() !== "120189")
+                return "denied";
+            save.purchased = save.purchased || [];
+            for (const id of IAP_ITEMS)
+                if (!save.purchased.includes(id))
+                    save.purchased.push(id);
+            writeSave(save);
+            notify();
+            return "ok";
         },
         flyLevel(id) {
             const def = levelById(id);
@@ -118,6 +129,8 @@ export async function createEngine(canvas) {
         // a matched-set helmet only goes on its own suit
         if (item.suitOnly && save.equippedSuit !== item.suitOnly)
             return "suitOnly";
+        if (!helmetRevealed(save, id))
+            return "locked";
         if (save.unlocked.includes(id)) {
             save.equipped = id;
             writeSave(save);
@@ -429,4 +442,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=57";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=58";

@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=57";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=57";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=57";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=57";
-import { tunnelBoundsAt } from "./sim.js?v=57";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=58";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=58";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=58";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=58";
+import { tunnelBoundsAt } from "./sim.js?v=58";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1172,7 +1172,15 @@ function paintPal(ctx, art, id, x, y, size) {
     const spr = art?.pals?.[id];
     if (spr) {
         // box fit, not core: companions are sidekicks, smaller than the pilot
-        drawSprite(ctx, spr, x, y, size);
+        // The premium silhouettes carry more transparent negative space than
+        // the round original pals. Small visual-only lifts keep their faces at
+        // the same apparent card/live scale without changing their hitboxes or
+        // any gameplay value (pals have neither).
+        const fit = size * (id === "nightglider" ? 1.32
+            : id === "clockling" ? 1.12
+                : id === "prismwing" ? 1.08
+                    : 1);
+        drawSprite(ctx, spr, x, y, fit);
         return;
     }
     if (id !== "none") {
@@ -1386,7 +1394,7 @@ export function drawHud(ctx, w) {
             : st === "tap2" ? "one more boost — then just watch"
                 : st === "swipe" ? "dive back down and make the gap"
                     : st === "yourturn" ? "fly the gaps · grab the acorns"
-                        : "The Acorn Buddy reels in nearby acorns.";
+                        : "The Acorn pal reels in nearby acorns.";
         drawPrompt(ctx, w, title, body, st === "swipe" ? w.H * 0.58 : w.H * 0.36);
         if (w.tut.nudge) {
             ctx.fillStyle = "#ffd080";

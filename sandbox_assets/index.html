@@ -10,10 +10,10 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icon.svg?v=3" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3" />
-  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png?v=3" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=3" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg?v=4" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=4" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png?v=4" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=4" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -241,9 +241,9 @@
        never a mystery while you shop */
     .ac-rig { flex: none; display: flex; align-items: center; gap: 14px; margin: 0 16px;
       background: linear-gradient(#0f1730, #0b1124); border: 1px solid #2a3454; border-radius: 16px; padding: 12px 14px; }
-    .ac-rigart { width: 86px; height: 86px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    .ac-rigart { width: 116px; height: 116px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center;
       background: radial-gradient(circle at 50% 38%, #1b2547 0%, #0a1024 72%); }
-    .ac-rigart canvas { width: 74px; height: 74px; }
+    .ac-rigart canvas { width: 100px; height: 100px; }
     .ac-rigtxt { flex: 1 1 auto; min-width: 0; }
     .ac-rigname { font-size: 16px; font-weight: 800; }
     .ac-rigtags { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
@@ -323,9 +323,21 @@
     .ac-modtxt { flex: 1 1 auto; min-width: 0; }
     .ac-modname { font-size: 13px; font-weight: 800; margin: 0 0 2px; }
     .ac-modprice { flex: none; font-size: 12px; font-weight: 800; color: #ffd76a; letter-spacing: .05em; }
-    .ac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .ac-card { min-height: 156px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 16px; padding: 10px 6px 10px; font-size: 11px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; overflow: visible; }
-    .ac-card img, .ac-card canvas { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+    .ac-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; }
+    .ac-grid.ac-palgrid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .ac-card { min-height: 118px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 13px; padding: 8px 4px 8px; font-size: 10px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; overflow: visible; }
+    .ac-card img, .ac-card canvas { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
+    .ac-palcard { justify-content: flex-start; gap: 6px; padding: 10px 8px; min-height: 0; }
+    .ac-palcard .ac-palname { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .ac-palcard canvas { width: 66px; height: 56px; }
+    .ac-palcard .ac-paldesc { font-size: 10px; font-weight: 500; line-height: 1.35; color: #a7b1cc; white-space: normal; }
+    .ac-palcard .ac-palstat { margin-top: auto; font-size: 9px; font-weight: 800; letter-spacing: .06em; color: #8b95b0; }
+    .ac-coderow { grid-column: 1 / -1; display: flex; gap: 8px; align-items: stretch; }
+    .ac-codein { flex: 1; min-width: 0; background: #0d1326; border: 1px solid #2a3454; border-radius: 12px;
+      color: #f3efe4; padding: 10px 14px; font-size: 15px; font-weight: 700; letter-spacing: .25em; }
+    .ac-codein::placeholder { color: #566180; letter-spacing: .1em; }
+    .ac-codego { width: auto; padding: 10px 18px; }
+    .ac-codemsg { grid-column: 1 / -1; color: #ff8a8a; }
     .ac-sheet-scroll { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; padding-top: 6px; }
     .ac-loadout { display: flex; align-items: center; gap: 12px; background: #141b30; border: 1px solid #2a3454; border-radius: 16px; padding: 10px 12px; }
     .ac-loadout canvas { width: 64px; height: 64px; }
@@ -383,7 +395,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js57/standalone.js";
+    import { bootStandalone } from "./js58/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

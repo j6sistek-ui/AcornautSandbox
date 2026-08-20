@@ -28,13 +28,15 @@
 <body>
   <header>
     <h1>Acornaut visual QA matrix</h1>
-    <p>Every shipping suit × helmet, baked-Clear Flight frames, and collision-sized planet/debris renders on a split light/dark plate. <a href="../../">Play this branch</a></p>
+    <p>Every shipping suit × helmet, pal at card/live scale, baked-Clear Flight frame, and collision-sized planet/debris render on a split light/dark plate. <a href="../../">Play this branch</a></p>
   </header>
   <main>
     <h2>Suit / helmet fit</h2>
     <div id="matrix" class="matrix" aria-busy="true"></div>
     <h2>Flight / Clear animation frames</h2>
     <div id="flight" class="assets"></div>
+    <h2>Pals — card scale / live flight scale</h2>
+    <div id="pals" class="assets"></div>
     <h2>Planets — rendered with gameplay core fit</h2>
     <div id="planets" class="assets"></div>
     <h2>Debris — rendered with gameplay core fit</h2>
@@ -45,8 +47,8 @@
   </script>
   <script type="module">
     import { loadArt, drawSprite } from "../../js/art.js";
-    import { HELMETS, SUITS, wearsOwnHead } from "../../js/catalog.js";
-    import { paintPortrait } from "../../js/draw.js";
+    import { HELMETS, PALS, SUITS, wearsOwnHead } from "../../js/catalog.js";
+    import { paintPalPreview, paintPortrait } from "../../js/draw.js";
 
     const matrix = document.querySelector("#matrix");
     matrix.style.gridTemplateColumns = `repeat(${HELMETS.length}, 112px)`;
@@ -106,6 +108,20 @@
         cell.append(c, text);
         flight.append(cell);
       });
+    }
+
+    const pals = document.querySelector("#pals");
+    for (const pal of PALS.filter((p) => p.id !== "none")) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      const [c, ctx] = canvas();
+      plate(ctx);
+      paintPalPreview(ctx, art, pal.id, 28, 50, 48);
+      paintPalPreview(ctx, art, pal.id, 74, 50, 26);
+      const text = document.createElement("span");
+      text.textContent = `${pal.name} · ${pal.tag}`;
+      cell.append(c, text);
+      pals.append(cell);
     }
 
     function renderBank(target, bank) {

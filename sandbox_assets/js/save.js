@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=57";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=57";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=58";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=58";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -126,9 +126,21 @@ export function starsOf(s) {
 // The old XP thresholds are retired for good with the production split:
 // a gate is stars, a stored unlock, or the beta. Nothing else opens one.
 export function palUnlocked(s, id) {
+    if (isIap(id))
+        return iapOwned(s, id);
     if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id])
         return true;
     return BETA_UNLOCK_GATES || s.unlockedPals.includes(id);
+}
+// Helmets with a rung on the ladder reveal at their star count; the four
+// starter tints have no rung and are open from the first flight. A helmet
+// already bought stays owned whatever the ladder says.
+export function helmetRevealed(s, id) {
+    if (isIap(id))
+        return iapOwned(s, id);
+    if (STAR_UNLOCKS.helmets[id] === undefined)
+        return true;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.helmets[id] || s.unlocked.includes(id);
 }
 export function suitRevealed(s, id) {
     if (isIap(id))
