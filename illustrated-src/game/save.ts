@@ -47,6 +47,8 @@ export type SaveData = {
   /** the post-tutorial guided path. See GUIDE_SUIT in catalog.ts.
    *  pending -> reward -> hangar -> helmet -> levels -> done */
   guide: "pending" | "reward" | "hangar" | "helmet" | "levels" | "done";
+  /** Briella's code: the game simply believes it has all 300 stars */
+  allStars: boolean;
 };
 
 export function defaultSave(): SaveData {
@@ -78,6 +80,7 @@ export function defaultSave(): SaveData {
     zonesSeen: [],
     stars: {},
     guide: "pending",
+    allStars: false,
   };
 }
 
@@ -129,6 +132,7 @@ export function loadSave(): SaveData {
   // saves written before the guided path existed have already seen the
   // game — never walk a veteran to the hangar
   if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
+  if (typeof s.allStars !== "boolean") s.allStars = false;
   if (parsed && typeof parsed.xp !== "number") {
     const owned =
       Math.max(0, (s.unlocked?.length || 1) - 1) +
@@ -161,6 +165,10 @@ export function pilotTitleOf(s: SaveData) {
 }
 
 export function starsOf(s: SaveData) {
+  // Briella's code: every star gate in the game asks this one function,
+  // so believing here is believing everywhere. Real level progress and
+  // its pips stay exactly as earned.
+  if (s.allStars) return 300;
   return totalStars(s.stars || {});
 }
 
@@ -180,6 +188,15 @@ export function helmetRevealed(s: SaveData, id: string) {
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.helmets[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.helmets[id] || s.unlocked.includes(id);
+}
+
+// Trails unlock on the ROADMAP only: a rung on the ladder, or the beta.
+// Sparks has no rung and is everyone's from the first flight; premium
+// trails keep the purchase contract.
+export function trailUnlocked(s: SaveData, id: string) {
+  if (isIap(id)) return iapOwned(s, id);
+  if (STAR_UNLOCKS.trails[id] === undefined) return true;
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
 }
 
 export function suitRevealed(s: SaveData, id: string) {

@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "60";
+export const ART_VER = "62";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -143,17 +143,17 @@ export function helmetWornBy(equippedHelmet: string, equippedSuit: string): Helm
 
 export const SUITS: Suit[] = [
   { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
-  { id: "iontrim", name: "Ion", cost: 22, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
-  { id: "copper", name: "Copper", cost: 48, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
-  { id: "frost", name: "Frost", cost: 80, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
-  { id: "voidsuit", name: "Void", cost: 180, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
-  { id: "aurorasuit", name: "Aurora", cost: 250, fur: "#cf8a3c", furDark: "#9c5f1d", belly: "#f4ddb4", suit: "#0f5c4c", suitLite: "#2fae8f", suitDark: "#073a2f", trim: "#5dffd0", glow: "#5dffd0", dust: "#a8ffe8" },
-  { id: "ember", name: "Ember", cost: 325, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
-  { id: "stardust", name: "Stardust", cost: 400, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
-  { id: "robo", name: "Robo", cost: 500, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
-  { id: "alien", name: "Alien", cost: 650, alien: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
-  { id: "ghost", name: "Ghost", cost: 800, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
-  { id: "bigbooty", name: "Big Booty", cost: 1000, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
+  { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
+  { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
+  { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
+  { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
+  { id: "aurorasuit", name: "Aurora", cost: 280, fur: "#cf8a3c", furDark: "#9c5f1d", belly: "#f4ddb4", suit: "#0f5c4c", suitLite: "#2fae8f", suitDark: "#073a2f", trim: "#5dffd0", glow: "#5dffd0", dust: "#a8ffe8" },
+  { id: "ember", name: "Ember", cost: 90, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
+  { id: "stardust", name: "Stardust", cost: 300, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
+  { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
+  { id: "alien", name: "Alien", cost: 0, alien: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
+  { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
+  { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
   { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
   { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
   { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
@@ -168,17 +168,17 @@ export type Trail = { id: string; name: string; cost: number; colors: string[] }
 
 export const TRAILS: Trail[] = [
   { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
-  { id: "ion", name: "Ion Stream", cost: 60, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
-  { id: "bubble", name: "Bubble Jets", cost: 90, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
-  { id: "bloom", name: "Nebula Bloom", cost: 120, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
-  { id: "comet", name: "Comet Booster", cost: 200, colors: ["#ffd060", "#ff6a28", "#8a2f0c"] },
-  { id: "prism", name: "Prism Shards", cost: 260, colors: ["#ff6ad2", "#6affd2", "#6ad2ff"] },
-  { id: "plasma", name: "Plasma Arc", cost: 320, colors: ["#f4e8ff", "#b45cff", "#4a2080"] },
-  { id: "galaxy", name: "Galaxy Dust", cost: 400, colors: ["#fff3b8", "#8fb8ff", "#3d4fa8"] },
-  { id: "aurora", name: "Aurora Ribbon", cost: 460, colors: ["#5dffd0", "#7fe0cf", "#c86bff"] },
-  { id: "frost", name: "Frostbite", cost: 520, colors: ["#eaf7ff", "#9fe4ff", "#6f9dc4"] },
-  { id: "voidsmoke", name: "Void Smoke", cost: 580, colors: ["#c8b8e0", "#4f4270", "#241d33"] },
-  { id: "supernova", name: "Supernova", cost: 650, colors: ["#fff8d0", "#ff9d47", "#ff4020"] },
+  { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
+  { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
+  { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
+  { id: "comet", name: "Comet Booster", cost: 0, colors: ["#ffd060", "#ff6a28", "#8a2f0c"] },
+  { id: "prism", name: "Prism Shards", cost: 0, colors: ["#ff6ad2", "#6affd2", "#6ad2ff"] },
+  { id: "plasma", name: "Plasma Arc", cost: 0, colors: ["#f4e8ff", "#b45cff", "#4a2080"] },
+  { id: "galaxy", name: "Galaxy Dust", cost: 0, colors: ["#fff3b8", "#8fb8ff", "#3d4fa8"] },
+  { id: "aurora", name: "Aurora Ribbon", cost: 0, colors: ["#5dffd0", "#7fe0cf", "#c86bff"] },
+  { id: "frost", name: "Frostbite", cost: 0, colors: ["#eaf7ff", "#9fe4ff", "#6f9dc4"] },
+  { id: "voidsmoke", name: "Void Smoke", cost: 0, colors: ["#c8b8e0", "#4f4270", "#241d33"] },
+  { id: "supernova", name: "Supernova", cost: 0, colors: ["#fff8d0", "#ff9d47", "#ff4020"] },
   { id: "opalfeather", name: "Opal Feather", cost: 0, colors: ["#fff5ef", "#7fffe0", "#8fb8ff"] },
   { id: "clockwork", name: "Clockwork Wake", cost: 0, colors: ["#fff0b8", "#d89a3a", "#7a4a18"] },
   { id: "celestialtide", name: "Celestial Tide", cost: 0, colors: ["#e8f4ff", "#75caff", "#745cff"] },
@@ -449,7 +449,7 @@ export const SUIT_REVEAL: Record<string, number> = {
 
 export type TrackItem = {
   lvl: number;
-  kind: "pal" | "mod" | "mode" | "title" | "suit" | "helmet";
+  kind: "pal" | "mod" | "mode" | "title" | "suit" | "helmet" | "trail";
   id?: string;
   name?: string;
   desc?: string;

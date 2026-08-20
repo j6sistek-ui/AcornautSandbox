@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=60";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=60";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=62";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=62";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -29,6 +29,7 @@ export function defaultSave() {
         zonesSeen: [],
         stars: {},
         guide: "pending",
+        allStars: false,
     };
 }
 function readRaw(key) {
@@ -98,6 +99,8 @@ export function loadSave() {
     // game — never walk a veteran to the hangar
     if (typeof s.guide !== "string")
         s.guide = s.tutorialDone ? "done" : "pending";
+    if (typeof s.allStars !== "boolean")
+        s.allStars = false;
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
             Math.max(0, (s.unlockedSuits?.length || 1) - 1) +
@@ -125,6 +128,11 @@ export function pilotTitleOf(s) {
     return titleForLevel(pilotLevelOf(s));
 }
 export function starsOf(s) {
+    // Briella's code: every star gate in the game asks this one function,
+    // so believing here is believing everywhere. Real level progress and
+    // its pips stay exactly as earned.
+    if (s.allStars)
+        return 300;
     return totalStars(s.stars || {});
 }
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
@@ -146,6 +154,16 @@ export function helmetRevealed(s, id) {
     if (STAR_UNLOCKS.helmets[id] === undefined)
         return true;
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.helmets[id] || s.unlocked.includes(id);
+}
+// Trails unlock on the ROADMAP only: a rung on the ladder, or the beta.
+// Sparks has no rung and is everyone's from the first flight; premium
+// trails keep the purchase contract.
+export function trailUnlocked(s, id) {
+    if (isIap(id))
+        return iapOwned(s, id);
+    if (STAR_UNLOCKS.trails[id] === undefined)
+        return true;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
 }
 export function suitRevealed(s, id) {
     if (isIap(id))
