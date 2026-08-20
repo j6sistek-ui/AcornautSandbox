@@ -224,9 +224,23 @@ fold them, look again.
 
 ## Controls
 
-- **Drag a tile** — moves the piece under the current target. The helmet
+- **Tap a tile to select it, then drag it** — moves the piece under the
+  current target. A tile that is not selected lets the page scroll straight
+  through it; the first version captured every touch, so on a phone a swipe
+  over the grid EDITED a tile instead of scrolling, the list below the fold
+  was unreachable, and it read as "there are only 9 suits". The helmet
   follows your finger, so on a 128px tile one pixel of travel is several
   units of the underlying number. That is arithmetic, not a bug.
+- **UNDO** — one step per gesture (drag, pad press, wheel burst, key burst),
+  thirty deep, ctrl/cmd-Z on desktop. Exists because an accidental
+  scroll-drag silently corrupted a number and there was no way back short
+  of refitting by hand.
+- **Both targets visibly move the helmet.** The suit's painting never moves
+  — the helmet is the only thing seated on a number, so it is always what
+  travels. The difference is WHICH number you are editing: HELMET edits the
+  glass in the helmet's own frame (lands on every suit wearing it), SUIT
+  HEAD edits where that suit's head is (the blue ring — lands under every
+  helmet on that suit).
 - **D-pad / arrow keys** — one *unit* per press, whatever the tile size.
   This is the precision control. Hold to repeat.
 - **SIZE ± / pinch / scroll** — 2% a step.
