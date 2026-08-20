@@ -148,6 +148,7 @@ export function starsOf(s: SaveData) {
 // old XP thresholds are kept as an OR so no existing save loses anything
 // it already had; they are not shown anywhere any more.
 export function palUnlocked(s: SaveData, id: string) {
+  if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id]) return true;
   return BETA_UNLOCK_GATES || s.unlockedPals.includes(id) || pilotLevelOf(s) >= (PAL_LEVELS[id] || 1);
 }
