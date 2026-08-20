@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=51";
-import { sfx, unlockAudio, music } from "./audio.js?v=51";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=51";
-import { drawHud, drawWorld } from "./draw.js?v=51";
-import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=51";
-import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=51";
-import { dive, flap, initStars, makeWorld, pausePlay, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=51";
+import { emptyArt, loadArt } from "./art.js?v=52";
+import { sfx, unlockAudio, music } from "./audio.js?v=52";
+import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=52";
+import { drawHud, drawWorld } from "./draw.js?v=52";
+import { batteryUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=52";
+import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=52";
+import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=52";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -242,8 +242,7 @@ export async function createEngine(canvas) {
         canvas.style.width = `${W}px`;
         canvas.style.height = `${H}px`;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        world.W = W;
-        world.H = H;
+        resizeWorld(world, W, H);
         if (!world.stars.length)
             initStars(world);
     }
@@ -271,7 +270,7 @@ export async function createEngine(canvas) {
         notify();
     }, { passive: false });
     canvas.addEventListener("pointermove", (e) => {
-        if (!swipe || swipe.fired || world.screen !== "play")
+        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
             return;
         const p = pos(e);
         if (performance.now() - swipe.t0 > 320) {
@@ -318,7 +317,7 @@ export async function createEngine(canvas) {
                 engine.dismissDead();
             notify();
         }
-        if (e.code === "ArrowDown" && world.screen === "play") {
+        if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
             const ev = dive(world);
             if (ev === "dive")
                 sfx.dive();
@@ -333,6 +332,18 @@ export async function createEngine(canvas) {
             sfx.acorn();
         if (ev === "gold")
             sfx.gold();
+        if (ev === "freeze")
+            sfx.freeze();
+        if (ev === "section")
+            sfx.section();
+        if (ev === "region")
+            sfx.region();
+        if (ev === "warning")
+            sfx.warning();
+        if (ev === "near")
+            sfx.near();
+        if (ev === "milestone")
+            sfx.milestone();
         if (ev === "bounce")
             sfx.bounce();
         if (ev === "die") {
@@ -396,4 +407,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=51";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=52";

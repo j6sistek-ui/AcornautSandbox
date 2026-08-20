@@ -1,9 +1,9 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=51";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=51";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=51";
-import { createEngine } from "./engine.js?v=51";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL, starsOf } from "./save.js?v=51";
-import { LEVELS, STAGES, STAR_REWARDS, countBits, fxText, goalText, levelUnlocked, stageUnlocked } from "./campaign.js?v=51";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=52";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=52";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=52";
+import { createEngine } from "./engine.js?v=52";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL, starsOf } from "./save.js?v=52";
+import { LEVELS, STAGES, STAR_REWARDS, countBits, fxText, goalText, levelUnlocked, stageUnlocked } from "./campaign.js?v=52";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -81,8 +81,12 @@ export async function bootStandalone(root) {
     window.__sandbox = engine;
     engine.start();
     // The title picks ONE mode at a time: TAKE FLIGHT launches it, the
-    // MODE bar cycles through the four. Selection lives here so it survives
+    // MODE bar cycles through the five. Selection lives here so it survives
     // a re-render of the title.
+    // WORMHOLE RUN is deliberately NOT here: it is an experiment, and the
+    // rule for experiments is the same one the Spill follows — hidden at the
+    // bottom of Help, one deliberate tap away, gone when the beta freezes
+    // unless it earns a real slot.
     const MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
@@ -120,10 +124,14 @@ export async function bootStandalone(root) {
             return;
         }
         if (snap.screen === "dead" && snap.dead) {
-            const sheet = el("div", "ac-sheet ac-center");
-            sheet.append(el("h2", "", "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
+            const sheet = el("div", "ac-sheet ac-center ac-result");
+            sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID" : "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
             if (snap.dead.best && snap.dead.score > 0)
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
+            if (snap.flight === "tunnel") {
+                const count = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+                sheet.append(el("p", "ac-sub", `${count(snap.dead.acorns, "acorn")} · ${count(snap.dead.sections, "section")}`), el("p", "ac-sub", `Best Flow ×${snap.dead.bestMultiplier} · Best chain ${snap.dead.bestChain} · ${count(snap.dead.nearMisses, "near miss")}`));
+            }
             sheet.append(el("p", "ac-sub", `+${snap.dead.xp} XP · LV ${snap.dead.toLv}`));
             if (snap.dead.toLv > snap.dead.fromLv)
                 sheet.append(el("p", "ac-gold", `LEVEL UP — LV ${snap.dead.toLv}!`));
@@ -143,9 +151,18 @@ export async function bootStandalone(root) {
                     fill.style.width = `${(toPct * 100).toFixed(1)}%`;
                 }));
             }
-            const go = el("button", "ac-primary", "CONTINUE");
-            go.onclick = () => engine.dismissDead();
-            sheet.append(go);
+            if (snap.flight === "tunnel") {
+                const replay = el("button", "ac-primary", "FLY AGAIN");
+                replay.onclick = () => engine.fly("tunnel");
+                const go = el("button", "ac-ghost", "CONTINUE");
+                go.onclick = () => engine.dismissDead();
+                sheet.append(replay, go);
+            }
+            else {
+                const go = el("button", "ac-primary", "CONTINUE");
+                go.onclick = () => engine.dismissDead();
+                sheet.append(go);
+            }
             overlay.append(sheet);
             return;
         }
@@ -427,7 +444,7 @@ export async function bootStandalone(root) {
         launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
         launch.onclick = () => engine.fly(MODES[selectedMode].id);
         controls.append(launch);
-        // All four modes visible at once — no cycling to reach Arcade.
+        // All modes visible at once — the experiment is one deliberate tap away.
         const modes = el("div", "ac-modes");
         MODES.forEach((m, i) => {
             const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode", m.short);
@@ -1179,6 +1196,7 @@ export async function bootStandalone(root) {
             ["Best · Deep Space", s.deepBest],
             ["Best · Lost in Space", s.lostBest],
             ["Best · Arcade", s.arcadeBest],
+            ["Best · Wormhole Run", s.tunnelBest],
         ]) {
             const r = el("div", "ac-row");
             r.append(el("span", "", label), el("span", "ac-rowgold", `${v ?? 0}`));
@@ -1241,7 +1259,8 @@ export async function bootStandalone(root) {
         item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
-        item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce.");
+        item(pic(spr("golden")), "GOLDEN ACORN", "Other modes: invulnerable to debris \u2014 planets still bounce.");
+        item(pic(spr("golden")), "FLOW ACORN", "Wormhole Run: fills Flow and guarantees at least ×2 score for 8 seconds.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
@@ -1266,7 +1285,8 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
         scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-        scroll.append(el("p", "ac-gold ac-mid", "BRING A PAL: each adds a fun modifier."));
+        scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+        scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
@@ -1286,7 +1306,12 @@ export async function bootStandalone(root) {
         // and cannot touch a save either \u2014 same delete-when-frozen rule.
         const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
         rig.onclick = () => { window.location.href = "./lab/rig/"; };
-        scroll.append(lab, rig, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+        // Wormhole Run is the third experiment, and the only one that lives in
+        // the engine itself rather than on a lab page — it is a FlightMode, so
+        // its door is a fly() call. Same delete-when-frozen rule as the others.
+        const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
+        worm.onclick = () => engine.fly("tunnel");
+        scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
         box.append(tabbar("none"));
         return box;
     }

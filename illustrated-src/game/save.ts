@@ -19,6 +19,7 @@ export type SaveData = {
   deepBest: number;
   lostBest: number;
   arcadeBest: number;
+  tunnelBest: number;
   purchased: string[];
   acorns: number;
   xp: number;
@@ -52,6 +53,7 @@ export function defaultSave(): SaveData {
     deepBest: 0,
     lostBest: 0,
     arcadeBest: 0,
+    tunnelBest: 0,
     purchased: [],
     acorns: 0,
     xp: 0,

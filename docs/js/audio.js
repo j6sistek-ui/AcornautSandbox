@@ -292,6 +292,38 @@ export const sfx = {
         });
         tone({ freq: 1980, dur: 0.5, gain: 0.02, wet: 0.7, delay: 0.11 });
     }),
+    // Wormhole section change: restrained and low so it can sit beneath
+    // frequent tap thrusts without becoming another melody to follow.
+    section: () => guard(() => {
+        tone({ freq: 185, to: 245, dur: 0.26, type: "triangle", gain: 0.045, wet: 0.36 });
+        burst({ dur: 0.22, from: 520, to: 920, q: 1.1, gain: 0.025, wet: 0.28 });
+    }),
+    // Debris warning: two compact low pulses, audible but never a shrill
+    // alarm. The visual edge beacon carries the exact lane information.
+    warning: () => guard(() => {
+        tone({ freq: 310, to: 225, dur: 0.13, type: "triangle", gain: 0.075, wet: 0.16 });
+        burst({ dur: 0.08, from: 880, to: 540, q: 1.8, gain: 0.035, wet: 0.12 });
+        tone({ freq: 290, to: 210, dur: 0.13, type: "triangle", gain: 0.065, wet: 0.16, delay: 0.16 });
+        burst({ dur: 0.08, from: 820, to: 500, q: 1.8, gain: 0.03, wet: 0.12, delay: 0.16 });
+    }),
+    region: () => guard(() => {
+        tone({ freq: 220, to: 330, dur: 0.4, type: "triangle", gain: 0.045, wet: 0.58 });
+        tone({ freq: 440, to: 550, dur: 0.34, type: "sine", gain: 0.025, wet: 0.64, delay: 0.08 });
+    }),
+    // A close pass is a short rush of air, deliberately unpitched so it
+    // rewards precision without fighting the acorn and Flow cues.
+    near: () => guard(() => {
+        burst({ dur: 0.24, from: 1500, to: 260, q: 0.8, type: "bandpass", gain: 0.075, wet: 0.3 });
+        tone({ freq: 260, to: 420, dur: 0.18, gain: 0.035, wet: 0.3 });
+    }),
+    freeze: () => guard(() => {
+        tone({ freq: 760, to: 310, dur: 0.48, type: "sine", gain: 0.06, wet: 0.62 });
+        tone({ freq: 1140, to: 520, dur: 0.38, type: "triangle", gain: 0.025, wet: 0.68 });
+        burst({ dur: 0.5, from: 2200, to: 480, q: 1.5, type: "lowpass", gain: 0.04, attack: 0.04, wet: 0.5 });
+    }),
+    milestone: () => guard(() => {
+        [330, 495, 660].forEach((freq, i) => tone({ freq, dur: 0.34, gain: 0.045, wet: 0.55, delay: i * 0.075 }));
+    }),
     // Shield: a rising swell with air moving through it, not a plain sine.
     shield: () => guard(() => {
         tone({ freq: 300, to: 720, dur: 0.34, gain: 0.075, attack: 0.05, wet: 0.45 });

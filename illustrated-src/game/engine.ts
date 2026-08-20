@@ -19,6 +19,7 @@ import {
   initStars,
   makeWorld,
   pausePlay,
+  resizeWorld,
   resetRun,
   resumePlay,
   snapshot,
@@ -283,8 +284,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     canvas.style.width = `${W}px`;
     canvas.style.height = `${H}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    world.W = W;
-    world.H = H;
+    resizeWorld(world, W, H);
     if (!world.stars.length) initStars(world);
   }
 
@@ -318,7 +318,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   canvas.addEventListener(
     "pointermove",
     (e) => {
-      if (!swipe || swipe.fired || world.screen !== "play") return;
+      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
         swipe = null;
@@ -357,19 +357,24 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
     }
-    if (e.code === "ArrowDown" && world.screen === "play") {
+    if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
       const ev = dive(world);
       if (ev === "dive") sfx.dive();
       notify();
     }
   });
-
   function loop(now: number) {
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
     const ev = updateWorld(world, save, dt);
     if (ev === "acorn") sfx.acorn();
     if (ev === "gold") sfx.gold();
+    if (ev === "freeze") sfx.freeze();
+    if (ev === "section") sfx.section();
+    if (ev === "region") sfx.region();
+    if (ev === "warning") sfx.warning();
+    if (ev === "near") sfx.near();
+    if (ev === "milestone") sfx.milestone();
     if (ev === "bounce") sfx.bounce();
     if (ev === "die") {
       writeSave(save);
