@@ -509,6 +509,12 @@ const DOME = {
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
 // stays as the fallback for any helmet added later.
+//
+// An optional FOURTH number is a rotation in degrees about the glass
+// centre, for the asymmetric shells — a crown, a halo, a horn — that sit
+// level in their own render but want a tilt once they are on a head. No
+// helmet uses it yet, so every entry below is three numbers and draws
+// exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS = {
     comet: [129, 129, 125],
     "clear": [129, 128, 111],
@@ -650,7 +656,16 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
         const punched = punchedHelm(helmSpr, helmet.id);
         if (punched) {
             const s2 = (r * 1.04) / g[2];
+            const rot = g[3] || 0;
+            if (rot) {
+                ctx.save();
+                ctx.translate(hx, hy);
+                ctx.rotate((rot * Math.PI) / 180);
+                ctx.translate(-hx, -hy);
+            }
             ctx.drawImage(punched, hx - g[0] * s2, hy - g[1] * s2, punched.width * s2, punched.height * s2);
+            if (rot)
+                ctx.restore();
             return;
         }
     }
