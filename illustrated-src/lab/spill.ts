@@ -33,9 +33,24 @@ const PHYS = {
   lungeSpeed: 320,
   lungeTime: 0.15,
   lungeCooldown: 0.55,
-  /** the pilot may roam this share of the screen width */
+  /** where the pilot sits when left alone, and how fast a lunge decays back
+   *  to it. Slow enough to be a drift rather than a spring — you keep the
+   *  ground a lunge won for a few seconds, you do not keep it for free. */
+  homeX: 0.22,
+  driftHome: 0.55,
+  /** The pilot may roam this share of the width. The right edge stops at
+   *  half: further forward than that and you can park in front of the field
+   *  where pieces have not spread apart yet, which was safer rather than
+   *  more dangerous. */
   bandLeft: 0.08,
-  bandRight: 0.62,
+  bandRight: 0.5,
+  /** How long the floor may be touched before it kills. A bounce off the
+   *  bottom while recovering from a dive is one or two frames — under 50ms.
+   *  Riding it is continuous. 0.25s sits well clear of the first and well
+   *  under the second, and the hull glows red from 0.1s so the rule is
+   *  visible before it is fatal rather than after. */
+  floorGrace: 0.25,
+  floorWarn: 0.1,
   pilotR: 15,
   /** how close a piece has to pass to count as a near miss */
   grazeR: 46,
@@ -75,7 +90,8 @@ type Rock = {
   dead: boolean;
 };
 
-type Nut = { x: number; y: number; vx: number; vy: number; got: boolean; bob: number };
+type NutKind = "acorn" | "gold" | "shield";
+type Nut = { x: number; y: number; vx: number; vy: number; got: boolean; bob: number; kind: NutKind };
 
 type Bit = { x: number; y: number; vx: number; vy: number; life: number; max: number; r: number; col: string };
 
@@ -111,10 +127,15 @@ function makeSpill(W: number, H: number) {
     bannerT: 0,
     nextRock: 0,
     nextNut: 2.5,
+    nextSpecial: 9,
     shake: 0,
     milestone: 0,
     deadFor: 0,
     flapT: 0,
+    floorT: 0,
+    shield: 0,
+    shieldFlash: 0,
+    cause: "" as string,
   };
 }
 
@@ -154,10 +175,15 @@ function reset(s: Spill) {
   s.bannerT = 0;
   s.nextRock = 0.6;
   s.nextNut = 2.5;
+  s.nextSpecial = 9 + Math.random() * 7;
   s.shake = 0;
   s.milestone = 0;
   s.deadFor = 0;
   s.flapT = 0;
+  s.floorT = 0;
+  s.shield = 0;
+  s.shieldFlash = 0;
+  s.cause = "";
 }
 
 // ---------------------------------------------------------------- spawning
@@ -257,8 +283,29 @@ function spawnNuts(s: Spill) {
       vy: 0,
       got: false,
       bob: Math.random() * Math.PI * 2,
+      kind: "acorn",
     });
   }
+}
+
+/**
+ * The two things that drift past on their own rather than in a stream.
+ * A golden acorn pays double; a shield acorn eats one hit and is rare
+ * enough that finding one changes how greedy the next twenty seconds are.
+ * They travel slower than the field, so taking one is a decision about
+ * where you want to be, not a reflex.
+ */
+function spawnSpecial(s: Spill) {
+  const shield = Math.random() < 0.22;
+  s.nuts.push({
+    x: s.W + 40,
+    y: 80 + Math.random() * (s.H - 160),
+    vx: -(150 + intensity(s.t) * 60),
+    vy: 0,
+    got: false,
+    bob: Math.random() * Math.PI * 2,
+    kind: shield ? "shield" : "gold",
+  });
 }
 
 function burst(s: Spill, x: number, y: number, n: number, cols: string[], power = 1) {
@@ -306,11 +353,15 @@ function dive(s: Spill) {
  */
 function doLunge(s: Spill, dir: number) {
   if (s.phase === "ready") { flap(s); return; }
-  if (s.phase !== "play" || s.cool > 0) return;
+  // FORWARD ONLY. A backward lunge was a free retreat: two of them put the
+  // pilot in a corner with the whole field ahead and nothing able to reach
+  // it. Forward costs you the safe end of the screen to gain reach, and the
+  // drift home is the only way back.
+  if (dir < 0 || s.phase !== "play" || s.cool > 0) return;
   s.lunge = PHYS.lungeTime;
-  s.lungeDir = dir;
+  s.lungeDir = 1;
   s.cool = PHYS.lungeCooldown;
-  burst(s, s.pilot.x - dir * 14, s.pilot.y, 8, ["#8fd6ff", "#cfefff"], 0.5);
+  burst(s, s.pilot.x - 14, s.pilot.y, 8, ["#8fd6ff", "#cfefff"], 0.5);
 }
 
 /** Spend a full charge meter: everything close enough is shattered. */
@@ -337,6 +388,16 @@ function pulse(s: Spill) {
 }
 
 // ---------------------------------------------------------------- step
+
+function die(s: Spill, cause: string) {
+  s.phase = "over";
+  s.deadFor = 0;
+  s.shake = 1;
+  s.cause = cause;
+  burst(s, s.pilot.x, s.pilot.y, 34, ["#ffd8a0", "#ff9a5c", "#fff2d8", "#ffffff"], 1.5);
+  s.best = Math.max(s.best, Math.floor(s.score));
+  saveBest(s.best);
+}
 
 function step(s: Spill, dt: number) {
   s.stars.forEach((st) => {
@@ -391,6 +452,7 @@ function step(s: Spill, dt: number) {
 
   // ---- pilot
   if (s.flapT > 0) s.flapT = Math.max(0, s.flapT - dt);
+  if (s.shieldFlash > 0) s.shieldFlash = Math.max(0, s.shieldFlash - dt * 2);
   if (s.cool > 0) s.cool = Math.max(0, s.cool - dt);
   if (s.lunge > 0) {
     s.lunge = Math.max(0, s.lunge - dt);
@@ -398,6 +460,10 @@ function step(s: Spill, dt: number) {
   } else {
     // slides to a stop rather than stopping dead, so a dash has weight
     s.pilot.vx *= 1 - Math.min(1, dt * 8.5);
+    // then drifts back to the home lane, slowly. Ground a lunge won is
+    // yours for a few seconds, not for the rest of the run.
+    const home = s.W * PHYS.homeX;
+    if (Math.abs(s.pilot.x - home) > 1) s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * PHYS.driftHome);
   }
   s.pilot.vy += PHYS.gravity * dt;
   s.pilot.y += s.pilot.vy * dt;
@@ -409,10 +475,23 @@ function step(s: Spill, dt: number) {
   if (s.pilot.x > hi) { s.pilot.x = hi; s.pilot.vx = 0; }
   s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
 
-  // the ceiling and floor are walls, not deaths — dying to the edge of the
-  // screen in a mode about reading debris would be reading the wrong thing
+  // The ceiling is a wall. THE FLOOR IS NOT — riding the bottom was a
+  // hiding place, and a survival mode cannot have one. Brushing it is fine;
+  // staying on it kills. See PHYS.floorGrace for where the line is and why.
   if (s.pilot.y < 22) { s.pilot.y = 22; s.pilot.vy = Math.max(0, s.pilot.vy); }
-  if (s.pilot.y > s.H - 22) { s.pilot.y = s.H - 22; s.pilot.vy = Math.min(0, s.pilot.vy); }
+  const floorY = s.H - 22;
+  if (s.pilot.y > floorY) {
+    s.pilot.y = floorY;
+    s.pilot.vy = Math.min(0, s.pilot.vy);
+    s.floorT += dt;
+    if (s.floorT > PHYS.floorGrace) {
+      die(s, "GROUNDED");
+      return;
+    }
+  } else if (s.floorT > 0) {
+    // forgives quickly once clear, so a bumpy stretch does not accumulate
+    s.floorT = Math.max(0, s.floorT - dt * 2.5);
+  }
 
   // ---- spawn director
   s.nextRock -= dt;
@@ -430,6 +509,11 @@ function step(s: Spill, dt: number) {
   if (s.nextNut <= 0) {
     s.nextNut = 4.5 + Math.random() * 4;
     spawnNuts(s);
+  }
+  s.nextSpecial -= dt;
+  if (s.nextSpecial <= 0) {
+    s.nextSpecial = 16 + Math.random() * 14;
+    spawnSpecial(s);
   }
 
   // ---- debris
@@ -450,12 +534,18 @@ function step(s: Spill, dt: number) {
     const d2 = dx * dx + dy * dy;
     const kill = r.r + PHYS.pilotR;
     if (d2 < kill * kill) {
-      s.phase = "over";
-      s.deadFor = 0;
-      s.shake = 1;
-      burst(s, s.pilot.x, s.pilot.y, 34, ["#ffd8a0", "#ff9a5c", "#fff2d8", "#ffffff"], 1.5);
-      s.best = Math.max(s.best, Math.floor(s.score));
-      saveBest(s.best);
+      if (s.shield > 0) {
+        // a shield eats the piece rather than the pilot
+        s.shield--;
+        s.shieldFlash = 0.5;
+        s.shake = 0.6;
+        r.dead = true;
+        burst(s, r.x, r.y, 20, ["#9fe8ff", "#cfefff", "#ffffff"], 1.2);
+        s.banner = "SHIELD HELD";
+        s.bannerT = 1.1;
+        continue;
+      }
+      die(s, "STRUCK");
       return;
     }
     // near miss: only once per piece, and only once it is alongside or past
@@ -483,12 +573,26 @@ function step(s: Spill, dt: number) {
     const dy = n.y + Math.sin(n.bob) * 3 - s.pilot.y;
     if (dx * dx + dy * dy < 30 * 30) {
       n.got = true;
-      s.acorns++;
-      s.combo = Math.min(9, s.combo + 1);
-      s.comboT = 2.6;
-      s.score += 25 * s.combo;
-      s.charge = Math.min(1, s.charge + 0.03);
-      burst(s, n.x, n.y, 7, ["#ffd76a", "#fff0b8"], 0.7);
+      if (n.kind === "shield") {
+        s.shield = Math.min(2, s.shield + 1);
+        s.shieldFlash = 0.5;
+        s.banner = "SHIELD";
+        s.bannerT = 1.3;
+        burst(s, n.x, n.y, 14, ["#9fe8ff", "#cfefff"], 0.9);
+      } else {
+        const mult = n.kind === "gold" ? 2 : 1;
+        s.acorns += mult;
+        s.combo = Math.min(9, s.combo + 1);
+        s.comboT = 2.6;
+        s.score += 25 * s.combo * mult;
+        s.charge = Math.min(1, s.charge + 0.03);
+        if (n.kind === "gold") {
+          s.banner = "DOUBLE";
+          s.bannerT = 0.9;
+        }
+        burst(s, n.x, n.y, n.kind === "gold" ? 14 : 7,
+              n.kind === "gold" ? ["#ffe9a0", "#ffd76a", "#fff"] : ["#ffd76a", "#fff0b8"], 0.8);
+      }
     }
   }
   s.nuts = s.nuts.filter((n) => !n.got && n.x > -40);
@@ -522,6 +626,8 @@ type Bank = {
   /** each sprite with a light rim baked behind it, so it separates */
   lit: (HTMLCanvasElement | null)[];
   acorn: HTMLImageElement | null;
+  gold: HTMLImageElement | null;
+  shieldnut: HTMLImageElement | null;
   idle: (HTMLImageElement | null)[];
   flap: (HTMLImageElement | null)[];
 };
@@ -543,13 +649,15 @@ function loadImg(src: string) {
  * frames still carry their dome, and they animate.
  */
 async function loadBank(): Promise<Bank> {
-  const [debris, acorn, idle, flap] = await Promise.all([
+  const [debris, acorn, gold, shieldnut, idle, flap] = await Promise.all([
     Promise.all(Array.from({ length: 27 }, (_, i) => loadImg(`${ART}/debris/${i}.png`))),
     loadImg(`${ART}/acorn/1.png`),
+    loadImg(`${ART}/golden/1.png`),
+    loadImg(`${ART}/pickups/shieldnut.png`),
     Promise.all([1, 2, 3, 4].map((i) => loadImg(`${ART}/squirrel/idle-${i}.png`))),
     Promise.all([1, 2, 3, 4].map((i) => loadImg(`${ART}/squirrel/flap-${i}.png`))),
   ]);
-  return { debris, lit: debris.map(rim), acorn, idle, flap };
+  return { debris, lit: debris.map(rim), acorn, gold, shieldnut, idle, flap };
 }
 
 /**
@@ -708,9 +816,23 @@ function draw(ctx: CanvasRenderingContext2D, s: Spill, bank: Bank) {
 
   for (const n of s.nuts) {
     const y = n.y + Math.sin(n.bob) * 3;
-    if (bank.acorn) ctx.drawImage(bank.acorn, n.x - 14, y - 14, 28, 28);
+    const special = n.kind !== "acorn";
+    const img = n.kind === "shield" ? bank.shieldnut : n.kind === "gold" ? bank.gold : bank.acorn;
+    // the two rare ones carry a halo, so they read as worth crossing for
+    if (special) {
+      const pull = 20 + Math.sin(s.t * 5 + n.bob) * 3;
+      const g = ctx.createRadialGradient(n.x, y, 0, n.x, y, pull);
+      g.addColorStop(0, n.kind === "shield" ? "rgba(120,225,255,0.55)" : "rgba(255,215,120,0.5)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(n.x, y, pull, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    const px = special ? 36 : 28;
+    if (img) ctx.drawImage(img, n.x - px / 2, y - px / 2, px, px);
     else {
-      ctx.fillStyle = "#ffd76a";
+      ctx.fillStyle = n.kind === "shield" ? "#7fe0ff" : "#ffd76a";
       ctx.beginPath();
       ctx.arc(n.x, y, 9, 0, Math.PI * 2);
       ctx.fill();
@@ -722,7 +844,26 @@ function draw(ctx: CanvasRenderingContext2D, s: Spill, bank: Bank) {
     else drawRock(ctx, bank, r);
   }
 
-  if (s.phase !== "over") drawPilot(ctx, bank, s);
+  // the floor announces itself before it kills
+  if (s.floorT > PHYS.floorWarn && s.phase === "play") {
+    const f = Math.min(1, (s.floorT - PHYS.floorWarn) / (PHYS.floorGrace - PHYS.floorWarn));
+    const g = ctx.createLinearGradient(0, s.H - 90, 0, s.H);
+    g.addColorStop(0, "rgba(255,60,60,0)");
+    g.addColorStop(1, `rgba(255,60,60,${(0.2 + f * 0.5).toFixed(2)})`);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, s.H - 90, s.W, 90);
+  }
+
+  if (s.phase !== "over") {
+    drawPilot(ctx, bank, s);
+    if (s.shield > 0) {
+      ctx.strokeStyle = `rgba(150,230,255,${(0.4 + 0.3 * Math.sin(s.t * 5) + s.shieldFlash).toFixed(2)})`;
+      ctx.lineWidth = s.shield > 1 ? 3.5 : 2;
+      ctx.beginPath();
+      ctx.arc(s.pilot.x, s.pilot.y, 32, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
 
   for (const b of s.bits) {
     ctx.globalAlpha = Math.max(0, 1 - b.life / b.max);
@@ -836,7 +977,7 @@ export async function bootSpill(root: HTMLElement) {
     $score.textContent = `${Math.floor(s.score)}`;
     $charge.style.width = `${(s.charge * 100).toFixed(0)}%`;
     pulseBtn.classList.toggle("ready", s.charge >= 1);
-    $combo.textContent = s.combo > 1 ? `×${s.combo}` : "";
+    $combo.textContent = (s.shield > 0 ? "\u25c9".repeat(s.shield) + " " : "") + (s.combo > 1 ? `\u00d7${s.combo}` : "");
     $banner.textContent = s.bannerT > 0 ? s.banner : "";
     $banner.style.opacity = s.bannerT > 0 ? `${Math.min(1, s.bannerT * 1.6)}` : "0";
 
@@ -846,17 +987,18 @@ export async function bootSpill(root: HTMLElement) {
         '<h1>THE SPILL</h1>' +
         '<p>A mining rig let go one system over. What reached us is travelling one way.</p>' +
         '<ul><li><b>Tap</b> — thrust</li><li><b>Swipe down</b> — dive</li>' +
-        '<li><b>Swipe left / right</b> — <b>lunge</b></li>' +
+        '<li><b>Swipe right</b> — <b>lunge</b> forward, then drift back</li>' +
         '<li><b>PULSE</b> — shatter what is close, once the meter fills</li></ul>' +
-        '<p class="sp-fine">Graze debris to charge the meter. Survive.</p>' +
+        '<p class="sp-fine">Graze debris to charge the meter. Gold acorns pay double; shields are rare. <b>Do not ride the floor.</b></p>' +
         `${s.best ? `<p class="sp-best">BEST ${s.best}</p>` : ""}` +
         '<p class="sp-go">TAP TO LAUNCH</p>';
     } else if (s.phase === "over") {
       $card.className = "sp-card show";
       $card.innerHTML =
-        '<h1>LOST</h1>' +
+        `<h1>${s.cause === "GROUNDED" ? "GROUNDED" : "LOST"}</h1>` +
         `<p class="sp-stat"><b>${Math.floor(s.score)}</b> points</p>` +
         `<p class="sp-sub">${s.t.toFixed(1)}s survived · ${s.acorns} acorns · ${s.grazes} grazes</p>` +
+        `${s.cause === "GROUNDED" ? '<p class="sp-sub">You cannot ride the floor.</p>' : ""}` +
         `${Math.floor(s.score) >= s.best && s.best > 0 ? '<p class="sp-best">NEW BEST</p>' : `<p class="sp-best">BEST ${s.best}</p>`}` +
         '<p class="sp-go">TAP TO FLY AGAIN</p>';
     } else {
