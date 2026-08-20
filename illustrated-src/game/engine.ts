@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, isIap } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -10,6 +10,7 @@ import {
   lostUnlocked,
   modsUnlocked,
   loadSave,
+  iapOwned,
   palUnlocked,
   startShieldUnlocked,
   suitRevealed,
@@ -231,6 +232,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactTrail(id: string) {
     const item = TRAILS.find((h) => h.id === id);
     if (!item) return "missing";
+    if (isIap(id)) {
+      if (!iapOwned(save, id)) return "locked";
+      save.equippedTrail = id;
+      if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
+      writeSave(save);
+      notify();
+      return "equip";
+    }
     if (save.unlockedTrails.includes(id)) {
       save.equippedTrail = id;
       writeSave(save);

@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=58";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=58";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=58";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=58";
-import { tunnelBoundsAt } from "./sim.js?v=58";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=59";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=59";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=59";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=59";
+import { tunnelBoundsAt } from "./sim.js?v=59";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -781,6 +781,132 @@ function drawParticle(ctx, p) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * (1.4 - t * 0.4), 0, Math.PI * 2);
         ctx.fill();
+    }
+    else if (kind === "opalfeather") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(((p.hue || 0) * Math.PI) / 180);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 5;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 2.1, 0);
+        ctx.quadraticCurveTo(-p.r * 0.2, -p.r * 1.15, p.r * 1.7, 0);
+        ctx.quadraticCurveTo(-p.r * 0.2, p.r * 0.75, -p.r * 2.1, 0);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.78)";
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 1.6, 0);
+        ctx.lineTo(p.r * 1.4, 0);
+        ctx.stroke();
+        ctx.restore();
+    }
+    else if (kind === "clockwork") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(((p.hue || 0) * Math.PI) / 180);
+        ctx.strokeStyle = p.color;
+        ctx.fillStyle = "rgba(255,224,145,.16)";
+        ctx.lineWidth = Math.max(0.8, p.r * 0.28);
+        ctx.shadowColor = "#f4b94f";
+        ctx.shadowBlur = 3;
+        for (let i = 0; i < 8; i++) {
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(p.r * 0.78, -p.r * 0.28, p.r * 0.62, p.r * 0.56);
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r * 0.34, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+    else if (kind === "celestialtide") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.strokeStyle = p.color;
+        ctx.lineCap = "round";
+        ctx.lineWidth = Math.max(0.8, p.r * 0.36);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 5;
+        const wave = Math.sin((p.seed || 0) + p.x * 0.04) * p.r;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 2.2, wave * 0.25);
+        ctx.quadraticCurveTo(-p.r * 0.4, -p.r * 1.35, p.r * 1.7, wave * 0.4);
+        ctx.stroke();
+        ctx.globalAlpha = t * 0.55;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 1.7, p.r * 0.8);
+        ctx.quadraticCurveTo(0, -p.r * 0.25, p.r * 1.4, p.r * 0.7);
+        ctx.stroke();
+        ctx.restore();
+    }
+    else if (kind === "phoenixplume") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(-0.3 + ((p.hue || 0) * Math.PI) / 360);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 2.4, p.r * 0.2);
+        ctx.quadraticCurveTo(-p.r * 0.4, -p.r * 1.7, p.r * 1.5, -p.r * 0.35);
+        ctx.quadraticCurveTo(p.r * 0.2, p.r * 0.1, p.r * 1.15, p.r * 1.15);
+        ctx.quadraticCurveTo(-p.r * 0.6, p.r * 0.7, -p.r * 2.4, p.r * 0.2);
+        ctx.fill();
+        ctx.strokeStyle = "#fff3bd";
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 1.8, p.r * 0.18);
+        ctx.lineTo(p.r, 0);
+        ctx.stroke();
+        ctx.restore();
+    }
+    else if (kind === "verdantflourish") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(((p.hue || 0) * Math.PI) / 180);
+        ctx.shadowColor = "#55e89d";
+        ctx.shadowBlur = 5;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 1.6, 0);
+        ctx.quadraticCurveTo(0, -p.r * 1.45, p.r * 1.65, 0);
+        ctx.quadraticCurveTo(0, p.r * 1.15, -p.r * 1.6, 0);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(235,255,216,.85)";
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(-p.r * 1.25, 0);
+        ctx.lineTo(p.r * 1.25, 0);
+        ctx.stroke();
+        ctx.fillStyle = "#efffc8";
+        ctx.beginPath();
+        ctx.arc(-p.r * 1.8, -p.r, 0.65, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    else if (kind === "eclipseglyph") {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(((p.hue || 0) * Math.PI) / 180);
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = Math.max(0.8, p.r * 0.3);
+        ctx.shadowColor = "#c77dff";
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r, 0.55, Math.PI * 1.72);
+        ctx.stroke();
+        ctx.globalAlpha = t * 0.7;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r * 1.55, 3.5, 5.75);
+        ctx.stroke();
+        ctx.fillStyle = "#ffe2bd";
+        ctx.rotate(Math.PI / 4);
+        ctx.fillRect(p.r * 1.35, -0.75, 1.5, 1.5);
+        ctx.restore();
     }
     else {
         ctx.fillStyle = p.color;

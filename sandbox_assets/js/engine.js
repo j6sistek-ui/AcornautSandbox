@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=58";
-import { sfx, unlockAudio, music } from "./audio.js?v=58";
-import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=58";
-import { drawHud, drawWorld } from "./draw.js?v=58";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=58";
-import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=58";
-import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=58";
+import { emptyArt, loadArt } from "./art.js?v=59";
+import { sfx, unlockAudio, music } from "./audio.js?v=59";
+import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, isIap } from "./catalog.js?v=59";
+import { drawHud, drawWorld } from "./draw.js?v=59";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, eraseSave, lostUnlocked, modsUnlocked, loadSave, iapOwned, palUnlocked, startShieldUnlocked, suitRevealed, writeSave, } from "./save.js?v=59";
+import { levelById, levelUnlocked, totalStars } from "./campaign.js?v=59";
+import { dive, flap, initStars, makeWorld, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=59";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -179,6 +179,16 @@ export async function createEngine(canvas) {
         const item = TRAILS.find((h) => h.id === id);
         if (!item)
             return "missing";
+        if (isIap(id)) {
+            if (!iapOwned(save, id))
+                return "locked";
+            save.equippedTrail = id;
+            if (!save.unlockedTrails.includes(id))
+                save.unlockedTrails.push(id);
+            writeSave(save);
+            notify();
+            return "equip";
+        }
         if (save.unlockedTrails.includes(id)) {
             save.equippedTrail = id;
             writeSave(save);
@@ -442,4 +452,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=58";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=59";
