@@ -1,5 +1,5 @@
 {
- "artVer": "55",
+ "artVer": "56",
  "suits": [
   {
    "id": "flight",
@@ -238,6 +238,48 @@
    "ownHead": false,
    "bakedDome": false,
    "frame": false
+  },
+  {
+   "id": "verdant",
+   "name": "Verdant",
+   "key": "suit:verdant",
+   "file": "suits/verdant.png",
+   "dome": [
+    204,
+    93,
+    58
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "cryostar",
+   "name": "Cryostar",
+   "key": "suit:cryostar",
+   "file": "suits/cryostar.png",
+   "dome": [
+    207,
+    93,
+    58
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "eclipse",
+   "name": "Eclipse",
+   "key": "suit:eclipse",
+   "file": "suits/eclipse.png",
+   "dome": [
+    204,
+    86,
+    58
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
   }
  ],
  "helmets": [
@@ -458,6 +500,39 @@
     119.3,
     91.8,
     126,
+    0
+   ]
+  },
+  {
+   "id": "verdant",
+   "name": "Verdant",
+   "file": "helms/verdant.png",
+   "glass": [
+    125,
+    129,
+    137,
+    0
+   ]
+  },
+  {
+   "id": "cryostar",
+   "name": "Cryostar",
+   "file": "helms/cryostar.png",
+   "glass": [
+    126,
+    125,
+    132,
+    0
+   ]
+  },
+  {
+   "id": "eclipse",
+   "name": "Eclipse",
+   "file": "helms/eclipse.png",
+   "glass": [
+    121,
+    132,
+    133,
     0
    ]
   }

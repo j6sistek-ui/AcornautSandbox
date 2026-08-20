@@ -273,6 +273,9 @@ export async function loadArt(): Promise<ArtBank> {
     "leviathan",
     "paladin",
     "princess",
+    "verdant",
+    "cryostar",
+    "eclipse",
   ];
   // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
   // still touches its plume in the source, but the guarded mainline cut is
@@ -281,6 +284,7 @@ export async function loadArt(): Promise<ArtBank> {
     "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
     "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
     "catsuit", "gemmie", "sammie", "seraph", "leviathan",
+    "verdant", "cryostar", "eclipse",
   ];
   const suitIds = [
     "flight",
@@ -300,6 +304,9 @@ export async function loadArt(): Promise<ArtBank> {
     "sammie",
     "seraph",
     "leviathan",
+    "verdant",
+    "cryostar",
+    "eclipse",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
 

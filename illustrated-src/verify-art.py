@@ -8,7 +8,7 @@ Run from anywhere in the repository:
 This gate checks contracts that can be decided mechanically, including the
 base suits' normalized on-screen helmet scale. Helmet seating is deliberately
 not one of them: shaped glass openings and unusual heads still need the
-17-suit x 20-helmet visual matrix described in ART_SPEC.md.
+20-suit x 23-helmet visual matrix described in ART_SPEC.md.
 """
 
 from __future__ import annotations

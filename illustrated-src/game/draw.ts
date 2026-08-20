@@ -867,6 +867,9 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:sammie": [206, 90, 59],
   "suit:seraph": [207, 97, 57],
   "suit:leviathan": [207, 81, 57],
+  "suit:verdant": [204, 93, 58],
+  "suit:cryostar": [207, 93, 58],
+  "suit:eclipse": [204, 86, 58],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -919,6 +922,9 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // suit (suitOnly in catalog.ts), so this number never has to sit right
   // on anyone else.
   "leviathan": [129.8, 110.6, 103.6, 12],
+  "verdant": [125, 129, 137],
+  "cryostar": [126, 125, 132],
+  "eclipse": [121, 132, 133],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
@@ -978,6 +984,9 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   seraph: [105, 138],
   stardust: [104, 140],
   voidsuit: [105, 142],
+  verdant: [103, 149],
+  cryostar: [103, 151],
+  eclipse: [105, 143],
 };
 
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they

@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=55";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=55";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=55";
-import { createEngine } from "./engine.js?v=55";
-import { palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=55";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=55";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=56";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=56";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=56";
+import { createEngine } from "./engine.js?v=56";
+import { palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=56";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=56";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)

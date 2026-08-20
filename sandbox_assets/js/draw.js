@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=55";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=55";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=55";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=55";
-import { tunnelBoundsAt } from "./sim.js?v=55";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=56";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=56";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=56";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=56";
+import { tunnelBoundsAt } from "./sim.js?v=56";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -858,6 +858,9 @@ const DOME = {
     "suit:sammie": [206, 90, 59],
     "suit:seraph": [207, 97, 57],
     "suit:leviathan": [207, 81, 57],
+    "suit:verdant": [204, 93, 58],
+    "suit:cryostar": [207, 93, 58],
+    "suit:eclipse": [204, 86, 58],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
@@ -909,6 +912,9 @@ const HELM_GLASS = {
     // suit (suitOnly in catalog.ts), so this number never has to sit right
     // on anyone else.
     "leviathan": [129.8, 110.6, 103.6, 12],
+    "verdant": [125, 129, 137],
+    "cryostar": [126, 125, 132],
+    "eclipse": [121, 132, 133],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
@@ -965,6 +971,9 @@ const TAIL_PIVOT = {
     seraph: [105, 138],
     stardust: [104, 140],
     voidsuit: [105, 142],
+    verdant: [103, 149],
+    cryostar: [103, 151],
+    eclipse: [105, 143],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
 // are placed against the WHOLE suit's trimmed box — that is what keeps

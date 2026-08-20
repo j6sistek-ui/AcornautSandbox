@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=55";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=56";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -222,6 +222,9 @@ export async function loadArt() {
         "leviathan",
         "paladin",
         "princess",
+        "verdant",
+        "cryostar",
+        "eclipse",
     ];
     // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
     // still touches its plume in the source, but the guarded mainline cut is
@@ -230,6 +233,7 @@ export async function loadArt() {
         "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
         "catsuit", "gemmie", "sammie", "seraph", "leviathan",
+        "verdant", "cryostar", "eclipse",
     ];
     const suitIds = [
         "flight",
@@ -249,6 +253,9 @@ export async function loadArt() {
         "sammie",
         "seraph",
         "leviathan",
+        "verdant",
+        "cryostar",
+        "eclipse",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     async function named(ids, folder, suffix = "", required = false) {
