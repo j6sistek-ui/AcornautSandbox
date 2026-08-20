@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=57";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=57";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=57";
-import { createEngine } from "./engine.js?v=57";
-import { deepUnlocked, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=57";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=57";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=58";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=58";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=58";
+import { createEngine } from "./engine.js?v=58";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=58";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=58";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -596,6 +596,30 @@ export async function bootStandalone(root) {
             paintPortrait(ctx, engine.art, helmet, suit, px * 0.45, px / 2, px * 0.78);
         return c;
     }
+    function palCardOf(pl, forShop = false) {
+        const s = engine.save;
+        const premium = isIap(pl.id);
+        const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
+        const b = el("button", s.equippedPal === pl.id ? "ac-card ac-palcard on" : "ac-card ac-palcard");
+        if (premium)
+            b.classList.add("ac-premium");
+        if (!open)
+            b.classList.add("ac-cardoff");
+        b.append(el("p", "ac-palname", pl.name));
+        const { c, ctx } = miniCanvas(72, 60);
+        if (ctx)
+            paintPalPreview(ctx, engine.art, pl.id, 36, 30, 54);
+        b.append(c);
+        b.append(el("p", "ac-paldesc", pl.desc));
+        const status = premium ? (open ? "OWNED" : "PREMIUM")
+            : open ? pl.tag
+                : STAR_UNLOCKS.pals[pl.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.pals[pl.id]}`
+                    : forShop ? "EARNED BY FLYING" : "LOCKED";
+        b.append(el("p", "ac-palstat", status));
+        b.onclick = () => { if (open)
+            engine.equipPal(pl.id); };
+        return b;
+    }
     function drawHangar() {
         const s = engine.save;
         const helm = helmetWornBy(s.equipped, s.equippedSuit);
@@ -608,7 +632,7 @@ export async function bootStandalone(root) {
         // is never a mystery while you shop.
         const load = el("div", "ac-rig");
         const rigArt = el("div", "ac-rigart");
-        rigArt.append(portraitOf(helm, suit, 74));
+        rigArt.append(portraitOf(helm, suit, 100));
         load.append(rigArt);
         const loadTxt = el("div", "ac-rigtxt");
         loadTxt.append(el("p", "ac-rigname", suit.name));
@@ -648,18 +672,22 @@ export async function bootStandalone(root) {
             }
             for (const h of HELMETS) {
                 const premium = isIap(h.id);
+                const open = helmetRevealed(s, h.id);
                 const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
                 // a matched-set helmet only fits its own suit; on any other it
                 // shows as a set piece rather than an option
                 const setLocked = !!h.suitOnly && s.equippedSuit !== h.suitOnly;
                 const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
                 const setName = h.suitOnly ? (SUITS.find((u) => u.id === h.suitOnly)?.name ?? h.suitOnly) : "";
-                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${setLocked ? `${setName.toUpperCase()} ONLY` : owned ? "OWNED" : premium ? "PREMIUM" : h.cost}`));
+                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${setLocked ? `${setName.toUpperCase()} ONLY`
+                    : premium ? (owned ? "OWNED" : "PREMIUM")
+                        : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
+                            : owned ? "OWNED" : h.cost}`));
                 if (premium)
                     b.classList.add("ac-premium");
-                if (locked || setLocked)
+                if (locked || setLocked || !open)
                     b.classList.add("ac-cardoff");
-                b.onclick = () => { if (!locked && !setLocked && (!premium || owned))
+                b.onclick = () => { if (!locked && !setLocked && open && (!premium || owned))
                     engine.buyHelmet(h.id); };
                 grid.append(b);
             }
@@ -690,17 +718,11 @@ export async function bootStandalone(root) {
             }
         }
         else if (engine.shopTab === "pals") {
-            for (const p of PALS) {
-                const open = palUnlocked(s, p.id);
-                const b = el("button", s.equippedPal === p.id ? "ac-card on" : "ac-card");
-                const { c, ctx } = miniCanvas(64, 56);
-                if (ctx)
-                    paintPalPreview(ctx, engine.art, p.id, 32, 28, 48);
-                b.append(c);
-                b.append(document.createTextNode(`${p.name}\n${open ? p.tag : "LOCKED"}`));
-                b.onclick = () => engine.equipPal(p.id);
-                grid.append(b);
-            }
+            // Pals carry a sentence, not a two-word tag, so their shelf runs two
+            // wide where everything else runs four.
+            grid.classList.add("ac-palgrid");
+            for (const p of PALS)
+                grid.append(palCardOf(p));
         }
         else {
             // Mods are BOUGHT, like everything else on this screen, so they get
@@ -866,6 +888,11 @@ export async function bootStandalone(root) {
             if (suit)
                 return suitCardOf(suit, px);
         }
+        if (item.kind === "helmet" && item.id) {
+            const helm = HELMETS.find((h) => h.id === item.id);
+            if (helm)
+                return helmCardOf(helm, px);
+        }
         const { c, ctx } = miniCanvas(px, px);
         const art = engine.art;
         if (!ctx || !art)
@@ -918,6 +945,31 @@ export async function bootStandalone(root) {
                     open = st.num;
             chartStage = open;
         }
+        // The reward ladder is PINNED at the top of the chart — what stars buy
+        // should never be a scroll-to-the-bottom secret. It opens and closes on
+        // a tap and stays collapsed by default so the chapters keep the screen.
+        const ladder = el("div", "ac-stagecard");
+        const lhead = el("button", "ac-stagehead");
+        lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", chartStage === -1 ? "\u25be what stars unlock" : "\u25b8 what stars unlock"));
+        lhead.onclick = () => { chartStage = chartStage === -1 ? 0 : -1; render(); };
+        ladder.append(lhead);
+        if (chartStage === -1) {
+            for (const r of STAR_REWARDS) {
+                const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
+                if (r.kind !== "stage") {
+                    row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }));
+                }
+                const txt = el("div", "ac-roadtxt");
+                txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
+                txt.append(el("p", "", r.name));
+                txt.append(el("p", "ac-sub", r.desc));
+                row.append(txt);
+                if (total >= r.stars)
+                    row.append(el("span", "ac-check", "\u2713"));
+                ladder.append(row);
+            }
+        }
+        scroll.append(ladder);
         for (const st of STAGES) {
             const open = stageUnlocked(st.num, total);
             const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
@@ -952,29 +1004,6 @@ export async function bootStandalone(root) {
             }
             scroll.append(card);
         }
-        // the reward ladder, folded under the stages: what stars BUY
-        const ladder = el("div", "ac-stagecard");
-        const lhead = el("button", "ac-stagehead");
-        lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", "what stars unlock"));
-        lhead.onclick = () => { chartStage = chartStage === -1 ? 0 : -1; render(); };
-        ladder.append(lhead);
-        if (chartStage === -1) {
-            for (const r of STAR_REWARDS) {
-                const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
-                if (r.kind !== "stage") {
-                    row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }));
-                }
-                const txt = el("div", "ac-roadtxt");
-                txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
-                txt.append(el("p", "", r.name));
-                txt.append(el("p", "ac-sub", r.desc));
-                row.append(txt);
-                if (total >= r.stars)
-                    row.append(el("span", "ac-check", "\u2713"));
-                ladder.append(row);
-            }
-        }
-        scroll.append(ladder);
         box.append(scroll, tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
@@ -1073,14 +1102,14 @@ export async function bootStandalone(root) {
     let storeTab = "bundles";
     // Bundles are priced under the sum of their parts — that IS the pitch, so
     // the saving is stated on the card rather than left to be worked out.
+    // ONE bundle for the staged release: everything premium, in one pack.
+    // "Buying" it is an access code for now — the payment rail comes later.
     const BUNDLES = [
-        { id: "bundle-founders", name: "Founder's Pack", blurb: "Every premium suit and the helmets cut for them.",
-            items: ["catsuit", "gemmie", "sammie", "seraph", "leviathan", "chronarch", "paladin", "princess", "phoenix"] },
-        { id: "bundle-suits", name: "Suit Collection", blurb: "All five premium squirrels.",
-            items: ["catsuit", "gemmie", "sammie", "seraph", "leviathan"] },
-        { id: "bundle-helmets", name: "Helmet Collection", blurb: "The four shaped helmets.",
-            items: ["chronarch", "paladin", "princess", "phoenix"] },
+        { id: "bundle-founders", name: "Founder's Pack", blurb: "Every premium suit, helmet and pal. All of it, forever.",
+            items: [...IAP_ITEMS] },
     ];
+    let foundersOpen = false;
+    let foundersMsg = "";
     function drawShop() {
         const s = engine.save;
         const box = el("div", "ac-menu");
@@ -1117,7 +1146,32 @@ export async function bootStandalone(root) {
                 if (owned)
                     card.classList.add("on");
                 card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
+                if (!owned)
+                    card.onclick = () => { foundersOpen = !foundersOpen; foundersMsg = ""; render(); };
                 grid.append(card);
+                if (!owned && foundersOpen) {
+                    const row = el("div", "ac-coderow");
+                    const input = document.createElement("input");
+                    input.type = "tel";
+                    input.inputMode = "numeric";
+                    input.placeholder = "ACCESS CODE";
+                    input.className = "ac-codein";
+                    const go = el("button", "ac-primary ac-codego", "REDEEM");
+                    go.onclick = () => {
+                        if (engine.redeemAccessCode(input.value) === "ok") {
+                            foundersOpen = false;
+                            foundersMsg = "";
+                        }
+                        else {
+                            foundersMsg = "That code doesn't open this door.";
+                            render();
+                        }
+                    };
+                    row.append(input, go);
+                    grid.append(row);
+                    if (foundersMsg)
+                        grid.append(el("p", "ac-fine ac-codemsg", foundersMsg));
+                }
             }
         }
         else if (storeTab === "suits") {
@@ -1141,21 +1195,13 @@ export async function bootStandalone(root) {
             }
         }
         else {
-            // Pals are earned by flying, not bought. The Shop still lists them so
-            // the shelf is not a mystery — each says what unlocks it.
-            for (const pl of PALS.filter((x) => x.id !== "none")) {
-                const open = palUnlocked(s, pl.id);
-                const b = el("button", s.equippedPal === pl.id ? "ac-card on" : "ac-card");
-                const { c, ctx } = miniCanvas(64, 56);
-                if (ctx)
-                    paintPalPreview(ctx, engine.art, pl.id, 32, 28, 48);
-                b.append(c, document.createTextNode(`${pl.name}\n${open ? pl.tag : "EARNED BY FLYING"}`));
-                if (!open)
-                    b.classList.add("ac-cardoff");
-                b.onclick = () => { if (open)
-                    engine.equipPal(pl.id); };
-                grid.append(b);
-            }
+            // Standard pals are earned by flying; premium pals share the same
+            // shelf but keep the same purchase/ownership contract as premium art.
+            // Pals earned by flying live in the Hangar; the Shop only SELLS,
+            // so its shelf is the premium three alone.
+            grid.classList.add("ac-palgrid");
+            for (const pl of PALS.filter((x) => isIap(x.id)))
+                grid.append(palCardOf(pl, true));
         }
         scroll.append(grid);
         if (storeTab !== "pals") {
@@ -1268,8 +1314,7 @@ export async function bootStandalone(root) {
         item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
-        item(pic(spr("golden")), "GOLDEN ACORN", "Other modes: invulnerable to debris \u2014 planets still bounce.");
-        item(pic(spr("golden")), "FLOW ACORN", "Wormhole Run: fills Flow and guarantees at least ×2 score for 8 seconds.");
+        item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce. In Wormhole Run it is the FLOW ACORN: fills Flow and guarantees at least \u00d72 score for 8 seconds.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
@@ -1294,22 +1339,22 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
         scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-        if (IS_BETA)
-            scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+        scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
         scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
         scroll.append(replay);
-        // The prototype doors are the BETA's: the Spill, the rig editor and
-        // Wormhole Run stay one deliberate tap away for testers, and the
-        // production page simply never grows them. The pages themselves still
-        // exist at their own URLs — this only removes the doors.
-        if (IS_BETA) {
+        // The live page is a STAGED release — still a beta in spirit — so the
+        // prototype doors stay on both pages for now: Wormhole Run, the Spill
+        // and the rig editor, one deliberate tap away, ungated. When the live
+        // page hardens for the stores, wrap these in IS_BETA again.
+        {
+            const labRoot = IS_BETA ? "../lab/" : "./lab/";
             const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
-            lab.onclick = () => { window.location.href = "../lab/spill/"; };
+            lab.onclick = () => { window.location.href = labRoot + "spill/"; };
             const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
-            rig.onclick = () => { window.location.href = "../lab/rig/"; };
+            rig.onclick = () => { window.location.href = labRoot + "rig/"; };
             const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
             worm.onclick = () => engine.fly("tunnel");
             scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));

@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=57";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=58";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -200,6 +200,9 @@ export async function loadArt() {
         "starpup",
         "tinbot",
         "wisp",
+        "prismwing",
+        "clockling",
+        "nightglider",
     ];
     const helmIds = [
         "clear",

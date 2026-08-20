@@ -1564,10 +1564,17 @@ export function flap(w: World, save: SaveData) {
     w.tut.nudge = "drag downward — not a tap";
     return "none";
   }
+  // The tap that answers a TAP prompt must itself flap — it is the very
+  // thing being taught. The second one froze mid-fall, switched straight
+  // into "glide" and was then swallowed by the glide guard below, so the
+  // pilot resumed plummeting with no lift and met the floor instead of
+  // the planned touchdown arc.
+  let tapAccepted = false;
   if (w.tut?.hold && (w.tut.stage === "tap" || w.tut.stage === "tap2")) {
     w.tut.hold = false;
     w.tut.t = 0;
     w.tut.stage = w.tut.stage === "tap" ? "tapdone" : "glide";
+    tapAccepted = true;
   } else if (w.tut?.hold && w.tut.stage === "yourturn") {
     w.tut.hold = false;
     w.tut.stage = "gates";
@@ -1575,7 +1582,7 @@ export function flap(w: World, save: SaveData) {
     w.tut.gates = 0;
   }
   if (w.ready) w.ready = false;
-  if (w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce")) return "none";
+  if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce")) return "none";
   if (w.lvl) {
     w.lvl.stats.taps += 1;
     w.lvl.strobeT = 0;      // THE BLACKOUT: a tap is a flashbulb
@@ -1932,7 +1939,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
         w.tut.stage = "bounce";
         w.tut.t = 0;
         w.squirrel.vy = -640;
-      } else if (w.tut.t > 1.6) {
+      } else if (w.tut.t > 1.6 || w.squirrel.y > w.H * 0.82) {
         w.tut.bounced = true;
         w.tut.stage = "bounce";
         w.tut.t = 0;

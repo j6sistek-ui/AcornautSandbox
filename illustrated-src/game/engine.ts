@@ -1,10 +1,11 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
   deepUnlocked,
+  helmetRevealed,
   eraseSave,
   lostUnlocked,
   modsUnlocked,
@@ -47,6 +48,8 @@ export type Engine = {
   fly: (mode: FlightMode) => void;
   /** wipe this build's save slot and reboot into a fresh game */
   startOver: () => void;
+  /** the Founder's Pack door: the right code marks every premium item bought */
+  redeemAccessCode: (code: string) => "ok" | "denied";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   open: (s: Screen) => void;
@@ -114,6 +117,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       eraseSave();
       window.location.reload();
     },
+    redeemAccessCode(code) {
+      if (code.trim() !== "120189") return "denied";
+      save.purchased = save.purchased || [];
+      for (const id of IAP_ITEMS) if (!save.purchased.includes(id)) save.purchased.push(id);
+      writeSave(save);
+      notify();
+      return "ok";
+    },
     flyLevel(id) {
       const def = levelById(id);
       if (!def) return false;
@@ -174,6 +185,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!item) return "missing";
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
+    if (!helmetRevealed(save, id)) return "locked";
     if (save.unlocked.includes(id)) {
       save.equipped = id;
       writeSave(save);

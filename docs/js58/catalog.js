@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "57";
+export const ART_VER = "58";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -134,6 +134,9 @@ export const PALS = [
     { id: "starpup", name: "Star Pup", tag: "LONG GOLD", desc: "Golden acorns last twice as long.", art: "starpup" },
     { id: "tinbot", name: "Tin Bot", tag: "NO HOLES", desc: "No black holes or wormholes. No shields either.", art: "tinbot" },
     { id: "wisp", name: "Nebula Wisp", tag: "GATE DRIFT", desc: "Gates drift up and down — moving targets.", art: "wisp" },
+    { id: "prismwing", name: "Prismwing", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "prismwing" },
+    { id: "clockling", name: "Clockling", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "clockling" },
+    { id: "nightglider", name: "Nightglider", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "nightglider" },
 ];
 // Original imagine sheet (3x4, 400px cells) → these filenames. Never remap by index.
 export const PAL_SHEET = {
@@ -317,6 +320,7 @@ export const IAP_ITEMS = [
     "gemmie", "phoenix", "sammie", "seraph",
     "chronarch", "leviathan", "paladin", "princess",
     "verdant", "cryostar", "eclipse",
+    "prismwing", "clockling", "nightglider",
 ];
 export function isIap(id) {
     return IAP_ITEMS.includes(id);

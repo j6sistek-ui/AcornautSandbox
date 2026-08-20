@@ -1,6 +1,6 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=57";
-import { modsUnlocked, writeSave } from "./save.js?v=57";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=57";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=58";
+import { modsUnlocked, writeSave } from "./save.js?v=58";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=58";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -1274,10 +1274,17 @@ export function flap(w, save) {
         w.tut.nudge = "drag downward — not a tap";
         return "none";
     }
+    // The tap that answers a TAP prompt must itself flap — it is the very
+    // thing being taught. The second one froze mid-fall, switched straight
+    // into "glide" and was then swallowed by the glide guard below, so the
+    // pilot resumed plummeting with no lift and met the floor instead of
+    // the planned touchdown arc.
+    let tapAccepted = false;
     if (w.tut?.hold && (w.tut.stage === "tap" || w.tut.stage === "tap2")) {
         w.tut.hold = false;
         w.tut.t = 0;
         w.tut.stage = w.tut.stage === "tap" ? "tapdone" : "glide";
+        tapAccepted = true;
     }
     else if (w.tut?.hold && w.tut.stage === "yourturn") {
         w.tut.hold = false;
@@ -1287,7 +1294,7 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
-    if (w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce"))
+    if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce"))
         return "none";
     if (w.lvl) {
         w.lvl.stats.taps += 1;
@@ -1651,7 +1658,7 @@ export function updateWorld(w, save, dt) {
                 w.tut.t = 0;
                 w.squirrel.vy = -640;
             }
-            else if (w.tut.t > 1.6) {
+            else if (w.tut.t > 1.6 || w.squirrel.y > w.H * 0.82) {
                 w.tut.bounced = true;
                 w.tut.stage = "bounce";
                 w.tut.t = 0;
