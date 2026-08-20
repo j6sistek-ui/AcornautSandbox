@@ -3,7 +3,7 @@ import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL, starsOf } from "./save";
-import { LEVELS, STAGES, STAR_REWARDS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, type LevelDef } from "./campaign";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -141,26 +141,8 @@ export async function bootStandalone(root: HTMLElement) {
           el("p", "ac-sub", `Best Flow ×${snap.dead.bestMultiplier} · Best chain ${snap.dead.bestChain} · ${count(snap.dead.nearMisses, "near miss")}`),
         );
       }
-      sheet.append(el("p", "ac-sub", `+${snap.dead.xp} XP · LV ${snap.dead.toLv}`));
-      if (snap.dead.toLv > snap.dead.fromLv) sheet.append(el("p", "ac-gold", `LEVEL UP — LV ${snap.dead.toLv}!`));
-      {
-        // the run's XP pours into the level meter
-        const lo = xpCumulative(snap.dead.toLv);
-        const hi = xpCumulative(snap.dead.toLv + 1);
-        const span = Math.max(1, hi - lo);
-        const fromPct = Math.max(0, Math.min(1, (snap.dead.fromXp - lo) / span));
-        const toPct = Math.max(0, Math.min(1, (engine.save.xp - lo) / span));
-        const bar = el("div", "ac-xpbar");
-        const fill = el("div", "");
-        fill.style.width = `${(fromPct * 100).toFixed(1)}%`;
-        bar.append(fill);
-        sheet.append(bar);
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => {
-            fill.style.width = `${(toPct * 100).toFixed(1)}%`;
-          }),
-        );
-      }
+      // XP is retired from the player's view — the Star Chart is the
+      // ladder now, and stars are earned in levels, not by crashing here
       if (snap.flight === "tunnel") {
         const replay = el("button", "ac-primary", "FLY AGAIN");
         replay.onclick = () => engine.fly("tunnel");
@@ -439,9 +421,8 @@ export async function bootStandalone(root: HTMLElement) {
     // plates — the launch screen is the art's, and these only have to be
     // readable over it.
     const pills = el("div", "ac-home-pills");
-    const lv = pilotLevelOf(s);
     const lvPill = el("div", "ac-pill");
-    lvPill.append(el("span", "ac-pill-key", "LV"), el("span", "ac-pill-num", `${lv}`));
+    lvPill.append(el("span", "ac-pill-key", "\u2605"), el("span", "ac-pill-num", `${starsOf(s)}`));
     const right = el("div", "ac-home-pillgroup");
     right.append(acornPill(s.acorns), lvPill);
     pills.append(helpDot(), right);
@@ -711,7 +692,9 @@ export async function bootStandalone(root: HTMLElement) {
         b.append(
           shopImg(artUrl(`suits/${u.id}.png`), u.name),
           document.createTextNode(
-            `${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM") : !open ? "LOCKED" : owned ? "OWNED" : u.cost}`),
+            `${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
+              : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
+              : owned ? "OWNED" : u.cost}`),
         );
         if (premium) b.classList.add("ac-premium");
         b.onclick = () => { if (!premium || owned) engine.buySuit(u.id); };
@@ -779,13 +762,13 @@ export async function bootStandalone(root: HTMLElement) {
       const modsOpen = modsUnlocked(s);
       if (!modsOpen) {
         scroll.append(el("p", "ac-sub ac-modlock",
-          `Flight mods unlock at LV ${MOD_UNLOCK_LEVEL}. They change how the game moves — fly it as built first.`));
+          `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
       }
       for (const m of MODS) {
         const owned = s.purchased.includes(m.id);
         const on = !!s[m.save];
         const b = mod(m.id, m.name, m.desc, m.cost,
-            !modsOpen ? `LV ${MOD_UNLOCK_LEVEL}` : on ? "ON" : owned ? "OFF" : null,
+            !modsOpen ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
             modIcon(m.id, 56),
             () => { if (modsOpen) engine.setMod(m.id); });
         if (!modsOpen) b.classList.add("ac-cardoff");
@@ -968,7 +951,7 @@ export async function bootStandalone(root: HTMLElement) {
       const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
       const head = el("button", "ac-stagehead");
       const ttl = el("div", "ac-stagetitle");
-      ttl.append(el("p", "ac-kicker", `STAGE ${st.num}`), el("p", "ac-stagename", st.name));
+      ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num}`), el("p", "ac-stagename", st.name));
       head.append(ttl);
       const earned = LEVELS.filter((l) => l.stage === st.num)
         .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
@@ -1217,7 +1200,7 @@ export async function bootStandalone(root: HTMLElement) {
     id.append(face);
     const idTxt = el("div", "ac-idtxt");
     idTxt.append(el("p", "ac-idname", "Nutcracker"));
-    idTxt.append(el("p", "ac-sub", `LV ${pilotLevelOf(s)} ${pilotTitleOf(s)}`));
+    idTxt.append(el("p", "ac-sub", `\u2605 ${starsOf(s)} \u00b7 ${starTitle(starsOf(s))}`));
     const tags = el("div", "ac-rigtags");
     tags.append(el("span", "ac-tagpill ac-taggold", "BETA PILOT"));
     idTxt.append(tags);

@@ -171,7 +171,9 @@ export function iapOwned(s: SaveData, id: string) {
 // holding position — move MOD_UNLOCK_LEVEL when the curve is tuned.
 export const MOD_UNLOCK_LEVEL = 30;
 export function modsUnlocked(s: SaveData) {
-  return starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
+  // beta opens these now (was held back deliberately; overruled) — the
+  // real gate for release is the star threshold
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
 }
 
 export function deepUnlocked(s: SaveData) {
