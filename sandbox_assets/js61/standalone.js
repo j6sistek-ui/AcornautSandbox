@@ -464,14 +464,18 @@ export async function bootStandalone(root) {
         controls.append(launch);
         // All modes visible at once. A mode the save has not earned stays on
         // the bar — dimmed and inert, so the bar never has a blank slot — and
-        // the Star Chart's reward ladder is where its unlock is named.
+        // its chip says the star price outright, so the lock is never a mystery.
         const modeOpen = (id) => id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
+        const modePrice = (id) => id === "deep" ? STAR_UNLOCKS.deep : id === "lost" ? STAR_UNLOCKS.lost : 0;
         const modes = el("div", "ac-modes");
         MODES.forEach((m, i) => {
             const open = modeOpen(m.id);
-            const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode", m.short);
-            if (!open)
+            const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode");
+            b.append(el("span", "", m.short));
+            if (!open) {
                 b.classList.add("ac-cardoff");
+                b.append(el("span", "ac-modeneed", `unlocks at ${modePrice(m.id)} ★`));
+            }
             b.onclick = () => {
                 if (!open)
                     return;
