@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, HELMETS, PHYS, SUITS, TUT_ARM, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=52";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=52";
-import { drawSprite, skyImage } from "./art.js?v=52";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=52";
-import { tunnelBoundsAt } from "./sim.js?v=52";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=53";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=53";
+import { drawSprite, skyImage } from "./art.js?v=53";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=53";
+import { tunnelBoundsAt } from "./sim.js?v=53";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -571,7 +571,7 @@ function drawRetroWorld(ctx, w, save, art) {
         // live draws its pals at unit SCALE, not at a pixel size
         drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
     }
-    const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
+    const helm = helmetWornBy(save.equipped, save.equippedSuit);
     const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
     drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
         flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
@@ -827,37 +827,37 @@ function hexRgb(hex) {
 // differently into the same 242px box. Assuming one radius for all of them
 // is what made the same helmet read huge on one suit and small on the next.
 const DOME = {
-    "idle-1": [191, 103, 51],
+    "idle-1": [192, 106, 56],
     "idle-2": [192, 103, 51],
     "idle-3": [192, 102, 53],
     "idle-4": [194, 99, 51],
-    "flap-1": [166, 96, 52],
+    "flap-1": [169, 86, 48],
     "flap-2": [164, 93, 50],
     "flap-3": [164, 79, 48],
     "flap-4": [163, 80, 45],
     // The twelve originals were re-rendered bare-headed, so every one of
     // these was measured again against flight's face. Ghost is the exception
     // and still wears a painted dome -- see bakedDome in catalog.ts.
-    "suit:flight": [194, 97, 50],
-    "suit:iontrim": [197, 100, 58],
-    "suit:copper": [196, 99, 54],
-    "suit:frost": [196, 109, 50],
-    "suit:voidsuit": [191, 110, 47],
-    "suit:aurorasuit": [194, 107, 53],
-    "suit:ember": [195, 106, 49],
-    "suit:stardust": [194, 107, 52],
-    "suit:robo": [194, 105, 50],
-    "suit:alien": [193, 112, 54],
+    "suit:flight": [185, 82, 44],
+    "suit:iontrim": [178, 88, 50],
+    "suit:copper": [183, 85, 51],
+    "suit:frost": [186, 98, 46],
+    "suit:voidsuit": [181, 102, 43],
+    "suit:aurorasuit": [181, 101, 43],
+    "suit:ember": [182, 100, 45],
+    "suit:stardust": [179, 95, 44],
+    "suit:robo": [180, 99, 46],
+    "suit:alien": [188, 102, 46],
     // re-rendered bare-headed on a black plate (the pale-on-cream key was
     // unrecoverable); measured against the new art, and near-identical to
     // flight, which is the same pose in the same framing
-    "suit:ghost": [195, 96, 50],
-    "suit:bigbooty": [190, 115, 54],
+    "suit:ghost": [182, 93, 44],
+    "suit:bigbooty": [175, 107, 43],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
     "suit:phoenix": [207, 92, 41],
     "suit:sammie": [206, 90, 59],
-    "suit:seraph": [204, 85, 57],
+    "suit:seraph": [207, 97, 57],
     "suit:leviathan": [207, 81, 57],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -875,7 +875,7 @@ const HELM_GLASS = {
     "ion": [129, 128, 125],
     "solar": [128, 128, 125],
     "nebula": [129, 129, 125],
-    "lunar": [129, 126, 125],
+    "lunar": [129, 126, 125, -4],
     "void": [125, 128, 125],
     "cherry": [126, 128, 125],
     // Royal wears a crown, so its sphere is scaled down inside the frame
@@ -887,27 +887,29 @@ const HELM_GLASS = {
     // measured off the corrected art. These renders are three-quarter
     // views, so the visor sits right of frame centre — that offset is real
     // and paintDome relies on it to seat the helmet on the head.
-    "gemmie": [128, 128, 104],
-    "phoenix": [128, 128, 106],
+    "gemmie": [128, 128, 131.9],
+    "phoenix": [130, 116, 129.2, -2],
     "seraph": [125, 151, 110],
-    "chronarch": [127, 128, 136],
+    "chronarch": [121.1, 119.5, 125.6],
     "paladin": [130, 144, 115],
     // Princess is a shell with a face opening, not a bubble, so the head does
     // not sit at the shell's centre — it sits behind the opening, back from it
     // by about a fifth of its own radius, because the squirrel's face is
     // forward of its head centre. Centred on the shell it put the whole face
     // behind cream lacquer.
-    "princess": [174, 121, 126],
+    "princess": [119.3, 91.8, 126],
     // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
     // its visor field gave 78, which drew the helmet half again too big — the
     // shell hides most of the sphere's edge, so the visible visor is nothing
     // like the glass radius. Like princess it is a shell with an opening, so
     // its centre sits behind that opening rather than in the middle of the
     // frame; centred, the muzzle hung over the rim on every suit.
-    "sammie": [150, 114, 102],
-    // Leviathan's visor is deep teal, too dark for a brightness fit to see,
-    // so it keeps the family default.
-    "leviathan": [134, 126, 85],
+    "sammie": [138, 103, 108.2],
+    // Leviathan's glass was fitted BY HAND in the rig editor, on its own
+    // suit, with a 12-degree tilt -- and the helmet is exclusive to that
+    // suit (suitOnly in catalog.ts), so this number never has to sit right
+    // on anyone else.
+    "leviathan": [129.8, 110.6, 103.6, 12],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
@@ -1111,7 +1113,7 @@ function drawPilot(ctx, w, save, art) {
     const x = w.W * PHYS.squirrelX;
     const y = w.squirrel.y;
     const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
-    const helm = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
+    const helm = helmetWornBy(save.equipped, save.equippedSuit);
     // The repainted flap frames are one coherent character, so the tap
     // cycles them again — plus a soft nose-up kick and scale pop for punch.
     const flapping = w.flapBoost > 0;

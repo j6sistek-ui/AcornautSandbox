@@ -158,6 +158,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactHelmet(id: string) {
     const item = HELMETS.find((h) => h.id === id);
     if (!item) return "missing";
+    // a matched-set helmet only goes on its own suit
+    if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (save.unlocked.includes(id)) {
       save.equipped = id;
       writeSave(save);
@@ -179,6 +181,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!suitRevealed(save, id)) return "locked";
     if (save.unlockedSuits.includes(id)) {
       save.equippedSuit = id;
+      dropOrphanedHelmet();
       writeSave(save);
       notify();
       return "equip";
@@ -187,9 +190,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.acorns -= item.cost;
     save.unlockedSuits.push(id);
     save.equippedSuit = id;
+    dropOrphanedHelmet();
     writeSave(save);
     notify();
     return "buy";
+  }
+
+  // stepping out of a suit takes its matched helmet off with it
+  function dropOrphanedHelmet() {
+    const h = HELMETS.find((x) => x.id === save.equipped);
+    if (h?.suitOnly && h.suitOnly !== save.equippedSuit) save.equipped = "clear";
   }
 
   function transactTrail(id: string) {

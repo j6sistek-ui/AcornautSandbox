@@ -1,5 +1,5 @@
 {
- "artVer": "52",
+ "artVer": "53",
  "suits": [
   {
    "id": "flight",
@@ -7,9 +7,9 @@
    "key": "suit:flight",
    "file": "suits/flight.png",
    "dome": [
-    194,
-    97,
-    50
+    185,
+    82,
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -21,9 +21,9 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
-    197,
-    100,
-    58
+    178,
+    88,
+    50
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -35,9 +35,9 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    196,
-    99,
-    54
+    183,
+    85,
+    51
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -49,9 +49,9 @@
    "key": "suit:frost",
    "file": "suits/frost.png",
    "dome": [
-    196,
-    109,
-    50
+    186,
+    98,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -63,9 +63,9 @@
    "key": "suit:voidsuit",
    "file": "suits/voidsuit.png",
    "dome": [
-    191,
-    110,
-    47
+    181,
+    102,
+    43
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -77,9 +77,9 @@
    "key": "suit:aurorasuit",
    "file": "suits/aurorasuit.png",
    "dome": [
-    194,
-    107,
-    53
+    181,
+    101,
+    43
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -91,9 +91,9 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    195,
-    106,
-    49
+    182,
+    100,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -105,9 +105,9 @@
    "key": "suit:stardust",
    "file": "suits/stardust.png",
    "dome": [
-    194,
-    107,
-    52
+    179,
+    95,
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -119,9 +119,9 @@
    "key": "suit:robo",
    "file": "suits/robo.png",
    "dome": [
-    194,
-    105,
-    50
+    180,
+    99,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -133,9 +133,9 @@
    "key": "suit:alien",
    "file": "suits/alien.png",
    "dome": [
-    193,
-    112,
-    54
+    188,
+    102,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -147,9 +147,9 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    195,
-    96,
-    50
+    182,
+    93,
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -161,9 +161,9 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    190,
-    115,
-    54
+    175,
+    107,
+    43
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -217,8 +217,8 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    204,
-    85,
+    207,
+    97,
     57
    ],
    "ownHead": false,
@@ -245,9 +245,9 @@
    "key": "idle-1",
    "file": "squirrel/idle-1.png",
    "dome": [
-    191,
-    103,
-    51
+    192,
+    106,
+    56
    ],
    "ownHead": false,
    "bakedDome": true,
@@ -301,9 +301,9 @@
    "key": "flap-1",
    "file": "squirrel/flap-1.png",
    "dome": [
-    166,
-    96,
-    52
+    169,
+    86,
+    48
    ],
    "ownHead": false,
    "bakedDome": true,
@@ -405,7 +405,7 @@
     129,
     126,
     125,
-    0
+    -4
    ]
   },
   {
@@ -492,7 +492,7 @@
    "glass": [
     128,
     128,
-    104,
+    131.9,
     0
    ]
   },
@@ -501,10 +501,10 @@
    "name": "Phoenix",
    "file": "helms/phoenix.png",
    "glass": [
-    128,
-    128,
-    106,
-    0
+    130,
+    116,
+    129.2,
+    -2
    ]
   },
   {
@@ -512,9 +512,9 @@
    "name": "Samurai",
    "file": "helms/sammie.png",
    "glass": [
-    150,
-    114,
-    102,
+    138,
+    103,
+    108.2,
     0
    ]
   },
@@ -534,9 +534,9 @@
    "name": "Chronarch",
    "file": "helms/chronarch.png",
    "glass": [
-    127,
-    128,
-    136,
+    121.1,
+    119.5,
+    125.6,
     0
    ]
   },
@@ -545,10 +545,10 @@
    "name": "Leviathan",
    "file": "helms/leviathan.png",
    "glass": [
-    134,
-    126,
-    85,
-    0
+    129.8,
+    110.6,
+    103.6,
+    12
    ]
   },
   {
@@ -567,8 +567,8 @@
    "name": "Rose",
    "file": "helms/princess.png",
    "glass": [
-    174,
-    121,
+    119.3,
+    91.8,
     126,
     0
    ]

@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=52";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=52";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=53";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=53";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -52,6 +52,13 @@ export function loadSave() {
         s.unlockedPals = ["none", ...(s.unlockedPals || [])];
     if (!HELMETS.some((h) => h.id === s.equipped))
         s.equipped = "clear";
+    // a matched-set helmet stranded on the wrong suit (saved before the rule
+    // existed, or edited by hand) comes off rather than half-fitting
+    {
+        const h = HELMETS.find((x) => x.id === s.equipped);
+        if (h?.suitOnly && h.suitOnly !== s.equippedSuit)
+            s.equipped = "clear";
+    }
     if (!SUITS.some((u) => u.id === s.equippedSuit))
         s.equippedSuit = "flight";
     if (!TRAILS.some((t) => t.id === s.equippedTrail))

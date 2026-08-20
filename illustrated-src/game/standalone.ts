@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -456,7 +456,7 @@ export async function bootStandalone(root: HTMLElement) {
 
     // The loadout strip is the second door into the Hangar, so the tab
     // icon is never the only way in.
-    const helm = HELMETS.find((h) => h.id === s.equipped) ?? HELMETS[0];
+    const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
     const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
     const strip = el("button", "ac-loadstrip");
@@ -637,7 +637,7 @@ export async function bootStandalone(root: HTMLElement) {
 
   function drawHangar() {
     const s = engine.save;
-    const helm = HELMETS.find((h) => h.id === s.equipped) ?? HELMETS[0];
+    const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
     const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
     const pal = PALS.find((p) => p.id === s.equippedPal);
@@ -690,12 +690,16 @@ export async function bootStandalone(root: HTMLElement) {
       for (const h of HELMETS) {
         const premium = isIap(h.id);
         const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
+        // a matched-set helmet only fits its own suit; on any other it
+        // shows as a set piece rather than an option
+        const setLocked = !!h.suitOnly && s.equippedSuit !== h.suitOnly;
         const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
+        const setName = h.suitOnly ? (SUITS.find((u) => u.id === h.suitOnly)?.name ?? h.suitOnly) : "";
         b.append(helmCardOf(h, 64), document.createTextNode(
-          `${h.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : h.cost}`));
+          `${h.name}\n${setLocked ? `${setName.toUpperCase()} ONLY` : owned ? "OWNED" : premium ? "PREMIUM" : h.cost}`));
         if (premium) b.classList.add("ac-premium");
-        if (locked) b.classList.add("ac-cardoff");
-        b.onclick = () => { if (!locked && (!premium || owned)) engine.buyHelmet(h.id); };
+        if (locked || setLocked) b.classList.add("ac-cardoff");
+        b.onclick = () => { if (!locked && !setLocked && (!premium || owned)) engine.buyHelmet(h.id); };
         grid.append(b);
       }
     } else if (engine.shopTab === "suits") {
@@ -1205,7 +1209,7 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(header("Pilot", "Profile"));
     const scroll = el("div", "ac-sheet-scroll");
 
-    const helm = HELMETS.find((h) => h.id === s.equipped) ?? HELMETS[0];
+    const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
     const id = el("div", "ac-idcard");
     const face = el("div", "ac-idface");
