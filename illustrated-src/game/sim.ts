@@ -1,6 +1,6 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
-import { countBits, emptyStats, goalMet, type LevelDef, type RunStats } from "./campaign";
+import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade" | "tunnel";
@@ -272,6 +272,10 @@ export type World = {
     stats: RunStats;
     portal: boolean;
     strobeT: number;
+    /** gate ordinals that MUST carry a golden acorn (see goldGatesFor) */
+    goldGates: number[];
+    /** how many gates this level has spawned so far */
+    spawnOrd: number;
   } | null;
   // the result sheet's payload — survives the world being reset
   lastLevel: {
@@ -733,6 +737,21 @@ function spawnPair(w: World, save: SaveData, x: number) {
   // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
   // achievable inside the level's own gate count with room to miss a few.
   const acornOdds = w.lvl?.def.fx.acornEvery ? 1 : 0.58;
+  // A LEVEL's promised pickups outrank the pal's veto. Bee spawns no
+  // pickups and that is its trade in endless — but a level whose star says
+  // "collect N" or "catch a golden acorn" must spawn them for every pilot,
+  // whatever is flying alongside. Golds land on planned gates (goldGatesFor)
+  // so the promise is arithmetic, not odds.
+  if (w.lvl) {
+    w.lvl.spawnOrd += 1;
+    if (w.lvl.def.fx.acornEvery && noPick) {
+      const off = (Math.random() - 0.5) * gap * 0.35;
+      w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
+    }
+    if (w.lvl.goldGates.includes(w.lvl.spawnOrd)) {
+      w.pickups.push({ x: x + 52, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "gold" });
+    }
+  }
   // Arcade is the generous mode: power-ups spawn twice as often by
   // default. Free Flight is the opposite — at the old rate a run was
   // carrying a freeze or a shield almost continuously, which is not a
@@ -793,7 +812,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // guarded on typeof: the tunnel test suite used to pass its SEED in this
   // slot, and a bare truthy check made a number impersonate a level
   w.lvl = level && typeof level === "object"
-    ? { def: level, stats: emptyStats(), portal: false, strobeT: 9 }
+    ? { def: level, stats: emptyStats(), portal: false, strobeT: 9,
+        goldGates: goldGatesFor(level), spawnOrd: 0 }
     : null;
   // every run starts in this game; the arcade acorn is the only way out
   // Arcade IS the retro game — it starts there and never leaves. Every

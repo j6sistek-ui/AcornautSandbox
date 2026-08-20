@@ -1,6 +1,6 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=53";
-import { modsUnlocked, writeSave } from "./save.js?v=53";
-import { countBits, emptyStats, goalMet } from "./campaign.js?v=53";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=54";
+import { modsUnlocked, writeSave } from "./save.js?v=54";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=54";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -440,6 +440,21 @@ function spawnPair(w, save, x) {
     // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
     // achievable inside the level's own gate count with room to miss a few.
     const acornOdds = w.lvl?.def.fx.acornEvery ? 1 : 0.58;
+    // A LEVEL's promised pickups outrank the pal's veto. Bee spawns no
+    // pickups and that is its trade in endless — but a level whose star says
+    // "collect N" or "catch a golden acorn" must spawn them for every pilot,
+    // whatever is flying alongside. Golds land on planned gates (goldGatesFor)
+    // so the promise is arithmetic, not odds.
+    if (w.lvl) {
+        w.lvl.spawnOrd += 1;
+        if (w.lvl.def.fx.acornEvery && noPick) {
+            const off = (Math.random() - 0.5) * gap * 0.35;
+            w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
+        }
+        if (w.lvl.goldGates.includes(w.lvl.spawnOrd)) {
+            w.pickups.push({ x: x + 52, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "gold" });
+        }
+    }
     // Arcade is the generous mode: power-ups spawn twice as often by
     // default. Free Flight is the opposite — at the old rate a run was
     // carrying a freeze or a shield almost continuously, which is not a
@@ -498,7 +513,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // guarded on typeof: the tunnel test suite used to pass its SEED in this
     // slot, and a bare truthy check made a number impersonate a level
     w.lvl = level && typeof level === "object"
-        ? { def: level, stats: emptyStats(), portal: false, strobeT: 9 }
+        ? { def: level, stats: emptyStats(), portal: false, strobeT: 9,
+            goldGates: goldGatesFor(level), spawnOrd: 0 }
         : null;
     // every run starts in this game; the arcade acorn is the only way out
     // Arcade IS the retro game — it starts there and never leaves. Every

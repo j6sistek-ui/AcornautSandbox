@@ -42,7 +42,7 @@ let md = `# The Star Chart — campaign roadmap
 *Generated from \`illustrated-src/game/campaign.ts\` by \`build-roadmap.mjs\`.
 Do not edit by hand — change the campaign and rebuild.*
 
-One hundred levels in ten stages. Every level is an ordinary run wearing a
+One hundred levels in ten chapters. Every level is an ordinary run wearing a
 finish line: pass its gate count and a golden portal spawns in clear sky —
 fly into it and the level is complete. Three stars per level:
 
@@ -51,7 +51,7 @@ fly into it and the level is complete. Three stars per level:
 - **★3** a discipline goal — no bounces, no shields, a tap budget
 
 Stars are independent and **kept across runs**: a level can be starred one
-goal at a time. **Total stars** open stages and buy the reward ladder —
+goal at a time. **Total stars** open chapters and buy the reward ladder —
 progression is earned by doing, not by mileage. Endless mode is untouched;
 flight mods are disabled inside levels so a star certifies the same flight
 for everyone.
@@ -65,9 +65,9 @@ for everyone.
 `;
 for (const r of STAR_REWARDS) md += `| ${r.stars} | **${r.name}** — ${r.desc} |\n`;
 
-md += `\n## The stages\n`;
+md += `\n## The chapters\n`;
 for (const st of STAGES) {
-  md += `\n### Stage ${st.num} — ${st.name}  *(opens at ${st.unlock}★)*\n\n`;
+  md += `\n### Chapter ${st.num} — ${st.name}  *(opens at ${st.unlock}★)*\n\n`;
   md += `*${st.tagline}* · Sky: **${envName(st.env)}**\n\n`;
   md += `| # | Level | Base | Gates | Modifiers | ★2 | ★3 |\n|---|---|---|---:|---|---|---|\n`;
   for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
@@ -84,21 +84,21 @@ md += `
 - **Collection goals are never hostage to dice.** Levels with an acorn goal
   guarantee one acorn per gate (\`fx.acornEvery\`), so "collect N" is always
   achievable with room to miss a few.
-- **THE BLACKOUT (stage 9)** is the strobe idea: the world is lit for the
+- **THE BLACKOUT (Chapter 9)** is the strobe idea: the world is lit for the
   half-second after each tap, then fades to black. Taps are sight — which is
   why its tap-budget goals are generous rather than tight.
-- **Fog (stage 5)** closes a sight circle around the pilot; **turbulence
-  (stage 7)** exposes the drift dials; **stages 6, 8 and the finale** borrow
+- **Fog (Chapter 5)** closes a sight circle around the pilot; **turbulence
+  (Chapter 7)** exposes the drift dials; **Chapters 6, 8 and the finale** borrow
   the deep-space, lost-in-space and arcade machinery whole.
 - **Difficulty ramps three ways at once**, deliberately gently: gate counts
-  rise within each stage, modifiers sharpen across stages, and the star
+  rise within each chapter, modifiers sharpen across chapters, and the star
   goals tighten. A pilot who only ever takes ★1 can still walk the whole
   chart; the last stages' unlock totals demand roughly two stars a level.
-- **Refinement path**: two experiments are queued as future stages once
+- **Refinement path**: two experiments are queued as future chapters once
   they earn promotion, both reachable today from the bottom of Help.
   **Wormhole Run** is the nearer fit — it already lives in the engine as a
   FlightMode with sections, a deterministic seed and its own counters
-  (sections, Flow tier, chains, near misses), so a Wormhole stage's goals
+  (sections, Flow tier, chains, near misses), so a Wormhole chapter's goals
   write themselves: *reach section N* is the portal, *best Flow x3* and
   *no near-miss spent* are the discipline stars. **The Spill** (lab page)
   needs engine integration first; its survive-T-seconds shape drops

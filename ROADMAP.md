@@ -3,7 +3,7 @@
 *Generated from `illustrated-src/game/campaign.ts` by `build-roadmap.mjs`.
 Do not edit by hand — change the campaign and rebuild.*
 
-One hundred levels in ten stages. Every level is an ordinary run wearing a
+One hundred levels in ten chapters. Every level is an ordinary run wearing a
 finish line: pass its gate count and a golden portal spawns in clear sky —
 fly into it and the level is complete. Three stars per level:
 
@@ -12,7 +12,7 @@ fly into it and the level is complete. Three stars per level:
 - **★3** a discipline goal — no bounces, no shields, a tap budget
 
 Stars are independent and **kept across runs**: a level can be starred one
-goal at a time. **Total stars** open stages and buy the reward ladder —
+goal at a time. **Total stars** open chapters and buy the reward ladder —
 progression is earned by doing, not by mileage. Endless mode is untouched;
 flight mods are disabled inside levels so a star certifies the same flight
 for everyone.
@@ -26,38 +26,38 @@ for everyone.
 | 3 | **Bee** — Your first wingmate. |
 | 6 | **Start Shield** — Arm any run with a shield from the hangar. |
 | 10 | **Acorn Buddy** — Pulls nearby acorns to you. |
-| 12 | **Stage 2 — NURSERY BLOOM** — The nebula opens. |
+| 12 | **Chapter 2 — NURSERY BLOOM** — The nebula opens. |
 | 12 | **Deep Space Flight** — Endless mode: space shifts every 10s. |
 | 16 | **Void Jelly** — Softens planet bounces. |
 | 21 | **Comet Sprite** — Freeze pickups last twice as long. |
-| 27 | **Stage 3 — ICE MOON** — The narrows open. |
+| 27 | **Chapter 3 — ICE MOON** — The narrows open. |
 | 27 | **Shield Battery** — Carry three shield charges at once. |
 | 33 | **Meteor Core** — A tougher travelling companion. |
-| 40 | **Lost in Space** — Endless mode: the sky rotates, drifts and mirrors. |
-| 45 | **Stage 4 — SOLAR FURNACE** — The heat opens. |
+| 45 | **Lost in Space** — Endless mode: the sky rotates, drifts and mirrors. |
+| 45 | **Chapter 4 — SOLAR FURNACE** — The heat opens. |
 | 45 | **Pocket Moon** — A small steady light. |
 | 52 | **UFO** — A burst of slow-time out of every warp. |
 | 60 | **Robo Suit** — Full chrome, scanning visor. Now in the shop. |
-| 66 | **Stage 5 — MIDNIGHT RUN** — The dark opens. |
+| 66 | **Chapter 5 — MIDNIGHT RUN** — The dark opens. |
 | 66 | **Star Pup** — Golden acorns burn twice as long. |
 | 75 | **Tin Bot** — Flies without shields, pays double. |
 | 84 | **Wisp** — The gates sway to its song. |
-| 90 | **Stage 6 — CRYSTAL BELT** — Deep-space levels open. |
+| 90 | **Chapter 6 — CRYSTAL BELT** — Deep-space levels open. |
 | 90 | **Nutsack** — Every acorn counts double. No shields. |
 | 100 | **Alien Suit** — The visitor look, antennae included. |
-| 117 | **Stage 7 — CRIMSON STORM** — The turbulence opens. |
+| 117 | **Chapter 7 — CRIMSON STORM** — The turbulence opens. |
 | 130 | **Ghost Suit** — Spectral tail, cyan-burning eyes. |
-| 147 | **Stage 8 — LOST REACHES** — Lost-in-space levels open. |
+| 147 | **Chapter 8 — LOST REACHES** — Lost-in-space levels open. |
 | 160 | **Big Booty Suit** — Maximum silhouette. Real jiggle. |
-| 180 | **Stage 9 — THE BLACKOUT** — Lights out. |
+| 180 | **Chapter 9 — THE BLACKOUT** — Lights out. |
 | 180 | **Flight Mods** — Steady Gates, Rough Air and Thrill Seeker unlock in the hangar. |
-| 216 | **Stage 10 — EVENT HORIZON** — The last ten. |
+| 216 | **Chapter 10 — EVENT HORIZON** — The last ten. |
 | 250 | **GATECRASHER** — A title for the pilots who earn it. |
 | 300 | **STARLORD** — Every star in the chart. |
 
-## The stages
+## The chapters
 
-### Stage 1 — FLIGHT SCHOOL  *(opens at 0★)*
+### Chapter 1 — FLIGHT SCHOOL  *(opens at 0★)*
 
 *Learn the sky before it learns you.* · Sky: **DEEP SPACE**
 
@@ -74,7 +74,7 @@ for everyone.
 | 9 | **No Scratches** | Normal | 16 | — | Collect 11 acorns | Touch no planet |
 | 10 | **Graduation** | Normal | 17 | — | Collect 12 acorns | Catch a golden acorn |
 
-### Stage 2 — NURSERY BLOOM  *(opens at 12★)*
+### Chapter 2 — NURSERY BLOOM  *(opens at 12★)*
 
 *The nebula is beautiful and it moves.* · Sky: **NEBULA NURSERY**
 
@@ -91,7 +91,7 @@ for everyone.
 | 19 | **Full Bloom** | Normal | 20 | HEAVY SWAY | Collect 8 acorns | Spend no shield |
 | 20 | **Seedfall** | Normal | 21 | HEAVY SWAY | Collect 8 acorns | Touch no planet |
 
-### Stage 3 — ICE MOON  *(opens at 27★)*
+### Chapter 3 — ICE MOON  *(opens at 27★)*
 
 *Everything narrow, everything bright.* · Sky: **ICE MOON**
 
@@ -108,7 +108,7 @@ for everyone.
 | 29 | **Pressure Ridge** | Normal | 22 | NARROW GATES, SWAYING GATES | Collect 10 acorns | Flawless — no bounces, no shields spent |
 | 30 | **Moonfall** | Normal | 23 | NARROW GATES, SWAYING GATES | Catch 2 golden acorns | Touch no planet |
 
-### Stage 4 — SOLAR FURNACE  *(opens at 45★)*
+### Chapter 4 — SOLAR FURNACE  *(opens at 45★)*
 
 *The sky burns and the clock runs hot.* · Sky: **SOLAR FURNACE**
 
@@ -125,7 +125,7 @@ for everyone.
 | 39 | **White Heat** | Normal | 23 | FAST FORWARD | Collect 11 acorns | Spend no shield |
 | 40 | **Out of the Fire** | Normal | 24 | FAST FORWARD | Collect 11 acorns | Catch 2 golden acorns |
 
-### Stage 5 — MIDNIGHT RUN  *(opens at 66★)*
+### Chapter 5 — MIDNIGHT RUN  *(opens at 66★)*
 
 *The dark closes in. Fly by the little you see.* · Sky: **SAPPHIRE ABYSS**
 
@@ -142,7 +142,7 @@ for everyone.
 | 49 | **Abyssal** | Normal | 23 | HEAVY FOG | Collect 10 acorns | At most 55 taps |
 | 50 | **Midnight Proper** | Normal | 24 | HEAVY FOG | Collect 10 acorns | Spend no shield |
 
-### Stage 6 — CRYSTAL BELT  *(opens at 90★)*
+### Chapter 6 — CRYSTAL BELT  *(opens at 90★)*
 
 *Deep space rules: the sky itself keeps shifting.* · Sky: **CRYSTAL BELT**
 
@@ -159,7 +159,7 @@ for everyone.
 | 59 | **Core Sample** | Deep Space | 20 | — | Collect 9 acorns | Flawless — no bounces, no shields spent |
 | 60 | **The Jewel** | Deep Space | 21 | — | Collect 9 acorns | Touch no planet |
 
-### Stage 7 — CRIMSON STORM  *(opens at 117★)*
+### Chapter 7 — CRIMSON STORM  *(opens at 117★)*
 
 *Turbulence. The gates will not sit still.* · Sky: **CRIMSON STORM**
 
@@ -176,7 +176,7 @@ for everyone.
 | 69 | **Landfall** | Normal | 24 | BRISK, HEAVY SWAY | Collect 12 acorns | Touch no planet |
 | 70 | **Stormbreaker** | Normal | 25 | BRISK, HEAVY SWAY | Collect 12 acorns | Spend no shield |
 
-### Stage 8 — LOST REACHES  *(opens at 147★)*
+### Chapter 8 — LOST REACHES  *(opens at 147★)*
 
 *Lost-in-space rules: tilt, drift, mirror.* · Sky: **VIOLET REALM**
 
@@ -193,7 +193,7 @@ for everyone.
 | 79 | **The Long Way** | Lost in Space | 20 | — | Collect 9 acorns | Spend no shield |
 | 80 | **Found** | Lost in Space | 21 | — | Collect 9 acorns | Touch no planet |
 
-### Stage 9 — THE BLACKOUT  *(opens at 180★)*
+### Chapter 9 — THE BLACKOUT  *(opens at 180★)*
 
 *You see for half a second after each tap. Remember the rest.* · Sky: **MONOCHROME VOID**
 
@@ -210,7 +210,7 @@ for everyone.
 | 89 | **Total Recall** | Normal | 16 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 7 acorns | Flawless — no bounces, no shields spent |
 | 90 | **Eyes Shut** | Normal | 17 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 7 acorns | Touch no planet |
 
-### Stage 10 — EVENT HORIZON  *(opens at 216★)*
+### Chapter 10 — EVENT HORIZON  *(opens at 216★)*
 
 *Everything the sky has learned, at once.* · Sky: **HYPERVIVID**
 
@@ -234,21 +234,21 @@ for everyone.
 - **Collection goals are never hostage to dice.** Levels with an acorn goal
   guarantee one acorn per gate (`fx.acornEvery`), so "collect N" is always
   achievable with room to miss a few.
-- **THE BLACKOUT (stage 9)** is the strobe idea: the world is lit for the
+- **THE BLACKOUT (Chapter 9)** is the strobe idea: the world is lit for the
   half-second after each tap, then fades to black. Taps are sight — which is
   why its tap-budget goals are generous rather than tight.
-- **Fog (stage 5)** closes a sight circle around the pilot; **turbulence
-  (stage 7)** exposes the drift dials; **stages 6, 8 and the finale** borrow
+- **Fog (Chapter 5)** closes a sight circle around the pilot; **turbulence
+  (Chapter 7)** exposes the drift dials; **Chapters 6, 8 and the finale** borrow
   the deep-space, lost-in-space and arcade machinery whole.
 - **Difficulty ramps three ways at once**, deliberately gently: gate counts
-  rise within each stage, modifiers sharpen across stages, and the star
+  rise within each chapter, modifiers sharpen across chapters, and the star
   goals tighten. A pilot who only ever takes ★1 can still walk the whole
   chart; the last stages' unlock totals demand roughly two stars a level.
-- **Refinement path**: two experiments are queued as future stages once
+- **Refinement path**: two experiments are queued as future chapters once
   they earn promotion, both reachable today from the bottom of Help.
   **Wormhole Run** is the nearer fit — it already lives in the engine as a
   FlightMode with sections, a deterministic seed and its own counters
-  (sections, Flow tier, chains, near misses), so a Wormhole stage's goals
+  (sections, Flow tier, chains, near misses), so a Wormhole chapter's goals
   write themselves: *reach section N* is the portal, *best Flow x3* and
   *no near-miss spent* are the discipline stars. **The Spill** (lab page)
   needs engine integration first; its survive-T-seconds shape drops

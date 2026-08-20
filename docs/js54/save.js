@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=53";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=53";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=54";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, PAL_LEVELS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=54";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -133,7 +133,9 @@ export function iapOwned(s, id) {
 // holding position — move MOD_UNLOCK_LEVEL when the curve is tuned.
 export const MOD_UNLOCK_LEVEL = 30;
 export function modsUnlocked(s) {
-    return starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
+    // beta opens these now (was held back deliberately; overruled) — the
+    // real gate for release is the star threshold
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods || pilotLevelOf(s) >= MOD_UNLOCK_LEVEL;
 }
 export function deepUnlocked(s) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep || pilotLevelOf(s) >= 5;

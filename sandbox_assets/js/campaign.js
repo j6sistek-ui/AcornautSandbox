@@ -333,6 +333,30 @@ export function fxText(fx) {
     return out;
 }
 export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0 });
+/** how many golden acorns this level's goals ask for (0 = none) */
+export function goldNeeded(def) {
+    let n = 0;
+    for (const g of def.goals)
+        if (g.kind === "gold")
+            n = Math.max(n, g.n);
+    return n;
+}
+/** the gate ordinals where the level GUARANTEES a golden acorn: the goal's
+ *  count plus one spare, spread evenly, so "catch a golden acorn" can never
+ *  be lost to the spawn dice — the exact promise fx.acornEvery already
+ *  makes for plain acorns */
+export function goldGatesFor(def) {
+    const need = goldNeeded(def);
+    if (!need)
+        return [];
+    const out = [];
+    for (let i = 1; i <= need + 1; i++) {
+        const ord = Math.max(1, Math.min(def.gates, Math.round((i * def.gates) / (need + 2))));
+        if (!out.includes(ord))
+            out.push(ord);
+    }
+    return out;
+}
 /** did this finished run meet the goal? (star 1 is the finish itself) */
 export function goalMet(g, s) {
     switch (g.kind) {
@@ -376,42 +400,64 @@ export const STAR_REWARDS = [
     { stars: 3, kind: "pal", id: "bee", name: "Bee", desc: "Your first wingmate." },
     { stars: 6, kind: "mod", id: "startShield", name: "Start Shield", desc: "Arm any run with a shield from the hangar." },
     { stars: 10, kind: "pal", id: "buddy", name: "Acorn Buddy", desc: "Pulls nearby acorns to you." },
-    { stars: 12, kind: "stage", name: "Stage 2 — NURSERY BLOOM", desc: "The nebula opens." },
+    { stars: 12, kind: "stage", name: "Chapter 2 — NURSERY BLOOM", desc: "The nebula opens." },
     { stars: 12, kind: "mode", id: "deep", name: "Deep Space Flight", desc: "Endless mode: space shifts every 10s." },
     { stars: 16, kind: "pal", id: "voidjelly", name: "Void Jelly", desc: "Softens planet bounces." },
     { stars: 21, kind: "pal", id: "cometsprite", name: "Comet Sprite", desc: "Freeze pickups last twice as long." },
-    { stars: 27, kind: "stage", name: "Stage 3 — ICE MOON", desc: "The narrows open." },
+    { stars: 27, kind: "stage", name: "Chapter 3 — ICE MOON", desc: "The narrows open." },
     { stars: 27, kind: "mod", id: "battery", name: "Shield Battery", desc: "Carry three shield charges at once." },
     { stars: 33, kind: "pal", id: "meteorcore", name: "Meteor Core", desc: "A tougher travelling companion." },
-    { stars: 40, kind: "mode", id: "lost", name: "Lost in Space", desc: "Endless mode: the sky rotates, drifts and mirrors." },
-    { stars: 45, kind: "stage", name: "Stage 4 — SOLAR FURNACE", desc: "The heat opens." },
+    { stars: 45, kind: "mode", id: "lost", name: "Lost in Space", desc: "Endless mode: the sky rotates, drifts and mirrors." },
+    { stars: 45, kind: "stage", name: "Chapter 4 — SOLAR FURNACE", desc: "The heat opens." },
     { stars: 45, kind: "pal", id: "pocketmoon", name: "Pocket Moon", desc: "A small steady light." },
     { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "A burst of slow-time out of every warp." },
     { stars: 60, kind: "suit", id: "robo", name: "Robo Suit", desc: "Full chrome, scanning visor. Now in the shop." },
-    { stars: 66, kind: "stage", name: "Stage 5 — MIDNIGHT RUN", desc: "The dark opens." },
+    { stars: 66, kind: "stage", name: "Chapter 5 — MIDNIGHT RUN", desc: "The dark opens." },
     { stars: 66, kind: "pal", id: "starpup", name: "Star Pup", desc: "Golden acorns burn twice as long." },
     { stars: 75, kind: "pal", id: "tinbot", name: "Tin Bot", desc: "Flies without shields, pays double." },
     { stars: 84, kind: "pal", id: "wisp", name: "Wisp", desc: "The gates sway to its song." },
-    { stars: 90, kind: "stage", name: "Stage 6 — CRYSTAL BELT", desc: "Deep-space levels open." },
+    { stars: 90, kind: "stage", name: "Chapter 6 — CRYSTAL BELT", desc: "Deep-space levels open." },
     { stars: 90, kind: "pal", id: "nutsack", name: "Nutsack", desc: "Every acorn counts double. No shields." },
     { stars: 100, kind: "suit", id: "alien", name: "Alien Suit", desc: "The visitor look, antennae included." },
-    { stars: 117, kind: "stage", name: "Stage 7 — CRIMSON STORM", desc: "The turbulence opens." },
+    { stars: 117, kind: "stage", name: "Chapter 7 — CRIMSON STORM", desc: "The turbulence opens." },
     { stars: 130, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes." },
-    { stars: 147, kind: "stage", name: "Stage 8 — LOST REACHES", desc: "Lost-in-space levels open." },
+    { stars: 147, kind: "stage", name: "Chapter 8 — LOST REACHES", desc: "Lost-in-space levels open." },
     { stars: 160, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle." },
-    { stars: 180, kind: "stage", name: "Stage 9 — THE BLACKOUT", desc: "Lights out." },
+    { stars: 180, kind: "stage", name: "Chapter 9 — THE BLACKOUT", desc: "Lights out." },
     { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
-    { stars: 216, kind: "stage", name: "Stage 10 — EVENT HORIZON", desc: "The last ten." },
+    { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
     { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
 ];
+/** the pilot's TITLE comes from stars now, not XP — same ladder the
+ *  rewards climb. Thresholds sit on chapter openings and the two title
+ *  rewards, so a title always names something the pilot actually did. */
+export function starTitle(total) {
+    if (total >= 300)
+        return "STARLORD";
+    if (total >= 250)
+        return "GATECRASHER";
+    if (total >= 216)
+        return "ACORNAUT";
+    if (total >= 147)
+        return "EVENT HORIZON";
+    if (total >= 90)
+        return "ACE";
+    if (total >= 45)
+        return "VOIDFARER";
+    if (total >= 12)
+        return "PILOT";
+    return "CADET";
+}
 /** star thresholds the save-side gates read; kept beside the reward list */
 export const STAR_UNLOCKS = {
     pals: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "pal" && r.id).map((r) => [r.id, r.stars])),
     suits: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "suit" && r.id).map((r) => [r.id, r.stars])),
     startShield: 6,
     battery: 27,
+    // modes open with a CHAPTER, not a loose star count: Deep Space with
+    // Chapter 2, Lost in Space with Chapter 4
     deep: 12,
-    lost: 40,
+    lost: 45,
     flightMods: 180,
 };
