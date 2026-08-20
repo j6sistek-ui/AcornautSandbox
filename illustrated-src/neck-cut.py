@@ -3,6 +3,17 @@
 
     python3 illustrated-src/neck-cut.py docs/art/suits            # all rigged
     python3 illustrated-src/neck-cut.py docs/art/suits bigbooty   # just one
+    python3 illustrated-src/neck-cut.py docs/art/suits --hints old/draw.ts
+
+NOT IDEMPOTENT, AND DELIBERATELY SO. The cut seeds itself from the existing
+split and the existing TAIL_PIVOT, because both are wrong about where the
+tail ENDS and reliable about where it IS. That means running it a second
+time feeds it its own output: after the pivots have been written back to
+draw.ts, a re-run measures from the new hinge and can land somewhere else --
+Seraph moved from [105,138] to [82,80] exactly this way, on identical art.
+So re-cut from the ORIGINAL art and the ORIGINAL pivots every time, and pass
+--hints to point at the draw.ts those pivots came from if the file has
+already been updated.
 
 WHY THIS EXISTS. Every tail rig in this project -- mine and the
 parts-separated pack's alike -- put the squirrel's RUMP and HIND FOOT in the
@@ -201,9 +212,47 @@ def cut_one(path, piv_hint, dome=None):
         return {"suit": os.path.basename(path[:-4]), "rejected": True, "share": -1.0}
     width, n, c, mid, tail, share = best
 
+    # THE SEAM IS STRAIGHT; THE ANIMAL IS NOT. A single line through the
+    # narrowest crossing still clips whatever else happens to lie across it
+    # -- on Big Booty a wedge of the purple suit and a sliver of the hind leg,
+    # which then swung away with the plume. So near the hinge, hand back
+    # anything that is not the plume's own colour.
+    #
+    # The reference is the plume itself, not a guess at "fur": Robo's tail is
+    # chrome and Frost's is white, so any fixed idea of tail-coloured would
+    # be wrong on half the roster. Colours are matched in a coarse 32-per-
+    # channel grid dilated by one bin, which is loose enough to keep shadowed
+    # fur at the base and tight enough to reject a purple cape.
+    rejected = np.zeros_like(mask)
+    far_plume = tail & (np.hypot(xs - mid[0], ys - mid[1]) > 60)
+    if far_plume.sum() > 200:
+        rgb = a[:, :, :3].astype(np.int32) >> 3          # 0..31 per channel
+        grid = np.zeros((32, 32, 32), bool)
+        pr = rgb[far_plume]
+        grid[pr[:, 0], pr[:, 1], pr[:, 2]] = True
+        grid = ndimage.binary_dilation(grid, np.ones((3, 3, 3), bool))
+        seam = tail & (np.hypot(xs - mid[0], ys - mid[1]) <= 60)
+        sr = rgb[seam]
+        ok = np.zeros(mask.shape, bool)
+        ok[seam] = grid[sr[:, 0], sr[:, 1], sr[:, 2]]
+        alien_px = seam & ~ok
+        if alien_px.any():
+            # keep the plume one connected piece: only drop what is not
+            # holding the rest of the tail on
+            keep = tail & ~alien_px
+            lb2, k2 = ndimage.label(keep)
+            if k2 and keep[plume[1], plume[0]]:
+                # body is derived from tail below, so shrinking the tail is
+                # all that is needed -- what is dropped returns to the body
+                tail = lb2 == lb2[plume[1], plume[0]]
+                rejected = mask & ~tail & ndimage.binary_dilation(alien_px)
+
     # a small lip over the body, hidden under it at rest, so the seam cannot
     # crack open when the plume turns
-    tail_l = ndimage.binary_dilation(tail, iterations=LIP) & mask
+    # ... and the lip must not quietly pick the rejected paint back up. It
+    # did on Big Booty: the purple wedge went to the body, then the five-pixel
+    # lip re-copied it into the tail, and the sliver was travelling again.
+    tail_l = ndimage.binary_dilation(tail, iterations=LIP) & mask & ~rejected
 
     body = mask & ~tail
     # ... and a pad of real body paint at the hinge, same reason
@@ -212,6 +261,11 @@ def cut_one(path, piv_hint, dome=None):
     # nothing of the plume beyond the pad may stay in the body, or it hangs
     # in the air as a ghost when the tail leaves
     body = body & ~(ndimage.binary_dilation(tail, iterations=FRINGE) & ~pad)
+    # Paint the colour guard handed back is BODY, and the fringe sweep above
+    # must not then delete it: it sits inside the tail's old silhouette, so
+    # the sweep treats it as plume unless told otherwise. Missing this cost
+    # Big Booty 297 px and Seraph 421.
+    body = body | (rejected & mask)
 
     t = a.copy()
     t[:, :, 3] = np.where(tail_l, al, 0)
@@ -231,8 +285,8 @@ def cut_one(path, piv_hint, dome=None):
     }
 
 
-def pivots(root):
-    src = open(os.path.join(root, "illustrated-src/game/draw.ts"), encoding="utf8").read()
+def pivots(root, hints=None):
+    src = open(hints or os.path.join(root, "illustrated-src/game/draw.ts"), encoding="utf8").read()
     blk = src[src.index("const TAIL_PIVOT"):]
     blk = blk[:blk.index("\n};")]
     return {m[0]: (int(m[1]), int(m[2]))
@@ -250,10 +304,16 @@ def domes(root):
 
 
 def main():
-    folder = sys.argv[1]
-    only = sys.argv[2:] or None
+    args = sys.argv[1:]
+    hints = None
+    if "--hints" in args:
+        i = args.index("--hints")
+        hints = args[i + 1]
+        del args[i:i + 2]
+    folder = args[0]
+    only = args[1:] or None
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    piv = pivots(root)
+    piv = pivots(root, hints)
     dom = domes(root)
     rows = []
     for p in sorted(glob.glob(os.path.join(folder, "*.png"))):

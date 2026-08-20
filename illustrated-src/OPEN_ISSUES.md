@@ -120,3 +120,33 @@ unhooked from her body at full swing.
 - Phoenix has no rig: its flame cape merges with the tail at every
   threshold, so `cut` cannot separate them. It draws as one piece.
 - Ghost still wears a painted helmet and needs a bare-headed render.
+
+## Seraph's wing rides with the tail (open — needs new art)
+
+Seraph's plume and its wing meet with no neck between them, so a geometric
+cut cannot separate them: there is no narrow crossing to find. The colour
+guard now keeps the wings on the BODY, which is the right side for them,
+but it leaves a scatter of small fragments along the wing edge where the
+guard's boundary runs through feathers.
+
+Shipping as-is by decision. The real fix is a re-render with the wing and
+the tail clearly apart, or a parts-separated Seraph. Anything cleverer in
+`neck-cut.py` would be over-fitting one suit.
+
+## Big Booty (fixed)
+
+The straight seam clipped a wedge of the purple suit and a sliver of the
+hind leg into the tail, and they swung away with the plume. The seam colour
+guard hands them back: near the hinge, anything that is not the plume's own
+colour belongs to the body. Two traps on the way — the tail's five-pixel lip
+quietly re-copied the wedge into the tail, and the body's fringe sweep then
+deleted the paint the guard had handed back (297 px on Big Booty, 421 on
+Seraph). Both are named in the source.
+
+## neck-cut.py is NOT idempotent
+
+It seeds itself from the existing split and the existing `TAIL_PIVOT`. Once
+the pivots are written back to `draw.ts`, a re-run measures from the new
+hinge and can land somewhere else — Seraph moved from [105,138] to [82,80]
+that way, on identical art. Always re-cut from the ORIGINAL art and pass
+`--hints` at the `draw.ts` those pivots came from.
