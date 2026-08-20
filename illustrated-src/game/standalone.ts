@@ -790,11 +790,17 @@ export async function bootStandalone(root: HTMLElement) {
       }
     } else if (engine.shopTab === "trails") {
       for (const t of TRAILS) {
-        const owned = s.unlockedTrails.includes(t.id);
+        const premium = isIap(t.id);
+        const owned = premium ? iapOwned(s, t.id) : s.unlockedTrails.includes(t.id);
         const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
-        b.append(shopImg(artUrl(`trails/${t.id}.png`), t.name),
-                 document.createTextNode(`${t.name}\n${owned ? "OWNED" : t.cost}`));
-        b.onclick = () => engine.buyTrail(t.id);
+        const { c, ctx } = miniCanvas(64, 56);
+        c.setAttribute("role", "img");
+        c.setAttribute("aria-label", `${t.name} trail preview`);
+        if (ctx) paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
+        b.append(c, document.createTextNode(
+          `${t.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : t.cost}`));
+        if (premium) b.classList.add("ac-premium");
+        b.onclick = () => { if (!premium || owned) engine.buyTrail(t.id); };
         grid.append(b);
       }
     } else if (engine.shopTab === "pals") {

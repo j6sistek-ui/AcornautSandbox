@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=59";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=59";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=59";
-import { createEngine } from "./engine.js?v=59";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=59";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=59";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=60";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=60";
+import { drawSprite as drawSpriteOn } from "./art.js?v=60";
+import { createEngine } from "./engine.js?v=60";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=60";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=60";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -764,10 +764,19 @@ export async function bootStandalone(root) {
         }
         else if (engine.shopTab === "trails") {
             for (const t of TRAILS) {
-                const owned = s.unlockedTrails.includes(t.id);
+                const premium = isIap(t.id);
+                const owned = premium ? iapOwned(s, t.id) : s.unlockedTrails.includes(t.id);
                 const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
-                b.append(shopImg(artUrl(`trails/${t.id}.png`), t.name), document.createTextNode(`${t.name}\n${owned ? "OWNED" : t.cost}`));
-                b.onclick = () => engine.buyTrail(t.id);
+                const { c, ctx } = miniCanvas(64, 56);
+                c.setAttribute("role", "img");
+                c.setAttribute("aria-label", `${t.name} trail preview`);
+                if (ctx)
+                    paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
+                b.append(c, document.createTextNode(`${t.name}\n${owned ? "OWNED" : premium ? "PREMIUM" : t.cost}`));
+                if (premium)
+                    b.classList.add("ac-premium");
+                b.onclick = () => { if (!premium || owned)
+                    engine.buyTrail(t.id); };
                 grid.append(b);
             }
         }

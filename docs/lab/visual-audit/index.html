@@ -28,7 +28,7 @@
 <body>
   <header>
     <h1>Acornaut visual QA matrix</h1>
-    <p>Every shipping suit × helmet, pal at card/live scale, baked-Clear Flight frame, and collision-sized planet/debris render on a split light/dark plate. <a href="../../">Play this branch</a></p>
+    <p>Every shipping suit × helmet, pal, animated trail, baked-Clear Flight frame, and collision-sized planet/debris render on a split light/dark plate. <a href="../../">Play this branch</a></p>
   </header>
   <main>
     <h2>Suit / helmet fit</h2>
@@ -37,6 +37,8 @@
     <div id="flight" class="assets"></div>
     <h2>Pals — card scale / live flight scale</h2>
     <div id="pals" class="assets"></div>
+    <h2>Trails — animated shop / flight preview</h2>
+    <div id="trails" class="assets"></div>
     <h2>Planets — rendered with gameplay core fit</h2>
     <div id="planets" class="assets"></div>
     <h2>Debris — rendered with gameplay core fit</h2>
@@ -47,8 +49,8 @@
   </script>
   <script type="module">
     import { loadArt, drawSprite } from "../../js/art.js";
-    import { HELMETS, PALS, SUITS, wearsOwnHead } from "../../js/catalog.js";
-    import { paintPalPreview, paintPortrait } from "../../js/draw.js";
+    import { HELMETS, PALS, SUITS, TRAILS, wearsOwnHead, isIap } from "../../js/catalog.js";
+    import { paintPalPreview, paintPortrait, paintTrailPreview } from "../../js/draw.js";
 
     const matrix = document.querySelector("#matrix");
     matrix.style.gridTemplateColumns = `repeat(${HELMETS.length}, 112px)`;
@@ -123,6 +125,28 @@
       cell.append(c, text);
       pals.append(cell);
     }
+
+    const trailViews = [];
+    const trails = document.querySelector("#trails");
+    for (const trail of TRAILS) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      const [c, ctx] = canvas();
+      const text = document.createElement("span");
+      text.textContent = `${trail.name}${isIap(trail.id) ? " · PREMIUM" : ""}`;
+      cell.append(c, text);
+      trails.append(cell);
+      trailViews.push({ trail, ctx });
+    }
+    function animateTrails(now) {
+      for (const { trail, ctx } of trailViews) {
+        ctx.clearRect(0, 0, 100, 100);
+        plate(ctx);
+        paintTrailPreview(ctx, trail, 50, 50, now / 1000);
+      }
+      requestAnimationFrame(animateTrails);
+    }
+    requestAnimationFrame(animateTrails);
 
     function renderBank(target, bank) {
       bank.forEach((spr, i) => {

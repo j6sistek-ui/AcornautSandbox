@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "59";
+export const ART_VER = "60";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -125,6 +125,12 @@ export const TRAILS = [
     { id: "frost", name: "Frostbite", cost: 520, colors: ["#eaf7ff", "#9fe4ff", "#6f9dc4"] },
     { id: "voidsmoke", name: "Void Smoke", cost: 580, colors: ["#c8b8e0", "#4f4270", "#241d33"] },
     { id: "supernova", name: "Supernova", cost: 650, colors: ["#fff8d0", "#ff9d47", "#ff4020"] },
+    { id: "opalfeather", name: "Opal Feather", cost: 0, colors: ["#fff5ef", "#7fffe0", "#8fb8ff"] },
+    { id: "clockwork", name: "Clockwork Wake", cost: 0, colors: ["#fff0b8", "#d89a3a", "#7a4a18"] },
+    { id: "celestialtide", name: "Celestial Tide", cost: 0, colors: ["#e8f4ff", "#75caff", "#745cff"] },
+    { id: "phoenixplume", name: "Phoenix Plumage", cost: 0, colors: ["#fff2a8", "#ff9b42", "#d9366e"] },
+    { id: "verdantflourish", name: "Verdant Flourish", cost: 0, colors: ["#e7ffd5", "#55e89d", "#16866a"] },
+    { id: "eclipseglyph", name: "Eclipse Sigils", cost: 0, colors: ["#ffe2bd", "#c77dff", "#35204f"] },
 ];
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
@@ -326,6 +332,8 @@ export const IAP_ITEMS = [
     "chronarch", "leviathan", "paladin", "princess",
     "verdant", "cryostar", "eclipse",
     "prismwing", "clockling", "nightglider",
+    "opalfeather", "clockwork", "celestialtide",
+    "phoenixplume", "verdantflourish", "eclipseglyph",
 ];
 export function isIap(id) {
     return IAP_ITEMS.includes(id);

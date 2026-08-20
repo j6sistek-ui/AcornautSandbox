@@ -257,6 +257,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactTrail(id: string) {
     const item = TRAILS.find((h) => h.id === id);
     if (!item) return "missing";
+    if (isIap(id)) {
+      if (!iapOwned(save, id)) return "locked";
+      save.equippedTrail = id;
+      if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
+      writeSave(save);
+      notify();
+      return "equip";
+    }
     if (save.unlockedTrails.includes(id)) {
       save.equippedTrail = id;
       writeSave(save);

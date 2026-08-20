@@ -1,7 +1,7 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=59";
-import { modsUnlocked, writeSave } from "./save.js?v=59";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=59";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=59";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=60";
+import { modsUnlocked, writeSave } from "./save.js?v=60";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=60";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=60";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -1245,6 +1245,77 @@ export function spawnTrail(w, save, scale = 1) {
                 r: 2 + Math.random() * 3,
                 color: colors[i % colors.length],
                 kind: "supernova",
+            });
+        }
+    }
+    else if (trail === "opalfeather") {
+        for (let i = 0; i < 7; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 9,
+                vx: -72 - Math.random() * 105, vy: (Math.random() - 0.5) * 42,
+                life: 0.52 + Math.random() * 0.32, max: 0.84,
+                r: 2.2 + Math.random() * 2.1, color: colors[i % colors.length],
+                hue: Math.random() * 360, spin: (Math.random() - 0.5) * 4,
+                kind: "opalfeather",
+            });
+        }
+    }
+    else if (trail === "clockwork") {
+        for (let i = 0; i < 5; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 10,
+                vx: -58 - Math.random() * 86, vy: (Math.random() - 0.5) * 35,
+                life: 0.62 + Math.random() * 0.34, max: 0.96,
+                r: 2.4 + Math.random() * 2.2, color: colors[i % colors.length],
+                hue: Math.random() * 360, spin: Math.random() < 0.5 ? -2.2 : 2.2,
+                kind: "clockwork",
+            });
+        }
+    }
+    else if (trail === "celestialtide") {
+        for (let i = 0; i < 7; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 8,
+                vx: -82 - Math.random() * 105, vy: (Math.random() - 0.5) * 48,
+                life: 0.5 + Math.random() * 0.3, max: 0.8,
+                r: 2 + Math.random() * 2.4, color: colors[i % colors.length],
+                seed: Math.random() * Math.PI * 2, kind: "celestialtide",
+            });
+        }
+    }
+    else if (trail === "phoenixplume") {
+        for (let i = 0; i < 8; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 9,
+                vx: -88 - Math.random() * 125, vy: -12 - Math.random() * 44,
+                life: 0.48 + Math.random() * 0.32, max: 0.8,
+                r: 2.3 + Math.random() * 2.4, color: colors[i % colors.length],
+                hue: Math.random() * 360, spin: (Math.random() - 0.5) * 5,
+                kind: "phoenixplume",
+            });
+        }
+    }
+    else if (trail === "verdantflourish") {
+        for (let i = 0; i < 7; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 10,
+                vx: -62 - Math.random() * 92, vy: (Math.random() - 0.5) * 50,
+                life: 0.58 + Math.random() * 0.34, max: 0.92,
+                r: 2 + Math.random() * 2.2, color: colors[i % colors.length],
+                hue: Math.random() * 360, spin: (Math.random() - 0.5) * 3,
+                kind: "verdantflourish",
+            });
+        }
+    }
+    else if (trail === "eclipseglyph") {
+        for (let i = 0; i < 6; i++) {
+            w.particles.push({
+                x: sx, y: sy + (Math.random() - 0.5) * 9,
+                vx: -56 - Math.random() * 85, vy: (Math.random() - 0.5) * 34,
+                life: 0.62 + Math.random() * 0.38, max: 1,
+                r: 2.5 + Math.random() * 2.5, color: colors[i % colors.length],
+                hue: Math.random() * 360, spin: Math.random() < 0.5 ? -1.4 : 1.4,
+                kind: "eclipseglyph",
             });
         }
     }
