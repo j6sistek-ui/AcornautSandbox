@@ -1,8 +1,14 @@
 # Acornaut art spec — heads and helmets
 
-Every helmet has to sit on every suit. There are 18 suits and 21 helmets, so
-that is 378 combinations and no one is going to eyeball them all. This is the
-contract that makes them work without checking.
+Every helmet has to sit on every suit. There are 17 suits — one of which,
+the Cat, wears its own head — and 20 helmets, so that is 320 combinations
+plus 160 more across the eight flight-animation frames, and no one is going
+to eyeball them all. This is the contract that makes them work without
+checking.
+
+The **rig editor** (`docs/lab/rig/`, reachable from Help) is the bench for
+setting these two tables by hand. It draws every pairing the way the game
+does and hands the numbers back as text.
 
 ## The contract
 
@@ -35,7 +41,13 @@ from a plausible-looking proxy, and the plausible proxies all lie:
 
 ## What to render for a new model
 
-- **1408 × 1408**, character centred, plain flat cream background.
+- **1408 × 1408**, character centred, plain flat background.
+- **Transparent background if you can get it.** It beats any cut, and
+  `key-render.py` notices and skips keying entirely.
+- **A PALE character needs a BLACK plate, not cream.** Ghost is painted
+  within 12 of the cream out of 765 — no code recovers that, because the
+  information is not in the file. This is the one input problem no tool
+  fixes, and it cost a whole re-render to learn.
 - **No cast shadow and no ground plane.** They survive keying as a grey
   smear under the feet or a white ellipse under a helmet, and separating a
   shadow that touches the figure is genuinely hard.
@@ -71,30 +83,55 @@ is the sphere itself; the twelve plain bubbles all carry `125` and all
 measure `103–107` as an inscribed circle, hence the constant in the tool.
 
 Helmets with **ears, a crown, a halo or a long chin** are the exception:
-an inscribed circle finds the wrong feature on them. **catbubble** and
-**leviathan** were both fitted by eye instead — draw the helmet against a
-fixed head circle at a spread of candidate radii and take the one that sits
-on it.
+an inscribed circle finds the wrong feature on them. **princess**, **sammie**,
+**royal**, **seraph** and **leviathan** are all fitted by eye instead — draw
+the helmet against a fixed head circle at a spread of candidate radii and
+take the one that sits on it, or use the rig editor.
 
-catbubble is the cautionary case. Its glass is a teardrop, so the inscribed
-circle settles on the shell's widest point, up and back from the opening,
-and the printed centre seated the helmet most of a head to the LEFT on
-every suit. The radius it printed was fine; the centre was not. **Sweep the
-centre as well as the radius**, and sweep it on three or four real suits —
-one is not enough to see a small offset.
+The cat helmet was the cautionary case, and it is why it no longer exists.
+Its glass was a teardrop, so the inscribed circle settled on the shell's
+widest point, up and back from the opening, and the printed centre seated
+the helmet most of a head to the LEFT on every suit. The radius was fine;
+the centre was not. **Sweep the centre as well as the radius**, and sweep it
+on three or four real suits — one is not enough to see a small offset.
+
+A shell with a face OPENING is not a bubble and its centre is not the
+frame's centre: the head sits BEHIND the opening, back from it by about a
+fifth of its own radius, because the muzzle is forward of the head's centre.
+Princess and Sammie both hung the face behind lacquer until that was fixed.
 
 ## Adding a model
 
 ```bash
-# 1. key the render, then measure it
+# 1. key the master and seat it in the family's framing in one resample
+python3 illustrated-src/fit-suit.py art-src/suit-new-master.png docs/art/suits/newsuit.png
+
+# 2. measure its head circle (or fit it in the rig editor)
 python3 illustrated-src/measure-art.py suit   docs/art/suits/newsuit.png
 python3 illustrated-src/measure-art.py helmet docs/art/helms/newhelm.png
 
-# 2. paste the printed line into DOME / HELM_GLASS in draw.ts
-# 3. add the id to catalog.ts (SUITS or HELMETS) and to art.ts
-# 4. re-check everything
+# 3. paste the printed line into DOME / HELM_GLASS in draw.ts
+# 4. add the id to catalog.ts (SUITS or HELMETS) and to art.ts
+
+# 5. cut the tail off at the neck, and paste the printed TAIL_PIVOT back
+python3 illustrated-src/neck-cut.py docs/art/suits newsuit
+
+# 6. re-check everything, then bump ART_VER and rebuild
 python3 illustrated-src/measure-art.py audit
+python3 illustrated-src/rig-tail.py audit docs/art/suits
 ```
+
+`fit-suit.py` exists because `key-render.py` keeps whatever framing the
+render arrived with. The game does not care — `measureSprite` trims and
+scales the trimmed box — but SHARPNESS does: a figure filling 150 px of a
+256 canvas carries a sixth fewer real pixels than its siblings at 180, and
+at the same on-screen size that reads soft. Key at source resolution, crop
+to the figure there, and take one downscale straight to the family's size.
+
+`neck-cut.py` is **not idempotent** — it seeds from the existing split and
+the existing `TAIL_PIVOT`, so re-cutting after the pivots are written back
+measures from the new hinge. Always cut from the original art, and pass
+`--hints` at the `draw.ts` those pivots came from.
 
 The tool prints a confidence for suits. **Below 0.80, fit it by eye** rather
 than trusting the number — that is the signal that the face match did not
@@ -113,7 +150,7 @@ rendered wearing a dome; get a bare-headed render instead.
 is measured against it:
 
 ```
-"suit:flight": [195, 97, 51]
+"suit:flight": [194, 97, 50]
 ```
 
 Change it and every other suit's measurement moves with it.

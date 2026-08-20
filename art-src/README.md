@@ -12,17 +12,26 @@ here and give them a name that says what they are.
 ## Turning a master into game art
 
 ```bash
-# a character render -> a 256px sprite with a clean edge
-python3 illustrated-src/key-render.py art-src/suit-flight-master.png docs/art/suits/flight.png
+# a character render -> a 256px sprite, cut and seated in the family's framing
+python3 illustrated-src/fit-suit.py art-src/suit-flight-master.png docs/art/suits/flight.png
 
 # then measure its head circle and paste the line into draw.ts
 python3 illustrated-src/measure-art.py suit docs/art/suits/flight.png
 
-# and cut the tail into its own hinged layer
-python3 illustrated-src/rig-tail.py cut docs/art/suits/flight.png
+# and cut the tail off at the neck, pasting the printed TAIL_PIVOT back
+python3 illustrated-src/neck-cut.py docs/art/suits flight
 ```
 
+Use `fit-suit.py`, not `key-render.py` directly: it keys at the master's own
+resolution and takes ONE downscale to the family's size, instead of keying
+to 256 and resampling whatever framing the render happened to arrive with.
+
+`rig-tail.py` still has `audit` (the check that a split is lossless and does
+not ghost) and `transfer` (carry a known-good split onto a re-render of the
+same pose). Its `cut` is superseded by `neck-cut.py`, which is the only one
+that keeps the rump and the hind foot OUT of the tail.
+
 A render that already has a transparent background needs no keying —
-`key-render.py` notices and just resizes it. Ask for transparency; it is
-better than any cut, and it is the only thing that fixes a character
-painted the same colour as its backing paper.
+`key-render.py` notices and just resizes it. Ask for transparency; it beats
+any cut. And a PALE character needs a BLACK plate: Ghost is painted within
+12 of the cream out of 765, and nothing recovers that.
