@@ -2,7 +2,7 @@
 
 **Status:** Phase 1 approved with the 2026-08-20 revision below. Phase 2 art is authorized. Phase 3 implementation remains blocked until separate art sign-off.
 
-**2026-08-20 approval revision:** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
+**2026-08-20 approval revision:** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
 
 ## Product promise
 
@@ -311,11 +311,14 @@ All deliverable art is PNG, RGBA, transparent, with no baked background. Gate an
 
 | Asset | Size | Visual read |
 | --- | ---: | --- |
-| `gate-idle.png` | 256² | Dim violet/cyan inner energy; readable carved structure and restrained dormant glyphs; open center remains transparent. |
-| `gate-passed.png` | 256² | Same exact silhouette/alignment; gold-green glyph ignition, brighter inner edge, outward energy sparks. |
-| `gate-missed.png` | 256² | Same exact silhouette/alignment; cooled slate/violet metal, interrupted glyph light, faint receding afterimage. No red failure explosion. |
+| `gate-idle-back.png` | 256² | Idle far rim and structural body, drawn behind the pilot; dim violet/cyan energy and restrained dormant glyphs. |
+| `gate-idle-front.png` | 256² | Idle near-rim arc only, drawn in front of the pilot to sell threading depth. |
+| `gate-passed-back.png` | 256² | Passed far rim on the exact idle alignment; gold-green glyph ignition and brighter inner edge. |
+| `gate-passed-front.png` | 256² | Passed near-rim arc on the exact idle alignment; outward gold-green energy sparks. |
+| `gate-missed-back.png` | 256² | Missed far rim on the exact idle alignment; cooled slate/violet metal and interrupted glyph light. |
+| `gate-missed-front.png` | 256² | Missed near-rim arc on the exact idle alignment; faint receding afterimage and no red failure explosion. |
 
-The collision aperture is authored consistently across all three states. State changes are a 450 ms passed crossfade or 650 ms missed crossfade; drawing scale and collision geometry do not change after the decision.
+Each ordinary gate state is a matched two-layer pair sharing one canvas center, transform, and collision aperture. Draw `gate-*-back` behind the pilot, draw the pilot, then draw only the small `gate-*-front` near-rim arc over the pilot. A slight elliptical tilt is allowed when it improves the side-view threading read, but the ellipse, aperture mask, center, tilt, and layer registration must be identical across idle, passed, and missed. The six PNGs must composite into three complete gates without seams or doubled highlights. State changes are a synchronized 450 ms passed crossfade or 650 ms missed crossfade across both layers; drawing scale and collision geometry do not change after the decision.
 
 ### Wormhole-entry showpiece
 
@@ -342,7 +345,7 @@ The return portal is the same architectural family but reads as arrival: warmer 
 
 ### Phase 2 contact sheet and checks
 
-The contact sheet shows idle/passed/missed at 1× and game-size reduction, the four entry layers separately and composited at four timestamps, and the return portal separately and composited. Review checks: transparent edges, shared centers, aperture consistency, 360 × 640 gameplay readability, no state silhouette pop, palette contrast over representative dark skies, and exact mirrored-file hashes between art roots.
+The contact sheet shows each ordinary gate back/front pair separately, composited without a pilot, and composited with a pilot silhouette between the layers at 1× and game-size reduction. It also shows the four entry layers separately and composited at four timestamps, and the return portal separately and composited. Review checks: transparent edges, shared centers, identical apertures and tilt across all gate states, clean near-rim occlusion, no seams when composited, 360 × 640 gameplay readability, no state silhouette pop, palette contrast over representative dark skies, and exact mirrored-file hashes between art roots.
 
 ## Performance target
 
@@ -355,7 +358,7 @@ Acceptance numbers for a 30-second capture covering entry, tunnel, and return:
 - 99th percentile frame time ≤25.0 ms.
 - No more than two frames above 33 ms per complete entry/tunnel/return cycle after warm-up.
 - No texture allocation or image decode during the live entry sequence; all seven Hyper Run layer assets are loaded before `TAKE FLIGHT` enables.
-- At most four 512² painted layers, three 256² return layers, and one gate-state trio resident; particles are pooled and capped at 120 live items.
+- At most four 512² painted layers, three 256² return layers, and three 256² gate-state pairs resident; particles are pooled and capped at 120 live items.
 - Canvas backing resolution is capped at 2× CSS pixels for this mode. Reducing particle count or bloom resolution is allowed; reducing physics rate, collision fidelity, or authoritative timing is not.
 
 The performance capture and device/browser details are Phase 3 evidence. Desktop FPS alone does not satisfy this target.
