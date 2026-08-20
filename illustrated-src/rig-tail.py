@@ -31,7 +31,25 @@ the BODY layer -- 6 to 350 pixels, on the outer edge of the plume. It sat
 still while the tail swung, which is what a player sees as "a fragment of
 the tip not following the tail". Any body blob that is disconnected from the
 body and lies against the tail belongs to the tail.
+
+RESEAT, and why REPAIR was not enough. Repair only moves blobs DISCONNECTED
+from the body, and the real defect is not disconnected: the cut left the
+tail's whole fur outline -- its dark rim and antialiased skirt -- attached
+to the body at the hip and tracing the plume all the way round. Eleven of
+seventeen suits carried 1100-1500 px of it, 18% to 31% of the swinging part
+of the tail. At the 43 degrees this tail actually swings (TAIL.maxA = 0.75
+rad) that reads as a second, ghostly tail hanging in the air. Repair could
+not see it, and neither could audit, because both asked "is it a separate
+blob?" when the question is "is it inside the tail?".
+
+Reseat asks the second question. The body keeps nothing inside the tail's
+silhouette -- grown a few pixels, to take the antialiased fringe with it --
+except a round pad at the hinge, which stops the hip opening a gap as the
+plume rotates. Everything the body gives up is already in the tail layer by
+construction, so nothing is lost; that is checked against the whole-suit
+render rather than assumed.
 """
+import re
 import sys
 import os
 import glob
@@ -181,6 +199,88 @@ def repair(stem, min_blob=MIN_BLOB, alpha=ALPHA):
 
 
 
+HINGE_PAD = 17      # px of body kept around the pivot, so the hip cannot gap
+FRINGE = 3          # px the tail mask grows by, to take its soft edge along
+FAR = 45.0          # px from the pivot: beyond this a swing really moves
+
+
+def hinge_of(tail_mask, stem):
+    """the hand-set pivot from draw.ts if there is one, else the measured one"""
+    name = os.path.basename(stem)
+    try:
+        src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "game", "draw.ts"), encoding="utf8").read()
+        blk = src[src.index("const TAIL_PIVOT"):]
+        blk = blk[:blk.index("\n};")]
+        for line in blk.split("\n"):
+            m = re.match(r"\s*(\w+):\s*\[(\d+),\s*(\d+)\]", line)
+            if m and m.group(1) == name:
+                return int(m.group(2)), int(m.group(3))
+    except (OSError, ValueError):
+        pass
+    return pivot_of(tail_mask)
+
+
+def stranded(tail_a, body_a, piv):
+    """how much of the SWINGING part of the tail the body is still holding"""
+    tm = tail_a > ALPHA
+    h, w = tm.shape
+    ys, xs = np.mgrid[0:h, 0:w]
+    far = np.hypot(xs - piv[0], ys - piv[1]) > FAR
+    tail_far = int((tm & far).sum())
+    held = int((tm & far & (body_a > ALPHA)).sum())
+    return held, tail_far
+
+
+def reseat(stem, pad=HINGE_PAD, fringe=FRINGE):
+    """take the tail's own outline out of the body layer"""
+    tp, bp = stem + "-tail.png", stem + "-body.png"
+    if not (os.path.exists(tp) and os.path.exists(bp)):
+        return None
+    t = load(tp)
+    b = load(bp)
+    tm = t[:, :, 3] > ALPHA
+    piv = hinge_of(tm, stem)
+
+    before, tail_far = stranded(t[:, :, 3], b[:, :, 3], piv)
+
+    h, w = tm.shape
+    ys, xs = np.mgrid[0:h, 0:w]
+    keep = np.hypot(xs - piv[0], ys - piv[1]) <= pad
+    drop = ndimage.binary_dilation(tm, iterations=fringe) & ~keep
+
+    # a sanity rail: if the tail mask is so generous that reseating would
+    # eat the body itself, something is wrong with the cut and this must
+    # not run. Better a known fringe than a suit with no haunch.
+    body_before = int((b[:, :, 3] > ALPHA).sum())
+    losing = int(((b[:, :, 3] > ALPHA) & drop).sum())
+    if losing > body_before * 0.45:
+        return {"suit": os.path.basename(stem), "skipped": True,
+                "would_lose_pct": round(100.0 * losing / max(1, body_before), 1)}
+
+    # MOVE the fringe, do not delete it. The cut split every pixel's alpha
+    # between the two layers (tail = a*soft, body = a*(1-soft)), so the
+    # outline is exactly where soft ran to nothing -- the tail's own edge,
+    # holding most of its alpha in the BODY. Zeroing it left a hairline of
+    # missing paint round the plume, 130-200 px a suit, because the tail had
+    # almost none of it to show in its place. Handing it to the tail keeps
+    # the resting silhouette identical to the whole-suit render and lets the
+    # edge swing with the plume it belongs to.
+    take = drop & (b[:, :, 3] > 0)
+    fill = take & (b[:, :, 3] > t[:, :, 3])
+    t[:, :, :3] = np.where(fill[:, :, None], b[:, :, :3], t[:, :, :3])
+    t[:, :, 3] = np.where(take, np.maximum(t[:, :, 3], b[:, :, 3]), t[:, :, 3])
+    b[:, :, 3] = np.where(drop, 0, b[:, :, 3])
+    save(t, tp)
+    save(b, bp)
+    after, _ = stranded(t[:, :, 3], b[:, :, 3], piv)
+    return {"suit": os.path.basename(stem), "pivot": list(piv),
+            "tail_far": tail_far, "before": before, "after": after,
+            "before_pct": round(100.0 * before / max(1, tail_far), 2),
+            "after_pct": round(100.0 * after / max(1, tail_far), 2),
+            "body_px_removed": losing}
+
+
 def transfer(old_suit, old_tail, new_suit):
     """carry a known-good tail/body split onto a re-render of the same pose
 
@@ -254,24 +354,44 @@ def warp(mask, s, _dx, _dy, ca, cb, shape):
     return np.asarray(out) > 127
 
 
-def audit(folder):
+def audit(folder, limit=1.0):
+    """Is any of the SWINGING tail still held in the body layer?
+
+    This used to count only blobs disconnected from the body, and so it
+    passed eleven suits that were carrying the tail's entire fur outline --
+    connected to the hip, and therefore invisible to that test. The measure
+    now is the one the player sees: of the tail beyond FAR px of the hinge,
+    the part that will not move, what share is the body still drawing?
+
+    It also checks the split is lossless, because the cheap way to score
+    zero here would be to delete paint.
+    """
     bad = 0
+    print("  %-12s %8s %8s %7s %7s" % ("suit", "tailfar", "held", "pct", "lost"))
     for p in sorted(glob.glob(os.path.join(folder, "*-body.png"))):
         stem = p[:-9]
-        t = np.asarray(Image.open(stem + "-tail.png").convert("RGBA"))[:, :, 3] > ALPHA
-        b = np.asarray(Image.open(p).convert("RGBA"))[:, :, 3] > ALPHA
-        lab, n = ndimage.label(b)
-        sizes = ndimage.sum(b, lab, range(1, n + 1))
-        main = int(np.argmax(sizes)) + 1
-        near = ndimage.binary_dilation(t, iterations=NEAR)
-        loose = sum(int(sizes[i - 1]) for i in range(1, n + 1)
-                    if i != main and sizes[i - 1] >= MIN_BLOB and ((lab == i) & near).any())
-        name = os.path.basename(stem)
-        if loose:
+        ta = np.asarray(Image.open(stem + "-tail.png").convert("RGBA"))[:, :, 3]
+        ba = np.asarray(Image.open(p).convert("RGBA"))[:, :, 3]
+        piv = hinge_of(ta > ALPHA, stem)
+        held, tail_far = stranded(ta, ba, piv)
+        pct = 100.0 * held / max(1, tail_far)
+
+        lost = -1
+        whole = stem + ".png"
+        if os.path.exists(whole):
+            fa = np.asarray(Image.open(whole).convert("RGBA"))[:, :, 3]
+            lost = int(((fa > ALPHA) & (np.maximum(ta, ba) <= ALPHA)).sum())
+
+        flag = ""
+        if pct > limit:
+            flag = "  <-- ghost tail"
             bad += 1
-            print("  %-12s %d px of tail still stranded in the body layer" % (name, loose))
-        else:
-            print("  %-12s clean, pivot [%d, %d]" % ((name,) + pivot_of(t)))
+        if lost > 200:
+            flag += "  <-- paint lost"
+            bad += 1
+        print("  %-12s %8d %8d %6.2f%% %7d%s"
+              % (os.path.basename(stem), tail_far, held, pct, lost, flag))
+    print("  %d problem(s)" % bad)
     return bad == 0
 
 
@@ -295,6 +415,22 @@ def main():
                 print("  %-12s moved %d px back to the tail"
                       % (os.path.basename(p[:-9]), got))
         print("repaired %d pairs" % total)
+        return
+    if mode == "reseat":
+        rows = []
+        for p in sorted(glob.glob(os.path.join(target, "*-body.png"))):
+            r = reseat(p[:-9])
+            if r:
+                rows.append(r)
+        for r in rows:
+            if r.get("skipped"):
+                print("  %-12s SKIPPED — would cut %s%% of the body away"
+                      % (r["suit"], r["would_lose_pct"]))
+            else:
+                print("  %-12s %5.2f%% -> %5.2f%%   (%d px off the body)"
+                      % (r["suit"], r["before_pct"], r["after_pct"],
+                         r["body_px_removed"]))
+        print("reseated %d pairs" % len([r for r in rows if not r.get("skipped")]))
         return
     if mode == "audit":
         sys.exit(0 if audit(target) else 1)

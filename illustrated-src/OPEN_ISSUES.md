@@ -59,3 +59,64 @@ that pass has to be redone anyway.
 
 `docs/art/suits/phoenix.png` is orphaned — Phoenix is a HELMET, and there
 is no Phoenix suit in `SUITS`. The file is unreferenced.
+
+## The tail fringe (fixed v51) — and why the first fix did not take
+
+Reported: "every single tail bounce has a small fragment of the tip of the
+tail not following the tail." Reported fixed once. It was not.
+
+`repair()` moved body blobs **disconnected** from the body. The real defect
+is connected: the cut left the tail's whole fur outline — its dark rim and
+antialiased skirt — attached at the hip and tracing the plume all the way
+round. `audit()` asked the same disconnected-blob question, so it printed
+"clean" over eleven broken suits and I believed it.
+
+Measured properly — of the tail beyond 45px of the hinge, what share is the
+body still drawing — the shipping art read:
+
+| | |
+|---|---|
+| bigbooty | 31.0% |
+| frost, stardust | 23.9% |
+| ember | 23.2% |
+| copper | 23.0% |
+| voidsuit | 22.1% |
+| alien | 21.8% |
+| aurorasuit | 20.8% |
+| robo | 20.5% |
+| iontrim | 18.2% |
+| flight | 7.4% |
+| everything else | under 1.7% |
+
+At `TAIL.maxA = 0.75` rad — 43°, which a single tap reaches — that is a
+second tail hanging in the air.
+
+**Lesson worth keeping:** the audit and the fix shared an assumption, so the
+audit could never catch the fix being wrong. An audit must measure the
+symptom the player sees, not the mechanism the fix happens to use.
+
+`reseat` measures the symptom. All 17 now read 0.00%, and the resting
+composite still reproduces the whole-suit render to within 0.04/255 of mean
+alpha.
+
+## Sammie's rig was the wrong art (fixed v51)
+
+`sammie.png` was re-rendered bare-headed; `sammie-tail.png` and
+`sammie-body.png` were never re-cut, so in flight she wore a painted-on
+dome under the real helmet. Caught by the new audit's lossless check —
+tail+body missed 2564px of the whole-suit render, scattered over 53 blobs,
+which is the signature of two different paintings rather than a bad cut.
+
+Re-cut with `transfer`. Her hinge moved with the pose: `TAIL_PIVOT.sammie`
+is now [128, 166], not [98, 178]. At the old pivot the plume visibly
+unhooked from her body at full swing.
+
+## Still open
+
+- Three suits (bigbooty 306px, sammie 208px, robo 31px) keep a small
+  disconnected piece in the body layer — a hind foot the tail's silhouette
+  cut across. It is genuinely body, it stays put correctly, and at the size
+  the pilot is actually drawn it is under two pixels. Left alone.
+- Phoenix has no rig: its flame cape merges with the tail at every
+  threshold, so `cut` cannot separate them. It draws as one piece.
+- Ghost still wears a painted helmet and needs a bare-headed render.

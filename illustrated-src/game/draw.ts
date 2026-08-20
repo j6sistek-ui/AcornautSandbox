@@ -618,7 +618,12 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   bigbooty: [94, 180],
   catsuit: [96, 179],
   gemmie: [97, 178],
-  sammie: [98, 178],
+  // Sammie's rig was cut from the OLD helmeted render and never re-cut when
+  // she was re-drawn bare-headed, so in flight she wore a painted-on dome
+  // under the real one. Re-cut against the current art, her plume meets the
+  // hip further forward and higher than the old pose's 98,178 -- at the old
+  // pivot the tail visibly unhooked from her body at full swing.
+  sammie: [128, 166],
   // Seraph and Leviathan stand rather than fly, so their tail meets the hip
   // higher and further forward than the flying pose's shared 95,179.
   seraph: [101, 173],

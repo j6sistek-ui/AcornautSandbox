@@ -1,8 +1,8 @@
-import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=50";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=50";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=50";
-import { createEngine } from "./engine.js?v=50";
-import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save.js?v=50";
+import { xpCumulative, ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, isIap, wearsOwnHead } from "./catalog.js?v=51";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=51";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=51";
+import { createEngine } from "./engine.js?v=51";
+import { palUnlocked, pilotLevelOf, pilotTitleOf, suitRevealed, iapOwned, modsUnlocked, MOD_UNLOCK_LEVEL } from "./save.js?v=51";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
