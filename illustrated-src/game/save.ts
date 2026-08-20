@@ -44,6 +44,9 @@ export type SaveData = {
   zonesSeen: string[];
   /** Star Chart progress: level id -> 3-bit goal mask. See campaign.ts. */
   stars: Record<string, number>;
+  /** the post-tutorial guided path. See GUIDE_SUIT in catalog.ts.
+   *  pending -> reward -> hangar -> helmet -> levels -> done */
+  guide: "pending" | "reward" | "hangar" | "helmet" | "levels" | "done";
 };
 
 export function defaultSave(): SaveData {
@@ -74,6 +77,7 @@ export function defaultSave(): SaveData {
     lifetimeAcorns: 0,
     zonesSeen: [],
     stars: {},
+    guide: "pending",
   };
 }
 
@@ -122,6 +126,9 @@ export function loadSave(): SaveData {
   if (typeof s.lifetimeAcorns !== "number") s.lifetimeAcorns = s.acorns;
   if (!Array.isArray(s.zonesSeen)) s.zonesSeen = [];
   if (!s.stars || typeof s.stars !== "object" || Array.isArray(s.stars)) s.stars = {};
+  // saves written before the guided path existed have already seen the
+  // game — never walk a veteran to the hangar
+  if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
   if (parsed && typeof parsed.xp !== "number") {
     const owned =
       Math.max(0, (s.unlocked?.length || 1) - 1) +

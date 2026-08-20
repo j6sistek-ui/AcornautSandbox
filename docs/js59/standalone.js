@@ -1,9 +1,9 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=58";
-import { paintPortrait, paintPalPreview } from "./draw.js?v=58";
-import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=58";
-import { createEngine } from "./engine.js?v=58";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=58";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=58";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=59";
+import { paintPortrait, paintPalPreview } from "./draw.js?v=59";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=59";
+import { createEngine } from "./engine.js?v=59";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf } from "./save.js?v=59";
+import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=59";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -142,9 +142,33 @@ export async function bootStandalone(root) {
                 sheet.append(replay, go);
             }
             else {
-                const go = el("button", "ac-primary", "CONTINUE");
-                go.onclick = () => engine.dismissDead();
-                sheet.append(go);
+                if (engine.save.guide === "reward") {
+                    const gsuit = SUITS.find((u) => u.id === GUIDE_SUIT);
+                    const ghelm = HELMETS.find((h) => h.id === GUIDE_HELM);
+                    const gift = el("div", "ac-gear");
+                    gift.append(el("p", "ac-gold ac-gearhead", "NEW GEAR UNLOCKED"));
+                    const row = el("div", "ac-gearrow");
+                    if (gsuit) {
+                        const cell = el("div", "ac-gearcell");
+                        cell.append(suitCardOf(gsuit, 56), el("p", "ac-sub", `${gsuit.name} Suit`));
+                        row.append(cell);
+                    }
+                    if (ghelm) {
+                        const cell = el("div", "ac-gearcell");
+                        cell.append(helmCardOf(ghelm, 56), el("p", "ac-sub", `${ghelm.name} Helmet`));
+                        row.append(cell);
+                    }
+                    gift.append(row, el("p", "ac-sub ac-mid", "Yours, free \u2014 waiting in the Hangar."));
+                    sheet.append(gift);
+                    const go = el("button", "ac-primary", "COLLECT");
+                    go.onclick = () => engine.dismissDead();
+                    sheet.append(go);
+                }
+                else {
+                    const go = el("button", "ac-primary", "CONTINUE");
+                    go.onclick = () => engine.dismissDead();
+                    sheet.append(go);
+                }
             }
             overlay.append(sheet);
             return;
@@ -277,6 +301,11 @@ export async function bootStandalone(root) {
     }
     // `active` may be "none": Help is reached from the "?" on any screen, so
     // it belongs to no tab and must not light one up.
+    // The coach: one line of guidance, pinned above the tab bar, that only
+    // exists while the post-tutorial path is live. It never blocks a tap.
+    function coach(text) {
+        return el("div", "ac-coach", text);
+    }
     function tabbar(active) {
         const bar = el("nav", "ac-tabbar");
         const side = (screen, paths, label) => {
@@ -288,7 +317,14 @@ export async function bootStandalone(root) {
         const dome = el("button", "ac-dome");
         dome.append(icon(I_ACORN, 26, true), el("span", "", "HOME"));
         dome.onclick = () => engine.open("title");
-        bar.append(side("hangar", I_HELMET, "HANGAR"), side("log", I_STAR, "LEVELS"), dome, side("profile", I_PILOT, "PROFILE"), side("shop", I_SHOP, "SHOP"));
+        const hangarTab = side("hangar", I_HELMET, "HANGAR");
+        const levelsTab = side("log", I_STAR, "LEVELS");
+        const g = engine.save.guide;
+        if ((g === "hangar" || g === "helmet") && active !== "hangar")
+            hangarTab.classList.add("ac-pulse");
+        if (g === "levels" && active !== "log")
+            levelsTab.classList.add("ac-pulse");
+        bar.append(hangarTab, levelsTab, dome, side("profile", I_PILOT, "PROFILE"), side("shop", I_SHOP, "SHOP"));
         return bar;
     }
     // Seven painted rank frames, one per five levels, topping out at 30+.
@@ -445,6 +481,12 @@ export async function bootStandalone(root) {
             modes.append(b);
         });
         controls.append(modes);
+        if (s.guide === "hangar" || s.guide === "helmet") {
+            box.append(coach("Your new gear is waiting \u2014 open the HANGAR"));
+        }
+        else if (s.guide === "levels") {
+            box.append(coach("Mission 1 is ready \u2014 open LEVELS"));
+        }
         box.append(controls, tabbar("title"));
         return box;
     }
@@ -658,6 +700,10 @@ export async function bootStandalone(root) {
         const tabs = el("div", "ac-cats");
         for (const t of ["suits", "helmets", "trails", "pals", "mods"]) {
             const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
+            if ((s.guide === "hangar" && t === "suits" && engine.shopTab !== "suits") ||
+                (s.guide === "helmet" && t === "helmets" && engine.shopTab !== "helmets")) {
+                b.classList.add("ac-pulse");
+            }
             b.onclick = () => engine.setShopTab(t);
             tabs.append(b);
         }
@@ -691,6 +737,8 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-premium");
                 if (locked || setLocked || !open)
                     b.classList.add("ac-cardoff");
+                if (s.guide === "helmet" && h.id === GUIDE_HELM)
+                    b.classList.add("ac-pulse");
                 b.onclick = () => { if (!locked && !setLocked && open && (!premium || owned))
                     engine.buyHelmet(h.id); };
                 grid.append(b);
@@ -707,6 +755,8 @@ export async function bootStandalone(root) {
                         : owned ? "OWNED" : u.cost}`));
                 if (premium)
                     b.classList.add("ac-premium");
+                if (s.guide === "hangar" && u.id === GUIDE_SUIT)
+                    b.classList.add("ac-pulse");
                 b.onclick = () => { if (!premium || owned)
                     engine.buySuit(u.id); };
                 grid.append(b);
@@ -769,6 +819,12 @@ export async function bootStandalone(root) {
             }
         }
         scroll.append(grid);
+        if (s.guide === "hangar")
+            box.append(coach("Tap your new ION SUIT to wear it"));
+        else if (s.guide === "helmet")
+            box.append(coach("Now the ION HELMET \u2014 tap to equip"));
+        else if (s.guide === "levels")
+            box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
         box.append(scroll, tabbar("hangar"));
         return box;
     }
@@ -1002,12 +1058,16 @@ export async function bootStandalone(root) {
                     b.append(starPips(mask, "sm"));
                     if (can)
                         b.onclick = () => { chartLevel = lvl.id; render(); };
+                    if (sv.guide === "levels" && lvl.id === "1-1")
+                        b.classList.add("ac-pulse");
                     grid.append(b);
                 }
                 card.append(grid);
             }
             scroll.append(card);
         }
+        if (sv.guide === "levels")
+            box.append(coach("Fly MISSION 1 \u2014 tap level 1, then TAKE FLIGHT"));
         box.append(scroll, tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {

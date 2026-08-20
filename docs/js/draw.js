@@ -1,8 +1,8 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=58";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=58";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=58";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=58";
-import { tunnelBoundsAt } from "./sim.js?v=58";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=59";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=59";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=59";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=59";
+import { tunnelBoundsAt } from "./sim.js?v=59";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;

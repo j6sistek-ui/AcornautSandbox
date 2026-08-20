@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -133,6 +133,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless
       resetRun(world, save, def.base, false, def);
+      guideStep("level");
       notify();
       return true;
     },
@@ -150,6 +151,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     dismissDead() {
       world.screen = "title";
       world.lastRun = null;
+      // collecting the graduation gift moves the coach to the hangar door
+      if (save.guide === "reward") save.guide = "hangar";
       writeSave(save);
       notify();
     },
@@ -180,6 +183,21 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     snap: () => snapshot(world),
   };
 
+  // The guided path advances only on the act it asked for: equip the gift
+  // suit, then the gift helmet, then fly Mission 1. If the helmet is
+  // somehow already on when the suit lands, the middle step is skipped
+  // rather than demanding a re-equip.
+  function guideStep(ev: "suit" | "helm" | "level") {
+    if (ev === "suit" && save.guide === "hangar" && save.equippedSuit === GUIDE_SUIT) {
+      save.guide = save.equipped === GUIDE_HELM ? "levels" : "helmet";
+    } else if (ev === "helm" && save.guide === "helmet" && save.equipped === GUIDE_HELM) {
+      save.guide = "levels";
+    } else if (ev === "level" && save.guide === "levels") {
+      save.guide = "done";
+    } else return;
+    writeSave(save);
+  }
+
   function transactHelmet(id: string) {
     const item = HELMETS.find((h) => h.id === id);
     if (!item) return "missing";
@@ -188,6 +206,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!helmetRevealed(save, id)) return "locked";
     if (save.unlocked.includes(id)) {
       save.equipped = id;
+      guideStep("helm");
       writeSave(save);
       notify();
       return "equip";
@@ -196,6 +215,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.acorns -= item.cost;
     save.unlocked.push(id);
     save.equipped = id;
+    guideStep("helm");
     writeSave(save);
     notify();
     return "buy";
@@ -208,6 +228,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (save.unlockedSuits.includes(id)) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
+      guideStep("suit");
       writeSave(save);
       notify();
       return "equip";
@@ -217,6 +238,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.unlockedSuits.push(id);
     save.equippedSuit = id;
     dropOrphanedHelmet();
+    guideStep("suit");
     writeSave(save);
     notify();
     return "buy";
