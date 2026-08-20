@@ -95,6 +95,12 @@ export function loadSave(): SaveData {
   if (!s.unlockedTrails?.includes("sparks")) s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
   if (!s.unlockedPals?.includes("none")) s.unlockedPals = ["none", ...(s.unlockedPals || [])];
   if (!HELMETS.some((h) => h.id === s.equipped)) s.equipped = "clear";
+  // a matched-set helmet stranded on the wrong suit (saved before the rule
+  // existed, or edited by hand) comes off rather than half-fitting
+  {
+    const h = HELMETS.find((x) => x.id === s.equipped);
+    if (h?.suitOnly && h.suitOnly !== s.equippedSuit) s.equipped = "clear";
+  }
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";

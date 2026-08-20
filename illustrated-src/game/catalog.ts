@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "52";
+export const ART_VER = "53";
 export const BUILD = `Illustrated · sandbox v${ART_VER}`;
 export const SAVE_KEY = "acornaut_illust_v1";
 export const LEGACY_KEYS = ["acornaut_beta", "acornaut_v2"];
@@ -45,6 +45,8 @@ export type Helmet = {
   trim: string;
   glow: string | null;
   ears?: boolean;
+  /** a matched set: only this suit may wear it. See helmetWornBy(). */
+  suitOnly?: string;
 };
 
 export const HELMETS: Helmet[] = [
@@ -65,7 +67,7 @@ export const HELMETS: Helmet[] = [
   { id: "sammie", name: "Samurai", cost: 0, visor: "#e6dccf", tint: 0.18, rim: "#7d1b20", trim: "#d4af37", glow: null },
   { id: "seraph", name: "Seraph", cost: 0, visor: "#fff4d8", tint: 0.14, rim: "#e8c66a", trim: "#a8853a", glow: "#ffe9a8" },
   { id: "chronarch", name: "Chronarch", cost: 0, visor: "#f0e6d2", tint: 0.16, rim: "#8a5a2a", trim: "#d4af37", glow: null },
-  { id: "leviathan", name: "Leviathan", cost: 0, visor: "#d6fbff", tint: 0.18, rim: "#1c8f96", trim: "#0d5257", glow: "#3fe8f0" },
+  { id: "leviathan", suitOnly: "leviathan", name: "Leviathan", cost: 0, visor: "#d6fbff", tint: 0.18, rim: "#1c8f96", trim: "#0d5257", glow: "#3fe8f0" },
   { id: "paladin", name: "Paladin", cost: 0, visor: "#f4efe4", tint: 0.15, rim: "#d8cfae", trim: "#8d8256", glow: null },
   { id: "princess", name: "Rose", cost: 0, visor: "#fdeef6", tint: 0.16, rim: "#6b3f9e", trim: "#c0348a", glow: "#ff8ad0" },
 ];
@@ -102,6 +104,17 @@ export type Suit = {
 // -- the head IS the cosmetic. Mark a new one with `ownHead: true`.
 export function wearsOwnHead(suit: { cat?: boolean; ownHead?: boolean }) {
   return suit.cat === true || suit.ownHead === true;
+}
+
+// Some helmets are a MATCHED SET with one suit -- Leviathan's was fitted by
+// hand on its own armour and looks like a costume piece, not a bubble, on
+// anyone else. This is the one place the rule lives: give it the equipped
+// ids and it answers which helmet is actually worn. A suit-locked helmet on
+// the wrong suit falls back to Clear rather than half-fitting.
+export function helmetWornBy(equippedHelmet: string, equippedSuit: string): Helmet {
+  const h = HELMETS.find((x) => x.id === equippedHelmet) ?? HELMETS[0];
+  if (h.suitOnly && h.suitOnly !== equippedSuit) return HELMETS[0];
+  return h;
 }
 
 export const SUITS: Suit[] = [
