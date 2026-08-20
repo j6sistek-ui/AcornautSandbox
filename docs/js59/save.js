@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=58";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=58";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=59";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=59";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -28,6 +28,7 @@ export function defaultSave() {
         lifetimeAcorns: 0,
         zonesSeen: [],
         stars: {},
+        guide: "pending",
     };
 }
 function readRaw(key) {
@@ -93,6 +94,10 @@ export function loadSave() {
         s.zonesSeen = [];
     if (!s.stars || typeof s.stars !== "object" || Array.isArray(s.stars))
         s.stars = {};
+    // saves written before the guided path existed have already seen the
+    // game — never walk a veteran to the hangar
+    if (typeof s.guide !== "string")
+        s.guide = s.tutorialDone ? "done" : "pending";
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
             Math.max(0, (s.unlockedSuits?.length || 1) - 1) +

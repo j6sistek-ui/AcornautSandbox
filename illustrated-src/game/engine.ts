@@ -1,11 +1,12 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { HELMETS, IAP_ITEMS, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
   deepUnlocked,
   helmetRevealed,
+  iapOwned,
   eraseSave,
   lostUnlocked,
   modsUnlocked,
@@ -133,6 +134,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless
       resetRun(world, save, def.base, false, def);
+      guideStep("level");
       notify();
       return true;
     },
@@ -150,6 +152,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     dismissDead() {
       world.screen = "title";
       world.lastRun = null;
+      // collecting the graduation gift moves the coach to the hangar door
+      if (save.guide === "reward") save.guide = "hangar";
       writeSave(save);
       notify();
     },
@@ -180,14 +184,33 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     snap: () => snapshot(world),
   };
 
+  // The guided path advances only on the act it asked for: equip the gift
+  // suit, then the gift helmet, then fly Mission 1. If the helmet is
+  // somehow already on when the suit lands, the middle step is skipped
+  // rather than demanding a re-equip.
+  function guideStep(ev: "suit" | "helm" | "level") {
+    if (ev === "suit" && save.guide === "hangar" && save.equippedSuit === GUIDE_SUIT) {
+      save.guide = save.equipped === GUIDE_HELM ? "levels" : "helmet";
+    } else if (ev === "helm" && save.guide === "helmet" && save.equipped === GUIDE_HELM) {
+      save.guide = "levels";
+    } else if (ev === "level" && save.guide === "levels") {
+      save.guide = "done";
+    } else return;
+    writeSave(save);
+  }
+
   function transactHelmet(id: string) {
     const item = HELMETS.find((h) => h.id === id);
     if (!item) return "missing";
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (!helmetRevealed(save, id)) return "locked";
-    if (save.unlocked.includes(id)) {
+    // A premium item that is OWNED equips — it never re-enters the buy
+    // path, whatever its cost field says. The Cat carried a stale acorn
+    // price from before it went premium, and "owned" met "poor".
+    if (save.unlocked.includes(id) || (isIap(id) && iapOwned(save, id))) {
       save.equipped = id;
+      guideStep("helm");
       writeSave(save);
       notify();
       return "equip";
@@ -196,6 +219,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.acorns -= item.cost;
     save.unlocked.push(id);
     save.equipped = id;
+    guideStep("helm");
     writeSave(save);
     notify();
     return "buy";
@@ -205,9 +229,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const item = SUITS.find((h) => h.id === id);
     if (!item) return "missing";
     if (!suitRevealed(save, id)) return "locked";
-    if (save.unlockedSuits.includes(id)) {
+    if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id))) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
+      guideStep("suit");
       writeSave(save);
       notify();
       return "equip";
@@ -217,6 +242,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.unlockedSuits.push(id);
     save.equippedSuit = id;
     dropOrphanedHelmet();
+    guideStep("suit");
     writeSave(save);
     notify();
     return "buy";

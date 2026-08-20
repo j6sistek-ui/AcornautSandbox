@@ -1,5 +1,6 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
@@ -1839,6 +1840,15 @@ function die(w: World, save: SaveData) {
   w.deadTimer = 0;
   w.tut = null;
   w.shake = 0.35;
+  // Graduation: the first crash after the tutorial hands over the first
+  // suit and helmet, free. The crash sheet announces it, the coach walks
+  // the pilot through wearing it, and Mission 1 takes it from there.
+  if (save.tutorialDone && save.guide === "pending") {
+    if (!save.unlockedSuits.includes(GUIDE_SUIT)) save.unlockedSuits.push(GUIDE_SUIT);
+    if (!save.unlocked.includes(GUIDE_HELM)) save.unlocked.push(GUIDE_HELM);
+    save.guide = "reward";
+    writeSave(save);
+  }
   const fromXp = save.xp || 0;
   const fromLv = levelForXp(fromXp);
   const xp = runXp(w.score, w.runAcorns, w.flight === "deep", w.flight === "lost");
