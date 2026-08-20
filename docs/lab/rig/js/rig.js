@@ -119,6 +119,42 @@ const S = {
     ghost: false,
     active: "", // "suitId|helmId" of the tile being edited
 };
+// One snapshot per GESTURE (drag, pad press, wheel burst, pinch), so an
+// accidental swipe-that-edited is one UNDO away instead of a hand re-fit.
+// Whole-table snapshots are a few KB; thirty of them is nothing.
+const undoStack = [];
+function checkpoint() {
+    if (!S.tables)
+        return;
+    undoStack.push(JSON.stringify({
+        suits: S.tables.suits.map((s) => [s.key, s.dome]),
+        helmets: S.tables.helmets.map((h) => [h.id, h.glass]),
+        over: S.over,
+    }));
+    if (undoStack.length > 30)
+        undoStack.shift();
+}
+function undo() {
+    const raw = undoStack.pop();
+    if (!raw || !S.tables)
+        return false;
+    const d = JSON.parse(raw);
+    const domes = new Map(d.suits);
+    const glasses = new Map(d.helmets);
+    for (const s of S.tables.suits) {
+        const v = domes.get(s.key);
+        if (v)
+            s.dome = v;
+    }
+    for (const h of S.tables.helmets) {
+        const v = glasses.get(h.id);
+        if (v)
+            h.glass = v;
+    }
+    S.over = d.over || {};
+    punched.clear();
+    return true;
+}
 const pairKey = (s, h) => `${s}|${h}`;
 const suitOf = (id) => S.tables.suits.find((s) => s.id === id);
 const helmOf = (id) => S.tables.helmets.find((h) => h.id === id);
@@ -449,6 +485,7 @@ function hold(btn, fn) {
     };
     btn.addEventListener("pointerdown", (e) => {
         e.preventDefault();
+        checkpoint();
         fn();
         t1 = window.setTimeout(() => {
             t2 = window.setInterval(fn, 55);
@@ -564,6 +601,15 @@ export async function bootRig(root) {
     };
     dials.append(mkDial("SIZE", () => withActive((s, h) => resize(1 / 1.02, s, h)), () => withActive((s, h) => resize(1.02, s, h))), mkDial("ROT", () => withActive((s, h) => spin(-2, s, h)), () => withActive((s, h) => spin(2, s, h))));
     const acts = el("div", "rg-acts");
+    const undoB = el("button", "rg-act", "UNDO");
+    undoB.onclick = () => {
+        if (undo()) {
+            paintAll();
+            flash("undone");
+        }
+        else
+            flash("nothing to undo");
+    };
     const resetB = el("button", "rg-act", "RESET");
     resetB.onclick = () => withActive((s, h) => resetTile(s, h));
     const foldB = el("button", "rg-act rg-fold", "FOLD");
@@ -576,7 +622,7 @@ export async function bootRig(root) {
     };
     const copyB = el("button", "rg-act rg-go", "COPY");
     copyB.onclick = () => showReport();
-    acts.append(resetB, foldB, copyB);
+    acts.append(undoB, resetB, foldB, copyB);
     foot.append(pad, dials, acts);
     const stat = el("div", "rg-stat");
     const toast = el("div", "rg-toast");
@@ -591,12 +637,15 @@ export async function bootRig(root) {
     function syncTarget() {
         for (const k of Object.keys(tBtns))
             tBtns[k].classList.toggle("on", S.target === k);
+        // On screen BOTH targets move the helmet — the suit's painting never
+        // moves, the helmet is the only thing seated on a number. What differs
+        // is WHICH number you are editing and how far the fix travels.
         hint.textContent =
             S.target === "helm"
-                ? "Dragging moves this HELMET on every suit it is worn with. Use the grid to check the fix landed everywhere."
+                ? "Tap a tile to select it, then drag. HELMET edits this helmet's own glass number — the fix lands on every suit that wears it."
                 : S.target === "suit"
-                    ? "Dragging moves this SUIT's head, so every helmet on it moves together. If one helmet was the odd one out, this is the wrong target."
-                    : "Dragging writes a per-pair override. Useful as evidence, not as a fix — three or more on one helmet and FOLD turns them into the helmet's own number.";
+                    ? "Tap a tile to select it, then drag. SUIT HEAD edits where this suit's head is — the helmet follows here and under every other helmet. The suit's painting itself never moves; the blue ring is what you are placing."
+                    : "Tap a tile to select it, then drag. THIS PAIR writes a local override — evidence, not a fix. Three on one helmet and FOLD turns them into the helmet's own number.";
     }
     let tiles = [];
     function pairs() {
@@ -654,6 +703,7 @@ export async function bootRig(root) {
             paintTile(t.cv, t.s, t.h, t.size);
             t.wrap.classList.toggle("on", pairKey(t.s.id, t.h.id) === S.active);
             t.wrap.classList.toggle("ov", !!S.over[pairKey(t.s.id, t.h.id)]);
+            t.touchSync?.();
         }
         const s = suitOf(activeSuit());
         const h = helmOf(activeHelm());
@@ -693,8 +743,21 @@ export async function bootRig(root) {
             const body = bank.get(t.s.file);
             return (t.size * 0.82) / Math.max(1, Math.max(body.box.w, body.box.h));
         };
-        t.cv.style.touchAction = "none";
+        // TAP TO SELECT, DRAG THE SELECTED TILE TO EDIT. The first build let
+        // every tile capture every touch (touch-action: none across the board),
+        // which on a phone meant a swipe over the grid EDITED instead of
+        // scrolling — the list only moved if your finger landed in the 8px gaps.
+        // With 24 heads in the one-helmet view, everything below the fold was
+        // effectively unreachable, and it read as "there are only 9 suits."
+        // Now only the ACTIVE tile owns the gesture; every other tile lets the
+        // page scroll straight through it (pan-y), and its first tap selects.
+        const syncTouch = () => {
+            t.cv.style.touchAction = pairKey(t.s.id, t.h.id) === S.active ? "none" : "pan-y";
+        };
+        t.touchSync = syncTouch;
+        syncTouch();
         t.cv.addEventListener("pointerdown", (e) => {
+            const wasActive = pairKey(t.s.id, t.h.id) === S.active;
             S.active = pairKey(t.s.id, t.h.id);
             // the tile you touched becomes the selection, so switching view keeps
             // your place instead of dropping you back on Flight × Clear
@@ -703,7 +766,15 @@ export async function bootRig(root) {
             S.helm = t.h.id;
             suitSel.value = S.suit;
             helmSel.value = S.helm;
+            if (!wasActive) {
+                // first tap only selects — the browser keeps the gesture, so a
+                // swipe that began on an unselected tile scrolls the grid
+                paintAll();
+                return;
+            }
             pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            if (pts.size === 1)
+                checkpoint(); // one undo step per gesture
             if (pts.size === 2) {
                 const [a, b] = [...pts.values()];
                 pinch = Math.hypot(a.x - b.x, a.y - b.y);
@@ -750,16 +821,33 @@ export async function bootRig(root) {
         };
         t.cv.addEventListener("pointerup", up);
         t.cv.addEventListener("pointercancel", up);
+        let wheelAt = 0;
         t.cv.addEventListener("wheel", (e) => {
+            // the wheel only sizes the SELECTED tile; over anything else it
+            // scrolls the grid like a normal page
+            if (pairKey(t.s.id, t.h.id) !== S.active)
+                return;
             e.preventDefault();
-            S.active = pairKey(t.s.id, t.h.id);
+            const now = performance.now();
+            if (now - wheelAt > 500)
+                checkpoint(); // a burst is one gesture
+            wheelAt = now;
             resize(e.deltaY < 0 ? 1.03 : 1 / 1.03, t.s, t.h);
             paintAll();
         }, { passive: false });
     }
     // ---- keyboard, for the desktop pass
+    let keyEditAt = 0;
     window.addEventListener("keydown", (e) => {
         const step = e.shiftKey ? 5 : 1;
+        // a held key repeats — one checkpoint per burst, not per repeat
+        const editKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "=", "+", "-", "_", "[", "]"];
+        if (editKeys.includes(e.key)) {
+            const now = performance.now();
+            if (now - keyEditAt > 500)
+                checkpoint();
+            keyEditAt = now;
+        }
         const map = {
             ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step],
         };
@@ -778,6 +866,11 @@ export async function bootRig(root) {
         }
         else if (e.key === "]") {
             withActive((s, h) => spin(2, s, h));
+        }
+        else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+            e.preventDefault();
+            if (undo())
+                withActive(() => { });
         }
         else if (e.key === "1" || e.key === "2" || e.key === "3") {
             S.target = ["helm", "suit", "pair"][+e.key - 1];
