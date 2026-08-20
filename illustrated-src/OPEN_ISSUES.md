@@ -35,21 +35,21 @@ Shipping as-is by decision. The real fix is a re-render with the wing and
 the tail clearly apart, or a parts-separated Seraph. Anything cleverer in
 `neck-cut.py` would be over-fitting one suit.
 
-## The helmet-on-suit matrix has still not been run
+## Debris 6 and 20 need source masters
 
-Every render is keyed, measured, rigged and on screen, and the hangar reads
-clean. What has NOT been done is the full **16 x 20** matrix — the sixteen
-helmet-wearing suits against all twenty helmets — nor the eight
-flight-animation frames against the same twenty.
+The 256px shipping cutouts are usable, but debris 6 has a coloured edge
+fringe and debris 20 has large ambiguous transparent tears through its dark
+face. There is no high-resolution or unkeyed source in `art-src/`, so a more
+aggressive repair would invent pixels or erase intentional holes. Replace
+them from transparent masters, or from flat plates that contrast with every
+part of the object.
 
-The rig editor (`docs/lab/rig/`) is built for exactly this and shows all of
-it at once; it is a job of looking, not of tooling.
+## Archive the black-plate Ghost master
 
-Tails HAVE now been checked through the full swing range offline, at 0, ±25
-and ±43 degrees. What has not happened is watching one in a real run.
-
-`docs/art/suits/phoenix.png` is orphaned — Phoenix is a HELMET, and there
-is no Phoenix suit in `SUITS`. The file is unreferenced.
+The runtime Ghost is fixed and clean, but `art-src/suit-ghost-master.png` is
+still the old cream-plate render. The successful black-plate source is not
+in the repository. Archive it before the next Ghost resize or rerender so
+the clean runtime derivative is reproducible.
 
 ## Video encoding for the native builds
 
@@ -71,11 +71,9 @@ When this is packaged, each target wants something different:
   WebM. A native engine wrapper usually wants the raw frames or a Theora /
   VP9 file.
 
-The master is the original upload, `IMG_7042.mov` — 1088x1920, H.264 High,
-23.97 fps, 5.9 s, with a quiet ambient audio track. It was removed from the
-working tree once the web encodes were made; it is still in git history at
-commit `747f65e` and should be the source for every future encode, never
-one of the derived files.
+The master is `art-src/intro-master.mov` — 1088x1920, H.264 High, 23.97 fps,
+5.9 s, with a quiet ambient audio track. It should be the source for every
+future encode, never one of the derived files.
 
 The web encode is muted on purpose. The clip's own audio is real but quiet
 (RMS 0.028), the menu music plays over it, and muted autoplay is the only
@@ -99,6 +97,25 @@ that way, on identical art. Always re-cut from the ORIGINAL art and pass
 ---
 
 # FIXED — and the check that catches it
+
+## Visual edge, fit and matrix audit (fixed v53)
+
+Sixteen reviewed cutouts were repaired without repainting them: exterior
+navy mattes came off eight planets/debris, six binary silhouettes received
+sub-pixel alpha ramps, and detached sheet scraps were removed from Comet
+Sprite and Pocket Moon. The runtime now centres collision-sized planet and
+debris art on its measured opaque core rather than on uneven transparent
+padding.
+
+The full 16 x 20 helmet-wearing matrix passed on split light/dark plates;
+Cat's 20 cells correctly retain its own head. All eight Flight/Clear frames
+were reviewed separately. Flight uses those baked frames only with Clear;
+custom helmets use the bare rig, so the old double-dome path no longer
+exists. Helmet glass fits, stronger visor punches, portrait clipping, suit
+card fit, and rig halos were reviewed in the same pass.
+
+The regression gate is `python3 illustrated-src/verify-art.py`, and the
+browser contact sheet is `docs/lab/visual-audit/`.
 
 ## Ghost (fixed v51) — the one input problem no code fixes
 
@@ -168,8 +185,9 @@ dome under the real helmet. Caught by the new audit's lossless check —
 tail+body missed 2564px of the whole-suit render, scattered over 53 blobs,
 which is the signature of two different paintings rather than a bad cut.
 
-Re-cut with `transfer`. Her hinge moved with the pose: `TAIL_PIVOT.sammie`
-is now [128, 166], not [98, 178]. At the old pivot the plume visibly
+Re-cut with `transfer`. That intermediate hinge moved with the pose to
+[128, 166] from [98, 178]. The later neck-cut system superseded both;
+`TAIL_PIVOT.sammie` is now [99, 148]. At either old pivot the plume visibly
 unhooked from her body at full swing.
 
 ## Big Booty (fixed, twice)

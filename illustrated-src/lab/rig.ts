@@ -102,6 +102,10 @@ function load(file: string, ver: string): Promise<Loaded | null> {
 // it — otherwise a solid visor hides the very misalignment you are here to
 // see, and Clear (which is fully opaque by design) would tell you nothing.
 const punched = new Map<string, HTMLCanvasElement>();
+const LIGHT_OPAQUE_VISORS = new Set([
+  "gemmie", "phoenix", "sammie", "seraph",
+  "chronarch", "paladin", "princess",
+]);
 function punch(rec: Loaded, id: string, g: Glass) {
   const memo = `${id}:${g[2].toFixed(2)}:${g[0].toFixed(1)}:${g[1].toFixed(1)}`;
   const hit = punched.get(memo);
@@ -111,9 +115,13 @@ function punch(rec: Loaded, id: string, g: Glass) {
   c.height = rec.img.naturalHeight;
   const cc = c.getContext("2d")!;
   cc.drawImage(rec.img, 0, 0);
-  const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * 0.82);
-  grad.addColorStop(0, "rgba(0,0,0,0.55)");
-  grad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+  const strong = LIGHT_OPAQUE_VISORS.has(id);
+  const grad = cc.createRadialGradient(
+    g[0], g[1], g[2] * 0.1,
+    g[0], g[1], g[2] * (strong ? 0.88 : 0.82),
+  );
+  grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
+  grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
   grad.addColorStop(1, "rgba(0,0,0,0)");
   cc.globalCompositeOperation = "destination-out";
   cc.fillStyle = grad;

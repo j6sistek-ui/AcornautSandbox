@@ -35,9 +35,10 @@ node illustrated-src/build-roadmap.mjs    # the campaign -> ROADMAP.md
 ```
 
 `ART_VER` in `illustrated-src/game/catalog.ts` is the cache-buster: it names
-the output folder (`js51/`) and is appended to every art URL. **Bump it
-whenever art changes**, or players keep the old sprites. Delete the
-superseded `js<N>` folders in the same commit.
+the current stamped output folder (for example, `js53/`) and is appended to
+every art URL. **Bump it whenever art changes**, or players keep old sprites.
+Older stamped folders may remain for immutable branch previews; the active
+`js/` mirror and page loader must always point at the current version.
 
 The illustrated build deliberately runs with **no service worker** — the
 page unregisters any it finds. A stale cache on a build that changes this
@@ -50,6 +51,8 @@ is two hidden buttons at the bottom of Help, both marked delete-when-frozen.
 
 - **`docs/lab/spill/`** — THE SPILL, a debris-field survival mode.
 - **`docs/lab/rig/`** — the rig editor, a fitting bench for heads and helmets.
+- **`docs/lab/visual-audit/`** — all suit/helmet combinations and collision
+  art on split light/dark plates.
 
 Design notes for both: `illustrated-src/lab/README.md`.
 

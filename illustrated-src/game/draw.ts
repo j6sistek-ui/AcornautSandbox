@@ -1,6 +1,6 @@
 import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
-import { drawSprite, skyImage, type ArtBank, type Sprite } from "./art";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import { tunnelBoundsAt, type Particle, type World } from "./sim";
@@ -844,9 +844,9 @@ const DOME: Record<string, [number, number, number]> = {
   "flap-2": [164, 93, 50],
   "flap-3": [164, 79, 48],
   "flap-4": [163, 80, 45],
-  // The twelve originals were re-rendered bare-headed, so every one of
-  // these was measured again against flight's face. Ghost is the exception
-  // and still wears a painted dome -- see bakedDome in catalog.ts.
+  // The twelve originals were re-rendered bare-headed and then HAND-FITTED
+  // in the rig editor on a device — these are the operator's numbers, not
+  // measurements, and they outrank any automated fit.
   "suit:flight": [185, 82, 44],
   "suit:iontrim": [178, 88, 50],
   "suit:copper": [183, 85, 51],
@@ -881,7 +881,7 @@ const DOME: Record<string, [number, number, number]> = {
 // exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS: Record<string, [number, number, number] | [number, number, number, number]> = {
   comet: [129, 129, 125],
-  "clear": [129, 128, 111],
+  "clear": [129, 128, 125],
   "ion": [129, 128, 125],
   "solar": [128, 128, 125],
   "nebula": [129, 129, 125],
@@ -925,6 +925,10 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
 const punchedCache = new Map<string, HTMLCanvasElement>();
+const LIGHT_OPAQUE_VISORS = new Set([
+  "gemmie", "phoenix", "sammie", "seraph",
+  "chronarch", "paladin", "princess",
+]);
 function punchedHelm(spr: Sprite, id: string) {
   const hit = punchedCache.get(id);
   if (hit) return hit;
@@ -935,9 +939,13 @@ function punchedHelm(spr: Sprite, id: string) {
   const cc = c.getContext("2d");
   if (!cc || !g) return null;
   cc.drawImage(spr, 0, 0);
-  const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * 0.82);
-  grad.addColorStop(0, "rgba(0,0,0,0.55)");
-  grad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+  const strong = LIGHT_OPAQUE_VISORS.has(id);
+  const grad = cc.createRadialGradient(
+    g[0], g[1], g[2] * 0.1,
+    g[0], g[1], g[2] * (strong ? 0.88 : 0.82),
+  );
+  grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
+  grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
   grad.addColorStop(1, "rgba(0,0,0,0)");
   cc.globalCompositeOperation = "destination-out";
   cc.fillStyle = grad;
@@ -985,6 +993,7 @@ function drawRigLayer(
   size: number,
   rot = 0,
   pivot?: [number, number],
+  halo?: "dark" | "light",
 ) {
   const scale = size / Math.max(1, Math.max(ref.w, ref.h));
   // top-left of the full canvas, in screen space
@@ -997,6 +1006,13 @@ function drawRigLayer(
     ctx.translate(px, py);
     ctx.rotate(rot);
     ctx.translate(-px, -py);
+  }
+  if (halo) {
+    const h = spriteHalo(layer, halo);
+    if (h) {
+      const pad = SPRITE_HALO_PAD * scale;
+      ctx.drawImage(h, ox - pad, oy - pad, h.width * scale, h.height * scale);
+    }
   }
   ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
   ctx.restore();
@@ -1099,7 +1115,11 @@ function paintIllustrated(
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
-  const suited = suit.id !== "flight" ? (art?.suits?.[suit.id] ?? null) : null;
+  // Flight's animation frames already wear the Clear dome. Any other helmet
+  // needs the bare rigged Flight painting so it does not stack two helmets.
+  const suited = suit.id !== "flight" || helmet.id !== "clear"
+    ? (art?.suits?.[suit.id] ?? null)
+    : null;
   const body = suited ?? spr;
   if (!body) return;
 
@@ -1110,8 +1130,8 @@ function paintIllustrated(
   const rigB = suited ? art?.suitBody?.[suit.id] : null;
   if (rigT && rigB && suited) {
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
-    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id]);
-    drawRigLayer(ctx, rigB, ref, x, y, size);
+    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id], halo);
+    drawRigLayer(ctx, rigB, ref, x, y, size, 0, undefined, halo);
     if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     return;
   }
