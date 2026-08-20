@@ -1152,7 +1152,12 @@ export async function bootStandalone(root) {
         // promoted to a real one by then.
         const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
         lab.onclick = () => { window.location.href = "./lab/spill/"; };
-        scroll.append(lab, el("p", "ac-fine ac-labnote", "Prototype \u00b7 not part of the game"));
+        // The rig editor is a WORKBENCH, not a mode: it fits helmets to heads
+        // and hands the numbers back as text. It changes nothing in the game
+        // and cannot touch a save either \u2014 same delete-when-frozen rule.
+        const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
+        rig.onclick = () => { window.location.href = "./lab/rig/"; };
+        scroll.append(lab, rig, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
         box.append(tabbar("none"));
         return box;
     }

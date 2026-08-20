@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Acornaut LAB — Rig Editor</title>
+<meta name="description" content="A fitting bench for heads and helmets. Not part of the game." />
+<meta name="theme-color" content="#0a0d16" />
+<meta name="robots" content="noindex" />
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=3" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #0a0d16; overflow: hidden;
+    font-family: Figtree, system-ui, -apple-system, sans-serif; color: #eef2fa; }
+  #app { position: fixed; inset: 0; display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top); }
+
+  .rg-boot { padding: 40px 20px; text-align: center; color: #8b97b8; font-size: 13px; }
+
+  .rg-bar { display: flex; gap: 8px; align-items: center; padding: 8px 10px 0; flex: 0 0 auto; }
+  .rg-sub { padding-top: 6px; flex-wrap: wrap; }
+  .rg-sel { flex: 1 1 0; min-width: 0; appearance: none; background: #141a2b;
+    border: 1px solid rgba(255,255,255,.12); color: #dfe6f5; border-radius: 9px;
+    padding: 9px 10px; font: 600 12px/1.2 Figtree, sans-serif; }
+
+  .rg-seg { display: flex; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; overflow: hidden; }
+  .rg-segb { background: transparent; border: 0; color: #8b97b8; padding: 8px 10px;
+    font: 800 10px/1 Figtree, sans-serif; letter-spacing: .08em; }
+  .rg-segb.on { background: #2a6df0; color: #fff; }
+  .rg-tog { background: #141a2b; border: 1px solid rgba(255,255,255,.12); color: #8b97b8;
+    border-radius: 9px; padding: 8px 10px; font: 800 10px/1 Figtree, sans-serif; letter-spacing: .08em; }
+  .rg-tog.on { color: #9fe6ff; border-color: rgba(120,200,255,.5); }
+
+  .rg-hint { margin: 6px 12px 0; font-size: 11px; line-height: 1.4; color: #7f8bab; flex: 0 0 auto; }
+
+  .rg-stage { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain;
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    align-content: flex-start; padding: 10px; }
+  .rg-stage.rg-solo { align-content: center; }
+  .rg-tile { border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: 4px 4px 0;
+    background: #10152280; }
+  .rg-tile.on { border-color: #2a6df0; background: #16203a; }
+  .rg-tile.ov { box-shadow: inset 0 0 0 1px rgba(255,190,90,.55); }
+  .rg-cv { display: block; touch-action: none; }
+  .rg-cap { text-align: center; font: 700 9px/1.8 Figtree, sans-serif; color: #8b97b8;
+    letter-spacing: .06em; text-transform: uppercase; }
+
+  .rg-stat { flex: 0 0 auto; padding: 6px 12px; font: 600 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #93a2c4; border-top: 1px solid rgba(255,255,255,.07); }
+
+  .rg-foot { flex: 0 0 auto; display: flex; gap: 10px; align-items: center;
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255,255,255,.07); background: #0d1220; }
+  .rg-pad { display: grid; grid-template-columns: repeat(3, 30px); grid-auto-rows: 30px; gap: 3px; }
+  .rg-pc { border-radius: 50%; background: rgba(255,255,255,.06); }
+  .rg-pb { background: #1a2136; border: 1px solid rgba(255,255,255,.12); color: #dfe6f5;
+    border-radius: 8px; font: 700 14px/1 Figtree, sans-serif; min-width: 30px; min-height: 30px; }
+  .rg-pb:active { background: #2a6df0; }
+  .rg-dials { display: flex; flex-direction: column; gap: 3px; }
+  .rg-dial { display: flex; align-items: center; gap: 4px; }
+  .rg-dl { font: 800 9px/1 Figtree, sans-serif; letter-spacing: .1em; color: #7f8bab; width: 30px; text-align: center; }
+  .rg-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; justify-content: flex-end; }
+  .rg-act { background: #1a2136; border: 1px solid rgba(255,255,255,.14); color: #dfe6f5;
+    border-radius: 999px; padding: 9px 13px; font: 800 10px/1 Figtree, sans-serif; letter-spacing: .1em; }
+  .rg-go { background: linear-gradient(180deg, #4d9bff, #2a6df0); border-color: #7fb8ff; color: #fff; }
+  .rg-fold { border-color: rgba(255,190,90,.6); color: #ffd76a; }
+  .rg-danger { border-color: rgba(255,120,120,.5); color: #ff9d9d; }
+
+  .rg-sheet { position: fixed; inset: 0; z-index: 40; background: rgba(6,9,17,.9);
+    display: flex; align-items: flex-end; }
+  .rg-sheetin { width: 100%; max-height: 88vh; overflow-y: auto; background: #10152a;
+    border-top: 1px solid rgba(255,255,255,.12); border-radius: 16px 16px 0 0;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
+  .rg-sheetin h2 { font-family: Fraunces, Georgia, serif; font-size: 20px; margin: 0 0 10px; letter-spacing: .04em; }
+  .rg-pre { white-space: pre-wrap; word-break: break-word; background: #070b15;
+    border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 12px;
+    font: 500 11px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: #cfe0ff;
+    max-height: 46vh; overflow: auto; user-select: text; -webkit-user-select: text; }
+  .rg-ta { position: fixed; left: -9999px; top: 0; }
+
+  .rg-toast { position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 50;
+    background: #1c2740; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+    padding: 9px 15px; font: 700 11px/1 Figtree, sans-serif; color: #dfe6f5;
+    opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .rg-toast.on { opacity: 1; }
+
+  .rg-back { position: fixed; right: 12px; top: calc(10px + env(safe-area-inset-top)); z-index: 30;
+    font: 700 9px/1 Figtree, sans-serif; letter-spacing: .16em; color: #6b7799; }
+  .rg-back a { color: #8b9bc4; padding: 8px 4px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="rg-back">LAB · <a href="../../">back</a></div>
+<script>
+  // the lab sits two folders below the site root, so the art lives up there
+  window.__ACORNAUT_ART__ = "../../art";
+</script>
+<script type="module">
+  import { bootRig } from "./js/rig.js";
+  bootRig(document.getElementById("app"));
+</script>
+</body>
+</html>
