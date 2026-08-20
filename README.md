@@ -1,14 +1,14 @@
-# Acornaut Sandbox
+# Acornaut 
 
-Illustrated rewrite of [Acornaut](https://github.com/j6sistek-ui/acornaut).
-The live game stays in the `acornaut` repo. All illustrated hangar / mode
+HD rewrite of [Acornaut](https://github.com/j6sistek-ui/acornaut).
+The arcade game version stays in the `acornaut` repo. All HD hangar / mode
 work lives **here**.
 
 ## PLAY HERE
 
 **Production** — the real game, everything earned on the Star Chart:
 
-https://j6sistek-ui.github.io/AcornautSandbox/
+https://www.acornaut.app
 
 **Beta** — the open test build: all gates open, premium handed out,
 prototype doors on the Help sheet, and its own save slot:
