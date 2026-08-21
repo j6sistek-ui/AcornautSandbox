@@ -7,6 +7,7 @@
 **Baseline:** `origin/main` at `5fbb4eb035a12349a49a8829da5aabcd48de9f67`
 
 **Test pages:** `docs/index.html`, `docs/beta/index.html`, and `docs/lab/spill/index.html`
+
 **Decision requested:** approve or amend the companion-background specification in [Recommended asset specification](#recommended-asset-specification).
 
 No art, layout, simulation, generated JavaScript, version constant, or save-key change is part of this phase.
@@ -265,4 +266,3 @@ Please approve or amend these four points before Phase 2:
 - **Budget:** target ≤6.84 MiB total new shipping art; hard ceiling ≤8.563 MiB with per-file caps above.
 
 **Hard stop:** no assets will be generated until this Phase 1 plan is signed off.
-
