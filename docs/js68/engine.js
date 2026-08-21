@@ -88,7 +88,7 @@ export async function createEngine(canvas) {
             }
             // Briella's code. The game believes it has every star, all the
             // gates open, and Dad gets to watch her fly whatever she wants.
-            if (entered === "033017") {
+            if (entered === "033018") {
                 save.allStars = true;
                 writeSave(save);
                 notify();
