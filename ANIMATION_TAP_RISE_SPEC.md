@@ -103,6 +103,10 @@ Eclipse is the approved high-detail reference implementation:
 - 256 x 256 RGBA;
 - transparent background;
 - fixed root, head/collar registration, and helmet anchor;
+- per-pose source-space registration that restores the approved static head
+  area and centroid; the eight paintings were delivered smaller inside their
+  fixed 256px roots, so this correction is required to prevent the pilot from
+  shrinking inside the suit before the static bookend returns;
 - restrained arms: thrust frames 3–5 reuse frame 1's compact arm pixels while
   retaining their own torso, hip, leg, and boot motion;
 - original procedural tail remains a separate layer.
@@ -207,6 +211,7 @@ Validation/review:
 - `illustrated-src/review-eclipse-tap.mjs`
 - `illustrated-src/review-tap-models.mjs`
 - `illustrated-src/test-tap-recovery.mjs`
+- `illustrated-src/test-eclipse-tap-registration.py`
 - `illustrated-src/verify-art.py`
 - `illustrated-src/test-tunnel.mjs`
 
@@ -253,6 +258,7 @@ The change is not complete unless all gates pass:
    - double eyes or blurred armor;
    - helmet drift;
    - snap on entry, repeat tap, or return to static.
+   - Eclipse head-area drift or head-centroid drift inside the fixed helmet.
 
 ## 8. Rejected translation method
 
