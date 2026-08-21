@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, TAP_ANIM_ENABLED } from "./catalog";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -36,6 +36,8 @@ export type ArtBank = {
   // Tail-only companion banks. These preserve the approved painted fur while
   // bending through the plume instead of rotating as one rigid piece.
   suitTapTail: Record<string, Sprite[]>;
+  /** Hyper Run layers are decoded with the launch bank, never mid-race. */
+  hyperRun: Record<string, Sprite>;
 };
 
 declare global {
@@ -161,7 +163,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
   };
 }
 
@@ -318,6 +320,12 @@ export async function loadArt(): Promise<ArtBank> {
     "eclipse",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
+  const hyperRunIds = [
+    "entry-mouth", "entry-rim-back", "entry-rim-front", "entry-glyphs",
+    "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
+    "gate-missed-back", "gate-missed-front",
+    "return-back", "return-front", "return-glyphs",
+  ];
 
   async function named(ids: string[], folder: string, suffix = "", required = false) {
     const out: Record<string, Sprite> = {};
@@ -344,7 +352,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -364,6 +372,9 @@ export async function loadArt(): Promise<ArtBank> {
       named(RIGGED_SUITS, "suits", "-body"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8 } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
+      // Beta-only, like the tap banks: production can never fly the race,
+      // so it never spends a byte downloading the portal set.
+      named(IS_BETA ? hyperRunIds : [], "hyper-run"),
     ]);
   return {
     ready: true,
@@ -385,5 +396,6 @@ export async function loadArt(): Promise<ArtBank> {
     suitBody,
     suitTap,
     suitTapTail,
+    hyperRun,
   };
 }

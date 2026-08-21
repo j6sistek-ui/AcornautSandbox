@@ -37,7 +37,7 @@
 
 // "tunnel" and "spill" are MISSION bases the BETA grafts onto the chart —
 // the live page never generates them (see the IS_BETA block under LEVELS).
-export type FlightBase = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill";
+export type FlightBase = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill" | "race";
 
 export type LevelFx = {
   env?: number;        // pin the run to one environment (index into ENVS)
@@ -60,7 +60,8 @@ export type Goal =
   | { kind: "maxTaps"; n: number }
   // mission-base goals (beta): Wormhole Flow multiplier, Spill score
   | { kind: "flow"; n: number }
-  | { kind: "score"; n: number };
+  | { kind: "score"; n: number }
+  | { kind: "time"; ticks: number };
 
 export type LevelDef = {
   id: string;          // "3-7"
@@ -72,6 +73,9 @@ export type LevelDef = {
   gates: number;       // the finish line
   fx: LevelFx;
   goals: [Goal, Goal, Goal];
+  /** Experimental cards are Log-only and never enter LEVELS/progression. */
+  experimental?: boolean;
+  raceEventId?: string;
 };
 
 export type StageDef = {
@@ -404,12 +408,36 @@ if (IS_BETA) {
 
 export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null;
 
+/** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
+ * cannot change chapter counts, unlock order, star totals, or rewards. */
+export const PROTOTYPE_RACE_MISSION: LevelDef = {
+  id: "prototype-chapter-1",
+  stage: 0,
+  n: 1,
+  ord: 0,
+  name: "HYPER RUN",
+  base: "race",
+  gates: 22,
+  fx: { env: 0 },
+  goals: [
+    { kind: "finish" },
+    { kind: "time", ticks: 10_200 },
+    { kind: "time", ticks: 8_700 },
+  ],
+  experimental: true,
+  raceEventId: "prototype-chapter-1",
+};
+
+export const experimentalRaceById = (id: string) =>
+  id === PROTOTYPE_RACE_MISSION.id ? PROTOTYPE_RACE_MISSION : null;
+
 // ------------------------------------------------------------------ prose
 
 export function goalText(g: Goal, def: LevelDef): string {
   switch (g.kind) {
     case "finish": return def.base === "tunnel" ? `Survive ${def.gates} wormhole sections`
       : def.base === "spill" ? `Survive ${def.gates} seconds in the Spill`
+      : def.base === "race" ? "Finish the course"
       : `Reach the portal — ${def.gates} gates`;
     case "acorns": return `Collect ${g.n} acorns`;
     case "gold": return g.n === 1 ? "Catch a golden acorn" : `Catch ${g.n} golden acorns`;
@@ -419,6 +447,10 @@ export function goalText(g: Goal, def: LevelDef): string {
     case "maxTaps": return `At most ${g.n} taps`;
     case "flow": return `Reach Flow \u00d7${g.n}`;
     case "score": return `Score ${g.n} points`;
+    case "time": {
+      const seconds = Math.floor(g.ticks / 60);
+      return `Finish in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")} or faster`;
+    }
   }
 }
 
@@ -447,9 +479,11 @@ export type RunStats = {
   flow: number;
   /** Spill missions: the run's score */
   score: number;
+  /** Hyper Run: authoritative 60 Hz finish time, zero until settled. */
+  finishTicks: number;
 };
 
-export const emptyStats = (): RunStats => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0 });
+export const emptyStats = (): RunStats => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, finishTicks: 0 });
 
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def: LevelDef) {
@@ -485,6 +519,7 @@ export function goalMet(g: Goal, s: RunStats): boolean {
     case "maxTaps": return s.taps <= g.n;
     case "flow": return s.flow >= g.n;
     case "score": return s.score >= g.n;
+    case "time": return s.finishTicks > 0 && s.finishTicks <= g.ticks;
   }
 }
 
