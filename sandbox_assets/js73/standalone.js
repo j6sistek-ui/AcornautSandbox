@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=72";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=72";
-import { drawSprite as drawSpriteOn } from "./art.js?v=72";
-import { createEngine } from "./engine.js?v=72";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=72";
-import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=72";
-import { formatRaceTicks } from "./race.js?v=72";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=73";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=73";
+import { drawSprite as drawSpriteOn } from "./art.js?v=73";
+import { createEngine } from "./engine.js?v=73";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=73";
+import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=73";
+import { formatRaceTicks } from "./race.js?v=73";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1549,7 +1549,15 @@ export async function bootStandalone(root) {
             rig.onclick = () => { window.location.href = labRoot + "rig/"; };
             const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
             worm.onclick = () => engine.fly("tunnel");
-            scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+            const doors = [lab, rig, worm];
+            if (IS_BETA) {
+                // judging painted skies against procedural ones is a BETA question —
+                // the live help never shows the door
+                const sky = el("button", "ac-ghost ac-lab", "BACKGROUND TEST MODE");
+                sky.onclick = () => { window.location.href = labRoot + "skytest/"; };
+                doors.push(sky);
+            }
+            scroll.append(...doors, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
         }
         // Starting over is a real feature, not a debug door: progression can
         // be flown from zero, in either build, without touching the browser.
