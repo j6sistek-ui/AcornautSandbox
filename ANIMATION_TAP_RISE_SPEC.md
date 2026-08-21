@@ -51,6 +51,8 @@ floor of 0.16 seconds.
 - Animation begins and ends on the exact static body/tail pose.
 - No body-frame crossfades. Painterly faces and armor seams become blurry or
   double when crossfaded at game scale.
+- Arm and hand motion must remain subordinate to the legs and tail. Do not use
+  a full forward reach during the short tap burst.
 - Docs and `sandbox_assets` mirrors must remain byte-matched.
 
 ## 4. Architecture
@@ -99,6 +101,8 @@ Eclipse is the approved high-detail reference implementation:
 - 256 x 256 RGBA;
 - transparent background;
 - fixed root, head/collar registration, and helmet anchor;
+- restrained arms: thrust frames 3–5 reuse frame 1's compact arm pixels while
+  retaining their own torso, hip, leg, and boot motion;
 - original procedural tail remains a separate layer.
 
 Asset names:
