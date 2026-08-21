@@ -1,4 +1,4 @@
-import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
@@ -1567,7 +1567,11 @@ function paintIllustrated(
   // default flight frames, carried by the pilot's motion
   // Flight's animation frames already wear the Clear dome. Any other helmet
   // needs the bare rigged Flight painting so it does not stack two helmets.
-  const suited = suit.id !== "flight" || helmet.id !== "clear"
+  // Where the articulated tap ships (the beta), Flight + Clear ALSO takes
+  // the rigged painting: the old crossfade walks through eight paintings
+  // whose outfits disagree (shoes on some frames, bare feet on others),
+  // and the rig path moves one consistent body like every other suit.
+  const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
     ? (art?.suits?.[suit.id] ?? null)
     : null;
   const body = suited ?? spr;
@@ -1940,8 +1944,12 @@ if (w.lvl) {
     // a level counts DOWN to the finish, not up into the void — and a
     // Wormhole mission counts SECTIONS, its own unit of survival
     const total = w.lvl.def.gates;
-    const done = w.lvl.def.base === "tunnel" && w.tunnel ? w.tunnel.sectionsCleared : w.score;
-    ctx.fillText(`${Math.min(done, total)}/${total}`, W / 2, 46);
+    if (w.lvl.def.base === "tunnel" && w.tunnel) {
+      // a wormhole mission is a SURVIVAL clock: seconds left to the finish
+      ctx.fillText(`${Math.ceil(Math.max(0, total - w.tunnel.time))}s`, W / 2, 46);
+    } else {
+      ctx.fillText(`${Math.min(w.score, total)}/${total}`, W / 2, 46);
+    }
     ctx.font = "700 11px Figtree, system-ui";
     ctx.fillStyle = "rgba(255,224,128,0.9)";
     ctx.fillText(
@@ -2036,7 +2044,7 @@ if (w.lvl) {
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = "700 18px Figtree, system-ui";
     ctx.globalAlpha = 0.75 + 0.25 * Math.sin(w.time * 4);
-    ctx.fillText(w.flight === "tunnel" ? "TAP TO RISE" : "TAP TO FLY", W / 2, w.H * 0.38);
+    ctx.fillText(w.flight === "tunnel" ? (IS_BETA ? "HOLD TO RISE" : "TAP TO RISE") : "TAP TO FLY", W / 2, w.H * 0.38);
     ctx.globalAlpha = 1;
   }
   if (w.tut?.hold) {

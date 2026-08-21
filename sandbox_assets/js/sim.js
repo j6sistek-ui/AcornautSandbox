@@ -1,8 +1,8 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=71";
-import { modsUnlocked, writeSave } from "./save.js?v=71";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=71";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=71";
-import { createRaceState, queueRaceHeld, stepRace } from "./race.js?v=71";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=72";
+import { modsUnlocked, writeSave } from "./save.js?v=72";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=72";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=72";
+import { createRaceState, queueRaceHeld, stepRace } from "./race.js?v=72";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -54,6 +54,7 @@ export function makeWorld(W, H) {
         bounceAnimT: -1,
         bounceAnimDir: 0,
         bounceAnimStrength: 0,
+        tunnelHeld: false,
         hitCooldown: 0,
         trailT: 0,
         bounceUp: false,
@@ -555,6 +556,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.bounceAnimT = -1;
     w.bounceAnimDir = 0;
     w.bounceAnimStrength = 0;
+    w.tunnelHeld = false;
     w.hitCooldown = 0;
     w.bounceUp = false;
     w.deadTimer = 0;
@@ -614,6 +616,23 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         : null;
     if (w.tut)
         buildTutorialCourse(w, save);
+}
+/** The beta's wormhole flight is hold-to-rise. Returns false anywhere it
+ *  does not apply (live page, other modes) so the caller falls back to the
+ *  classic flap. Grabbing the screen also launches a run still on READY. */
+export function setTunnelHeld(w, held) {
+    if (!IS_BETA || w.flight !== "tunnel" || !w.tunnel)
+        return false;
+    if (held) {
+        if (w.screen !== "play")
+            return false;
+        if (w.ready)
+            w.ready = false;
+        if (w.lvl)
+            w.lvl.stats.taps += 1;
+    }
+    w.tunnelHeld = held;
+    return true;
 }
 /** Hold-to-rise input is tick-stamped and consumed before the next race step. */
 export function setRaceHeld(w, held) {
@@ -845,7 +864,7 @@ function initTunnel(w, forcedSeed) {
         nodes: [], hazards: [], scoreFloat: 0,
         multiplier: 1, bestMultiplier: 1, multiplierLeft: 0,
         flow: 0, flowBest: 0, flowGrace: 0, chain: 0, bestChain: 0,
-        sectionsCleared: 0, nearMisses: 0,
+        sectionsCleared: 0, time: 0, nearMisses: 0,
         nextHazardAt: 1800, nextPickupAt: 720,
         seed: Math.max(1, Math.floor(forcedSeed ?? (Math.random() * 1000000 + 1))),
         buildSection: -1, buildPattern: "launch", buildRegion: 0,
@@ -915,12 +934,17 @@ function updateTunnel(w, save, simDt, realDt) {
     // Tunnel flight deliberately reuses the main game's gravity and flap
     // impulse. A tap resets upward velocity; gravity owns the descent.
     const oldSy = w.squirrel.y;
-    w.squirrel.vy = Math.min(620, w.squirrel.vy + gravOf(save, w) * simDt);
+    // The BETA flies the wormhole like Hyper Run's stretches: hold to rise,
+    // release to fall. Live keeps the classic tap until this is approved.
+    w.squirrel.vy = IS_BETA
+        ? Math.max(-520, Math.min(620, w.squirrel.vy + (w.tunnelHeld ? -2100 : gravOf(save, w)) * simDt))
+        : Math.min(620, w.squirrel.vy + gravOf(save, w) * simDt);
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
     const move = w.speed * simDt;
     w.distance += move;
     t.visualT += simDt;
+    t.time += simDt;
     refreshTunnelMultiplier(t);
     t.scoreFloat += move / 100 * t.multiplier;
     w.score = Math.floor(t.scoreFloat);
@@ -972,9 +996,9 @@ function updateTunnel(w, save, simDt, realDt) {
         }
     }
     t.nodes = t.nodes.filter((n, i) => n.x > -TUNNEL_STEP * 2 || i >= t.nodes.length - 2);
-    // A Wormhole MISSION has a finish line: clear the level's section count
+    // A Wormhole MISSION has a finish line: SURVIVE the level's seconds
     // and the run completes on the spot — stars bank, the sheet comes up.
-    if (w.lvl && t.sectionsCleared >= w.lvl.def.gates) {
+    if (w.lvl && t.time >= w.lvl.def.gates) {
         settleLevel(w, save, true);
         return null;
     }
