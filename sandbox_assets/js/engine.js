@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=68";
-import { sfx, unlockAudio, music } from "./audio.js?v=68";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=68";
-import { drawHud, drawWorld } from "./draw.js?v=68";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=68";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=68";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=68";
+import { emptyArt, loadArt } from "./art.js?v=69";
+import { sfx, unlockAudio, music } from "./audio.js?v=69";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=69";
+import { drawHud, drawWorld } from "./draw.js?v=69";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=69";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=69";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=69";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -556,4 +556,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=68";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=69";

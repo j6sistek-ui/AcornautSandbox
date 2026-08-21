@@ -37,7 +37,7 @@ globalThis.localStorage = {
 // Copy them into a disposable ESM package so Node can exercise exactly the
 // exported browser bundle without adding test-only metadata to docs/.
 const js = join(mkdtempSync(join(tmpdir(), "acornaut-review-js-")), "js");
-cpSync(join(root, "docs/js65"), js, { recursive: true });
+cpSync(join(root, "docs/js"), js, { recursive: true });
 writeFileSync(join(js, "package.json"), '{"type":"module"}\n');
 const [{ drawWorld }, { makeWorld, initStars, flap, updateWorld }, { defaultSave }] =
   await Promise.all([
@@ -127,7 +127,7 @@ function artBank(articulated) {
 const WIDTH = 390;
 const HEIGHT = 844;
 const FPS = 30;
-const SECONDS = 1.2;
+const SECONDS = 1.5;
 const oldArt = artBank(false);
 const trialArt = artBank(true);
 const save = defaultSave();
@@ -155,7 +155,8 @@ const left = createCanvas(WIDTH, HEIGHT);
 const right = createCanvas(WIDTH, HEIGHT);
 const result = createCanvas(WIDTH * 2, HEIGHT);
 const rc = result.getContext("2d");
-const tapFrames = new Set([5, 12]); // 0.167 s and 0.400 s: rapid repeat case.
+// Three taps, each arriving before the prior visual recovery completes.
+const tapFrames = new Set([5, 14, 23]);
 
 function label(text, x, accent) {
   rc.fillStyle = "rgba(6, 8, 18, 0.82)";

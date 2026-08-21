@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "68";
+export const ART_VER = "69";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -17,9 +17,10 @@ export const LEGACY_KEYS = IS_BETA
     ? ["acornaut_illust_v1", "acornaut_beta", "acornaut_v2"]
     : ["acornaut_beta", "acornaut_v2"];
 export const TUT_ARM = 1.25;
-// Rendering-only tap burst. Physics remains instantaneous; this longer clock
-// gives the pilot enough time for anticipation, thrust and follow-through.
-export const TAP_ANIM_DURATION = 0.4;
+// Rendering-only tap burst. Physics remains instantaneous. The recovery is
+// deliberately longer than a normal tap interval so the pose can keep
+// settling between inputs instead of snapping home before the next tap.
+export const TAP_ANIM_DURATION = 0.66;
 // Keep the trial isolated to the open Beta page until every suit has been
 // reviewed in-game. Production imports the shared bundle but never starts the
 // visual clock or fetches the optional painted animation banks.

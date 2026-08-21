@@ -25,7 +25,7 @@ until the tap implementation is stable and independently validated.
 
 On a tap, lift remains immediate, but the character picture no longer snaps to
 a new pitch or twitches through two visible frames. The visual response lasts
-0.40 seconds and contains:
+0.66 seconds and contains:
 
 1. restrained anticipation;
 2. upward thrust;
@@ -35,9 +35,10 @@ a new pitch or twitches through two visible frames. The visual response lasts
 6. one small rebound;
 7. exact return to the static flight pose.
 
-A rapid second tap must not restart at frame one. It re-enters the thrust/peak
-portion by rewinding the active visual clock by at most 0.10 seconds, with a
-floor of 0.16 seconds.
+A second tap during recovery must not restart, rewind, or stop the body bank.
+The painted body continues from its current pose while physics, pitch,
+particles, and the live tail spring respond immediately to the new input. This
+keeps the animation alive between taps without snapping the hands backward.
 
 ## 3. Non-negotiable invariants
 
@@ -59,7 +60,7 @@ floor of 0.16 seconds.
 
 ### 4.1 Visual clock
 
-`TAP_ANIM_DURATION` is `0.4` seconds in
+`TAP_ANIM_DURATION` is `0.66` seconds in
 `illustrated-src/game/catalog.ts`.
 
 `TAP_ANIM_ENABLED` is tied to `IS_BETA`. The Production page does not start the
@@ -68,17 +69,18 @@ tap clock or fetch the optional Eclipse animation banks.
 `World` owns:
 
 - `tapAnimT`: elapsed visual time; `-1` means inactive;
+- `tapAnimHold`: bounded slow-recovery reserve added by repeat taps;
 - `tapAnimFromRot`: displayed pitch at tap entry for visual easing.
 
 `flap()` starts the clock without changing the physics path. During an active
-burst, a rapid repeat applies:
-
-```ts
-tapAnimT = Math.max(0.16, tapAnimT - 0.1);
-```
+burst, a repeat tap leaves the body clock unchanged, adds 0.16 seconds to a
+bounded 0.30-second recovery reserve, applies the full physics impulse, and
+adds to the existing tail spring velocity. Once `tapAnimT` reaches 0.20, the
+clock advances at 35% speed while that reserve drains. This extends the return
+without changing or rewinding the current pose.
 
 `updateWorld()` advances the visual clock using the same pace multiplier as the
-run and returns it to `-1` at 0.40 seconds.
+run and returns it to `-1` at 0.66 seconds plus any repeat-tap recovery reserve.
 
 ### 4.2 Pitch easing
 
@@ -111,15 +113,17 @@ Asset names:
 eclipse-tap-1.png ... eclipse-tap-8.png
 ```
 
-Body pose boundaries in seconds:
+Body pose boundaries in seconds. The first half produces the knee tuck; the
+second half deliberately gives the arms and torso more time to settle:
 
 ```text
-0.000, 0.025, 0.060, 0.100, 0.145,
-0.195, 0.245, 0.295, 0.340, 0.375, 0.400
+0.000, 0.035, 0.080, 0.135, 0.200,
+0.275, 0.365, 0.460, 0.550, 0.625, 0.660
 ```
 
 Static body art is inserted at both ends. The eight painted poses occupy the
-interior boundaries and are stepped, not blended.
+interior boundaries and are stepped, not blended. An in-progress repeat tap
+does not change the current boundary.
 
 ### 4.4 Eclipse tail bank
 
@@ -139,6 +143,16 @@ Tip-angle motion curve in radians:
 0.00, 0.09, 0.20, 0.34, 0.47, 0.54,
 0.46, 0.27, 0.04, -0.15, -0.09, 0.00
 ```
+
+The tail bank uses fast launch spacing and slow recovery spacing:
+
+```text
+0.000, 0.030, 0.065, 0.105, 0.150, 0.200, 0.260,
+0.335, 0.415, 0.500, 0.575, 0.625, 0.660
+```
+
+48% of the live spring rotation is retained over the painted bank so every tap
+can renew tail motion while the authored recovery continues.
 
 The deterministic builder is:
 
@@ -192,6 +206,7 @@ Validation/review:
 
 - `illustrated-src/review-eclipse-tap.mjs`
 - `illustrated-src/review-tap-models.mjs`
+- `illustrated-src/test-tap-recovery.mjs`
 - `illustrated-src/verify-art.py`
 - `illustrated-src/test-tunnel.mjs`
 

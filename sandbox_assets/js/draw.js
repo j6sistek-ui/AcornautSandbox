@@ -1,9 +1,9 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=68";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=68";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=68";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=68";
-import { tunnelBoundsAt } from "./sim.js?v=68";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=68";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=69";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=69";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=69";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=69";
+import { tunnelBoundsAt } from "./sim.js?v=69";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=69";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1356,8 +1356,11 @@ function drawBentRigLayer(ctx, layer, ref, x, y, size, baseRot, bend, pivot) {
         ctx.restore();
     }
 }
-const TAP_TAIL_CURVE = [0, 0.09, 0.2, 0.34, 0.47, 0.54, 0.46, 0.27, 0.04, -0.15, -0.09, 0];
-const TAP_BODY_CURVE = [0, 0.18, 0.48, 1, 0.78, 0.43, 0.16, -0.08, 0];
+// Fast compression/straightening, then a much longer return. A second tap
+// does not reset these curves; the ordinary spring tail still receives its
+// new impulse and rides over this authored silhouette motion.
+const TAP_TAIL_CURVE = [0, 0.18, 0.4, 0.58, 0.64, 0.59, 0.48, 0.35, 0.23, 0.13, 0.06, 0];
+const TAP_BODY_CURVE = [0, 0.42, 0.82, 1, 0.9, 0.74, 0.58, 0.43, 0.29, 0.17, 0.08, 0];
 function sampleTapCurve(curve, tapAnimT) {
     const at = Math.max(0, Math.min(curve.length - 1, (tapAnimT / TAP_ANIM_DURATION) * (curve.length - 1)));
     const lo = Math.floor(at);
@@ -1463,13 +1466,25 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             // progressively from the planted hinge to the tip: launch drag, delayed
             // whip, one rebound, settle. A small share of the live spring remains so
             // a tap entered mid-swing does not snap to a canned orientation.
-            const tailIndex = Math.min(11, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 12));
+            // Reach the straightened launch silhouette quickly, then spend most of
+            // the clock pulling the tail back in. This is intentionally asymmetric:
+            // the old even spacing made the last tail pose jerk into rest.
+            const tailTimes = [0, 0.03, 0.065, 0.105, 0.15, 0.2, 0.26, 0.335, 0.415, 0.5, 0.575, 0.625, TAP_ANIM_DURATION];
+            let tailIndex = 11;
+            for (let i = 0; i < 12; i++) {
+                if (tapAnimT < tailTimes[i + 1]) {
+                    tailIndex = i;
+                    break;
+                }
+            }
             tailPose = tapTailFrames[tailIndex];
-            tailPoseRot *= 0.22;
+            // Preserve enough of the live spring to show every accepted tap even
+            // while the painted recovery is still in progress.
+            tailPoseRot *= 0.48;
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         else if (tapAnimT >= 0 && pivot) {
-            drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.22, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
+            drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
         }
         else {
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
@@ -1481,7 +1496,10 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             // eight close poses already supply the in-betweens. Static body bookends
             // make both the tap entry and return to glide exact, with no identity pop.
             const poses = [rigB, ...tapFrames, rigB];
-            const poseTimes = [0, 0.025, 0.06, 0.1, 0.145, 0.195, 0.245, 0.295, 0.34, 0.375, TAP_ANIM_DURATION];
+            // Knees tuck promptly; hands and torso return over the long half of the
+            // motion. Repeat taps leave this clock alone, preventing the recovery
+            // frames from snapping backward to an earlier arm pose.
+            const poseTimes = [0, 0.035, 0.08, 0.135, 0.2, 0.275, 0.365, 0.46, 0.55, 0.625, TAP_ANIM_DURATION];
             let pose = poses.length - 1;
             for (let i = 0; i < poses.length; i++) {
                 if (tapAnimT < poseTimes[i + 1]) {
