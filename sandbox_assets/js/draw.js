@@ -1,9 +1,9 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=67";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=67";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=67";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=67";
-import { tunnelBoundsAt } from "./sim.js?v=67";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=67";
+import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=68";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=68";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=68";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=68";
+import { tunnelBoundsAt } from "./sim.js?v=68";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=68";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;

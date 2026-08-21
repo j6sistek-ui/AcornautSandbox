@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=67";
-import { sfx, unlockAudio, music } from "./audio.js?v=67";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=67";
-import { drawHud, drawWorld } from "./draw.js?v=67";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=67";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=67";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=67";
+import { emptyArt, loadArt } from "./art.js?v=68";
+import { sfx, unlockAudio, music } from "./audio.js?v=68";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=68";
+import { drawHud, drawWorld } from "./draw.js?v=68";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=68";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=68";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=68";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -404,6 +404,16 @@ export async function createEngine(canvas) {
     };
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
+    // A held thrust is a long-press to the browser: without these, phones
+    // answer it with text selection and the copy bubble over the whole HUD.
+    canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+    document.addEventListener("selectstart", (e) => {
+        const t = e.target;
+        if (t?.closest?.("input, textarea"))
+            return;
+        e.preventDefault();
+    });
     window.addEventListener("keydown", (e) => {
         if (e.code === "Escape") {
             if (world.screen === "play")
@@ -546,4 +556,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=67";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=68";

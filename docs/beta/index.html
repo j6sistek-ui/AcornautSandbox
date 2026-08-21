@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=67" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=68" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=67" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=68" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -23,7 +23,13 @@
   <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=4" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    /* Long-press must never become a text selection: a held thrust in
+       Hyper Run was painting the whole screen selection-blue on phones.
+       The prefixed rules are what iOS Safari actually honours, and the
+       touch-callout kill stops the copy/look-up bubble. Inputs opt back
+       in so the access code can still be typed and pasted. */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #070b16; color: #f3efe4; font-family: Figtree, system-ui, sans-serif; touch-action: none; user-select: none; }
     #app, .ac-root { width: 100%; height: 100%; display: flex; justify-content: center; }
     .ac-stage { position: relative; width: 100%; max-width: 480px; height: 100%; background: #0c1224; overflow: hidden; }
@@ -430,7 +436,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js67/standalone.js";
+    import { bootStandalone } from "../js68/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
