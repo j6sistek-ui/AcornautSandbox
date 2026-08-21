@@ -266,3 +266,22 @@ Please approve or amend these four points before Phase 2:
 - **Budget:** target ≤6.84 MiB total new shipping art; hard ceiling ≤8.563 MiB with per-file caps above.
 
 **Hard stop:** no assets will be generated until this Phase 1 plan is signed off.
+
+## Phase 1 sign-off and revised Phase 2 scope
+
+**Approved:** 2026-08-21
+
+The audit findings, crop math, and landscape-companion strategy are approved. A subsequent product decision removes the ten named normal-mode skies from Phase 2 because those environments are moving to procedural runtime rendering. Their portrait paintings remain untouched as live assets and reversion fallbacks; no wide companions will be generated for `indigo`, `ice`, `inferno`, `mono`, `magenta`, `verdant`, `ghost`, `neon`, `vortex`, or `gold`.
+
+The approved Phase 2 shipping scope is therefore 17 new mirrored JPEGs:
+
+- `skies/dark1-wide.jpg` through `skies/dark14-wide.jpg`, 1920×1080;
+- `menu-splash-wide.jpg` and `menu-home-wide.jpg`, 1920×1080;
+- `sky-wide.jpg`, 1920×1080.
+
+Delivery is split by a mandatory style-review stop:
+
+1. Batch 1: `dark1-wide.jpg` through `dark5-wide.jpg` plus `menu-splash-wide.jpg`, with clean/source comparisons and actual-game 844×390 and 1440×900 evidence.
+2. Batch 2, only after approval: `dark6-wide.jpg` through `dark14-wide.jpg`, `menu-home-wide.jpg`, and `sky-wide.jpg`, under the same evidence contract.
+
+The L1–L8 and S1–S8 findings remain assigned to a separate engineering pass. Phase 2 is art-only and must not change layout, simulation, generated bundles, `ART_VER`, `SAVE_KEY`, or `LEGACY_KEYS`.
