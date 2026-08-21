@@ -1,5 +1,6 @@
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
+import { proceduralSky } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
@@ -40,12 +41,13 @@ function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
 
 function coverDraw(
   ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement,
+  img: HTMLImageElement | HTMLCanvasElement,
   W: number,
   H: number,
 ) {
-  const sw = img.naturalWidth || img.width;
-  const sh = img.naturalHeight || img.height;
+  // a procedural sky is already composed for this exact canvas
+  const sw = (img as HTMLImageElement).naturalWidth || img.width;
+  const sh = (img as HTMLImageElement).naturalHeight || img.height;
   const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
   const dw = sw * scale;
   const dh = sh * scale;
@@ -65,9 +67,14 @@ export function skyLuma(w: World) {
 
 function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const { W, H } = w;
-  // each environment flies under its own painted sky; shifts crossfade
-  const skyA = skyImage(skyIdFor(w.flight, w.envA));
-  const skyB = skyImage(skyIdFor(w.flight, w.envB));
+  // Each environment flies under its own sky; shifts crossfade. In the
+  // BETA the ten normal-mode environments render PROCEDURALLY from their
+  // recipes (sky-gen.ts) — the painted file is never even fetched — while
+  // Deep and Lost's dark plates have no recipe and stay painted.
+  const idA = skyIdFor(w.flight, w.envA);
+  const idB = skyIdFor(w.flight, w.envB);
+  const skyA = proceduralSky(idA, W, H) ?? skyImage(idA);
+  const skyB = proceduralSky(idB, W, H) ?? skyImage(idB);
   const painted = skyB ?? skyA;
   if (painted) {
     coverDraw(ctx, skyA ?? painted, W, H);
