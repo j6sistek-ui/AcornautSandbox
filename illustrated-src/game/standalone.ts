@@ -38,13 +38,13 @@ export async function bootStandalone(root: HTMLElement) {
   const boot = el("div", "ac-boot");
   const bootNut = el("div", "ac-bootnut");
   const shell = document.createElement("img");
-  shell.src = `${bootArt}/acorn/1.png`;
+  shell.src = `${bootArt}/acorn/1.png?v=${ART_VER}`;
   shell.alt = "";
   shell.className = "ac-bootshell";
   const fillBox = el("div", "ac-bootfill");
-  fillBox.style.setProperty("--nut", `url("${bootArt}/acorn/1.png")`);
+  fillBox.style.setProperty("--nut", `url("${bootArt}/acorn/1.png?v=${ART_VER}")`);
   const fillImg = document.createElement("img");
-  fillImg.src = `${bootArt}/acorn/1.png`;
+  fillImg.src = `${bootArt}/acorn/1.png?v=${ART_VER}`;
   fillImg.alt = "";
   fillBox.append(fillImg, el("div", "ac-bootline"));
   bootNut.append(shell, fillBox);
@@ -363,7 +363,7 @@ export async function bootStandalone(root: HTMLElement) {
   // has touched the page, so this tap is what lets the music play.
   function drawSplash() {
     const box = el("div", "ac-splash");
-    box.style.backgroundImage = `url("${artRootUrl()}/menu-splash.jpg")`;
+    box.style.backgroundImage = `url("${artRootUrl()}/menu-splash.jpg?v=${ART_VER}")`;
     box.append(el("div", "ac-splash-ink"));
     const stack = el("div", "ac-splash-stack");
     stack.append(el("h1", "ac-splash-title", "ACORNAUT"));
@@ -447,7 +447,7 @@ export async function bootStandalone(root: HTMLElement) {
     // The key art carries the top three quarters and fades out under the
     // controls, so nothing sits on a hard edge.
     const art = el("div", "ac-home-art");
-    art.style.backgroundImage = `url("${artRootUrl()}/menu-home.jpg")`;
+    art.style.backgroundImage = `url("${artRootUrl()}/menu-home.jpg?v=${ART_VER}")`;
     box.append(art, el("div", "ac-home-scrim"));
 
     // Help takes the left corner and the two counters group on the right,

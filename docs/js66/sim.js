@@ -1,7 +1,7 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=64";
-import { modsUnlocked, writeSave } from "./save.js?v=64";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=64";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=64";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=66";
+import { modsUnlocked, writeSave } from "./save.js?v=66";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=66";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=66";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -46,6 +46,8 @@ export function makeWorld(W, H) {
         powerLeft: 0,
         invulnLeft: 0,
         flapBoost: 0,
+        tapAnimT: -1,
+        tapAnimFromRot: 0,
         hitCooldown: 0,
         trailT: 0,
         bounceUp: false,
@@ -540,6 +542,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.powerLeft = 0;
     w.invulnLeft = 0;
     w.flapBoost = 0;
+    w.tapAnimT = -1;
+    w.tapAnimFromRot = 0;
     w.hitCooldown = 0;
     w.bounceUp = false;
     w.deadTimer = 0;
@@ -1378,6 +1382,21 @@ export function flap(w, save) {
         w.lvl.stats.taps += 1;
         w.lvl.strobeT = 0; // THE BLACKOUT: a tap is a flashbulb
     }
+    // A repeated tap while the short burst is still playing keeps the current
+    // articulated pose. Physics and particles still respond immediately, but
+    // the picture no longer jumps back to frame one mid-motion.
+    if (TAP_ANIM_ENABLED) {
+        if (w.tapAnimT < 0) {
+            w.tapAnimT = 0;
+            w.tapAnimFromRot = w.squirrel.rot;
+        }
+        else if (w.tapAnimT > 0.18) {
+            // A rapid repeat is a small second push, not a restart. Rewind only into
+            // the thrust/peak neighborhood: this extends the burst while avoiding
+            // both the idle bookend and a jump back to the anticipation pose.
+            w.tapAnimT = Math.max(0.16, w.tapAnimT - 0.1);
+        }
+    }
     w.squirrel.vy = flapOf(save, w);
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back
@@ -1825,6 +1844,11 @@ export function updateWorld(w, save, dt) {
     if (w.tailA < -TAIL.maxA) {
         w.tailA = -TAIL.maxA;
         w.tailV *= -0.35;
+    }
+    if (TAP_ANIM_ENABLED && w.tapAnimT >= 0) {
+        w.tapAnimT += dt * paceOf(save, w);
+        if (w.tapAnimT >= TAP_ANIM_DURATION)
+            w.tapAnimT = -1;
     }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
