@@ -1,8 +1,10 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Course 1 Revision 2, Phase A design delta proposed on 2026-08-21. Awaiting sign-off. Phase B art and Phase C source implementation have not started.
+**Status:** Course 1 Revision 2 Phase A was approved and merged to `origin/main` on 2026-08-21 in PR #60 (merge `e710052`). Phase B ordinary-gate art is the active scope and will stop for visual sign-off. Phase C source implementation has not started and remains outside this Phase B change.
 
 **Phase boundary:** This Revision 2 section is the authority wherever it conflicts with the shipped prototype plan below. The approved 60 Hz determinism core, fixed-step race clock, existing six-case replay suite, beta-only placement, and four painted wormhole-entry layers stay. The older sections remain as a Revision 1 record; their superseded counts, constants, controls, timing bands, tunnel layout, transition timing, and ordinary-gate brief must not be implemented for Revision 2.
+
+**Phase A approval record (2026-08-21):** The Revision 2 design delta below was approved and merged by PR #60 at `e710052`. This records design authority only; it does not claim that Revision 2 gate art or Phase C runtime/test changes have shipped.
 
 **Revision 1 approval record (2026-08-20):** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
 
@@ -51,6 +53,16 @@ The boost contribution is `−1,400 px/s²` while boost is active. It raises bot
 #### Quick-drop recognition
 
 The race reuses normal flight's existing swipe language: at least 34 canonical pixels downward within `DROP_MAX_TICKS = 19`, inclusive, the 316.7 ms fixed-tick equivalent of the shipped 320 ms window. It emits once per contact. The semantic event atomically records `held = false`, `boost = false`, and `drop = true`, then assigns `vy = +380 px/s`; it is not additive and cannot be stacked by duplicate move events. The firing contact is disarmed until lift, so the same finger cannot immediately reassert ascent; a fresh down after lift is required. Ordinary boost otherwise lasts through the held second press and ends on its lift. Arrow Down emits the same release-plus-drop event. The gesture is enabled in both normal and tunnel portions of a race.
+
+#### Race-ready control prompt copy
+
+Before the race begins, the ready screen must state all three controls as these three stacked lines:
+
+**HOLD TO RISE**<br>
+**DOUBLE-TAP + HOLD TO BOOST**<br>
+**SWIPE DOWN TO DIVE**
+
+This is copy authority for later Phase C presentation only. Phase B does not edit UI/runtime source or bake this text into gate art.
 
 #### Authoritative input record
 
@@ -232,6 +244,14 @@ Phase B replaces only the six ordinary-gate PNGs. The approved four-layer entry 
 - The review composite shows each layer separately, the pair without a pilot, the pilot between layers, all three states at 148-pixel game size over representative dark skies, and the radius-54 collision overlay.
 - Store the contact sheet at `art-src/hyper-run/hyper-run-r2-contact-sheet.png` or attach it to the PR. Never put it in `docs/` or `sandbox_assets/`.
 - Mirror only the six approved runtime PNGs into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/`; paired roots must be byte-identical by SHA-256.
+
+#### Phase B change and verification statement
+
+Phase B replaces only the six ordinary-gate runtime PNGs, adds their selected idle master and deterministic art build under `art-src/hyper-run/`, and stores the game-scale sign-off sheet at `art-src/hyper-run/hyper-run-r2-contact-sheet.png`. It also records the approved three-line ready-screen copy above for Phase C. No runtime source, generated JavaScript, protected identifier, entry-showpiece asset, or return asset is changed.
+
+The production files verify as 256 × 256 RGBA with transparent gutters. All three states use byte-identical alpha silhouettes and apertures centered at `(127.5, 127.5)`. At alpha 16, the shared outer box is 244 × 238 for an axis ratio of 0.975; the enclosed aperture is a centered 188 × 188 circle, projecting to 108.7 pixels at the 148-pixel game draw size against the 108-pixel collision diameter. The near-rim front arc occupies 22.0% of the back-rim pixels. Every corresponding file in the two runtime roots is byte-identical by SHA-256, and the approved entry layers retain their `origin/main` bytes.
+
+The Phase B source audit also found that the shipped `drawSprite` path independently alpha-fits each layer. That behavior would enlarge and recenter a genuinely small front arc relative to its back layer. The sign-off sheet therefore uses the approved full-canvas transform: both 256 × 256 layers draw into the same 148 × 148 destination square around one center. Phase C must preserve that shared transform in the gate renderer; Phase B does not change renderer code.
 
 Phase B stops after those game-scale composites and hash/geometry checks for separate sign-off.
 
