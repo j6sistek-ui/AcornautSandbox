@@ -1,8 +1,254 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Phase 1 and Phase 2 are approved. Phase 3 source implementation is authorized under the fixed-step, source-only, replay-evidence guardrails below.
+**Status:** Course 1 Revision 2, Phase A design delta proposed on 2026-08-21. Awaiting sign-off. Phase B art and Phase C source implementation have not started.
 
-**2026-08-20 approval revision:** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
+**Phase boundary:** This Revision 2 section is the authority wherever it conflicts with the shipped prototype plan below. The approved 60 Hz determinism core, fixed-step race clock, existing six-case replay suite, beta-only placement, and four painted wormhole-entry layers stay. The older sections remain as a Revision 1 record; their superseded counts, constants, controls, timing bands, tunnel layout, transition timing, and ordinary-gate brief must not be implemented for Revision 2.
+
+**Revision 1 approval record (2026-08-20):** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
+
+## Course 1 Revision 2 — Phase A design delta
+
+### Phase A change and verification statement
+
+This delta redesigns the moment-to-moment course without replacing the approved race authority. It adds deterministic boost/drop semantics, a denser authored 45,000-unit course, a faster speed model, three new benchmark bands and star thresholds, a six-second risk/reward tunnel, a fixed-tick transition storyboard, the exact gate-plane correction, and the Phase B gate-art acceptance contract.
+
+Phase A verified the following against the shipped source before selecting the new values:
+
+- Race authority still advances in canonical 360 × 640 coordinates at 60 fixed steps per second and owns integer finish ticks independently of render cadence.
+- The six mandatory replay cases still exist as the acceptance structure to extend in Phase C. Phase A changes their planned inputs and bands, not the approved determinism contract.
+- Beta Wormhole Run's shipped hold physics are released acceleration `+1,300 px/s²`, held acceleration `−2,100 px/s²`, and velocity clamp `−520…+620 px/s`; the existing dive sets vertical velocity to `+380 px/s`.
+- The early gate-state change has a specific source cause: gate authority and gate drawing cross at `RACE_PILOT_X = 96`, but the generic pilot draw uses `360 × PHYS.squirrelX = 360 × 0.18 = 64.8`. The visible pilot is therefore 31.2 canonical pixels behind its judging plane, about 3.9 ticks at the new 480-unit cap.
+- The approved entry assets remain four independently painted layers and the Hyper Run art bank remains beta-gated. No art, runtime source, generated JavaScript, save identifier, legacy identifier, or art version is changed in Phase A.
+- The timing arithmetic, shortcut value, density ceiling, skill-move reachability, profile bands, and threshold margins below were re-derived from the proposed constants rather than copied from Revision 1.
+
+### Control upgrade: hold, boost, and quick drop
+
+Positive Y is downward. Plain normal-flight control remains hold-to-rise and release-to-fall. Two semantic moves sit on top of that state:
+
+| Regime and input | Acceleration or impulse | Velocity clamp |
+| --- | ---: | ---: |
+| Normal, released | `+1,050 px/s²` | `−330…+390 px/s` |
+| Normal, plain hold | `−700 px/s²` | `−330…+390 px/s` |
+| Normal, boosted hold | `−2,100 px/s²` | `−520…+390 px/s` |
+| Race tunnel, released | `+1,300 px/s²` | `−520…+620 px/s` |
+| Race tunnel, plain hold | `−2,100 px/s²` | `−520…+620 px/s` |
+| Race tunnel, boosted hold | `−3,500 px/s²` | `−780…+620 px/s` |
+| Quick drop, either live regime | Set `vy = +380 px/s` once | Regime clamp applies during the same tick's integration |
+
+The boost contribution is `−1,400 px/s²` while boost is active. It raises both acceleration and the upward velocity cap, so it remains observably stronger than a plain hold instead of becoming identical once both reach one shared cap. The race tunnel's non-boosted values must use the same named constants as beta Wormhole Run so the two modes cannot drift. Normal race flight retains its `+1,050` release value; only the loadout-neutral race tunnel shares Wormhole Run's baseline `+1,300` release value.
+
+#### Double-tap-and-hold recognition
+
+- `DOUBLE_TAP_MAX_GAP_TICKS = 15`, inclusive: the second down may occur at most 15 race ticks, or 250 ms at 60 Hz, after the first down.
+- The interval is down-to-down and requires an intervening release. Keyboard autorepeat and duplicate pointer downs are ignored.
+- Every valid down begins a plain hold immediately. There is no delay while the detector waits to learn whether a second tap will arrive.
+- A qualifying second down sets `boost = true` on that same simulation tick. Boost remains active only while that second press remains held.
+- A successful second down consumes and clears the tap candidate; it cannot also become the first tap of a third press. A contact that fires quick drop also clears the candidate and cannot seed a later boost.
+- The corresponding lift sets both `held = false` and `boost = false` before that tick's physics. Pointer cancel, pause, focus loss, or visibility loss does the same and clears the tap candidate.
+- A second down at a gap of 16 ticks or more is an ordinary hold and becomes the next first-tap candidate. A missed window therefore degrades into a working plain hold, never a dead press.
+- The first primary pointer to press owns the gesture until it ends. Additional pointer ids are ignored, preventing a second finger from creating a false double tap or drop.
+
+#### Quick-drop recognition
+
+The race reuses normal flight's existing swipe language: at least 34 canonical pixels downward within `DROP_MAX_TICKS = 19`, inclusive, the 316.7 ms fixed-tick equivalent of the shipped 320 ms window. It emits once per contact. The semantic event atomically records `held = false`, `boost = false`, and `drop = true`, then assigns `vy = +380 px/s`; it is not additive and cannot be stacked by duplicate move events. The firing contact is disarmed until lift, so the same finger cannot immediately reassert ascent; a fresh down after lift is required. Ordinary boost otherwise lasts through the held second press and ends on its lift. Arrow Down emits the same release-plus-drop event. The gesture is enabled in both normal and tunnel portions of a race.
+
+#### Authoritative input record
+
+The replay record extends the existing transition without storing wall-clock gesture timing:
+
+```ts
+type RaceInputTransition = {
+  tick: number;
+  held: boolean;
+  boost: boolean;
+  drop?: true;
+};
+```
+
+The record is the post-recognizer state for that tick. `tick` means the pre-increment authority tick whose inputs are consumed immediately before physics; `decisionTick` uses that same convention. Legacy `{ tick, held }` records load with `boost = false` and no drop. If more than one update lands on one tick, the final held/boost state wins and `drop` is OR-preserved. Consumption order is state snapshot, then the one-shot drop assignment, then that regime's acceleration and integration. `loadRaceInputs` rejects, rather than silently normalizes, any record where `boost = true` while `held = false`. Entry and return continue recording held/boost transitions so the first live tick inherits the actual finger state; their presentation-locked motion does not defer a drop impulse into later gameplay.
+
+#### Why the authored redline line requires both moves
+
+The named redline exam is a coupled low-high-low sequence with centers `496 → 144 → 496` and exactly 384 course units between planes. At the 480 cap, each leg is exactly 48 ticks / 0.80 seconds. The 38-pixel clearance at both ends leaves a minimum edge-to-edge movement of `352 − 2 × 38 = 276` pixels.
+
+- Plain hold can move upward at no more than `330 × 0.80 = 264 px`, regardless of its entry velocity, and therefore cannot pass the first two planes at cap.
+- A preceding authored runway lets a correctly timed boosted hold enter the low plane at the `−520 px/s` boosted cap; its 0.80-second envelope is 416 pixels, so the high plane is reachable.
+- The complete 48-tick fixed-step envelope constrains a valid high-plane exit from that first leg to at most about `vy = +48 px/s` downward. Without a drop, 48 released ticks can descend at most about 260.7 pixels, still short of 276. The release-plus-drop semantic clears held/boost and sets `vy = +380`; it therefore descends 312 pixels over 48 released ticks and reaches the low plane.
+
+Those figures define the authored target, but Phase C must prove it with a fixed-step reachability search over every legal plain hold/release transition, not only by stripping events from one replay. The release blocker is: no advanced-free state path may clear the three named planes at cap, while a declared boost/drop input path must clear them. A separate benchmark comparison must show that slowing down or sacrificing the sequence cannot remain inside the optimized band. The passive replay still finishes with neither event.
+
+### Retuned authoritative constants
+
+| Rule | Revision 1 shipped | Revision 2 proposal |
+| --- | ---: | ---: |
+| Course length | 36,000 | 45,000 course units |
+| Normal base speed | 185 | 300 units/second |
+| Ring speed gain | +22 | +18 units/second |
+| Normal speed cap | 275 | 480 units/second |
+| Speed grace | 90 ticks | 90 ticks / 1.50 seconds |
+| Decay after grace | 4 | 18 units/second toward 300 |
+| Charge per passed ring | +20 | +5; 20 clean rings from empty |
+| Debris penalty | speed 185, charge −20 | speed 300, charge −10; 45-tick contact grace |
+| Entry | 72 ticks | 48 ticks / 0.80 seconds |
+| Race tunnel | 3,600 units in 540 ticks | 4,500 units in 360 ticks / 750 units/second |
+| Return | 36 ticks, speed 225 | 36 ticks / 0.60 seconds, speed 390 |
+| Wormhole maximum | 3 | 3 |
+| Ordinary rings | 22 | 84 |
+| Normal debris | 14 | 30 |
+| Normal acorns | 12 | 42 |
+| Tunnel acorns | 20 per cycle | 18 authored acorns per cycle; 96 total maximum |
+| Gate collision aperture | radius 54, center clearance 38 | unchanged |
+
+The course grows spatially to support 84 authored gate beats, but it becomes materially shorter in time: a no-shortcut base-speed run falls from the shipped 194.6-second result to 150 seconds. Returning at 390 prevents a portal from feeling like a forced stall. Ring gain reaches cap in ten no-decay hits from base; the speed-stack portions keep post-hit gaps at or below 470 units until cap so the 90-tick grace really permits that ramp. Charge takes 20 clean rings, so dense gates remain the primary beat without opening a tunnel every few seconds. A debris hit costs the current stack and two rings of charge rather than erasing a whole cycle.
+
+### Density map and authored skill sequence
+
+All placements are fixed course data. No ring, debris, acorn, pinch, recovery object, or skill sequence may be generated at runtime.
+
+| Act | Course range | Rings | Debris | Normal acorns | Authored rhythm and exam |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Launch Circuit | `0…7,500` | 14 | 4 | 8 | Short hold corrections, then the first boost ladder |
+| Snap Descent | `7,500…15,000` | 14 | 6 | 4 | Boost-to-drop gate reversal and a drop-through debris pinch; intended entry is ring 20 at x = 10,000 exactly |
+| Crosscut | `15,000…22,500` | 14 | 5 | 9 | Alternating-height clusters with a recovery breather |
+| Acorn Switchback | `22,500…30,000` | 14 | 5 | 5 | High-low-high acorn line off the completion-safe route; intended entry is ring 48 at x = 25,000 exactly |
+| Needle Surge | `30,000…37,500` | 14 | 5 | 10 | Redline 480-unit boost/drop reversals and two narrow debris lanes |
+| Redline Final | `37,500…45,000` | 14 | 5 | 6 | Combined boost/drop/boost exam; intended entry is ring 76 at x = 40,000 exactly; 500-unit finish sprint after return |
+| **Total** | **45,000** | **84** | **30** | **42** | **Rings are the dominant recurring beat** |
+
+Ring gaps alternate 360–480-unit clusters with 560–700-unit breathers; they are never a monotone interval. Speed-stack clusters use gaps of 470 units or less until cap. The sorted union of rings, debris, and normal acorns, with start and finish sentinels, must have no gap above 720 units. At base speed, `720 / 300 = 2.4 s`, below the 2.5-second ceiling. The Phase C layout validator evaluates the passive course and every authored intended or delayed-recovery entry route after its skipped objects are removed; from each return coordinate, the next live interactive element must also be within 720 units. Global density cannot be satisfied by objects hidden inside a tunnel skip. Both ring-rhythm and route-aware interactive-gap limits are release-blocking.
+
+All 42 normal acorns lie outside the three optimized tunnel-skip intervals `(10,000, 14,500]`, `(25,000, 29,500]`, and `(40,000, 44,500]`; the Act 2, Act 4, and Act 6 acorns appear before their intended entry rings. Collecting every normal acorn and all three 18-acorn tunnel lines can therefore attain the stated maximum of 96 rather than leaving skipped pickups in the theoretical total.
+
+The intended three-cycle optimized route is structural:
+
+1. Pass rings 1–20; ring 20 opens the first entry at x = 10,000. The 4,500-unit tunnel skips exactly rings 21–28 and returns at x = 14,500.
+2. Pass rings 29–48; ring 48 opens the second entry at x = 25,000. The tunnel skips exactly rings 49–56 and returns at x = 29,500.
+3. Pass rings 57–76; ring 76 opens the third entry at x = 40,000. The tunnel skips exactly rings 77–84 and returns at x = 44,500 for the final 500 units.
+
+Thus the optimized fixture passes exactly 60 gates and uses three tunnels, while a passive no-charge fixture sees all 84. The layout validator asserts those three exact skip sets. Recovery placements still permit a missed-gate run to finish, but moving an entry later costs normal-flight time and changes which authored objects are skipped. Each mandatory skill sequence has a stable id so the replay test can assert its exact gate ledger rather than infer skill from total ring count.
+
+### Time derivation, benchmark bands, and stars
+
+One entry/tunnel/return cycle costs `48 / 60 + 360 / 60 + 36 / 60 = 7.4 s` and advances 4,500 course units. Its shortcut value is therefore:
+
+- base speed: `4,500 / 300 − 7.4 = 7.6 s` saved;
+- representative average speed: `4,500 / 390 − 7.4 = 4.138 s` saved;
+- cap speed: `4,500 / 480 − 7.4 = 1.975 s` saved.
+
+Even at cap, entry is faster than flying the same distance normally. The tunnel is no longer nine seconds of downtime, and its navigation/acorn line supplies active content during the shortcut.
+
+The benchmark equation is:
+
+`finish seconds = normal course distance / measured mean normal speed + wormhole cycles × 7.4`.
+
+| Profile | Derivation and measurable route | Acceptance band |
+| --- | --- | ---: |
+| Passive | 45,000 normal units at 300, zero cycles: `45,000 / 300 = 150.000 s = 9,000 ticks`; no boost or drop | `8,990…9,010` ticks / `149.833…150.167 s` |
+| Average | Two tunnels leave `45,000 − 2 × 4,500 = 36,000` normal units. At representative mean speed 390: `36,000 / 390 + 2 × 7.4 = 107.108 s`; target 44–50 passed rings, two cycles, 0–2 debris contacts, mean normal speed 371–403 | `6,240…6,720` ticks / `104…112 s` |
+| Optimized | Three tunnels leave `31,500` normal units. A representative no-decay ring-ramp budget produces about 69.75 seconds of normal flight; `69.75 + 3 × 7.4 = 91.95 s`; exactly 60 passed rings, three cycles, zero debris, named boost and drop events, mean normal speed about 452 | `5,400…5,700` ticks / `90…95 s` |
+
+The optimized normal-flight estimate is a representative equal-spacing budget pending the authored Phase C replay. With 450-unit no-decay stack gaps, the first leg is `Σ(450 / s)` for `s = 300, 318, …, 462`, plus `5,500 / 480`, or about 23.49 seconds. Each post-return leg is `Σ(450 / s)` for `s = 390, 408, …, 462`, plus `8,250 / 480`, or about 22.49 seconds. The final 500 units at 390 take about 1.28 seconds. Their sum is about 69.75 seconds, or approximately 91.95 seconds after the three fixed 7.4-second cycles. The acceptance band, rather than this analytical center point, is release-authoritative.
+
+Worst-case accepted separation is `8,990 / 60 − 5,700 / 60 = 54.833 s`, preserving more than the required 45-second passive-to-optimal spread. The full accepted range is approximately 90–150 seconds.
+
+Revision 2 stars are:
+
+1. Finish the course: one star.
+2. Finish at or below `6,900 ticks / 1:55.000`: two stars. This is the 112-second slow edge of the average band plus three seconds of execution margin.
+3. Finish at or below `5,760 ticks / 1:36.000`: three stars. This is the 95-second slow edge of the optimized band plus one second of execution margin.
+
+The three-star limit remains below the average band, every accepted optimized run earns three stars, and the passive fixture remains outside two stars. Phase C may tune placements or the declared constants through review if the deterministic fixtures miss a band; it must not silently move thresholds after seeing results.
+
+### Tunnel redesign: six seconds of shared-skill risk and reward
+
+The race tunnel uses the beta Wormhole Run plain-control constants stated above, then adds the same boost and drop semantics as normal race flight. Its fixed 360-tick duration and 4,500-unit distance remain independent of collision and rendering. Gameplay geometry comes from the one authored beat table below. `hash(courseSeed, cycle) & 1` may vertically mirror its post-mouth Y coordinates around 320; no undeclared template, synthesized placement, or `Math.random()` call is allowed.
+
+The canonical six-second spine is:
+
+| Tick | Center Y | Half-width | Beat |
+| ---: | ---: | ---: | --- |
+| 0 | Entry-anchor Y | 144 | Safe mouth; preserve the triggering gate's authored Y within `144…496` |
+| 45 | 248 | 126 | Rising weave |
+| 90 | 204 | 96 | High pinch |
+| 135 | 408 | 108 | Drop chute |
+| 180 | 440 | 88 | Low pinch |
+| 225 | 468 | 104 | Boost-line start |
+| 255 | 168 | 88 | Boost reward crest |
+| 285 | 452 | 96 | Drop-line catch |
+| 315 | 360 | 120 | Unwind |
+| 359 | 320 | 144 | Safe exit |
+
+Centers and half-widths smoothstep between anchors. Mirroring uses `y' = 640 − y` from the first post-mouth anchor through tick 315; tick 0 remains the triggering entry Y and tick 359 remains 320. Every possible entry-triggering gate center is authored inside `144…496`, so the 144-pixel mouth stays wholly inside the canonical 640-pixel field without a hidden clamp or visual snap. The narrowing corridor itself supplies the authored pinches; Revision 2 adds no separate tunnel-debris collision type. Wall contact stays nonlethal: clamp the pilot, zero vertical velocity, grant the existing 15-tick wall/pickup suppression, and record one scrape for the replay signature. The real cost is losing the next reward window; tunnel duration and distance do not change.
+
+Each cycle places exactly 18 authored acorns: five on the completion-readable center line; eight from Y 480 to 156 over ticks 225–255; and five from Y 156 to 464 over ticks 255–285. Mirror the acorn Y values with the corridor when the cycle mirror bit is set. Accounting for 28 pixels of pickup reach at each endpoint, the boost line needs at least `324 − 2 × 28 = 268` pixels of rise in 30 ticks. From rest, plain tunnel hold covers about 199.9 pixels while boosted hold covers about 309.0. Leaving the crest boosted, release alone for a half-second still moves about 100.5 pixels upward; the release-plus-drop event clears ascent and moves about 290.2 pixels downward, enough to sweep the `308 − 2 × 28 = 252`-pixel drop line. Phase C verifies those fixed-step envelopes and the full collection route.
+
+The normal 42 plus three tunnel sets of 18 produce the attainable result-sheet maximum of 96. Acorns remain a secondary record and never alter finish time, speed, charge, or stars.
+
+The tunnel earns its place in three ways: every cycle is a measurable shortcut, six seconds replaces the shipped nine-second lull, and the active 88–126-pixel half-width weave demands the same hold/boost/drop language as the rest of the event while widening to 144 only at the mouth and exit. The three-cycle maximum remains; Revision 2 does not need fewer tunnels. Tunnel drawing must derive lookahead and pickup X from the exported 750-unit authority speed rather than retain a hard-coded Revision 1 value.
+
+### Deterministic entry and return storyboard
+
+The four approved entry paintings are untouched. Presentation transforms are derived only from `phaseTick`; no image load, CSS transition, animation callback, frame count, or render completion can delay race authority.
+
+#### Entry — 48 ticks
+
+| Ticks | Deterministic beat |
+| --- | --- |
+| `0…11` | On `decisionTick`, freeze `entryAnchor = (RACE_PILOT_X, triggeringRingY)` rather than using the post-step overshoot position. The ordinary ring registers as the four-layer entry portal at that anchor. The mouth fades in; common scale grows `1.00→1.25`. Back, mouth, glyph, and front layers use restrained `0.96 / 1.00 / 1.04 / 1.08` parallax factors. |
+| `12…23` | Common scale grows `1.25→1.75`; glyphs ignite and rotate; the aperture darkens; course streaks bend toward the mouth. |
+| `24…35` | Scale grows `1.75→2.15`; pilot presentation X eases 30 pixels into the mouth while authoritative `race.y` smoothsteps to `entryAnchor.y`. It does not snap to screen center. |
+| `36…47` | Scale grows `2.15→2.35`; the light-streak wash rises `0→1`; the tunnel scene initializes behind the opaque wash. |
+| `48` | Authority enters tunnel exactly with `race.y = entryAnchor.y` inside the authored `144…496` mouth and resumes physics with the current held/boost state. |
+
+#### Return — 36 ticks
+
+| Ticks | Deterministic beat |
+| --- | --- |
+| `0…9` | At exact tunnel completion, the wash rises and the return portal opens behind it at `(RACE_PILOT_X, returnY)`. |
+| `10…23` | Wash falls `1→0.35`; the portal scales `2.15→1.30`; glyphs unwind; the pilot eases out of the mouth. The normal course is already drawn behind the return portal under the wash. |
+| `24…31` | Portal returns `1.30→1.00`; the near lip releases the pilot; wash reaches zero and normal course parallax is fully visible. |
+| `32…35` | Glyphs extinguish and the rim collapses into the course. |
+| `36` | Normal physics and collisions resume exactly at speed 390 with the derived return clamp `96…544`. |
+
+Course position is fixed during entry/return while finish ticks continue. Phase C must not retain the shipped `tunnelView` through all 36 return ticks: normal-course drawing is present under the wash from tick 10 so tick 36 cannot pop between scenes. Missing or late art draws a fallback; it never stalls or lengthens the phase. The return margin remains a separate geometrically derived constant, `88 + 8 = 96`, rather than an alias whose meaning changes if the pilot's screen plane changes.
+
+### Exact gate judging and visible crossing evidence
+
+The judging rule remains authoritative and simple: on the first fixed step where `previousCoursePosition < ring.x ≤ coursePosition`, interpolate pilot Y to that crossing fraction, decide passed/missed once against the 38-pixel clearance, and stamp the pre-increment `decisionTick`. Both ordinary-gate layers begin their synchronized state crossfade at elapsed zero on that exact tick. Passed fades for 27 ticks / 450 ms; missed fades for 39 ticks / 650 ms. Neither crossfade changes silhouette, aperture, collision state, or decision timing.
+
+Phase C keeps `RACE_PILOT_X = 96` and gives Hyper Run's pilot draw a race-only X override of `96 × viewportScale`; other flight modes retain `PHYS.squirrelX = 0.18`. Ring draw X remains `pilotPlaneX + (ring.x − coursePosition) × scale`. This removes the verified 31.2-pixel mismatch without moving authority or changing the course. Passed and missed drawing may interpolate from the stamped decision but may not look ahead in distance.
+
+A review harness under `illustrated-src/` renders pass and miss strips at two ticks before crossing, one tick before, the first crossing step, one tick after, and two ticks after. Every frame shows the vertical pilot plane, pilot collision circle, gate center/aperture, tick, course position, ring X, and ledger/decision state. Assertions require `pending` in every pre-cross frame, one decision on the first crossing step, and a stable state afterward. Generated JavaScript and frame directories compile to a temporary location; the PNG strip is attached to the PR, not committed as a generated runtime artifact.
+
+### Phase B ordinary-gate art acceptance contract
+
+Phase B replaces only the six ordinary-gate PNGs. The approved four-layer entry showpiece and its hashes are untouched.
+
+- Deliver idle, passed, and missed as matched `gate-*-back.png` and `gate-*-front.png`, each 256 × 256 RGBA with transparent background.
+- Every back/front composite must show a complete 360-degree ring and an enclosed, unmistakable hole. No state may read as a half-circle, horseshoe, or open arch.
+- The back layer carries the full far rim and structural silhouette behind the pilot. The front layer is only a thin near-rim arc drawn over the pilot. At the actual 148-pixel game draw size, the pilot must visibly thread between them.
+- All six files share one canvas center, transform, collision-aperture registration, and scale. The three back/front composites share one core outer silhouette and aperture geometry; the front files remain thin arcs rather than duplicating the back silhouette. The projected aperture remains the same radius-54 collision hole in every state.
+- The gate is face-on. Apparent major/minor axis ratio is at least 0.96 and authored tilt is at most about 3 degrees. Color, glow, and particles may change state; silhouette and aperture may not.
+- The review composite shows each layer separately, the pair without a pilot, the pilot between layers, all three states at 148-pixel game size over representative dark skies, and the radius-54 collision overlay.
+- Store the contact sheet at `art-src/hyper-run/hyper-run-r2-contact-sheet.png` or attach it to the PR. Never put it in `docs/` or `sandbox_assets/`.
+- Mirror only the six approved runtime PNGs into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/`; paired roots must be byte-identical by SHA-256.
+
+Phase B stops after those game-scale composites and hash/geometry checks for separate sign-off.
+
+### Phase C implementation acceptance: the same six tests, extended
+
+1. **Same seed and semantic inputs:** Two runs with the same held/boost/drop log produce identical finish tick, acorns, ring decisions and decision ticks, debris contacts, wall scrapes, and entry ticks. Detector boundary subcases prove a 15-tick gap boosts, a 16-tick gap is plain hold, lift clears boost on that tick, and one drop is consumed once.
+2. **Presentation-size independence:** The same log at 360 × 640 and a tall-phone viewport produces the same authority. Canonical swipe mapping emits the same drop tick at both sizes.
+3. **Render-cadence independence:** 60 fps, 30 fps, and the existing mixed/dropped cadence produce the same full signature with boost and drop events present.
+4. **Re-banded profiles:** Passive, average, and optimized fixtures land in `8,990…9,010`, `6,240…6,720`, and `5,400…5,700` ticks respectively with the telemetry declared above. Passive has zero boost/drop events. Optimized contains both and passes the named skill gates. In the same case, the fixed-step reachability search proves the 384-unit low-high-low chain has no cap-speed plain-control path, and an advanced-free benchmark search cannot remain in the optimized band by slowing for it.
+5. **Swept objects and exact gate plane:** Swept gate/debris checks run at 300 and 480. The ledger remains pending before the plane, stamps its decision only on the first crossing step, and advances synchronized 27/39-tick layer fades from that stamp. The pass/miss frame strips are the visible evidence companion. The procedural fallback composite is also a full face-on ring; it may not retain the shipped half-ellipse horseshoe.
+6. **Tunnel parity and handoff:** One tunnel advances exactly 4,500 units in 360 ticks, then returns after 36 ticks with charge zero, speed 390, Y inside the separately derived `96…544` band, and no double settlement. One-tick parity checks prove race-tunnel plain release/hold matches beta Wormhole Run's `+1,300 / −2,100` and `−520…+620`, then exercise deterministic boost/drop reward lines and both seed/cycle mirror outcomes inside the tunnel.
+
+The Hyper Run art loader stays beta-gated. Phase C changes source and source-level tests only; it does not edit or commit generated `docs/js*` or `sandbox_assets/js*`. `ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Phase C stops with all six tests passing and reports exact fixture evidence for review.
+
+Every later phase repeats the repository gate before doing work: fetch current `origin/main`, re-cut that phase's branch from it, and fetch/rebase again immediately before the final push. Commits contain source and approved art only, all committed text is LF-only, and generated `js*` paths remain absent.
+
+## Revision 1 shipped plan — historical record only
 
 ## Product promise
 
