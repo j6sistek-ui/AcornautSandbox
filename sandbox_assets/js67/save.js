@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=66";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=66";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=67";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=67";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -30,6 +30,7 @@ export function defaultSave() {
         stars: {},
         guide: "pending",
         allStars: false,
+        experimentalRaceRecords: {},
     };
 }
 function readRaw(key) {
@@ -101,6 +102,9 @@ export function loadSave() {
         s.guide = s.tutorialDone ? "done" : "pending";
     if (typeof s.allStars !== "boolean")
         s.allStars = false;
+    if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
+        s.experimentalRaceRecords = {};
+    }
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
             Math.max(0, (s.unlockedSuits?.length || 1) - 1) +

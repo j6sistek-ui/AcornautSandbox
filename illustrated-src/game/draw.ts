@@ -4,6 +4,17 @@ import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type S
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import { tunnelBoundsAt, type Particle, type World } from "./sim";
+import {
+  RACE_ACORNS,
+  RACE_DEBRIS,
+  RACE_HEIGHT,
+  RACE_LENGTH,
+  RACE_PILOT_X,
+  RACE_RINGS,
+  formatRaceTicks,
+  raceTunnelAcorns,
+  raceTunnelCenter,
+} from "./race";
 
 function frameOf<T>(list: T[], t: number, speed = 6) {
   if (!list.length) return null;
@@ -121,6 +132,169 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   ctx.globalAlpha = 1;
 }
 
+function drawRaceSprite(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  id: string,
+  x: number,
+  y: number,
+  size: number,
+  tilt = 0,
+) {
+  const sprite = art.hyperRun[id];
+  if (!sprite) return false;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(tilt);
+  drawSprite(ctx, sprite, 0, 0, size);
+  ctx.restore();
+  return true;
+}
+
+function drawRaceGateLayer(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  state: "idle" | "passed" | "missed",
+  layer: "back" | "front",
+  x: number,
+  y: number,
+  size: number,
+  tilt: number,
+) {
+  if (drawRaceSprite(ctx, art, `gate-${state}-${layer}`, x, y, size, tilt)) return;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(tilt);
+  ctx.strokeStyle = state === "passed" ? "#6ef0d8" : state === "missed" ? "#ff6a70" : "#f2b653";
+  ctx.lineWidth = Math.max(2, size * 0.045);
+  ctx.beginPath();
+  if (layer === "back") ctx.ellipse(0, 0, size * 0.39, size * 0.46, 0, Math.PI * 0.08, Math.PI * 1.08);
+  else ctx.ellipse(0, 0, size * 0.39, size * 0.46, 0, Math.PI * 1.08, Math.PI * 2.08);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawRaceTunnel(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
+  const race = w.race!;
+  const sx = w.W / 360;
+  const sy = w.H / RACE_HEIGHT;
+  const unit = Math.min(sx, sy);
+  const pilotX = RACE_PILOT_X * sx;
+  const g = ctx.createLinearGradient(0, 0, w.W, w.H);
+  g.addColorStop(0, "#13072d");
+  g.addColorStop(0.48, "#122e5a");
+  g.addColorStop(1, "#050713");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w.W, w.H);
+  for (let i = 0; i < 20; i++) {
+    const x = ((i * 79 + race.tick * 7) % (w.W + 80)) - 40;
+    ctx.strokeStyle = `rgba(111,224,255,${0.1 + (i % 4) * 0.05})`;
+    ctx.lineWidth = 1 + (i % 3);
+    ctx.beginPath();
+    ctx.moveTo(x, w.H * 0.5);
+    ctx.lineTo(x - 90, i % 2 ? 0 : w.H);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  const samples = 18;
+  for (let i = 0; i <= samples; i++) {
+    const x = (i / samples) * w.W;
+    const lookTicks = (x - pilotX) / Math.max(0.001, (400 / 60) * sx);
+    const y = (raceTunnelCenter(race, race.phaseTick + lookTicks) - 150) * sy;
+    if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.lineTo(w.W, 0); ctx.lineTo(0, 0); ctx.closePath();
+  ctx.fillStyle = "rgba(8,5,22,.88)"; ctx.fill();
+  ctx.beginPath();
+  for (let i = 0; i <= samples; i++) {
+    const x = (i / samples) * w.W;
+    const lookTicks = (x - pilotX) / Math.max(0.001, (400 / 60) * sx);
+    const y = (raceTunnelCenter(race, race.phaseTick + lookTicks) + 150) * sy;
+    if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.lineTo(w.W, w.H); ctx.lineTo(0, w.H); ctx.closePath();
+  ctx.fillStyle = "rgba(5,9,25,.9)"; ctx.fill();
+
+  if (race.phase === "tunnel") {
+    const pickups = raceTunnelAcorns(race);
+    const ledger = race.tunnelAcornLedger[race.wormholes] ?? [];
+    pickups.forEach((a, i) => {
+      if (ledger[i]) return;
+      const x = pilotX + (a.tick - race.phaseTick) * (400 / 60) * sx;
+      if (x < -30 || x > w.W + 30) return;
+      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, a.y * sy, 26 * unit);
+    });
+  }
+}
+
+function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
+  const race = w.race!;
+  const sx = w.W / 360;
+  const sy = w.H / RACE_HEIGHT;
+  const unit = Math.min(sx, sy);
+  const pilotX = RACE_PILOT_X * sx;
+  const ringSize = 148 * unit;
+  const tunnelView = race.phase === "tunnel" || race.phase === "return";
+  if (tunnelView) drawRaceTunnel(ctx, w, art);
+
+  const visibleRings: { i: number; x: number; y: number }[] = [];
+  if (!tunnelView) {
+    RACE_RINGS.forEach((ring, i) => {
+      const x = pilotX + (ring.x - race.coursePosition) * sx;
+      if (x < -ringSize || x > w.W + ringSize) return;
+      visibleRings.push({ i, x, y: ring.y * sy });
+      const ledger = race.ringLedger[i];
+      const state = ledger === "passed" ? "passed" : ledger === "missed" ? "missed" : "idle";
+      drawRaceGateLayer(ctx, art, state, "back", x, ring.y * sy, ringSize, ring.tilt);
+    });
+    RACE_DEBRIS.forEach((debris, i) => {
+      if (race.debrisLedger[i]) return;
+      const x = pilotX + (debris.x - race.coursePosition) * sx;
+      if (x < -60 || x > w.W + 60) return;
+      drawSprite(ctx, art.debris[debris.art % Math.max(1, art.debris.length)], x, debris.y * sy, debris.r * 2 * unit, "core", "dark");
+    });
+    RACE_ACORNS.forEach((acorn, i) => {
+      if (race.acornLedger[i]) return;
+      const x = pilotX + (acorn.x - race.coursePosition) * sx;
+      if (x < -30 || x > w.W + 30) return;
+      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, acorn.y * sy, 26 * unit);
+    });
+    const finishX = pilotX + (RACE_LENGTH - race.coursePosition) * sx;
+    if (finishX < w.W + ringSize) {
+      ctx.strokeStyle = "rgba(255,224,128,.85)";
+      ctx.lineWidth = 4 * unit;
+      ctx.setLineDash([8 * unit, 8 * unit]);
+      ctx.beginPath(); ctx.moveTo(finishX, 80 * sy); ctx.lineTo(finishX, 560 * sy); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  if (race.phase === "entry") {
+    const x = pilotX + 30 * sx;
+    const y = 320 * sy;
+    drawRaceSprite(ctx, art, "entry-mouth", x, y, 220 * unit);
+    drawRaceSprite(ctx, art, "entry-rim-back", x, y, 220 * unit);
+    drawRaceSprite(ctx, art, "entry-glyphs", x, y, 220 * unit, race.phaseTick * 0.01);
+  } else if (race.phase === "return") {
+    drawRaceSprite(ctx, art, "return-back", pilotX, race.returnY * sy, 220 * unit);
+    drawRaceSprite(ctx, art, "return-glyphs", pilotX, race.returnY * sy, 220 * unit, -race.phaseTick * 0.012);
+  }
+
+  drawPilot(ctx, w, save, art);
+
+  if (race.phase === "entry") {
+    drawRaceSprite(ctx, art, "entry-rim-front", pilotX + 30 * sx, 320 * sy, 220 * unit);
+  } else if (race.phase === "return") {
+    drawRaceSprite(ctx, art, "return-front", pilotX, race.returnY * sy, 220 * unit);
+  } else if (!tunnelView) {
+    visibleRings.forEach(({ i, x, y }) => {
+      const ledger = race.ringLedger[i];
+      const state = ledger === "passed" ? "passed" : ledger === "missed" ? "missed" : "idle";
+      drawRaceGateLayer(ctx, art, state, "front", x, y, ringSize, RACE_RINGS[i].tilt);
+    });
+  }
+}
+
 export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const { W, H } = w;
   ctx.save();
@@ -141,6 +315,13 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 
   ctx.save();
   applyWarp(ctx, w);
+
+  if (w.race) {
+    drawHyperRunWorld(ctx, w, save, art);
+    ctx.restore();
+    ctx.restore();
+    return;
+  }
 
   if (w.retro) {
     drawRetroWorld(ctx, w, save, art);
@@ -1602,6 +1783,39 @@ function drawSwirl(ctx: CanvasRenderingContext2D, w: World) {
 
 export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
   const { W } = w;
+  if (w.race) {
+    const race = w.race;
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#fff";
+    ctx.font = "800 30px Figtree, system-ui";
+    ctx.fillText(formatRaceTicks(race.finishTicks ?? race.tick), W / 2, 40);
+    ctx.fillStyle = "rgba(255,224,128,.92)";
+    ctx.font = "800 10px Figtree, system-ui";
+    const phase = race.phase === "normal" ? "HYPER RUN" : race.phase.toUpperCase();
+    ctx.fillText(`${phase} · ${Math.min(RACE_LENGTH, Math.floor(race.coursePosition))} / ${RACE_LENGTH}`, W / 2, 57);
+    const cellW = 19;
+    const gap = 4;
+    const totalW = cellW * 5 + gap * 4;
+    const x0 = W / 2 - totalW / 2;
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = i < Math.floor(race.charge / 20) ? "#6ef0d8" : "rgba(255,255,255,.15)";
+      ctx.fillRect(x0 + i * (cellW + gap), 66, cellW, 5);
+    }
+    ctx.fillStyle = "rgba(255,255,255,.68)";
+    ctx.font = "700 9px Figtree, system-ui";
+    ctx.fillText("HYPER", W / 2, 84);
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#ffd080";
+    ctx.font = "700 14px Figtree, system-ui";
+    ctx.fillText(`${race.acorns}`, 24, 28);
+    if (race.tick < 240) {
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255,255,255,.88)";
+      ctx.font = "800 13px Figtree, system-ui";
+      ctx.fillText("HOLD TO RISE · RELEASE TO FALL", W / 2, w.H * 0.82);
+    }
+    return;
+  }
   ctx.textAlign = "center";
   ctx.fillStyle = "#fff";
   ctx.font = "800 36px Figtree, system-ui";
