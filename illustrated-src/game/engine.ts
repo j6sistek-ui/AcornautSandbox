@@ -455,6 +455,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   };
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
+  // A held thrust is a long-press to the browser: without these, phones
+  // answer it with text selection and the copy bubble over the whole HUD.
+  canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+  document.addEventListener("selectstart", (e) => {
+    const t = e.target as HTMLElement | null;
+    if (t?.closest?.("input, textarea")) return;
+    e.preventDefault();
+  });
 
   window.addEventListener("keydown", (e) => {
     if (e.code === "Escape") {
