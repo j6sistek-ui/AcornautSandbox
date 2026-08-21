@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Acornaut LAB — Background Test</title>
+<meta name="description" content="Painted skies beside procedural skies. Not part of the game." />
+<meta name="theme-color" content="#05070f" />
+<meta name="robots" content="noindex" />
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=3" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  html, body { margin: 0; height: 100%; background: #05070f; overflow: hidden;
+    font-family: Figtree, system-ui, -apple-system, sans-serif; color: #f3efe4; }
+  /* Full viewport on purpose — this page exists to judge the sky in BOTH
+     orientations, so nothing pins it to a phone column. Rotate freely. */
+  .sk-root { position: fixed; inset: 0; overflow: hidden; touch-action: none; }
+  .sk-canvas { position: absolute; inset: 0; display: block; }
+  .sk-label { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: 0; right: 0;
+    text-align: center; font: 800 14px/1 Figtree, sans-serif; letter-spacing: .14em;
+    text-shadow: 0 2px 10px rgba(0,0,0,.85); pointer-events: none; }
+  .sk-paint { color: #ffd76a; }
+  .sk-proc { color: #8fe3ff; }
+  .sk-hint { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom)); left: 0; right: 0;
+    text-align: center; font: 700 9px/1.5 Figtree, sans-serif; letter-spacing: .16em;
+    color: #6b779c; pointer-events: none; }
+  .sk-tag { position: fixed; left: 14px; top: calc(12px + env(safe-area-inset-top)); z-index: 20;
+    font-size: 9px; letter-spacing: .18em; color: #4d5878; }
+  .sk-tag a { color: #8b9bc4; padding: 8px 4px; text-decoration-thickness: 1px; }
+</style>
+</head>
+<body>
+<div class="sk-root" id="root"></div>
+<div class="sk-tag"><a href="../../beta/">back</a></div>
+<script>
+  window.__ACORNAUT_ART__ = "../../art";
+</script>
+<script type="module">
+  import { bootSkyTest } from "./js/skytest.js";
+  bootSkyTest(document.getElementById("root"));
+</script>
+</body>
+</html>
