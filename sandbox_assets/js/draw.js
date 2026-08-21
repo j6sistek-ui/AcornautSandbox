@@ -1,9 +1,9 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=70";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=70";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=70";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=70";
-import { tunnelBoundsAt } from "./sim.js?v=70";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=70";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=71";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=71";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=71";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=71";
+import { tunnelBoundsAt } from "./sim.js?v=71";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=71";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1325,6 +1325,38 @@ function rigPlacement(ref, x, y, size, pivot) {
     const oy = y - (ref.h * scale) / 2 - ref.y * scale;
     return { scale, px: ox + pivot[0] * scale, py: oy + pivot[1] * scale };
 }
+// The generated Eclipse tap paintings kept their 256px roots but drew the
+// pilot about 15-20% smaller inside them. The fixed helmet therefore stayed
+// full-size while the exposed head/body shrank, then popped back when the
+// static bookend returned. These measurements register each pose to the
+// approved eclipse-body.png head without repainting any pixels or touching
+// physics. Static bookends intentionally bypass this table.
+const ECLIPSE_TAP_HEAD_TARGET = [200.28, 83.82];
+const ECLIPSE_TAP_REGISTRATION = [
+    { head: [186.03, 76.74], scale: 1.192 },
+    { head: [184.89, 74.67], scale: 1.176 },
+    { head: [185.24, 77.51], scale: 1.174 },
+    { head: [186.15, 76.12], scale: 1.203 },
+    { head: [185.34, 77.74], scale: 1.168 },
+    { head: [184.87, 74.78], scale: 1.183 },
+    { head: [184.29, 74.73], scale: 1.184 },
+    { head: [184.69, 76.24], scale: 1.176 },
+];
+function drawRegisteredTapLayer(ctx, layer, ref, x, y, size, registration, halo) {
+    const screenScale = size / Math.max(1, Math.max(ref.w, ref.h));
+    const ox = x - (ref.w * screenScale) / 2 - ref.x * screenScale;
+    const oy = y - (ref.h * screenScale) / 2 - ref.y * screenScale;
+    const sourceX = ox + registration.head[0] * screenScale;
+    const sourceY = oy + registration.head[1] * screenScale;
+    const targetX = ox + ECLIPSE_TAP_HEAD_TARGET[0] * screenScale;
+    const targetY = oy + ECLIPSE_TAP_HEAD_TARGET[1] * screenScale;
+    ctx.save();
+    ctx.translate(targetX, targetY);
+    ctx.scale(registration.scale, registration.scale);
+    ctx.translate(-sourceX, -sourceY);
+    drawRigLayer(ctx, layer, ref, x, y, size, 0, undefined, halo);
+    ctx.restore();
+}
 // The shared tail translation for suits without a painted tap bank. Six
 // overlapping radial sections rotate by progressively larger amounts from the
 // planted hinge to the tip. At game scale this reads as a continuous flexible
@@ -1513,6 +1545,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         let poseA = rigB;
+        let tapPoseRegistration = null;
         if (bounceAnimT >= 0 && suit.id === "eclipse") {
             // Contact takes visual priority over the tap bank. The approved static
             // body is transformed below; no armor, hand, face, or helmet pixels are
@@ -1537,6 +1570,9 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
                 }
             }
             poseA = poses[pose];
+            if (suit.id === "eclipse" && pose > 0 && pose < poses.length - 1) {
+                tapPoseRegistration = ECLIPSE_TAP_REGISTRATION[pose - 1] ?? null;
+            }
         }
         if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
             // Universal body impulse: scale from the tail hinge, not the canvas
@@ -1554,7 +1590,12 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             ctx.restore();
         }
         else {
-            drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+            if (tapPoseRegistration) {
+                drawRegisteredTapLayer(ctx, poseA, ref, x, y, size, tapPoseRegistration, halo);
+            }
+            else {
+                drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+            }
             if (!wearsOwnHead(suit))
                 paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
         }

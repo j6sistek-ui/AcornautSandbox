@@ -1338,6 +1338,56 @@ function rigPlacement(
   return { scale, px: ox + pivot[0] * scale, py: oy + pivot[1] * scale };
 }
 
+type TapPoseRegistration = {
+  /** Centroid of the pose's painted orange head pixels, in source space. */
+  head: [number, number];
+  /** Uniform correction that restores the approved static head area. */
+  scale: number;
+};
+
+// The generated Eclipse tap paintings kept their 256px roots but drew the
+// pilot about 15-20% smaller inside them. The fixed helmet therefore stayed
+// full-size while the exposed head/body shrank, then popped back when the
+// static bookend returned. These measurements register each pose to the
+// approved eclipse-body.png head without repainting any pixels or touching
+// physics. Static bookends intentionally bypass this table.
+const ECLIPSE_TAP_HEAD_TARGET: [number, number] = [200.28, 83.82];
+const ECLIPSE_TAP_REGISTRATION: TapPoseRegistration[] = [
+  { head: [186.03, 76.74], scale: 1.192 },
+  { head: [184.89, 74.67], scale: 1.176 },
+  { head: [185.24, 77.51], scale: 1.174 },
+  { head: [186.15, 76.12], scale: 1.203 },
+  { head: [185.34, 77.74], scale: 1.168 },
+  { head: [184.87, 74.78], scale: 1.183 },
+  { head: [184.29, 74.73], scale: 1.184 },
+  { head: [184.69, 76.24], scale: 1.176 },
+];
+
+function drawRegisteredTapLayer(
+  ctx: CanvasRenderingContext2D,
+  layer: Sprite | HTMLImageElement,
+  ref: { x: number; y: number; w: number; h: number },
+  x: number,
+  y: number,
+  size: number,
+  registration: TapPoseRegistration,
+  halo?: "dark" | "light",
+) {
+  const screenScale = size / Math.max(1, Math.max(ref.w, ref.h));
+  const ox = x - (ref.w * screenScale) / 2 - ref.x * screenScale;
+  const oy = y - (ref.h * screenScale) / 2 - ref.y * screenScale;
+  const sourceX = ox + registration.head[0] * screenScale;
+  const sourceY = oy + registration.head[1] * screenScale;
+  const targetX = ox + ECLIPSE_TAP_HEAD_TARGET[0] * screenScale;
+  const targetY = oy + ECLIPSE_TAP_HEAD_TARGET[1] * screenScale;
+  ctx.save();
+  ctx.translate(targetX, targetY);
+  ctx.scale(registration.scale, registration.scale);
+  ctx.translate(-sourceX, -sourceY);
+  drawRigLayer(ctx, layer, ref, x, y, size, 0, undefined, halo);
+  ctx.restore();
+}
+
 // The shared tail translation for suits without a painted tap bank. Six
 // overlapping radial sections rotate by progressively larger amounts from the
 // planted hinge to the tip. At game scale this reads as a continuous flexible
@@ -1563,6 +1613,7 @@ function paintIllustrated(
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
     }
     let poseA: Sprite | HTMLImageElement = rigB;
+    let tapPoseRegistration: TapPoseRegistration | null = null;
     if (bounceAnimT >= 0 && suit.id === "eclipse") {
       // Contact takes visual priority over the tap bank. The approved static
       // body is transformed below; no armor, hand, face, or helmet pixels are
@@ -1583,6 +1634,9 @@ function paintIllustrated(
         if (tapAnimT < poseTimes[i + 1]) { pose = i; break; }
       }
       poseA = poses[pose];
+      if (suit.id === "eclipse" && pose > 0 && pose < poses.length - 1) {
+        tapPoseRegistration = ECLIPSE_TAP_REGISTRATION[pose - 1] ?? null;
+      }
     }
     if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
       // Universal body impulse: scale from the tail hinge, not the canvas
@@ -1598,7 +1652,11 @@ function paintIllustrated(
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
       ctx.restore();
     } else {
-      drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+      if (tapPoseRegistration) {
+        drawRegisteredTapLayer(ctx, poseA, ref, x, y, size, tapPoseRegistration, halo);
+      } else {
+        drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+      }
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     }
     return;

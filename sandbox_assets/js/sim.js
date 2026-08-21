@@ -1,8 +1,8 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=70";
-import { modsUnlocked, writeSave } from "./save.js?v=70";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=70";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=70";
-import { createRaceState, queueRaceHeld, stepRace } from "./race.js?v=70";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=71";
+import { modsUnlocked, writeSave } from "./save.js?v=71";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=71";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=71";
+import { createRaceState, queueRaceHeld, stepRace } from "./race.js?v=71";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
