@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog.js?v=64";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, TAP_ANIM_ENABLED } from "./catalog.js?v=65";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -116,7 +116,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-        suitTail: {}, suitBody: {},
+        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {},
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -275,7 +275,14 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] = await Promise.all([
+    async function namedSeries(counts, folder, separator) {
+        const out = {};
+        await Promise.all(Object.entries(counts).map(async ([id, count]) => {
+            out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
+        }));
+        return out;
+    }
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -292,6 +299,8 @@ export async function loadArt() {
         optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8 } : {}, "suits", "-tap-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
     ]);
     return {
         ready: true,
@@ -311,5 +320,7 @@ export async function loadArt() {
         shieldnut: shieldnut ? asSprite(shieldnut) : null,
         suitTail,
         suitBody,
+        suitTap,
+        suitTapTail,
     };
 }
