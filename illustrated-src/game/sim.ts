@@ -1,4 +1,4 @@
-import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
@@ -230,6 +230,12 @@ export type World = {
   tapAnimHold: number;
   /** displayed pitch at burst entry, used to ease the otherwise instant snap */
   tapAnimFromRot: number;
+  /** elapsed rendering time for the planet-contact response; -1 idle */
+  bounceAnimT: number;
+  /** screen-space rebound normal: -1 up, 1 down */
+  bounceAnimDir: number;
+  /** normalized visual amplitude captured from incoming vertical speed */
+  bounceAnimStrength: number;
   hitCooldown: number;
   trailT: number;
   bounceUp: boolean;
@@ -345,6 +351,9 @@ export function makeWorld(W: number, H: number): World {
     tapAnimT: -1,
     tapAnimHold: 0,
     tapAnimFromRot: 0,
+    bounceAnimT: -1,
+    bounceAnimDir: 0,
+    bounceAnimStrength: 0,
     hitCooldown: 0,
     trailT: 0,
     bounceUp: false,
@@ -863,6 +872,9 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.tapAnimT = -1;
   w.tapAnimHold = 0;
   w.tapAnimFromRot = 0;
+  w.bounceAnimT = -1;
+  w.bounceAnimDir = 0;
+  w.bounceAnimStrength = 0;
   w.hitCooldown = 0;
   w.bounceUp = false;
   w.deadTimer = 0;
@@ -1771,9 +1783,18 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   const dist = Math.hypot(dx, dy) || 1;
   dx /= dist;
   dy /= dist;
+  const incomingVy = w.squirrel.vy;
   const jelly = palId(save, w) === "voidjelly" ? 0.55 : 1;
   const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly;
   w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
+  if (BOUNCE_ANIM_ENABLED) {
+    w.bounceAnimT = 0;
+    w.bounceAnimDir = dy >= 0 ? 1 : -1;
+    w.bounceAnimStrength = Math.max(0.68, Math.min(1, Math.abs(incomingVy) / 430));
+    // Contact throws the plume opposite the rebound. This is additive to the
+    // existing spring, so the authored impact settles naturally afterward.
+    w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
+  }
   w.bounceUp = w.squirrel.vy < 0;
   w.squirrel.y += dy * 14;
   w.squirrel.rot = dy >= 0 ? 0.85 : -0.55;
@@ -2214,6 +2235,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     if (w.tapAnimT >= TAP_ANIM_DURATION) {
       w.tapAnimT = -1;
       w.tapAnimHold = 0;
+    }
+  }
+  if (BOUNCE_ANIM_ENABLED && w.bounceAnimT >= 0) {
+    w.bounceAnimT += dt * paceOf(save, w);
+    if (w.bounceAnimT >= BOUNCE_ANIM_DURATION) {
+      w.bounceAnimT = -1;
+      w.bounceAnimDir = 0;
+      w.bounceAnimStrength = 0;
     }
   }
 

@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "69";
+export const ART_VER = "70";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -25,6 +25,11 @@ export const TAP_ANIM_DURATION = 0.66;
 // reviewed in-game. Production imports the shared bundle but never starts the
 // visual clock or fetches the optional painted animation banks.
 export const TAP_ANIM_ENABLED = IS_BETA;
+// Rendering-only planet contact response. Keep the first pass isolated to
+// Beta and Eclipse until the contact shape, tail recoil, and helmet stability
+// have been approved at game scale.
+export const BOUNCE_ANIM_DURATION = 0.38;
+export const BOUNCE_ANIM_ENABLED = IS_BETA;
 // The tutorial's graduation gift, and the trail of guided steps that
 // follows it: equip the suit, equip the helmet, fly Mission 1. One pair,
 // named once, so the crash sheet, the hangar and the coach all agree.

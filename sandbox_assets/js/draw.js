@@ -1,9 +1,9 @@
-import { SKY_RGB, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=69";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=69";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=69";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=69";
-import { tunnelBoundsAt } from "./sim.js?v=69";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=69";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=70";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=70";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=70";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=70";
+import { tunnelBoundsAt } from "./sim.js?v=70";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=70";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1361,13 +1361,31 @@ function drawBentRigLayer(ctx, layer, ref, x, y, size, baseRot, bend, pivot) {
 // new impulse and rides over this authored silhouette motion.
 const TAP_TAIL_CURVE = [0, 0.18, 0.4, 0.58, 0.64, 0.59, 0.48, 0.35, 0.23, 0.13, 0.06, 0];
 const TAP_BODY_CURVE = [0, 0.42, 0.82, 1, 0.9, 0.74, 0.58, 0.43, 0.29, 0.17, 0.08, 0];
-function sampleTapCurve(curve, tapAnimT) {
-    const at = Math.max(0, Math.min(curve.length - 1, (tapAnimT / TAP_ANIM_DURATION) * (curve.length - 1)));
+// Tail is driven away from the rebound at contact, overshoots once, then
+// rejoins the live spring. The sign is supplied by the collision normal.
+const BOUNCE_TAIL_CURVE = [0, 0.58, 0.76, 0.48, 0.16, -0.11, 0];
+function sampleMotionCurve(curve, t, duration) {
+    const at = Math.max(0, Math.min(curve.length - 1, (t / duration) * (curve.length - 1)));
     const lo = Math.floor(at);
     const hi = Math.min(curve.length - 1, lo + 1);
     const f = at - lo;
     const eased = f * f * (3 - 2 * f);
     return curve[lo] * (1 - eased) + curve[hi] * eased;
+}
+function sampleTapCurve(curve, tapAnimT) {
+    return sampleMotionCurve(curve, tapAnimT, TAP_ANIM_DURATION);
+}
+function bounceShape(t, strength) {
+    const p = Math.max(0, Math.min(1, t / BOUNCE_ANIM_DURATION));
+    const squash = p < 0.18 ? 1 - p / 0.18 : 0;
+    const stretchP = Math.max(0, Math.min(1, (p - 0.1) / 0.42));
+    const stretch = p >= 0.1 && p <= 0.52 ? Math.sin(stretchP * Math.PI) : 0;
+    const settleP = Math.max(0, Math.min(1, (p - 0.46) / 0.54));
+    const settle = p >= 0.46 ? Math.sin(settleP * Math.PI * 2) * (1 - settleP) : 0;
+    return {
+        x: 1 + strength * (squash * 0.1 - stretch * 0.045 + settle * 0.012),
+        y: 1 + strength * (-squash * 0.13 + stretch * 0.085 - settle * 0.018),
+    };
 }
 // Which art still has a helmet painted into it. The eight flight animation
 // frames do (they were never re-rendered), and so does any suit flagged
@@ -1438,7 +1456,7 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     ctx.stroke();
     ctx.restore();
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -1461,7 +1479,12 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
         let tailPose = rigT;
         let tailPoseRot = tailRot;
-        if (tapAnimT >= 0 && tapTailFrames.length === 12) {
+        if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
+            const bend = bounceAnimDir * bounceAnimStrength
+                * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
+            drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
+        }
+        else if (tapAnimT >= 0 && tapTailFrames.length === 12) {
             // One tail drawing per 30 fps presentation frame. The sequence bends
             // progressively from the planted hinge to the tip: launch drag, delayed
             // whip, one rebound, settle. A small share of the live spring remains so
@@ -1490,7 +1513,13 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         let poseA = rigB;
-        if (tapAnimT >= 0 && tapFrames.length === 8) {
+        if (bounceAnimT >= 0 && suit.id === "eclipse") {
+            // Contact takes visual priority over the tap bank. The approved static
+            // body is transformed below; no armor, hand, face, or helmet pixels are
+            // redrawn for the impact.
+            poseA = rigB;
+        }
+        else if (tapAnimT >= 0 && tapFrames.length === 8) {
             // A traditional stepped bank stays crisp at the 52 px gameplay size.
             // Crossfading painterly faces produces double eyes and soft armor seams;
             // eight close poses already supply the in-betweens. Static body bookends
@@ -1590,12 +1619,23 @@ function drawPilot(ctx, w, save, art) {
     const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     const articulatedTap = !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
+    const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
     ctx.save();
     ctx.translate(x, y);
+    if (eclipseImpact) {
+        // Scale around the planet-facing edge instead of the sprite centre. The
+        // contact point stays planted while Eclipse flattens, lengthens into the
+        // rebound, and rings down to the exact original silhouette.
+        const shape = bounceShape(w.bounceAnimT, w.bounceAnimStrength);
+        const contactY = -w.bounceAnimDir * 18;
+        ctx.translate(0, contactY);
+        ctx.scale(shape.x, shape.y);
+        ctx.translate(0, -contactY);
+    }
     // the sim's real pitch — dives nose down, bounces kick the body over;
     // the old ±6° bank made every impact read as nothing happening
     let bank = w.squirrel.rot * 0.8;
-    if (articulatedTap) {
+    if (articulatedTap && !eclipseImpact) {
         // Every current model now uses the same eased visual pitch clock. Eclipse
         // supplies painted body poses; the other rigs use the identity-safe body
         // pulse and sectional tail bend in paintIllustrated below.
@@ -1609,9 +1649,9 @@ function drawPilot(ctx, w, save, art) {
     ctx.scale(pop, pop);
     // fresh planet bounce: a squash-and-stretch pulse sells the impact
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
-    if (sq > 0)
+    if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
