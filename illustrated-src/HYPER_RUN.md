@@ -1,6 +1,6 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Phase 1 approved with the 2026-08-20 revision below. Phase 2 art is authorized. Phase 3 implementation remains blocked until separate art sign-off.
+**Status:** Phase 1 and Phase 2 are approved. Phase 3 source implementation is authorized under the fixed-step, source-only, replay-evidence guardrails below.
 
 **2026-08-20 approval revision:** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
 
@@ -21,7 +21,7 @@ The proof of concept is an experimental Log mission named **PROTOTYPE CHAPTER 1*
 - Time goals evaluated by the existing goal and level-result path. Prototype stars are a run grade only; campaign star masks, totals, unlocks, and rewards are not changed.
 - A prototype race result-sheet variant in the existing level-complete overlay.
 - A deterministic replay test extending the pattern in `illustrated-src/test-tunnel.mjs`.
-- The approved ring, entry, and return-portal art set, mirrored into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/` in Phase 2.
+- The approved ring, entry, and return-portal production sprites, mirrored into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/`; the review-only contact sheet lives once at `illustrated-src/hyper-run-contact-sheet.png`.
 
 ### Explicitly out until later courses
 
@@ -305,7 +305,7 @@ Any mismatch in finish ticks or acorns is a release blocker for Prototype Chapte
 
 The supplied image is non-authoritative concept art, not a design direction, target, or required source of visual cues. Phase 2 may use it as loose context or ignore it completely. No geometry, character treatment, glyph language, palette, lighting, material, composition, or ornament density is to be inferred from that image as a requirement. The written brief and the approved statements in this document are the authority: the gate family must be original, readable at phone scale, dimensional, and style-matched to the painted material, edge lighting, and color richness in `docs/art/planets/` and `docs/art/solo/`.
 
-All deliverable art is PNG, RGBA, transparent, with no baked background. Gate and portal plates are 256 × 256. Entry showpiece layers may be 512 × 512. Phase 2 mirrors byte-identical files into both art roots and includes a contact sheet for review; no art is wired into code before sign-off.
+All deliverable art is PNG, RGBA, transparent, with no baked background. Gate and portal plates are 256 × 256. Entry showpiece layers may be 512 × 512. Phase 2 mirrors byte-identical production sprites into both art roots. The review-only contact sheet is kept out of both runtime roots at `illustrated-src/hyper-run-contact-sheet.png`.
 
 ### Ring gate set
 
@@ -345,7 +345,7 @@ The return portal is the same architectural family but reads as arrival: warmer 
 
 ### Phase 2 contact sheet and checks
 
-The contact sheet shows each ordinary gate back/front pair separately, composited without a pilot, and composited with a pilot silhouette between the layers at 1× and game-size reduction. It also shows the four entry layers separately and composited at four timestamps, and the return portal separately and composited. Review checks: transparent edges, shared centers, identical apertures and tilt across all gate states, clean near-rim occlusion, no seams when composited, 360 × 640 gameplay readability, no state silhouette pop, palette contrast over representative dark skies, and exact mirrored-file hashes between art roots.
+The single source/review contact sheet at `illustrated-src/hyper-run-contact-sheet.png` shows each ordinary gate back/front pair separately, composited without a pilot, and composited with a pilot silhouette between the layers at 1× and game-size reduction. It also shows the four entry layers separately and composited at four timestamps, and the return portal separately and composited. Review checks: transparent edges, shared centers, identical apertures and tilt across all gate states, clean near-rim occlusion, no seams when composited, 360 × 640 gameplay readability, no state silhouette pop, palette contrast over representative dark skies, and exact mirrored-file hashes between runtime art roots.
 
 ## Performance target
 
@@ -357,7 +357,7 @@ Acceptance numbers for a 30-second capture covering entry, tunnel, and return:
 - 95th percentile frame time ≤18.0 ms.
 - 99th percentile frame time ≤25.0 ms.
 - No more than two frames above 33 ms per complete entry/tunnel/return cycle after warm-up.
-- No texture allocation or image decode during the live entry sequence; all seven Hyper Run layer assets are loaded before `TAKE FLIGHT` enables.
+- No texture allocation or image decode during the live entry sequence; all thirteen Hyper Run layer assets are loaded before `TAKE FLIGHT` enables.
 - At most four 512² painted layers, three 256² return layers, and three 256² gate-state pairs resident; particles are pooled and capped at 120 live items.
 - Canvas backing resolution is capped at 2× CSS pixels for this mode. Reducing particle count or bloom resolution is allowed; reducing physics rate, collision fidelity, or authoritative timing is not.
 
@@ -392,5 +392,5 @@ Do not run or edit build outputs. Do not change `ART_VER`, `SAVE_KEY`, or `LEGAC
 ## Approval gates
 
 - **Phase 1 approval:** Agree on scope, constants, controls, time bands, experimental Log placement, later-campaign extension path, art inventory, and deviations in this document.
-- **Phase 2 approval:** Review the mirrored PNG set and contact sheet. No code is started.
-- **Phase 3:** Implement the approved design, run source-level tests and performance checks, and stop with source changes for maintainer build/versioning.
+- **Phase 2 approval:** Approved 2026-08-20; production sprites remain mirrored and the contact sheet is source/review-only.
+- **Phase 3:** Authorized 2026-08-20; implement the approved design, run source-level tests and performance checks, and stop with source changes for maintainer build/versioning.

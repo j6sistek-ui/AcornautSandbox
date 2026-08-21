@@ -3,7 +3,8 @@ import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
-import { LEVELS, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
+import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
+import { formatRaceTicks } from "./race";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -121,7 +122,10 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (snap.screen === "pause") {
       const sheet = el("div", "ac-sheet ac-center");
-      sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", `Score ${engine.world.score}`));
+      sheet.append(
+        el("h2", "", "PAUSED"),
+        el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}` : `Score ${engine.world.score}`),
+      );
       const resume = el("button", "ac-primary", "RESUME");
       resume.onclick = () => engine.resume();
       const abort = el("button", "ac-ghost", "ABORT TO TITLE");
@@ -1068,6 +1072,12 @@ export async function bootStandalone(root: HTMLElement) {
     return wrap;
   }
 
+  function prototypeMask() {
+    const record = engine.save.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
+    if (!record?.bestFinishTicks) return 0;
+    return 1 | (record.bestFinishTicks <= 10_200 ? 2 : 0) | (record.bestFinishTicks <= 8_700 ? 4 : 0);
+  }
+
   let chartStage = 0;           // which stage panel is open; sticky per visit
   let chartLevel: string | null = null;   // level detail overlay
 
@@ -1115,6 +1125,25 @@ export async function bootStandalone(root: HTMLElement) {
     }
     scroll.append(ladder);
 
+    if (IS_BETA) {
+      const record = sv.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
+      const proto = el("div", "ac-stagecard");
+      const phead = el("button", "ac-stagehead");
+      const ptitle = el("div", "ac-stagetitle");
+      ptitle.append(
+        el("p", "ac-kicker", "EXPERIMENTAL MISSION"),
+        el("p", "ac-stagename", "PROTOTYPE CHAPTER 1"),
+        el("p", "ac-sub", "HYPER RUN · deterministic time trial"),
+      );
+      phead.append(ptitle);
+      phead.append(record?.bestFinishTicks
+        ? el("span", "ac-stagestars", `BEST ${formatRaceTicks(record.bestFinishTicks)}`)
+        : el("span", "ac-stagestars", "UNFLOWN"));
+      phead.onclick = () => { chartLevel = PROTOTYPE_RACE_MISSION.id; render(); };
+      proto.append(phead);
+      scroll.append(proto);
+    }
+
     for (const st of STAGES) {
       const open = stageUnlocked(st.num, total);
       const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
@@ -1154,8 +1183,8 @@ export async function bootStandalone(root: HTMLElement) {
 
     // level detail: goals, modifiers, and the FLY button
     if (chartLevel) {
-      const def = LEVELS.find((l) => l.id === chartLevel);
-      if (def) box.append(drawLevelSheet(def, stars[def.id] || 0));
+      const def = LEVELS.find((l) => l.id === chartLevel) ?? (IS_BETA ? experimentalRaceById(chartLevel) : null);
+      if (def) box.append(drawLevelSheet(def, def.experimental ? prototypeMask() : stars[def.id] || 0));
     }
     return box;
   }
@@ -1163,12 +1192,16 @@ export async function bootStandalone(root: HTMLElement) {
   function drawLevelSheet(def: LevelDef, mask: number) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard");
-    const place = def.base === "tunnel" ? "WORMHOLE RUN"
+    const place = def.base === "race" ? "HYPER RUN"
+      : def.base === "tunnel" ? "WORMHOLE RUN"
       : def.base === "spill" ? "THE SPILL"
       : ENVS[def.fx.env ?? 0]?.name ?? "";
-    sheet.append(el("p", "ac-kicker", `LEVEL ${def.id} \u00b7 ${place}`));
+    sheet.append(el("p", "ac-kicker", def.experimental
+      ? "EXPERIMENTAL MISSION · PROTOTYPE CHAPTER 1"
+      : `LEVEL ${def.id} \u00b7 ${place}`));
     sheet.append(el("h2", "ac-lvlname", def.name));
     const mode =
+      def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
       def.base === "deep" ? "DEEP SPACE RULES" :
       def.base === "lost" ? "LOST IN SPACE RULES" :
       def.base === "arcade" ? "ARCADE TIMELINE" :
@@ -1189,7 +1222,8 @@ export async function bootStandalone(root: HTMLElement) {
       goals.append(row);
     });
     sheet.append(goals);
-    const fly = el("button", "ac-primary", mask & 1 ? "FLY AGAIN" : "FLY");
+    if (def.experimental) sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE · CAMPAIGN STARS UNCHANGED"));
+    const fly = el("button", "ac-primary", def.experimental ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
     fly.onclick = () => { chartLevel = null; engine.flyLevel(def.id); };
     const back = el("button", "ac-ghost", "BACK");
     back.onclick = () => { chartLevel = null; render(); };
@@ -1200,6 +1234,36 @@ export async function bootStandalone(root: HTMLElement) {
   }
 
   function drawLevelDone(last: NonNullable<typeof engine.world.lastLevel>) {
+    if (last.def.experimental && last.def.base === "race" && last.raceRecord) {
+      const r = last.raceRecord;
+      const sheet = el("div", "ac-sheet ac-center");
+      sheet.append(el("p", "ac-kicker", "EXPERIMENTAL MISSION"));
+      sheet.append(el("h2", "", "PROTOTYPE CHAPTER 1"));
+      sheet.append(el("p", "ac-kicker", "FINISH"));
+      sheet.append(el("h2", "", formatRaceTicks(r.finishTicks)));
+      if (r.newBestTime) sheet.append(el("p", "ac-gold", "NEW BEST"));
+      else sheet.append(el("p", "ac-sub", `+${((r.finishTicks - r.bestFinishTicks) / 60).toFixed(3)}`));
+      const pips = el("div", "ac-bigpips");
+      last.met.forEach((ok) => pips.append(el("span", ok ? "ac-bigpip earned" : "ac-bigpip", "★")));
+      sheet.append(pips);
+      const labels = el("div", "ac-lvlgoals");
+      ["FINISH", "≤ 2:50.000", "≤ 2:25.000"].forEach((label, i) => {
+        const row = el("div", last.met[i] ? "ac-goal on" : "ac-goal");
+        row.append(el("span", last.met[i] ? "ac-pip on" : "ac-pip", "★"), el("span", "", label));
+        labels.append(row);
+      });
+      sheet.append(labels);
+      sheet.append(el("p", "", `ACORNS  ${r.acorns} / 72`));
+      sheet.append(el("p", "", `BEST  ${r.bestAcorns} / 72`));
+      if (r.newBestAcorns) sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
+      sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));
+      const again = el("button", "ac-primary", "RUN AGAIN");
+      again.onclick = () => engine.flyLevel(last.def.id);
+      const back = el("button", "ac-ghost", "BACK TO LOG");
+      back.onclick = () => engine.open("log");
+      sheet.append(again, back);
+      return sheet;
+    }
     const sheet = el("div", "ac-sheet ac-center");
     sheet.append(el("p", "ac-kicker", `LEVEL ${last.def.id} \u00b7 ${last.def.name}`));
     sheet.append(el("h2", "", last.finished ? "LEVEL COMPLETE" : "LOST"));

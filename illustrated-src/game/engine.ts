@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -19,7 +19,7 @@ import {
   writeSave,
   type SaveData,
 } from "./save";
-import { emptyStats, levelById, levelUnlocked, type LevelDef } from "./campaign";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked, type LevelDef } from "./campaign";
 import {
   dive,
   flap,
@@ -30,6 +30,7 @@ import {
   resizeWorld,
   resetRun,
   resumePlay,
+  setRaceHeld,
   snapshot,
   updateWorld,
   type FlightMode,
@@ -85,6 +86,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   let raf = 0;
   let last = performance.now();
   let running = false;
+  let raceAccumulator = 0;
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((fn) => fn());
 
@@ -161,10 +163,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return "denied";
     },
     flyLevel(id) {
-      const def = levelById(id);
+      const def = levelById(id) ?? (IS_BETA ? experimentalRaceById(id) : null);
       if (!def) return false;
       // starsOf, not the raw tally: Briella's code opens chapters here too
-      if (!levelUnlocked(def, save.stars || {}, starsOf(save))) return false;
+      if (!def.experimental && !levelUnlocked(def, save.stars || {}, starsOf(save))) return false;
       unlockAudio();
       // A SPILL mission lives on the lab page: hand it the mission card
       // and go. It writes one result record at the end, and the boot code
@@ -181,8 +183,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // having a save, and a first-timer meets the tutorial in endless.
       // A Wormhole mission flies a FIXED corridor: the seed is the level's
       // ordinal, so mission 3-4 is the same test for every pilot, forever.
-      resetRun(world, save, def.base, false, def,
+      resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? 7000 + def.ord : undefined);
+      raceAccumulator = 0;
       guideStep("level");
       notify();
       return true;
@@ -190,6 +193,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     open(s) {
       world.screen = s;
       if (s === "title") world.tut = null;
+      if (s === "title" || s === "log") {
+        world.race = null;
+        raceAccumulator = 0;
+      }
       notify();
     },
     buyHelmet: (id) => transactHelmet(id),
@@ -213,11 +220,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     },
     pause() {
+      setRaceHeld(world, false);
       pausePlay(world);
       notify();
     },
     resume() {
       resumePlay(world);
+      raceAccumulator = 0;
       last = performance.now();
       notify();
     },
@@ -383,7 +392,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const parent = canvas.parentElement;
     if (!parent) return;
     const rect = parent.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
     const W = Math.min(rect.width, 480);
     const H = rect.height;
     canvas.width = Math.floor(W * dpr);
@@ -412,7 +421,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       e.preventDefault();
       const p = pos(e);
       swipe = { y0: p.y, t0: performance.now(), fired: false };
-      const ev = flap(world, save);
+      const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
       if (ev === "flap") sfx.flap();
       if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
         world.tut.hold = false;
@@ -425,7 +434,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   canvas.addEventListener(
     "pointermove",
     (e) => {
-      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
+      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel" || !!world.race) return;
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
         swipe = null;
@@ -441,6 +450,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     { passive: true },
   );
   const end = () => {
+    setRaceHeld(world, false);
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
@@ -459,7 +469,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       else if (world.screen === "title") engine.fly("fly");
       else if (world.screen === "pause") engine.resume();
       else if (world.screen === "play") {
-        const ev = flap(world, save);
+        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
         if (ev === "flap") sfx.flap();
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
@@ -470,12 +480,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     }
   });
-  function loop(now: number) {
-    const dt = Math.min(0.033, (now - last) / 1000);
-    last = now;
-    const ev = updateWorld(world, save, dt);
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space" || e.code === "ArrowUp") setRaceHeld(world, false);
+  });
+  window.addEventListener("blur", () => setRaceHeld(world, false));
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) setRaceHeld(world, false);
+  });
+  function dispatchWorldEvent(ev: string | null) {
     if (ev === "acorn") sfx.acorn();
-    if (ev === "gold") sfx.gold();
+    if (ev === "gold" || ev === "ring") sfx.gold();
     if (ev === "freeze") sfx.freeze();
     if (ev === "section") sfx.section();
     if (ev === "region") sfx.region();
@@ -483,6 +497,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (ev === "near") sfx.near();
     if (ev === "milestone") sfx.milestone();
     if (ev === "bounce") sfx.bounce();
+    if (ev === "debris") sfx.bounce();
     if (ev === "die") {
       writeSave(save);
       sfx.die();
@@ -492,9 +507,24 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       sfx.shield();
       notify();
     }
-    if (ev === "shift") {
+    if (ev === "shift" || ev === "entry" || ev === "return") {
       sfx.shift();
       notify();
+    }
+  }
+  function loop(now: number) {
+    const frameDt = Math.min(0.25, (now - last) / 1000);
+    last = now;
+    if (world.race) {
+      raceAccumulator += frameDt;
+      while (raceAccumulator + 1e-12 >= 1 / 60) {
+        dispatchWorldEvent(updateWorld(world, save, 1 / 60));
+        raceAccumulator -= 1 / 60;
+        if (world.screen === "lvldone") break;
+      }
+    } else {
+      raceAccumulator = 0;
+      dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
     }
     // The retro soundtrack rides the retro renderer: on for the whole
     // arcade run and for the shifted stretches of Free Flight, off the

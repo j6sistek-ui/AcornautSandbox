@@ -30,6 +30,8 @@ export type ArtBank = {
   // full canvas so they register against the whole-suit sprite.
   suitTail: Record<string, Sprite>;
   suitBody: Record<string, Sprite>;
+  /** Hyper Run layers are decoded with the launch bank, never mid-race. */
+  hyperRun: Record<string, Sprite>;
 };
 
 declare global {
@@ -155,7 +157,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-    suitTail: {}, suitBody: {},
+    suitTail: {}, suitBody: {}, hyperRun: {},
   };
 }
 
@@ -312,6 +314,12 @@ export async function loadArt(): Promise<ArtBank> {
     "eclipse",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
+  const hyperRunIds = [
+    "entry-mouth", "entry-rim-back", "entry-rim-front", "entry-glyphs",
+    "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
+    "gate-missed-back", "gate-missed-front",
+    "return-back", "return-front", "return-glyphs",
+  ];
 
   async function named(ids: string[], folder: string, suffix = "", required = false) {
     const out: Record<string, Sprite> = {};
@@ -328,7 +336,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -346,6 +354,7 @@ export async function loadArt(): Promise<ArtBank> {
       optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
+      named(hyperRunIds, "hyper-run"),
     ]);
   return {
     ready: true,
@@ -365,5 +374,6 @@ export async function loadArt(): Promise<ArtBank> {
     shieldnut: shieldnut ? asSprite(shieldnut as HTMLImageElement) : null,
     suitTail,
     suitBody,
+    hyperRun,
   };
 }

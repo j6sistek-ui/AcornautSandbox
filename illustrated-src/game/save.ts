@@ -49,6 +49,8 @@ export type SaveData = {
   guide: "pending" | "reward" | "hangar" | "helmet" | "levels" | "done";
   /** Briella's code: the game simply believes it has all 300 stars */
   allStars: boolean;
+  /** Experimental records are isolated from chapter stars and rewards. */
+  experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
 };
 
 export function defaultSave(): SaveData {
@@ -81,6 +83,7 @@ export function defaultSave(): SaveData {
     stars: {},
     guide: "pending",
     allStars: false,
+    experimentalRaceRecords: {},
   };
 }
 
@@ -133,6 +136,9 @@ export function loadSave(): SaveData {
   // game — never walk a veteran to the hangar
   if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
   if (typeof s.allStars !== "boolean") s.allStars = false;
+  if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
+    s.experimentalRaceRecords = {};
+  }
   if (parsed && typeof parsed.xp !== "number") {
     const owned =
       Math.max(0, (s.unlocked?.length || 1) - 1) +

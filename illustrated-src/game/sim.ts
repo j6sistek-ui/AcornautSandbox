@@ -2,6 +2,7 @@ import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  DEBRIS_COUNT, PLANET_COU
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
+import { createRaceState, queueRaceHeld, stepRace, type RaceState } from "./race";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade" | "tunnel";
@@ -214,6 +215,7 @@ export type World = {
   pickups: Pickup[];
   particles: Particle[];
   tunnel: TunnelState | null;
+  race: RaceState | null;
   stars: { x: number; y: number; r: number; a: number; tw: number }[];
   speed: number;
   distance: number;
@@ -288,6 +290,14 @@ export type World = {
     totalBefore: number;
     totalAfter: number;
     stats: RunStats;
+    raceRecord?: {
+      finishTicks: number;
+      acorns: number;
+      bestFinishTicks: number;
+      bestAcorns: number;
+      newBestTime: boolean;
+      newBestAcorns: boolean;
+    };
   } | null;
   tut: {
     stage: TutStage;
@@ -317,6 +327,7 @@ export function makeWorld(W: number, H: number): World {
     pickups: [],
     particles: [],
     tunnel: null,
+    race: null,
     stars: [],
     speed: PHYS.baseSpeed,
     distance: 0,
@@ -832,6 +843,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.pickups = [];
   w.particles = [];
   w.tunnel = null;
+  w.race = w.lvl?.def.base === "race" ? createRaceState() : null;
   w.speed = PHYS.baseSpeed;
   w.distance = 0;
   w.lastSpawnX = w.W * 0.55;
@@ -842,7 +854,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.hitCooldown = 0;
   w.bounceUp = false;
   w.deadTimer = 0;
-  w.ready = true;
+  w.ready = !w.race;
   w.screen = "play";
   w.pausedFrom = null;
   w.shake = 0;
@@ -880,13 +892,26 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.envA = w.lvl.def.fx.env;
     w.envB = w.lvl.def.fx.env;
   }
-  if (flight === "tunnel") initTunnel(w, tunnelSeed);
+  if (w.race) {
+    w.squirrel.y = w.race.y * (w.H / 640);
+    w.squirrel.vy = 0;
+    w.speed = w.race.speed;
+    w.startShieldArmed = false;
+    w.shieldCharges = 0;
+  } else if (flight === "tunnel") initTunnel(w, tunnelSeed);
   else for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
-  w.tut = flight === "tunnel" ? null : tutorial
+  w.tut = w.race || flight === "tunnel" ? null : tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
         retries: 0, springs: 0, bounced: false }
     : null;
   if (w.tut) buildTutorialCourse(w, save);
+}
+
+/** Hold-to-rise input is tick-stamped and consumed before the next race step. */
+export function setRaceHeld(w: World, held: boolean) {
+  if (!w.race || w.screen !== "play") return false;
+  queueRaceHeld(w.race, held);
+  return true;
 }
 
 const TUNNEL_STEP = 56;
@@ -1874,6 +1899,43 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
     ? [goalMet(def.goals[0], lvl.stats), goalMet(def.goals[1], lvl.stats), goalMet(def.goals[2], lvl.stats)]
     : [false, false, false];
   const mask = (met[0] ? 1 : 0) | (met[1] ? 2 : 0) | (met[2] ? 4 : 0);
+  if (def.experimental && def.base === "race") {
+    const records = save.experimentalRaceRecords ?? (save.experimentalRaceRecords = {});
+    const prior = records[def.raceEventId ?? def.id];
+    const finishTicks = Math.max(0, Math.floor(lvl.stats.finishTicks));
+    const priorTicks = prior?.bestFinishTicks ?? 0;
+    const priorAcorns = prior?.bestAcorns ?? 0;
+    const newBestTime = finished && finishTicks > 0 && (!priorTicks || finishTicks < priorTicks);
+    const newBestAcorns = lvl.stats.acorns > priorAcorns;
+    const bestFinishTicks = newBestTime ? finishTicks : priorTicks;
+    const bestAcorns = Math.max(priorAcorns, lvl.stats.acorns);
+    records[def.raceEventId ?? def.id] = { bestFinishTicks, bestAcorns };
+    const total = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
+    writeSave(save);
+    w.lastLevel = {
+      def,
+      finished,
+      met,
+      newMask: mask,
+      gained: 0,
+      totalBefore: total,
+      totalAfter: total,
+      stats: { ...lvl.stats },
+      raceRecord: {
+        finishTicks,
+        acorns: lvl.stats.acorns,
+        bestFinishTicks,
+        bestAcorns,
+        newBestTime,
+        newBestAcorns,
+      },
+    };
+    w.lvl = null;
+    w.tut = null;
+    w.screen = "lvldone";
+    w.deadTimer = 0;
+    return;
+  }
   const before = save.stars?.[def.id] || 0;
   const totalBefore = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
   if (!save.stars) save.stars = {};
@@ -2006,6 +2068,27 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.particles = w.particles.filter((p) => p.life > 0);
 
   if (w.screen !== "play") return null;
+
+  if (w.race) {
+    const result = stepRace(w.race);
+    const sy = w.H / 640;
+    w.squirrel.y = w.race.y * sy;
+    w.squirrel.vy = w.race.vy * sy;
+    w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.race.vy / 720));
+    w.speed = w.race.speed;
+    w.distance = w.race.coursePosition;
+    w.runAcorns = w.race.acorns;
+    w.score = w.race.ringLedger.filter((s) => s === "passed").length;
+    if (w.lvl) {
+      w.lvl.stats.acorns = w.race.acorns;
+      w.lvl.stats.finishTicks = w.race.finishTicks ?? 0;
+    }
+    if (result.finished && w.lvl) {
+      settleLevel(w, save, true);
+      return "finish";
+    }
+    return result.sound;
+  }
 
   if (w.tut) {
     w.tut.t += dt;
