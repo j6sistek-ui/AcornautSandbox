@@ -345,12 +345,33 @@ if (IS_BETA) {
     }
 }
 export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;
+/** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
+ * cannot change chapter counts, unlock order, star totals, or rewards. */
+export const PROTOTYPE_RACE_MISSION = {
+    id: "prototype-chapter-1",
+    stage: 0,
+    n: 1,
+    ord: 0,
+    name: "HYPER RUN",
+    base: "race",
+    gates: 22,
+    fx: { env: 0 },
+    goals: [
+        { kind: "finish" },
+        { kind: "time", ticks: 10200 },
+        { kind: "time", ticks: 8700 },
+    ],
+    experimental: true,
+    raceEventId: "prototype-chapter-1",
+};
+export const experimentalRaceById = (id) => id === PROTOTYPE_RACE_MISSION.id ? PROTOTYPE_RACE_MISSION : null;
 // ------------------------------------------------------------------ prose
 export function goalText(g, def) {
     switch (g.kind) {
         case "finish": return def.base === "tunnel" ? `Survive ${def.gates} wormhole sections`
             : def.base === "spill" ? `Survive ${def.gates} seconds in the Spill`
-                : `Reach the portal — ${def.gates} gates`;
+                : def.base === "race" ? "Finish the course"
+                    : `Reach the portal — ${def.gates} gates`;
         case "acorns": return `Collect ${g.n} acorns`;
         case "gold": return g.n === 1 ? "Catch a golden acorn" : `Catch ${g.n} golden acorns`;
         case "noBounce": return "Touch no planet";
@@ -359,6 +380,10 @@ export function goalText(g, def) {
         case "maxTaps": return `At most ${g.n} taps`;
         case "flow": return `Reach Flow \u00d7${g.n}`;
         case "score": return `Score ${g.n} points`;
+        case "time": {
+            const seconds = Math.floor(g.ticks / 60);
+            return `Finish in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")} or faster`;
+        }
     }
 }
 export function fxText(fx) {
@@ -379,7 +404,7 @@ export function fxText(fx) {
         out.push("SWAYING GATES");
     return out;
 }
-export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0 });
+export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, finishTicks: 0 });
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def) {
     let n = 0;
@@ -416,6 +441,7 @@ export function goalMet(g, s) {
         case "maxTaps": return s.taps <= g.n;
         case "flow": return s.flow >= g.n;
         case "score": return s.score >= g.n;
+        case "time": return s.finishTicks > 0 && s.finishTicks <= g.ticks;
     }
 }
 // --------------------------------------------------------------- progress

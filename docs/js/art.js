@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, TAP_ANIM_ENABLED } from "./catalog.js?v=66";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=67";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -116,7 +116,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {},
+        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -261,6 +261,12 @@ export async function loadArt() {
         "eclipse",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
+    const hyperRunIds = [
+        "entry-mouth", "entry-rim-back", "entry-rim-front", "entry-glyphs",
+        "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
+        "gate-missed-back", "gate-missed-front",
+        "return-back", "return-front", "return-glyphs",
+    ];
     async function named(ids, folder, suffix = "", required = false) {
         const out = {};
         await Promise.all(ids.map(async (id) => {
@@ -282,7 +288,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 4),
@@ -301,6 +307,9 @@ export async function loadArt() {
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8 } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
+        // Beta-only, like the tap banks: production can never fly the race,
+        // so it never spends a byte downloading the portal set.
+        named(IS_BETA ? hyperRunIds : [], "hyper-run"),
     ]);
     return {
         ready: true,
@@ -322,5 +331,6 @@ export async function loadArt() {
         suitBody,
         suitTap,
         suitTapTail,
+        hyperRun,
     };
 }

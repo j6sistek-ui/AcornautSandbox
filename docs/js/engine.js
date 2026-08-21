@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=66";
-import { sfx, unlockAudio, music } from "./audio.js?v=66";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=66";
-import { drawHud, drawWorld } from "./draw.js?v=66";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=66";
-import { emptyStats, levelById, levelUnlocked } from "./campaign.js?v=66";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, snapshot, updateWorld, } from "./sim.js?v=66";
+import { emptyArt, loadArt } from "./art.js?v=67";
+import { sfx, unlockAudio, music } from "./audio.js?v=67";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=67";
+import { drawHud, drawWorld } from "./draw.js?v=67";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=67";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=67";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=67";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -16,6 +16,7 @@ export async function createEngine(canvas) {
     let raf = 0;
     let last = performance.now();
     let running = false;
+    let raceAccumulator = 0;
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
     // A finished Spill mission left its result in the hallway on the way
@@ -96,11 +97,11 @@ export async function createEngine(canvas) {
             return "denied";
         },
         flyLevel(id) {
-            const def = levelById(id);
+            const def = levelById(id) ?? (IS_BETA ? experimentalRaceById(id) : null);
             if (!def)
                 return false;
             // starsOf, not the raw tally: Briella's code opens chapters here too
-            if (!levelUnlocked(def, save.stars || {}, starsOf(save)))
+            if (!def.experimental && !levelUnlocked(def, save.stars || {}, starsOf(save)))
                 return false;
             unlockAudio();
             // A SPILL mission lives on the lab page: hand it the mission card
@@ -118,7 +119,8 @@ export async function createEngine(canvas) {
             // having a save, and a first-timer meets the tutorial in endless.
             // A Wormhole mission flies a FIXED corridor: the seed is the level's
             // ordinal, so mission 3-4 is the same test for every pilot, forever.
-            resetRun(world, save, def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
+            resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
+            raceAccumulator = 0;
             guideStep("level");
             notify();
             return true;
@@ -127,6 +129,10 @@ export async function createEngine(canvas) {
             world.screen = s;
             if (s === "title")
                 world.tut = null;
+            if (s === "title" || s === "log") {
+                world.race = null;
+                raceAccumulator = 0;
+            }
             notify();
         },
         buyHelmet: (id) => transactHelmet(id),
@@ -151,11 +157,13 @@ export async function createEngine(canvas) {
             notify();
         },
         pause() {
+            setRaceHeld(world, false);
             pausePlay(world);
             notify();
         },
         resume() {
             resumePlay(world);
+            raceAccumulator = 0;
             last = performance.now();
             notify();
         },
@@ -339,7 +347,7 @@ export async function createEngine(canvas) {
         if (!parent)
             return;
         const rect = parent.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
         const W = Math.min(rect.width, 480);
         const H = rect.height;
         canvas.width = Math.floor(W * dpr);
@@ -365,7 +373,7 @@ export async function createEngine(canvas) {
         e.preventDefault();
         const p = pos(e);
         swipe = { y0: p.y, t0: performance.now(), fired: false };
-        const ev = flap(world, save);
+        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
         if (ev === "flap")
             sfx.flap();
         if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
@@ -375,7 +383,7 @@ export async function createEngine(canvas) {
         notify();
     }, { passive: false });
     canvas.addEventListener("pointermove", (e) => {
-        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
+        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel" || !!world.race)
             return;
         const p = pos(e);
         if (performance.now() - swipe.t0 > 320) {
@@ -391,6 +399,7 @@ export async function createEngine(canvas) {
         }
     }, { passive: true });
     const end = () => {
+        setRaceHeld(world, false);
         swipe = null;
     };
     canvas.addEventListener("pointerup", end);
@@ -414,7 +423,7 @@ export async function createEngine(canvas) {
             else if (world.screen === "pause")
                 engine.resume();
             else if (world.screen === "play") {
-                const ev = flap(world, save);
+                const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
                 if (ev === "flap")
                     sfx.flap();
             }
@@ -429,13 +438,19 @@ export async function createEngine(canvas) {
             notify();
         }
     });
-    function loop(now) {
-        const dt = Math.min(0.033, (now - last) / 1000);
-        last = now;
-        const ev = updateWorld(world, save, dt);
+    window.addEventListener("keyup", (e) => {
+        if (e.code === "Space" || e.code === "ArrowUp")
+            setRaceHeld(world, false);
+    });
+    window.addEventListener("blur", () => setRaceHeld(world, false));
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden)
+            setRaceHeld(world, false);
+    });
+    function dispatchWorldEvent(ev) {
         if (ev === "acorn")
             sfx.acorn();
-        if (ev === "gold")
+        if (ev === "gold" || ev === "ring")
             sfx.gold();
         if (ev === "freeze")
             sfx.freeze();
@@ -451,6 +466,8 @@ export async function createEngine(canvas) {
             sfx.milestone();
         if (ev === "bounce")
             sfx.bounce();
+        if (ev === "debris")
+            sfx.bounce();
         if (ev === "die") {
             writeSave(save);
             sfx.die();
@@ -460,9 +477,26 @@ export async function createEngine(canvas) {
             sfx.shield();
             notify();
         }
-        if (ev === "shift") {
+        if (ev === "shift" || ev === "entry" || ev === "return") {
             sfx.shift();
             notify();
+        }
+    }
+    function loop(now) {
+        const frameDt = Math.min(0.25, (now - last) / 1000);
+        last = now;
+        if (world.race) {
+            raceAccumulator += frameDt;
+            while (raceAccumulator + 1e-12 >= 1 / 60) {
+                dispatchWorldEvent(updateWorld(world, save, 1 / 60));
+                raceAccumulator -= 1 / 60;
+                if (world.screen === "lvldone")
+                    break;
+            }
+        }
+        else {
+            raceAccumulator = 0;
+            dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
         }
         // The retro soundtrack rides the retro renderer: on for the whole
         // arcade run and for the shifted stretches of Free Flight, off the
@@ -512,4 +546,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=66";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=67";
