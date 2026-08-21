@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER } from "./catalog";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, TAP_ANIM_ENABLED } from "./catalog";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -30,6 +30,12 @@ export type ArtBank = {
   // full canvas so they register against the whole-suit sprite.
   suitTail: Record<string, Sprite>;
   suitBody: Record<string, Sprite>;
+  // Optional one-shot body animation banks. Frames stay on the same 256px
+  // canvas as the static suit so the tail hinge and helmet rig remain stable.
+  suitTap: Record<string, Sprite[]>;
+  // Tail-only companion banks. These preserve the approved painted fur while
+  // bending through the plume instead of rotating as one rigid piece.
+  suitTapTail: Record<string, Sprite[]>;
 };
 
 declare global {
@@ -155,7 +161,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-    suitTail: {}, suitBody: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {},
   };
 }
 
@@ -328,7 +334,17 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody] =
+  async function namedSeries(counts: Record<string, number>, folder: string, separator: string) {
+    const out: Record<string, Sprite[]> = {};
+    await Promise.all(
+      Object.entries(counts).map(async ([id, count]) => {
+        out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
+      }),
+    );
+    return out;
+  }
+
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -346,6 +362,8 @@ export async function loadArt(): Promise<ArtBank> {
       optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8 } : {}, "suits", "-tap-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
     ]);
   return {
     ready: true,
@@ -365,5 +383,7 @@ export async function loadArt(): Promise<ArtBank> {
     shieldnut: shieldnut ? asSprite(shieldnut as HTMLImageElement) : null,
     suitTail,
     suitBody,
+    suitTap,
+    suitTapTail,
   };
 }

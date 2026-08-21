@@ -1,4 +1,4 @@
-import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import {SKY_RGB,  ENVS, HELMETS, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
@@ -1144,6 +1144,72 @@ function drawRigLayer(
   ctx.restore();
 }
 
+function rigPlacement(
+  ref: { x: number; y: number; w: number; h: number },
+  x: number,
+  y: number,
+  size: number,
+  pivot: [number, number],
+) {
+  const scale = size / Math.max(1, Math.max(ref.w, ref.h));
+  const ox = x - (ref.w * scale) / 2 - ref.x * scale;
+  const oy = y - (ref.h * scale) / 2 - ref.y * scale;
+  return { scale, px: ox + pivot[0] * scale, py: oy + pivot[1] * scale };
+}
+
+// The shared tail translation for suits without a painted tap bank. Six
+// overlapping radial sections rotate by progressively larger amounts from the
+// planted hinge to the tip. At game scale this reads as a continuous flexible
+// plume, while every pixel still comes from the model's approved tail asset.
+function drawBentRigLayer(
+  ctx: CanvasRenderingContext2D,
+  layer: Sprite | HTMLImageElement,
+  ref: { x: number; y: number; w: number; h: number },
+  x: number,
+  y: number,
+  size: number,
+  baseRot: number,
+  bend: number,
+  pivot: [number, number],
+) {
+  const { scale, px, py } = rigPlacement(ref, x, y, size, pivot);
+  const box = (layer as Sprite).box ?? { x: 0, y: 0, w: layer.width, h: layer.height };
+  const corners = [
+    [box.x, box.y], [box.x + box.w, box.y],
+    [box.x, box.y + box.h], [box.x + box.w, box.y + box.h],
+  ];
+  const maxR = Math.max(...corners.map(([cx, cy]) => Math.hypot(cx - pivot[0], cy - pivot[1]))) * scale;
+  const segments = 6;
+  const overlap = Math.max(0.75, scale * 3.5);
+  // Tip first, base last: the overlap hides section edges beneath the denser
+  // inner fur instead of building a bright double-alpha seam on top.
+  for (let i = segments - 1; i >= 0; i--) {
+    const inner = Math.max(0, (maxR * i) / segments - overlap);
+    const outer = (maxR * (i + 1)) / segments + overlap;
+    const along = (i + 0.5) / segments;
+    const smooth = along * along * (3 - 2 * along);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(px, py, outer, 0, Math.PI * 2);
+    if (inner > 0) ctx.arc(px, py, inner, 0, Math.PI * 2, true);
+    ctx.clip("evenodd");
+    drawRigLayer(ctx, layer, ref, x, y, size, baseRot + bend * Math.pow(smooth, 1.18), pivot);
+    ctx.restore();
+  }
+}
+
+const TAP_TAIL_CURVE = [0, 0.09, 0.2, 0.34, 0.47, 0.54, 0.46, 0.27, 0.04, -0.15, -0.09, 0];
+const TAP_BODY_CURVE = [0, 0.18, 0.48, 1, 0.78, 0.43, 0.16, -0.08, 0];
+
+function sampleTapCurve(curve: number[], tapAnimT: number) {
+  const at = Math.max(0, Math.min(curve.length - 1, (tapAnimT / TAP_ANIM_DURATION) * (curve.length - 1)));
+  const lo = Math.floor(at);
+  const hi = Math.min(curve.length - 1, lo + 1);
+  const f = at - lo;
+  const eased = f * f * (3 - 2 * f);
+  return curve[lo] * (1 - eased) + curve[hi] * eased;
+}
+
 
 // Which art still has a helmet painted into it. The eight flight animation
 // frames do (they were never re-rendered), and so does any suit flagged
@@ -1238,6 +1304,7 @@ function paintIllustrated(
   blend = 0,
   halo: "dark" | "light" = "dark",
   tailRot = 0,
+  tapAnimT = -1,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -1256,9 +1323,56 @@ function paintIllustrated(
   const rigB = suited ? art?.suitBody?.[suit.id] : null;
   if (rigT && rigB && suited) {
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
-    drawRigLayer(ctx, rigT, ref, x, y, size, tailRot, TAIL_PIVOT[suit.id], halo);
-    drawRigLayer(ctx, rigB, ref, x, y, size, 0, undefined, halo);
-    if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    const pivot = TAIL_PIVOT[suit.id];
+    const tapFrames = art?.suitTap?.[suit.id] ?? [];
+    const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
+    let tailPose: Sprite | HTMLImageElement = rigT;
+    let tailPoseRot = tailRot;
+    if (tapAnimT >= 0 && tapTailFrames.length === 12) {
+      // One tail drawing per 30 fps presentation frame. The sequence bends
+      // progressively from the planted hinge to the tip: launch drag, delayed
+      // whip, one rebound, settle. A small share of the live spring remains so
+      // a tap entered mid-swing does not snap to a canned orientation.
+      const tailIndex = Math.min(11, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 12));
+      tailPose = tapTailFrames[tailIndex];
+      tailPoseRot *= 0.22;
+      drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
+    } else if (tapAnimT >= 0 && pivot) {
+      drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.22, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
+    } else {
+      drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
+    }
+    let poseA: Sprite | HTMLImageElement = rigB;
+    if (tapAnimT >= 0 && tapFrames.length === 8) {
+      // A traditional stepped bank stays crisp at the 52 px gameplay size.
+      // Crossfading painterly faces produces double eyes and soft armor seams;
+      // eight close poses already supply the in-betweens. Static body bookends
+      // make both the tap entry and return to glide exact, with no identity pop.
+      const poses: (Sprite | HTMLImageElement)[] = [rigB, ...tapFrames, rigB];
+      const poseTimes = [0, 0.025, 0.06, 0.1, 0.145, 0.195, 0.245, 0.295, 0.34, 0.375, TAP_ANIM_DURATION];
+      let pose = poses.length - 1;
+      for (let i = 0; i < poses.length; i++) {
+        if (tapAnimT < poseTimes[i + 1]) { pose = i; break; }
+      }
+      poseA = poses[pose];
+    }
+    if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
+      // Universal body impulse: scale from the tail hinge, not the canvas
+      // centre. The model stretches forward a few pixels and rebounds without
+      // repainting armor, anatomy, face, or the helmet attachment.
+      const pulse = sampleTapCurve(TAP_BODY_CURVE, tapAnimT);
+      const { px, py } = rigPlacement(ref, x, y, size, pivot);
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.scale(1 + pulse * 0.052, 1 - pulse * 0.028);
+      ctx.translate(-px, -py);
+      drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+      if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+      ctx.restore();
+    } else {
+      drawRigLayer(ctx, poseA, ref, x, y, size, 0, undefined, halo);
+      if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    }
     return;
   }
   // frames crossfade instead of hard-switching — the four paintings blend
@@ -1317,21 +1431,30 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   const spr = frames[idx] ?? null;
   const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
+  const articulatedTap = !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
   // the sim's real pitch — dives nose down, bounces kick the body over;
   // the old ±6° bank made every impact read as nothing happening
-  const bank = w.squirrel.rot * 0.8;
+  let bank = w.squirrel.rot * 0.8;
+  if (articulatedTap) {
+    // Every current model now uses the same eased visual pitch clock. Eclipse
+    // supplies painted body poses; the other rigs use the identity-safe body
+    // pulse and sectional tail bend in paintIllustrated below.
+    const raw = Math.max(0, Math.min(1, w.tapAnimT / 0.14));
+    const eased = 1 - Math.pow(1 - raw, 3);
+    bank = w.tapAnimFromRot * 0.8 * (1 - eased) + bank * eased;
+  }
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
-  ctx.rotate(bank - kick * 0.12);
-  const pop = 1 + kick * 0.05;
+  ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
+  const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
   // fresh planet bounce: a squash-and-stretch pulse sells the impact
   const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
   if (sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
-    w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA);
+    w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT);
   ctx.restore();
 }
 
