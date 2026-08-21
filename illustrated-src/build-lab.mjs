@@ -33,6 +33,7 @@ function tsc(entry, outDir) {
 
 tsc("illustrated-src/lab/spill.ts", join(root, "docs/lab/spill/js"));
 tsc("illustrated-src/lab/rig.ts", join(root, "docs/lab/rig/js"));
+tsc("illustrated-src/lab/skytest.ts", join(root, "docs/lab/skytest/js"));
 
 // The rig editor opens on the shipping numbers, read straight out of
 // draw.ts at build time.
