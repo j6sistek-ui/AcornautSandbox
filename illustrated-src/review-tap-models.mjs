@@ -24,7 +24,7 @@ globalThis.document = {
 globalThis.localStorage = { getItem() { return null; }, setItem() {}, removeItem() {} };
 
 const js = join(mkdtempSync(join(tmpdir(), "acornaut-model-review-js-")), "js");
-cpSync(join(root, "docs/js65"), js, { recursive: true });
+cpSync(join(root, "docs/js"), js, { recursive: true });
 writeFileSync(join(js, "package.json"), '{"type":"module"}\n');
 const [{ drawWorld }, { makeWorld, initStars, flap, updateWorld }, { defaultSave }, { SUITS }] =
   await Promise.all([
@@ -81,7 +81,7 @@ const art = {
   suitTap: { eclipse: eclipseTap }, suitTapTail: { eclipse: eclipseTailTap },
 };
 
-const W = 390, H = 844, FPS = 30, SECONDS = 1.2;
+const W = 390, H = 844, FPS = 30, SECONDS = 1.5;
 const COLS = 5, ROWS = 4, CELL = 190;
 const output = createCanvas(COLS * CELL, ROWS * CELL);
 const oc = output.getContext("2d");
@@ -105,7 +105,7 @@ const states = SUITS.map((suit, index) => {
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
-const taps = new Set([5, 12]);
+const taps = new Set([5, 14, 23]);
 let drawMs = 0;
 let drawCalls = 0;
 for (let frame = 0; frame < Math.round(SECONDS * FPS); frame++) {

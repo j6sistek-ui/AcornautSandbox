@@ -226,6 +226,8 @@ export type World = {
   flapBoost: number;
   /** elapsed rendering time for the one-shot articulated tap burst; -1 idle */
   tapAnimT: number;
+  /** queued slow-recovery time from taps received before the burst settles */
+  tapAnimHold: number;
   /** displayed pitch at burst entry, used to ease the otherwise instant snap */
   tapAnimFromRot: number;
   hitCooldown: number;
@@ -341,6 +343,7 @@ export function makeWorld(W: number, H: number): World {
     invulnLeft: 0,
     flapBoost: 0,
     tapAnimT: -1,
+    tapAnimHold: 0,
     tapAnimFromRot: 0,
     hitCooldown: 0,
     trailT: 0,
@@ -858,6 +861,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.invulnLeft = 0;
   w.flapBoost = 0;
   w.tapAnimT = -1;
+  w.tapAnimHold = 0;
   w.tapAnimFromRot = 0;
   w.hitCooldown = 0;
   w.bounceUp = false;
@@ -1693,18 +1697,21 @@ export function flap(w: World, save: SaveData) {
     w.lvl.stats.taps += 1;
     w.lvl.strobeT = 0;      // THE BLACKOUT: a tap is a flashbulb
   }
-  // A repeated tap while the short burst is still playing keeps the current
-  // articulated pose. Physics and particles still respond immediately, but
-  // the picture no longer jumps back to frame one mid-motion.
+  // A repeated tap while the burst is still playing keeps the current body
+  // pose and recovery clock. Physics, particles, pitch, and the live tail
+  // spring still respond immediately, so the new input adds motion without
+  // forcing the painted body through its idle/anticipation bookend again.
   if (TAP_ANIM_ENABLED) {
     if (w.tapAnimT < 0) {
       w.tapAnimT = 0;
+      w.tapAnimHold = 0;
       w.tapAnimFromRot = w.squirrel.rot;
-    } else if (w.tapAnimT > 0.18) {
-      // A rapid repeat is a small second push, not a restart. Rewind only into
-      // the thrust/peak neighborhood: this extends the burst while avoiding
-      // both the idle bookend and a jump back to the anticipation pose.
-      w.tapAnimT = Math.max(0.16, w.tapAnimT - 0.1);
+    } else {
+      // Bank a little extra settling time without touching the current pose.
+      // Once the knees have tucked, the remaining frames play at 35% speed
+      // until this reserve is spent. Repeated inputs accumulate only a short,
+      // bounded reserve so the body stays alive but never hangs indefinitely.
+      w.tapAnimHold = Math.min(0.3, w.tapAnimHold + 0.16);
     }
   }
   w.squirrel.vy = flapOf(save, w);
@@ -2200,8 +2207,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.tailA > TAIL.maxA) { w.tailA = TAIL.maxA; w.tailV *= -0.35; }
   if (w.tailA < -TAIL.maxA) { w.tailA = -TAIL.maxA; w.tailV *= -0.35; }
   if (TAP_ANIM_ENABLED && w.tapAnimT >= 0) {
-    w.tapAnimT += dt * paceOf(save, w);
-    if (w.tapAnimT >= TAP_ANIM_DURATION) w.tapAnimT = -1;
+    const tapDt = dt * paceOf(save, w);
+    const slowingRecovery = w.tapAnimT >= 0.2 && w.tapAnimHold > 0;
+    w.tapAnimT += tapDt * (slowingRecovery ? 0.35 : 1);
+    if (slowingRecovery) w.tapAnimHold = Math.max(0, w.tapAnimHold - tapDt);
+    if (w.tapAnimT >= TAP_ANIM_DURATION) {
+      w.tapAnimT = -1;
+      w.tapAnimHold = 0;
+    }
   }
 
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
