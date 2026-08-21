@@ -1,10 +1,10 @@
-import { emptyArt, loadArt } from "./art.js?v=71";
-import { sfx, unlockAudio, music } from "./audio.js?v=71";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=71";
-import { drawHud, drawWorld } from "./draw.js?v=71";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=71";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=71";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, snapshot, updateWorld, } from "./sim.js?v=71";
+import { emptyArt, loadArt } from "./art.js?v=72";
+import { sfx, unlockAudio, music } from "./audio.js?v=72";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=72";
+import { drawHud, drawWorld } from "./draw.js?v=72";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=72";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=72";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=72";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -158,6 +158,7 @@ export async function createEngine(canvas) {
         },
         pause() {
             setRaceHeld(world, false);
+            setTunnelHeld(world, false);
             pausePlay(world);
             notify();
         },
@@ -373,7 +374,8 @@ export async function createEngine(canvas) {
         e.preventDefault();
         const p = pos(e);
         swipe = { y0: p.y, t0: performance.now(), fired: false };
-        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
+        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
+            : setTunnelHeld(world, true) ? "flap" : flap(world, save);
         if (ev === "flap")
             sfx.flap();
         if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
@@ -400,6 +402,7 @@ export async function createEngine(canvas) {
     }, { passive: true });
     const end = () => {
         setRaceHeld(world, false);
+        setTunnelHeld(world, false);
         swipe = null;
     };
     canvas.addEventListener("pointerup", end);
@@ -433,7 +436,8 @@ export async function createEngine(canvas) {
             else if (world.screen === "pause")
                 engine.resume();
             else if (world.screen === "play") {
-                const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
+                const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
+                    : setTunnelHeld(world, true) ? "flap" : flap(world, save);
                 if (ev === "flap")
                     sfx.flap();
             }
@@ -449,13 +453,17 @@ export async function createEngine(canvas) {
         }
     });
     window.addEventListener("keyup", (e) => {
-        if (e.code === "Space" || e.code === "ArrowUp")
+        if (e.code === "Space" || e.code === "ArrowUp") {
             setRaceHeld(world, false);
+            setTunnelHeld(world, false);
+        }
     });
-    window.addEventListener("blur", () => setRaceHeld(world, false));
+    window.addEventListener("blur", () => { setRaceHeld(world, false); setTunnelHeld(world, false); });
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden)
+        if (document.hidden) {
             setRaceHeld(world, false);
+            setTunnelHeld(world, false);
+        }
     });
     function dispatchWorldEvent(ev) {
         if (ev === "acorn")
@@ -556,4 +564,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=71";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=72";

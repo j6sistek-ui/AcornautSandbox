@@ -31,6 +31,7 @@ import {
   resetRun,
   resumePlay,
   setRaceHeld,
+  setTunnelHeld,
   snapshot,
   updateWorld,
   type FlightMode,
@@ -221,6 +222,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     pause() {
       setRaceHeld(world, false);
+      setTunnelHeld(world, false);
       pausePlay(world);
       notify();
     },
@@ -421,7 +423,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       e.preventDefault();
       const p = pos(e);
       swipe = { y0: p.y, t0: performance.now(), fired: false };
-      const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
+      const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
+        : setTunnelHeld(world, true) ? "flap" : flap(world, save);
       if (ev === "flap") sfx.flap();
       if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
         world.tut.hold = false;
@@ -451,6 +454,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   );
   const end = () => {
     setRaceHeld(world, false);
+    setTunnelHeld(world, false);
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
@@ -478,7 +482,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       else if (world.screen === "title") engine.fly("fly");
       else if (world.screen === "pause") engine.resume();
       else if (world.screen === "play") {
-        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none") : flap(world, save);
+        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
+          : setTunnelHeld(world, true) ? "flap" : flap(world, save);
         if (ev === "flap") sfx.flap();
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
@@ -490,11 +495,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
   });
   window.addEventListener("keyup", (e) => {
-    if (e.code === "Space" || e.code === "ArrowUp") setRaceHeld(world, false);
+    if (e.code === "Space" || e.code === "ArrowUp") { setRaceHeld(world, false); setTunnelHeld(world, false); }
   });
-  window.addEventListener("blur", () => setRaceHeld(world, false));
+  window.addEventListener("blur", () => { setRaceHeld(world, false); setTunnelHeld(world, false); });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) setRaceHeld(world, false);
+    if (document.hidden) { setRaceHeld(world, false); setTunnelHeld(world, false); }
   });
   function dispatchWorldEvent(ev: string | null) {
     if (ev === "acorn") sfx.acorn();

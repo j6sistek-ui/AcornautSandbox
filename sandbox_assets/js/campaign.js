@@ -324,7 +324,7 @@ if (IS_BETA) {
             continue;
         if (l.n === 4) {
             l.base = "tunnel";
-            l.gates = 3 + l.stage; // 5..13 sections
+            l.gates = 20 + l.stage * 5; // SECONDS survived: 30..70
             l.goals = [
                 { kind: "finish" },
                 { kind: "acorns", n: 4 + l.stage * 2 }, // 8..24 acorns
@@ -368,7 +368,7 @@ export const experimentalRaceById = (id) => id === PROTOTYPE_RACE_MISSION.id ? P
 // ------------------------------------------------------------------ prose
 export function goalText(g, def) {
     switch (g.kind) {
-        case "finish": return def.base === "tunnel" ? `Survive ${def.gates} wormhole sections`
+        case "finish": return def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
             : def.base === "spill" ? `Survive ${def.gates} seconds in the Spill`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
