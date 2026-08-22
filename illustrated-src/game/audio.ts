@@ -90,9 +90,9 @@ const MUSIC_FILES: Record<MusicTrack, string> = {
   voyage: "music/voyage.mp3",
   cosmos: "music/cosmos.m4a",
 };
-// the menu score sits a notch under the chiptune so speech-level SFX and
-// the first-run tutorial reads stay on top of it
-const MUSIC_VOLS: Record<MusicTrack, number> = { voyage: 0.42, cosmos: 0.5 };
+// Halved on owner feedback: at 0.42 the score buried every effect. The
+// music is a floor under the SFX now, not a ceiling over them.
+const MUSIC_VOLS: Record<MusicTrack, number> = { voyage: 0.21, cosmos: 0.25 };
 const musicEls: Record<MusicTrack, HTMLAudioElement | null> = { voyage: null, cosmos: null };
 // Each element is routed THROUGH the shared WebAudio graph instead of
 // playing on its own: a bare <audio> element ignores the phone's silent
