@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=74" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=75" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=74" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=75" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -34,6 +34,10 @@
     #app, .ac-root { width: 100%; height: 100%; display: flex; justify-content: center; }
     .ac-stage { position: relative; width: 100%; max-width: 480px; height: 100%; background: #0c1224; overflow: hidden; }
     .ac-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    /* WIDESCREEN MODE (beta): the stage sheds the phone cap; DOM menus
+       hold a centred column until the responsive menu pass. */
+    body.ac-wide .ac-stage { max-width: none; }
+    body.ac-wide .ac-overlay { left: 50%; right: auto; width: min(100%, 500px); transform: translateX(-50%); }
     .ac-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; pointer-events: none; }
     .ac-overlay > * { pointer-events: auto; }
     .ac-sheet { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px 18px 18px; background: rgba(7,11,22,0.9); overflow: hidden; }
@@ -435,7 +439,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js74/standalone.js";
+    import { bootStandalone } from "./js75/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

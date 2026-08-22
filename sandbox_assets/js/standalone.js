@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=74";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=74";
-import { drawSprite as drawSpriteOn } from "./art.js?v=74";
-import { createEngine } from "./engine.js?v=74";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=74";
-import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=74";
-import { formatRaceTicks } from "./race.js?v=74";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=75";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=75";
+import { drawSprite as drawSpriteOn } from "./art.js?v=75";
+import { createEngine } from "./engine.js?v=75";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=75";
+import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=75";
+import { formatRaceTicks } from "./race.js?v=75";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -14,6 +14,11 @@ function el(tag, cls = "", text) {
     return n;
 }
 export async function bootStandalone(root) {
+    // WIDESCREEN MODE, beta only: the stage sheds its phone cap and the
+    // canvas takes the whole window; DOM menus stay a centred column until
+    // the responsive menu pass. Production keeps the shipped layout.
+    if (IS_BETA)
+        document.body.classList.add("ac-wide");
     root.innerHTML = "";
     root.className = "ac-root";
     const stage = el("div", "ac-stage");
@@ -340,7 +345,9 @@ export async function bootStandalone(root) {
     // has touched the page, so this tap is what lets the music play.
     function drawSplash() {
         const box = el("div", "ac-splash");
-        box.style.backgroundImage = `url("${artRootUrl()}/menu-splash.jpg?v=${ART_VER}")`;
+        const splashArt = IS_BETA && window.innerWidth > window.innerHeight
+            ? "menu-splash-wide.jpg" : "menu-splash.jpg";
+        box.style.backgroundImage = `url("${artRootUrl()}/${splashArt}?v=${ART_VER}")`;
         box.append(el("div", "ac-splash-ink"));
         const stack = el("div", "ac-splash-stack");
         stack.append(el("h1", "ac-splash-title", "ACORNAUT"));
@@ -836,7 +843,17 @@ export async function bootStandalone(root) {
                 b.append(pic);
                 const txt = el("div", "ac-modtxt");
                 txt.append(el("p", "ac-modname", name), el("p", "ac-sub", blurb));
-                b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
+                // An owned mod is a SWITCH, not a price: the card flips it and the
+                // slider shows the state at a glance. Prices and star locks keep
+                // their text chip.
+                if (state === "ON" || state === "OFF" || state === "ARMED") {
+                    const sw = el("span", state === "OFF" ? "ac-switch" : "ac-switch on");
+                    sw.append(el("i", "ac-knob"));
+                    b.append(txt, sw);
+                }
+                else {
+                    b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
+                }
                 b.onclick = () => hit();
                 grid.append(b);
                 return b;
@@ -847,7 +864,7 @@ export async function bootStandalone(root) {
                     drawSpriteOn(ctx, engine.art.shieldnut, 28, 28, 52);
                 return c;
             };
-            mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.", MOD_SHIELD_COST, s.startShield ? "ARMED" : null, shieldNut(), () => engine.toggleMod("shield"));
+            mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.", MOD_SHIELD_COST, s.startShield ? "ARMED" : "OFF", shieldNut(), () => engine.toggleMod("shield"));
             mod("battery", "Shield Battery", "Stack up to three shield charges instead of one. Bought once.", MOD_BATTERY_COST, s.battery ? "OWNED" : null, batteryIcon(56), () => engine.toggleMod("battery"));
             // Flight mods change how a run FLIES rather than what you survive, so
             // they say ON / OFF rather than OWNED: buying one does not force you

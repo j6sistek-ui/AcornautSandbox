@@ -44,14 +44,17 @@ function coverDraw(
   img: HTMLImageElement | HTMLCanvasElement,
   W: number,
   H: number,
+  pan = 0.5,
 ) {
-  // a procedural sky is already composed for this exact canvas
+  // a procedural sky is already composed for this exact canvas.
+  // `pan` slides the visible window across whatever the cover-crop cannot
+  // show: 0 = left/top edge, 1 = right/bottom edge, 0.5 = the old centre.
   const sw = (img as HTMLImageElement).naturalWidth || img.width;
   const sh = (img as HTMLImageElement).naturalHeight || img.height;
   const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
   const dw = sw * scale;
   const dh = sh * scale;
-  ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  ctx.drawImage(img, (W - dw) * pan, (H - dh) * 0.5, dw, dh);
 }
 
 /** How bright the sky is right now, across an environment crossfade. */
@@ -71,16 +74,27 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   // BETA the ten normal-mode environments render PROCEDURALLY from their
   // recipes (sky-gen.ts) — the painted file is never even fetched — while
   // Deep and Lost's dark plates have no recipe and stay painted.
+  // Deep and Lost fly under ONE wide painting in the beta, whatever the
+  // orientation: landscape sees the full 16:9, portrait sees a window that
+  // DRIFTS across it over the run, and a rotation only resizes the window
+  // instead of swapping the art. The portrait dark plates stay shipped as
+  // the live game's source and the beta's fallback while a wide file loads.
+  const wideDark = IS_BETA && (w.flight === "deep" || w.flight === "lost");
   const idA = skyIdFor(w.flight, w.envA);
   const idB = skyIdFor(w.flight, w.envB);
-  const skyA = proceduralSky(idA, W, H) ?? skyImage(idA);
-  const skyB = proceduralSky(idB, W, H) ?? skyImage(idB);
+  const skyA = proceduralSky(idA, W, H)
+    ?? (wideDark ? skyImage(idA + "-wide") : null) ?? skyImage(idA);
+  const skyB = proceduralSky(idB, W, H)
+    ?? (wideDark ? skyImage(idB + "-wide") : null) ?? skyImage(idB);
+  // a slow triangle wave: out and back, never a snap
+  const drift = (w.time * 0.012) % 2;
+  const pan = wideDark ? 1 - Math.abs(1 - drift) : 0.5;
   const painted = skyB ?? skyA;
   if (painted) {
-    coverDraw(ctx, skyA ?? painted, W, H);
+    coverDraw(ctx, skyA ?? painted, W, H, pan);
     if (skyB && skyA && skyB !== skyA && w.envBlend > 0) {
       ctx.globalAlpha = w.envBlend;
-      coverDraw(ctx, skyB, W, H);
+      coverDraw(ctx, skyB, W, H, pan);
       ctx.globalAlpha = 1;
     }
     // Readability scrim, scaled to how bright this sky is: a white

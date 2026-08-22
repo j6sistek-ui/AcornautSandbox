@@ -18,6 +18,10 @@ function el<K extends keyof HTMLElementTagNameMap>(
 }
 
 export async function bootStandalone(root: HTMLElement) {
+  // WIDESCREEN MODE, beta only: the stage sheds its phone cap and the
+  // canvas takes the whole window; DOM menus stay a centred column until
+  // the responsive menu pass. Production keeps the shipped layout.
+  if (IS_BETA) document.body.classList.add("ac-wide");
   root.innerHTML = "";
   root.className = "ac-root";
   const stage = el("div", "ac-stage");
@@ -367,7 +371,9 @@ export async function bootStandalone(root: HTMLElement) {
   // has touched the page, so this tap is what lets the music play.
   function drawSplash() {
     const box = el("div", "ac-splash");
-    box.style.backgroundImage = `url("${artRootUrl()}/menu-splash.jpg?v=${ART_VER}")`;
+    const splashArt = IS_BETA && window.innerWidth > window.innerHeight
+      ? "menu-splash-wide.jpg" : "menu-splash.jpg";
+    box.style.backgroundImage = `url("${artRootUrl()}/${splashArt}?v=${ART_VER}")`;
     box.append(el("div", "ac-splash-ink"));
     const stack = el("div", "ac-splash-stack");
     stack.append(el("h1", "ac-splash-title", "ACORNAUT"));
@@ -869,7 +875,16 @@ export async function bootStandalone(root: HTMLElement) {
         b.append(pic);
         const txt = el("div", "ac-modtxt");
         txt.append(el("p", "ac-modname", name), el("p", "ac-sub", blurb));
-        b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
+        // An owned mod is a SWITCH, not a price: the card flips it and the
+        // slider shows the state at a glance. Prices and star locks keep
+        // their text chip.
+        if (state === "ON" || state === "OFF" || state === "ARMED") {
+          const sw = el("span", state === "OFF" ? "ac-switch" : "ac-switch on");
+          sw.append(el("i", "ac-knob"));
+          b.append(txt, sw);
+        } else {
+          b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
+        }
         b.onclick = () => hit();
         grid.append(b);
         return b;
@@ -880,7 +895,7 @@ export async function bootStandalone(root: HTMLElement) {
         return c;
       };
       mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.",
-          MOD_SHIELD_COST, s.startShield ? "ARMED" : null, shieldNut(),
+          MOD_SHIELD_COST, s.startShield ? "ARMED" : "OFF", shieldNut(),
           () => engine.toggleMod("shield"));
       mod("battery", "Shield Battery", "Stack up to three shield charges instead of one. Bought once.",
           MOD_BATTERY_COST, s.battery ? "OWNED" : null, batteryIcon(56),

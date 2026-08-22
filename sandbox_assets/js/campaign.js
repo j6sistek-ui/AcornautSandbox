@@ -456,11 +456,17 @@ export function totalStars(stars) {
     return n;
 }
 export function stageUnlocked(stageNum, total) {
+    // The beta is a TEST BUILD: every chapter is open so experimental
+    // missions can be flown without earning the road first.
+    if (IS_BETA)
+        return true;
     const st = STAGES.find((s) => s.num === stageNum);
     return !!st && total >= st.unlock;
 }
 /** a level opens when its stage is open and the level before it is finished */
 export function levelUnlocked(def, stars, total) {
+    if (IS_BETA)
+        return true;
     if (!stageUnlocked(def.stage, total))
         return false;
     if (def.n === 1)
