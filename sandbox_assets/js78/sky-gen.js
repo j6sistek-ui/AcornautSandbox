@@ -16,7 +16,6 @@
 // offscreen canvas at reduced resolution (painterly softness survives the
 // upscale by design); stars go on at full resolution so they stay crisp.
 // The per-frame cost is one drawImage, the same as a painted sky.
-import { IS_BETA } from "./catalog.js?v=77";
 // Palettes sampled from the shipping paintings, then hand-adjusted where
 // an environment wanted more identity (neon's triad, mono's restraint).
 // Tune freely: these numbers ARE the art direction.
@@ -168,10 +167,8 @@ function render(w, h, r) {
 const cache = new Map();
 let cacheKeyWH = "";
 /** The procedural sky for this id at this canvas size — or null when the
- *  id has no recipe (every dark plate) or this build keeps paintings. */
+ *  id has no recipe (every dark plate stays painted). */
 export function proceduralSky(id, w, h) {
-    if (!IS_BETA)
-        return null;
     const r = RECIPES[id];
     if (!r || w < 8 || h < 8)
         return null;

@@ -18,10 +18,9 @@ function el<K extends keyof HTMLElementTagNameMap>(
 }
 
 export async function bootStandalone(root: HTMLElement) {
-  // WIDESCREEN MODE, beta only: the stage sheds its phone cap and the
-  // canvas takes the whole window; DOM menus stay a centred column until
-  // the responsive menu pass. Production keeps the shipped layout.
-  if (IS_BETA) document.body.classList.add("ac-wide");
+  // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
+  // the whole window; DOM menus widen with it in landscape.
+  document.body.classList.add("ac-wide");
   root.innerHTML = "";
   root.className = "ac-root";
   const stage = el("div", "ac-stage");
@@ -371,7 +370,7 @@ export async function bootStandalone(root: HTMLElement) {
   // has touched the page, so this tap is what lets the music play.
   function drawSplash() {
     const box = el("div", "ac-splash");
-    const splashArt = IS_BETA && window.innerWidth > window.innerHeight
+    const splashArt = window.innerWidth > window.innerHeight
       ? "menu-splash-wide.jpg" : "menu-splash.jpg";
     box.style.backgroundImage = `url("${artRootUrl()}/${splashArt}?v=${ART_VER}")`;
     box.append(el("div", "ac-splash-ink"));
@@ -457,7 +456,9 @@ export async function bootStandalone(root: HTMLElement) {
     // The key art carries the top three quarters and fades out under the
     // controls, so nothing sits on a hard edge.
     const art = el("div", "ac-home-art");
-    art.style.backgroundImage = `url("${artRootUrl()}/menu-home.jpg?v=${ART_VER}")`;
+    const homeArt = window.innerWidth > window.innerHeight
+      ? "menu-home-wide.jpg" : "menu-home.jpg";
+    art.style.backgroundImage = `url("${artRootUrl()}/${homeArt}?v=${ART_VER}")`;
     box.append(art, el("div", "ac-home-scrim"));
 
     // Help takes the left corner and the two counters group on the right,

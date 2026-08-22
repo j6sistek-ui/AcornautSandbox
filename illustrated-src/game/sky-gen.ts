@@ -17,7 +17,7 @@
 // upscale by design); stars go on at full resolution so they stay crisp.
 // The per-frame cost is one drawImage, the same as a painted sky.
 
-import { IS_BETA, type SkyId } from "./catalog";
+import { type SkyId } from "./catalog";
 
 type RGB = [number, number, number];
 
@@ -171,9 +171,8 @@ const cache = new Map<string, HTMLCanvasElement>();
 let cacheKeyWH = "";
 
 /** The procedural sky for this id at this canvas size — or null when the
- *  id has no recipe (every dark plate) or this build keeps paintings. */
+ *  id has no recipe (every dark plate stays painted). */
 export function proceduralSky(id: SkyId, w: number, h: number): HTMLCanvasElement | null {
-  if (!IS_BETA) return null;
   const r = RECIPES[id];
   if (!r || w < 8 || h < 8) return null;
   const wh = `${w}x${h}`;

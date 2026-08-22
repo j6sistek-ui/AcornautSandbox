@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=77";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=78";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -306,9 +306,9 @@ export async function loadArt() {
         optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
         many(`${base}/pickups/frozen-`, 16),
         many(`${base}/pickups/shieldnut-`, 16),
-        // Beta-only: production keeps the procedural swirl and downloads nothing.
-        many(`${base}/vortex/worm-`, IS_BETA ? 16 : 0),
-        many(`${base}/vortex/hole-`, IS_BETA ? 16 : 0),
+        // Approved from the beta trial: the painted vortices spin everywhere.
+        many(`${base}/vortex/worm-`, 16),
+        many(`${base}/vortex/hole-`, 16),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),

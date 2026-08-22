@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=77";
-import { modsUnlocked, writeSave } from "./save.js?v=77";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=77";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=77";
-import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=77";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=77";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=77";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=78";
+import { modsUnlocked, writeSave } from "./save.js?v=78";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=78";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=78";
+import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=78";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=78";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=78";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -280,7 +280,14 @@ function pickDebris(env) {
 function sealBlockers(w, env, gapY, gap) {
     const r = PHYS.planetR;
     const blockers = [];
-    const step = 30;
+    // A short landscape field leaves only a thin band between each planet
+    // and the screen edge — the portrait spacing (26px of air, 30px step,
+    // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
+    // Tight packing keeps the seal visible whatever the field height.
+    const short = w.H < 560;
+    const pad = short ? 6 : 26;
+    const step = short ? 24 : 30;
+    const edge = short ? 6 : 20;
     const put = (y, n) => blockers.push({
         y,
         r: 19 + Math.random() * 7,
@@ -288,11 +295,11 @@ function sealBlockers(w, env, gapY, gap) {
         xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
         debris: pickDebris(env),
     });
-    let y = gapY - gap / 2 - r * 2 - 26;
-    for (let n = 0; y > 20 && n < 12; n++, y -= step)
+    let y = gapY - gap / 2 - r * 2 - pad;
+    for (let n = 0; y > edge && n < 12; n++, y -= step)
         put(y, n);
-    y = gapY + gap / 2 + r * 2 + 26;
-    for (let n = 0; y < w.H - 20 && n < 12; n++, y += step)
+    y = gapY + gap / 2 + r * 2 + pad;
+    for (let n = 0; y < w.H - edge && n < 12; n++, y += step)
         put(y, n);
     return blockers;
 }

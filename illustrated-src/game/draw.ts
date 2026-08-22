@@ -86,7 +86,7 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   // DRIFTS across it over the run, and a rotation only resizes the window
   // instead of swapping the art. The portrait dark plates stay shipped as
   // the live game's source and the beta's fallback while a wide file loads.
-  const wideDark = IS_BETA && (w.flight === "deep" || w.flight === "lost");
+  const wideDark = w.flight === "deep" || w.flight === "lost";
   const idA = skyIdFor(w.flight, w.envA);
   const idB = skyIdFor(w.flight, w.envB);
   const skyA = proceduralSky(idA, W, H)

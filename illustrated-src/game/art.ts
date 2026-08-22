@@ -30,10 +30,10 @@ export type ArtBank = {
    *  acorns always have; the single files above stay as icons/fallbacks */
   frozenAnim: Sprite[];
   shieldAnim: Sprite[];
-  /** The painted vortex spin cycles (beta trial): wormhole and black hole.
-   *  Drawn full-canvas at a fixed footprint — the glow makes each frame's
-   *  alpha box breathe, so box-fitting would jitter the size. Empty in
-   *  production, where the procedural vortex still paints. */
+  /** The painted vortex spin cycles: wormhole and black hole. Drawn
+   *  full-canvas at a fixed footprint — the glow makes each frame's alpha
+   *  box breathe, so box-fitting would jitter the size. The procedural
+   *  vortex remains the fallback while frames stream in. */
   wormAnim: Sprite[];
   holeAnim: Sprite[];
   // Suits that ship a hinged tail carry two extra layers, both on the
@@ -381,9 +381,9 @@ export async function loadArt(): Promise<ArtBank> {
       optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
       many(`${base}/pickups/frozen-`, 16),
       many(`${base}/pickups/shieldnut-`, 16),
-      // Beta-only: production keeps the procedural swirl and downloads nothing.
-      many(`${base}/vortex/worm-`, IS_BETA ? 16 : 0),
-      many(`${base}/vortex/hole-`, IS_BETA ? 16 : 0),
+      // Approved from the beta trial: the painted vortices spin everywhere.
+      many(`${base}/vortex/worm-`, 16),
+      many(`${base}/vortex/hole-`, 16),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),

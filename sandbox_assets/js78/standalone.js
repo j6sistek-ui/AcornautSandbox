@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=77";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=77";
-import { drawSprite as drawSpriteOn } from "./art.js?v=77";
-import { createEngine } from "./engine.js?v=77";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=77";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=77";
-import { formatRaceTicks } from "./race.js?v=77";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=78";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=78";
+import { drawSprite as drawSpriteOn } from "./art.js?v=78";
+import { createEngine } from "./engine.js?v=78";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=78";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=78";
+import { formatRaceTicks } from "./race.js?v=78";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -14,11 +14,9 @@ function el(tag, cls = "", text) {
     return n;
 }
 export async function bootStandalone(root) {
-    // WIDESCREEN MODE, beta only: the stage sheds its phone cap and the
-    // canvas takes the whole window; DOM menus stay a centred column until
-    // the responsive menu pass. Production keeps the shipped layout.
-    if (IS_BETA)
-        document.body.classList.add("ac-wide");
+    // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
+    // the whole window; DOM menus widen with it in landscape.
+    document.body.classList.add("ac-wide");
     root.innerHTML = "";
     root.className = "ac-root";
     const stage = el("div", "ac-stage");
@@ -345,7 +343,7 @@ export async function bootStandalone(root) {
     // has touched the page, so this tap is what lets the music play.
     function drawSplash() {
         const box = el("div", "ac-splash");
-        const splashArt = IS_BETA && window.innerWidth > window.innerHeight
+        const splashArt = window.innerWidth > window.innerHeight
             ? "menu-splash-wide.jpg" : "menu-splash.jpg";
         box.style.backgroundImage = `url("${artRootUrl()}/${splashArt}?v=${ART_VER}")`;
         box.append(el("div", "ac-splash-ink"));
@@ -430,7 +428,9 @@ export async function bootStandalone(root) {
         // The key art carries the top three quarters and fades out under the
         // controls, so nothing sits on a hard edge.
         const art = el("div", "ac-home-art");
-        art.style.backgroundImage = `url("${artRootUrl()}/menu-home.jpg?v=${ART_VER}")`;
+        const homeArt = window.innerWidth > window.innerHeight
+            ? "menu-home-wide.jpg" : "menu-home.jpg";
+        art.style.backgroundImage = `url("${artRootUrl()}/${homeArt}?v=${ART_VER}")`;
         box.append(art, el("div", "ac-home-scrim"));
         // Help takes the left corner and the two counters group on the right,
         // beside the level badge they belong with. Flat pills, not painted
