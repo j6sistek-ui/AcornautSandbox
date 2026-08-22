@@ -648,9 +648,14 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
   // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
   // Tight packing keeps the seal visible whatever the field height.
   const short = w.H < 560;
-  const pad = short ? 6 : 26;
-  const step = short ? 24 : 30;
-  const edge = short ? 6 : 20;
+  const pad = short ? 4 : 26;
+  const step = short ? 26 : 30;
+  // Short fields PROJECT the column past the screen edges (owner call):
+  // a rock whose centre sits just off screen still shows its inner half,
+  // so the column visibly continues above and below the planets instead
+  // of stopping wherever the thin band ran out — and a higher or tighter
+  // gate can no longer open an empty-looking slip lane at the edge.
+  const edge = short ? -16 : 20;
   const put = (y: number, n: number) =>
     blockers.push({
       y,
