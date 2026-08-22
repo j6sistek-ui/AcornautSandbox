@@ -16,7 +16,7 @@
 // offscreen canvas at reduced resolution (painterly softness survives the
 // upscale by design); stars go on at full resolution so they stay crisp.
 // The per-frame cost is one drawImage, the same as a painted sky.
-import { IS_BETA } from "./catalog.js?v=75";
+import { IS_BETA } from "./catalog.js?v=76";
 // Palettes sampled from the shipping paintings, then hand-adjusted where
 // an environment wanted more identity (neon's triad, mono's restraint).
 // Tune freely: these numbers ARE the art direction.

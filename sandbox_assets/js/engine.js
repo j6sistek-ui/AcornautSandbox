@@ -1,10 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=75";
-import { sfx, unlockAudio, music } from "./audio.js?v=75";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=75";
-import { drawHud, drawWorld } from "./draw.js?v=75";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=75";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=75";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceHeld, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=75";
+import { emptyArt, loadArt } from "./art.js?v=76";
+import { sfx, unlockAudio, music } from "./audio.js?v=76";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=76";
+import { drawHud, drawWorld } from "./draw.js?v=76";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=76";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=76";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=76";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=76";
+import { raceViewport } from "./race-viewport.js?v=76";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -17,6 +19,7 @@ export async function createEngine(canvas) {
     let last = performance.now();
     let running = false;
     let raceAccumulator = 0;
+    let raceGesture = createRaceGestureState();
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
     // A finished Spill mission left its result in the hallway on the way
@@ -54,6 +57,9 @@ export async function createEngine(canvas) {
             raf = requestAnimationFrame(loop);
         },
         stop() {
+            cancelRaceControls();
+            setTunnelHeld(world, false);
+            swipe = null;
             running = false;
             cancelAnimationFrame(raf);
         },
@@ -69,6 +75,7 @@ export async function createEngine(canvas) {
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
+            resetInputTracking();
             notify();
         },
         startOver() {
@@ -120,12 +127,18 @@ export async function createEngine(canvas) {
             // A Wormhole mission flies a FIXED corridor: the seed is the level's
             // ordinal, so mission 3-4 is the same test for every pilot, forever.
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
+            resetInputTracking();
             raceAccumulator = 0;
             guideStep("level");
             notify();
             return true;
         },
         open(s) {
+            if (s !== "play") {
+                cancelRaceControls();
+                setTunnelHeld(world, false);
+                swipe = null;
+            }
             world.screen = s;
             if (s === "title")
                 world.tut = null;
@@ -154,11 +167,18 @@ export async function createEngine(canvas) {
             save.tutorialDone = false;
             writeSave(save);
             resetRun(world, save, "fly", true);
+            resetInputTracking();
             notify();
         },
         pause() {
-            setRaceHeld(world, false);
+            cancelRaceControls();
             setTunnelHeld(world, false);
+            swipe = null;
+            // A race pause discards the incomplete presentation-frame remainder.
+            // Resume starts from the next whole 60 Hz authority step, so focus loss
+            // can never leak hidden-tab wall time into the time trial.
+            if (world.race)
+                raceAccumulator = 0;
             pausePlay(world);
             notify();
         },
@@ -363,6 +383,23 @@ export async function createEngine(canvas) {
             initStars(world);
     }
     let swipe = null;
+    function applyRaceGesture(result) {
+        raceGesture = result.state;
+        if (!result.input)
+            return false;
+        const wasReady = world.ready;
+        const accepted = setRaceInput(world, result.input);
+        if (accepted && wasReady && !world.ready)
+            raceAccumulator = 0;
+        return accepted;
+    }
+    function resetInputTracking() {
+        raceGesture = createRaceGestureState();
+        swipe = null;
+    }
+    function cancelRaceControls(owner) {
+        return applyRaceGesture(cancelRaceGesture(raceGesture, owner));
+    }
     function pos(e) {
         const rect = canvas.getBoundingClientRect();
         return {
@@ -370,14 +407,28 @@ export async function createEngine(canvas) {
             y: (e.clientY - rect.top) * (world.H / rect.height),
         };
     }
+    function raceInputY(viewY) {
+        const viewport = raceViewport(world.W, world.H);
+        return canonicalRaceY(viewY, viewport.top, viewport.contentHeight);
+    }
     canvas.addEventListener("pointerdown", (e) => {
         if (world.screen !== "play")
             return;
+        if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0))
+            return;
         e.preventDefault();
         const p = pos(e);
+        if (world.race) {
+            try {
+                canvas.setPointerCapture(e.pointerId);
+            }
+            catch { /* capture is best-effort */ }
+            applyRaceGesture(pressRaceGesture(raceGesture, e.pointerId, world.race.tick, raceInputY(p.y)));
+            notify();
+            return;
+        }
         swipe = { y0: p.y, t0: performance.now(), fired: false };
-        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
-            : setTunnelHeld(world, true) ? "flap" : flap(world, save);
+        const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
         if (ev === "flap")
             sfx.flap();
         if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
@@ -387,7 +438,18 @@ export async function createEngine(canvas) {
         notify();
     }, { passive: false });
     canvas.addEventListener("pointermove", (e) => {
-        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel" || !!world.race)
+        if (world.race && world.screen === "play") {
+            const p = pos(e);
+            const result = moveRaceGesture(raceGesture, e.pointerId, world.race.tick, raceInputY(p.y));
+            const isDrop = result.input?.drop === true;
+            const accepted = applyRaceGesture(result);
+            if (isDrop && accepted) {
+                sfx.dive();
+                notify();
+            }
+            return;
+        }
+        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
             return;
         const p = pos(e);
         if (performance.now() - swipe.t0 > 320) {
@@ -402,8 +464,16 @@ export async function createEngine(canvas) {
             notify();
         }
     }, { passive: true });
-    const end = () => {
-        setRaceHeld(world, false);
+    const end = (e) => {
+        if (raceGesture.owner === e.pointerId) {
+            if (e.type === "pointercancel")
+                cancelRaceControls(e.pointerId);
+            else
+                applyRaceGesture(releaseRaceGesture(raceGesture, e.pointerId));
+            return;
+        }
+        if (world.race)
+            return;
         setTunnelHeld(world, false);
         swipe = null;
     };
@@ -438,16 +508,29 @@ export async function createEngine(canvas) {
             else if (world.screen === "pause")
                 engine.resume();
             else if (world.screen === "play") {
-                const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
-                    : setTunnelHeld(world, true) ? "flap" : flap(world, save);
-                if (ev === "flap")
-                    sfx.flap();
+                if (world.race) {
+                    if (!e.repeat)
+                        applyRaceGesture(pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
+                }
+                else {
+                    const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
+                    if (ev === "flap")
+                        sfx.flap();
+                }
             }
             else if (world.screen === "dead" && world.deadTimer > 0.55)
                 engine.dismissDead();
             notify();
         }
-        if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
+        if (e.code === "ArrowDown" && world.screen === "play" && world.race) {
+            e.preventDefault();
+            if (e.repeat)
+                return;
+            if (applyRaceGesture(dropRaceGesture(raceGesture)))
+                sfx.dive();
+            notify();
+        }
+        else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
             const ev = dive(world);
             if (ev === "dive")
                 sfx.dive();
@@ -456,15 +539,31 @@ export async function createEngine(canvas) {
     });
     window.addEventListener("keyup", (e) => {
         if (e.code === "Space" || e.code === "ArrowUp") {
-            setRaceHeld(world, false);
-            setTunnelHeld(world, false);
+            if (raceGesture.owner === "keyboard-rise") {
+                applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
+            }
+            else if (!world.race)
+                setTunnelHeld(world, false);
         }
     });
-    window.addEventListener("blur", () => { setRaceHeld(world, false); setTunnelHeld(world, false); });
+    window.addEventListener("blur", () => {
+        if (world.race && world.screen === "play") {
+            engine.pause();
+            return;
+        }
+        cancelRaceControls();
+        setTunnelHeld(world, false);
+        swipe = null;
+    });
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
-            setRaceHeld(world, false);
+            if (world.race && world.screen === "play") {
+                engine.pause();
+                return;
+            }
+            cancelRaceControls();
             setTunnelHeld(world, false);
+            swipe = null;
         }
     });
     function dispatchWorldEvent(ev) {
@@ -566,4 +665,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=75";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=76";

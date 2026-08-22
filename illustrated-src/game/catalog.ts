@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "75";
+export const ART_VER = "76";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -26,7 +26,7 @@ export const TUT_ARM = 1.25;
 // Rendering-only tap burst. Physics remains instantaneous. The recovery is
 // deliberately longer than a normal tap interval so the pose can keep
 // settling between inputs instead of snapping home before the next tap.
-export const TAP_ANIM_DURATION = 0.66;
+export const TAP_ANIM_DURATION = 1.0;
 // Keep the trial isolated to the open Beta page until every suit has been
 // reviewed in-game. Production imports the shared bundle but never starts the
 // visual clock or fetches the optional painted animation banks.

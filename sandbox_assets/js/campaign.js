@@ -1,39 +1,4 @@
-// THE STAR CHART — a finish line for a game that never had one.
-//
-// Endless mode is untouched; this is a second way to fly the same
-// simulation. A LEVEL is a run with a finish line: survive the level's
-// gate count and a PORTAL spawns — fly into it and the run is complete.
-// Each level offers THREE STARS:
-//
-//   star 1  reach the portal            (always — the finish line itself)
-//   star 2  a collection goal           (acorns, golden acorns)
-//   star 3  a discipline goal           (no bounces, no shield, few taps)
-//
-// Stars are independent and KEPT ACROSS RUNS — a level can be starred one
-// goal at a time, which is what makes a 2-star level an invitation instead
-// of a wall. Total stars are the progression currency: they open stages
-// and earn the rewards that XP used to hand out for mileage. XP still
-// exists and still names the pilot's title; it just is not the gate any
-// more. Earning by DOING SOMETHING beats earning by being present.
-//
-// A STAGE is ten levels under one sky with one idea. The ideas come from
-// the game that already exists — its environments, its three flight modes,
-// its drift and warp machinery — plus a small set of level-only modifiers
-// (fx) the simulation honours ONLY when a level is running:
-//
-//   pace       the world clock, 0.9 gentle to 1.25 furnace
-//   gapScale   gate mouth, 1.1 forgiving to 0.92 tight
-//   driftScale how far gates sway;  driftRate how fast
-//   fog        the sky closes in — a sight circle around the pilot
-//   strobe     THE BLACKOUT: the world is only lit for the half-second
-//              after a tap. Fly the gap you remember, not the one you see.
-//   acornEvery guarantees an acorn per gate so collection goals are
-//              always fair, never hostage to the spawn dice
-//
-// Tuning lives in ONE table per stage (STAGES) and one goal script
-// (goalsFor), so difficulty can be re-curved without touching a level by
-// hand. The generated result is deliberately data, not code: the whole
-// 100 is printed into ROADMAP.md by build-roadmap.mjs for review.
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=76";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -347,6 +312,7 @@ if (IS_BETA) {
 export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
+export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
 export const PROTOTYPE_RACE_MISSION = {
     id: "prototype-chapter-1",
     stage: 0,
@@ -354,12 +320,12 @@ export const PROTOTYPE_RACE_MISSION = {
     ord: 0,
     name: "HYPER RUN",
     base: "race",
-    gates: 22,
+    gates: RACE_RINGS.length,
     fx: { env: 0 },
     goals: [
         { kind: "finish" },
-        { kind: "time", ticks: 10200 },
-        { kind: "time", ticks: 8700 },
+        { kind: "time", ticks: RACE_TWO_STAR_TICKS },
+        { kind: "time", ticks: RACE_THREE_STAR_TICKS },
     ],
     experimental: true,
     raceEventId: "prototype-chapter-1",

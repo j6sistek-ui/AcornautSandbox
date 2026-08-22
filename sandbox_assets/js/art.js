@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=75";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=76";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -305,7 +305,7 @@ export async function loadArt() {
         optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8 } : {}, "suits", "-tap-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.

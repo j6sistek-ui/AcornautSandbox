@@ -1,8 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=75";
-import { modsUnlocked, writeSave } from "./save.js?v=75";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=75";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=75";
-import { createRaceState, queueRaceHeld, stepRace } from "./race.js?v=75";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=76";
+import { modsUnlocked, writeSave } from "./save.js?v=76";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=76";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=76";
+import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=76";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=76";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=76";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -49,7 +51,7 @@ export function makeWorld(W, H) {
         invulnLeft: 0,
         flapBoost: 0,
         tapAnimT: -1,
-        tapAnimHold: 0,
+        tapAnimDir: 1,
         tapAnimFromRot: 0,
         bounceAnimT: -1,
         bounceAnimDir: 0,
@@ -151,6 +153,11 @@ export function resizeWorld(w, W, H) {
     }
     w.W = W;
     w.H = H;
+    if (w.race) {
+        const viewport = raceViewport(W, H);
+        w.squirrel.y = raceViewportY(viewport, w.race.y);
+        w.squirrel.vy = w.race.vy * viewport.scale;
+    }
 }
 function shuffleEnv(w) {
     const mid = ENVS.map((_, i) => i).slice(1, -1);
@@ -551,7 +558,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.invulnLeft = 0;
     w.flapBoost = 0;
     w.tapAnimT = -1;
-    w.tapAnimHold = 0;
+    w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
     w.bounceAnimDir = 0;
@@ -560,7 +567,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.hitCooldown = 0;
     w.bounceUp = false;
     w.deadTimer = 0;
-    w.ready = !w.race;
+    w.ready = true;
     w.screen = "play";
     w.pausedFrom = null;
     w.shake = 0;
@@ -599,7 +606,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         w.envB = w.lvl.def.fx.env;
     }
     if (w.race) {
-        w.squirrel.y = w.race.y * (w.H / 640);
+        const viewport = raceViewport(w.W, w.H);
+        w.squirrel.y = raceViewportY(viewport, w.race.y);
         w.squirrel.vy = 0;
         w.speed = w.race.speed;
         w.startShieldArmed = false;
@@ -634,12 +642,18 @@ export function setTunnelHeld(w, held) {
     w.tunnelHeld = held;
     return true;
 }
-/** Hold-to-rise input is tick-stamped and consumed before the next race step. */
-export function setRaceHeld(w, held) {
+/** Semantic race input is tick-stamped and consumed before the next race step. */
+export function setRaceInput(w, input) {
     if (!w.race || w.screen !== "play")
         return false;
-    queueRaceHeld(w.race, held);
+    queueRaceInput(w.race, input);
+    if (input.held || input.drop)
+        w.ready = false;
     return true;
+}
+/** Compatibility shim for callers that only know the original hold control. */
+export function setRaceHeld(w, held) {
+    return setRaceInput(w, { held, boost: false });
 }
 const TUNNEL_STEP = 56;
 const TUNNEL_PATTERN_LENGTH = {
@@ -937,8 +951,8 @@ function updateTunnel(w, save, simDt, realDt) {
     // The BETA flies the wormhole like Hyper Run's stretches: hold to rise,
     // release to fall. Live keeps the classic tap until this is approved.
     w.squirrel.vy = IS_BETA
-        ? Math.max(-520, Math.min(620, w.squirrel.vy + (w.tunnelHeld ? -2100 : gravOf(save, w)) * simDt))
-        : Math.min(620, w.squirrel.vy + gravOf(save, w) * simDt);
+        ? Math.max(WORMHOLE_MIN_VY, Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL) * simDt))
+        : Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + gravOf(save, w) * simDt);
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
     const move = w.speed * simDt;
@@ -1438,15 +1452,14 @@ export function flap(w, save) {
     if (TAP_ANIM_ENABLED) {
         if (w.tapAnimT < 0) {
             w.tapAnimT = 0;
-            w.tapAnimHold = 0;
+            w.tapAnimDir = 1;
             w.tapAnimFromRot = w.squirrel.rot;
         }
         else {
-            // Bank a little extra settling time without touching the current pose.
-            // Once the knees have tucked, the remaining frames play at 35% speed
-            // until this reserve is spent. Repeated inputs accumulate only a short,
-            // bounded reserve so the body stays alive but never hangs indefinitely.
-            w.tapAnimHold = Math.min(0.3, w.tapAnimHold + 0.16);
+            // A repeat tap REWINDS the picture: the animation plays backward from
+            // wherever it is, bounces off the start, and runs through to the end
+            // again — a natural second wingbeat, never a hyper-speed restart.
+            w.tapAnimDir = -1;
         }
     }
     w.squirrel.vy = flapOf(save, w);
@@ -1850,10 +1863,14 @@ export function updateWorld(w, save, dt) {
     if (w.screen !== "play")
         return null;
     if (w.race) {
+        // The ready overlay is outside race time: neither its authority tick nor
+        // its physics may advance until a positive hold or drop launches the run.
+        if (w.ready)
+            return null;
         const result = stepRace(w.race);
-        const sy = w.H / 640;
-        w.squirrel.y = w.race.y * sy;
-        w.squirrel.vy = w.race.vy * sy;
+        const viewport = raceViewport(w.W, w.H);
+        w.squirrel.y = raceViewportY(viewport, w.race.y);
+        w.squirrel.vy = w.race.vy * viewport.scale;
         w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.race.vy / 720));
         w.speed = w.race.speed;
         w.distance = w.race.coursePosition;
@@ -1965,13 +1982,15 @@ export function updateWorld(w, save, dt) {
     }
     if (TAP_ANIM_ENABLED && w.tapAnimT >= 0) {
         const tapDt = dt * paceOf(save, w);
-        const slowingRecovery = w.tapAnimT >= 0.2 && w.tapAnimHold > 0;
-        w.tapAnimT += tapDt * (slowingRecovery ? 0.35 : 1);
-        if (slowingRecovery)
-            w.tapAnimHold = Math.max(0, w.tapAnimHold - tapDt);
-        if (w.tapAnimT >= TAP_ANIM_DURATION) {
+        w.tapAnimT += tapDt * w.tapAnimDir;
+        if (w.tapAnimDir < 0 && w.tapAnimT <= 0) {
+            // rewound to the start: bounce and play the whole beat to the end
+            w.tapAnimT = 0;
+            w.tapAnimDir = 1;
+        }
+        else if (w.tapAnimT >= TAP_ANIM_DURATION) {
             w.tapAnimT = -1;
-            w.tapAnimHold = 0;
+            w.tapAnimDir = 1;
         }
     }
     if (BOUNCE_ANIM_ENABLED && w.bounceAnimT >= 0) {

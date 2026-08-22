@@ -236,7 +236,9 @@ export type World = {
   /** elapsed rendering time for the one-shot articulated tap burst; -1 idle */
   tapAnimT: number;
   /** queued slow-recovery time from taps received before the burst settles */
-  tapAnimHold: number;
+  /** playback direction: 1 forward; -1 after a repeat tap, rewinding to
+   *  the start before playing through to the end again */
+  tapAnimDir: number;
   /** displayed pitch at burst entry, used to ease the otherwise instant snap */
   tapAnimFromRot: number;
   /** elapsed rendering time for the planet-contact response; -1 idle */
@@ -360,7 +362,7 @@ export function makeWorld(W: number, H: number): World {
     invulnLeft: 0,
     flapBoost: 0,
     tapAnimT: -1,
-    tapAnimHold: 0,
+    tapAnimDir: 1,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
     bounceAnimDir: 0,
@@ -887,7 +889,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.invulnLeft = 0;
   w.flapBoost = 0;
   w.tapAnimT = -1;
-  w.tapAnimHold = 0;
+  w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
   w.bounceAnimDir = 0;
@@ -1767,14 +1769,13 @@ export function flap(w: World, save: SaveData) {
   if (TAP_ANIM_ENABLED) {
     if (w.tapAnimT < 0) {
       w.tapAnimT = 0;
-      w.tapAnimHold = 0;
+      w.tapAnimDir = 1;
       w.tapAnimFromRot = w.squirrel.rot;
     } else {
-      // Bank a little extra settling time without touching the current pose.
-      // Once the knees have tucked, the remaining frames play at 35% speed
-      // until this reserve is spent. Repeated inputs accumulate only a short,
-      // bounded reserve so the body stays alive but never hangs indefinitely.
-      w.tapAnimHold = Math.min(0.3, w.tapAnimHold + 0.16);
+      // A repeat tap REWINDS the picture: the animation plays backward from
+      // wherever it is, bounces off the start, and runs through to the end
+      // again — a natural second wingbeat, never a hyper-speed restart.
+      w.tapAnimDir = -1;
     }
   }
   w.squirrel.vy = flapOf(save, w);
@@ -2283,12 +2284,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.tailA < -TAIL.maxA) { w.tailA = -TAIL.maxA; w.tailV *= -0.35; }
   if (TAP_ANIM_ENABLED && w.tapAnimT >= 0) {
     const tapDt = dt * paceOf(save, w);
-    const slowingRecovery = w.tapAnimT >= 0.2 && w.tapAnimHold > 0;
-    w.tapAnimT += tapDt * (slowingRecovery ? 0.35 : 1);
-    if (slowingRecovery) w.tapAnimHold = Math.max(0, w.tapAnimHold - tapDt);
-    if (w.tapAnimT >= TAP_ANIM_DURATION) {
+    w.tapAnimT += tapDt * w.tapAnimDir;
+    if (w.tapAnimDir < 0 && w.tapAnimT <= 0) {
+      // rewound to the start: bounce and play the whole beat to the end
+      w.tapAnimT = 0;
+      w.tapAnimDir = 1;
+    } else if (w.tapAnimT >= TAP_ANIM_DURATION) {
       w.tapAnimT = -1;
-      w.tapAnimHold = 0;
+      w.tapAnimDir = 1;
     }
   }
   if (BOUNCE_ANIM_ENABLED && w.bounceAnimT >= 0) {

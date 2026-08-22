@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=75";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=75";
-import { drawSprite as drawSpriteOn } from "./art.js?v=75";
-import { createEngine } from "./engine.js?v=75";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=75";
-import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=75";
-import { formatRaceTicks } from "./race.js?v=75";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=76";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=76";
+import { drawSprite as drawSpriteOn } from "./art.js?v=76";
+import { createEngine } from "./engine.js?v=76";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=76";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=76";
+import { formatRaceTicks } from "./race.js?v=76";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1064,7 +1064,11 @@ export async function bootStandalone(root) {
         const record = engine.save.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
         if (!record?.bestFinishTicks)
             return 0;
-        return 1 | (record.bestFinishTicks <= 10200 ? 2 : 0) | (record.bestFinishTicks <= 8700 ? 4 : 0);
+        return PROTOTYPE_RACE_MISSION.goals.reduce((mask, goal, i) => {
+            const met = goal.kind === "finish"
+                || (goal.kind === "time" && record.bestFinishTicks <= goal.ticks);
+            return met ? mask | (1 << i) : mask;
+        }, 0);
     }
     let chartStage = 0; // which stage panel is open; sticky per visit
     let chartLevel = null; // level detail overlay
@@ -1235,14 +1239,16 @@ export async function bootStandalone(root) {
             last.met.forEach((ok) => pips.append(el("span", ok ? "ac-bigpip earned" : "ac-bigpip", "★")));
             sheet.append(pips);
             const labels = el("div", "ac-lvlgoals");
-            ["FINISH", "≤ 2:50.000", "≤ 2:25.000"].forEach((label, i) => {
+            last.def.goals.map((goal) => goal.kind === "time"
+                ? `≤ ${formatRaceTicks(goal.ticks)}`
+                : goal.kind === "finish" ? "FINISH" : goalText(goal, last.def).toUpperCase()).forEach((label, i) => {
                 const row = el("div", last.met[i] ? "ac-goal on" : "ac-goal");
                 row.append(el("span", last.met[i] ? "ac-pip on" : "ac-pip", "★"), el("span", "", label));
                 labels.append(row);
             });
             sheet.append(labels);
-            sheet.append(el("p", "", `ACORNS  ${r.acorns} / 72`));
-            sheet.append(el("p", "", `BEST  ${r.bestAcorns} / 72`));
+            sheet.append(el("p", "", `ACORNS  ${r.acorns} · THEORETICAL CONTENT CEILING  ${PROTOTYPE_RACE_MAX_ACORNS}`));
+            sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
             if (r.newBestAcorns)
                 sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
             sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));
@@ -1548,7 +1554,9 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
         scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
         scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-        scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+        scroll.append(el("p", "ac-sub ac-mid", IS_BETA
+            ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
+            : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
         scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
