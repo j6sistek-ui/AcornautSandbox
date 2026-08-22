@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=84";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=84";
-import { proceduralSky } from "./sky-gen.js?v=84";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=84";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=84";
-import { tunnelBoundsAt } from "./sim.js?v=84";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=84";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=84";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=85";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=85";
+import { proceduralSky } from "./sky-gen.js?v=85";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=85";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=85";
+import { tunnelBoundsAt } from "./sim.js?v=85";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=85";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=85";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1947,6 +1947,14 @@ const DOME = {
     "suit:verdant": [204, 93, 58],
     "suit:cryostar": [207, 93, 58],
     "suit:eclipse": [204, 86, 58],
+    "suit:cinderforge": [196, 100, 51],
+    "suit:groveguard": [196, 100, 51],
+    "suit:cosmic": [196, 100, 51],
+    "suit:sunforged": [196, 96, 49],
+    "suit:abyssal": [196, 100, 51],
+    "suit:amethyst": [196, 100, 51],
+    "suit:ivoryguard": [196, 100, 51],
+    "suit:reactor": [196, 98, 51],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
@@ -2001,6 +2009,14 @@ const HELM_GLASS = {
     "verdant": [125, 129, 137],
     "cryostar": [126, 125, 132],
     "eclipse": [121, 132, 133],
+    "cinderforge": [124, 125, 128],
+    "groveguard": [130, 124, 106],
+    "cosmic": [134, 119, 117],
+    "sunforged": [123, 128, 129],
+    "abyssal": [124, 131, 134],
+    "amethyst": [122, 131, 134],
+    "ivoryguard": [122, 126, 128],
+    "reactor": [136, 116, 115],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.
@@ -2009,7 +2025,7 @@ const LIGHT_OPAQUE_VISORS = new Set([
     "gemmie", "phoenix", "sammie", "seraph",
     "chronarch", "paladin", "princess",
 ]);
-function punchedHelm(spr, id) {
+function punchedHelm(spr, id, opaqueVisor = false) {
     const hit = punchedCache.get(id);
     if (hit)
         return hit;
@@ -2021,6 +2037,10 @@ function punchedHelm(spr, id) {
     if (!cc || !g)
         return null;
     cc.drawImage(spr, 0, 0);
+    if (opaqueVisor) {
+        punchedCache.set(id, c);
+        return c;
+    }
     const strong = LIGHT_OPAQUE_VISORS.has(id);
     const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * (strong ? 0.88 : 0.82));
     grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
@@ -2061,6 +2081,14 @@ const TAIL_PIVOT = {
     cryostar: [103, 151],
     volt: [107, 136],
     eclipse: [105, 143],
+    cinderforge: [104, 132],
+    groveguard: [102, 130],
+    cosmic: [104, 131],
+    sunforged: [101, 128],
+    abyssal: [104, 132],
+    amethyst: [103, 132],
+    ivoryguard: [103, 132],
+    reactor: [102, 130],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
 // are placed against the WHOLE suit's trimmed box — that is what keeps
@@ -2219,7 +2247,7 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     const helmSpr = art?.helms?.[helmet.id];
     const g = HELM_GLASS[helmet.id];
     if (helmSpr && g) {
-        const punched = punchedHelm(helmSpr, helmet.id);
+        const punched = punchedHelm(helmSpr, helmet.id, helmet.opaqueVisor === true);
         if (punched) {
             const s2 = (r * 1.04) / g[2];
             const rot = g[3] || 0;

@@ -26,7 +26,7 @@ globalThis.localStorage = { getItem() { return null; }, setItem() {}, removeItem
 const js = join(mkdtempSync(join(tmpdir(), "acornaut-model-review-js-")), "js");
 cpSync(join(root, "docs/js"), js, { recursive: true });
 writeFileSync(join(js, "package.json"), '{"type":"module"}\n');
-const [{ drawWorld }, { makeWorld, initStars, flap, updateWorld }, { defaultSave }, { SUITS }] =
+const [{ drawWorld }, { makeWorld, initStars, flap, updateWorld }, { defaultSave }, { SUITS, HELMETS }] =
   await Promise.all([
     import(pathToFileURL(join(js, "draw.js")).href),
     import(pathToFileURL(join(js, "sim.js")).href),
@@ -65,7 +65,8 @@ function measure(img) {
 
 async function sprite(path) { return measure(await loadImage(path)); }
 const suitsDir = join(root, "docs/art/suits");
-const suits = {}, suitBody = {}, suitTail = {}, suitTap = {};
+const helmsDir = join(root, "docs/art/helms");
+const suits = {}, helms = {}, suitBody = {}, suitTail = {}, suitTap = {};
 for (const suit of SUITS) {
   suits[suit.id] = await sprite(join(suitsDir, `${suit.id}.png`));
   suitBody[suit.id] = await sprite(join(suitsDir, `${suit.id}-body.png`));
@@ -74,17 +75,18 @@ for (const suit of SUITS) {
     Array.from({ length: 16 }, (_, i) => sprite(join(suitsDir, `${suit.id}-tap-${i + 1}.png`))),
   );
 }
+for (const helmet of HELMETS) helms[helmet.id] = await sprite(join(helmsDir, `${helmet.id}.png`));
 const eclipseTailTap = await Promise.all(Array.from({ length: 12 }, (_, i) => sprite(join(suitsDir, `eclipse-tail-tap-${i + 1}.png`))));
 const sky = await loadImage(join(root, "docs/art/skies/dark6.jpg"));
 const art = {
   ready: true, squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
-  planets: [], debris: [], pals: {}, helms: {}, suits, sky, arcadeAcorn: null,
+  planets: [], debris: [], pals: {}, helms, suits, sky, arcadeAcorn: null,
   frozen: null, shieldnut: null, suitTail, suitBody,
   suitTap, suitTapTail: { eclipse: eclipseTailTap },
 };
 
 const W = 390, H = 844, FPS = 30, SECONDS = 1.5;
-const COLS = 5, ROWS = 4, CELL = 190;
+const COLS = 5, ROWS = Math.ceil(SUITS.length / COLS), CELL = 190;
 const output = createCanvas(COLS * CELL, ROWS * CELL);
 const oc = output.getContext("2d");
 const source = createCanvas(W, H);
@@ -92,7 +94,7 @@ const states = SUITS.map((suit, index) => {
   const save = defaultSave();
   save.equippedSuit = suit.id;
   save.unlockedSuits.push(suit.id);
-  save.equipped = "clear";
+  save.equipped = HELMETS.some((helmet) => helmet.id === suit.id) ? suit.id : "clear";
   save.equippedPal = "none";
   const world = makeWorld(W, H);
   let seed = 0xAC0A17 + index;
