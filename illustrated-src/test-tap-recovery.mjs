@@ -29,6 +29,10 @@ const save = defaultSave();
 const world = makeWorld(390, 844);
 world.screen = "play";
 world.ready = false;
+// This contract isolates the visual clock from randomly seeded obstacles.
+world.planets = [];
+world.debris = [];
+world.invulnLeft = 999;
 
 assert(flap(world, save) === "flap", "initial tap was rejected");
 assert(world.tapAnimT === 0, "initial tap did not start the visual clock");
@@ -38,26 +42,31 @@ const firstRecoveryT = world.tapAnimT;
 const firstTailV = world.tailV;
 assert(flap(world, save) === "flap", "repeat tap was rejected");
 assert(world.tapAnimT === firstRecoveryT, "repeat tap rewound or restarted the body clock");
-assert(world.tapAnimHold > 0, "repeat tap did not queue slower recovery");
+assert(world.tapAnimDir === -1, "repeat tap did not reverse toward the impulse bookend");
 assert(world.tailV > firstTailV, "repeat tap did not add energy to the live tail spring");
 
 for (let i = 0; i < 12; i++) updateWorld(world, save, 1 / 60);
 const secondRecoveryT = world.tapAnimT;
 assert(flap(world, save) === "flap", "second repeat tap was rejected");
 assert(world.tapAnimT === secondRecoveryT, "second repeat changed the body clock");
-assert(world.tapAnimHold > 0, "second repeat did not extend the slow recovery");
+assert(world.tapAnimDir === -1, "second repeat did not reverse the active beat");
 assert(world.tapAnimT > 0 && world.tapAnimT < TAP_ANIM_DURATION,
   "recovery did not remain active between taps");
 
-while (world.tapAnimT >= 0) updateWorld(world, save, 1 / 60);
-assert(world.tapAnimT === -1, "visual clock did not settle to its idle sentinel");
+let settleTicks = 0;
+while (world.tapAnimT >= 0 && settleTicks < 600) {
+  updateWorld(world, save, 1 / 60);
+  settleTicks += 1;
+}
+assert(world.tapAnimT === -1,
+  `visual clock did not settle to its idle sentinel: t=${world.tapAnimT}, dir=${world.tapAnimDir}, screen=${world.screen}`);
 
 console.log(JSON.stringify({
   duration: TAP_ANIM_DURATION,
   firstRepeatAt: Number(firstRecoveryT.toFixed(3)),
   secondRepeatAt: Number(secondRecoveryT.toFixed(3)),
   repeatClockContinuity: "passed",
-  interruptibleSlowRecovery: "passed",
+  interruptibleReverseRecovery: "passed",
   repeatedTailImpulse: "passed",
   exactIdleSentinel: "passed",
 }));

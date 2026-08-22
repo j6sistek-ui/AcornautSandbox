@@ -311,7 +311,18 @@ export async function loadArt() {
         many(`${base}/vortex/hole-`, 16),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16, bigbooty: 16, robo: 16, catsuit: 16 } : {}, "suits", "-tap-"),
+        namedSeries(TAP_ANIM_ENABLED ? {
+            // Existing approved custom banks remain live everywhere.
+            robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16,
+            // The Robo-timing rollout stays beta-only until the owner has flown
+            // every silhouette. Production keeps its current universal rig path.
+            ...(IS_BETA ? {
+                flight: 16, iontrim: 16, copper: 16, frost: 16,
+                voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
+                alien: 16, ghost: 16, gemmie: 16, sammie: 16,
+                seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+            } : {}),
+        } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.

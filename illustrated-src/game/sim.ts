@@ -2,7 +2,14 @@ import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BO
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
-import { createRaceState, queueRaceInput, stepRace, type RaceState } from "./race";
+import {
+  createRaceState,
+  queueRaceInput,
+  raceDecisionAge,
+  stepRace,
+  type RaceCue,
+  type RaceState,
+} from "./race";
 import { raceViewport, raceViewportY } from "./race-viewport";
 import {
   WORMHOLE_HOLD_ACCEL,
@@ -225,6 +232,10 @@ export type World = {
   particles: Particle[];
   tunnel: TunnelState | null;
   race: RaceState | null;
+  /** Bounded fixed-step cue history for presentation; never race authority. */
+  raceCues: RaceCue[];
+  /** One fixed step of deterministic race cues awaiting engine side effects. */
+  raceCueEffects: RaceCue[];
   stars: { x: number; y: number; r: number; a: number; tw: number }[];
   speed: number;
   distance: number;
@@ -353,6 +364,8 @@ export function makeWorld(W: number, H: number): World {
     particles: [],
     tunnel: null,
     race: null,
+    raceCues: [],
+    raceCueEffects: [],
     stars: [],
     speed: PHYS.baseSpeed,
     distance: 0,
@@ -931,6 +944,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.particles = [];
   w.tunnel = null;
   w.race = w.lvl?.def.base === "race" ? createRaceState() : null;
+  w.raceCues = [];
+  w.raceCueEffects = [];
   w.speed = PHYS.baseSpeed;
   w.distance = 0;
   w.lastSpawnX = w.W * 0.55;
@@ -1033,6 +1048,41 @@ export function setRaceInput(w: World, input: RaceSemanticInput) {
 /** Compatibility shim for callers that only know the original hold control. */
 export function setRaceHeld(w: World, held: boolean) {
   return setRaceInput(w, { held, boost: false });
+}
+
+/**
+ * Consume the current fixed step's presentation side effects exactly once.
+ * Race authority and the legacy updateWorld sound return remain unchanged.
+ */
+export function takeRaceCueEffects(w: World): RaceCue[] {
+  const cues = w.raceCueEffects;
+  w.raceCueEffects = [];
+  return cues;
+}
+
+export type RaceCueSfx = "gold" | "bounce" | "acorn" | "shift";
+
+export type RaceCueEffectPlan = Readonly<{
+  cue: RaceCue;
+  sfx: RaceCueSfx | null;
+  notify: boolean;
+}>;
+
+/**
+ * Pure presentation-side mapping from authority cues to existing WebAudio
+ * routes. Keeping this separate from playback makes cadence and one-shot
+ * dispatch executable evidence without moving any side effect into draw.
+ */
+export function planRaceCueEffects(cues: readonly RaceCue[]): RaceCueEffectPlan[] {
+  return cues.map((cue) => {
+    if (cue.kind === "ring-pass") return { cue, sfx: "gold", notify: false };
+    if (cue.kind === "debris-hit") return { cue, sfx: "bounce", notify: false };
+    if (cue.kind === "acorn") return { cue, sfx: "acorn", notify: false };
+    if (cue.kind === "entry" || cue.kind === "return") {
+      return { cue, sfx: "shift", notify: true };
+    }
+    return { cue, sfx: null, notify: cue.kind === "finish" };
+  });
 }
 
 const TUNNEL_STEP = 56;
@@ -2200,6 +2250,10 @@ export function resumePlay(w: World) {
 }
 
 export function updateWorld(w: World, save: SaveData, dt: number): string | null {
+  // A fixed-step cue is edge-triggered. The engine drains it immediately;
+  // clearing here also prevents a paused or READY update from replaying a
+  // prior step if a non-engine caller chose not to drain it.
+  w.raceCueEffects = [];
   w.time += dt;
   if (w.shake > 0) w.shake = Math.max(0, w.shake - dt * 2.4);
   for (const s of w.stars) s.tw += dt * 2;
@@ -2226,6 +2280,12 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     // its physics may advance until a positive hold or drop launches the run.
     if (w.ready) return null;
     const result = stepRace(w.race);
+    w.raceCueEffects = result.cues;
+    // Preserve producer order and distinct same-tick events. Presentation
+    // can show a pass and debris impact together without either overwriting
+    // the other; age is derived from the post-step authority tick.
+    w.raceCues = [...w.raceCues, ...result.cues]
+      .filter((cue) => raceDecisionAge(w.race!.tick, cue.tick) <= 45);
     const viewport = raceViewport(w.W, w.H);
     w.squirrel.y = raceViewportY(viewport, w.race.y);
     w.squirrel.vy = w.race.vy * viewport.scale;

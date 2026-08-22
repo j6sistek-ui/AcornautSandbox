@@ -322,14 +322,9 @@ function sealBlockers(w, env, gapY, gap) {
     // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
     // Tight packing keeps the seal visible whatever the field height.
     const short = w.H < 560;
-    const pad = short ? 4 : 26;
-    const step = short ? 22 : 30;
-    // Short fields PROJECT the column past the screen edges (owner call):
-    // a rock whose centre sits just off screen still shows its inner half,
-    // so the column visibly continues above and below the planets instead
-    // of stopping wherever the thin band ran out — and a higher or tighter
-    // gate can no longer open an empty-looking slip lane at the edge.
-    const edge = short ? -16 : 20;
+    const pad = short ? 6 : 26;
+    const step = short ? 24 : 30;
+    const edge = short ? 6 : 20;
     const put = (y, n) => blockers.push({
         y,
         r: 19 + Math.random() * 7,
@@ -343,6 +338,30 @@ function sealBlockers(w, env, gapY, gap) {
     y = gapY + gap / 2 + r * 2 + pad;
     for (let n = 0; y < w.H - edge && n < 12; n++, y += step)
         put(y, n);
+    // A short field's bands hold one or two rocks vertically, which still
+    // reads as empty sky. Widen the seal instead: a row of smaller rocks
+    // flanks each planet along the screen edge, so landscape flights meet
+    // the same debris field portrait always had — visible AND solid.
+    if (short) {
+        const row = (yy, count) => {
+            for (let n = 0; n < count; n++) {
+                const side = (n % 2) * 2 - 1;
+                blockers.push({
+                    y: yy + (Math.random() - 0.5) * 10,
+                    r: 14 + Math.random() * 7,
+                    kind: pickKind(w),
+                    xOff: side * (30 + Math.floor(n / 2) * 26 + Math.random() * 9),
+                    debris: pickDebris(env),
+                });
+            }
+        };
+        const topBand = gapY - gap / 2 - r * 2;
+        const botBand = w.H - (gapY + gap / 2 + r * 2);
+        if (topBand > 24)
+            row(Math.max(16, topBand - 22), 4);
+        if (botBand > 24)
+            row(Math.min(w.H - 16, w.H - botBand + 22), 4);
+    }
     return blockers;
 }
 // ——— THE SCRIPTED COURSE ———
