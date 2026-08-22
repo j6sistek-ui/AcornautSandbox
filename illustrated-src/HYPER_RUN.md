@@ -1,6 +1,6 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Course 1 Revision 2 Phase A was approved and merged to `origin/main` on 2026-08-21 in PR #60 (merge `e710052`). Phase B ordinary-gate art is the active scope and will stop for visual sign-off. Phase C source implementation has not started and remains outside this Phase B change.
+**Status:** Course 1 Revision 2 Phase A was approved and merged to `origin/main` on 2026-08-21 in PR #60 (merge `e710052`). Phase B ordinary-gate art was approved and merged in PR #63 (merge `acaa04e`). Phase C source implementation and source-level acceptance evidence are complete on the review branch and stop here for sign-off; maintainer-owned generated bundles have not been edited.
 
 **Phase boundary:** This Revision 2 section is the authority wherever it conflicts with the shipped prototype plan below. The approved 60 Hz determinism core, fixed-step race clock, existing six-case replay suite, beta-only placement, and four painted wormhole-entry layers stay. The older sections remain as a Revision 1 record; their superseded counts, constants, controls, timing bands, tunnel layout, transition timing, and ordinary-gate brief must not be implemented for Revision 2.
 
@@ -108,7 +108,7 @@ Those figures define the authored target, but Phase C must prove it with a fixed
 | Ordinary rings | 22 | 84 |
 | Normal debris | 14 | 30 |
 | Normal acorns | 12 | 42 |
-| Tunnel acorns | 20 per cycle | 18 authored acorns per cycle; 96 total maximum |
+| Tunnel acorns | 20 per cycle | 18 authored acorns per cycle; 96 theoretical content ceiling |
 | Gate collision aperture | radius 54, center clearance 38 | unchanged |
 
 The course grows spatially to support 84 authored gate beats, but it becomes materially shorter in time: a no-shortcut base-speed run falls from the shipped 194.6-second result to 150 seconds. Returning at 390 prevents a portal from feeling like a forced stall. Ring gain reaches cap in ten no-decay hits from base; the speed-stack portions keep post-hit gaps at or below 470 units until cap so the 90-tick grace really permits that ramp. Charge takes 20 clean rings, so dense gates remain the primary beat without opening a tunnel every few seconds. A debris hit costs the current stack and two rings of charge rather than erasing a whole cycle.
@@ -129,7 +129,7 @@ All placements are fixed course data. No ring, debris, acorn, pinch, recovery ob
 
 Ring gaps alternate 360–480-unit clusters with 560–700-unit breathers; they are never a monotone interval. Speed-stack clusters use gaps of 470 units or less until cap. The sorted union of rings, debris, and normal acorns, with start and finish sentinels, must have no gap above 720 units. At base speed, `720 / 300 = 2.4 s`, below the 2.5-second ceiling. The Phase C layout validator evaluates the passive course and every authored intended or delayed-recovery entry route after its skipped objects are removed; from each return coordinate, the next live interactive element must also be within 720 units. Global density cannot be satisfied by objects hidden inside a tunnel skip. Both ring-rhythm and route-aware interactive-gap limits are release-blocking.
 
-All 42 normal acorns lie outside the three optimized tunnel-skip intervals `(10,000, 14,500]`, `(25,000, 29,500]`, and `(40,000, 44,500]`; the Act 2, Act 4, and Act 6 acorns appear before their intended entry rings. Collecting every normal acorn and all three 18-acorn tunnel lines can therefore attain the stated maximum of 96 rather than leaving skipped pickups in the theoretical total.
+All 42 normal acorns lie outside the three optimized tunnel-skip intervals `(10,000, 14,500]`, `(25,000, 29,500]`, and `(40,000, 44,500]`; the Act 2, Act 4, and Act 6 acorns appear before their intended entry rings. Those 42 pickups plus three 18-acorn tunnel sets derive a theoretical content ceiling of 96 without counting pickups hidden inside a tunnel skip. Phase C does not call 96 attainable in one run: several charge-critical gates and normal acorns occupy mutually exclusive apertures at the same or nearly the same course plane, including r67/a34, r41/a20, r45/a24, and r59/a28.
 
 The intended three-cycle optimized route is structural:
 
@@ -194,7 +194,9 @@ Centers and half-widths smoothstep between anchors. Mirroring uses `y' = 640 −
 
 Each cycle places exactly 18 authored acorns: five on the completion-readable center line; eight from Y 480 to 156 over ticks 225–255; and five from Y 156 to 464 over ticks 255–285. Mirror the acorn Y values with the corridor when the cycle mirror bit is set. Accounting for 28 pixels of pickup reach at each endpoint, the boost line needs at least `324 − 2 × 28 = 268` pixels of rise in 30 ticks. From rest, plain tunnel hold covers about 199.9 pixels while boosted hold covers about 309.0. Leaving the crest boosted, release alone for a half-second still moves about 100.5 pixels upward; the release-plus-drop event clears ascent and moves about 290.2 pixels downward, enough to sweep the `308 − 2 × 28 = 252`-pixel drop line. Phase C verifies those fixed-step envelopes and the full collection route.
 
-The normal 42 plus three tunnel sets of 18 produce the attainable result-sheet maximum of 96. Acorns remain a secondary record and never alter finish time, speed, charge, or stars.
+**Phase C mirrored-cusp reachability correction:** Tunnel boost and drop physics are intentionally asymmetric, so a literal reflection of the two Y 156 cusp pickups makes the mirrored 18-acorn route unreachable even under exhaustive fixed-step control search. Only those two mirrored-cycle targets are therefore authored explicitly: tick 255 uses Y 429 and tick 257 uses Y 433 instead of the literal Y 484 reflection. Every other pickup still uses `640 − y`. This is the smallest deterministic correction that preserves the approved physics, 28-pixel pickup reach, zero-scrape route, and 18-per-cycle count; the acceptance harness proves all three actual-entry tunnel sets with recognizer-realisable inputs.
+
+The normal 42 plus three tunnel sets of 18 produce a count-derived theoretical content ceiling of 96, not a claim that one authored route can collect all 96. Acorns remain a secondary record and never alter finish time, speed, charge, or stars.
 
 The tunnel earns its place in three ways: every cycle is a measurable shortcut, six seconds replaces the shipped nine-second lull, and the active 88–126-pixel half-width weave demands the same hold/boost/drop language as the rest of the event while widening to 144 only at the mouth and exit. The three-cycle maximum remains; Revision 2 does not need fewer tunnels. Tunnel drawing must derive lookahead and pickup X from the exported 750-unit authority speed rather than retain a hard-coded Revision 1 value.
 
@@ -265,6 +267,24 @@ Phase B stops after those game-scale composites and hash/geometry checks for sep
 6. **Tunnel parity and handoff:** One tunnel advances exactly 4,500 units in 360 ticks, then returns after 36 ticks with charge zero, speed 390, Y inside the separately derived `96…544` band, and no double settlement. One-tick parity checks prove race-tunnel plain release/hold matches beta Wormhole Run's `+1,300 / −2,100` and `−520…+620`, then exercise deterministic boost/drop reward lines and both seed/cycle mirror outcomes inside the tunnel.
 
 The Hyper Run art loader stays beta-gated. Phase C changes source and source-level tests only; it does not edit or commit generated `docs/js*` or `sandbox_assets/js*`. `ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Phase C stops with all six tests passing and reports exact fixture evidence for review.
+
+#### Phase C change and verification statement
+
+Phase C implements the tick-stamped hold/boost/drop recognizer, the three-line ready screen, the 84-ring / 30-debris / 42-course-acorn authored layout, the 300-to-480 speed authority and revised grades, the exact gate-plane decision stamps and 27/39-tick fades, the shared full-canvas back/front gate transform, the six-second risk/reward tunnel, and the 48/360/36-tick entry/tunnel/return sequence. One centered uniform viewport now projects the canonical 360 × 640 race field at every draw and input boundary, so tall-phone presentation preserves the same pilot radius, circular aperture, center clearance, and swipe distance as authority. Campaign labels and prototype totals now derive from the race authority. Focus loss pauses an active race and discards any incomplete render-frame remainder, so hidden wall time cannot advance the fixed-step course. The roadmap generator's temporary compile remains compatible with the campaign's new authority import.
+
+The beta mission deliberately keeps the stable `prototype-chapter-1` event identity and its backward-compatible optional save record. Phase C does not erase or migrate a Revision 1 prototype best; the older time and acorn records remain visible until each is independently beaten on Revision 2, and they still cannot award or alter campaign stars.
+
+The six mandatory acceptance areas pass with these exact fixtures:
+
+- Passive finishes in 9,000 ticks (2:30.000), enters no tunnel, and emits no boost or drop event.
+- Average finishes in 6,380 ticks (1:46.333), passes 48 gates, enters two tunnels, and averages 393.522 units per second during normal flight.
+- Optimized finishes in 5,576 ticks (1:32.933), passes exactly 60 gates, enters three tunnels, touches no debris, uses both advanced moves, and averages 445.664 units per second during normal flight. The passive-to-optimized spread is 57.067 seconds.
+- The fixed-step plain-control search and all relevant late-course slowdown masks put the fastest optimistic plain-feasible result at 5,771 ticks, outside the 5,700-tick optimized ceiling. Recognizer-driven tunnel witnesses start from the three actual entry-ring anchors, Y 320, 300, and 496; all three collect 18/18 with zero wall scrapes, maximum center errors of 17.482, 16.306, and 23.667 pixels, and minimum wall clearances of 16.196, 16.363, and 20.301 pixels respectively. This verifies every tunnel component of the `42 + 3 × 18 = 96` theoretical content ceiling without claiming a combined 96-acorn replay.
+- Every eligible delayed entry has a live post-return element within 720 units. Gate decisions remain pending until the pilot plane, stamp only on the crossing step, and produce every fade age from zero through the exact 27/39-tick endpoints. The source-only crossing harness also produces pass/miss strips at `−2`, `−1`, crossing, `+1`, and `+2` frames using the production pilot and ordinary-gate art.
+
+The average and optimized benchmark logs are deterministic controller fixtures, not forecasts of comfortable human input cadence. Their semantic transitions are nevertheless reproduced exactly through the production press, release, and swipe recognizer without cancellation: the average realization emits 4,518 raw events (42.489 per second), including 59 qualifying boost presses and 10 dives; the optimized realization emits 5,098 (54.857 per second), including 100 qualifying boost presses and 14 dives. Those deliberately TAS-like fixtures prove authority bounds and input-path determinism; they do not replace a later physical-phone balance playtest.
+
+TypeScript source checking, the roadmap generator, repeated replay execution, crossing-harness assertions, repository-output rejection, diff whitespace checks, and LF/protected-identifier/generated-path audits are the Phase C verification surface. This source-only phase does not claim a rebuilt deploy bundle or new physical-device performance capture; the maintainer performs the bundle rebuild at merge.
 
 Every later phase repeats the repository gate before doing work: fetch current `origin/main`, re-cut that phase's branch from it, and fetch/rebase again immediately before the final push. Commits contain source and approved art only, all committed text is LF-only, and generated `js*` paths remain absent.
 

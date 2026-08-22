@@ -3,7 +3,7 @@ import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
-import { LEVELS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
 import { formatRaceTicks } from "./race";
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -1090,7 +1090,11 @@ export async function bootStandalone(root: HTMLElement) {
   function prototypeMask() {
     const record = engine.save.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
     if (!record?.bestFinishTicks) return 0;
-    return 1 | (record.bestFinishTicks <= 10_200 ? 2 : 0) | (record.bestFinishTicks <= 8_700 ? 4 : 0);
+    return PROTOTYPE_RACE_MISSION.goals.reduce((mask, goal, i) => {
+      const met = goal.kind === "finish"
+        || (goal.kind === "time" && record.bestFinishTicks <= goal.ticks);
+      return met ? mask | (1 << i) : mask;
+    }, 0);
   }
 
   let chartStage = 0;           // which stage panel is open; sticky per visit
@@ -1262,14 +1266,17 @@ export async function bootStandalone(root: HTMLElement) {
       last.met.forEach((ok) => pips.append(el("span", ok ? "ac-bigpip earned" : "ac-bigpip", "★")));
       sheet.append(pips);
       const labels = el("div", "ac-lvlgoals");
-      ["FINISH", "≤ 2:50.000", "≤ 2:25.000"].forEach((label, i) => {
+      last.def.goals.map((goal) => goal.kind === "time"
+        ? `≤ ${formatRaceTicks(goal.ticks)}`
+        : goal.kind === "finish" ? "FINISH" : goalText(goal, last.def).toUpperCase()
+      ).forEach((label, i) => {
         const row = el("div", last.met[i] ? "ac-goal on" : "ac-goal");
         row.append(el("span", last.met[i] ? "ac-pip on" : "ac-pip", "★"), el("span", "", label));
         labels.append(row);
       });
       sheet.append(labels);
-      sheet.append(el("p", "", `ACORNS  ${r.acorns} / 72`));
-      sheet.append(el("p", "", `BEST  ${r.bestAcorns} / 72`));
+      sheet.append(el("p", "", `ACORNS  ${r.acorns} · THEORETICAL CONTENT CEILING  ${PROTOTYPE_RACE_MAX_ACORNS}`));
+      sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
       if (r.newBestAcorns) sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
       sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));
       const again = el("button", "ac-primary", "RUN AGAIN");
@@ -1562,7 +1569,9 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
     scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
     scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-    scroll.append(el("p", "ac-sub ac-mid", "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+    scroll.append(el("p", "ac-sub ac-mid", IS_BETA
+      ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
+      : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
     scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
     box.append(scroll);
 
