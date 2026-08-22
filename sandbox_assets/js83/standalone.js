@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=82";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=82";
-import { drawSprite as drawSpriteOn } from "./art.js?v=82";
-import { createEngine } from "./engine.js?v=82";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=82";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=82";
-import { formatRaceTicks } from "./race.js?v=82";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=83";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=83";
+import { drawSprite as drawSpriteOn } from "./art.js?v=83";
+import { createEngine } from "./engine.js?v=83";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=83";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=83";
+import { formatRaceTicks } from "./race.js?v=83";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
