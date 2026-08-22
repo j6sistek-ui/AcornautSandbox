@@ -429,6 +429,119 @@
     .ac-log.on { border-color: rgba(232,164,74,.4); background: #141b30; }
     .ac-playbar { display: flex; justify-content: flex-end; padding: 12px; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
+
+    /* ================= THE HUB (v85) =================
+       The home is a hub of saturated tiles over the purple key art.
+       Sub-screens keep the galaxy chrome; only home wears this. */
+    .ac-hub { position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;
+      background: #120a2c; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); }
+    .ac-hub-art { position: absolute; inset: 0; background-size: cover; background-position: 50% 26%; filter: saturate(1.1); }
+    .ac-hub-scrim { position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(16,7,38,.68) 0%, rgba(16,7,38,.12) 22%, rgba(16,7,38,.14) 60%, rgba(10,4,26,.82) 94%); }
+    .ac-hub > * { position: relative; }
+    .ac-hub-art, .ac-hub-scrim { position: absolute; }
+    .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 9px; }
+    .ac-hub-acorns { background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); padding: 8px 15px 8px 12px; font-size: 15px; }
+    .ac-hub-railgap { flex: 1; }
+    .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 14px; background: rgba(22,14,48,.92);
+      border: 1.5px solid rgba(170,140,240,.3); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
+    .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px; }
+    .ac-hub-wordmark { margin-top: 10px; text-align: center; }
+    .ac-hub-title { font-family: Fraunces, serif; font-weight: 800; font-size: 40px; line-height: .95;
+      background: linear-gradient(#fff 25%, #cfd6f2 60%, #9aa6d8 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 3px 14px rgba(20,10,50,.9)); }
+    .ac-hub-kicker { margin-top: 5px; font-size: 10px; font-weight: 800; letter-spacing: .3em; text-transform: uppercase;
+      color: #c9b1ff; text-shadow: 0 1px 8px rgba(10,5,30,.9); }
+    .ac-hub-space { flex: 1 1 auto; min-height: 60px; }
+    .ac-hub-tiles { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .ac-hubtile { position: relative; border-radius: 20px; padding: 12px 8px 10px; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; color: #fff;
+      background: linear-gradient(180deg, var(--t1,#1a1f3a), var(--t2,#0e1122));
+      border: 2px solid var(--tb, rgba(170,140,240,.3));
+      box-shadow: 0 9px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.28), inset 0 -3px 0 rgba(0,0,0,.28); }
+    .ac-hubtile:active { transform: translateY(1px) scale(.99); }
+    .ac-hubtile b { font-size: 14px; font-weight: 900; letter-spacing: .05em; text-shadow: 0 2px 4px rgba(0,0,0,.55); }
+    .ac-hubsub { font-size: 10px; color: rgba(255,255,255,.85); font-weight: 700; margin-top: -3px; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+    .ac-hubic { width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+      background: rgba(8,10,24,.38); border-radius: 14px; box-shadow: inset 0 2px 5px rgba(0,0,0,.35); }
+    .ac-hubic img, .ac-hubic canvas { max-width: 50px; max-height: 50px; object-fit: contain; }
+    .ac-hubic .ac-hubic-img { mix-blend-mode: screen; border-radius: 12px; }
+    .ac-hubdot { position: absolute; top: 9px; right: 10px; width: 11px; height: 11px; border-radius: 50%;
+      background: #ff4d6d; box-shadow: 0 0 8px #ff4d6d; }
+    .t-launch { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 13px; padding: 13px 10px;
+      --t1: #2f8fe0; --t2: #123f80; --tb: #8fdaff;
+      box-shadow: 0 0 0 2px rgba(120,200,255,.4), 0 0 26px rgba(90,180,255,.5), 0 12px 26px rgba(0,0,0,.5),
+        inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.28); }
+    .t-launch b { font-size: 21px; }
+    .ac-hub-launchtxt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; }
+    .ac-hub-launchtxt .ac-hubsub { letter-spacing: .13em; text-transform: uppercase; color: #d4ecff; margin-top: 0; }
+    .t-loadout { --t1: #8a5ae4; --t2: #44249a; --tb: #c4a0ff; }
+    .t-chart { --t1: #1db388; --t2: #0a5a44; --tb: #6ce8bc; }
+    .t-modes { --t1: #eda03c; --t2: #8f4d0e; --tb: #ffd88f; }
+    .t-profile { --t1: #5b64e0; --t2: #282f92; --tb: #a2aaff; }
+    .ac-hub-ribbon { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+      background: linear-gradient(180deg,#57b9ff,#2f86d6); color: #fff; font-size: 9px; font-weight: 900; letter-spacing: .13em;
+      padding: 3.5px 12px; border-radius: 7px; box-shadow: 0 3px 9px rgba(0,0,0,.5);
+      clip-path: polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%); }
+    .ac-hub-bar { margin-top: 11px; flex: none; display: flex; align-items: center; gap: 11px; text-align: left; width: 100%;
+      background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); border-radius: 18px; padding: 9px 13px;
+      color: #f3efe4; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+    .ac-hub-starbadge { width: 34px; height: 34px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #7a4a08; background: radial-gradient(circle at 50% 35%, #ffe9a8, #e8a44a);
+      box-shadow: 0 0 12px rgba(255,206,92,.5); }
+    .ac-hub-bartxt { flex: 1; min-width: 0; }
+    .ac-hub-bartxt b { display: block; font-size: 11.5px; font-weight: 900; letter-spacing: .07em; }
+    .ac-hub-track { position: relative; display: block; height: 14px; border-radius: 999px; background: #0b0618;
+      border: 1px solid rgba(255,206,92,.35); overflow: hidden; margin-top: 4px; }
+    .ac-hub-track i { display: block; height: 100%; background: linear-gradient(90deg, #c07f1f, #ffd76a); border-radius: 999px; }
+    .ac-hub-track em { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal;
+      font-size: 9.5px; font-weight: 900; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); letter-spacing: .05em; }
+    /* landscape: five tiles in one row, launch back to a column */
+    @media (orientation: landscape) {
+      .ac-hub { padding: 12px 22px 14px; }
+      .ac-hub-art { background-position: 50% 18%; }
+      .ac-hub-wordmark { text-align: left; margin: 2px 0 0 4px; }
+      .ac-hub-tiles { grid-template-columns: repeat(5, 1fr); gap: 14px; }
+      .t-launch { grid-column: auto; flex-direction: column; gap: 5px; padding: 12px 8px 10px; }
+      .t-launch b { font-size: 15px; }
+      .ac-hub-launchtxt { align-items: center; text-align: center; }
+      .ac-hub-bar { max-width: 720px; align-self: center; }
+    }
+    /* the mode sheet rows */
+    .ac-moderow { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
+      background: #141b30; border: 1px solid #2a3454; border-radius: 14px; padding: 11px 14px; color: #f3efe4; }
+    .ac-moderow.on { border-color: #A99BE8; background: rgba(153,142,177,.14); box-shadow: 0 0 0 3px rgba(169,155,232,.16); }
+    .ac-moderowtxt { min-width: 0; }
+    .ac-moderowtxt b { display: block; font-size: 13px; font-weight: 800; letter-spacing: .05em; }
+    .ac-moderowtxt span { display: block; font-size: 11px; color: #8b95b0; margin-top: 1px; }
+    .ac-moderowaside { flex: none; font-size: 10.5px; font-weight: 800; color: #ffd76a; letter-spacing: .05em; white-space: nowrap; }
+    .ac-modeshead { margin: 8px 0 0; letter-spacing: .22em; color: #8b95b0 !important; }
+    .ac-modedoor { border-style: dashed; color: #9aa6c4; }
+    /* ---- the chapter map ---- */
+    .ac-chartmapwrap { display: flex; justify-content: center; padding: 4px 0 14px; }
+    .ac-chartmap { position: relative; }
+    .ac-mappath { position: absolute; inset: 0; }
+    .ac-mapnode { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center;
+      gap: 3px; background: none; border: 0; color: inherit; padding: 0; }
+    .ac-mapdisc { position: relative; display: flex; align-items: center; justify-content: center; color: #c9d2e8; }
+    .ac-mapdisc canvas { filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+    .ac-mapnode.done .ac-mapdisc::after { content: ""; position: absolute; inset: -4px; border-radius: 50%;
+      border: 2px solid rgba(255,206,92,.55); box-shadow: 0 0 12px rgba(255,206,92,.3); }
+    .ac-mapnode.cur .ac-mapdisc canvas { filter: drop-shadow(0 0 20px rgba(255,206,92,.7)) drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+    .ac-mapnode.locked { pointer-events: none; }
+    .ac-mapnode.locked .ac-mapdisc canvas { filter: grayscale(1) brightness(.55) drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+    .ac-mapnode.locked .ac-mapdisc svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-55%);
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,.9)); }
+    .ac-mapnum { position: absolute; right: -6px; bottom: -3px; min-width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font: 900 13px/1 Fraunces, serif; color: #4a2f05;
+      background: radial-gradient(circle at 50% 32%, #ffe9a8, #e8a44a);
+      box-shadow: 0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 #fff3c9; }
+    .ac-mapnode.todo .ac-mapnum, .ac-mapnode.locked .ac-mapnum {
+      background: radial-gradient(circle at 50% 32%, #39415f, #1a2038); color: #98a2bd; }
+    .ac-maprider { position: absolute; left: 50%; bottom: 68%; transform: translateX(-50%); width: 62px; pointer-events: none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+    .ac-mapname { background: rgba(16,20,38,.92); border: 1.5px solid rgba(255,206,92,.45); border-radius: 10px; padding: 4px 10px;
+      font: 900 11px/1.2 Fraunces, serif; letter-spacing: .03em; box-shadow: 0 6px 14px rgba(0,0,0,.5); white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -444,7 +557,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js84/standalone.js";
+    import { bootStandalone } from "../js85/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
