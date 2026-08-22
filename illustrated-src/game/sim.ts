@@ -605,7 +605,14 @@ function pickDebris(env: (typeof ENVS)[number]) {
 function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: number) {
   const r = PHYS.planetR;
   const blockers: PlanetCol["blockers"] = [];
-  const step = 30;
+  // A short landscape field leaves only a thin band between each planet
+  // and the screen edge — the portrait spacing (26px of air, 30px step,
+  // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
+  // Tight packing keeps the seal visible whatever the field height.
+  const short = w.H < 560;
+  const pad = short ? 6 : 26;
+  const step = short ? 24 : 30;
+  const edge = short ? 6 : 20;
   const put = (y: number, n: number) =>
     blockers.push({
       y,
@@ -614,10 +621,10 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
       xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
       debris: pickDebris(env),
     });
-  let y = gapY - gap / 2 - r * 2 - 26;
-  for (let n = 0; y > 20 && n < 12; n++, y -= step) put(y, n);
-  y = gapY + gap / 2 + r * 2 + 26;
-  for (let n = 0; y < w.H - 20 && n < 12; n++, y += step) put(y, n);
+  let y = gapY - gap / 2 - r * 2 - pad;
+  for (let n = 0; y > edge && n < 12; n++, y -= step) put(y, n);
+  y = gapY + gap / 2 + r * 2 + pad;
+  for (let n = 0; y < w.H - edge && n < 12; n++, y += step) put(y, n);
   return blockers;
 }
 

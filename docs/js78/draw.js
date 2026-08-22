@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=77";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=77";
-import { proceduralSky } from "./sky-gen.js?v=77";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=77";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=77";
-import { tunnelBoundsAt } from "./sim.js?v=77";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=77";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=77";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=78";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=78";
+import { proceduralSky } from "./sky-gen.js?v=78";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=78";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=78";
+import { tunnelBoundsAt } from "./sim.js?v=78";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=78";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=78";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -59,7 +59,7 @@ function drawBackdrop(ctx, w, art) {
     // DRIFTS across it over the run, and a rotation only resizes the window
     // instead of swapping the art. The portrait dark plates stay shipped as
     // the live game's source and the beta's fallback while a wide file loads.
-    const wideDark = IS_BETA && (w.flight === "deep" || w.flight === "lost");
+    const wideDark = w.flight === "deep" || w.flight === "lost";
     const idA = skyIdFor(w.flight, w.envA);
     const idB = skyIdFor(w.flight, w.envB);
     const skyA = proceduralSky(idA, W, H)

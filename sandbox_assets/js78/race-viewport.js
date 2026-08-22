@@ -1,4 +1,4 @@
-import { RACE_HEIGHT, RACE_WIDTH } from "./race.js?v=77";
+import { RACE_HEIGHT, RACE_WIDTH } from "./race.js?v=78";
 export function raceViewport(viewWidth, viewHeight) {
     const width = Number.isFinite(viewWidth) ? Math.max(0, viewWidth) : 0;
     const height = Number.isFinite(viewHeight) ? Math.max(0, viewHeight) : 0;

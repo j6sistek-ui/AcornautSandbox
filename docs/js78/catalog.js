@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=77";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=78";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "77";
+export const ART_VER = "78";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -22,15 +22,12 @@ export const TUT_ARM = 1.25;
 // deliberately longer than a normal tap interval so the pose can keep
 // settling between inputs instead of snapping home before the next tap.
 export const TAP_ANIM_DURATION = 1.0;
-// Keep the trial isolated to the open Beta page until every suit has been
-// reviewed in-game. Production imports the shared bundle but never starts the
-// visual clock or fetches the optional painted animation banks.
-export const TAP_ANIM_ENABLED = IS_BETA;
-// Rendering-only planet contact response. Keep the first pass isolated to
-// Beta and Eclipse until the contact shape, tail recoil, and helmet stability
-// have been approved at game scale.
+// Approved from the beta trial: the burst runs everywhere now. Suits
+// without a painted bank still take the universal articulated path.
+export const TAP_ANIM_ENABLED = true;
+// Rendering-only planet contact response — approved from the beta trial.
 export const BOUNCE_ANIM_DURATION = 0.38;
-export const BOUNCE_ANIM_ENABLED = IS_BETA;
+export const BOUNCE_ANIM_ENABLED = true;
 // The tutorial's graduation gift, and the trail of guided steps that
 // follows it: equip the suit, equip the helmet, fly Mission 1. One pair,
 // named once, so the crash sheet, the hangar and the coach all agree.

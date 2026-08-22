@@ -78,26 +78,35 @@ export function unlockAudio() {
   }
 }
 
-// ————— Music: the retro timeline's soundtrack —————
-// A streamed loop, kept OUTSIDE the WebAudio graph on purpose. Decoding
-// five megabytes of AAC into a buffer would cost real memory for no gain;
-// an <audio> element streams it and loops seamlessly. It plays only while
-// the retro renderer is active — the whole arcade run, and only the
-// shifted stretches of Free Flight — and never in the illustrated game.
-let musicEl: HTMLAudioElement | null = null;
-let musicFade = 0; // rAF id for the current fade
-let musicWanted = false;
+// ————— Music: two streamed loops —————
+// VOYAGE scores the menus and every illustrated mode; COSMOS remains the
+// retro timeline's chiptune — the whole arcade run and the shifted
+// stretches of Free Flight. Both stay OUTSIDE the WebAudio graph on
+// purpose: decoding megabytes of compressed audio into buffers would cost
+// real memory for no gain; <audio> elements stream and loop seamlessly.
+// Exactly one track is audible at a time, crossfaded at the timeline shift.
+type MusicTrack = "voyage" | "cosmos";
+const MUSIC_FILES: Record<MusicTrack, string> = {
+  voyage: "music/voyage.mp3",
+  cosmos: "music/cosmos.m4a",
+};
+// the menu score sits a notch under the chiptune so speech-level SFX and
+// the first-run tutorial reads stay on top of it
+const MUSIC_VOLS: Record<MusicTrack, number> = { voyage: 0.42, cosmos: 0.5 };
+const musicEls: Record<MusicTrack, HTMLAudioElement | null> = { voyage: null, cosmos: null };
+const musicFades: Record<MusicTrack, number> = { voyage: 0, cosmos: 0 }; // rAF ids
+let musicWanted: MusicTrack | null = null;
 let musicMuted = false;
-const MUSIC_VOL = 0.5;
+let musicUnlockArmed = false;
 
-function musicUrl() {
+function musicUrl(track: MusicTrack) {
   const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
-  return `${raw.replace(/\/$/, "")}/music/cosmos.m4a`;
+  return `${raw.replace(/\/$/, "")}/${MUSIC_FILES[track]}`;
 }
 
-function ensureMusic() {
-  if (musicEl || typeof Audio === "undefined") return musicEl;
-  const el = new Audio(musicUrl());
+function ensureMusic(track: MusicTrack) {
+  if (musicEls[track] || typeof Audio === "undefined") return musicEls[track];
+  const el = new Audio(musicUrl(track));
   el.loop = true;
   el.preload = "none";
   el.volume = 0;
@@ -106,57 +115,73 @@ function ensureMusic() {
   el.setAttribute("aria-hidden", "true");
   el.style.display = "none";
   if (typeof document !== "undefined" && document.body) document.body.appendChild(el);
-  musicEl = el;
+  musicEls[track] = el;
   return el;
 }
 
-function fadeMusic(to: number, ms: number) {
-  const el = musicEl;
+function fadeMusic(track: MusicTrack, to: number, ms: number) {
+  const el = musicEls[track];
   if (!el) return;
-  if (musicFade) cancelAnimationFrame(musicFade);
+  if (musicFades[track]) cancelAnimationFrame(musicFades[track]);
   const from = el.volume;
   const start = performance.now();
   const step = (now: number) => {
     const k = Math.min(1, (now - start) / ms);
     el.volume = from + (to - from) * k;
     if (k < 1) {
-      musicFade = requestAnimationFrame(step);
+      musicFades[track] = requestAnimationFrame(step);
     } else {
-      musicFade = 0;
+      musicFades[track] = 0;
       if (to === 0) el.pause();
     }
   };
-  musicFade = requestAnimationFrame(step);
+  musicFades[track] = requestAnimationFrame(step);
+}
+
+function playWanted(fadeMs: number) {
+  if (!musicWanted || musicMuted) return;
+  const el = ensureMusic(musicWanted);
+  if (!el) return;
+  void el.play().catch(() => {
+    /* autoplay may be blocked until the first gesture; armMusicUnlock
+       retries on the first pointer/key, so the score still starts */
+  });
+  fadeMusic(musicWanted, MUSIC_VOLS[musicWanted], fadeMs);
+}
+
+// The menu score now WANTS to play from the first frame, before any
+// gesture — where the retro loop always started post-tap. One document
+// listener retries the wanted track the moment the user first interacts.
+function armMusicUnlock() {
+  if (musicUnlockArmed || typeof document === "undefined") return;
+  musicUnlockArmed = true;
+  const kick = () => {
+    const el = musicWanted ? musicEls[musicWanted] : null;
+    if (el && el.paused && !musicMuted) playWanted(600);
+  };
+  document.addEventListener("pointerdown", kick, { capture: true, passive: true });
+  document.addEventListener("keydown", kick, { capture: true, passive: true });
 }
 
 export const music = {
-  // Called every frame with whether the retro renderer is live right now.
-  // It debounces itself, so the engine can call it unconditionally.
-  set(active: boolean) {
-    if (active === musicWanted) return;
-    musicWanted = active;
-    const el = ensureMusic();
-    if (!el) return;
-    if (active && !musicMuted) {
-      void el.play().catch(() => {
-        /* autoplay may be blocked until the first gesture; the next
-           call after a tap will succeed */
-      });
-      fadeMusic(MUSIC_VOL, 600);
-    } else {
-      fadeMusic(0, 450);
+  // Called every frame with the track the moment wants (or null for
+  // silence). It debounces itself, so the engine can call it unconditionally.
+  set(track: MusicTrack | null) {
+    if (track === musicWanted) return;
+    const prev = musicWanted;
+    musicWanted = track;
+    if (prev) fadeMusic(prev, 0, 450);
+    if (track) {
+      armMusicUnlock();
+      playWanted(600);
     }
   },
   setMuted(m: boolean) {
     musicMuted = m;
-    if (m) fadeMusic(0, 200);
-    else if (musicWanted) {
-      const el = ensureMusic();
-      if (el) {
-        void el.play().catch(() => {});
-        fadeMusic(MUSIC_VOL, 400);
-      }
-    }
+    if (m) {
+      fadeMusic("voyage", 0, 200);
+      fadeMusic("cosmos", 0, 200);
+    } else playWanted(400);
   },
   muted: () => musicMuted,
 };

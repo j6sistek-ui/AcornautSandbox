@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=77";
-import { sfx, unlockAudio, music } from "./audio.js?v=77";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=77";
-import { drawHud, drawWorld } from "./draw.js?v=77";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=77";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=77";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=77";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=77";
-import { raceViewport } from "./race-viewport.js?v=77";
+import { emptyArt, loadArt } from "./art.js?v=78";
+import { sfx, unlockAudio, music } from "./audio.js?v=78";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=78";
+import { drawHud, drawWorld } from "./draw.js?v=78";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=78";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=78";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=78";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=78";
+import { raceViewport } from "./race-viewport.js?v=78";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -369,9 +369,9 @@ export async function createEngine(canvas) {
             return;
         const rect = parent.getBoundingClientRect();
         const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
-        // widescreen beta: the play area may take the whole window; live
-        // keeps the phone column until the responsive pass is approved
-        const W = Math.min(rect.width, IS_BETA ? 1600 : 480);
+        // widescreen everywhere: the play area may take the whole window,
+        // capped only at desktop-panorama width
+        const W = Math.min(rect.width, 1600);
         const H = rect.height;
         canvas.width = Math.floor(W * dpr);
         canvas.height = Math.floor(H * dpr);
@@ -617,11 +617,11 @@ export async function createEngine(canvas) {
             raceAccumulator = 0;
             dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
         }
-        // The retro soundtrack rides the retro renderer: on for the whole
-        // arcade run and for the shifted stretches of Free Flight, off the
-        // instant you are back in the illustrated game or out of a live run.
+        // The chiptune rides the retro renderer: the whole arcade run and the
+        // shifted stretches of Free Flight. Everywhere else — menus, results,
+        // and every illustrated mode — the voyage score carries the game.
         const inRun = world.screen === "play" || world.screen === "pause";
-        music.set(world.retro && inRun);
+        music.set(world.retro && inRun ? "cosmos" : "voyage");
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
@@ -665,4 +665,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=77";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=78";
