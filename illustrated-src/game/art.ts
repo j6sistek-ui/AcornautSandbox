@@ -26,6 +26,10 @@ export type ArtBank = {
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
   shieldnut: Sprite | null;
+  /** the animated pickup cycles — frozen and shield now MOVE like the
+   *  acorns always have; the single files above stay as icons/fallbacks */
+  frozenAnim: Sprite[];
+  shieldAnim: Sprite[];
   // Suits that ship a hinged tail carry two extra layers, both on the
   // full canvas so they register against the whole-suit sprite.
   suitTail: Record<string, Sprite>;
@@ -163,6 +167,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+    frozenAnim: [], shieldAnim: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
   };
 }
@@ -352,12 +357,12 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, suitTail, suitBody, suitTap, suitTapTail, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
-      many(`${base}/acorn/`, 4),
-      many(`${base}/golden/`, 4),
+      many(`${base}/acorn/`, 16),
+      many(`${base}/golden/`, 16),
       many(`${base}/shield/`, 4),
       many(`${base}/planets/`, PLANET_COUNT, 0),
       many(`${base}/debris/`, DEBRIS_COUNT, 0),
@@ -368,6 +373,8 @@ export async function loadArt(): Promise<ArtBank> {
       optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
       optional(`${base}/pickups/frozen.png?v=${ART_VER}`),
       optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
+      many(`${base}/pickups/frozen-`, 16),
+      many(`${base}/pickups/shieldnut-`, 16),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),
@@ -392,6 +399,8 @@ export async function loadArt(): Promise<ArtBank> {
     arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn as HTMLImageElement) : null,
     frozen: frozen ? asSprite(frozen as HTMLImageElement) : null,
     shieldnut: shieldnut ? asSprite(shieldnut as HTMLImageElement) : null,
+    frozenAnim,
+    shieldAnim,
     suitTail,
     suitBody,
     suitTap,

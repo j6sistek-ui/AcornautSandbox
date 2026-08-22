@@ -379,7 +379,7 @@ function drawRaceTunnel(
       const canonicalX = RACE_PILOT_X + (a.tick - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ);
       const x = raceViewportX(viewport, canonicalX);
       if (x < left - 30 * scale || x > right + 30 * scale) return;
-      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, a.y), 26 * scale);
+      drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, raceViewportY(viewport, a.y), 26 * scale);
     });
   }
 }
@@ -487,7 +487,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
       if (race.acornLedger[i]) return;
       const x = raceViewportX(viewport, RACE_PILOT_X + acorn.x - race.coursePosition);
       if (x < left - 30 * scale || x > right + 30 * scale) return;
-      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, acorn.y), 26 * scale);
+      drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, raceViewportY(viewport, acorn.y), 26 * scale);
     });
     const finishX = raceViewportX(viewport, RACE_PILOT_X + RACE_LENGTH - race.coursePosition);
     if (finishX < right + ringSize) {
@@ -653,21 +653,19 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   for (const a of w.pickups) {
     if (a.got) continue;
     const y = a.y + Math.sin(a.bob) * 4;
-    if (a.kind === "acorn") drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
-    else if (a.kind === "gold") drawSprite(ctx, frameOf(art.golden, w.time, 6), a.x, y, 32);
+    if (a.kind === "acorn") drawSprite(ctx, frameOf(art.acorn, w.time, 10), a.x, y, 28);
+    else if (a.kind === "gold") drawSprite(ctx, frameOf(art.golden, w.time, 10), a.x, y, 32);
     else if (a.kind === "slow") {
       // the frozen acorn is its own painting now — no ring needed to say
       // what it does, the frost says it
-      if (art.frozen) drawSprite(ctx, art.frozen, a.x, y, 32);
-      else drawSprite(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 28);
+      drawSprite(ctx, frameOf(art.frozenAnim, w.time, 10) ?? art.frozen ?? frameOf(art.acorn, w.time, 10), a.x, y, 32);
       ctx.strokeStyle = `rgba(150,225,255,${0.28 + 0.16 * Math.sin(w.time * 6)})`;
       ctx.lineWidth = 1.6;
       ctx.beginPath();
       ctx.arc(a.x, y, 20 + Math.sin(w.time * 6) * 1.6, 0, Math.PI * 2);
       ctx.stroke();
     } else if (a.kind === "shield") {
-      if (art.shieldnut) drawSprite(ctx, art.shieldnut, a.x, y, 34);
-      else drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
+      drawSprite(ctx, frameOf(art.shieldAnim, w.time, 10) ?? art.shieldnut, a.x, y, 34);
     }
     else if (a.kind === "hole" || a.kind === "worm") {
       drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
@@ -958,16 +956,15 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
       ctx.strokeStyle = "rgba(255,238,128,.85)";
       ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(a.x, y, 21 + Math.sin(w.time * 5) * 2, 0, Math.PI * 2); ctx.stroke();
-      drawSprite(ctx, frameOf(art.golden, w.time, 6) ?? frameOf(art.acorn, w.time, 5), a.x, y, 33);
+      drawSprite(ctx, frameOf(art.golden, w.time, 10) ?? frameOf(art.acorn, w.time, 10), a.x, y, 33);
       ctx.fillStyle = "#fff"; ctx.font = "900 10px Figtree, system-ui"; ctx.textAlign = "center";
       ctx.fillText("FLOW", a.x, y + 4);
     } else if (a.kind === "slow") {
-      if (art.frozen) drawSprite(ctx, art.frozen, a.x, y, 33);
-      else drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 29);
+      drawSprite(ctx, frameOf(art.frozenAnim, w.time, 10) ?? art.frozen ?? frameOf(art.acorn, w.time, 10), a.x, y, 33);
       ctx.strokeStyle = `rgba(150,225,255,${0.35 + 0.2 * Math.sin(w.time * 6)})`;
       ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.arc(a.x, y, 21 + Math.sin(w.time * 6) * 2, 0, Math.PI * 2); ctx.stroke();
-    } else drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
+    } else drawSprite(ctx, frameOf(art.acorn, w.time, 10), a.x, y, 28);
   }
   for (const p of w.particles) drawParticle(ctx, p);
   if (w.powerLeft > 0) {
