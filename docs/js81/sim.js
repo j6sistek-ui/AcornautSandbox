@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=80";
-import { modsUnlocked, writeSave } from "./save.js?v=80";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=80";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=80";
-import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=80";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=80";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=80";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=81";
+import { modsUnlocked, writeSave } from "./save.js?v=81";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=81";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=81";
+import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=81";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=81";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=81";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -338,29 +338,30 @@ function sealBlockers(w, env, gapY, gap) {
     y = gapY + gap / 2 + r * 2 + pad;
     for (let n = 0; y < w.H - edge && n < 12; n++, y += step)
         put(y, n);
-    // A short field's bands hold one or two rocks vertically, which still
-    // reads as empty sky. Widen the seal instead: a row of smaller rocks
-    // flanks each planet along the screen edge, so landscape flights meet
-    // the same debris field portrait always had — visible AND solid.
+    // On a REAL landscape phone (content height ~350-430) the planets and
+    // the gap consume virtually the whole height: the edge bands are
+    // 20-30px slivers, so band-packed rocks either clip offscreen or land
+    // ON a planet, and gates still read as bare — the owner's screenshot.
+    // The seal changes shape instead of density: smaller rocks line the
+    // corridor's CEILING and FLOOR between the gate columns, kept clear
+    // of the planet disks (|xOff| > planet radius + rock radius), so the
+    // debris field runs continuously along both screen edges. They stay
+    // solid, punishing edge-hugging exactly like portrait's columns.
     if (short) {
-        const row = (yy, count) => {
-            for (let n = 0; n < count; n++) {
+        const line = (yy) => {
+            for (let n = 0; n < 6; n++) {
                 const side = (n % 2) * 2 - 1;
                 blockers.push({
                     y: yy + (Math.random() - 0.5) * 10,
-                    r: 14 + Math.random() * 7,
+                    r: 13 + Math.random() * 6,
                     kind: pickKind(w),
-                    xOff: side * (30 + Math.floor(n / 2) * 26 + Math.random() * 9),
+                    xOff: side * (66 + Math.floor(n / 2) * 36 + Math.random() * 14),
                     debris: pickDebris(env),
                 });
             }
         };
-        const topBand = gapY - gap / 2 - r * 2;
-        const botBand = w.H - (gapY + gap / 2 + r * 2);
-        if (topBand > 24)
-            row(Math.max(16, topBand - 22), 4);
-        if (botBand > 24)
-            row(Math.min(w.H - 16, w.H - botBand + 22), 4);
+        line(18);
+        line(w.H - 18);
     }
     return blockers;
 }
