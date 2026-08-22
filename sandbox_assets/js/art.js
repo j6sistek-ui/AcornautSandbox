@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=84";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=85";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -229,6 +229,10 @@ export async function loadArt() {
         "verdant",
         "cryostar",
         "eclipse",
+        ...(IS_BETA ? [
+            "cinderforge", "groveguard", "cosmic", "sunforged",
+            "abyssal", "amethyst", "ivoryguard", "reactor",
+        ] : []),
     ];
     // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
     // still touches its plume in the source, but the guarded mainline cut is
@@ -238,6 +242,10 @@ export async function loadArt() {
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
         "catsuit", "gemmie", "sammie", "seraph", "leviathan",
         "verdant", "cryostar", "eclipse", "volt",
+        ...(IS_BETA ? [
+            "cinderforge", "groveguard", "cosmic", "sunforged",
+            "abyssal", "amethyst", "ivoryguard", "reactor",
+        ] : []),
     ];
     const suitIds = [
         "flight",
@@ -261,6 +269,10 @@ export async function loadArt() {
         "cryostar",
         "eclipse",
         "volt",
+        ...(IS_BETA ? [
+            "cinderforge", "groveguard", "cosmic", "sunforged",
+            "abyssal", "amethyst", "ivoryguard", "reactor",
+        ] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [
@@ -322,6 +334,8 @@ export async function loadArt() {
                 voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
                 alien: 16, ghost: 16, gemmie: 16, sammie: 16,
                 seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+                cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
+                abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
             } : {}),
         } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),

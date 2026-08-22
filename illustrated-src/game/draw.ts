@@ -2089,6 +2089,14 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:verdant": [204, 93, 58],
   "suit:cryostar": [207, 93, 58],
   "suit:eclipse": [204, 86, 58],
+  "suit:cinderforge": [196, 100, 51],
+  "suit:groveguard": [196, 100, 51],
+  "suit:cosmic": [196, 100, 51],
+  "suit:sunforged": [196, 96, 49],
+  "suit:abyssal": [196, 100, 51],
+  "suit:amethyst": [196, 100, 51],
+  "suit:ivoryguard": [196, 100, 51],
+  "suit:reactor": [196, 98, 51],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -2144,6 +2152,14 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   "verdant": [125, 129, 137],
   "cryostar": [126, 125, 132],
   "eclipse": [121, 132, 133],
+  "cinderforge": [124, 125, 128],
+  "groveguard": [130, 124, 106],
+  "cosmic": [134, 119, 117],
+  "sunforged": [123, 128, 129],
+  "abyssal": [124, 131, 134],
+  "amethyst": [122, 131, 134],
+  "ivoryguard": [122, 126, 128],
+  "reactor": [136, 116, 115],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
@@ -2153,7 +2169,7 @@ const LIGHT_OPAQUE_VISORS = new Set([
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "paladin", "princess",
 ]);
-function punchedHelm(spr: Sprite, id: string) {
+function punchedHelm(spr: Sprite, id: string, opaqueVisor = false) {
   const hit = punchedCache.get(id);
   if (hit) return hit;
   const g = HELM_GLASS[id];
@@ -2163,6 +2179,10 @@ function punchedHelm(spr: Sprite, id: string) {
   const cc = c.getContext("2d");
   if (!cc || !g) return null;
   cc.drawImage(spr, 0, 0);
+  if (opaqueVisor) {
+    punchedCache.set(id, c);
+    return c;
+  }
   const strong = LIGHT_OPAQUE_VISORS.has(id);
   const grad = cc.createRadialGradient(
     g[0], g[1], g[2] * 0.1,
@@ -2207,6 +2227,14 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   cryostar: [103, 151],
   volt: [107, 136],
   eclipse: [105, 143],
+  cinderforge: [104, 132],
+  groveguard: [102, 130],
+  cosmic: [104, 131],
+  sunforged: [101, 128],
+  abyssal: [104, 132],
+  amethyst: [103, 132],
+  ivoryguard: [103, 132],
+  reactor: [102, 130],
 };
 
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they
@@ -2424,7 +2452,7 @@ function paintDome(
   const helmSpr = art?.helms?.[helmet.id];
   const g = HELM_GLASS[helmet.id];
   if (helmSpr && g) {
-    const punched = punchedHelm(helmSpr, helmet.id);
+    const punched = punchedHelm(helmSpr, helmet.id, helmet.opaqueVisor === true);
     if (punched) {
       const s2 = (r * 1.04) / g[2];
       const rot = g[3] || 0;
