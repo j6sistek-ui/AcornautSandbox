@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=81";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=82";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -237,7 +237,7 @@ export async function loadArt() {
         "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
         "catsuit", "gemmie", "sammie", "seraph", "leviathan",
-        "verdant", "cryostar", "eclipse",
+        "verdant", "cryostar", "eclipse", "volt",
     ];
     const suitIds = [
         "flight",
@@ -260,6 +260,7 @@ export async function loadArt() {
         "verdant",
         "cryostar",
         "eclipse",
+        "volt",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [
@@ -313,7 +314,7 @@ export async function loadArt() {
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? {
             // Existing approved custom banks remain live everywhere.
-            robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16,
+            robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
             // The Robo-timing rollout stays beta-only until the owner has flown
             // every silhouette. Production keeps its current universal rig path.
             ...(IS_BETA ? {

@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=81";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=82";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "81";
+export const ART_VER = "82";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -122,6 +122,7 @@ export const SUITS = [
     { id: "verdant", name: "Verdant", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c6844", suitLite: "#45b977", suitDark: "#063e2a", trim: "#d7b85a", glow: "#38ff9a", dust: "#a8ffd1" },
     { id: "cryostar", name: "Cryostar", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#eaf6ff", suitLite: "#ffffff", suitDark: "#2f86ba", trim: "#56ceff", glow: "#54d8ff", dust: "#d8f8ff" },
     { id: "eclipse", name: "Eclipse", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#171126", suitLite: "#503274", suitDark: "#090611", trim: "#c98a72", glow: "#b552ff", dust: "#e2b5ff" },
+    { id: "volt", name: "Volt", cost: 0, ownHead: true, fur: "#8a7434", furDark: "#4a3f14", belly: "#c9b06a", suit: "#46421a", suitLite: "#6f6220", suitDark: "#1d1d04", trim: "#6eab3c", glow: "#54ff2e", dust: "#a8ff7a" },
 ];
 export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
@@ -326,6 +327,7 @@ export const SUIT_REVEAL = {
     alien: 16,
     ghost: 20,
     bigbooty: 24,
+    volt: 28,
 };
 export const TRACK = [
     { lvl: 2, kind: "pal", id: "bee" },

@@ -2205,6 +2205,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   voidsuit: [105, 142],
   verdant: [103, 149],
   cryostar: [103, 151],
+  volt: [107, 136],
   eclipse: [105, 143],
 };
 
