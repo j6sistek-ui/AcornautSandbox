@@ -31,6 +31,7 @@ export function defaultSave() {
         guide: "pending",
         allStars: false,
         musicOff: false,
+        voltAltJump: false,
         experimentalRaceRecords: {},
     };
 }

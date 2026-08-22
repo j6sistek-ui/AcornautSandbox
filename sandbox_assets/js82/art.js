@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=82";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=82";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -117,7 +117,7 @@ export function emptyArt() {
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
         frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
-        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
+        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, hyperRun: {},
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -290,7 +290,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -325,6 +325,8 @@ export async function loadArt() {
             } : {}),
         } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
+        namedSeries(TAP_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-tap2-"),
+        namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.
         named(IS_BETA ? hyperRunIds : [], "hyper-run"),
@@ -353,6 +355,8 @@ export async function loadArt() {
         suitBody,
         suitTap,
         suitTapTail,
+        suitTapAlt,
+        suitBounce,
         hyperRun,
     };
 }

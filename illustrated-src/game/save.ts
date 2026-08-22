@@ -51,6 +51,8 @@ export type SaveData = {
   allStars: boolean;
   /** the Profile's music switch — absent (old saves) means music ON */
   musicOff?: boolean;
+  /** VOLT's hangar experiment: fly the alternate painted jump bank */
+  voltAltJump?: boolean;
   /** Experimental records are isolated from chapter stars and rewards. */
   experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
 };
@@ -86,6 +88,7 @@ export function defaultSave(): SaveData {
     guide: "pending",
     allStars: false,
     musicOff: false,
+    voltAltJump: false,
     experimentalRaceRecords: {},
   };
 }
