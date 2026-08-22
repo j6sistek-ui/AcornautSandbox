@@ -198,7 +198,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (snap.screen === "title") {
       keptScroll = 0;
-      overlay.append(drawHome());
+      overlay.append(IS_BETA ? drawHome() : drawHomeClassic());
       return;
     }
     if (snap.screen === "hangar") {
@@ -209,6 +209,17 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (snap.screen === "log") {
       overlay.append(drawLog());
+      // land the chart on the level you're ON: the map climbs, so a fresh
+      // chapter opens at its locked top unless we scroll to the pilot
+      const sc = overlay.querySelector(".ac-sheet-scroll");
+      if (sc) {
+        if (keptScroll) {
+          sc.scrollTop = keptScroll;
+        } else {
+          const cur = sc.querySelector(".ac-mapnode.cur");
+          if (cur) (cur as HTMLElement).scrollIntoView({ block: "center" });
+        }
+      }
       return;
     }
     if (snap.screen === "profile") {
@@ -277,6 +288,11 @@ export async function bootStandalone(root: HTMLElement) {
   const I_LAUNCH = ["M5 13.5 12 4l7 9.5", "M12 4v16", "M8.5 20h7"];
   const I_CHEV = ["m9 5 7 7-7 7"];
   const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
+  const I_GEAR = [
+    "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
+    "M12 3.2v2.2M12 18.6v2.2M20.8 12h-2.2M5.4 12H3.2M18.2 5.8l-1.6 1.6M7.4 16.6l-1.6 1.6M18.2 18.2l-1.6-1.6M7.4 7.4 5.8 5.8",
+  ];
+  const I_LOCK = ["M6 11h12v9H6z", "M9 11V8a3 3 0 0 1 6 0v3"];
 
   // Every menu wears the same head: a kicker, the screen's name, and
   // whichever counter that screen is actually about.
@@ -341,7 +357,7 @@ export async function bootStandalone(root: HTMLElement) {
     const dome = el("button", "ac-dome");
     dome.append(icon(I_ACORN, 26, true), el("span", "", "HOME"));
     dome.onclick = () => engine.open("title");
-    const hangarTab = side("hangar", I_HELMET, "HANGAR");
+    const hangarTab = side("hangar", I_HELMET, IS_BETA ? "LOADOUT" : "HANGAR");
     const levelsTab = side("log", I_STAR, "LEVELS");
     const g = engine.save.guide;
     if ((g === "hangar" || g === "helmet") && active !== "hangar") hangarTab.classList.add("ac-pulse");
@@ -449,7 +465,9 @@ export async function bootStandalone(root: HTMLElement) {
       started.catch(() => { clear(); end(); });
   }
 
-  function drawHome() {
+  // The LIVE page keeps the shipped title screen while the hub bakes in
+  // the beta — same rule as every other experiment in this repo.
+  function drawHomeClassic() {
     const s = engine.save;
     const box = el("div", "ac-home");
 
@@ -536,6 +554,189 @@ export async function bootStandalone(root: HTMLElement) {
     }
     box.append(controls, tabbar("title"));
     return box;
+  }
+
+  // ------------------------------------------------------------- the hub
+  // The title screen is a HUB now: the purple key art owns the screen and
+  // every destination is one saturated tile, named once. Identity lives in
+  // PROFILE, gear lives in LOADOUT, settings and help share the gear
+  // button, the Lab rides inside MODES, and the Star Chart bar is the
+  // campaign's stars made permanently visible.
+  let modesOpen = false;
+
+  function nextStarReward(stars: number) {
+    return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
+  }
+
+  function hubIcon(name: string) {
+    const img = document.createElement("img");
+    img.src = `${artRootUrl()}/ui/${name}.png?v=${ART_VER}`;
+    img.alt = "";
+    img.draggable = false;
+    img.className = "ac-hubic-img";
+    return img;
+  }
+
+  function drawHome() {
+    const s = engine.save;
+    const box = el("div", "ac-hub");
+
+    const art = el("div", "ac-hub-art");
+    const hubArt = window.innerWidth > window.innerHeight ? "menu-hub-wide.jpg" : "menu-hub.jpg";
+    art.style.backgroundImage = `url("${artRootUrl()}/${hubArt}?v=${ART_VER}")`;
+    box.append(art, el("div", "ac-hub-scrim"));
+
+    // ONE top rail: the acorn balance (a door to the shop), the shop
+    // itself, and the gear that holds settings + help together
+    const rail = el("div", "ac-hub-rail");
+    const acorns = el("button", "ac-pill ac-pill-gold ac-hub-acorns");
+    acorns.append(icon(I_NUT, 15), el("span", "", s.acorns.toLocaleString()));
+    acorns.onclick = () => engine.open("shop");
+    const shopBtn = el("button", "ac-hub-sq");
+    shopBtn.setAttribute("aria-label", "Shop");
+    shopBtn.append(hubIcon("gift"));
+    shopBtn.onclick = () => engine.open("shop");
+    const gear = el("button", "ac-hub-sq");
+    gear.setAttribute("aria-label", "Settings and help");
+    gear.append(icon(I_GEAR, 22));
+    gear.onclick = () => engine.open("help");
+    rail.append(acorns, el("div", "ac-hub-railgap"), shopBtn, gear);
+    box.append(rail);
+
+    const mark = el("div", "ac-hub-wordmark");
+    mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
+    mark.append(el("p", "ac-hub-kicker", "Fly the gaps · Grab the acorns"));
+    box.append(mark, el("div", "ac-hub-space"));
+
+    const tiles = el("div", "ac-hub-tiles");
+    const tile = (
+      cls: string,
+      pic: HTMLElement,
+      label: string,
+      sub: string,
+      hit: () => void,
+      dot?: string,
+      pulse?: boolean,
+    ) => {
+      const b = el("button", `ac-hubtile ${cls}`);
+      const ic = el("span", "ac-hubic");
+      ic.append(pic);
+      b.append(ic, el("b", "", label), el("span", "ac-hubsub", sub));
+      if (dot) {
+        const d = el("i", "ac-hubdot");
+        d.style.background = dot;
+        d.style.boxShadow = `0 0 8px ${dot}`;
+        b.append(d);
+      }
+      if (pulse) b.classList.add("ac-pulse");
+      b.onclick = hit;
+      tiles.append(b);
+      return b;
+    };
+
+    // FREE FLIGHT is the endless game; missions live on the Star Chart.
+    // The ribbon names the selected mode so launching is never a mystery.
+    const launch = el("button", "ac-hubtile t-launch");
+    launch.append(el("span", "ac-hub-ribbon", `${MODES[selectedMode].label} SELECTED`));
+    const lic = el("span", "ac-hubic");
+    lic.append(hubIcon("rocket"));
+    const ltxt = el("span", "ac-hub-launchtxt");
+    ltxt.append(el("b", "", "FREE FLIGHT"), el("span", "ac-hubsub", "Begin your flight"));
+    launch.append(lic, ltxt);
+    launch.onclick = () => engine.fly(MODES[selectedMode].id);
+    tiles.append(launch);
+
+    const helm = helmetWornBy(s.equipped, s.equippedSuit);
+    const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
+    tile("t-loadout", helmCardOf(helm, 50), "LOADOUT", "Suits & gear",
+      () => engine.open("hangar"), undefined,
+      s.guide === "hangar" || s.guide === "helmet");
+    tile("t-chart", hubIcon("map"), "STAR CHART", "100 missions",
+      () => engine.open("log"), s.guide === "levels" ? "#ffb45c" : undefined,
+      s.guide === "levels");
+    const planet = miniCanvas(50, 50);
+    if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+    tile("t-modes", planet.c, "MODES", "4 ways to fly · Lab",
+      () => { modesOpen = true; render(); }, "#ff4d6d");
+    tile("t-profile", portraitOf(helm, suit, 50), "PROFILE", "Pilot record",
+      () => engine.open("profile"));
+    box.append(tiles);
+
+    // the Star Chart bar: campaign stars over the 300 total, plus what the
+    // next handful buys — a second door into the chart
+    const stars = starsOf(s);
+    const nxt = nextStarReward(stars);
+    const bar = el("button", "ac-hub-bar");
+    bar.append(el("span", "ac-hub-starbadge", "★"));
+    const btxt = el("span", "ac-hub-bartxt");
+    btxt.append(el("b", "", nxt ? `STAR CHART · NEXT UNLOCK ★ ${nxt.stars}` : "STAR CHART · COMPLETE"));
+    const track = el("span", "ac-hub-track");
+    const fill = el("i", "");
+    fill.style.width = `${Math.min(100, (stars / 300) * 100)}%`;
+    track.append(fill, el("em", "", `${stars} / 300`));
+    btxt.append(track);
+    bar.append(btxt);
+    bar.onclick = () => engine.open("log");
+    box.append(bar);
+
+    if (s.guide === "hangar" || s.guide === "helmet") {
+      box.append(coach("Your new gear is waiting — open LOADOUT"));
+    } else if (s.guide === "levels") {
+      box.append(coach("Mission 1 is ready — open the STAR CHART"));
+    }
+    if (modesOpen) box.append(drawModeSheet());
+    return box;
+  }
+
+  // The mode picker: FREE FLIGHT's four rule-sets, with the Lab's
+  // prototype doors riding at the bottom — one deliberate tap away,
+  // exactly as Help used to carry them.
+  function drawModeSheet() {
+    const s = engine.save;
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("div", "ac-lvlcard");
+    sheet.append(el("p", "ac-kicker", "FREE FLIGHT"), el("h2", "ac-lvlname", "Modes"));
+    const bests: Record<string, number> = {
+      fly: s.highScore, deep: s.deepBest, lost: s.lostBest, arcade: s.arcadeBest ?? 0,
+    };
+    const modeOpen = (id: string) =>
+      id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
+    const modePrice = (id: string) =>
+      id === "deep" ? STAR_UNLOCKS.deep : id === "lost" ? STAR_UNLOCKS.lost : 0;
+    MODES.forEach((m, i) => {
+      const open = modeOpen(m.id);
+      const b = el("button", i === selectedMode ? "ac-moderow on" : "ac-moderow");
+      if (!open) b.classList.add("ac-cardoff");
+      const t = el("span", "ac-moderowtxt");
+      t.append(el("b", "", m.label), el("span", "", m.blurb));
+      b.append(t, el("span", "ac-moderowaside",
+        open ? `BEST ${bests[m.id] ?? 0}` : `★ ${modePrice(m.id)} TO OPEN`));
+      b.onclick = () => { if (!open) return; selectedMode = i; modesOpen = false; render(); };
+      sheet.append(b);
+    });
+    sheet.append(el("p", "ac-kicker ac-modeshead", "PROTOTYPES · NOT PART OF THE GAME"));
+    const door = (label: string, hit: () => void) => {
+      const b = el("button", "ac-moderow ac-modedoor");
+      const t = el("span", "ac-moderowtxt");
+      t.append(el("b", "", label));
+      b.append(t, icon(I_CHEV, 16));
+      b.onclick = hit;
+      sheet.append(b);
+    };
+    door("WORMHOLE RUN", () => { modesOpen = false; engine.fly("tunnel"); });
+    door("SURVIVAL TEST MODE", () => { window.location.href = labRootOf() + "spill/"; });
+    door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
+    if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
+    const back = el("button", "ac-ghost", "BACK");
+    back.onclick = () => { modesOpen = false; render(); };
+    sheet.append(back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) { modesOpen = false; render(); } };
+    return wrap;
+  }
+
+  function labRootOf() {
+    return IS_BETA ? "../lab/" : "./lab/";
   }
 
   function miniCanvas(w: number, h: number) {
@@ -1112,6 +1313,92 @@ export async function bootStandalone(root: HTMLElement) {
     }, 0);
   }
 
+  // ------------------------------------------------------------ chapter map
+  // The open chapter is a MAP, not a grid: its levels are planet nodes on
+  // a serpentine dotted path, climbing from the chapter's first level at
+  // the bottom to its last at the top. Every node is a shipped planet
+  // render, so the chart literally is a star chart. Flown path gold,
+  // path ahead dim; the current level carries the pilot and its name.
+  function chapterMap(stageNum: number, stars: Record<string, number>, total: number) {
+    const levels = LEVELS.filter((l) => l.stage === stageNum);
+    const W = Math.min(420, Math.max(280, window.innerWidth - 56));
+    const step = 92;
+    const H = 70 + (levels.length - 1) * step + 84;
+    const xs = [0.17, 0.5, 0.83, 0.5];
+    const pos = levels.map((_, i) => ({
+      x: Math.round(xs[i % 4] * W),
+      y: H - 62 - i * step,
+    }));
+    const current = levels.findIndex(
+      (l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1),
+    );
+
+    const map = el("div", "ac-chartmap");
+    map.style.width = `${W}px`;
+    map.style.height = `${H}px`;
+
+    const svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("class", "ac-mappath");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.setAttribute("width", `${W}`);
+    svg.setAttribute("height", `${H}`);
+    const seg = (pts: { x: number; y: number }[], bright: boolean) => {
+      if (pts.length < 2) return;
+      const line = document.createElementNS(SVG, "polyline");
+      line.setAttribute("points", pts.map((p) => `${p.x},${p.y}`).join(" "));
+      line.setAttribute("fill", "none");
+      line.setAttribute("stroke", bright ? "#ffce5c" : "#5a6488");
+      line.setAttribute("stroke-opacity", bright ? ".8" : ".5");
+      line.setAttribute("stroke-width", bright ? "6" : "5");
+      line.setAttribute("stroke-linecap", "round");
+      line.setAttribute("stroke-dasharray", "0.1 16");
+      svg.append(line);
+    };
+    const split = current < 0 ? pos.length : current + 1;
+    seg(pos.slice(0, split), true);
+    seg(pos.slice(Math.max(0, split - 1)), false);
+    map.append(svg);
+
+    levels.forEach((lvl, i) => {
+      const mask = stars[lvl.id] || 0;
+      const can = levelUnlocked(lvl, stars, total);
+      const isCur = i === current;
+      const done = (mask & 1) === 1;
+      const node = el("button",
+        "ac-mapnode" + (isCur ? " cur" : done ? " done" : can ? " todo" : " locked"));
+      node.style.left = `${pos[i].x}px`;
+      node.style.top = `${pos[i].y}px`;
+      if (can) node.append(starPips(mask, "sm"));
+      const px = isCur ? 84 : 62;
+      const { c, ctx } = miniCanvas(px, px);
+      // a stable spread across the planet bank, so neighbours differ
+      const bank = engine.art?.planets ?? [];
+      if (ctx && bank.length) {
+        drawSpriteOn(ctx, bank[(stageNum * 5 + i * 3) % bank.length] ?? null, px / 2, px / 2, px * 0.94);
+      }
+      const disc = el("span", "ac-mapdisc");
+      disc.append(c);
+      if (isCur) {
+        const rider = document.createElement("img");
+        rider.src = `${artRootUrl()}/squirrel/idle-1.png?v=${ART_VER}`;
+        rider.alt = "";
+        rider.className = "ac-maprider";
+        disc.append(rider);
+      }
+      if (!can) disc.append(icon(I_LOCK, 20));
+      disc.append(el("span", "ac-mapnum", String(lvl.n)));
+      node.append(disc);
+      if (isCur) node.append(el("span", "ac-mapname", lvl.name));
+      if (can) node.onclick = () => { chartLevel = lvl.id; render(); };
+      if (engine.save.guide === "levels" && lvl.id === "1-1") node.classList.add("ac-pulse");
+      map.append(node);
+    });
+
+    const wrap = el("div", "ac-chartmapwrap");
+    wrap.append(map);
+    return wrap;
+  }
+
   let chartStage = 0;           // which stage panel is open; sticky per visit
   let chartLevel: string | null = null;   // level detail overlay
 
@@ -1196,18 +1483,22 @@ export async function bootStandalone(root: HTMLElement) {
       card.append(head);
       if (open && chartStage === st.num) {
         card.append(el("p", "ac-sub ac-stagetag", st.tagline));
-        const grid = el("div", "ac-lvlgrid");
-        for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
-          const mask = stars[lvl.id] || 0;
-          const can = levelUnlocked(lvl, stars, total);
-          const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
-          b.append(el("span", "ac-lvlnum", String(lvl.n)));
-          b.append(starPips(mask, "sm"));
-          if (can) b.onclick = () => { chartLevel = lvl.id; render(); };
-          if (sv.guide === "levels" && lvl.id === "1-1") b.classList.add("ac-pulse");
-          grid.append(b);
+        if (IS_BETA) {
+          card.append(chapterMap(st.num, stars, total));
+        } else {
+          const grid = el("div", "ac-lvlgrid");
+          for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
+            const mask = stars[lvl.id] || 0;
+            const can = levelUnlocked(lvl, stars, total);
+            const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
+            b.append(el("span", "ac-lvlnum", String(lvl.n)));
+            b.append(starPips(mask, "sm"));
+            if (can) b.onclick = () => { chartLevel = lvl.id; render(); };
+            if (sv.guide === "levels" && lvl.id === "1-1") b.classList.add("ac-pulse");
+            grid.append(b);
+          }
+          card.append(grid);
         }
-        card.append(grid);
       }
       scroll.append(card);
     }
@@ -1505,28 +1796,23 @@ export async function bootStandalone(root: HTMLElement) {
     }
     scroll.append(bests);
 
-    // The start shield and the battery used to sit here as two switches.
-    // They are not settings — both cost acorns, and the shield is charged
-    // every time it is armed — so they belong on the Hangar's MODS shelf
-    // with a price on them, next to everything else you buy.
-
-    // MUSIC is a real setting: free, global, and remembered. The switch
-    // silences both score tracks (menu/flight and the arcade chiptune)
-    // while the SFX keep playing.
-    scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
-    const settings = el("div", "ac-rows");
-    const musicRow = el("button", "ac-row ac-rowbtn");
-    musicRow.append(el("span", "", "Music"));
-    const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
-    musicSw.append(el("i", "ac-knob"));
-    musicRow.append(musicSw);
-    musicRow.onclick = () => {
-      engine.setMusicOff(!engine.save.musicOff);
-      musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
-    };
-    settings.append(musicRow);
-    scroll.append(settings);
-
+    // BETA: settings left this screen for the hub's gear button, where
+    // they sit with Help; the live page keeps Music here for now.
+    if (!IS_BETA) {
+      scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
+      const settings = el("div", "ac-rows");
+      const musicRow = el("button", "ac-row ac-rowbtn");
+      musicRow.append(el("span", "", "Music"));
+      const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
+      musicSw.append(el("i", "ac-knob"));
+      musicRow.append(musicSw);
+      musicRow.onclick = () => {
+        engine.setMusicOff(!engine.save.musicOff);
+        musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+      };
+      settings.append(musicRow);
+      scroll.append(settings);
+    }
     scroll.append(el("p", "ac-kicker ac-secthead", "News"));
     const news = el("div", "ac-rows");
     for (const line of NEWS) {
@@ -1542,8 +1828,26 @@ export async function bootStandalone(root: HTMLElement) {
 
   function drawHelp() {
     const box = el("div", "ac-menu");
-    box.append(header("Briefing", "How to Fly"));
+    box.append(IS_BETA ? header("Flight deck", "Settings & Help") : header("Briefing", "How to Fly"));
     const scroll = el("div", "ac-sheet-scroll");
+
+    // BETA: music moved here from the Profile — settings and help share
+    // the hub's gear button. The live page keeps Help as the briefing.
+    if (IS_BETA) {
+      const settings = el("div", "ac-rows");
+      const musicRow = el("button", "ac-row ac-rowbtn");
+      musicRow.append(el("span", "", "Music"));
+      const musicSw = el("span", engine.save.musicOff ? "ac-switch" : "ac-switch on");
+      musicSw.append(el("i", "ac-knob"));
+      musicRow.append(musicSw);
+      musicRow.onclick = () => {
+        engine.setMusicOff(!engine.save.musicOff);
+        musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+      };
+      settings.append(musicRow);
+      scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settings);
+      scroll.append(el("p", "ac-kicker ac-secthead", "How to fly"));
+    }
 
     // the two controls, as two SEPARATE cards — tap and swipe must never
     // read as one combined instruction
@@ -1611,29 +1915,18 @@ export async function bootStandalone(root: HTMLElement) {
     replay.onclick = () => engine.replayTutorial();
     scroll.append(replay);
 
-    // The live page is a STAGED release — still a beta in spirit — so the
-    // prototype doors stay on both pages for now: Wormhole Run, the Spill
-    // and the rig editor, one deliberate tap away, ungated. When the live
-    // page hardens for the stores, wrap these in IS_BETA again.
-    {
-      const labRoot = IS_BETA ? "../lab/" : "./lab/";
+    // BETA reaches the prototype doors through the MODES sheet on the hub;
+    // the live page keeps them here, one deliberate tap away, as before.
+    if (!IS_BETA) {
+      const labRoot = "./lab/";
       const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
       lab.onclick = () => { window.location.href = labRoot + "spill/"; };
       const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
       rig.onclick = () => { window.location.href = labRoot + "rig/"; };
       const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
       worm.onclick = () => engine.fly("tunnel");
-      const doors = [lab, rig, worm];
-      if (IS_BETA) {
-        // judging painted skies against procedural ones is a BETA question —
-        // the live help never shows the door
-        const sky = el("button", "ac-ghost ac-lab", "BACKGROUND TEST MODE");
-        sky.onclick = () => { window.location.href = labRoot + "skytest/"; };
-        doors.push(sky);
-      }
-      scroll.append(...doors, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+      scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
     }
-
     // Starting over is a real feature, not a debug door: progression can
     // be flown from zero, in either build, without touching the browser.
     // Two taps, and the armed state disarms on any re-render.
