@@ -649,7 +649,7 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
   // Tight packing keeps the seal visible whatever the field height.
   const short = w.H < 560;
   const pad = short ? 4 : 26;
-  const step = short ? 26 : 30;
+  const step = short ? 22 : 30;
   // Short fields PROJECT the column past the screen edges (owner call):
   // a rock whose centre sits just off screen still shows its inner half,
   // so the column visibly continues above and below the planets instead
@@ -668,31 +668,6 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
   for (let n = 0; y > edge && n < 12; n++, y -= step) put(y, n);
   y = gapY + gap / 2 + r * 2 + pad;
   for (let n = 0; y < w.H - edge && n < 12; n++, y += step) put(y, n);
-  // On a REAL landscape phone (content height ~350-430) the planets and
-  // the gap consume virtually the whole height: the edge bands are
-  // 20-30px slivers, so band-packed rocks either clip offscreen or land
-  // ON a planet, and gates still read as bare — the owner's screenshot.
-  // The seal changes shape instead of density: smaller rocks line the
-  // corridor's CEILING and FLOOR between the gate columns, kept clear
-  // of the planet disks (|xOff| > planet radius + rock radius), so the
-  // debris field runs continuously along both screen edges. They stay
-  // solid, punishing edge-hugging exactly like portrait's columns.
-  if (short) {
-    const line = (yy: number) => {
-      for (let n = 0; n < 6; n++) {
-        const side = (n % 2) * 2 - 1;
-        blockers.push({
-          y: yy + (Math.random() - 0.5) * 10,
-          r: 13 + Math.random() * 6,
-          kind: pickKind(w),
-          xOff: side * (66 + Math.floor(n / 2) * 36 + Math.random() * 14),
-          debris: pickDebris(env),
-        });
-      }
-    };
-    line(18);
-    line(w.H - 18);
-  }
   return blockers;
 }
 
