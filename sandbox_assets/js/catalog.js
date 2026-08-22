@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=79";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=80";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "79";
+export const ART_VER = "80";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and

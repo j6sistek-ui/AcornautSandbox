@@ -1579,7 +1579,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   alien: [106, 145],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
-  catsuit: [90, 146],
+  catsuit: [74, 149],
   copper: [99, 131],
   ember: [107, 136],
   flight: [102, 130],
