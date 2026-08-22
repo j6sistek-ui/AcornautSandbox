@@ -78,6 +78,8 @@ export type Engine = {
   toggleMod: (which: "shield" | "battery") => string;
   /** buy a flight mod if unowned, otherwise switch it on or off */
   setMod: (id: string) => string;
+  /** the Profile's music switch: silences both score tracks, persisted */
+  setMusicOff: (off: boolean) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -94,6 +96,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   if (!raw) throw new Error("no 2d");
   const ctx = raw;
   const save = loadSave();
+  // the saved music preference applies before the first frame ever asks
+  // for a track, so a switched-off score never blips on at boot
+  music.setMuted(!!save.musicOff);
   const world = makeWorld(360, 640);
   let art: ArtBank | null = null;
   let raf = 0;
@@ -229,6 +234,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     equipPal: (id) => transactPal(id),
     toggleMod,
     setMod,
+    setMusicOff(off) {
+      save.musicOff = off;
+      writeSave(save);
+      music.setMuted(off);
+      notify();
+    },
     dismissDead() {
       world.screen = "title";
       world.lastRun = null;

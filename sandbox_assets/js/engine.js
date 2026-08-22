@@ -13,6 +13,9 @@ export async function createEngine(canvas) {
         throw new Error("no 2d");
     const ctx = raw;
     const save = loadSave();
+    // the saved music preference applies before the first frame ever asks
+    // for a track, so a switched-off score never blips on at boot
+    music.setMuted(!!save.musicOff);
     const world = makeWorld(360, 640);
     let art = null;
     let raf = 0;
@@ -154,6 +157,12 @@ export async function createEngine(canvas) {
         equipPal: (id) => transactPal(id),
         toggleMod,
         setMod,
+        setMusicOff(off) {
+            save.musicOff = off;
+            writeSave(save);
+            music.setMuted(off);
+            notify();
+        },
         dismissDead() {
             world.screen = "title";
             world.lastRun = null;

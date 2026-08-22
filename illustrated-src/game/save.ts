@@ -49,6 +49,8 @@ export type SaveData = {
   guide: "pending" | "reward" | "hangar" | "helmet" | "levels" | "done";
   /** Briella's code: the game simply believes it has all 300 stars */
   allStars: boolean;
+  /** the Profile's music switch — absent (old saves) means music ON */
+  musicOff?: boolean;
   /** Experimental records are isolated from chapter stars and rewards. */
   experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
 };
@@ -83,6 +85,7 @@ export function defaultSave(): SaveData {
     stars: {},
     guide: "pending",
     allStars: false,
+    musicOff: false,
     experimentalRaceRecords: {},
   };
 }
