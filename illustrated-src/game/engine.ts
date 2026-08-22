@@ -395,7 +395,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!parent) return;
     const rect = parent.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
-    const W = Math.min(rect.width, 480);
+    // widescreen beta: the play area may take the whole window; live
+    // keeps the phone column until the responsive pass is approved
+    const W = Math.min(rect.width, IS_BETA ? 1600 : 480);
     const H = rect.height;
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
