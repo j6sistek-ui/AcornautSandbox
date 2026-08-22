@@ -668,7 +668,17 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
       drawSprite(ctx, frameOf(art.shieldAnim, w.time, 10) ?? art.shieldnut, a.x, y, 34);
     }
     else if (a.kind === "hole" || a.kind === "worm") {
-      drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
+      // The wormhole has a painted spin cycle now (beta). Full-canvas draw
+      // at a fixed footprint: the glow makes each frame's alpha box breathe,
+      // so drawSprite's box fit would visibly jitter the size. 16 frames at
+      // ~9fps matches the clip's native pacing; the cycle loops seamlessly.
+      const spin = a.kind === "worm" ? frameOf(art.wormAnim, w.time, 9) : undefined;
+      if (spin) {
+        const s = (a.r ?? 28) * 4;
+        ctx.drawImage(spin, a.x - s / 2, y - s / 2, s, s);
+      } else {
+        drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
+      }
     } else if (a.kind === "portal") {
       drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
     } else if (a.kind === "retro") {
