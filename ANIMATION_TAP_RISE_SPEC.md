@@ -1,283 +1,163 @@
-# Acornaut Tap/Rise Animation — Reproduction Specification
+# Acornaut Tap/Rise Animation — Handoff Specification
 
-Status: implemented for Beta and ready for per-model in-game review. This file
-is the source-of-truth handoff for recreating or repairing the feature in a new
-chat or checkout.
+Status: the approved tap response is implemented. This document is the
+repository-root handoff for continuing the feature in a fresh checkout or a
+new chat. The authoritative frame-generation details, roster, pivots, socket
+coordinates, and verification commands live in
+`art-src/tap-rollout/TAP_ANIMATION_SPEC.md` and
+`art-src/tap-rollout/build_robo_motion_banks.py`.
 
-## 1. Scope
+## Scope
 
-This specification covers only the short **tap-to-rise** visual response used
-by the illustrated Acornaut game. The feature is gated by
-`TAP_ANIM_ENABLED = IS_BETA`; Production retains the prior tap presentation
-until the complete model roster is approved.
+This specification covers only the short tap-to-rise visual response in the
+illustrated Acornaut game. It does not cover swipe-down/dive, forward dash,
+flight physics, collision geometry, scoring, or the Arcade Edition. Add those
+actions as independent motion profiles after this tap bank is stable.
 
-It does not cover:
+## Approved player-facing behavior
 
-- swipe-down/dive animation;
-- dash-forward animation;
-- changes to flight physics, collision geometry, controls, scoring, or timing;
-- the Arcade Edition.
+- The physics impulse is immediate on the tap frame.
+- The one-second picture motion reads as a compact wingbeat: knees tuck, the
+  pelvis/body lifts, the torso leans into the impulse, the tail straightens and
+  pulls in, and the hands move only subtly. The hands and torso recover more
+  slowly than the legs.
+- A repeat tap during an active beat reverses the visual clock toward the
+  impulse rather than snapping to idle or restarting at frame 1. When the
+  clock reaches the start it plays forward again through recovery.
+- The animation is allowed to continue between taps and eventually returns to
+  the exact static pose.
+- The procedural tail spring receives a new impulse on every accepted tap.
+- Pitch follows the existing eased visual path; physics and collision remain
+  unchanged.
 
-Develop those actions as separate motion profiles. Do not extend this tap clock
-until the tap implementation is stable and independently validated.
-
-## 2. Player-facing result
-
-On a tap, lift remains immediate, but the character picture no longer snaps to
-a new pitch or twitches through two visible frames. The visual response lasts
-0.66 seconds and contains:
-
-1. restrained anticipation;
-2. upward thrust;
-3. body extension;
-4. delayed tail drag;
-5. tail whip through home;
-6. one small rebound;
-7. exact return to the static flight pose.
-
-A second tap during recovery must not restart, rewind, or stop the body bank.
-The painted body continues from its current pose while physics, pitch,
-particles, and the live tail spring respond immediately to the new input. This
-keeps the animation alive between taps without snapping the hands backward.
-
-## 3. Non-negotiable invariants
-
-- Physics responds on the tap frame; animation never delays control.
-- Collision geometry is unchanged.
-- The character root remains on the existing 256 x 256 rig canvas.
-- The model's tail hinge remains planted.
-- Helmet/dome anchors remain compatible with every existing helmet.
-- Tail, armor, fur, face, and lighting identity come from approved repository
-  art. Do not independently redesign models to create motion.
-- Animation begins and ends on the exact static body/tail pose.
-- No body-frame crossfades. Painterly faces and armor seams become blurry or
-  double when crossfaded at game scale.
-- Arm and hand motion must remain subordinate to the legs and tail. Do not use
-  a full forward reach during the short tap burst.
-- Docs and `sandbox_assets` mirrors must remain byte-matched.
-
-## 4. Architecture
-
-### 4.1 Visual clock
-
-`TAP_ANIM_DURATION` is `0.66` seconds in
-`illustrated-src/game/catalog.ts`.
-
-`TAP_ANIM_ENABLED` is tied to `IS_BETA`. The Production page does not start the
-tap clock or fetch the optional Eclipse animation banks.
-
-`World` owns:
-
-- `tapAnimT`: elapsed visual time; `-1` means inactive;
-- `tapAnimHold`: bounded slow-recovery reserve added by repeat taps;
-- `tapAnimFromRot`: displayed pitch at tap entry for visual easing.
-
-`flap()` starts the clock without changing the physics path. During an active
-burst, a repeat tap leaves the body clock unchanged, adds 0.16 seconds to a
-bounded 0.30-second recovery reserve, applies the full physics impulse, and
-adds to the existing tail spring velocity. Once `tapAnimT` reaches 0.20, the
-clock advances at 35% speed while that reserve drains. This extends the return
-without changing or rewinding the current pose.
-
-`updateWorld()` advances the visual clock using the same pace multiplier as the
-run and returns it to `-1` at 0.66 seconds plus any repeat-tap recovery reserve.
-
-### 4.2 Pitch easing
-
-Every rigged model eases from `tapAnimFromRot` into the live physics pitch over
-the first 0.14 seconds using cubic ease-out:
+Runtime constants in `illustrated-src/game/catalog.ts`:
 
 ```ts
-raw = clamp(tapAnimT / 0.14, 0, 1)
-eased = 1 - (1 - raw)^3
+TAP_ANIM_DURATION = 1.0
+TAP_ANIM_ENABLED = true
 ```
 
-The legacy `kick` rotation and scale-pop are disabled while this rigged tap
-clock is active. They must not be layered on top of the new motion.
+The repeat-tap state machine is in `illustrated-src/game/sim.ts`:
 
-### 4.3 Eclipse premium body bank
+1. Idle tap: set `tapAnimT = 0` and `tapAnimDir = 1`.
+2. Active tap: preserve `tapAnimT` and set `tapAnimDir = -1`.
+3. Rewind reaches zero: clamp to zero and set `tapAnimDir = 1`.
+4. Forward playback reaches one second: return `tapAnimT` to the `-1` idle
+   sentinel.
 
-Eclipse is the approved high-detail reference implementation:
+## Sprite contract
 
-- 8 body-only PNG poses;
-- 256 x 256 RGBA;
-- transparent background;
-- fixed root, head/collar registration, and helmet anchor;
-- per-pose source-space registration that restores the approved static head
-  area and centroid; the eight paintings were delivered smaller inside their
-  fixed 256px roots, so this correction is required to prevent the pilot from
-  shrinking inside the suit before the static bookend returns;
-- restrained arms: thrust frames 3–5 reuse frame 1's compact arm pixels while
-  retaining their own torso, hip, leg, and boot motion;
-- original procedural tail remains a separate layer.
-
-Asset names:
+Each articulated suit has 16 transparent PNG frames:
 
 ```text
-eclipse-tap-1.png ... eclipse-tap-8.png
+<suit>-tap-1.png ... <suit>-tap-16.png
 ```
 
-Body pose boundaries in seconds. The first half produces the knee tuck; the
-second half deliberately gives the arms and torso more time to settle:
+Every frame must satisfy all of the following:
 
-```text
-0.000, 0.035, 0.080, 0.135, 0.200,
-0.275, 0.365, 0.460, 0.550, 0.625, 0.660
-```
+- 256 x 256 RGBA with true transparency;
+- identical copies in `docs/art/suits/` and
+  `sandbox_assets/art/suits/`;
+- frames 1 and 16 are pixel-identical to the shipped `<suit>.png` static;
+- fixed character root and planted tail hinge;
+- exact static head, face, collar, and helmet-socket pixels in every frame;
+- no body-frame crossfades;
+- no redraw, recolor, generic body substitution, or proportion change;
+- arm motion is subordinate to the leg scrunch and tail pull.
 
-Static body art is inserted at both ends. The eight painted poses occupy the
-interior boundaries and are stepped, not blended. An in-progress repeat tap
-does not change the current boundary.
+The head/socket hard lock is non-negotiable. It prevents the pilot from
+shrinking inside the suit and keeps every compatible helmet seated throughout
+the beat.
 
-### 4.4 Eclipse tail bank
+## Model policy
 
-Eclipse also has 12 tail-only PNG poses mechanically derived from the approved
-`eclipse-tail.png`. Pixels are progressively bent from the hinge to the tip;
-fur and lighting are never regenerated.
+Robo is the approved timing and motion reference.
 
-Asset names:
+- Robo, Eclipse, Big Booty, Cat, and Volt retain their custom banks.
+- Big Booty and Cat are excluded from deterministic translation and must remain
+  pixel-identical unless the owner explicitly requests new custom work.
+- Other supported suits use the deterministic translator, which preserves each
+  suit's own body and tail pixels, pivot, socket, silhouette, and proportions.
+- Translated banks are beta-only until the owner approves production
+  promotion. The five custom banks continue to load outside Beta.
 
-```text
-eclipse-tail-tap-1.png ... eclipse-tail-tap-12.png
-```
+The current translated roster and per-model rig values are maintained in
+`art-src/tap-rollout/TAP_ANIMATION_SPEC.md` and
+`build_robo_motion_banks.py`; do not duplicate those tables here.
 
-Tip-angle motion curve in radians:
+## Differently shaped suits
 
-```text
-0.00, 0.09, 0.20, 0.34, 0.47, 0.54,
-0.46, 0.27, 0.04, -0.15, -0.09, 0.00
-```
+Do not force a new suit into a generic template.
 
-The tail bank uses fast launch spacing and slow recovery spacing:
+1. Create its 256px static, `-body`, and `-tail` layers with the normal rig
+   contract.
+2. Measure its own tail root and add it to `PIVOTS` in the translator and
+   `TAIL_PIVOT` in `illustrated-src/game/draw.ts`.
+3. Measure its own helmet socket and add it to `DOME`/`HELM_GLASS`.
+4. Add the suit to the beta catalog, beta art loader, and translator roster.
+5. Generate its 16 frames from its own body/tail art.
+6. Reduce tail travel only where a broad plume, wing, foliage, or long armor
+   panel would cross the torso.
+7. Inspect matched and compatible helmets at impulse, maximum scrunch,
+   recovery, and exact idle.
 
-```text
-0.000, 0.030, 0.065, 0.105, 0.150, 0.200, 0.260,
-0.335, 0.415, 0.500, 0.575, 0.625, 0.660
-```
+Reject a translation for any head-size change, dome drift, collar gap, alpha
+disconnect, tail/body seam, silhouette loss, or helmet clipping.
 
-48% of the live spring rotation is retained over the painted bank so every tap
-can renew tail motion while the authored recovery continues.
+## Relevant implementation files
 
-The deterministic builder is:
-
-```text
-illustrated-src/build-eclipse-tail-tap.py
-```
-
-### 4.5 Translation to every other model
-
-All 20 current suits are rigged with separate `*-body.png` and `*-tail.png`
-assets and a `TAIL_PIVOT` entry.
-
-For models without a painted tap bank:
-
-- keep the exact existing body pixels;
-- apply a restrained scale pulse from the tail hinge, not the canvas center;
-- bend the tail at runtime through six overlapping radial sections;
-- increase rotation progressively from hinge to tip;
-- retain 22% of the live spring rotation so a tap entered mid-swing remains
-  continuous;
-- use the same 12-point tail curve as Eclipse with smooth interpolation.
-
-Universal body pulse curve:
-
-```text
-0.00, 0.18, 0.48, 1.00, 0.78, 0.43, 0.16, -0.08, 0.00
-```
-
-At pulse value `p`, scale from the tail hinge:
-
-```text
-x = 1 + p * 0.052
-y = 1 - p * 0.028
-```
-
-This is intentionally less dramatic than Eclipse. It preserves model identity
-and avoids approximately 400 additional raster assets and their mobile startup
-cost.
-
-## 5. Relevant files
-
-Source:
+Source of truth:
 
 - `illustrated-src/game/catalog.ts`
 - `illustrated-src/game/sim.ts`
 - `illustrated-src/game/art.ts`
 - `illustrated-src/game/draw.ts`
-- `illustrated-src/build-eclipse-tail-tap.py`
+- `art-src/tap-rollout/TAP_ANIMATION_SPEC.md`
+- `art-src/tap-rollout/build_robo_motion_banks.py`
 
-Validation/review:
+Validation and review:
 
-- `illustrated-src/review-eclipse-tap.mjs`
+- `art-src/tap-rollout/verify_robo_motion_banks.py`
 - `illustrated-src/review-tap-models.mjs`
 - `illustrated-src/test-tap-recovery.mjs`
-- `illustrated-src/test-eclipse-tap-registration.py`
-- `illustrated-src/verify-art.py`
+- `illustrated-src/test-bounce-impact.mjs`
 - `illustrated-src/test-tunnel.mjs`
+- `illustrated-src/verify-art.py`
 
-Mirrored runtime assets:
+Generated JavaScript is produced by
+`illustrated-src/export-sandbox.mjs`. Edit TypeScript first; never hand-edit the
+generated runtime bundles.
 
-- `docs/art/suits/`
-- `sandbox_assets/art/suits/`
+## Rebuild procedure
 
-Generated JavaScript is produced by `illustrated-src/export-sandbox.mjs`. Edit
-TypeScript sources first; do not hand-edit generated JS.
+From the repository root:
 
-## 6. Recreation procedure
+```sh
+python3 art-src/tap-rollout/build_robo_motion_banks.py
+python3 art-src/tap-rollout/verify_robo_motion_banks.py
+ACORNAUT_TSC=/path/to/typescript/lib/tsc.js node illustrated-src/export-sandbox.mjs
+node illustrated-src/test-tap-recovery.mjs
+node illustrated-src/test-bounce-impact.mjs
+ACORNAUT_TSC=/path/to/typescript/lib/tsc.js node illustrated-src/test-tunnel.mjs
+python3 illustrated-src/verify-art.py
+ACORNAUT_CANVAS_MODULE=/path/to/@napi-rs/canvas/index.js \
+  node illustrated-src/review-tap-models.mjs /tmp/acornaut-tap-review
+git diff --check
+```
 
-1. Start from current repository `main` and create a feature branch.
-2. Confirm all active suits have full, body, tail, and `TAIL_PIVOT` entries.
-3. Restore the 0.40-second visual clock and rapid-repeat behavior.
-4. Restore universal pitch easing.
-5. Restore `ArtBank.suitTap` and `ArtBank.suitTapTail` optional banks.
-6. Restore Eclipse's eight body and twelve tail assets.
-7. Restore the universal hinge-scaled body pulse and six-section tail bend.
-8. Run the tail builder to reproduce Eclipse tail frames.
-9. Export the TypeScript runtime to both asset trees.
-10. Run every validation gate below.
-11. Inspect the Eclipse comparison and all-model grid video at actual game
-    scale before approving.
+## Approval gates
 
-## 7. Required validation gates
+The feature is ready only when:
 
-The change is not complete unless all gates pass:
-
-1. TypeScript export/compile.
-2. Art mirror equality.
-3. Decode every mirrored raster.
-4. 256 x 256 RGBA runtime-sprite contract.
-5. Suit x helmet load contract.
-6. Rig-tail audit for every active model.
-7. Deterministic tunnel replay: three forced seeds x 100 seconds.
-8. Viewport replay: 320 x 568 and 390 x 844.
-9. Rapid repeated taps in the rendered review harness.
-10. Visual inspection for:
-   - hinge gaps;
-   - radial-section seams;
-   - tail/body overlap errors;
-   - double eyes or blurred armor;
-   - helmet drift;
-   - snap on entry, repeat tap, or return to static.
-   - Eclipse head-area drift or head-centroid drift inside the fixed helmet.
-
-## 8. Rejected translation method
-
-Do not ask an image model to independently redraw all suits from the Eclipse
-sheet. A Flight-model trial produced usable movement but silently changed suit
-construction and added sleeves. That fails identity preservation and should not
-be scaled across the roster.
-
-New painted banks are allowed only for a specifically approved premium model,
-using that model's own body as the identity source and passing the full art and
-helmet-anchor contract afterward.
-
-## 9. Transfer prompt
-
-Use this exact routing statement in a new chat:
-
-> Read `ANIMATION_TAP_RISE_SPEC.md` completely and inspect the current
-> implementation before editing. Recreate or repair only the tap/rise
-> animation. Preserve immediate physics, collision geometry, 256px roots,
-> helmet anchors, model identity, and docs/sandbox mirror parity. Do not begin
-> swipe-down or dash-forward work. Run every validation gate in Section 7 and
-> provide the rendered Eclipse comparison plus the all-model validation grid.
+1. both runtime art trees are byte-identical;
+2. all tap frames decode as 256 x 256 RGBA;
+3. frames 1 and 16 exactly equal the corresponding static sprite;
+4. the locked head/socket region has zero RGB delta;
+5. the largest alpha component remains at least 94% of visible pixels;
+6. at maximum scrunch, at least 30% of the original body-mask pixels show a
+   visible color/alpha delta, so the body cannot remain a static cutout;
+7. tap recovery, bounce, deterministic tunnel, viewport, and art-contract
+   tests pass;
+8. the 390 x 844 shipping-path review shows stable scale, helmet fit, tail
+   attachment, and recovery for every translated suit;
+9. Big Booty and Cat remain visually unchanged.

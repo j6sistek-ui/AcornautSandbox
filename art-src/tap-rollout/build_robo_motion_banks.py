@@ -27,6 +27,8 @@ ELIGIBLE = (
     "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
     "ember", "stardust", "alien", "ghost", "gemmie", "sammie",
     "seraph", "leviathan", "verdant", "cryostar",
+    "cinderforge", "groveguard", "cosmic", "sunforged",
+    "abyssal", "amethyst", "ivoryguard", "reactor",
 )
 
 PIVOTS = {
@@ -36,6 +38,10 @@ PIVOTS = {
     "leviathan": (101, 131), "sammie": (99, 148), "seraph": (105, 138),
     "stardust": (104, 140), "voidsuit": (105, 142), "verdant": (103, 149),
     "cryostar": (103, 151),
+    "cinderforge": (104, 132), "groveguard": (102, 130),
+    "cosmic": (104, 131), "sunforged": (101, 128),
+    "abyssal": (104, 132), "amethyst": (103, 132),
+    "ivoryguard": (103, 132), "reactor": (102, 130),
 }
 
 # Runtime helmet sockets from draw.ts.  The exact static pixels inside each
@@ -50,6 +56,10 @@ DOME = {
     "gemmie": (204, 92, 58), "sammie": (206, 90, 59),
     "seraph": (207, 97, 57), "leviathan": (207, 81, 57),
     "verdant": (204, 93, 58), "cryostar": (207, 93, 58),
+    "cinderforge": (196, 100, 51), "groveguard": (196, 100, 51),
+    "cosmic": (196, 100, 51), "sunforged": (196, 96, 49),
+    "abyssal": (196, 100, 51), "amethyst": (196, 100, 51),
+    "ivoryguard": (196, 100, 51), "reactor": (196, 98, 51),
 }
 
 # Tail centroid angles measured from the approved 16-frame Robo bank and
@@ -61,7 +71,7 @@ TAIL_DEGREES = (0, -4, -31, -60, -77, -74, -57, -24, 13, 16, -6, -64, -72, -75, 
 # This is the part that removes the old snap-back between rapid taps.
 LEG_PHASE = (0.0, .18, .48, .82, 1.0, .90, .70, .48, .28, .18, .28, .50, .62, .48, .24, 0.0)
 HAND_PHASE = (0.0, .26, .55, .78, 1.0, .96, .88, .78, .68, .59, .50, .42, .33, .23, .12, 0.0)
-TORSO_PHASE = (0.0, .12, .28, .46, .58, .54, .44, .32, .22, .16, .20, .28, .30, .22, .10, 0.0)
+TORSO_PHASE = (0.0, .20, .50, .80, 1.0, .94, .80, .62, .45, .30, .38, .55, .60, .43, .20, 0.0)
 
 
 def rgba(path: Path) -> np.ndarray:
@@ -108,10 +118,11 @@ def articulate_body(img: np.ndarray, leg: float, hand: float, torso: float) -> n
 
     # Local inverse displacement fields. Broad, feathered weights avoid seams
     # and adapt to the slightly different suit shapes already in the roster.
-    rear_leg = gaussian(xx, yy, x0 + .47 * bw, y0 + .79 * bh, .17 * bw, .15 * bh)
-    fore_leg = gaussian(xx, yy, x0 + .64 * bw, y0 + .77 * bh, .15 * bw, .14 * bh)
+    rear_leg = gaussian(xx, yy, x0 + .45 * bw, y0 + .80 * bh, .18 * bw, .16 * bh)
+    fore_leg = gaussian(xx, yy, x0 + .63 * bw, y0 + .78 * bh, .16 * bw, .15 * bh)
     hands = gaussian(xx, yy, x0 + .82 * bw, y0 + .59 * bh, .16 * bw, .14 * bh)
-    chest = gaussian(xx, yy, x0 + .61 * bw, y0 + .57 * bh, .23 * bw, .22 * bh)
+    pelvis = gaussian(xx, yy, x0 + .52 * bw, y0 + .68 * bh, .24 * bw, .21 * bh)
+    chest = gaussian(xx, yy, x0 + .62 * bw, y0 + .55 * bh, .25 * bw, .23 * bh)
 
     # Keep the complete face, skull, neck ring, and helmet socket immobile.
     hx, hy = x0 + .78 * bw, y0 + .29 * bh
@@ -120,13 +131,29 @@ def articulate_body(img: np.ndarray, leg: float, hand: float, torso: float) -> n
     head_lock = np.clip((1.08 - head_distance) / .18, 0.0, 1.0)
     movable = 1.0 - head_lock
 
-    dx = movable * (rear_leg * 2.2 * leg + fore_leg * 1.4 * leg + hands * 2.0 * hand)
-    dy = movable * (rear_leg * -4.8 * leg + fore_leg * -3.7 * leg + hands * -.7 * hand)
+    # The first translator limited this motion to less than one gameplay
+    # pixel. It protected the helmet socket, but it also made the pilot read
+    # as a static cutout behind a moving tail. Robo's approved bank has a
+    # visible knee tuck and a smaller whole-body follow-through, so transfer
+    # those two amplitudes while leaving the hands deliberately restrained.
+    dx = movable * (
+        rear_leg * 9.5 * leg
+        + fore_leg * 7.0 * leg
+        + pelvis * 5.4 * leg
+        + hands * 3.8 * hand
+    )
+    dy = movable * (
+        rear_leg * -16.5 * leg
+        + fore_leg * -13.0 * leg
+        + pelvis * -9.0 * leg
+        + hands * -2.4 * hand
+    )
 
-    # A restrained impulse through the abdomen, pivoting beneath the locked
-    # collar. This is deliberately below one gameplay pixel at normal scale.
-    dx += movable * chest * 1.15 * torso
-    dy += movable * chest * -1.35 * torso
+    # Lift and lean the torso into the impulse. The locked head/collar mask
+    # below keeps the skull and helmet socket exact; this field moves only the
+    # suit underneath it and blends over a broad shoulder/abdomen area.
+    dx += movable * chest * 5.3 * torso
+    dy += movable * chest * -7.0 * torso
     warped = sample(img, xx - dx, yy - dy)
     # The inner head/collar ellipse is copied bit-for-bit; only its feathered
     # edge blends into the moving torso. This is the size/fitment invariant.
@@ -156,7 +183,10 @@ def build_one(suit: str, preview_dir: Path | None = None) -> None:
     tail = rgba(DOC_SUITS / f"{suit}-tail.png")
     pivot = PIVOTS[suit]
     # Winged and extra-wide tails need a little less angular travel.
-    tail_strength = .70 if suit == "seraph" else .78 if suit in {"leviathan", "verdant", "cryostar"} else .84
+    # Once the body actually participates, Robo's full tail angle no longer
+    # needs to carry the entire impulse. Less travel also prevents broad
+    # plumes from reading as if they are being stretched straight backward.
+    tail_strength = .48 if suit == "seraph" else .52 if suit in {"leviathan", "verdant", "cryostar"} else .58
 
     frames: list[Image.Image] = []
     for i in range(16):

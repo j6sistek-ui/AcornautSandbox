@@ -30,15 +30,16 @@ reuse or modify this tap bank until their own motion specifications are approved
 
 ## Roster policy
 
-Robo is the approved timing reference. Eclipse, Big Booty, Cat, and Robo keep
+Robo is the approved timing reference. Eclipse, Big Booty, Cat, Robo, and Volt keep
 their existing custom 16-frame banks. The deterministic translator is used for:
 
 `flight`, `iontrim`, `copper`, `frost`, `voidsuit`, `aurorasuit`, `ember`,
 `stardust`, `alien`, `ghost`, `gemmie`, `sammie`, `seraph`, `leviathan`,
-`verdant`, and `cryostar`.
+`verdant`, `cryostar`, `cinderforge`, `groveguard`, `cosmic`, `sunforged`,
+`abyssal`, `amethyst`, `ivoryguard`, and `reactor`.
 
 Those translated banks load only when `IS_BETA` is true. Production continues
-to load only the four approved custom banks until the owner approves promotion.
+to load only the five approved custom banks until the owner approves promotion.
 
 ## Construction method
 
@@ -50,8 +51,10 @@ Run `build_robo_motion_banks.py`. It uses each shipped `-body.png` and
    keeping the root planted while the outer plume receives most of the bend.
 3. Reduce tail travel for broad premium silhouettes, especially Seraph,
    Leviathan, Verdant, and Cryostar.
-4. Apply feathered local body deformations: knee compression, very small hand
-   displacement, and sub-game-pixel torso follow-through.
+4. Apply feathered local body deformations: a visible knee tuck, pelvis/body
+   lift, torso lean, and deliberately restrained hand displacement. The body
+   must participate clearly at gameplay scale; a moving tail over a static
+   torso is a failed translation.
 5. Restore the exact static pixels inside the per-suit runtime helmet socket.
    This hard lock prevents the smaller-head/oversized-suit defect.
 6. Use the untouched static image for the first and last frames.
@@ -106,6 +109,8 @@ Release criteria:
 - frames 1 and 16 exactly match the shipped static;
 - locked head pixels have zero RGB delta;
 - the largest alpha component is at least 94% of visible pixels;
+- at maximum scrunch, at least 30% of the original body-mask pixels have a
+  visible color/alpha delta, preventing a static-body translation;
 - tap recovery, bounce impact, deterministic tunnel, and full art-contract tests
   pass;
 - the 390×844 shipping-path review shows stable scale and fit for all suits;

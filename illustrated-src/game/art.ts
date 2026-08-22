@@ -302,6 +302,10 @@ export async function loadArt(): Promise<ArtBank> {
     "verdant",
     "cryostar",
     "eclipse",
+    ...(IS_BETA ? [
+      "cinderforge", "groveguard", "cosmic", "sunforged",
+      "abyssal", "amethyst", "ivoryguard", "reactor",
+    ] : []),
   ];
   // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
   // still touches its plume in the source, but the guarded mainline cut is
@@ -311,6 +315,10 @@ export async function loadArt(): Promise<ArtBank> {
     "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
     "catsuit", "gemmie", "sammie", "seraph", "leviathan",
     "verdant", "cryostar", "eclipse", "volt",
+    ...(IS_BETA ? [
+      "cinderforge", "groveguard", "cosmic", "sunforged",
+      "abyssal", "amethyst", "ivoryguard", "reactor",
+    ] : []),
   ];
   const suitIds = [
     "flight",
@@ -334,6 +342,10 @@ export async function loadArt(): Promise<ArtBank> {
     "cryostar",
     "eclipse",
     "volt",
+    ...(IS_BETA ? [
+      "cinderforge", "groveguard", "cosmic", "sunforged",
+      "abyssal", "amethyst", "ivoryguard", "reactor",
+    ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [
@@ -401,6 +413,8 @@ export async function loadArt(): Promise<ArtBank> {
           voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
           alien: 16, ghost: 16, gemmie: 16, sammie: 16,
           seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+          cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
+          abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
         } : {}),
       } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),

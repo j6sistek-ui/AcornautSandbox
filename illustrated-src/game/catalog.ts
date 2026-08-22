@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "85";
+export const ART_VER = "86";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -86,6 +86,10 @@ export type Helmet = {
   ears?: boolean;
   /** a matched set: only this suit may wear it. See helmetWornBy(). */
   suitOnly?: string;
+  /** preserve a painted world/face inside the visor instead of punching it. */
+  opaqueVisor?: boolean;
+  /** visible only on the beta host while fitment is being reviewed. */
+  beta?: boolean;
 };
 
 export const HELMETS: Helmet[] = [
@@ -112,7 +116,20 @@ export const HELMETS: Helmet[] = [
   { id: "verdant", name: "Verdant", cost: 0, visor: "#d8fff3", tint: 0.14, rim: "#d7b85a", trim: "#087a50", glow: "#38ff9a" },
   { id: "cryostar", name: "Cryostar", cost: 0, visor: "#dff8ff", tint: 0.15, rim: "#dcecf7", trim: "#168bd1", glow: "#54d8ff" },
   { id: "eclipse", name: "Eclipse", cost: 0, visor: "#eee6ff", tint: 0.17, rim: "#c98a72", trim: "#43206f", glow: "#b552ff" },
+  { id: "cinderforge", suitOnly: "cinderforge", opaqueVisor: true, beta: true, name: "Cinderforge", cost: 0, visor: "#ff4a27", tint: 0.28, rim: "#8d211d", trim: "#2c1012", glow: "#ff3a20" },
+  { id: "groveguard", suitOnly: "groveguard", opaqueVisor: true, beta: true, name: "Groveguard", cost: 0, visor: "#7de5d3", tint: 0.18, rim: "#b89b58", trim: "#3e5b3d", glow: "#63e6d1" },
+  { id: "cosmic", suitOnly: "cosmic", beta: true, name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
+  { id: "sunforged", suitOnly: "sunforged", opaqueVisor: true, beta: true, name: "Sunforged", cost: 0, visor: "#ffbf36", tint: 0.22, rim: "#c08a33", trim: "#4c351d", glow: "#ffb52e" },
+  { id: "abyssal", suitOnly: "abyssal", opaqueVisor: true, beta: true, name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
+  { id: "amethyst", suitOnly: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
+  { id: "ivoryguard", suitOnly: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
+  { id: "reactor", suitOnly: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
 ];
+if (!IS_BETA) {
+  for (let i = HELMETS.length - 1; i >= 0; i--) {
+    if (HELMETS[i].beta) HELMETS.splice(i, 1);
+  }
+}
 
 export type Suit = {
   id: string;
@@ -138,6 +155,8 @@ export type Suit = {
    *  over it. Bare-headed art — which is everything else now — wants the
    *  Clear helmet actually drawn. Drop this the moment a bare render lands. */
   bakedDome?: boolean;
+  /** visible only on the beta host while fitment is being reviewed. */
+  beta?: boolean;
 };
 
 // Some characters ARE their headgear: the Cat's ears and bubble are part
@@ -181,7 +200,20 @@ export const SUITS: Suit[] = [
   { id: "cryostar", name: "Cryostar", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#eaf6ff", suitLite: "#ffffff", suitDark: "#2f86ba", trim: "#56ceff", glow: "#54d8ff", dust: "#d8f8ff" },
   { id: "eclipse", name: "Eclipse", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#171126", suitLite: "#503274", suitDark: "#090611", trim: "#c98a72", glow: "#b552ff", dust: "#e2b5ff" },
   { id: "volt", name: "Volt", cost: 0, ownHead: true, fur: "#8a7434", furDark: "#4a3f14", belly: "#c9b06a", suit: "#46421a", suitLite: "#6f6220", suitDark: "#1d1d04", trim: "#6eab3c", glow: "#54ff2e", dust: "#a8ff7a" },
+  { id: "cinderforge", beta: true, name: "Cinderforge", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2a1114", suitLite: "#7e2f27", suitDark: "#12080a", trim: "#ff4b2f", glow: "#ff3b22", dust: "#ff9470" },
+  { id: "groveguard", beta: true, name: "Groveguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2e5e2d", suitLite: "#719452", suitDark: "#18351c", trim: "#c6a75d", glow: "#65dca1", dust: "#bff0ac" },
+  { id: "cosmic", beta: true, name: "Cosmic", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#6b4b91", suitLite: "#b978d3", suitDark: "#30214d", trim: "#e4b8ff", glow: "#d687ff", dust: "#f0cfff" },
+  { id: "sunforged", beta: true, name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
+  { id: "abyssal", beta: true, name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
+  { id: "amethyst", beta: true, name: "Amethyst", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#78529a", suitLite: "#c58ce1", suitDark: "#38214f", trim: "#e0ba65", glow: "#c86dff", dust: "#efc9ff" },
+  { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#e8ddc5", suitLite: "#fffaf0", suitDark: "#9b8765", trim: "#d9ad55", glow: "#fff0b8", dust: "#fff7dd" },
+  { id: "reactor", beta: true, name: "Reactor", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#61752f", suitLite: "#9aaf4a", suitDark: "#293914", trim: "#65ff32", glow: "#65ff32", dust: "#b8ff80" },
 ];
+if (!IS_BETA) {
+  for (let i = SUITS.length - 1; i >= 0; i--) {
+    if (SUITS[i].beta) SUITS.splice(i, 1);
+  }
+}
 
 export type Trail = { id: string; name: string; cost: number; colors: string[] };
 
