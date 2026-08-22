@@ -72,20 +72,22 @@ export function unlockAudio() {
     }
 }
 const MUSIC_FILES = {
+    menu: "music/menu.mp3",
+    flight: "music/flight.mp3",
     voyage: "music/voyage.mp3",
     cosmos: "music/cosmos.m4a",
 };
-// the menu score sits a notch under the chiptune so speech-level SFX and
-// the first-run tutorial reads stay on top of it
-const MUSIC_VOLS = { voyage: 0.42, cosmos: 0.5 };
-const musicEls = { voyage: null, cosmos: null };
+// Halved on owner feedback: the score is a floor under the SFX, not a
+// ceiling over them.
+const MUSIC_VOLS = { menu: 0.21, flight: 0.21, voyage: 0.21, cosmos: 0.25 };
+const musicEls = { menu: null, flight: null, voyage: null, cosmos: null };
 // Each element is routed THROUGH the shared WebAudio graph instead of
 // playing on its own: a bare <audio> element ignores the phone's silent
 // switch (iOS treats it as media, not game audio) while WebAudio output
 // respects it — flipping the switch must hush the score along with the
 // SFX. Fades drive these gain nodes; the elements stay at volume 1.
-const musicGains = { voyage: null, cosmos: null };
-const musicFades = { voyage: 0, cosmos: 0 }; // rAF ids
+const musicGains = { menu: null, flight: null, voyage: null, cosmos: null };
+const musicFades = { menu: 0, flight: 0, voyage: 0, cosmos: 0 }; // rAF ids
 let musicWanted = null;
 let musicMuted = false;
 let musicUnlockArmed = false;
@@ -195,8 +197,8 @@ export const music = {
     setMuted(m) {
         musicMuted = m;
         if (m) {
-            fadeMusic("voyage", 0, 200);
-            fadeMusic("cosmos", 0, 200);
+            for (const t of Object.keys(MUSIC_FILES))
+                fadeMusic(t, 0, 200);
         }
         else
             playWanted(400);

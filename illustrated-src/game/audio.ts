@@ -78,29 +78,32 @@ export function unlockAudio() {
   }
 }
 
-// ————— Music: two streamed loops —————
-// VOYAGE scores the menus and every illustrated mode; COSMOS remains the
-// retro timeline's chiptune — the whole arcade run and the shifted
-// stretches of Free Flight. Both stay OUTSIDE the WebAudio graph on
-// purpose: decoding megabytes of compressed audio into buffers would cost
-// real memory for no gain; <audio> elements stream and loop seamlessly.
-// Exactly one track is audible at a time, crossfaded at the timeline shift.
-type MusicTrack = "voyage" | "cosmos";
+// ————— Music: four streamed loops, one audible at a time —————
+// MENU is the slow score for every screen outside a live run; FLIGHT is
+// the upbeat instrumental under the illustrated game modes; VOYAGE now
+// scores exactly one place — the Hyper Run time trial; COSMOS remains
+// the retro timeline's chiptune (the whole arcade run and the shifted
+// stretches of Free Flight), untouched. All stay OUTSIDE the WebAudio
+// element-decode path on purpose: <audio> elements stream and loop
+// seamlessly, and each is crossfaded at its boundary.
+type MusicTrack = "menu" | "flight" | "voyage" | "cosmos";
 const MUSIC_FILES: Record<MusicTrack, string> = {
+  menu: "music/menu.mp3",
+  flight: "music/flight.mp3",
   voyage: "music/voyage.mp3",
   cosmos: "music/cosmos.m4a",
 };
-// the menu score sits a notch under the chiptune so speech-level SFX and
-// the first-run tutorial reads stay on top of it
-const MUSIC_VOLS: Record<MusicTrack, number> = { voyage: 0.42, cosmos: 0.5 };
-const musicEls: Record<MusicTrack, HTMLAudioElement | null> = { voyage: null, cosmos: null };
+// Halved on owner feedback: the score is a floor under the SFX, not a
+// ceiling over them.
+const MUSIC_VOLS: Record<MusicTrack, number> = { menu: 0.21, flight: 0.21, voyage: 0.21, cosmos: 0.25 };
+const musicEls: Record<MusicTrack, HTMLAudioElement | null> = { menu: null, flight: null, voyage: null, cosmos: null };
 // Each element is routed THROUGH the shared WebAudio graph instead of
 // playing on its own: a bare <audio> element ignores the phone's silent
 // switch (iOS treats it as media, not game audio) while WebAudio output
 // respects it — flipping the switch must hush the score along with the
 // SFX. Fades drive these gain nodes; the elements stay at volume 1.
-const musicGains: Record<MusicTrack, GainNode | null> = { voyage: null, cosmos: null };
-const musicFades: Record<MusicTrack, number> = { voyage: 0, cosmos: 0 }; // rAF ids
+const musicGains: Record<MusicTrack, GainNode | null> = { menu: null, flight: null, voyage: null, cosmos: null };
+const musicFades: Record<MusicTrack, number> = { menu: 0, flight: 0, voyage: 0, cosmos: 0 }; // rAF ids
 let musicWanted: MusicTrack | null = null;
 let musicMuted = false;
 let musicUnlockArmed = false;
@@ -201,8 +204,7 @@ export const music = {
   setMuted(m: boolean) {
     musicMuted = m;
     if (m) {
-      fadeMusic("voyage", 0, 200);
-      fadeMusic("cosmos", 0, 200);
+      for (const t of Object.keys(MUSIC_FILES) as MusicTrack[]) fadeMusic(t, 0, 200);
     } else playWanted(400);
   },
   muted: () => musicMuted,

@@ -724,11 +724,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       raceAccumulator = 0;
       dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
     }
-    // The chiptune rides the retro renderer: the whole arcade run and the
-    // shifted stretches of Free Flight. Everywhere else — menus, results,
-    // and every illustrated mode — the voyage score carries the game.
+    // Four scores, one at a time: the chiptune rides the retro renderer
+    // (arcade + shifted stretches, exactly as always); the Hyper Run time
+    // trial keeps the voyage loop; every other live run gets the upbeat
+    // flight instrumental; and everything outside a run — menus, results,
+    // the hangar — settles onto the slow menu score.
     const inRun = world.screen === "play" || world.screen === "pause";
-    music.set(world.retro && inRun ? "cosmos" : "voyage");
+    music.set(
+      world.retro && inRun ? "cosmos"
+        : world.race && inRun ? "voyage"
+          : inRun ? "flight"
+            : "menu");
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {

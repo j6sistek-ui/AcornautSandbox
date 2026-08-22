@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=83";
-import { sfx, unlockAudio, music } from "./audio.js?v=83";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=83";
-import { drawHud, drawWorld } from "./draw.js?v=83";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=83";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=83";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=83";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=83";
-import { raceViewport } from "./race-viewport.js?v=83";
+import { emptyArt, loadArt } from "./art.js?v=84";
+import { sfx, unlockAudio, music } from "./audio.js?v=84";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=84";
+import { drawHud, drawWorld } from "./draw.js?v=84";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=84";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=84";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=84";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=84";
+import { raceViewport } from "./race-viewport.js?v=84";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -687,11 +687,16 @@ export async function createEngine(canvas) {
             raceAccumulator = 0;
             dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
         }
-        // The chiptune rides the retro renderer: the whole arcade run and the
-        // shifted stretches of Free Flight. Everywhere else — menus, results,
-        // and every illustrated mode — the voyage score carries the game.
+        // Four scores, one at a time: the chiptune rides the retro renderer
+        // (arcade + shifted stretches, exactly as always); the Hyper Run time
+        // trial keeps the voyage loop; every other live run gets the upbeat
+        // flight instrumental; and everything outside a run — menus, results,
+        // the hangar — settles onto the slow menu score.
         const inRun = world.screen === "play" || world.screen === "pause";
-        music.set(world.retro && inRun ? "cosmos" : "voyage");
+        music.set(world.retro && inRun ? "cosmos"
+            : world.race && inRun ? "voyage"
+                : inRun ? "flight"
+                    : "menu");
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
@@ -735,4 +740,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=83";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=84";
