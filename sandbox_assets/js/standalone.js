@@ -188,7 +188,7 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "title") {
             keptScroll = 0;
-            overlay.append(drawHome());
+            overlay.append(IS_BETA ? drawHome() : drawHomeClassic());
             return;
         }
         if (snap.screen === "hangar") {
@@ -339,7 +339,7 @@ export async function bootStandalone(root) {
         const dome = el("button", "ac-dome");
         dome.append(icon(I_ACORN, 26, true), el("span", "", "HOME"));
         dome.onclick = () => engine.open("title");
-        const hangarTab = side("hangar", I_HELMET, "LOADOUT");
+        const hangarTab = side("hangar", I_HELMET, IS_BETA ? "LOADOUT" : "HANGAR");
         const levelsTab = side("log", I_STAR, "LEVELS");
         const g = engine.save.guide;
         if ((g === "hangar" || g === "helmet") && active !== "hangar")
@@ -439,6 +439,88 @@ export async function bootStandalone(root) {
         const started = v.play();
         if (started && typeof started.catch === "function")
             started.catch(() => { clear(); end(); });
+    }
+    // The LIVE page keeps the shipped title screen while the hub bakes in
+    // the beta — same rule as every other experiment in this repo.
+    function drawHomeClassic() {
+        const s = engine.save;
+        const box = el("div", "ac-home");
+        // The key art carries the top three quarters and fades out under the
+        // controls, so nothing sits on a hard edge.
+        const art = el("div", "ac-home-art");
+        const homeArt = window.innerWidth > window.innerHeight
+            ? "menu-home-wide.jpg" : "menu-home.jpg";
+        art.style.backgroundImage = `url("${artRootUrl()}/${homeArt}?v=${ART_VER}")`;
+        box.append(art, el("div", "ac-home-scrim"));
+        // Help takes the left corner and the two counters group on the right,
+        // beside the level badge they belong with. Flat pills, not painted
+        // plates — the launch screen is the art's, and these only have to be
+        // readable over it.
+        const pills = el("div", "ac-home-pills");
+        const lvPill = el("div", "ac-pill");
+        lvPill.append(el("span", "ac-pill-key", "\u2605"), el("span", "ac-pill-num", `${starsOf(s)}`));
+        const right = el("div", "ac-home-pillgroup");
+        right.append(acornPill(s.acorns), lvPill);
+        pills.append(helpDot(), right);
+        box.append(pills);
+        const title = el("div", "ac-home-titlewrap");
+        title.append(el("h1", "ac-home-title", "ACORNAUT"));
+        title.append(el("p", "ac-home-kicker", "Fly the gaps \u00b7 Grab the acorns"));
+        box.append(title, el("div", "ac-home-gap"));
+        const controls = el("div", "ac-controls");
+        // The loadout strip is the second door into the Hangar, so the tab
+        // icon is never the only way in.
+        const helm = helmetWornBy(s.equipped, s.equippedSuit);
+        const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
+        const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+        const strip = el("button", "ac-loadstrip");
+        const port = el("div", "ac-loadport");
+        port.append(portraitOf(helm, suit, 38));
+        const stxt = el("div", "ac-loadtxt");
+        stxt.append(el("p", "ac-kicker", "Loadout"));
+        const head = suit.cat || suit.ownHead ? "Own helmet" : helm.name;
+        stxt.append(el("p", "ac-loadname", `${suit.name} \u00b7 ${head} \u00b7 ${trail.name}`));
+        strip.append(port, stxt, icon(I_CHEV, 16));
+        strip.onclick = () => engine.open("hangar");
+        controls.append(strip);
+        // Launch sits ABOVE the mode chips on purpose: it keeps the button
+        // that starts a run well clear of the tab bar, so reaching for a tab
+        // can never fire a flight.
+        const launch = el("button", "ac-launch");
+        launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
+        launch.onclick = () => engine.fly(MODES[selectedMode].id);
+        controls.append(launch);
+        // All modes visible at once. A mode the save has not earned stays on
+        // the bar — dimmed and inert, so the bar never has a blank slot — and
+        // its chip says the star price outright, so the lock is never a mystery.
+        const modeOpen = (id) => id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
+        const modePrice = (id) => id === "deep" ? STAR_UNLOCKS.deep : id === "lost" ? STAR_UNLOCKS.lost : 0;
+        const modes = el("div", "ac-modes");
+        MODES.forEach((m, i) => {
+            const open = modeOpen(m.id);
+            const b = el("button", i === selectedMode ? "ac-mode on" : "ac-mode");
+            b.append(el("span", "", m.short));
+            if (!open) {
+                b.classList.add("ac-cardoff");
+                b.append(el("span", "ac-modeneed", `unlocks at ${modePrice(m.id)} ★`));
+            }
+            b.onclick = () => {
+                if (!open)
+                    return;
+                selectedMode = i;
+                render();
+            };
+            modes.append(b);
+        });
+        controls.append(modes);
+        if (s.guide === "hangar" || s.guide === "helmet") {
+            box.append(coach("Your new gear is waiting \u2014 open the HANGAR"));
+        }
+        else if (s.guide === "levels") {
+            box.append(coach("Mission 1 is ready \u2014 open LEVELS"));
+        }
+        box.append(controls, tabbar("title"));
+        return box;
     }
     // ------------------------------------------------------------- the hub
     // The title screen is a HUB now: the purple key art owns the screen and
@@ -1344,7 +1426,25 @@ export async function bootStandalone(root) {
             card.append(head);
             if (open && chartStage === st.num) {
                 card.append(el("p", "ac-sub ac-stagetag", st.tagline));
-                card.append(chapterMap(st.num, stars, total));
+                if (IS_BETA) {
+                    card.append(chapterMap(st.num, stars, total));
+                }
+                else {
+                    const grid = el("div", "ac-lvlgrid");
+                    for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
+                        const mask = stars[lvl.id] || 0;
+                        const can = levelUnlocked(lvl, stars, total);
+                        const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
+                        b.append(el("span", "ac-lvlnum", String(lvl.n)));
+                        b.append(starPips(mask, "sm"));
+                        if (can)
+                            b.onclick = () => { chartLevel = lvl.id; render(); };
+                        if (sv.guide === "levels" && lvl.id === "1-1")
+                            b.classList.add("ac-pulse");
+                        grid.append(b);
+                    }
+                    card.append(grid);
+                }
             }
             scroll.append(card);
         }
@@ -1657,8 +1757,23 @@ export async function bootStandalone(root) {
             bests.append(r);
         }
         scroll.append(bests);
-        // Settings left this screen for the hub's gear button, where they sit
-        // with Help; the Profile is the pilot's record and nothing else.
+        // BETA: settings left this screen for the hub's gear button, where
+        // they sit with Help; the live page keeps Music here for now.
+        if (!IS_BETA) {
+            scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
+            const settings = el("div", "ac-rows");
+            const musicRow = el("button", "ac-row ac-rowbtn");
+            musicRow.append(el("span", "", "Music"));
+            const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
+            musicSw.append(el("i", "ac-knob"));
+            musicRow.append(musicSw);
+            musicRow.onclick = () => {
+                engine.setMusicOff(!engine.save.musicOff);
+                musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+            };
+            settings.append(musicRow);
+            scroll.append(settings);
+        }
         scroll.append(el("p", "ac-kicker ac-secthead", "News"));
         const news = el("div", "ac-rows");
         for (const line of NEWS) {
@@ -1672,22 +1787,25 @@ export async function bootStandalone(root) {
     }
     function drawHelp() {
         const box = el("div", "ac-menu");
-        box.append(header("Flight deck", "Settings & Help"));
+        box.append(IS_BETA ? header("Flight deck", "Settings & Help") : header("Briefing", "How to Fly"));
         const scroll = el("div", "ac-sheet-scroll");
-        // MUSIC moved here from the Profile: settings and help share the gear
-        const settings = el("div", "ac-rows");
-        const musicRow = el("button", "ac-row ac-rowbtn");
-        musicRow.append(el("span", "", "Music"));
-        const musicSw = el("span", engine.save.musicOff ? "ac-switch" : "ac-switch on");
-        musicSw.append(el("i", "ac-knob"));
-        musicRow.append(musicSw);
-        musicRow.onclick = () => {
-            engine.setMusicOff(!engine.save.musicOff);
-            musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
-        };
-        settings.append(musicRow);
-        scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settings);
-        scroll.append(el("p", "ac-kicker ac-secthead", "How to fly"));
+        // BETA: music moved here from the Profile — settings and help share
+        // the hub's gear button. The live page keeps Help as the briefing.
+        if (IS_BETA) {
+            const settings = el("div", "ac-rows");
+            const musicRow = el("button", "ac-row ac-rowbtn");
+            musicRow.append(el("span", "", "Music"));
+            const musicSw = el("span", engine.save.musicOff ? "ac-switch" : "ac-switch on");
+            musicSw.append(el("i", "ac-knob"));
+            musicRow.append(musicSw);
+            musicRow.onclick = () => {
+                engine.setMusicOff(!engine.save.musicOff);
+                musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+            };
+            settings.append(musicRow);
+            scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settings);
+            scroll.append(el("p", "ac-kicker ac-secthead", "How to fly"));
+        }
         // the two controls, as two SEPARATE cards — tap and swipe must never
         // read as one combined instruction
         const controls = el("div", "ac-ctrls");
@@ -1758,8 +1876,18 @@ export async function bootStandalone(root) {
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
         scroll.append(replay);
-        // The prototype doors moved into the MODES sheet on the hub — the
-        // Lab rides with the modes now, not at the bottom of Help.
+        // BETA reaches the prototype doors through the MODES sheet on the hub;
+        // the live page keeps them here, one deliberate tap away, as before.
+        if (!IS_BETA) {
+            const labRoot = "./lab/";
+            const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
+            lab.onclick = () => { window.location.href = labRoot + "spill/"; };
+            const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
+            rig.onclick = () => { window.location.href = labRoot + "rig/"; };
+            const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
+            worm.onclick = () => engine.fly("tunnel");
+            scroll.append(lab, rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+        }
         // Starting over is a real feature, not a debug door: progression can
         // be flown from zero, in either build, without touching the browser.
         // Two taps, and the armed state disarms on any re-render.
