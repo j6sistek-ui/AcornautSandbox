@@ -65,20 +65,22 @@ function measure(img) {
 
 async function sprite(path) { return measure(await loadImage(path)); }
 const suitsDir = join(root, "docs/art/suits");
-const suits = {}, suitBody = {}, suitTail = {};
+const suits = {}, suitBody = {}, suitTail = {}, suitTap = {};
 for (const suit of SUITS) {
   suits[suit.id] = await sprite(join(suitsDir, `${suit.id}.png`));
   suitBody[suit.id] = await sprite(join(suitsDir, `${suit.id}-body.png`));
   suitTail[suit.id] = await sprite(join(suitsDir, `${suit.id}-tail.png`));
+  suitTap[suit.id] = await Promise.all(
+    Array.from({ length: 16 }, (_, i) => sprite(join(suitsDir, `${suit.id}-tap-${i + 1}.png`))),
+  );
 }
-const eclipseTap = await Promise.all(Array.from({ length: 8 }, (_, i) => sprite(join(suitsDir, `eclipse-tap-${i + 1}.png`))));
 const eclipseTailTap = await Promise.all(Array.from({ length: 12 }, (_, i) => sprite(join(suitsDir, `eclipse-tail-tap-${i + 1}.png`))));
 const sky = await loadImage(join(root, "docs/art/skies/dark6.jpg"));
 const art = {
   ready: true, squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
   planets: [], debris: [], pals: {}, helms: {}, suits, sky, arcadeAcorn: null,
   frozen: null, shieldnut: null, suitTail, suitBody,
-  suitTap: { eclipse: eclipseTap }, suitTapTail: { eclipse: eclipseTailTap },
+  suitTap, suitTapTail: { eclipse: eclipseTailTap },
 };
 
 const W = 390, H = 844, FPS = 30, SECONDS = 1.5;
@@ -113,7 +115,7 @@ for (let frame = 0; frame < Math.round(SECONDS * FPS); frame++) {
   oc.fillStyle = "#0b0d19"; oc.fillRect(0, 0, output.width, output.height);
   for (let i = 0; i < states.length; i++) {
     const { suit, save, world } = states[i];
-    world.planets = []; world.pickups = [];
+    world.planets = []; world.debris = []; world.pickups = []; world.invulnLeft = 999;
     const sc = source.getContext("2d"); sc.clearRect(0, 0, W, H);
     const drawStart = performance.now();
     drawWorld(sc, world, save, art);
