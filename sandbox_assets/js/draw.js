@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=78";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=78";
-import { proceduralSky } from "./sky-gen.js?v=78";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=78";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=78";
-import { tunnelBoundsAt } from "./sim.js?v=78";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=78";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=78";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=79";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=79";
+import { proceduralSky } from "./sky-gen.js?v=79";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=79";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=79";
+import { tunnelBoundsAt } from "./sim.js?v=79";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=79";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=79";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1404,13 +1404,13 @@ const DOME = {
     "suit:aurorasuit": [181, 101, 44],
     "suit:ember": [182, 100, 44],
     "suit:stardust": [179, 95, 44],
-    "suit:robo": [180, 99, 44],
+    "suit:robo": [193, 92, 45],
     "suit:alien": [188, 102, 43],
     // re-rendered bare-headed on a black plate (the pale-on-cream key was
     // unrecoverable); measured against the new art, and near-identical to
     // flight, which is the same pose in the same framing
     "suit:ghost": [182, 93, 44],
-    "suit:bigbooty": [175, 107, 44],
+    "suit:bigbooty": [182, 102, 45],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
     "suit:phoenix": [207, 92, 41],
@@ -1515,7 +1515,7 @@ const TAIL_PIVOT = {
     // it. Re-cut the art and these must be re-read from the same run.
     alien: [106, 145],
     aurorasuit: [99, 139],
-    bigbooty: [94, 136],
+    bigbooty: [92, 129],
     catsuit: [90, 146],
     copper: [99, 131],
     ember: [107, 136],
@@ -1525,7 +1525,7 @@ const TAIL_PIVOT = {
     ghost: [103, 128],
     iontrim: [100, 130],
     leviathan: [101, 131],
-    robo: [99, 138],
+    robo: [101, 140],
     sammie: [99, 148],
     seraph: [105, 138],
     stardust: [104, 140],

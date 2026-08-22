@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=78";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=78";
-import { drawSprite as drawSpriteOn } from "./art.js?v=78";
-import { createEngine } from "./engine.js?v=78";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=78";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=78";
-import { formatRaceTicks } from "./race.js?v=78";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=79";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=79";
+import { drawSprite as drawSpriteOn } from "./art.js?v=79";
+import { createEngine } from "./engine.js?v=79";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=79";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=79";
+import { formatRaceTicks } from "./race.js?v=79";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1477,6 +1477,22 @@ export async function bootStandalone(root) {
         // They are not settings — both cost acorns, and the shield is charged
         // every time it is armed — so they belong on the Hangar's MODS shelf
         // with a price on them, next to everything else you buy.
+        // MUSIC is a real setting: free, global, and remembered. The switch
+        // silences both score tracks (menu/flight and the arcade chiptune)
+        // while the SFX keep playing.
+        scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
+        const settings = el("div", "ac-rows");
+        const musicRow = el("button", "ac-row ac-rowbtn");
+        musicRow.append(el("span", "", "Music"));
+        const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
+        musicSw.append(el("i", "ac-knob"));
+        musicRow.append(musicSw);
+        musicRow.onclick = () => {
+            engine.setMusicOff(!engine.save.musicOff);
+            musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+        };
+        settings.append(musicRow);
+        scroll.append(settings);
         scroll.append(el("p", "ac-kicker ac-secthead", "News"));
         const news = el("div", "ac-rows");
         for (const line of NEWS) {

@@ -1463,13 +1463,13 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:aurorasuit": [181, 101, 44],
   "suit:ember": [182, 100, 44],
   "suit:stardust": [179, 95, 44],
-  "suit:robo": [180, 99, 44],
+  "suit:robo": [193, 92, 45],
   "suit:alien": [188, 102, 43],
   // re-rendered bare-headed on a black plate (the pale-on-cream key was
   // unrecoverable); measured against the new art, and near-identical to
   // flight, which is the same pose in the same framing
   "suit:ghost": [182, 93, 44],
-  "suit:bigbooty": [175, 107, 44],
+  "suit:bigbooty": [182, 102, 45],
   "suit:catsuit": [212, 86, 50],
   "suit:gemmie": [204, 92, 58],
   "suit:phoenix": [207, 92, 41],
@@ -1578,7 +1578,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // it. Re-cut the art and these must be re-read from the same run.
   alien: [106, 145],
   aurorasuit: [99, 139],
-  bigbooty: [94, 136],
+  bigbooty: [92, 129],
   catsuit: [90, 146],
   copper: [99, 131],
   ember: [107, 136],
@@ -1588,7 +1588,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   ghost: [103, 128],
   iontrim: [100, 130],
   leviathan: [101, 131],
-  robo: [99, 138],
+  robo: [101, 140],
   sammie: [99, 148],
   seraph: [105, 138],
   stardust: [104, 140],

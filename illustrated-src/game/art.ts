@@ -386,7 +386,7 @@ export async function loadArt(): Promise<ArtBank> {
       many(`${base}/vortex/hole-`, 16),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16, bigbooty: 16, robo: 16 } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
