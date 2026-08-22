@@ -30,7 +30,7 @@ import {
   resizeWorld,
   resetRun,
   resumePlay,
-  setRaceHeld,
+  setRaceInput,
   setTunnelHeld,
   snapshot,
   updateWorld,
@@ -39,6 +39,18 @@ import {
   type Snapshot,
   type World,
 } from "./sim";
+import {
+  canonicalRaceY,
+  cancelRaceGesture,
+  createRaceGestureState,
+  dropRaceGesture,
+  moveRaceGesture,
+  pressRaceGesture,
+  releaseRaceGesture,
+  type RaceGestureOwner,
+  type RaceGestureResult,
+} from "./race-gesture";
+import { raceViewport } from "./race-viewport";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "mods";
 
@@ -88,6 +100,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   let last = performance.now();
   let running = false;
   let raceAccumulator = 0;
+  let raceGesture = createRaceGestureState();
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((fn) => fn());
 
@@ -125,6 +138,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       raf = requestAnimationFrame(loop);
     },
     stop() {
+      cancelRaceControls();
+      setTunnelHeld(world, false);
+      swipe = null;
       running = false;
       cancelAnimationFrame(raf);
     },
@@ -138,6 +154,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
+      resetInputTracking();
       notify();
     },
     startOver() {
@@ -186,12 +203,18 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // ordinal, so mission 3-4 is the same test for every pilot, forever.
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? 7000 + def.ord : undefined);
+      resetInputTracking();
       raceAccumulator = 0;
       guideStep("level");
       notify();
       return true;
     },
     open(s) {
+      if (s !== "play") {
+        cancelRaceControls();
+        setTunnelHeld(world, false);
+        swipe = null;
+      }
       world.screen = s;
       if (s === "title") world.tut = null;
       if (s === "title" || s === "log") {
@@ -218,11 +241,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       save.tutorialDone = false;
       writeSave(save);
       resetRun(world, save, "fly", true);
+      resetInputTracking();
       notify();
     },
     pause() {
-      setRaceHeld(world, false);
+      cancelRaceControls();
       setTunnelHeld(world, false);
+      swipe = null;
+      // A race pause discards the incomplete presentation-frame remainder.
+      // Resume starts from the next whole 60 Hz authority step, so focus loss
+      // can never leak hidden-tab wall time into the time trial.
+      if (world.race) raceAccumulator = 0;
       pausePlay(world);
       notify();
     },
@@ -410,6 +439,24 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   let swipe: { y0: number; t0: number; fired: boolean } | null = null;
 
+  function applyRaceGesture(result: RaceGestureResult) {
+    raceGesture = result.state;
+    if (!result.input) return false;
+    const wasReady = world.ready;
+    const accepted = setRaceInput(world, result.input);
+    if (accepted && wasReady && !world.ready) raceAccumulator = 0;
+    return accepted;
+  }
+
+  function resetInputTracking() {
+    raceGesture = createRaceGestureState();
+    swipe = null;
+  }
+
+  function cancelRaceControls(owner?: RaceGestureOwner) {
+    return applyRaceGesture(cancelRaceGesture(raceGesture, owner));
+  }
+
   function pos(e: PointerEvent | Touch) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -418,15 +465,31 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     };
   }
 
+  function raceInputY(viewY: number) {
+    const viewport = raceViewport(world.W, world.H);
+    return canonicalRaceY(viewY, viewport.top, viewport.contentHeight);
+  }
+
   canvas.addEventListener(
     "pointerdown",
     (e) => {
       if (world.screen !== "play") return;
+      if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return;
       e.preventDefault();
       const p = pos(e);
+      if (world.race) {
+        try { canvas.setPointerCapture(e.pointerId); } catch { /* capture is best-effort */ }
+        applyRaceGesture(pressRaceGesture(
+          raceGesture,
+          e.pointerId,
+          world.race.tick,
+          raceInputY(p.y),
+        ));
+        notify();
+        return;
+      }
       swipe = { y0: p.y, t0: performance.now(), fired: false };
-      const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
-        : setTunnelHeld(world, true) ? "flap" : flap(world, save);
+      const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
       if (ev === "flap") sfx.flap();
       if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
         world.tut.hold = false;
@@ -439,7 +502,23 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   canvas.addEventListener(
     "pointermove",
     (e) => {
-      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel" || !!world.race) return;
+      if (world.race && world.screen === "play") {
+        const p = pos(e);
+        const result = moveRaceGesture(
+          raceGesture,
+          e.pointerId,
+          world.race.tick,
+          raceInputY(p.y),
+        );
+        const isDrop = result.input?.drop === true;
+        const accepted = applyRaceGesture(result);
+        if (isDrop && accepted) {
+          sfx.dive();
+          notify();
+        }
+        return;
+      }
+      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
         swipe = null;
@@ -454,8 +533,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     { passive: true },
   );
-  const end = () => {
-    setRaceHeld(world, false);
+  const end = (e: PointerEvent) => {
+    if (raceGesture.owner === e.pointerId) {
+      if (e.type === "pointercancel") cancelRaceControls(e.pointerId);
+      else applyRaceGesture(releaseRaceGesture(raceGesture, e.pointerId));
+      return;
+    }
+    if (world.race) return;
     setTunnelHeld(world, false);
     swipe = null;
   };
@@ -484,24 +568,57 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       else if (world.screen === "title") engine.fly("fly");
       else if (world.screen === "pause") engine.resume();
       else if (world.screen === "play") {
-        const ev = world.race ? (setRaceHeld(world, true) ? "race" : "none")
-          : setTunnelHeld(world, true) ? "flap" : flap(world, save);
-        if (ev === "flap") sfx.flap();
+        if (world.race) {
+          if (!e.repeat) applyRaceGesture(pressRaceGesture(
+            raceGesture,
+            "keyboard-rise",
+            world.race.tick,
+            null,
+          ));
+        } else {
+          const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
+          if (ev === "flap") sfx.flap();
+        }
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
     }
-    if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
+    if (e.code === "ArrowDown" && world.screen === "play" && world.race) {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (applyRaceGesture(dropRaceGesture(raceGesture))) sfx.dive();
+      notify();
+    } else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
       const ev = dive(world);
       if (ev === "dive") sfx.dive();
       notify();
     }
   });
   window.addEventListener("keyup", (e) => {
-    if (e.code === "Space" || e.code === "ArrowUp") { setRaceHeld(world, false); setTunnelHeld(world, false); }
+    if (e.code === "Space" || e.code === "ArrowUp") {
+      if (raceGesture.owner === "keyboard-rise") {
+        applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
+      } else if (!world.race) setTunnelHeld(world, false);
+    }
   });
-  window.addEventListener("blur", () => { setRaceHeld(world, false); setTunnelHeld(world, false); });
+  window.addEventListener("blur", () => {
+    if (world.race && world.screen === "play") {
+      engine.pause();
+      return;
+    }
+    cancelRaceControls();
+    setTunnelHeld(world, false);
+    swipe = null;
+  });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { setRaceHeld(world, false); setTunnelHeld(world, false); }
+    if (document.hidden) {
+      if (world.race && world.screen === "play") {
+        engine.pause();
+        return;
+      }
+      cancelRaceControls();
+      setTunnelHeld(world, false);
+      swipe = null;
+    }
   });
   function dispatchWorldEvent(ev: string | null) {
     if (ev === "acorn") sfx.acorn();

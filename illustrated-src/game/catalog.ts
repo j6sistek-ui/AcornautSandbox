@@ -1,3 +1,5 @@
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
+
 export const GAME_VERSION = "v1.2.0-illust";
 export const ART_VER = "75";
 
@@ -44,9 +46,9 @@ export const GUIDE_HELM = "ion";
 
 
 export const PHYS = {
-  gravity: 1300,
+  gravity: FLIGHT_GRAVITY,
   flap: -450,
-  dive: 380,
+  dive: QUICK_DROP_VY,
   bounceCancel: 210,
   squirrelX: 0.18,
   baseSpeed: 165,

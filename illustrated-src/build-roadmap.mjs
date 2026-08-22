@@ -8,16 +8,19 @@ import { execSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const tmp = mkdtempSync(join(tmpdir(), "roadmap-"));
+const compiler = process.env.ACORNAUT_TSC
+  ? `${JSON.stringify(process.execPath)} ${JSON.stringify(process.env.ACORNAUT_TSC)}`
+  : "npx --yes --package typescript@5.9.2 tsc";
 execSync(
-  `npx tsc illustrated-src/game/campaign.ts --outDir ${JSON.stringify(tmp)} ` +
-    "--module es2020 --target es2020 --skipLibCheck --moduleResolution bundler --declaration false --strict false",
+  `${compiler} illustrated-src/game/campaign.ts --outDir ${JSON.stringify(tmp)} ` +
+    "--module commonjs --target es2020 --skipLibCheck --moduleResolution node --declaration false --strict false",
   { cwd: root, stdio: "inherit" },
 );
-const mod = await import(join(tmp, "campaign.js"));
+const mod = await import(pathToFileURL(join(tmp, "campaign.js")).href);
 const { STAGES, LEVELS, STAR_REWARDS, goalText, fxText } = mod;
 
 // the reward ladder's stage rows must agree with the stages themselves

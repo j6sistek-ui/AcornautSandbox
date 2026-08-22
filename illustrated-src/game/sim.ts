@@ -2,7 +2,14 @@ import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BO
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
-import { createRaceState, queueRaceHeld, stepRace, type RaceState } from "./race";
+import { createRaceState, queueRaceInput, stepRace, type RaceState } from "./race";
+import { raceViewport, raceViewportY } from "./race-viewport";
+import {
+  WORMHOLE_HOLD_ACCEL,
+  WORMHOLE_MAX_VY,
+  WORMHOLE_MIN_VY,
+  WORMHOLE_RELEASE_ACCEL,
+} from "./control-constants";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade" | "tunnel";
@@ -465,6 +472,11 @@ export function resizeWorld(w: World, W: number, H: number) {
   }
   w.W = W;
   w.H = H;
+  if (w.race) {
+    const viewport = raceViewport(W, H);
+    w.squirrel.y = raceViewportY(viewport, w.race.y);
+    w.squirrel.vy = w.race.vy * viewport.scale;
+  }
 }
 
 function shuffleEnv(w: World) {
@@ -884,7 +896,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.hitCooldown = 0;
   w.bounceUp = false;
   w.deadTimer = 0;
-  w.ready = !w.race;
+  w.ready = true;
   w.screen = "play";
   w.pausedFrom = null;
   w.shake = 0;
@@ -923,7 +935,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.envB = w.lvl.def.fx.env;
   }
   if (w.race) {
-    w.squirrel.y = w.race.y * (w.H / 640);
+    const viewport = raceViewport(w.W, w.H);
+    w.squirrel.y = raceViewportY(viewport, w.race.y);
     w.squirrel.vy = 0;
     w.speed = w.race.speed;
     w.startShieldArmed = false;
@@ -951,11 +964,23 @@ export function setTunnelHeld(w: World, held: boolean) {
   return true;
 }
 
-/** Hold-to-rise input is tick-stamped and consumed before the next race step. */
-export function setRaceHeld(w: World, held: boolean) {
+export type RaceSemanticInput = {
+  held: boolean;
+  boost: boolean;
+  drop?: true;
+};
+
+/** Semantic race input is tick-stamped and consumed before the next race step. */
+export function setRaceInput(w: World, input: RaceSemanticInput) {
   if (!w.race || w.screen !== "play") return false;
-  queueRaceHeld(w.race, held);
+  queueRaceInput(w.race, input);
+  if (input.held || input.drop) w.ready = false;
   return true;
+}
+
+/** Compatibility shim for callers that only know the original hold control. */
+export function setRaceHeld(w: World, held: boolean) {
+  return setRaceInput(w, { held, boost: false });
 }
 
 const TUNNEL_STEP = 56;
@@ -1277,8 +1302,9 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
   // The BETA flies the wormhole like Hyper Run's stretches: hold to rise,
   // release to fall. Live keeps the classic tap until this is approved.
   w.squirrel.vy = IS_BETA
-    ? Math.max(-520, Math.min(620, w.squirrel.vy + (w.tunnelHeld ? -2100 : gravOf(save, w)) * simDt))
-    : Math.min(620, w.squirrel.vy + gravOf(save, w) * simDt);
+    ? Math.max(WORMHOLE_MIN_VY, Math.min(WORMHOLE_MAX_VY,
+        w.squirrel.vy + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL) * simDt))
+    : Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + gravOf(save, w) * simDt);
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
   const move = w.speed * simDt;
@@ -2145,10 +2171,13 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.screen !== "play") return null;
 
   if (w.race) {
+    // The ready overlay is outside race time: neither its authority tick nor
+    // its physics may advance until a positive hold or drop launches the run.
+    if (w.ready) return null;
     const result = stepRace(w.race);
-    const sy = w.H / 640;
-    w.squirrel.y = w.race.y * sy;
-    w.squirrel.vy = w.race.vy * sy;
+    const viewport = raceViewport(w.W, w.H);
+    w.squirrel.y = raceViewportY(viewport, w.race.y);
+    w.squirrel.vy = w.race.vy * viewport.scale;
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.race.vy / 720));
     w.speed = w.race.speed;
     w.distance = w.race.coursePosition;

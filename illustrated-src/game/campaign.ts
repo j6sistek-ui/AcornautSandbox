@@ -1,3 +1,10 @@
+import {
+  RACE_MAX_ACORNS,
+  RACE_RINGS,
+  RACE_THREE_STAR_TICKS,
+  RACE_TWO_STAR_TICKS,
+} from "./race";
+
 // THE STAR CHART — a finish line for a game that never had one.
 //
 // Endless mode is untouched; this is a second way to fly the same
@@ -410,6 +417,8 @@ export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null
 
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
+export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
+
 export const PROTOTYPE_RACE_MISSION: LevelDef = {
   id: "prototype-chapter-1",
   stage: 0,
@@ -417,12 +426,12 @@ export const PROTOTYPE_RACE_MISSION: LevelDef = {
   ord: 0,
   name: "HYPER RUN",
   base: "race",
-  gates: 22,
+  gates: RACE_RINGS.length,
   fx: { env: 0 },
   goals: [
     { kind: "finish" },
-    { kind: "time", ticks: 10_200 },
-    { kind: "time", ticks: 8_700 },
+    { kind: "time", ticks: RACE_TWO_STAR_TICKS },
+    { kind: "time", ticks: RACE_THREE_STAR_TICKS },
   ],
   experimental: true,
   raceEventId: "prototype-chapter-1",

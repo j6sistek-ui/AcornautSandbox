@@ -5,16 +5,23 @@ import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type S
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import { tunnelBoundsAt, type Particle, type World } from "./sim";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   RACE_ACORNS,
   RACE_DEBRIS,
-  RACE_HEIGHT,
+  RACE_GATE_MISS_FADE_TICKS,
+  RACE_GATE_PASS_FADE_TICKS,
+  RACE_HZ,
   RACE_LENGTH,
   RACE_PILOT_X,
+  RACE_READY_COPY,
   RACE_RINGS,
+  RACE_TUNNEL_SPEED,
+  RACE_TUNNEL_TICKS,
+  RACE_WIDTH,
   formatRaceTicks,
   raceTunnelAcorns,
-  raceTunnelCenter,
+  raceTunnelGeometry,
 } from "./race";
 
 function frameOf<T>(list: T[], t: number, speed = 6) {
@@ -153,6 +160,39 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   ctx.globalAlpha = 1;
 }
 
+type RaceGateVisualState = "idle" | "passed" | "missed";
+
+/** A gate may use its paintings only as registered back/front pairs. Resolved
+ * gates also need the idle pair because both states share the crossfade. */
+export function hyperRunGateUsesPaintedPairs(
+  hyperRun: Readonly<Record<string, unknown>>,
+  state: RaceGateVisualState,
+) {
+  const pairComplete = (pairState: RaceGateVisualState) =>
+    !!hyperRun[`gate-${pairState}-back`] && !!hyperRun[`gate-${pairState}-front`];
+  return pairComplete("idle") && (state === "idle" || pairComplete(state));
+}
+
+export const HYPER_RUN_GATE_FALLBACK_GEOMETRY = {
+  shape: "full-ring",
+  backStart: 0,
+  backEnd: Math.PI * 2,
+  frontStart: Math.PI * 0.2,
+  frontEnd: Math.PI * 0.8,
+} as const;
+
+const raceClamp01 = (n: number) => Math.max(0, Math.min(1, n));
+const raceSmooth = (n: number) => {
+  const t = raceClamp01(n);
+  return t * t * (3 - 2 * t);
+};
+const raceSegment = (tick: number, start: number, end: number) =>
+  raceSmooth((tick - start) / Math.max(1, end - start));
+const raceLerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+/** Hyper Run portal paintings are registered to their complete square canvas.
+ * Generic drawSprite deliberately alpha-fits other art; using it here would
+ * independently enlarge and recenter the gate's small foreground arc. */
 function drawRaceSprite(
   ctx: CanvasRenderingContext2D,
   art: ArtBank,
@@ -161,46 +201,135 @@ function drawRaceSprite(
   y: number,
   size: number,
   tilt = 0,
+  alpha = 1,
 ) {
   const sprite = art.hyperRun[id];
   if (!sprite) return false;
+  if (alpha <= 0) return true;
+  const sw = sprite.naturalWidth || sprite.width;
+  const sh = sprite.naturalHeight || sprite.height;
   ctx.save();
+  ctx.globalAlpha *= raceClamp01(alpha);
   ctx.translate(x, y);
   ctx.rotate(tilt);
-  drawSprite(ctx, sprite, 0, 0, size);
+  ctx.drawImage(sprite, 0, 0, sw, sh, -size / 2, -size / 2, size, size);
   ctx.restore();
   return true;
 }
 
-function drawRaceGateLayer(
+function drawRaceGateFallback(
   ctx: CanvasRenderingContext2D,
-  art: ArtBank,
-  state: "idle" | "passed" | "missed",
+  state: RaceGateVisualState,
   layer: "back" | "front",
   x: number,
   y: number,
   size: number,
   tilt: number,
+  alpha: number,
 ) {
-  if (drawRaceSprite(ctx, art, `gate-${state}-${layer}`, x, y, size, tilt)) return;
+  if (alpha <= 0) return;
+  const palette = state === "passed"
+    ? { rim: "#7fffd4", edge: "#fff0a5" }
+    : state === "missed"
+      ? { rim: "#a47a50", edge: "#79c9d7" }
+      : { rim: "#65dcff", edge: "#b5a0ff" };
+  const r = size * 0.422;
   ctx.save();
+  ctx.globalAlpha *= raceClamp01(alpha);
   ctx.translate(x, y);
   ctx.rotate(tilt);
-  ctx.strokeStyle = state === "passed" ? "#6ef0d8" : state === "missed" ? "#ff6a70" : "#f2b653";
-  ctx.lineWidth = Math.max(2, size * 0.045);
-  ctx.beginPath();
-  if (layer === "back") ctx.ellipse(0, 0, size * 0.39, size * 0.46, 0, Math.PI * 0.08, Math.PI * 1.08);
-  else ctx.ellipse(0, 0, size * 0.39, size * 0.46, 0, Math.PI * 1.08, Math.PI * 2.08);
-  ctx.stroke();
+  ctx.lineCap = "round";
+  if (layer === "back") {
+    // A complete rear ring provides the structural silhouette. The pilot is
+    // painted over it; only the small lower lip is restored in the front pass.
+    ctx.strokeStyle = palette.rim;
+    ctx.lineWidth = Math.max(2, size * 0.11);
+    ctx.shadowColor = palette.rim;
+    ctx.shadowBlur = size * 0.06;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, HYPER_RUN_GATE_FALLBACK_GEOMETRY.backStart, HYPER_RUN_GATE_FALLBACK_GEOMETRY.backEnd);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = palette.edge;
+    ctx.lineWidth = Math.max(1, size * 0.018);
+    ctx.beginPath();
+    ctx.arc(0, 0, r - size * 0.052, HYPER_RUN_GATE_FALLBACK_GEOMETRY.backStart, HYPER_RUN_GATE_FALLBACK_GEOMETRY.backEnd);
+    ctx.stroke();
+  } else {
+    ctx.strokeStyle = palette.edge;
+    ctx.lineWidth = Math.max(2, size * 0.115);
+    ctx.shadowColor = palette.rim;
+    ctx.shadowBlur = size * 0.075;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, HYPER_RUN_GATE_FALLBACK_GEOMETRY.frontStart, HYPER_RUN_GATE_FALLBACK_GEOMETRY.frontEnd);
+    ctx.stroke();
+  }
   ctx.restore();
 }
 
-function drawRaceTunnel(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
+function drawRaceGateLayer(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  state: RaceGateVisualState,
+  layer: "back" | "front",
+  x: number,
+  y: number,
+  size: number,
+  tilt: number,
+  alpha = 1,
+  usePaintings = true,
+) {
+  if (usePaintings && drawRaceSprite(ctx, art, `gate-${state}-${layer}`, x, y, size, tilt, alpha)) return;
+  drawRaceGateFallback(ctx, state, layer, x, y, size, tilt, alpha);
+}
+
+function raceGateVisual(race: NonNullable<World["race"]>, i: number) {
+  const ledger = race.ringLedger[i];
+  if (ledger === "skipped") return null;
+  if (ledger !== "passed" && ledger !== "missed") {
+    return { state: "idle" as const, blend: 1 };
+  }
+  const decisionTick = race.ringDecisionTicks[i];
+  if (decisionTick == null) return { state: ledger, blend: 1 };
+  // race.tick names the next pre-increment step after rendering. A decision
+  // stamped during the just-completed step therefore has visual age zero.
+  const age = Math.max(0, race.tick - 1 - decisionTick);
+  const duration = ledger === "passed" ? RACE_GATE_PASS_FADE_TICKS : RACE_GATE_MISS_FADE_TICKS;
+  return { state: ledger, blend: raceClamp01(age / duration) };
+}
+
+function drawRaceGateVisualLayer(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  gate: { x: number; y: number; tilt: number; state: RaceGateVisualState; blend: number },
+  layer: "back" | "front",
+  size: number,
+) {
+  const usePaintings = hyperRunGateUsesPaintedPairs(art.hyperRun, gate.state);
+  if (gate.state === "idle") {
+    drawRaceGateLayer(ctx, art, "idle", layer, gate.x, gate.y, size, gate.tilt, 1, usePaintings);
+    return;
+  }
+  if (gate.blend < 1) {
+    drawRaceGateLayer(ctx, art, "idle", layer, gate.x, gate.y, size, gate.tilt, 1 - gate.blend, usePaintings);
+  }
+  if (gate.blend > 0) {
+    drawRaceGateLayer(ctx, art, gate.state, layer, gate.x, gate.y, size, gate.tilt, gate.blend, usePaintings);
+  }
+}
+
+function drawRaceTunnel(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  art: ArtBank,
+  viewTick = w.race!.phaseTick,
+) {
   const race = w.race!;
-  const sx = w.W / 360;
-  const sy = w.H / RACE_HEIGHT;
-  const unit = Math.min(sx, sy);
-  const pilotX = RACE_PILOT_X * sx;
+  const viewport = raceViewport(w.W, w.H);
+  const { scale, left, top, contentWidth, contentHeight } = viewport;
+  const pilotX = raceViewportX(viewport, RACE_PILOT_X);
+  const right = left + contentWidth;
+  const bottom = top + contentHeight;
   const g = ctx.createLinearGradient(0, 0, w.W, w.H);
   g.addColorStop(0, "#13072d");
   g.addColorStop(0.48, "#122e5a");
@@ -219,21 +348,27 @@ function drawRaceTunnel(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   ctx.beginPath();
   const samples = 18;
   for (let i = 0; i <= samples; i++) {
-    const x = (i / samples) * w.W;
-    const lookTicks = (x - pilotX) / Math.max(0.001, (400 / 60) * sx);
-    const y = (raceTunnelCenter(race, race.phaseTick + lookTicks) - 150) * sy;
+    const canonicalX = (i / samples) * RACE_WIDTH;
+    const x = raceViewportX(viewport, canonicalX);
+    const lookTicks = (canonicalX - RACE_PILOT_X) / Math.max(0.001, RACE_TUNNEL_SPEED / RACE_HZ);
+    const sampleTick = Math.max(0, Math.min(RACE_TUNNEL_TICKS - 1, viewTick + lookTicks));
+    const tunnel = raceTunnelGeometry(race, sampleTick);
+    const y = raceViewportY(viewport, tunnel.center - tunnel.half);
     if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
-  ctx.lineTo(w.W, 0); ctx.lineTo(0, 0); ctx.closePath();
+  ctx.lineTo(right, top); ctx.lineTo(left, top); ctx.closePath();
   ctx.fillStyle = "rgba(8,5,22,.88)"; ctx.fill();
   ctx.beginPath();
   for (let i = 0; i <= samples; i++) {
-    const x = (i / samples) * w.W;
-    const lookTicks = (x - pilotX) / Math.max(0.001, (400 / 60) * sx);
-    const y = (raceTunnelCenter(race, race.phaseTick + lookTicks) + 150) * sy;
+    const canonicalX = (i / samples) * RACE_WIDTH;
+    const x = raceViewportX(viewport, canonicalX);
+    const lookTicks = (canonicalX - RACE_PILOT_X) / Math.max(0.001, RACE_TUNNEL_SPEED / RACE_HZ);
+    const sampleTick = Math.max(0, Math.min(RACE_TUNNEL_TICKS - 1, viewTick + lookTicks));
+    const tunnel = raceTunnelGeometry(race, sampleTick);
+    const y = raceViewportY(viewport, tunnel.center + tunnel.half);
     if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
-  ctx.lineTo(w.W, w.H); ctx.lineTo(0, w.H); ctx.closePath();
+  ctx.lineTo(right, bottom); ctx.lineTo(left, bottom); ctx.closePath();
   ctx.fillStyle = "rgba(5,9,25,.9)"; ctx.fill();
 
   if (race.phase === "tunnel") {
@@ -241,79 +376,226 @@ function drawRaceTunnel(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
     const ledger = race.tunnelAcornLedger[race.wormholes] ?? [];
     pickups.forEach((a, i) => {
       if (ledger[i]) return;
-      const x = pilotX + (a.tick - race.phaseTick) * (400 / 60) * sx;
-      if (x < -30 || x > w.W + 30) return;
-      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, a.y * sy, 26 * unit);
+      const canonicalX = RACE_PILOT_X + (a.tick - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ);
+      const x = raceViewportX(viewport, canonicalX);
+      if (x < left - 30 * scale || x > right + 30 * scale) return;
+      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, a.y), 26 * scale);
     });
   }
 }
 
+function drawRaceConvergingStreaks(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  x: number,
+  y: number,
+  phaseTick: number,
+  alpha: number,
+  visualScale = 1,
+) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalAlpha *= raceClamp01(alpha);
+  ctx.lineCap = "round";
+  for (let i = 0; i < 12; i++) {
+    const laneY = ((i * 79 + phaseTick * 5) % (w.H + 120)) - 60;
+    const reach = (22 + (i % 4) * 9) * visualScale;
+    ctx.strokeStyle = i % 3 === 0 ? "rgba(255,226,137,.65)" : "rgba(112,225,255,.52)";
+    ctx.lineWidth = (1 + (i % 3) * 0.65) * visualScale;
+    ctx.beginPath();
+    ctx.moveTo(w.W + reach, laneY);
+    ctx.quadraticCurveTo(x + w.W * 0.22, laneY * 0.55 + y * 0.45, x + reach, y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawRaceLightWash(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  x: number,
+  y: number,
+  phaseTick: number,
+  alpha: number,
+) {
+  const a = raceClamp01(alpha);
+  if (a <= 0) return;
+  ctx.save();
+  ctx.fillStyle = `rgba(235,249,255,${a.toFixed(3)})`;
+  ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+  ctx.globalCompositeOperation = "screen";
+  ctx.globalAlpha = Math.min(1, a * 1.35);
+  const glow = ctx.createRadialGradient(x, y, 0, x, y, Math.max(w.W, w.H) * 0.72);
+  glow.addColorStop(0, "rgba(255,255,255,1)");
+  glow.addColorStop(0.3, "rgba(255,225,151,.72)");
+  glow.addColorStop(1, "rgba(92,211,255,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+  ctx.strokeStyle = "rgba(255,255,255,.72)";
+  for (let i = 0; i < 10; i++) {
+    const off = ((i * 97 + phaseTick * 17) % (w.H + 160)) - 80;
+    ctx.lineWidth = 1 + (i % 3);
+    ctx.beginPath();
+    ctx.moveTo(x - w.W, y + off - 80);
+    ctx.lineTo(x + w.W, y + off + 80);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const race = w.race!;
-  const sx = w.W / 360;
-  const sy = w.H / RACE_HEIGHT;
-  const unit = Math.min(sx, sy);
-  const pilotX = RACE_PILOT_X * sx;
-  const ringSize = 148 * unit;
-  const tunnelView = race.phase === "tunnel" || race.phase === "return";
-  if (tunnelView) drawRaceTunnel(ctx, w, art);
+  const viewport = raceViewport(w.W, w.H);
+  const { scale, left, contentWidth } = viewport;
+  const right = left + contentWidth;
+  const pilotX = raceViewportX(viewport, RACE_PILOT_X);
+  const ringSize = 148 * scale;
+  const tunnelView = race.phase === "tunnel" || (race.phase === "return" && race.phaseTick < 10);
+  const courseView = !tunnelView;
+  if (tunnelView) {
+    const viewTick = race.phase === "return" ? RACE_TUNNEL_TICKS - 1 : race.phaseTick;
+    drawRaceTunnel(ctx, w, art, viewTick);
+  }
 
-  const visibleRings: { i: number; x: number; y: number }[] = [];
-  if (!tunnelView) {
+  const visibleRings: {
+    i: number;
+    x: number;
+    y: number;
+    tilt: number;
+    state: RaceGateVisualState;
+    blend: number;
+  }[] = [];
+  if (courseView) {
     RACE_RINGS.forEach((ring, i) => {
-      const x = pilotX + (ring.x - race.coursePosition) * sx;
-      if (x < -ringSize || x > w.W + ringSize) return;
-      visibleRings.push({ i, x, y: ring.y * sy });
-      const ledger = race.ringLedger[i];
-      const state = ledger === "passed" ? "passed" : ledger === "missed" ? "missed" : "idle";
-      drawRaceGateLayer(ctx, art, state, "back", x, ring.y * sy, ringSize, ring.tilt);
+      if (race.phase === "entry" && i === race.entryRingIndex) return;
+      const visual = raceGateVisual(race, i);
+      if (!visual) return;
+      const x = raceViewportX(viewport, RACE_PILOT_X + ring.x - race.coursePosition);
+      if (x < left - ringSize || x > right + ringSize) return;
+      const gate = { i, x, y: raceViewportY(viewport, ring.y), tilt: ring.tilt, ...visual };
+      visibleRings.push(gate);
+      drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
     });
     RACE_DEBRIS.forEach((debris, i) => {
       if (race.debrisLedger[i]) return;
-      const x = pilotX + (debris.x - race.coursePosition) * sx;
-      if (x < -60 || x > w.W + 60) return;
-      drawSprite(ctx, art.debris[debris.art % Math.max(1, art.debris.length)], x, debris.y * sy, debris.r * 2 * unit, "core", "dark");
+      const x = raceViewportX(viewport, RACE_PILOT_X + debris.x - race.coursePosition);
+      if (x < left - 60 * scale || x > right + 60 * scale) return;
+      drawSprite(ctx, art.debris[debris.art % Math.max(1, art.debris.length)],
+        x, raceViewportY(viewport, debris.y), debris.r * 2 * scale, "core", "dark");
     });
     RACE_ACORNS.forEach((acorn, i) => {
       if (race.acornLedger[i]) return;
-      const x = pilotX + (acorn.x - race.coursePosition) * sx;
-      if (x < -30 || x > w.W + 30) return;
-      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, acorn.y * sy, 26 * unit);
+      const x = raceViewportX(viewport, RACE_PILOT_X + acorn.x - race.coursePosition);
+      if (x < left - 30 * scale || x > right + 30 * scale) return;
+      drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, acorn.y), 26 * scale);
     });
-    const finishX = pilotX + (RACE_LENGTH - race.coursePosition) * sx;
-    if (finishX < w.W + ringSize) {
+    const finishX = raceViewportX(viewport, RACE_PILOT_X + RACE_LENGTH - race.coursePosition);
+    if (finishX < right + ringSize) {
       ctx.strokeStyle = "rgba(255,224,128,.85)";
-      ctx.lineWidth = 4 * unit;
-      ctx.setLineDash([8 * unit, 8 * unit]);
-      ctx.beginPath(); ctx.moveTo(finishX, 80 * sy); ctx.lineTo(finishX, 560 * sy); ctx.stroke();
+      ctx.lineWidth = 4 * scale;
+      ctx.setLineDash([8 * scale, 8 * scale]);
+      ctx.beginPath();
+      ctx.moveTo(finishX, raceViewportY(viewport, 80));
+      ctx.lineTo(finishX, raceViewportY(viewport, 560));
+      ctx.stroke();
       ctx.setLineDash([]);
     }
   }
 
-  if (race.phase === "entry") {
-    const x = pilotX + 30 * sx;
-    const y = 320 * sy;
-    drawRaceSprite(ctx, art, "entry-mouth", x, y, 220 * unit);
-    drawRaceSprite(ctx, art, "entry-rim-back", x, y, 220 * unit);
-    drawRaceSprite(ctx, art, "entry-glyphs", x, y, 220 * unit, race.phaseTick * 0.01);
-  } else if (race.phase === "return") {
-    drawRaceSprite(ctx, art, "return-back", pilotX, race.returnY * sy, 220 * unit);
-    drawRaceSprite(ctx, art, "return-glyphs", pilotX, race.returnY * sy, 220 * unit, -race.phaseTick * 0.012);
-  }
-
-  drawPilot(ctx, w, save, art);
+  let pilotPresentationX = pilotX;
+  let transitionWash = 0;
+  let transitionX = pilotX;
+  let transitionY = raceViewportY(viewport, race.y);
+  let entryFront: { x: number; y: number; size: number; complete: boolean } | null = null;
+  let returnFront: { x: number; y: number; size: number; alpha: number; complete: boolean } | null = null;
 
   if (race.phase === "entry") {
-    drawRaceSprite(ctx, art, "entry-rim-front", pilotX + 30 * sx, 320 * sy, 220 * unit);
+    const t = race.phaseTick;
+    const x = pilotX;
+    const y = raceViewportY(viewport, race.entryAnchorY);
+    const commonScale = t <= 11
+      ? raceLerp(1, 1.25, raceSegment(t, 0, 11))
+      : t <= 23
+        ? raceLerp(1.25, 1.75, raceSegment(t, 12, 23))
+        : t <= 35
+          ? raceLerp(1.75, 2.15, raceSegment(t, 24, 35))
+          : raceLerp(2.15, 2.35, raceSegment(t, 36, 47));
+    const size = ringSize * commonScale;
+    const complete = ["entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front"]
+      .every((id) => !!art.hyperRun[id]);
+    const mouthAlpha = raceSegment(t, 0, 11);
+    const glyphAlpha = raceLerp(0.18, 1, raceSegment(t, 12, 23));
+    const bendAlpha = t < 12 ? 0 : raceSegment(t, 12, 23);
+    drawRaceConvergingStreaks(ctx, w, x, y, t, bendAlpha, scale);
+    if (complete) {
+      drawRaceSprite(ctx, art, "entry-mouth", x, y, size, 0, mouthAlpha);
+      drawRaceSprite(ctx, art, "entry-rim-back", x, y, size * 0.96);
+      drawRaceSprite(ctx, art, "entry-glyphs", x, y, size * 1.04, t * 0.01, glyphAlpha);
+    } else {
+      drawRaceGateFallback(ctx, "passed", "back", x, y, size, 0, 1);
+    }
+    pilotPresentationX = pilotX + 30 * scale * raceSegment(t, 24, 35);
+    transitionWash = raceSegment(t, 36, 47);
+    transitionX = x;
+    transitionY = y;
+    entryFront = { x, y, size: size * 1.08, complete };
   } else if (race.phase === "return") {
-    drawRaceSprite(ctx, art, "return-front", pilotX, race.returnY * sy, 220 * unit);
-  } else if (!tunnelView) {
-    visibleRings.forEach(({ i, x, y }) => {
-      const ledger = race.ringLedger[i];
-      const state = ledger === "passed" ? "passed" : ledger === "missed" ? "missed" : "idle";
-      drawRaceGateLayer(ctx, art, state, "front", x, y, ringSize, RACE_RINGS[i].tilt);
-    });
+    const t = race.phaseTick;
+    const x = pilotX;
+    const y = raceViewportY(viewport, race.returnY);
+    const portalScale = t <= 9
+      ? raceLerp(1, 2.15, raceSegment(t, 0, 9))
+      : t <= 23
+        ? raceLerp(2.15, 1.3, raceSegment(t, 10, 23))
+        : t <= 31
+          ? raceLerp(1.3, 1, raceSegment(t, 24, 31))
+          : raceLerp(1, 0.9, raceSegment(t, 32, 35));
+    const size = ringSize * portalScale;
+    const openAlpha = t <= 9 ? raceLerp(0.35, 1, raceSegment(t, 0, 9)) : 1;
+    const collapseAlpha = t < 32 ? 1 : 1 - raceSegment(t, 32, 35);
+    const alpha = openAlpha * collapseAlpha;
+    const complete = ["return-back", "return-glyphs", "return-front"]
+      .every((id) => !!art.hyperRun[id]);
+    if (complete) {
+      drawRaceSprite(ctx, art, "return-back", x, y, size, 0, alpha);
+      drawRaceSprite(ctx, art, "return-glyphs", x, y, size, -t * 0.012, alpha);
+    } else {
+      drawRaceGateFallback(ctx, "passed", "back", x, y, size, 0, alpha);
+    }
+    if (t >= 10) pilotPresentationX = pilotX + 30 * scale * (1 - raceSegment(t, 10, 23));
+    transitionWash = t <= 9
+      ? raceSegment(t, 0, 9)
+      : t <= 23
+        ? raceLerp(1, 0.35, raceSegment(t, 10, 23))
+        : t <= 31
+          ? raceLerp(0.35, 0, raceSegment(t, 24, 31))
+          : 0;
+    transitionX = x;
+    transitionY = y;
+    returnFront = { x, y, size, alpha, complete };
   }
+
+  drawPilot(ctx, w, save, art, pilotPresentationX, scale);
+
+  if (courseView) {
+    visibleRings.forEach((gate) => drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize));
+  }
+
+  if (entryFront) {
+    if (entryFront.complete) {
+      drawRaceSprite(ctx, art, "entry-rim-front", entryFront.x, entryFront.y, entryFront.size);
+    } else {
+      drawRaceGateFallback(ctx, "passed", "front", entryFront.x, entryFront.y, entryFront.size / 1.08, 0, 1);
+    }
+  } else if (returnFront) {
+    if (returnFront.complete) {
+      drawRaceSprite(ctx, art, "return-front", returnFront.x, returnFront.y, returnFront.size, 0, returnFront.alpha);
+    } else {
+      drawRaceGateFallback(ctx, "passed", "front", returnFront.x, returnFront.y, returnFront.size, 0, returnFront.alpha);
+    }
+  }
+
+  drawRaceLightWash(ctx, w, transitionX, transitionY, race.phaseTick, transitionWash);
 }
 
 export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
@@ -1723,8 +2005,15 @@ function paintIllustrated(
   }
 }
 
-function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
-  const x = w.W * PHYS.squirrelX;
+function drawPilot(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  save: SaveData,
+  art: ArtBank,
+  xOverride?: number,
+  localScale = 1,
+) {
+  const x = xOverride ?? w.W * PHYS.squirrelX;
   const y = w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = helmetWornBy(save.equipped, save.equippedSuit);
@@ -1746,6 +2035,7 @@ function drawPilot(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art:
   const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
+  ctx.scale(localScale, localScale);
   if (eclipseImpact) {
     // Scale around the planet-facing edge instead of the sprite centre. The
     // contact point stays planted while Eclipse flattens, lengthens into the
@@ -1950,11 +2240,11 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
     ctx.fillStyle = "#ffd080";
     ctx.font = "700 14px Figtree, system-ui";
     ctx.fillText(`${race.acorns}`, 24, 28);
-    if (race.tick < 240) {
+    if (w.ready) {
       ctx.textAlign = "center";
       ctx.fillStyle = "rgba(255,255,255,.88)";
-      ctx.font = "800 13px Figtree, system-ui";
-      ctx.fillText("HOLD TO RISE · RELEASE TO FALL", W / 2, w.H * 0.82);
+      ctx.font = "800 12px Figtree, system-ui";
+      RACE_READY_COPY.forEach((line, i) => ctx.fillText(line, W / 2, w.H * 0.78 + i * 18));
     }
     return;
   }
