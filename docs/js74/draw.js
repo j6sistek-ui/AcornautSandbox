@@ -1,9 +1,10 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=73";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=73";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=73";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=73";
-import { tunnelBoundsAt } from "./sim.js?v=73";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=73";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=74";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=74";
+import { proceduralSky } from "./sky-gen.js?v=74";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=74";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=74";
+import { tunnelBoundsAt } from "./sim.js?v=74";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_HEIGHT, RACE_LENGTH, RACE_PILOT_X, RACE_RINGS, formatRaceTicks, raceTunnelAcorns, raceTunnelCenter, } from "./race.js?v=74";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -26,6 +27,7 @@ function applyWarp(ctx, w) {
     ctx.translate(-w.W / 2, -w.H / 2);
 }
 function coverDraw(ctx, img, W, H) {
+    // a procedural sky is already composed for this exact canvas
     const sw = img.naturalWidth || img.width;
     const sh = img.naturalHeight || img.height;
     const scale = Math.max(W / Math.max(1, sw), H / Math.max(1, sh));
@@ -45,9 +47,14 @@ export function skyLuma(w) {
 }
 function drawBackdrop(ctx, w, art) {
     const { W, H } = w;
-    // each environment flies under its own painted sky; shifts crossfade
-    const skyA = skyImage(skyIdFor(w.flight, w.envA));
-    const skyB = skyImage(skyIdFor(w.flight, w.envB));
+    // Each environment flies under its own sky; shifts crossfade. In the
+    // BETA the ten normal-mode environments render PROCEDURALLY from their
+    // recipes (sky-gen.ts) — the painted file is never even fetched — while
+    // Deep and Lost's dark plates have no recipe and stay painted.
+    const idA = skyIdFor(w.flight, w.envA);
+    const idB = skyIdFor(w.flight, w.envB);
+    const skyA = proceduralSky(idA, W, H) ?? skyImage(idA);
+    const skyB = proceduralSky(idB, W, H) ?? skyImage(idB);
     const painted = skyB ?? skyA;
     if (painted) {
         coverDraw(ctx, skyA ?? painted, W, H);

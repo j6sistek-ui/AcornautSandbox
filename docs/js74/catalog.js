@@ -1,5 +1,5 @@
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "73";
+export const ART_VER = "74";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
