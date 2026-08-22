@@ -97,6 +97,20 @@ export function cancelRaceGesture(state, owner) {
         input: shouldRecord ? { held: false, boost: false } : null,
     };
 }
+/**
+ * A viewport change while a contact is still owned is a control boundary:
+ * clear the recognizer (including its double-tap candidate) and expose one
+ * neutral semantic state for the authority log. Idle resizes must not call
+ * this helper; they preserve the candidate and produce no input mutation.
+ */
+export function neutralizeOwnedRaceGesture(state) {
+    if (state.owner === null)
+        return { state, input: null };
+    return {
+        state: createRaceGestureState(),
+        input: { held: false, boost: false },
+    };
+}
 /** Arrow Down uses the same atomic release-plus-drop semantic as a swipe. */
 export function dropRaceGesture(state) {
     if (state.dropFired)

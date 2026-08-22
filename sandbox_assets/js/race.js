@@ -3,35 +3,38 @@
 // This module knows nothing about canvas size, render cadence, DOM events, or
 // the campaign. Feed it semantic input snapshots stamped with simulation ticks
 // and call stepRace exactly once per 1/60-second live race step.
-import { QUICK_DROP_VY, WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=81";
+import { QUICK_DROP_VY, WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=82";
 export const RACE_EVENT_ID = "prototype-chapter-1";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
 export const RACE_DT = 1 / RACE_HZ;
 export const RACE_WIDTH = 360;
 export const RACE_HEIGHT = 640;
-export const RACE_LENGTH = 45000;
+export const RACE_COURSE_SCALE = 0.75;
+export const RACE_LENGTH = 33750;
 export const RACE_PILOT_X = 96;
 export const RACE_PILOT_RADIUS = 16;
 export const RACE_GATE_APERTURE = 54;
 export const RACE_GATE_CLEARANCE = RACE_GATE_APERTURE - RACE_PILOT_RADIUS;
 export const RACE_GATE_PASS_FADE_TICKS = 27;
 export const RACE_GATE_MISS_FADE_TICKS = 39;
-export const RACE_BASE_SPEED = 300;
-export const RACE_MAX_SPEED = 480;
-export const RACE_RING_SPEED_GAIN = 18;
-export const RACE_RETURN_SPEED = 390;
-export const RACE_TUNNEL_SPEED = 750;
-export const RACE_TUNNEL_DISTANCE = 4500;
+export const RACE_BASE_SPEED = 225;
+export const RACE_MAX_SPEED = 360;
+export const RACE_RING_SPEED_GAIN = 13.5;
+export const RACE_RETURN_SPEED = 292.5;
+export const RACE_TUNNEL_SPEED = 562.5;
+export const RACE_TUNNEL_DISTANCE = 3375;
 export const RACE_ENTRY_TICKS = 48;
 export const RACE_TUNNEL_TICKS = 360;
 export const RACE_RETURN_TICKS = 36;
 export const RACE_SPEED_GRACE_TICKS = 90;
+export const RACE_SPEED_DECAY_PER_SECOND = 13.5;
 export const RACE_RETURN_GRACE_TICKS = 21;
 export const RACE_DEBRIS_GRACE_TICKS = 45;
 export const RACE_MAX_WORMHOLES = 3;
 export const RACE_RING_CHARGE = 5;
 export const RACE_DEBRIS_CHARGE_PENALTY = 10;
+export const RACE_MAX_INTERACTIVE_GAP = 540;
 export const RACE_TWO_STAR_TICKS = 6900;
 export const RACE_THREE_STAR_TICKS = 5760;
 /** Count-derived content ceiling (42 course + 3 x 18 tunnel), not a promised single-run route. */
@@ -52,9 +55,8 @@ const NORMAL_BOOST_MIN_VY = -520;
 const NORMAL_MAX_VY = 390;
 const TUNNEL_BOOST_ACCEL = -3500;
 const TUNNEL_BOOST_MIN_VY = -780;
-const RACE_SPEED_DECAY_PER_SECOND = 18;
 const RACE_TUNNEL_PICKUP_RADIUS = RACE_PILOT_RADIUS + 12;
-const RACE_LATEST_ENTRY_X = RACE_LENGTH - RACE_TUNNEL_DISTANCE;
+export const RACE_LATEST_ENTRY_X = RACE_LENGTH - RACE_TUNNEL_DISTANCE;
 const RING_POINTS = [
     [600, 320], [1020, 280], [1440, 360], [1880, 240], [2320, 400], [2780, 200], [3240, 440],
     [3680, 220], [4120, 420], [4580, 260], [5220, 380], [5840, 240], [6460, 430], [7080, 300],
@@ -79,7 +81,7 @@ const RING_SKILLS = {
 };
 export const RACE_RINGS = RING_POINTS.map(([x, y], i) => ({
     id: `r${String(i + 1).padStart(2, "0")}`,
-    x,
+    x: x * RACE_COURSE_SCALE,
     y,
     tilt: 0,
     ...(RING_SKILLS[i] ? { skill: RING_SKILLS[i] } : {}),
@@ -94,7 +96,7 @@ const DEBRIS_POINTS = [
 ];
 export const RACE_DEBRIS = DEBRIS_POINTS.map(([x, y, r], i) => ({
     id: `d${String(i + 1).padStart(2, "0")}`,
-    x,
+    x: x * RACE_COURSE_SCALE,
     y,
     r,
     art: i % 3,
@@ -111,7 +113,7 @@ const ACORN_POINTS = [
 ];
 export const RACE_ACORNS = ACORN_POINTS.map(([x, y], i) => ({
     id: `a${String(i + 1).padStart(2, "0")}`,
-    x,
+    x: x * RACE_COURSE_SCALE,
     y,
     ...(i >= 21 && i <= 23 ? { skill: "high-low-high" } : {}),
     ...(i >= 38 ? { skill: "redline-reward" } : {}),
@@ -121,6 +123,39 @@ const smoothstep = (n) => {
     const f = clamp(n, 0, 1);
     return f * f * (3 - 2 * f);
 };
+/** Visual age for events stamped during the pre-increment authority step. */
+export function raceDecisionAge(nextTick, decisionTick) {
+    return Math.max(0, nextTick - 1 - decisionTick);
+}
+/**
+ * One authority-owned source for the director target and whether another
+ * charged entry can still be earned. Eligibility assumes the needed pending
+ * gates are passed; actual pass/miss decisions remain fixed-step authority.
+ */
+export function raceRouteTarget(race) {
+    const pending = [];
+    for (let i = 0; i < RACE_RINGS.length; i++) {
+        if (race.ringLedger[i] === "pending")
+            pending.push(i);
+    }
+    const ringsNeeded = Math.max(1, Math.ceil((100 - race.charge) / RACE_RING_CHARGE));
+    const nextRingIndex = pending[0] ?? null;
+    const entryRingIndex = pending[ringsNeeded - 1] ?? null;
+    const remainingEligible = pending.filter((index) => RACE_RINGS[index].x <= RACE_LATEST_ENTRY_X).length;
+    const entryEligible = race.wormholes < RACE_MAX_WORMHOLES
+        && entryRingIndex != null
+        && RACE_RINGS[entryRingIndex].x <= RACE_LATEST_ENTRY_X;
+    return {
+        nextRingIndex,
+        ringsNeeded,
+        remainingEligible,
+        entryRingIndex,
+        entryEligible,
+        entryReady: race.charge >= 100 && entryEligible,
+        nextCleanGateEnters: ringsNeeded === 1 && entryEligible,
+        finalRoute: !entryEligible,
+    };
+}
 function hash(seed, n) {
     let x = (seed ^ Math.imul(n + 1, 0x9e3779b1)) >>> 0;
     x ^= x >>> 16;
@@ -287,6 +322,7 @@ export function sweptDebrisHit(previousPosition, nextPosition, previousY, nextY,
 }
 function crossNormalObjects(race) {
     let sound = null;
+    const cues = [];
     let entryRingIndex = null;
     for (let i = 0; i < RACE_RINGS.length; i++) {
         if (race.ringLedger[i] !== "pending")
@@ -299,6 +335,14 @@ function crossNormalObjects(race) {
         const passed = sweptGateHit(race.previousCoursePosition, race.coursePosition, race.previousY, race.y, ring);
         race.ringLedger[i] = passed ? "passed" : "missed";
         race.ringDecisionTicks[i] = race.tick;
+        cues.push({
+            kind: passed ? "ring-pass" : "ring-miss",
+            tick: race.tick,
+            id: ring.id,
+            index: i,
+            y: ring.y,
+            chargeDelta: passed ? RACE_RING_CHARGE : 0,
+        });
         if (passed) {
             race.charge = Math.min(100, race.charge + RACE_RING_CHARGE);
             race.speed = Math.min(RACE_MAX_SPEED, race.speed + RACE_RING_SPEED_GAIN);
@@ -328,6 +372,14 @@ function crossNormalObjects(race) {
             race.speedGraceTicks = 0;
             race.charge = Math.max(0, race.charge - RACE_DEBRIS_CHARGE_PENALTY);
             race.collisionGraceTicks = RACE_DEBRIS_GRACE_TICKS;
+            cues.push({
+                kind: "debris-hit",
+                tick: race.tick,
+                id: debris.id,
+                index: i,
+                y: debris.y,
+                chargeDelta: -RACE_DEBRIS_CHARGE_PENALTY,
+            });
             sound = "debris";
         }
     }
@@ -344,11 +396,12 @@ function crossNormalObjects(race) {
         if (sweptPointHit(race.previousCoursePosition, race.previousY, settleThrough, race.y, acorn.x, acorn.y, RACE_PILOT_RADIUS + 10)) {
             race.acornLedger[i] = true;
             race.acorns += 1;
+            cues.push({ kind: "acorn", tick: race.tick, id: acorn.id, index: i, y: acorn.y, chargeDelta: 0 });
             if (!sound)
                 sound = "acorn";
         }
     }
-    return { sound, entryRingIndex };
+    return { sound, cues, entryRingIndex };
 }
 function beginEntry(race, ringIndex) {
     const ring = RACE_RINGS[ringIndex];
@@ -464,11 +517,20 @@ function stepTunnel(race) {
     const acorns = raceTunnelAcorns(race);
     const ledger = race.tunnelAcornLedger[cycle] ?? (race.tunnelAcornLedger[cycle] = acorns.map(() => false));
     let sound = null;
+    const cues = [];
     for (let i = 0; i < acorns.length; i++) {
         if (!ledger[i] && acorns[i].tick === race.phaseTick) {
             ledger[i] = true;
             if (race.wallSuppressTicks <= 0 && Math.abs(race.y - acorns[i].y) <= RACE_TUNNEL_PICKUP_RADIUS) {
                 race.acorns += 1;
+                cues.push({
+                    kind: "acorn",
+                    tick: race.tick,
+                    id: `w${cycle + 1}-a${String(i + 1).padStart(2, "0")}`,
+                    index: i,
+                    y: acorns[i].y,
+                    chargeDelta: 0,
+                });
                 sound = "acorn";
             }
         }
@@ -476,17 +538,18 @@ function stepTunnel(race) {
     race.coursePosition = race.phaseStartPosition
         + RACE_TUNNEL_DISTANCE * ((race.phaseTick + 1) / RACE_TUNNEL_TICKS);
     race.speed = RACE_TUNNEL_SPEED;
-    return sound;
+    return { sound, cues };
 }
 export function stepRace(race) {
     if (race.phase === "finish")
-        return { sound: null, finished: false };
+        return { sound: null, cues: [], finished: false };
     consumeInputs(race);
     race.previousCoursePosition = race.coursePosition;
     race.previousY = race.y;
     if (race.collisionGraceTicks > 0)
         race.collisionGraceTicks -= 1;
     let sound = null;
+    const cues = [];
     if (race.phase === "normal") {
         stepPilot(race, false);
         if (race.speedGraceTicks > 0)
@@ -496,8 +559,21 @@ export function stepRace(race) {
         race.coursePosition = Math.min(RACE_LENGTH, race.coursePosition + race.speed * RACE_DT);
         const crossing = crossNormalObjects(race);
         sound = crossing.sound;
-        if (crossing.entryRingIndex != null) {
+        cues.push(...crossing.cues);
+        // A charged ring is an entry candidate until every charge delta from this
+        // authority step has resolved. Same-step debris makes the gate non-clean:
+        // keep both cues, retain the net meter value, and remain in normal flight.
+        if (crossing.entryRingIndex != null && race.charge >= 100) {
             beginEntry(race, crossing.entryRingIndex);
+            const ring = RACE_RINGS[crossing.entryRingIndex];
+            cues.push({
+                kind: "entry",
+                tick: race.tick,
+                id: ring.id,
+                index: crossing.entryRingIndex,
+                y: ring.y,
+                chargeDelta: 0,
+            });
             sound = "entry";
         }
     }
@@ -518,7 +594,9 @@ export function stepRace(race) {
         }
     }
     else if (race.phase === "tunnel") {
-        sound = stepTunnel(race);
+        const tunnel = stepTunnel(race);
+        sound = tunnel.sound;
+        cues.push(...tunnel.cues);
         race.phaseTick += 1;
         if (race.phaseTick >= RACE_TUNNEL_TICKS) {
             const exit = race.phaseStartPosition + RACE_TUNNEL_DISTANCE;
@@ -545,6 +623,14 @@ export function stepRace(race) {
             // Normal-flight authority decrements before collision checks. Arm one
             // extra count so all documented 21 post-return steps remain protected.
             race.collisionGraceTicks = RACE_RETURN_GRACE_TICKS + 1;
+            cues.push({
+                kind: "return",
+                tick: race.tick,
+                id: `w${race.wormholes}`,
+                index: race.wormholes - 1,
+                y: race.returnY,
+                chargeDelta: 0,
+            });
             sound = "return";
         }
     }
@@ -554,10 +640,11 @@ export function stepRace(race) {
         race.finishTicks = race.tick;
         if (!race.finishEmitted) {
             race.finishEmitted = true;
-            return { sound: "finish", finished: true };
+            cues.push({ kind: "finish", tick: race.tick - 1, id: RACE_EVENT_ID, index: -1, y: race.y, chargeDelta: 0 });
+            return { sound: "finish", cues, finished: true };
         }
     }
-    return { sound, finished: false };
+    return { sound, cues, finished: false };
 }
 export function raceGrade(finishTicks) {
     if (finishTicks == null)

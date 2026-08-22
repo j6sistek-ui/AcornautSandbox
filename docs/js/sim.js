@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=81";
-import { modsUnlocked, writeSave } from "./save.js?v=81";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=81";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=81";
-import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=81";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=81";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=81";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=82";
+import { modsUnlocked, writeSave } from "./save.js?v=82";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=82";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=82";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=82";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=82";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=82";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -42,6 +42,8 @@ export function makeWorld(W, H) {
         particles: [],
         tunnel: null,
         race: null,
+        raceCues: [],
+        raceCueEffects: [],
         stars: [],
         speed: PHYS.baseSpeed,
         distance: 0,
@@ -599,6 +601,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.particles = [];
     w.tunnel = null;
     w.race = w.lvl?.def.base === "race" ? createRaceState() : null;
+    w.raceCues = [];
+    w.raceCueEffects = [];
     w.speed = PHYS.baseSpeed;
     w.distance = 0;
     w.lastSpawnX = w.W * 0.55;
@@ -703,6 +707,34 @@ export function setRaceInput(w, input) {
 /** Compatibility shim for callers that only know the original hold control. */
 export function setRaceHeld(w, held) {
     return setRaceInput(w, { held, boost: false });
+}
+/**
+ * Consume the current fixed step's presentation side effects exactly once.
+ * Race authority and the legacy updateWorld sound return remain unchanged.
+ */
+export function takeRaceCueEffects(w) {
+    const cues = w.raceCueEffects;
+    w.raceCueEffects = [];
+    return cues;
+}
+/**
+ * Pure presentation-side mapping from authority cues to existing WebAudio
+ * routes. Keeping this separate from playback makes cadence and one-shot
+ * dispatch executable evidence without moving any side effect into draw.
+ */
+export function planRaceCueEffects(cues) {
+    return cues.map((cue) => {
+        if (cue.kind === "ring-pass")
+            return { cue, sfx: "gold", notify: false };
+        if (cue.kind === "debris-hit")
+            return { cue, sfx: "bounce", notify: false };
+        if (cue.kind === "acorn")
+            return { cue, sfx: "acorn", notify: false };
+        if (cue.kind === "entry" || cue.kind === "return") {
+            return { cue, sfx: "shift", notify: true };
+        }
+        return { cue, sfx: null, notify: cue.kind === "finish" };
+    });
 }
 const TUNNEL_STEP = 56;
 const TUNNEL_PATTERN_LENGTH = {
@@ -1886,6 +1918,10 @@ export function resumePlay(w) {
     w.pausedFrom = null;
 }
 export function updateWorld(w, save, dt) {
+    // A fixed-step cue is edge-triggered. The engine drains it immediately;
+    // clearing here also prevents a paused or READY update from replaying a
+    // prior step if a non-engine caller chose not to drain it.
+    w.raceCueEffects = [];
     w.time += dt;
     if (w.shake > 0)
         w.shake = Math.max(0, w.shake - dt * 2.4);
@@ -1917,6 +1953,12 @@ export function updateWorld(w, save, dt) {
         if (w.ready)
             return null;
         const result = stepRace(w.race);
+        w.raceCueEffects = result.cues;
+        // Preserve producer order and distinct same-tick events. Presentation
+        // can show a pass and debris impact together without either overwriting
+        // the other; age is derived from the post-step authority tick.
+        w.raceCues = [...w.raceCues, ...result.cues]
+            .filter((cue) => raceDecisionAge(w.race.tick, cue.tick) <= 45);
         const viewport = raceViewport(w.W, w.H);
         w.squirrel.y = raceViewportY(viewport, w.race.y);
         w.squirrel.vy = w.race.vy * viewport.scale;

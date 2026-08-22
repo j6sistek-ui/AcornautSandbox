@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=81";
-import { sfx, unlockAudio, music } from "./audio.js?v=81";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=81";
-import { drawHud, drawWorld } from "./draw.js?v=81";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=81";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=81";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=81";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=81";
-import { raceViewport } from "./race-viewport.js?v=81";
+import { emptyArt, loadArt } from "./art.js?v=82";
+import { sfx, unlockAudio, music } from "./audio.js?v=82";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=82";
+import { drawHud, drawWorld } from "./draw.js?v=82";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=82";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=82";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=82";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=82";
+import { raceViewport } from "./race-viewport.js?v=82";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -23,6 +23,7 @@ export async function createEngine(canvas) {
     let running = false;
     let raceAccumulator = 0;
     let raceGesture = createRaceGestureState();
+    let raceResizeKeyboardReleasePending = false;
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
     // A finished Spill mission left its result in the hallway on the way
@@ -382,6 +383,28 @@ export async function createEngine(canvas) {
         // capped only at desktop-panorama width
         const W = Math.min(rect.width, 1600);
         const H = rect.height;
+        const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
+        const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
+            && raceGesture.owner !== null;
+        if (ownedRaceResize) {
+            const owner = raceGesture.owner;
+            // Neutralize before pausing so the semantic state is stamped at the
+            // current authority tick. The dedicated recognizer path always clears
+            // the double-tap/swipe candidate; a duplicate resize sees no owner and
+            // therefore cannot append another transition.
+            applyRaceGesture(neutralizeOwnedRaceGesture(raceGesture));
+            if (owner === "keyboard-rise")
+                raceResizeKeyboardReleasePending = true;
+            raceAccumulator = 0;
+            swipe = null;
+            pausePlay(world);
+            if (typeof owner === "number") {
+                try {
+                    canvas.releasePointerCapture(owner);
+                }
+                catch { /* capture is best-effort */ }
+            }
+        }
         canvas.width = Math.floor(W * dpr);
         canvas.height = Math.floor(H * dpr);
         canvas.style.width = `${W}px`;
@@ -390,6 +413,8 @@ export async function createEngine(canvas) {
         resizeWorld(world, W, H);
         if (!world.stars.length)
             initStars(world);
+        if (ownedRaceResize)
+            notify();
     }
     let swipe = null;
     function applyRaceGesture(result) {
@@ -404,6 +429,7 @@ export async function createEngine(canvas) {
     }
     function resetInputTracking() {
         raceGesture = createRaceGestureState();
+        raceResizeKeyboardReleasePending = false;
         swipe = null;
     }
     function cancelRaceControls(owner) {
@@ -510,6 +536,11 @@ export async function createEngine(canvas) {
         }
         if (e.code === "Space" || e.code === "ArrowUp") {
             e.preventDefault();
+            // A key held through an orientation change keeps generating repeat
+            // keydowns. It may not auto-resume the paused race or become a new
+            // press until the physical key has first been released.
+            if (raceResizeKeyboardReleasePending)
+                return;
             if (world.screen === "splash")
                 engine.open("title");
             else if (world.screen === "title")
@@ -548,6 +579,10 @@ export async function createEngine(canvas) {
     });
     window.addEventListener("keyup", (e) => {
         if (e.code === "Space" || e.code === "ArrowUp") {
+            if (raceResizeKeyboardReleasePending) {
+                raceResizeKeyboardReleasePending = false;
+                return;
+            }
             if (raceGesture.owner === "keyboard-rise") {
                 applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
             }
@@ -610,13 +645,34 @@ export async function createEngine(canvas) {
             notify();
         }
     }
+    function dispatchRaceCues(cues) {
+        let shouldNotify = false;
+        for (const effect of planRaceCueEffects(cues)) {
+            if (effect.sfx === "gold")
+                sfx.gold();
+            if (effect.sfx === "bounce")
+                sfx.bounce();
+            if (effect.sfx === "acorn")
+                sfx.acorn();
+            if (effect.sfx === "shift")
+                sfx.shift();
+            if (effect.notify)
+                shouldNotify = true;
+        }
+        if (shouldNotify)
+            notify();
+    }
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         last = now;
         if (world.race) {
             raceAccumulator += frameDt;
             while (raceAccumulator + 1e-12 >= 1 / 60) {
-                dispatchWorldEvent(updateWorld(world, save, 1 / 60));
+                // Race cues are drained after every authority step, not once per
+                // render frame. This preserves simultaneous pass/debris feedback and
+                // prevents high-refresh rendering from replaying audio side effects.
+                updateWorld(world, save, 1 / 60);
+                dispatchRaceCues(takeRaceCueEffects(world));
                 raceAccumulator -= 1 / 60;
                 if (world.screen === "lvldone")
                     break;
@@ -674,4 +730,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=81";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=82";
