@@ -40,6 +40,7 @@ if (tscModule) {
   execFileSync("npx", ["tsc", ...tscArgs], { cwd: root, stdio: "inherit" });
 }
 
+const buildTime = new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC";
 for (const name of readdirSync(join(out, "js"))) {
   if (!name.endsWith(".js")) continue;
   const p = join(out, "js", name);
@@ -50,7 +51,7 @@ for (const name of readdirSync(join(out, "js"))) {
       const bare = file.replace(/\?.*$/, "");
       return `from ${q}${bare}?v=${ver}${q2}`;
     },
-  );
+  ).replace("__BUILD_TIME__", buildTime);
   writeFileSync(p, next);
 }
 
