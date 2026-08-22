@@ -1496,6 +1496,23 @@ export async function bootStandalone(root: HTMLElement) {
     // every time it is armed — so they belong on the Hangar's MODS shelf
     // with a price on them, next to everything else you buy.
 
+    // MUSIC is a real setting: free, global, and remembered. The switch
+    // silences both score tracks (menu/flight and the arcade chiptune)
+    // while the SFX keep playing.
+    scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
+    const settings = el("div", "ac-rows");
+    const musicRow = el("button", "ac-row ac-rowbtn");
+    musicRow.append(el("span", "", "Music"));
+    const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
+    musicSw.append(el("i", "ac-knob"));
+    musicRow.append(musicSw);
+    musicRow.onclick = () => {
+      engine.setMusicOff(!engine.save.musicOff);
+      musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
+    };
+    settings.append(musicRow);
+    scroll.append(settings);
+
     scroll.append(el("p", "ac-kicker ac-secthead", "News"));
     const news = el("div", "ac-rows");
     for (const line of NEWS) {

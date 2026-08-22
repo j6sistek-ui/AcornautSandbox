@@ -30,6 +30,7 @@ export function defaultSave() {
         stars: {},
         guide: "pending",
         allStars: false,
+        musicOff: false,
         experimentalRaceRecords: {},
     };
 }

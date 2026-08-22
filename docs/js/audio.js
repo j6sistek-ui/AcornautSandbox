@@ -79,6 +79,12 @@ const MUSIC_FILES = {
 // the first-run tutorial reads stay on top of it
 const MUSIC_VOLS = { voyage: 0.42, cosmos: 0.5 };
 const musicEls = { voyage: null, cosmos: null };
+// Each element is routed THROUGH the shared WebAudio graph instead of
+// playing on its own: a bare <audio> element ignores the phone's silent
+// switch (iOS treats it as media, not game audio) while WebAudio output
+// respects it — flipping the switch must hush the score along with the
+// SFX. Fades drive these gain nodes; the elements stay at volume 1.
+const musicGains = { voyage: null, cosmos: null };
 const musicFades = { voyage: 0, cosmos: 0 }; // rAF ids
 let musicWanted = null;
 let musicMuted = false;
@@ -93,13 +99,27 @@ function ensureMusic(track) {
     const el = new Audio(musicUrl(track));
     el.loop = true;
     el.preload = "none";
-    el.volume = 0;
-    // attach it (muted, off-layout) so mobile browsers treat it as a real
-    // media element and keep the loop alive when the tab is backgrounded
+    // attach it (off-layout) so mobile browsers treat it as a real media
+    // element and keep the loop alive when the tab is backgrounded
     el.setAttribute("aria-hidden", "true");
     el.style.display = "none";
     if (typeof document !== "undefined" && document.body)
         document.body.appendChild(el);
+    try {
+        const c = ac();
+        const src = c.createMediaElementSource(el);
+        const g = c.createGain();
+        g.gain.value = 0;
+        src.connect(g);
+        g.connect(master ?? c.destination);
+        musicGains[track] = g;
+        el.volume = 1; // the gain node owns loudness from here
+    }
+    catch {
+        // no WebAudio: fall back to the element's own volume for fades
+        musicGains[track] = null;
+        el.volume = 0;
+    }
     musicEls[track] = el;
     return el;
 }
@@ -107,13 +127,18 @@ function fadeMusic(track, to, ms) {
     const el = musicEls[track];
     if (!el)
         return;
+    const g = musicGains[track];
     if (musicFades[track])
         cancelAnimationFrame(musicFades[track]);
-    const from = el.volume;
+    const from = g ? g.gain.value : el.volume;
     const start = performance.now();
     const step = (now) => {
         const k = Math.min(1, (now - start) / ms);
-        el.volume = from + (to - from) * k;
+        const v = from + (to - from) * k;
+        if (g)
+            g.gain.value = v;
+        else
+            el.volume = v;
         if (k < 1) {
             musicFades[track] = requestAnimationFrame(step);
         }
