@@ -1,4 +1,4 @@
-import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=76";
+import { DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=77";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -116,6 +116,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+        frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
     };
 }
@@ -288,11 +289,11 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
-        many(`${base}/acorn/`, 4),
-        many(`${base}/golden/`, 4),
+        many(`${base}/acorn/`, 16),
+        many(`${base}/golden/`, 16),
         many(`${base}/shield/`, 4),
         many(`${base}/planets/`, PLANET_COUNT, 0),
         many(`${base}/debris/`, DEBRIS_COUNT, 0),
@@ -303,6 +304,11 @@ export async function loadArt() {
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
         optional(`${base}/pickups/frozen.png?v=${ART_VER}`),
         optional(`${base}/pickups/shieldnut.png?v=${ART_VER}`),
+        many(`${base}/pickups/frozen-`, 16),
+        many(`${base}/pickups/shieldnut-`, 16),
+        // Beta-only: production keeps the procedural swirl and downloads nothing.
+        many(`${base}/vortex/worm-`, IS_BETA ? 16 : 0),
+        many(`${base}/vortex/hole-`, IS_BETA ? 16 : 0),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),
@@ -327,6 +333,10 @@ export async function loadArt() {
         arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn) : null,
         frozen: frozen ? asSprite(frozen) : null,
         shieldnut: shieldnut ? asSprite(shieldnut) : null,
+        frozenAnim,
+        shieldAnim,
+        wormAnim,
+        holeAnim,
         suitTail,
         suitBody,
         suitTap,

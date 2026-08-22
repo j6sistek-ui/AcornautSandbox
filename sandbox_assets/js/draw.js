@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=76";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=76";
-import { proceduralSky } from "./sky-gen.js?v=76";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=76";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=76";
-import { tunnelBoundsAt } from "./sim.js?v=76";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=76";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=76";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=77";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=77";
+import { proceduralSky } from "./sky-gen.js?v=77";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=77";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=77";
+import { tunnelBoundsAt } from "./sim.js?v=77";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=77";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=77";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -316,7 +316,7 @@ function drawRaceTunnel(ctx, w, art, viewTick = w.race.phaseTick) {
             const x = raceViewportX(viewport, canonicalX);
             if (x < left - 30 * scale || x > right + 30 * scale)
                 return;
-            drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, a.y), 26 * scale);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, raceViewportY(viewport, a.y), 26 * scale);
         });
     }
 }
@@ -406,7 +406,7 @@ function drawHyperRunWorld(ctx, w, save, art) {
             const x = raceViewportX(viewport, RACE_PILOT_X + acorn.x - race.coursePosition);
             if (x < left - 30 * scale || x > right + 30 * scale)
                 return;
-            drawSprite(ctx, frameOf(art.acorn, w.time, 5), x, raceViewportY(viewport, acorn.y), 26 * scale);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, raceViewportY(viewport, acorn.y), 26 * scale);
         });
         const finishX = raceViewportX(viewport, RACE_PILOT_X + RACE_LENGTH - race.coursePosition);
         if (finishX < right + ringSize) {
@@ -571,16 +571,13 @@ export function drawWorld(ctx, w, save, art) {
             continue;
         const y = a.y + Math.sin(a.bob) * 4;
         if (a.kind === "acorn")
-            drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 10), a.x, y, 28);
         else if (a.kind === "gold")
-            drawSprite(ctx, frameOf(art.golden, w.time, 6), a.x, y, 32);
+            drawSprite(ctx, frameOf(art.golden, w.time, 10), a.x, y, 32);
         else if (a.kind === "slow") {
             // the frozen acorn is its own painting now — no ring needed to say
             // what it does, the frost says it
-            if (art.frozen)
-                drawSprite(ctx, art.frozen, a.x, y, 32);
-            else
-                drawSprite(ctx, frameOf(art.acorn, w.time, 6), a.x, y, 28);
+            drawSprite(ctx, frameOf(art.frozenAnim, w.time, 10) ?? art.frozen ?? frameOf(art.acorn, w.time, 10), a.x, y, 32);
             ctx.strokeStyle = `rgba(150,225,255,${0.28 + 0.16 * Math.sin(w.time * 6)})`;
             ctx.lineWidth = 1.6;
             ctx.beginPath();
@@ -588,13 +585,21 @@ export function drawWorld(ctx, w, save, art) {
             ctx.stroke();
         }
         else if (a.kind === "shield") {
-            if (art.shieldnut)
-                drawSprite(ctx, art.shieldnut, a.x, y, 34);
-            else
-                drawSprite(ctx, frameOf(art.shield, w.time, 5), a.x, y, 34);
+            drawSprite(ctx, frameOf(art.shieldAnim, w.time, 10) ?? art.shieldnut, a.x, y, 34);
         }
         else if (a.kind === "hole" || a.kind === "worm") {
-            drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
+            // Both vortices have painted spin cycles now (beta). Full-canvas draw
+            // at a fixed footprint: the glow makes each frame's alpha box breathe,
+            // so drawSprite's box fit would visibly jitter the size. 16 frames at
+            // ~9fps matches the clips' native pacing; the cycles loop seamlessly.
+            const spin = frameOf(a.kind === "worm" ? art.wormAnim : art.holeAnim, w.time, 9);
+            if (spin) {
+                const s = (a.r ?? 28) * 4;
+                ctx.drawImage(spin, a.x - s / 2, y - s / 2, s, s);
+            }
+            else {
+                drawVortex(ctx, a.x, y, a.kind === "worm", w.time, a.r ?? 28);
+            }
         }
         else if (a.kind === "portal") {
             drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
@@ -882,17 +887,14 @@ function drawTunnelWorld(ctx, w, save, art) {
             ctx.beginPath();
             ctx.arc(a.x, y, 21 + Math.sin(w.time * 5) * 2, 0, Math.PI * 2);
             ctx.stroke();
-            drawSprite(ctx, frameOf(art.golden, w.time, 6) ?? frameOf(art.acorn, w.time, 5), a.x, y, 33);
+            drawSprite(ctx, frameOf(art.golden, w.time, 10) ?? frameOf(art.acorn, w.time, 10), a.x, y, 33);
             ctx.fillStyle = "#fff";
             ctx.font = "900 10px Figtree, system-ui";
             ctx.textAlign = "center";
             ctx.fillText("FLOW", a.x, y + 4);
         }
         else if (a.kind === "slow") {
-            if (art.frozen)
-                drawSprite(ctx, art.frozen, a.x, y, 33);
-            else
-                drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 29);
+            drawSprite(ctx, frameOf(art.frozenAnim, w.time, 10) ?? art.frozen ?? frameOf(art.acorn, w.time, 10), a.x, y, 33);
             ctx.strokeStyle = `rgba(150,225,255,${0.35 + 0.2 * Math.sin(w.time * 6)})`;
             ctx.lineWidth = 1.8;
             ctx.beginPath();
@@ -900,7 +902,7 @@ function drawTunnelWorld(ctx, w, save, art) {
             ctx.stroke();
         }
         else
-            drawSprite(ctx, frameOf(art.acorn, w.time, 5), a.x, y, 28);
+            drawSprite(ctx, frameOf(art.acorn, w.time, 10), a.x, y, 28);
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
