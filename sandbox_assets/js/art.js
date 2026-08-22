@@ -116,7 +116,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-        frozenAnim: [], shieldAnim: [], wormAnim: [],
+        frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, hyperRun: {},
     };
 }
@@ -289,7 +289,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -308,6 +308,7 @@ export async function loadArt() {
         many(`${base}/pickups/shieldnut-`, 16),
         // Beta-only: production keeps the procedural swirl and downloads nothing.
         many(`${base}/vortex/worm-`, IS_BETA ? 16 : 0),
+        many(`${base}/vortex/hole-`, IS_BETA ? 16 : 0),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 16 } : {}, "suits", "-tap-"),
@@ -335,6 +336,7 @@ export async function loadArt() {
         frozenAnim,
         shieldAnim,
         wormAnim,
+        holeAnim,
         suitTail,
         suitBody,
         suitTap,

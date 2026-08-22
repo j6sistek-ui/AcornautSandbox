@@ -668,11 +668,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
       drawSprite(ctx, frameOf(art.shieldAnim, w.time, 10) ?? art.shieldnut, a.x, y, 34);
     }
     else if (a.kind === "hole" || a.kind === "worm") {
-      // The wormhole has a painted spin cycle now (beta). Full-canvas draw
+      // Both vortices have painted spin cycles now (beta). Full-canvas draw
       // at a fixed footprint: the glow makes each frame's alpha box breathe,
       // so drawSprite's box fit would visibly jitter the size. 16 frames at
-      // ~9fps matches the clip's native pacing; the cycle loops seamlessly.
-      const spin = a.kind === "worm" ? frameOf(art.wormAnim, w.time, 9) : undefined;
+      // ~9fps matches the clips' native pacing; the cycles loop seamlessly.
+      const spin = frameOf(a.kind === "worm" ? art.wormAnim : art.holeAnim, w.time, 9);
       if (spin) {
         const s = (a.r ?? 28) * 4;
         ctx.drawImage(spin, a.x - s / 2, y - s / 2, s, s);

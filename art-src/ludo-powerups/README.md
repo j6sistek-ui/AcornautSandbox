@@ -17,7 +17,12 @@ nothing depends on Ludo's 7-day URLs or an ephemeral session:
   dramatic, styled on the shipping arcade.png; only the acorn — the
   other pixel pickups were dropped from scope).
 - `blackhole-r2-*.webp`: round-2 black hole candidates (Gargantua
-  treatment) after round 1 was rejected.
+  treatment) after round 1 was rejected. `blackhole-r2-3745` (A) is the
+  LOCKED pick; its idle cycle lives in `blackhole-a-frames/` (16 frames
+  from `blackhole-a-sheet.webp`, preview `blackhole-a-preview.gif`,
+  source clip `blackhole-a-anim.mp4`).
+- `arcade-old-backup.png`: the retired arcade acorn, kept as backup;
+  `8bit-dramatic-02d9` (B) shipped in its place.
 - `specials-candidates.png`, `powerup-candidates.png`,
   `shield2-candidates.png`, `review-specials-r2.png`: the review
   sheets as sent.
