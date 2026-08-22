@@ -83,6 +83,8 @@ export type Engine = {
   setMod: (id: string) => string;
   /** the Profile's music switch: silences both score tracks, persisted */
   setMusicOff: (off: boolean) => void;
+  /** VOLT's hangar experiment: swap between its two painted jump banks */
+  setVoltAltJump: (on: boolean) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -242,6 +244,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       save.musicOff = off;
       writeSave(save);
       music.setMuted(off);
+      notify();
+    },
+    setVoltAltJump(on) {
+      save.voltAltJump = on;
+      writeSave(save);
       notify();
     },
     dismissDead() {

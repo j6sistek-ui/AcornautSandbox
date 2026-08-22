@@ -164,6 +164,11 @@ export async function createEngine(canvas) {
             music.setMuted(off);
             notify();
         },
+        setVoltAltJump(on) {
+            save.voltAltJump = on;
+            writeSave(save);
+            notify();
+        },
         dismissDead() {
             world.screen = "title";
             world.lastRun = null;

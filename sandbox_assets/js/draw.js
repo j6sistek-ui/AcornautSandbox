@@ -2257,7 +2257,7 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     ctx.stroke();
     ctx.restore();
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, altTap = false) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -2280,20 +2280,31 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
     if (rigT && rigB && suited) {
         const ref = suited.box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
         const pivot = TAIL_PIVOT[suit.id];
-        const tapFrames = art?.suitTap?.[suit.id] ?? [];
+        // VOLT's hangar experiment: the owner is A/B-ing two painted jumps,
+        // so its card carries a switch that swaps in the alternate bank.
+        const tapFrames = (suit.id === "volt" && altTap
+            ? art?.suitTapAlt?.[suit.id] : art?.suitTap?.[suit.id]) ?? [];
         const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
         // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
         // so during the burst the frame IS the pilot: no rig tail, no body
         // layer, no pulse. Smaller banks keep the layered treatment below.
         const fullTap = tapAnimT >= 0 && tapFrames.length === 16;
+        // A full-character BOUNCE bank plays the painted planet-contact recoil
+        // (impact, discharge, slight overturn, correction) instead of the rig.
+        // Contact takes visual priority over any tap in flight.
+        const bounceFrames = art?.suitBounce?.[suit.id] ?? [];
+        const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
         let tailPose = rigT;
         let tailPoseRot = tailRot;
-        if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
+        if (fullBounce) {
+            /* the bounce frames carry the whole character */
+        }
+        else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
             const bend = bounceAnimDir * bounceAnimStrength
                 * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
         }
-        else if (!fullTap && tapAnimT >= 0 && tapTailFrames.length === 12) {
+        else if (!fullTap && !fullBounce && tapAnimT >= 0 && tapTailFrames.length === 12) {
             // One tail drawing per 30 fps presentation frame. The sequence bends
             // progressively from the planted hinge to the tip: launch drag, delayed
             // whip, one rebound, settle. A small share of the live spring remains so
@@ -2315,10 +2326,10 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             tailPoseRot *= 0.48;
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
-        else if (!fullTap && tapAnimT >= 0 && pivot) {
+        else if (!fullTap && !fullBounce && tapAnimT >= 0 && pivot) {
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
         }
-        else if (!fullTap) {
+        else if (!fullTap && !fullBounce) {
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         let poseA = rigB;
@@ -2351,7 +2362,14 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
                 tapPoseRegistration = ECLIPSE_TAP_REGISTRATION[pose - 1] ?? null;
             }
         }
-        if (fullTap) {
+        if (fullBounce) {
+            const idx = Math.min(15, Math.floor((bounceAnimT / BOUNCE_ANIM_DURATION) * 16));
+            const refB = bounceFrames[0].box ?? ref;
+            drawRigLayer(ctx, bounceFrames[idx], refB, x, y, size, 0, undefined, halo);
+            if (!wearsOwnHead(suit))
+                paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+        }
+        else if (fullTap) {
             // frame registration comes from the bank's own first frame, so every
             // frame lands at the same scale and the character never pulses in size
             const idx = Math.min(15, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 16));
@@ -2479,7 +2497,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
