@@ -306,7 +306,7 @@ export async function loadArt(): Promise<ArtBank> {
     "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
     "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
     "catsuit", "gemmie", "sammie", "seraph", "leviathan",
-    "verdant", "cryostar", "eclipse",
+    "verdant", "cryostar", "eclipse", "volt",
   ];
   const suitIds = [
     "flight",
@@ -329,6 +329,7 @@ export async function loadArt(): Promise<ArtBank> {
     "verdant",
     "cryostar",
     "eclipse",
+    "volt",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [
@@ -388,7 +389,7 @@ export async function loadArt(): Promise<ArtBank> {
       named(RIGGED_SUITS, "suits", "-body"),
       namedSeries(TAP_ANIM_ENABLED ? {
         // Existing approved custom banks remain live everywhere.
-        robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16,
+        robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
         // The Robo-timing rollout stays beta-only until the owner has flown
         // every silhouette. Production keeps its current universal rig path.
         ...(IS_BETA ? {

@@ -2059,6 +2059,7 @@ const TAIL_PIVOT = {
     voidsuit: [105, 142],
     verdant: [103, 149],
     cryostar: [103, 151],
+    volt: [107, 136],
     eclipse: [105, 143],
 };
 // Draw one layer of a rigged suit. Both layers are full-canvas, so they

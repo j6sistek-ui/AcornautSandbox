@@ -490,6 +490,7 @@ export const STAR_REWARDS = [
     { stars: 170, kind: "trail", id: "supernova", name: "Supernova", desc: "The loudest exit there is." },
     { stars: 180, kind: "stage", name: "Chapter 9 — THE BLACKOUT", desc: "Lights out." },
     { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
+    { stars: 200, kind: "suit", id: "volt", name: "Volt Suit", desc: "Storm-charged armor. The tail crackles." },
     { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
     { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
