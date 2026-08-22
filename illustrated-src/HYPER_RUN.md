@@ -1,12 +1,282 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Course 1 Revision 2 Phase A was approved and merged to `origin/main` on 2026-08-21 in PR #60 (merge `e710052`). Phase B ordinary-gate art was approved and merged in PR #63 (merge `acaa04e`). Phase C source implementation and source-level acceptance evidence are complete on the review branch and stop here for sign-off; maintainer-owned generated bundles have not been edited.
+**Status:** Course 1 Revision 2 is merged: Phase A in PR #60 (`e710052`), Phase B in PR #63 (`acaa04e`), and Phase C in PR #70 (`794531e`). Course 1 Revision 3 Phase A is the documentation-only design delta below, audited from current `origin/main` at `1fe1570`; it stops for sign-off before any review visual, art, or runtime source changes.
 
-**Phase boundary:** This Revision 2 section is the authority wherever it conflicts with the shipped prototype plan below. The approved 60 Hz determinism core, fixed-step race clock, existing six-case replay suite, beta-only placement, and four painted wormhole-entry layers stay. The older sections remain as a Revision 1 record; their superseded counts, constants, controls, timing bands, tunnel layout, transition timing, and ordinary-gate brief must not be implemented for Revision 2.
+**Phase boundary:** The Revision 3 section is the authority wherever it conflicts with Revision 2. The approved 60 Hz determinism core, fixed-step race clock, semantic input log, six-case acceptance structure, beta-only mission placement, authored course, two-layer gate contract, and approved portal paintings stay unless Revision 3 explicitly changes them. Revision 2 and Revision 1 remain below as historical delivery records; their superseded speeds, course distances, landscape camera, horizontal density limits, and transition presentation must not be reintroduced.
 
 **Phase A approval record (2026-08-21):** The Revision 2 design delta below was approved and merged by PR #60 at `e710052`. This records design authority only; it does not claim that Revision 2 gate art or Phase C runtime/test changes have shipped.
 
 **Revision 1 approval record (2026-08-20):** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
+
+## Course 1 Revision 3 — Phase A design delta
+
+### Phase A change and verification statement
+
+Revision 3 responds to the second phone playtest. It specifies a real landscape race camera, a literal 25% horizontal authority slowdown, similarity-scaled course distances and tunnel scroll, a continuous side-view hyperspace flow, a visible blue pass-through target and crossing response, a next-gate direction indicator, and a course-to-wormhole transition that never cuts to an unrelated opaque scene.
+
+Phase A verified the following against the merged Revision 2 source before choosing the design:
+
+- The application canvas now supports widescreen, but Hyper Run still projects a centered 360 × 640 portrait field. At 844 × 390 it uses only about 219 × 390 pixels for race content, leaving most of the landscape width as noninteractive sky.
+- Gate authority and the visible pilot plane are aligned after Revision 2. The swept decision still occurs only when `previousCoursePosition < ring.x <= coursePosition`, with the pilot center inside the 38-pixel clearance. Revision 3 therefore does not quietly widen or move the hit test.
+- Gate feedback is nevertheless easy to miss. A clean gate awards only 5 charge, while the five-cell HUD floors charge in 20-point steps; the first three successful gates produce no visible meter change. The resolved ring is also already moving behind the pilot while its 27/39-tick art fade develops. A player can be judged correctly and still receive weak confirmation.
+- A full charge meter can stop promising a valid outcome after the third wormhole or past the final eligible entry position. The HUD needs an explicit final-route state rather than continuing to look armed.
+- Hyper Run currently replaces the course with an opaque purple tunnel fill and ends entry in a full-screen white wash. The tunnel begins as a new picture under that wash, which explains the awkward scene cut even though the authority handoff is deterministic.
+- Standalone Wormhole Run already has stronger reusable presentation primitives: corridor clipping, speed-scaled streak batches, transverse corridor bands, palette blending, layered wall contours, and bright collision-boundary lines. Revision 3 reuses that visual vocabulary, not its state object, randomized content, first-person composition, or authority.
+- Current fixed-step profile evidence is 9,000 passive, 6,380 average, and 5,576 optimized ticks. The new values below are derived from those actual fixtures, not only the earlier analytical estimates.
+- This Phase A changes only this design document. It does not change art, runtime source, generated JavaScript, `ART_VER`, `SAVE_KEY`, `LEGACY_KEYS`, the experimental event id, or saved prototype records.
+
+### Reference-image boundary
+
+The supplied image is a motion reference only. Useful cues are the layered fluid ribbons, star elongation, luminous boundary blend, and sense of being pulled into a faster stream. It is not a style target, palette target, camera target, composition target, or asset brief. Hyper Run remains a readable side-view race with the pilot on the left and future course arriving from the right; it must not become a first-person concentric vortex or copy the image's illustrated look.
+
+### Revision 3 experience contract
+
+The course sky is always the visual world. Normal flight carries a light, deterministic wind-stream treatment that points into the upcoming gate. Passing a gate means visibly crossing a blue energy membrane at the exact judged plane. A charged gate deepens that same flow into the wormhole: the portal opens within the existing sky, stars stretch, the corridor boundaries grow out of the portal, and those layers become the tunnel without an opaque swap. Return reverses the same material back into the course.
+
+The player should be able to answer these questions without reading the code:
+
+1. **Where is the next gate?** The edge director gives its vertical direction before it is visible.
+2. **What area counts?** A subtle blue membrane shows the exact safe-center locus inside the physical aperture.
+3. **Did that gate count?** A crossing-tick shell, pulse, charge micro-step, sound, and optional haptic answer immediately.
+4. **Is a wormhole still available?** The meter distinguishes charging, ready, and final-route states.
+5. **Did the scene change?** It should feel as if the same sky and airflow became the tunnel, not as if a new screen replaced the race.
+
+### Responsive side-view race camera
+
+Race authority remains canonical 360 × 640 vertically. Landscape expands only the presentation's horizontal lookahead; it does not stretch circles, change Y physics, move a gate's authority plane, or change replay results.
+
+For view size `W × H`:
+
+```text
+s          = min(W / 360, H / 640)
+top        = (H - 640s) / 2
+virtualW   = min(W / s, 1440)
+activeLeft = (W - virtualW·s) / 2
+activeRight= activeLeft + virtualW·s
+pilotLocal = clamp(0.20·virtualW, 96, 288)
+pilotX     = activeLeft + pilotLocal·s
+screenY(y) = top + y·s
+screenX(x) = pilotX + (x - coursePosition)·s
+```
+
+`screenX(ring.x)` equals `pilotX` exactly when authority crosses `ring.x`; every gate layer, bubble layer, pilot layer, finish plane, review overlay, and crossing capture uses that one presentation plane. Authority owns course position and no screen X. `RACE_PILOT_X = 96` remains the canonical presentation/reference plane for portrait compatibility but is no longer incorrectly treated as a fixed left offset in a panoramic view.
+
+At 360 × 640 and tall portrait, this reduces to the approved Revision 2 mapping. At 844 × 390 it exposes about 1,385 canonical horizontal units instead of centering a roughly 360-unit portrait strip. At widths beyond the 1,440-canonical cap, the active race camera stays centered and only cheap background/flow layers fill the side bands. Gates, membranes, debris, acorns, pilot, tunnel corridor, portals, and reveal are clipped to `[activeLeft, activeRight]`; backdrop, cheap ambient flow, and HUD may use the full canvas.
+
+Landscape does not grant hidden authority state. It reveals authored course earlier, and the same next-gate director is present in portrait so the directional information is not landscape-exclusive. An idle orientation change during READY, normal flight, entry, tunnel, return, or finish reprojects presentation only; race position, Y, velocity, input log, ledgers, and tick do not change.
+
+The extra landscape reveal is an accepted presentation advantage for this offline prototype, balanced by the universal director rather than by cropping landscape back to portrait. Resizing while a pointer, touch, or keyboard hold is owned must pause the race, clear held/boost and the gesture candidate, append or same-tick merge one neutral semantic input transition, discard the incomplete render accumulator, and require a lift plus fresh press after resume. It may not compare a newly projected pointer Y with a pre-resize `downY`, emit a false drop/boost, or advance authority during the resize.
+
+### Literal 25% horizontal slowdown
+
+“Slow it down 25%” means `new horizontal speed = old horizontal speed × 0.75`. It does not mean divide by 1.25, which would be only 20% slower. Revision 3 applies the same 0.75 similarity transform to every authored course-axis X coordinate and course-travel/spacing distance. The world therefore scrolls 25% slower on screen while the approved encounter rhythm, skill windows, shortcut value, and approximately 90–150-second run envelope remain intact.
+
+This is intentionally not a one-third-longer race. Reducing speed while retaining 45,000 units would make every fixed-distance interval 33⅓% longer, push the passive fixture to 3:20, weaken authored boost/drop exams, and violate the earlier “no three-minute crawl” direction. The controlled similarity transform preserves time between consecutive crossings. Playability still gains concrete preview time: the canonical 264-unit right-edge horizon grows from 0.88 to 1.173 seconds at base and from 0.55 to 0.733 seconds at cap, while the landscape camera reveals substantially more than that portrait horizon.
+
+| Horizontal rule | Revision 2 | Revision 3 proposal | Derivation |
+| --- | ---: | ---: | --- |
+| Course length | 45,000 | 33,750 units | `45,000 × 0.75` |
+| Normal base speed | 300 | 225 units/s | `300 × 0.75` |
+| Ring speed gain | +18 | +13.5 units/s | `18 × 0.75`; still ten clean gates from base to cap |
+| Normal speed cap | 480 | 360 units/s | `480 × 0.75` |
+| Post-ring speed grace | 90 ticks | 90 ticks | same crossing cadence and tick window |
+| Speed decay | 18 | 13.5 units/s² | `18 × 0.75`; preserves same-tick speed similarity |
+| Debris reset speed | 300 | 225 units/s | new base |
+| Return speed | 390 | 292.5 units/s | `390 × 0.75` |
+| Tunnel speed | 750 | 562.5 units/s | `750 × 0.75` |
+| Tunnel distance | 4,500 | 3,375 units | `4,500 × 0.75` |
+| Tunnel duration | 360 | 360 ticks / 6.0 s | `3,375 / 562.5` |
+| Entry / return | 48 / 36 ticks | 48 / 36 ticks | presentation beats stay responsive |
+
+All selected speeds and transformed authored X values are exact integer, half, or quarter values. The tunnel identity is exact: `562.5 × (360 / 60) = 3,375`. Vertical acceleration, velocity clamps, boost, quick drop, the inclusive 15-tick double-tap window, phase durations, gate fades, collision grace, and the 60 Hz clock do not slow down; the request changes horizontal world motion, not input latency.
+
+The similarity invariant is `x₃ = 0.75x₂` and `v₃ = 0.75v₂` at the same fixed tick. Ring gain and decay scale by the same factor, while grace remains 90 ticks. Absent a changed fixed-radius debris/acorn contact, every gate, entry, exit, and finish center plane is mathematically projected to the same tick under the same semantic input route; fixed-step replay is the authority because floating-point operation order can still move a boundary. Fixed horizontal collision radii and artwork are not squeezed, so Phase C must rerun swept debris/acorn evidence because a marginal pickup or scrape can differ even when center planes are similar.
+
+One wormhole cycle remains `48 + 360 + 36 = 444 ticks = 7.4 s`. Its shortcut value is unchanged because both distance and speed scale together: 7.6 seconds at base, about `3,375 / 295.142 − 7.4 = 4.035` seconds at the measured average mean, and 1.975 seconds at cap. It remains active content and a shortcut rather than downtime.
+
+### Density and skill-layout retune
+
+Revision 3 keeps 84 gates, 30 debris, 42 course acorns, all six per-act counts, the three intended entry rings, and the exact ring-index skip topology. Every ring, debris, acorn, act boundary, course sentinel, entry anchor, exit anchor, and horizontal acceptance limit is multiplied by 0.75. No element is independently relocated.
+
+| Act | Revision 3 range | Rings | Debris | Course acorns |
+| --- | ---: | ---: | ---: | ---: |
+| Launch Circuit | `[0, 5,625)` | 14 | 4 | 8 |
+| Snap Descent | `[5,625, 11,250)` | 14 | 6 | 4 |
+| Crosscut | `[11,250, 16,875)` | 14 | 5 | 9 |
+| Acorn Switchback | `[16,875, 22,500)` | 14 | 5 | 5 |
+| Needle Surge | `[22,500, 28,125)` | 14 | 5 | 10 |
+| Redline Final | `[28,125, 33,750]` | 14 | 5 | 6 |
+
+Ring clusters become 270–360 units and breathers become 420–525. The route-aware live-element ceiling scales from 720 to a conservative 540 units; the transformed authored union's measured maximum scales from 700 to 525, or `525 / 225 = 2.333 s` at base, and the current transformed delayed-return maximum is 435. Phase C's validator still checks the start/finish sentinels, the passive route, and every eligible delayed-entry return after skipped objects are removed. No random element or filler gate is added, and no normal acorn enters an intended tunnel skip.
+
+The intended entry anchors become 7,500, 18,750, and 30,000. Their 3,375-unit skips end at 10,875, 22,125, and 33,375; the final sprint is 375 units. The latest legal entry becomes `33,750 − 3,375 = 30,375`. The optimized route still passes rings 1–20, 29–48, and 57–76 and skips rings 21–28, 49–56, and 77–84.
+
+All skill and reward lines receive the same global transform, so their fixed-step windows are unchanged. The final redline becomes:
+
+| Element | Revision 2 X | Revision 3 X | Y |
+| --- | ---: | ---: | ---: |
+| r74, redline-low-in | 39,232 | 29,424 | 496 |
+| r75, redline-high | 39,616 | 29,712 | 144 |
+| r76, redline-low-out / entry | 40,000 | 30,000 | 496 |
+| reward a39 | 38,720 | 29,040 | 496 |
+| reward a40 | 39,120 | 29,340 | 496 |
+| reward a41 | 39,504 | 29,628 | 144 |
+| reward a42 | 39,888 | 29,916 | 496 |
+
+The gate separations become 288 units; at the 360 cap, each leg is still exactly `288 / 360 = 0.8 s = 48 ticks`. The earlier exam transforms r18/r19/r20 from `9,040 / 9,400 / 10,000` to `6,780 / 7,050 / 7,500`, with a11/a12 at `6,900 / 7,350`. The high-low-high reward line a22/a23/a24 becomes `17,136 / 17,424 / 17,712`. Phase C reruns the plain/advanced fixed-step reachability proof rather than treating similarity arithmetic as acceptance evidence.
+
+### Re-derived profiles and grades
+
+Because course X, velocity, gain, decay, entry distance, and tunnel distance all use one 0.75 factor while phase ticks stay fixed, Revision 3 keeps the approved tick bands and star thresholds as design invariants, subject to fresh fixed-step replay acceptance.
+
+| Profile | Revision 2 evidence | Revision 3 projected center | Provisional Phase C band |
+| --- | --- | --- | ---: |
+| Passive | 9,000 ticks, 0 cycles | 9,000 ticks / 2:30.000 | `8,990…9,010` |
+| Average | 6,380 ticks, 2 cycles | 6,380 ticks / 1:46.333 | `6,240…6,720` |
+| Optimized | 5,576 ticks, 3 cycles | 5,576 ticks / 1:32.933 | `5,400…5,700` |
+
+Average mean normal speed scales from 393.522 to 295.142 units/s; its acceptance range scales from 371…403 to 278.25…302.25. The optimized target mean scales from 445.664 to 334.248; use a provisional 330…345 telemetry band until the deterministic controller is rerun. Pass counts, exact skip sets, cycle counts, debris requirements, and semantic boost/drop requirements remain unchanged.
+
+Stars remain 6,900 ticks / 1:55.000 for two stars and 5,760 ticks / 1:36.000 for three. The expected passive-to-optimized spread remains `9,000 − 5,576 = 3,424 ticks = 57.067 s`; the accepted floor remains `8,990 − 5,700 = 3,290 ticks = 54.833 s`, above the required 45 seconds.
+
+These are Phase A invariants, not permission to force the controller into desired numbers. Fixed-size debris/acorn swept radii and floating-point integration make a fresh replay mandatory. If a marginal route moves, Phase C may retune its input line or propose a separately reviewed threshold; it may not silently change a grade. The exhaustive plain-only reachability and slowdown-mask search remains release-blocking.
+
+### Continuous gateward flow
+
+Normal flight receives a restrained side-view “wind tunnel” made from deterministic batched strokes. It is a presentation derived from `race.tick`, `coursePosition`, `speed`, course seed, and the first pending gate; it never feeds physics and never uses per-frame `Math.random()` or wall-clock `w.time`.
+
+On the entry decision, the flow target freezes to `entryRingIndex` / `entryAnchorY` for all 48 entry ticks even though that ring's ledger is already passed. It may not jump toward the next pending course ring while the portal mouth is swallowing the pilot. Tunnel and return use their own corridor/return targets; normal next-gate targeting resumes only when normal authority resumes.
+
+- About 24 far star dashlets sit behind all gameplay, about 16 mid-distance slipstream threads sit behind the pilot, and no more than 8 near flecks pass in front of the pilot but below UI.
+- At 225…360 units/s, speed controls dash length, travel, and alpha. Visual multipliers may preserve a fast hyperspace read inside the slower authority; they do not change object scroll or collision timing.
+- Inside 540 course units of the next pending gate, mid threads bend only 15–25% toward its Y. Up to six of those mid threads become short rim-tangent streams behind the gate-back layer. The flow suggests destination without drawing a false guaranteed path.
+- The direction is always future-to-past: material enters from the right, passes the side-view pilot, and exits left. There is no central vanishing point, camera rotation, first-person zoom, or FOV pulse.
+- Reuse or extract Wormhole Run's batched `screen` compositing, modulo streak motion, palette interpolation, and corridor contour treatment. Its depth ellipses must become transverse wall bands/lateral contour echoes clipped between the side-view boundaries—never screen-centered ellipses or a central vanishing point. Do not import `World.tunnel`, its hazards, procedural content, or authority into the race.
+
+The default layer order is: wide backdrop; far and mid flow; gate/bubble backs; debris and acorns; pilot trail and pilot; gate/bubble fronts; attenuated near flecks; gate director; HUD. Streak segments are culled or locally attenuated around the pilot, debris, acorns, and aperture edge; bright `screen` strokes may not wash out gameplay silhouettes.
+
+### Blue gate membrane and exact crossing response
+
+Every pending ordinary gate contains a subtle electric-blue portal membrane registered to the same center and circular transform as its back/front art. Its faint lens sits behind the pilot; a thin near-side crescent sits in front. The target boundary represents the exact 38-canonical-pixel safe-center locus (`54 aperture − 16 pilot radius`), while the painted ring continues to show the physical 54-pixel opening. A small collision-core bead on the pilot may reinforce which point is judged. This changes explanation and confirmation, not authority.
+
+The pass response begins only from that ring's stamped `ringDecisionTick`, never from lookahead or render position:
+
+- Age 0–2 ticks: a compact white-blue contact flash at the pilot plane and an immediate visible `+5` charge micro-step.
+- Age 3–9: a cyan shell expands from 0.70 to 1.10 gate radius and threads behind/in front of the pilot.
+- Age 10–18: a second low-alpha wave and two outward chevrons drift 0→24 canonical pixels left, clearly indicating completed travel.
+- Age 19–26: the response holds at that 24-pixel offset and fades to zero with the existing 27-tick passed-state fade.
+
+At decision, the response captures stable ring id, decision tick, and canonical `ring.y`, not literal screen pixels. Every render derives current `(pilotX, screenY(ring.y))` and ignores later world-ring X motion, so an orientation change reprojects the cue correctly. A miss receives no blue shell. It uses the same anchor and begins at age 0 with a broken amber/dark notch; inward brackets contract during ages 3–12, drift at most 24 canonical pixels left, and remain plane-anchored while fading through age 26. The ordinary gate art continues its existing 39-tick missed fade behind that cue. Pass and miss therefore remain readable after the world gate leaves and differ by shape and motion, not color alone. An optional short confirmation tone and at most one subtle device haptic may fire from the same decision event; either is non-authoritative and respects mute/platform settings. Audio/haptic dispatch happens only while consuming one fixed-step cue, never from draw or cue age, so 120 Hz rendering and pause/resume cannot repeat it.
+
+Gate confirmation is independent of the existing one-string sound result. If a ring pass and debris contact happen during the same fixed step, the blue pass shell and `+5` event still appear, the debris impact and `−10` event also appear, and the meter resolves the net authority charge. One cue may not overwrite the other or imply that the gate failed.
+
+Phase C replaces the single-result presentation bottleneck with a structured tick-stamped cue list or equivalent one-shot ledger. Each cue carries kind, authority tick, and stable object id; gate pass/miss and debris may coexist on one tick. Fixed-step simulation emits cues, the engine consumes side effects once, and the renderer derives bounded visuals without mutating authority. Cue order/content enters determinism evidence, but cue playback never affects course state.
+
+The gate HUD exposes all 5-point gains. The existing five bars become five four-step cells, or an equivalent 20-micro-step meter, so every clean gate changes one visible substep. The decision-tick pulse also flashes the new substep and may show `+5` briefly. In normal flight, let `needed = max(1, ceil((100 − charge) / 5))` because even stored charge 100 still requires crossing a new legal ring, and let `remainingEligible` be the number of pending rings at or before `RACE_LATEST_ENTRY_X`. **FINAL SPRINT** applies when `wormholes >= 3` or `remainingEligible < needed`; this is a presentation of best-case authority eligibility, not a promise that the player will pass those gates or avoid debris. At 95 charge with at least one eligible ring, the meter reads **NEXT CLEAN GATE: WORMHOLE** and that gate gains a gold outer accent without replacing its blue safe membrane. The qualifying crossing immediately changes to entry tick 0, where the meter reads **WORMHOLE** rather than lingering at a misleading ready state. HUD and director call one exported authority-owned eligibility/next-ring helper; draw code may not duplicate private latest-entry or ledger math.
+
+### Next-gate direction indicator
+
+The director targets the first ring whose ledger is still `pending`. It advances only when that ring receives its exact decision tick or authority marks it `skipped` during a tunnel span; presentation visibility never advances it. It hides during entry, tunnel, return, and finish.
+
+While the target center is more than 240 canonical units ahead, draw a 12–16 CSS-pixel outlined marker at the active camera's right edge inset by 18 pixels, even when the panoramic camera already shows the distant ring. Its Y is the gate's projected canonical Y clamped outside HUD/safe margins. Relative to the pilot, a triangle points up or down; within ±24 canonical pixels it becomes a hollow level diamond. A short stem encodes larger vertical delta. The marker fades from 240 to 160 course units and hides only inside 160, when the gate itself is the dominant target. A dark outer stroke plus cyan/light inner stroke supplies at least 3:1 local contrast, and shape carries the meaning in grayscale.
+
+### Six-second race tunnel: slower scroll, unchanged skill rhythm
+
+The race tunnel scales from 4,500 to 3,375 course units and from 750 to 562.5 units/s. It remains 360 ticks / 6.0 seconds with the same 18 authored pickups, vertical geometry, and advanced-move windows. This preserves the approved active rhythm while the new visual flow makes it feel like hyperspace rather than downtime.
+
+| Tick | Center Y | Half-width | Beat |
+| ---: | ---: | ---: | --- |
+| 0 | Entry anchor | 144 | Safe mouth, continuous from entry presentation |
+| 45 | 248 | 126 | First pull |
+| 90 | 204 | 96 | High corridor |
+| 135 | 408 | 108 | Broad crossing |
+| 180 | 440 | 88 | Low pinch |
+| 225 | 468 | 104 | Boost-line launch |
+| 255 | 168 | 88 | Boost crest |
+| 285 | 452 | 96 | Drop recovery |
+| 315 | 360 | 120 | Settle |
+| 359 | 320 | 144 | Safe return mouth |
+
+The five center-line pickups remain at ticks `30, 75, 120, 165, 210`. The eight-point boost line remains at `225, 229, 234, 238, 242, 246, 251, 255`; the five-point drop line remains at `257, 264, 271, 278, 285`. Authored Y values and the mirrored-only tick-255/257 cusp overrides remain unchanged. Phase C reruns the recognizer-realizable 18/18, zero-scrape routes from all three real entry anchors; it does not assume similarity is sufficient evidence.
+
+The table is the unmirrored spine. Seed/cycle mirroring reflects every interior center around Y=320; tick 0 remains the triggering `entryAnchorY` and tick 359 remains Y=320. Pickups follow the approved mirrored rule and cusp exceptions.
+
+Tunnel collision geometry remains authority. Presentation samples that same geometry and reuses Wormhole Run's clipped boundary/contour language so the luminous walls are the real walls, not decoration.
+
+### Fluid course-to-tunnel-to-course transition
+
+Authority keeps 48 entry ticks and 36 return ticks and never waits for painting, image decode, or effect completion. The presentation replaces the opaque wash/scene substitution with one deterministic reveal. From the first entry frame, tunnel tick-0 geometry is painted inside the portal aperture over the still-visible course. The reveal expands from that aperture until the same tunnel overlay covers the active camera. The course-sky backdrop remains continuously drawn and tinted underneath both states; only normal course objects and normal-flow layers fade. The race tunnel may not use its current opaque full-canvas fill.
+
+Binding entry compositing is: course-sky backdrop and normal flow; normal course objects; clipped destination tunnel; portal back/mouth/glyphs; pilot trail and pilot; portal front; reveal-edge ribbons and low bloom; director/HUD. Return reverses source and destination roles: continuous course-sky backdrop; tunnel source; clipped course objects/normal flow; return back/glyphs; pilot; return front; reveal edge/low bloom; HUD. Neither reveal may cover the pilot or the approved front rim.
+
+#### Entry, 48 ticks
+
+| Ticks | Visual beat |
+| --- | --- |
+| 0–5 | The triggering blue pass shell primes the charged portal; normal gateward flow continues and a dim tunnel core becomes visible through the mouth. |
+| 6–11 | Portal grows 1.00→1.25; tunnel-window alpha rises 0.20→0.45; nearby stars begin to stretch. |
+| 12–23 | Portal grows 1.25→1.75; glyphs ignite; far/mid streams lengthen and curve into the mouth; tunnel window rises 0.45→0.75. |
+| 24–35 | Deterministic pilot Y suction occurs while presentation X eases 0→+30 canonical pixels; portal grows 1.75→2.15; corridor and boundaries are fully legible inside the opening. |
+| 36–43 | Pilot X eases +30→about +8; portal grows 2.15→2.35 and holds its lit layers while a soft circular reveal reaches about 80% of the farthest-corner radius; normal objects/flow fade 1.00→0.25 beneath blue boundary ribbons. |
+| 44–47 | Pilot X reaches exactly the tunnel pilot plane; portal holds 2.35; reveal covers the active camera; normal objects/flow reach zero; backdrop remains; bloom never exceeds 0.55 alpha and is never opaque white. |
+
+The reveal radius is the farthest active-camera corner distance from the portal center plus a small edge allowance. Two or three soft rim rings hide the clip boundary. Entry tick 47 and tunnel tick 0 render identical tunnel tick-0 geometry, palette phase, corridor edges, streak seed, pilot X, and 2.35-scale portal transform. The entry rim/glyph/front persist at tunnel tick 0 and fade to zero through tunnel tick 5 instead of popping away; residual suction streaks share that fade. At tunnel tick 0, both live collision-boundary strokes render at no less than 90% of their steady-tunnel opacity and line contrast because control resumes immediately.
+
+#### Return, 36 ticks
+
+| Ticks | Visual beat |
+| --- | --- |
+| 0–5 | The course at the exact return coordinate is already visible inside the return aperture while tunnel flow remains outside; pilot begins at the tunnel plane and eases toward +18; return portal alpha grows 0→about 0.7 so tunnel-359/return-0 has no layer pop. |
+| 6–9 | Pilot reaches +30; portal alpha reaches 1 and scale reaches 2.15 as course reveal expands to the active-camera bounds and corridor ribbons peel into the rim. |
+| 10–23 | The already-visible course becomes the base without a bitmap cut; pilot exits +30→0, glyphs unwind, and normal gateward flow inherits the tunnel streak phase. |
+| 24–31 | Portal settles 1.30→1.00 and bloom fades to zero. |
+| 32–35 | Rim/glyph residue fades and the normal course remains fully present. |
+
+Course objects may be shown beneath the reveal before return control resumes, but authority collision stays paused for the approved return phase and 21 protected post-return normal steps. The effect never moves an object or delays the handoff.
+
+Tunnel tick 359 ends with corridor center Y=320, while the actual pilot and return portal use the clamped route-dependent `returnY`. During return ticks 0–9, a presentation-only terminal ribbon bends continuously from the frozen Y=320 corridor into the portal at `returnY`; its boundary endpoints match both scenes and never claim a different collision corridor. Phase B must show low and high `returnY` cases, and Phase C must assert bridge/portal registration as well as return-9/10 continuity.
+
+### Accessibility and performance contract
+
+- Reduced motion uses half as many short straight dashlets, removes suction curvature and secondary waves, and replaces the sweeping reveal with a soft iris plus opacity blend. Tick timing, gate shell/check, director, corridor boundaries, and authority are identical.
+- No camera shake, rotation, zoom pulse, opaque flash, or luminance reversal above 3 Hz. Pilot, aperture, debris, acorns, and live collision boundaries retain strong silhouettes.
+- Default flow is capped at roughly 48–52 strokes. Lanes and seeds are precomputed, composite-state changes are batched, active-camera culling is mandatory, and the renderer creates no particle object, image decode, `getImageData`, per-streak blur, or full-resolution temporary canvas each frame.
+- The implementation respects the existing DPR cap. Target captures on a Pixel 6a/Galaxy A54-class device are median frame ≤16.7 ms, p95 ≤18 ms, p99 ≤25 ms, with no more than two frames above 33 ms per entry/tunnel/return cycle.
+
+### Phase B — review visual proof, then stop
+
+Phase B creates review-only, code-native composites and motion evidence; it does not change game runtime. It shows:
+
+- 360 × 640, 390 × 844, 844 × 390, 1440 × 900, and extreme 1600 × 600 layouts over representative game skies;
+- pending blue membrane, centered pass, edge pass, edge miss, pass ages 0/3/9/18/26, miss ages 0/3/12/26/38, simultaneous pass-plus-debris, a visible pilot-plane guide, and pilot threading between all back/front layers;
+- up/down/level director states and meter states at 0, 5, 15, 20, 95-ready, entry-tick-0 **WORMHOLE**, late-ineligible 100, max-cycle 100, and insufficient-remaining-rings;
+- director-in-context frames at 844 × 390 for both a typical and maximum-gap target while visible-but-far, through its 240→160 acquisition fade, and on the exact decision-tick target switch;
+- entry frames 0/6/12/24/35/36/43/47 plus tunnel 0/1/5 with pilot-plane guides at entry-47/tunnel-0; show both a central entry anchor and the worst real anchor Y=496;
+- return frames 0/5/9/10/23/35 with a pilot-plane guide at return-9/10, plus landscape tunnel gameplay through the tick-180, tick-255, and tick-285 pinches with pickups and real wall boundaries;
+- a dense debris pinch and the high-low-high course-acorn line at cap in normal, grayscale, and reduced-motion treatments, proving flow attenuation preserves gameplay silhouettes;
+- complete-art and missing/partial-art transition states, proving the atomic procedural fallback has the same portal registration and never produces an empty frame;
+- normal, reduced-motion, grayscale, and deuteranopia variants at game scale.
+
+Phase B also requires real-timing motion evidence, not only selected frames: an 844 × 390 clip of 2–3 seconds of normal flight at both 225 and 360 units/s including one decision-tick target switch, a continuous entry-0 through tunnel-5 clip, and a continuous return-0 through return-35 clip. Provide default-motion and reduced-motion landscape clips; other view sizes may remain static. At least one full landscape tunnel frame must prove pilot-left side view, registered readable walls, and no first-person vortex. Transition strips include transform overlays for entry-47/tunnel-0, tunnel-359/return-0, and return-9/10, including portal layers as well as the pilot.
+
+The review harness writes frames, strips, and required short clips only to an OS temporary directory or attaches them to the PR. No contact sheet goes in `docs/` or `sandbox_assets/`, and no generated output is committed. The approved ordinary gates and portal paintings are inputs and remain byte-identical. Any proposal for a new runtime bitmap requires separate approval; the default implementation is procedural Canvas 2D over existing art. Phase B stops for visual sign-off.
+
+### Phase C — source implementation and acceptance, then stop
+
+Phase C may change authored TypeScript and source-only harnesses after Phase B approval. It does not edit or commit generated `docs/js*` or `sandbox_assets/js*`, does not change the approved gate/portal PNGs unless separately authorized, and does not change current `ART_VER = 78`, `SAVE_KEY`, `LEGACY_KEYS`, `prototype-chapter-1`, or the record-continuity decision.
+
+The existing six top-level acceptance cases remain the release structure and are extended as follows:
+
+1. **Same seed and semantic inputs:** repeated hold/boost/drop replays still match complete signatures. The deterministic flow helper returns identical lane/phase data for the same seed, tick, position, speed, and next-gate target and contains no random/wall-clock dependency.
+2. **Presentation-size independence:** 360 × 640, 390 × 844, 844 × 390, 1440 × 900, and 1600 × 600 produce the same authority signature. Pure camera assertions prove circles remain circles, the visible gate plane equals the pilot plane, portrait landmarks stay registered, landscape reveals more course, active-camera clipping excludes gameplay from capped side bands, and canonical swipes map identically. Across READY, normal, entry, tunnel, return, and finish, idle orientation changes prove zero authority/input-log mutation and correct reprojection. Where input is owned, pointer/touch/keyboard resize proves pause/cancel behavior, exactly one resulting neutral semantic state (append or same-tick merge), no false drop/boost, no hidden tick, correct live-Y projection, and correct active-cue reprojection from canonical Y.
+3. **Cadence and accessibility independence:** 30, 60, 120 fps, mixed/dropped cadence, default motion, and reduced motion produce one fixed-step signature. Structured cues have identical order/content and each audio/haptic side effect dispatches at most once. Pause/focus loss retains its Revision 2 protection.
+4. **Similarity-transformed course profiles:** passive/average/optimized runs land in the unchanged tick bands or a separately reviewed correction. A mechanical validator proves every ring/debris/acorn X, act boundary, entry/exit anchor, course sentinel, latest-entry limit, and horizontal gap/acceptance limit equals its approved Revision 2 value ×0.75; all Y, radii, art indexes, stable ids, and skill tags remain unchanged. It separately asserts length 33,750; base/reset 225; cap 360; gain and decay 13.5; return 292.5; tunnel speed 562.5; tunnel distance 3,375; latest entry 30,375; scaled means; unchanged stars; pass/cycle/debris contracts; exact skip sets; every live/return gap ≤540; the 288-unit redline timing; a recognizer-realizable advanced witness; and the exhaustive plain-only exclusion.
+5. **Gate plane and confirmation:** retain swept checks at base and cap. Capture centered pass, `±38` edge passes, and `±(38 + ε)` misses at −2/−1/crossing/+1/+2 frames in portrait and landscape. The ledger and screen-anchored pass/miss marks remain absent before crossing, stamp exactly once, age 0 begins on that tick, back/front layers thread the pilot, every `+5` and `−10` is visible, simultaneous pass/debris cues coexist, late/max-cycle/insufficient-ring charge cannot promise entry, and pending/visible/decided/skipped director target changes are exact. HUD/director share the exported authority helper.
+6. **Tunnel parity and continuous handoff:** one tunnel advances exactly 3,375 units in 360 ticks and completes the 48/360/36 sequence without double settlement. All three actual entry anchors have recognizer-realizable 18/18 zero-scrape routes. At portrait, landscape, and capped-wide sizes, review assertions prove monotonic reveal area; entry-47/tunnel-0 geometry, pilot, and portal-layer identity; tunnel-359/return-0 pilot/portal continuity; return-9/10 transform continuity; low/high-`returnY` bridge registration; live boundary/authority registration; no opaque full-canvas tunnel fill, white frame, or empty frame; and the existing 21/22 return-grace boundary. Repeat complete, missing, and partial Hyper Run art cases to prove atomic procedural fallback, no decode wait, no empty transition, and identical authority timings/signatures.
+
+The source-only crossing/transition harness rejects any output path inside the repository. Phase C also runs TypeScript no-emit checking, the Wormhole Run regression suite, roadmap regeneration with no committed output drift, repeated mandatory replays, whitespace/LF/U+FFFD checks, protected-identifier checks, generated-path checks, and phone landscape performance capture. Physical phone controls/feedback and desktop mouse/keyboard with live resize both require playtests; deterministic/TAS fixtures prove authority bounds, not comfortable human cadence.
+
+Every Revision 3 phase starts from current `origin/main`, fetches/rebases again immediately before its final push, commits source/review art only, preserves LF, and reports exactly what changed and what was verified. Phase A stops here for design sign-off.
 
 ## Course 1 Revision 2 — Phase A design delta
 
