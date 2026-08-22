@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=80";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=80";
-import { proceduralSky } from "./sky-gen.js?v=80";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=80";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=80";
-import { tunnelBoundsAt } from "./sim.js?v=80";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=80";
-import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=80";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=81";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=81";
+import { proceduralSky } from "./sky-gen.js?v=81";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=81";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=81";
+import { tunnelBoundsAt } from "./sim.js?v=81";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=81";
+import { RACE_ACORNS, RACE_DEBRIS, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_PILOT_X, RACE_READY_COPY, RACE_RINGS, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, RACE_WIDTH, formatRaceTicks, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=81";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
