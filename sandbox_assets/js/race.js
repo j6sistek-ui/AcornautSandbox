@@ -1,83 +1,126 @@
 // HYPER RUN — deterministic, fixed-step race authority.
 //
-// This module knows nothing about canvas size, render cadence, particles, or
-// the campaign. Feed it held/released transitions stamped with simulation
-// ticks and call stepRace exactly once per 1/60-second simulation step.
+// This module knows nothing about canvas size, render cadence, DOM events, or
+// the campaign. Feed it semantic input snapshots stamped with simulation ticks
+// and call stepRace exactly once per 1/60-second live race step.
+import { QUICK_DROP_VY, WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=76";
 export const RACE_EVENT_ID = "prototype-chapter-1";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
 export const RACE_DT = 1 / RACE_HZ;
 export const RACE_WIDTH = 360;
 export const RACE_HEIGHT = 640;
-export const RACE_LENGTH = 36000;
+export const RACE_LENGTH = 45000;
 export const RACE_PILOT_X = 96;
 export const RACE_PILOT_RADIUS = 16;
 export const RACE_GATE_APERTURE = 54;
 export const RACE_GATE_CLEARANCE = RACE_GATE_APERTURE - RACE_PILOT_RADIUS;
-export const RACE_BASE_SPEED = 185;
-export const RACE_MAX_SPEED = 275;
-export const RACE_RETURN_SPEED = 225;
-export const RACE_TUNNEL_SPEED = 400;
-export const RACE_TUNNEL_DISTANCE = 3600;
-export const RACE_ENTRY_TICKS = 72;
-export const RACE_TUNNEL_TICKS = 540;
+export const RACE_GATE_PASS_FADE_TICKS = 27;
+export const RACE_GATE_MISS_FADE_TICKS = 39;
+export const RACE_BASE_SPEED = 300;
+export const RACE_MAX_SPEED = 480;
+export const RACE_RING_SPEED_GAIN = 18;
+export const RACE_RETURN_SPEED = 390;
+export const RACE_TUNNEL_SPEED = 750;
+export const RACE_TUNNEL_DISTANCE = 4500;
+export const RACE_ENTRY_TICKS = 48;
+export const RACE_TUNNEL_TICKS = 360;
 export const RACE_RETURN_TICKS = 36;
 export const RACE_SPEED_GRACE_TICKS = 90;
 export const RACE_RETURN_GRACE_TICKS = 21;
 export const RACE_DEBRIS_GRACE_TICKS = 45;
 export const RACE_MAX_WORMHOLES = 3;
-export const RACE_RETURN_MARGIN = RACE_PILOT_X; // 360 - 2 × 96 = 168 px safe band.
-// Fifth-ring charge points are deliberately followed by a 3,600-unit clear
-// recovery span. A return therefore never deposits the pilot inside a ring.
-export const RACE_RINGS = [
-    { id: "r01", x: 500, y: 244, tilt: -0.10 },
-    { id: "r02", x: 1100, y: 390, tilt: 0.08 },
-    { id: "r03", x: 1800, y: 214, tilt: -0.06 },
-    { id: "r04", x: 2600, y: 422, tilt: 0.11 },
-    { id: "r05", x: 3500, y: 302, tilt: -0.08 },
-    { id: "r06", x: 5200, y: 190, tilt: 0.06 },
-    { id: "r07", x: 7600, y: 404, tilt: 0.09 },
-    { id: "r08", x: 8500, y: 228, tilt: -0.11 },
-    { id: "r09", x: 9500, y: 420, tilt: 0.07 },
-    { id: "r10", x: 10600, y: 194, tilt: -0.06 },
-    { id: "r11", x: 11800, y: 334, tilt: 0.10 },
-    { id: "r12", x: 13600, y: 448, tilt: -0.07 },
-    { id: "r13", x: 16000, y: 214, tilt: 0.06 },
-    { id: "r14", x: 16900, y: 418, tilt: -0.09 },
-    { id: "r15", x: 17900, y: 254, tilt: 0.10 },
-    { id: "r16", x: 19000, y: 440, tilt: -0.08 },
-    { id: "r17", x: 20200, y: 310, tilt: 0.07 },
-    { id: "r18", x: 22000, y: 184, tilt: -0.10 },
-    { id: "r19", x: 24500, y: 398, tilt: 0.08 },
-    { id: "r20", x: 25200, y: 220, tilt: -0.07 },
-    { id: "r21", x: 26000, y: 430, tilt: 0.09 },
-    { id: "r22", x: 27400, y: 306, tilt: -0.06 },
+export const RACE_RING_CHARGE = 5;
+export const RACE_DEBRIS_CHARGE_PENALTY = 10;
+export const RACE_TWO_STAR_TICKS = 6900;
+export const RACE_THREE_STAR_TICKS = 5760;
+/** Count-derived content ceiling (42 course + 3 x 18 tunnel), not a promised single-run route. */
+export const RACE_MAX_ACORNS = 96;
+export const RACE_READY_COPY = [
+    "HOLD TO RISE",
+    "DOUBLE-TAP + HOLD TO BOOST",
+    "SWIPE DOWN TO DIVE",
 ];
-export const RACE_DEBRIS = [
-    { id: "d01", x: 1500, y: 490, r: 24, art: 0 },
-    { id: "d02", x: 2650, y: 320, r: 23, art: 1 },
-    { id: "d03", x: 3900, y: 500, r: 25, art: 2 },
-    { id: "d04", x: 5100, y: 170, r: 22, art: 0 },
-    { id: "d05", x: 9900, y: 294, r: 25, art: 1 },
-    { id: "d06", x: 11100, y: 505, r: 24, art: 2 },
-    { id: "d07", x: 13450, y: 535, r: 23, art: 0 },
-    { id: "d08", x: 14800, y: 510, r: 25, art: 1 },
-    { id: "d09", x: 19500, y: 550, r: 24, art: 2 },
-    { id: "d10", x: 20750, y: 520, r: 23, art: 0 },
-    { id: "d11", x: 23050, y: 105, r: 25, art: 1 },
-    { id: "d12", x: 24400, y: 120, r: 22, art: 2 },
-    { id: "d13", x: 29100, y: 545, r: 25, art: 0 },
-    { id: "d14", x: 32300, y: 100, r: 24, art: 1 },
+// Smallest tunnel half-width (88) plus half the 16-pixel pilot radius (8).
+// This remains a geometric derivation, not an alias for the pilot screen X.
+export const RACE_RETURN_MARGIN = 88 + RACE_PILOT_RADIUS / 2;
+const NORMAL_RELEASE_ACCEL = 1050;
+const NORMAL_HOLD_ACCEL = -700;
+const NORMAL_BOOST_ACCEL = -2100;
+const NORMAL_MIN_VY = -330;
+const NORMAL_BOOST_MIN_VY = -520;
+const NORMAL_MAX_VY = 390;
+const TUNNEL_BOOST_ACCEL = -3500;
+const TUNNEL_BOOST_MIN_VY = -780;
+const RACE_SPEED_DECAY_PER_SECOND = 18;
+const RACE_TUNNEL_PICKUP_RADIUS = RACE_PILOT_RADIUS + 12;
+const RACE_LATEST_ENTRY_X = RACE_LENGTH - RACE_TUNNEL_DISTANCE;
+const RING_POINTS = [
+    [600, 320], [1020, 280], [1440, 360], [1880, 240], [2320, 400], [2780, 200], [3240, 440],
+    [3680, 220], [4120, 420], [4580, 260], [5220, 380], [5840, 240], [6460, 430], [7080, 300],
+    [7520, 440], [7960, 200], [8400, 380], [9040, 144], [9400, 496], [10000, 320], [10440, 220],
+    [11040, 430], [11460, 180], [12080, 460], [12520, 250], [13140, 440], [13600, 200], [14300, 360],
+    [15000, 320], [15440, 270], [15880, 390], [16340, 200], [16780, 450], [17420, 240], [17860, 420],
+    [18520, 180], [18960, 460], [19640, 260], [20100, 400], [20740, 220], [21180, 440], [21860, 300],
+    [22540, 420], [22980, 200], [23600, 380], [24040, 160], [24400, 440], [25000, 300], [25440, 220],
+    [26040, 430], [26460, 180], [27080, 460], [27520, 250], [28140, 440], [28600, 200], [29300, 360],
+    [30000, 320], [30440, 240], [30880, 420], [31340, 180], [31780, 460], [32420, 220], [32860, 440],
+    [33520, 200], [33960, 480], [34640, 260], [35100, 420], [35740, 180], [36180, 460], [36840, 300],
+    [37540, 420], [38160, 260], [38840, 496], [39232, 496], [39616, 144], [40000, 496], [40440, 220],
+    [41040, 430], [41460, 180], [42080, 460], [42520, 250], [43140, 440], [43600, 200], [44300, 360],
 ];
-export const RACE_ACORNS = [
-    { id: "a01", x: 1220, y: 250 }, { id: "a02", x: 2880, y: 210 },
-    { id: "a03", x: 4780, y: 420 }, { id: "a04", x: 9550, y: 250 },
-    { id: "a05", x: 11950, y: 225 }, { id: "a06", x: 14450, y: 200 },
-    { id: "a07", x: 19150, y: 210 }, { id: "a08", x: 21650, y: 415 },
-    { id: "a09", x: 24050, y: 440 }, { id: "a10", x: 28750, y: 398 },
-    { id: "a11", x: 31850, y: 220 }, { id: "a12", x: 34250, y: 430 },
+const RING_SKILLS = {
+    17: "launch-boost-ladder",
+    18: "snap-drop-in",
+    19: "snap-drop-out",
+    73: "redline-low-in",
+    74: "redline-high",
+    75: "redline-low-out",
+};
+export const RACE_RINGS = RING_POINTS.map(([x, y], i) => ({
+    id: `r${String(i + 1).padStart(2, "0")}`,
+    x,
+    y,
+    tilt: 0,
+    ...(RING_SKILLS[i] ? { skill: RING_SKILLS[i] } : {}),
+}));
+const DEBRIS_POINTS = [
+    [2500, 520, 24], [4700, 120, 22], [6120, 500, 25], [7320, 130, 23],
+    [8240, 120, 24], [8720, 250, 25], [8840, 520, 24], [9520, 160, 22], [11800, 500, 25], [14120, 130, 23],
+    [16200, 510, 24], [17600, 130, 22], [18800, 500, 25], [20400, 140, 23], [22000, 520, 24],
+    [22800, 500, 24], [23900, 110, 22], [25700, 520, 25], [27400, 120, 23], [29200, 500, 24],
+    [30500, 520, 24], [32200, 120, 22], [34000, 510, 25], [35400, 130, 23], [37000, 500, 24],
+    [37850, 520, 24], [38600, 110, 22], [40700, 120, 25], [42900, 510, 23], [44700, 100, 24],
 ];
+export const RACE_DEBRIS = DEBRIS_POINTS.map(([x, y, r], i) => ({
+    id: `d${String(i + 1).padStart(2, "0")}`,
+    x,
+    y,
+    r,
+    art: i % 3,
+    ...(i === 5 || i === 6 ? { skill: "snap-drop-pinch" } : {}),
+    ...(i === 26 ? { skill: "exam-brake-proof" } : {}),
+}));
+const ACORN_POINTS = [
+    [800, 320], [1660, 300], [2540, 380], [3420, 220], [4300, 400], [5380, 300], [6200, 420], [7240, 320],
+    [7700, 400], [8500, 220], [9200, 460], [9800, 320],
+    [15200, 320], [16100, 250], [17000, 410], [17800, 220], [18600, 440], [19400, 260], [20300, 420], [21200, 240], [22100, 360],
+    [22848, 160], [23232, 480], [23616, 160], [24200, 360], [24800, 280],
+    [30200, 320], [30900, 250], [31600, 410], [32300, 190], [33000, 450], [33700, 220], [34400, 430], [35100, 240], [36000, 400], [37000, 300],
+    [37680, 360], [38280, 450], [38720, 496], [39120, 496], [39504, 144], [39888, 496],
+];
+export const RACE_ACORNS = ACORN_POINTS.map(([x, y], i) => ({
+    id: `a${String(i + 1).padStart(2, "0")}`,
+    x,
+    y,
+    ...(i >= 21 && i <= 23 ? { skill: "high-low-high" } : {}),
+    ...(i >= 38 ? { skill: "redline-reward" } : {}),
+}));
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const smoothstep = (n) => {
+    const f = clamp(n, 0, 1);
+    return f * f * (3 - 2 * f);
+};
 function hash(seed, n) {
     let x = (seed ^ Math.imul(n + 1, 0x9e3779b1)) >>> 0;
     x ^= x >>> 16;
@@ -87,6 +130,7 @@ function hash(seed, n) {
     return (x ^ (x >>> 16)) >>> 0;
 }
 export function createRaceState(seed = RACE_SEED) {
+    const startY = RACE_HEIGHT * 0.45;
     return {
         seed: seed >>> 0,
         tick: 0,
@@ -95,10 +139,11 @@ export function createRaceState(seed = RACE_SEED) {
         phaseStartPosition: 0,
         coursePosition: 0,
         previousCoursePosition: 0,
-        y: RACE_HEIGHT * 0.45,
-        previousY: RACE_HEIGHT * 0.45,
+        y: startY,
+        previousY: startY,
         vy: 0,
         held: false,
+        boost: false,
         inputs: [],
         inputCursor: 0,
         speed: RACE_BASE_SPEED,
@@ -106,54 +151,119 @@ export function createRaceState(seed = RACE_SEED) {
         collisionGraceTicks: 0,
         charge: 0,
         wormholes: 0,
-        entryY: RACE_HEIGHT * 0.5,
+        entryRingIndex: null,
+        entryStartY: startY,
+        entryAnchorY: startY,
         returnY: RACE_HEIGHT * 0.5,
         ringLedger: RACE_RINGS.map(() => "pending"),
+        ringDecisionTicks: RACE_RINGS.map(() => null),
         debrisLedger: RACE_DEBRIS.map(() => false),
         debrisContacts: [],
         acornLedger: RACE_ACORNS.map(() => false),
         tunnelAcornLedger: [],
         acorns: 0,
         entryTicks: [],
+        boostTicks: [],
+        dropTicks: [],
+        wallScrapeTicks: [],
         wallSuppressTicks: 0,
         finishTicks: null,
         finishEmitted: false,
     };
 }
-export function queueRaceHeld(race, held, tick = race.tick) {
+function validInput(input) {
+    if (input.boost && !input.held)
+        throw new RangeError("Hyper Run boost requires held=true");
+}
+/** Same-tick state is last-writer-wins; drop is OR-preserved. */
+export function queueRaceInput(race, input, tick = race.tick) {
+    validInput(input);
+    const at = Math.max(0, Math.floor(tick));
     const prior = race.inputs[race.inputs.length - 1];
-    if (prior && prior.tick === tick) {
-        prior.held = held;
+    if (prior && prior.tick === at) {
+        prior.held = input.held;
+        prior.boost = input.boost;
+        if (input.drop)
+            prior.drop = true;
         return;
     }
-    if (prior?.held === held || (!prior && race.held === held))
+    const lastHeld = prior?.held ?? race.held;
+    const lastBoost = prior?.boost ?? race.boost;
+    if (!input.drop && lastHeld === input.held && lastBoost === input.boost)
         return;
-    race.inputs.push({ tick, held });
+    race.inputs.push({
+        tick: at,
+        held: input.held,
+        boost: input.boost,
+        ...(input.drop ? { drop: true } : {}),
+    });
+}
+export function queueRaceHeld(race, held, tick = race.tick) {
+    queueRaceInput(race, { held, boost: held ? race.boost : false }, tick);
 }
 export function loadRaceInputs(race, inputs) {
-    race.inputs = inputs.map((i) => ({ tick: Math.max(0, Math.floor(i.tick)), held: !!i.held }))
-        .sort((a, b) => a.tick - b.tick);
+    const ordered = inputs.map((input, order) => {
+        const normalized = {
+            tick: Math.max(0, Math.floor(input.tick)), held: !!input.held, boost: !!input.boost,
+            ...(input.drop ? { drop: true } : {}), order,
+        };
+        validInput(normalized);
+        return normalized;
+    }).sort((a, b) => a.tick - b.tick || a.order - b.order);
+    const merged = [];
+    for (const input of ordered) {
+        const prior = merged[merged.length - 1];
+        if (prior?.tick === input.tick) {
+            prior.held = input.held;
+            prior.boost = input.boost;
+            if (input.drop)
+                prior.drop = true;
+        }
+        else {
+            merged.push({ tick: input.tick, held: input.held, boost: input.boost, ...(input.drop ? { drop: true } : {}) });
+        }
+    }
+    race.inputs = merged;
     race.inputCursor = 0;
+    race.held = false;
+    race.boost = false;
 }
 function consumeInputs(race) {
     while (race.inputCursor < race.inputs.length && race.inputs[race.inputCursor].tick <= race.tick) {
-        race.held = race.inputs[race.inputCursor].held;
+        const input = race.inputs[race.inputCursor];
+        const wasBoosting = race.boost;
+        race.held = input.held;
+        race.boost = !!input.boost;
+        if (race.boost && !wasBoosting)
+            race.boostTicks.push(race.tick);
+        if (input.drop) {
+            race.vy = QUICK_DROP_VY;
+            race.dropTicks.push(race.tick);
+        }
         race.inputCursor += 1;
     }
 }
-function stepPilot(race) {
-    // Release: +1,050 px/s². Hold: gravity plus thrust = -700 px/s².
-    race.vy = clamp(race.vy + (race.held ? -700 : 1050) * RACE_DT, -330, 390);
+function stepPilot(race, tunnel) {
+    const acceleration = tunnel
+        ? race.boost ? TUNNEL_BOOST_ACCEL : race.held ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL
+        : race.boost ? NORMAL_BOOST_ACCEL : race.held ? NORMAL_HOLD_ACCEL : NORMAL_RELEASE_ACCEL;
+    const minVy = tunnel
+        ? race.boost ? TUNNEL_BOOST_MIN_VY : WORMHOLE_MIN_VY
+        : race.boost ? NORMAL_BOOST_MIN_VY : NORMAL_MIN_VY;
+    const maxVy = tunnel ? WORMHOLE_MAX_VY : NORMAL_MAX_VY;
+    race.vy = clamp(race.vy + acceleration * RACE_DT, minVy, maxVy);
     race.y += race.vy * RACE_DT;
-    const floor = RACE_HEIGHT - RACE_PILOT_RADIUS;
-    const ceiling = RACE_PILOT_RADIUS;
-    if (race.y < ceiling) {
-        race.y = ceiling;
-        race.vy = Math.max(0, race.vy);
-    }
-    if (race.y > floor) {
-        race.y = floor;
-        race.vy = Math.min(0, race.vy);
+    if (!tunnel) {
+        const ceiling = RACE_PILOT_RADIUS;
+        const floor = RACE_HEIGHT - RACE_PILOT_RADIUS;
+        if (race.y < ceiling) {
+            race.y = ceiling;
+            race.vy = Math.max(0, race.vy);
+        }
+        if (race.y > floor) {
+            race.y = floor;
+            race.vy = Math.min(0, race.vy);
+        }
     }
 }
 export function sweptPointHit(ax0, ay0, ax1, ay1, bx, by, radius) {
@@ -166,7 +276,7 @@ export function sweptPointHit(ax0, ay0, ax1, ay1, bx, by, radius) {
     return ex * ex + ey * ey <= radius * radius;
 }
 export function sweptGateHit(previousPosition, nextPosition, previousY, nextY, ring) {
-    if (ring.x < previousPosition || ring.x > nextPosition)
+    if (!(previousPosition < ring.x && ring.x <= nextPosition))
         return false;
     const span = Math.max(Number.EPSILON, nextPosition - previousPosition);
     const u = clamp((ring.x - previousPosition) / span, 0, 1);
@@ -177,27 +287,30 @@ export function sweptDebrisHit(previousPosition, nextPosition, previousY, nextY,
 }
 function crossNormalObjects(race) {
     let sound = null;
+    let entryRingIndex = null;
     for (let i = 0; i < RACE_RINGS.length; i++) {
         if (race.ringLedger[i] !== "pending")
             continue;
         const ring = RACE_RINGS[i];
         if (ring.x > race.coursePosition)
             break;
-        if (ring.x < race.previousCoursePosition) {
-            race.ringLedger[i] = "missed";
+        if (!(race.previousCoursePosition < ring.x && ring.x <= race.coursePosition))
             continue;
-        }
-        if (sweptGateHit(race.previousCoursePosition, race.coursePosition, race.previousY, race.y, ring)) {
-            race.ringLedger[i] = "passed";
-            race.charge = Math.min(100, race.charge + 20);
-            race.speed = Math.min(RACE_MAX_SPEED, race.speed + 22);
+        const passed = sweptGateHit(race.previousCoursePosition, race.coursePosition, race.previousY, race.y, ring);
+        race.ringLedger[i] = passed ? "passed" : "missed";
+        race.ringDecisionTicks[i] = race.tick;
+        if (passed) {
+            race.charge = Math.min(100, race.charge + RACE_RING_CHARGE);
+            race.speed = Math.min(RACE_MAX_SPEED, race.speed + RACE_RING_SPEED_GAIN);
             race.speedGraceTicks = RACE_SPEED_GRACE_TICKS;
             sound = "ring";
-        }
-        else {
-            race.ringLedger[i] = "missed";
+            if (race.charge >= 100 && race.wormholes < RACE_MAX_WORMHOLES && ring.x <= RACE_LATEST_ENTRY_X) {
+                entryRingIndex = i;
+                break;
+            }
         }
     }
+    const settleThrough = entryRingIndex == null ? race.coursePosition : RACE_RINGS[entryRingIndex].x;
     for (let i = 0; i < RACE_DEBRIS.length; i++) {
         if (race.debrisLedger[i])
             continue;
@@ -206,15 +319,14 @@ function crossNormalObjects(race) {
             race.debrisLedger[i] = true;
             continue;
         }
-        if (debris.x - debris.r > race.coursePosition)
+        if (debris.x - debris.r > settleThrough)
             break;
-        if (race.collisionGraceTicks <= 0 &&
-            sweptDebrisHit(race.previousCoursePosition, race.coursePosition, race.previousY, race.y, debris)) {
+        if (race.collisionGraceTicks <= 0 && sweptDebrisHit(race.previousCoursePosition, settleThrough, race.previousY, race.y, debris)) {
             race.debrisLedger[i] = true;
             race.debrisContacts.push(debris.id);
             race.speed = RACE_BASE_SPEED;
             race.speedGraceTicks = 0;
-            race.charge = Math.max(0, race.charge - 20);
+            race.charge = Math.max(0, race.charge - RACE_DEBRIS_CHARGE_PENALTY);
             race.collisionGraceTicks = RACE_DEBRIS_GRACE_TICKS;
             sound = "debris";
         }
@@ -227,24 +339,28 @@ function crossNormalObjects(race) {
             race.acornLedger[i] = true;
             continue;
         }
-        if (acorn.x - 26 > race.coursePosition)
+        if (acorn.x - 26 > settleThrough)
             break;
-        if (sweptPointHit(race.previousCoursePosition, race.previousY, race.coursePosition, race.y, acorn.x, acorn.y, RACE_PILOT_RADIUS + 10)) {
+        if (sweptPointHit(race.previousCoursePosition, race.previousY, settleThrough, race.y, acorn.x, acorn.y, RACE_PILOT_RADIUS + 10)) {
             race.acornLedger[i] = true;
             race.acorns += 1;
             if (!sound)
                 sound = "acorn";
         }
     }
-    return sound;
+    return { sound, entryRingIndex };
 }
-function beginEntry(race) {
+function beginEntry(race, ringIndex) {
+    const ring = RACE_RINGS[ringIndex];
     race.phase = "entry";
     race.phaseTick = 0;
-    race.phaseStartPosition = race.coursePosition;
-    race.entryY = race.y;
+    race.coursePosition = ring.x;
+    race.phaseStartPosition = ring.x;
+    race.entryRingIndex = ringIndex;
+    race.entryStartY = race.y;
+    race.entryAnchorY = ring.y;
     race.charge = 100;
-    race.entryTicks.push(race.tick + 1);
+    race.entryTicks.push(race.tick);
 }
 function skipTunnelSpan(race, from, to) {
     for (let i = 0; i < RACE_RINGS.length; i++) {
@@ -261,34 +377,89 @@ function skipTunnelSpan(race, from, to) {
             race.acornLedger[i] = true;
     }
 }
+const TUNNEL_SPINE = [
+    { tick: 0, center: 320, half: 144 },
+    { tick: 45, center: 248, half: 126 },
+    { tick: 90, center: 204, half: 96 },
+    { tick: 135, center: 408, half: 108 },
+    { tick: 180, center: 440, half: 88 },
+    { tick: 225, center: 468, half: 104 },
+    { tick: 255, center: 168, half: 88 },
+    { tick: 285, center: 452, half: 96 },
+    { tick: 315, center: 360, half: 120 },
+    { tick: 359, center: 320, half: 144 },
+];
+export function raceTunnelMirrored(race) {
+    return (hash(race.seed ^ 0x4d495252, race.wormholes) & 1) === 1;
+}
+export function raceTunnelGeometry(race, tick) {
+    const at = clamp(tick, 0, RACE_TUNNEL_TICKS - 1);
+    let b = TUNNEL_SPINE[TUNNEL_SPINE.length - 1];
+    let a = TUNNEL_SPINE[TUNNEL_SPINE.length - 2];
+    for (let i = 1; i < TUNNEL_SPINE.length; i++) {
+        if (at <= TUNNEL_SPINE[i].tick) {
+            a = TUNNEL_SPINE[i - 1];
+            b = TUNNEL_SPINE[i];
+            break;
+        }
+    }
+    const mirrored = raceTunnelMirrored(race);
+    const centerAt = (point) => {
+        if (point.tick === 0)
+            return race.entryAnchorY;
+        if (point.tick === 359)
+            return 320;
+        return mirrored ? RACE_HEIGHT - point.center : point.center;
+    };
+    const f = smoothstep((at - a.tick) / Math.max(1, b.tick - a.tick));
+    return { center: centerAt(a) + (centerAt(b) - centerAt(a)) * f, half: a.half + (b.half - a.half) * f };
+}
 export function raceTunnelCenter(race, tick) {
-    const segment = Math.floor(tick / 45);
-    const f = (tick % 45) / 45;
-    const a = 245 + (hash(race.seed + race.wormholes * 97, segment) % 151);
-    const b = 245 + (hash(race.seed + race.wormholes * 97, segment + 1) % 151);
-    const smooth = f * f * (3 - 2 * f);
-    return a + (b - a) * smooth;
+    return raceTunnelGeometry(race, tick).center;
 }
 export function raceTunnelAcorns(race) {
-    return Array.from({ length: 20 }, (_, i) => ({
-        tick: 18 + i * 26,
-        y: 250 + (hash(race.seed + race.wormholes * 193, i + 31) % 141),
-    }));
+    const centerTicks = [30, 75, 120, 165, 210];
+    const boostLine = [
+        { tick: 225, y: 480 }, { tick: 229, y: 465 }, { tick: 234, y: 427 }, { tick: 238, y: 379 },
+        { tick: 242, y: 327 }, { tick: 246, y: 275 }, { tick: 251, y: 210 }, { tick: 255, y: 156 },
+    ];
+    const dropLine = [
+        { tick: 257, y: 156 }, { tick: 264, y: 233 }, { tick: 271, y: 310 }, { tick: 278, y: 387 }, { tick: 285, y: 464 },
+    ];
+    const mirrored = raceTunnelMirrored(race);
+    const mirror = (acorn) => {
+        if (!mirrored)
+            return acorn.y;
+        // Boost and quick-drop physics are intentionally asymmetric. A literal
+        // mirror makes the two points around the phase-255 reversal unreachable,
+        // so the mirrored cusp follows the attainable drop-then-boost trajectory.
+        if (acorn.tick === 255)
+            return 429;
+        if (acorn.tick === 257)
+            return 433;
+        return RACE_HEIGHT - acorn.y;
+    };
+    return [
+        ...centerTicks.map((tick) => ({ tick, y: raceTunnelGeometry(race, tick).center })),
+        ...boostLine.map((a) => ({ tick: a.tick, y: mirror(a) })),
+        ...dropLine.map((a) => ({ tick: a.tick, y: mirror(a) })),
+    ];
 }
 function stepTunnel(race) {
-    stepPilot(race);
-    const center = raceTunnelCenter(race, race.phaseTick);
-    const half = 150;
-    const top = center - half + RACE_PILOT_RADIUS;
-    const bottom = center + half - RACE_PILOT_RADIUS;
+    stepPilot(race, true);
+    const geometry = raceTunnelGeometry(race, race.phaseTick);
+    const top = geometry.center - geometry.half + RACE_PILOT_RADIUS;
+    const bottom = geometry.center + geometry.half - RACE_PILOT_RADIUS;
     if (race.y < top || race.y > bottom) {
+        const newContact = race.wallSuppressTicks <= 0;
         race.y = clamp(race.y, top, bottom);
         race.vy = 0;
+        if (newContact)
+            race.wallScrapeTicks.push(race.tick);
         race.wallSuppressTicks = 15;
     }
-    else if (race.wallSuppressTicks > 0) {
+    else if (race.wallSuppressTicks > 0)
         race.wallSuppressTicks -= 1;
-    }
     const cycle = race.wormholes;
     const acorns = raceTunnelAcorns(race);
     const ledger = race.tunnelAcornLedger[cycle] ?? (race.tunnelAcornLedger[cycle] = acorns.map(() => false));
@@ -296,50 +467,54 @@ function stepTunnel(race) {
     for (let i = 0; i < acorns.length; i++) {
         if (!ledger[i] && acorns[i].tick === race.phaseTick) {
             ledger[i] = true;
-            if (race.wallSuppressTicks <= 0 && Math.abs(race.y - acorns[i].y) <= RACE_PILOT_RADIUS + 12) {
+            if (race.wallSuppressTicks <= 0 && Math.abs(race.y - acorns[i].y) <= RACE_TUNNEL_PICKUP_RADIUS) {
                 race.acorns += 1;
                 sound = "acorn";
             }
         }
     }
-    race.coursePosition = race.phaseStartPosition + RACE_TUNNEL_DISTANCE * ((race.phaseTick + 1) / RACE_TUNNEL_TICKS);
+    race.coursePosition = race.phaseStartPosition
+        + RACE_TUNNEL_DISTANCE * ((race.phaseTick + 1) / RACE_TUNNEL_TICKS);
     race.speed = RACE_TUNNEL_SPEED;
     return sound;
 }
 export function stepRace(race) {
-    if (race.phase === "finish") {
+    if (race.phase === "finish")
         return { sound: null, finished: false };
-    }
-    consumeInputs(race); // Input transitions are authoritative before physics.
+    consumeInputs(race);
     race.previousCoursePosition = race.coursePosition;
     race.previousY = race.y;
     if (race.collisionGraceTicks > 0)
         race.collisionGraceTicks -= 1;
     let sound = null;
     if (race.phase === "normal") {
-        stepPilot(race);
+        stepPilot(race, false);
         if (race.speedGraceTicks > 0)
             race.speedGraceTicks -= 1;
         else
-            race.speed = Math.max(RACE_BASE_SPEED, race.speed - 4 * RACE_DT);
+            race.speed = Math.max(RACE_BASE_SPEED, race.speed - RACE_SPEED_DECAY_PER_SECOND * RACE_DT);
         race.coursePosition = Math.min(RACE_LENGTH, race.coursePosition + race.speed * RACE_DT);
-        sound = crossNormalObjects(race);
-        if (race.charge >= 100 && race.wormholes < RACE_MAX_WORMHOLES) {
-            beginEntry(race);
+        const crossing = crossNormalObjects(race);
+        sound = crossing.sound;
+        if (crossing.entryRingIndex != null) {
+            beginEntry(race, crossing.entryRingIndex);
             sound = "entry";
         }
     }
     else if (race.phase === "entry") {
-        race.phaseTick += 1;
-        const f = race.phaseTick / RACE_ENTRY_TICKS;
-        const eased = f * f * (3 - 2 * f);
-        race.y = race.entryY + (RACE_HEIGHT * 0.5 - race.entryY) * eased;
+        const f = smoothstep((race.phaseTick - 24) / 11);
+        race.y = race.phaseTick < 24 ? race.entryStartY : race.entryStartY + (race.entryAnchorY - race.entryStartY) * f;
+        if (race.phaseTick >= 35)
+            race.y = race.entryAnchorY;
         race.vy = 0;
+        race.phaseTick += 1;
         if (race.phaseTick >= RACE_ENTRY_TICKS) {
             race.phase = "tunnel";
             race.phaseTick = 0;
             race.phaseStartPosition = race.coursePosition;
-            race.tunnelAcornLedger[race.wormholes] = Array(20).fill(false);
+            race.y = race.entryAnchorY;
+            race.charge = 0;
+            race.tunnelAcornLedger[race.wormholes] = Array(18).fill(false);
         }
     }
     else if (race.phase === "tunnel") {
@@ -352,23 +527,24 @@ export function stepRace(race) {
             race.phase = "return";
             race.phaseTick = 0;
             race.returnY = clamp(race.y, RACE_RETURN_MARGIN, RACE_HEIGHT - RACE_RETURN_MARGIN);
+            race.y = race.returnY;
+            race.vy = 0;
         }
     }
     else if (race.phase === "return") {
-        race.phaseTick += 1;
-        const f = race.phaseTick / RACE_RETURN_TICKS;
-        const eased = f * f * (3 - 2 * f);
-        race.y += (race.returnY - race.y) * eased;
+        race.y = race.returnY;
         race.vy = 0;
+        race.phaseTick += 1;
         if (race.phaseTick >= RACE_RETURN_TICKS) {
-            race.y = race.returnY;
             race.phase = "normal";
             race.phaseTick = 0;
             race.wormholes += 1;
             race.charge = 0;
             race.speed = RACE_RETURN_SPEED;
             race.speedGraceTicks = 0;
-            race.collisionGraceTicks = RACE_RETURN_GRACE_TICKS;
+            // Normal-flight authority decrements before collision checks. Arm one
+            // extra count so all documented 21 post-return steps remain protected.
+            race.collisionGraceTicks = RACE_RETURN_GRACE_TICKS + 1;
             sound = "return";
         }
     }
@@ -386,9 +562,9 @@ export function stepRace(race) {
 export function raceGrade(finishTicks) {
     if (finishTicks == null)
         return 0;
-    if (finishTicks <= 8700)
+    if (finishTicks <= RACE_THREE_STAR_TICKS)
         return 3;
-    if (finishTicks <= 10200)
+    if (finishTicks <= RACE_TWO_STAR_TICKS)
         return 2;
     return 1;
 }
@@ -405,7 +581,11 @@ export function raceSignature(race) {
         finishTicks: race.finishTicks,
         acorns: race.acorns,
         ringLedger: race.ringLedger.join(","),
+        ringDecisionTicks: race.ringDecisionTicks.map((tick) => tick ?? -1),
         debrisContacts: [...race.debrisContacts],
         entryTicks: [...race.entryTicks],
+        boostTicks: [...race.boostTicks],
+        dropTicks: [...race.dropTicks],
+        wallScrapeTicks: [...race.wallScrapeTicks],
     };
 }

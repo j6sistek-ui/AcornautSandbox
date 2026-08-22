@@ -1890,13 +1890,17 @@ function paintIllustrated(
     const pivot = TAIL_PIVOT[suit.id];
     const tapFrames = art?.suitTap?.[suit.id] ?? [];
     const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
+    // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
+    // so during the burst the frame IS the pilot: no rig tail, no body
+    // layer, no pulse. Smaller banks keep the layered treatment below.
+    const fullTap = tapAnimT >= 0 && tapFrames.length === 16;
     let tailPose: Sprite | HTMLImageElement = rigT;
     let tailPoseRot = tailRot;
     if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
       const bend = bounceAnimDir * bounceAnimStrength
         * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
-    } else if (tapAnimT >= 0 && tapTailFrames.length === 12) {
+    } else if (!fullTap && tapAnimT >= 0 && tapTailFrames.length === 12) {
       // One tail drawing per 30 fps presentation frame. The sequence bends
       // progressively from the planted hinge to the tip: launch drag, delayed
       // whip, one rebound, settle. A small share of the live spring remains so
@@ -1914,9 +1918,9 @@ function paintIllustrated(
       // while the painted recovery is still in progress.
       tailPoseRot *= 0.48;
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
-    } else if (tapAnimT >= 0 && pivot) {
+    } else if (!fullTap && tapAnimT >= 0 && pivot) {
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
-    } else {
+    } else if (!fullTap) {
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
     }
     let poseA: Sprite | HTMLImageElement = rigB;
@@ -1945,7 +1949,14 @@ function paintIllustrated(
         tapPoseRegistration = ECLIPSE_TAP_REGISTRATION[pose - 1] ?? null;
       }
     }
-    if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
+    if (fullTap) {
+      // frame registration comes from the bank's own first frame, so every
+      // frame lands at the same scale and the character never pulses in size
+      const idx = Math.min(15, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 16));
+      const ref16 = (tapFrames[0] as Sprite).box ?? ref;
+      drawRigLayer(ctx, tapFrames[idx], ref16, x, y, size, 0, undefined, halo);
+      if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    } else if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
       // Universal body impulse: scale from the tail hinge, not the canvas
       // centre. The model stretches forward a few pixels and rebounds without
       // repainting armor, anatomy, face, or the helmet attachment.
