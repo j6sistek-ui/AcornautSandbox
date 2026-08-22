@@ -13,7 +13,11 @@ export const IS_BETA =
   typeof window !== "undefined" &&
   (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
 
-export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}`;
+// Stamped by export-sandbox.mjs at build time, so two approvals of the
+// same day are still tellable apart on the Profile footer. Unbuilt source
+// (labs, tests) shows no stamp rather than a stale one.
+export const BUILD_TIME = "__BUILD_TIME__";
+export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
