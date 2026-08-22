@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=78";
-import { sfx, unlockAudio, music } from "./audio.js?v=78";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=78";
-import { drawHud, drawWorld } from "./draw.js?v=78";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=78";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=78";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=78";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=78";
-import { raceViewport } from "./race-viewport.js?v=78";
+import { emptyArt, loadArt } from "./art.js?v=79";
+import { sfx, unlockAudio, music } from "./audio.js?v=79";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=79";
+import { drawHud, drawWorld } from "./draw.js?v=79";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=79";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=79";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, updateWorld, } from "./sim.js?v=79";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=79";
+import { raceViewport } from "./race-viewport.js?v=79";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -674,4 +674,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=78";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=79";

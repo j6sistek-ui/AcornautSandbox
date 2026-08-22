@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=78";
-import { modsUnlocked, writeSave } from "./save.js?v=78";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=78";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=78";
-import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=78";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=78";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=78";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=79";
+import { modsUnlocked, writeSave } from "./save.js?v=79";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=79";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=79";
+import { createRaceState, queueRaceInput, stepRace } from "./race.js?v=79";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=79";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=79";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -151,8 +151,45 @@ export function resizeWorld(w, W, H) {
         w.palPos.y *= scaleY;
         w.lastGapY *= scaleY;
     }
+    // every planet mode — anything that is not the tunnel, which remapped
+    // itself above, and not a race, which owns its own viewport
+    const remapPlanets = w.flight !== "tunnel" && !w.tut && !w.race &&
+        oldW > 0 && oldH > 0 && (oldW !== W || oldH !== H);
     w.W = W;
     w.H = H;
+    // Rotating mid-run used to leave every planet mode in its OLD
+    // coordinates: a run spawned portrait kept gates laid out for an
+    // 844px-tall field, so a landscape window showed scattered planets,
+    // no debris, and gaps it could not reach (audit finding S3). The
+    // whole live world now remaps into the new field — gate centres
+    // scale and re-clamp, debris seals rebuild for the new bands, and
+    // the pilot keeps their relative altitude. The scripted tutorial is
+    // exempt: its beats are authored for the field they started in.
+    if (remapPlanets) {
+        const scaleY = H / oldH;
+        const shiftX = W * PHYS.squirrelX - oldW * PHYS.squirrelX;
+        const margin = 72;
+        const env = ENVS[w.envB];
+        for (const p of w.planets) {
+            p.x += shiftX;
+            p.gapY = Math.max(margin + p.gap / 2, Math.min(H - margin - p.gap / 2, p.gapY * scaleY));
+            p.blockers = sealBlockers(w, env, p.gapY, p.gap);
+        }
+        for (const a of w.pickups) {
+            a.x += shiftX;
+            a.y = Math.max(16, Math.min(H - 16, a.y * scaleY));
+        }
+        for (const pt of w.particles) {
+            pt.x += shiftX;
+            pt.y *= scaleY;
+        }
+        w.squirrel.y = Math.max(20, Math.min(H - 20, w.squirrel.y * scaleY));
+        w.palPos.x += shiftX;
+        w.palPos.y *= scaleY;
+        w.lastGapY = Math.max(margin + 84, Math.min(H - margin - 84, w.lastGapY * scaleY));
+        // keep the spawner's look-ahead anchored to the new right edge
+        w.lastSpawnX += W - oldW;
+    }
     if (w.race) {
         const viewport = raceViewport(W, H);
         w.squirrel.y = raceViewportY(viewport, w.race.y);
@@ -301,6 +338,30 @@ function sealBlockers(w, env, gapY, gap) {
     y = gapY + gap / 2 + r * 2 + pad;
     for (let n = 0; y < w.H - edge && n < 12; n++, y += step)
         put(y, n);
+    // A short field's bands hold one or two rocks vertically, which still
+    // reads as empty sky. Widen the seal instead: a row of smaller rocks
+    // flanks each planet along the screen edge, so landscape flights meet
+    // the same debris field portrait always had — visible AND solid.
+    if (short) {
+        const row = (yy, count) => {
+            for (let n = 0; n < count; n++) {
+                const side = (n % 2) * 2 - 1;
+                blockers.push({
+                    y: yy + (Math.random() - 0.5) * 10,
+                    r: 14 + Math.random() * 7,
+                    kind: pickKind(w),
+                    xOff: side * (30 + Math.floor(n / 2) * 26 + Math.random() * 9),
+                    debris: pickDebris(env),
+                });
+            }
+        };
+        const topBand = gapY - gap / 2 - r * 2;
+        const botBand = w.H - (gapY + gap / 2 + r * 2);
+        if (topBand > 24)
+            row(Math.max(16, topBand - 22), 4);
+        if (botBand > 24)
+            row(Math.min(w.H - 16, w.H - botBand + 22), 4);
+    }
     return blockers;
 }
 // ——— THE SCRIPTED COURSE ———
