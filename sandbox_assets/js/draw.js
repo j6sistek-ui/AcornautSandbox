@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=108";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=108";
-import { proceduralSky } from "./sky-gen.js?v=108";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=108";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=108";
-import { tunnelBoundsAt } from "./sim.js?v=108";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=108";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=108";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=109";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=109";
+import { proceduralSky } from "./sky-gen.js?v=109";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=109";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=109";
+import { tunnelBoundsAt } from "./sim.js?v=109";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=109";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=109";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1996,6 +1996,21 @@ const DOME = {
     // on this shared head family (it makes the same error on approved Aurora).
     // These sockets apply Aurora's hand-reviewed correction to each new suit's
     // measured head, preserving the small pose-specific vertical differences.
+    // Flight's banks come from a motion TRANSFER of Eclipse's own arc, so
+    // its head sits differently in every frame and each one carries its own
+    // anchor, exactly as Eclipse's do.
+    "flight-asc-1": [174.4, 88.6, 32.6],
+    "flight-asc-2": [178.4, 87.0, 32.6],
+    "flight-asc-3": [174.9, 90.7, 32.6],
+    "flight-asc-4": [176.7, 87.0, 32.6],
+    "flight-asc-5": [174.4, 89.2, 32.6],
+    "flight-asc-6": [176.8, 86.2, 32.6],
+    "flight-asc-7": [176.2, 86.6, 32.6],
+    "flight-desc-1": [179.0, 93.0, 32.6],
+    "flight-desc-2": [178.4, 95.6, 32.6],
+    "flight-desc-3": [173.9, 110.8, 32.6],
+    "flight-desc-4": [171.8, 113.7, 32.6],
+    "flight-desc-5": [164.2, 138.4, 32.6],
     "suit:cinderforge": [183, 93, 44],
     "suit:groveguard": [183, 93, 44],
     "suit:cosmic": [183, 93, 44],
