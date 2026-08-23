@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=106";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=106";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=107";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=107";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -32,7 +32,7 @@ export function defaultSave() {
         allStars: false,
         musicOff: false,
         voltAltJump: false,
-        eclipseMotionMode: 0,
+        eclipseMotionMode: 2,
         experimentalRaceRecords: {},
     };
 }
