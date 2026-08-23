@@ -571,6 +571,12 @@
     body.ac-beta .ac-rows .ac-row { border-bottom-color: rgba(170,140,240,.16); }
     body.ac-beta .ac-switch { background: #241740; border-color: rgba(170,140,240,.3); }
     body.ac-beta .ac-codein { background: #1a1136; border-color: rgba(170,140,240,.3); }
+    /* hub-and-spoke: the beta menus' way home, and room where the bar was */
+    .ac-backbtn { flex: none; width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center;
+      background: rgba(30,20,62,.85); border: 1px solid rgba(170,140,240,.3); color: #cfd8ea; align-self: center; }
+    .ac-backbtn:active { transform: scale(.94); }
+    body.ac-beta .ac-menu .ac-sheet-scroll { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+    body.ac-beta .ac-coach { bottom: calc(20px + env(safe-area-inset-bottom)); }
   </style>
 </head>
 <body>

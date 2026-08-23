@@ -283,6 +283,7 @@ export async function bootStandalone(root) {
     ];
     const I_LAUNCH = ["M5 13.5 12 4l7 9.5", "M12 4v16", "M8.5 20h7"];
     const I_CHEV = ["m9 5 7 7-7 7"];
+    const I_BACK = ["m15 5-7 7 7 7"];
     const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
     const I_GEAR = [
         "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -293,6 +294,15 @@ export async function bootStandalone(root) {
     // whichever counter that screen is actually about.
     function header(kicker, title, aside) {
         const h = el("header", "ac-menuhead");
+        if (IS_BETA) {
+            // hub-and-spoke: the beta has no tab bar, so every menu carries
+            // its own door back to the hub
+            const back = el("button", "ac-backbtn");
+            back.setAttribute("aria-label", "Back to home");
+            back.append(icon(I_BACK, 20));
+            back.onclick = () => engine.open("title");
+            h.append(back);
+        }
         const t = el("div", "ac-menuheadtext");
         t.append(el("p", "ac-kicker", kicker), el("h2", "ac-menutitle", title));
         h.append(t);
@@ -900,7 +910,9 @@ export async function bootStandalone(root) {
         const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
         const pal = PALS.find((p) => p.id === s.equippedPal);
         const box = el("div", "ac-menu");
-        box.append(header("Customize your squirrel", "Hangar", headAside(s.acorns)));
+        box.append(IS_BETA
+            ? header("Suits & gear", "Loadout", headAside(s.acorns))
+            : header("Customize your squirrel", "Hangar", headAside(s.acorns)));
         // The equipped rig stays pinned above the categories, so the preview
         // is never a mystery while you shop.
         const load = el("div", "ac-rig");
@@ -1088,7 +1100,9 @@ export async function bootStandalone(root) {
             box.append(coach("Now the ION HELMET \u2014 tap to equip"));
         else if (s.guide === "levels")
             box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
-        box.append(scroll, tabbar("hangar"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("hangar"));
         return box;
     }
     // Every rank earns its OWN emblem — a cadet chevron through the
@@ -1483,7 +1497,9 @@ export async function bootStandalone(root) {
         }
         if (sv.guide === "levels")
             box.append(coach("Fly MISSION 1 \u2014 tap level 1, then TAKE FLIGHT"));
-        box.append(scroll, tabbar("log"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
             const def = LEVELS.find((l) => l.id === chartLevel) ?? (IS_BETA ? experimentalRaceById(chartLevel) : null);
@@ -1741,7 +1757,9 @@ export async function bootStandalone(root) {
                 ? "Premium items are unlocked for everyone during the beta."
                 : "Premium items arrive with the full release."));
         }
-        box.append(scroll, tabbar("shop"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("shop"));
         return box;
     }
     function drawProfile() {
@@ -1815,7 +1833,9 @@ export async function bootStandalone(root) {
             news.append(r);
         }
         scroll.append(news, el("p", "ac-fine ac-mid", `${BUILD} · ${GAME_VERSION}`));
-        box.append(scroll, tabbar("profile"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("profile"));
         return box;
     }
     function drawHelp() {
@@ -1941,7 +1961,8 @@ export async function bootStandalone(root) {
             engine.startOver();
         };
         scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
-        box.append(tabbar("none"));
+        if (!IS_BETA)
+            box.append(tabbar("none"));
         return box;
     }
     engine.subscribe(render);
