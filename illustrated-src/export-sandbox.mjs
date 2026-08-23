@@ -85,11 +85,23 @@ for (const dir of [root, pages]) {
   const html = readFileSync(srcIdx, "utf8")
     .replaceAll('"./', '"../')
     .replace(/<title>[^<]*<\/title>/, "<title>Acornaut · Beta</title>")
+    // the beta gets its OWN manifest, scoped to /beta/ — pointing at the
+    // root manifest made "Add to Home Screen" install the LIVE game
+    .replace('href="../manifest.webmanifest"', 'href="./manifest.webmanifest"')
     .replace(
       'window.__ACORNAUT_ART__',
       'window.__ACORNAUT_BETA__ = true;\n    window.__ACORNAUT_ART__',
     );
   mkdirSync(outDir, { recursive: true });
   writeFileSync(join(outDir, "index.html"), html);
+
+  const rootManifest = join(dir, dir === pages ? "manifest.webmanifest" : "sandbox_assets/manifest.webmanifest");
+  const man = JSON.parse(readFileSync(rootManifest, "utf8"));
+  man.name = "Acornaut Beta";
+  man.short_name = "Acornaut β";
+  man.start_url = "./";
+  man.scope = "./";
+  man.icons = (man.icons || []).map((i) => ({ ...i, src: `../${i.src}` }));
+  writeFileSync(join(outDir, "manifest.webmanifest"), JSON.stringify(man, null, 2) + "\n");
 }
 console.log(`exported js + js${ver} to sandbox_assets and docs (+ beta pages)`);
