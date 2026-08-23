@@ -129,6 +129,59 @@ def supersampled_alpha(alpha):
     return np.asarray(down)
 
 
+def fill_pinholes(a):
+    """Restore paint the cutout pass ate out of the middle of a sprite.
+
+    Some sprites are peppered with tiny transparent specks INSIDE an
+    otherwise solid body — the sky shows through them in game, which is
+    what "specks of colour not native to the planet" turns out to be.
+
+    Three conditions together separate this from every kind of
+    transparency that is meant to be there:
+
+    * the speck sits inside the filled silhouette, eroded well clear of
+      the rim, so an antialiased edge can never qualify;
+    * it is SMALL (<= 20px). A single large opening is negative space —
+      the gap between a limb and a body, the eye of a ring — and is left
+      alone;
+    * every pixel ringing it is FULLY opaque. This is the condition that
+      protects deliberately translucent art: a jellyfish, a vortex swirl
+      and a glowing rim are translucent in their surroundings too, so
+      none of their soft interiors can pass.
+
+    The paint underneath survives (the pass zeroed alpha, not colour), so
+    restoring alpha restores the original artwork. Only where a speck was
+    left with nearly nothing does colour come from its nearest solid
+    neighbour.
+    """
+    alpha = a[:, :, 3]
+    filled = ndimage.binary_fill_holes(alpha > 60)
+    inner = ndimage.binary_erosion(filled, iterations=3)
+    candidates = inner & (alpha < 200)
+    if not candidates.any():
+        return 0
+    labels, count = ndimage.label(candidates)
+    holes = np.zeros_like(candidates)
+    for index in range(1, count + 1):
+        blob = labels == index
+        if int(blob.sum()) > 20:
+            continue
+        ring = ndimage.binary_dilation(blob, iterations=2) & ~blob
+        if not ring.any() or alpha[ring].mean() < 250:
+            continue
+        holes |= blob
+    if not holes.any():
+        return 0
+    # anything left almost fully transparent has no colour worth keeping
+    bare = holes & (alpha < 40)
+    if bare.any():
+        solid = alpha >= 250
+        _, nearest = ndimage.distance_transform_edt(~solid, return_indices=True)
+        a[:, :, :3][bare] = a[:, :, :3][nearest[0], nearest[1]][bare]
+    a[:, :, 3][holes] = 255
+    return int(holes.sum())
+
+
 def edge_rgb_from_interior(a, alpha):
     """Give translucent pixels real object colour instead of matte colour."""
     core = alpha >= 192
