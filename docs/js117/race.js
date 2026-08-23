@@ -3,7 +3,7 @@
 // This module knows nothing about canvas size, render cadence, DOM events, or
 // the campaign. Feed it semantic input snapshots stamped with simulation ticks
 // and call stepRace exactly once per 1/60-second live race step.
-import { QUICK_DROP_VY, WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=116";
+import { QUICK_DROP_VY } from "./control-constants.js?v=117";
 export const RACE_EVENT_ID = "prototype-chapter-1";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
@@ -27,6 +27,16 @@ export const RACE_TUNNEL_DISTANCE = 3375;
 export const RACE_ENTRY_TICKS = 48;
 export const RACE_TUNNEL_TICKS = 360;
 export const RACE_RETURN_TICKS = 36;
+export const RACE_TUNNEL_DRAG_TRAVERSAL_TICKS = 18;
+/** Maximum canonical Y travel per fixed step: one full 640px field in 18 ticks. */
+export const RACE_TUNNEL_DRAG_STEP = RACE_HEIGHT / RACE_TUNNEL_DRAG_TRAVERSAL_TICKS;
+export const RACE_TUNNEL_RING_TICKS = [36, 72, 108, 144, 180, 216, 252, 288, 324];
+export const RACE_TUNNEL_RING_APERTURE = 58;
+export const RACE_TUNNEL_PERFECT_APERTURE = 24;
+export const RACE_TUNNEL_RING_CLEARANCE = RACE_TUNNEL_RING_APERTURE - RACE_PILOT_RADIUS;
+export const RACE_TUNNEL_PERFECT_CLEARANCE = RACE_TUNNEL_PERFECT_APERTURE - RACE_PILOT_RADIUS;
+/** One pass is one unit and one perfect is two; 18 units span return speed to max speed. */
+export const RACE_TUNNEL_QUALITY_SPEED_GAIN = (RACE_MAX_SPEED - RACE_RETURN_SPEED) / (RACE_TUNNEL_RING_TICKS.length * 2);
 export const RACE_SPEED_GRACE_TICKS = 90;
 export const RACE_SPEED_DECAY_PER_SECOND = 13.5;
 export const RACE_RETURN_GRACE_TICKS = 21;
@@ -37,12 +47,13 @@ export const RACE_DEBRIS_CHARGE_PENALTY = 10;
 export const RACE_MAX_INTERACTIVE_GAP = 540;
 export const RACE_TWO_STAR_TICKS = 6900;
 export const RACE_THREE_STAR_TICKS = 5760;
-/** Count-derived content ceiling (42 course + 3 x 18 tunnel), not a promised single-run route. */
-export const RACE_MAX_ACORNS = 96;
+/** Hyper Run's authored course pickups; the alignment-only tunnel has no acorns. */
+export const RACE_MAX_ACORNS = 42;
 export const RACE_READY_COPY = [
     "HOLD TO RISE",
     "DOUBLE-TAP + HOLD TO BOOST",
     "SWIPE DOWN TO DIVE",
+    "WORMHOLE: PRESS + DRAG UP / DOWN",
 ];
 // Smallest tunnel half-width (88) plus half the 16-pixel pilot radius (8).
 // This remains a geometric derivation, not an alias for the pilot screen X.
@@ -53,9 +64,6 @@ const NORMAL_BOOST_ACCEL = -2100;
 const NORMAL_MIN_VY = -330;
 const NORMAL_BOOST_MIN_VY = -520;
 const NORMAL_MAX_VY = 390;
-const TUNNEL_BOOST_ACCEL = -3500;
-const TUNNEL_BOOST_MIN_VY = -780;
-const RACE_TUNNEL_PICKUP_RADIUS = RACE_PILOT_RADIUS + 12;
 export const RACE_LATEST_ENTRY_X = RACE_LENGTH - RACE_TUNNEL_DISTANCE;
 const RING_POINTS = [
     [600, 320], [1020, 280], [1440, 360], [1880, 240], [2320, 400], [2780, 200], [3240, 440],
@@ -179,6 +187,7 @@ export function createRaceState(seed = RACE_SEED) {
         vy: 0,
         held: false,
         boost: false,
+        tunnelDragY: null,
         inputs: [],
         inputCursor: 0,
         speed: RACE_BASE_SPEED,
@@ -195,7 +204,8 @@ export function createRaceState(seed = RACE_SEED) {
         debrisLedger: RACE_DEBRIS.map(() => false),
         debrisContacts: [],
         acornLedger: RACE_ACORNS.map(() => false),
-        tunnelAcornLedger: [],
+        tunnelRingLedger: [],
+        tunnelRingDecisionTicks: [],
         acorns: 0,
         entryTicks: [],
         boostTicks: [],
@@ -206,31 +216,61 @@ export function createRaceState(seed = RACE_SEED) {
         finishEmitted: false,
     };
 }
+function normalizeDragY(dragY) {
+    if (dragY === undefined || dragY === null)
+        return dragY;
+    if (!Number.isFinite(dragY))
+        throw new RangeError("Hyper Run dragY must be finite, null, or undefined");
+    return Math.round(clamp(dragY, 0, RACE_HEIGHT));
+}
 function validInput(input) {
     if (input.boost && !input.held)
         throw new RangeError("Hyper Run boost requires held=true");
+    normalizeDragY(input.dragY);
 }
-/** Same-tick state is last-writer-wins; drop is OR-preserved. */
+/** Same-tick state and drag target are last-writer-wins; drop is OR-preserved. */
 export function queueRaceInput(race, input, tick = race.tick) {
     validInput(input);
     const at = Math.max(0, Math.floor(tick));
+    const hasDragY = input.dragY !== undefined;
+    const dragY = normalizeDragY(input.dragY);
     const prior = race.inputs[race.inputs.length - 1];
     if (prior && prior.tick === at) {
         prior.held = input.held;
         prior.boost = input.boost;
         if (input.drop)
             prior.drop = true;
+        if (hasDragY)
+            prior.dragY = dragY;
         return;
     }
-    const lastHeld = prior?.held ?? race.held;
-    const lastBoost = prior?.boost ?? race.boost;
-    if (!input.drop && lastHeld === input.held && lastBoost === input.boost)
+    const hasPendingInput = race.inputCursor < race.inputs.length;
+    const lastHeld = hasPendingInput ? prior?.held ?? race.held : race.held;
+    const lastBoost = hasPendingInput ? prior?.boost ?? race.boost : race.boost;
+    // Once the log is fully consumed, authority state is the effective state.
+    // Entry/tunnel/return boundaries reset flight and drag controls. Consumed
+    // values must not suppress a fresh press or the next cycle's first drag.
+    let lastDragY = race.tunnelDragY;
+    if (hasPendingInput) {
+        // held/boost-only transitions intentionally omit dragY. Walk the unconsumed
+        // suffix so dedupe compares against the effective queued drag target, not
+        // an unrelated live target or only the final snapshot's optional field.
+        for (let i = race.inputs.length - 1; i >= race.inputCursor; i -= 1) {
+            if (race.inputs[i].dragY !== undefined) {
+                lastDragY = race.inputs[i].dragY;
+                break;
+            }
+        }
+    }
+    if (!input.drop && lastHeld === input.held && lastBoost === input.boost
+        && (!hasDragY || lastDragY === dragY))
         return;
     race.inputs.push({
         tick: at,
         held: input.held,
         boost: input.boost,
         ...(input.drop ? { drop: true } : {}),
+        ...(hasDragY ? { dragY: dragY } : {}),
     });
 }
 export function queueRaceHeld(race, held, tick = race.tick) {
@@ -238,9 +278,12 @@ export function queueRaceHeld(race, held, tick = race.tick) {
 }
 export function loadRaceInputs(race, inputs) {
     const ordered = inputs.map((input, order) => {
+        const hasDragY = input.dragY !== undefined;
         const normalized = {
             tick: Math.max(0, Math.floor(input.tick)), held: !!input.held, boost: !!input.boost,
-            ...(input.drop ? { drop: true } : {}), order,
+            ...(input.drop ? { drop: true } : {}),
+            ...(hasDragY ? { dragY: normalizeDragY(input.dragY) } : {}),
+            order,
         };
         validInput(normalized);
         return normalized;
@@ -253,52 +296,61 @@ export function loadRaceInputs(race, inputs) {
             prior.boost = input.boost;
             if (input.drop)
                 prior.drop = true;
+            if (input.dragY !== undefined)
+                prior.dragY = input.dragY;
         }
         else {
-            merged.push({ tick: input.tick, held: input.held, boost: input.boost, ...(input.drop ? { drop: true } : {}) });
+            merged.push({
+                tick: input.tick,
+                held: input.held,
+                boost: input.boost,
+                ...(input.drop ? { drop: true } : {}),
+                ...(input.dragY !== undefined ? { dragY: input.dragY } : {}),
+            });
         }
     }
     race.inputs = merged;
     race.inputCursor = 0;
     race.held = false;
     race.boost = false;
+    race.tunnelDragY = null;
 }
 function consumeInputs(race) {
     while (race.inputCursor < race.inputs.length && race.inputs[race.inputCursor].tick <= race.tick) {
         const input = race.inputs[race.inputCursor];
-        const wasBoosting = race.boost;
-        race.held = input.held;
-        race.boost = !!input.boost;
-        if (race.boost && !wasBoosting)
-            race.boostTicks.push(race.tick);
-        if (input.drop) {
-            race.vy = QUICK_DROP_VY;
-            race.dropTicks.push(race.tick);
+        if (input.dragY !== undefined)
+            race.tunnelDragY = input.dragY;
+        // Hold, boost, and drop belong to normal flight. The tunnel consumes only
+        // its explicit drag target, so stale gesture state cannot alter its path.
+        if (race.phase === "normal") {
+            const wasBoosting = race.boost;
+            race.held = input.held;
+            race.boost = !!input.boost;
+            if (race.boost && !wasBoosting)
+                race.boostTicks.push(race.tick);
+            if (input.drop) {
+                race.vy = QUICK_DROP_VY;
+                race.dropTicks.push(race.tick);
+            }
         }
         race.inputCursor += 1;
     }
 }
-function stepPilot(race, tunnel) {
-    const acceleration = tunnel
-        ? race.boost ? TUNNEL_BOOST_ACCEL : race.held ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL
-        : race.boost ? NORMAL_BOOST_ACCEL : race.held ? NORMAL_HOLD_ACCEL : NORMAL_RELEASE_ACCEL;
-    const minVy = tunnel
-        ? race.boost ? TUNNEL_BOOST_MIN_VY : WORMHOLE_MIN_VY
-        : race.boost ? NORMAL_BOOST_MIN_VY : NORMAL_MIN_VY;
-    const maxVy = tunnel ? WORMHOLE_MAX_VY : NORMAL_MAX_VY;
+function stepPilot(race) {
+    const acceleration = race.boost ? NORMAL_BOOST_ACCEL : race.held ? NORMAL_HOLD_ACCEL : NORMAL_RELEASE_ACCEL;
+    const minVy = race.boost ? NORMAL_BOOST_MIN_VY : NORMAL_MIN_VY;
+    const maxVy = NORMAL_MAX_VY;
     race.vy = clamp(race.vy + acceleration * RACE_DT, minVy, maxVy);
     race.y += race.vy * RACE_DT;
-    if (!tunnel) {
-        const ceiling = RACE_PILOT_RADIUS;
-        const floor = RACE_HEIGHT - RACE_PILOT_RADIUS;
-        if (race.y < ceiling) {
-            race.y = ceiling;
-            race.vy = Math.max(0, race.vy);
-        }
-        if (race.y > floor) {
-            race.y = floor;
-            race.vy = Math.min(0, race.vy);
-        }
+    const ceiling = RACE_PILOT_RADIUS;
+    const floor = RACE_HEIGHT - RACE_PILOT_RADIUS;
+    if (race.y < ceiling) {
+        race.y = ceiling;
+        race.vy = Math.max(0, race.vy);
+    }
+    if (race.y > floor) {
+        race.y = floor;
+        race.vy = Math.min(0, race.vy);
     }
 }
 export function sweptPointHit(ax0, ay0, ax1, ay1, bx, by, radius) {
@@ -413,6 +465,9 @@ function beginEntry(race, ringIndex) {
     race.entryStartY = race.y;
     race.entryAnchorY = ring.y;
     race.charge = 100;
+    race.held = false;
+    race.boost = false;
+    race.tunnelDragY = null;
     race.entryTicks.push(race.tick);
 }
 function skipTunnelSpan(race, from, to) {
@@ -470,36 +525,46 @@ export function raceTunnelGeometry(race, tick) {
 export function raceTunnelCenter(race, tick) {
     return raceTunnelGeometry(race, tick).center;
 }
-export function raceTunnelAcorns(race) {
-    const centerTicks = [30, 75, 120, 165, 210];
-    const boostLine = [
-        { tick: 225, y: 480 }, { tick: 229, y: 465 }, { tick: 234, y: 427 }, { tick: 238, y: 379 },
-        { tick: 242, y: 327 }, { tick: 246, y: 275 }, { tick: 251, y: 210 }, { tick: 255, y: 156 },
-    ];
-    const dropLine = [
-        { tick: 257, y: 156 }, { tick: 264, y: 233 }, { tick: 271, y: 310 }, { tick: 278, y: 387 }, { tick: 285, y: 464 },
-    ];
-    const mirrored = raceTunnelMirrored(race);
-    const mirror = (acorn) => {
-        if (!mirrored)
-            return acorn.y;
-        // Boost and quick-drop physics are intentionally asymmetric. A literal
-        // mirror makes the two points around the phase-255 reversal unreachable,
-        // so the mirrored cusp follows the attainable drop-then-boost trajectory.
-        if (acorn.tick === 255)
-            return 429;
-        if (acorn.tick === 257)
-            return 433;
-        return RACE_HEIGHT - acorn.y;
+export function raceTunnelRings(race) {
+    return RACE_TUNNEL_RING_TICKS.map((tick, index) => ({
+        id: `w${race.wormholes + 1}-g${String(index + 1).padStart(2, "0")}`,
+        tick,
+        y: raceTunnelGeometry(race, tick).center,
+    }));
+}
+export function raceTunnelQuality(race, cycle = race.wormholes) {
+    const ledger = race.tunnelRingLedger[cycle] ?? [];
+    let passed = 0;
+    let perfect = 0;
+    let missed = 0;
+    let pending = 0;
+    for (let i = 0; i < RACE_TUNNEL_RING_TICKS.length; i++) {
+        const outcome = ledger[i] ?? "pending";
+        if (outcome === "passed")
+            passed += 1;
+        else if (outcome === "perfect")
+            perfect += 1;
+        else if (outcome === "missed")
+            missed += 1;
+        else
+            pending += 1;
+    }
+    const units = passed + perfect * 2;
+    return {
+        passed,
+        perfect,
+        missed,
+        pending,
+        units,
+        exitSpeed: clamp(RACE_RETURN_SPEED + units * RACE_TUNNEL_QUALITY_SPEED_GAIN, RACE_RETURN_SPEED, RACE_MAX_SPEED),
     };
-    return [
-        ...centerTicks.map((tick) => ({ tick, y: raceTunnelGeometry(race, tick).center })),
-        ...boostLine.map((a) => ({ tick: a.tick, y: mirror(a) })),
-        ...dropLine.map((a) => ({ tick: a.tick, y: mirror(a) })),
-    ];
 }
 function stepTunnel(race) {
-    stepPilot(race, true);
+    const priorY = race.y;
+    if (race.tunnelDragY !== null) {
+        race.y += clamp(race.tunnelDragY - race.y, -RACE_TUNNEL_DRAG_STEP, RACE_TUNNEL_DRAG_STEP);
+    }
+    race.vy = (race.y - priorY) / RACE_DT;
     const geometry = raceTunnelGeometry(race, race.phaseTick);
     const top = geometry.center - geometry.half + RACE_PILOT_RADIUS;
     const bottom = geometry.center + geometry.half - RACE_PILOT_RADIUS;
@@ -514,25 +579,38 @@ function stepTunnel(race) {
     else if (race.wallSuppressTicks > 0)
         race.wallSuppressTicks -= 1;
     const cycle = race.wormholes;
-    const acorns = raceTunnelAcorns(race);
-    const ledger = race.tunnelAcornLedger[cycle] ?? (race.tunnelAcornLedger[cycle] = acorns.map(() => false));
+    const rings = raceTunnelRings(race);
+    const ledger = race.tunnelRingLedger[cycle]
+        ?? (race.tunnelRingLedger[cycle] = rings.map(() => "pending"));
+    const decisionTicks = race.tunnelRingDecisionTicks[cycle]
+        ?? (race.tunnelRingDecisionTicks[cycle] = rings.map(() => null));
     let sound = null;
     const cues = [];
-    for (let i = 0; i < acorns.length; i++) {
-        if (!ledger[i] && acorns[i].tick === race.phaseTick) {
-            ledger[i] = true;
-            if (race.wallSuppressTicks <= 0 && Math.abs(race.y - acorns[i].y) <= RACE_TUNNEL_PICKUP_RADIUS) {
-                race.acorns += 1;
-                cues.push({
-                    kind: "acorn",
-                    tick: race.tick,
-                    id: `w${cycle + 1}-a${String(i + 1).padStart(2, "0")}`,
-                    index: i,
-                    y: acorns[i].y,
-                    chargeDelta: 0,
-                });
-                sound = "acorn";
-            }
+    for (let i = 0; i < rings.length; i++) {
+        const ring = rings[i];
+        if (ledger[i] === "pending" && ring.tick === race.phaseTick) {
+            const error = Math.abs(race.y - ring.y);
+            const outcome = error <= RACE_TUNNEL_PERFECT_CLEARANCE
+                ? "perfect"
+                : error <= RACE_TUNNEL_RING_CLEARANCE
+                    ? "passed"
+                    : "missed";
+            ledger[i] = outcome;
+            decisionTicks[i] = race.tick;
+            cues.push({
+                kind: outcome === "perfect"
+                    ? "tunnel-ring-perfect"
+                    : outcome === "passed"
+                        ? "tunnel-ring-pass"
+                        : "tunnel-ring-miss",
+                tick: race.tick,
+                id: ring.id,
+                index: i,
+                y: ring.y,
+                chargeDelta: 0,
+            });
+            if (outcome !== "missed")
+                sound = "ring";
         }
     }
     race.coursePosition = race.phaseStartPosition
@@ -551,7 +629,7 @@ export function stepRace(race) {
     let sound = null;
     const cues = [];
     if (race.phase === "normal") {
-        stepPilot(race, false);
+        stepPilot(race);
         if (race.speedGraceTicks > 0)
             race.speedGraceTicks -= 1;
         else
@@ -590,7 +668,11 @@ export function stepRace(race) {
             race.phaseStartPosition = race.coursePosition;
             race.y = race.entryAnchorY;
             race.charge = 0;
-            race.tunnelAcornLedger[race.wormholes] = Array(18).fill(false);
+            race.held = false;
+            race.boost = false;
+            race.tunnelDragY = null;
+            race.tunnelRingLedger[race.wormholes] = RACE_TUNNEL_RING_TICKS.map(() => "pending");
+            race.tunnelRingDecisionTicks[race.wormholes] = RACE_TUNNEL_RING_TICKS.map(() => null);
         }
     }
     else if (race.phase === "tunnel") {
@@ -607,6 +689,9 @@ export function stepRace(race) {
             race.returnY = clamp(race.y, RACE_RETURN_MARGIN, RACE_HEIGHT - RACE_RETURN_MARGIN);
             race.y = race.returnY;
             race.vy = 0;
+            race.held = false;
+            race.boost = false;
+            race.tunnelDragY = null;
         }
     }
     else if (race.phase === "return") {
@@ -616,10 +701,14 @@ export function stepRace(race) {
         if (race.phaseTick >= RACE_RETURN_TICKS) {
             race.phase = "normal";
             race.phaseTick = 0;
+            const quality = raceTunnelQuality(race, race.wormholes);
             race.wormholes += 1;
             race.charge = 0;
-            race.speed = RACE_RETURN_SPEED;
+            race.speed = quality.exitSpeed;
             race.speedGraceTicks = 0;
+            race.held = false;
+            race.boost = false;
+            race.tunnelDragY = null;
             // Normal-flight authority decrements before collision checks. Arm one
             // extra count so all documented 21 post-return steps remain protected.
             race.collisionGraceTicks = RACE_RETURN_GRACE_TICKS + 1;
@@ -669,6 +758,10 @@ export function raceSignature(race) {
         acorns: race.acorns,
         ringLedger: race.ringLedger.join(","),
         ringDecisionTicks: race.ringDecisionTicks.map((tick) => tick ?? -1),
+        tunnelRingLedger: race.tunnelRingLedger.map((ledger) => ledger.join(",")),
+        tunnelRingDecisionTicks: race.tunnelRingDecisionTicks
+            .map((ledger) => ledger.map((tick) => tick ?? -1)),
+        tunnelQuality: race.tunnelRingLedger.map((_, cycle) => raceTunnelQuality(race, cycle)),
         debrisContacts: [...race.debrisContacts],
         entryTicks: [...race.entryTicks],
         boostTicks: [...race.boostTicks],
