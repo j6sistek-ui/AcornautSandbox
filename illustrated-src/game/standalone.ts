@@ -111,11 +111,25 @@ export async function bootStandalone(root: HTMLElement) {
   // BUG: every re-render rebuilt the overlay from scratch, so buying or
   // equipping something near the bottom of the hangar threw you back to
   // the top. Remember where the list was and put it back after the swap.
+  // The hangar's sideways shelves have the same problem in the other
+  // axis — tapping a card rebuilt every row at its start — so each row's
+  // scrollLeft is kept by index and restored after the swap too.
   let keptScroll = 0;
+  let keptRowScroll: number[] = [];
+  let shelfKey = "";              // which tab the kept rows belong to
+  const keepShelves = () => {
+    keptRowScroll = [...overlay.querySelectorAll(".ac-shelfrow")].map((r) => r.scrollLeft);
+  };
+  const restoreShelves = () => {
+    [...overlay.querySelectorAll(".ac-shelfrow")].forEach((r, i) => {
+      if (keptRowScroll[i]) r.scrollLeft = keptRowScroll[i];
+    });
+  };
   const render = () => {
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
     if (prevScroll) keptScroll = prevScroll.scrollTop;
+    keepShelves();
     overlay.innerHTML = "";
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
@@ -158,7 +172,10 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (snap.screen === "dead" && snap.dead) {
       const sheet = el("div", "ac-sheet ac-center ac-result");
-      sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID" : "CRASHED"), el("p", "", `Score ${snap.dead.score}`));
+      sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID" : "CRASHED"));
+      if (!(BETA_FEATURES && snap.flight !== "tunnel")) {
+        sheet.append(el("p", "", `Score ${snap.dead.score}`));
+      }
       if (snap.dead.best && snap.dead.score > 0) sheet.append(el("p", "ac-gold", "NEW BEST"));
       if (snap.flight === "tunnel") {
         const count = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -175,6 +192,55 @@ export async function bootStandalone(root: HTMLElement) {
         const go = el("button", "ac-ghost", "CONTINUE");
         go.onclick = () => engine.dismissDead();
         sheet.append(replay, go);
+      } else if (BETA_FEATURES) {
+        // The crash sheet is a receipt now: the run's whole story in
+        // rows — gates as the headline, then what happened on the way.
+        const d = snap.dead;
+        const big = el("div", "ac-crashscore");
+        big.append(el("b", "", String(d.score)),
+          el("span", "", d.score === 1 ? "GATE CLEARED" : "GATES CLEARED"));
+        sheet.append(big);
+        const s = engine.save;
+        const hs = snap.flight === "deep" ? s.deepBest
+          : snap.flight === "lost" ? s.lostBest
+          : snap.flight === "arcade" ? (s.arcadeBest ?? 0)
+          : s.highScore;
+        const rows = el("div", "ac-rows ac-crashrows");
+        const row = (label: string, v: number, gold = false) => {
+          const r = el("div", "ac-row");
+          r.append(el("span", "", label), el("span", gold ? "ac-rowgold" : "ac-rowdim", String(v)));
+          rows.append(r);
+        };
+        row("Black holes", d.holes ?? 0);
+        row("Acorns", d.acorns, true);
+        row("Taps", d.taps ?? 0);
+        row("Planet bounces", d.bounces ?? 0);
+        row("High score", hs, true);
+        sheet.append(rows);
+        if (engine.save.guide === "reward") {
+          const gsuit = SUITS.find((u) => u.id === GUIDE_SUIT);
+          const ghelm = HELMETS.find((h) => h.id === GUIDE_HELM);
+          const gift = el("div", "ac-gear");
+          gift.append(el("p", "ac-gold ac-gearhead", "NEW GEAR UNLOCKED"));
+          const grow = el("div", "ac-gearrow");
+          if (gsuit) {
+            const cell = el("div", "ac-gearcell");
+            cell.append(suitCardOf(gsuit, 56), el("p", "ac-sub", `${gsuit.name} Suit`));
+            grow.append(cell);
+          }
+          if (ghelm) {
+            const cell = el("div", "ac-gearcell");
+            cell.append(helmCardOf(ghelm, 56), el("p", "ac-sub", `${ghelm.name} Helmet`));
+            grow.append(cell);
+          }
+          gift.append(grow, el("p", "ac-sub ac-mid", "Yours, free — waiting in the Loadout."));
+          sheet.append(gift);
+        }
+        const again = el("button", "ac-primary", "TRY AGAIN");
+        again.onclick = () => engine.fly(snap.flight);
+        const menu = el("button", "ac-ghost", engine.save.guide === "reward" ? "COLLECT" : "MAIN MENU");
+        menu.onclick = () => engine.dismissDead();
+        sheet.append(again, menu);
       } else {
         if (engine.save.guide === "reward") {
           const gsuit = SUITS.find((u) => u.id === GUIDE_SUIT);
@@ -224,6 +290,11 @@ export async function bootStandalone(root: HTMLElement) {
       overlay.append(drawHangar());
       const sc = overlay.querySelector(".ac-sheet-scroll");
       if (sc && keptScroll) sc.scrollTop = keptScroll;
+      // put the sideways shelves back where they were — but only when the
+      // rebuilt rows are the same tab's rows; a fresh tab starts at its front
+      const key = `hangar:${engine.shopTab}`;
+      if (shelfKey === key) restoreShelves();
+      shelfKey = key;
       return;
     }
     if (snap.screen === "log") {
@@ -1553,6 +1624,15 @@ export async function bootStandalone(root: HTMLElement) {
     const total = starsOf(sv);
 
     const box = el("div", "ac-menu");
+    // the chart flies over deep space: one nebula render behind the whole
+    // screen, center-cropped by cover so the same image serves portrait
+    // and landscape alike
+    if (BETA_FEATURES) {
+      box.classList.add("ac-chartscene");
+      const art = el("div", "ac-chart-art");
+      art.style.backgroundImage = `url("${artRootUrl()}/chart-bg.jpg?v=${ART_VER}")`;
+      box.append(art, el("div", "ac-chart-scrim"));
+    }
     const totalPill = el("div", "ac-pill ac-pill-gold");
     totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / 300`));
     box.append(header("The road ahead", "Star Chart", totalPill));
