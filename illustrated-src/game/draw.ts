@@ -26,6 +26,7 @@ import {
   RACE_RETURN_TICKS,
   RACE_RINGS,
   RACE_SEED,
+  RACE_TUNNEL_DISTANCE,
   RACE_TUNNEL_SPEED,
   RACE_TUNNEL_TICKS,
   formatRaceTicks,
@@ -628,107 +629,228 @@ function drawRaceTunnel(
   viewTick = w.race!.phaseTick,
   includePickups = w.race!.phase === "tunnel",
   bridgeY: number | null = null,
+  bridgeX: number | null = null,
 ) {
   const race = w.race!;
   const viewport = raceViewport(w.W, w.H);
   const { scale, left, right, top, bottom, contentWidth, contentHeight, pilotX } = viewport;
   const reduced = raceReducedMotion();
-  const g = ctx.createLinearGradient(left, top, right, bottom);
-  g.addColorStop(0, "rgba(6,20,45,.54)");
-  g.addColorStop(0.48, "rgba(18,59,101,.58)");
-  g.addColorStop(1, "rgba(5,7,19,.62)");
-  ctx.fillStyle = g;
-  ctx.fillRect(left, top, contentWidth, contentHeight);
-  ctx.save();
-  ctx.beginPath(); ctx.rect(left, top, contentWidth, contentHeight); ctx.clip();
-  ctx.globalCompositeOperation = "screen";
-  ctx.lineCap = "round";
-  const streakCount = reduced ? 10 : 22;
-  for (let i = 0; i < streakCount; i++) {
-    const lane = raceFlowHash(race.seed, i, 61);
-    const speed = 5 + (i % 3);
-    const span = contentWidth + 100 * scale;
-    const x = left - 50 * scale + raceMod(raceFlowHash(race.seed, i, 62) * span - viewTick * speed * scale, span);
-    const y = top + (28 + lane * 584) * scale;
-    ctx.strokeStyle = i % 4 ? "rgba(79,210,255,.34)" : "rgba(207,242,255,.48)";
-    ctx.lineWidth = (1 + (i % 2)) * scale;
-    ctx.beginPath();
-    ctx.moveTo(x + (reduced ? 16 : 58) * scale, y);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-  ctx.restore();
-
   const samples = hyperRunTunnelSampleCount(viewport.virtualWidth);
   raceTunnelTopScratch.length = samples + 1;
   raceTunnelBottomScratch.length = samples + 1;
   const bridgeSpan = Math.max(160, Math.min(360, viewport.virtualWidth * 0.32)) * scale;
+  const presentationBridgeX = bridgeX ?? pilotX;
   for (let i = 0; i <= samples; i++) {
     const x = left + contentWidth * (i / samples);
     const distance = (x - pilotX) / Math.max(0.001, scale);
     const lookTicks = distance / Math.max(0.001, RACE_TUNNEL_SPEED / RACE_HZ);
     const sampleTick = Math.max(0, Math.min(RACE_TUNNEL_TICKS - 1, viewTick + lookTicks));
     const tunnel = raceTunnelGeometry(race, sampleTick);
-    const center = hyperRunTunnelPresentationCenter(tunnel.center, bridgeY, x, pilotX, bridgeSpan);
+    const center = hyperRunTunnelPresentationCenter(tunnel.center, bridgeY, x, presentationBridgeX, bridgeSpan);
     raceTunnelTopScratch[i] = raceViewportY(viewport, center - tunnel.half);
     raceTunnelBottomScratch[i] = raceViewportY(viewport, center + tunnel.half);
   }
-  ctx.beginPath();
-  ctx.moveTo(left, top);
-  for (let i = 0; i <= samples; i++) ctx.lineTo(left + contentWidth * (i / samples), raceTunnelTopScratch[i]);
-  ctx.lineTo(right, top); ctx.lineTo(left, top); ctx.closePath();
-  ctx.fillStyle = "rgba(2,6,18,.92)"; ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(left, bottom);
-  for (let i = 0; i <= samples; i++) ctx.lineTo(left + contentWidth * (i / samples), raceTunnelBottomScratch[i]);
-  ctx.lineTo(right, bottom); ctx.lineTo(left, bottom); ctx.closePath();
-  ctx.fillStyle = "rgba(2,5,16,.94)"; ctx.fill();
 
-  // Transverse contour echoes borrow Wormhole Run's depth cadence without a
-  // central vanishing point. They remain literal side-view wall decoration.
+  const corridorPath = () => {
+    ctx.beginPath();
+    for (let i = 0; i <= samples; i++) {
+      const x = left + contentWidth * (i / samples);
+      if (i) ctx.lineTo(x, raceTunnelTopScratch[i]);
+      else ctx.moveTo(x, raceTunnelTopScratch[i]);
+    }
+    for (let i = samples; i >= 0; i--) {
+      ctx.lineTo(left + contentWidth * (i / samples), raceTunnelBottomScratch[i]);
+    }
+    ctx.closePath();
+  };
+  const traceBoundary = (line: readonly number[], offset = 0, strand = 0) => {
+    ctx.beginPath();
+    for (let i = 0; i <= samples; i++) {
+      const x = left + contentWidth * (i / samples);
+      const wave = reduced ? 0 : Math.sin(i * 0.68 + viewTick * 0.11 + strand * 1.7) * (1.2 + strand * 0.7) * scale;
+      const y = line[i] + offset + wave;
+      if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+  };
+
+  // The same course sky remains visible throughout the shortcut. Plasma adds
+  // colour and depth, but never replaces the scene with an opaque dark plate.
+  const wash = ctx.createLinearGradient(left, top, right, bottom);
+  wash.addColorStop(0, "rgba(48,18,104,.12)");
+  wash.addColorStop(0.42, "rgba(104,36,174,.18)");
+  wash.addColorStop(0.72, "rgba(30,112,190,.15)");
+  wash.addColorStop(1, "rgba(12,214,236,.10)");
+  ctx.fillStyle = wash;
+  ctx.fillRect(left, top, contentWidth, contentHeight);
+
+  // Outside the playable route is a translucent energy bank, not darkness.
+  // The live collision boundary below remains substantially brighter than it.
+  ctx.fillStyle = "rgba(25,7,55,.18)";
+  ctx.beginPath();
+  ctx.moveTo(left, top); ctx.lineTo(right, top);
+  for (let i = samples; i >= 0; i--) ctx.lineTo(left + contentWidth * (i / samples), raceTunnelTopScratch[i]);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(5,27,61,.17)";
+  ctx.beginPath();
+  ctx.moveTo(left, bottom); ctx.lineTo(right, bottom);
+  for (let i = samples; i >= 0; i--) ctx.lineTo(left + contentWidth * (i / samples), raceTunnelBottomScratch[i]);
+  ctx.closePath(); ctx.fill();
+
   ctx.save();
+  corridorPath();
+  ctx.clip();
+  const corridor = ctx.createLinearGradient(left, top, right, bottom);
+  corridor.addColorStop(0, "rgba(76,39,176,.12)");
+  corridor.addColorStop(0.52, "rgba(37,104,196,.14)");
+  corridor.addColorStop(1, "rgba(64,232,255,.10)");
+  ctx.fillStyle = corridor;
+  ctx.fillRect(left, top, contentWidth, contentHeight);
   ctx.globalCompositeOperation = "screen";
-  const bandCount = reduced ? 4 : 8;
+  ctx.lineCap = "round";
+
+  // Long, layered future-to-past streaks make the 562.5-unit shortcut read
+  // materially faster than normal flight without introducing a vanishing point.
+  const streakCount = reduced ? 14 : 38;
+  for (let i = 0; i < streakCount; i++) {
+    const span = contentWidth + 260 * scale;
+    const travel = reduced ? 0 : viewTick * (11 + i % 5) * scale;
+    const x = left - 130 * scale + raceMod(raceFlowHash(race.seed, i, 62) * span - travel, span);
+    const index = Math.max(0, Math.min(samples, Math.round((x - left) / Math.max(1, contentWidth) * samples)));
+    const lane = 0.08 + raceFlowHash(race.seed, i, 61) * 0.84;
+    const y = raceLerp(raceTunnelTopScratch[index], raceTunnelBottomScratch[index], lane);
+    const length = (reduced ? 14 + (i % 4) * 3 : 48 + (i % 7) * 14) * scale;
+    ctx.strokeStyle = i % 5 === 0
+      ? "rgba(229,184,255,.55)"
+      : i % 3 === 0
+        ? "rgba(128,91,255,.46)"
+        : "rgba(91,226,255,.43)";
+    ctx.lineWidth = Math.max(0.7, (0.8 + (i % 3) * 0.55) * scale);
+    ctx.beginPath(); ctx.moveTo(x + length, y); ctx.lineTo(x, y); ctx.stroke();
+  }
+
+  // Transverse bands are sampled directly from the authority corridor. Their
+  // lateral cadence provides Wormhole Run depth while keeping the camera side-on.
+  const bandCount = reduced ? 5 : 11;
+  ctx.setLineDash([3 * scale, 8 * scale]);
   for (let i = 0; i < bandCount; i++) {
-    const u = raceMod(i / bandCount - viewTick * 0.006, 1);
-    const index = Math.min(samples, Math.round(u * samples));
+    const u = reduced ? (i + 0.5) / bandCount : raceMod((i + 0.5) / bandCount - viewTick * 0.018, 1);
+    const index = Math.min(samples, Math.max(0, Math.round(u * samples)));
     const x = left + contentWidth * (index / samples);
     const ty = raceTunnelTopScratch[index];
     const by = raceTunnelBottomScratch[index];
-    ctx.strokeStyle = "rgba(111,126,255,.2)";
-    ctx.lineWidth = Math.max(0.75, scale);
-    ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x - 8 * scale, ty); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x, bottom); ctx.lineTo(x - 8 * scale, by); ctx.stroke();
-  }
-  for (const line of [raceTunnelTopScratch, raceTunnelBottomScratch]) {
-    ctx.strokeStyle = "rgba(151,105,255,.3)";
-    ctx.lineWidth = 8 * scale;
+    const bow = reduced ? 0 : Math.sin((viewTick + i * 13) * 0.08) * 9 * scale;
+    ctx.strokeStyle = i % 2 ? "rgba(156,96,255,.20)" : "rgba(83,222,255,.24)";
+    ctx.lineWidth = Math.max(0.7, 1.1 * scale);
     ctx.beginPath();
-    for (let i = 0; i <= samples; i++) {
-      const x = left + contentWidth * (i / samples);
-      if (i) ctx.lineTo(x, line[i]); else ctx.moveTo(x, line[i]);
-    }
+    ctx.moveTo(x, ty + 3 * scale);
+    ctx.quadraticCurveTo(x - 10 * scale + bow, (ty + by) * 0.5, x, by - 3 * scale);
     ctx.stroke();
-    ctx.strokeStyle = "rgba(88,220,255,.82)";
-    ctx.lineWidth = 2.2 * scale;
+  }
+  ctx.setLineDash([]);
+
+  // A restrained center guide turns the corridor into a readable route rather
+  // than a texture. It is decorative only and never feeds collision authority.
+  const guideCount = reduced ? 5 : 9;
+  for (let i = 0; i < guideCount; i++) {
+    const u = reduced ? (i + 0.5) / guideCount : raceMod((i + 0.5) / guideCount - viewTick * 0.011, 1);
+    const index = Math.min(samples, Math.max(0, Math.round(u * samples)));
+    const x = left + contentWidth * (index / samples);
+    const y = (raceTunnelTopScratch[index] + raceTunnelBottomScratch[index]) * 0.5;
+    const r = (reduced ? 3.5 : 4.5) * scale;
+    ctx.strokeStyle = "rgba(214,250,255,.34)";
+    ctx.lineWidth = Math.max(0.7, 1.1 * scale);
     ctx.beginPath();
-    for (let i = 0; i <= samples; i++) {
-      const x = left + contentWidth * (i / samples);
-      if (i) ctx.lineTo(x, line[i]); else ctx.moveTo(x, line[i]);
-    }
+    ctx.moveTo(x - r, y - r); ctx.lineTo(x, y); ctx.lineTo(x - r, y + r);
     ctx.stroke();
   }
   ctx.restore();
 
+  // Procedural purple/blue wall filaments give the shortcut a living energy
+  // boundary. The cyan core is the exact collision edge and stays brightest.
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  for (const [line, direction] of [
+    [raceTunnelTopScratch, -1], [raceTunnelBottomScratch, 1],
+  ] as const) {
+    const strandCount = reduced ? 1 : 3;
+    for (let strand = strandCount - 1; strand >= 0; strand--) {
+      const offset = direction * (8 + strand * 8) * scale;
+      ctx.strokeStyle = strand % 2
+        ? "rgba(90,108,255,.26)"
+        : "rgba(197,82,255,.34)";
+      ctx.lineWidth = Math.max(0.8, (1.2 + strand * 0.8) * scale);
+      traceBoundary(line, offset, strand);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(172,69,255,.34)";
+    ctx.lineWidth = Math.max(4, 18 * scale);
+    traceBoundary(line);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(204,91,255,.72)";
+    ctx.lineWidth = Math.max(2, 6.5 * scale);
+    traceBoundary(line);
+    ctx.stroke();
+    ctx.shadowColor = "#56e8ff";
+    ctx.shadowBlur = 12 * scale;
+    ctx.strokeStyle = "rgba(112,238,255,.96)";
+    ctx.lineWidth = Math.max(1.5, 2.6 * scale);
+    traceBoundary(line);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+  ctx.restore();
+
+  if (race.wallSuppressTicks > 0) {
+    const index = Math.min(samples, Math.max(0, Math.round((pilotX - left) / Math.max(1, contentWidth) * samples)));
+    const pilotY = raceViewportY(viewport, race.y);
+    const line = Math.abs(pilotY - raceTunnelTopScratch[index]) < Math.abs(pilotY - raceTunnelBottomScratch[index])
+      ? raceTunnelTopScratch : raceTunnelBottomScratch;
+    const start = Math.max(0, index - 2);
+    const end = Math.min(samples, index + 2);
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = raceClamp01(race.wallSuppressTicks / 15);
+    ctx.strokeStyle = "rgba(255,211,112,.92)";
+    ctx.lineWidth = Math.max(2, 5 * scale);
+    ctx.shadowColor = "#ff8bd8";
+    ctx.shadowBlur = 10 * scale;
+    ctx.beginPath();
+    for (let i = start; i <= end; i++) {
+      const x = left + contentWidth * (i / samples);
+      if (i === start) ctx.moveTo(x, line[i]); else ctx.lineTo(x, line[i]);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
   if (includePickups) {
     const pickups = raceTunnelAcorns(race);
     const ledger = race.tunnelAcornLedger[race.wormholes] ?? [];
+    ctx.save();
+    corridorPath();
+    ctx.clip();
     pickups.forEach((a, i) => {
       if (ledger[i]) return;
       const x = pilotX + (a.tick - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ) * scale;
       if (x < left - 30 * scale || x > right + 30 * scale) return;
-      drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, raceViewportY(viewport, a.y), 26 * scale);
+      const y = raceViewportY(viewport, a.y);
+      const pulse = reduced ? 1 : 1 + Math.sin((viewTick + i * 7) * 0.18) * 0.08;
+      ctx.save();
+      ctx.fillStyle = "rgba(4,9,28,.46)";
+      ctx.beginPath(); ctx.arc(x, y, 19 * scale, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = "screen";
+      ctx.strokeStyle = i < 5 ? "rgba(109,234,255,.82)" : "rgba(211,114,255,.82)";
+      ctx.lineWidth = Math.max(1.2, 2 * scale);
+      ctx.beginPath(); ctx.arc(x, y, 17 * scale * pulse, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255,230,143,.58)";
+      ctx.lineWidth = Math.max(0.8, 1.2 * scale);
+      ctx.beginPath(); ctx.moveTo(x + 20 * scale, y); ctx.lineTo(x + 34 * scale, y); ctx.stroke();
+      ctx.restore();
+      drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, y, 26 * scale);
     });
+    ctx.restore();
   }
 }
 
@@ -740,22 +862,45 @@ function drawRaceSuctionStreaks(
   phaseTick: number,
   alpha: number,
   reduced: boolean,
+  direction: "in" | "out" = "in",
 ) {
   if (alpha <= 0) return;
   ctx.save();
   ctx.globalAlpha *= raceClamp01(alpha);
   ctx.globalCompositeOperation = "screen";
   ctx.lineCap = "round";
-  const count = reduced ? 6 : 12;
+  const count = reduced ? 6 : 16;
   for (let i = 0; i < count; i++) {
-    const laneY = viewport.top + (32 + raceFlowHash(RACE_SEED, i, 72) * 576) * viewport.scale;
-    const reach = (22 + (i % 4) * 9) * viewport.scale;
-    ctx.strokeStyle = i % 3 === 0 ? "rgba(255,226,137,.55)" : "rgba(112,225,255,.48)";
-    ctx.lineWidth = (1 + (i % 3) * 0.65) * viewport.scale;
+    const sourceX = viewport.left + raceFlowHash(RACE_SEED, i, 71) * viewport.contentWidth;
+    const sourceY = viewport.top + (28 + raceFlowHash(RACE_SEED, i, 72) * 584) * viewport.scale;
+    const side = sourceX < x ? -1 : 1;
+    const targetX = x + side * (15 + i % 4 * 3) * viewport.scale;
+    const targetY = raceLerp(sourceY, y, 0.88) + (raceFlowHash(RACE_SEED, i, 73) - 0.5) * 12 * viewport.scale;
+    ctx.strokeStyle = i % 5 === 0
+      ? "rgba(255,226,137,.58)"
+      : i % 2
+        ? "rgba(190,105,255,.52)"
+        : "rgba(112,225,255,.52)";
+    ctx.lineWidth = Math.max(0.8, (0.85 + (i % 3) * 0.62) * viewport.scale);
     ctx.beginPath();
-    ctx.moveTo(viewport.right + reach, laneY);
-    if (reduced) ctx.lineTo(x + reach, y);
-    else ctx.quadraticCurveTo(x + viewport.contentWidth * 0.22, laneY * 0.55 + y * 0.45, x + reach, y);
+    if (direction === "in") ctx.moveTo(sourceX, sourceY); else ctx.moveTo(targetX, targetY);
+    if (reduced) {
+      if (direction === "in") ctx.lineTo(targetX, targetY); else ctx.lineTo(sourceX, sourceY);
+    } else {
+      const controlX = raceLerp(sourceX, x, 0.68);
+      const controlY = raceLerp(sourceY, y, 0.24);
+      if (direction === "in") ctx.quadraticCurveTo(controlX, controlY, targetX, targetY);
+      else ctx.quadraticCurveTo(controlX, controlY, sourceX, sourceY);
+    }
+    ctx.stroke();
+  }
+  const lensCount = reduced ? 1 : 3;
+  for (let i = 0; i < lensCount; i++) {
+    const pulse = reduced ? 0 : Math.sin((phaseTick + i * 9) * 0.12) * 3 * viewport.scale;
+    ctx.strokeStyle = i === 0 ? "rgba(117,233,255,.5)" : "rgba(190,90,255,.28)";
+    ctx.lineWidth = Math.max(0.8, (1.4 - i * 0.2) * viewport.scale);
+    ctx.beginPath();
+    ctx.arc(x, y, (34 + i * 12) * viewport.scale + pulse, -0.8, 0.8);
     ctx.stroke();
   }
   ctx.restore();
@@ -895,14 +1040,31 @@ function drawRaceCourseUnderlay(
   }
   frame.gates.forEach((gate) => {
     if (gate.i === frame.entryAccentIndex) {
+      const formation = racePortalFormation(race, gate.i, art);
+      const portalRotation = raceReducedMotion() ? 0 : race.tick * 0.008;
       ctx.save();
       ctx.globalCompositeOperation = "screen";
-      ctx.strokeStyle = "rgba(255,221,111,.72)";
-      ctx.lineWidth = 3 * scale;
-      ctx.beginPath(); ctx.arc(gate.x, gate.y, ringSize * 0.46, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(185,91,255,.62)";
+      ctx.lineWidth = 8 * scale;
+      ctx.beginPath(); ctx.arc(gate.x, gate.y, ringSize * (0.44 + formation * 0.04), 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(104,230,255,.88)";
+      ctx.lineWidth = 2.2 * scale;
+      ctx.beginPath(); ctx.arc(gate.x, gate.y, ringSize * (0.45 + formation * 0.04), 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
+      drawRaceSuctionStreaks(ctx, viewport, gate.x, gate.y, race.tick, formation * 0.72,
+        raceReducedMotion(), "in");
+      if (formation < 1) {
+        ctx.save(); ctx.globalAlpha *= 1 - formation;
+        drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
+        ctx.restore();
+      }
+      if (formation > 0) {
+        drawEntryPortalBack(ctx, art, gate.x, gate.y, ringSize,
+          0.72, 1, portalRotation, formation);
+      }
+    } else {
+      drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
     }
-    drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
     if (race.ringLedger[gate.i] === "pending") drawRacePendingMembrane(ctx, viewport, gate.x, gate.y, "back");
   });
   RACE_RINGS.forEach((ring, i) => {
@@ -950,7 +1112,17 @@ function drawRaceCourseOverlay(
   const race = w.race!;
   const ringSize = 148 * viewport.scale;
   frame.gates.forEach((gate) => {
-    drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
+    if (gate.i === frame.entryAccentIndex) {
+      const formation = racePortalFormation(race, gate.i, art);
+      if (formation < 1) {
+        ctx.save(); ctx.globalAlpha *= 1 - formation;
+        drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
+        ctx.restore();
+      }
+      if (formation > 0) drawEntryPortalFront(ctx, art, gate.x, gate.y, ringSize, formation, true);
+    } else {
+      drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
+    }
     if (race.ringLedger[gate.i] === "pending") drawRacePendingMembrane(ctx, viewport, gate.x, gate.y, "front");
   });
   RACE_RINGS.forEach((ring, i) => {
@@ -1021,10 +1193,25 @@ function drawRaceCueOverlay(
   }
 }
 
+function hasEntryPortalArt(art: ArtBank) {
+  return ["entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front"]
+    .every((id) => !!art.hyperRun[id]);
+}
+
+function racePortalFormation(
+  race: NonNullable<World["race"]>,
+  gateIndex: number,
+  art: ArtBank,
+) {
+  if (!hasEntryPortalArt(art)) return 0;
+  const distance = Math.max(0, RACE_RINGS[gateIndex].x - race.coursePosition);
+  return raceLerp(0.58, 1, raceSmooth(1 - raceClamp01(distance / RACE_MAX_INTERACTIVE_GAP)));
+}
+
 function drawEntryPortalBack(
   ctx: CanvasRenderingContext2D,
   art: ArtBank,
-  viewport: ReturnType<typeof raceViewport>,
+  x: number,
   y: number,
   size: number,
   mouthAlpha: number,
@@ -1032,9 +1219,7 @@ function drawEntryPortalBack(
   rotation: number,
   alpha = 1,
 ) {
-  const x = viewport.pilotX;
-  const complete = ["entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front"]
-    .every((id) => !!art.hyperRun[id]);
+  const complete = hasEntryPortalArt(art);
   if (complete) {
     drawRaceSprite(ctx, art, "entry-mouth", x, y, size, 0, mouthAlpha * alpha);
     drawRaceSprite(ctx, art, "entry-rim-back", x, y, size * 0.96, 0, alpha);
@@ -1048,14 +1233,51 @@ function drawEntryPortalBack(
 function drawEntryPortalFront(
   ctx: CanvasRenderingContext2D,
   art: ArtBank,
-  viewport: ReturnType<typeof raceViewport>,
+  x: number,
   y: number,
   size: number,
   alpha: number,
   complete: boolean,
 ) {
-  if (complete) drawRaceSprite(ctx, art, "entry-rim-front", viewport.pilotX, y, size * 1.08, 0, alpha);
-  else drawRaceGateFallback(ctx, "passed", "front", viewport.pilotX, y, size, 0, alpha);
+  if (complete) drawRaceSprite(ctx, art, "entry-rim-front", x, y, size * 1.08, 0, alpha);
+  else drawRaceGateFallback(ctx, "passed", "front", x, y, size, 0, alpha);
+}
+
+function hasReturnPortalArt(art: ArtBank) {
+  return ["return-back", "return-glyphs", "return-front"]
+    .every((id) => !!art.hyperRun[id]);
+}
+
+function drawReturnPortalBack(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  x: number,
+  y: number,
+  size: number,
+  rotation: number,
+  alpha: number,
+) {
+  const complete = hasReturnPortalArt(art);
+  if (complete) {
+    drawRaceSprite(ctx, art, "return-back", x, y, size, 0, alpha);
+    drawRaceSprite(ctx, art, "return-glyphs", x, y, size, rotation, alpha);
+  } else {
+    drawRaceGateFallback(ctx, "passed", "back", x, y, size, 0, alpha);
+  }
+  return complete;
+}
+
+function drawReturnPortalFront(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank,
+  x: number,
+  y: number,
+  size: number,
+  alpha: number,
+  complete: boolean,
+) {
+  if (complete) drawRaceSprite(ctx, art, "return-front", x, y, size, 0, alpha);
+  else drawRaceGateFallback(ctx, "passed", "front", x, y, size, 0, alpha);
 }
 
 function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
@@ -1125,8 +1347,8 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
     const suctionAlpha = t < 12 ? 0 : raceSegment(t, 12, 23) * (1 - raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
     drawRaceSuctionStreaks(ctx, viewport, pilotX, y, t, suctionAlpha, reduced);
     const settle = t < 36 ? 1 : raceLerp(1, 0.25, raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
-    const complete = drawEntryPortalBack(ctx, art, viewport, y, size,
-      raceSegment(t, 0, 11) * settle, raceLerp(0.18, 1, raceSegment(t, 12, 23)), t * 0.01);
+    const complete = drawEntryPortalBack(ctx, art, pilotX, y, size,
+      raceLerp(0.72, 1, raceSegment(t, 0, 11)) * settle, 1, reduced ? 0 : race.tick * 0.008);
     const entryOut = t <= 35
       ? 30 * raceSegment(t, 24, 35)
       : 30 * (1 - raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
@@ -1144,7 +1366,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
         ctx.restore();
       }
     }
-    drawEntryPortalFront(ctx, art, viewport, y, size, 1, complete);
+    drawEntryPortalFront(ctx, art, pilotX, y, size, 1, complete);
     if (t >= 36) drawRaceRevealEdge(ctx, pilotX, y, reveal, 1 - raceSegment(t, 44, RACE_ENTRY_TICKS - 1));
     drawRaceCueOverlay(ctx, w, viewport);
     return;
@@ -1155,9 +1377,30 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
     const residual = race.phaseTick <= 5 ? 1 - race.phaseTick / 6 : 0;
     const y = raceViewportY(viewport, race.entryAnchorY);
     const size = ringSize * 2.35;
-    const complete = drawEntryPortalBack(ctx, art, viewport, y, size, 0.25, 1, 0.47, residual);
+    const rotation = reduced ? 0 : race.tick * 0.008;
+    const complete = drawEntryPortalBack(ctx, art, pilotX, y, size, 0.25, 1, rotation, residual);
+
+    // The destination portal is already part of the tunnel during the final
+    // second. It approaches from the right and reaches the pilot plane on the
+    // exact authority handoff, so return tick 0 never creates a new scene.
+    const exitLead = raceSegment(race.phaseTick, RACE_TUNNEL_TICKS - RACE_HZ, RACE_TUNNEL_TICKS - 1);
+    const exitEase = raceSmooth(exitLead);
+    const exitX = raceLerp(viewport.right + ringSize * 0.6, pilotX, exitEase);
+    const terminalCenter = raceTunnelGeometry(race, RACE_TUNNEL_TICKS - 1).center;
+    const exitCanonicalY = raceLerp(terminalCenter, race.y, exitEase);
+    const exitY = raceViewportY(viewport, exitCanonicalY);
+    const exitSize = ringSize * raceLerp(0.82, 1.15, exitEase);
+    const exitAlpha = exitEase;
+    if (exitAlpha > 0) {
+      drawRaceSuctionStreaks(ctx, viewport, exitX, exitY, race.phaseTick,
+        exitAlpha * 0.34, reduced, "in");
+    }
+    const returnComplete = exitAlpha > 0
+      ? drawReturnPortalBack(ctx, art, exitX, exitY, exitSize, -rotation, exitAlpha)
+      : false;
     drawPilot(ctx, w, save, art, pilotX, scale);
-    drawEntryPortalFront(ctx, art, viewport, y, size, residual, complete);
+    drawEntryPortalFront(ctx, art, pilotX, y, size, residual, complete);
+    if (exitAlpha > 0) drawReturnPortalFront(ctx, art, exitX, exitY, exitSize, exitAlpha, returnComplete);
     drawRaceCueOverlay(ctx, w, viewport);
     return;
   }
@@ -1177,27 +1420,24 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   drawRaceCourseUnderlay(ctx, w, art, viewport, frame);
   drawRaceCourseOverlay(ctx, w, art, viewport, frame);
   ctx.restore();
+  const returnFlowAlpha = t <= 9
+    ? raceLerp(0.18, 0.72, raceSegment(t, 0, 9))
+    : 0.72 * (1 - raceSegment(t, 10, 23));
+  drawRaceSuctionStreaks(ctx, viewport, pilotX, y, t, returnFlowAlpha, reduced, "out");
   const portalScale = t <= 9
-    ? raceLerp(1, 2.15, raceSegment(t, 0, 9))
+    ? raceLerp(1.15, 2.15, raceSegment(t, 0, 9))
     : t <= 23
       ? raceLerp(2.15, 1.3, raceSegment(t, 10, 23))
       : t <= 31
         ? raceLerp(1.3, 1, raceSegment(t, 24, 31))
         : raceLerp(1, 0.9, raceSegment(t, 32, RACE_RETURN_TICKS - 1));
   const size = ringSize * portalScale;
-  const open = t <= 9 ? raceSegment(t, 0, 9) : 1;
-  const alpha = open * (t < 32 ? 1 : 1 - raceSegment(t, 32, RACE_RETURN_TICKS - 1));
-  const complete = ["return-back", "return-glyphs", "return-front"].every((id) => !!art.hyperRun[id]);
-  if (complete) {
-    drawRaceSprite(ctx, art, "return-back", pilotX, y, size, 0, alpha);
-    drawRaceSprite(ctx, art, "return-glyphs", pilotX, y, size, -t * 0.012, alpha);
-  } else {
-    drawRaceGateFallback(ctx, "passed", "back", pilotX, y, size, 0, alpha);
-  }
+  const alpha = t < 32 ? 1 : 1 - raceSegment(t, 32, RACE_RETURN_TICKS - 1);
+  const complete = drawReturnPortalBack(ctx, art, pilotX, y, size,
+    reduced ? 0 : -race.tick * 0.008, alpha);
   const returnOut = t <= 9 ? 30 * raceSegment(t, 0, 9) : 30 * (1 - raceSegment(t, 10, 23));
   drawPilot(ctx, w, save, art, pilotX + returnOut * scale, scale);
-  if (complete) drawRaceSprite(ctx, art, "return-front", pilotX, y, size, 0, alpha);
-  else drawRaceGateFallback(ctx, "passed", "front", pilotX, y, size, 0, alpha);
+  drawReturnPortalFront(ctx, art, pilotX, y, size, alpha, complete);
   if (t <= 9) drawRaceRevealEdge(ctx, pilotX, y, reveal, 1 - raceSegment(t, 6, 9));
   drawRaceCueOverlay(ctx, w, viewport);
 }
@@ -3001,7 +3241,14 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     const phase = race.phase === "normal" ? "HYPER RUN" : race.phase.toUpperCase();
     ctx.fillText(`${phase} · ${Math.min(RACE_LENGTH, Math.floor(race.coursePosition))} / ${RACE_LENGTH}`, W / 2, 57);
     const route = raceRouteTarget(race);
-    const chargeCopy = hyperRunChargeCopy(race);
+    const shortcutSaving = RACE_TUNNEL_DISTANCE
+      - RACE_BASE_SPEED * (RACE_TUNNEL_TICKS / RACE_HZ);
+    const tunnelProgress = race.phase === "tunnel"
+      ? raceClamp01((race.phaseTick + 1) / RACE_TUNNEL_TICKS)
+      : race.phase === "return" ? 1 : 0;
+    const chargeCopy = race.phase === "tunnel" || race.phase === "return"
+      ? `WARP ×${(RACE_TUNNEL_SPEED / RACE_BASE_SPEED).toFixed(1)} · SHORTCUT +${Math.floor(shortcutSaving * tunnelProgress)}`
+      : hyperRunChargeCopy(race);
     const cellW = 4;
     const gap = 2;
     const groupGap = 3;
@@ -3010,10 +3257,17 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     for (let i = 0; i < 20; i++) {
       const groupsBefore = Math.floor(i / 4);
       const x = x0 + i * (cellW + gap) + groupsBefore * groupGap;
-      ctx.fillStyle = i < Math.floor(race.charge / 5) ? "#6ef0d8" : "rgba(255,255,255,.15)";
+      const activeCells = race.phase === "tunnel" || race.phase === "return"
+        ? Math.floor(tunnelProgress * 20)
+        : Math.floor(race.charge / 5);
+      ctx.fillStyle = i < activeCells
+        ? race.phase === "tunnel" || race.phase === "return" ? "#a66bff" : "#6ef0d8"
+        : "rgba(255,255,255,.15)";
       ctx.fillRect(x, 66, cellW, 6);
     }
-    ctx.fillStyle = race.phase === "entry" || route.entryReady || route.nextCleanGateEnters
+    ctx.fillStyle = race.phase === "tunnel" || race.phase === "return"
+      ? "#a9f5ff"
+      : race.phase === "entry" || route.entryReady || route.nextCleanGateEnters
       ? "#ffe77d"
       : route.finalRoute
         ? "rgba(214,225,241,.78)"
