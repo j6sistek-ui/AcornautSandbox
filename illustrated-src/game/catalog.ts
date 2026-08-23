@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "121";
+export const ART_VER = "122";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -270,7 +270,7 @@ export type Pal = {
 export const PAL_ANIM: Record<string, number> = {
   bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
   nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
-  starpup: 25, ufo: 16, voidjelly: 36,
+  starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
 };
 
 export const PALS: Pal[] = [

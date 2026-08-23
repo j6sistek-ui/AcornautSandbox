@@ -9,8 +9,10 @@ then confirmed by eye against the shipped still.
   nightglider 16 · nutsack 36 · pocketmoon 25 · prismwing 16
   starpup 25 · ufo 16 · voidjelly 36
 
-STILL MISSING: **tinbot** and **wisp**. Both keep their stills until their
-sheets arrive, which is the designed fallback, not a broken state.
+`tinbot` (36) and `wisp` (25) followed on branch `j6sistek-ui-pal03`, in
+its two top-level `sprite-256px-*` folders - that branch also carries a
+copy of art-src, so the pal sheets are the two folders at its ROOT and
+nothing under art-src/. All fourteen pals now animate.
 
 Cometsprite's four frames are the outlier. Every other pal got nine to
 thirty-six; at four the loop is a stutter rather than a cycle, and it is

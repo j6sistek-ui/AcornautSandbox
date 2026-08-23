@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=121";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=122";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "121";
+export const ART_VER = "122";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -26,7 +26,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-23 22:55 UTC";
+export const BUILD_TIME = "2026-08-23 23:05 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -197,7 +197,7 @@ export const TRAILS = [
 export const PAL_ANIM = {
     bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
     nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
-    starpup: 25, ufo: 16, voidjelly: 36,
+    starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
 };
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
