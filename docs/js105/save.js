@@ -32,7 +32,7 @@ export function defaultSave() {
         allStars: false,
         musicOff: false,
         voltAltJump: false,
-        eclipseRateMotion: false,
+        eclipseMotionMode: 0,
         experimentalRaceRecords: {},
     };
 }

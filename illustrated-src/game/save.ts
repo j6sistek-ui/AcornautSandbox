@@ -53,9 +53,11 @@ export type SaveData = {
   musicOff?: boolean;
   /** VOLT's hangar experiment: fly the alternate painted jump bank */
   voltAltJump?: boolean;
-  // A/B for Eclipse's motion mapping: off = the shipped pose-per-velocity
-  // curve, on = the rate-driven remap.
-  eclipseRateMotion?: boolean;
+  // Eclipse's motion mapping, cycled from the hangar so all three can be
+  // flown back to back: 0 = the shipped pose-per-velocity curve, 1 = the
+  // rate-driven remap, 2 = heading (the body follows the tangent of the
+  // flight arc).
+  eclipseMotionMode?: number;
   /** Experimental records are isolated from chapter stars and rewards. */
   experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
 };
@@ -92,7 +94,7 @@ export function defaultSave(): SaveData {
     allStars: false,
     musicOff: false,
     voltAltJump: false,
-    eclipseRateMotion: false,
+    eclipseMotionMode: 0,
     experimentalRaceRecords: {},
   };
 }

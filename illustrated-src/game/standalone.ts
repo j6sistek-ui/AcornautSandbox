@@ -1067,14 +1067,20 @@ export async function bootStandalone(root: HTMLElement) {
         // selected pilot its card grows a switch between the shipped pose
         // mapping and the rate-driven one, so both can be flown back to back.
         if (u.id === "eclipse" && s.equippedSuit === "eclipse") {
+          const MOTION_MODES = [
+            ["Motion: Shipped", "Pose maps straight from vertical speed."],
+            ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
+            ["Motion: Heading", "Body follows the tangent of the flight arc."],
+          ];
+          const mode = ((s.eclipseMotionMode ?? 0) % 3 + 3) % 3;
           const alt = el("button", "ac-card ac-modcard on");
           const txt = el("div", "ac-modtxt");
-          txt.append(el("p", "ac-modname", "Rate Motion"),
-            el("p", "ac-sub", "Pose follows how fast you are climbing or falling."));
-          const sw = el("span", s.eclipseRateMotion ? "ac-switch on" : "ac-switch");
+          txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]),
+            el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
+          const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
           sw.append(el("i", "ac-knob"));
           alt.append(txt, sw);
-          alt.onclick = () => engine.setEclipseRateMotion(!engine.save.eclipseRateMotion);
+          alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 0) + 1) % 3);
           grid.append(alt);
         }
         if (u.id === "volt" && s.equippedSuit === "volt") {
