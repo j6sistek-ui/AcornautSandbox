@@ -169,8 +169,8 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
-        setEclipseRateMotion(on) {
-            save.eclipseRateMotion = on;
+        setEclipseMotionMode(mode) {
+            save.eclipseMotionMode = ((mode % 3) + 3) % 3;
             writeSave(save);
             notify();
         },

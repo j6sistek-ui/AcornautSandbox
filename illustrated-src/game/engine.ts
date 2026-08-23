@@ -85,7 +85,7 @@ export type Engine = {
   setMusicOff: (off: boolean) => void;
   /** VOLT's hangar experiment: swap between its two painted jump banks */
   setVoltAltJump: (on: boolean) => void;
-  setEclipseRateMotion: (on: boolean) => void;
+  setEclipseMotionMode: (mode: number) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -252,8 +252,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
-    setEclipseRateMotion(on) {
-      save.eclipseRateMotion = on;
+    setEclipseMotionMode(mode) {
+      save.eclipseMotionMode = ((mode % 3) + 3) % 3;
       writeSave(save);
       notify();
     },

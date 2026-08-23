@@ -2363,6 +2363,25 @@ function smoothMotionVy(t, vy) {
 // deliberate animation (hand-drawn work sits here), over ~20/s reads as
 // vibration. This lands 9-15/s in flight and 2-3/s pinned; the shipped
 // mapping manages 20/s hovering and 0/s falling.
+// HEADING: the body simply points where it is going - the tangent of the
+// flight arc, atan2(vy, forward speed). It is the most physically honest of
+// the three and it self-normalises, since the same climb rate reads shallower
+// when the run is faster. Its cost is resolution: the true tangent sweeps
+// roughly 130 degrees on every hop, so eight frames of bank have to cover
+// that whole sweep and the frames turn over quickly.
+const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+let headingA = 0;
+let headingClock = -1;
+function trackHeadingMotion(t, vy, vx) {
+    const fresh = headingClock < 0 || t < headingClock;
+    if (fresh)
+        headingA = 0;
+    const dt = fresh ? 0.016 : Math.min(0.05, t - headingClock);
+    headingClock = t;
+    const target = Math.atan2(vy, Math.max(60, vx));
+    headingA += (target - headingA) * (1 - Math.exp(-dt / 0.12));
+    return Math.max(-1, Math.min(1, headingA / MOTION_HEADING_MAX));
+}
 const MOTION_LIFE = 0.35; // how far the beat may pull the pose off its commitment
 const MOTION_CYCLE_HZ = 1.15;
 const MOTION_CYCLE_FRAMES = 0.9; // amplitude in FRAMES, at full stillness
@@ -2399,7 +2418,7 @@ function trackRateMotion(t, vy) {
     ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
     return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, altTap = false, motionVy = 0, rateMotion = false) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, altTap = false, motionVy = 0, motionMode = 0, motionVx = 0) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -2524,10 +2543,13 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             // two mappings, switched from the hangar so both can be flown back to back
             let v;
             let cycle = 0;
-            if (rateMotion) {
+            if (motionMode === 1) {
                 const r = trackRateMotion(_t, motionVy);
                 v = r.pose;
                 cycle = r.cycle;
+            }
+            else if (motionMode === 2) {
+                v = trackHeadingMotion(_t, motionVy, motionVx);
             }
             else {
                 const sv = smoothMotionVy(_t, motionVy);
@@ -2674,7 +2696,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseRateMotion === true);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 0, w.speed);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {

@@ -2579,6 +2579,25 @@ function smoothMotionVy(t: number, vy: number) {
 // deliberate animation (hand-drawn work sits here), over ~20/s reads as
 // vibration. This lands 9-15/s in flight and 2-3/s pinned; the shipped
 // mapping manages 20/s hovering and 0/s falling.
+// HEADING: the body simply points where it is going - the tangent of the
+// flight arc, atan2(vy, forward speed). It is the most physically honest of
+// the three and it self-normalises, since the same climb rate reads shallower
+// when the run is faster. Its cost is resolution: the true tangent sweeps
+// roughly 130 degrees on every hop, so eight frames of bank have to cover
+// that whole sweep and the frames turn over quickly.
+const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+let headingA = 0;
+let headingClock = -1;
+function trackHeadingMotion(t: number, vy: number, vx: number) {
+  const fresh = headingClock < 0 || t < headingClock;
+  if (fresh) headingA = 0;
+  const dt = fresh ? 0.016 : Math.min(0.05, t - headingClock);
+  headingClock = t;
+  const target = Math.atan2(vy, Math.max(60, vx));
+  headingA += (target - headingA) * (1 - Math.exp(-dt / 0.12));
+  return Math.max(-1, Math.min(1, headingA / MOTION_HEADING_MAX));
+}
+
 const MOTION_LIFE = 0.35;   // how far the beat may pull the pose off its commitment
 const MOTION_CYCLE_HZ = 1.15;
 const MOTION_CYCLE_FRAMES = 0.9;   // amplitude in FRAMES, at full stillness
@@ -2638,7 +2657,8 @@ function paintIllustrated(
   bounceAnimStrength = 0,
   altTap = false,
   motionVy = 0,
-  rateMotion = false,
+  motionMode = 0,
+  motionVx = 0,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -2751,10 +2771,12 @@ function paintIllustrated(
       // two mappings, switched from the hangar so both can be flown back to back
       let v: number;
       let cycle = 0;
-      if (rateMotion) {
+      if (motionMode === 1) {
         const r = trackRateMotion(_t, motionVy);
         v = r.pose;
         cycle = r.cycle;
+      } else if (motionMode === 2) {
+        v = trackHeadingMotion(_t, motionVy, motionVx);
       } else {
         const sv = smoothMotionVy(_t, motionVy);
         v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
@@ -2902,7 +2924,7 @@ function drawPilot(
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseRateMotion === true);
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 0, w.speed);
   ctx.restore();
 }
 
