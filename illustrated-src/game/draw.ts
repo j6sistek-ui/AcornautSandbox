@@ -2082,13 +2082,13 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:aurorasuit": [181, 101, 44],
   "suit:ember": [182, 100, 44],
   "suit:stardust": [179, 95, 44],
-  "suit:robo": [193, 92, 45],
+  "suit:robo": [180, 99, 45],
   "suit:alien": [188, 102, 43],
   // re-rendered bare-headed on a black plate (the pale-on-cream key was
   // unrecoverable); measured against the new art, and near-identical to
   // flight, which is the same pose in the same framing
   "suit:ghost": [182, 93, 44],
-  "suit:bigbooty": [182, 102, 45],
+  "suit:bigbooty": [175, 107, 45],
   "suit:catsuit": [212, 86, 50],
   "suit:gemmie": [204, 92, 58],
   "suit:phoenix": [207, 92, 41],
@@ -2168,23 +2168,23 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // Royal wears a crown, so its sphere is scaled down inside the frame
   // and never measured 125 like the bare bubbles. Measured off the art.
   "royal": [124, 156, 98],
-  "aurora": [128, 127, 125],
-  "meteor": [128, 127, 125],
-  "chrono": [132, 126, 125],
+  "aurora": [128, 127, 127.5],
+  "meteor": [128, 127, 127.5],
+  "chrono": [132, 126, 127.5],
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
   "gemmie": [128, 128, 131.9],
   "phoenix": [130, 116, 129.2, -2],
   "seraph": [125, 151, 110],
-  "chronarch": [121.1, 119.5, 125.6],
-  "paladin": [130, 144, 115],
+  "chronarch": [127.1, 120.5, 125.6],
+  "paladin": [133, 137, 119.6],
   // Princess is a shell with a face opening, not a bubble, so the head does
   // not sit at the shell's centre — it sits behind the opening, back from it
   // by about a fifth of its own radius, because the squirrel's face is
   // forward of its head centre. Centred on the shell it put the whole face
   // behind cream lacquer.
-  "princess": [119.3, 91.8, 126],
+  "princess": [127.3, 96.8, 126],
   // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
   // its visor field gave 78, which drew the helmet half again too big — the
   // shell hides most of the sphere's edge, so the visible visor is nothing
@@ -2197,17 +2197,17 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // suit (suitOnly in catalog.ts), so this number never has to sit right
   // on anyone else.
   "leviathan": [129.8, 110.6, 103.6, 12],
-  "verdant": [125, 129, 137],
-  "cryostar": [126, 125, 132],
-  "eclipse": [121, 132, 133],
-  "cinderforge": [124, 125, 128],
+  "verdant": [141, 116, 126.6],
+  "cryostar": [126, 121, 134.6],
+  "eclipse": [127, 129, 138.4],
+  "cinderforge": [128, 125, 115.9],
   "groveguard": [130, 124, 106],
-  "cosmic": [134, 119, 117],
+  "cosmic": [134, 119, 124.2],
   "sunforged": [123, 128, 129],
-  "abyssal": [124, 131, 134],
-  "amethyst": [122, 131, 134],
-  "ivoryguard": [122, 126, 128],
-  "reactor": [136, 116, 115],
+  "abyssal": [125, 131, 128.8],
+  "amethyst": [127, 128, 126.3],
+  "ivoryguard": [127, 126, 130.6],
+  "reactor": [140, 110, 96.2],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
