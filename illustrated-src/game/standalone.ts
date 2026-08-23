@@ -21,6 +21,8 @@ export async function bootStandalone(root: HTMLElement) {
   // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
   // the whole window; DOM menus widen with it in landscape.
   document.body.classList.add("ac-wide");
+  // the purple beta chrome: every menu greys toward violet under this flag
+  if (IS_BETA) document.body.classList.add("ac-beta");
   root.innerHTML = "";
   root.className = "ac-root";
   const stage = el("div", "ac-stage");
@@ -1319,19 +1321,26 @@ export async function bootStandalone(root: HTMLElement) {
   // the bottom to its last at the top. Every node is a shipped planet
   // render, so the chart literally is a star chart. Flown path gold,
   // path ahead dim; the current level carries the pilot and its name.
-  function chapterMap(stageNum: number, stars: Record<string, number>, total: number) {
+  function chapterMap(
+    stageNum: number,
+    stars: Record<string, number>,
+    total: number,
+    currentId: string | null = null,
+  ) {
     const levels = LEVELS.filter((l) => l.stage === stageNum);
     const W = Math.min(420, Math.max(280, window.innerWidth - 56));
     const step = 92;
-    const H = 70 + (levels.length - 1) * step + 84;
+    const H = 58 + (levels.length - 1) * step + 86;
     const xs = [0.17, 0.5, 0.83, 0.5];
+    // the path DESCENDS: forward is down, so chapters stack into one
+    // continuous road and the next chapter begins where this one ends
     const pos = levels.map((_, i) => ({
       x: Math.round(xs[i % 4] * W),
-      y: H - 62 - i * step,
+      y: 58 + i * step,
     }));
-    const current = levels.findIndex(
-      (l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1),
-    );
+    const current = currentId === null
+      ? levels.findIndex((l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1))
+      : levels.findIndex((l) => l.id === currentId);
 
     const map = el("div", "ac-chartmap");
     map.style.width = `${W}px`;
@@ -1354,9 +1363,10 @@ export async function bootStandalone(root: HTMLElement) {
       line.setAttribute("stroke-dasharray", "0.1 16");
       svg.append(line);
     };
-    const split = current < 0 ? pos.length : current + 1;
+    const firstUndone = levels.findIndex((l) => !((stars[l.id] || 0) & 1));
+    const split = firstUndone < 0 ? pos.length : firstUndone + 1;
     seg(pos.slice(0, split), true);
-    seg(pos.slice(Math.max(0, split - 1)), false);
+    if (split < pos.length) seg(pos.slice(Math.max(0, split - 1)), false);
     map.append(svg);
 
     levels.forEach((lvl, i) => {
@@ -1465,42 +1475,63 @@ export async function bootStandalone(root: HTMLElement) {
       scroll.append(proto);
     }
 
-    for (const st of STAGES) {
-      const open = stageUnlocked(st.num, total);
-      const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
-      const head = el("button", "ac-stagehead");
-      const ttl = el("div", "ac-stagetitle");
-      ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num}`), el("p", "ac-stagename", st.name));
-      head.append(ttl);
-      const earned = LEVELS.filter((l) => l.stage === st.num)
-        .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
-      if (open) {
-        head.append(el("span", "ac-stagestars", `\u2605 ${earned}/30`));
-        head.onclick = () => { chartStage = chartStage === st.num ? 0 : st.num; render(); };
-      } else {
-        head.append(el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
+    if (IS_BETA) {
+      // ONE continuous chart: every chapter in order, no accordion, no
+      // tabs — a divider names each chapter and the road just keeps
+      // going. The scroll lands on the level being flown next.
+      let currentId: string | null = null;
+      for (const l of LEVELS) {
+        if (levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1)) { currentId = l.id; break; }
       }
-      card.append(head);
-      if (open && chartStage === st.num) {
-        card.append(el("p", "ac-sub ac-stagetag", st.tagline));
-        if (IS_BETA) {
-          card.append(chapterMap(st.num, stars, total));
+      for (const st of STAGES) {
+        const open = stageUnlocked(st.num, total);
+        const head = el("div", open ? "ac-chapdiv" : "ac-chapdiv locked");
+        const ttl = el("div", "ac-stagetitle");
+        ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num} \u2014 ${st.name}`), el("p", "ac-sub", st.tagline));
+        head.append(ttl);
+        const earned = LEVELS.filter((l) => l.stage === st.num)
+          .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
+        head.append(open
+          ? el("span", "ac-stagestars", `\u2605 ${earned}/30`)
+          : el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
+        scroll.append(head, chapterMap(st.num, stars, total, currentId));
+      }
+    } else {
+      for (const st of STAGES) {
+        const open = stageUnlocked(st.num, total);
+        const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
+        const head = el("button", "ac-stagehead");
+        const ttl = el("div", "ac-stagetitle");
+        ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num}`), el("p", "ac-stagename", st.name));
+        head.append(ttl);
+        const earned = LEVELS.filter((l) => l.stage === st.num)
+          .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
+        if (open) {
+          head.append(el("span", "ac-stagestars", `\u2605 ${earned}/30`));
+          head.onclick = () => { chartStage = chartStage === st.num ? 0 : st.num; render(); };
         } else {
-          const grid = el("div", "ac-lvlgrid");
-          for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
-            const mask = stars[lvl.id] || 0;
-            const can = levelUnlocked(lvl, stars, total);
-            const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
-            b.append(el("span", "ac-lvlnum", String(lvl.n)));
-            b.append(starPips(mask, "sm"));
-            if (can) b.onclick = () => { chartLevel = lvl.id; render(); };
-            if (sv.guide === "levels" && lvl.id === "1-1") b.classList.add("ac-pulse");
-            grid.append(b);
-          }
-          card.append(grid);
+          head.append(el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
         }
+        card.append(head);
+        if (open && chartStage === st.num) {
+          card.append(el("p", "ac-sub ac-stagetag", st.tagline));
+          {
+            const grid = el("div", "ac-lvlgrid");
+            for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
+              const mask = stars[lvl.id] || 0;
+              const can = levelUnlocked(lvl, stars, total);
+              const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
+              b.append(el("span", "ac-lvlnum", String(lvl.n)));
+              b.append(starPips(mask, "sm"));
+              if (can) b.onclick = () => { chartLevel = lvl.id; render(); };
+              if (sv.guide === "levels" && lvl.id === "1-1") b.classList.add("ac-pulse");
+              grid.append(b);
+            }
+            card.append(grid);
+          }
+        }
+        scroll.append(card);
       }
-      scroll.append(card);
     }
 
     if (sv.guide === "levels") box.append(coach("Fly MISSION 1 \u2014 tap level 1, then TAKE FLIGHT"));
