@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=119";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=120";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "119";
+export const ART_VER = "120";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -26,7 +26,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-23 20:48 UTC";
+export const BUILD_TIME = "2026-08-23 21:13 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -362,13 +362,38 @@ export const TITLES = [
 // flying reveals them — and acorns cannot buy them; they are bought for
 // real money. The beta hands them over so they can be played and judged.
 export const IAP_ITEMS = [
-    "catsuit",
     "gemmie", "phoenix", "sammie", "seraph",
     "chronarch", "leviathan", "paladin", "princess",
     "verdant", "cryostar", "eclipse",
     "prismwing", "clockling", "nightglider",
     "opalfeather", "clockwork", "celestialtide",
     "phoenixplume", "verdantflourish", "eclipseglyph",
+];
+// THE HANGAR SHELVES. The suit wall stopped being one grid the day it
+// passed twenty cards: a grid ranks nothing, and the one thing a hangar
+// must answer at a glance is "what am I working toward". Each shelf is a
+// sideways-scrolling row. A section whose suits are not in this build's
+// catalog simply does not render, which is how the Unreleased shelf stays
+// beta-only without carrying its own flag.
+export const SUIT_SHELF = [
+    { title: "STANDARD", ids: ["flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit", "ember", "stardust", "ghost"] },
+    { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
+    // premium suits the pilot owns; each one not yet bought shows as a door
+    // to the shop instead of a locked card that answers nothing
+    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan"], shop: true },
+    // the cat eats no acorns, so no amount of them buys it: it is the
+    // 300-star prize, the full Star Chart, and nothing less
+    { title: "ACORN INTOLERANT", ids: ["catsuit"] },
+    { title: "UNRELEASED", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
+];
+// The helmet wall groups by what the GLASS does, because that is how a
+// pilot actually chooses one. Suit-locked helmets are not listed anywhere:
+// they arrive with their suit and equipping them elsewhere does nothing,
+// so a card would be a lie.
+export const HELMET_SHELF = [
+    { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "sammie", "seraph", "chronarch", "paladin"] },
+    { title: "COLOR VISORS", ids: ["ion", "solar", "void", "comet", "cherry", "meteor", "chrono", "amethyst", "reactor"] },
+    { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "cosmic", "abyssal", "ivoryguard"] },
 ];
 export function isIap(id) {
     return IAP_ITEMS.includes(id);

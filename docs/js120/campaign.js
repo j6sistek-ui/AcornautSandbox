@@ -1,4 +1,4 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=119";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=120";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -494,6 +494,7 @@ export const STAR_REWARDS = [
     { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
     { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
+    { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned by every star there is." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title

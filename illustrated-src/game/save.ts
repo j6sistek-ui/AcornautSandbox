@@ -222,8 +222,15 @@ export function trailUnlocked(s: SaveData, id: string) {
 }
 
 export function suitRevealed(s: SaveData, id: string) {
+  // anyone who BOUGHT a suit keeps it, even one that has since moved off
+  // the premium list - the cat did exactly that when it became the
+  // 300-star prize
+  if ((s.purchased || []).includes(id)) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id]) return true;
+  // a suit with a star gate is LOCKED below it - the no-gate fallback is
+  // only for suits with no gate at all, or the cat would have been free
+  if (STAR_UNLOCKS.suits[id] !== undefined) return BETA_UNLOCK_GATES;
   return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
 

@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=119";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=119";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=120";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=120";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -172,10 +172,19 @@ export function trailUnlocked(s, id) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
 }
 export function suitRevealed(s, id) {
+    // anyone who BOUGHT a suit keeps it, even one that has since moved off
+    // the premium list - the cat did exactly that when it became the
+    // 300-star prize
+    if ((s.purchased || []).includes(id))
+        return true;
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id])
         return true;
+    // a suit with a star gate is LOCKED below it - the no-gate fallback is
+    // only for suits with no gate at all, or the cat would have been free
+    if (STAR_UNLOCKS.suits[id] !== undefined)
+        return BETA_UNLOCK_GATES;
     return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
 // Premium items are owned only once bought for real money. The beta

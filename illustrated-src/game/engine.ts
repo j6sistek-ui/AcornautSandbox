@@ -343,7 +343,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const item = SUITS.find((h) => h.id === id);
     if (!item) return "missing";
     if (!suitRevealed(save, id)) return "locked";
-    if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id))) {
+    if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id)) || (save.purchased || []).includes(id)) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
       guideStep("suit");

@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=119";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=119";
-import { drawSprite as drawSpriteOn } from "./art.js?v=119";
-import { createEngine } from "./engine.js?v=119";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=119";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=119";
-import { formatRaceTicks } from "./race.js?v=119";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=120";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=120";
+import { drawSprite as drawSpriteOn } from "./art.js?v=120";
+import { createEngine } from "./engine.js?v=120";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=120";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=120";
+import { formatRaceTicks } from "./race.js?v=120";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -990,32 +990,42 @@ export async function bootStandalone(root) {
                 note.append(el("p", "ac-lockedhead", `${suit.name} has its own head`), el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."));
                 scroll.append(note);
             }
-            for (const h of HELMETS) {
-                const premium = isIap(h.id);
-                const open = helmetRevealed(s, h.id);
-                const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
-                // a matched-set helmet only fits its own suit; on any other it
-                // shows as a set piece rather than an option
-                const setLocked = !!h.suitOnly && s.equippedSuit !== h.suitOnly;
-                const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
-                const setName = h.suitOnly ? (SUITS.find((u) => u.id === h.suitOnly)?.name ?? h.suitOnly) : "";
-                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${setLocked ? `${setName.toUpperCase()} ONLY`
-                    : premium ? (owned ? "OWNED" : "PREMIUM")
+            // grouped by what the GLASS does. A suit-locked helmet is not listed
+            // at all: it arrives with its suit, and a card that cannot be chosen
+            // answers nothing.
+            grid.classList.add("ac-shelfcol");
+            for (const sec of HELMET_SHELF) {
+                const items = sec.ids
+                    .map((id) => HELMETS.find((h) => h.id === id))
+                    .filter((h) => !!h && !h.suitOnly);
+                if (!items.length)
+                    continue;
+                grid.append(el("p", "ac-shelfhead", sec.title));
+                const row = el("div", "ac-shelfrow");
+                for (const h of items) {
+                    const premium = isIap(h.id);
+                    const open = helmetRevealed(s, h.id);
+                    const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
+                    const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
+                    b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                         : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
                             : owned ? "OWNED" : h.cost}`));
-                if (premium)
-                    b.classList.add("ac-premium");
-                if (locked || setLocked || !open)
-                    b.classList.add("ac-cardoff");
-                if (s.guide === "helmet" && h.id === GUIDE_HELM)
-                    b.classList.add("ac-pulse");
-                b.onclick = () => { if (!locked && !setLocked && open && (!premium || owned))
-                    engine.buyHelmet(h.id); };
-                grid.append(b);
+                    if (premium)
+                        b.classList.add("ac-premium");
+                    if (locked || !open)
+                        b.classList.add("ac-cardoff");
+                    if (s.guide === "helmet" && h.id === GUIDE_HELM)
+                        b.classList.add("ac-pulse");
+                    b.onclick = () => { if (!locked && open && (!premium || owned))
+                        engine.buyHelmet(h.id); };
+                    row.append(b);
+                }
+                grid.append(row);
             }
         }
         else if (engine.shopTab === "suits") {
-            for (const u of SUITS) {
+            grid.classList.add("ac-shelfcol");
+            const suitCard = (u) => {
                 const premium = isIap(u.id);
                 const open = suitRevealed(s, u.id);
                 const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
@@ -1023,20 +1033,45 @@ export async function bootStandalone(root) {
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
                         : owned ? "OWNED" : u.cost === 0 ? "EARNED" : u.cost}`));
+                // a fixed head takes no helmet; the card says so up front
+                if (wearsOwnHead(u)) {
+                    const nh = el("span", "ac-nohelm");
+                    nh.title = "Wears no helmet";
+                    b.append(nh);
+                }
                 if (premium)
                     b.classList.add("ac-premium");
                 if (s.guide === "hangar" && u.id === GUIDE_SUIT)
                     b.classList.add("ac-pulse");
                 b.onclick = () => { if (!premium || owned)
                     engine.buySuit(u.id); };
-                grid.append(b);
-                // VOLT's experiment: while Volt is the selected pilot, its card
-                // grows a switch that swaps between the two painted jump takes so
-                // the owner can fly both back to back and pick one.
-                // ECLIPSE's experiment, run the same way: while Eclipse is the
-                // selected pilot its card grows a switch between the shipped pose
-                // mapping and the rate-driven one, so both can be flown back to back.
-                if (u.id === "eclipse" && s.equippedSuit === "eclipse") {
+                return b;
+            };
+            for (const sec of SUIT_SHELF) {
+                const items = sec.ids
+                    .map((id) => SUITS.find((x) => x.id === id))
+                    .filter((u) => !!u);
+                if (!items.length)
+                    continue;
+                grid.append(el("p", "ac-shelfhead", sec.title));
+                const row = el("div", "ac-shelfrow");
+                for (const u of items) {
+                    // on the purchased shelf, a premium suit not yet bought is a door
+                    // to the shop, not a dead locked card
+                    if (sec.shop && isIap(u.id) && !iapOwned(s, u.id)) {
+                        const sq = el("button", "ac-card ac-shopcard");
+                        sq.append(el("span", "ac-shopglyph", "+"), document.createTextNode(`${u.name}\nIN THE SHOP`));
+                        sq.onclick = () => engine.open("shop");
+                        row.append(sq);
+                        continue;
+                    }
+                    row.append(suitCard(u));
+                }
+                grid.append(row);
+                // ECLIPSE's experiment rides under its own shelf: while Eclipse is
+                // the selected pilot, the section that lists it grows the switch
+                // between its three pose mappings so they can be flown back to back.
+                if (sec.ids.includes("eclipse") && s.equippedSuit === "eclipse") {
                     const MOTION_MODES = [
                         ["Motion: Shipped", "Pose maps straight from vertical speed."],
                         ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
