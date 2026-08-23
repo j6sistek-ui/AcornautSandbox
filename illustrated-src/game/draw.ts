@@ -2463,8 +2463,8 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // by hand. The old values sat on the outer edge of the tail mask, which
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
-  alien: [115, 149],
-  cyber: [117, 110],
+  alien: [116, 109],
+  cyber: [101, 125],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
   catsuit: [74, 149],
@@ -2836,7 +2836,7 @@ const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "alien"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t: number, vy: number, vx: number) {
