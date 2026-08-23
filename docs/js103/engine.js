@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=102";
-import { sfx, unlockAudio, music } from "./audio.js?v=102";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=102";
-import { drawHud, drawWorld } from "./draw.js?v=102";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=102";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=102";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=102";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=102";
-import { raceViewport } from "./race-viewport.js?v=102";
+import { emptyArt, loadArt } from "./art.js?v=103";
+import { sfx, unlockAudio, music } from "./audio.js?v=103";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=103";
+import { drawHud, drawWorld } from "./draw.js?v=103";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=103";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=103";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=103";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=103";
+import { raceViewport } from "./race-viewport.js?v=103";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -378,12 +378,44 @@ export async function createEngine(canvas) {
         notify();
         return owned ? "on" : "buy";
     }
+    // How sharp we are willing to render. A phone reporting devicePixelRatio 3
+    // was being drawn at 2.5 and then upscaled by the browser to fill the
+    // screen — a fractional resample of every frame, which is most of what
+    // read as "fuzzy": on identical glyphs, full-DPR rendering carries about
+    // half again as much edge detail.
+    //
+    // Rendering at 3 is not free (it is 44% more pixels per frame), and the
+    // right answer depends on the device, so this is measured rather than
+    // assumed. We open at full DPR and, if the first seconds of play cannot
+    // hold a frame budget, drop to the old cap ONCE and stay there. It never
+    // climbs back: a renderer that renegotiates its own resolution mid-run
+    // would be visible every time it changed its mind.
+    const RENDER_CAP_HIGH = 3;
+    const RENDER_CAP_SAFE = 2.5;
+    let renderCap = RENDER_CAP_HIGH;
+    let capProbe = [];
+    function noteFrameCost(ms) {
+        if (!capProbe || world.screen !== "play")
+            return;
+        capProbe.push(ms);
+        if (capProbe.length < 90)
+            return;
+        // ignore the slowest few: a GC pause or a first-touch decode is not the
+        // steady state we are deciding about
+        const sorted = capProbe.slice().sort((a, b) => a - b);
+        const median = sorted[Math.floor(sorted.length / 2)];
+        capProbe = null;
+        if (median > 20 && renderCap !== RENDER_CAP_SAFE) {
+            renderCap = RENDER_CAP_SAFE;
+            resize();
+        }
+    }
     function resize() {
         const parent = canvas.parentElement;
         if (!parent)
             return;
         const rect = parent.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
+        const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : renderCap);
         // widescreen everywhere: the play area may take the whole window,
         // capped only at desktop-panorama width
         const W = Math.min(rect.width, 1600);
@@ -669,6 +701,7 @@ export async function createEngine(canvas) {
     }
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
+        noteFrameCost(now - last);
         last = now;
         if (world.race) {
             raceAccumulator += frameDt;
@@ -740,4 +773,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=102";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=103";
