@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=86";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=86";
-import { drawSprite as drawSpriteOn } from "./art.js?v=86";
-import { createEngine } from "./engine.js?v=86";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=86";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=86";
-import { formatRaceTicks } from "./race.js?v=86";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=87";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=87";
+import { drawSprite as drawSpriteOn } from "./art.js?v=87";
+import { createEngine } from "./engine.js?v=87";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=87";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=87";
+import { formatRaceTicks } from "./race.js?v=87";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -17,6 +17,9 @@ export async function bootStandalone(root) {
     // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
     // the whole window; DOM menus widen with it in landscape.
     document.body.classList.add("ac-wide");
+    // the purple beta chrome: every menu greys toward violet under this flag
+    if (IS_BETA)
+        document.body.classList.add("ac-beta");
     root.innerHTML = "";
     root.className = "ac-root";
     const stage = el("div", "ac-stage");
@@ -280,6 +283,7 @@ export async function bootStandalone(root) {
     ];
     const I_LAUNCH = ["M5 13.5 12 4l7 9.5", "M12 4v16", "M8.5 20h7"];
     const I_CHEV = ["m9 5 7 7-7 7"];
+    const I_BACK = ["m15 5-7 7 7 7"];
     const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
     const I_GEAR = [
         "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -290,6 +294,15 @@ export async function bootStandalone(root) {
     // whichever counter that screen is actually about.
     function header(kicker, title, aside) {
         const h = el("header", "ac-menuhead");
+        if (IS_BETA) {
+            // hub-and-spoke: the beta has no tab bar, so every menu carries
+            // its own door back to the hub
+            const back = el("button", "ac-backbtn");
+            back.setAttribute("aria-label", "Back to home");
+            back.append(icon(I_BACK, 20));
+            back.onclick = () => engine.open("title");
+            h.append(back);
+        }
         const t = el("div", "ac-menuheadtext");
         t.append(el("p", "ac-kicker", kicker), el("h2", "ac-menutitle", title));
         h.append(t);
@@ -897,7 +910,9 @@ export async function bootStandalone(root) {
         const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
         const pal = PALS.find((p) => p.id === s.equippedPal);
         const box = el("div", "ac-menu");
-        box.append(header("Customize your squirrel", "Hangar", headAside(s.acorns)));
+        box.append(IS_BETA
+            ? header("Suits & gear", "Loadout", headAside(s.acorns))
+            : header("Customize your squirrel", "Hangar", headAside(s.acorns)));
         // The equipped rig stays pinned above the categories, so the preview
         // is never a mystery while you shop.
         const load = el("div", "ac-rig");
@@ -1085,7 +1100,9 @@ export async function bootStandalone(root) {
             box.append(coach("Now the ION HELMET \u2014 tap to equip"));
         else if (s.guide === "levels")
             box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
-        box.append(scroll, tabbar("hangar"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("hangar"));
         return box;
     }
     // Every rank earns its OWN emblem — a cadet chevron through the
@@ -1271,17 +1288,21 @@ export async function bootStandalone(root) {
     // the bottom to its last at the top. Every node is a shipped planet
     // render, so the chart literally is a star chart. Flown path gold,
     // path ahead dim; the current level carries the pilot and its name.
-    function chapterMap(stageNum, stars, total) {
+    function chapterMap(stageNum, stars, total, currentId = null) {
         const levels = LEVELS.filter((l) => l.stage === stageNum);
         const W = Math.min(420, Math.max(280, window.innerWidth - 56));
         const step = 92;
-        const H = 70 + (levels.length - 1) * step + 84;
+        const H = 58 + (levels.length - 1) * step + 86;
         const xs = [0.17, 0.5, 0.83, 0.5];
+        // the path DESCENDS: forward is down, so chapters stack into one
+        // continuous road and the next chapter begins where this one ends
         const pos = levels.map((_, i) => ({
             x: Math.round(xs[i % 4] * W),
-            y: H - 62 - i * step,
+            y: 58 + i * step,
         }));
-        const current = levels.findIndex((l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1));
+        const current = currentId === null
+            ? levels.findIndex((l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1))
+            : levels.findIndex((l) => l.id === currentId);
         const map = el("div", "ac-chartmap");
         map.style.width = `${W}px`;
         map.style.height = `${H}px`;
@@ -1303,9 +1324,11 @@ export async function bootStandalone(root) {
             line.setAttribute("stroke-dasharray", "0.1 16");
             svg.append(line);
         };
-        const split = current < 0 ? pos.length : current + 1;
+        const firstUndone = levels.findIndex((l) => !((stars[l.id] || 0) & 1));
+        const split = firstUndone < 0 ? pos.length : firstUndone + 1;
         seg(pos.slice(0, split), true);
-        seg(pos.slice(Math.max(0, split - 1)), false);
+        if (split < pos.length)
+            seg(pos.slice(Math.max(0, split - 1)), false);
         map.append(svg);
         levels.forEach((lvl, i) => {
             const mask = stars[lvl.id] || 0;
@@ -1407,50 +1430,76 @@ export async function bootStandalone(root) {
             proto.append(phead);
             scroll.append(proto);
         }
-        for (const st of STAGES) {
-            const open = stageUnlocked(st.num, total);
-            const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
-            const head = el("button", "ac-stagehead");
-            const ttl = el("div", "ac-stagetitle");
-            ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num}`), el("p", "ac-stagename", st.name));
-            head.append(ttl);
-            const earned = LEVELS.filter((l) => l.stage === st.num)
-                .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
-            if (open) {
-                head.append(el("span", "ac-stagestars", `\u2605 ${earned}/30`));
-                head.onclick = () => { chartStage = chartStage === st.num ? 0 : st.num; render(); };
+        if (IS_BETA) {
+            // ONE continuous chart: every chapter in order, no accordion, no
+            // tabs — a divider names each chapter and the road just keeps
+            // going. The scroll lands on the level being flown next.
+            let currentId = null;
+            for (const l of LEVELS) {
+                if (levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1)) {
+                    currentId = l.id;
+                    break;
+                }
             }
-            else {
-                head.append(el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
+            for (const st of STAGES) {
+                const open = stageUnlocked(st.num, total);
+                const head = el("div", open ? "ac-chapdiv" : "ac-chapdiv locked");
+                const ttl = el("div", "ac-stagetitle");
+                ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num} \u2014 ${st.name}`), el("p", "ac-sub", st.tagline));
+                head.append(ttl);
+                const earned = LEVELS.filter((l) => l.stage === st.num)
+                    .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
+                head.append(open
+                    ? el("span", "ac-stagestars", `\u2605 ${earned}/30`)
+                    : el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
+                scroll.append(head, chapterMap(st.num, stars, total, currentId));
             }
-            card.append(head);
-            if (open && chartStage === st.num) {
-                card.append(el("p", "ac-sub ac-stagetag", st.tagline));
-                if (IS_BETA) {
-                    card.append(chapterMap(st.num, stars, total));
+        }
+        else {
+            for (const st of STAGES) {
+                const open = stageUnlocked(st.num, total);
+                const card = el("div", open ? "ac-stagecard" : "ac-stagecard locked");
+                const head = el("button", "ac-stagehead");
+                const ttl = el("div", "ac-stagetitle");
+                ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num}`), el("p", "ac-stagename", st.name));
+                head.append(ttl);
+                const earned = LEVELS.filter((l) => l.stage === st.num)
+                    .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
+                if (open) {
+                    head.append(el("span", "ac-stagestars", `\u2605 ${earned}/30`));
+                    head.onclick = () => { chartStage = chartStage === st.num ? 0 : st.num; render(); };
                 }
                 else {
-                    const grid = el("div", "ac-lvlgrid");
-                    for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
-                        const mask = stars[lvl.id] || 0;
-                        const can = levelUnlocked(lvl, stars, total);
-                        const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
-                        b.append(el("span", "ac-lvlnum", String(lvl.n)));
-                        b.append(starPips(mask, "sm"));
-                        if (can)
-                            b.onclick = () => { chartLevel = lvl.id; render(); };
-                        if (sv.guide === "levels" && lvl.id === "1-1")
-                            b.classList.add("ac-pulse");
-                        grid.append(b);
-                    }
-                    card.append(grid);
+                    head.append(el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
                 }
+                card.append(head);
+                if (open && chartStage === st.num) {
+                    card.append(el("p", "ac-sub ac-stagetag", st.tagline));
+                    {
+                        const grid = el("div", "ac-lvlgrid");
+                        for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
+                            const mask = stars[lvl.id] || 0;
+                            const can = levelUnlocked(lvl, stars, total);
+                            const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
+                            b.append(el("span", "ac-lvlnum", String(lvl.n)));
+                            b.append(starPips(mask, "sm"));
+                            if (can)
+                                b.onclick = () => { chartLevel = lvl.id; render(); };
+                            if (sv.guide === "levels" && lvl.id === "1-1")
+                                b.classList.add("ac-pulse");
+                            grid.append(b);
+                        }
+                        card.append(grid);
+                    }
+                }
+                scroll.append(card);
             }
-            scroll.append(card);
         }
         if (sv.guide === "levels")
             box.append(coach("Fly MISSION 1 \u2014 tap level 1, then TAKE FLIGHT"));
-        box.append(scroll, tabbar("log"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
             const def = LEVELS.find((l) => l.id === chartLevel) ?? (IS_BETA ? experimentalRaceById(chartLevel) : null);
@@ -1708,7 +1757,9 @@ export async function bootStandalone(root) {
                 ? "Premium items are unlocked for everyone during the beta."
                 : "Premium items arrive with the full release."));
         }
-        box.append(scroll, tabbar("shop"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("shop"));
         return box;
     }
     function drawProfile() {
@@ -1782,7 +1833,9 @@ export async function bootStandalone(root) {
             news.append(r);
         }
         scroll.append(news, el("p", "ac-fine ac-mid", `${BUILD} · ${GAME_VERSION}`));
-        box.append(scroll, tabbar("profile"));
+        box.append(scroll);
+        if (!IS_BETA)
+            box.append(tabbar("profile"));
         return box;
     }
     function drawHelp() {
@@ -1864,14 +1917,19 @@ export async function bootStandalone(root) {
             ctx.arc(px / 2, px / 2, px * 0.46, 0, Math.PI * 2);
             ctx.fill();
         }), "WORMHOLE", "Lost in Space & Arcade: mirrors your heading.");
-        scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
-        scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
-        scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
-        scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-        scroll.append(el("p", "ac-sub ac-mid", IS_BETA
-            ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
-            : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
-        scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
+        // The mode blurbs left the beta's help: every mode describes itself on
+        // the MODES sheet now. The live Briefing keeps them — it is still the
+        // only place the live page explains the modes.
+        if (!IS_BETA) {
+            scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
+            scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
+            scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
+            scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
+            scroll.append(el("p", "ac-sub ac-mid", IS_BETA
+                ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
+                : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
+            scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
+        }
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
@@ -1903,7 +1961,8 @@ export async function bootStandalone(root) {
             engine.startOver();
         };
         scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
-        box.append(tabbar("none"));
+        if (!IS_BETA)
+            box.append(tabbar("none"));
         return box;
     }
     engine.subscribe(render);

@@ -438,7 +438,10 @@
     .ac-hub-art { position: absolute; inset: 0; background-size: cover; background-position: 50% 26%; filter: saturate(1.1); }
     .ac-hub-scrim { position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(16,7,38,.68) 0%, rgba(16,7,38,.12) 22%, rgba(16,7,38,.14) 60%, rgba(10,4,26,.82) 94%); }
-    .ac-hub > * { position: relative; }
+    /* every hub child stacks over the art — EXCEPT the mode sheet, whose
+       position:fixed must survive or it renders inline and gets clipped
+       by the hub's overflow, with its BACK button unreachable */
+    .ac-hub > :not(.ac-lvlsheet) { position: relative; }
     .ac-hub-art, .ac-hub-scrim { position: absolute; }
     .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 9px; }
     .ac-hub-acorns { background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); padding: 8px 15px 8px 12px; font-size: 15px; }
@@ -542,6 +545,38 @@
       filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
     .ac-mapname { background: rgba(16,20,38,.92); border: 1.5px solid rgba(255,206,92,.45); border-radius: 10px; padding: 4px 10px;
       font: 900 11px/1.2 Fraunces, serif; letter-spacing: .03em; box-shadow: 0 6px 14px rgba(0,0,0,.5); white-space: nowrap; }
+
+    /* the continuous chart's chapter dividers */
+    .ac-chapdiv { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin: 14px 0 2px; padding: 10px 14px; border: 1px solid rgba(170,140,240,.25); border-radius: 14px;
+      background: rgba(24,15,50,.72); }
+    .ac-chapdiv.locked { opacity: .6; }
+
+    /* ============ BETA CHROME ============
+       The purple grade on every menu, hung off one body class so the
+       live page keeps its shipped navy untouched. */
+    body.ac-beta .ac-menu { background:
+      radial-gradient(100% 45% at 50% -8%, rgba(96,52,170,.4), transparent 62%), #120a2c; }
+    body.ac-beta .ac-sheet { background: rgba(16,8,36,.92); }
+    body.ac-beta .ac-stagecard, body.ac-beta .ac-rows, body.ac-beta .ac-idcard, body.ac-beta .ac-rig,
+    body.ac-beta .ac-tile, body.ac-beta .ac-log, body.ac-beta .ac-roaditem, body.ac-beta .ac-lockednote {
+      background: rgba(24,15,50,.72); border-color: rgba(170,140,240,.26); }
+    body.ac-beta .ac-card, body.ac-beta .ac-ghost, body.ac-beta .ac-cat, body.ac-beta .ac-modebar,
+    body.ac-beta .ac-tab, body.ac-beta .ac-lvlbtn, body.ac-beta .ac-loadstrip, body.ac-beta .ac-tagpill {
+      background: rgba(30,20,62,.85); border-color: rgba(170,140,240,.26); }
+    body.ac-beta .ac-card.on { border-color: #c4a0ff; background: rgba(160,120,255,.18); }
+    body.ac-beta .ac-lvlcard { background: #191036; border-top-color: rgba(170,140,240,.4); }
+    body.ac-beta .ac-tabbar { background: #150c30; border-top-color: rgba(170,140,240,.22); }
+    body.ac-beta .ac-dome { border-color: #150c30; }
+    body.ac-beta .ac-rows .ac-row { border-bottom-color: rgba(170,140,240,.16); }
+    body.ac-beta .ac-switch { background: #241740; border-color: rgba(170,140,240,.3); }
+    body.ac-beta .ac-codein { background: #1a1136; border-color: rgba(170,140,240,.3); }
+    /* hub-and-spoke: the beta menus' way home, and room where the bar was */
+    .ac-backbtn { flex: none; width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center;
+      background: rgba(30,20,62,.85); border: 1px solid rgba(170,140,240,.3); color: #cfd8ea; align-self: center; }
+    .ac-backbtn:active { transform: scale(.94); }
+    body.ac-beta .ac-menu .ac-sheet-scroll { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+    body.ac-beta .ac-coach { bottom: calc(20px + env(safe-area-inset-bottom)); }
   </style>
 </head>
 <body>
@@ -557,7 +592,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js86/standalone.js";
+    import { bootStandalone } from "../js87/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
