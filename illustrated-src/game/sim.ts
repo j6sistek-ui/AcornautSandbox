@@ -1061,13 +1061,15 @@ export type RaceSemanticInput = {
   held: boolean;
   boost: boolean;
   drop?: true;
+  /** Canonical tunnel steering target; null ends an active drag. */
+  dragY?: number | null;
 };
 
 /** Semantic race input is tick-stamped and consumed before the next race step. */
 export function setRaceInput(w: World, input: RaceSemanticInput) {
   if (!w.race || w.screen !== "play") return false;
   queueRaceInput(w.race, input);
-  if (input.held || input.drop) w.ready = false;
+  if (input.held || input.drop || input.dragY != null) w.ready = false;
   return true;
 }
 
@@ -1101,7 +1103,9 @@ export type RaceCueEffectPlan = Readonly<{
  */
 export function planRaceCueEffects(cues: readonly RaceCue[]): RaceCueEffectPlan[] {
   return cues.map((cue) => {
-    if (cue.kind === "ring-pass") return { cue, sfx: "gold", notify: false };
+    if (cue.kind === "ring-pass" || cue.kind === "tunnel-ring-pass" || cue.kind === "tunnel-ring-perfect") {
+      return { cue, sfx: "gold", notify: false };
+    }
     if (cue.kind === "debris-hit") return { cue, sfx: "bounce", notify: false };
     if (cue.kind === "acorn") return { cue, sfx: "acorn", notify: false };
     if (cue.kind === "entry" || cue.kind === "return") {
@@ -1427,8 +1431,9 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
   // Tunnel flight deliberately reuses the main game's gravity and flap
   // impulse. A tap resets upward velocity; gravity owns the descent.
   const oldSy = w.squirrel.y;
-  // The BETA flies the wormhole like Hyper Run's stretches: hold to rise,
-  // release to fall. Live keeps the classic tap until this is approved.
+  // The BETA's standalone Wormhole Run uses hold to rise/release to fall.
+  // Hyper Run's alignment tunnel has its own drag authority in race.ts.
+  // Live Wormhole Run keeps the classic tap until its beta control is approved.
   w.squirrel.vy = IS_BETA
     ? Math.max(WORMHOLE_MIN_VY, Math.min(WORMHOLE_MAX_VY,
         w.squirrel.vy + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL) * simDt))
