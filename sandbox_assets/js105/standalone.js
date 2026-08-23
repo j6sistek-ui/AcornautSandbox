@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=104";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=104";
-import { drawSprite as drawSpriteOn } from "./art.js?v=104";
-import { createEngine } from "./engine.js?v=104";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=104";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=104";
-import { formatRaceTicks } from "./race.js?v=104";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=105";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=105";
+import { drawSprite as drawSpriteOn } from "./art.js?v=105";
+import { createEngine } from "./engine.js?v=105";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=105";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=105";
+import { formatRaceTicks } from "./race.js?v=105";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1016,6 +1016,19 @@ export async function bootStandalone(root) {
                 // VOLT's experiment: while Volt is the selected pilot, its card
                 // grows a switch that swaps between the two painted jump takes so
                 // the owner can fly both back to back and pick one.
+                // ECLIPSE's experiment, run the same way: while Eclipse is the
+                // selected pilot its card grows a switch between the shipped pose
+                // mapping and the rate-driven one, so both can be flown back to back.
+                if (u.id === "eclipse" && s.equippedSuit === "eclipse") {
+                    const alt = el("button", "ac-card ac-modcard on");
+                    const txt = el("div", "ac-modtxt");
+                    txt.append(el("p", "ac-modname", "Rate Motion"), el("p", "ac-sub", "Pose follows how fast you are climbing or falling."));
+                    const sw = el("span", s.eclipseRateMotion ? "ac-switch on" : "ac-switch");
+                    sw.append(el("i", "ac-knob"));
+                    alt.append(txt, sw);
+                    alt.onclick = () => engine.setEclipseRateMotion(!engine.save.eclipseRateMotion);
+                    grid.append(alt);
+                }
                 if (u.id === "volt" && s.equippedSuit === "volt") {
                     const alt = el("button", "ac-card ac-modcard on");
                     const txt = el("div", "ac-modtxt");
