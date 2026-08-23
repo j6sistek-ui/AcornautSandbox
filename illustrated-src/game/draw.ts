@@ -2089,6 +2089,25 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:verdant": [204, 93, 58],
   "suit:cryostar": [207, 93, 58],
   "suit:eclipse": [204, 86, 58],
+  // Eclipse's physics-pose banks move the head with the attitude, so each
+  // frame registers its own dome (auto-measured from the fur blob; the
+  // same detector finds the shipped static's dome within 5px).
+  "eclipse-asc-1": [196, 64, 54],
+  "eclipse-asc-2": [196, 59, 50],
+  "eclipse-asc-3": [198, 62, 50],
+  "eclipse-asc-4": [200, 71, 56],
+  "eclipse-asc-5": [200, 75, 56],
+  "eclipse-asc-6": [200, 78, 48],
+  "eclipse-asc-7": [198, 86, 48],
+  "eclipse-asc-8": [198, 92, 48],
+  "eclipse-desc-1": [189, 98, 43],
+  "eclipse-desc-2": [194, 108, 43],
+  "eclipse-desc-3": [192, 121, 43],
+  "eclipse-desc-4": [187, 136, 42],
+  "eclipse-desc-5": [186, 142, 44],
+  "eclipse-desc-6": [180, 156, 46],
+  "eclipse-desc-7": [174, 160, 44],
+  "eclipse-desc-8": [166, 164, 44],
   "suit:cinderforge": [196, 100, 51],
   "suit:groveguard": [196, 100, 51],
   "suit:cosmic": [196, 100, 51],
@@ -2547,7 +2566,7 @@ function paintIllustrated(
   if (rigT && rigB && suited) {
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
     const pivot = TAIL_PIVOT[suit.id];
-    // VOLT's physics-pose experiment: with ascend/descend banks present,
+    // ECLIPSE's physics-pose experiment: with ascend/descend banks present,
     // posture is DRIVEN BY VERTICAL VELOCITY, not a tap clock — rising
     // deepens the climb pose, the arc settles to level, and falling rolls
     // into the dive ramp. Earth physics, worn on the body.
@@ -2636,10 +2655,18 @@ function paintIllustrated(
       const v = smoothMotionVy(_t, motionVy);
       const bank = v < 0 ? ascFrames : descFrames;
       const k = v < 0 ? Math.min(1, -v / 470) : Math.min(1, v / 620);
-      const frame = bank[Math.min(bank.length - 1, Math.round(k * (bank.length - 1)))];
+      const idxM = Math.min(bank.length - 1, Math.round(k * (bank.length - 1)));
+      const frame = bank[idxM];
       const refM = (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
-      if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+      // the helmet rides the HEAD, which these frames move with the
+      // attitude — each frame carries its own dome anchor. The anchor is
+      // in canvas space, so it must be mapped through the SAME reference
+      // box the frame itself is drawn with (asc[0]), not the frame's own.
+      if (!wearsOwnHead(suit)) {
+        paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`,
+          helmet, x, y, size, art);
+      }
     } else if (fullTap) {
       // frame registration comes from the bank's own first frame, so every
       // frame lands at the same scale and the character never pulses in size
