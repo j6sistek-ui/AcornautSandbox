@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=113";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=113";
-import { drawSprite as drawSpriteOn } from "./art.js?v=113";
-import { createEngine } from "./engine.js?v=113";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=113";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=113";
-import { formatRaceTicks } from "./race.js?v=113";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=114";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=114";
+import { drawSprite as drawSpriteOn } from "./art.js?v=114";
+import { createEngine } from "./engine.js?v=114";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=114";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=114";
+import { formatRaceTicks } from "./race.js?v=114";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -987,7 +987,7 @@ export async function bootStandalone(root) {
             const locked = wearsOwnHead(suit);
             if (locked) {
                 const note = el("div", "ac-lockednote");
-                note.append(el("p", "ac-lockedhead", `${suit.name} wears its own helmet`), el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."));
+                note.append(el("p", "ac-lockedhead", `${suit.name} has its own head`), el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."));
                 scroll.append(note);
             }
             for (const h of HELMETS) {

@@ -2083,7 +2083,6 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:ember": [182, 100, 44],
   "suit:stardust": [179, 95, 44],
   "suit:robo": [180, 99, 45],
-  "suit:alien": [188, 102, 43],
   // re-rendered bare-headed on a black plate (the pale-on-cream key was
   // unrecoverable); measured against the new art, and near-identical to
   // flight, which is the same pose in the same framing
@@ -2250,7 +2249,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // by hand. The old values sat on the outer edge of the tail mask, which
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
-  alien: [106, 145],
+  alien: [119, 115],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
   catsuit: [74, 149],

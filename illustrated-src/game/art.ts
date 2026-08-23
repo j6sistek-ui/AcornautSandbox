@@ -422,7 +422,7 @@ export async function loadArt(): Promise<ArtBank> {
         ...(BETA_FEATURES ? {
           flight: 16, iontrim: 16, copper: 16, frost: 16,
           voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
-          alien: 16, ghost: 16, gemmie: 16, sammie: 16,
+          ghost: 16, gemmie: 16, sammie: 16,
           seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
           cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
           abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,

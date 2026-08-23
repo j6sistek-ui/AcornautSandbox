@@ -1035,7 +1035,7 @@ export async function bootStandalone(root: HTMLElement) {
       if (locked) {
         const note = el("div", "ac-lockednote");
         note.append(
-          el("p", "ac-lockedhead", `${suit.name} wears its own helmet`),
+          el("p", "ac-lockedhead", `${suit.name} has its own head`),
           el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."),
         );
         scroll.append(note);

@@ -67,7 +67,6 @@ BASE_SUIT_IDS = (
     "ember",
     "stardust",
     "robo",
-    "alien",
     "ghost",
     "bigbooty",
 )
