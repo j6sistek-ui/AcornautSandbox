@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, TAP_ANIM_ENABLED } from "./catalog.js?v=117";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=118";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -229,7 +229,7 @@ export async function loadArt() {
         "verdant",
         "cryostar",
         "eclipse",
-        ...(BETA_FEATURES ? [
+        ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor",
         ] : []),
@@ -242,7 +242,7 @@ export async function loadArt() {
         "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
         "catsuit", "gemmie", "sammie", "seraph", "leviathan",
         "verdant", "cryostar", "eclipse", "volt",
-        ...(BETA_FEATURES ? [
+        ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
         ] : []),
@@ -269,7 +269,7 @@ export async function loadArt() {
         "cryostar",
         "eclipse",
         "volt",
-        ...(BETA_FEATURES ? [
+        ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
         ] : []),
@@ -333,7 +333,9 @@ export async function loadArt() {
             robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
             // The Robo-timing rollout stays beta-only until the owner has flown
             // every silhouette. Production keeps its current universal rig path.
-            ...(BETA_FEATURES ? {
+            // IS_BETA, not BETA_FEATURES: this list is 384 images, and the flag
+            // split sent all of them to production, where none is ever drawn.
+            ...(IS_BETA ? {
                 flight: 16, iontrim: 16, copper: 16, frost: 16,
                 voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
                 ghost: 16, gemmie: 16, sammie: 16,
@@ -344,8 +346,8 @@ export async function loadArt() {
         } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
         namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {}, "suits", "-asc-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {}, "suits", "-desc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, alien: 6, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-asc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, alien: 6, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-desc-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
