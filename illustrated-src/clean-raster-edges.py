@@ -75,6 +75,12 @@ HARD_EDGE = {
     "planets/22.png",
     "planets/32.png",
     "debris/23.png",
+    # Found by a later sweep for alpha channels with no soft pixels at all.
+    # These three are the only remaining sprites whose alpha holds just two
+    # values, so their silhouettes stair-step where every neighbour's ramp.
+    "helms/ion.png",
+    "helms/reactor.png",
+    "solo/wisp.png",
 }
 
 # These are otherwise clean, but a tiny foreign component at the bottom of
