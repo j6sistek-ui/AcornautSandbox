@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=109";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=109";
-import { proceduralSky } from "./sky-gen.js?v=109";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=109";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=109";
-import { tunnelBoundsAt } from "./sim.js?v=109";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=109";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=109";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=112";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=112";
+import { proceduralSky } from "./sky-gen.js?v=112";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=112";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=112";
+import { tunnelBoundsAt } from "./sim.js?v=112";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=112";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=112";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1956,13 +1956,13 @@ const DOME = {
     "suit:aurorasuit": [181, 101, 44],
     "suit:ember": [182, 100, 44],
     "suit:stardust": [179, 95, 44],
-    "suit:robo": [193, 92, 45],
+    "suit:robo": [180, 99, 45],
     "suit:alien": [188, 102, 43],
     // re-rendered bare-headed on a black plate (the pale-on-cream key was
     // unrecoverable); measured against the new art, and near-identical to
     // flight, which is the same pose in the same framing
     "suit:ghost": [182, 93, 44],
-    "suit:bigbooty": [182, 102, 45],
+    "suit:bigbooty": [175, 107, 45],
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [204, 92, 58],
     "suit:phoenix": [207, 92, 41],
@@ -1999,13 +1999,9 @@ const DOME = {
     // Flight's banks come from a motion TRANSFER of Eclipse's own arc, so
     // its head sits differently in every frame and each one carries its own
     // anchor, exactly as Eclipse's do.
-    "flight-asc-1": [174.4, 88.6, 32.6],
-    "flight-asc-2": [178.4, 87.0, 32.6],
-    "flight-asc-3": [174.9, 90.7, 32.6],
-    "flight-asc-4": [176.7, 87.0, 32.6],
-    "flight-asc-5": [174.4, 89.2, 32.6],
-    "flight-asc-6": [176.8, 86.2, 32.6],
-    "flight-asc-7": [176.2, 86.6, 32.6],
+    "flight-asc-1": [174.1, 88.5, 32.6],
+    "flight-asc-2": [174.6, 90.6, 32.6],
+    "flight-asc-3": [174.1, 89.1, 32.6],
     "flight-desc-1": [179.0, 93.0, 32.6],
     "flight-desc-2": [178.4, 95.6, 32.6],
     "flight-desc-3": [173.9, 110.8, 32.6],
@@ -2041,23 +2037,23 @@ const HELM_GLASS = {
     // Royal wears a crown, so its sphere is scaled down inside the frame
     // and never measured 125 like the bare bubbles. Measured off the art.
     "royal": [124, 156, 98],
-    "aurora": [128, 127, 125],
-    "meteor": [128, 127, 125],
-    "chrono": [132, 126, 125],
+    "aurora": [128, 127, 127.5],
+    "meteor": [128, 127, 127.5],
+    "chrono": [132, 126, 127.5],
     // measured off the corrected art. These renders are three-quarter
     // views, so the visor sits right of frame centre — that offset is real
     // and paintDome relies on it to seat the helmet on the head.
     "gemmie": [128, 128, 131.9],
     "phoenix": [130, 116, 129.2, -2],
     "seraph": [125, 151, 110],
-    "chronarch": [121.1, 119.5, 125.6],
-    "paladin": [130, 144, 115],
+    "chronarch": [127.1, 120.5, 125.6],
+    "paladin": [133, 137, 119.6],
     // Princess is a shell with a face opening, not a bubble, so the head does
     // not sit at the shell's centre — it sits behind the opening, back from it
     // by about a fifth of its own radius, because the squirrel's face is
     // forward of its head centre. Centred on the shell it put the whole face
     // behind cream lacquer.
-    "princess": [119.3, 91.8, 126],
+    "princess": [127.3, 96.8, 126],
     // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
     // its visor field gave 78, which drew the helmet half again too big — the
     // shell hides most of the sphere's edge, so the visible visor is nothing
@@ -2070,17 +2066,17 @@ const HELM_GLASS = {
     // suit (suitOnly in catalog.ts), so this number never has to sit right
     // on anyone else.
     "leviathan": [129.8, 110.6, 103.6, 12],
-    "verdant": [125, 129, 137],
-    "cryostar": [126, 125, 132],
-    "eclipse": [121, 132, 133],
-    "cinderforge": [124, 125, 128],
+    "verdant": [141, 116, 126.6],
+    "cryostar": [126, 121, 134.6],
+    "eclipse": [127, 129, 138.4],
+    "cinderforge": [128, 125, 115.9],
     "groveguard": [130, 124, 106],
-    "cosmic": [134, 119, 117],
+    "cosmic": [134, 119, 124.2],
     "sunforged": [123, 128, 129],
-    "abyssal": [124, 131, 134],
-    "amethyst": [122, 131, 134],
-    "ivoryguard": [122, 126, 128],
-    "reactor": [136, 116, 115],
+    "abyssal": [125, 131, 128.8],
+    "amethyst": [127, 128, 126.3],
+    "ivoryguard": [127, 126, 130.6],
+    "reactor": [140, 110, 96.2],
 };
 // The real helmet art, its glass centre punched translucent once so the
 // pilot's face shows through when it is composited onto the head.

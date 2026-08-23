@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=109";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=109";
-import { drawSprite as drawSpriteOn } from "./art.js?v=109";
-import { createEngine } from "./engine.js?v=109";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=109";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=109";
-import { formatRaceTicks } from "./race.js?v=109";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=112";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=112";
+import { drawSprite as drawSpriteOn } from "./art.js?v=112";
+import { createEngine } from "./engine.js?v=112";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=112";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=112";
+import { formatRaceTicks } from "./race.js?v=112";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -18,7 +18,7 @@ export async function bootStandalone(root) {
     // the whole window; DOM menus widen with it in landscape.
     document.body.classList.add("ac-wide");
     // the purple beta chrome: every menu greys toward violet under this flag
-    if (IS_BETA)
+    if (BETA_FEATURES)
         document.body.classList.add("ac-beta");
     root.innerHTML = "";
     root.className = "ac-root";
@@ -208,7 +208,7 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "title") {
             keptScroll = 0;
-            overlay.append(IS_BETA ? drawHome() : drawHomeClassic());
+            overlay.append(BETA_FEATURES ? drawHome() : drawHomeClassic());
             return;
         }
         if (snap.screen === "hangar") {
@@ -311,7 +311,7 @@ export async function bootStandalone(root) {
     // whichever counter that screen is actually about.
     function header(kicker, title, aside) {
         const h = el("header", "ac-menuhead");
-        if (IS_BETA) {
+        if (BETA_FEATURES) {
             // hub-and-spoke: the beta has no tab bar, so every menu carries
             // its own door back to the hub
             const back = el("button", "ac-backbtn");
@@ -369,7 +369,7 @@ export async function bootStandalone(root) {
         const dome = el("button", "ac-dome");
         dome.append(icon(I_ACORN, 26, true), el("span", "", "HOME"));
         dome.onclick = () => engine.open("title");
-        const hangarTab = side("hangar", I_HELMET, IS_BETA ? "LOADOUT" : "HANGAR");
+        const hangarTab = side("hangar", I_HELMET, BETA_FEATURES ? "LOADOUT" : "HANGAR");
         const levelsTab = side("log", I_STAR, "LEVELS");
         const g = engine.save.guide;
         if ((g === "hangar" || g === "helmet") && active !== "hangar")
@@ -941,7 +941,7 @@ export async function bootStandalone(root) {
         const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
         const pal = PALS.find((p) => p.id === s.equippedPal);
         const box = el("div", "ac-menu");
-        box.append(IS_BETA
+        box.append(BETA_FEATURES
             ? header("Suits & gear", "Loadout", headAside(s.acorns))
             : header("Customize your squirrel", "Hangar", headAside(s.acorns)));
         // The equipped rig stays pinned above the categories, so the preview
@@ -1151,7 +1151,7 @@ export async function bootStandalone(root) {
         else if (s.guide === "levels")
             box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
         box.append(scroll);
-        if (!IS_BETA)
+        if (!BETA_FEATURES)
             box.append(tabbar("hangar"));
         return box;
     }
@@ -1499,7 +1499,7 @@ export async function bootStandalone(root) {
         // a tap and stays collapsed by default so the chapters keep the screen.
         // BETA: the rewards ladder left this screen — every reward hangs on
         // the road itself, at the level its stars can first be earned.
-        if (!IS_BETA) {
+        if (!BETA_FEATURES) {
             const ladder = el("div", "ac-stagecard");
             const lhead = el("button", "ac-stagehead");
             lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", chartStage === -1 ? "\u25be what stars unlock" : "\u25b8 what stars unlock"));
@@ -1523,7 +1523,7 @@ export async function bootStandalone(root) {
             }
             scroll.append(ladder);
         }
-        if (IS_BETA) {
+        if (BETA_FEATURES) {
             const record = sv.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
             const proto = el("div", "ac-stagecard");
             const phead = el("button", "ac-stagehead");
@@ -1537,7 +1537,7 @@ export async function bootStandalone(root) {
             proto.append(phead);
             scroll.append(proto);
         }
-        if (IS_BETA) {
+        if (BETA_FEATURES) {
             scroll.append(fullChart(stars, total));
         }
         else {
@@ -1583,11 +1583,11 @@ export async function bootStandalone(root) {
         if (sv.guide === "levels")
             box.append(coach("Fly MISSION 1 \u2014 tap level 1, then TAKE FLIGHT"));
         box.append(scroll);
-        if (!IS_BETA)
+        if (!BETA_FEATURES)
             box.append(tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
-            const def = LEVELS.find((l) => l.id === chartLevel) ?? (IS_BETA ? experimentalRaceById(chartLevel) : null);
+            const def = LEVELS.find((l) => l.id === chartLevel) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(chartLevel) : null);
             if (def)
                 box.append(drawLevelSheet(def, def.experimental ? prototypeMask() : stars[def.id] || 0));
         }
@@ -1598,7 +1598,7 @@ export async function bootStandalone(root) {
         const sheet = el("div", "ac-lvlcard");
         // BETA: a level is a number and its three stars — no name, no place,
         // no modifier tags. The live page keeps the full briefing.
-        const plain = IS_BETA && !def.experimental;
+        const plain = HYPER_RUN_ENABLED && !def.experimental;
         if (plain) {
             const gnum = LEVELS.findIndex((l) => l.id === def.id) + 1;
             sheet.append(el("p", "ac-kicker", "STAR CHART"));
@@ -1848,12 +1848,12 @@ export async function bootStandalone(root) {
         }
         scroll.append(grid);
         if (storeTab !== "pals") {
-            scroll.append(el("p", "ac-fine", IS_BETA
+            scroll.append(el("p", "ac-fine", BETA_FEATURES
                 ? "Premium items are unlocked for everyone during the beta."
                 : "Premium items arrive with the full release."));
         }
         box.append(scroll);
-        if (!IS_BETA)
+        if (!BETA_FEATURES)
             box.append(tabbar("shop"));
         return box;
     }
@@ -1905,7 +1905,7 @@ export async function bootStandalone(root) {
         scroll.append(bests);
         // BETA: settings left this screen for the hub's gear button, where
         // they sit with Help; the live page keeps Music here for now.
-        if (!IS_BETA) {
+        if (!BETA_FEATURES) {
             scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
             const settings = el("div", "ac-rows");
             const musicRow = el("button", "ac-row ac-rowbtn");
@@ -1929,17 +1929,17 @@ export async function bootStandalone(root) {
         }
         scroll.append(news, el("p", "ac-fine ac-mid", `${BUILD} · ${GAME_VERSION}`));
         box.append(scroll);
-        if (!IS_BETA)
+        if (!BETA_FEATURES)
             box.append(tabbar("profile"));
         return box;
     }
     function drawHelp() {
         const box = el("div", "ac-menu");
-        box.append(IS_BETA ? header("Flight deck", "Settings & Help") : header("Briefing", "How to Fly"));
+        box.append(BETA_FEATURES ? header("Flight deck", "Settings & Help") : header("Briefing", "How to Fly"));
         const scroll = el("div", "ac-sheet-scroll");
         // BETA: music moved here from the Profile — settings and help share
         // the hub's gear button. The live page keeps Help as the briefing.
-        if (IS_BETA) {
+        if (BETA_FEATURES) {
             const settings = el("div", "ac-rows");
             const musicRow = el("button", "ac-row ac-rowbtn");
             musicRow.append(el("span", "", "Music"));
@@ -2015,12 +2015,12 @@ export async function bootStandalone(root) {
         // The mode blurbs left the beta's help: every mode describes itself on
         // the MODES sheet now. The live Briefing keeps them — it is still the
         // only place the live page explains the modes.
-        if (!IS_BETA) {
+        if (!BETA_FEATURES) {
             scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
             scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
             scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
             scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-            scroll.append(el("p", "ac-sub ac-mid", IS_BETA
+            scroll.append(el("p", "ac-sub ac-mid", BETA_FEATURES
                 ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
                 : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
             scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
@@ -2031,7 +2031,7 @@ export async function bootStandalone(root) {
         scroll.append(replay);
         // BETA reaches the prototype doors through the MODES sheet on the hub;
         // the live page keeps them here, one deliberate tap away, as before.
-        if (!IS_BETA) {
+        if (!BETA_FEATURES) {
             const labRoot = "./lab/";
             const lab = el("button", "ac-ghost ac-lab", "SURVIVAL TEST MODE");
             lab.onclick = () => { window.location.href = labRoot + "spill/"; };
@@ -2056,7 +2056,7 @@ export async function bootStandalone(root) {
             engine.startOver();
         };
         scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
-        if (!IS_BETA)
+        if (!BETA_FEATURES)
             box.append(tabbar("none"));
         return box;
     }

@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -310,7 +310,7 @@ export async function loadArt(): Promise<ArtBank> {
     "verdant",
     "cryostar",
     "eclipse",
-    ...(IS_BETA ? [
+    ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
       "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
@@ -323,7 +323,7 @@ export async function loadArt(): Promise<ArtBank> {
     "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
     "catsuit", "gemmie", "sammie", "seraph", "leviathan",
     "verdant", "cryostar", "eclipse", "volt",
-    ...(IS_BETA ? [
+    ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
       "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
@@ -350,7 +350,7 @@ export async function loadArt(): Promise<ArtBank> {
     "cryostar",
     "eclipse",
     "volt",
-    ...(IS_BETA ? [
+    ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
       "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
@@ -420,7 +420,7 @@ export async function loadArt(): Promise<ArtBank> {
         robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
         // The Robo-timing rollout stays beta-only until the owner has flown
         // every silhouette. Production keeps its current universal rig path.
-        ...(IS_BETA ? {
+        ...(BETA_FEATURES ? {
           flight: 16, iontrim: 16, copper: 16, frost: 16,
           voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
           alien: 16, ghost: 16, gemmie: 16, sammie: 16,
@@ -432,11 +432,11 @@ export async function loadArt(): Promise<ArtBank> {
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-tap2-"),
       namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 7 } : {}, "suits", "-asc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3 } : {}, "suits", "-asc-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5 } : {}, "suits", "-desc-"),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
-      named(IS_BETA ? hyperRunIds : [], "hyper-run"),
+      named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
     ]);
   return {
     ready: true,
