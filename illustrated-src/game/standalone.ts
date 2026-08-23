@@ -1328,32 +1328,29 @@ export async function bootStandalone(root: HTMLElement) {
     }, 0);
   }
 
-  // ------------------------------------------------------------ chapter map
-  // The open chapter is a MAP, not a grid: its levels are planet nodes on
-  // a serpentine dotted path, climbing from the chapter's first level at
-  // the bottom to its last at the top. Every node is a shipped planet
-  // render, so the chart literally is a star chart. Flown path gold,
-  // path ahead dim; the current level carries the pilot and its name.
-  function chapterMap(
-    stageNum: number,
-    stars: Record<string, number>,
-    total: number,
-    currentId: string | null = null,
-  ) {
-    const levels = LEVELS.filter((l) => l.stage === stageNum);
+  // ------------------------------------------------------------ the road
+  // ONE road, bottom-up: a hundred numbered levels climbing from the
+  // first flight at the very bottom of the scroll to the last at the top.
+  // No chapters, no tabs, no level names — a planet, a number, and up to
+  // three stars each. Pals hang at the roadside beside the level whose
+  // three-star ceiling first covers their price, greyed until banked.
+  function fullChart(stars: Record<string, number>, total: number) {
+    const levels = LEVELS;
     const W = Math.min(420, Math.max(280, window.innerWidth - 56));
     const step = 92;
-    const H = 58 + (levels.length - 1) * step + 86;
+    const H = 70 + (levels.length - 1) * step + 84;
     const xs = [0.17, 0.5, 0.83, 0.5];
-    // the path DESCENDS: forward is down, so chapters stack into one
-    // continuous road and the next chapter begins where this one ends
     const pos = levels.map((_, i) => ({
       x: Math.round(xs[i % 4] * W),
-      y: 58 + i * step,
+      y: H - 62 - i * step,
     }));
-    const current = currentId === null
-      ? levels.findIndex((l) => levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1))
-      : levels.findIndex((l) => l.id === currentId);
+    let current = -1;
+    for (let i = 0; i < levels.length; i++) {
+      if (levelUnlocked(levels[i], stars, total) && !((stars[levels[i].id] || 0) & 1)) {
+        current = i;
+        break;
+      }
+    }
 
     const map = el("div", "ac-chartmap");
     map.style.width = `${W}px`;
@@ -1382,6 +1379,19 @@ export async function bootStandalone(root: HTMLElement) {
     if (split < pos.length) seg(pos.slice(Math.max(0, split - 1)), false);
     map.append(svg);
 
+    for (const r of STAR_REWARDS) {
+      if (r.kind !== "pal" || !r.id) continue;
+      const li = Math.min(levels.length - 1, Math.max(0, Math.ceil(r.stars / 3) - 1));
+      const side = pos[li].x < W / 2 ? 1 : -1;
+      const mark = el("div", total >= r.stars ? "ac-palmark earned" : "ac-palmark");
+      mark.style.left = `${Math.max(34, Math.min(W - 34, pos[li].x + side * 104))}px`;
+      mark.style.top = `${pos[li].y}px`;
+      const pc = miniCanvas(46, 42);
+      if (pc.ctx) paintPalPreview(pc.ctx, engine.art, r.id, 23, 19, 40);
+      mark.append(pc.c, el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
+      map.append(mark);
+    }
+
     levels.forEach((lvl, i) => {
       const mask = stars[lvl.id] || 0;
       const can = levelUnlocked(lvl, stars, total);
@@ -1394,10 +1404,9 @@ export async function bootStandalone(root: HTMLElement) {
       if (can) node.append(starPips(mask, "sm"));
       const px = isCur ? 84 : 62;
       const { c, ctx } = miniCanvas(px, px);
-      // a stable spread across the planet bank, so neighbours differ
       const bank = engine.art?.planets ?? [];
       if (ctx && bank.length) {
-        drawSpriteOn(ctx, bank[(stageNum * 5 + i * 3) % bank.length] ?? null, px / 2, px / 2, px * 0.94);
+        drawSpriteOn(ctx, bank[(i * 7) % bank.length] ?? null, px / 2, px / 2, px * 0.94);
       }
       const disc = el("span", "ac-mapdisc");
       disc.append(c);
@@ -1409,9 +1418,8 @@ export async function bootStandalone(root: HTMLElement) {
         disc.append(rider);
       }
       if (!can) disc.append(icon(I_LOCK, 20));
-      disc.append(el("span", "ac-mapnum", String(lvl.n)));
+      disc.append(el("span", "ac-mapnum", String(i + 1)));
       node.append(disc);
-      if (isCur) node.append(el("span", "ac-mapname", lvl.name));
       if (can) node.onclick = () => { chartLevel = lvl.id; render(); };
       if (engine.save.guide === "levels" && lvl.id === "1-1") node.classList.add("ac-pulse");
       map.append(node);
@@ -1489,26 +1497,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     if (IS_BETA) {
-      // ONE continuous chart: every chapter in order, no accordion, no
-      // tabs — a divider names each chapter and the road just keeps
-      // going. The scroll lands on the level being flown next.
-      let currentId: string | null = null;
-      for (const l of LEVELS) {
-        if (levelUnlocked(l, stars, total) && !((stars[l.id] || 0) & 1)) { currentId = l.id; break; }
-      }
-      for (const st of STAGES) {
-        const open = stageUnlocked(st.num, total);
-        const head = el("div", open ? "ac-chapdiv" : "ac-chapdiv locked");
-        const ttl = el("div", "ac-stagetitle");
-        ttl.append(el("p", "ac-kicker", `CHAPTER ${st.num} \u2014 ${st.name}`), el("p", "ac-sub", st.tagline));
-        head.append(ttl);
-        const earned = LEVELS.filter((l) => l.stage === st.num)
-          .reduce((n, l) => n + countBits(stars[l.id] || 0), 0);
-        head.append(open
-          ? el("span", "ac-stagestars", `\u2605 ${earned}/30`)
-          : el("span", "ac-stagelock", `\u2605 ${st.unlock} TO OPEN`));
-        scroll.append(head, chapterMap(st.num, stars, total, currentId));
-      }
+      scroll.append(fullChart(stars, total));
     } else {
       for (const st of STAGES) {
         const open = stageUnlocked(st.num, total);
@@ -1562,6 +1551,14 @@ export async function bootStandalone(root: HTMLElement) {
   function drawLevelSheet(def: LevelDef, mask: number) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard");
+    // BETA: a level is a number and its three stars — no name, no place,
+    // no modifier tags. The live page keeps the full briefing.
+    const plain = IS_BETA && !def.experimental;
+    if (plain) {
+      const gnum = LEVELS.findIndex((l) => l.id === def.id) + 1;
+      sheet.append(el("p", "ac-kicker", "STAR CHART"));
+      sheet.append(el("h2", "ac-lvlname", `Level ${gnum || def.id}`));
+    } else {
     const place = def.base === "race" ? "HYPER RUN"
       : def.base === "tunnel" ? "WORMHOLE RUN"
       : def.base === "spill" ? "THE SPILL"
@@ -1584,6 +1581,7 @@ export async function bootStandalone(root: HTMLElement) {
       for (const t of fxs) tags.append(el("span", "ac-lvltag", t));
       sheet.append(tags);
     }
+    }
     const goals = el("div", "ac-lvlgoals");
     def.goals.forEach((g, i) => {
       const row = el("div", (mask >> i) & 1 ? "ac-goal on" : "ac-goal");
@@ -1593,7 +1591,7 @@ export async function bootStandalone(root: HTMLElement) {
     });
     sheet.append(goals);
     if (def.experimental) sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE · CAMPAIGN STARS UNCHANGED"));
-    const fly = el("button", "ac-primary", def.experimental ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
+    const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.experimental ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
     fly.onclick = () => { chartLevel = null; engine.flyLevel(def.id); };
     const back = el("button", "ac-ghost", "BACK");
     back.onclick = () => { chartLevel = null; render(); };

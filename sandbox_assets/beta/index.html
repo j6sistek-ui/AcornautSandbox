@@ -438,10 +438,14 @@
     .ac-hub-art { position: absolute; inset: 0; background-size: cover; background-position: 50% 26%; filter: saturate(1.1); }
     .ac-hub-scrim { position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(16,7,38,.68) 0%, rgba(16,7,38,.12) 22%, rgba(16,7,38,.14) 60%, rgba(10,4,26,.82) 94%); }
-    /* every hub child stacks over the art — EXCEPT the mode sheet, whose
-       position:fixed must survive or it renders inline and gets clipped
-       by the hub's overflow, with its BACK button unreachable */
-    .ac-hub > :not(.ac-lvlsheet) { position: relative; }
+    /* stack every hub child over the art with three same-specificity
+       rules, last one wins: the art and scrim stay ABSOLUTE (the :not()
+       fix in v87 accidentally out-specified them into zero-height
+       relative divs — the vanished background), and the mode sheet stays
+       FIXED so it overlays instead of rendering inline and clipped. */
+    .ac-hub > * { position: relative; }
+    .ac-hub > .ac-hub-art, .ac-hub > .ac-hub-scrim { position: absolute; }
+    .ac-hub > .ac-lvlsheet { position: fixed; }
     .ac-hub-art, .ac-hub-scrim { position: absolute; }
     .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 9px; }
     .ac-hub-acorns { background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); padding: 8px 15px 8px 12px; font-size: 15px; }
@@ -577,6 +581,12 @@
     .ac-backbtn:active { transform: scale(.94); }
     body.ac-beta .ac-menu .ac-sheet-scroll { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
     body.ac-beta .ac-coach { bottom: calc(20px + env(safe-area-inset-bottom)); }
+    /* pals at the roadside, greyed until their stars are banked */
+    .ac-palmark { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column;
+      align-items: center; gap: 1px; pointer-events: none; opacity: .45; filter: grayscale(.9) brightness(.7); }
+    .ac-palmark.earned { opacity: 1; filter: none; }
+    .ac-palmarkstar { font: 800 9px/1 Figtree, sans-serif; color: #ffd76a; background: rgba(16,8,36,.85);
+      border: 1px solid rgba(255,206,92,.4); border-radius: 999px; padding: 2.5px 7px; letter-spacing: .06em; }
   </style>
 </head>
 <body>
@@ -592,7 +602,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js87/standalone.js";
+    import { bootStandalone } from "../js88/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
