@@ -1,4 +1,4 @@
-import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
@@ -60,6 +60,9 @@ export type Pickup = {
   // whole gate mouth, so meeting one is a matter of arriving — not of
   // threading past it. Only the pal that suppresses them lets you through.
   r?: number;
+  // The hole that closes a warp stretch rather than opening one. It is the
+  // one hazard you are meant to fly into while already warped.
+  exit?: boolean;
   tunnelSection?: number;
   tunnelPattern?: TunnelPattern;
   missed?: boolean;
@@ -280,6 +283,11 @@ export type World = {
   tiltPhase: number;
   warpT: number;
   warpLeft: number;
+  // Free Flight's black hole runs on GATES, not seconds: the stretch is a
+  // measured distance you fly out of, ending at a hole you can see coming.
+  // -1 when no gate-counted warp is running.
+  warpGateEnd: number;
+  warpExitSpawned: boolean;
   warpTilt: number;
   warpMirror: boolean;
   prevTilt: number;
@@ -401,6 +409,8 @@ export function makeWorld(W: number, H: number): World {
     tiltPhase: 0,
     warpT: 0,
     warpLeft: 0,
+    warpGateEnd: -1,
+    warpExitSpawned: false,
     warpTilt: 0,
     warpMirror: true,
     prevTilt: 0,
@@ -894,8 +904,22 @@ function spawnPair(w: World, save: SaveData, x: number) {
     }
     // Deep Space runs its own shift on a timer, so a black hole there does
     // nothing but clutter the lane — live excludes them and so do we.
-    if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
+    //
+    // Inside the stretch the roll is OFF. A hole met while already warped
+    // could not be entered (the catch is guarded on warp state), so it was
+    // scenery that looked like the exit — black holes inside the black
+    // hole. The only hole that belongs in here is the one that ends it.
+    const warping = w.warpGateEnd >= 0;
+    if (!w.tut && !noHoles && w.flight === "fly" && !warping && Math.random() < 0.018) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
+    }
+    // The way home. Once the fifteen gates are behind you the next gate
+    // carries the exit, dead centre in the mouth so it cannot be missed by
+    // accident — you leave the way you came in, through a hole, rather than
+    // having the flight quietly right itself underneath you.
+    if (warping && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
+      w.warpExitSpawned = true;
+      w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
     }
     // The door to the other game. It rides in Free Flight only — the
     // one place you can leave the illustrated game and slip into the
@@ -975,6 +999,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.shieldSlow = 0;
   w.warpT = 0;
   w.warpLeft = 0;
+  w.warpGateEnd = -1;
+  w.warpExitSpawned = false;
   w.warpTilt = 0;
   w.warpMirror = true;
   w.prevTilt = 0;
@@ -2055,7 +2081,18 @@ function enterWarp(w: World, save: SaveData) {
   w.squirrel.vy = 0;
   w.squirrel.rot = 0;
   w.hitCooldown = 0;
-  w.warpLeft = w.flight === "lost" ? 0 : w.flight === "deep" ? 10 : 15;
+  // Free Flight's black hole is a measured stretch of FIFTEEN GATES, not a
+  // fifteen-second timer. A timer ended wherever it happened to end, which
+  // read as the flight randomly righting itself; gates are a distance the
+  // pilot can see passing, and the stretch closes on a hole they fly into
+  // on purpose. Deep Space keeps its own short timer, Lost never warps out.
+  if (w.flight === "fly") {
+    w.warpLeft = 0;
+    w.warpGateEnd = w.score + WARP_GATES;
+    w.warpExitSpawned = false;
+  } else {
+    w.warpLeft = w.flight === "lost" ? 0 : w.flight === "deep" ? 10 : 15;
+  }
   w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
   w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
   if (palId(save, w) === "ufo" && w.flight !== "deep") w.powerLeft = Math.max(w.powerLeft, 2.4);
@@ -2064,6 +2101,8 @@ function enterWarp(w: World, save: SaveData) {
 }
 
 function exitWarp(w: World) {
+  w.warpGateEnd = -1;
+  w.warpExitSpawned = false;
   if (w.flight === "deep") {
     startSwirl(w, "shift");
     return;
@@ -2522,6 +2561,12 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   w.planets = w.planets.filter((p) => p.x > -90);
   w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
+  // A missed exit is not a life sentence. If the closing hole scrolled past
+  // uncaught, arm the next gate to carry another one — the stretch ends by
+  // being flown out of, so there always has to be a door on screen to aim at.
+  if (w.warpGateEnd >= 0 && w.warpExitSpawned && !w.pickups.some((a) => a.exit)) {
+    w.warpExitSpawned = false;
+  }
 
   const targetEnv = envIndexFor(w, w.score);
   if (targetEnv !== w.envB) {
@@ -2673,7 +2718,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       }
       spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");
       snd = "shield";
-    } else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0) {
+    } else if (a.exit && a.kind === "hole" && w.warpT <= 0) {
+      // Home through the same door. exitWarp puts the flight back upright
+      // and clears the gate window, and it is reached by flying into
+      // something rather than by a clock running out.
+      exitWarp(w);
+      spark(w, a.x, ay, ["#b45cff", "#fff", "#4ad8ff"], 20, "warp");
+      snd = "shield";
+    } else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0 && w.warpGateEnd < 0) {
       startSwirl(w, a.kind === "worm" ? "worm" : "hole");
       snd = "shield";
     } else if (a.kind === "portal" && w.lvl) {

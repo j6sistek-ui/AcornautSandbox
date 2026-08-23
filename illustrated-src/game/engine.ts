@@ -441,11 +441,43 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return owned ? "on" : "buy";
   }
 
+  // How sharp we are willing to render. A phone reporting devicePixelRatio 3
+  // was being drawn at 2.5 and then upscaled by the browser to fill the
+  // screen — a fractional resample of every frame, which is most of what
+  // read as "fuzzy": on identical glyphs, full-DPR rendering carries about
+  // half again as much edge detail.
+  //
+  // Rendering at 3 is not free (it is 44% more pixels per frame), and the
+  // right answer depends on the device, so this is measured rather than
+  // assumed. We open at full DPR and, if the first seconds of play cannot
+  // hold a frame budget, drop to the old cap ONCE and stay there. It never
+  // climbs back: a renderer that renegotiates its own resolution mid-run
+  // would be visible every time it changed its mind.
+  const RENDER_CAP_HIGH = 3;
+  const RENDER_CAP_SAFE = 2.5;
+  let renderCap = RENDER_CAP_HIGH;
+  let capProbe: number[] | null = [];
+
+  function noteFrameCost(ms: number) {
+    if (!capProbe || world.screen !== "play") return;
+    capProbe.push(ms);
+    if (capProbe.length < 90) return;
+    // ignore the slowest few: a GC pause or a first-touch decode is not the
+    // steady state we are deciding about
+    const sorted = capProbe.slice().sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    capProbe = null;
+    if (median > 20 && renderCap !== RENDER_CAP_SAFE) {
+      renderCap = RENDER_CAP_SAFE;
+      resize();
+    }
+  }
+
   function resize() {
     const parent = canvas.parentElement;
     if (!parent) return;
     const rect = parent.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : 2.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : renderCap);
     // widescreen everywhere: the play area may take the whole window,
     // capped only at desktop-panorama width
     const W = Math.min(rect.width, 1600);
@@ -708,6 +740,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   }
   function loop(now: number) {
     const frameDt = Math.min(0.25, (now - last) / 1000);
+    noteFrameCost(now - last);
     last = now;
     if (world.race) {
       raceAccumulator += frameDt;

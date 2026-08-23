@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=100";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=103";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "100";
+export const ART_VER = "103";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -12,7 +12,7 @@ export const IS_BETA = typeof window !== "undefined" &&
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-23 08:35 UTC";
+export const BUILD_TIME = "2026-08-23 09:42 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -325,6 +325,10 @@ export const ENV_GATES = 20;
 // crossing is a late-run reward — meeting it on gate two would sell the
 // illustrated game short before it has been seen.
 export const RETRO_GATE = 100;
+// How many gates a Free Flight black hole holds you for. The stretch ends
+// at a hole you fly into, so this is a distance the pilot reads, not a
+// timer that expires on them.
+export const WARP_GATES = 15;
 export const XP_STEPS = [
     60, 100, 150, 200, 260, 320, 390, 460, 540, 620, 710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720, 1860, 2000,
     2150, 2300, 2460, 2620, 2790, 2960, 3140,

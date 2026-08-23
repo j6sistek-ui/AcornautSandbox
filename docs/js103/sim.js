@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=100";
-import { modsUnlocked, writeSave } from "./save.js?v=100";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=100";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=100";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=100";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=100";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=100";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=103";
+import { modsUnlocked, writeSave } from "./save.js?v=103";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=103";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=103";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=103";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=103";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=103";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -79,6 +79,8 @@ export function makeWorld(W, H) {
         tiltPhase: 0,
         warpT: 0,
         warpLeft: 0,
+        warpGateEnd: -1,
+        warpExitSpawned: false,
         warpTilt: 0,
         warpMirror: true,
         prevTilt: 0,
@@ -552,8 +554,22 @@ function spawnPair(w, save, x) {
         }
         // Deep Space runs its own shift on a timer, so a black hole there does
         // nothing but clutter the lane — live excludes them and so do we.
-        if (!w.tut && !noHoles && w.flight === "fly" && Math.random() < 0.018) {
+        //
+        // Inside the stretch the roll is OFF. A hole met while already warped
+        // could not be entered (the catch is guarded on warp state), so it was
+        // scenery that looked like the exit — black holes inside the black
+        // hole. The only hole that belongs in here is the one that ends it.
+        const warping = w.warpGateEnd >= 0;
+        if (!w.tut && !noHoles && w.flight === "fly" && !warping && Math.random() < 0.018) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
+        }
+        // The way home. Once the fifteen gates are behind you the next gate
+        // carries the exit, dead centre in the mouth so it cannot be missed by
+        // accident — you leave the way you came in, through a hole, rather than
+        // having the flight quietly right itself underneath you.
+        if (warping && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
+            w.warpExitSpawned = true;
+            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
         }
         // The door to the other game. It rides in Free Flight only — the
         // one place you can leave the illustrated game and slip into the
@@ -632,6 +648,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.shieldSlow = 0;
     w.warpT = 0;
     w.warpLeft = 0;
+    w.warpGateEnd = -1;
+    w.warpExitSpawned = false;
     w.warpTilt = 0;
     w.warpMirror = true;
     w.prevTilt = 0;
@@ -1717,7 +1735,19 @@ function enterWarp(w, save) {
     w.squirrel.vy = 0;
     w.squirrel.rot = 0;
     w.hitCooldown = 0;
-    w.warpLeft = w.flight === "lost" ? 0 : w.flight === "deep" ? 10 : 15;
+    // Free Flight's black hole is a measured stretch of FIFTEEN GATES, not a
+    // fifteen-second timer. A timer ended wherever it happened to end, which
+    // read as the flight randomly righting itself; gates are a distance the
+    // pilot can see passing, and the stretch closes on a hole they fly into
+    // on purpose. Deep Space keeps its own short timer, Lost never warps out.
+    if (w.flight === "fly") {
+        w.warpLeft = 0;
+        w.warpGateEnd = w.score + WARP_GATES;
+        w.warpExitSpawned = false;
+    }
+    else {
+        w.warpLeft = w.flight === "lost" ? 0 : w.flight === "deep" ? 10 : 15;
+    }
     w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
     w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
     if (palId(save, w) === "ufo" && w.flight !== "deep")
@@ -1726,6 +1756,8 @@ function enterWarp(w, save) {
     spark(w, sx, cy, ["#b45cff", "#fff", "#4ad8ff"], 18, "warp");
 }
 function exitWarp(w) {
+    w.warpGateEnd = -1;
+    w.warpExitSpawned = false;
     if (w.flight === "deep") {
         startSwirl(w, "shift");
         return;
@@ -2212,6 +2244,12 @@ export function updateWorld(w, save, dt) {
     }
     w.planets = w.planets.filter((p) => p.x > -90);
     w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
+    // A missed exit is not a life sentence. If the closing hole scrolled past
+    // uncaught, arm the next gate to carry another one — the stretch ends by
+    // being flown out of, so there always has to be a door on screen to aim at.
+    if (w.warpGateEnd >= 0 && w.warpExitSpawned && !w.pickups.some((a) => a.exit)) {
+        w.warpExitSpawned = false;
+    }
     const targetEnv = envIndexFor(w, w.score);
     if (targetEnv !== w.envB) {
         w.envA = w.envB;
@@ -2373,7 +2411,15 @@ export function updateWorld(w, save, dt) {
             spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");
             snd = "shield";
         }
-        else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0) {
+        else if (a.exit && a.kind === "hole" && w.warpT <= 0) {
+            // Home through the same door. exitWarp puts the flight back upright
+            // and clears the gate window, and it is reached by flying into
+            // something rather than by a clock running out.
+            exitWarp(w);
+            spark(w, a.x, ay, ["#b45cff", "#fff", "#4ad8ff"], 20, "warp");
+            snd = "shield";
+        }
+        else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0 && w.warpGateEnd < 0) {
             startSwirl(w, a.kind === "worm" ? "worm" : "hole");
             snd = "shield";
         }
