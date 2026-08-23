@@ -65,7 +65,7 @@ try {
   const require = createRequire(import.meta.url);
   const {
     drawWorld, drawHud, hyperRunChargeCopy, hyperRunFlowSnapshot, hyperRunInlineWormholePresentation,
-    hyperRunTunnelSampleCount,
+    hyperRunTunnelRingScreenX, hyperRunTunnelSampleCount,
   } = require(join(jsOut, "draw.js"));
   const { makeWorld } = require(join(jsOut, "sim.js"));
   const { defaultSave } = require(join(jsOut, "save.js"));
@@ -73,8 +73,11 @@ try {
   const raceApi = require(join(jsOut, "race.js"));
   const {
     RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_HZ,
-    RACE_LATEST_ENTRY_X, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_RINGS,
-    RACE_RETURN_TICKS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_TICKS, createRaceState, raceTunnelGeometry,
+    RACE_LATEST_ENTRY_X, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_RADIUS, RACE_PILOT_X, RACE_RINGS,
+    RACE_READY_COPY, RACE_RETURN_TICKS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_PERFECT_APERTURE,
+    RACE_TUNNEL_PERFECT_CLEARANCE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_RING_CLEARANCE,
+    RACE_TUNNEL_RING_TICKS, RACE_TUNNEL_TICKS, createRaceState, raceTunnelGeometry,
+    raceTunnelQuality, raceTunnelRings, stepRace,
   } = raceApi;
 
   function assert(condition, message) { if (!condition) throw new Error(message); }
@@ -141,6 +144,11 @@ try {
       a: .35 + (i % 5) * .1, tw: i * .7,
     }));
     return { world, race };
+  }
+
+  function setTunnelLedger(race, cycle = race.wormholes, outcome = "pending") {
+    race.tunnelRingLedger[cycle] = RACE_TUNNEL_RING_TICKS.map(() => outcome);
+    race.tunnelRingDecisionTicks[cycle] = RACE_TUNNEL_RING_TICKS.map(() => null);
   }
 
   function sync(s) {
@@ -351,7 +359,7 @@ try {
     s.race.phase = phase; s.race.phaseTick = t;
     s.race.entryAnchorY = anchorY; s.race.entryStartY = 320; s.race.y = anchorY; s.race.previousY = anchorY;
     s.race.coursePosition = RACE_RINGS[75].x; s.race.phaseStartPosition = s.race.coursePosition;
-    s.race.entryRingIndex = 75; s.race.tunnelAcornLedger[s.race.wormholes] = Array(18).fill(false);
+    s.race.entryRingIndex = 75; setTunnelLedger(s.race);
     return s;
   }
 
@@ -442,7 +450,7 @@ try {
     s.race.wormholes = 2; s.race.entryAnchorY = 496;
     s.race.coursePosition = RACE_RINGS[75].x + RACE_TUNNEL_DISTANCE;
     s.race.phaseStartPosition = RACE_RINGS[75].x;
-    s.race.tunnelAcornLedger[2] = Array(18).fill(false);
+    setTunnelLedger(s.race, 2);
     return s;
   }
   const returnKeys = [0, 5, 6, 12, 23, 24, 35];
@@ -587,14 +595,15 @@ try {
       : `FRAME ${frame} / ${frame < normalDecisionFrame ? RACE_RINGS[0].id : RACE_RINGS[1].id} TARGET`)), 5, handoffPath),
     frames: handoffFrames, decisionFrame: normalDecisionFrame };
 
-  function tunnelContentState(tick, { W = 844, H = 390, pilotY = null } = {}) {
+  function tunnelContentState(tick, { W = 844, H = 390, pilotY = null, cycle = 2, dragY = null } = {}) {
     const s = scenario(W, H);
-    s.race.phase = "tunnel"; s.race.phaseTick = tick; s.race.wormholes = 2;
+    s.race.phase = "tunnel"; s.race.phaseTick = tick; s.race.wormholes = cycle;
     s.race.entryAnchorY = 496; s.race.entryStartY = 496;
     s.race.phaseStartPosition = RACE_RINGS[75].x;
     s.race.coursePosition = s.race.phaseStartPosition + tick * (raceApi.RACE_TUNNEL_SPEED / RACE_HZ);
-    s.race.tunnelAcornLedger[2] = Array(18).fill(false);
+    setTunnelLedger(s.race, cycle);
     s.race.y = pilotY ?? raceTunnelGeometry(s.race, tick).center; s.race.previousY = s.race.y;
+    s.race.tunnelDragY = dragY;
     return s;
   }
   const tunnelTicks = [180, 255, 285];
@@ -602,6 +611,78 @@ try {
   outputs.tunnelContent = { path: tunnelContentPath, ...sheet(tunnelTicks.map((tick) =>
     labelled(render(tunnelContentState(tick)), `CYCLE 3 / Y496 / TUNNEL ${tick}`)), 3, tunnelContentPath),
     ticks: tunnelTicks, cycle: 3, entryAnchorY: 496 };
+
+  function tunnelRingOutcomeState(outcome, age = 0, { W = 844, H = 390, ringIndex = 0 } = {}) {
+    const ringTick = RACE_TUNNEL_RING_TICKS[ringIndex];
+    const probe = tunnelContentState(ringTick, { W, H, cycle: 0 });
+    const ring = raceTunnelRings(probe.race)[ringIndex];
+    const error = outcome === "perfect" ? 0
+      : outcome === "passed" ? (RACE_TUNNEL_PERFECT_CLEARANCE + RACE_TUNNEL_RING_CLEARANCE) / 2
+        : RACE_TUNNEL_RING_CLEARANCE + 12;
+    const s = tunnelContentState(ringTick, { W, H, cycle: 0, pilotY: ring.y + error });
+    const decisionTick = 2_000;
+    s.race.tick = decisionTick;
+    if (outcome !== "pending") {
+      for (let step = 0; step <= age; step += 1) stepRace(s.race);
+      assert(s.race.tunnelRingLedger[0][ringIndex] === outcome,
+        `authority resolved ${s.race.tunnelRingLedger[0][ringIndex]} instead of ${outcome}`);
+      assert(s.race.tunnelRingDecisionTicks[0][ringIndex] === decisionTick,
+        `authority decision tick changed for ${outcome}`);
+    }
+    return s;
+  }
+
+  const ringCrossingFrames = [];
+  for (const outcome of ["perfect", "passed", "missed"]) {
+    for (const before of [2, 1]) {
+      const s = tunnelContentState(RACE_TUNNEL_RING_TICKS[0] + 1 - before, { cycle: 0 });
+      const ring = raceTunnelRings(s.race)[0];
+      s.race.y = outcome === "perfect" ? ring.y
+        : outcome === "passed" ? ring.y + 25 : ring.y + RACE_TUNNEL_RING_CLEARANCE + 12;
+      s.race.previousY = s.race.y; s.race.tick = 2_000 - before;
+      ringCrossingFrames.push(labelled(withPilotPlaneGuide(render(s)),
+        `${outcome.toUpperCase()} / T-${before}`));
+    }
+    for (const age of [0, 8]) ringCrossingFrames.push(labelled(withPilotPlaneGuide(
+      render(tunnelRingOutcomeState(outcome, age))),
+    `${outcome.toUpperCase()} / ${age === 0 ? "CROSS + RESULT" : `RESULT ${age}`}`));
+  }
+  const ringCrossingPath = join(outDir, "runtime-tunnel-ring-crossing.png");
+  outputs.tunnelRingCrossing = { path: ringCrossingPath,
+    ...sheet(ringCrossingFrames, 4, ringCrossingPath), pendingTicks: [35, 36], resultAges: [0, 8] };
+
+  const threadingPath = join(outDir, "runtime-tunnel-ring-threading.png");
+  const threadingFrames = [34, 35, 36].map((tick) => {
+    const s = tunnelContentState(tick, { cycle: 0 });
+    const ring = raceTunnelRings(s.race)[0]; s.race.y = ring.y; s.race.previousY = ring.y;
+    return labelled(withPilotPlaneGuide(render(s)), `PERFECT LINE / T${tick - 37}`);
+  });
+  threadingFrames.push(labelled(withPilotPlaneGuide(render(tunnelRingOutcomeState("perfect", 0))), "PERFECT / AGE 0"));
+  threadingFrames.push(labelled(withPilotPlaneGuide(render(tunnelRingOutcomeState("perfect", 2))), "PERFECT / AGE 2"));
+  outputs.tunnelRingThreading = { path: threadingPath, ...sheet(threadingFrames, 5, threadingPath) };
+
+  const ringClipFrames = Array.from({ length: 25 }, (_, frame) => {
+    const viewTick = 28 + frame;
+    if (viewTick <= RACE_TUNNEL_RING_TICKS[0]) {
+      const s = tunnelContentState(viewTick, { cycle: 0 });
+      const ring = raceTunnelRings(s.race)[0]; s.race.y = ring.y; s.race.previousY = ring.y;
+      return render(s, { hud: false });
+    }
+    return render(tunnelRingOutcomeState("perfect", viewTick - RACE_TUNNEL_RING_TICKS[0] - 1), { hud: false });
+  });
+  const ringClipPath = join(outDir, "runtime-tunnel-ring-perfect.gif");
+  gif(ringClipPath, ringClipFrames); outputs.tunnelRingClip = { path: ringClipPath, frames: ringClipFrames.length, fps: 60 };
+
+  const dragPath = join(outDir, "runtime-tunnel-drag-cue.png");
+  const dragIdle = tunnelContentState(0, { W: 390, H: 844, cycle: 0 });
+  const dragAbove = tunnelContentState(12, { W: 390, H: 844, cycle: 0, dragY: 180 });
+  const dragBelow = tunnelContentState(24, { W: 844, H: 390, cycle: 0, dragY: 470 });
+  outputs.tunnelDragCue = { path: dragPath, ...sheet([
+    labelled(render(dragIdle), "PORTRAIT / NEXT RING + DRAG", .42),
+    labelled(render(dragAbove), "PORTRAIT / ACTIVE TARGET HIGH", .42),
+    labelled(render(dragBelow), "LANDSCAPE / ACTIVE TARGET LOW", .42),
+    labelled(render(dragBelow, { reduced: true }), "LANDSCAPE / REDUCED MOTION", .42),
+  ], 2, dragPath) };
 
   const inlineSequenceFrames = [
     ...entryKeys.map((tick) => [entryState(tick), `ENTRY ${tick}`]),
@@ -626,6 +707,21 @@ try {
   const viewportPath = join(outDir, "runtime-inline-wormhole-five-viewports.png");
   outputs.inlineWormholeViewports = { path: viewportPath,
     ...sheet(viewportEvidence, 3, viewportPath), sizes: approvedViewportSizes };
+
+  const ringViewportEvidence = [];
+  for (const [W, H] of approvedViewportSizes) {
+    const evidenceScale = Math.min(.4, 300 / W, 240 / H);
+    const pending = tunnelContentState(35, { W, H, cycle: 0 });
+    const ring = raceTunnelRings(pending.race)[0]; pending.race.y = ring.y; pending.race.previousY = ring.y;
+    ringViewportEvidence.push(
+      labelled(withPilotPlaneGuide(render(pending)), `${W}x${H} / APPROACH`, evidenceScale),
+      labelled(withPilotPlaneGuide(render(tunnelRingOutcomeState("perfect", 0, { W, H }))),
+        `${W}x${H} / PERFECT`, evidenceScale),
+    );
+  }
+  const ringViewportPath = join(outDir, "runtime-tunnel-rings-five-viewports.png");
+  outputs.tunnelRingViewports = { path: ringViewportPath,
+    ...sheet(ringViewportEvidence, 2, ringViewportPath), sizes: approvedViewportSizes };
 
   const reproItems = [];
   for (const [W, H] of [[390, 844], [844, 390]]) {
@@ -668,6 +764,102 @@ try {
       `${item.name} portal-free frame was empty or white ${JSON.stringify(stats)}`);
     return { name: item.name, completeEqualsPortalArtRemoved: unused, portalFreeFrame: stats };
   });
+
+  assert(RACE_TUNNEL_RING_CLEARANCE === RACE_TUNNEL_RING_APERTURE - RACE_PILOT_RADIUS,
+    "tunnel pass clearance is not derived from the white outer ring");
+  assert(RACE_TUNNEL_PERFECT_CLEARANCE === RACE_TUNNEL_PERFECT_APERTURE - RACE_PILOT_RADIUS,
+    "tunnel perfect clearance is not derived from the white center ring");
+  assert(RACE_TUNNEL_RING_CLEARANCE === 42 && RACE_TUNNEL_PERFECT_CLEARANCE === 8,
+    "tunnel alignment thresholds changed");
+  assert(RACE_READY_COPY.includes("WORMHOLE: PRESS + DRAG UP / DOWN"),
+    `race ready copy omitted drag control ${JSON.stringify(RACE_READY_COPY)}`);
+
+  const ringProjectionMatrix = approvedViewportSizes.map(([W, H]) => {
+    const viewport = raceViewport(W, H);
+    let maxCrossingError = 0;
+    let minPendingLead = Infinity;
+    for (const tick of RACE_TUNNEL_RING_TICKS) {
+      maxCrossingError = Math.max(maxCrossingError,
+        Math.abs(hyperRunTunnelRingScreenX(viewport, tick, tick + 1) - viewport.pilotX));
+      minPendingLead = Math.min(minPendingLead,
+        hyperRunTunnelRingScreenX(viewport, tick, tick) - viewport.pilotX);
+    }
+    const outerDiameter = RACE_TUNNEL_RING_APERTURE * 2 * viewport.scale;
+    const perfectDiameter = RACE_TUNNEL_PERFECT_APERTURE * 2 * viewport.scale;
+    assert(maxCrossingError < 1e-9, `${W}x${H} tunnel ring missed pilot plane by ${maxCrossingError}`);
+    assert(minPendingLead > 0, `${W}x${H} pending tunnel ring reached the pilot plane before judging`);
+    assert(outerDiameter >= 70 && perfectDiameter >= 29,
+      `${W}x${H} tunnel rings are too small ${JSON.stringify({ outerDiameter, perfectDiameter })}`);
+    return { size: [W, H], maxCrossingError, minPendingLead, outerDiameter, perfectDiameter };
+  });
+
+  const geometryProbe = createRaceState(); geometryProbe.entryAnchorY = 496;
+  const ringGeometry = raceTunnelRings(geometryProbe).map((ring) => {
+    const geometry = raceTunnelGeometry(geometryProbe, ring.tick);
+    const wallBuffer = geometry.half - Math.abs(ring.y - geometry.center) - RACE_TUNNEL_RING_APERTURE;
+    assert(wallBuffer >= 0, `${ring.id} white ring escapes corridor by ${-wallBuffer}`);
+    return { id: ring.id, tick: ring.tick, center: ring.y, half: geometry.half, wallBuffer };
+  });
+
+  const qualityProbe = createRaceState(); setTunnelLedger(qualityProbe, 0);
+  qualityProbe.tunnelRingLedger[0][0] = "perfect";
+  qualityProbe.tunnelRingLedger[0][1] = "passed";
+  qualityProbe.tunnelRingLedger[0][2] = "missed";
+  const qualitySample = raceTunnelQuality(qualityProbe, 0);
+  assert(qualitySample.perfect === 1 && qualitySample.passed === 1 && qualitySample.missed === 1
+    && qualitySample.pending === RACE_TUNNEL_RING_TICKS.length - 3 && qualitySample.units === 3,
+  `quality HUD sample mismatch ${JSON.stringify(qualitySample)}`);
+
+  const whiteRingState = tunnelContentState(35, { cycle: 0 });
+  const whiteRing = raceTunnelRings(whiteRingState.race)[0];
+  whiteRingState.race.y = whiteRing.y; whiteRingState.race.previousY = whiteRing.y;
+  whiteRingState.race.tick = 1_999;
+  const whiteRingFrame = render(whiteRingState, { hud: false });
+  const noRingState = tunnelContentState(35, { cycle: 0 });
+  noRingState.race.y = whiteRing.y; noRingState.race.previousY = whiteRing.y; noRingState.race.tick = 1_999;
+  noRingState.race.tunnelRingLedger[0].fill("missed");
+  noRingState.race.tunnelRingDecisionTicks[0].fill(1_000);
+  const noRingFrame = render(noRingState, { hud: false });
+  const noHyperRunFrame = render(whiteRingState, { hud: false, hyperRunOverride: {} });
+  const whiteRingPath = join(outDir, "runtime-tunnel-ring-white-only.png");
+  outputs.tunnelRingWhiteOnly = { path: whiteRingPath, ...sheet([
+    labelled(whiteRingFrame, "CODE-NATIVE WHITE RINGS"),
+    labelled(noHyperRunFrame, "EMPTY HYPER-RUN ART BANK"),
+    labelled(noRingFrame, "SAME FRAME / RINGS SUPPRESSED"),
+  ], 3, whiteRingPath) };
+  const ringArtIndependence = pixelDiff(whiteRingFrame, noHyperRunFrame,
+    { x: 0, y: 0, w: whiteRingFrame.width, h: whiteRingFrame.height });
+  assert(ringArtIndependence.mean === 0 && ringArtIndependence.max === 0,
+    `white tunnel rings depend on bitmap art ${JSON.stringify(ringArtIndependence)}`);
+
+  const whiteViewport = raceViewport(whiteRingFrame.width, whiteRingFrame.height);
+  const whiteX = hyperRunTunnelRingScreenX(whiteViewport, whiteRing.tick, 35);
+  const whiteY = raceViewportY(whiteViewport, whiteRing.y);
+  const whiteRadius = RACE_TUNNEL_RING_APERTURE * whiteViewport.scale;
+  const targetPixels = whiteRingFrame.getContext("2d").getImageData(0, 0, whiteRingFrame.width, whiteRingFrame.height).data;
+  const basePixels = noRingFrame.getContext("2d").getImageData(0, 0, noRingFrame.width, noRingFrame.height).data;
+  let brightRingPixels = 0, neutralRingPixels = 0, lowerArcPixels = 0;
+  const ringRect = {
+    x0: Math.max(0, Math.floor(whiteX - whiteRadius - 8)),
+    x1: Math.min(whiteRingFrame.width - 1, Math.ceil(whiteX + whiteRadius + 8)),
+    y0: Math.max(0, Math.floor(whiteY - whiteRadius - 8)),
+    y1: Math.min(whiteRingFrame.height - 1, Math.ceil(whiteY + whiteRadius + 8)),
+  };
+  for (let y = ringRect.y0; y <= ringRect.y1; y++) for (let x = ringRect.x0; x <= ringRect.x1; x++) {
+    const offset = (y * whiteRingFrame.width + x) * 4;
+    const targetLuma = .2126 * targetPixels[offset] + .7152 * targetPixels[offset + 1] + .0722 * targetPixels[offset + 2];
+    const baseLuma = .2126 * basePixels[offset] + .7152 * basePixels[offset + 1] + .0722 * basePixels[offset + 2];
+    if (targetLuma - baseLuma < 32) continue;
+    brightRingPixels++;
+    const chroma = Math.max(targetPixels[offset], targetPixels[offset + 1], targetPixels[offset + 2])
+      - Math.min(targetPixels[offset], targetPixels[offset + 1], targetPixels[offset + 2]);
+    if (chroma <= 42) neutralRingPixels++;
+    if (y > whiteY + whiteRadius * .45) lowerArcPixels++;
+  }
+  assert(brightRingPixels >= 24 && neutralRingPixels / brightRingPixels >= .45 && lowerArcPixels >= 6,
+    `white/threading pixel evidence failed ${JSON.stringify({ brightRingPixels, neutralRingPixels, lowerArcPixels })}`);
+  const ringPixelEvidence = { brightRingPixels, neutralRingPixels,
+    neutralRatio: neutralRingPixels / brightRingPixels, lowerArcPixels, ringArtIndependence };
 
   function tunnelExitState(returnY, W, H) {
     const s = tunnelContentState(RACE_TUNNEL_TICKS - 1, { W, H, pilotY: returnY });
@@ -795,23 +987,32 @@ try {
   function percentile(sorted, fraction) {
     return sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil(sorted.length * fraction) - 1))];
   }
-  function measureHostCanvas(W, H, reduced) {
+  function measureHostCanvas(W, H, reduced, mode = "normal") {
     reducedMotion = reduced;
-    const s = scenario(W, H); s.race.coursePosition = RACE_RINGS[0].x - 430;
+    const s = mode === "tunnel"
+      ? tunnelContentState(180, { W, H, cycle: 0 })
+      : scenario(W, H);
+    if (mode === "normal") s.race.coursePosition = RACE_RINGS[0].x - 430;
     const canvas = createCanvas(W, H), ctx = canvas.getContext("2d");
     const warmupFrames = 30, measuredFrames = 180;
     for (let i = 0; i < warmupFrames; i++) {
-      s.race.tick = i; s.race.coursePosition += RACE_MAX_SPEED / RACE_HZ; sync(s);
+      s.race.tick = i;
+      if (mode === "tunnel") s.race.phaseTick = 180 + i % 24;
+      else s.race.coursePosition += RACE_MAX_SPEED / RACE_HZ;
+      sync(s);
       drawWorld(ctx, s.world, save, art);
     }
     const samples = [];
     for (let i = 0; i < measuredFrames; i++) {
-      s.race.tick = warmupFrames + i; s.race.coursePosition += RACE_MAX_SPEED / RACE_HZ; sync(s);
+      s.race.tick = warmupFrames + i;
+      if (mode === "tunnel") s.race.phaseTick = 180 + i % 24;
+      else s.race.coursePosition += RACE_MAX_SPEED / RACE_HZ;
+      sync(s);
       const start = performance.now(); drawWorld(ctx, s.world, save, art); samples.push(performance.now() - start);
     }
     samples.sort((a, b) => a - b);
     return {
-      label: "host Canvas proxy; not Pixel 6a evidence", width: W, height: H,
+      label: "host Canvas proxy; not Pixel 6a evidence", mode, width: W, height: H,
       reducedMotion: reduced, warmupFrames, measuredFrames,
       median: percentile(samples, .5), p95: percentile(samples, .95),
       p99: percentile(samples, .99), max: samples.at(-1),
@@ -821,6 +1022,8 @@ try {
   const hostCanvasPerformance = [
     measureHostCanvas(844, 390, false), measureHostCanvas(844, 390, true),
     measureHostCanvas(1440, 900, false), measureHostCanvas(1440, 900, true),
+    measureHostCanvas(390, 844, false, "tunnel"), measureHostCanvas(390, 844, true, "tunnel"),
+    measureHostCanvas(844, 390, false, "tunnel"), measureHostCanvas(844, 390, true, "tunnel"),
   ];
   reducedMotion = false;
 
@@ -833,6 +1036,10 @@ try {
       proceduralSkyControl: backdropDifference, skyTransmission,
       sideBands: { left: leftBand, right: rightBand }, copyStates,
       boundaryMatrix: { offsets: [38, -38, 38.0001, -38.0001], stamps: [-2, -1, "CROSS", 1, 2], sizes: [[360, 640], [844, 390]] },
+      tunnelRings: { projection: ringProjectionMatrix, geometry: ringGeometry,
+        qualitySample, pixelEvidence: ringPixelEvidence,
+        thresholds: { pass: RACE_TUNNEL_RING_CLEARANCE, perfect: RACE_TUNNEL_PERFECT_CLEARANCE },
+        readyCopy: RACE_READY_COPY },
       deterministicFlow: true, hostCanvasPerformance,
     },
   };

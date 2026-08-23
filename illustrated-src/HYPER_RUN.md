@@ -1,14 +1,80 @@
 # Hyper Run — Prototype Chapter 1 design plan
 
-**Status:** Course 1 Revision 2 is merged: Phase A in PR #60 (`e710052`), Phase B in PR #63 (`acaa04e`), and Phase C in PR #70 (`794531e`). Course 1 Revision 3 Phase A was approved and merged in PR #76 (`b948fd0`; merge `e10fc50`). Phase B review was approved, and Phase C runtime source and source-level acceptance are complete in this change. Generated deploy bundles remain maintainer-owned, and physical-device performance/control validation remains open.
+**Status:** Course 1 Revision 2 is merged: Phase A in PR #60 (`e710052`), Phase B in PR #63 (`acaa04e`), and Phase C in PR #70 (`794531e`). Course 1 Revision 3 Phase A was approved and merged in PR #76 (`b948fd0`; merge `e10fc50`). Its Phase B review and Phase C source subsequently shipped. The wormhole alignment-control update below is complete in this source change. Generated deploy bundles remain maintainer-owned, and physical-device performance/control validation remains open.
 
-**Phase boundary:** The Revision 3 section is the authority wherever it conflicts with Revision 2. The approved 60 Hz determinism core, fixed-step race clock, semantic input log, six-case acceptance structure, beta-only mission placement, authored course, two-layer gate contract, and approved portal paintings stay unless Revision 3 explicitly changes them. Revision 2 and Revision 1 remain below as historical delivery records; their superseded speeds, course distances, landscape camera, horizontal density limits, and transition presentation must not be reintroduced.
+**Phase boundary:** The wormhole alignment-control update is authoritative only for Hyper Run's tunnel input, tunnel targets/rewards, return-speed bonus, and corresponding presentation/evidence. Revision 3 remains authoritative elsewhere and supersedes Revision 2. The approved 60 Hz determinism core, fixed-step race clock, beta-only mission placement, authored normal course, two-layer ordinary-gate contract, inline energy transition, and approved portal paintings stay. Revision 3, Revision 2, and Revision 1 remain below as historical delivery records; superseded tunnel hold/boost/drop and tunnel-acorn rules must not be reintroduced.
 
 **Revision 3 Phase A approval record (2026-08-22):** The documentation-only design delta was approved and merged in PR #76 (`b948fd0`; merge `e10fc50`). It authorized the Phase B visual proof and Phase C source run recorded below. Revision 2 approvals remain identified in the status line and historical delivery record.
 
 **Revision 2 Phase A approval record (2026-08-21):** The Revision 2 design delta below was approved and merged by PR #60 at `e710052`. This records design authority only; it does not claim that Revision 2 gate art or Phase C runtime/test changes had shipped at that point.
 
 **Revision 1 approval record (2026-08-20):** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
+
+## Wormhole alignment-control update — source contract
+
+This update changes only Hyper Run's six-second wormhole gameplay. Normal-course flight remains **hold to rise / double-tap and hold to boost / swipe down to dive**. The separate Wormhole Run mission and its `setTunnelHeld` controls are unchanged.
+
+### Relative drag instead of tunnel hold
+
+Inside the Hyper Run wormhole, pointer, touch, and mouse input is a relative vertical drag:
+
+- Press captures both pointer Y and current pilot Y. The press does not snap the pilot to the finger or cursor.
+- While held, target Y is `capturedPilotY + currentPointerY - capturedPointerY`. Lifting, cancellation, focus loss, pause, or an owned resize emits one `dragY: null` transition and then becomes idempotent.
+- A pointer held through the inline entry converts on its first tunnel move by anchoring at the then-current pilot Y, so changing regimes does not produce a jump.
+- Space/Arrow Up and Arrow Down provide the same target follower for keyboard access, targeting canonical Y `0` and `640` respectively. A key repeat cannot resume a paused race without a physical release and fresh non-repeat press.
+- Tunnel authority ignores `{held, boost, drop}`. Those semantics continue to control normal flight only.
+
+Replay input extends to `{tick, held, boost, drop?, dragY?}`. Numeric drag targets are finite, rounded to canonical integer Y, and clamped to `0…640`; `null` releases and omission leaves the current target unchanged. Same-tick target state is last-writer-wins while `drop` remains OR-preserved for normal flight. The follower moves at most
+
+```text
+RACE_TUNNEL_DRAG_STEP = 640 / 18 = 35.555… canonical pixels per 60 Hz tick
+```
+
+so a target can traverse the full canonical field in 18 ticks / 0.3 seconds. Authority still clamps the pilot inside the procedural corridor after movement. Inactive drag holds the last position with zero vertical velocity.
+
+### Nine white alignment gates
+
+Each seeded/mirrored cycle places nine deterministic gates on the existing corridor center at tunnel ticks:
+
+```text
+36, 72, 108, 144, 180, 216, 252, 288, 324
+```
+
+Each gate is code-native white geometry with no bitmap dependency: a full outer ring of radius `58`, a nested precision ring of radius `24`, a dark neutral keyline for sky contrast, and thin lower near-rim arcs drawn in front of the pilot so both circles visibly thread in side view. Pending, clear, perfect, and miss feedback stays white; alpha, dash, bloom, and text carry state. A right-edge ring director preserves preview on portrait, the first cycle teaches **DRAG TO ALIGN**, and the tunnel HUD reports judged rings, perfects, and projected exit speed.
+
+With pilot radius `16`, the exact center-error thresholds are derived rather than guessed:
+
+```text
+outer clear  = 58 - 16 = 42 pixels
+perfect      = 24 - 16 =  8 pixels
+```
+
+At the exact ring tick, error `≤8` is `perfect`, error `≤42` is `passed`, and larger error is `missed`. The decision, state change, and `wN-gNN` cue share that tick. The signature records per-cycle outcomes and decision ticks. Tunnel acorns are removed; the prototype's collectible ceiling is the 42 authored course acorns.
+
+### Accuracy-derived exit speed
+
+A pass is one quality unit and a perfect is two. Nine gates therefore provide `0…18` units. The bonus spans the approved minimum return speed to normal-flight cap:
+
+```text
+gain per unit = (360 - 292.5) / 18 = 3.75
+exit speed    = clamp(292.5 + qualityUnits × 3.75, 292.5, 360)
+```
+
+All misses return at `292.5`; nine outer clears return at `326.25`; nine perfect centers return at `360`. The bonus is applied once when the 36-tick return completes. Tunnel duration remains 360 ticks, shortcut distance remains 3,375 units, entry/tunnel/return remains `48 / 360 / 36`, and the authority never waits on presentation.
+
+### Source acceptance record
+
+The six fixed-step suites pass with drag press/move/release reconstruction, integer/clamp/merge boundaries, both tunnel keyboard owners, owned resize/focus/pause cancellation, 30/60/120/mixed render cadence, five viewport sizes, exact `8 / 42` judging boundaries, all-miss/all-pass/all-perfect speed derivations, all three mirrored entry anchors, and the unchanged gate-plane/return-grace evidence.
+
+Measured deterministic profiles are:
+
+| Profile | Finish | Normal gates | Wormholes | Tunnel quality |
+| --- | ---: | ---: | ---: | --- |
+| Passive | 9,000 ticks / 2:30.000 | 0 | 0 | none |
+| Average | 5,966 ticks / 1:39.433 | 48 | 2 | each ring cleared; three perfects per cycle |
+| Optimized | 5,442 ticks / 1:30.700 | 60 | 3 | 27/27 perfect, zero wall scrapes |
+
+Stars remain `6,900 / 5,760` ticks, and passive-to-optimized separation is `3,558` ticks / `59.3` seconds. The source-only runtime review proves exact ring-to-pilot-plane projection at all five view sizes, visible back/front threading, a minimum 30-pixel ring-to-wall buffer, white-only code-native rendering, zero difference when bitmap art is removed, and no regression in the approved inline entry/return seams. Host Canvas timing is a development proxy, not physical-phone evidence; comfortable finger-drag feel and device performance remain playtest items.
 
 ## Course 1 Revision 3 — Phase A design delta
 

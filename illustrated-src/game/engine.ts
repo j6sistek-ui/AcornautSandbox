@@ -46,9 +46,12 @@ import {
   cancelRaceGesture,
   createRaceGestureState,
   dropRaceGesture,
+  moveRaceDragGesture,
   moveRaceGesture,
   neutralizeOwnedRaceGesture,
+  pressRaceDragGesture,
   pressRaceGesture,
+  pressRaceKeyboardDragGesture,
   releaseRaceGesture,
   type RaceGestureOwner,
   type RaceGestureResult,
@@ -112,7 +115,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   let running = false;
   let raceAccumulator = 0;
   let raceGesture = createRaceGestureState();
-  let raceResizeKeyboardReleasePending = false;
+  let raceResizeKeyboardReleasePending: "keyboard-rise" | "keyboard-drop" | null = null;
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((fn) => fn());
 
@@ -498,7 +501,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // the double-tap/swipe candidate; a duplicate resize sees no owner and
       // therefore cannot append another transition.
       applyRaceGesture(neutralizeOwnedRaceGesture(raceGesture));
-      if (owner === "keyboard-rise") raceResizeKeyboardReleasePending = true;
+      if (owner === "keyboard-rise" || owner === "keyboard-drop") {
+        raceResizeKeyboardReleasePending = owner;
+      }
       raceAccumulator = 0;
       swipe = null;
       pausePlay(world);
@@ -529,7 +534,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   function resetInputTracking() {
     raceGesture = createRaceGestureState();
-    raceResizeKeyboardReleasePending = false;
+    raceResizeKeyboardReleasePending = null;
     swipe = null;
   }
 
@@ -559,12 +564,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const p = pos(e);
       if (world.race) {
         try { canvas.setPointerCapture(e.pointerId); } catch { /* capture is best-effort */ }
-        applyRaceGesture(pressRaceGesture(
-          raceGesture,
-          e.pointerId,
-          world.race.tick,
-          raceInputY(p.y),
-        ));
+        const canonicalY = raceInputY(p.y);
+        applyRaceGesture(world.race.phase === "tunnel"
+          ? pressRaceDragGesture(raceGesture, e.pointerId, world.race.tick, canonicalY, world.race.y)
+          : pressRaceGesture(raceGesture, e.pointerId, world.race.tick, canonicalY));
         notify();
         return;
       }
@@ -584,12 +587,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     (e) => {
       if (world.race && world.screen === "play") {
         const p = pos(e);
-        const result = moveRaceGesture(
-          raceGesture,
-          e.pointerId,
-          world.race.tick,
-          raceInputY(p.y),
-        );
+        const canonicalY = raceInputY(p.y);
+        const result = world.race.phase === "tunnel"
+          ? moveRaceDragGesture(raceGesture, e.pointerId, world.race.tick, canonicalY, world.race.y)
+          : moveRaceGesture(raceGesture, e.pointerId, world.race.tick, canonicalY);
         const isDrop = result.input?.drop === true;
         const accepted = applyRaceGesture(result);
         if (isDrop && accepted) {
@@ -650,15 +651,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (raceResizeKeyboardReleasePending) return;
       if (world.screen === "splash") engine.open("title");
       else if (world.screen === "title") engine.fly("fly");
-      else if (world.screen === "pause") engine.resume();
+      // A focus/visibility/Escape pause cancels the semantic owner. Ignore an
+      // OS repeat from the still-held key; only a fresh physical press resumes.
+      else if (world.screen === "pause") {
+        if (!e.repeat) engine.resume();
+      }
       else if (world.screen === "play") {
         if (world.race) {
-          if (!e.repeat) applyRaceGesture(pressRaceGesture(
-            raceGesture,
-            "keyboard-rise",
-            world.race.tick,
-            null,
-          ));
+          if (!e.repeat) applyRaceGesture(world.race.phase === "tunnel"
+            ? pressRaceKeyboardDragGesture(raceGesture, "keyboard-rise", world.race.tick, 0)
+            : pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
         } else {
           const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
           if (ev === "flap") sfx.flap();
@@ -668,8 +670,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
     if (e.code === "ArrowDown" && world.screen === "play" && world.race) {
       e.preventDefault();
+      if (raceResizeKeyboardReleasePending) return;
       if (e.repeat) return;
-      if (applyRaceGesture(dropRaceGesture(raceGesture))) sfx.dive();
+      if (world.race.phase === "tunnel") {
+        applyRaceGesture(pressRaceKeyboardDragGesture(
+          raceGesture,
+          "keyboard-drop",
+          world.race.tick,
+          640,
+        ));
+      } else if (applyRaceGesture(dropRaceGesture(raceGesture))) sfx.dive();
       notify();
     } else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
       const ev = dive(world);
@@ -679,13 +689,22 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
   window.addEventListener("keyup", (e) => {
     if (e.code === "Space" || e.code === "ArrowUp") {
-      if (raceResizeKeyboardReleasePending) {
-        raceResizeKeyboardReleasePending = false;
+      if (raceResizeKeyboardReleasePending === "keyboard-rise") {
+        raceResizeKeyboardReleasePending = null;
         return;
       }
       if (raceGesture.owner === "keyboard-rise") {
         applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
       } else if (!world.race) setTunnelHeld(world, false);
+    }
+    if (e.code === "ArrowDown") {
+      if (raceResizeKeyboardReleasePending === "keyboard-drop") {
+        raceResizeKeyboardReleasePending = null;
+        return;
+      }
+      if (raceGesture.owner === "keyboard-drop") {
+        applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-drop"));
+      }
     }
   });
   window.addEventListener("blur", () => {
