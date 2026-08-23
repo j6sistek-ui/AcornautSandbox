@@ -217,6 +217,9 @@ export type Snapshot = {
     sections: number;
     nearMisses: number;
     bestMultiplier: number;
+    taps: number;
+    bounces: number;
+    holes: number;
   } | null;
   squirrel: { y: number; rot: number; vy: number };
 };
@@ -229,6 +232,9 @@ export type World = {
   ready: boolean;
   score: number;
   runAcorns: number;
+  /** the crash sheet's receipts: every accepted flap, planet bounce, and
+   *  black hole flown this run */
+  run: { taps: number; bounces: number; holes: number };
   squirrel: { y: number; vy: number; rot: number };
   planets: PlanetCol[];
   pickups: Pickup[];
@@ -366,6 +372,7 @@ export function makeWorld(W: number, H: number): World {
     ready: false,
     score: 0,
     runAcorns: 0,
+    run: { taps: 0, bounces: 0, holes: 0 },
     squirrel: { y: H * 0.45, vy: 0, rot: 0 },
     planets: [],
     pickups: [],
@@ -962,6 +969,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.tailV = 0;
   w.score = 0;
   w.runAcorns = 0;
+  w.run = { taps: 0, bounces: 0, holes: 0 };
   w.squirrel = { y: w.H * 0.45, vy: 0, rot: 0 };
   w.planets = [];
   w.pickups = [];
@@ -1889,6 +1897,7 @@ export function flap(w: World, save: SaveData) {
   }
   if (w.ready) w.ready = false;
   if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce")) return "none";
+  w.run.taps += 1;
   if (w.lvl) {
     w.lvl.stats.taps += 1;
     w.lvl.strobeT = 0;      // THE BLACKOUT: a tap is a flashbulb
@@ -2076,6 +2085,7 @@ function startSwirl(w: World, kind: "hole" | "worm" | "shift" | "timeline") {
   }
   w.warpKind = kind;
   w.warpT = 1;
+  if (kind === "hole") w.run.holes += 1;
 }
 
 function enterWarp(w: World, save: SaveData) {
@@ -2261,6 +2271,9 @@ function die(w: World, save: SaveData) {
     sections: w.tunnel?.sectionsCleared ?? 0,
     nearMisses: w.tunnel?.nearMisses ?? 0,
     bestMultiplier: w.tunnel?.bestMultiplier ?? 1,
+    taps: w.run.taps,
+    bounces: w.run.bounces,
+    holes: w.run.holes,
   };
   save.xp = fromXp + xp;
   save.acorns += w.runAcorns;
@@ -2685,6 +2698,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
           /* planets bounce even with a shield — shields save debris / fall */
         }
         bounceOff(w, save, p.x, py);
+        w.run.bounces += 1;
         return "bounce";
       }
       pushOut(w, p.x, py, p.r * 0.92, sr);
