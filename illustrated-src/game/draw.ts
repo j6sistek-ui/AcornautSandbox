@@ -2556,9 +2556,28 @@ function smoothMotionVy(t: number, vy: number) {
 //
 // Hover therefore reads as small movement around horizontal; a climb reads as
 // a committed climb that still breathes on each beat; and nothing snaps.
+//
+// A third piece, found by filming all the candidates offline: a pose that is
+// merely CORRECT still dies. Pinned in a long fall, every velocity mapping
+// tested held one frame for seconds - a still image at the most dramatic
+// moment. So the pose carries a small motion BUDGET: a gentle cycle whose
+// amplitude opens only as the mapping itself goes still, and closes again the
+// moment real motion returns. A pinned dive keeps breathing; a busy hover
+// gets no extra churn piled onto it.
+//
+// The target is a band, measured by counting frame changes per second against
+// the real constants: under ~3/s reads as a still image, 6-12/s reads as
+// deliberate animation (hand-drawn work sits here), over ~20/s reads as
+// vibration. This lands 9-15/s in flight and 2-3/s pinned; the shipped
+// mapping manages 20/s hovering and 0/s falling.
 const MOTION_LIFE = 0.35;   // how far the beat may pull the pose off its commitment
+const MOTION_CYCLE_HZ = 1.15;
+const MOTION_CYCLE_FRAMES = 0.9;   // amplitude in FRAMES, at full stillness
 let rateFast = 0;
 let rateSlow = 0;
+let ratePrev = 0;
+let rateStill = 0;
+let ratePhase = 0;
 let rateClock = -1;
 function trackRateMotion(t: number, vy: number) {
   const fresh = rateClock < 0 || t < rateClock;
@@ -2578,7 +2597,14 @@ function trackRateMotion(t: number, vy: number) {
     return (v < 0 ? -1 : 1) * Math.pow(k, 1.15);
   };
   const commit = lean(rateSlow);
-  return commit + (lean(rateFast) - commit) * MOTION_LIFE;
+  const pose = commit + (lean(rateFast) - commit) * MOTION_LIFE;
+  // how much the pose is moving on its own, and therefore how much of the
+  // cycle's budget is needed to keep the body alive
+  const moving = Math.min(1, Math.abs(pose - ratePrev) / dt / 1.6);
+  ratePrev = pose;
+  rateStill += ((1 - moving) - rateStill) * (1 - Math.exp(-dt / 0.25));
+  ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
+  return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
 }
 
 function paintIllustrated(
@@ -2714,17 +2740,19 @@ function paintIllustrated(
       // A light exponential smooth keeps rapid taps from strobing the
       // pose; the ramps themselves already grade the attitude.
       // two mappings, switched from the hangar so both can be flown back to back
-      let poseV: number;
+      let v: number;
+      let cycle = 0;
       if (rateMotion) {
-        poseV = trackRateMotion(_t, motionVy);
+        const r = trackRateMotion(_t, motionVy);
+        v = r.pose;
+        cycle = r.cycle;
       } else {
         const sv = smoothMotionVy(_t, motionVy);
-        poseV = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+        v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
       }
-      const v = poseV;
       const bank = v < 0 ? ascFrames : descFrames;
-      const k = Math.abs(v);
-      const idxM = Math.min(bank.length - 1, Math.round(k * (bank.length - 1)));
+      const idxM = Math.max(0, Math.min(bank.length - 1,
+        Math.round(Math.abs(v) * (bank.length - 1) + cycle)));
       const frame = bank[idxM];
       const refM = (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
