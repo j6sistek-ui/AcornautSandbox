@@ -2491,6 +2491,17 @@ function paintDome(
   ctx.restore();
 }
 
+// presentation-only smoothing for the physics-pose banks: one shared clock
+// keyed on world time, so pause holds the pose and resume never jumps
+let motionVySmooth = 0;
+let motionVyClock = -1;
+function smoothMotionVy(t: number, vy: number) {
+  const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
+  motionVyClock = t;
+  motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
+  return motionVySmooth;
+}
+
 function paintIllustrated(
   ctx: CanvasRenderingContext2D,
   spr: Sprite | HTMLImageElement | null | undefined,
@@ -2512,6 +2523,7 @@ function paintIllustrated(
   bounceAnimDir = 0,
   bounceAnimStrength = 0,
   altTap = false,
+  motionVy = 0,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -2535,6 +2547,13 @@ function paintIllustrated(
   if (rigT && rigB && suited) {
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
     const pivot = TAIL_PIVOT[suit.id];
+    // VOLT's physics-pose experiment: with ascend/descend banks present,
+    // posture is DRIVEN BY VERTICAL VELOCITY, not a tap clock — rising
+    // deepens the climb pose, the arc settles to level, and falling rolls
+    // into the dive ramp. Earth physics, worn on the body.
+    const ascFrames = art?.suitAsc?.[suit.id] ?? [];
+    const descFrames = art?.suitDesc?.[suit.id] ?? [];
+    const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
     // VOLT's hangar experiment: the owner is A/B-ing two painted jumps,
     // so its card carries a switch that swaps in the alternate bank.
     const tapFrames = (suit.id === "volt" && altTap
@@ -2551,13 +2570,13 @@ function paintIllustrated(
     const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
     let tailPose: Sprite | HTMLImageElement = rigT;
     let tailPoseRot = tailRot;
-    if (fullBounce) {
-      /* the bounce frames carry the whole character */
+    if (fullBounce || fullMotion) {
+      /* these frames carry the whole character, tail included */
     } else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
       const bend = bounceAnimDir * bounceAnimStrength
         * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
-    } else if (!fullTap && !fullBounce && tapAnimT >= 0 && tapTailFrames.length === 12) {
+    } else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && tapTailFrames.length === 12) {
       // One tail drawing per 30 fps presentation frame. The sequence bends
       // progressively from the planted hinge to the tip: launch drag, delayed
       // whip, one rebound, settle. A small share of the live spring remains so
@@ -2575,9 +2594,9 @@ function paintIllustrated(
       // while the painted recovery is still in progress.
       tailPoseRot *= 0.48;
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
-    } else if (!fullTap && !fullBounce && tapAnimT >= 0 && pivot) {
+    } else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && pivot) {
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
-    } else if (!fullTap && !fullBounce) {
+    } else if (!fullTap && !fullBounce && !fullMotion) {
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
     }
     let poseA: Sprite | HTMLImageElement = rigB;
@@ -2610,6 +2629,16 @@ function paintIllustrated(
       const idx = Math.min(15, Math.floor((bounceAnimT / BOUNCE_ANIM_DURATION) * 16));
       const refB = (bounceFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, bounceFrames[idx], refB, x, y, size, 0, undefined, halo);
+      if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    } else if (fullMotion) {
+      // A light exponential smooth keeps rapid taps from strobing the
+      // pose; the ramps themselves already grade the attitude.
+      const v = smoothMotionVy(_t, motionVy);
+      const bank = v < 0 ? ascFrames : descFrames;
+      const k = v < 0 ? Math.min(1, -v / 470) : Math.min(1, v / 620);
+      const frame = bank[Math.min(bank.length - 1, Math.round(k * (bank.length - 1)))];
+      const refM = (ascFrames[0] as Sprite).box ?? ref;
+      drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     } else if (fullTap) {
       // frame registration comes from the bank's own first frame, so every
@@ -2740,7 +2769,7 @@ function drawPilot(
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true);
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy);
   ctx.restore();
 }
 

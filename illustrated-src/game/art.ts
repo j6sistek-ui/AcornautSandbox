@@ -50,6 +50,12 @@ export type ArtBank = {
    *  planet-bounce recoil. Volt-only for now. */
   suitTapAlt: Record<string, Sprite[]>;
   suitBounce: Record<string, Sprite[]>;
+  /** VOLT's physics-pose experiment: posture follows vertical velocity.
+   *  asc runs neutral->full climb, desc runs neutral->steep dive; both
+   *  index-0 frames are the same level-glide attitude so crossing the
+   *  arc never pops. Volt-only for testing. */
+  suitAsc: Record<string, Sprite[]>;
+  suitDesc: Record<string, Sprite[]>;
   /** Hyper Run layers are decoded with the launch bank, never mid-race. */
   hyperRun: Record<string, Sprite>;
 };
@@ -178,7 +184,7 @@ export function emptyArt(): ArtBank {
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
-    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, hyperRun: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
   };
 }
 
@@ -380,7 +386,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -420,6 +426,8 @@ export async function loadArt(): Promise<ArtBank> {
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-tap2-"),
       namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
+      namedSeries(TAP_ANIM_ENABLED ? { volt: 8 } : {}, "suits", "-asc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { volt: 8 } : {}, "suits", "-desc-"),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
       named(IS_BETA ? hyperRunIds : [], "hyper-run"),
@@ -450,6 +458,8 @@ export async function loadArt(): Promise<ArtBank> {
     suitTapTail,
     suitTapAlt,
     suitBounce,
+    suitAsc,
+    suitDesc,
     hyperRun,
   };
 }

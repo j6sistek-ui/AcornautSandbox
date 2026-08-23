@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=88";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=88";
-import { drawSprite as drawSpriteOn } from "./art.js?v=88";
-import { createEngine } from "./engine.js?v=88";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=88";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=88";
-import { formatRaceTicks } from "./race.js?v=88";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=89";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=89";
+import { drawSprite as drawSpriteOn } from "./art.js?v=89";
+import { createEngine } from "./engine.js?v=89";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=89";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=89";
+import { formatRaceTicks } from "./race.js?v=89";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -999,19 +999,6 @@ export async function bootStandalone(root) {
                 b.onclick = () => { if (!premium || owned)
                     engine.buySuit(u.id); };
                 grid.append(b);
-                // VOLT's experiment: while Volt is the selected pilot, its card
-                // grows a switch that swaps between the two painted jump takes so
-                // the owner can fly both back to back and pick one.
-                if (u.id === "volt" && s.equippedSuit === "volt") {
-                    const alt = el("button", "ac-card ac-modcard on");
-                    const txt = el("div", "ac-modtxt");
-                    txt.append(el("p", "ac-modname", "Test Jump"), el("p", "ac-sub", "Fly Volt's alternate jump animation."));
-                    const sw = el("span", s.voltAltJump ? "ac-switch on" : "ac-switch");
-                    sw.append(el("i", "ac-knob"));
-                    alt.append(txt, sw);
-                    alt.onclick = () => engine.setVoltAltJump(!engine.save.voltAltJump);
-                    grid.append(alt);
-                }
             }
         }
         else if (engine.shopTab === "trails") {
