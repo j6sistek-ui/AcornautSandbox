@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=109";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=110";
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "109";
+export const ART_VER = "110";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -9,10 +9,24 @@ export const ART_VER = "109";
 // can never leak into the production one.
 export const IS_BETA = typeof window !== "undefined" &&
     window.__ACORNAUT_BETA__ === true;
+// WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
+// until the beta set was promoted, and conflating them is dangerous: the save
+// key is derived from IS_BETA, so turning the beta features on for production
+// by flipping that flag would have moved every live player onto the beta save
+// slot and silently wiped their progress.
+//
+// So the two are separate now. IS_BETA still means "this is the beta PAGE",
+// and still decides the save key and the build label. BETA_FEATURES decides
+// what is built, and is on everywhere.
+export const BETA_FEATURES = true;
+// The two the owner asked to hold back are gated on their own, so either can
+// be turned on by itself without touching anything else.
+export const HYPER_RUN_ENABLED = IS_BETA;
+export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-23 12:29 UTC";
+export const BUILD_TIME = "2026-08-23 12:47 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so

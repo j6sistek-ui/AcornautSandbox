@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -193,7 +193,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return "denied";
     },
     flyLevel(id) {
-      const def = levelById(id) ?? (IS_BETA ? experimentalRaceById(id) : null);
+      const def = levelById(id) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(id) : null);
       if (!def) return false;
       // starsOf, not the raw tally: Briella's code opens chapters here too
       if (!def.experimental && !levelUnlocked(def, save.stars || {}, starsOf(save))) return false;

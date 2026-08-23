@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=109";
-import { sfx, unlockAudio, music } from "./audio.js?v=109";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=109";
-import { drawHud, drawWorld } from "./draw.js?v=109";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=109";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=109";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=109";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=109";
-import { raceViewport } from "./race-viewport.js?v=109";
+import { emptyArt, loadArt } from "./art.js?v=110";
+import { sfx, unlockAudio, music } from "./audio.js?v=110";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=110";
+import { drawHud, drawWorld } from "./draw.js?v=110";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=110";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=110";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=110";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=110";
+import { raceViewport } from "./race-viewport.js?v=110";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -108,7 +108,7 @@ export async function createEngine(canvas) {
             return "denied";
         },
         flyLevel(id) {
-            const def = levelById(id) ?? (IS_BETA ? experimentalRaceById(id) : null);
+            const def = levelById(id) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(id) : null);
             if (!def)
                 return false;
             // starsOf, not the raw tally: Briella's code opens chapters here too
@@ -778,4 +778,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=109";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=110";

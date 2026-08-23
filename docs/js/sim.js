@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=109";
-import { modsUnlocked, writeSave } from "./save.js?v=109";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=109";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=109";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=109";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=109";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=109";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=110";
+import { modsUnlocked, writeSave } from "./save.js?v=110";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=110";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=110";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=110";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=110";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=110";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
