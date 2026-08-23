@@ -2515,15 +2515,30 @@ function paintDome(
   ctx.restore();
 }
 
-// presentation-only smoothing for the physics-pose banks: one shared clock
-// keyed on world time, so pause holds the pose and resume never jumps
-let motionVySmooth = 0;
-let motionVyClock = -1;
-function smoothMotionVy(t: number, vy: number) {
-  const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
-  motionVyClock = t;
-  motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
-  return motionVySmooth;
+// Presentation-only pose tracker for the physics-pose banks. Raw vy maps
+// were too honest: at a hover cadence the velocity crosses zero twice a
+// second and a direct map FLIPPED the whole attitude each time — the
+// rocking the owner flagged. Three dampers fix it without dulling real
+// climbs and dives:
+//  - a deadband: |vy| under ~100 px/s reads as level glide, so subtle
+//    bobbing between taps never tips the body;
+//  - a soft curve (^1.35): mid-size swings lean gently, only committed
+//    motion reaches the deep poses;
+//  - a rate limit: the pose value slews at most 3.2/s across its -1..1
+//    range, so a full climb-to-dive rotation takes ~0.6s and always
+//    sweeps THROUGH the intermediate frames instead of snapping.
+// One shared clock keyed on world time: pause holds, resume never jumps.
+let motionPose = 0;
+let motionPoseClock = -1;
+function trackMotionPose(t: number, vy: number) {
+  const dt = motionPoseClock < 0 || t < motionPoseClock ? 0.016 : Math.min(0.05, t - motionPoseClock);
+  motionPoseClock = t;
+  const mag = Math.max(0, Math.abs(vy) - 100);
+  const k = Math.pow(Math.min(1, mag / (vy < 0 ? 370 : 520)), 1.35);
+  const target = (vy < 0 ? -1 : 1) * k;
+  const step = dt * 3.2;
+  motionPose += Math.max(-step, Math.min(step, target - motionPose));
+  return motionPose;
 }
 
 function paintIllustrated(
@@ -2655,12 +2670,10 @@ function paintIllustrated(
       drawRigLayer(ctx, bounceFrames[idx], refB, x, y, size, 0, undefined, halo);
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     } else if (fullMotion) {
-      // A light exponential smooth keeps rapid taps from strobing the
-      // pose; the ramps themselves already grade the attitude.
-      const v = smoothMotionVy(_t, motionVy);
-      const bank = v < 0 ? ascFrames : descFrames;
-      const k = v < 0 ? Math.min(1, -v / 470) : Math.min(1, v / 620);
-      const idxM = Math.min(bank.length - 1, Math.round(k * (bank.length - 1)));
+      // the tracked pose value sweeps -1 (full climb) .. +1 (full dive)
+      const pv = trackMotionPose(_t, motionVy);
+      const bank = pv < 0 ? ascFrames : descFrames;
+      const idxM = Math.min(bank.length - 1, Math.round(Math.abs(pv) * (bank.length - 1)));
       const frame = bank[idxM];
       const refM = (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
@@ -2669,7 +2682,7 @@ function paintIllustrated(
       // in canvas space, so it must be mapped through the SAME reference
       // box the frame itself is drawn with (asc[0]), not the frame's own.
       if (!wearsOwnHead(suit)) {
-        paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`,
+        paintDome(ctx, ascFrames[0], `${suit.id}-${pv < 0 ? "asc" : "desc"}-${idxM + 1}`,
           helmet, x, y, size, art);
       }
     } else if (fullTap) {

@@ -54,11 +54,14 @@ export function buildTables(root) {
       const id = line.match(/\{\s*id:\s*"([^"]+)"/);
       if (!id) continue;
       const name = line.match(/name:\s*"([^"]+)"/);
+      const suitOnly = line.match(/\bsuitOnly:\s*"([^"]+)"/);
       out.push({
         id: id[1],
         name: name ? name[1] : id[1],
         ownHead: /\b(cat|ownHead):\s*true/.test(line),
         bakedDome: /\bbakedDome:\s*true/.test(line),
+        suitOnly: suitOnly ? suitOnly[1] : undefined,
+        opaqueVisor: /\bopaqueVisor:\s*true/.test(line),
       });
     }
     return out;
@@ -94,6 +97,12 @@ export function buildTables(root) {
       name: r.name,
       file: `helms/${r.id}.png`,
       glass: [glass[r.id][0], glass[r.id][1], glass[r.id][2], glass[r.id][3] || 0],
+      // suit-locked helmets never render on any other suit (the game snaps
+      // back to Clear), so the editor must not offer those pairings to fit
+      suitOnly: r.suitOnly,
+      // an opaque visor is never punched — fitting one through a punched
+      // hole that the game does not cut would be fitting a lie
+      opaqueVisor: r.opaqueVisor || undefined,
     }));
 
   return { artVer, suits, helmets };

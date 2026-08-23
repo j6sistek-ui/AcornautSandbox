@@ -11,8 +11,8 @@
 //   s2    = r * 1.04 / g[2]
 //   helmet drawn at (hx - g[0]*s2, hy - g[1]*s2)
 //
-// Two tables, 17 suits and 20 helmets — 37 numbers-triples, not 340
-// pairings. That is deliberate and this editor protects it: you edit the
+// Two tables — one triple per suit and one per helmet, not one per
+// pairing. That is deliberate and this editor protects it: you edit the
 // SUIT's head or the HELMET's glass, and the fix lands everywhere at once.
 // Per-pair overrides exist, but as a DIAGNOSTIC (see foldable() below) —
 // if one helmet needs the same nudge on twelve suits, the helmet's number
@@ -35,7 +35,14 @@ type SuitRow = {
   bakedDome: boolean;
   frame: boolean;
 };
-type HelmRow = { id: string; name: string; file: string; glass: Glass };
+type HelmRow = {
+  id: string;
+  name: string;
+  file: string;
+  glass: Glass;
+  suitOnly?: string;    // locked to one suit; the game snaps to Clear elsewhere
+  opaqueVisor?: boolean; // never punched — the visor is meant to hide the face
+};
 
 type Tables = { artVer: string; suits: SuitRow[]; helmets: HelmRow[] };
 
@@ -106,7 +113,7 @@ const LIGHT_OPAQUE_VISORS = new Set([
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "paladin", "princess",
 ]);
-function punch(rec: Loaded, id: string, g: Glass) {
+function punch(rec: Loaded, id: string, g: Glass, opaque = false) {
   const memo = `${id}:${g[2].toFixed(2)}:${g[0].toFixed(1)}:${g[1].toFixed(1)}`;
   const hit = punched.get(memo);
   if (hit) return hit;
@@ -115,6 +122,13 @@ function punch(rec: Loaded, id: string, g: Glass) {
   c.height = rec.img.naturalHeight;
   const cc = c.getContext("2d")!;
   cc.drawImage(rec.img, 0, 0);
+  // an opaqueVisor helmet is never punched in the game — punching it here
+  // would let you fit a face the player never sees
+  if (opaque) {
+    punched.set(memo, c);
+    while (punched.size > 48) punched.delete(punched.keys().next().value as string);
+    return c;
+  }
   const strong = LIGHT_OPAQUE_VISORS.has(id);
   const grad = cc.createRadialGradient(
     g[0], g[1], g[2] * 0.1,
@@ -264,10 +278,17 @@ function paintTile(cv: HTMLCanvasElement, s: SuitRow, h: HelmRow, size: number) 
   const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
   const r = a[2] * scale;
 
+  // a suit-locked helmet on the wrong suit is a pairing the game refuses —
+  // it snaps back to Clear — so there is nothing here to fit
+  if (h.suitOnly && h.suitOnly !== s.id) {
+    label(ctx, `locked to ${h.suitOnly} — game falls back to Clear`, size);
+    return;
+  }
+
   const helm = bank.get(h.file);
   if (helm && !skip) {
     const s2 = (r * 1.04) / g[2];
-    const p = punch(helm, h.id, g);
+    const p = punch(helm, h.id, g, h.opaqueVisor === true);
     ctx.save();
     ctx.globalAlpha = S.ghost ? 0.45 : 1;
     if (rot) {
@@ -596,7 +617,7 @@ export async function bootRig(root: HTMLElement) {
     },
   );
   const helmSel = mkSel(
-    tables.helmets.map((h) => ({ v: h.id, t: h.name })),
+    tables.helmets.map((h) => ({ v: h.id, t: h.suitOnly ? `${h.name} (${h.suitOnly} only)` : h.name })),
     S.helm,
     (v) => {
       S.helm = v;
@@ -722,11 +743,20 @@ export async function bootRig(root: HTMLElement) {
 
   function pairs(): [SuitRow, HelmRow][] {
     const wearable = tables.suits.filter((s) => !s.ownHead);
+    // a suit-locked helmet exists on exactly one suit — every other pairing
+    // is one the game refuses, and a grid of refusals is noise, not evidence
+    const wears = (s: SuitRow, h: HelmRow) => !h.suitOnly || h.suitOnly === s.id;
     if (S.mode === "one") return [[suitOf(S.suit), helmOf(S.helm)]];
-    if (S.mode === "suit") return tables.helmets.map((h) => [suitOf(S.suit), h] as [SuitRow, HelmRow]);
-    if (S.mode === "helm") return wearable.map((s) => [s, helmOf(S.helm)] as [SuitRow, HelmRow]);
+    if (S.mode === "suit")
+      return tables.helmets
+        .filter((h) => wears(suitOf(S.suit), h))
+        .map((h) => [suitOf(S.suit), h] as [SuitRow, HelmRow]);
+    if (S.mode === "helm")
+      return wearable
+        .filter((s) => wears(s, helmOf(S.helm)))
+        .map((s) => [s, helmOf(S.helm)] as [SuitRow, HelmRow]);
     const out: [SuitRow, HelmRow][] = [];
-    for (const s of wearable) for (const h of tables.helmets) out.push([s, h]);
+    for (const s of wearable) for (const h of tables.helmets) if (wears(s, h)) out.push([s, h]);
     return out;
   }
 
