@@ -116,14 +116,14 @@ export const HELMETS: Helmet[] = [
   { id: "verdant", name: "Verdant", cost: 0, visor: "#d8fff3", tint: 0.14, rim: "#d7b85a", trim: "#087a50", glow: "#38ff9a" },
   { id: "cryostar", name: "Cryostar", cost: 0, visor: "#dff8ff", tint: 0.15, rim: "#dcecf7", trim: "#168bd1", glow: "#54d8ff" },
   { id: "eclipse", name: "Eclipse", cost: 0, visor: "#eee6ff", tint: 0.17, rim: "#c98a72", trim: "#43206f", glow: "#b552ff" },
-  { id: "cinderforge", suitOnly: "cinderforge", opaqueVisor: true, beta: true, name: "Cinderforge", cost: 0, visor: "#ff4a27", tint: 0.28, rim: "#8d211d", trim: "#2c1012", glow: "#ff3a20" },
+  { id: "cinderforge", beta: true, name: "Cinderforge", cost: 0, visor: "#ff4a27", tint: 0.28, rim: "#8d211d", trim: "#2c1012", glow: "#ff3a20" },
   { id: "groveguard", suitOnly: "groveguard", opaqueVisor: true, beta: true, name: "Groveguard", cost: 0, visor: "#7de5d3", tint: 0.18, rim: "#b89b58", trim: "#3e5b3d", glow: "#63e6d1" },
-  { id: "cosmic", suitOnly: "cosmic", beta: true, name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
+  { id: "cosmic", beta: true, name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
   { id: "sunforged", suitOnly: "sunforged", opaqueVisor: true, beta: true, name: "Sunforged", cost: 0, visor: "#ffbf36", tint: 0.22, rim: "#c08a33", trim: "#4c351d", glow: "#ffb52e" },
-  { id: "abyssal", suitOnly: "abyssal", opaqueVisor: true, beta: true, name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
-  { id: "amethyst", suitOnly: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
-  { id: "ivoryguard", suitOnly: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
-  { id: "reactor", suitOnly: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
+  { id: "abyssal", beta: true, name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
+  { id: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
+  { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
+  { id: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
 ];
 if (!IS_BETA) {
   for (let i = HELMETS.length - 1; i >= 0; i--) {

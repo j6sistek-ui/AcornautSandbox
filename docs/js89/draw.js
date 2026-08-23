@@ -1966,14 +1966,18 @@ const DOME = {
     "eclipse-desc-6": [180, 156, 46],
     "eclipse-desc-7": [174, 160, 44],
     "eclipse-desc-8": [166, 164, 44],
-    "suit:cinderforge": [196, 100, 51],
-    "suit:groveguard": [196, 100, 51],
-    "suit:cosmic": [196, 100, 51],
-    "suit:sunforged": [196, 96, 49],
-    "suit:abyssal": [196, 100, 51],
-    "suit:amethyst": [196, 100, 51],
-    "suit:ivoryguard": [196, 100, 51],
-    "suit:reactor": [196, 98, 51],
+    // The automatic face estimator lands 13px right, 7px low, and 7px large
+    // on this shared head family (it makes the same error on approved Aurora).
+    // These sockets apply Aurora's hand-reviewed correction to each new suit's
+    // measured head, preserving the small pose-specific vertical differences.
+    "suit:cinderforge": [183, 93, 44],
+    "suit:groveguard": [183, 93, 44],
+    "suit:cosmic": [183, 93, 44],
+    "suit:sunforged": [183, 89, 42],
+    "suit:abyssal": [183, 93, 44],
+    "suit:amethyst": [183, 93, 44],
+    "suit:ivoryguard": [183, 93, 44],
+    "suit:reactor": [183, 91, 44],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
