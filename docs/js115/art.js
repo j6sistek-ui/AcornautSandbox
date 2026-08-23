@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, TAP_ANIM_ENABLED } from "./catalog.js?v=114";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, TAP_ANIM_ENABLED } from "./catalog.js?v=115";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");

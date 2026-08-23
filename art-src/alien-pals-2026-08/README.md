@@ -4,7 +4,13 @@ Two generated sheets, three characters each, split into one keyable master
 per figure by `illustrated-src/cut-sheet.py`. The sheets are the originals
 as they arrived; the `-master.png` files are the cuts.
 
-`green-a` is SHIPPING as the Alien suit. It was picked over its two
+SHIPPING: `green-a-redblue-master.jpg`, the red/blue pair, cut with
+`two-plate-matte.py`. The first attempt cut `green-a-master.png` off the
+dark sheet and left a black rim round the tail; the white plate only
+traded it for a pale one. The pair solves alpha exactly and the result
+holds on white, on the night sky and on red alike.
+
+`green-a` (the dark-sheet cut) was the first pick for the suit. It was picked over its two
 siblings for the silhouette closest to the retired Alien — tail up and
 curling back — and for having the clearest gap between tail and rump,
 which is what `neck-cut.py` needs to split the rig without taking the

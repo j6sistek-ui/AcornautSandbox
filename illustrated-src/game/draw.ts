@@ -2249,7 +2249,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // by hand. The old values sat on the outer edge of the tail mask, which
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
-  alien: [119, 115],
+  alien: [115, 149],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
   catsuit: [74, 149],
