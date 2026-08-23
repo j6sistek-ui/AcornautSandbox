@@ -187,15 +187,25 @@ Same delete-when-frozen rule as the Spill.
 Two tables, and only two:
 
 - **DOME** — where each suit's head is, and how big, in that suit's own
-  256px canvas. 17 suits. The eight baked-Clear Flight frames are reviewed
-  separately; custom helmets use the bare Flight rig.
+  256px canvas. Every helmet-wearing suit in the catalog. The eight
+  baked-Clear Flight frames are reviewed separately; custom helmets use
+  the bare Flight rig.
 - **HELM_GLASS** — where each helmet's glass circle is, and how big, in
-  the helmet's own canvas. 20 helmets.
+  the helmet's own canvas. Every helmet in the catalog, beta included.
 
-That is 37 triples covering 320 helmet-wearing pairings, and keeping it that
-way is the whole point. A per-pair table would be 320 entries that every new suit
-grows by twenty, and no two of them would ever be checked against each
-other again.
+That is one triple per suit and one per helmet covering hundreds of
+helmet-wearing pairings, and keeping it that way is the whole point. A
+per-pair table would be hundreds of entries that every new suit grows by
+dozens, and no two of them would ever be checked against each other again.
+
+Both tables are regenerated from `draw.ts`/`catalog.ts` on every
+`build-lab.mjs` run — **rebuild the lab whenever the game's tables or art
+change**, or the bench opens on stale numbers over stale-cached art and
+every number dialed in on it is wrong on arrival. Two catalog flags carry
+through: a `suitOnly` helmet only appears paired with its own suit (the
+game snaps every other pairing back to Clear, so there is nothing to fit),
+and an `opaqueVisor` helmet is drawn unpunched, exactly as the game leaves
+it.
 
 So the **EDIT TARGET** switch is the main control, not a detail:
 

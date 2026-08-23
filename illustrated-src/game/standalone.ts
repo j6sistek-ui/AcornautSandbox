@@ -668,9 +668,14 @@ export async function bootStandalone(root: HTMLElement) {
     launch.onclick = () => engine.fly(MODES[selectedMode].id);
     tiles.append(launch);
 
-    tile("t-loadout", helmCardOf(helm, 50), "LOADOUT", "Suits & gear",
+    const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear",
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
+    // an equipped pal announces itself on the tile — one green line
+    const hubPal = PALS.find((p) => p.id === s.equippedPal);
+    if (hubPal && hubPal.id !== "none") {
+      loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPal.name} equipped`));
+    }
     const planet = miniCanvas(50, 50);
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing

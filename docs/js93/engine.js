@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=94";
-import { sfx, unlockAudio, music } from "./audio.js?v=94";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=94";
-import { drawHud, drawWorld } from "./draw.js?v=94";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=94";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=94";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=94";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=94";
-import { raceViewport } from "./race-viewport.js?v=94";
+import { emptyArt, loadArt } from "./art.js?v=93";
+import { sfx, unlockAudio, music } from "./audio.js?v=93";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=93";
+import { drawHud, drawWorld } from "./draw.js?v=93";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=93";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=93";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=93";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=93";
+import { raceViewport } from "./race-viewport.js?v=93";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -740,4 +740,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=94";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=93";

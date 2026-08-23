@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=92";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=92";
-import { drawSprite as drawSpriteOn } from "./art.js?v=92";
-import { createEngine } from "./engine.js?v=92";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=92";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=92";
-import { formatRaceTicks } from "./race.js?v=92";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=94";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=94";
+import { drawSprite as drawSpriteOn } from "./art.js?v=94";
+import { createEngine } from "./engine.js?v=94";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=94";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=94";
+import { formatRaceTicks } from "./race.js?v=94";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -618,7 +618,12 @@ export async function bootStandalone(root) {
         launch.append(lic, ltxt);
         launch.onclick = () => engine.fly(MODES[selectedMode].id);
         tiles.append(launch);
-        tile("t-loadout", helmCardOf(helm, 50), "LOADOUT", "Suits & gear", () => engine.open("hangar"), undefined, s.guide === "hangar" || s.guide === "helmet");
+        const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear", () => engine.open("hangar"), undefined, s.guide === "hangar" || s.guide === "helmet");
+        // an equipped pal announces itself on the tile — one green line
+        const hubPal = PALS.find((p) => p.id === s.equippedPal);
+        if (hubPal && hubPal.id !== "none") {
+            loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPal.name} equipped`));
+        }
         const planet = miniCanvas(50, 50);
         if (planet.ctx)
             drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);

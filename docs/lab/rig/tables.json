@@ -1,5 +1,5 @@
 {
- "artVer": "72",
+ "artVer": "93",
  "suits": [
   {
    "id": "flight",
@@ -119,9 +119,9 @@
    "key": "suit:robo",
    "file": "suits/robo.png",
    "dome": [
-    180,
-    99,
-    44
+    193,
+    92,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -161,9 +161,9 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    175,
-    107,
-    44
+    182,
+    102,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -276,6 +276,118 @@
     204,
     86,
     58
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "cinderforge",
+   "name": "Cinderforge",
+   "key": "suit:cinderforge",
+   "file": "suits/cinderforge.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "groveguard",
+   "name": "Groveguard",
+   "key": "suit:groveguard",
+   "file": "suits/groveguard.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "cosmic",
+   "name": "Cosmic",
+   "key": "suit:cosmic",
+   "file": "suits/cosmic.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "sunforged",
+   "name": "Sunforged",
+   "key": "suit:sunforged",
+   "file": "suits/sunforged.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "abyssal",
+   "name": "Abyssal",
+   "key": "suit:abyssal",
+   "file": "suits/abyssal.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "amethyst",
+   "name": "Amethyst",
+   "key": "suit:amethyst",
+   "file": "suits/amethyst.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "ivoryguard",
+   "name": "Ivoryguard",
+   "key": "suit:ivoryguard",
+   "file": "suits/ivoryguard.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "reactor",
+   "name": "Reactor",
+   "key": "suit:reactor",
+   "file": "suits/reactor.png",
+   "dome": [
+    183,
+    91,
+    44
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -479,7 +591,8 @@
     110.6,
     103.6,
     12
-   ]
+   ],
+   "suitOnly": "leviathan"
   },
   {
    "id": "paladin",
@@ -533,6 +646,98 @@
     121,
     132,
     133,
+    0
+   ]
+  },
+  {
+   "id": "cinderforge",
+   "name": "Cinderforge",
+   "file": "helms/cinderforge.png",
+   "glass": [
+    124,
+    125,
+    128,
+    0
+   ]
+  },
+  {
+   "id": "groveguard",
+   "name": "Groveguard",
+   "file": "helms/groveguard.png",
+   "glass": [
+    130,
+    124,
+    106,
+    0
+   ],
+   "suitOnly": "groveguard",
+   "opaqueVisor": true
+  },
+  {
+   "id": "cosmic",
+   "name": "Cosmic",
+   "file": "helms/cosmic.png",
+   "glass": [
+    134,
+    119,
+    117,
+    0
+   ]
+  },
+  {
+   "id": "sunforged",
+   "name": "Sunforged",
+   "file": "helms/sunforged.png",
+   "glass": [
+    123,
+    128,
+    129,
+    0
+   ],
+   "suitOnly": "sunforged",
+   "opaqueVisor": true
+  },
+  {
+   "id": "abyssal",
+   "name": "Abyssal",
+   "file": "helms/abyssal.png",
+   "glass": [
+    124,
+    131,
+    134,
+    0
+   ]
+  },
+  {
+   "id": "amethyst",
+   "name": "Amethyst",
+   "file": "helms/amethyst.png",
+   "glass": [
+    122,
+    131,
+    134,
+    0
+   ]
+  },
+  {
+   "id": "ivoryguard",
+   "name": "Ivoryguard",
+   "file": "helms/ivoryguard.png",
+   "glass": [
+    122,
+    126,
+    128,
+    0
+   ]
+  },
+  {
+   "id": "reactor",
+   "name": "Reactor",
+   "file": "helms/reactor.png",
+   "glass": [
+    136,
+    116,
+    115,
     0
    ]
   }
