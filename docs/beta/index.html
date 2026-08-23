@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=93" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=95" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=93" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=95" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -584,7 +584,7 @@
     body.ac-beta .ac-coach { bottom: calc(20px + env(safe-area-inset-bottom)); }
     /* pals at the roadside, greyed until their stars are banked */
     .ac-palmark { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column;
-      align-items: center; gap: 1px; pointer-events: none; opacity: .45; filter: grayscale(.9) brightness(.7); }
+      align-items: center; gap: 2px; pointer-events: none; opacity: .45; filter: grayscale(.9) brightness(.7); }
     .ac-palmark.earned { opacity: 1; filter: none; }
     .ac-palmarkstar { font: 800 9px/1 Figtree, sans-serif; color: #ffd76a; background: rgba(16,8,36,.85);
       border: 1px solid rgba(255,206,92,.4); border-radius: 999px; padding: 2.5px 7px; letter-spacing: .06em; }
@@ -600,6 +600,16 @@
     .ac-hubic .ac-hubic-art { width: 100%; height: 100%; max-width: none; max-height: none;
       object-fit: cover; border-radius: 14px; }
     .ac-hubequip { color: #7fe0b0; margin-top: 0; }
+    .ac-palmark img, .ac-palmark canvas { max-width: 44px; max-height: 44px; object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+    .ac-rmarkname { font: 700 9px/1.15 Figtree, sans-serif; color: #c3cbe2; max-width: 96px; text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,.85); }
+    /* the milestone rail: every reward in one column on the chart's right edge */
+    .ac-palmark.mile { width: 74px; padding: 5px 2px; border-radius: 12px;
+      background: rgba(12,8,30,.55); border: 1px solid rgba(122,132,180,.2); }
+    .ac-palmark.mile.earned { border-color: rgba(255,206,92,.35); }
+    .ac-palmark.mile img, .ac-palmark.mile canvas { max-width: 40px; max-height: 40px; }
+    .ac-palmark.mile .ac-rmarkname { max-width: 68px; }
   </style>
 </head>
 <body>
@@ -615,7 +625,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js95/standalone.js";
+    import { bootStandalone } from "../js96/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

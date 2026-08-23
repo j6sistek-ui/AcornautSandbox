@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=95";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=95";
-import { drawSprite as drawSpriteOn } from "./art.js?v=95";
-import { createEngine } from "./engine.js?v=95";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=95";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=95";
-import { formatRaceTicks } from "./race.js?v=95";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=96";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=96";
+import { drawSprite as drawSpriteOn } from "./art.js?v=96";
+import { createEngine } from "./engine.js?v=96";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=96";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=96";
+import { formatRaceTicks } from "./race.js?v=96";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1300,16 +1300,20 @@ export async function bootStandalone(root) {
     // ONE road, bottom-up: a hundred numbered levels climbing from the
     // first flight at the very bottom of the scroll to the last at the top.
     // No chapters, no tabs, no level names — a planet, a number, and up to
-    // three stars each. Pals hang at the roadside beside the level whose
-    // three-star ceiling first covers their price, greyed until banked.
+    // three stars each. Star rewards ride a milestone rail down the right
+    // edge, level with the mission whose three-star ceiling first covers
+    // their price, greyed until banked.
     function fullChart(stars, total) {
         const levels = LEVELS;
-        const W = Math.min(420, Math.max(280, window.innerWidth - 56));
+        const W = Math.min(460, Math.max(292, window.innerWidth - 32));
+        const railW = 78; // the milestone rail owns the right edge
+        const roadW = W - railW;
+        const railX = roadW + Math.round(railW / 2);
         const step = 92;
         const H = 70 + (levels.length - 1) * step + 84;
-        const xs = [0.17, 0.5, 0.83, 0.5];
+        const xs = [0.19, 0.5, 0.81, 0.5];
         const pos = levels.map((_, i) => ({
-            x: Math.round(xs[i % 4] * W),
+            x: Math.round(xs[i % 4] * roadW),
             y: H - 62 - i * step,
         }));
         let current = -1;
@@ -1346,20 +1350,56 @@ export async function bootStandalone(root) {
         if (split < pos.length)
             seg(pos.slice(Math.max(0, split - 1)), false);
         map.append(svg);
-        for (const r of STAR_REWARDS) {
-            if (r.kind !== "pal" || !r.id)
-                continue;
+        // EVERY star reward rides the milestone rail down the right edge —
+        // pals, trails, mods, suits, helmets, modes, titles — each level with
+        // the mission whose three-star ceiling first covers its price, pushed
+        // apart just enough that neighbours never overlap. The rail scrolls
+        // with the road, so climbing the map walks the reward ladder too.
+        const miles = STAR_REWARDS.filter((r) => r.kind !== "stage")
+            .slice()
+            .sort((a, b) => a.stars - b.stars);
+        const gap = 88;
+        let prevY = H + gap;
+        const mileY = miles.map((r) => {
             const li = Math.min(levels.length - 1, Math.max(0, Math.ceil(r.stars / 3) - 1));
-            const side = pos[li].x < W / 2 ? 1 : -1;
-            const mark = el("div", total >= r.stars ? "ac-palmark earned" : "ac-palmark");
-            mark.style.left = `${Math.max(34, Math.min(W - 34, pos[li].x + side * 104))}px`;
-            mark.style.top = `${pos[li].y}px`;
-            const pc = miniCanvas(46, 42);
-            if (pc.ctx)
-                paintPalPreview(pc.ctx, engine.art, r.id, 23, 19, 40);
-            mark.append(pc.c, el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
-            map.append(mark);
+            const y = Math.max(50, Math.min(pos[li].y, prevY - gap));
+            prevY = y;
+            return y;
+        });
+        const railLine = document.createElementNS(SVG, "line");
+        railLine.setAttribute("x1", `${railX}`);
+        railLine.setAttribute("y1", "44");
+        railLine.setAttribute("x2", `${railX}`);
+        railLine.setAttribute("y2", `${H - 40}`);
+        railLine.setAttribute("stroke", "#5a6488");
+        railLine.setAttribute("stroke-opacity", ".45");
+        railLine.setAttribute("stroke-width", "4");
+        railLine.setAttribute("stroke-linecap", "round");
+        railLine.setAttribute("stroke-dasharray", "0.1 12");
+        svg.append(railLine);
+        const lastEarned = miles.reduce((acc, r, i) => (total >= r.stars ? i : acc), -1);
+        if (lastEarned >= 0) {
+            const gold = document.createElementNS(SVG, "line");
+            gold.setAttribute("x1", `${railX}`);
+            gold.setAttribute("y1", `${H - 40}`);
+            gold.setAttribute("x2", `${railX}`);
+            gold.setAttribute("y2", `${mileY[lastEarned]}`);
+            gold.setAttribute("stroke", "#ffce5c");
+            gold.setAttribute("stroke-opacity", ".8");
+            gold.setAttribute("stroke-width", "4");
+            gold.setAttribute("stroke-linecap", "round");
+            gold.setAttribute("stroke-dasharray", "0.1 12");
+            svg.append(gold);
         }
+        miles.forEach((r, i) => {
+            const mark = el("div", total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+            mark.style.left = `${railX}px`;
+            mark.style.top = `${mileY[i]}px`;
+            mark.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }, 40));
+            mark.append(el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
+            mark.append(el("span", "ac-rmarkname", r.name));
+            map.append(mark);
+        });
         levels.forEach((lvl, i) => {
             const mask = stars[lvl.id] || 0;
             const can = levelUnlocked(lvl, stars, total);
@@ -1421,28 +1461,32 @@ export async function bootStandalone(root) {
         // The reward ladder is PINNED at the top of the chart — what stars buy
         // should never be a scroll-to-the-bottom secret. It opens and closes on
         // a tap and stays collapsed by default so the chapters keep the screen.
-        const ladder = el("div", "ac-stagecard");
-        const lhead = el("button", "ac-stagehead");
-        lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", chartStage === -1 ? "\u25be what stars unlock" : "\u25b8 what stars unlock"));
-        lhead.onclick = () => { chartStage = chartStage === -1 ? 0 : -1; render(); };
-        ladder.append(lhead);
-        if (chartStage === -1) {
-            for (const r of STAR_REWARDS) {
-                const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
-                if (r.kind !== "stage") {
-                    row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }));
+        // BETA: the rewards ladder left this screen — every reward hangs on
+        // the road itself, at the level its stars can first be earned.
+        if (!IS_BETA) {
+            const ladder = el("div", "ac-stagecard");
+            const lhead = el("button", "ac-stagehead");
+            lhead.append(el("p", "ac-stagename", "REWARDS"), el("span", "ac-stagestars", chartStage === -1 ? "\u25be what stars unlock" : "\u25b8 what stars unlock"));
+            lhead.onclick = () => { chartStage = chartStage === -1 ? 0 : -1; render(); };
+            ladder.append(lhead);
+            if (chartStage === -1) {
+                for (const r of STAR_REWARDS) {
+                    const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
+                    if (r.kind !== "stage") {
+                        row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name }));
+                    }
+                    const txt = el("div", "ac-roadtxt");
+                    txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
+                    txt.append(el("p", "", r.name));
+                    txt.append(el("p", "ac-sub", r.desc));
+                    row.append(txt);
+                    if (total >= r.stars)
+                        row.append(el("span", "ac-check", "\u2713"));
+                    ladder.append(row);
                 }
-                const txt = el("div", "ac-roadtxt");
-                txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
-                txt.append(el("p", "", r.name));
-                txt.append(el("p", "ac-sub", r.desc));
-                row.append(txt);
-                if (total >= r.stars)
-                    row.append(el("span", "ac-check", "\u2713"));
-                ladder.append(row);
             }
+            scroll.append(ladder);
         }
-        scroll.append(ladder);
         if (IS_BETA) {
             const record = sv.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
             const proto = el("div", "ac-stagecard");
