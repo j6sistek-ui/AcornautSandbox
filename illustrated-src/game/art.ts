@@ -50,7 +50,6 @@ export type ArtBank = {
   suitTapTail: Record<string, Sprite[]>;
   /** VOLT's alternate jump (the hangar A/B experiment) and its painted
    *  planet-bounce recoil. Volt-only for now. */
-  suitTapAlt: Record<string, Sprite[]>;
   suitBounce: Record<string, Sprite[]>;
   /** ECLIPSE's physics-pose experiment: posture follows vertical
    *  velocity. asc runs neutral->full climb, desc runs neutral->steep
@@ -186,7 +185,7 @@ export function emptyArt(): ArtBank {
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
-    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
   };
 }
 
@@ -388,7 +387,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -430,7 +429,6 @@ export async function loadArt(): Promise<ArtBank> {
         } : {}),
       } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
-      namedSeries(TAP_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-tap2-"),
       namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3 } : {}, "suits", "-asc-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5 } : {}, "suits", "-desc-"),
@@ -463,7 +461,6 @@ export async function loadArt(): Promise<ArtBank> {
     suitBody,
     suitTap,
     suitTapTail,
-    suitTapAlt,
     suitBounce,
     suitAsc,
     suitDesc,

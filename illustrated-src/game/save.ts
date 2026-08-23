@@ -51,8 +51,6 @@ export type SaveData = {
   allStars: boolean;
   /** the Profile's music switch — absent (old saves) means music ON */
   musicOff?: boolean;
-  /** VOLT's hangar experiment: fly the alternate painted jump bank */
-  voltAltJump?: boolean;
   // Eclipse's motion mapping, cycled from the hangar or the pause sheet:
   // 0 = the original pose-per-velocity curve, 1 = the rate-driven remap,
   // 2 = HEADING, the body following the tangent of the flight arc.
@@ -100,7 +98,6 @@ export function defaultSave(): SaveData {
     guide: "pending",
     allStars: false,
     musicOff: false,
-    voltAltJump: false,
     eclipseMotionMode: 2,
     experimentalRaceRecords: {},
   };

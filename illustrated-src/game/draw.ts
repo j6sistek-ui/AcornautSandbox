@@ -2685,7 +2685,6 @@ function paintIllustrated(
   bounceAnimT = -1,
   bounceAnimDir = 0,
   bounceAnimStrength = 0,
-  altTap = false,
   motionVy = 0,
   motionMode = 0,
   motionVx = 0,
@@ -2738,10 +2737,7 @@ function paintIllustrated(
     const ascFrames = art?.suitAsc?.[suit.id] ?? [];
     const descFrames = art?.suitDesc?.[suit.id] ?? [];
     const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
-    // VOLT's hangar experiment: the owner is A/B-ing two painted jumps,
-    // so its card carries a switch that swaps in the alternate bank.
-    const tapFrames = (suit.id === "volt" && altTap
-      ? art?.suitTapAlt?.[suit.id] : art?.suitTap?.[suit.id]) ?? [];
+    const tapFrames = art?.suitTap?.[suit.id] ?? [];
     const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
     // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
     // so during the burst the frame IS the pilot: no rig tail, no body
@@ -2974,7 +2970,7 @@ function drawPilot(
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
   ctx.restore();
 }
 

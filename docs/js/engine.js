@@ -1,12 +1,12 @@
-import { emptyArt, loadArt } from "./art.js?v=112";
-import { sfx, unlockAudio, music } from "./audio.js?v=112";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=112";
-import { drawHud, drawWorld } from "./draw.js?v=112";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=112";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=112";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=112";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=112";
-import { raceViewport } from "./race-viewport.js?v=112";
+import { emptyArt, loadArt } from "./art.js?v=113";
+import { sfx, unlockAudio, music } from "./audio.js?v=113";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=113";
+import { drawHud, drawWorld } from "./draw.js?v=113";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=113";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=113";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=113";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceGesture, releaseRaceGesture, } from "./race-gesture.js?v=113";
+import { raceViewport } from "./race-viewport.js?v=113";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -162,11 +162,6 @@ export async function createEngine(canvas) {
             save.musicOff = off;
             writeSave(save);
             music.setMuted(off);
-            notify();
-        },
-        setVoltAltJump(on) {
-            save.voltAltJump = on;
-            writeSave(save);
             notify();
         },
         setEclipseMotionMode(mode) {
@@ -778,4 +773,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=112";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=113";
