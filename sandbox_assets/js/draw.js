@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=94";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=94";
-import { proceduralSky } from "./sky-gen.js?v=94";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=94";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=94";
-import { tunnelBoundsAt } from "./sim.js?v=94";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=94";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=94";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=95";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=95";
+import { proceduralSky } from "./sky-gen.js?v=95";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=95";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=95";
+import { tunnelBoundsAt } from "./sim.js?v=95";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=95";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=95";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2309,28 +2309,37 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     ctx.stroke();
     ctx.restore();
 }
-// Presentation-only pose tracker for the physics-pose banks. Raw vy maps
-// were too honest: at a hover cadence the velocity crosses zero twice a
-// second and a direct map FLIPPED the whole attitude each time — the
-// rocking the owner flagged. Three dampers fix it without dulling real
-// climbs and dives:
-//  - a deadband: |vy| under ~100 px/s reads as level glide, so subtle
-//    bobbing between taps never tips the body;
-//  - a soft curve (^1.35): mid-size swings lean gently, only committed
-//    motion reaches the deep poses;
-//  - a rate limit: the pose value slews at most 3.2/s across its -1..1
-//    range, so a full climb-to-dive rotation takes ~0.6s and always
-//    sweeps THROUGH the intermediate frames instead of snapping.
-// One shared clock keyed on world time: pause holds, resume never jumps.
+// Presentation-only pose tracker for the physics-pose banks. Raw vy is
+// the wrong driver: a tap RESETS vy to -450 and gravity rebuilds it at
+// 1300/s², so at any hover cadence the instantaneous value sweeps most of
+// [-450, +400] every cycle. Damping that signal only slows the rocking —
+// the target still swings full range each tap. What is nearly zero at a
+// hover is the AVERAGE velocity, so that is what the pose follows:
+//  - vy goes through a ~0.45s exponential average. Hover taps cancel to
+//    roughly nothing (level glide at every cadence); sustained climbs and
+//    dives accumulate and read through within half a second.
+//  - a deadband on the average (120 up / 160 down) absorbs the residual
+//    ripple, and the ^1.35 curve keeps mid-size drifts near-level.
+//  - the pose value still slews at most 2.4/s across its -1..1 range, so
+//    what motion remains always sweeps THROUGH the intermediate frames.
+// A clock jump backwards is a new run: state resets to level.
 let motionPose = 0;
+let motionVyAvg = 0;
 let motionPoseClock = -1;
 function trackMotionPose(t, vy) {
-    const dt = motionPoseClock < 0 || t < motionPoseClock ? 0.016 : Math.min(0.05, t - motionPoseClock);
+    const fresh = motionPoseClock < 0 || t < motionPoseClock;
+    if (fresh) {
+        motionPose = 0;
+        motionVyAvg = 0;
+    }
+    const dt = fresh ? 0.016 : Math.min(0.05, t - motionPoseClock);
     motionPoseClock = t;
-    const mag = Math.max(0, Math.abs(vy) - 100);
-    const k = Math.pow(Math.min(1, mag / (vy < 0 ? 370 : 520)), 1.35);
-    const target = (vy < 0 ? -1 : 1) * k;
-    const step = dt * 3.2;
+    motionVyAvg += (vy - motionVyAvg) * (1 - Math.exp(-dt / 0.45));
+    const v = motionVyAvg;
+    const mag = Math.max(0, Math.abs(v) - (v < 0 ? 120 : 160));
+    const k = Math.pow(Math.min(1, mag / (v < 0 ? 220 : 480)), 1.35);
+    const target = (v < 0 ? -1 : 1) * k;
+    const step = dt * 2.4;
     motionPose += Math.max(-step, Math.min(step, target - motionPose));
     return motionPose;
 }
