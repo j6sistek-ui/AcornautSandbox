@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=105";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=105";
-import { drawSprite as drawSpriteOn } from "./art.js?v=105";
-import { createEngine } from "./engine.js?v=105";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=105";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=105";
-import { formatRaceTicks } from "./race.js?v=105";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=106";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=106";
+import { drawSprite as drawSpriteOn } from "./art.js?v=106";
+import { createEngine } from "./engine.js?v=106";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=106";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=106";
+import { formatRaceTicks } from "./race.js?v=106";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -122,6 +122,23 @@ export async function bootStandalone(root) {
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center");
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}` : `Score ${engine.world.score}`));
+            // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
+            // drawn, so the row is there when Eclipse is the pilot and nowhere else.
+            // Switching from the pause is the whole point: the three read completely
+            // differently depending on what you were doing when you paused, and
+            // going back to the hangar to change it loses the run you were judging.
+            if (engine.save.equippedSuit === "eclipse") {
+                const mode = (((engine.save.eclipseMotionMode ?? 0) % 3) + 3) % 3;
+                sheet.append(el("p", "ac-sub", "PILOT MOTION"));
+                const row = el("div", "ac-modes");
+                row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
+                ["Shipped", "Rate", "Heading"].forEach((name, i) => {
+                    const mb = el("button", i === mode ? "ac-mode on" : "ac-mode", name);
+                    mb.onclick = () => engine.setEclipseMotionMode(i);
+                    row.append(mb);
+                });
+                sheet.append(row);
+            }
             const resume = el("button", "ac-primary", "RESUME");
             resume.onclick = () => engine.resume();
             const abort = el("button", "ac-ghost", "ABORT TO TITLE");
@@ -1020,13 +1037,19 @@ export async function bootStandalone(root) {
                 // selected pilot its card grows a switch between the shipped pose
                 // mapping and the rate-driven one, so both can be flown back to back.
                 if (u.id === "eclipse" && s.equippedSuit === "eclipse") {
+                    const MOTION_MODES = [
+                        ["Motion: Shipped", "Pose maps straight from vertical speed."],
+                        ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
+                        ["Motion: Heading", "Body follows the tangent of the flight arc."],
+                    ];
+                    const mode = ((s.eclipseMotionMode ?? 0) % 3 + 3) % 3;
                     const alt = el("button", "ac-card ac-modcard on");
                     const txt = el("div", "ac-modtxt");
-                    txt.append(el("p", "ac-modname", "Rate Motion"), el("p", "ac-sub", "Pose follows how fast you are climbing or falling."));
-                    const sw = el("span", s.eclipseRateMotion ? "ac-switch on" : "ac-switch");
+                    txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]), el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
+                    const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
                     sw.append(el("i", "ac-knob"));
                     alt.append(txt, sw);
-                    alt.onclick = () => engine.setEclipseRateMotion(!engine.save.eclipseRateMotion);
+                    alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 0) + 1) % 3);
                     grid.append(alt);
                 }
                 if (u.id === "volt" && s.equippedSuit === "volt") {

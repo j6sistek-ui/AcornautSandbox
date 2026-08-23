@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flight Lab — frame cue</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg:#0b0e1e; --panel:#141b30; --line:#2a3454; --ink:#e8ecf8; --dim:#98a2bd;
+          --hot:#A99BE8; --gold:#ffd76a; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+              font:14px/1.4 Figtree, system-ui, -apple-system, sans-serif; }
+  body { display:flex; flex-direction:column; overflow:hidden; }
+
+  header { flex:none; display:flex; align-items:center; gap:12px; padding:8px 14px;
+           border-bottom:1px solid var(--line); background:#101628; }
+  header h1 { font-size:14px; margin:0; letter-spacing:.06em; font-weight:800; }
+  header .sp { flex:1; }
+  button { font:inherit; font-weight:700; color:var(--ink); background:var(--panel);
+           border:1px solid var(--line); border-radius:9px; padding:6px 11px; cursor:pointer; }
+  button:hover { border-color:var(--hot); }
+  button.on { background:linear-gradient(196deg,#F4F8FF,#C4D5EC); color:#17203A; border-color:#C4D5EC; }
+  .hint { color:var(--dim); font-size:12px; }
+
+  /* the flight is always on screen: it owns the top half and never scrolls away */
+  #stageWrap { flex:none; position:relative; height:44vh; min-height:230px;
+               border-bottom:1px solid var(--line); background:#070a16; }
+  #stage { width:100%; height:100%; display:block; }
+  #phase { position:absolute; left:12px; top:10px; font-size:11px; font-weight:800;
+           letter-spacing:.1em; color:var(--gold); text-shadow:0 1px 3px #000; }
+  #readout { position:absolute; right:12px; top:10px; font-size:11px; color:var(--dim);
+             text-align:right; text-shadow:0 1px 3px #000; }
+
+  #work { flex:1; display:flex; min-height:0; }
+  .col { display:flex; flex-direction:column; min-height:0; min-width:0; }
+  #cues { flex:none; width:min(46%,430px); border-right:1px solid var(--line); }
+  #palette { flex:1; }
+  .colhead { flex:none; display:flex; align-items:center; gap:8px; padding:7px 12px;
+             border-bottom:1px solid var(--line); background:#101628; font-size:12px; font-weight:800;
+             letter-spacing:.05em; }
+  .colhead .sp { flex:1; }
+  .scroll { flex:1; overflow-y:auto; padding:10px 12px 22px; }
+
+  .cue { margin-bottom:14px; }
+  .cue h3 { margin:0 0 5px; font-size:11px; letter-spacing:.1em; color:var(--dim); font-weight:800; }
+  .cue h3 b { color:var(--ink); }
+  .slots { display:flex; flex-wrap:wrap; gap:6px; min-height:74px; padding:7px;
+           border:1px dashed var(--line); border-radius:11px; background:#0e1426; }
+  .slots.hot { border-color:var(--hot); background:#141c36; }
+  .chip { position:relative; width:60px; height:60px; border-radius:9px; background:#1a2340;
+          border:1px solid var(--line); cursor:grab; flex:none; }
+  .chip img { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+  .chip .n { position:absolute; left:2px; bottom:1px; font-size:9px; color:var(--dim); }
+  .chip .x { position:absolute; right:1px; top:0; font-size:13px; color:#ff8b8b; display:none; }
+  .cue .chip .x { display:block; }
+  .chip.playing { border-color:var(--gold); box-shadow:0 0 0 2px rgba(255,215,106,.45); }
+  .empty { color:var(--dim); font-size:12px; padding:20px 8px; }
+  .ghost { position:fixed; z-index:99; width:60px; height:60px; pointer-events:none;
+           opacity:.9; transform:translate(-50%,-50%) scale(1.08);
+           border-radius:9px; border:1px solid var(--hot); background:#1a2340; }
+  .ghost img { width:100%; height:100%; object-fit:contain; }
+  .chip { touch-action:none; }
+
+  .grp { margin-bottom:12px; }
+  .grp h4 { margin:0 0 5px; font-size:11px; letter-spacing:.08em; color:var(--dim); font-weight:800; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:6px; }
+
+  @media (max-width:760px){ #work{flex-direction:column} #cues{width:auto;border-right:0;
+    border-bottom:1px solid var(--line);max-height:42%} }
+</style>
+</head>
+<body>
+<header>
+  <h1>FLIGHT LAB</h1>
+  <span class="hint">drag frames into a cue · index 0 = level, last = hardest</span>
+  <span class="sp"></span>
+  <button id="apply" class="on">APPLY</button>
+  <button id="reset">RESET</button>
+  <button id="copy">COPY</button>
+</header>
+
+<div id="stageWrap">
+  <canvas id="stage"></canvas>
+  <div id="phase"></div>
+  <div id="readout"></div>
+</div>
+
+<div id="work">
+  <div class="col" id="cues">
+    <div class="colhead">CUES<span class="sp"></span><span class="hint">tap a frame to remove</span></div>
+    <div class="scroll">
+      <div class="cue"><h3>CLIMB — <b id="cA">0</b> frames</h3><div class="slots" id="slotAsc"></div></div>
+      <div class="cue"><h3>DIVE — <b id="cD">0</b> frames</h3><div class="slots" id="slotDesc"></div></div>
+      <p class="hint">The autopilot flies a fixed pattern on a loop. How hard it is climbing or
+      falling picks the index into the matching cue, so the first frame is what you see in
+      level flight and the last is the hardest case.</p>
+    </div>
+  </div>
+  <div class="col" id="palette">
+    <div class="colhead">FRAMES<span class="sp"></span><span class="hint" id="count"></span></div>
+    <div class="scroll" id="pal"></div>
+  </div>
+</div>
+
+<script>
+const SAVE = "acornaut.flightlab.v1";
+let MAN = [], cues = { asc: [], desc: [] };
+
+/* ---------- the flight pattern: fixed, looping, no interaction ----------
+   Each leg names a target vertical velocity in px/s (negative is up) and how
+   long to hold it. The pattern deliberately covers the cases that read
+   differently: a hard climb, a fall, station keeping, a slow staggered rise,
+   and a long gentle sink.                                                  */
+const PATTERN = [
+  { name:"QUICK ASCENT",   dur:1.1, vy:-430 },
+  { name:"DESCENT",        dur:1.3, vy: 470 },
+  { name:"LEVEL TAPS",     dur:2.4, vy:   0, tap:0.62 },
+  { name:"STAGGERED RISE", dur:3.0, vy:-150, tap:0.46, stagger:true },
+  { name:"SLOW DESCENT",   dur:2.6, vy: 210 },
+];
+const LOOP = PATTERN.reduce((a,p)=>a+p.dur,0);
+
+const cv = document.getElementById("stage"), ctx = cv.getContext("2d");
+let W=0,H=0,DPR=1;
+function fit(){ const r=cv.getBoundingClientRect(); DPR=Math.min(2.5,devicePixelRatio||1);
+  W=r.width; H=r.height; cv.width=Math.floor(W*DPR); cv.height=Math.floor(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0); }
+addEventListener("resize",fit);
+
+const img = {}, ready = {};
+function frameImg(k){ if(!img[k]){ const i=new Image(); i.src="frames/"+k+".webp";
+    i.onload=()=>ready[k]=true; img[k]=i; } return img[k]; }
+
+/* a blank scroll: no planets, no gates, nothing to read but the pilot */
+const stars = Array.from({length:110},()=>({x:Math.random(),y:Math.random(),
+  r:Math.random()*1.5+.4, s:.25+Math.random()*.9}));
+let scroll=0;
+
+let t0=performance.now()/1000, vy=0, y=0.5, lastTap=0, legIx=0, poseIx=0;
+function legAt(tt){ let a=0; for(const p of PATTERN){ if(tt<a+p.dur) return [p,tt-a]; a+=p.dur; }
+  return [PATTERN[PATTERN.length-1],0]; }
+
+function draw(now){
+  const t = now/1000 - t0;
+  const tt = t % LOOP;
+  const [leg, into] = legAt(tt);
+  const dt = 1/60;
+  scroll += 165*dt;
+
+  /* drive vertical velocity toward the leg's target; the tap legs pulse it so
+     the motion has the same beat the real game has */
+  let target = leg.vy;
+  if (leg.tap) {
+    const period = leg.stagger ? leg.tap * (1 + 0.45*Math.sin(into*1.7)) : leg.tap;
+    if (into - lastTap > period) { lastTap = into; vy = -430 + (leg.vy||0)*0.4; }
+    else vy += 1300*dt;
+    if (leg.vy===0) target = null;
+  }
+  if (target !== null && !leg.tap) vy += (target - vy) * (1 - Math.exp(-dt/0.22));
+  else if (target !== null) vy += (target - vy) * (1 - Math.exp(-dt/0.5));
+  vy = Math.max(-620, Math.min(900, vy));
+  y += vy*dt/600;
+  if (y<0.16){ y=0.16; if(vy<0) vy*=0.3; }
+  if (y>0.86){ y=0.86; if(vy>0) vy*=0.3; }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#070a16"; ctx.fillRect(0,0,W,H);
+  for(const s of stars){ const sx=((s.x*W - scroll*s.s)%W+W)%W;
+    ctx.globalAlpha=.25+s.s*.5; ctx.fillStyle="#cfe0ff";
+    ctx.fillRect(sx, s.y*H, s.r, s.r); }
+  ctx.globalAlpha=1;
+
+  /* pick the frame: which cue, and how deep into it */
+  const bank = vy < 0 ? "asc" : "desc";
+  const cue = cues[bank];
+  const k = Math.min(1, Math.abs(vy) / (vy<0 ? 430 : 620));
+  let key = null;
+  if (cue.length){ poseIx = Math.min(cue.length-1, Math.round(k*(cue.length-1))); key = cue[poseIx]; }
+  const px = W*0.30, py = y*H, size = Math.min(150, H*0.42);
+  if (key && ready[key]) {
+    const im = frameImg(key);
+    ctx.drawImage(im, px-size/2, py-size/2, size, size);
+  } else {
+    ctx.fillStyle="#243055"; ctx.beginPath(); ctx.arc(px,py,size*0.16,0,7); ctx.fill();
+    ctx.fillStyle="#6d7ba6"; ctx.font="600 12px Figtree, sans-serif"; ctx.textAlign="center";
+    ctx.fillText(cue.length?"loading…":"drop frames into the "+bank.toUpperCase()+" cue", px, py+size*0.34);
+    ctx.textAlign="start";
+  }
+
+  document.getElementById("phase").textContent = leg.name;
+  document.getElementById("readout").textContent =
+    `vy ${Math.round(vy)}  ·  ${bank}  ·  frame ${cue.length?poseIx+1:0}/${cue.length}`;
+  markPlaying(bank, cue.length?poseIx:-1);
+  requestAnimationFrame(draw);
+}
+
+let lastMark="";
+function markPlaying(bank, ix){
+  const sig = bank+ix;
+  if (sig===lastMark) return; lastMark=sig;
+  document.querySelectorAll(".slots .chip").forEach(c=>c.classList.remove("playing"));
+  const host = document.getElementById(bank==="asc"?"slotAsc":"slotDesc");
+  if (ix>=0 && host.children[ix]) host.children[ix].classList.add("playing");
+}
+
+/* ---------------------------------------------------------------- chips
+   Pointer events, not HTML5 drag-and-drop: HTML5 DnD does not fire on touch
+   at all, so on a tablet the whole tool would be dead. This works with a
+   mouse and a finger identically.                                          */
+let drag = null;
+
+function chip(key, label, inCue){
+  const d=document.createElement("div"); d.className="chip"; d.dataset.key=key;
+  const i=document.createElement("img"); i.src="frames/"+key+".webp"; i.loading="lazy"; d.append(i);
+  const n=document.createElement("span"); n.className="n"; n.textContent=label; d.append(n);
+  if(inCue){ const x=document.createElement("span"); x.className="x"; x.textContent="×"; d.append(x); }
+  d.addEventListener("pointerdown", e=>startDrag(e, d, key, inCue));
+  return d;
+}
+
+function slotsOf(el){ return el ? el.closest(".slots") : null; }
+function bankOf(row){ return row && row.id==="slotAsc" ? "asc" : row && row.id==="slotDesc" ? "desc" : null; }
+
+function startDrag(e, el, key, inCue){
+  if (e.button !== undefined && e.button !== 0) return;
+  e.preventDefault();
+  const row = inCue ? slotsOf(el) : null;
+  drag = { key, inCue, el, moved:false,
+           fromBank: bankOf(row),
+           fromIx: row ? [...row.children].indexOf(el) : -1,
+           x:e.clientX, y:e.clientY, ghost:null };
+  el.setPointerCapture?.(e.pointerId);
+  el.addEventListener("pointermove", onDragMove);
+  el.addEventListener("pointerup", onDragEnd);
+  el.addEventListener("pointercancel", onDragEnd);
+}
+
+function onDragMove(e){
+  if(!drag) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  if(!drag.moved && Math.hypot(dx,dy) < 6) return;   // let a tap stay a tap
+  drag.moved = true;
+  if(!drag.ghost){
+    const g=document.createElement("div"); g.className="ghost";
+    const i=document.createElement("img"); i.src="frames/"+drag.key+".webp"; g.append(i);
+    document.body.append(g); drag.ghost=g;
+  }
+  drag.ghost.style.left=e.clientX+"px"; drag.ghost.style.top=e.clientY+"px";
+  document.querySelectorAll(".slots").forEach(s=>s.classList.remove("hot"));
+  const row = slotsOf(document.elementFromPoint(e.clientX, e.clientY));
+  if(row) row.classList.add("hot");
+}
+
+function onDragEnd(e){
+  if(!drag) return;
+  const el=drag.el;
+  el.removeEventListener("pointermove", onDragMove);
+  el.removeEventListener("pointerup", onDragEnd);
+  el.removeEventListener("pointercancel", onDragEnd);
+  drag.ghost?.remove();
+  document.querySelectorAll(".slots").forEach(s=>s.classList.remove("hot"));
+
+  if(!drag.moved){
+    // a tap: on a cue chip that means remove it
+    if(drag.inCue && drag.fromBank) { cues[drag.fromBank].splice(drag.fromIx,1); render(); }
+    drag=null; return;
+  }
+  const row = slotsOf(document.elementFromPoint(e.clientX, e.clientY));
+  const bank = bankOf(row);
+  if(bank){
+    // insertion point: before the first chip whose centre is past the pointer
+    let at = cues[bank].length;
+    const kids=[...row.children].filter(c=>c.classList.contains("chip"));
+    for(let i=0;i<kids.length;i++){
+      const r=kids[i].getBoundingClientRect();
+      if(e.clientY < r.bottom && e.clientX < r.left + r.width/2){ at=i; break; }
+    }
+    if(drag.inCue && drag.fromBank){
+      cues[drag.fromBank].splice(drag.fromIx,1);
+      if(drag.fromBank===bank && drag.fromIx < at) at--;
+    }
+    cues[bank].splice(Math.max(0,Math.min(cues[bank].length,at)), 0, drag.key);
+    render();
+  } else if (drag.inCue && drag.fromBank){
+    cues[drag.fromBank].splice(drag.fromIx,1); render();   // dragged out = removed
+  }
+  drag=null;
+}
+
+function render(){
+  for(const [bank,id] of [["asc","slotAsc"],["desc","slotDesc"]]){
+    const host=document.getElementById(id); host.innerHTML="";
+    cues[bank].forEach((k,i)=>{ const m=MAN.find(x=>x.key===k);
+      host.append(chip(k, String(i+1)+" "+(m?m.label:k), true)); });
+    if(!cues[bank].length){ const p=document.createElement("span");
+      p.className="empty"; p.textContent="drag frames here"; host.append(p); }
+  }
+  document.getElementById("cA").textContent=cues.asc.length;
+  document.getElementById("cD").textContent=cues.desc.length;
+  lastMark="";
+  try{ localStorage.setItem(SAVE, JSON.stringify(cues)); }catch(e){}
+}
+
+function buildPalette(){
+  const pal=document.getElementById("pal"); pal.innerHTML="";
+  const groups=[...new Set(MAN.map(m=>m.group))];
+  for(const g of groups){
+    const box=document.createElement("div"); box.className="grp";
+    const h=document.createElement("h4"); h.textContent=g.toUpperCase(); box.append(h);
+    const grid=document.createElement("div"); grid.className="grid";
+    MAN.filter(m=>m.group===g).forEach(m=>grid.append(chip(m.key,m.label,false)));
+    box.append(grid); pal.append(box);
+  }
+  document.getElementById("count").textContent = MAN.length+" frames";
+}
+
+document.getElementById("reset").onclick=()=>{ cues={asc:[],desc:[]}; seedShipped(); render(); };
+document.getElementById("apply").onclick=()=>{ render(); };
+document.getElementById("copy").onclick=()=>{
+  const txt=JSON.stringify(cues,null,1);
+  navigator.clipboard?.writeText(txt).catch(()=>{});
+  const b=document.getElementById("copy"); const o=b.textContent; b.textContent="COPIED";
+  setTimeout(()=>b.textContent=o,1200);
+};
+
+function seedShipped(){
+  cues.asc = Array.from({length:8},(_,i)=>"ship-asc-"+(i+1));
+  cues.desc = Array.from({length:8},(_,i)=>"ship-desc-"+(i+1));
+}
+
+fetch("frames/manifest.json").then(r=>r.json()).then(m=>{
+  MAN=m; buildPalette();
+  let saved=null; try{ saved=JSON.parse(localStorage.getItem(SAVE)||"null"); }catch(e){}
+  if(saved && (saved.asc?.length||saved.desc?.length)) cues=saved; else seedShipped();
+  cues.asc.concat(cues.desc).forEach(frameImg);
+  MAN.forEach(x=>frameImg(x.key));
+  render(); fit(); requestAnimationFrame(draw);
+});
+</script>
+</body>
+</html>
