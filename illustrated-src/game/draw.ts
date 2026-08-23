@@ -46,7 +46,7 @@ function liveGapY(p: World["planets"][number]) {
 
 function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
   const lost = w.flight === "lost";
-  const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+  const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return;
   ctx.translate(w.W / 2, w.H / 2);
   const spin = w.warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
@@ -1723,7 +1723,7 @@ function drawShiftAcorn(
 // the FINISH banner reading backwards.
 function warpMirroredNow(w: World) {
   const lost = w.flight === "lost";
-  const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+  const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return false;
   const mFrom = w.prevMirror ? -1 : 1;
   const mTo = w.warpMirror ? -1 : 1;
@@ -3108,7 +3108,14 @@ if (w.lvl) {
     ctx.fillText(text, W / 2, hudY);
     hudY += 18;
   };
-  if (w.warpLeft > 0) hudLine((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", "#c084fc");
+  if (w.warpGateEnd >= 0) {
+    // Free Flight measures the stretch in gates, so the readout counts the
+    // same thing the pilot is flying through, and names the way out.
+    const left = Math.max(0, w.warpGateEnd - w.score);
+    hudLine(left > 0 ? "BLACK HOLE  " + left + " gates" : "BLACK HOLE  exit ahead", "#c084fc");
+  } else if (w.warpLeft > 0) {
+    hudLine((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", "#c084fc");
+  }
   else if (w.flight === "deep" && w.warpT <= 0) hudLine("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", "rgba(192,132,252,0.8)");
   if (w.powerLeft > 0) hudLine(`${w.flight === "tunnel" ? "FREEZE" : "SLOW"}  ${Math.ceil(w.powerLeft)}s`, "#6ef0ff");
   if (w.invulnLeft > 0) hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");

@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "101";
+export const ART_VER = "102";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -428,6 +428,10 @@ export const ENV_GATES = 20;
 // crossing is a late-run reward — meeting it on gate two would sell the
 // illustrated game short before it has been seen.
 export const RETRO_GATE = 100;
+// How many gates a Free Flight black hole holds you for. The stretch ends
+// at a hole you fly into, so this is a distance the pilot reads, not a
+// timer that expires on them.
+export const WARP_GATES = 15;
 
 export const XP_STEPS = [
   60, 100, 150, 200, 260, 320, 390, 460, 540, 620, 710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720, 1860, 2000,

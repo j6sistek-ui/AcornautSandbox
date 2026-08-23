@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=101";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=101";
-import { proceduralSky } from "./sky-gen.js?v=101";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=101";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=101";
-import { tunnelBoundsAt } from "./sim.js?v=101";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=101";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=101";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=102";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=102";
+import { proceduralSky } from "./sky-gen.js?v=102";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=102";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=102";
+import { tunnelBoundsAt } from "./sim.js?v=102";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=102";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=102";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -16,7 +16,7 @@ function liveGapY(p) {
 }
 function applyWarp(ctx, w) {
     const lost = w.flight === "lost";
-    const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+    const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
     if (wp <= 0)
         return;
     ctx.translate(w.W / 2, w.H / 2);
@@ -1557,7 +1557,7 @@ function drawShiftAcorn(ctx, art, x, y, t) {
 // the FINISH banner reading backwards.
 function warpMirroredNow(w) {
     const lost = w.flight === "lost";
-    const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || lost ? 1 : 0;
+    const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
     if (wp <= 0)
         return false;
     const mFrom = w.prevMirror ? -1 : 1;
@@ -2860,8 +2860,15 @@ export function drawHud(ctx, w, art) {
         ctx.fillText(text, W / 2, hudY);
         hudY += 18;
     };
-    if (w.warpLeft > 0)
+    if (w.warpGateEnd >= 0) {
+        // Free Flight measures the stretch in gates, so the readout counts the
+        // same thing the pilot is flying through, and names the way out.
+        const left = Math.max(0, w.warpGateEnd - w.score);
+        hudLine(left > 0 ? "BLACK HOLE  " + left + " gates" : "BLACK HOLE  exit ahead", "#c084fc");
+    }
+    else if (w.warpLeft > 0) {
         hudLine((w.flight === "deep" ? "SHIFT  " : "BLACK HOLE  ") + Math.ceil(w.warpLeft) + "s", "#c084fc");
+    }
     else if (w.flight === "deep" && w.warpT <= 0)
         hudLine("FIRST SHIFT IN " + Math.ceil(Math.max(0, 10 - w.deepTimer)) + "s", "rgba(192,132,252,0.8)");
     if (w.powerLeft > 0)
