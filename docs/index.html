@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=119" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=120" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=119" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=120" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -346,6 +346,26 @@
     .ac-modtxt { flex: 1 1 auto; min-width: 0; }
     .ac-modname { font-size: 13px; font-weight: 800; margin: 0 0 2px; }
     .ac-modprice { flex: none; font-size: 12px; font-weight: 800; color: #ffd76a; letter-spacing: .05em; }
+    /* HANGAR SHELVES: titled, sideways-scrolling category rows */
+    .ac-grid.ac-shelfcol { display: flex; flex-direction: column; gap: 8px; }
+    .ac-shelfhead { margin: 4px 2px -2px; font-size: 11px; letter-spacing: .16em;
+      color: #98a2bd; font-weight: 800; }
+    .ac-shelfrow { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .ac-shelfrow::-webkit-scrollbar { display: none; }
+    .ac-shelfrow > .ac-card { flex: 0 0 96px; }
+    .ac-shelfrow > .ac-card.ac-modcard { flex: 0 0 auto; min-width: 240px; }
+    /* a fixed head takes no helmet: dome, circle, slash */
+    .ac-nohelm { position: absolute; top: 6px; right: 6px; width: 16px; height: 16px;
+      border: 2px solid #8fa0be; border-radius: 50%; opacity: .95; pointer-events: none; }
+    .ac-nohelm::before { content: ""; position: absolute; left: 3px; top: 5px; width: 10px;
+      height: 7px; border: 2px solid #8fa0be; border-bottom: none; border-radius: 10px 10px 0 0; }
+    .ac-nohelm::after { content: ""; position: absolute; left: -2px; top: 6px; width: 19px;
+      height: 2px; background: #8fa0be; transform: rotate(-45deg); }
+    /* the purchased shelf's door to the shop */
+    .ac-card.ac-shopcard { border: 1px dashed #3a4468; background: rgba(20,27,48,.5);
+      color: #98a2bd; justify-content: center; }
+    .ac-shopglyph { font-size: 26px; line-height: 1; color: #d4af37; font-weight: 800; }
     .ac-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; }
     .ac-grid.ac-palgrid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
     .ac-card { min-height: 118px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 13px; padding: 8px 4px 8px; font-size: 10px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; overflow: visible; }
@@ -624,7 +644,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js119/standalone.js";
+    import { bootStandalone } from "./js120/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
