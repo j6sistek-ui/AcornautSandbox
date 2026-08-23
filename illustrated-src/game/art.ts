@@ -36,6 +36,8 @@ export type ArtBank = {
    *  vortex remains the fallback while frames stream in. */
   wormAnim: Sprite[];
   holeAnim: Sprite[];
+  /** The black hole's collapse, played once as a hole warp takes hold. */
+  holeEnter: Sprite[];
   // Suits that ship a hinged tail carry two extra layers, both on the
   // full canvas so they register against the whole-suit sprite.
   suitTail: Record<string, Sprite>;
@@ -183,7 +185,7 @@ export function emptyArt(): ArtBank {
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-    frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
+    frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
   };
 }
@@ -386,7 +388,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -406,7 +408,11 @@ export async function loadArt(): Promise<ArtBank> {
       many(`${base}/pickups/shieldnut-`, 16),
       // Approved from the beta trial: the painted vortices spin everywhere.
       many(`${base}/vortex/worm-`, 16),
-      many(`${base}/vortex/hole-`, 16),
+      // The repainted hole loops in 9 native frames; resampling to 16 would
+      // only duplicate renders, so the bank is its true length and frameOf
+      // paces it.
+      many(`${base}/vortex/hole-`, 9),
+      many(`${base}/vortex/holeenter-`, 16),
       named(RIGGED_SUITS, "suits", "-tail"),
       named(RIGGED_SUITS, "suits", "-body"),
       namedSeries(TAP_ANIM_ENABLED ? {
@@ -452,6 +458,7 @@ export async function loadArt(): Promise<ArtBank> {
     shieldAnim,
     wormAnim,
     holeAnim,
+    holeEnter,
     suitTail,
     suitBody,
     suitTap,

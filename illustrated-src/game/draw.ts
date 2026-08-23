@@ -2914,7 +2914,32 @@ export function paintTrailPreview(
 /** The vortex that eats the screen while a black hole or wormhole
  *  takes hold — spiral arms winding in, a dark core, a colour bloom.
  *  Purely procedural: no art needed. */
-function drawSwirl(ctx: CanvasRenderingContext2D, w: World) {
+function drawSwirl(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
+  // The black hole now has a painted collapse: the ring winds in, whips
+  // its streaks around and pinches out. When those frames are loaded a
+  // hole warp plays them over the bloom instead of the procedural core.
+  const painted = w.warpKind === "hole" && !(w.flight === "lost") ? art?.holeEnter : null;
+  if (painted && painted.length) {
+    const prog = Math.min(0.999, Math.max(0, 1 - w.warpT));
+    const frame = painted[Math.min(painted.length - 1, Math.floor(prog * painted.length))];
+    const { W: pw, H: ph } = w;
+    const diag = Math.hypot(pw, ph);
+    const e = prog < 0.5 ? 2 * prog * prog : 1 - Math.pow(-2 * prog + 2, 2) / 2;
+    // Grow into the viewer rather than opening already full-bleed: at the
+    // start the portal is a shape on screen, by the end it has swallowed
+    // it. Centred where the procedural swirl sits, so the two read as one
+    // effect while the bank is still streaming in.
+    const s = diag * (0.62 + 1.05 * e);
+    ctx.save();
+    const bloom = ctx.createRadialGradient(pw / 2, ph * 0.46, 0, pw / 2, ph * 0.46, diag * 0.62);
+    bloom.addColorStop(0, `rgba(192,132,252,${(0.45 * e).toFixed(3)})`);
+    bloom.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = bloom;
+    ctx.fillRect(0, 0, pw, ph);
+    ctx.drawImage(frame, pw / 2 - s / 2, ph * 0.46 - s / 2, s, s);
+    ctx.restore();
+    return;
+  }
   const { W, H } = w;
   const t = 1 - w.warpT;                       // 0 -> 1 over the transition
   const worm = w.warpKind === "worm" || w.flight === "lost";
@@ -2978,7 +3003,7 @@ export function hyperRunChargeCopy(race: NonNullable<World["race"]>) {
   return `CHARGE ${race.charge}/100`;
 }
 
-export function drawHud(ctx: CanvasRenderingContext2D, w: World) {
+export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
   const { W } = w;
   if (w.race) {
     const race = w.race;
@@ -3111,7 +3136,7 @@ if (w.lvl) {
     ctx.fillText(w.recoveryMsg, W / 2, w.H * 0.22);
   }
   if (w.warpT > 0) {
-    drawSwirl(ctx, w);
+    drawSwirl(ctx, w, art);
     ctx.textAlign = "center";
     ctx.fillStyle = w.warpKind === "worm" || w.flight === "lost" ? "#6ef0d8" : "#c084fc";
     ctx.font = "800 22px Figtree, system-ui";
