@@ -2515,60 +2515,22 @@ function paintDome(
   ctx.restore();
 }
 
-// Presentation-only pose tracker for the physics-pose banks.
+// presentation-only smoothing for the physics-pose banks: one shared clock
+// keyed on world time, so pause holds the pose and resume never jumps
 //
-// The problem was never the pose depth, it was the CHATTER: a tap resets
-// vy to -450 and gravity rebuilds it at 1300/s², so the velocity changes
-// sign twice a second at any hover cadence and the body flipped banks
-// with it. Averaging the velocity hard enough to stop that also averaged
-// away the animation, which is the wrong trade — the posture is the point.
-//
-// So the flip is DEBOUNCED instead of smoothed. Direction has to hold for
-// MOTION_STALL before the body commits to the other bank; while it waits
-// the pose eases to level, so a reversal reads as climb -> glide -> dive
-// rather than a snap, and a half-second of jitter never leaves level at
-// all. Within a committed direction the magnitude follows vy closely, so
-// a real dive still develops the full posture in about half a second.
-const MOTION_STALL = 0.2;   // seconds a reversal must hold to commit
-const MOTION_SLEW = 5;      // pose units per second across the -1..1 range
-const MOTION_DEADBAND = 80; // px/s of vy that still counts as level
-let motionPose = 0;
-let motionVyAvg = 0;
-let motionDir = 0;
-let motionPend = 0;
-let motionPoseClock = -1;
-function trackMotionPose(t: number, vy: number) {
-  const fresh = motionPoseClock < 0 || t < motionPoseClock;
-  if (fresh) {
-    motionPose = 0;
-    motionVyAvg = 0;
-    motionDir = 0;
-    motionPend = 0;
-  }
-  const dt = fresh ? 0.016 : Math.min(0.05, t - motionPoseClock);
-  motionPoseClock = t;
-  // a short average only to take the single-frame steps off a tap, not to
-  // hide the motion
-  motionVyAvg += (vy - motionVyAvg) * (1 - Math.exp(-dt / 0.08));
-  const v = motionVyAvg;
-  const raw = v < -MOTION_DEADBAND ? -1 : v > MOTION_DEADBAND ? 1 : 0;
-  let target: number;
-  if (raw !== 0 && raw !== motionDir) {
-    motionPend += dt;
-    target = 0;
-    if (motionPend >= MOTION_STALL) {
-      motionDir = raw;
-      motionPend = 0;
-    }
-  } else {
-    motionPend = 0;
-    const mag = Math.max(0, Math.abs(v) - MOTION_DEADBAND);
-    const k = Math.pow(Math.min(1, mag / (v < 0 ? 370 : 520)), 1.2);
-    target = motionDir * k;
-  }
-  const step = dt * MOTION_SLEW;
-  motionPose += Math.max(-step, Math.min(step, target - motionPose));
-  return motionPose;
+// This is the FIRST-PASS driver, restored deliberately. Two later attempts
+// to damp the hover-cadence rocking - a long velocity average (v95) and a
+// direction debounce (v98) - each bought calm by spending the animation,
+// and the owner would rather re-approach the timing from here than keep
+// tuning a body that barely moves. Do not re-add damping without a look at
+// WHEN the pose starts rather than how fast it turns.
+let motionVySmooth = 0;
+let motionVyClock = -1;
+function smoothMotionVy(t: number, vy: number) {
+  const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
+  motionVyClock = t;
+  motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
+  return motionVySmooth;
 }
 
 function paintIllustrated(
@@ -2700,19 +2662,21 @@ function paintIllustrated(
       drawRigLayer(ctx, bounceFrames[idx], refB, x, y, size, 0, undefined, halo);
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     } else if (fullMotion) {
-      // the tracked pose value sweeps -1 (full climb) .. +1 (full dive)
-      const pv = trackMotionPose(_t, motionVy);
-      const bank = pv < 0 ? ascFrames : descFrames;
-      const idxM = Math.min(bank.length - 1, Math.round(Math.abs(pv) * (bank.length - 1)));
+      // A light exponential smooth keeps rapid taps from strobing the
+      // pose; the ramps themselves already grade the attitude.
+      const v = smoothMotionVy(_t, motionVy);
+      const bank = v < 0 ? ascFrames : descFrames;
+      const k = v < 0 ? Math.min(1, -v / 470) : Math.min(1, v / 620);
+      const idxM = Math.min(bank.length - 1, Math.round(k * (bank.length - 1)));
       const frame = bank[idxM];
       const refM = (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
       // the helmet rides the HEAD, which these frames move with the
-      // attitude — each frame carries its own dome anchor. The anchor is
+      // attitude - each frame carries its own dome anchor. The anchor is
       // in canvas space, so it must be mapped through the SAME reference
       // box the frame itself is drawn with (asc[0]), not the frame's own.
       if (!wearsOwnHead(suit)) {
-        paintDome(ctx, ascFrames[0], `${suit.id}-${pv < 0 ? "asc" : "desc"}-${idxM + 1}`,
+        paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`,
           helmet, x, y, size, art);
       }
     } else if (fullTap) {
