@@ -2125,13 +2125,9 @@ const DOME: Record<string, [number, number, number]> = {
   // Flight's banks come from a motion TRANSFER of Eclipse's own arc, so
   // its head sits differently in every frame and each one carries its own
   // anchor, exactly as Eclipse's do.
-  "flight-asc-1": [174.4, 88.6, 32.6],
-  "flight-asc-2": [178.4, 87.0, 32.6],
-  "flight-asc-3": [174.9, 90.7, 32.6],
-  "flight-asc-4": [176.7, 87.0, 32.6],
-  "flight-asc-5": [174.4, 89.2, 32.6],
-  "flight-asc-6": [176.8, 86.2, 32.6],
-  "flight-asc-7": [176.2, 86.6, 32.6],
+  "flight-asc-1": [174.1, 88.5, 32.6],
+  "flight-asc-2": [174.6, 90.6, 32.6],
+  "flight-asc-3": [174.1, 89.1, 32.6],
   "flight-desc-1": [179.0, 93.0, 32.6],
   "flight-desc-2": [178.4, 95.6, 32.6],
   "flight-desc-3": [173.9, 110.8, 32.6],

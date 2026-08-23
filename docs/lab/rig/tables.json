@@ -1,5 +1,5 @@
 {
- "artVer": "111",
+ "artVer": "112",
  "suits": [
   {
    "id": "flight",
@@ -121,7 +121,7 @@
    "dome": [
     180,
     99,
-    44
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -163,7 +163,7 @@
    "dome": [
     175,
     107,
-    44
+    45
    ],
    "ownHead": false,
    "bakedDome": false,

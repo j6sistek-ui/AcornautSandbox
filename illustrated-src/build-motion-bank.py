@@ -87,6 +87,100 @@ def head_size(a, centre, radius):
     return np.sqrt(max(n, 1) / np.pi)
 
 
+def foot_ink(a):
+    """Pixels of ink in the bottom fifth of the body — the leg/foot state."""
+    m = a[..., 3] > 40
+    ys, xs = np.nonzero(m)
+    y1, h = ys.max(), ys.max() - ys.min() + 1
+    fm = m.copy()
+    fm[:y1 - int(round(h * 0.18)), :] = False
+    return int(fm.sum())
+
+
+def foot_core_ratio(frames):
+    """How much the FEET move per step against how much the BODY moves.
+
+    The number that actually predicts the defect. Gross silhouette change
+    does not: Eclipse's dive moves more of the character per frame than
+    Flight's climb does and reads as clean, because Eclipse's motion is the
+    whole body pitching. Motion concentrated in the extremities under a
+    torso that is holding still does not read as flight, it reads as a
+    vibration — the owner's word for it was that the feet buzz.
+
+    Eclipse, the bank that is known good, sits at 1.5 climbing and 1.0
+    diving. Past about 2 the feet have detached from the body.
+    """
+    S = [a[..., 3] > 40 for a in frames]
+    U = np.zeros_like(S[0])
+    for s in S:
+        U |= s
+    ys, _ = np.nonzero(U)
+    y0, y1 = ys.min(), ys.max()
+    h = y1 - y0 + 1
+    feet, core = slice(y1 - int(h * 0.25), y1 + 1), slice(y0, y0 + int(h * 0.55))
+
+    def dz(a, b, z):
+        return 1.0 - (a[z] & b[z]).sum() / max((a[z] | b[z]).sum(), 1)
+
+    f = np.array([dz(S[k], S[k + 1], feet) for k in range(len(S) - 1)])
+    c = np.array([dz(S[k], S[k + 1], core) for k in range(len(S) - 1)])
+    return float((f / np.maximum(c, 1e-3)).mean()), float(f.mean())
+
+
+RATIO_LIMIT = 2.0
+
+
+def coherent_pool(pool, frames, angles):
+    """Drop a pool back to one leg state when the two do not blend.
+
+    A transfer does not promise a graded ramp. Where the pool carries a
+    real attitude sweep — a dive — the legs open with the pitch and every
+    frame is an in-between of its neighbours. Where the pool is nearly
+    level, as a climb tends to be, the model has no ramp to interpolate and
+    emits two discrete leg poses, tucked and extended, with NOTHING between
+    them. Ordering cannot repair that: whatever the sequence, the bank has
+    to cross the gap, and the game crosses it several times a second while
+    the player holds a hover.
+
+    So the gap is not bridged, it is avoided — the larger of the two states
+    becomes the bank. A shorter bank that moves as one body beats a longer
+    one that pops.
+    """
+    if len(pool) < 3:
+        return pool, None
+    ratio, _ = foot_core_ratio([frames[i] for i in pool])
+    if ratio <= RATIO_LIMIT:
+        return pool, ratio
+    inks = sorted((foot_ink(frames[i]), i) for i in pool)
+    gaps = [(inks[k + 1][0] - inks[k][0], k) for k in range(len(inks) - 1)]
+    span, at = max(gaps)
+    # only a gap that dwarfs the ordinary spacing is two states rather than
+    # one continuous sweep sampled unevenly
+    typical = np.median([g for g, _ in gaps])
+    if span < max(3 * typical, 150):
+        return pool, ratio
+    low = [i for _, i in inks[:at + 1]]
+    high = [i for _, i in inks[at + 1:]]
+
+    def ordered(g):
+        return sorted(g, key=lambda i: angles[i], reverse=bool(angles[pool[0]] < 12))
+
+    # Pick the state that MOVES BEST, not the one with the most frames. The
+    # bigger cluster is the tempting choice and it is the wrong one: on
+    # Flight it is four tucked poses that still swing the feet twice as far
+    # as the body, where the three extended poses sit right on Eclipse's
+    # number. Frames are worth nothing if they are not worth playing.
+    sides = [ordered(g) for g in (low, high) if len(g) >= 2]
+    if not sides:
+        return pool, ratio
+    keep = min(sides, key=lambda g: (foot_core_ratio([frames[i] for i in g])[0], -len(g)))
+    new_ratio, _ = foot_core_ratio([frames[i] for i in keep])
+    print(f"  feet/body motion ratio {ratio:.2f} over the {RATIO_LIMIT:.1f} limit: "
+          f"two leg states {span} px apart and no in-between")
+    print(f"  -> keeping the {len(keep)}-frame state, ratio now {new_ratio:.2f}")
+    return keep, new_ratio
+
+
 def footprint_size(path):
     a = load(path)
     m = a[..., 3] > 16
@@ -186,6 +280,12 @@ def main():
             return ix
         return [ix[round(i * (len(ix) - 1) / (n - 1))] for i in range(n)]
 
+    # Guard both pools before sampling them: a bank whose feet have come
+    # loose from its body is the defect this catches, and the check is cheap
+    # next to shipping it and having it seen.
+    climb, _ = coherent_pool(climb, frames, angles)
+    dive, _ = coherent_pool(dive, frames, angles)
+
     built = {}
     for name, ix in (("asc", pick(climb)), ("desc", pick(dive))):
         built[name] = normalise([frames[i] for i in ix], f"docs/art/suits/{suit}.png", dome) + (ix,)
@@ -212,7 +312,10 @@ def main():
             for root in ("docs/art/suits", "sandbox_assets/art/suits"):
                 im2.save(f"{root}/{suit}-{name}-{n}.png")
             out[f"{suit}-{name}-{n}"] = [round(ax, 1), round(ay, 1), round(radius * k, 1)]
-        print(f"  {name}: {len(imgs)} frames from source {[i + 1 for i in ix]}")
+        r, fm = foot_core_ratio([np.array(rescale_about_centre(i, k)).astype(np.float64)
+                                 for i in imgs]) if len(imgs) > 1 else (0.0, 0.0)
+        print(f"  {name}: {len(imgs)} frames from source {[i + 1 for i in ix]}"
+              f"  (feet/body {r:.2f}, foot motion {fm:.3f})")
     print("\nDOME entries to paste into draw.ts:")
     for k, v in out.items():
         print(f'  "{k}": [{v[0]}, {v[1]}, {v[2]}],')
