@@ -122,6 +122,23 @@ export async function bootStandalone(root) {
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center");
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}` : `Score ${engine.world.score}`));
+            // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
+            // drawn, so the row is there when Eclipse is the pilot and nowhere else.
+            // Switching from the pause is the whole point: the three read completely
+            // differently depending on what you were doing when you paused, and
+            // going back to the hangar to change it loses the run you were judging.
+            if (engine.save.equippedSuit === "eclipse") {
+                const mode = (((engine.save.eclipseMotionMode ?? 0) % 3) + 3) % 3;
+                sheet.append(el("p", "ac-sub", "PILOT MOTION"));
+                const row = el("div", "ac-modes");
+                row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
+                ["Shipped", "Rate", "Heading"].forEach((name, i) => {
+                    const mb = el("button", i === mode ? "ac-mode on" : "ac-mode", name);
+                    mb.onclick = () => engine.setEclipseMotionMode(i);
+                    row.append(mb);
+                });
+                sheet.append(row);
+            }
             const resume = el("button", "ac-primary", "RESUME");
             resume.onclick = () => engine.resume();
             const abort = el("button", "ac-ghost", "ABORT TO TITLE");
