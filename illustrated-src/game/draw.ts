@@ -2089,25 +2089,26 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:verdant": [204, 93, 58],
   "suit:cryostar": [207, 93, 58],
   "suit:eclipse": [204, 86, 58],
-  // Eclipse's physics-pose banks move the head with the attitude, so each
-  // frame registers its own dome (auto-measured from the fur blob; the
-  // same detector finds the shipped static's dome within 5px).
-  "eclipse-asc-1": [196, 64, 54],
-  "eclipse-asc-2": [196, 59, 50],
-  "eclipse-asc-3": [198, 62, 50],
-  "eclipse-asc-4": [200, 71, 56],
-  "eclipse-asc-5": [200, 75, 56],
-  "eclipse-asc-6": [200, 78, 48],
-  "eclipse-asc-7": [198, 86, 48],
-  "eclipse-asc-8": [198, 92, 48],
-  "eclipse-desc-1": [189, 98, 43],
-  "eclipse-desc-2": [194, 108, 43],
-  "eclipse-desc-3": [192, 121, 43],
-  "eclipse-desc-4": [187, 136, 42],
-  "eclipse-desc-5": [186, 142, 44],
-  "eclipse-desc-6": [180, 156, 46],
-  "eclipse-desc-7": [174, 160, 44],
-  "eclipse-desc-8": [166, 164, 44],
+  // Eclipse's physics-pose banks are HEAD-NORMALIZED: every frame is
+  // scaled so the (rigid) head is identical, which pins the character's
+  // on-screen size and makes the dome one constant radius. Anchors are
+  // auto-measured per frame (merged-blob dive frames interpolated).
+  "eclipse-asc-1": [186, 80, 52],
+  "eclipse-asc-2": [185, 78, 52],
+  "eclipse-asc-3": [185, 77, 52],
+  "eclipse-asc-4": [187, 76, 52],
+  "eclipse-asc-5": [188, 77, 52],
+  "eclipse-asc-6": [191, 73, 52],
+  "eclipse-asc-7": [193, 78, 52],
+  "eclipse-asc-8": [195, 86, 52],
+  "eclipse-desc-1": [201, 84, 52],
+  "eclipse-desc-2": [197, 100, 52],
+  "eclipse-desc-3": [184, 122, 52],
+  "eclipse-desc-4": [182, 131, 52],
+  "eclipse-desc-5": [180, 141, 52],
+  "eclipse-desc-6": [178, 150, 52],
+  "eclipse-desc-7": [178, 157, 52],
+  "eclipse-desc-8": [178, 157, 52],
   // The automatic face estimator lands 13px right, 7px low, and 7px large
   // on this shared head family (it makes the same error on approved Aurora).
   // These sockets apply Aurora's hand-reviewed correction to each new suit's
