@@ -29,12 +29,37 @@ GROW = 37   # px of glow carried with a figure
 PAD = 46    # px of plate left around it
 
 
-def figures(a):
-    mx, mn = a.max(2), a.min(2)
-    fg = ndimage.binary_fill_holes(
-        ndimage.binary_closing((mx > 70) & ((mx - mn) > 18), np.ones((9, 9))))
-    lab, n = ndimage.label(fg)
-    sizes = ndimage.sum(fg, lab, range(1, n + 1))
+def coverage(im):
+    """Per-pixel 'this is character, not plate', whatever the sheet arrived on.
+
+    Three cases turn up and they are not interchangeable. A sheet that
+    already carries ALPHA is the good case and its own alpha is the answer -
+    keying it again would only throw information away. Otherwise the plate
+    is measured from the border rather than assumed, because a sheet may be
+    dark or light and a rule written for one eats the other: 'bright and
+    saturated' finds nothing on white, and 'far from white' finds
+    everything on black.
+    """
+    if im.mode == "RGBA":
+        a = np.asarray(im).astype(np.float32)
+        if a[..., 3].min() < 250:
+            return a[..., 3] / 255.0, a[..., :3], None
+    a = np.asarray(im.convert("RGB")).astype(np.float32)
+    plate = np.median(np.concatenate([a[0], a[-1], a[:, 0], a[:, -1]]), axis=0)
+    d = np.sqrt(((a - plate) ** 2).sum(2))
+    return np.clip(d / 60.0, 0.0, 1.0), a, plate
+
+
+def figures(cov, cut=False):
+    # The closing bridges the speckle a keyed plate leaves along an edge. A
+    # sheet that arrived with alpha has none, and closing it there does real
+    # harm: 9 px was enough to weld two characters whose tails pass within
+    # a few pixels of each other into one figure.
+    m = cov > 0.5
+    if not cut:
+        m = ndimage.binary_closing(m, np.ones((9, 9)))
+    lab, n = ndimage.label(ndimage.binary_fill_holes(m))
+    sizes = ndimage.sum(m, lab, range(1, n + 1))
     return lab, sizes
 
 
@@ -43,30 +68,40 @@ def main():
         print(__doc__)
         return 1
     src, names = sys.argv[1], sys.argv[2:]
-    a = np.array(Image.open(src).convert("RGB")).astype(np.float32)
-    lab, sizes = figures(a)
+    im = Image.open(src)
+    cov, a, plate = coverage(im)
+    cut = plate is None
+    lab, sizes = figures(cov, cut)
     keep = list(np.argsort(sizes)[::-1][:len(names)] + 1)
     keep.sort(key=lambda k: np.nonzero(lab == k)[1].min())
-    plate = np.median(a[0:20, 0:20].reshape(-1, 3), axis=0)
     out = os.path.dirname(src)
     for k, name in zip(keep, names):
         own = lab == k
         foreign = (lab > 0) & ~own
-        mask = ndimage.binary_dilation(own, np.ones((GROW, GROW))) & ~foreign
+        grow = 9 if cut else GROW
+        mask = ndimage.binary_dilation(own, np.ones((grow, grow))) & ~foreign
         ys, xs = np.nonzero(own)
         x0, x1 = max(0, xs.min() - PAD), min(a.shape[1], xs.max() + PAD + 1)
         y0, y1 = max(0, ys.min() - PAD), min(a.shape[0], ys.max() + PAD + 1)
-        crop = a[y0:y1, x0:x1].copy()
-        crop[~mask[y0:y1, x0:x1]] = plate
+        keep = mask[y0:y1, x0:x1]
         dst = os.path.join(out, f"{name}-master.png")
-        Image.fromarray(crop.astype(np.uint8)).save(dst)
+        if cut:
+            # an already-cut sheet keeps its own alpha; only the neighbours go
+            rgba = np.zeros((y1 - y0, x1 - x0, 4), np.float32)
+            rgba[..., :3] = a[y0:y1, x0:x1]
+            rgba[..., 3] = cov[y0:y1, x0:x1] * 255.0 * keep
+            Image.fromarray(rgba.astype(np.uint8), "RGBA").save(dst)
+        else:
+            crop = a[y0:y1, x0:x1].copy()
+            crop[~keep] = plate
+            Image.fromarray(crop.astype(np.uint8)).save(dst)
         # a clean master holds exactly one figure
-        c = np.array(Image.open(dst).convert("RGB")).astype(np.float32)
-        _, s2 = figures(c)
-        stray = sorted(s2)[::-1][1:]
-        stray = [int(v) for v in stray if v > 40]
+        c2, _, _ = coverage(Image.open(dst))
+        _, s2 = figures(c2, cut)
+        stray = [int(v) for v in sorted(s2)[::-1][1:] if v > 40]
         print(f"{name:9s} {x1-x0}x{y1-y0}  figure {int(sizes[k-1])}px"
-              + (f"  STRAY LEFT: {stray}" if stray else "  clean"))
+              + (f"  STRAY LEFT: {stray}" if stray else "  clean")
+              + ("  (kept its own alpha)" if cut else ""))
     return 0
 
 

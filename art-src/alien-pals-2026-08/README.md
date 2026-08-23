@@ -25,6 +25,22 @@ game nothing:
   chrome             silver and gold plating, violet trim
   cosmos             deep indigo with a galaxy tail and orange spots
 
+Two files exist for each of those three, and they are not interchangeable:
+
+  <name>-master.png  the crop off the ORIGINAL dark sheet. Still on its
+                     plate, so it carries the outer glow the dark
+                     background makes visible - and needs cutting.
+  <name>-cut.png     ALREADY TRANSPARENT, split out of the pre-cut sheet
+                     the owner supplied. Use this one. It composites
+                     cleanly on white, on the night sky and on red, which
+                     is the test that says no plate is left in it.
+
+The cut versions have somewhat harder edges than a two-plate solve gives
+(about 2,600 soft pixels each against the equivalent of roughly 16,000):
+the fur wisps are less feathered. Nothing is contaminated, so they are
+good to ship as they are, but for a hero pose ask for the red/blue pair
+and run two-plate-matte.py, the way the Alien was finally done.
+
 To ship one, follow the pipeline in `art-src/README.md`: `fit-suit.py`,
 then `measure-art.py`, then `neck-cut.py`, and add a SUITS row. The three
 coloured ones read as their own characters rather than Alien variants, so
