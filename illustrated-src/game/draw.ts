@@ -1,6 +1,6 @@
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
-import { proceduralSky } from "./sky-gen";
+import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
@@ -102,9 +102,16 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const wideDark = w.flight === "deep" || w.flight === "lost";
   const idA = skyIdFor(w.flight, w.envA);
   const idB = skyIdFor(w.flight, w.envB);
-  const skyA = proceduralSky(idA, W, H)
+  const procA = proceduralSky(idA, W, H);
+  const procB = proceduralSky(idB, W, H);
+  // PRISMWING repaints the PROCEDURAL plate and nothing else. A painted
+  // sky is a photograph of a place and rotating its hue makes it look
+  // broken, so those are left alone - which is also why the effect is
+  // described as procedural-only rather than universal.
+  const hue = w.prismHue || 0;
+  const skyA = (hue && procA ? hueShifted(procA, idA, hue) : procA)
     ?? (wideDark ? skyImage(idA + "-wide") : null) ?? skyImage(idA);
-  const skyB = proceduralSky(idB, W, H)
+  const skyB = (hue && procB ? hueShifted(procB, idB, hue) : procB)
     ?? (wideDark ? skyImage(idB + "-wide") : null) ?? skyImage(idB);
   // a slow triangle wave: out and back, never a snap
   const drift = (w.time * 0.012) % 2;
@@ -1540,11 +1547,29 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
       // stays faintly embered (0.94, not 1.0) so the screen never reads
       // as broken — just unlit.
       const t = w.lvl.strobeT;
-      const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+      // FULL black, not 0.94: the owner flew this and could still read the
+      // planets through it, which turns "fly by memory" into "fly by
+      // squinting". A blackout that leaks is not a blackout.
+      const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
       if (a > 0) {
-        ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+        ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
         ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
       }
+    }
+  }
+
+  // NIGHTGLIDER. The story-mode strobe stops at 0.94 so a level never reads
+  // as broken; the owner's note was that planets stayed visible through it,
+  // and for this pal that is the whole point of the item - so this one goes
+  // to FULL black. Drawn after the world and before the pal, so the
+  // companion and the pilot stay lit and the pilot is never flying blind
+  // about where they themselves are.
+  if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+    const t = w.lampT;
+    const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
+    if (a > 0) {
+      ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
+      ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
     }
   }
 
@@ -1554,7 +1579,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
       : save.equippedPal;
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
-    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
+    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
   }
 
   drawPilot(ctx, w, save, art);
@@ -1820,7 +1845,7 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
   const pal = save.equippedPal;
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
-    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
+    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
   }
   drawPilot(ctx, w, save, art);
 }
@@ -1880,9 +1905,12 @@ function drawRetroWorld(
       // stays faintly embered (0.94, not 1.0) so the screen never reads
       // as broken — just unlit.
       const t = w.lvl.strobeT;
-      const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+      // FULL black, not 0.94: the owner flew this and could still read the
+      // planets through it, which turns "fly by memory" into "fly by
+      // squinting". A blackout that leaks is not a blackout.
+      const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
       if (a > 0) {
-        ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+        ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
         ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
       }
     }
@@ -3195,6 +3223,8 @@ function drawPilot(
   ctx.restore();
 }
 
+const PAL_ANIM_FPS = 12;
+
 function paintPal(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
@@ -3202,8 +3232,18 @@ function paintPal(
   x: number,
   y: number,
   size: number,
+  time = 0,
 ) {
-  const spr = art?.pals?.[id];
+  // A pal with an idle bank plays it; one without keeps its still, which is
+  // what every pal did before the banks existed. The banks are their own
+  // true lengths, so the clock is frames-per-second and not a fraction of
+  // some shared cycle - a 4-frame loop and a 36-frame loop both read at the
+  // pace they were drawn for.
+  const bank = art?.palAnim?.[id];
+  const anim = bank && bank.length > 1
+    ? bank[Math.floor(time * PAL_ANIM_FPS) % bank.length]
+    : null;
+  const spr = anim ?? art?.pals?.[id];
   if (spr) {
     // box fit, not core: companions are sidekicks, smaller than the pilot
     // The premium silhouettes carry more transparent negative space than
@@ -3266,7 +3306,7 @@ export function paintPalPreview(
   cy: number,
   size: number,
 ) {
-  paintPal(ctx, art, id, cx, cy, size);
+  paintPal(ctx, art, id, cx, cy, size, performance.now() / 1000);
 }
 
 export function paintTrailPreview(

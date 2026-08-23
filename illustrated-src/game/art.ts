@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -20,6 +20,7 @@ export type ArtBank = {
   planets: Sprite[];
   debris: Sprite[];
   pals: Record<string, Sprite>;
+  palAnim: Record<string, Sprite[]>;
   helms: Record<string, Sprite>;
   suits: Record<string, Sprite>;
   sky: HTMLImageElement | null;
@@ -182,7 +183,7 @@ export function emptyArt(): ArtBank {
   return {
     ready: false,
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
-    planets: [], debris: [], pals: {}, helms: {},
+    planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
@@ -387,7 +388,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -398,6 +399,9 @@ export async function loadArt(): Promise<ArtBank> {
       many(`${base}/debris/`, DEBRIS_COUNT, 0),
       optional(`${base}/sky.jpg`),
       named(palIds, "solo"),
+      // every pal that has an idle bank; a pal without one simply
+      // keeps its still, which is what the draw path falls back to
+      namedSeries(PAL_ANIM, "solo", "-"),
       named(suitIds, "suits"),
       named(helmIds, "helms"),
       optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
@@ -448,6 +452,7 @@ export async function loadArt(): Promise<ArtBank> {
     planets,
     debris,
     pals,
+    palAnim,
     helms,
     suits,
     sky: sky as HTMLImageElement | null,

@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=120";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=120";
-import { proceduralSky } from "./sky-gen.js?v=120";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=120";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=120";
-import { tunnelBoundsAt } from "./sim.js?v=120";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=120";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=120";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=121";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=121";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=121";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=121";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=121";
+import { tunnelBoundsAt } from "./sim.js?v=121";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=121";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=121";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -62,9 +62,16 @@ function drawBackdrop(ctx, w, art) {
     const wideDark = w.flight === "deep" || w.flight === "lost";
     const idA = skyIdFor(w.flight, w.envA);
     const idB = skyIdFor(w.flight, w.envB);
-    const skyA = proceduralSky(idA, W, H)
+    const procA = proceduralSky(idA, W, H);
+    const procB = proceduralSky(idB, W, H);
+    // PRISMWING repaints the PROCEDURAL plate and nothing else. A painted
+    // sky is a photograph of a place and rotating its hue makes it look
+    // broken, so those are left alone - which is also why the effect is
+    // described as procedural-only rather than universal.
+    const hue = w.prismHue || 0;
+    const skyA = (hue && procA ? hueShifted(procA, idA, hue) : procA)
         ?? (wideDark ? skyImage(idA + "-wide") : null) ?? skyImage(idA);
-    const skyB = proceduralSky(idB, W, H)
+    const skyB = (hue && procB ? hueShifted(procB, idB, hue) : procB)
         ?? (wideDark ? skyImage(idB + "-wide") : null) ?? skyImage(idB);
     // a slow triangle wave: out and back, never a snap
     const drift = (w.time * 0.012) % 2;
@@ -1392,11 +1399,28 @@ export function drawWorld(ctx, w, save, art) {
             // stays faintly embered (0.94, not 1.0) so the screen never reads
             // as broken — just unlit.
             const t = w.lvl.strobeT;
-            const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+            // FULL black, not 0.94: the owner flew this and could still read the
+            // planets through it, which turns "fly by memory" into "fly by
+            // squinting". A blackout that leaks is not a blackout.
+            const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
             if (a > 0) {
-                ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+                ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
                 ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
             }
+        }
+    }
+    // NIGHTGLIDER. The story-mode strobe stops at 0.94 so a level never reads
+    // as broken; the owner's note was that planets stayed visible through it,
+    // and for this pal that is the whole point of the item - so this one goes
+    // to FULL black. Drawn after the world and before the pal, so the
+    // companion and the pilot stay lit and the pilot is never flying blind
+    // about where they themselves are.
+    if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+        const t = w.lampT;
+        const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
+        if (a > 0) {
+            ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
+            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
         }
     }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
@@ -1404,7 +1428,7 @@ export function drawWorld(ctx, w, save, art) {
         : save.equippedPal;
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
+        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
     // The shield and golden rings belong to the PILOT, so they must be
@@ -1679,7 +1703,7 @@ function drawTunnelWorld(ctx, w, save, art) {
     const pal = save.equippedPal;
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26);
+        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
 }
@@ -1734,9 +1758,12 @@ function drawRetroWorld(ctx, w, save, art) {
             // stays faintly embered (0.94, not 1.0) so the screen never reads
             // as broken — just unlit.
             const t = w.lvl.strobeT;
-            const a = t < 0.12 ? 0 : Math.min(0.94, ((t - 0.12) / 0.38) * 0.94);
+            // FULL black, not 0.94: the owner flew this and could still read the
+            // planets through it, which turns "fly by memory" into "fly by
+            // squinting". A blackout that leaks is not a blackout.
+            const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
             if (a > 0) {
-                ctx.fillStyle = `rgba(3,4,10,${a.toFixed(3)})`;
+                ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
                 ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
             }
         }
@@ -2989,8 +3016,18 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1) {
     paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
     ctx.restore();
 }
-function paintPal(ctx, art, id, x, y, size) {
-    const spr = art?.pals?.[id];
+const PAL_ANIM_FPS = 12;
+function paintPal(ctx, art, id, x, y, size, time = 0) {
+    // A pal with an idle bank plays it; one without keeps its still, which is
+    // what every pal did before the banks existed. The banks are their own
+    // true lengths, so the clock is frames-per-second and not a fraction of
+    // some shared cycle - a 4-frame loop and a 36-frame loop both read at the
+    // pace they were drawn for.
+    const bank = art?.palAnim?.[id];
+    const anim = bank && bank.length > 1
+        ? bank[Math.floor(time * PAL_ANIM_FPS) % bank.length]
+        : null;
+    const spr = anim ?? art?.pals?.[id];
     if (spr) {
         // box fit, not core: companions are sidekicks, smaller than the pilot
         // The premium silhouettes carry more transparent negative space than
@@ -3035,7 +3072,7 @@ export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
         paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {
-    paintPal(ctx, art, id, cx, cy, size);
+    paintPal(ctx, art, id, cx, cy, size, performance.now() / 1000);
 }
 export function paintTrailPreview(ctx, trail, cx, cy, t = 0) {
     drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
