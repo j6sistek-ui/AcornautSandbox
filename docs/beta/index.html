@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=84" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=91" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=84" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=91" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -453,6 +453,7 @@
     .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 14px; background: rgba(22,14,48,.92);
       border: 1.5px solid rgba(170,140,240,.3); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
     .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px; }
+    .ac-hub-sq canvas { width: 36px; height: 36px; }
     .ac-hub-wordmark { margin-top: 10px; text-align: center; }
     .ac-hub-title { font-family: Fraunces, serif; font-weight: 800; font-size: 40px; line-height: .95;
       background: linear-gradient(#fff 25%, #cfd6f2 60%, #9aa6d8 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -508,7 +509,7 @@
       .ac-hub { padding: 12px 22px 14px; }
       .ac-hub-art { background-position: 50% 18%; }
       .ac-hub-wordmark { text-align: left; margin: 2px 0 0 4px; }
-      .ac-hub-tiles { grid-template-columns: repeat(5, 1fr); gap: 14px; }
+      .ac-hub-tiles { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; max-width: 860px; width: 100%; align-self: center; }
       .t-launch { grid-column: auto; flex-direction: column; gap: 5px; padding: 12px 8px 10px; }
       .t-launch b { font-size: 15px; }
       .ac-hub-launchtxt { align-items: center; text-align: center; }
@@ -602,7 +603,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js91/standalone.js";
+    import { bootStandalone } from "../js92/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
