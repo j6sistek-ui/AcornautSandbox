@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=115";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=115";
-import { proceduralSky } from "./sky-gen.js?v=115";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=115";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=115";
-import { tunnelBoundsAt } from "./sim.js?v=115";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=115";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=115";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=116";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=116";
+import { proceduralSky } from "./sky-gen.js?v=116";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=116";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=116";
+import { tunnelBoundsAt } from "./sim.js?v=116";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=116";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=116";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2120,6 +2120,7 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     alien: [115, 149],
+    cyber: [117, 110],
     aurorasuit: [99, 139],
     bigbooty: [92, 129],
     catsuit: [74, 149],
@@ -2423,6 +2424,13 @@ const RIG_PITCH_DOWN = (30 * Math.PI) / 180; // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// A painted motion bank normally CARRIES the attitude, so rotating it as
+// well would pitch the character twice. Cyber's bank is not built that way:
+// it is one glide ramp played in both directions, carrying how far the body
+// EXTENDS rather than which way it points, and the rig supplies the
+// direction over the top. That is what lets nine frames read as a climb and
+// a dive instead of needing two sheets that never quite agree at the seam.
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t, vy, vx) {
@@ -2498,7 +2506,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         // while a painted full-character frame is on screen - those already carry
         // an attitude and would be rotated twice.
         const rigPitchOn = motionMode === 2 && !RIG_PITCH_SKIP.has(suit.id)
-            && !(art?.suitAsc?.[suit.id]?.length);
+            && (RIG_PITCH_WITH_BANK.has(suit.id) || !(art?.suitAsc?.[suit.id]?.length));
         let rigPitch = 0;
         if (rigPitchOn) {
             const hp = trackHeadingMotion(_t, motionVy, motionVx);

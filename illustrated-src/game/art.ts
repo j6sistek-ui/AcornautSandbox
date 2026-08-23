@@ -324,7 +324,7 @@ export async function loadArt(): Promise<ArtBank> {
     "verdant", "cryostar", "eclipse", "volt",
     ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor",
+      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
     ] : []),
   ];
   const suitIds = [
@@ -351,7 +351,7 @@ export async function loadArt(): Promise<ArtBank> {
     "volt",
     ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor",
+      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
     ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
@@ -430,8 +430,8 @@ export async function loadArt(): Promise<ArtBank> {
       } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
       namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3 } : {}, "suits", "-asc-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5 } : {}, "suits", "-desc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {}, "suits", "-asc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {}, "suits", "-desc-"),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),

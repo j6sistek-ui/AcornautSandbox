@@ -2250,6 +2250,7 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
   alien: [115, 149],
+  cyber: [117, 110],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
   catsuit: [74, 149],
@@ -2615,6 +2616,13 @@ const RIG_PITCH_DOWN = (30 * Math.PI) / 180;  // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// A painted motion bank normally CARRIES the attitude, so rotating it as
+// well would pitch the character twice. Cyber's bank is not built that way:
+// it is one glide ramp played in both directions, carrying how far the body
+// EXTENDS rather than which way it points, and the rig supplies the
+// direction over the top. That is what lets nine frames read as a climb and
+// a dive instead of needing two sheets that never quite agree at the seam.
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t: number, vy: number, vx: number) {
@@ -2714,7 +2722,7 @@ function paintIllustrated(
     // while a painted full-character frame is on screen - those already carry
     // an attitude and would be rotated twice.
     const rigPitchOn = motionMode === 2 && !RIG_PITCH_SKIP.has(suit.id)
-      && !(art?.suitAsc?.[suit.id]?.length);
+      && (RIG_PITCH_WITH_BANK.has(suit.id) || !(art?.suitAsc?.[suit.id]?.length));
     let rigPitch = 0;
     if (rigPitchOn) {
       const hp = trackHeadingMotion(_t, motionVy, motionVx);

@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, TAP_ANIM_ENABLED } from "./catalog.js?v=115";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, BETA_FEATURES, HYPER_RUN_ENABLED, TAP_ANIM_ENABLED } from "./catalog.js?v=116";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -244,7 +244,7 @@ export async function loadArt() {
         "verdant", "cryostar", "eclipse", "volt",
         ...(BETA_FEATURES ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal", "amethyst", "ivoryguard", "reactor",
+            "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
         ] : []),
     ];
     const suitIds = [
@@ -271,7 +271,7 @@ export async function loadArt() {
         "volt",
         ...(BETA_FEATURES ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal", "amethyst", "ivoryguard", "reactor",
+            "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
         ] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
@@ -344,8 +344,8 @@ export async function loadArt() {
         } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
         namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3 } : {}, "suits", "-asc-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5 } : {}, "suits", "-desc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {}, "suits", "-asc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {}, "suits", "-desc-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
