@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=107";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=107";
-import { proceduralSky } from "./sky-gen.js?v=107";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=107";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=107";
-import { tunnelBoundsAt } from "./sim.js?v=107";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=107";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=107";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=108";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=108";
+import { proceduralSky } from "./sky-gen.js?v=108";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=108";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=108";
+import { tunnelBoundsAt } from "./sim.js?v=108";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=108";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=108";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2395,6 +2395,24 @@ function smoothMotionVy(t, vy) {
 // roughly 130 degrees on every hop, so eight frames of bank have to cover
 // that whole sweep and the frames turn over quickly.
 const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+// Suits with no painted motion banks get the same flight from their RIG.
+// Measured off Eclipse's banks, its motion is mostly two rotations: the body
+// pitches about 19 degrees through the climb and about 40 through the dive,
+// and the tail trails the body by roughly 25 degrees climbing and swings well
+// past it in a deep dive. Both are inside what the tail hinge already does
+// for every one of the 29 rigged suits, so the fleet can fly the same shape
+// without a single new drawing.
+//
+// What this CANNOT reproduce is the limb articulation painted into Eclipse's
+// frames - the arms and hands that turned out to be why heading reads alive.
+// A rigged suit gets the silhouette of the motion, not the performance, and
+// that gap is the argument for transferring real frames onto the suits that
+// matter most rather than settling here.
+const RIG_PITCH_UP = (14 * Math.PI) / 180; // eased back from Eclipse's 19
+const RIG_PITCH_DOWN = (30 * Math.PI) / 180; // eased back from Eclipse's 40
+const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
+// Suits whose own animation is already approved and must not be touched.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t, vy, vx) {
@@ -2464,6 +2482,25 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
     const rigT = suited ? art?.suitTail?.[suit.id] : null;
     const rigB = suited ? art?.suitBody?.[suit.id] : null;
     if (rigT && rigB && suited) {
+        // Rig-driven heading flight: the whole character pitches to point along
+        // its flight path, and the tail trails that pitch instead of following it
+        // rigidly. Only for suits with no painted bank of their own, and never
+        // while a painted full-character frame is on screen - those already carry
+        // an attitude and would be rotated twice.
+        const rigPitchOn = motionMode === 2 && !RIG_PITCH_SKIP.has(suit.id)
+            && !(art?.suitAsc?.[suit.id]?.length);
+        let rigPitch = 0;
+        if (rigPitchOn) {
+            const hp = trackHeadingMotion(_t, motionVy, motionVx);
+            rigPitch = hp < 0 ? hp * RIG_PITCH_UP : hp * RIG_PITCH_DOWN;
+        }
+        const pitched = rigPitch !== 0;
+        if (pitched) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rigPitch);
+            ctx.translate(-x, -y);
+        }
         const ref = suited.box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
         const pivot = TAIL_PIVOT[suit.id];
         // ECLIPSE's physics-pose experiment: with ascend/descend banks present,
@@ -2488,7 +2525,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         const bounceFrames = art?.suitBounce?.[suit.id] ?? [];
         const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
         let tailPose = rigT;
-        let tailPoseRot = tailRot;
+        let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
         if (fullBounce || fullMotion) {
             /* these frames carry the whole character, tail included */
         }
@@ -2627,6 +2664,8 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             if (!wearsOwnHead(suit))
                 paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
         }
+        if (pitched)
+            ctx.restore();
         return;
     }
     // frames crossfade instead of hard-switching — the four paintings blend
