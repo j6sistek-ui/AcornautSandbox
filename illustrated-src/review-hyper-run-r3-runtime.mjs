@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Shipping-path visual evidence for Hyper Run Revision 3. Source TypeScript is
-// compiled into OS temp and every review frame/clip stays outside the repo.
+// Shipping-path visual evidence for Hyper Run's inline wormhole presentation.
+// Source TypeScript is compiled into OS temp and every review frame/clip stays
+// outside the repo.
 import { execFileSync } from "node:child_process";
 import {
   existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync,
@@ -63,23 +64,21 @@ try {
 
   const require = createRequire(import.meta.url);
   const {
-    drawWorld, drawHud, hyperRunChargeCopy, hyperRunFlowSnapshot,
-    hyperRunTunnelPresentationCenter, hyperRunTunnelSampleCount,
+    drawWorld, drawHud, hyperRunChargeCopy, hyperRunFlowSnapshot, hyperRunInlineWormholePresentation,
+    hyperRunTunnelSampleCount,
   } = require(join(jsOut, "draw.js"));
   const { makeWorld } = require(join(jsOut, "sim.js"));
   const { defaultSave } = require(join(jsOut, "save.js"));
   const { raceViewport, raceViewportY } = require(join(jsOut, "race-viewport.js"));
   const raceApi = require(join(jsOut, "race.js"));
   const {
-    RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_GATE_CLEARANCE, RACE_HZ,
+    RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_HZ,
     RACE_LATEST_ENTRY_X, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_RINGS,
-    RACE_TUNNEL_DISTANCE, RACE_TUNNEL_TICKS, createRaceState, raceTunnelGeometry,
+    RACE_RETURN_TICKS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_TICKS, createRaceState, raceTunnelGeometry,
   } = raceApi;
 
   function assert(condition, message) { if (!condition) throw new Error(message); }
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-  const smooth = (n) => { const t = clamp(n, 0, 1); return t * t * (3 - 2 * t); };
-  const lerp = (a, b, t) => a + (b - a) * t;
 
   async function sprite(path) {
     const img = await loadImage(path);
@@ -192,19 +191,6 @@ try {
     ctx.beginPath(); ctx.moveTo(viewport.pilotX, viewport.top); ctx.lineTo(viewport.pilotX, viewport.bottom); ctx.stroke();
     ctx.setLineDash([]); ctx.fillStyle = "rgba(3,8,18,.8)"; ctx.fillRect(viewport.pilotX + 5, viewport.top + 6, 76, 16);
     ctx.fillStyle = "#fff0a0"; ctx.font = "800 9px sans-serif"; ctx.fillText("PILOT PLANE", viewport.pilotX + 9, viewport.top + 17);
-    ctx.restore();
-    return out;
-  }
-
-  function withTransformOverlay(source, canonicalY) {
-    const out = withPilotPlaneGuide(source), ctx = out.getContext("2d");
-    const viewport = raceViewport(source.width, source.height);
-    const y = raceViewportY(viewport, canonicalY);
-    ctx.save(); ctx.setLineDash([5, 5]); ctx.lineWidth = 1.25;
-    ctx.strokeStyle = "rgba(255,139,220,.92)";
-    ctx.beginPath(); ctx.moveTo(viewport.left, y); ctx.lineTo(viewport.right, y); ctx.stroke();
-    ctx.setLineDash([]); ctx.beginPath(); ctx.arc(viewport.pilotX, y, 38 * viewport.scale, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = "rgba(255,139,220,.95)"; ctx.fillRect(viewport.pilotX - 3, y - 3, 6, 6);
     ctx.restore();
     return out;
   }
@@ -362,42 +348,72 @@ try {
 
   function entryState(t, phase = "entry", anchorY = 496, W = 844, H = 390) {
     const s = scenario(W, H);
-    s.race.phase = phase; s.race.phaseTick = phase === "entry" ? t : t;
+    s.race.phase = phase; s.race.phaseTick = t;
     s.race.entryAnchorY = anchorY; s.race.entryStartY = 320; s.race.y = anchorY; s.race.previousY = anchorY;
     s.race.coursePosition = RACE_RINGS[75].x; s.race.phaseStartPosition = s.race.coursePosition;
     s.race.entryRingIndex = 75; s.race.tunnelAcornLedger[s.race.wormholes] = Array(18).fill(false);
     return s;
   }
-  const entryKeys = [0, 6, 12, 24, 35, 36, 43, 47];
+
+  function assertMonotonic(values, direction, label) {
+    for (let i = 1; i < values.length; i++) {
+      const valid = direction === "up"
+        ? values[i] + 1e-12 >= values[i - 1]
+        : values[i] - 1e-12 <= values[i - 1];
+      assert(valid, `${label} regressed at tick ${i}: ${values[i - 1]} -> ${values[i]}`);
+    }
+  }
+  const entrySchedule = Array.from({ length: RACE_ENTRY_TICKS }, (_, tick) =>
+    hyperRunInlineWormholePresentation("entry", tick));
+  const returnSchedule = Array.from({ length: RACE_RETURN_TICKS }, (_, tick) =>
+    hyperRunInlineWormholePresentation("return", tick));
+  assertMonotonic(entrySchedule.map((frame) => frame.enclosure), "up", "entry enclosure");
+  assertMonotonic(entrySchedule.map((frame) => frame.energyAlpha), "up", "entry energy alpha");
+  assertMonotonic(entrySchedule.map((frame) => frame.courseAlpha), "down", "entry course alpha");
+  assertMonotonic(returnSchedule.map((frame) => frame.enclosure), "down", "return enclosure");
+  assertMonotonic(returnSchedule.map((frame) => frame.energyAlpha), "down", "return energy alpha");
+  assertMonotonic(returnSchedule.map((frame) => frame.courseAlpha), "up", "return course alpha");
+  const tunnelSchedule = hyperRunInlineWormholePresentation("tunnel", 0);
+  for (const [label, value] of Object.entries(tunnelSchedule)) {
+    const expected = label === "courseAlpha" ? 0 : 1;
+    assert(Math.abs(value - expected) < 1e-12, `tunnel ${label} ${value}`);
+  }
+  assert(Math.abs(entrySchedule.at(-1).enclosure - tunnelSchedule.enclosure) < 1e-12,
+    "entry enclosure does not reach tunnel enclosure");
+  assert(Math.abs(entrySchedule.at(-1).energyAlpha - tunnelSchedule.energyAlpha) < 1e-12,
+    "entry energy does not reach tunnel energy");
+  assert(Math.abs(entrySchedule.at(-1).courseAlpha - tunnelSchedule.courseAlpha) < 1e-12,
+    "entry course does not finish fading before tunnel");
+  assert(returnSchedule[0].enclosure === tunnelSchedule.enclosure
+    && returnSchedule[0].energyAlpha === tunnelSchedule.energyAlpha,
+  "return does not begin at full tunnel enclosure");
+  assert(returnSchedule.at(-1).enclosure === 0 && returnSchedule.at(-1).energyAlpha === 0
+    && returnSchedule.at(-1).courseAlpha === 1,
+  "return does not finish as unobstructed normal flight");
+
+  const entryKeys = [0, 6, 11, 12, 24, 35, 36, 43, 47];
   const entryFrames = entryKeys.map((t) => labelled(render(entryState(t)), `ENTRY ${t}`));
   entryFrames.push(labelled(render(entryState(0, "tunnel")), "TUNNEL 0"));
-  entryFrames.push(labelled(render(entryState(1, "tunnel")), "TUNNEL 1"));
-  entryFrames.push(labelled(render(entryState(5, "tunnel")), "TUNNEL 5"));
-  const entryPath = join(outDir, "runtime-entry-y496.png");
+  const entryPath = join(outDir, "runtime-inline-entry-y496.png");
   outputs.entry = { path: entryPath, ...sheet(entryFrames, 5, entryPath) };
   const entryClipFrames = [
-    ...Array.from({ length: 48 }, (_, t) => render(entryState(t), { hud: false })),
+    ...Array.from({ length: RACE_ENTRY_TICKS }, (_, t) => render(entryState(t), { hud: false })),
     ...Array.from({ length: 6 }, (_, t) => render(entryState(t, "tunnel"), { hud: false })),
   ];
-  const entryGif = join(outDir, "runtime-entry-to-tunnel.gif"); gif(entryGif, entryClipFrames);
+  const entryGif = join(outDir, "runtime-inline-entry-to-tunnel.gif"); gif(entryGif, entryClipFrames);
   outputs.entryClip = { path: entryGif, frames: entryClipFrames.length, fps: 60 };
-  const entryReducedGif = join(outDir, "runtime-entry-to-tunnel-reduced.gif");
+  const entryReducedGif = join(outDir, "runtime-inline-entry-to-tunnel-reduced.gif");
   const entryReducedFrames = [
-    ...Array.from({ length: 48 }, (_, t) => render(entryState(t), { hud: false, reduced: true })),
+    ...Array.from({ length: RACE_ENTRY_TICKS }, (_, t) => render(entryState(t), { hud: false, reduced: true })),
     ...Array.from({ length: 6 }, (_, t) => render(entryState(t, "tunnel"), { hud: false, reduced: true })),
   ];
   gif(entryReducedGif, entryReducedFrames);
   outputs.entryReducedClip = { path: entryReducedGif, frames: entryReducedFrames.length, fps: 60 };
 
-  const centralEntryFrames = [
-    [entryState(0, "entry", 320), "CENTRAL ENTRY 0", false],
-    [entryState(24, "entry", 320), "CENTRAL ENTRY 24", false],
-    [entryState(47, "entry", 320), "CENTRAL ENTRY 47 / PILOT PLANE", true],
-    [entryState(0, "tunnel", 320), "CENTRAL TUNNEL 0 / PILOT PLANE", true],
-    [entryState(1, "tunnel", 320), "CENTRAL TUNNEL 1", false],
-    [entryState(5, "tunnel", 320), "CENTRAL TUNNEL 5", false],
-  ];
-  const centralEntryPath = join(outDir, "runtime-entry-central.png");
+  const centralEntryFrames = [0, 11, 24, 35, 47].map((tick) =>
+    [entryState(tick, "entry", 320), `CENTRAL ENTRY ${tick}`, tick === 47]);
+  centralEntryFrames.push([entryState(0, "tunnel", 320), "CENTRAL TUNNEL 0", true]);
+  const centralEntryPath = join(outDir, "runtime-inline-entry-central.png");
   outputs.entryCentral = { path: centralEntryPath, ...sheet(centralEntryFrames.map(([s, label, guide]) =>
     labelled(guide ? withPilotPlaneGuide(render(s)) : render(s), label)), 3, centralEntryPath) };
 
@@ -423,49 +439,55 @@ try {
   function returnState(t, y, W = 844, H = 390) {
     const s = scenario(W, H);
     s.race.phase = "return"; s.race.phaseTick = t; s.race.returnY = y; s.race.y = y; s.race.previousY = y;
-    s.race.entryAnchorY = 496; s.race.coursePosition = RACE_RINGS[75].x + RACE_TUNNEL_DISTANCE;
+    s.race.wormholes = 2; s.race.entryAnchorY = 496;
+    s.race.coursePosition = RACE_RINGS[75].x + RACE_TUNNEL_DISTANCE;
     s.race.phaseStartPosition = RACE_RINGS[75].x;
+    s.race.tunnelAcornLedger[2] = Array(18).fill(false);
     return s;
   }
+  const returnKeys = [0, 5, 6, 12, 23, 24, 35];
   const returnItems = [];
-  for (const y of [96, 544]) for (const t of [0, 5, 9, 10, 23, 35]) {
+  for (const y of [192, 448]) for (const t of returnKeys) {
     returnItems.push(labelled(render(returnState(t, y)), `Y${y} RETURN ${t}`));
   }
-  const returnPath = join(outDir, "runtime-return-extremes.png");
-  outputs.return = { path: returnPath, ...sheet(returnItems, 6, returnPath) };
-  const returnGif = join(outDir, "runtime-return-y544.gif");
-  const returnClipFrames = Array.from({ length: 36 }, (_, t) => render(returnState(t, 544), { hud: false }));
-  gif(returnGif, returnClipFrames); outputs.returnClip = { path: returnGif, frames: 36, fps: 60 };
-  const returnReducedGif = join(outDir, "runtime-return-y544-reduced.gif");
-  const returnReducedFrames = Array.from({ length: 36 }, (_, t) => render(returnState(t, 544), { hud: false, reduced: true }));
+  const returnPath = join(outDir, "runtime-inline-return-extremes.png");
+  outputs.return = { path: returnPath, ...sheet(returnItems, 7, returnPath) };
+  const returnGif = join(outDir, "runtime-inline-return-y448.gif");
+  const returnClipFrames = Array.from({ length: RACE_RETURN_TICKS }, (_, t) => render(returnState(t, 448), { hud: false }));
+  gif(returnGif, returnClipFrames); outputs.returnClip = { path: returnGif, frames: RACE_RETURN_TICKS, fps: 60 };
+  const returnReducedGif = join(outDir, "runtime-inline-return-y448-reduced.gif");
+  const returnReducedFrames = Array.from({ length: RACE_RETURN_TICKS }, (_, t) => render(returnState(t, 448), { hud: false, reduced: true }));
   gif(returnReducedGif, returnReducedFrames);
-  outputs.returnReducedClip = { path: returnReducedGif, frames: 36, fps: 60 };
+  outputs.returnReducedClip = { path: returnReducedGif, frames: RACE_RETURN_TICKS, fps: 60 };
 
   function hyperRunWithout(ids) {
     const next = { ...hyperRun };
     ids.forEach((id) => { delete next[id]; });
     return next;
   }
-  const entryPortalIds = ["entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front"];
-  const returnPortalIds = ["return-back", "return-glyphs", "return-front"];
-  const transitionFallbackCases = [
-    { name: "ENTRY 24", state: entryState(24), partial: hyperRunWithout(["entry-glyphs"]), missing: hyperRunWithout(entryPortalIds) },
-    { name: "ENTRY 47", state: entryState(47), partial: hyperRunWithout(["entry-glyphs"]), missing: hyperRunWithout(entryPortalIds) },
-    { name: "RETURN 5", state: returnState(5, 544), partial: hyperRunWithout(["return-glyphs"]), missing: hyperRunWithout(returnPortalIds) },
-    { name: "RETURN 10", state: returnState(10, 544), partial: hyperRunWithout(["return-glyphs"]), missing: hyperRunWithout(returnPortalIds) },
+  const transitionPortalIds = [
+    "entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front",
+    "return-back", "return-glyphs", "return-front",
+  ];
+  const portalUnusedCases = [
+    { name: "ENTRY 0", state: entryState(0) },
+    { name: "ENTRY 24", state: entryState(24) },
+    { name: "ENTRY 47", state: entryState(47) },
+    { name: "TUNNEL 0", state: entryState(0, "tunnel") },
+    { name: "RETURN 0", state: returnState(0, 448) },
+    { name: "RETURN 24", state: returnState(24, 448) },
+    { name: "RETURN 35", state: returnState(35, 448) },
   ].map((item) => ({
     ...item,
     completeFrame: render(item.state),
-    partialFrame: render(item.state, { hyperRunOverride: item.partial }),
-    missingFrame: render(item.state, { hyperRunOverride: item.missing }),
+    noPortalArtFrame: render(item.state, { hyperRunOverride: hyperRunWithout(transitionPortalIds) }),
   }));
-  const transitionFallbackPath = join(outDir, "runtime-transition-art-fallback.png");
-  outputs.transitionArtFallback = { path: transitionFallbackPath, ...sheet(
-    transitionFallbackCases.flatMap((item) => [
+  const portalUnusedPath = join(outDir, "runtime-inline-portal-assets-unused.png");
+  outputs.portalAssetsUnused = { path: portalUnusedPath, ...sheet(
+    portalUnusedCases.flatMap((item) => [
       labelled(item.completeFrame, `${item.name} / COMPLETE`),
-      labelled(item.partialFrame, `${item.name} / PARTIAL`),
-      labelled(item.missingFrame, `${item.name} / MISSING`),
-    ]), 3, transitionFallbackPath), cases: transitionFallbackCases.map((item) => item.name) };
+      labelled(item.noPortalArtFrame, `${item.name} / PORTAL ART REMOVED`),
+    ]), 2, portalUnusedPath), cases: portalUnusedCases.map((item) => item.name) };
 
   const accessibilityBase = decisionFrame(844, 390, "passed", 0, 9);
   const reducedScenario = scenario(); reducedScenario.race.coursePosition = RACE_RINGS[0].x - 430; reducedScenario.race.y = 496;
@@ -581,17 +603,29 @@ try {
     labelled(render(tunnelContentState(tick)), `CYCLE 3 / Y496 / TUNNEL ${tick}`)), 3, tunnelContentPath),
     ticks: tunnelTicks, cycle: 3, entryAnchorY: 496 };
 
-  const transformFrames = [
-    [render(entryState(47), { hud: false }), 496, "ENTRY 47"],
-    [render(entryState(0, "tunnel"), { hud: false }), 496, "TUNNEL 0"],
-    [render(tunnelContentState(359, { pilotY: 544 }), { hud: false }), 544, "TUNNEL 359 / RETURN Y544"],
-    [render(returnState(0, 544), { hud: false }), 544, "RETURN 0 / Y544"],
-    [render(returnState(9, 544), { hud: false }), 544, "RETURN 9 / Y544"],
-    [render(returnState(10, 544), { hud: false }), 544, "RETURN 10 / Y544"],
+  const inlineSequenceFrames = [
+    ...entryKeys.map((tick) => [entryState(tick), `ENTRY ${tick}`]),
+    [entryState(0, "tunnel"), "TUNNEL 0"],
+    ...returnKeys.map((tick) => [returnState(tick, 448), `RETURN ${tick}`]),
   ];
-  const transformPath = join(outDir, "runtime-transition-transform-overlays.png");
-  outputs.transitionTransforms = { path: transformPath, ...sheet(transformFrames.map(([frame, y, label]) =>
-    labelled(withTransformOverlay(frame, y), `${label} / PILOT+PORTAL GUIDE`)), 3, transformPath) };
+  const inlineSequencePath = join(outDir, "runtime-inline-wormhole-sequence.png");
+  outputs.inlineWormholeSequence = { path: inlineSequencePath, ...sheet(inlineSequenceFrames.map(([state, label]) =>
+    labelled(withPilotPlaneGuide(render(state)), `${label} / SAME SCREEN`)), 5, inlineSequencePath),
+    entryTicks: entryKeys, tunnelTicks: [0], returnTicks: returnKeys };
+
+  const approvedViewportSizes = [[360, 640], [390, 844], [844, 390], [1440, 900], [1600, 600]];
+  const viewportEvidence = [];
+  for (const [W, H] of approvedViewportSizes) {
+    const evidenceScale = Math.min(.4, 300 / W, 240 / H);
+    viewportEvidence.push(
+      labelled(render(entryState(24, "entry", 496, W, H)), `${W}x${H} / ENTRY 24`, evidenceScale),
+      labelled(render(tunnelContentState(180, { W, H })), `${W}x${H} / TUNNEL 180`, evidenceScale),
+      labelled(render(returnState(24, 448, W, H)), `${W}x${H} / RETURN 24`, evidenceScale),
+    );
+  }
+  const viewportPath = join(outDir, "runtime-inline-wormhole-five-viewports.png");
+  outputs.inlineWormholeViewports = { path: viewportPath,
+    ...sheet(viewportEvidence, 3, viewportPath), sizes: approvedViewportSizes };
 
   const reproItems = [];
   for (const [W, H] of [[390, 844], [844, 390]]) {
@@ -624,21 +658,32 @@ try {
     return { nonTransparent, nearWhite, nearWhiteRatio: nearWhite / pixels, meanLuminance: luminance / pixels };
   }
 
-  const transitionArtAssertions = transitionFallbackCases.map((item) => {
-    const atomic = pixelDiff(item.partialFrame, item.missingFrame,
-      { x: 0, y: 0, w: item.partialFrame.width, h: item.partialFrame.height });
-    const stats = frameStats(item.missingFrame);
-    assert(atomic.mean === 0 && atomic.max === 0, `${item.name} partial art did not atomically match missing fallback`);
+  const portalArtAssertions = portalUnusedCases.map((item) => {
+    const unused = pixelDiff(item.completeFrame, item.noPortalArtFrame,
+      { x: 0, y: 0, w: item.completeFrame.width, h: item.completeFrame.height });
+    const stats = frameStats(item.noPortalArtFrame);
+    assert(unused.mean === 0 && unused.max === 0,
+      `${item.name} still depends on transition portal art ${JSON.stringify(unused)}`);
     assert(stats.nonTransparent > 0 && stats.nearWhiteRatio < .9,
-      `${item.name} fallback was empty or a white frame ${JSON.stringify(stats)}`);
-    return { name: item.name, partialEqualsMissing: atomic, missingFrame: stats };
+      `${item.name} portal-free frame was empty or white ${JSON.stringify(stats)}`);
+    return { name: item.name, completeEqualsPortalArtRemoved: unused, portalFreeFrame: stats };
   });
 
-  function bridgeSpan(viewport) {
-    return Math.max(160, Math.min(360, viewport.virtualWidth * .32)) * viewport.scale;
+  function tunnelExitState(returnY, W, H) {
+    const s = tunnelContentState(RACE_TUNNEL_TICKS - 1, { W, H, pilotY: returnY });
+    s.race.coursePosition = s.race.phaseStartPosition + RACE_TUNNEL_DISTANCE;
+    s.race.previousCoursePosition = s.race.coursePosition;
+    return s;
+  }
+  function noTargetReturnState(tick, returnY, W, H, phase = "return") {
+    const s = returnState(tick, returnY, W, H);
+    RACE_RINGS.forEach((ring, index) => { s.race.ringLedger[index] = "skipped"; });
+    s.race.phase = phase;
+    if (phase === "normal") s.race.phaseTick = 0;
+    return s;
   }
   const seamMatrix = [];
-  const seamSizes = [[360, 640], [844, 390], [1600, 600]];
+  const seamSizes = approvedViewportSizes;
   for (const [W, H] of seamSizes) {
     const viewport = raceViewport(W, H), rect = { x: 0, y: 0, w: W, h: H };
     const entry47 = render(entryState(47, "entry", 496, W, H), { hud: false });
@@ -646,26 +691,27 @@ try {
     const entrySeam = pixelDiff(entry47, tunnel0, rect);
     assert(entrySeam.mean < 1, `${W}x${H} entry47/tunnel0 seam ${entrySeam.mean}`);
     const returns = [];
-    for (const returnY of [96, 544]) {
-      const return9 = render(returnState(9, returnY, W, H), { hud: false });
-      const return10 = render(returnState(10, returnY, W, H), { hud: false });
-      const returnSeam = pixelDiff(return9, return10, rect);
-      assert(returnSeam.mean < 8, `${W}x${H} Y${returnY} return9/10 seam ${returnSeam.mean}`);
-      const authorityCenter = raceTunnelGeometry(returnState(0, returnY, W, H).race, RACE_TUNNEL_TICKS - 1).center;
-      const presentationCenter = hyperRunTunnelPresentationCenter(
-        authorityCenter, returnY, viewport.pilotX, viewport.pilotX, bridgeSpan(viewport));
-      const registrationError = Math.abs(presentationCenter - returnY);
-      assert(registrationError < 1e-9, `${W}x${H} Y${returnY} return bridge missed portal by ${registrationError}`);
+    for (const returnY of [192, 448]) {
+      const tunnel359 = render(tunnelExitState(returnY, W, H), { hud: false });
+      const return0 = render(returnState(0, returnY, W, H), { hud: false });
+      const tunnelReturnSeam = pixelDiff(tunnel359, return0, rect);
+      assert(tunnelReturnSeam.mean < 1,
+        `${W}x${H} Y${returnY} tunnel359/return0 seam ${tunnelReturnSeam.mean}`);
       const tunnel359Pilot = [viewport.pilotX, raceViewportY(viewport, returnY)];
       const return0Pilot = [viewport.pilotX, raceViewportY(viewport, returnY)];
       assert(tunnel359Pilot[0] === return0Pilot[0] && tunnel359Pilot[1] === return0Pilot[1],
         `${W}x${H} Y${returnY} tunnel359/return0 pilot transform changed`);
-      returns.push({ returnY, return9Return10: returnSeam, bridgeRegistrationError: registrationError,
+      const return35 = render(noTargetReturnState(RACE_RETURN_TICKS - 1, returnY, W, H), { hud: false });
+      const normal0 = render(noTargetReturnState(RACE_RETURN_TICKS - 1, returnY, W, H, "normal"), { hud: false });
+      const returnNormalSeam = pixelDiff(return35, normal0, rect);
+      assert(returnNormalSeam.mean === 0 && returnNormalSeam.max === 0,
+        `${W}x${H} Y${returnY} return35/normal seam ${JSON.stringify(returnNormalSeam)}`);
+      returns.push({ returnY, tunnel359Return0: tunnelReturnSeam, return35Normal: returnNormalSeam,
         tunnel359Return0PilotDelta: [return0Pilot[0] - tunnel359Pilot[0], return0Pilot[1] - tunnel359Pilot[1]] });
     }
     for (const frame of [entry47, tunnel0,
-      render(tunnelContentState(359, { W, H, pilotY: 544 }), { hud: false }),
-      render(returnState(0, 544, W, H), { hud: false })]) {
+      render(tunnelExitState(448, W, H), { hud: false }),
+      render(returnState(0, 448, W, H), { hud: false })]) {
       const stats = frameStats(frame);
       assert(stats.nonTransparent > 0 && stats.nearWhiteRatio < .9,
         `${W}x${H} transition frame empty/white ${JSON.stringify(stats)}`);
@@ -673,7 +719,7 @@ try {
     seamMatrix.push({ size: [W, H], entry47Tunnel0: entrySeam, returns });
   }
 
-  const approvedViewportGrid = [[360, 640], [390, 844], [844, 390], [1440, 900], [1600, 600]].map(([W, H]) => {
+  const approvedViewportGrid = approvedViewportSizes.map(([W, H]) => {
     const viewport = raceViewport(W, H), samples = hyperRunTunnelSampleCount(viewport.virtualWidth);
     const pilotGridIndex = viewport.pilotLocalX / viewport.virtualWidth * samples;
     const gridError = Math.abs(pilotGridIndex - Math.round(pilotGridIndex));
@@ -696,28 +742,14 @@ try {
       pilotScreenError, maxAuthorityBoundaryError: maxBoundaryError };
   });
 
-  function coverRadius(viewport, x, y) {
-    return Math.max(
-      Math.hypot(x - viewport.left, y - viewport.top), Math.hypot(x - viewport.right, y - viewport.top),
-      Math.hypot(x - viewport.left, y - viewport.bottom), Math.hypot(x - viewport.right, y - viewport.bottom),
-    ) + 8 * viewport.scale;
-  }
-  const revealMonotonic = seamSizes.map(([W, H]) => {
-    const viewport = raceViewport(W, H), y = raceViewportY(viewport, 496);
-    const cover = coverRadius(viewport, viewport.pilotX, y), ringSize = 148 * viewport.scale;
-    const entry = Array.from({ length: 12 }, (_, i) => 36 + i).map((tick) => {
-      const scale = tick <= 43 ? lerp(2.15, 2.35, smooth((tick - 36) / 7)) : 2.35;
-      const aperture = ringSize * scale * .32;
-      return tick <= 43 ? lerp(aperture, cover * .8, smooth((tick - 36) / 7))
-        : lerp(cover * .8, cover, smooth((tick - 44) / 3));
-    });
-    const returns = Array.from({ length: 10 }, (_, tick) =>
-      lerp(ringSize * .32, cover, smooth(tick / 9)));
-    for (const values of [entry, returns]) for (let i = 1; i < values.length; i++) {
-      assert(values[i] + 1e-9 >= values[i - 1], `${W}x${H} reveal area regressed at ${i}`);
-    }
-    return { size: [W, H], entryRadii: entry, returnRadii: returns };
-  });
+  const transitionSchedules = {
+    monotonic: true,
+    entry: { ticks: RACE_ENTRY_TICKS,
+      keyframes: Object.fromEntries(entryKeys.map((tick) => [tick, entrySchedule[tick]])) },
+    tunnel: { tick: 0, ...tunnelSchedule },
+    return: { ticks: RACE_RETURN_TICKS,
+      keyframes: Object.fromEntries(returnKeys.map((tick) => [tick, returnSchedule[tick]])) },
+  };
 
   const transmissionStateA = tunnelContentState(180), transmissionStateB = tunnelContentState(180);
   transmissionStateA.world.envA = 0; transmissionStateA.world.envB = 0; transmissionStateA.world.envBlend = 0;
@@ -797,7 +829,7 @@ try {
     generatedFrom: "shipping drawWorld/drawHud compiled from illustrated-src/game/*.ts",
     generatedOutsideRepository: !inside(root, outDir), outputs,
     assertions: {
-      seamMatrix, approvedViewportGrid, revealMonotonic, transitionArtAssertions,
+      seamMatrix, approvedViewportGrid, transitionSchedules, portalArtAssertions,
       proceduralSkyControl: backdropDifference, skyTransmission,
       sideBands: { left: leftBand, right: rightBand }, copyStates,
       boundaryMatrix: { offsets: [38, -38, 38.0001, -38.0001], stamps: [-2, -1, "CROSS", 1, 2], sizes: [[360, 640], [844, 390]] },
