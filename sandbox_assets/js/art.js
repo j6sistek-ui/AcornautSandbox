@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=118";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=119";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -346,8 +346,8 @@ export async function loadArt() {
         } : {}, "suits", "-tap-"),
         namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
         namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, alien: 6, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-asc-"),
-        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, alien: 6, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-desc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-asc-"),
+        namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-desc-"),
         // Beta-only, like the tap banks: production can never fly the race,
         // so it never spends a byte downloading the portal set.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
