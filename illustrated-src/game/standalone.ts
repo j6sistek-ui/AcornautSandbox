@@ -598,8 +598,12 @@ export async function bootStandalone(root: HTMLElement) {
     art.style.backgroundImage = `url("${artRootUrl()}/${hubArt}?v=${ART_VER}")`;
     box.append(art, el("div", "ac-hub-scrim"));
 
-    // ONE top rail: the acorn balance (a door to the shop), the shop
-    // itself, and the gear that holds settings + help together
+    const helm = helmetWornBy(s.equipped, s.equippedSuit);
+    const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
+
+    // ONE top rail: the acorn balance (a door to the shop), the pilot's
+    // portrait (the door to the Profile), the shop, and the gear that
+    // holds settings + help together
     const rail = el("div", "ac-hub-rail");
     const acorns = el("button", "ac-pill ac-pill-gold ac-hub-acorns");
     acorns.append(icon(I_NUT, 15), el("span", "", s.acorns.toLocaleString()));
@@ -612,7 +616,11 @@ export async function bootStandalone(root: HTMLElement) {
     gear.setAttribute("aria-label", "Settings and help");
     gear.append(icon(I_GEAR, 22));
     gear.onclick = () => engine.open("help");
-    rail.append(acorns, el("div", "ac-hub-railgap"), shopBtn, gear);
+    const prof = el("button", "ac-hub-sq");
+    prof.setAttribute("aria-label", "Profile");
+    prof.append(portraitOf(helm, suit, 34));
+    prof.onclick = () => engine.open("profile");
+    rail.append(acorns, el("div", "ac-hub-railgap"), prof, shopBtn, gear);
     box.append(rail);
 
     const mark = el("div", "ac-hub-wordmark");
@@ -658,20 +666,15 @@ export async function bootStandalone(root: HTMLElement) {
     launch.onclick = () => engine.fly(MODES[selectedMode].id);
     tiles.append(launch);
 
-    const helm = helmetWornBy(s.equipped, s.equippedSuit);
-    const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
     tile("t-loadout", helmCardOf(helm, 50), "LOADOUT", "Suits & gear",
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
-    tile("t-chart", hubIcon("map"), "STAR CHART", "100 missions",
-      () => engine.open("log"), s.guide === "levels" ? "#ffb45c" : undefined,
-      s.guide === "levels");
     const planet = miniCanvas(50, 50);
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+    // no dot: a badge should mean something NEW is inside, and nothing
+    // in the mode sheet changes on its own
     tile("t-modes", planet.c, "MODES", "4 ways to fly · Lab",
-      () => { modesOpen = true; render(); }, "#ff4d6d");
-    tile("t-profile", portraitOf(helm, suit, 50), "PROFILE", "Pilot record",
-      () => engine.open("profile"));
+      () => { modesOpen = true; render(); });
     box.append(tiles);
 
     // the Star Chart bar: campaign stars over the 300 total, plus what the
@@ -689,6 +692,7 @@ export async function bootStandalone(root: HTMLElement) {
     btxt.append(track);
     bar.append(btxt);
     bar.onclick = () => engine.open("log");
+    if (s.guide === "levels") bar.classList.add("ac-pulse");
     box.append(bar);
 
     if (s.guide === "hangar" || s.guide === "helmet") {
