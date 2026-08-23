@@ -1063,6 +1063,20 @@ export async function bootStandalone(root: HTMLElement) {
         // VOLT's experiment: while Volt is the selected pilot, its card
         // grows a switch that swaps between the two painted jump takes so
         // the owner can fly both back to back and pick one.
+        // ECLIPSE's experiment, run the same way: while Eclipse is the
+        // selected pilot its card grows a switch between the shipped pose
+        // mapping and the rate-driven one, so both can be flown back to back.
+        if (u.id === "eclipse" && s.equippedSuit === "eclipse") {
+          const alt = el("button", "ac-card ac-modcard on");
+          const txt = el("div", "ac-modtxt");
+          txt.append(el("p", "ac-modname", "Rate Motion"),
+            el("p", "ac-sub", "Pose follows how fast you are climbing or falling."));
+          const sw = el("span", s.eclipseRateMotion ? "ac-switch on" : "ac-switch");
+          sw.append(el("i", "ac-knob"));
+          alt.append(txt, sw);
+          alt.onclick = () => engine.setEclipseRateMotion(!engine.save.eclipseRateMotion);
+          grid.append(alt);
+        }
         if (u.id === "volt" && s.equippedSuit === "volt") {
           const alt = el("button", "ac-card ac-modcard on");
           const txt = el("div", "ac-modtxt");

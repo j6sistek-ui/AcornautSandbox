@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=104";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=104";
-import { proceduralSky } from "./sky-gen.js?v=104";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=104";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=104";
-import { tunnelBoundsAt } from "./sim.js?v=104";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=104";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=104";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=105";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=105";
+import { proceduralSky } from "./sky-gen.js?v=105";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=105";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=105";
+import { tunnelBoundsAt } from "./sim.js?v=105";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=105";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=105";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2326,7 +2326,80 @@ function smoothMotionVy(t, vy) {
     motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
     return motionVySmooth;
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, altTap = false, motionVy = 0) {
+// The RATE-DRIVEN mapping (the hangar A/B switches this on).
+//
+// The shipped mapping poses the body by INSTANTANEOUS vertical speed, and
+// that is what feels jerky: a tap resets vy to -450 and gravity rebuilds it
+// at 1300/s2, so the pose is yanked across its whole range twice a second
+// whether or not the pilot is actually going anywhere.
+//
+// What the pilot experiences is not instantaneous speed, it is RATE: am I
+// holding level, climbing, or falling, and how hard. So two signals, doing
+// two different jobs:
+//
+//   COMMITMENT (~0.55s average) - how far the body is willing to lean. Tapping
+//   just enough to hold station averages to nearly nothing, so the body stays
+//   horizontal. Several taps in a row average clearly negative and the body
+//   commits to a real climb. A long fall commits to the dive.
+//
+//   LIFE (~0.09s average) - the instantaneous beat, which only ever pulls the
+//   pose a fraction of the way from its commitment. This is what keeps the
+//   animation alive between taps, at whatever pace the pilot is tapping,
+//   without letting a single tap throw the whole body.
+//
+// Hover therefore reads as small movement around horizontal; a climb reads as
+// a committed climb that still breathes on each beat; and nothing snaps.
+//
+// A third piece, found by filming all the candidates offline: a pose that is
+// merely CORRECT still dies. Pinned in a long fall, every velocity mapping
+// tested held one frame for seconds - a still image at the most dramatic
+// moment. So the pose carries a small motion BUDGET: a gentle cycle whose
+// amplitude opens only as the mapping itself goes still, and closes again the
+// moment real motion returns. A pinned dive keeps breathing; a busy hover
+// gets no extra churn piled onto it.
+//
+// The target is a band, measured by counting frame changes per second against
+// the real constants: under ~3/s reads as a still image, 6-12/s reads as
+// deliberate animation (hand-drawn work sits here), over ~20/s reads as
+// vibration. This lands 9-15/s in flight and 2-3/s pinned; the shipped
+// mapping manages 20/s hovering and 0/s falling.
+const MOTION_LIFE = 0.35; // how far the beat may pull the pose off its commitment
+const MOTION_CYCLE_HZ = 1.15;
+const MOTION_CYCLE_FRAMES = 0.9; // amplitude in FRAMES, at full stillness
+let rateFast = 0;
+let rateSlow = 0;
+let ratePrev = 0;
+let rateStill = 0;
+let ratePhase = 0;
+let rateClock = -1;
+function trackRateMotion(t, vy) {
+    const fresh = rateClock < 0 || t < rateClock;
+    if (fresh) {
+        rateFast = 0;
+        rateSlow = 0;
+    }
+    const dt = fresh ? 0.016 : Math.min(0.05, t - rateClock);
+    rateClock = t;
+    rateFast += (vy - rateFast) * (1 - Math.exp(-dt / 0.09));
+    rateSlow += (vy - rateSlow) * (1 - Math.exp(-dt / 0.55));
+    // climbing is the slow direction in this game (about 230px/s sustained) and
+    // gravity makes falling fast (about 520px/s), so the two are scaled apart
+    // rather than sharing one number
+    const lean = (v) => {
+        const k = Math.min(1, Math.abs(v) / (v < 0 ? 300 : 520));
+        return (v < 0 ? -1 : 1) * Math.pow(k, 1.15);
+    };
+    const commit = lean(rateSlow);
+    const pose = commit + (lean(rateFast) - commit) * MOTION_LIFE;
+    // how much the pose is moving on its own, and therefore how much of the
+    // cycle's budget is needed to keep the body alive
+    const moving = Math.min(1, Math.abs(pose - ratePrev) / dt / 1.6);
+    ratePrev = pose;
+    rateStill += ((1 - moving) - rateStill) * (1 - Math.exp(-dt / 0.25));
+    ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
+    return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
+}
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, altTap = false, motionVy = 0, rateMotion = false) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -2448,10 +2521,20 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         else if (fullMotion) {
             // A light exponential smooth keeps rapid taps from strobing the
             // pose; the ramps themselves already grade the attitude.
-            const v = smoothMotionVy(_t, motionVy);
+            // two mappings, switched from the hangar so both can be flown back to back
+            let v;
+            let cycle = 0;
+            if (rateMotion) {
+                const r = trackRateMotion(_t, motionVy);
+                v = r.pose;
+                cycle = r.cycle;
+            }
+            else {
+                const sv = smoothMotionVy(_t, motionVy);
+                v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+            }
             const bank = v < 0 ? ascFrames : descFrames;
-            const k = v < 0 ? Math.min(1, -v / 470) : Math.min(1, v / 620);
-            const idxM = Math.min(bank.length - 1, Math.round(k * (bank.length - 1)));
+            const idxM = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)));
             const frame = bank[idxM];
             const refM = ascFrames[0].box ?? ref;
             drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
@@ -2591,7 +2674,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseRateMotion === true);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {
