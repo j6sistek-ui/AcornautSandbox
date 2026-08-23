@@ -2297,7 +2297,6 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:ember": [182, 100, 44],
   "suit:stardust": [179, 95, 44],
   "suit:robo": [180, 99, 45],
-  "suit:alien": [188, 102, 43],
   // re-rendered bare-headed on a black plate (the pale-on-cream key was
   // unrecoverable); measured against the new art, and near-identical to
   // flight, which is the same pose in the same framing
@@ -2464,7 +2463,8 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // by hand. The old values sat on the outer edge of the tail mask, which
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
-  alien: [106, 145],
+  alien: [115, 149],
+  cyber: [117, 110],
   aurorasuit: [99, 139],
   bigbooty: [92, 129],
   catsuit: [74, 149],
@@ -2830,6 +2830,13 @@ const RIG_PITCH_DOWN = (30 * Math.PI) / 180;  // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// A painted motion bank normally CARRIES the attitude, so rotating it as
+// well would pitch the character twice. Cyber's bank is not built that way:
+// it is one glide ramp played in both directions, carrying how far the body
+// EXTENDS rather than which way it points, and the rig supplies the
+// direction over the top. That is what lets nine frames read as a climb and
+// a dive instead of needing two sheets that never quite agree at the seam.
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t: number, vy: number, vx: number) {
@@ -2899,7 +2906,6 @@ function paintIllustrated(
   bounceAnimT = -1,
   bounceAnimDir = 0,
   bounceAnimStrength = 0,
-  altTap = false,
   motionVy = 0,
   motionMode = 0,
   motionVx = 0,
@@ -2930,7 +2936,7 @@ function paintIllustrated(
     // while a painted full-character frame is on screen - those already carry
     // an attitude and would be rotated twice.
     const rigPitchOn = motionMode === 2 && !RIG_PITCH_SKIP.has(suit.id)
-      && !(art?.suitAsc?.[suit.id]?.length);
+      && (RIG_PITCH_WITH_BANK.has(suit.id) || !(art?.suitAsc?.[suit.id]?.length));
     let rigPitch = 0;
     if (rigPitchOn) {
       const hp = trackHeadingMotion(_t, motionVy, motionVx);
@@ -2952,10 +2958,7 @@ function paintIllustrated(
     const ascFrames = art?.suitAsc?.[suit.id] ?? [];
     const descFrames = art?.suitDesc?.[suit.id] ?? [];
     const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
-    // VOLT's hangar experiment: the owner is A/B-ing two painted jumps,
-    // so its card carries a switch that swaps in the alternate bank.
-    const tapFrames = (suit.id === "volt" && altTap
-      ? art?.suitTapAlt?.[suit.id] : art?.suitTap?.[suit.id]) ?? [];
+    const tapFrames = art?.suitTap?.[suit.id] ?? [];
     const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
     // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
     // so during the burst the frame IS the pilot: no rig tail, no body
@@ -3188,7 +3191,7 @@ function drawPilot(
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
   ctx.restore();
 }
 

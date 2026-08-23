@@ -50,7 +50,6 @@ export type ArtBank = {
   suitTapTail: Record<string, Sprite[]>;
   /** VOLT's alternate jump (the hangar A/B experiment) and its painted
    *  planet-bounce recoil. Volt-only for now. */
-  suitTapAlt: Record<string, Sprite[]>;
   suitBounce: Record<string, Sprite[]>;
   /** ECLIPSE's physics-pose experiment: posture follows vertical
    *  velocity. asc runs neutral->full climb, desc runs neutral->steep
@@ -186,7 +185,7 @@ export function emptyArt(): ArtBank {
     planets: [], debris: [], pals: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
-    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
   };
 }
 
@@ -325,7 +324,7 @@ export async function loadArt(): Promise<ArtBank> {
     "verdant", "cryostar", "eclipse", "volt",
     ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor",
+      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
     ] : []),
   ];
   const suitIds = [
@@ -352,7 +351,7 @@ export async function loadArt(): Promise<ArtBank> {
     "volt",
     ...(BETA_FEATURES ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor",
+      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
     ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
@@ -388,7 +387,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -423,17 +422,16 @@ export async function loadArt(): Promise<ArtBank> {
         ...(BETA_FEATURES ? {
           flight: 16, iontrim: 16, copper: 16, frost: 16,
           voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
-          alien: 16, ghost: 16, gemmie: 16, sammie: 16,
+          ghost: 16, gemmie: 16, sammie: 16,
           seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
           cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
           abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
         } : {}),
       } : {}, "suits", "-tap-"),
       namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
-      namedSeries(TAP_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-tap2-"),
       namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3 } : {}, "suits", "-asc-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5 } : {}, "suits", "-desc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {}, "suits", "-asc-"),
+      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {}, "suits", "-desc-"),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
@@ -463,7 +461,6 @@ export async function loadArt(): Promise<ArtBank> {
     suitBody,
     suitTap,
     suitTapTail,
-    suitTapAlt,
     suitBounce,
     suitAsc,
     suitDesc,

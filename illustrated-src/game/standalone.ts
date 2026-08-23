@@ -1035,7 +1035,7 @@ export async function bootStandalone(root: HTMLElement) {
       if (locked) {
         const note = el("div", "ac-lockednote");
         note.append(
-          el("p", "ac-lockedhead", `${suit.name} wears its own helmet`),
+          el("p", "ac-lockedhead", `${suit.name} has its own head`),
           el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."),
         );
         scroll.append(note);
@@ -1098,17 +1098,6 @@ export async function bootStandalone(root: HTMLElement) {
           sw.append(el("i", "ac-knob"));
           alt.append(txt, sw);
           alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
-          grid.append(alt);
-        }
-        if (u.id === "volt" && s.equippedSuit === "volt") {
-          const alt = el("button", "ac-card ac-modcard on");
-          const txt = el("div", "ac-modtxt");
-          txt.append(el("p", "ac-modname", "Test Jump"),
-            el("p", "ac-sub", "Fly Volt's alternate jump animation."));
-          const sw = el("span", s.voltAltJump ? "ac-switch on" : "ac-switch");
-          sw.append(el("i", "ac-knob"));
-          alt.append(txt, sw);
-          alt.onclick = () => engine.setVoltAltJump(!engine.save.voltAltJump);
           grid.append(alt);
         }
       }

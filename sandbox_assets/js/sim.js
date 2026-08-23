@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=112";
-import { modsUnlocked, writeSave } from "./save.js?v=112";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=112";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=112";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=112";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=112";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=112";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=117";
+import { modsUnlocked, writeSave } from "./save.js?v=117";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=117";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=117";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=117";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=117";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=117";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -718,7 +718,7 @@ export function setRaceInput(w, input) {
     if (!w.race || w.screen !== "play")
         return false;
     queueRaceInput(w.race, input);
-    if (input.held || input.drop)
+    if (input.held || input.drop || input.dragY != null)
         w.ready = false;
     return true;
 }
@@ -742,8 +742,9 @@ export function takeRaceCueEffects(w) {
  */
 export function planRaceCueEffects(cues) {
     return cues.map((cue) => {
-        if (cue.kind === "ring-pass")
+        if (cue.kind === "ring-pass" || cue.kind === "tunnel-ring-pass" || cue.kind === "tunnel-ring-perfect") {
             return { cue, sfx: "gold", notify: false };
+        }
         if (cue.kind === "debris-hit")
             return { cue, sfx: "bounce", notify: false };
         if (cue.kind === "acorn")
@@ -1047,8 +1048,9 @@ function updateTunnel(w, save, simDt, realDt) {
     // Tunnel flight deliberately reuses the main game's gravity and flap
     // impulse. A tap resets upward velocity; gravity owns the descent.
     const oldSy = w.squirrel.y;
-    // The BETA flies the wormhole like Hyper Run's stretches: hold to rise,
-    // release to fall. Live keeps the classic tap until this is approved.
+    // The BETA's standalone Wormhole Run uses hold to rise/release to fall.
+    // Hyper Run's alignment tunnel has its own drag authority in race.ts.
+    // Live Wormhole Run keeps the classic tap until its beta control is approved.
     w.squirrel.vy = IS_BETA
         ? Math.max(WORMHOLE_MIN_VY, Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL) * simDt))
         : Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + gravOf(save, w) * simDt);

@@ -1,5 +1,5 @@
 {
- "artVer": "112",
+ "artVer": "117",
  "suits": [
   {
    "id": "flight",
@@ -122,20 +122,6 @@
     180,
     99,
     45
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": false
-  },
-  {
-   "id": "alien",
-   "name": "Alien",
-   "key": "suit:alien",
-   "file": "suits/alien.png",
-   "dome": [
-    188,
-    102,
-    43
    ],
    "ownHead": false,
    "bakedDome": false,
