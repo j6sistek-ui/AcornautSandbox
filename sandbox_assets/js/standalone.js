@@ -1,10 +1,10 @@
-import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=106";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=106";
-import { drawSprite as drawSpriteOn } from "./art.js?v=106";
-import { createEngine } from "./engine.js?v=106";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=106";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=106";
-import { formatRaceTicks } from "./race.js?v=106";
+import { ART_VER, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog.js?v=109";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=109";
+import { drawSprite as drawSpriteOn } from "./art.js?v=109";
+import { createEngine } from "./engine.js?v=109";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=109";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=109";
+import { formatRaceTicks } from "./race.js?v=109";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -128,7 +128,7 @@ export async function bootStandalone(root) {
             // differently depending on what you were doing when you paused, and
             // going back to the hangar to change it loses the run you were judging.
             if (engine.save.equippedSuit === "eclipse") {
-                const mode = (((engine.save.eclipseMotionMode ?? 0) % 3) + 3) % 3;
+                const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
                 sheet.append(el("p", "ac-sub", "PILOT MOTION"));
                 const row = el("div", "ac-modes");
                 row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
@@ -1042,14 +1042,14 @@ export async function bootStandalone(root) {
                         ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
                         ["Motion: Heading", "Body follows the tangent of the flight arc."],
                     ];
-                    const mode = ((s.eclipseMotionMode ?? 0) % 3 + 3) % 3;
+                    const mode = ((s.eclipseMotionMode ?? 2) % 3 + 3) % 3;
                     const alt = el("button", "ac-card ac-modcard on");
                     const txt = el("div", "ac-modtxt");
                     txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]), el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
                     const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
                     sw.append(el("i", "ac-knob"));
                     alt.append(txt, sw);
-                    alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 0) + 1) % 3);
+                    alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
                     grid.append(alt);
                 }
                 if (u.id === "volt" && s.equippedSuit === "volt") {

@@ -137,7 +137,7 @@ export async function bootStandalone(root: HTMLElement) {
       // differently depending on what you were doing when you paused, and
       // going back to the hangar to change it loses the run you were judging.
       if (engine.save.equippedSuit === "eclipse") {
-        const mode = (((engine.save.eclipseMotionMode ?? 0) % 3) + 3) % 3;
+        const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
         sheet.append(el("p", "ac-sub", "PILOT MOTION"));
         const row = el("div", "ac-modes");
         (row as HTMLElement).style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
@@ -1089,7 +1089,7 @@ export async function bootStandalone(root: HTMLElement) {
             ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
             ["Motion: Heading", "Body follows the tangent of the flight arc."],
           ];
-          const mode = ((s.eclipseMotionMode ?? 0) % 3 + 3) % 3;
+          const mode = ((s.eclipseMotionMode ?? 2) % 3 + 3) % 3;
           const alt = el("button", "ac-card ac-modcard on");
           const txt = el("div", "ac-modtxt");
           txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]),
@@ -1097,7 +1097,7 @@ export async function bootStandalone(root: HTMLElement) {
           const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
           sw.append(el("i", "ac-knob"));
           alt.append(txt, sw);
-          alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 0) + 1) % 3);
+          alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
           grid.append(alt);
         }
         if (u.id === "volt" && s.equippedSuit === "volt") {

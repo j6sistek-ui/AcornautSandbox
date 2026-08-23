@@ -2122,6 +2122,21 @@ const DOME: Record<string, [number, number, number]> = {
   // on this shared head family (it makes the same error on approved Aurora).
   // These sockets apply Aurora's hand-reviewed correction to each new suit's
   // measured head, preserving the small pose-specific vertical differences.
+  // Flight's banks come from a motion TRANSFER of Eclipse's own arc, so
+  // its head sits differently in every frame and each one carries its own
+  // anchor, exactly as Eclipse's do.
+  "flight-asc-1": [174.4, 88.6, 32.6],
+  "flight-asc-2": [178.4, 87.0, 32.6],
+  "flight-asc-3": [174.9, 90.7, 32.6],
+  "flight-asc-4": [176.7, 87.0, 32.6],
+  "flight-asc-5": [174.4, 89.2, 32.6],
+  "flight-asc-6": [176.8, 86.2, 32.6],
+  "flight-asc-7": [176.2, 86.6, 32.6],
+  "flight-desc-1": [179.0, 93.0, 32.6],
+  "flight-desc-2": [178.4, 95.6, 32.6],
+  "flight-desc-3": [173.9, 110.8, 32.6],
+  "flight-desc-4": [171.8, 113.7, 32.6],
+  "flight-desc-5": [164.2, 138.4, 32.6],
   "suit:cinderforge": [183, 93, 44],
   "suit:groveguard": [183, 93, 44],
   "suit:cosmic": [183, 93, 44],
@@ -2586,6 +2601,25 @@ function smoothMotionVy(t: number, vy: number) {
 // roughly 130 degrees on every hop, so eight frames of bank have to cover
 // that whole sweep and the frames turn over quickly.
 const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+
+// Suits with no painted motion banks get the same flight from their RIG.
+// Measured off Eclipse's banks, its motion is mostly two rotations: the body
+// pitches about 19 degrees through the climb and about 40 through the dive,
+// and the tail trails the body by roughly 25 degrees climbing and swings well
+// past it in a deep dive. Both are inside what the tail hinge already does
+// for every one of the 29 rigged suits, so the fleet can fly the same shape
+// without a single new drawing.
+//
+// What this CANNOT reproduce is the limb articulation painted into Eclipse's
+// frames - the arms and hands that turned out to be why heading reads alive.
+// A rigged suit gets the silhouette of the motion, not the performance, and
+// that gap is the argument for transferring real frames onto the suits that
+// matter most rather than settling here.
+const RIG_PITCH_UP = (14 * Math.PI) / 180;    // eased back from Eclipse's 19
+const RIG_PITCH_DOWN = (30 * Math.PI) / 180;  // eased back from Eclipse's 40
+const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail lags by
+// Suits whose own animation is already approved and must not be touched.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t: number, vy: number, vx: number) {
@@ -2680,6 +2714,25 @@ function paintIllustrated(
   const rigT = suited ? art?.suitTail?.[suit.id] : null;
   const rigB = suited ? art?.suitBody?.[suit.id] : null;
   if (rigT && rigB && suited) {
+    // Rig-driven heading flight: the whole character pitches to point along
+    // its flight path, and the tail trails that pitch instead of following it
+    // rigidly. Only for suits with no painted bank of their own, and never
+    // while a painted full-character frame is on screen - those already carry
+    // an attitude and would be rotated twice.
+    const rigPitchOn = motionMode === 2 && !RIG_PITCH_SKIP.has(suit.id)
+      && !(art?.suitAsc?.[suit.id]?.length);
+    let rigPitch = 0;
+    if (rigPitchOn) {
+      const hp = trackHeadingMotion(_t, motionVy, motionVx);
+      rigPitch = hp < 0 ? hp * RIG_PITCH_UP : hp * RIG_PITCH_DOWN;
+    }
+    const pitched = rigPitch !== 0;
+    if (pitched) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rigPitch);
+      ctx.translate(-x, -y);
+    }
     const ref = (suited as Sprite).box ?? { x: 0, y: 0, w: suited.width, h: suited.height };
     const pivot = TAIL_PIVOT[suit.id];
     // ECLIPSE's physics-pose experiment: with ascend/descend banks present,
@@ -2704,7 +2757,7 @@ function paintIllustrated(
     const bounceFrames = art?.suitBounce?.[suit.id] ?? [];
     const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
     let tailPose: Sprite | HTMLImageElement = rigT;
-    let tailPoseRot = tailRot;
+    let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
     if (fullBounce || fullMotion) {
       /* these frames carry the whole character, tail included */
     } else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
@@ -2823,6 +2876,7 @@ function paintIllustrated(
       }
       if (!wearsOwnHead(suit)) paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
     }
+    if (pitched) ctx.restore();
     return;
   }
   // frames crossfade instead of hard-switching — the four paintings blend
@@ -2924,7 +2978,7 @@ function drawPilot(
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 0, w.speed);
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
   ctx.restore();
 }
 
