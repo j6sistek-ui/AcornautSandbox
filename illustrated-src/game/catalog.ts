@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "121";
+export const ART_VER = "123";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -263,6 +263,16 @@ export type Pal = {
   art?: string;
 };
 
+
+// Idle animation banks, by pal. The length is the bank's TRUE length -
+// resampling a 9-frame loop up to 16 only duplicates renders - and a pal
+// absent from this table simply keeps its still.
+export const PAL_ANIM: Record<string, number> = {
+  bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
+  nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
+  starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
+};
+
 export const PALS: Pal[] = [
   { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
   { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
@@ -276,9 +286,9 @@ export const PALS: Pal[] = [
   { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
   { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
   { id: "wisp", name: "Wisp", tag: "GATE DRIFT", desc: "More gate movement", art: "wisp" },
-  { id: "prismwing", name: "Prismwing", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "prismwing" },
-  { id: "clockling", name: "Clockling", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "clockling" },
-  { id: "nightglider", name: "Nightglider", tag: "COSMETIC", desc: "Premium companion. No flight effect yet.", art: "nightglider" },
+  { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Every bounce repaints the sky a new vibrant colour.", art: "prismwing" },
+  { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll speed drifts, +50% to -70%, and never at a steady rate.", art: "clockling" },
+  { id: "nightglider", name: "Nightglider", tag: "BLACKOUT", desc: "Total dark. Every tap is a flashbulb that shows the way.", art: "nightglider" },
 ];
 
 export type Env = {

@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=121";
-import { modsUnlocked, writeSave } from "./save.js?v=121";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=121";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=121";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=121";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=121";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=121";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=123";
+import { modsUnlocked, writeSave } from "./save.js?v=123";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=123";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=123";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=123";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=123";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=123";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -63,6 +63,11 @@ export function makeWorld(W, H) {
         hitCooldown: 0,
         trailT: 0,
         bounceUp: false,
+        clockMul: 1,
+        clockPhase: 0,
+        clockRate: 0.5,
+        prismHue: 0,
+        lampT: 9,
         shieldCharges: 0,
         absorbGrace: 0,
         shieldFreeze: 0,
@@ -1549,6 +1554,7 @@ export function flap(w, save) {
         w.lvl.stats.taps += 1;
         w.lvl.strobeT = 0; // THE BLACKOUT: a tap is a flashbulb
     }
+    w.lampT = 0; // NIGHTGLIDER's lamp is lit the same way
     // A repeated tap while the burst is still playing keeps the current body
     // pose and recovery clock. Physics, particles, pitch, and the live tail
     // spring still respond immediately, so the new input adds motion without
@@ -1632,6 +1638,13 @@ function bounceOff(w, save, px, py) {
         // Contact throws the plume opposite the rebound. This is additive to the
         // existing spring, so the authored impact settles naturally afterward.
         w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
+    }
+    // PRISMWING. Contact repaints the SKY, and only the sky: a new hue every
+    // bounce, stepped at least 60 degrees off the last so no two in a row
+    // read as the same colour. Planets keep their zone and debris keeps its
+    // palette - a pilot still has to recognise what is about to hit them.
+    if (palId(save, w) === "prismwing") {
+        w.prismHue = (w.prismHue + 60 + Math.random() * 240) % 360;
     }
     w.bounceUp = w.squirrel.vy < 0;
     w.squirrel.y += dy * 14;
@@ -2209,10 +2222,32 @@ export function updateWorld(w, save, dt) {
         w.envMsgT = Math.max(0, w.envMsgT - dt);
     if (w.lvl)
         w.lvl.strobeT += dt;
+    w.lampT += dt;
     if (w.flight === "tunnel" && w.tunnel)
         return updateTunnel(w, save, simDt, dt);
     const d = difficulty(w);
-    w.speed = d.speed;
+    // TURCLOCK. The scroll wanders between 30% and 150% of what this run
+    // would otherwise be doing - and the wander itself changes pace, because
+    // a drift at a fixed frequency stops being a drift after two cycles and
+    // becomes a rhythm the pilot can just count. The rate re-rolls each time
+    // the phase comes round, so the next swell is never the last one's
+    // length. The multiplier is smoothed toward its target rather than set,
+    // so no frame ever jumps the world sideways.
+    if (palId(save, w) === "clockling" && !w.ready) {
+        w.clockPhase += simDt * w.clockRate;
+        if (w.clockPhase >= Math.PI * 2) {
+            w.clockPhase -= Math.PI * 2;
+            w.clockRate = 0.22 + Math.random() * 0.66; // ~9s to ~29s per swell
+        }
+        const target = 0.9 + 0.6 * Math.sin(w.clockPhase); // 0.30 .. 1.50
+        w.clockMul += (target - w.clockMul) * Math.min(1, simDt * 1.6);
+    }
+    else if (w.clockMul !== 1) {
+        w.clockMul += (1 - w.clockMul) * Math.min(1, simDt * 2.2);
+        if (Math.abs(w.clockMul - 1) < 0.005)
+            w.clockMul = 1;
+    }
+    w.speed = d.speed * w.clockMul;
     w.squirrel.vy += gravOf(save, w) * simDt;
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));

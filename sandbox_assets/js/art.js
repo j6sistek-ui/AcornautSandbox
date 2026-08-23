@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=121";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=123";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -114,7 +114,7 @@ export function emptyArt() {
     return {
         ready: false,
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
-        planets: [], debris: [], pals: {}, helms: {},
+        planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
         frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
@@ -302,7 +302,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -312,6 +312,9 @@ export async function loadArt() {
         many(`${base}/debris/`, DEBRIS_COUNT, 0),
         optional(`${base}/sky.jpg`),
         named(palIds, "solo"),
+        // every pal that has an idle bank; a pal without one simply
+        // keeps its still, which is what the draw path falls back to
+        namedSeries(PAL_ANIM, "solo", "-"),
         named(suitIds, "suits"),
         named(helmIds, "helms"),
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
@@ -362,6 +365,7 @@ export async function loadArt() {
         planets,
         debris,
         pals,
+        palAnim,
         helms,
         suits,
         sky: sky,

@@ -172,6 +172,45 @@ let cacheKeyWH = "";
 
 /** The procedural sky for this id at this canvas size — or null when the
  *  id has no recipe (every dark plate stays painted). */
+
+// PRISMWING's repaint. Rotating the hue of a full-screen plate every frame
+// would cost a filter pass per frame; the plate only changes when a bounce
+// changes it, so the rotated copy is built once per (sky, hue step) and
+// then drawn like any other image. Steps of 12 degrees keep that cache to
+// thirty entries per sky instead of one per degree.
+const hueCache = new Map<string, HTMLCanvasElement>();
+let hueCacheWH = "";
+
+export function hueShifted(
+  src: HTMLCanvasElement | HTMLImageElement,
+  id: string,
+  deg: number,
+): HTMLCanvasElement | HTMLImageElement {
+  const step = Math.round(((deg % 360) + 360) % 360 / 12) * 12;
+  if (!step) return src;
+  const w = (src as HTMLCanvasElement).width;
+  const h = (src as HTMLCanvasElement).height;
+  if (!w || !h) return src;
+  const wh = `${w}x${h}`;
+  if (wh !== hueCacheWH) { hueCache.clear(); hueCacheWH = wh; }
+  const key = `${id}:${step}`;
+  const hit = hueCache.get(key);
+  if (hit) return hit;
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d");
+  if (!g) return src;
+  // saturate BEFORE the rotation so a near-grey plate still lands on a
+  // vibrant colour rather than a slightly different grey
+  g.filter = `saturate(1.75) hue-rotate(${step}deg)`;
+  g.drawImage(src, 0, 0);
+  g.filter = "none";
+  // a cache that grows without bound is a leak wearing a hat
+  if (hueCache.size > 90) hueCache.clear();
+  hueCache.set(key, c);
+  return c;
+}
+
 export function proceduralSky(id: SkyId, w: number, h: number): HTMLCanvasElement | null {
   const r = RECIPES[id];
   if (!r || w < 8 || h < 8) return null;
