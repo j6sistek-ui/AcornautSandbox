@@ -25,14 +25,16 @@ import {
   RACE_READY_COPY,
   RACE_RETURN_TICKS,
   RACE_RINGS,
-  RACE_TUNNEL_DISTANCE,
+  RACE_TUNNEL_PERFECT_APERTURE,
+  RACE_TUNNEL_RING_APERTURE,
   RACE_TUNNEL_SPEED,
   RACE_TUNNEL_TICKS,
   formatRaceTicks,
   raceDecisionAge,
   raceRouteTarget,
-  raceTunnelAcorns,
   raceTunnelGeometry,
+  raceTunnelQuality,
+  raceTunnelRings,
 } from "./race";
 
 function frameOf<T>(list: T[], t: number, speed = 6) {
@@ -635,12 +637,240 @@ export function hyperRunTunnelSampleCount(virtualWidth: number) {
   return Math.max(30, Math.ceil(Math.max(0, virtualWidth) / 48 / 30) * 30);
 }
 
+type HyperRunTunnelRingOutcome = "pending" | "passed" | "perfect" | "missed";
+type HyperRunTunnelRingLayer = "back" | "front";
+
+/** The shipping projection used by both ring layers. Presentation sees the
+ * post-step phase tick, so the +1 keeps the pending ring one step ahead and
+ * places its resolved result on the pilot plane after authority judges it.
+ * Keeping this pure lets the runtime review prove the crossing at every
+ * approved viewport. */
+export function hyperRunTunnelRingScreenX(
+  viewport: ReturnType<typeof raceViewport>,
+  ringTick: number,
+  viewTick: number,
+) {
+  return viewport.pilotX
+    + (ringTick + 1 - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ) * viewport.scale;
+}
+
+function drawHyperRunTunnelRingPath(
+  ctx: CanvasRenderingContext2D,
+  radius: number,
+  layer: HyperRunTunnelRingLayer,
+) {
+  ctx.beginPath();
+  if (layer === "back") ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  else ctx.arc(0, 0, radius, Math.PI * 0.2, Math.PI * 0.8);
+}
+
+function drawHyperRunTunnelRing(
+  ctx: CanvasRenderingContext2D,
+  viewport: ReturnType<typeof raceViewport>,
+  x: number,
+  canonicalY: number,
+  outcome: HyperRunTunnelRingOutcome,
+  age: number,
+  layer: HyperRunTunnelRingLayer,
+) {
+  if (age > 27) return;
+  const { scale } = viewport;
+  const y = raceViewportY(viewport, canonicalY);
+  const reduced = raceReducedMotion();
+  const fade = outcome === "pending" || age <= 17
+    ? 1
+    : 1 - raceSegment(age, 18, 27);
+  const outerRadius = RACE_TUNNEL_RING_APERTURE * scale;
+  const innerRadius = RACE_TUNNEL_PERFECT_APERTURE * scale;
+  const outerWidth = Math.max(1.8, 3.2 * scale);
+  const innerWidth = Math.max(1.35, 2.15 * scale);
+  const perfect = outcome === "perfect";
+  const passed = outcome === "passed";
+  const missed = outcome === "missed";
+
+  ctx.save();
+  ctx.globalAlpha *= raceClamp01(fade * (missed ? 0.68 : 1));
+  ctx.translate(x, y);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  if (missed) ctx.setLineDash([Math.max(3, 7 * scale), Math.max(3, 7 * scale)]);
+
+  // A neutral dark keyline is deliberately painted first. It keeps the white
+  // geometry readable over pale stars without turning outcome into colour.
+  ctx.globalCompositeOperation = "source-over";
+  ctx.strokeStyle = "rgba(2,5,13,.82)";
+  ctx.lineWidth = outerWidth + Math.max(2.4, 4.2 * scale);
+  drawHyperRunTunnelRingPath(ctx, outerRadius, layer); ctx.stroke();
+  ctx.lineWidth = innerWidth + Math.max(2, 3.4 * scale);
+  drawHyperRunTunnelRingPath(ctx, innerRadius, layer); ctx.stroke();
+
+  ctx.globalCompositeOperation = "source-over";
+  ctx.strokeStyle = missed ? "rgba(255,255,255,.7)" : "#fff";
+  ctx.lineWidth = outerWidth;
+  ctx.shadowColor = "#fff";
+  ctx.shadowBlur = reduced ? 0 : (perfect ? 13 : outcome === "pending" ? 5 : 8) * scale;
+  drawHyperRunTunnelRingPath(ctx, outerRadius, layer); ctx.stroke();
+
+  ctx.strokeStyle = passed
+    ? "rgba(255,255,255,.62)"
+    : missed ? "rgba(255,255,255,.58)" : "#fff";
+  ctx.lineWidth = innerWidth;
+  drawHyperRunTunnelRingPath(ctx, innerRadius, layer); ctx.stroke();
+  ctx.setLineDash([]);
+
+  if (layer === "front" && perfect && age <= 16) {
+    const reach = outerRadius + (7 + raceSmooth(age / 16) * 7) * scale;
+    ctx.strokeStyle = `rgba(255,255,255,${(0.92 * (1 - age / 17)).toFixed(3)})`;
+    ctx.lineWidth = Math.max(1.2, 2 * scale);
+    ctx.shadowBlur = reduced ? 0 : 9 * scale;
+    for (let arm = 0; arm < 4; arm++) {
+      const a = arm * Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * (outerRadius + 3 * scale), Math.sin(a) * (outerRadius + 3 * scale));
+      ctx.lineTo(Math.cos(a) * reach, Math.sin(a) * reach);
+      ctx.stroke();
+    }
+  } else if (layer === "front" && missed && age <= 16) {
+    const r = innerRadius * 0.62;
+    ctx.strokeStyle = `rgba(255,255,255,${(0.72 * (1 - age / 17)).toFixed(3)})`;
+    ctx.lineWidth = Math.max(1.2, 2 * scale);
+    for (const direction of [-1, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(-r, direction * -r); ctx.lineTo(r, direction * r); ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  if (layer === "front" && outcome !== "pending" && age <= 24) {
+    const label = perfect ? "PERFECT · EXIT BOOST" : passed ? "CLEAR" : "MISS";
+    const labelFade = age <= 14 ? 1 : 1 - raceSegment(age, 15, 24);
+    const labelY = Math.max(viewport.top + 18,
+      Math.min(viewport.bottom - 8, y - outerRadius - 11 * scale));
+    ctx.save();
+    ctx.globalAlpha *= labelFade;
+    ctx.textAlign = "center";
+    ctx.font = `900 ${Math.max(9, 11 * scale)}px Figtree, system-ui`;
+    ctx.lineWidth = Math.max(2, 3 * scale);
+    ctx.strokeStyle = "rgba(2,5,13,.9)";
+    ctx.strokeText(label, x, labelY);
+    ctx.fillStyle = missed ? "rgba(255,255,255,.72)" : "#fff";
+    ctx.fillText(label, x, labelY);
+    ctx.restore();
+  }
+}
+
+function drawHyperRunTunnelRingLayer(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  viewTick: number,
+  layer: HyperRunTunnelRingLayer,
+) {
+  const race = w.race!;
+  const viewport = raceViewport(w.W, w.H);
+  const rings = raceTunnelRings(race);
+  const ledger = race.tunnelRingLedger[race.wormholes] ?? [];
+  const decisions = race.tunnelRingDecisionTicks[race.wormholes] ?? [];
+  const pad = (RACE_TUNNEL_RING_APERTURE + 22) * viewport.scale;
+  for (let i = 0; i < rings.length; i++) {
+    const ring = rings[i];
+    const outcome = (ledger[i] ?? "pending") as HyperRunTunnelRingOutcome;
+    const decisionTick = decisions[i];
+    const age = outcome === "pending" || decisionTick == null
+      ? 0
+      : raceDecisionAge(race.tick, decisionTick);
+    if (outcome !== "pending" && age > 27) continue;
+    // Pending gates travel by phase tick. A resolved gate is held on the pilot
+    // plane for its age-zero frame, then drifts left as feedback. This preserves
+    // the exact crossing read despite the fixed-step authority increment.
+    const x = outcome === "pending"
+      ? hyperRunTunnelRingScreenX(viewport, ring.tick, viewTick)
+      : viewport.pilotX - age * (RACE_TUNNEL_SPEED / RACE_HZ) * viewport.scale;
+    if (x < viewport.left - pad || x > viewport.right + pad) continue;
+    drawHyperRunTunnelRing(ctx, viewport, x, ring.y, outcome, age, layer);
+  }
+}
+
+function drawHyperRunTunnelDirector(ctx: CanvasRenderingContext2D, w: World, viewTick: number) {
+  const race = w.race!;
+  const viewport = raceViewport(w.W, w.H);
+  const rings = raceTunnelRings(race);
+  const ledger = race.tunnelRingLedger[race.wormholes] ?? [];
+  const nextIndex = rings.findIndex((ring, i) => (ledger[i] ?? "pending") === "pending" && ring.tick >= viewTick);
+  if (nextIndex < 0) return;
+  const ring = rings[nextIndex];
+  const ringX = hyperRunTunnelRingScreenX(viewport, ring.tick, viewTick);
+  if (ringX <= viewport.right - RACE_TUNNEL_RING_APERTURE * viewport.scale) return;
+  const x = viewport.right - Math.max(12, 16 * viewport.scale);
+  const y = Math.max(viewport.top + 28, Math.min(viewport.bottom - 28, raceViewportY(viewport, ring.y)));
+  const r = Math.max(5, 7 * viewport.scale);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.lineJoin = "round";
+  ctx.lineWidth = Math.max(4, 6 * viewport.scale);
+  ctx.strokeStyle = "rgba(2,5,13,.9)";
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r - 6 * viewport.scale, -r); ctx.lineTo(-r, 0); ctx.lineTo(-r - 6 * viewport.scale, r); ctx.stroke();
+  ctx.lineWidth = Math.max(1.4, 2.1 * viewport.scale);
+  ctx.strokeStyle = "rgba(255,255,255,.96)";
+  ctx.shadowColor = "#fff"; ctx.shadowBlur = raceReducedMotion() ? 0 : 5 * viewport.scale;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r - 6 * viewport.scale, -r); ctx.lineTo(-r, 0); ctx.lineTo(-r - 6 * viewport.scale, r); ctx.stroke();
+  ctx.restore();
+}
+
+function drawHyperRunTunnelDragCue(ctx: CanvasRenderingContext2D, w: World) {
+  const race = w.race!;
+  if (race.wormholes !== 0) return;
+  const localTick = race.phase === "entry" ? Math.max(0, race.phaseTick - 12) : race.phaseTick + 36;
+  if (race.phase !== "entry" && race.phase !== "tunnel") return;
+  const fade = localTick <= 72 ? 1 : 1 - raceSegment(localTick, 73, 96);
+  if (fade <= 0) return;
+  const viewport = raceViewport(w.W, w.H);
+  const pilotY = raceViewportY(viewport, race.y);
+  const targetY = race.tunnelDragY == null ? pilotY : raceViewportY(viewport, race.tunnelDragY);
+  const x = Math.min(viewport.right - 54 * viewport.scale, viewport.pilotX + 66 * viewport.scale);
+  const railTop = Math.max(viewport.top + 26, Math.min(pilotY, targetY) - 42 * viewport.scale);
+  const railBottom = Math.min(viewport.bottom - 26, Math.max(pilotY, targetY) + 42 * viewport.scale);
+  const dotY = Math.max(railTop, Math.min(railBottom, targetY));
+  ctx.save();
+  ctx.globalAlpha *= raceClamp01(fade * 0.88);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "rgba(2,5,13,.88)";
+  ctx.lineWidth = Math.max(4, 6 * viewport.scale);
+  ctx.beginPath(); ctx.moveTo(x, railTop); ctx.lineTo(x, railBottom); ctx.stroke();
+  ctx.lineWidth = Math.max(1.3, 2 * viewport.scale);
+  ctx.strokeStyle = "rgba(255,255,255,.9)";
+  ctx.beginPath(); ctx.moveTo(x, railTop); ctx.lineTo(x, railBottom); ctx.stroke();
+  for (const [y, direction] of [[railTop, 1], [railBottom, -1]] as const) {
+    ctx.beginPath();
+    ctx.moveTo(x - 5 * viewport.scale, y + direction * 7 * viewport.scale);
+    ctx.lineTo(x, y); ctx.lineTo(x + 5 * viewport.scale, y + direction * 7 * viewport.scale);
+    ctx.stroke();
+  }
+  if (race.tunnelDragY != null) {
+    ctx.globalAlpha *= 0.7;
+    ctx.setLineDash([3 * viewport.scale, 5 * viewport.scale]);
+    ctx.beginPath(); ctx.moveTo(viewport.pilotX + 22 * viewport.scale, pilotY); ctx.lineTo(x, dotY); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle = "#fff";
+  ctx.beginPath(); ctx.arc(x, dotY, Math.max(2.5, 3.5 * viewport.scale), 0, Math.PI * 2); ctx.fill();
+  ctx.textAlign = "left";
+  ctx.font = `900 ${Math.max(8, 9 * viewport.scale)}px Figtree, system-ui`;
+  const labelX = Math.min(viewport.right - 72, x + 10 * viewport.scale);
+  const labelY = Math.max(viewport.top + 12, Math.min(viewport.bottom - 6, dotY + 3));
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(2,5,13,.9)";
+  ctx.strokeText("DRAG TO ALIGN", labelX, labelY);
+  ctx.fillText("DRAG TO ALIGN", labelX, labelY);
+  ctx.restore();
+}
+
 function drawRaceTunnel(
   ctx: CanvasRenderingContext2D,
   w: World,
-  art: ArtBank,
   viewTick = w.race!.phaseTick,
-  includePickups = w.race!.phase === "tunnel",
   enclosure = 1,
 ) {
   const race = w.race!;
@@ -881,33 +1111,6 @@ function drawRaceTunnel(
     ctx.restore();
   }
 
-  if (includePickups) {
-    const pickups = raceTunnelAcorns(race);
-    const ledger = race.tunnelAcornLedger[race.wormholes] ?? [];
-    ctx.save();
-    corridorPath();
-    ctx.clip();
-    pickups.forEach((a, i) => {
-      if (ledger[i]) return;
-      const x = pilotX + (a.tick - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ) * scale;
-      if (x < left - 30 * scale || x > right + 30 * scale) return;
-      const y = raceViewportY(viewport, a.y);
-      const pulse = reduced ? 1 : 1 + Math.sin((visualTick + i * 7) * 0.18) * 0.08;
-      ctx.save();
-      ctx.fillStyle = "rgba(4,9,28,.46)";
-      ctx.beginPath(); ctx.arc(x, y, 19 * scale, 0, Math.PI * 2); ctx.fill();
-      ctx.globalCompositeOperation = "screen";
-      ctx.strokeStyle = i < 5 ? "rgba(109,234,255,.82)" : "rgba(211,114,255,.82)";
-      ctx.lineWidth = Math.max(1.2, 2 * scale);
-      ctx.beginPath(); ctx.arc(x, y, 17 * scale * pulse, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = "rgba(255,230,143,.58)";
-      ctx.lineWidth = Math.max(0.8, 1.2 * scale);
-      ctx.beginPath(); ctx.moveTo(x + 20 * scale, y); ctx.lineTo(x + 34 * scale, y); ctx.stroke();
-      ctx.restore();
-      drawSprite(ctx, frameOf(art.acorn, w.time, 10), x, y, 26 * scale);
-    });
-    ctx.restore();
-  }
 }
 
 type VisibleRaceGate = {
@@ -1165,12 +1368,19 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
 
     ctx.save();
     ctx.globalAlpha *= energyAlpha;
-    // Future tunnel rewards materialize with the energy instead of popping in
-    // on the first tunnel frame. They remain presentation-only during entry.
-    drawRaceTunnel(ctx, w, art, 0, true, enclosure);
+    // The first alignment gates materialize with the energy instead of popping
+    // in on the first tunnel frame. They remain presentation-only during entry.
+    drawRaceTunnel(ctx, w, 0, enclosure);
+    drawHyperRunTunnelRingLayer(ctx, w, 0, "back");
     ctx.restore();
 
     drawPilot(ctx, w, save, art, pilotX, scale);
+    ctx.save();
+    ctx.globalAlpha *= energyAlpha;
+    drawHyperRunTunnelRingLayer(ctx, w, 0, "front");
+    drawHyperRunTunnelDirector(ctx, w, 0);
+    drawHyperRunTunnelDragCue(ctx, w);
+    ctx.restore();
     ctx.save();
     ctx.globalAlpha *= courseAlpha;
     drawRaceCourseOverlay(ctx, w, art, viewport, frame);
@@ -1180,8 +1390,12 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   }
 
   if (race.phase === "tunnel") {
-    drawRaceTunnel(ctx, w, art, race.phaseTick, true);
+    drawRaceTunnel(ctx, w, race.phaseTick);
+    drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "back");
     drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "front");
+    drawHyperRunTunnelDirector(ctx, w, race.phaseTick);
+    drawHyperRunTunnelDragCue(ctx, w);
     drawRaceCueOverlay(ctx, w, viewport);
     return;
   }
@@ -1200,7 +1414,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
 
   ctx.save();
   ctx.globalAlpha *= energyAlpha;
-  drawRaceTunnel(ctx, w, art, RACE_TUNNEL_TICKS - 1, false, enclosure);
+  drawRaceTunnel(ctx, w, RACE_TUNNEL_TICKS - 1, enclosure);
   ctx.restore();
 
   drawPilot(ctx, w, save, art, pilotX, scale);
@@ -3170,13 +3384,17 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     const phase = race.phase === "normal" ? "HYPER RUN" : race.phase.toUpperCase();
     ctx.fillText(`${phase} · ${Math.min(RACE_LENGTH, Math.floor(race.coursePosition))} / ${RACE_LENGTH}`, W / 2, 57);
     const route = raceRouteTarget(race);
-    const shortcutSaving = RACE_TUNNEL_DISTANCE
-      - RACE_BASE_SPEED * (RACE_TUNNEL_TICKS / RACE_HZ);
-    const tunnelProgress = race.phase === "tunnel"
-      ? raceClamp01((race.phaseTick + 1) / RACE_TUNNEL_TICKS)
-      : race.phase === "return" ? 1 : 0;
-    const chargeCopy = race.phase === "tunnel" || race.phase === "return"
-      ? `WARP ×${(RACE_TUNNEL_SPEED / RACE_BASE_SPEED).toFixed(1)} · SHORTCUT +${Math.floor(shortcutSaving * tunnelProgress)}`
+    const tunnelQuality = race.phase === "tunnel" || race.phase === "return"
+      ? raceTunnelQuality(race)
+      : null;
+    const judgedRings = tunnelQuality
+      ? tunnelQuality.passed + tunnelQuality.perfect + tunnelQuality.missed
+      : 0;
+    const totalTunnelRings = tunnelQuality ? judgedRings + tunnelQuality.pending : 0;
+    const chargeCopy = tunnelQuality
+      ? race.phase === "return"
+        ? `EXIT ${Math.round(tunnelQuality.exitSpeed)} · ${tunnelQuality.perfect} PERFECT`
+        : `ALIGN ${judgedRings}/${totalTunnelRings} · PERFECT ${tunnelQuality.perfect} · EXIT ${Math.round(tunnelQuality.exitSpeed)}`
       : hyperRunChargeCopy(race);
     const cellW = 4;
     const gap = 2;
@@ -3186,11 +3404,11 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     for (let i = 0; i < 20; i++) {
       const groupsBefore = Math.floor(i / 4);
       const x = x0 + i * (cellW + gap) + groupsBefore * groupGap;
-      const activeCells = race.phase === "tunnel" || race.phase === "return"
-        ? Math.floor(tunnelProgress * 20)
+      const activeCells = tunnelQuality
+        ? Math.floor(judgedRings / Math.max(1, totalTunnelRings) * 20)
         : Math.floor(race.charge / 5);
       ctx.fillStyle = i < activeCells
-        ? race.phase === "tunnel" || race.phase === "return" ? "#a66bff" : "#6ef0d8"
+        ? tunnelQuality ? "#fff" : "#6ef0d8"
         : "rgba(255,255,255,.15)";
       ctx.fillRect(x, 66, cellW, 6);
     }

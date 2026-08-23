@@ -1,4 +1,4 @@
-// Pure, tick-based recognizer for Hyper Run's raw press/swipe gestures.
+// Pure, tick-based recognizer for Hyper Run's raw press, swipe, and drag gestures.
 // The output is semantic race input; wall-clock time and viewport units never
 // cross this boundary.
 
@@ -17,18 +17,25 @@ export function canonicalRaceY(y: number, topOrHeight: number, contentHeight?: n
   return (y - top) * (640 / Math.max(1, height));
 }
 
-export type RaceGestureOwner = number | "keyboard-rise";
+export type RaceGestureOwner = number | "keyboard-rise" | "keyboard-drop";
+
+export type RaceGestureMode = "flight" | "pointer-drag" | "keyboard-drag";
 
 export type RaceGestureInput = {
   held: boolean;
   boost: boolean;
   drop?: true;
+  /** Canonical Hyper Run Y. A number starts/updates tunnel drag; null releases it. */
+  dragY?: number | null;
 };
 
 export type RaceGestureState = {
   owner: RaceGestureOwner | null;
+  mode: RaceGestureMode | null;
   downTick: number;
   downY: number | null;
+  /** Pilot Y captured when a relative pointer drag begins. */
+  dragStartY: number | null;
   tapCandidateTick: number | null;
   held: boolean;
   boost: boolean;
@@ -43,8 +50,10 @@ export type RaceGestureResult = {
 export function createRaceGestureState(): RaceGestureState {
   return {
     owner: null,
+    mode: null,
     downTick: 0,
     downY: null,
+    dragStartY: null,
     tapCandidateTick: null,
     held: false,
     boost: false,
@@ -74,8 +83,10 @@ export function pressRaceGesture(
   return {
     state: {
       owner,
+      mode: "flight",
       downTick,
       downY: canonicalY,
+      dragStartY: null,
       tapCandidateTick: boost ? null : downTick,
       held: true,
       boost,
@@ -92,7 +103,7 @@ export function moveRaceGesture(
   tick: number,
   canonicalY: number,
 ): RaceGestureResult {
-  if (state.owner !== owner || state.dropFired || state.downY === null) {
+  if (state.owner !== owner || state.mode !== "flight" || state.dropFired || state.downY === null) {
     return { state, input: null };
   }
 
@@ -113,24 +124,123 @@ export function moveRaceGesture(
   };
 }
 
+/**
+ * Start a tunnel pointer drag without snapping the pilot to the contact. The
+ * first semantic target is the current authority Y; subsequent moves preserve
+ * the pointer-to-pilot offset captured here.
+ */
+export function pressRaceDragGesture(
+  state: RaceGestureState,
+  owner: number,
+  tick: number,
+  canonicalY: number,
+  pilotY: number,
+): RaceGestureResult {
+  if (state.owner !== null) return { state, input: null };
+  return {
+    state: {
+      owner,
+      mode: "pointer-drag",
+      downTick: atTick(tick),
+      downY: canonicalY,
+      dragStartY: pilotY,
+      tapCandidateTick: null,
+      held: false,
+      boost: false,
+      dropFired: false,
+    },
+    input: { held: false, boost: false, dragY: pilotY },
+  };
+}
+
+/**
+ * Update a relative tunnel drag. A pointer held through the entry presentation
+ * converts on its first tunnel move, anchoring at the current pilot position so
+ * the control regime changes without a jump or a forced lift/re-press.
+ */
+export function moveRaceDragGesture(
+  state: RaceGestureState,
+  owner: number,
+  tick: number,
+  canonicalY: number,
+  pilotY: number,
+): RaceGestureResult {
+  if (state.owner !== owner || state.mode === "keyboard-drag") return { state, input: null };
+  if (state.mode !== "pointer-drag" || state.downY === null || state.dragStartY === null) {
+    return {
+      state: {
+        ...state,
+        mode: "pointer-drag",
+        downTick: atTick(tick),
+        downY: canonicalY,
+        dragStartY: pilotY,
+        tapCandidateTick: null,
+        held: false,
+        boost: false,
+        dropFired: false,
+      },
+      input: { held: false, boost: false, dragY: pilotY },
+    };
+  }
+  return {
+    state,
+    input: {
+      held: false,
+      boost: false,
+      dragY: state.dragStartY + canonicalY - state.downY,
+    },
+  };
+}
+
+/** Keyboard accessibility uses the same tunnel target follower as pointer drag. */
+export function pressRaceKeyboardDragGesture(
+  state: RaceGestureState,
+  owner: "keyboard-rise" | "keyboard-drop",
+  tick: number,
+  targetY: number,
+): RaceGestureResult {
+  if (state.owner !== null) return { state, input: null };
+  return {
+    state: {
+      owner,
+      mode: "keyboard-drag",
+      downTick: atTick(tick),
+      downY: null,
+      dragStartY: null,
+      tapCandidateTick: null,
+      held: false,
+      boost: false,
+      dropFired: false,
+    },
+    input: { held: false, boost: false, dragY: targetY },
+  };
+}
+
 /** Lift an owned contact. A fired drop is already released, so it adds no log entry. */
 export function releaseRaceGesture(
   state: RaceGestureState,
   owner: RaceGestureOwner,
 ): RaceGestureResult {
   if (state.owner !== owner) return { state, input: null };
-  const shouldRecord = state.held || state.boost;
+  const drag = state.mode === "pointer-drag" || state.mode === "keyboard-drag";
+  const input = drag
+    ? { held: false, boost: false, dragY: null }
+    : state.held || state.boost ? { held: false, boost: false } : null;
   return {
-    state: {
+    // A flight lift retains its first-tap candidate for the existing double-
+    // tap window. Drag lift has no tap semantics and clears everything.
+    state: drag ? createRaceGestureState() : {
       ...state,
       owner: null,
+      mode: null,
       downTick: 0,
       downY: null,
+      dragStartY: null,
       held: false,
       boost: false,
       dropFired: false,
     },
-    input: shouldRecord ? { held: false, boost: false } : null,
+    input,
   };
 }
 
@@ -144,10 +254,12 @@ export function cancelRaceGesture(
   owner?: RaceGestureOwner,
 ): RaceGestureResult {
   if (owner !== undefined && state.owner !== owner) return { state, input: null };
-  const shouldRecord = state.held || state.boost;
+  const input = state.mode === "pointer-drag" || state.mode === "keyboard-drag"
+    ? { held: false, boost: false, dragY: null }
+    : state.held || state.boost ? { held: false, boost: false } : null;
   return {
     state: createRaceGestureState(),
-    input: shouldRecord ? { held: false, boost: false } : null,
+    input,
   };
 }
 
@@ -161,12 +273,15 @@ export function neutralizeOwnedRaceGesture(state: RaceGestureState): RaceGesture
   if (state.owner === null) return { state, input: null };
   return {
     state: createRaceGestureState(),
-    input: { held: false, boost: false },
+    input: state.mode === "pointer-drag" || state.mode === "keyboard-drag"
+      ? { held: false, boost: false, dragY: null }
+      : { held: false, boost: false },
   };
 }
 
 /** Arrow Down uses the same atomic release-plus-drop semantic as a swipe. */
 export function dropRaceGesture(state: RaceGestureState): RaceGestureResult {
+  if (state.mode === "pointer-drag" || state.mode === "keyboard-drag") return { state, input: null };
   if (state.dropFired) return { state, input: null };
   return {
     state: {

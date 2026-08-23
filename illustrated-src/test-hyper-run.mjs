@@ -76,6 +76,7 @@ try {
     RACE_MAX_SPEED,
     RACE_MAX_WORMHOLES,
     RACE_PILOT_X,
+    RACE_PILOT_RADIUS,
     RACE_READY_COPY,
     RACE_RING_CHARGE,
     RACE_RING_SPEED_GAIN,
@@ -86,6 +87,14 @@ try {
     RACE_RINGS,
     RACE_SEED,
     RACE_TUNNEL_DISTANCE,
+    RACE_TUNNEL_DRAG_STEP,
+    RACE_TUNNEL_DRAG_TRAVERSAL_TICKS,
+    RACE_TUNNEL_PERFECT_APERTURE,
+    RACE_TUNNEL_PERFECT_CLEARANCE,
+    RACE_TUNNEL_QUALITY_SPEED_GAIN,
+    RACE_TUNNEL_RING_APERTURE,
+    RACE_TUNNEL_RING_CLEARANCE,
+    RACE_TUNNEL_RING_TICKS,
     RACE_TUNNEL_SPEED,
     RACE_TUNNEL_TICKS,
     RACE_SPEED_DECAY_PER_SECOND,
@@ -99,9 +108,10 @@ try {
     raceDecisionAge,
     raceRouteTarget,
     raceSignature,
-    raceTunnelAcorns,
     raceTunnelGeometry,
     raceTunnelMirrored,
+    raceTunnelQuality,
+    raceTunnelRings,
     stepRace,
     sweptDebrisHit,
     sweptGateHit,
@@ -109,15 +119,24 @@ try {
   const {
     DOUBLE_TAP_MAX_GAP_TICKS,
     DROP_DISTANCE,
+    cancelRaceGesture,
     canonicalRaceY,
     createRaceGestureState,
     moveRaceGesture,
+    moveRaceDragGesture,
     neutralizeOwnedRaceGesture,
+    pressRaceDragGesture,
     pressRaceGesture,
+    pressRaceKeyboardDragGesture,
     releaseRaceGesture,
   } = gestureApi;
   const { RACE_MAX_VIRTUAL_WIDTH, raceViewport, raceViewportX, raceViewportY } = viewportApi;
-  const { HYPER_RUN_GATE_FALLBACK_GEOMETRY, hyperRunChargeCopy, hyperRunGateUsesPaintedPairs } = drawApi;
+  const {
+    HYPER_RUN_GATE_FALLBACK_GEOMETRY,
+    hyperRunChargeCopy,
+    hyperRunGateUsesPaintedPairs,
+    hyperRunTunnelRingScreenX,
+  } = drawApi;
   const {
     makeWorld, pausePlay, planRaceCueEffects, resetRun, resizeWorld, setRaceInput, takeRaceCueEffects, updateWorld,
   } = simApi;
@@ -125,10 +144,6 @@ try {
   const { defaultSave } = saveApi;
   const {
     QUICK_DROP_VY,
-    WORMHOLE_HOLD_ACCEL,
-    WORMHOLE_MAX_VY,
-    WORMHOLE_MIN_VY,
-    WORMHOLE_RELEASE_ACCEL,
   } = controlApi;
 
   const optimizedVisible = new Set([
@@ -255,20 +270,28 @@ try {
     return desiredVy < race.vy ? { held: true, boost: false } : { held: false, boost: false };
   }
 
-  function desiredTunnelInput(race, advanced, memory) {
-    const lookTick = Math.min(RACE_TUNNEL_TICKS - 1, race.phaseTick + 12);
-    const targetY = raceTunnelGeometry(race, lookTick).center;
-    const desiredVy = Math.max(-780, Math.min(620, (targetY - race.y) / 0.20));
-    if (advanced && targetY - race.y > 95 && race.vy < 260 && race.phaseTick - memory.lastTunnelDrop > 24) {
-      memory.lastTunnelDrop = race.phaseTick;
-      return { held: false, boost: false, drop: true };
-    }
-    if (race.vy > desiredVy + 28) return { held: true, boost: advanced && desiredVy < -500 };
-    return { held: false, boost: false };
+  function desiredTunnelInput(race, profile) {
+    const rings = raceTunnelRings(race);
+    const ledger = race.tunnelRingLedger[race.wormholes] ?? [];
+    const nextIndex = rings.findIndex((_, index) => (ledger[index] ?? "pending") === "pending");
+    if (nextIndex < 0) return { held: false, boost: false, dragY: null };
+    // The average proof clears every outer aperture but centers only 1/5/9.
+    // Optimized play tracks all nine centers for the full exit-speed reward.
+    const averageOffset = nextIndex === 0 || nextIndex === 4 || nextIndex === 8
+      ? 0
+      : nextIndex % 2 === 0 ? -20 : 20;
+    return {
+      held: false,
+      boost: false,
+      dragY: raceTunnelGeometry(race, race.phaseTick).center
+        + (profile === "optimized" ? 0 : averageOffset),
+    };
   }
 
   function sameInputState(race, input) {
-    return !input.drop && race.held === input.held && race.boost === input.boost;
+    const ownsDragTarget = Object.prototype.hasOwnProperty.call(input, "dragY");
+    return !input.drop && race.held === input.held && race.boost === input.boost
+      && (!ownsDragTarget || race.tunnelDragY === input.dragY);
   }
 
   function runController(profile, seed = RACE_SEED) {
@@ -278,13 +301,13 @@ try {
     // completion fixture is required to omit them. Its authored misses and
     // two-cycle route, rather than disabled controls, create the time band.
     const advanced = true;
-    const memory = { lastDropTarget: "", lastTunnelDrop: -1000 };
+    const memory = { lastDropTarget: "" };
     let normalSpeedSum = 0;
     let normalTicks = 0;
     while (race.phase !== "finish" && race.tick < 12_000) {
       let input = { held: false, boost: false };
       if (race.phase === "normal") input = desiredNormalInput(race, selected, advanced, memory);
-      else if (race.phase === "tunnel") input = desiredTunnelInput(race, advanced, memory);
+      else if (race.phase === "tunnel") input = desiredTunnelInput(race, profile);
       if (!sameInputState(race, input)) queueRaceInput(race, input);
       if (race.phase === "normal") {
         normalSpeedSum += race.speed;
@@ -307,6 +330,8 @@ try {
     let rawEvents = 0;
     let qualifyingBoostPresses = 0;
     let swipeDrops = 0;
+    let dragTargets = 0;
+    let dragMoves = 0;
     const emit = (result, tick, kind) => {
       rawEvents += 1;
       gesture = result.state;
@@ -325,7 +350,26 @@ try {
 
     for (const target of transitions) {
       const tick = target.tick;
-      if (target.drop) {
+      if (Object.prototype.hasOwnProperty.call(target, "dragY")) {
+        assert(!target.held && !target.boost && !target.drop,
+          `${label} tunnel drag target was not isolated from flight controls`);
+        if (target.dragY === null) {
+          releaseActive(tick);
+        } else {
+          dragTargets += 1;
+          if (gesture.owner === null) {
+            const owner = ownerSerial++;
+            emit(pressRaceDragGesture(gesture, owner, tick, 0, target.dragY), tick, "drag-press");
+          } else {
+            assert(typeof gesture.owner === "number", `${label} tunnel drag had a non-pointer owner`);
+            const pointerY = gesture.mode === "pointer-drag"
+              ? gesture.downY + target.dragY - gesture.dragStartY
+              : 0;
+            emit(moveRaceDragGesture(gesture, gesture.owner, tick, pointerY, target.dragY), tick, "drag-move");
+            dragMoves += 1;
+          }
+        }
+      } else if (target.drop) {
         assert(!target.held && !target.boost, `${label} drop target was not atomic release-plus-drop`);
         releaseActive(tick);
         const { owner } = pressFresh(tick, "swipe-press");
@@ -361,7 +405,14 @@ try {
         `${label} raw gesture state disagreed with semantic target at tick ${tick}`);
     }
     same(authority.inputs, transitions, `${label} raw gestures did not reproduce the semantic log`);
-    return { transitions: authority.inputs.map((input) => ({ ...input })), rawEvents, qualifyingBoostPresses, swipeDrops };
+    return {
+      transitions: authority.inputs.map((input) => ({ ...input })),
+      rawEvents,
+      qualifyingBoostPresses,
+      swipeDrops,
+      dragTargets,
+      dragMoves,
+    };
   }
 
   function runReplay(transitions, cadence = [RACE_DT], seed = RACE_SEED) {
@@ -616,6 +667,10 @@ try {
     "benchmark raw gesture traces did not contain qualifying boost presses");
   assert(realizedAverage.swipeDrops > 0 && realizedOptimized.swipeDrops > 0,
     "benchmark raw gesture traces did not contain legal swipe drops");
+  assert(realizedAverage.dragTargets >= authoredAverage.race.wormholes * RACE_TUNNEL_RING_TICKS.length
+    && realizedOptimized.dragTargets >= authoredOptimized.race.wormholes * RACE_TUNNEL_RING_TICKS.length
+    && realizedAverage.dragMoves > 0 && realizedOptimized.dragMoves > 0,
+  "benchmark raw gesture traces did not cover every entered tunnel's relative drag targets");
 
   // Acceptance 1: same semantic log, recognizer boundaries, and merge rules.
   const replayRunA = runReplay(authoredOptimized.transitions);
@@ -630,6 +685,9 @@ try {
     { kind: "ring-miss", tick: 7, id: "r02", index: 1, y: 280, chargeDelta: 0 },
     { kind: "debris-hit", tick: 7, id: "d01", index: 0, y: 520, chargeDelta: -10 },
     { kind: "acorn", tick: 7, id: "a01", index: 0, y: 320, chargeDelta: 0 },
+    { kind: "tunnel-ring-pass", tick: 7, id: "w1-g01", index: 0, y: 320, chargeDelta: 0 },
+    { kind: "tunnel-ring-perfect", tick: 7, id: "w1-g02", index: 1, y: 320, chargeDelta: 0 },
+    { kind: "tunnel-ring-miss", tick: 7, id: "w1-g03", index: 2, y: 320, chargeDelta: 0 },
     { kind: "entry", tick: 7, id: "r20", index: 19, y: 320, chargeDelta: 0 },
     { kind: "return", tick: 7, id: "w1", index: 0, y: 320, chargeDelta: 0 },
     { kind: "finish", tick: 7, id: "prototype-chapter-1", index: -1, y: 320, chargeDelta: 0 },
@@ -640,6 +698,9 @@ try {
     ["ring-miss", null, false],
     ["debris-hit", "bounce", false],
     ["acorn", "acorn", false],
+    ["tunnel-ring-pass", "gold", false],
+    ["tunnel-ring-perfect", "gold", false],
+    ["tunnel-ring-miss", null, false],
     ["entry", "shift", true],
     ["return", "shift", true],
     ["finish", null, true],
@@ -654,7 +715,7 @@ try {
     if (effect.sfx) counts[effect.sfx] = (counts[effect.sfx] ?? 0) + 1;
     return counts;
   }, {});
-  same(plannedSfxCounts, { gold: 1, bounce: 1, acorn: 1, shift: 2 },
+  same(plannedSfxCounts, { gold: 3, bounce: 1, acorn: 1, shift: 2 },
     "same-tick pass/debris/acorn/entry/return effects were overwritten or duplicated");
   assert(firstEffectPlans.filter((effect) => effect.notify).length === 3,
     "entry/return/finish notification plans were overwritten or duplicated");
@@ -669,6 +730,75 @@ try {
   gesture = releaseRaceGesture(pressRaceGesture(gesture, 1, 0, 120).state, 1).state;
   result = pressRaceGesture(gesture, 1, DOUBLE_TAP_MAX_GAP_TICKS + 1, 120);
   same(result.input, { held: true, boost: false }, "16-tick second down did not degrade to plain hold");
+  let dragGesture = pressRaceDragGesture(createRaceGestureState(), 41, 70, 300, 240);
+  same(dragGesture.input, { held: false, boost: false, dragY: 240 },
+    "tunnel press snapped to the pointer instead of anchoring at the pilot");
+  assert(dragGesture.state.mode === "pointer-drag" && dragGesture.state.downY === 300
+    && dragGesture.state.dragStartY === 240, "tunnel press did not retain its relative-drag anchors");
+  dragGesture = moveRaceDragGesture(dragGesture.state, 41, 71, 340, 240);
+  same(dragGesture.input, { held: false, boost: false, dragY: 280 },
+    "relative tunnel move did not preserve the initial pointer-to-pilot offset");
+  dragGesture = releaseRaceGesture(dragGesture.state, 41);
+  same(dragGesture.input, { held: false, boost: false, dragY: null },
+    "tunnel pointer lift did not release its target immediately");
+  same(dragGesture.state, createRaceGestureState(), "tunnel pointer lift did not clear its owner");
+  const flightAcrossEntry = pressRaceGesture(createRaceGestureState(), 42, 80, 180);
+  const convertedDrag = moveRaceDragGesture(flightAcrossEntry.state, 42, 90, 260, 330);
+  same(convertedDrag.input, { held: false, boost: false, dragY: 330 },
+    "flight contact held across entry did not convert without snapping");
+  assert(convertedDrag.state.mode === "pointer-drag" && convertedDrag.state.downY === 260
+    && convertedDrag.state.dragStartY === 330, "entry-held contact did not establish fresh tunnel anchors");
+  const keyboardDrag = pressRaceKeyboardDragGesture(createRaceGestureState(), "keyboard-rise", 100, 0);
+  same(keyboardDrag.input, { held: false, boost: false, dragY: 0 },
+    "tunnel keyboard rise did not use the drag target follower");
+  same(releaseRaceGesture(keyboardDrag.state, "keyboard-rise").input,
+    { held: false, boost: false, dragY: null }, "tunnel keyboard release did not clear its target");
+  const cancelledDrag = cancelRaceGesture(
+    pressRaceDragGesture(createRaceGestureState(), 43, 101, 400, 300).state,
+    43,
+  );
+  same(cancelledDrag.input, { held: false, boost: false, dragY: null },
+    "tunnel pointer cancel did not release its target");
+  assert(cancelRaceGesture(cancelledDrag.state, 43).input === null,
+    "cleared tunnel pointer emitted a duplicate cancel transition");
+  const canonicalDrag = createRaceState();
+  queueRaceInput(canonicalDrag, { held: false, boost: false, dragY: -10.2 }, 2);
+  queueRaceInput(canonicalDrag, { held: false, boost: false, dragY: 91.6 }, 3);
+  queueRaceInput(canonicalDrag, { held: false, boost: false, dragY: 900 }, 4);
+  queueRaceInput(canonicalDrag, { held: false, boost: false, dragY: null }, 4);
+  same(canonicalDrag.inputs, [
+    { tick: 2, held: false, boost: false, dragY: 0 },
+    { tick: 3, held: false, boost: false, dragY: 92 },
+    { tick: 4, held: false, boost: false, dragY: null },
+  ], "drag target canonicalization or same-tick last-writer merge changed");
+  const pendingDragDedupe = createRaceState();
+  pendingDragDedupe.tunnelDragY = 100;
+  queueRaceInput(pendingDragDedupe, { held: false, boost: false, dragY: 200 }, 10);
+  queueRaceInput(pendingDragDedupe, { held: true, boost: false }, 11);
+  queueRaceInput(pendingDragDedupe, { held: true, boost: false, dragY: 100 }, 12);
+  same(pendingDragDedupe.inputs, [
+    { tick: 10, held: false, boost: false, dragY: 200 },
+    { tick: 11, held: true, boost: false },
+    { tick: 12, held: true, boost: false, dragY: 100 },
+  ], "held-only pending input hid the effective queued drag target during dedupe");
+  for (const freshInput of [
+    { held: true, boost: false },
+    { held: true, boost: true },
+  ]) {
+    const consumedBoundaryInput = createRaceState();
+    queueRaceInput(consumedBoundaryInput, freshInput, 0);
+    stepRace(consumedBoundaryInput);
+    assert(consumedBoundaryInput.inputCursor === consumedBoundaryInput.inputs.length,
+      "boundary-reset fixture did not consume its initial control");
+    // Entry/tunnel handoffs own these resets even when the preceding logged
+    // snapshot happened to have the same values as a later fresh press.
+    consumedBoundaryInput.held = false;
+    consumedBoundaryInput.boost = false;
+    queueRaceInput(consumedBoundaryInput, freshInput, consumedBoundaryInput.tick);
+    same(consumedBoundaryInput.inputs.slice(-1), [
+      { tick: consumedBoundaryInput.tick, ...freshInput },
+    ], `consumed ${freshInput.boost ? "boost" : "hold"} history suppressed a fresh post-boundary press`);
+  }
   const idleGesture = createRaceGestureState();
   const idleNeutral = neutralizeOwnedRaceGesture(idleGesture);
   assert(idleNeutral.state === idleGesture && idleNeutral.input === null,
@@ -878,7 +1008,21 @@ try {
     mappedDropTick.push(52);
   }
   same(mappedDropTick, requiredViewports.map(() => 52), "viewport mapping changed semantic drop tick");
-  same(RACE_READY_COPY, ["HOLD TO RISE", "DOUBLE-TAP + HOLD TO BOOST", "SWIPE DOWN TO DIVE"],
+  const mappedDragTargets = requiredViewports.map(({ viewport }, index) => {
+    const owner = 70 + index;
+    const pointerStart = canonicalRaceY(raceViewportY(viewport, 200), viewport.top, viewport.contentHeight);
+    const pointerEnd = canonicalRaceY(raceViewportY(viewport, 260), viewport.top, viewport.contentHeight);
+    const down = pressRaceDragGesture(createRaceGestureState(), owner, 60, pointerStart, 310);
+    return moveRaceDragGesture(down.state, owner, 61, pointerEnd, 310).input?.dragY;
+  });
+  same(mappedDragTargets, requiredViewports.map(() => 370),
+    "viewport mapping changed the canonical relative tunnel drag distance");
+  same(RACE_READY_COPY, [
+    "HOLD TO RISE",
+    "DOUBLE-TAP + HOLD TO BOOST",
+    "SWIPE DOWN TO DIVE",
+    "WORMHOLE: PRESS + DRAG UP / DOWN",
+  ],
     "race ready copy changed");
   const projectionWorld = makeWorld(390, 844);
   const projectionSave = defaultSave();
@@ -958,33 +1102,48 @@ try {
   // stamp/merge one semantic state, pause, then reproject—across every phase.
   for (let phaseIndex = 0; phaseIndex < resizePhaseSpecs.length; phaseIndex++) {
     const spec = resizePhaseSpecs[phaseIndex];
-    for (const owner of [1_000 + phaseIndex, "keyboard-rise"]) {
+    const resizeOwners = spec.phase === "tunnel"
+      ? [1_000 + phaseIndex, "keyboard-rise", "keyboard-drop"]
+      : [1_000 + phaseIndex, "keyboard-rise"];
+    for (const owner of resizeOwners) {
       const phaseWorld = makeResizePhaseWorld(spec);
       phaseWorld.screen = "play";
       const race = phaseWorld.race;
+      const tunnelOwned = spec.phase === "tunnel";
       const sameTick = typeof owner === "number";
       const downTick = sameTick ? race.tick : race.tick - 1;
-      const down = pressRaceGesture(createRaceGestureState(), owner, downTick,
-        typeof owner === "number" ? canonicalRaceY(220, 0, 640) : null);
-      same(down.input, { held: true, boost: false }, `${spec.label}/${owner} did not begin as a plain hold`);
+      const down = tunnelOwned
+        ? typeof owner === "number"
+          ? pressRaceDragGesture(createRaceGestureState(), owner, downTick, 220, spec.y)
+          : pressRaceKeyboardDragGesture(createRaceGestureState(), owner, downTick, spec.y)
+        : pressRaceGesture(createRaceGestureState(), owner, downTick,
+          typeof owner === "number" ? canonicalRaceY(220, 0, 640) : null);
+      const downInput = tunnelOwned
+        ? { held: false, boost: false, dragY: spec.y }
+        : { held: true, boost: false };
+      same(down.input, downInput, `${spec.label}/${owner} did not begin with its phase-owned control`);
       if (spec.ready) setRaceInput(phaseWorld, down.input);
       else queueRaceInput(race, down.input, downTick);
       const tickBeforeNeutral = race.tick;
       const neutral = neutralizeOwnedRaceGesture(down.state);
-      same(neutral.input, { held: false, boost: false },
+      const neutralInput = tunnelOwned
+        ? { held: false, boost: false, dragY: null }
+        : { held: false, boost: false };
+      same(neutral.input, neutralInput,
         `${spec.label}/${owner} resize did not emit one neutral state`);
       queueRaceInput(race, neutral.input, race.tick);
       assert(race.tick === tickBeforeNeutral && race.inputs.filter((input) => input.tick === race.tick
-        && !input.held && !input.boost && !input.drop).length === 1,
+        && !input.held && !input.boost && !input.drop
+        && (!tunnelOwned || input.dragY === null)).length === 1,
       `${spec.label}/${owner} resize hid a tick or failed to stamp exactly one neutral state`);
       if (sameTick || spec.ready) {
         same(race.inputs.filter((input) => input.tick === race.tick), [
-          { tick: race.tick, held: false, boost: false },
+          { tick: race.tick, ...neutralInput },
         ], `${spec.label}/${owner} same-tick neutral state did not replace the owned hold`);
       } else {
         same(race.inputs.slice(-2), [
-          { tick: race.tick - 1, held: true, boost: false },
-          { tick: race.tick, held: false, boost: false },
+          { tick: race.tick - 1, ...downInput },
+          { tick: race.tick, ...neutralInput },
         ], `${spec.label}/${owner} neutral state did not append after the prior hold`);
       }
       const repeated = neutralizeOwnedRaceGesture(neutral.state);
@@ -992,9 +1151,15 @@ try {
         `${spec.label}/${owner} duplicate resize emitted a second neutral state`);
       const oldLift = releaseRaceGesture(neutral.state, owner);
       assert(oldLift.input === null, `${spec.label}/${owner} stale lift emitted a semantic transition`);
-      const fresh = pressRaceGesture(oldLift.state, owner, race.tick + 1,
-        typeof owner === "number" ? 220 : null);
-      same(fresh.input, { held: true, boost: false },
+      const fresh = tunnelOwned
+        ? typeof owner === "number"
+          ? pressRaceDragGesture(oldLift.state, owner, race.tick + 1, 220, race.y)
+          : pressRaceKeyboardDragGesture(oldLift.state, owner, race.tick + 1, race.y)
+        : pressRaceGesture(oldLift.state, owner, race.tick + 1,
+          typeof owner === "number" ? 220 : null);
+      same(fresh.input, tunnelOwned
+        ? { held: false, boost: false, dragY: race.y }
+        : { held: true, boost: false },
         `${spec.label}/${owner} did not require a fresh plain press after resize`);
       const authorityAfterNeutral = JSON.stringify(race);
       const target = typeof owner === "number" ? landscapeViewport : cappedViewport;
@@ -1069,18 +1234,27 @@ try {
     && engineSource.includes("pausePlay(world);"),
   "owned-contact resize no longer neutralizes input and pauses fixed-step authority");
   const keyboardRepeatGuard = engineSource.indexOf("if (raceResizeKeyboardReleasePending) return;");
-  const pauseResumeAfterGuard = engineSource.indexOf('else if (world.screen === "pause") engine.resume();',
+  const focusPauseRepeatGuard = engineSource.indexOf('else if (world.screen === "pause") {\n        if (!e.repeat) engine.resume();\n      }',
     keyboardRepeatGuard);
-  assert(engineSource.includes("let raceResizeKeyboardReleasePending = false;")
-    && engineSource.includes('if (owner === "keyboard-rise") raceResizeKeyboardReleasePending = true;')
-    && keyboardRepeatGuard >= 0 && pauseResumeAfterGuard > keyboardRepeatGuard
-    && engineSource.includes("if (raceResizeKeyboardReleasePending) {\n        raceResizeKeyboardReleasePending = false;\n        return;\n      }")
-    && /function resetInputTracking\(\) \{[\s\S]*?raceResizeKeyboardReleasePending = false;/m.test(engineSource),
+  const racePlayAfterFocusGuard = engineSource.indexOf('else if (world.screen === "play") {',
+    focusPauseRepeatGuard);
+  assert(engineSource.includes('let raceResizeKeyboardReleasePending: "keyboard-rise" | "keyboard-drop" | null = null;')
+    && engineSource.includes('if (owner === "keyboard-rise" || owner === "keyboard-drop") {')
+    && engineSource.includes("raceResizeKeyboardReleasePending = owner;")
+    && keyboardRepeatGuard >= 0 && focusPauseRepeatGuard > keyboardRepeatGuard
+    && engineSource.includes('if (raceResizeKeyboardReleasePending === "keyboard-rise") {\n        raceResizeKeyboardReleasePending = null;\n        return;\n      }')
+    && engineSource.includes('if (raceResizeKeyboardReleasePending === "keyboard-drop") {\n        raceResizeKeyboardReleasePending = null;\n        return;\n      }')
+    && /function resetInputTracking\(\) \{[\s\S]*?raceResizeKeyboardReleasePending = null;/m.test(engineSource),
   "keyboard repeat can resume an orientation-paused race before physical key release");
+  assert(focusPauseRepeatGuard >= 0 && racePlayAfterFocusGuard > focusPauseRepeatGuard,
+    "held-key OS repeat can resume a focus/visibility/Escape-paused race without a fresh press");
 
   // Acceptance 3: cadence independence with advanced input present.
   assert(authoredOptimized.transitions.some((input) => input.boost), "optimized fixture has no boost event");
   assert(authoredOptimized.transitions.some((input) => input.drop), "optimized fixture has no drop event");
+  assert(authoredOptimized.transitions.some((input) => typeof input.dragY === "number")
+    && authoredOptimized.transitions.some((input) => input.dragY === null),
+  "optimized fixture has no tick-stamped tunnel drag target/release events");
   const at60 = runReplay(authoredOptimized.transitions, [1 / 60]);
   const at30 = runReplay(authoredOptimized.transitions, [1 / 30]);
   const at120 = runReplay(authoredOptimized.transitions, [1 / 120]);
@@ -1102,11 +1276,11 @@ try {
   assertProfile("passive", passive, [8_990, 9_010], { passedRange: [0, 0], wormholes: 0, debris: [0, 0] });
   assert(passive.race.boostTicks.length === 0 && passive.race.dropTicks.length === 0,
     "passive fixture emitted an advanced input event");
-  assertProfile("average", average, [6_240, 6_720], {
-    passedRange: [44, 50], wormholes: 2, debris: [0, 2], mean: [278.25, 302.25],
+  assertProfile("average", average, [5_940, 6_000], {
+    passedRange: [44, 50], wormholes: 2, debris: [0, 2], mean: [316, 322],
   });
   assertProfile("optimized", optimized, [5_400, 5_700], {
-    passed: [60], wormholes: 3, debris: [0, 0], mean: [330, 345],
+    passed: [60], wormholes: 3, debris: [0, 0], mean: [342, 348],
   });
   same([RACE_TWO_STAR_TICKS, RACE_THREE_STAR_TICKS], [6_900, 5_760],
     "Revision 3 changed the approved star thresholds");
@@ -1427,34 +1601,65 @@ try {
     }
   }
 
-  // Acceptance 6: tunnel parity/content/mirroring and exact handoff/settle.
-  function oneTunnelTick(input, vy = 0) {
+  // Acceptance 6: relative tunnel drag, alignment rings, and exact handoff/settle.
+  function makeTunnelRace(wormholes = 0, entryAnchorY = 320) {
     const race = createRaceState();
     race.phase = "tunnel";
     race.phaseTick = 0;
     race.phaseStartPosition = 1_000;
     race.coursePosition = 1_000;
-    race.entryAnchorY = 320;
-    race.y = 320;
-    race.previousY = 320;
-    race.vy = vy;
-    race.tunnelAcornLedger[0] = Array(18).fill(false);
-    if (input) loadRaceInputs(race, [{ tick: 0, ...input }]);
-    stepRace(race);
+    race.previousCoursePosition = 1_000;
+    race.entryAnchorY = entryAnchorY;
+    race.y = entryAnchorY;
+    race.previousY = entryAnchorY;
+    race.vy = 0;
+    race.wormholes = wormholes;
+    race.tunnelRingLedger[wormholes] = RACE_TUNNEL_RING_TICKS.map(() => "pending");
+    race.tunnelRingDecisionTicks[wormholes] = RACE_TUNNEL_RING_TICKS.map(() => null);
     return race;
   }
-  near(oneTunnelTick({ held: false, boost: false }).vy, WORMHOLE_RELEASE_ACCEL * RACE_DT, 1e-9,
-    "race tunnel release acceleration drifted from Wormhole Run");
-  near(oneTunnelTick({ held: true, boost: false }).vy, WORMHOLE_HOLD_ACCEL * RACE_DT, 1e-9,
-    "race tunnel hold acceleration drifted from Wormhole Run");
-  near(oneTunnelTick({ held: true, boost: false }, WORMHOLE_MIN_VY).vy, WORMHOLE_MIN_VY, 1e-9,
-    "race tunnel upward clamp drifted");
-  near(oneTunnelTick({ held: false, boost: false }, WORMHOLE_MAX_VY).vy, WORMHOLE_MAX_VY, 1e-9,
-    "race tunnel downward clamp drifted");
-  assert(oneTunnelTick({ held: true, boost: true }).vy < WORMHOLE_HOLD_ACCEL * RACE_DT,
-    "tunnel boost was not stronger than plain hold");
-  assert(oneTunnelTick({ held: false, boost: false, drop: true }).vy > QUICK_DROP_VY,
-    "tunnel drop did not apply before released integration");
+
+  same([
+    RACE_TUNNEL_DRAG_TRAVERSAL_TICKS,
+    RACE_TUNNEL_DRAG_STEP,
+    RACE_TUNNEL_RING_APERTURE,
+    RACE_TUNNEL_PERFECT_APERTURE,
+    RACE_TUNNEL_RING_CLEARANCE,
+    RACE_TUNNEL_PERFECT_CLEARANCE,
+    RACE_TUNNEL_QUALITY_SPEED_GAIN,
+  ], [18, RACE_HEIGHT / 18, 58, 24, 42, 8, 3.75],
+  "drag traversal, nested apertures, or exit-speed derivation changed");
+  for (const [width, height] of [[360, 640], [390, 844], [844, 390], [1_440, 900], [1_600, 600]]) {
+    const viewport = raceViewport(width, height);
+    for (const ringTick of RACE_TUNNEL_RING_TICKS) {
+      near(hyperRunTunnelRingScreenX(viewport, ringTick, ringTick + 1), viewport.pilotX, 1e-9,
+        `${width}x${height} resolved tunnel ring did not meet the pilot plane on its authority crossing`);
+      assert(hyperRunTunnelRingScreenX(viewport, ringTick, ringTick) > viewport.pilotX,
+        `${width}x${height} pending tunnel ring reached the pilot plane before authority judged it`);
+    }
+  }
+  const inactiveTunnel = makeTunnelRace();
+  inactiveTunnel.vy = -500;
+  loadRaceInputs(inactiveTunnel, [{ tick: 0, held: true, boost: true, drop: true }]);
+  stepRace(inactiveTunnel);
+  same([inactiveTunnel.y, inactiveTunnel.vy, inactiveTunnel.boostTicks, inactiveTunnel.dropTicks],
+    [320, 0, [], []], "legacy hold/boost/drop changed tunnel position or telemetry");
+  const risingDrag = makeTunnelRace();
+  loadRaceInputs(risingDrag, [{ tick: 0, held: false, boost: false, dragY: 500 }]);
+  stepRace(risingDrag);
+  near(risingDrag.y, 320 + RACE_TUNNEL_DRAG_STEP, 1e-9,
+    "active tunnel drag exceeded or undershot its fixed-step traversal cap");
+  near(risingDrag.vy, RACE_TUNNEL_DRAG_STEP / RACE_DT, 1e-9,
+    "drag-derived presentation velocity changed");
+  const preciseDrag = makeTunnelRace();
+  loadRaceInputs(preciseDrag, [{ tick: 0, held: false, boost: false, dragY: 330 }]);
+  stepRace(preciseDrag);
+  same([preciseDrag.y, preciseDrag.vy], [330, 600],
+    "nearby tunnel drag target did not settle exactly in one fixed step");
+  queueRaceInput(preciseDrag, { held: false, boost: false, dragY: null });
+  stepRace(preciseDrag);
+  same([preciseDrag.y, preciseDrag.vy, preciseDrag.tunnelDragY], [330, 0, null],
+    "released tunnel drag did not hold its last position");
   const mirrorBits = [0, 1, 2].map((wormholes) => raceTunnelMirrored({ seed: RACE_SEED, wormholes }));
   assert(new Set(mirrorBits).size === 2, `first three tunnel cycles did not cover both mirrors: ${mirrorBits}`);
   const actualTunnelEntries = [19, 47, 75].map((ringIndex, wormholes) => ({
@@ -1481,174 +1686,97 @@ try {
     [0, 496, 144], [45, 392, 126], [90, 436, 96], [135, 232, 108], [180, 200, 88],
     [225, 172, 104], [255, 472, 88], [285, 188, 96], [315, 280, 120], [359, 320, 144],
   ], "mirrored tunnel spine no longer preserves entry/exit mouths and reflected interior centers");
-  const centerPickupLines = [
-    [
-      { tick: 30, y: 266.6666666666667 }, { tick: 75, y: 215.40740740740742 },
-      { tick: 120, y: 355.1111111111111 }, { tick: 165, y: 431.7037037037037 },
-      { tick: 210, y: 460.74074074074076 },
-    ],
-    [
-      { tick: 30, y: 261.48148148148147 }, { tick: 75, y: 215.40740740740742 },
-      { tick: 120, y: 355.1111111111111 }, { tick: 165, y: 431.7037037037037 },
-      { tick: 210, y: 460.74074074074076 },
-    ],
-    [
-      { tick: 30, y: 418.96296296296293 }, { tick: 75, y: 424.5925925925926 },
-      { tick: 120, y: 284.8888888888889 }, { tick: 165, y: 208.2962962962963 },
-      { tick: 210, y: 179.25925925925927 },
-    ],
-  ];
-  actualTunnelEntries.forEach((entry, cycle) => {
-    same(raceTunnelAcorns({ seed: RACE_SEED, ...entry }).slice(0, 5), centerPickupLines[cycle],
-      `cycle ${cycle} center pickup ticks/Y changed`);
-  });
-  assert(actualTunnelEntries.every((entry) => raceTunnelAcorns({ seed: RACE_SEED, ...entry }).length === 18),
-    "tunnel cycle does not contain exactly 18 authored acorns");
-  const canonicalTunnelRewards = raceTunnelAcorns({ seed: RACE_SEED, wormholes: 0, entryAnchorY: 320 }).slice(5);
-  same(canonicalTunnelRewards, [
-    { tick: 225, y: 480 }, { tick: 229, y: 465 }, { tick: 234, y: 427 }, { tick: 238, y: 379 },
-    { tick: 242, y: 327 }, { tick: 246, y: 275 }, { tick: 251, y: 210 }, { tick: 255, y: 156 },
-    { tick: 257, y: 156 }, { tick: 264, y: 233 }, { tick: 271, y: 310 }, { tick: 278, y: 387 },
-    { tick: 285, y: 464 },
-  ], "canonical boost/drop reward line changed");
-  const mirroredTunnelRewards = raceTunnelAcorns({ seed: RACE_SEED, wormholes: 2, entryAnchorY: 496 }).slice(5);
-  same(mirroredTunnelRewards, [
-    { tick: 225, y: 160 }, { tick: 229, y: 175 }, { tick: 234, y: 213 }, { tick: 238, y: 261 },
-    { tick: 242, y: 313 }, { tick: 246, y: 365 }, { tick: 251, y: 430 }, { tick: 255, y: 429 },
-    { tick: 257, y: 433 }, { tick: 264, y: 407 }, { tick: 271, y: 330 }, { tick: 278, y: 253 },
-    { tick: 285, y: 176 },
-  ], "mirrored drop/boost line or its two asymmetric cusp overrides changed");
-
-  const tunnelWitnessSchedules = [
-    {
-      pressTicks: [7, 50, 124, 180], releaseTicks: [21, 71, 150, 198],
-      boostPrepTick: 206, boostTick: 221, dropTick: 256, dropFromOwnedContact: false,
-    },
-    {
-      pressTicks: [10, 65, 124, 180], releaseTicks: [30, 80, 150, 198],
-      boostPrepTick: 206, boostTick: 221, dropTick: 256, dropFromOwnedContact: false,
-    },
-    {
-      pressTicks: [8, 77, 163, 205], releaseTicks: [30, 124, 181],
-      boostPrepTick: 234, boostTick: 249, dropTick: 224, dropFromOwnedContact: true,
-    },
-  ];
-
-  function runFullTunnelReward(wormholes, entryAnchorY, schedule) {
-    const mirrored = raceTunnelMirrored({ seed: RACE_SEED, wormholes });
-    const race = createRaceState();
-    race.phase = "tunnel";
-    race.phaseTick = 0;
-    race.phaseStartPosition = 1_000;
-    race.coursePosition = 1_000;
-    race.entryAnchorY = entryAnchorY;
-    race.y = entryAnchorY;
-    race.previousY = entryAnchorY;
-    race.vy = 0;
-    race.wormholes = wormholes;
-    race.tunnelAcornLedger[wormholes] = Array(18).fill(false);
-    const targets = raceTunnelAcorns(race);
-    const targetByTick = new Map(targets.map((acorn, index) => [acorn.tick, { ...acorn, index }]));
-    let gesture = createRaceGestureState();
-    let ownerSerial = mirrored ? 400 : 300;
-    const rawEvents = [];
-    const collected = [];
-    const pickupCues = [];
-    const trajectory = [];
-    let minimumWallClearance = Number.POSITIVE_INFINITY;
-    const emit = (result, kind) => {
-      gesture = result.state;
-      rawEvents.push({ tick: race.tick, kind, input: result.input });
-      if (result.input) queueRaceInput(race, result.input);
-      return result;
-    };
-    const press = (kind = "press") => {
-      const owner = ownerSerial++;
-      return { owner, result: emit(pressRaceGesture(gesture, owner, race.tick, race.y), kind) };
-    };
-    const release = (kind = "release") => {
-      assert(gesture.owner !== null, `phase ${race.phaseTick} had no gesture owner to release`);
-      return emit(releaseRaceGesture(gesture, gesture.owner), kind);
-    };
-
-    for (let phaseTick = 0; phaseTick <= 285; phaseTick++) {
-      if (schedule.pressTicks.includes(phaseTick)) {
-        const down = press("plain-press").result;
-        same(down.input, { held: true, boost: false }, `phase ${phaseTick} plain hold was not recognizer-realizable`);
-      }
-      if (schedule.releaseTicks.includes(phaseTick)) release();
-
-      if (phaseTick === schedule.boostPrepTick) {
-        const firstTap = press("boost-first-tap");
-        same(firstTap.result.input, { held: true, boost: false }, "boost first tap was not plain");
-        release("boost-first-release");
-      } else if (phaseTick === schedule.boostTick) {
-        const secondDown = press("boost-second-down").result;
-        same(secondDown.input, { held: true, boost: true }, "boost second down did not qualify at 15 ticks");
-      } else if (phaseTick === schedule.dropTick) {
-        let swipeOwner = gesture.owner;
-        if (schedule.dropFromOwnedContact) {
-          assert(swipeOwner !== null && gesture.downY !== null,
-            "owned tunnel swipe had no live plain-hold contact");
-        } else {
-          release("boost-lift");
-          swipeOwner = press("drop-press").owner;
-        }
-        const moved = emit(moveRaceGesture(gesture, swipeOwner, race.tick, gesture.downY + DROP_DISTANCE), "drop-move");
-        same(moved.input, { held: false, boost: false, drop: true },
-          "tunnel swipe did not emit the atomic drop");
-        release("drop-release");
-      }
-
-      const before = race.acorns;
-      const corridor = raceTunnelGeometry(race, phaseTick);
-      const tunnelStep = stepRace(race);
-      pickupCues.push(...tunnelStep.cues.filter((cue) => cue.kind === "acorn"));
-      minimumWallClearance = Math.min(minimumWallClearance,
-        race.y - (corridor.center - corridor.half + 16),
-        corridor.center + corridor.half - 16 - race.y);
-      const target = targetByTick.get(phaseTick);
-      if (target) trajectory.push({ tick: phaseTick, index: target.index, y: Number(race.y.toFixed(3)), target: target.y });
-      if (race.acorns > before) collected.push({ tick: phaseTick, y: Number(race.y.toFixed(3)) });
-    }
-    const maxError = Math.max(...trajectory.map((point) => Math.abs(point.y - point.target)));
-    assert(race.acorns === 18 && collected.length === 18 && race.tunnelAcornLedger[wormholes].every(Boolean),
-      `${mirrored ? "mirrored" : "unmirrored"} authority route collected ${race.acorns}/18: `
-      + `${JSON.stringify({ collected, trajectory, scrapes: race.wallScrapeTicks })}`);
-    assert(trajectory.slice(0, 5).every((point) => Math.abs(point.y - point.target) <= 28)
-      && trajectory.slice(5).every((point) => Math.abs(point.y - point.target) <= 28),
-    `${mirrored ? "mirrored" : "unmirrored"} route did not collect all five center plus 13 advanced acorns`);
-    assert(race.wallScrapeTicks.length === 0,
-      `${mirrored ? "mirrored" : "unmirrored"} full reward route scraped the corridor`);
-    same(pickupCues.map((cue) => [cue.tick, cue.id, cue.index, cue.y]),
-      targets.map((target, index) => [target.tick, `w${wormholes + 1}-a${String(index + 1).padStart(2, "0")}`, index, target.y]),
-      `${mirrored ? "mirrored" : "unmirrored"} tunnel pickup cue log changed`);
-    same(race.boostTicks, [schedule.boostTick], "full reward route did not have exactly one qualified boost onset");
-    same(race.dropTicks, [schedule.dropTick], "full reward route did not have exactly one legal swipe drop");
-    const boostTransitions = race.inputs.filter((input) => input.boost);
-    assert(boostTransitions.length === 1 && boostTransitions[0].held,
-      "full reward route introduced a direct or repeated mid-hold boost toggle");
-    const boostIndex = race.inputs.indexOf(boostTransitions[0]);
-    assert(boostIndex > 0 && !race.inputs[boostIndex - 1].held && !race.inputs[boostIndex - 1].boost,
-      "full reward boost onset was not preceded by the released first tap");
-    return { race, mirrored, entryAnchorY, rawEvents, collected, pickupCues, trajectory, maxError, minimumWallClearance };
+  for (const { wormholes, entryAnchorY } of actualTunnelEntries) {
+    const ringRace = { seed: RACE_SEED, wormholes, entryAnchorY };
+    const rings = raceTunnelRings(ringRace);
+    same(rings.map((ring) => ring.tick), [...RACE_TUNNEL_RING_TICKS],
+      `cycle ${wormholes} ring cadence changed`);
+    rings.forEach((ring, index) => {
+      near(ring.y, raceTunnelGeometry(ringRace, ring.tick).center, 1e-12,
+        `cycle ${wormholes} ring ${index + 1} left the procedural center path`);
+      const geometry = raceTunnelGeometry(ringRace, ring.tick);
+      assert(RACE_TUNNEL_RING_APERTURE + RACE_PILOT_RADIUS <= geometry.half,
+        `cycle ${wormholes} ring ${index + 1} aperture escaped the corridor`);
+    });
   }
 
-  const fullTunnelRewards = actualTunnelEntries.map(({ wormholes, entryAnchorY }, cycle) =>
-    runFullTunnelReward(wormholes, entryAnchorY, tunnelWitnessSchedules[cycle]));
-  assert(!fullTunnelRewards[0].mirrored && !fullTunnelRewards[1].mirrored && fullTunnelRewards[2].mirrored,
-    "actual-entry tunnel reward witnesses did not cover the expected orientation outcomes");
-  assert(fullTunnelRewards.every((reward, cycle) => reward.entryAnchorY === actualTunnelEntries[cycle].entryAnchorY
-    && reward.race.acorns === 18 && reward.race.wallScrapeTicks.length === 0),
-  "one of the three actual entry-anchor cycles failed the full reward route");
-  assert(RACE_MAX_WORMHOLES === 3 && RACE_ACORNS.length + RACE_MAX_WORMHOLES * 18 === RACE_MAX_ACORNS
-    && RACE_MAX_ACORNS === 96,
-  "42 normal pickups plus three individually reachable 18-acorn tunnel sets no longer derive the 96 theoretical content ceiling");
+  function judgeFirstTunnelRing(error) {
+    const race = makeTunnelRace();
+    race.phaseTick = RACE_TUNNEL_RING_TICKS[0];
+    const ring = raceTunnelRings(race)[0];
+    race.y = ring.y + error;
+    race.previousY = race.y;
+    race.tick = 500;
+    const result = stepRace(race);
+    return { outcome: race.tunnelRingLedger[0][0], cue: result.cues[0], decisionTick: race.tunnelRingDecisionTicks[0][0] };
+  }
+  same([
+    judgeFirstTunnelRing(8).outcome,
+    judgeFirstTunnelRing(8 + 1e-6).outcome,
+    judgeFirstTunnelRing(42).outcome,
+    judgeFirstTunnelRing(42 + 1e-6).outcome,
+  ], ["perfect", "passed", "passed", "missed"],
+  "nested center/outer ring boundary grading changed");
+  same([
+    judgeFirstTunnelRing(0).cue.kind,
+    judgeFirstTunnelRing(20).cue.kind,
+    judgeFirstTunnelRing(60).cue.kind,
+  ], ["tunnel-ring-perfect", "tunnel-ring-pass", "tunnel-ring-miss"],
+  "tunnel ring authority cue kinds changed");
+  const firstDecision = judgeFirstTunnelRing(0);
+  same([firstDecision.cue.id, firstDecision.cue.index, firstDecision.decisionTick], ["w1-g01", 0, 500],
+    "tunnel ring decision did not bind to its exact crossing tick/id");
+
+  function runTunnelAlignment(wormholes, entryAnchorY, offsetForIndex) {
+    const race = makeTunnelRace(wormholes, entryAnchorY);
+    const cues = [];
+    for (let step = 0; step < RACE_TUNNEL_TICKS; step++) {
+      const rings = raceTunnelRings(race);
+      const nextIndex = rings.findIndex((_, index) => race.tunnelRingLedger[wormholes][index] === "pending");
+      if (nextIndex >= 0) {
+        queueRaceInput(race, {
+          held: false,
+          boost: false,
+          dragY: raceTunnelGeometry(race, race.phaseTick).center + offsetForIndex(nextIndex),
+        });
+      }
+      cues.push(...stepRace(race).cues);
+    }
+    const quality = raceTunnelQuality(race, wormholes);
+    for (let step = 0; step < RACE_RETURN_TICKS; step++) cues.push(...stepRace(race).cues);
+    return { race, quality, cues };
+  }
+  const perfectAlignments = actualTunnelEntries.map(({ wormholes, entryAnchorY }) =>
+    runTunnelAlignment(wormholes, entryAnchorY, () => 0));
+  const passAlignment = runTunnelAlignment(0, 320, () => 20);
+  const missAlignment = runTunnelAlignment(0, 320, () => 60);
+  for (const [cycle, witness] of perfectAlignments.entries()) {
+    same(witness.quality, {
+      passed: 0, perfect: 9, missed: 0, pending: 0, units: 18, exitSpeed: 360,
+    }, `cycle ${cycle} centered ring witness did not earn the full exit-speed reward`);
+    assert(witness.race.wallScrapeTicks.length === 0,
+      `cycle ${cycle} centered ring witness scraped the procedural corridor`);
+    same(witness.cues.filter((cue) => cue.kind === "tunnel-ring-perfect").map((cue) => cue.id),
+      RACE_TUNNEL_RING_TICKS.map((_, index) => `w${cycle + 1}-g${String(index + 1).padStart(2, "0")}`),
+      `cycle ${cycle} centered ring cue order changed`);
+  }
+  same(passAlignment.quality, {
+    passed: 9, perfect: 0, missed: 0, pending: 0, units: 9, exitSpeed: 326.25,
+  }, "outer-ring clear witness did not derive the middle exit speed");
+  same(missAlignment.quality, {
+    passed: 0, perfect: 0, missed: 9, pending: 0, units: 0, exitSpeed: 292.5,
+  }, "all-miss witness did not retain the minimum exit speed");
+  same([passAlignment.race.speed, missAlignment.race.speed, perfectAlignments[0].race.speed],
+    [326.25, 292.5, 360], "return handoff did not apply the judged alignment quality");
+  assert(RACE_MAX_WORMHOLES === 3 && RACE_ACORNS.length === RACE_MAX_ACORNS && RACE_MAX_ACORNS === 42,
+    "alignment-only tunnels changed the 42 authored course-pickup ceiling");
+  assert([...passAlignment.cues, ...missAlignment.cues, ...perfectAlignments.flatMap((x) => x.cues)]
+    .every((cue) => cue.kind !== "acorn"), "alignment-only tunnel emitted a removed acorn reward");
   const ceilingConflict = { ring: RACE_RINGS[66], acorn: RACE_ACORNS[33] };
   assert(ceilingConflict.ring.id === "r67" && ceilingConflict.acorn.id === "a34"
     && ceilingConflict.ring.x === ceilingConflict.acorn.x
     && Math.abs(ceilingConflict.ring.y - ceilingConflict.acorn.y) > RACE_GATE_CLEARANCE + 26,
-  "same-plane r67/a34 exclusion no longer proves that 96 is a content ceiling rather than a replay claim");
+  "same-plane r67/a34 exclusion changed while removing tunnel acorns");
 
   const fullPhaseCycle = createRaceState();
   fullPhaseCycle.phase = "entry";
@@ -1675,9 +1803,10 @@ try {
     fullPhaseCycle.coursePosition,
     fullPhaseCycle.phaseStartPosition,
     fullPhaseCycle.charge,
-    fullPhaseCycle.tunnelAcornLedger[0]?.length,
+    fullPhaseCycle.tunnelRingLedger[0]?.length,
+    fullPhaseCycle.tunnelRingDecisionTicks[0]?.length,
     entryHandoff.finished,
-  ], ["tunnel", 0, RACE_ENTRY_TICKS, 1_000, 1_000, 0, 18, false],
+  ], ["tunnel", 0, RACE_ENTRY_TICKS, 1_000, 1_000, 0, 9, 9, false],
   "entry step 48 did not hand off exactly to tunnel tick 0");
   for (let step = 0; step < RACE_TUNNEL_TICKS - 1; step++) stepRace(fullPhaseCycle);
   same([fullPhaseCycle.phase, fullPhaseCycle.phaseTick, fullPhaseCycle.tick],
@@ -1695,6 +1824,8 @@ try {
     tunnelHandoff.finished,
   ], ["return", 0, RACE_ENTRY_TICKS + RACE_TUNNEL_TICKS, 1_000 + RACE_TUNNEL_DISTANCE, false],
   "tunnel step 360 did not hand off exactly to return tick 0");
+  const fullCycleQuality = raceTunnelQuality(fullPhaseCycle, 0);
+  assert(fullCycleQuality.pending === 0, "full phase cycle left an alignment ring unjudged");
   for (let step = 0; step < RACE_RETURN_TICKS - 1; step++) stepRace(fullPhaseCycle);
   same([fullPhaseCycle.phase, fullPhaseCycle.phaseTick, fullPhaseCycle.tick, fullPhaseCycle.wormholes],
     ["return", RACE_RETURN_TICKS - 1,
@@ -1710,7 +1841,7 @@ try {
     fullPhaseCycle.collisionGraceTicks,
     returnHandoff.cues.map((cue) => cue.kind),
   ], ["normal", 0, RACE_ENTRY_TICKS + RACE_TUNNEL_TICKS + RACE_RETURN_TICKS,
-    1, RACE_RETURN_SPEED, RACE_RETURN_GRACE_TICKS + 1, ["return"]],
+    1, fullCycleQuality.exitSpeed, RACE_RETURN_GRACE_TICKS + 1, ["return"]],
   "return step 36 did not settle the exact 444-tick cycle once");
   const postSettlement = stepRace(fullPhaseCycle);
   assert(fullPhaseCycle.phase === "normal" && fullPhaseCycle.wormholes === 1
@@ -1724,13 +1855,15 @@ try {
   handoff.entryAnchorY = 320;
   handoff.y = 320;
   handoff.charge = 100;
-  handoff.tunnelAcornLedger[0] = Array(18).fill(false);
   const handoffCues = [];
-  for (let i = 0; i < RACE_TUNNEL_TICKS + RACE_RETURN_TICKS; i++) handoffCues.push(...stepRace(handoff).cues);
+  for (let i = 0; i < RACE_TUNNEL_TICKS; i++) handoffCues.push(...stepRace(handoff).cues);
+  const handoffQuality = raceTunnelQuality(handoff, 0);
+  for (let i = 0; i < RACE_RETURN_TICKS; i++) handoffCues.push(...stepRace(handoff).cues);
   assert(handoff.phase === "normal", "return did not hand back to normal flight");
   near(handoff.coursePosition, 1_000 + RACE_TUNNEL_DISTANCE, 1e-9, "tunnel distance changed");
   assert(handoff.charge === 0, `return charge ${handoff.charge}, expected 0`);
-  assert(handoff.speed === RACE_RETURN_SPEED, `return speed ${handoff.speed}, expected ${RACE_RETURN_SPEED}`);
+  assert(handoff.speed === handoffQuality.exitSpeed,
+    `return speed ${handoff.speed}, expected judged ${handoffQuality.exitSpeed}`);
   assert(RACE_RETURN_MARGIN === 96 && handoff.y >= 96 && handoff.y <= 544,
     `return y ${handoff.y} outside separately derived 96..544 band`);
   assert(handoff.collisionGraceTicks === RACE_RETURN_GRACE_TICKS + 1,
@@ -1774,7 +1907,7 @@ try {
   ], [], []], "finish cue did not emit exactly once on its authority step");
 
   const evidence = {
-    suite: "Hyper Run Revision 3 mandatory replay acceptance",
+    suite: "Hyper Run wormhole alignment mandatory replay acceptance",
     fixedStepHz: 60,
     tests: {
       sameSeedAndSemanticInputs: "passed",
@@ -1782,14 +1915,16 @@ try {
       renderCadenceIndependence: "passed",
       similarityProfilesAndReachability: "passed",
       sweptObjectsAndGatePlane: "passed",
-      tunnelParityAndHandoff: "passed",
+      tunnelDragAlignmentAndHandoff: "passed",
     },
     profiles: {
       passive: { ticks: passive.race.finishTicks, time: formatRaceTicks(passive.race.finishTicks), wormholes: passive.race.wormholes },
       average: { ticks: average.race.finishTicks, time: formatRaceTicks(average.race.finishTicks), wormholes: average.race.wormholes,
-        passed: countLedger(average.race, "passed"), meanNormalSpeed: Number(average.meanNormalSpeed.toFixed(3)) },
+        passed: countLedger(average.race, "passed"), meanNormalSpeed: Number(average.meanNormalSpeed.toFixed(3)),
+        tunnelQuality: average.race.tunnelRingLedger.map((_, cycle) => raceTunnelQuality(average.race, cycle)) },
       optimized: { ticks: optimized.race.finishTicks, time: formatRaceTicks(optimized.race.finishTicks), wormholes: optimized.race.wormholes,
-        passed: countLedger(optimized.race, "passed"), meanNormalSpeed: Number(optimized.meanNormalSpeed.toFixed(3)) },
+        passed: countLedger(optimized.race, "passed"), meanNormalSpeed: Number(optimized.meanNormalSpeed.toFixed(3)),
+        tunnelQuality: optimized.race.tunnelRingLedger.map((_, cycle) => raceTunnelQuality(optimized.race, cycle)) },
     },
     optimizedSignature: raceSignature(optimized.race),
     horizontalSimilarity: {
@@ -1806,7 +1941,7 @@ try {
     presentationMatrix: {
       viewports: requiredViewSizes.map(([width, height]) => `${width}x${height}`),
       phases: resizePhaseSpecs.map((spec) => spec.label),
-      ownedInputs: ["pointer/touch", "keyboard-rise"],
+      ownedInputs: ["flight pointer/touch", "relative tunnel drag", "keyboard-rise", "keyboard-drop"],
     },
     authoredTupleLocks: {
       rings: RACE_RINGS.length,
@@ -1840,36 +1975,49 @@ try {
         eventsPerSecond: Number((realizedAverage.rawEvents / (average.race.finishTicks / 60)).toFixed(3)),
         qualifyingBoostPresses: realizedAverage.qualifyingBoostPresses,
         swipeDrops: realizedAverage.swipeDrops,
+        dragTargets: realizedAverage.dragTargets,
+        dragMoves: realizedAverage.dragMoves,
       },
       optimized: {
         rawEvents: realizedOptimized.rawEvents,
         eventsPerSecond: Number((realizedOptimized.rawEvents / (optimized.race.finishTicks / 60)).toFixed(3)),
         qualifyingBoostPresses: realizedOptimized.qualifyingBoostPresses,
         swipeDrops: realizedOptimized.swipeDrops,
+        dragTargets: realizedOptimized.dragTargets,
+        dragMoves: realizedOptimized.dragMoves,
       },
     },
     mirrorBits,
     advancedFreeOptimisticLowerBound: fastestPlainBenchmark,
-    theoreticalAcornCeilingDerivation: `${RACE_ACORNS.length} + ${RACE_MAX_WORMHOLES} * 18 = ${RACE_MAX_ACORNS}`,
-    mirroredCuspOverrides: [{ tick: 255, y: 429 }, { tick: 257, y: 433 }],
+    courseAcornCeiling: RACE_MAX_ACORNS,
+    tunnelDrag: {
+      fullHeight: RACE_HEIGHT,
+      traversalTicks: RACE_TUNNEL_DRAG_TRAVERSAL_TICKS,
+      maximumStep: RACE_TUNNEL_DRAG_STEP,
+    },
+    tunnelAlignment: {
+      ringTicks: [...RACE_TUNNEL_RING_TICKS],
+      outerAperture: RACE_TUNNEL_RING_APERTURE,
+      perfectAperture: RACE_TUNNEL_PERFECT_APERTURE,
+      outerClearance: RACE_TUNNEL_RING_CLEARANCE,
+      perfectClearance: RACE_TUNNEL_PERFECT_CLEARANCE,
+      speedGainPerUnit: RACE_TUNNEL_QUALITY_SPEED_GAIN,
+      allMiss: missAlignment.quality,
+      allPass: passAlignment.quality,
+      allPerfect: perfectAlignments.map((witness) => witness.quality),
+    },
     fullPhaseCycle: {
       entryTicks: RACE_ENTRY_TICKS,
       tunnelTicks: RACE_TUNNEL_TICKS,
       returnTicks: RACE_RETURN_TICKS,
       totalTicks: RACE_ENTRY_TICKS + RACE_TUNNEL_TICKS + RACE_RETURN_TICKS,
+      quality: fullCycleQuality,
     },
     tunnelSpineTicks,
-    centerPickupLines,
-    fullTunnelRewards: fullTunnelRewards.map((reward, cycle) => ({
-      cycle,
-      entryAnchorY: reward.entryAnchorY,
-      mirrored: reward.mirrored,
-      collected: reward.race.acorns,
-      scrapes: reward.race.wallScrapeTicks.length,
-      maxError: Number(reward.maxError.toFixed(3)),
-      minimumWallClearance: Number(reward.minimumWallClearance.toFixed(3)),
-      first: reward.collected[0],
-      last: reward.collected[17],
+    tunnelRingEntries: actualTunnelEntries.map((entry) => ({
+      ...entry,
+      mirrored: raceTunnelMirrored({ seed: RACE_SEED, wormholes: entry.wormholes }),
+      rings: raceTunnelRings({ seed: RACE_SEED, ...entry }),
     })),
     returnGrace: { protectedNormalSteps: RACE_RETURN_GRACE_TICKS, firstLiveStep: RACE_RETURN_GRACE_TICKS + 1 },
   };
