@@ -580,12 +580,12 @@ export async function bootStandalone(root: HTMLElement) {
     return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
   }
 
-  function hubIcon(name: string) {
+  function hubIcon(name: string, blend = true) {
     const img = document.createElement("img");
     img.src = `${artRootUrl()}/ui/${name}.png?v=${ART_VER}`;
     img.alt = "";
     img.draggable = false;
-    img.className = "ac-hubic-img";
+    img.className = blend ? "ac-hubic-img" : "ac-hubic-art";
     return img;
   }
 
@@ -601,13 +601,19 @@ export async function bootStandalone(root: HTMLElement) {
     const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
 
-    // ONE top rail: the acorn balance (a door to the shop), the pilot's
-    // portrait (the door to the Profile), the shop, and the gear that
-    // holds settings + help together
+    // ONE top rail, balanced: the pilot's portrait fused with the acorn
+    // meter on the left, the shop and the gear on the right
     const rail = el("div", "ac-hub-rail");
-    const acorns = el("button", "ac-pill ac-pill-gold ac-hub-acorns");
+    const idcap = el("div", "ac-hub-id");
+    const prof = el("button", "ac-hub-idport");
+    prof.setAttribute("aria-label", "Profile");
+    prof.append(portraitOf(helm, suit, 34));
+    prof.onclick = () => engine.open("profile");
+    const acorns = el("button", "ac-hub-idacorns");
+    acorns.setAttribute("aria-label", "Shop");
     acorns.append(icon(I_NUT, 15), el("span", "", s.acorns.toLocaleString()));
     acorns.onclick = () => engine.open("shop");
+    idcap.append(prof, acorns);
     const shopBtn = el("button", "ac-hub-sq");
     shopBtn.setAttribute("aria-label", "Shop");
     shopBtn.append(hubIcon("gift"));
@@ -616,11 +622,7 @@ export async function bootStandalone(root: HTMLElement) {
     gear.setAttribute("aria-label", "Settings and help");
     gear.append(icon(I_GEAR, 22));
     gear.onclick = () => engine.open("help");
-    const prof = el("button", "ac-hub-sq");
-    prof.setAttribute("aria-label", "Profile");
-    prof.append(portraitOf(helm, suit, 34));
-    prof.onclick = () => engine.open("profile");
-    rail.append(acorns, el("div", "ac-hub-railgap"), prof, shopBtn, gear);
+    rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, gear);
     box.append(rail);
 
     const mark = el("div", "ac-hub-wordmark");
@@ -659,16 +661,21 @@ export async function bootStandalone(root: HTMLElement) {
     const launch = el("button", "ac-hubtile t-launch");
     launch.append(el("span", "ac-hub-ribbon", `${MODES[selectedMode].label} SELECTED`));
     const lic = el("span", "ac-hubic");
-    lic.append(hubIcon("rocket"));
+    lic.append(hubIcon("rocket", false));
     const ltxt = el("span", "ac-hub-launchtxt");
     ltxt.append(el("b", "", "FREE FLIGHT"), el("span", "ac-hubsub", "Begin your flight"));
     launch.append(lic, ltxt);
     launch.onclick = () => engine.fly(MODES[selectedMode].id);
     tiles.append(launch);
 
-    tile("t-loadout", helmCardOf(helm, 50), "LOADOUT", "Suits & gear",
+    const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear",
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
+    // an equipped pal announces itself on the tile — one green line
+    const hubPal = PALS.find((p) => p.id === s.equippedPal);
+    if (hubPal && hubPal.id !== "none") {
+      loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPal.name} equipped`));
+    }
     const planet = miniCanvas(50, 50);
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
