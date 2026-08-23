@@ -3,7 +3,7 @@
 // This module knows nothing about canvas size, render cadence, DOM events, or
 // the campaign. Feed it semantic input snapshots stamped with simulation ticks
 // and call stepRace exactly once per 1/60-second live race step.
-import { QUICK_DROP_VY } from "./control-constants.js?v=122";
+import { QUICK_DROP_VY } from "./control-constants.js?v=123";
 export const RACE_EVENT_ID = "prototype-chapter-1";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;

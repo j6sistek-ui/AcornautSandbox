@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=122" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=123" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=122" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=123" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -630,6 +630,34 @@
     .ac-palmark.mile.earned { border-color: rgba(255,206,92,.35); }
     .ac-palmark.mile img, .ac-palmark.mile canvas { max-width: 40px; max-height: 40px; }
     .ac-palmark.mile .ac-rmarkname { max-width: 68px; }
+    /* the loadout/shop category pills: bright, one hue per door, alive */
+    body.ac-beta .ac-cat { color: #dfe4f7; font-weight: 800; background: rgba(18,14,42,.9);
+      border: 1.5px solid var(--t1, #2a3454); }
+    body.ac-beta .ac-cat.on { color: #fff; border-color: var(--tb, #cec6ff);
+      background:
+        radial-gradient(120% 180% at 18% -20%, rgba(255,255,255,.28), transparent 60%),
+        linear-gradient(180deg, var(--t1, #6C5FB6), var(--t2, #463C86));
+      box-shadow: 0 4px 16px -4px var(--t1, #6C5FB6), inset 0 1px 0 rgba(255,255,255,.4); }
+    body.ac-beta .ac-cats > :nth-child(5n+1) { --t1: #8a5ae4; --t2: #44249a; --tb: #c4a0ff; }
+    body.ac-beta .ac-cats > :nth-child(5n+2) { --t1: #1db388; --t2: #0a5a44; --tb: #6ce8bc; }
+    body.ac-beta .ac-cats > :nth-child(5n+3) { --t1: #eda03c; --t2: #8f4d0e; --tb: #ffd88f; }
+    body.ac-beta .ac-cats > :nth-child(5n+4) { --t1: #5b64e0; --t2: #282f92; --tb: #a2aaff; }
+    body.ac-beta .ac-cats > :nth-child(5n+5) { --t1: #e0447c; --t2: #83164a; --tb: #ff9ec2; }
+    /* the chart's deep-space backdrop: art pinned behind, content above.
+       Same-specificity trio as the hub so the level sheet stays fixed. */
+    .ac-chartscene > * { position: relative; }
+    .ac-chartscene > .ac-chart-art, .ac-chartscene > .ac-chart-scrim { position: absolute; }
+    .ac-chartscene > .ac-lvlsheet { position: fixed; }
+    .ac-chart-art { inset: 0; background-size: cover; background-position: 50% 50%; }
+    .ac-chart-scrim { inset: 0; background:
+      linear-gradient(180deg, rgba(7,4,20,.78), rgba(7,4,20,.38) 26%, rgba(7,4,20,.34) 70%, rgba(7,4,20,.6)); }
+    /* the crash receipt: gates as the headline, the run's story in rows */
+    .ac-crashscore { display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 2px 0 4px; }
+    .ac-crashscore b { font-family: Fraunces, serif; font-weight: 800; font-size: 46px; line-height: 1; color: #ffd76a;
+      text-shadow: 0 2px 14px rgba(255,180,60,.35); }
+    .ac-crashscore span { font-size: 11px; font-weight: 800; letter-spacing: .22em; color: #b7c0da; }
+    .ac-crashrows { width: min(320px, 86vw); text-align: left; }
+    .ac-rowdim { color: #cdd5ea; font-weight: 800; }
   </style>
 </head>
 <body>
@@ -644,7 +672,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js122/standalone.js";
+    import { bootStandalone } from "./js123/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

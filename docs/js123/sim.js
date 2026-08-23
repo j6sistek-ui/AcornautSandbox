@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=122";
-import { modsUnlocked, writeSave } from "./save.js?v=122";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=122";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=122";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=122";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=122";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=122";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=123";
+import { modsUnlocked, writeSave } from "./save.js?v=123";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=123";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=123";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=123";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=123";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=123";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -36,6 +36,7 @@ export function makeWorld(W, H) {
         ready: false,
         score: 0,
         runAcorns: 0,
+        run: { taps: 0, bounces: 0, holes: 0 },
         squirrel: { y: H * 0.45, vy: 0, rot: 0 },
         planets: [],
         pickups: [],
@@ -616,6 +617,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.tailV = 0;
     w.score = 0;
     w.runAcorns = 0;
+    w.run = { taps: 0, bounces: 0, holes: 0 };
     w.squirrel = { y: w.H * 0.45, vy: 0, rot: 0 };
     w.planets = [];
     w.pickups = [];
@@ -1547,6 +1549,7 @@ export function flap(w, save) {
         w.ready = false;
     if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce"))
         return "none";
+    w.run.taps += 1;
     if (w.lvl) {
         w.lvl.stats.taps += 1;
         w.lvl.strobeT = 0; // THE BLACKOUT: a tap is a flashbulb
@@ -1741,6 +1744,8 @@ function startSwirl(w, kind) {
     }
     w.warpKind = kind;
     w.warpT = 1;
+    if (kind === "hole")
+        w.run.holes += 1;
 }
 function enterWarp(w, save) {
     const sx = w.W * PHYS.squirrelX;
@@ -1928,6 +1933,9 @@ function die(w, save) {
         sections: w.tunnel?.sectionsCleared ?? 0,
         nearMisses: w.tunnel?.nearMisses ?? 0,
         bestMultiplier: w.tunnel?.bestMultiplier ?? 1,
+        taps: w.run.taps,
+        bounces: w.run.bounces,
+        holes: w.run.holes,
     };
     save.xp = fromXp + xp;
     save.acorns += w.runAcorns;
@@ -2403,6 +2411,7 @@ export function updateWorld(w, save, dt) {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
                 bounceOff(w, save, p.x, py);
+                w.run.bounces += 1;
                 return "bounce";
             }
             pushOut(w, p.x, py, p.r * 0.92, sr);
