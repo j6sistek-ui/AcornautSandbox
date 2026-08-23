@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=106";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=106";
-import { proceduralSky } from "./sky-gen.js?v=106";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=106";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=106";
-import { tunnelBoundsAt } from "./sim.js?v=106";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=106";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=106";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=107";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=107";
+import { proceduralSky } from "./sky-gen.js?v=107";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=107";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=107";
+import { tunnelBoundsAt } from "./sim.js?v=107";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=107";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=107";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2721,7 +2721,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1) {
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 0, w.speed);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, save.voltAltJump === true, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
     ctx.restore();
 }
 function paintPal(ctx, art, id, x, y, size) {

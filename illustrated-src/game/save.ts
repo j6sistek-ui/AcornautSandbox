@@ -53,10 +53,17 @@ export type SaveData = {
   musicOff?: boolean;
   /** VOLT's hangar experiment: fly the alternate painted jump bank */
   voltAltJump?: boolean;
-  // Eclipse's motion mapping, cycled from the hangar so all three can be
-  // flown back to back: 0 = the shipped pose-per-velocity curve, 1 = the
-  // rate-driven remap, 2 = heading (the body follows the tangent of the
-  // flight arc).
+  // Eclipse's motion mapping, cycled from the hangar or the pause sheet:
+  // 0 = the original pose-per-velocity curve, 1 = the rate-driven remap,
+  // 2 = HEADING, the body following the tangent of the flight arc.
+  //
+  // Heading is the default because it is the one that reads right in the
+  // hand. It also turned out to be the only one that uses the whole bank:
+  // it visits thirteen distinct frames at a hover, including ascent frames
+  // 5-8, and those are precisely the frames where the arms and hands move.
+  // The other two settle into frames 1-3, where the character is nearly
+  // still from the shoulders down - which is why they read as lifeless
+  // however carefully their magnitudes were damped.
   eclipseMotionMode?: number;
   /** Experimental records are isolated from chapter stars and rewards. */
   experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
@@ -94,7 +101,7 @@ export function defaultSave(): SaveData {
     allStars: false,
     musicOff: false,
     voltAltJump: false,
-    eclipseMotionMode: 0,
+    eclipseMotionMode: 2,
     experimentalRaceRecords: {},
   };
 }
