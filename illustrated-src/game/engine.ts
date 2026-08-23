@@ -739,7 +739,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
         drawWorld(ctx, world, save, art);
-        if (world.screen !== "pause") drawHud(ctx, world);
+        if (world.screen !== "pause") drawHud(ctx, world, art);
       } else if (art.sky) {
         ctx.drawImage(art.sky, 0, 0, world.W, world.H);
         ctx.fillStyle = "rgba(7,11,22,0.35)";

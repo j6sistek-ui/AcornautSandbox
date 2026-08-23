@@ -1,4 +1,4 @@
-import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=96";
+import { BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=97";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -116,7 +116,7 @@ export function emptyArt() {
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
-        frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [],
+        frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitTapAlt: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
     };
 }
@@ -302,7 +302,7 @@ export async function loadArt() {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitTapAlt, suitBounce, suitAsc, suitDesc, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -321,7 +321,11 @@ export async function loadArt() {
         many(`${base}/pickups/shieldnut-`, 16),
         // Approved from the beta trial: the painted vortices spin everywhere.
         many(`${base}/vortex/worm-`, 16),
-        many(`${base}/vortex/hole-`, 16),
+        // The repainted hole loops in 9 native frames; resampling to 16 would
+        // only duplicate renders, so the bank is its true length and frameOf
+        // paces it.
+        many(`${base}/vortex/hole-`, 9),
+        many(`${base}/vortex/holeenter-`, 16),
         named(RIGGED_SUITS, "suits", "-tail"),
         named(RIGGED_SUITS, "suits", "-body"),
         namedSeries(TAP_ANIM_ENABLED ? {
@@ -367,6 +371,7 @@ export async function loadArt() {
         shieldAnim,
         wormAnim,
         holeAnim,
+        holeEnter,
         suitTail,
         suitBody,
         suitTap,
