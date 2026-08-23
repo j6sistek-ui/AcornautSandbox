@@ -671,8 +671,10 @@ export async function bootStandalone(root: HTMLElement) {
       s.guide === "hangar" || s.guide === "helmet");
     const planet = miniCanvas(50, 50);
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+    // no dot: a badge should mean something NEW is inside, and nothing
+    // in the mode sheet changes on its own
     tile("t-modes", planet.c, "MODES", "4 ways to fly · Lab",
-      () => { modesOpen = true; render(); }, "#ff4d6d");
+      () => { modesOpen = true; render(); });
     box.append(tiles);
 
     // the Star Chart bar: campaign stars over the 300 total, plus what the
