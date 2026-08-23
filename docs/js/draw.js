@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=89";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=89";
-import { proceduralSky } from "./sky-gen.js?v=89";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=89";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=89";
-import { tunnelBoundsAt } from "./sim.js?v=89";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=89";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=89";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=90";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=90";
+import { proceduralSky } from "./sky-gen.js?v=90";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=90";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=90";
+import { tunnelBoundsAt } from "./sim.js?v=90";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=90";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_SEED, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelAcorns, raceTunnelGeometry, } from "./race.js?v=90";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1967,14 +1967,18 @@ const DOME = {
     "eclipse-desc-6": [178, 150, 52],
     "eclipse-desc-7": [178, 157, 52],
     "eclipse-desc-8": [178, 157, 52],
-    "suit:cinderforge": [196, 100, 51],
-    "suit:groveguard": [196, 100, 51],
-    "suit:cosmic": [196, 100, 51],
-    "suit:sunforged": [196, 96, 49],
-    "suit:abyssal": [196, 100, 51],
-    "suit:amethyst": [196, 100, 51],
-    "suit:ivoryguard": [196, 100, 51],
-    "suit:reactor": [196, 98, 51],
+    // The automatic face estimator lands 13px right, 7px low, and 7px large
+    // on this shared head family (it makes the same error on approved Aurora).
+    // These sockets apply Aurora's hand-reviewed correction to each new suit's
+    // measured head, preserving the small pose-specific vertical differences.
+    "suit:cinderforge": [183, 93, 44],
+    "suit:groveguard": [183, 93, 44],
+    "suit:cosmic": [183, 93, 44],
+    "suit:sunforged": [183, 89, 42],
+    "suit:abyssal": [183, 93, 44],
+    "suit:amethyst": [183, 93, 44],
+    "suit:ivoryguard": [183, 93, 44],
+    "suit:reactor": [183, 91, 44],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
