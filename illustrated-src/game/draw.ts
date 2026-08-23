@@ -25,7 +25,6 @@ import {
   RACE_READY_COPY,
   RACE_RETURN_TICKS,
   RACE_RINGS,
-  RACE_SEED,
   RACE_TUNNEL_DISTANCE,
   RACE_TUNNEL_SPEED,
   RACE_TUNNEL_TICKS,
@@ -202,7 +201,33 @@ const raceSegment = (tick: number, start: number, end: number) =>
   raceSmooth((tick - start) / Math.max(1, end - start));
 const raceLerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-/** Hyper Run portal paintings are registered to their complete square canvas.
+export type HyperRunInlineWormholePhase = "entry" | "tunnel" | "return";
+
+/** Pure presentation schedule for the portal-free inline wormhole. Keeping the
+ * enclosure and crossfade contract here lets runtime evidence exercise the
+ * exact values consumed by the shipping renderer. */
+export function hyperRunInlineWormholePresentation(
+  phase: HyperRunInlineWormholePhase,
+  tick: number,
+) {
+  if (phase === "entry") return {
+    enclosure: tick <= 11
+      ? raceLerp(0, 0.08, raceSegment(tick, 0, 11))
+      : tick <= 35
+        ? raceLerp(0.08, 0.88, raceSegment(tick, 12, 35))
+        : raceLerp(0.88, 1, raceSegment(tick, 36, RACE_ENTRY_TICKS - 1)),
+    energyAlpha: raceSegment(tick, 0, 11),
+    courseAlpha: 1 - raceSegment(tick, 20, RACE_ENTRY_TICKS - 1),
+  };
+  if (phase === "return") return {
+    enclosure: tick <= 5 ? 1 : 1 - raceSegment(tick, 6, RACE_RETURN_TICKS - 1),
+    energyAlpha: tick <= 11 ? 1 : 1 - raceSegment(tick, 12, RACE_RETURN_TICKS - 1),
+    courseAlpha: raceSegment(tick, 6, 23),
+  };
+  return { enclosure: 1, energyAlpha: 1, courseAlpha: 0 };
+}
+
+/** Hyper Run ring paintings are registered to their complete square canvas.
  * Generic drawSprite deliberately alpha-fits other art; using it here would
  * independently enlarge and recenter the gate's small foreground arc. */
 function drawRaceSprite(
@@ -610,45 +635,37 @@ export function hyperRunTunnelSampleCount(virtualWidth: number) {
   return Math.max(30, Math.ceil(Math.max(0, virtualWidth) / 48 / 30) * 30);
 }
 
-export function hyperRunTunnelPresentationCenter(
-  authorityCenter: number,
-  bridgeY: number | null,
-  screenX: number,
-  pilotX: number,
-  bridgeSpan: number,
-) {
-  if (bridgeY == null) return authorityCenter;
-  const bridge = raceSmooth(1 - Math.abs(screenX - pilotX) / Math.max(0.001, bridgeSpan));
-  return raceLerp(authorityCenter, bridgeY, bridge);
-}
-
 function drawRaceTunnel(
   ctx: CanvasRenderingContext2D,
   w: World,
   art: ArtBank,
   viewTick = w.race!.phaseTick,
   includePickups = w.race!.phase === "tunnel",
-  bridgeY: number | null = null,
-  bridgeX: number | null = null,
+  enclosure = 1,
 ) {
   const race = w.race!;
   const viewport = raceViewport(w.W, w.H);
   const { scale, left, right, top, bottom, contentWidth, contentHeight, pilotX } = viewport;
   const reduced = raceReducedMotion();
+  const visualTick = race.tick;
   const samples = hyperRunTunnelSampleCount(viewport.virtualWidth);
   raceTunnelTopScratch.length = samples + 1;
   raceTunnelBottomScratch.length = samples + 1;
-  const bridgeSpan = Math.max(160, Math.min(360, viewport.virtualWidth * 0.32)) * scale;
-  const presentationBridgeX = bridgeX ?? pilotX;
+  const enclosureMix = raceSmooth(enclosure);
+  const structureFactor = raceSmooth(raceClamp01((enclosure - 0.2) / 0.8));
   for (let i = 0; i <= samples; i++) {
     const x = left + contentWidth * (i / samples);
     const distance = (x - pilotX) / Math.max(0.001, scale);
     const lookTicks = distance / Math.max(0.001, RACE_TUNNEL_SPEED / RACE_HZ);
     const sampleTick = Math.max(0, Math.min(RACE_TUNNEL_TICKS - 1, viewTick + lookTicks));
     const tunnel = raceTunnelGeometry(race, sampleTick);
-    const center = hyperRunTunnelPresentationCenter(tunnel.center, bridgeY, x, presentationBridgeX, bridgeSpan);
-    raceTunnelTopScratch[i] = raceViewportY(viewport, center - tunnel.half);
-    raceTunnelBottomScratch[i] = raceViewportY(viewport, center + tunnel.half);
+    const center = tunnel.center;
+    const liveTop = raceViewportY(viewport, center - tunnel.half);
+    const liveBottom = raceViewportY(viewport, center + tunnel.half);
+    // Entry and return never reveal a second scene. The same energy banks begin
+    // at the screen edges, close onto the authority corridor, then reopen.
+    raceTunnelTopScratch[i] = raceLerp(top, liveTop, enclosureMix);
+    raceTunnelBottomScratch[i] = raceLerp(bottom, liveBottom, enclosureMix);
   }
 
   const corridorPath = () => {
@@ -667,8 +684,18 @@ function drawRaceTunnel(
     ctx.beginPath();
     for (let i = 0; i <= samples; i++) {
       const x = left + contentWidth * (i / samples);
-      const wave = reduced ? 0 : Math.sin(i * 0.68 + viewTick * 0.11 + strand * 1.7) * (1.2 + strand * 0.7) * scale;
+      const wave = reduced ? 0 : Math.sin(i * 0.68 + visualTick * 0.11 + strand * 1.7) * (1.2 + strand * 0.7) * scale;
       const y = line[i] + offset + wave;
+      if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+  };
+  const traceBankBeam = (line: readonly number[], edge: number, depth: number, strand: number) => {
+    ctx.beginPath();
+    for (let i = 0; i <= samples; i++) {
+      const x = left + contentWidth * (i / samples);
+      const wave = reduced ? 0 : Math.sin(i * 0.52 + visualTick * 0.09 + strand * 1.9)
+        * (1.2 + strand * 0.45) * scale;
+      const y = raceLerp(edge, line[i], depth) + wave;
       if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
     }
   };
@@ -696,6 +723,28 @@ function drawRaceTunnel(
   for (let i = samples; i >= 0; i--) ctx.lineTo(left + contentWidth * (i / samples), raceTunnelBottomScratch[i]);
   ctx.closePath(); ctx.fill();
 
+  // Parallel beams make the enclosure itself readable: they originate on the
+  // existing screen boundaries and sweep inward with the closing energy banks.
+  // No radial mouth or portal is involved.
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  ctx.lineCap = "round";
+  const bankBeamCount = reduced ? 2 : 5;
+  for (const [line, edge] of [
+    [raceTunnelTopScratch, top], [raceTunnelBottomScratch, bottom],
+  ] as const) {
+    for (let strand = 0; strand < bankBeamCount; strand++) {
+      const depth = (strand + 1) / (bankBeamCount + 1);
+      ctx.strokeStyle = strand % 2
+        ? "rgba(91,225,255,.18)"
+        : "rgba(190,92,255,.22)";
+      ctx.lineWidth = Math.max(0.7, (0.9 + strand * 0.32) * scale);
+      traceBankBeam(line, edge, depth, strand);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+
   ctx.save();
   corridorPath();
   ctx.clip();
@@ -713,7 +762,7 @@ function drawRaceTunnel(
   const streakCount = reduced ? 14 : 38;
   for (let i = 0; i < streakCount; i++) {
     const span = contentWidth + 260 * scale;
-    const travel = reduced ? 0 : viewTick * (11 + i % 5) * scale;
+    const travel = reduced ? 0 : visualTick * (11 + i % 5) * scale;
     const x = left - 130 * scale + raceMod(raceFlowHash(race.seed, i, 62) * span - travel, span);
     const index = Math.max(0, Math.min(samples, Math.round((x - left) / Math.max(1, contentWidth) * samples)));
     const lane = 0.08 + raceFlowHash(race.seed, i, 61) * 0.84;
@@ -730,15 +779,18 @@ function drawRaceTunnel(
 
   // Transverse bands are sampled directly from the authority corridor. Their
   // lateral cadence provides Wormhole Run depth while keeping the camera side-on.
+  // They resolve only after the edge beams have begun closing; early formation
+  // remains loose filaments and speed streaks instead of a tunnel popping in.
+  ctx.globalAlpha *= structureFactor;
   const bandCount = reduced ? 5 : 11;
   ctx.setLineDash([3 * scale, 8 * scale]);
   for (let i = 0; i < bandCount; i++) {
-    const u = reduced ? (i + 0.5) / bandCount : raceMod((i + 0.5) / bandCount - viewTick * 0.018, 1);
+    const u = reduced ? (i + 0.5) / bandCount : raceMod((i + 0.5) / bandCount - visualTick * 0.018, 1);
     const index = Math.min(samples, Math.max(0, Math.round(u * samples)));
     const x = left + contentWidth * (index / samples);
     const ty = raceTunnelTopScratch[index];
     const by = raceTunnelBottomScratch[index];
-    const bow = reduced ? 0 : Math.sin((viewTick + i * 13) * 0.08) * 9 * scale;
+    const bow = reduced ? 0 : Math.sin((visualTick + i * 13) * 0.08) * 9 * scale;
     ctx.strokeStyle = i % 2 ? "rgba(156,96,255,.20)" : "rgba(83,222,255,.24)";
     ctx.lineWidth = Math.max(0.7, 1.1 * scale);
     ctx.beginPath();
@@ -752,7 +804,7 @@ function drawRaceTunnel(
   // than a texture. It is decorative only and never feeds collision authority.
   const guideCount = reduced ? 5 : 9;
   for (let i = 0; i < guideCount; i++) {
-    const u = reduced ? (i + 0.5) / guideCount : raceMod((i + 0.5) / guideCount - viewTick * 0.011, 1);
+    const u = reduced ? (i + 0.5) / guideCount : raceMod((i + 0.5) / guideCount - visualTick * 0.011, 1);
     const index = Math.min(samples, Math.max(0, Math.round(u * samples)));
     const x = left + contentWidth * (index / samples);
     const y = (raceTunnelTopScratch[index] + raceTunnelBottomScratch[index]) * 0.5;
@@ -792,13 +844,17 @@ function drawRaceTunnel(
     ctx.lineWidth = Math.max(2, 6.5 * scale);
     traceBoundary(line);
     ctx.stroke();
-    ctx.shadowColor = "#56e8ff";
-    ctx.shadowBlur = 12 * scale;
-    ctx.strokeStyle = "rgba(112,238,255,.96)";
-    ctx.lineWidth = Math.max(1.5, 2.6 * scale);
-    traceBoundary(line);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    if (structureFactor > 0) {
+      ctx.save();
+      ctx.globalAlpha *= structureFactor;
+      ctx.shadowColor = "#56e8ff";
+      ctx.shadowBlur = 12 * scale;
+      ctx.strokeStyle = "rgba(112,238,255,.96)";
+      ctx.lineWidth = Math.max(1.5, 2.6 * scale);
+      traceBoundary(line);
+      ctx.stroke();
+      ctx.restore();
+    }
   }
   ctx.restore();
 
@@ -836,7 +892,7 @@ function drawRaceTunnel(
       const x = pilotX + (a.tick - viewTick) * (RACE_TUNNEL_SPEED / RACE_HZ) * scale;
       if (x < left - 30 * scale || x > right + 30 * scale) return;
       const y = raceViewportY(viewport, a.y);
-      const pulse = reduced ? 1 : 1 + Math.sin((viewTick + i * 7) * 0.18) * 0.08;
+      const pulse = reduced ? 1 : 1 + Math.sin((visualTick + i * 7) * 0.18) * 0.08;
       ctx.save();
       ctx.fillStyle = "rgba(4,9,28,.46)";
       ctx.beginPath(); ctx.arc(x, y, 19 * scale, 0, Math.PI * 2); ctx.fill();
@@ -852,87 +908,6 @@ function drawRaceTunnel(
     });
     ctx.restore();
   }
-}
-
-function drawRaceSuctionStreaks(
-  ctx: CanvasRenderingContext2D,
-  viewport: ReturnType<typeof raceViewport>,
-  x: number,
-  y: number,
-  phaseTick: number,
-  alpha: number,
-  reduced: boolean,
-  direction: "in" | "out" = "in",
-) {
-  if (alpha <= 0) return;
-  ctx.save();
-  ctx.globalAlpha *= raceClamp01(alpha);
-  ctx.globalCompositeOperation = "screen";
-  ctx.lineCap = "round";
-  const count = reduced ? 6 : 16;
-  for (let i = 0; i < count; i++) {
-    const sourceX = viewport.left + raceFlowHash(RACE_SEED, i, 71) * viewport.contentWidth;
-    const sourceY = viewport.top + (28 + raceFlowHash(RACE_SEED, i, 72) * 584) * viewport.scale;
-    const side = sourceX < x ? -1 : 1;
-    const targetX = x + side * (15 + i % 4 * 3) * viewport.scale;
-    const targetY = raceLerp(sourceY, y, 0.88) + (raceFlowHash(RACE_SEED, i, 73) - 0.5) * 12 * viewport.scale;
-    ctx.strokeStyle = i % 5 === 0
-      ? "rgba(255,226,137,.58)"
-      : i % 2
-        ? "rgba(190,105,255,.52)"
-        : "rgba(112,225,255,.52)";
-    ctx.lineWidth = Math.max(0.8, (0.85 + (i % 3) * 0.62) * viewport.scale);
-    ctx.beginPath();
-    if (direction === "in") ctx.moveTo(sourceX, sourceY); else ctx.moveTo(targetX, targetY);
-    if (reduced) {
-      if (direction === "in") ctx.lineTo(targetX, targetY); else ctx.lineTo(sourceX, sourceY);
-    } else {
-      const controlX = raceLerp(sourceX, x, 0.68);
-      const controlY = raceLerp(sourceY, y, 0.24);
-      if (direction === "in") ctx.quadraticCurveTo(controlX, controlY, targetX, targetY);
-      else ctx.quadraticCurveTo(controlX, controlY, sourceX, sourceY);
-    }
-    ctx.stroke();
-  }
-  const lensCount = reduced ? 1 : 3;
-  for (let i = 0; i < lensCount; i++) {
-    const pulse = reduced ? 0 : Math.sin((phaseTick + i * 9) * 0.12) * 3 * viewport.scale;
-    ctx.strokeStyle = i === 0 ? "rgba(117,233,255,.5)" : "rgba(190,90,255,.28)";
-    ctx.lineWidth = Math.max(0.8, (1.4 - i * 0.2) * viewport.scale);
-    ctx.beginPath();
-    ctx.arc(x, y, (34 + i * 12) * viewport.scale + pulse, -0.8, 0.8);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function raceRevealRadius(viewport: ReturnType<typeof raceViewport>, x: number, y: number) {
-  return Math.max(
-    Math.hypot(x - viewport.left, y - viewport.top),
-    Math.hypot(x - viewport.right, y - viewport.top),
-    Math.hypot(x - viewport.left, y - viewport.bottom),
-    Math.hypot(x - viewport.right, y - viewport.bottom),
-  ) + 8 * viewport.scale;
-}
-
-function drawRaceRevealEdge(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius: number,
-  alpha: number,
-) {
-  const a = raceClamp01(alpha);
-  if (a <= 0) return;
-  ctx.save();
-  ctx.globalCompositeOperation = "screen";
-  ctx.globalAlpha = Math.min(0.55, a * 0.55);
-  for (let i = 0; i < 3; i++) {
-    ctx.strokeStyle = i === 0 ? "rgba(205,251,255,.72)" : "rgba(62,202,255,.34)";
-    ctx.lineWidth = 2 + i * 4;
-    ctx.beginPath(); ctx.arc(x, y, Math.max(1, radius + i * 3), 0, Math.PI * 2); ctx.stroke();
-  }
-  ctx.restore();
 }
 
 type VisibleRaceGate = {
@@ -951,7 +926,6 @@ type RaceCourseFrame = {
   targetIndex: number | null;
   targetDistance: number;
   targetY: number | null;
-  entryAccentIndex: number | null;
 };
 
 function buildRaceCourseFrame(w: World, viewport: ReturnType<typeof raceViewport>): RaceCourseFrame {
@@ -1006,7 +980,6 @@ function buildRaceCourseFrame(w: World, viewport: ReturnType<typeof raceViewport
     targetIndex,
     targetDistance,
     targetY,
-    entryAccentIndex: route.nextCleanGateEnters ? route.entryRingIndex : null,
   };
 }
 
@@ -1039,32 +1012,7 @@ function drawRaceCourseUnderlay(
     }
   }
   frame.gates.forEach((gate) => {
-    if (gate.i === frame.entryAccentIndex) {
-      const formation = racePortalFormation(race, gate.i, art);
-      const portalRotation = raceReducedMotion() ? 0 : race.tick * 0.008;
-      ctx.save();
-      ctx.globalCompositeOperation = "screen";
-      ctx.strokeStyle = "rgba(185,91,255,.62)";
-      ctx.lineWidth = 8 * scale;
-      ctx.beginPath(); ctx.arc(gate.x, gate.y, ringSize * (0.44 + formation * 0.04), 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = "rgba(104,230,255,.88)";
-      ctx.lineWidth = 2.2 * scale;
-      ctx.beginPath(); ctx.arc(gate.x, gate.y, ringSize * (0.45 + formation * 0.04), 0, Math.PI * 2); ctx.stroke();
-      ctx.restore();
-      drawRaceSuctionStreaks(ctx, viewport, gate.x, gate.y, race.tick, formation * 0.72,
-        raceReducedMotion(), "in");
-      if (formation < 1) {
-        ctx.save(); ctx.globalAlpha *= 1 - formation;
-        drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
-        ctx.restore();
-      }
-      if (formation > 0) {
-        drawEntryPortalBack(ctx, art, gate.x, gate.y, ringSize,
-          0.72, 1, portalRotation, formation);
-      }
-    } else {
-      drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
-    }
+    drawRaceGateVisualLayer(ctx, art, gate, "back", ringSize);
     if (race.ringLedger[gate.i] === "pending") drawRacePendingMembrane(ctx, viewport, gate.x, gate.y, "back");
   });
   RACE_RINGS.forEach((ring, i) => {
@@ -1112,17 +1060,7 @@ function drawRaceCourseOverlay(
   const race = w.race!;
   const ringSize = 148 * viewport.scale;
   frame.gates.forEach((gate) => {
-    if (gate.i === frame.entryAccentIndex) {
-      const formation = racePortalFormation(race, gate.i, art);
-      if (formation < 1) {
-        ctx.save(); ctx.globalAlpha *= 1 - formation;
-        drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
-        ctx.restore();
-      }
-      if (formation > 0) drawEntryPortalFront(ctx, art, gate.x, gate.y, ringSize, formation, true);
-    } else {
-      drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
-    }
+    drawRaceGateVisualLayer(ctx, art, gate, "front", ringSize);
     if (race.ringLedger[gate.i] === "pending") drawRacePendingMembrane(ctx, viewport, gate.x, gate.y, "front");
   });
   RACE_RINGS.forEach((ring, i) => {
@@ -1193,99 +1131,10 @@ function drawRaceCueOverlay(
   }
 }
 
-function hasEntryPortalArt(art: ArtBank) {
-  return ["entry-mouth", "entry-rim-back", "entry-glyphs", "entry-rim-front"]
-    .every((id) => !!art.hyperRun[id]);
-}
-
-function racePortalFormation(
-  race: NonNullable<World["race"]>,
-  gateIndex: number,
-  art: ArtBank,
-) {
-  if (!hasEntryPortalArt(art)) return 0;
-  const distance = Math.max(0, RACE_RINGS[gateIndex].x - race.coursePosition);
-  return raceLerp(0.58, 1, raceSmooth(1 - raceClamp01(distance / RACE_MAX_INTERACTIVE_GAP)));
-}
-
-function drawEntryPortalBack(
-  ctx: CanvasRenderingContext2D,
-  art: ArtBank,
-  x: number,
-  y: number,
-  size: number,
-  mouthAlpha: number,
-  glyphAlpha: number,
-  rotation: number,
-  alpha = 1,
-) {
-  const complete = hasEntryPortalArt(art);
-  if (complete) {
-    drawRaceSprite(ctx, art, "entry-mouth", x, y, size, 0, mouthAlpha * alpha);
-    drawRaceSprite(ctx, art, "entry-rim-back", x, y, size * 0.96, 0, alpha);
-    drawRaceSprite(ctx, art, "entry-glyphs", x, y, size * 1.04, rotation, glyphAlpha * alpha);
-  } else {
-    drawRaceGateFallback(ctx, "passed", "back", x, y, size, 0, alpha);
-  }
-  return complete;
-}
-
-function drawEntryPortalFront(
-  ctx: CanvasRenderingContext2D,
-  art: ArtBank,
-  x: number,
-  y: number,
-  size: number,
-  alpha: number,
-  complete: boolean,
-) {
-  if (complete) drawRaceSprite(ctx, art, "entry-rim-front", x, y, size * 1.08, 0, alpha);
-  else drawRaceGateFallback(ctx, "passed", "front", x, y, size, 0, alpha);
-}
-
-function hasReturnPortalArt(art: ArtBank) {
-  return ["return-back", "return-glyphs", "return-front"]
-    .every((id) => !!art.hyperRun[id]);
-}
-
-function drawReturnPortalBack(
-  ctx: CanvasRenderingContext2D,
-  art: ArtBank,
-  x: number,
-  y: number,
-  size: number,
-  rotation: number,
-  alpha: number,
-) {
-  const complete = hasReturnPortalArt(art);
-  if (complete) {
-    drawRaceSprite(ctx, art, "return-back", x, y, size, 0, alpha);
-    drawRaceSprite(ctx, art, "return-glyphs", x, y, size, rotation, alpha);
-  } else {
-    drawRaceGateFallback(ctx, "passed", "back", x, y, size, 0, alpha);
-  }
-  return complete;
-}
-
-function drawReturnPortalFront(
-  ctx: CanvasRenderingContext2D,
-  art: ArtBank,
-  x: number,
-  y: number,
-  size: number,
-  alpha: number,
-  complete: boolean,
-) {
-  if (complete) drawRaceSprite(ctx, art, "return-front", x, y, size, 0, alpha);
-  else drawRaceGateFallback(ctx, "passed", "front", x, y, size, 0, alpha);
-}
-
 function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const race = w.race!;
   const viewport = raceViewport(w.W, w.H);
   const { scale, pilotX } = viewport;
-  const ringSize = 148 * scale;
-  const reduced = raceReducedMotion();
 
   if (race.phase === "normal" || race.phase === "finish") {
     const frame = buildRaceCourseFrame(w, viewport);
@@ -1301,144 +1150,64 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
 
   if (race.phase === "entry") {
     const t = race.phaseTick;
-    const y = raceViewportY(viewport, race.entryAnchorY);
     const frame = buildRaceCourseFrame(w, viewport);
-    const courseAlpha = t <= 35
-      ? 1
-      : t <= 43
-        ? raceLerp(1, 0.25, raceSegment(t, 36, 43))
-        : raceLerp(0.25, 0, raceSegment(t, 44, RACE_ENTRY_TICKS - 1));
+    // Nothing teleports or opens a second scene. The course remains in place
+    // while energy appears at the screen edges, then closes around the live
+    // tunnel geometry. At the last entry tick this is pixel-continuous with
+    // tunnel tick zero.
+    const { enclosure, energyAlpha, courseAlpha } =
+      hyperRunInlineWormholePresentation("entry", t);
+
     ctx.save();
     ctx.globalAlpha *= courseAlpha;
     drawRaceCourseUnderlay(ctx, w, art, viewport, frame);
-    drawRaceCourseOverlay(ctx, w, art, viewport, frame, race.entryRingIndex);
     ctx.restore();
-    const portalScale = t <= 5
-      ? 1
-      : t <= 11
-        ? raceLerp(1, 1.25, raceSegment(t, 6, 11))
-      : t <= 23
-        ? raceLerp(1.25, 1.75, raceSegment(t, 12, 23))
-        : t <= 35
-          ? raceLerp(1.75, 2.15, raceSegment(t, 24, 35))
-          : t <= 43
-            ? raceLerp(2.15, 2.35, raceSegment(t, 36, 43))
-            : 2.35;
-    const size = ringSize * portalScale;
-    const aperture = size * 0.32;
-    const cover = raceRevealRadius(viewport, pilotX, y);
-    const reveal = t < 36
-      ? aperture
-      : t <= 43
-        ? raceLerp(aperture, cover * 0.8, raceSegment(t, 36, 43))
-        : raceLerp(cover * 0.8, cover, raceSegment(t, 44, RACE_ENTRY_TICKS - 1));
-    const tunnelAlpha = t < 6
-      ? 0.2
-      : t <= 11
-        ? raceLerp(0.2, 0.45, raceSegment(t, 6, 11))
-        : t <= 23
-          ? raceLerp(0.45, 0.75, raceSegment(t, 12, 23))
-          : 1;
+
     ctx.save();
-    ctx.globalAlpha *= tunnelAlpha;
-    ctx.beginPath(); ctx.arc(pilotX, y, reveal, 0, Math.PI * 2); ctx.clip();
-    drawRaceTunnel(ctx, w, art, 0, true);
+    ctx.globalAlpha *= energyAlpha;
+    // Future tunnel rewards materialize with the energy instead of popping in
+    // on the first tunnel frame. They remain presentation-only during entry.
+    drawRaceTunnel(ctx, w, art, 0, true, enclosure);
     ctx.restore();
-    const suctionAlpha = t < 12 ? 0 : raceSegment(t, 12, 23) * (1 - raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
-    drawRaceSuctionStreaks(ctx, viewport, pilotX, y, t, suctionAlpha, reduced);
-    const settle = t < 36 ? 1 : raceLerp(1, 0.25, raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
-    const complete = drawEntryPortalBack(ctx, art, pilotX, y, size,
-      raceLerp(0.72, 1, raceSegment(t, 0, 11)) * settle, 1, reduced ? 0 : race.tick * 0.008);
-    const entryOut = t <= 35
-      ? 30 * raceSegment(t, 24, 35)
-      : 30 * (1 - raceSegment(t, 36, RACE_ENTRY_TICKS - 1));
-    drawPilot(ctx, w, save, art, pilotX + entryOut * scale, scale);
-    // Preserve only the triggering shell's near half in front of the pilot;
-    // all other course fronts/near-flow remain behind the destination scene.
-    const entryDecisionIndex = race.entryRingIndex;
-    if (entryDecisionIndex != null) {
-      const decisionTick = race.ringDecisionTicks[entryDecisionIndex];
-      const state = race.ringLedger[entryDecisionIndex];
-      if (decisionTick != null && (state === "passed" || state === "missed")) {
-        ctx.save(); ctx.globalAlpha *= courseAlpha;
-        drawRaceDecisionCue(ctx, viewport, state,
-          raceDecisionAge(race.tick, decisionTick), RACE_RINGS[entryDecisionIndex].y, "front");
-        ctx.restore();
-      }
-    }
-    drawEntryPortalFront(ctx, art, pilotX, y, size, 1, complete);
-    if (t >= 36) drawRaceRevealEdge(ctx, pilotX, y, reveal, 1 - raceSegment(t, 44, RACE_ENTRY_TICKS - 1));
+
+    drawPilot(ctx, w, save, art, pilotX, scale);
+    ctx.save();
+    ctx.globalAlpha *= courseAlpha;
+    drawRaceCourseOverlay(ctx, w, art, viewport, frame);
+    ctx.restore();
     drawRaceCueOverlay(ctx, w, viewport);
     return;
   }
 
   if (race.phase === "tunnel") {
     drawRaceTunnel(ctx, w, art, race.phaseTick, true);
-    const residual = race.phaseTick <= 5 ? 1 - race.phaseTick / 6 : 0;
-    const y = raceViewportY(viewport, race.entryAnchorY);
-    const size = ringSize * 2.35;
-    const rotation = reduced ? 0 : race.tick * 0.008;
-    const complete = drawEntryPortalBack(ctx, art, pilotX, y, size, 0.25, 1, rotation, residual);
-
-    // The destination portal is already part of the tunnel during the final
-    // second. It approaches from the right and reaches the pilot plane on the
-    // exact authority handoff, so return tick 0 never creates a new scene.
-    const exitLead = raceSegment(race.phaseTick, RACE_TUNNEL_TICKS - RACE_HZ, RACE_TUNNEL_TICKS - 1);
-    const exitEase = raceSmooth(exitLead);
-    const exitX = raceLerp(viewport.right + ringSize * 0.6, pilotX, exitEase);
-    const terminalCenter = raceTunnelGeometry(race, RACE_TUNNEL_TICKS - 1).center;
-    const exitCanonicalY = raceLerp(terminalCenter, race.y, exitEase);
-    const exitY = raceViewportY(viewport, exitCanonicalY);
-    const exitSize = ringSize * raceLerp(0.82, 1.15, exitEase);
-    const exitAlpha = exitEase;
-    if (exitAlpha > 0) {
-      drawRaceSuctionStreaks(ctx, viewport, exitX, exitY, race.phaseTick,
-        exitAlpha * 0.34, reduced, "in");
-    }
-    const returnComplete = exitAlpha > 0
-      ? drawReturnPortalBack(ctx, art, exitX, exitY, exitSize, -rotation, exitAlpha)
-      : false;
     drawPilot(ctx, w, save, art, pilotX, scale);
-    drawEntryPortalFront(ctx, art, pilotX, y, size, residual, complete);
-    if (exitAlpha > 0) drawReturnPortalFront(ctx, art, exitX, exitY, exitSize, exitAlpha, returnComplete);
     drawRaceCueOverlay(ctx, w, viewport);
     return;
   }
 
   const t = race.phaseTick;
-  const y = raceViewportY(viewport, race.returnY);
-  if (t <= 9) drawRaceTunnel(ctx, w, art, RACE_TUNNEL_TICKS - 1, false, race.returnY);
   const frame = buildRaceCourseFrame(w, viewport);
-  const cover = raceRevealRadius(viewport, pilotX, y);
-  const aperture = ringSize * 0.32;
-  const reveal = t <= 9 ? raceLerp(aperture, cover, raceSegment(t, 0, 9)) : cover;
+  // Return is the exact inverse visual: the energy banks open toward the same
+  // screen edges and dissolve, uncovering normal flight beneath them.
+  const { enclosure, energyAlpha, courseAlpha } =
+    hyperRunInlineWormholePresentation("return", t);
+
   ctx.save();
-  if (t <= 9) {
-    ctx.beginPath(); ctx.arc(pilotX, y, reveal, 0, Math.PI * 2); ctx.clip();
-    drawBackdrop(ctx, w, art);
-  }
+  ctx.globalAlpha *= courseAlpha;
   drawRaceCourseUnderlay(ctx, w, art, viewport, frame);
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalAlpha *= energyAlpha;
+  drawRaceTunnel(ctx, w, art, RACE_TUNNEL_TICKS - 1, false, enclosure);
+  ctx.restore();
+
+  drawPilot(ctx, w, save, art, pilotX, scale);
+  ctx.save();
+  ctx.globalAlpha *= courseAlpha;
   drawRaceCourseOverlay(ctx, w, art, viewport, frame);
   ctx.restore();
-  const returnFlowAlpha = t <= 9
-    ? raceLerp(0.18, 0.72, raceSegment(t, 0, 9))
-    : 0.72 * (1 - raceSegment(t, 10, 23));
-  drawRaceSuctionStreaks(ctx, viewport, pilotX, y, t, returnFlowAlpha, reduced, "out");
-  const portalScale = t <= 9
-    ? raceLerp(1.15, 2.15, raceSegment(t, 0, 9))
-    : t <= 23
-      ? raceLerp(2.15, 1.3, raceSegment(t, 10, 23))
-      : t <= 31
-        ? raceLerp(1.3, 1, raceSegment(t, 24, 31))
-        : raceLerp(1, 0.9, raceSegment(t, 32, RACE_RETURN_TICKS - 1));
-  const size = ringSize * portalScale;
-  const alpha = t < 32 ? 1 : 1 - raceSegment(t, 32, RACE_RETURN_TICKS - 1);
-  const complete = drawReturnPortalBack(ctx, art, pilotX, y, size,
-    reduced ? 0 : -race.tick * 0.008, alpha);
-  const returnOut = t <= 9 ? 30 * raceSegment(t, 0, 9) : 30 * (1 - raceSegment(t, 10, 23));
-  drawPilot(ctx, w, save, art, pilotX + returnOut * scale, scale);
-  drawReturnPortalFront(ctx, art, pilotX, y, size, alpha, complete);
-  if (t <= 9) drawRaceRevealEdge(ctx, pilotX, y, reveal, 1 - raceSegment(t, 6, 9));
   drawRaceCueOverlay(ctx, w, viewport);
 }
 
