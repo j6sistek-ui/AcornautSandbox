@@ -956,22 +956,33 @@ export async function bootStandalone(root: HTMLElement) {
       return c;
     }
 
+    if (id === "noPalFx") {
+      // a companion orb with a line through it: the pal is there, its
+      // effect is not
+      ctx.fillStyle = "#8fa2c4";
+      ctx.beginPath();
+      ctx.arc(px * 0.5, mid, px * 0.24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#39445c";
+      ctx.beginPath();
+      ctx.arc(px * 0.5, mid, px * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ff8a8a";
+      ctx.lineWidth = Math.max(2, px * 0.075);
+      ctx.beginPath();
+      ctx.moveTo(px * 0.2, mid + px * 0.3);
+      ctx.lineTo(px * 0.8, mid - px * 0.3);
+      ctx.stroke();
+      return c;
+    }
+
     disc(mid - gap);
     disc(mid + gap);
-    ctx.strokeStyle = id === "roughAir" ? "#ff9a5c" : "#7fe0b0";
+    ctx.strokeStyle = "#7fe0b0";
     ctx.lineWidth = Math.max(1.5, px * 0.06);
     ctx.beginPath();
-    if (id === "roughAir") {
-      for (let i = 0; i <= 24; i++) {
-        const t = i / 24;
-        const x = px * 0.12 + t * px * 0.76;
-        const y = mid + Math.sin(t * Math.PI * 3) * px * 0.13;
-        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-      }
-    } else {
-      ctx.moveTo(px * 0.12, mid);
-      ctx.lineTo(px * 0.88, mid);
-    }
+    ctx.moveTo(px * 0.12, mid);
+    ctx.lineTo(px * 0.88, mid);
     ctx.stroke();
     return c;
   }
@@ -1283,13 +1294,17 @@ export async function bootStandalone(root: HTMLElement) {
           `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
       }
       for (const m of MODS) {
-        const owned = s.purchased.includes(m.id);
+        const owned = m.always || s.purchased.includes(m.id);
         const on = !!s[m.save];
-        const b = mod(m.id, m.name, m.desc, m.cost,
-            !modsOpen ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
+        // an always-on mod ignores the star gate the others sit behind: it
+        // takes something away rather than granting it, so there is nothing
+        // to earn first
+        const open = m.always || modsOpen;
+        const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost,
+            !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
             modIcon(m.id, 56),
-            () => { if (modsOpen) engine.setMod(m.id); });
-        if (!modsOpen) b.classList.add("ac-cardoff");
+            () => { if (open) engine.setMod(m.id); });
+        if (!open) b.classList.add("ac-cardoff");
       }
     }
     scroll.append(grid);

@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "124";
+export const ART_VER = "126";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -581,13 +581,16 @@ export const BETA_UNLOCK_GATES = IS_BETA;
 // a turbulent one.
 export type Mod = {
   id: string;
-  save: "steadyGates" | "roughAir" | "thrillSeeker";
+  save: "steadyGates" | "thrillSeeker" | "noPalFx";
   name: string;
   cost: number;
   tag: string;
   desc: string;
   /** the mod this one switches off when it comes on */
-  opposes?: "steadyGates" | "roughAir" | "thrillSeeker";
+  opposes?: "steadyGates" | "thrillSeeker" | "noPalFx";
+  /** on from the start, for everyone, at no cost - a comfort switch rather
+   *  than a reward. It is never bought and never gated behind stars. */
+  always?: boolean;
 };
 
 export const MODS: Mod[] = [
@@ -598,16 +601,20 @@ export const MODS: Mod[] = [
     cost: 400,
     tag: "NORMAL",
     desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
-    opposes: "roughAir",
   },
   {
-    id: "roughAir",
-    save: "roughAir",
-    name: "Rough Air",
-    cost: 400,
-    tag: "NORMAL",
-    desc: "Doubles how far the gates drift in Normal, and how fast they do it.",
-    opposes: "steadyGates",
+    // Rough Air used to sit here and it did the same job as the Wisp pal:
+    // both exist to make the gates sway harder. Two switches for one
+    // outcome is a menu asking a question it has already answered, so the
+    // mod goes and the pal keeps it - the pal is the one you can SEE doing
+    // it. In its place, the opposite kind of switch entirely.
+    id: "noPalFx",
+    save: "noPalFx",
+    name: "Pal Effects Off",
+    cost: 0,
+    always: true,
+    tag: "ANY MODE",
+    desc: "Fly with any companion for the look alone - none of its effect, good or bad.",
   },
   {
     id: "thrillSeeker",

@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=124";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=124";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=124";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=124";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=124";
-import { tunnelBoundsAt } from "./sim.js?v=124";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=124";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=124";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=126";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=126";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=126";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=126";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=126";
+import { tunnelBoundsAt } from "./sim.js?v=126";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=126";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=126";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -47,6 +47,30 @@ export function skyLuma(w) {
     const a = lum(skyIdFor(w.flight, w.envA));
     const b = lum(skyIdFor(w.flight, w.envB));
     return a + (b - a) * w.envBlend;
+}
+// Rotate an [r,g,b,a] wash around the colour wheel, alpha untouched. The
+// saturation lift matches the one the plate gets, so the wash and the sky
+// under it land on the same new colour instead of two nearby ones.
+function rotateRgb(c, deg) {
+    const [r, g, bl] = c;
+    const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl);
+    const d = mx - mn;
+    let h = 0;
+    if (d) {
+        h = mx === r ? ((g - bl) / d) % 6 : mx === g ? (bl - r) / d + 2 : (r - g) / d + 4;
+        h *= 60;
+    }
+    const l = (mx + mn) / 2 / 255;
+    const sNow = d === 0 ? 0 : d / 255 / (1 - Math.abs(2 * l - 1) || 1);
+    const sat = Math.min(1, sNow * 1.75);
+    h = (((h + deg) % 360) + 360) % 360;
+    const cc = (1 - Math.abs(2 * l - 1)) * sat;
+    const x = cc * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - cc / 2;
+    const seg = Math.floor(h / 60) % 6;
+    const t = [[cc, x, 0], [x, cc, 0], [0, cc, x], [0, x, cc], [x, 0, cc], [cc, 0, x]];
+    const [rr, gg, bb] = t[seg];
+    return [(rr + m) * 255, (gg + m) * 255, (bb + m) * 255, c[3]];
 }
 function drawBackdrop(ctx, w, art) {
     const { W, H } = w;
@@ -112,12 +136,19 @@ function drawBackdrop(ctx, w, art) {
     const envA = ENVS[w.envA];
     const blend = w.envBlend;
     const ws = washScale(w.flight);
-    const wash = env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1));
+    // PRISMWING again. The procedural plate carries the hue, but in flight
+    // that plate sits under this colour wash and the readability scrim, and
+    // those are what the eye actually reads - rotating the plate alone
+    // measured as a 3-point shift in mean colour, which is why the owner
+    // reported it as not working at all. The wash is backdrop, exactly like
+    // the plate, so it turns with it. Planets and debris still do not.
+    const spin = (c) => (w.prismHue ? rotateRgb(c, w.prismHue) : c);
+    const wash = spin(env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1)));
     ctx.fillStyle = `rgba(${wash[0]},${wash[1]},${wash[2]},${wash[3]})`;
     ctx.beginPath();
     ctx.ellipse(W * 0.68, H * 0.28, W * 0.55, H * 0.28, 0.25, 0, Math.PI * 2);
     ctx.fill();
-    const wash2 = env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1));
+    const wash2 = spin(env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1)));
     ctx.fillStyle = `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${wash2[3]})`;
     ctx.beginPath();
     ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
@@ -1415,7 +1446,7 @@ export function drawWorld(ctx, w, save, art) {
     // to FULL black. Drawn after the world and before the pal, so the
     // companion and the pilot stay lit and the pilot is never flying blind
     // about where they themselves are.
-    if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+    if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
         const t = w.lampT;
         const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
         if (a > 0) {
@@ -2661,7 +2692,15 @@ const RIG_PITCH_UP = (14 * Math.PI) / 180; // eased back from Eclipse's 19
 const RIG_PITCH_DOWN = (30 * Math.PI) / 180; // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// Suits the heading pitch must NOT touch. The rotation is calibrated for a
+// character painted belly-down at about +14 degrees, which is where the
+// whole family sits: Flight 14, Ion 12, Frost 16, Ghost 17, Eclipse 24.
+// A suit painted outside that band gets rotated from the wrong starting
+// attitude, and the further off it is the worse the result. The Alien is
+// painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
+// climb tipped it back until it sat upright in the sky rather than
+// climbing, which is what the owner saw as leading with its head.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
