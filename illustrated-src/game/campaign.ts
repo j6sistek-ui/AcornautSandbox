@@ -81,7 +81,7 @@ export type LevelDef = {
   fx: LevelFx;
   goals: [Goal, Goal, Goal];
   /** Experimental cards are Log-only and never enter LEVELS/progression. */
-  experimental?: boolean;
+  standalone?: boolean;
   raceEventId?: string;
 };
 
@@ -417,14 +417,14 @@ export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null
 
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
-export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
+export const HYPER_RUN_MAX_ACORNS = RACE_MAX_ACORNS;
 
 // Hyper Run's mission definition. The names here still say "prototype"
-// and that is deliberate: `id` is the KEY inside save.experimentalRaceRecords,
+// and that is deliberate: `id` is the KEY inside save.raceRecords,
 // so renaming it would orphan every best time already recorded. The mode
 // shipped; the storage key it was born with has to outlive its old name.
-export const PROTOTYPE_RACE_MISSION: LevelDef = {
-  id: "prototype-chapter-1",
+export const HYPER_RUN_MISSION: LevelDef = {
+  id: "hyper-run",
   stage: 0,
   n: 1,
   ord: 0,
@@ -437,12 +437,12 @@ export const PROTOTYPE_RACE_MISSION: LevelDef = {
     { kind: "time", ticks: RACE_TWO_STAR_TICKS },
     { kind: "time", ticks: RACE_THREE_STAR_TICKS },
   ],
-  experimental: true,
-  raceEventId: "prototype-chapter-1",
+  standalone: true,
+  raceEventId: "hyper-run",
 };
 
-export const experimentalRaceById = (id: string) =>
-  id === PROTOTYPE_RACE_MISSION.id ? PROTOTYPE_RACE_MISSION : null;
+export const hyperRunById = (id: string) =>
+  id === HYPER_RUN_MISSION.id ? HYPER_RUN_MISSION : null;
 
 // ------------------------------------------------------------------ prose
 

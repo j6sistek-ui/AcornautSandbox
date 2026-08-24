@@ -38,7 +38,7 @@ export function defaultSave() {
         allStars: false,
         musicOff: false,
         eclipseMotionMode: 2,
-        experimentalRaceRecords: {},
+        raceRecords: {},
     };
 }
 function readRaw(key) {
@@ -125,8 +125,14 @@ export function loadSave() {
         s.guide = s.tutorialDone ? "done" : "pending";
     if (typeof s.allStars !== "boolean")
         s.allStars = false;
-    if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
-        s.experimentalRaceRecords = {};
+    // Hyper Run's records used to live under experimentalRaceRecords, keyed
+    // by "prototype-chapter-1". Both names were prototype-era and the owner
+    // confirmed the only records were their own testing, so the old key is
+    // dropped rather than migrated - left in place it would sit in every
+    // save forever, describing a mission id that no longer exists.
+    delete s.experimentalRaceRecords;
+    if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
+        s.raceRecords = {};
     }
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +

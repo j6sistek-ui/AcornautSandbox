@@ -3,7 +3,7 @@ import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=1
 import { drawSprite as drawSpriteOn } from "./art.js?v=131";
 import { createEngine } from "./engine.js?v=131";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=131";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=131";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=131";
 import { formatRaceTicks } from "./race.js?v=131";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
@@ -16,8 +16,8 @@ function el(tag, cls = "", text) {
 /** One testable launch seam shared by the Hyper Run briefing CTA and its
  * fixed-step acceptance harness. Hyper Run ships on both pages now, so
  * this is no longer gated - the Modes entry always offers it. */
-export function launchPrototypeRace(flyLevel) {
-    return flyLevel(PROTOTYPE_RACE_MISSION.id);
+export function launchHyperRun(flyLevel) {
+    return flyLevel(HYPER_RUN_MISSION.id);
 }
 export async function bootStandalone(root) {
     // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
@@ -97,7 +97,7 @@ export async function bootStandalone(root) {
     // MODE bar cycles through the five. Selection lives here so it survives
     // a re-render of the title.
     // Specialized runs are deliberately NOT selectable by FREE FLIGHT.
-    // WORMHOLE RUN and beta-only HYPER RUN have full rows under PROTOTYPES in
+    // WORMHOLE RUN and HYPER RUN are modes proper now, above the divider in
     // the Modes sheet, while external lab tools remain quieter doors.
     const MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
@@ -646,7 +646,7 @@ export async function bootStandalone(root) {
     // button, the Lab rides inside MODES, and the Star Chart bar is the
     // campaign's stars made permanently visible.
     let modesOpen = false;
-    let prototypeModeOpen = false;
+    let hyperRunOpen = false;
     function nextStarReward(stars) {
         return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
     }
@@ -762,13 +762,13 @@ export async function bootStandalone(root) {
         }
         if (modesOpen)
             box.append(drawModeSheet());
-        if (prototypeModeOpen) {
-            box.append(drawLevelSheet(PROTOTYPE_RACE_MISSION, prototypeMask(), "modes"));
+        if (hyperRunOpen) {
+            box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes"));
         }
         return box;
     }
     // The mode picker: FREE FLIGHT's four rule-sets, with the Lab's
-    // prototype doors riding at the bottom — one deliberate tap away,
+    // lab doors riding at the bottom — one deliberate tap away,
     // exactly as Help used to carry them.
     // Every mode wears a piece of the real game as its face: the painted
     // black hole DEEP SPACE throws at you, the 8-bit acorn ARCADE spawns,
@@ -810,7 +810,7 @@ export async function bootStandalone(root) {
         return c;
     }
     // The mode picker: FREE FLIGHT's four rule-sets, each a saturated row in
-    // its own hue with its record on the right — then the Lab's prototype
+    // its own hue with its record on the right — then the Lab's
     // doors under a rule, deliberately quieter so they never read as modes.
     function drawModeSheet() {
         const s = engine.save;
@@ -874,14 +874,14 @@ export async function bootStandalone(root) {
         // own art, its own record and its own rules; the only thing the old
         // placement still said about it was that it had not shipped yet.
         {
-            const record = s.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
+            const record = s.raceRecords?.[HYPER_RUN_MISSION.id];
             row({
                 cls: "m-race",
                 face: "race",
                 label: "HYPER RUN",
                 blurb: "Thread gates. Center the wormhole rings.",
                 aside: record?.bestFinishTicks ? bestChip(formatRaceTicks(record.bestFinishTicks)) : null,
-                hit: () => { modesOpen = false; prototypeModeOpen = true; render(); },
+                hit: () => { modesOpen = false; hyperRunOpen = true; render(); },
             });
         }
         row({
@@ -1644,11 +1644,11 @@ export async function bootStandalone(root) {
         }
         return wrap;
     }
-    function prototypeMask() {
-        const record = engine.save.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
+    function hyperRunMask() {
+        const record = engine.save.raceRecords?.[HYPER_RUN_MISSION.id];
         if (!record?.bestFinishTicks)
             return 0;
-        return PROTOTYPE_RACE_MISSION.goals.reduce((mask, goal, i) => {
+        return HYPER_RUN_MISSION.goals.reduce((mask, goal, i) => {
             const met = goal.kind === "finish"
                 || (goal.kind === "time" && record.bestFinishTicks <= goal.ticks);
             return met ? mask | (1 << i) : mask;
@@ -1913,7 +1913,7 @@ export async function bootStandalone(root) {
     function drawLevelSheet(def, mask, origin = "chart") {
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard");
-        const raceBriefing = def.experimental && def.base === "race";
+        const raceBriefing = def.standalone && def.base === "race";
         if (raceBriefing)
             sheet.classList.add("ac-racecard");
         // BETA: a level is a number and its three stars — no name, no place,
@@ -1922,7 +1922,7 @@ export async function bootStandalone(root) {
         // when the two were the same value. Promoting Hyper Run to live would
         // therefore have stripped every live level briefing down to "Level 12"
         // as a side effect. It now asks the question it actually means.
-        const plain = IS_BETA && !def.experimental;
+        const plain = IS_BETA && !def.standalone;
         if (plain) {
             const gnum = LEVELS.findIndex((l) => l.id === def.id) + 1;
             sheet.append(el("p", "ac-kicker", "STAR CHART"));
@@ -1933,8 +1933,8 @@ export async function bootStandalone(root) {
                 : def.base === "tunnel" ? "WORMHOLE RUN"
                     : def.base === "spill" ? "THE SPILL"
                         : ENVS[def.fx.env ?? 0]?.name ?? "";
-            sheet.append(el("p", "ac-kicker", def.experimental
-                ? "EXPERIMENTAL MISSION · PROTOTYPE CHAPTER 1"
+            sheet.append(el("p", "ac-kicker", def.standalone
+                ? "HYPER RUN · TIME TRIAL"
                 : `LEVEL ${def.id} \u00b7 ${place}`));
             sheet.append(el("h2", "ac-lvlname", def.name));
             const mode = def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
@@ -1979,20 +1979,20 @@ export async function bootStandalone(root) {
             goals.append(row);
         });
         sheet.append(goals);
-        if (def.experimental)
-            sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE · CAMPAIGN STARS UNCHANGED"));
-        const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.experimental ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
+        if (def.standalone)
+            sheet.append(el("p", "ac-sub", "OWN RECORD · CAMPAIGN STARS UNCHANGED"));
+        const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
         fly.onclick = () => {
             chartLevel = null;
-            prototypeModeOpen = false;
+            hyperRunOpen = false;
             modesOpen = false;
-            const launched = def.id === PROTOTYPE_RACE_MISSION.id
-                ? launchPrototypeRace((id) => engine.flyLevel(id))
+            const launched = def.id === HYPER_RUN_MISSION.id
+                ? launchHyperRun((id) => engine.flyLevel(id))
                 : engine.flyLevel(def.id);
             // A beta-gate regression should leave the briefing recoverable rather
             // than turning START RUN into another dead control.
             if (!launched && origin === "modes") {
-                prototypeModeOpen = true;
+                hyperRunOpen = true;
                 render();
             }
         };
@@ -2000,7 +2000,7 @@ export async function bootStandalone(root) {
         const close = () => {
             chartLevel = null;
             if (origin === "modes") {
-                prototypeModeOpen = false;
+                hyperRunOpen = false;
                 modesOpen = true;
             }
             render();
@@ -2013,11 +2013,11 @@ export async function bootStandalone(root) {
         return wrap;
     }
     function drawLevelDone(last) {
-        if (last.def.experimental && last.def.base === "race" && last.raceRecord) {
+        if (last.def.standalone && last.def.base === "race" && last.raceRecord) {
             const r = last.raceRecord;
             const sheet = el("div", "ac-sheet ac-center");
-            sheet.append(el("p", "ac-kicker", "EXPERIMENTAL MISSION"));
-            sheet.append(el("h2", "", "PROTOTYPE CHAPTER 1"));
+            sheet.append(el("p", "ac-kicker", "HYPER RUN"));
+            sheet.append(el("h2", "", "HYPER RUN"));
             sheet.append(el("p", "ac-kicker", "FINISH"));
             sheet.append(el("h2", "", formatRaceTicks(r.finishTicks)));
             if (r.newBestTime)
@@ -2036,11 +2036,11 @@ export async function bootStandalone(root) {
                 labels.append(row);
             });
             sheet.append(labels);
-            sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`));
+            sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${HYPER_RUN_MAX_ACORNS}`));
             sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
             if (r.newBestAcorns)
                 sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
-            sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));
+            sheet.append(el("p", "ac-sub", "OWN RECORD — CAMPAIGN STARS UNCHANGED"));
             const again = el("button", "ac-primary", "RUN AGAIN");
             again.onclick = () => engine.flyLevel(last.def.id);
             const back = el("button", "ac-ghost", "BACK TO LOG");

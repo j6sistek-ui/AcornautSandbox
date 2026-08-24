@@ -78,7 +78,7 @@ export type SaveData = {
   // however carefully their magnitudes were damped.
   eclipseMotionMode?: number;
   /** Experimental records are isolated from chapter stars and rewards. */
-  experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
+  raceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
 };
 
 export function defaultSave(): SaveData {
@@ -119,7 +119,7 @@ export function defaultSave(): SaveData {
     allStars: false,
     musicOff: false,
     eclipseMotionMode: 2,
-    experimentalRaceRecords: {},
+    raceRecords: {},
   };
 }
 
@@ -183,8 +183,14 @@ export function loadSave(): SaveData {
   // game — never walk a veteran to the hangar
   if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
   if (typeof s.allStars !== "boolean") s.allStars = false;
-  if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
-    s.experimentalRaceRecords = {};
+  // Hyper Run's records used to live under experimentalRaceRecords, keyed
+  // by "prototype-chapter-1". Both names were prototype-era and the owner
+  // confirmed the only records were their own testing, so the old key is
+  // dropped rather than migrated - left in place it would sit in every
+  // save forever, describing a mission id that no longer exists.
+  delete (s as Record<string, unknown>).experimentalRaceRecords;
+  if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
+    s.raceRecords = {};
   }
   if (parsed && typeof parsed.xp !== "number") {
     const owned =

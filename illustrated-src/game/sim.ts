@@ -2184,8 +2184,8 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
     ? [goalMet(def.goals[0], lvl.stats), goalMet(def.goals[1], lvl.stats), goalMet(def.goals[2], lvl.stats)]
     : [false, false, false];
   const mask = (met[0] ? 1 : 0) | (met[1] ? 2 : 0) | (met[2] ? 4 : 0);
-  if (def.experimental && def.base === "race") {
-    const records = save.experimentalRaceRecords ?? (save.experimentalRaceRecords = {});
+  if (def.standalone && def.base === "race") {
+    const records = save.raceRecords ?? (save.raceRecords = {});
     const prior = records[def.raceEventId ?? def.id];
     const finishTicks = Math.max(0, Math.floor(lvl.stats.finishTicks));
     const priorTicks = prior?.bestFinishTicks ?? 0;

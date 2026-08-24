@@ -6,7 +6,7 @@
 
 import { QUICK_DROP_VY } from "./control-constants";
 
-export const RACE_EVENT_ID = "prototype-chapter-1";
+export const RACE_EVENT_ID = "hyper-run";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
 export const RACE_DT = 1 / RACE_HZ;

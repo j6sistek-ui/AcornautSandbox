@@ -19,7 +19,7 @@ import {
   writeSave,
   type SaveData,
 } from "./save";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
 import {
   dive,
   flap,
@@ -202,10 +202,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return "denied";
     },
     flyLevel(id) {
-      const def = levelById(id) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(id) : null);
+      const def = levelById(id) ?? (HYPER_RUN_ENABLED ? hyperRunById(id) : null);
       if (!def) return false;
       // starsOf, not the raw tally: Briella's code opens chapters here too
-      if (!def.experimental && !levelUnlocked(def, save.stars || {}, starsOf(save))) return false;
+      if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save))) return false;
       unlockAudio();
       // A SPILL mission lives on the lab page: hand it the mission card
       // and go. It writes one result record at the end, and the boot code

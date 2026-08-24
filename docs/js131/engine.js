@@ -3,7 +3,7 @@ import { sfx, unlockAudio, music } from "./audio.js?v=131";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=131";
 import { drawHud, drawWorld } from "./draw.js?v=131";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=131";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=131";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=131";
 import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=131";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=131";
 import { raceViewport } from "./race-viewport.js?v=131";
@@ -108,11 +108,11 @@ export async function createEngine(canvas) {
             return "denied";
         },
         flyLevel(id) {
-            const def = levelById(id) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(id) : null);
+            const def = levelById(id) ?? (HYPER_RUN_ENABLED ? hyperRunById(id) : null);
             if (!def)
                 return false;
             // starsOf, not the raw tally: Briella's code opens chapters here too
-            if (!def.experimental && !levelUnlocked(def, save.stars || {}, starsOf(save)))
+            if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save)))
                 return false;
             unlockAudio();
             // A SPILL mission lives on the lab page: hand it the mission card
