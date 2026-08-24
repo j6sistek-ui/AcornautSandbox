@@ -36,7 +36,7 @@ DRAW_SOURCE = ROOT / "illustrated-src" / "game" / "draw.ts"
 RIG_AUDIT = ROOT / "illustrated-src" / "rig-tail.py"
 EDGE_AUDIT = ROOT / "illustrated-src" / "clean-raster-edges.py"
 
-RASTER_SUFFIXES = {".png", ".jpg", ".jpeg"}
+RASTER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
 
 # These are runtime-sized sprites. Other categories intentionally carry
 # panoramas, thumbnails, UI plates, trail previews, or 128px overlay masks.
@@ -586,6 +586,60 @@ def run_rig_audit(qa: QA, rigged: list[str]) -> None:
     qa.ok(f"rig-tail audit passed for {len(rigged)} active rigs")
 
 
+
+def verify_sprite_sheets(qa: QA) -> None:
+    """The badge sheet and the CSS that plays it must agree.
+
+    Nothing about a sprite sheet fails loudly: get the grid wrong and the
+    badge simply plays a slice of the wrong cells, which reads as a glitchy
+    disc rather than as an error. So the geometry is not written down twice.
+    The CSS is the one that has to be right - it is what the browser obeys -
+    and this reads the grid back OUT of it and holds the image to it.
+    """
+    index = ROOT / "docs" / "index.html"
+    sheet = DOCS_ART / "ui" / "dust-badge-anim.webp"
+    if not index.exists() or not sheet.exists():
+        qa.fail("the animated dust badge is missing its sheet or its page")
+        return
+    css = index.read_text(encoding="utf8")
+    cols = re.search(r"\.ac-dustbadgecells\s*\{[^}]*?width:\s*(\d+)%", css, re.S)
+    rows = re.search(r"\.ac-dustbadgerow\s*\{[^}]*?height:\s*(\d+)%", css, re.S)
+    col_step = re.search(r"\.ac-dustbadgecells\s*\{[^}]*?steps\((\d+)\)", css, re.S)
+    row_step = re.search(r"\.ac-dustbadgerow\s*\{[^}]*?steps\((\d+)\)", css, re.S)
+    col_time = re.search(r"\.ac-dustbadgecells\s*\{[^}]*?animation:[^;]*?([\d.]+)s", css, re.S)
+    row_time = re.search(r"\.ac-dustbadgerow\s*\{[^}]*?animation:[^;]*?([\d.]+)s", css, re.S)
+    if not all((cols, rows, col_step, row_step, col_time, row_time)):
+        qa.fail("could not read the dust badge grid out of docs/index.html")
+        return
+    across, down = int(cols.group(1)) // 100, int(rows.group(1)) // 100
+    problems: list[str] = []
+    if int(col_step.group(1)) != across:
+        problems.append(f"the sheet is {across} cells across but steps in {col_step.group(1)}")
+    if int(row_step.group(1)) != down:
+        problems.append(f"the sheet is {down} cells down but steps in {row_step.group(1)}")
+    # the column leg must run exactly one row's worth, or the two legs drift
+    # apart and the badge starts sampling cells from two different frames
+    if abs(float(row_time.group(1)) - float(col_time.group(1)) * down) > 1e-6:
+        problems.append(
+            f"the row leg is {row_time.group(1)}s but {down} column legs are "
+            f"{float(col_time.group(1)) * down:g}s, so the two drift apart")
+    with Image.open(sheet) as image:
+        width, height = image.size
+        bands = image.getbands()
+    if width % across or height % down:
+        problems.append(f"{width}x{height} does not divide into {across}x{down} cells")
+    elif width // across != height // down:
+        problems.append(
+            f"cells are {width // across}x{height // down}, which is not square")
+    if "A" not in bands:
+        problems.append("the sheet lost its alpha, so the disc will paint on a box")
+    if problems:
+        qa.fail("animated dust badge: " + "; ".join(problems))
+    else:
+        qa.ok(f"dust badge sheet is {across}x{down} cells of "
+              f"{width // across}px, in step with the CSS")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -596,6 +650,7 @@ def main() -> int:
     _, _, pals, rigged = verify_catalog_assets(qa, files)
     if pals:
         verify_pal_bounds(qa, pals)
+    verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
