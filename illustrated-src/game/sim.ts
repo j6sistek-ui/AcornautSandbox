@@ -765,12 +765,15 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
       kind: pickKind(w),
       xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
       // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
-      // own clock - up to its own width either way, at its own speed, from
+      // own clock - up to its own RADIUS either way, at its own speed, from
       // its own phase - so a stack reads as debris hanging in space rather
       // than as a wall of evenly spaced circles. Uniform amplitude is the
       // point: plenty of rocks barely move, which is what stops the column
       // pulsing as one body.
-      amp: Math.random() * 2 * rr,
+      //
+      // It was a full width either way at first, which spread the column too
+      // far to still read as one seal. Halved.
+      amp: Math.random() * rr,
       rate: 0.45 + Math.random() * 0.9,        // one swing every 5s to 14s
       phase: Math.random() * Math.PI * 2,
       debris: pickDebris(env),
