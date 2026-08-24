@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=136";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=137";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "136";
+export const ART_VER = "137";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 21:01 UTC";
+export const BUILD_TIME = "2026-08-24 21:26 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -377,19 +377,6 @@ export const TITLES = [
     [25, "EVENT HORIZON"],
     [30, "ACORNAUT"],
 ];
-// Premium items. These never appear on the level track — no amount of
-// flying reveals them — and acorns cannot buy them; they are bought for
-// real money. The beta hands them over so they can be played and judged.
-// THE THREE PACKS. Premium is sold as themed sets rather than a wall of
-// single items: a pack is a LOOK - suit, its helmet, its trail, its
-// companion - so buying one dresses the pilot completely instead of
-// leaving them half-matched.
-//
-// Cyber, Volt and Robo moved in here from the Star Chart. That is a real
-// trade and it is deliberate: they become premium skins, and the two
-// reward slots they vacated (\u2605 60 and \u2605 200) are refilled below with
-// helmets that used to be premium and are now earned. Nothing was simply
-// taken away.
 export const BUNDLES = [
     {
         id: "bundle-aurora",
@@ -397,10 +384,10 @@ export const BUNDLES = [
         blurb: "Ice, growth and eclipse \u2014 three skies, worn.",
         dust: 900,
         items: [
-            "cryostar", "verdant", "eclipse", // suits
-            "cryostar", "verdant", "eclipse", // helmets (same ids)
-            "celestialtide", "verdantflourish", "eclipseglyph", // trails
-            "prismwing", // pal
+            { kind: "suit", id: "cryostar" }, { kind: "suit", id: "verdant" }, { kind: "suit", id: "eclipse" },
+            { kind: "helm", id: "cryostar" }, { kind: "helm", id: "verdant" }, { kind: "helm", id: "eclipse" },
+            { kind: "trail", id: "celestialtide" }, { kind: "trail", id: "verdantflourish" }, { kind: "trail", id: "eclipseglyph" },
+            { kind: "pal", id: "prismwing" },
         ],
     },
     {
@@ -409,10 +396,12 @@ export const BUNDLES = [
         blurb: "Gemcut, seraphim and the deep \u2014 the ceremonial set.",
         dust: 1200,
         items: [
-            "gemmie", "sammie", "seraph", "leviathan", // suits
-            "gemmie", "sammie", "seraph", "leviathan", // helmets
-            "opalfeather", "clockwork", "phoenixplume", // trails
-            "clockling", // pal
+            { kind: "suit", id: "gemmie" }, { kind: "suit", id: "sammie" },
+            { kind: "suit", id: "seraph" }, { kind: "suit", id: "leviathan" },
+            { kind: "helm", id: "gemmie" }, { kind: "helm", id: "sammie" },
+            { kind: "helm", id: "seraph" }, { kind: "helm", id: "leviathan" },
+            { kind: "trail", id: "opalfeather" }, { kind: "trail", id: "clockwork" }, { kind: "trail", id: "phoenixplume" },
+            { kind: "pal", id: "clockling" },
         ],
     },
     {
@@ -421,15 +410,93 @@ export const BUNDLES = [
         blurb: "Chrome, current and code. These three wear their own heads.",
         dust: 750,
         items: [
-            "cyber", "volt", "robo", // suits, no helmets
-            "nightglider", // pal
+            { kind: "suit", id: "cyber" }, { kind: "suit", id: "volt" }, { kind: "suit", id: "robo" },
+            { kind: "pal", id: "nightglider" },
+        ],
+    },
+    // The small packs. They overlap the big ones ON PURPOSE: a pilot who owns
+    // Robo should meet a Robo pack that has already taken his suit off the
+    // price, which is the whole reason the pricing below exists.
+    {
+        id: "bundle-robo",
+        name: "Robo & Glider",
+        blurb: "One machine, one wing. A short pack for a long night.",
+        dust: 300,
+        items: [
+            { kind: "suit", id: "robo" },
+            { kind: "pal", id: "nightglider" },
+        ],
+    },
+    {
+        id: "bundle-cyber",
+        name: "Cyber & Clockwork",
+        blurb: "Circuit chrome, trailing gearlight.",
+        dust: 300,
+        items: [
+            { kind: "suit", id: "cyber" },
+            { kind: "trail", id: "clockwork" },
         ],
     },
 ];
-// Premium is now DEFINED by the packs rather than kept as a parallel list
-// that could drift out of step with them. An item is premium precisely
-// because a pack sells it.
-export const IAP_ITEMS = [...new Set(BUNDLES.flatMap((b) => b.items))];
+/** WHAT A SLOT IS WORTH. A suit is where the work goes - the rig, the neck
+ *  cut, the tail layer, the flight banks - so it carries three times what
+ *  anything else does. Helmets, trails and pals are one apiece. A first
+ *  pass, and it lives here so re-weighting the economy is one edit. */
+export const ITEM_WEIGHT = {
+    suit: 3, helm: 1, trail: 1, pal: 1,
+};
+/** the ownership keys a pack grants - a suit and its helmet share one */
+export const bundleIds = (b) => [...new Set(b.items.map((i) => i.id))];
+export const bundleWeight = (b) => b.items.reduce((n, i) => n + ITEM_WEIGHT[i.kind], 0);
+/** WHAT A PACK COSTS YOU, given what you already own.
+ *
+ *  Packs overlap on purpose - that is what makes a rotating shelf worth
+ *  watching - so a pack whose suit you bought last week must not charge you
+ *  for it twice. The price falls with the WEIGHT still owed rather than the
+ *  item count, so clearing a suit out of a pack takes three helmets' worth
+ *  off what is left. Rounded to ten so a discounted price still reads as a
+ *  price and not as a calculation. */
+export function bundlePrice(b, owns) {
+    const total = bundleWeight(b);
+    const owed = b.items.reduce((n, i) => n + (owns(i.id) ? 0 : ITEM_WEIGHT[i.kind]), 0);
+    if (owed <= 0)
+        return 0; // nothing left to sell
+    if (owed >= total)
+        return b.dust;
+    return Math.max(10, Math.round((b.dust * owed) / total / 10) * 10);
+}
+export const SHOP_SLOTS = 3;
+export const SHOP_DAY_MS = 24 * 60 * 60 * 1000;
+function keyOf(day, id) {
+    let h = (day * 2654435761) >>> 0;
+    for (let i = 0; i < id.length; i++)
+        h = (Math.imul(h ^ id.charCodeAt(i), 16777619)) >>> 0;
+    return h;
+}
+/** THE DAY'S SHELF.
+ *
+ *  Three packs, chosen by the DATE rather than by anything the pilot can
+ *  touch: no reroll, no reshuffle on reopening the shop, the same three all
+ *  day and a fresh draw tomorrow. It is deterministic from the day number
+ *  alone, so it needs no server and nothing saved - every device agrees.
+ *
+ *  A pack already owned leaves the pool for good, which is what makes a
+ *  purchase feel like it cleared something rather than just spending. The
+ *  ordering is computed BEFORE that filter, so buying one pack never
+ *  reshuffles the others sitting beside it.
+ *
+ *  And the point of all of it: adding a pack to BUNDLES is now a shop
+ *  update, not a release. It simply joins the pool the next day draws from. */
+export function shopBundles(now, owns) {
+    const day = Math.floor(now / SHOP_DAY_MS);
+    return [...BUNDLES]
+        .map((b) => ({ b, k: keyOf(day, b.id) }))
+        .sort((x, y) => x.k - y.k || (x.b.id < y.b.id ? -1 : 1))
+        .map((x) => x.b)
+        .filter((b) => !bundleIds(b).every(owns))
+        .slice(0, SHOP_SLOTS);
+}
+export const IAP_ITEMS = [...new Set(BUNDLES.flatMap(bundleIds))];
 // STAR DUST is the premium currency. Acorns are earned by flying and buy
 // the standard wardrobe; dust is bought (or claimed daily) and buys packs.
 // Two currencies, two jobs, and the header shows both so neither can be

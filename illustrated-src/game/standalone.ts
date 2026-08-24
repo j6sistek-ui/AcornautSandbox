@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -2505,42 +2505,38 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     if (shopPage === "packs") {
-      for (const bn of BUNDLES) {
-        const owned = bn.items.every((i) => iapOwned(s, i));
+      // THE DAY'S SHELF, not the whole catalogue. Three packs chosen by the
+      // date, the same three all day, a fresh draw tomorrow - and a pack
+      // the pilot owns is gone from the pool for good rather than sitting
+      // there greyed out. See shopBundles.
+      const shelf = shopBundles(Date.now(), (i) => iapOwned(s, i));
+      for (const bn of shelf) {
         const card = el("button", "ac-card ac-bundle");
         const strip = el("div", "ac-bundlestrip");
-        const seen = new Set<string>();
-        for (const id of bn.items) {
-          if (seen.has(id)) continue;
-          seen.add(id);
-          if (seen.size > 4) break;
-          const suit = SUITS.find((u) => u.id === id);
-          const helm = HELMETS.find((h) => h.id === id);
+        for (const it of bn.items.slice(0, 4)) {
+          const suit = it.kind === "suit" && SUITS.find((u) => u.id === it.id);
+          const helm = it.kind === "helm" && HELMETS.find((h) => h.id === it.id);
           if (suit) strip.append(suitCardOf(suit, 40));
           else if (helm) strip.append(helmCardOf(helm, 40));
         }
-        // A suit and its helmet SHARE an id in this catalog - owning
-        // "cryostar" grants both - so counting distinct ids undercounts what
-        // the pilot actually receives. Count the wearables instead.
-        // Count over the DEDUPED ids. A suit and its helmet share an id, so
-        // that id appears twice in items and each occurrence matched both
-        // lists - Aurora reported sixteen wearables for a pack of ten. The
-        // sheet already deduped; the card had not caught up.
-        const worn = [...new Set(bn.items)].reduce((n, id) => n
-          + (SUITS.some((u) => u.id === id) ? 1 : 0)
-          + (HELMETS.some((h) => h.id === id) ? 1 : 0)
-          + (TRAILS.some((t) => t.id === id) ? 1 : 0)
-          + (PALS.some((pl) => pl.id === id) ? 1 : 0), 0);
-        if (seen.size > 4) strip.append(el("span", "ac-bundlemore", `+${worn - 4}`));
+        // every slot is one wearable now that the list says what each is -
+        // no more counting an id twice because a suit and its helmet share
+        const worn = bn.items.length;
+        if (worn > 4) strip.append(el("span", "ac-bundlemore", `+${worn - 4}`));
         card.append(strip);
         const txt = el("div", "ac-modtxt");
         txt.append(el("p", "ac-modname", bn.name), el("p", "ac-sub", bn.blurb));
         card.append(txt);
+        // what the pack costs THIS pilot: the packs overlap, so anything
+        // already owned has come off the price
+        const due = bundlePrice(bn, (i) => iapOwned(s, i));
         const price = el("span", "ac-modprice ac-dustprice");
-        if (owned) price.textContent = "OWNED";
-        else { price.append(icon(I_DUST, 12, true), el("span", "", bn.dust.toLocaleString())); }
+        price.append(icon(I_DUST, 12, true), el("span", "", due.toLocaleString()));
+        if (due < bn.dust) {
+          price.append(el("s", "ac-wasprice", bn.dust.toLocaleString()));
+          card.classList.add("ac-partly");
+        }
         card.append(price);
-        if (owned) card.classList.add("on");
         card.append(el("span", "ac-bundlecount", `${worn} items`));
         // Buying used to happen on this tap, which asked a pilot to spend
         // four figures on a strip of four faces and a count. It opens the
@@ -2548,6 +2544,13 @@ export async function bootStandalone(root: HTMLElement) {
         // it actually contains.
         card.onclick = () => { packOpen = bn.id; confirmBuy = false; render(); };
         grid.append(card);
+      }
+      if (!shelf.length) {
+        grid.append(el("p", "ac-sub ac-shelfempty",
+          "Every pack on the shelf is yours. The shop restocks tomorrow."));
+      } else if (shelf.length < SHOP_SLOTS) {
+        grid.append(el("p", "ac-sub ac-shelfempty",
+          "That is the shelf for today \u2014 it restocks tomorrow."));
       }
       grid.append(codeRow());
     } else {
@@ -2598,15 +2601,11 @@ export async function bootStandalone(root: HTMLElement) {
 
     type Got = { id: string; name: string; kind: "suit" | "helm" | "trail" | "pal" };
     const got: Got[] = [];
-    for (const i of [...new Set(bn.items)]) {
-      const u = SUITS.find((x) => x.id === i);
-      if (u) got.push({ id: i, name: u.name, kind: "suit" });
-      const h = HELMETS.find((x) => x.id === i);
-      if (h) got.push({ id: i, name: h.name, kind: "helm" });
-      const t = TRAILS.find((x) => x.id === i);
-      if (t) got.push({ id: i, name: t.name, kind: "trail" });
-      const pl = PALS.find((x) => x.id === i);
-      if (pl) got.push({ id: i, name: pl.name, kind: "pal" });
+    for (const it of bn.items) {
+      const src = it.kind === "suit" ? SUITS : it.kind === "helm" ? HELMETS
+        : it.kind === "trail" ? TRAILS : PALS;
+      const found = (src as readonly { id: string; name: string }[]).find((x) => x.id === it.id);
+      if (found) got.push({ id: it.id, name: found.name, kind: it.kind });
     }
 
     const wrap = el("div", "ac-lvlsheet");
@@ -2693,19 +2692,19 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.append(el("h2", "ac-lvlname", bn.name));
     sheet.append(el("p", "ac-sub", bn.blurb));
 
-    // grouped by kind, because "10 items" tells you nothing about whether
-    // the thing you wanted is in there
-    // A suit and its helmet share an id, so the items list carries that id
-    // twice - once meaning each. Deduping first is what stops a pack with
-    // three suits reporting six.
-    const uniq = [...new Set(bn.items)];
-    const pick = <T extends { id: string; name: string }>(src: readonly T[]) =>
-      uniq.map((i) => src.find((x) => x.id === i)).filter(Boolean) as T[];
+    // Grouped by kind, because "10 items" tells you nothing about whether
+    // the thing you wanted is in there. Each slot now SAYS what it is, so
+    // this is a filter rather than four lookups per id hoping exactly one
+    // hits - which is what used to report a pack of ten as sixteen.
+    const pick = <T extends { id: string; name: string }>(
+      kind: (typeof bn.items)[number]["kind"], src: readonly T[],
+    ) => bn.items.filter((i) => i.kind === kind)
+      .map((i) => src.find((x) => x.id === i.id)).filter(Boolean) as T[];
     const groups: [string, { id: string; name: string }[]][] = [
-      ["SUITS", pick(SUITS)],
-      ["HELMETS", pick(HELMETS)],
-      ["TRAILS", pick(TRAILS)],
-      ["PALS", pick(PALS)],
+      ["SUITS", pick("suit", SUITS)],
+      ["HELMETS", pick("helm", HELMETS)],
+      ["TRAILS", pick("trail", TRAILS)],
+      ["PALS", pick("pal", PALS)],
     ];
     const listWrap = el("div", "ac-packlist");
     let total = 0;
@@ -2740,7 +2739,15 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.append(listWrap);
     sheet.append(el("p", "ac-fine", `${total} items in this pack.`));
 
-    const owned = bn.items.every((i) => iapOwned(s, i));
+    const owned = bundleIds(bn).every((i) => iapOwned(s, i));
+    // what THIS pilot owes: the packs overlap, so anything already in the
+    // loadout has come off the price and the button must say so
+    const due = bundlePrice(bn, (i) => iapOwned(s, i));
+    const already = bn.items.filter((i) => iapOwned(s, i.id)).length;
+    if (already && !owned) {
+      sheet.append(el("p", "ac-fine ac-packcredit",
+        `${already} of these are already yours \u2014 ${(bn.dust - due).toLocaleString()} Star Dust off.`));
+    }
     const buy = el("button", "ac-primary ac-packbuy");
     if (owned) { buy.textContent = "OWNED"; buy.disabled = true; }
     else {
@@ -2753,10 +2760,10 @@ export async function bootStandalone(root: HTMLElement) {
       if (confirmBuy) {
         buy.classList.add("ac-confirming");
         buy.append(el("span", "", "CONFIRM \u00b7 SPEND "), icon(I_DUST, 14, true),
-                   el("span", "", bn.dust.toLocaleString()));
+                   el("span", "", due.toLocaleString()));
       } else {
         buy.append(el("span", "", "BUY \u00b7 "), icon(I_DUST, 14, true),
-                   el("span", "", bn.dust.toLocaleString()));
+                   el("span", "", due.toLocaleString()));
       }
       buy.onclick = () => {
         if (!confirmBuy) { confirmBuy = true; render(); return; }

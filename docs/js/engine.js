@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=136";
-import { sfx, unlockAudio, music } from "./audio.js?v=136";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=136";
-import { drawHud, drawWorld } from "./draw.js?v=136";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=136";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=136";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=136";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=136";
-import { raceViewport } from "./race-viewport.js?v=136";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=137";
+import { sfx, unlockAudio, music } from "./audio.js?v=137";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=137";
+import { drawHud, drawWorld } from "./draw.js?v=137";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=137";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=137";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=137";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=137";
+import { raceViewport } from "./race-viewport.js?v=137";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -486,12 +486,17 @@ export async function createEngine(canvas) {
         const bn = BUNDLES.find((b) => b.id === id);
         if (!bn)
             return "missing";
-        if (bn.items.every((i) => (save.purchased || []).includes(i)))
+        const ids = bundleIds(bn);
+        if (ids.every((i) => (save.purchased || []).includes(i)))
             return "owned";
-        if (save.starDust < bn.dust)
+        // the price the SHELF is showing, not the sticker: a pack whose suit
+        // the pilot already owns costs less, and charging the sticker here
+        // would take dust the card never asked for
+        const due = bundlePrice(bn, (i) => (save.purchased || []).includes(i));
+        if (save.starDust < due)
             return "poor";
-        save.starDust -= bn.dust;
-        save.purchased = [...new Set([...(save.purchased || []), ...bn.items])];
+        save.starDust -= due;
+        save.purchased = [...new Set([...(save.purchased || []), ...ids])];
         writeSave(save);
         notify();
         return "ok";
@@ -966,4 +971,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=136";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=137";

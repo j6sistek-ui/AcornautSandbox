@@ -223,7 +223,7 @@ export function loadSave(): SaveData {
   // leave a tester unable to afford the set. Granted ONCE - a tester who
   // spends it is meant to stay spent, or the ledger is untestable too.
   if (IS_BETA && !s.betaDustGrant) {
-    s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+    s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);   // every pack, at sticker price
     s.betaDustGrant = true;
   }
   return s;
