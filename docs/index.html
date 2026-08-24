@@ -239,6 +239,21 @@
     .ac-lvlnum { font: 800 15px/1 Figtree, sans-serif; }
     .ac-lvlsheet { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; background: rgba(5,8,18,.72); }
     .ac-lvlcard { width: 100%; border-radius: 18px 18px 0 0; border-top: 1px solid #3a4468; background: #101830; padding: 18px 18px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px; }
+    .ac-lvlcard.ac-racecard { width: min(760px, 100%); max-height: min(94vh, 820px); margin-inline: auto; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+    .ac-racebrief { display: grid; gap: 10px; }
+    .ac-racebriefblock { border: 1px solid rgba(170,140,240,.28); border-radius: 14px; padding: 12px 13px; background: rgba(8,13,31,.38); }
+    .ac-racebriefblock h3 { margin: 0 0 8px; font: 900 14px/1 Figtree, sans-serif; letter-spacing: .12em; color: #ffe086; }
+    .ac-racebriefblock p { margin: 0; color: #d7def0; font: 600 14px/1.45 Figtree, sans-serif; }
+    .ac-racecontrols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .ac-racecontrol { display: grid; grid-template-columns: minmax(118px, .9fr) 1.1fr; gap: 10px; align-items: baseline; padding: 5px 0; color: #d7def0; font: 600 14px/1.3 Figtree, sans-serif; }
+    .ac-racecontrol + .ac-racecontrol { border-top: 1px solid rgba(170,140,240,.13); }
+    .ac-racecontrol b { color: #a9f5ff; font-size: 14px; letter-spacing: .035em; }
+    @media (max-width: 619px), (max-height: 699px) {
+      .ac-lvlcard.ac-racecard { max-height: 96vh; gap: 8px; padding-top: 14px; }
+      .ac-racecontrols { grid-template-columns: 1fr; }
+      .ac-racebriefblock { padding: 10px 12px; }
+      .ac-racebriefblock p, .ac-racecontrol { font-size: 14px; }
+    }
     .ac-lvlname { font-family: Fraunces, Georgia, serif; font-size: 26px; margin: 0; }
     .ac-lvltags { display: flex; flex-wrap: wrap; gap: 6px; }
     .ac-lvltag { font: 800 9px/1 Figtree, sans-serif; letter-spacing: .1em; color: #9fb0d0; border: 1px solid #3a4468; border-radius: 999px; padding: 5px 9px; }

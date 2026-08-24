@@ -859,10 +859,15 @@ function drawHyperRunTunnelDirector(ctx: CanvasRenderingContext2D, w: World, vie
 
 function drawHyperRunTunnelDragCue(ctx: CanvasRenderingContext2D, w: World) {
   const race = w.race!;
-  if (race.wormholes !== 0) return;
   const localTick = race.phase === "entry" ? Math.max(0, race.phaseTick - 12) : race.phaseTick + 36;
   if (race.phase !== "entry" && race.phase !== "tunnel") return;
-  const fade = localTick <= 72 ? 1 : 1 - raceSegment(localTick, 73, 96);
+  const tutorialFade = race.wormholes === 0
+    ? localTick <= 72 ? 1 : 1 - raceSegment(localTick, 73, 96)
+    : 0;
+  // Keep a restrained target pipper alive whenever a drag is owned. The
+  // slower follower then reads as deliberate steering rather than lag.
+  const activeTarget = race.phase === "tunnel" && race.tunnelDragY != null;
+  const fade = Math.max(tutorialFade, activeTarget ? 0.72 : 0);
   if (fade <= 0) return;
   const viewport = raceViewport(w.W, w.H);
   const pilotY = raceViewportY(viewport, race.y);
@@ -895,14 +900,30 @@ function drawHyperRunTunnelDragCue(ctx: CanvasRenderingContext2D, w: World) {
   }
   ctx.fillStyle = "#fff";
   ctx.beginPath(); ctx.arc(x, dotY, Math.max(2.5, 3.5 * viewport.scale), 0, Math.PI * 2); ctx.fill();
-  ctx.textAlign = "left";
-  ctx.font = `900 ${Math.max(8, 9 * viewport.scale)}px Figtree, system-ui`;
-  const labelX = Math.min(viewport.right - 72, x + 10 * viewport.scale);
-  const labelY = Math.max(viewport.top + 12, Math.min(viewport.bottom - 6, dotY + 3));
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "rgba(2,5,13,.9)";
-  ctx.strokeText("DRAG TO ALIGN", labelX, labelY);
-  ctx.fillText("DRAG TO ALIGN", labelX, labelY);
+  if (activeTarget) {
+    const pipper = Math.max(6, 8 * viewport.scale);
+    ctx.strokeStyle = "rgba(169,245,255,.92)";
+    ctx.lineWidth = Math.max(1, 1.4 * viewport.scale);
+    ctx.beginPath(); ctx.arc(x, dotY, pipper, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x - pipper - 4 * viewport.scale, dotY); ctx.lineTo(x - pipper / 2, dotY);
+    ctx.moveTo(x + pipper / 2, dotY); ctx.lineTo(x + pipper + 4 * viewport.scale, dotY);
+    ctx.moveTo(x, dotY - pipper - 4 * viewport.scale); ctx.lineTo(x, dotY - pipper / 2);
+    ctx.moveTo(x, dotY + pipper / 2); ctx.lineTo(x, dotY + pipper + 4 * viewport.scale);
+    ctx.stroke();
+  }
+  if (tutorialFade > 0) {
+    ctx.textAlign = "left";
+    ctx.font = `900 ${Math.max(8, 9 * viewport.scale)}px Figtree, system-ui`;
+    const labelX = Math.min(viewport.right - 102, x + 10 * viewport.scale);
+    const labelY = Math.max(viewport.top + 20, Math.min(viewport.bottom - 22, dotY));
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(2,5,13,.9)";
+    for (const [text, y] of [["DRAG TO ALIGN", labelY], ["CENTER = FASTER EXIT", labelY + 13]] as const) {
+      ctx.strokeText(text, labelX, y);
+      ctx.fillText(text, labelX, y);
+    }
+  }
   ctx.restore();
 }
 
@@ -1384,9 +1405,16 @@ function drawHyperRunShipExhaust(
     : race.phase === "entry" || race.phase === "return"
       ? hyperRunInlineWormholePresentation(race.phase, race.phaseTick).energyAlpha
       : 0;
-  const pulse = 0.5 + 0.5 * Math.sin(w.time * raceLerp(17, 26, hyperspeed));
-  const length = raceLerp(15, 25, hyperspeed) + pulse * raceLerp(4, 7, hyperspeed);
-  const half = raceLerp(4.2, 5.4, hyperspeed) * scale;
+  // The physics applies its deterministic press edge on the first fixed tick.
+  // Mirror that intent in the engine plume on the same rendered frame so a
+  // hold or boost never feels like it disappeared into an input queue.
+  const controlThrust = race.phase === "normal"
+    ? race.boost ? 1 : race.held ? 0.45 : 0
+    : 0;
+  const thrust = Math.max(hyperspeed, controlThrust);
+  const pulse = 0.5 + 0.5 * Math.sin(w.time * raceLerp(17, 26, thrust));
+  const length = raceLerp(15, 25, thrust) + pulse * raceLerp(4, 7, thrust);
+  const half = raceLerp(4.2, 5.4, thrust) * scale;
   const tail = engineX - length * scale;
   const gradient = ctx.createLinearGradient(engineX, 0, tail, 0);
   gradient.addColorStop(0, "rgba(255,255,255,.96)");
@@ -1397,7 +1425,7 @@ function drawHyperRunShipExhaust(
   ctx.globalCompositeOperation = "lighter";
   ctx.fillStyle = gradient;
   ctx.shadowColor = "rgba(111,92,255,.82)";
-  ctx.shadowBlur = raceLerp(6, 10, hyperspeed) * scale;
+  ctx.shadowBlur = raceLerp(6, 10, thrust) * scale;
   ctx.beginPath();
   ctx.moveTo(engineX, -half);
   ctx.quadraticCurveTo(engineX - length * scale * 0.48, -half * 0.64, tail, 0);
@@ -3555,6 +3583,20 @@ export function hyperRunChargeCopy(race: NonNullable<World["race"]>) {
   return `CHARGE ${race.charge}/100`;
 }
 
+export function hyperRunReadyLines(viewWidth: number): readonly string[] {
+  if (viewWidth >= 520) return RACE_READY_COPY;
+  return [
+    "THREAD GATES · CHARGE SHORTCUTS",
+    "FINISH FAST",
+    "FLIGHT · HOLD / RELEASE",
+    "DOUBLE-TAP + HOLD · BOOST",
+    "SWIPE DOWN · DIVE",
+    "WORMHOLE · DRAG TO ALIGN",
+    "CENTER = FASTER EXIT",
+    "PRESS + HOLD TO LAUNCH",
+  ];
+}
+
 export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
   const { W } = w;
   if (w.race) {
@@ -3610,10 +3652,27 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     ctx.font = "700 14px Figtree, system-ui";
     ctx.fillText(`${race.acorns}`, 24, 28);
     if (w.ready) {
+      const readyLines = hyperRunReadyLines(W);
+      const compact = W < 520;
+      const lineHeight = compact ? 20 : 21;
+      const panelWidth = Math.min(W - 24, compact ? 430 : 560);
+      const panelHeight = readyLines.length * lineHeight + 28;
+      const panelTop = Math.min(w.H - panelHeight - 12, Math.max(96, w.H * 0.66));
+      ctx.fillStyle = "rgba(4,8,20,.78)";
+      ctx.strokeStyle = "rgba(169,245,255,.34)";
+      ctx.lineWidth = 1;
+      round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 12);
+      ctx.fill();
+      ctx.stroke();
       ctx.textAlign = "center";
-      ctx.fillStyle = "rgba(255,255,255,.88)";
-      ctx.font = "800 12px Figtree, system-ui";
-      RACE_READY_COPY.forEach((line, i) => ctx.fillText(line, W / 2, w.H * 0.78 + i * 18));
+      readyLines.forEach((line, i) => {
+        const isLaunch = i === readyLines.length - 1;
+        ctx.fillStyle = isLaunch ? "#ffe086" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
+        ctx.font = isLaunch
+          ? "900 15px Figtree, system-ui"
+          : i === 0 ? "900 14px Figtree, system-ui" : "800 14px Figtree, system-ui";
+        ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+      });
     }
     return;
   }
