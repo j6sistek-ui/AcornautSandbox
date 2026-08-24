@@ -18,6 +18,7 @@ import {
   suitRevealed,
   writeSave,
   type SaveData,
+  cleanPilotName,
 } from "./save";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
 import {
@@ -74,6 +75,9 @@ export type Engine = {
   startOver: () => void;
   /** the Founder's Pack door — and one more code that is a love letter */
   redeemAccessCode: (code: string) => "ok" | "love" | "denied";
+  /** rename the pilot. Returns the name that was actually stored, which
+   *  may differ from what was passed - it is sanitised on the way in. */
+  setPilotName: (name: string) => string;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -262,6 +266,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     equipPal: (id) => transactPal(id),
     toggleMod,
     setMod,
+    setPilotName(name) {
+      const clean = cleanPilotName(name);
+      save.pilotName = clean;
+      writeSave(save);
+      notify();
+      return clean;
+    },
     settleDust,
     dailyState,
     claimDaily,

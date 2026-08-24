@@ -12,6 +12,7 @@ export function defaultSave() {
         xp: 0,
         startShield: false,
         battery: false,
+        pilotName: "",
         starDust: 0,
         betaDustGrant: false,
         dustPaidTo: 0,
@@ -96,6 +97,7 @@ export function loadSave() {
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
         s.betaDustGrant = false;
+    s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
@@ -158,6 +160,23 @@ export function loadSave() {
         s.betaDustGrant = true;
     }
     return s;
+}
+/** The one place a pilot name is made safe. Control characters and line
+ *  breaks are stripped because the name is rendered into a single-line
+ *  element, runs of whitespace are collapsed so a name cannot be padded to
+ *  look longer than it is, and the result is capped. Kept here rather than
+ *  at the input so a save hand-edited in devtools gets the same treatment
+ *  as a name typed into the box. */
+export const PILOT_NAME_MAX = 18;
+export function cleanPilotName(raw) {
+    return (raw || "")
+        // eslint-disable-next-line no-control-regex
+        // to a SPACE, not to nothing: a pasted name carrying a line break
+        // should read as two words, not silently become one
+        .replace(/[\u0000-\u001f\u007f-\u009f]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, PILOT_NAME_MAX);
 }
 export function writeSave(s) {
     localStorage.setItem(SAVE_KEY, JSON.stringify(s));

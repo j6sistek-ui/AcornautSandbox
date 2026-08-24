@@ -2,7 +2,7 @@ import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 
@@ -409,6 +409,10 @@ export async function bootStandalone(root: HTMLElement) {
   // The Discord wordmark's face, drawn rather than linked so it needs no
   // network round trip and inherits currentColor like every other icon here.
   const I_DISCORD = ["M20.317 4.492a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.492a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.061.061 0 0 0-.031-.03zM8.02 15.278c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"];
+  const I_EDIT = [
+    "M4 20.4h4.2L19 9.6a2.1 2.1 0 0 0 0-3l-1.6-1.6a2.1 2.1 0 0 0-3 0L3.6 15.8z",
+    "M13.4 6.2 17.8 10.6",
+  ];
   const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
   const I_GEAR = [
     "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -2337,6 +2341,8 @@ export async function bootStandalone(root: HTMLElement) {
   // trying premium on, not equipping it, and nothing here is owned.
   let tryOn: { suit: string; helm: string; pal: string } = { suit: "", helm: "", pal: "" };
   let packOpen: string | null = null;      // the pack whose contents are open
+  let editingName = false;                 // the Profile name is in edit mode
+  const PILOT_FALLBACK = "Nutcracker";     // shown until a pilot picks one
 
   function drawShop() {
     const s = engine.save;
@@ -2702,7 +2708,44 @@ export async function bootStandalone(root: HTMLElement) {
     face.append(portraitOf(helm, suit, 58));
     id.append(face);
     const idTxt = el("div", "ac-idtxt");
-    idTxt.append(el("p", "ac-idname", "Nutcracker"));
+    // THE PILOT NAMES THEMSELVES. It was hard-coded, which read as a bug the
+    // moment anyone looked at it twice. Empty means never chosen, so the
+    // fallback shows through without ever being written to the save - a name
+    // the player picked and one we picked for them stay different facts.
+    const nameRow = el("div", "ac-idnamerow");
+    if (editingName) {
+      const input = document.createElement("input");
+      input.className = "ac-idnameinput";
+      input.type = "text";
+      input.value = s.pilotName || "";
+      input.placeholder = PILOT_FALLBACK;
+      input.maxLength = PILOT_NAME_MAX;
+      input.setAttribute("aria-label", "Pilot name");
+      const commit = () => {
+        engine.setPilotName(input.value);
+        editingName = false;
+        render();
+      };
+      // Enter commits, Escape abandons - the two keys anyone will try
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") { e.preventDefault(); commit(); }
+        else if (e.key === "Escape") { e.preventDefault(); editingName = false; render(); }
+      };
+      const ok = el("button", "ac-idnameok", "SAVE");
+      ok.onclick = commit;
+      nameRow.append(input, ok);
+      // focus after the node is in the document, or the caret goes nowhere
+      requestAnimationFrame(() => { input.focus(); input.select(); });
+    } else {
+      const nm = el("p", "ac-idname", s.pilotName || PILOT_FALLBACK);
+      if (!s.pilotName) nm.classList.add("unset");
+      const edit = el("button", "ac-idnameedit");
+      edit.setAttribute("aria-label", "Change pilot name");
+      edit.append(icon(I_EDIT, 15));
+      edit.onclick = () => { editingName = true; render(); };
+      nameRow.append(nm, edit);
+    }
+    idTxt.append(nameRow);
     idTxt.append(el("p", "ac-sub", `\u2605 ${starsOf(s)} \u00b7 ${starTitle(starsOf(s))}`));
     const tags = el("div", "ac-rigtags");
     if (IS_BETA) tags.append(el("span", "ac-tagpill ac-taggold", "BETA PILOT"));
