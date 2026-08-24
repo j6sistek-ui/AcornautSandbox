@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=125";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=125";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=125";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=125";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=125";
-import { tunnelBoundsAt } from "./sim.js?v=125";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=125";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=125";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=126";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=126";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=126";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=126";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=126";
+import { tunnelBoundsAt } from "./sim.js?v=126";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=126";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=126";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1446,7 +1446,7 @@ export function drawWorld(ctx, w, save, art) {
     // to FULL black. Drawn after the world and before the pal, so the
     // companion and the pilot stay lit and the pilot is never flying blind
     // about where they themselves are.
-    if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+    if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
         const t = w.lampT;
         const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
         if (a > 0) {

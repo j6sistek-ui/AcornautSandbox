@@ -1596,7 +1596,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   // to FULL black. Drawn after the world and before the pal, so the
   // companion and the pilot stay lit and the pilot is never flying blind
   // about where they themselves are.
-  if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+  if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
     const t = w.lampT;
     const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
     if (a > 0) {

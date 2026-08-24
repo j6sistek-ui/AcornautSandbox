@@ -580,6 +580,13 @@ export function envIndexFor(w: World, score: number) {
 
 function palId(save: SaveData, w: World) {
   if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo")) return "buddy";
+  // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
+  // one question, so answering "none" here turns all of them off at once
+  // and cannot miss one the way a flag checked in fourteen places would.
+  // The pal is still EQUIPPED and still drawn - the draw path reads
+  // save.equippedPal directly - because the point of the switch is to keep
+  // the companion you like without the effect you do not.
+  if (save.noPalFx) return "none";
   return save.equippedPal;
 }
 
@@ -596,11 +603,10 @@ function modsLive(save: SaveData, w: World) {
   return !w.tut && !w.lvl && modsUnlocked(save);
 }
 
-/** How hard the gates sway in Normal: 0 with Steady Gates, 2 with Rough Air. */
+/** How hard the gates sway in Normal: 0 with Steady Gates, 1 otherwise. */
 function driftModOf(save: SaveData, w: World) {
   if (!modsLive(save, w)) return 1;
   if (save.steadyGates) return 0;
-  if (save.roughAir) return 2;
   return 1;
 }
 
@@ -1012,7 +1018,9 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.screen = "play";
   w.pausedFrom = null;
   w.shake = 0;
-  const canShield = save.equippedPal !== "nutsack" && save.equippedPal !== "tinbot";
+  // through palId so Pal Effects Off lifts the no-shield rule too
+  const shieldPal = palId(save, w);
+  const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
   w.startShieldArmed = !!(save.startShield && canShield);
   w.shieldCharges = w.startShieldArmed ? 1 : 0;
   w.absorbGrace = 0;
@@ -2593,7 +2601,6 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     // Rough Air doubles how FAST a gate sways as well as how far, so the
     // two together read as turbulence rather than a slow deep breath.
     const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
-      * (w.flight === "fly" && save.roughAir && modsLive(save, w) ? 2 : 1)
       * (w.lvl?.def.fx.driftRate ?? 1);
     p.drift += simDt * driftRate;
   }

@@ -27,6 +27,8 @@ export type SaveData = {
   /** flight mods, bought once and kept. See MODS in catalog.ts. */
   steadyGates: boolean;
   roughAir: boolean;
+  /** comfort switch: the equipped pal is cosmetic only */
+  noPalFx: boolean;
   thrillSeeker: boolean;
   tutorialDone: boolean;
   unlocked: string[];
@@ -81,6 +83,7 @@ export function defaultSave(): SaveData {
     battery: false,
     steadyGates: false,
     roughAir: false,
+    noPalFx: false,
     thrillSeeker: false,
     tutorialDone: false,
     unlocked: ["clear"],
@@ -137,12 +140,15 @@ export function loadSave(): SaveData {
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
   // saves written before the flight mods existed
-  for (const k of ["steadyGates", "roughAir", "thrillSeeker"] as const) {
+  for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
   }
   // Steady Gates and Rough Air are opposites; a save carrying both is
   // incoherent, and stilling the gates is the safer of the two to honour.
-  if (s.steadyGates && s.roughAir) s.roughAir = false;
+  // Rough Air is retired; a save that still has it on simply stops using
+  // it, and the flag is left in place so an older build reading the same
+  // save is not confused by a missing key.
+  s.roughAir = false;
   // saves written before the lifetime tallies existed
   if (typeof s.runs !== "number") s.runs = 0;
   if (typeof s.lifetimeAcorns !== "number") s.lifetimeAcorns = s.acorns;
