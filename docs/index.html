@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=138" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=139" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=138" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=139" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -370,6 +370,24 @@
     .ac-card.ac-bundle .ac-modtxt { min-width: 0; }
     .ac-card.ac-bundle .ac-sub { font-size: 11.5px; line-height: 1.35; }
 
+
+    /* GRID VIEW. The same groupings and the same headings - the rows simply
+       stop scrolling and wrap, so a whole group is on screen at once
+       instead of behind a swipe. One class flips the Loadout's shelves and
+       the shop's PREVIEW alike, because both are built from ac-shelfrow. */
+    .ac-viewrow { display: flex; justify-content: flex-end; margin: 2px 2px -2px; }
+    .ac-viewseg { display: flex; gap: 2px; padding: 2px; border-radius: 10px;
+      background: rgba(20,14,44,.72); border: 1px solid rgba(203,180,255,.22); }
+    .ac-viewbtn { width: 30px; height: 26px; padding: 0; border: 0; border-radius: 8px;
+      background: transparent; color: #98a2bd; font-size: 14px; line-height: 1; }
+    .ac-viewbtn.on { background: rgba(143,107,255,.35); color: #f0ebff; }
+    .ac-asgrid .ac-shelfrow { display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      overflow-x: visible; }
+    .ac-asgrid .ac-shelfrow > .ac-card { flex: initial; min-width: 0; }
+    .ac-asgrid .ac-shelfrow > .ac-card.ac-modcard { min-width: 0; }
+    /* the PREVIEW cards are bigger, so they get three across rather than four */
+    .ac-tostage ~ .ac-shelfrow, .ac-asgrid .ac-shelfrow > .ac-tocard { min-width: 0; }
+    .ac-asgrid .ac-shelfrow:has(> .ac-tocard) { grid-template-columns: repeat(3, minmax(0,1fr)); }
 
     /* THE CALIBRATION PANEL, in the Wormhole Run pause menu. Dense on
        purpose: seven dials have to fit above RESUME on a phone without the
@@ -1077,7 +1095,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js138/standalone.js";
+    import { bootStandalone } from "./js139/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

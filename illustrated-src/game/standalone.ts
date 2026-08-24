@@ -1472,6 +1472,7 @@ export async function bootStandalone(root: HTMLElement) {
       tabs.append(b);
     }
     box.append(tabs);
+    if (engine.shopTab === "suits" || engine.shopTab === "helmets") box.append(shelfToggle());
     denyEl = el("p", "ac-deny");
     denyEl.setAttribute("role", "status");
     denyEl.setAttribute("aria-live", "polite");
@@ -1495,6 +1496,7 @@ export async function bootStandalone(root: HTMLElement) {
       // at all: it arrives with its suit, and a card that cannot be chosen
       // answers nothing.
       grid.classList.add("ac-shelfcol");
+      if (s.shelfGrid) grid.classList.add("ac-asgrid");
       for (const sec of HELMET_SHELF) {
         const items = sec.ids
           .map((id) => HELMETS.find((h) => h.id === id))
@@ -1528,6 +1530,7 @@ export async function bootStandalone(root: HTMLElement) {
       }
     } else if (engine.shopTab === "suits") {
       grid.classList.add("ac-shelfcol");
+      if (s.shelfGrid) grid.classList.add("ac-asgrid");
       const suitCard = (u: (typeof SUITS)[number]) => {
         const premium = isIap(u.id);
         const open = suitRevealed(s, u.id);
@@ -2848,6 +2851,30 @@ export async function bootStandalone(root: HTMLElement) {
    *  runs a real tap-rise-fall cycle so a suit with its own jump shows it.
    *  Robo's articulated tap and Eclipse's impact squash are the whole
    *  reason a still image was not good enough. */
+  /** THE LAYOUT SWITCH. The grouped shelves side-scroll, which keeps a long
+   *  roster short but hides most of it behind a swipe. This flips the same
+   *  groupings - same headings, same order, same cards - into a wrapping
+   *  grid so a whole group is on screen at once. Purely a view: nothing
+   *  about what is listed or how it is sorted changes.
+   *
+   *  It only appears where there is something to flip. On the trails, pals
+   *  and mods tabs there are no groupings, so a switch there would be a
+   *  control that does nothing. */
+  function shelfToggle() {
+    const row = el("div", "ac-viewrow");
+    const seg = el("div", "ac-viewseg");
+    const mk = (grid: boolean, label: string, title: string) => {
+      const b = el("button", `ac-viewbtn${engine.save.shelfGrid === grid ? " on" : ""}`, label);
+      b.title = title;
+      b.setAttribute("aria-pressed", String(engine.save.shelfGrid === grid));
+      b.onclick = () => { engine.setShelfGrid(grid); render(); };
+      return b;
+    };
+    seg.append(mk(false, "\u2261", "Side-scrolling rows"), mk(true, "\u25a6", "Grid"));
+    row.append(seg);
+    return row;
+  }
+
   function drawTryOn() {
     const s = engine.save;
     const wrap = el("div", "ac-tryon");
@@ -2902,7 +2929,9 @@ export async function bootStandalone(root: HTMLElement) {
       requestAnimationFrame(tick);
     }
 
-    // ---- the three shelves
+    // ---- the three shelves, in whichever layout the pilot chose
+    wrap.append(shelfToggle());
+    if (engine.save.shelfGrid) wrap.classList.add("ac-asgrid");
     const shelf = (title: string, kind: "suit" | "helm" | "pal", items: { id: string; name: string }[]) => {
       if (!items.length) return;
       wrap.append(el("p", "ac-shelfhead", title));

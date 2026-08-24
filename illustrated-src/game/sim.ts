@@ -50,12 +50,15 @@ export type PlanetCol = {
               amp: number; rate: number; phase: number }[];
 };
 
+export type PickupKind =
+  | "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro" | "portal" | "multiplier";
+
 export type Pickup = {
   x: number;
   y: number;
   got: boolean;
   bob: number;
-  kind: "acorn" | "slow" | "gold" | "shield" | "hole" | "worm" | "retro" | "portal" | "multiplier";
+  kind: PickupKind;
   pulled?: boolean;
   // Hazards carry their own reach. A black hole or wormhole spans the
   // whole gate mouth, so meeting one is a matter of arriving — not of
@@ -907,6 +910,49 @@ function wormChance(w: World) {
   return w.lvl ? 0 : WORM_RATE[w.flight] ?? 0;
 }
 
+/** PER SECOND, NOT PER GATE.
+ *
+ *  Every pickup rolled once per gate - but gates ARRIVE FASTER as the run
+ *  speeds up: 1.40x as often by distance 12,000, and 1.53x once overdrive
+ *  is on top. Same odds per gate plus half again as many gates a second is
+ *  a deep run being quietly showered, and it compounds against the pilot's
+ *  favour rather than the run's.
+ *
+ *  Shields were the visible symptom - three in hand by gate 100, and a
+ *  crash refilled before the next was spent, so a deep run stopped being
+ *  risky - but every pickup had drifted the same way.
+ *
+ *  Dividing by how much faster the gates are arriving than they did at the
+ *  start holds every pickup's rate PER SECOND flat for the whole run, which
+ *  also makes the opening minute an honest sample of the whole thing.
+ *
+ *  Hazards are deliberately NOT normalised. A black hole arriving more
+ *  often in a faster run is difficulty; a shield arriving more often is a
+ *  bail-out. */
+function cadenceNorm(w: World, d: { speed: number }) {
+  const now = Math.max(1e-3, d.speed / gapSpacing(w));
+  const start = PHYS.baseSpeed / 230;
+  return Math.min(1, start / now);
+}
+
+/** SHIELDS THIN OUT AND THEN STOP.
+ *
+ *  A shield is a second chance, and a run that keeps handing them out has
+ *  no late game - the pilot is never actually at risk. The rate steps down
+ *  a quarter every fifty gates and reaches ZERO at gate 200, so the deep
+ *  run is flown without a net. Every mode that spawns shields is covered,
+ *  because this multiplies the one roll they all share.
+ *
+ *  The +1 SHIELD mod is untouched: that is a thing the pilot bought and
+ *  brought with them, not something the run handed out. */
+export const SHIELD_FADE_EVERY = 50;
+export const SHIELD_FADE_END = 200;
+export function shieldFalloff(w: World) {
+  const steps = SHIELD_FADE_END / SHIELD_FADE_EVERY;          // four
+  const step = Math.floor(Math.max(0, w.score) / SHIELD_FADE_EVERY);
+  return Math.max(0, (steps - step) / steps);
+}
+
 function spawnPair(w: World, save: SaveData, x: number) {
   const env = ENVS[w.envB];
   const d = difficulty(w);
@@ -972,20 +1018,33 @@ function spawnPair(w: World, save: SaveData, x: number) {
   // A collection star must never be lost to the spawn dice: a level with
   // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
   // achievable inside the level's own gate count with room to miss a few.
-  const acornOdds = w.lvl?.def.fx.acornEvery ? 1 : 0.58;
+  // a level's promise is exempt: fx.acornEvery means EVERY gate, whatever
+  // the run is doing, or a "collect eight" star stops being arithmetic
+  const acornOdds = w.lvl?.def.fx.acornEvery ? 1 : 0.58 * cadenceNorm(w, d);
   // A LEVEL's promised pickups outrank the pal's veto. Bee spawns no
   // pickups and that is its trade in endless — but a level whose star says
   // "collect N" or "catch a golden acorn" must spawn them for every pilot,
   // whatever is flying alongside. Golds land on planned gates (goldGatesFor)
   // so the promise is arithmetic, not odds.
+  // ONE PICKUP PER GAP. Four independent rolls could all land in the same
+  // mouth - and with Arcade's double and Meteorcore's double stacked on
+  // top, often did: three things almost on top of each other, which reads
+  // as a pile rather than as a choice worth making.
+  //
+  // A level's PROMISED pickups are placed first and take the slot, because
+  // a star that says "collect eight" must never be left to the dice. Every
+  // roll below only fills a mouth the level did not already claim.
+  let slotUsed = false;
   if (w.lvl) {
     w.lvl.spawnOrd += 1;
     if (w.lvl.def.fx.acornEvery && noPick) {
       const off = (Math.random() - 0.5) * gap * 0.35;
       w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
+      slotUsed = true;
     }
     if (w.lvl.goldGates.includes(w.lvl.spawnOrd)) {
       w.pickups.push({ x: x + 52, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "gold" });
+      slotUsed = true;
     }
   }
   // Arcade is the generous mode: power-ups spawn twice as often by
@@ -1003,18 +1062,35 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const noShield = pal === "nutsack" || pal === "tinbot";
   const noHoles = pal === "tinbot";
   if (!noPick) {
-    if (w.tut || Math.random() < acornOdds) {
+    // The three power-ups roll ONCE, weighted against each other, rather
+    // than three times independently. Their combined chance is what it
+    // always was, so a run meets no fewer of them - it just never meets
+    // two in the same mouth. The power-up goes first: rolling the acorn
+    // first would have let its 58% swallow more than half of them.
+    if (!w.tut && !slotUsed) {
+      const norm = specialMul * cadenceNorm(w, d);
+      const odds: [PickupKind, number][] = [
+        ["slow", 0.05 * norm],
+        ["gold", 0.035 * norm],
+        // shields take BOTH corrections: flat per second like everything
+        // else, AND fading out entirely by gate 200
+        ["shield", noShield ? 0 : 0.03 * norm * shieldFalloff(w)],
+      ];
+      let roll = Math.random();
+      for (const [kind, chance] of odds) {
+        if (roll >= chance) { roll -= chance; continue; }
+        const spread = kind === "slow" ? 0.22 : kind === "gold" ? 0.2 : 0.18;
+        const at = kind === "slow" ? 36 : kind === "gold" ? 52 : 20;
+        w.pickups.push({ x: x + at, y: gapY + (Math.random() - 0.5) * gap * spread,
+                         got: false, bob: Math.random() * 6, kind });
+        slotUsed = true;
+        break;
+      }
+    }
+    if (!slotUsed && (w.tut || Math.random() < acornOdds)) {
       const off = w.tut?.stage === "palDemo" ? (Math.random() < 0.5 ? -1 : 1) * gap * 0.32 : (Math.random() - 0.5) * gap * 0.35;
       w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
-    }
-    if (!w.tut && Math.random() < 0.05 * specialMul) {
-      w.pickups.push({ x: x + 36, y: gapY + (Math.random() - 0.5) * gap * 0.22, got: false, bob: Math.random() * 6, kind: "slow" });
-    }
-    if (!w.tut && Math.random() < 0.035 * specialMul) {
-      w.pickups.push({ x: x + 52, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "gold" });
-    }
-    if (!w.tut && !noShield && Math.random() < 0.03 * specialMul) {
-      w.pickups.push({ x: x + 20, y: gapY + (Math.random() - 0.5) * gap * 0.18, got: false, bob: Math.random() * 6, kind: "shield" });
+      slotUsed = true;
     }
     // Deep Space runs its own shift on a timer, so a black hole there does
     // nothing but clutter the lane — live excludes them and so do we.
