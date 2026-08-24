@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=141";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=141";
-import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=141";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=141";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=141";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=141";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=141";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=142";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=142";
+import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=142";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=142";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=142";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=142";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=142";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -393,12 +393,15 @@ function sealBlockers(w, env, gapY, gap) {
             kind: pickKind(w),
             xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
             // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
-            // own clock - up to its own width either way, at its own speed, from
+            // own clock - up to its own RADIUS either way, at its own speed, from
             // its own phase - so a stack reads as debris hanging in space rather
             // than as a wall of evenly spaced circles. Uniform amplitude is the
             // point: plenty of rocks barely move, which is what stops the column
             // pulsing as one body.
-            amp: Math.random() * 2 * rr,
+            //
+            // It was a full width either way at first, which spread the column too
+            // far to still read as one seal. Halved.
+            amp: Math.random() * rr,
             rate: 0.45 + Math.random() * 0.9, // one swing every 5s to 14s
             phase: Math.random() * Math.PI * 2,
             debris: pickDebris(env),
