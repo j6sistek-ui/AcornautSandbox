@@ -112,7 +112,7 @@ export async function createEngine(canvas) {
             if (!def)
                 return false;
             // starsOf, not the raw tally: Briella's code opens chapters here too
-            if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save)))
+            if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save), save.raceGates))
                 return false;
             unlockAudio();
             // A SPILL mission lives on the lab page: hand it the mission card

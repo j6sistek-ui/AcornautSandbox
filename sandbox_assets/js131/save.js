@@ -1,4 +1,4 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=131";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=131";
 import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, } from "./catalog.js?v=131";
 export function defaultSave() {
     return {
@@ -39,6 +39,7 @@ export function defaultSave() {
         musicOff: false,
         eclipseMotionMode: 2,
         raceRecords: {},
+        raceGates: [],
     };
 }
 function readRaw(key) {
@@ -131,6 +132,11 @@ export function loadSave() {
     // dropped rather than migrated - left in place it would sit in every
     // save forever, describing a mission id that no longer exists.
     delete s.experimentalRaceRecords;
+    if (!Array.isArray(s.raceGates))
+        s.raceGates = [];
+    // only ever the three real gate ids, de-duplicated - a hand-edited save
+    // cannot invent a fourth and unlock the chart with it
+    s.raceGates = [...new Set(s.raceGates.filter((n) => RACE_GATES.some((g) => g.after === n)))];
     if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
         s.raceRecords = {};
     }

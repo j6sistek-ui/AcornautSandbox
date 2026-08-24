@@ -205,7 +205,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const def = levelById(id) ?? (HYPER_RUN_ENABLED ? hyperRunById(id) : null);
       if (!def) return false;
       // starsOf, not the raw tally: Briella's code opens chapters here too
-      if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save))) return false;
+      if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save), save.raceGates)) return false;
       unlockAudio();
       // A SPILL mission lives on the lab page: hand it the mission card
       // and go. It writes one result record at the end, and the boot code

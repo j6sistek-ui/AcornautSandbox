@@ -434,9 +434,53 @@ export function stageUnlocked(stageNum, total) {
     return !!st && total >= st.unlock;
 }
 /** a level opens when its stage is open and the level before it is finished */
-export function levelUnlocked(def, stars, total) {
+// DEBRIS FIELDS. Every 33 levels the road is blocked outright and the only
+// way past is a Hyper Run inside a time. They award no stars on purpose: a
+// gate is passed or not yet passed, never scored, so it can never sit
+// half-finished the way a three-star level can. The times tighten as the
+// chart does - the first is close to autopilot (the no-input replay
+// profile finishes in exactly 9000 ticks), the last wants a real run.
+export const RACE_GATES = [
+    { after: 33, ticks: 9000, label: "2:30" },
+    { after: 66, ticks: 7200, label: "2:00" },
+    { after: 99, ticks: 6120, label: "1:42" },
+];
+/** the gate standing between the pilot and this level, or null if the road
+ *  is clear. Checks every gate below the level, not just the nearest, so a
+ *  skipped one can never be walked around. */
+export function gateBefore(ord, cleared) {
+    const done = cleared || [];
+    for (const g of RACE_GATES) {
+        if (ord > g.after && !done.includes(g.after))
+            return g;
+    }
+    return null;
+}
+/** the gate a Hyper Run would be attempting right now: the first uncleared
+ *  one. A run clears the gate in FRONT of the pilot and no more, so beating
+ *  1:42 early does not silently bank all three. */
+export function nextGate(cleared) {
+    const done = cleared || [];
+    return RACE_GATES.find((g) => !done.includes(g.after)) ?? null;
+}
+/** THE CLEAR RULE, kept pure so it can be tested without flying a race.
+ *  A finish opens the gate in front of the pilot when it was an actual
+ *  finish and the clock beat the limit. Returns the gate that opened, or
+ *  null when nothing did. */
+export function gateClearedBy(cleared, finished, finishTicks) {
+    const g = nextGate(cleared);
+    if (!g || !finished)
+        return null;
+    // a zero or negative clock is a quit or a broken read, never a pass
+    if (!(finishTicks > 0))
+        return null;
+    return finishTicks <= g.ticks ? g : null;
+}
+export function levelUnlocked(def, stars, total, gatesCleared) {
     if (IS_BETA)
         return true;
+    if (gateBefore(def.ord, gatesCleared))
+        return false;
     if (!stageUnlocked(def.stage, total))
         return false;
     if (def.n === 1)

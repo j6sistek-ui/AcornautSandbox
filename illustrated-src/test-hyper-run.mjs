@@ -45,6 +45,11 @@ try {
     standaloneSource.indexOf("function drawLog()"),
     standaloneSource.indexOf("function drawLevelSheet"),
   );
+  // the debris fields are drawn by fullChart(), which sits ABOVE drawLog()
+  const chartSource = standaloneSource.slice(
+    standaloneSource.indexOf("function fullChart("),
+    standaloneSource.indexOf("function drawLog()"),
+  );
   const levelSheetSource = standaloneSource.slice(
     standaloneSource.indexOf("function drawLevelSheet"),
     standaloneSource.indexOf("function drawLevelDone"),
@@ -77,10 +82,22 @@ try {
   assert(homeSource.includes("if (hyperRunOpen)")
     && homeSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes")'),
   "Modes did not route Hyper Run through its objective/control briefing");
-  assert(!logSource.includes("HYPER_RUN_MISSION")
-    && !logSource.includes("PROTOTYPE CHAPTER 1")
+  // The chart must not carry the OLD entry - the "PROTOTYPE CHAPTER 1"
+  // stage card that #123 removed. It legitimately references
+  // HYPER_RUN_MISSION now, because the debris fields live on this screen
+  // and their briefing renders here; that is a different thing from
+  // listing Hyper Run as a chapter, so the check names what it forbids
+  // rather than banning the symbol outright.
+  // ac-stagecard is the ordinary chapter card and must stay; what may not
+  // come back is the Hyper Run entry that used to sit among them, which
+  // was only ever identifiable by its copy.
+  assert(!logSource.includes("PROTOTYPE CHAPTER 1")
     && !logSource.includes("EXPERIMENTAL MISSION"),
-  "Star Chart still exposes the old Hyper Run prototype entry");
+  "Star Chart still exposes the old Hyper Run prototype chapter entry");
+  assert(chartSource.includes("ac-gatenode")
+    && chartSource.includes("RACE_GATES")
+    && logSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "chart")'),
+  "Star Chart debris fields are missing, or cannot open the run that clears them");
   assert(levelSheetSource.includes("launchHyperRun((id) => engine.flyLevel(id))")
     && levelSheetSource.includes('origin: "chart" | "modes" = "chart"'),
   "START RUN no longer uses the tested engine launch seam or Modes return path");

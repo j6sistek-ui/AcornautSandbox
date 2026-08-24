@@ -3,7 +3,7 @@ import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -929,14 +929,34 @@ export async function bootStandalone(root: HTMLElement) {
     // own art, its own record and its own rules; the only thing the old
     // placement still said about it was that it had not shipped yet.
     {
+      // HYPER RUN IS THE FIRST DEBRIS FIELD'S REWARD. Before that it is not
+      // a mode you can pick - the only way to fly it is the field itself,
+      // from the Star Chart, because that is the run it exists to be. Clear
+      // the field at 33 and it becomes yours to fly whenever you like.
+      const firstGate = RACE_GATES[0];
+      const earned = IS_BETA || (s.raceGates || []).includes(firstGate.after);
       const record = s.raceRecords?.[HYPER_RUN_MISSION.id];
+      const lock = el("span", "ac-modelock");
+      lock.append(icon(I_LOCK, 12), el("b", "", `LV ${firstGate.after}`));
       row({
         cls: "m-race",
         face: "race",
         label: "HYPER RUN",
-        blurb: "Thread gates. Center the wormhole rings.",
-        aside: record?.bestFinishTicks ? bestChip(formatRaceTicks(record.bestFinishTicks)) : null,
-        hit: () => { modesOpen = false; hyperRunOpen = true; render(); },
+        blurb: earned
+          ? "Thread gates. Center the wormhole rings."
+          : `Clear the debris field after level ${firstGate.after} to unlock.`,
+        aside: earned
+          ? (record?.bestFinishTicks ? bestChip(formatRaceTicks(record.bestFinishTicks)) : null)
+          : lock,
+        open: earned,
+        // locked, it still answers the tap - by showing the chart where the
+        // field actually is, rather than doing nothing
+        hit: () => {
+          modesOpen = false;
+          if (earned) hyperRunOpen = true;
+          else engine.open("log");
+          render();
+        },
       });
     }
     row({
@@ -1703,6 +1723,7 @@ export async function bootStandalone(root: HTMLElement) {
   // their price, greyed until banked.
   function fullChart(stars: Record<string, number>, total: number) {
     const levels = LEVELS;
+    const gatesDone = engine.save.raceGates || [];
     const W = Math.min(460, Math.max(292, window.innerWidth - 32));
     const railW = 78;               // the milestone rail owns the right edge
     const roadW = W - railW;
@@ -1716,7 +1737,7 @@ export async function bootStandalone(root: HTMLElement) {
     }));
     let current = -1;
     for (let i = 0; i < levels.length; i++) {
-      if (levelUnlocked(levels[i], stars, total) && !((stars[levels[i].id] || 0) & 1)) {
+      if (levelUnlocked(levels[i], stars, total, gatesDone) && !((stars[levels[i].id] || 0) & 1)) {
         current = i;
         break;
       }
@@ -1803,7 +1824,7 @@ export async function bootStandalone(root: HTMLElement) {
 
     levels.forEach((lvl, i) => {
       const mask = stars[lvl.id] || 0;
-      const can = levelUnlocked(lvl, stars, total);
+      const can = levelUnlocked(lvl, stars, total, gatesDone);
       const isCur = i === current;
       const done = (mask & 1) === 1;
       const node = el("button",
@@ -1833,6 +1854,39 @@ export async function bootStandalone(root: HTMLElement) {
       if (engine.save.guide === "levels" && lvl.id === "1-1") node.classList.add("ac-pulse");
       map.append(node);
     });
+
+    // THE DEBRIS FIELDS. One node per gate, parked on the road between the
+    // level it follows and the next, so the block is visible from a screen
+    // away rather than discovered by tapping a locked planet. It wears the
+    // scout ship because the ship is what gets you through it.
+    for (const g of RACE_GATES) {
+      const i = g.after - 1;                  // the level it sits after
+      if (i < 0 || i >= pos.length) continue;
+      const here = pos[i];
+      const beyond = pos[i + 1] ?? { x: here.x, y: here.y - step };
+      const done = gatesDone.includes(g.after);
+      // blocking only if it is the one actually in the way
+      const blocking = !done && !RACE_GATES.some((o) => o.after < g.after && !gatesDone.includes(o.after));
+      const node = el("button", `ac-gatenode${done ? " done" : blocking ? " blocking" : " locked"}`);
+      node.style.left = `${Math.round((here.x + beyond.x) / 2)}px`;
+      node.style.top = `${Math.round((here.y + beyond.y) / 2)}px`;
+      const disc = el("span", "ac-gatedisc");
+      const ship = document.createElement("img");
+      ship.src = `${artRootUrl()}/hyper-run/scout-ship.png?v=${ART_VER}`;
+      ship.alt = "";
+      ship.className = "ac-gateship";
+      disc.append(ship);
+      node.append(disc);
+      node.append(el("span", "ac-gatelabel", done ? "CLEAR" : g.label));
+      node.setAttribute("aria-label", done
+        ? `Debris field after level ${g.after}: cleared`
+        : `Debris field after level ${g.after}. Finish Hyper Run in ${g.label} to pass.`);
+      // Only the field in your way opens. A later one is not a preview you
+      // can attempt early; it is simply not your problem yet.
+      if (blocking || done) node.onclick = () => { hyperRunOpen = true; render(); };
+      else node.disabled = true;
+      map.append(node);
+    }
 
     const wrap = el("div", "ac-chartmapwrap");
     wrap.append(map);
@@ -1924,7 +1978,7 @@ export async function bootStandalone(root: HTMLElement) {
             const grid = el("div", "ac-lvlgrid");
             for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
               const mask = stars[lvl.id] || 0;
-              const can = levelUnlocked(lvl, stars, total);
+              const can = levelUnlocked(lvl, stars, total, engine.save.raceGates);
               const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
               b.append(el("span", "ac-lvlnum", String(lvl.n)));
               b.append(starPips(mask, "sm"));
@@ -1947,6 +2001,15 @@ export async function bootStandalone(root: HTMLElement) {
     if (chartLevel) {
       const def = LEVELS.find((l) => l.id === chartLevel);
       if (def) box.append(drawLevelSheet(def, stars[def.id] || 0));
+    }
+    // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
+    // hyperRunOpen was only ever read by the hub - so tapping a field set a
+    // flag nothing on the chart looked at, and the one route to Hyper Run
+    // before it is unlocked opened nothing at all. It renders here too, and
+    // returns to the chart rather than the hub because that is where the
+    // tap came from.
+    if (hyperRunOpen) {
+      box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "chart"));
     }
     return box;
   }
@@ -2031,7 +2094,19 @@ export async function bootStandalone(root: HTMLElement) {
       goals.append(row);
     });
     sheet.append(goals);
-    if (def.standalone) sheet.append(el("p", "ac-sub", "OWN RECORD · CAMPAIGN STARS UNCHANGED"));
+    if (def.standalone) {
+      // A gate turns this from a time trial into the way past a blocked
+      // road, so the briefing has to say WHICH field and WHAT time before
+      // the pilot commits to a run rather than after.
+      const g = nextGate(engine.save.raceGates);
+      if (g && !IS_BETA) {
+        const note = el("p", "ac-sub ac-gatenote");
+        note.append(el("b", "", `DEBRIS FIELD AFTER LEVEL ${g.after}`),
+                    el("span", "", ` \u00b7 finish under ${g.label} to clear it`));
+        sheet.append(note);
+      }
+      sheet.append(el("p", "ac-sub", "OWN RECORD \u00b7 CAMPAIGN STARS UNCHANGED"));
+    }
     const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
     fly.onclick = () => {
       chartLevel = null;
@@ -2040,20 +2115,23 @@ export async function bootStandalone(root: HTMLElement) {
       const launched = def.id === HYPER_RUN_MISSION.id
         ? launchHyperRun((id) => engine.flyLevel(id))
         : engine.flyLevel(def.id);
-      // A beta-gate regression should leave the briefing recoverable rather
-      // than turning START RUN into another dead control.
-      if (!launched && origin === "modes") {
+      // A refused launch must leave the briefing recoverable rather than
+      // turning START RUN into another dead control - from the chart as
+      // well as from Modes, since the chart is the only route in before
+      // the mode is unlocked.
+      if (!launched) {
         hyperRunOpen = true;
+        if (origin === "modes") modesOpen = false;
         render();
       }
     };
     const back = el("button", "ac-ghost", "BACK");
     const close = () => {
       chartLevel = null;
-      if (origin === "modes") {
-        hyperRunOpen = false;
-        modesOpen = true;
-      }
+      // the sheet is open because a flag says so, and the flag has to be
+      // cleared on BOTH routes or closing it from the chart just redraws it
+      hyperRunOpen = false;
+      if (origin === "modes") modesOpen = true;
       render();
     };
     back.onclick = close;
@@ -2073,6 +2151,18 @@ export async function bootStandalone(root: HTMLElement) {
       sheet.append(el("h2", "", formatRaceTicks(r.finishTicks)));
       if (r.newBestTime) sheet.append(el("p", "ac-gold", "NEW BEST"));
       else sheet.append(el("p", "ac-sub", `+${((r.finishTicks - r.bestFinishTicks) / 60).toFixed(3)}`));
+      // A cleared field outranks a personal best on this screen: the best
+      // is a number, the field is a road that just opened.
+      if (r.clearedGate) {
+        const won = el("p", "ac-gold ac-gatecleared");
+        won.append(el("b", "", "DEBRIS FIELD CLEARED"),
+                   el("span", "", ` \u2014 the road past level ${r.clearedGate.after} is open`));
+        sheet.append(won);
+      } else if (!IS_BETA) {
+        const g = nextGate(engine.save.raceGates);
+        if (g) sheet.append(el("p", "ac-sub",
+          `Debris field after level ${g.after} still holds \u2014 needs ${g.label}.`));
+      }
       const pips = el("div", "ac-bigpips");
       last.met.forEach((ok) => pips.append(el("span", ok ? "ac-bigpip earned" : "ac-bigpip", "★")));
       sheet.append(pips);
@@ -2128,7 +2218,7 @@ export async function bootStandalone(root: HTMLElement) {
     const next = LEVELS.find((l) => l.stage === last.def.stage && l.n === last.def.n + 1)
       ?? LEVELS.find((l) => l.stage === last.def.stage + 1 && l.n === 1);
     const stars = engine.save.stars || {};
-    if (last.finished && next && levelUnlocked(next, stars, last.totalAfter)) {
+    if (last.finished && next && levelUnlocked(next, stars, last.totalAfter, engine.save.raceGates)) {
       const go = el("button", "ac-primary", `NEXT \u2014 ${next.id} ${next.name.toUpperCase()}`);
       go.onclick = () => engine.flyLevel(next.id);
       sheet.append(go);

@@ -1,4 +1,6 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign";
+import { STAR_UNLOCKS, totalStars,
+  RACE_GATES,
+} from "./campaign";
 import {
   BETA_UNLOCK_GATES,
   HELMETS,
@@ -79,6 +81,8 @@ export type SaveData = {
   eclipseMotionMode?: number;
   /** Experimental records are isolated from chapter stars and rewards. */
   raceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
+  /** debris fields cleared, stored by the level they sit after (33/66/99) */
+  raceGates: number[];
 };
 
 export function defaultSave(): SaveData {
@@ -120,6 +124,7 @@ export function defaultSave(): SaveData {
     musicOff: false,
     eclipseMotionMode: 2,
     raceRecords: {},
+    raceGates: [],
   };
 }
 
@@ -189,6 +194,10 @@ export function loadSave(): SaveData {
   // dropped rather than migrated - left in place it would sit in every
   // save forever, describing a mission id that no longer exists.
   delete (s as Record<string, unknown>).experimentalRaceRecords;
+  if (!Array.isArray(s.raceGates)) s.raceGates = [];
+  // only ever the three real gate ids, de-duplicated - a hand-edited save
+  // cannot invent a fourth and unlock the chart with it
+  s.raceGates = [...new Set(s.raceGates.filter((n) => RACE_GATES.some((g) => g.after === n)))];
   if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
     s.raceRecords = {};
   }

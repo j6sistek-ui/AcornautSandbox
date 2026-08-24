@@ -1,7 +1,7 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData } from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
-import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats } from "./campaign";
+import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
   createRaceState,
   queueRaceInput,
@@ -355,6 +355,8 @@ export type World = {
       bestAcorns: number;
       newBestTime: boolean;
       newBestAcorns: boolean;
+      /** set when this run opened a debris field, so the receipt can say so */
+      clearedGate?: { after: number; label: string } | null;
     };
   } | null;
   tut: {
@@ -2195,6 +2197,16 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
     const bestFinishTicks = newBestTime ? finishTicks : priorTicks;
     const bestAcorns = Math.max(priorAcorns, lvl.stats.acorns);
     records[def.raceEventId ?? def.id] = { bestFinishTicks, bestAcorns };
+    // DEBRIS FIELD. A finish inside the time clears the gate the pilot is
+    // actually standing at - the first uncleared one - and only that one.
+    // Beating 1:42 at the very first field does not silently bank all
+    // three: each field is its own trip back.
+    const gate = gateClearedBy(save.raceGates, finished, finishTicks);
+    let clearedGate: { after: number; label: string } | null = null;
+    if (gate) {
+      save.raceGates = [...new Set([...(save.raceGates || []), gate.after])];
+      clearedGate = { after: gate.after, label: gate.label };
+    }
     const total = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
     writeSave(save);
     w.lastLevel = {
@@ -2213,6 +2225,7 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
         bestAcorns,
         newBestTime,
         newBestAcorns,
+        clearedGate,
       },
     };
     w.lvl = null;
