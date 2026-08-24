@@ -3536,7 +3536,24 @@ export function paintFlightPreview(
 
   const tapWindow = 0.30 / RATE;
   const flapWindow = 0.24 / RATE;
-  const tapAnimT = p < tapWindow ? p * RATE : -1;
+  // THE HEAD HAS TO STAY IN THE HELMET.
+  //
+  // A rigged suit's tap poses move the head, but the dome is anchored to a
+  // single per-suit position ("suit:<id>") because no per-POSE anchors were
+  // ever measured for those banks. In flight that is hidden by 52px and a
+  // third of a second; in a preview at twice the size and half the speed it
+  // reads as a head sliding around inside its glass.
+  //
+  // The preview therefore holds the STATIC body pose, whose anchor is the
+  // one the dome was measured against, and the motion comes from everything
+  // that does not touch the head: the arc, the pitch, the tail spring and
+  // the pal. Bonus - the tail layer only draws OUTSIDE the tap banks, so
+  // holding the pose is also what lets the plume swing through the beat.
+  //
+  // The generic idle and flap banks are unaffected either way: they carry
+  // per-frame anchors and paintIllustrated already glides between them.
+  const tapAnimT = -1;
+  const beatT = p < tapWindow ? p * RATE : -1;   // the beat, for everything else
   const flapping = p < flapWindow;
   const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
   const speed = flapping ? 10 : 5;
@@ -3563,7 +3580,7 @@ export function paintFlightPreview(
   // second half of every flap fed a NEGATIVE kick - tilting the wrong way
   // and shrinking the suit instead of popping it
   const kick = flapping ? 1 - p / flapWindow : 0;
-  const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
+  const articulated = !!art.suitBody?.[suit.id] && beatT >= 0;
   ctx.rotate(rot * 0.8 - (articulated ? 0 : kick * 0.12));
   const pop = 1 + (articulated ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
