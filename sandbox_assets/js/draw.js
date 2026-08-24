@@ -1,18 +1,15 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=135";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=135";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=135";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=135";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=135";
-import { tunnelBoundsAt } from "./sim.js?v=135";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=135";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=135";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=136";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=136";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=136";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=136";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=136";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=136";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=136";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=136";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
-}
-function liveGapY(p) {
-    return p.gapY + Math.sin(p.drift) * p.driftAmp;
 }
 function applyWarp(ctx, w) {
     const lost = w.flight === "lost";
@@ -21,7 +18,9 @@ function applyWarp(ctx, w) {
         return;
     ctx.translate(w.W / 2, w.H / 2);
     const spin = w.warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
-    ctx.rotate(w.prevTilt + (w.warpTilt - w.prevTilt) * wp + spin);
+    // tiltNow is the settled lean, shared with the gate edge limit so the two
+    // can never disagree; the fold's spin is this painter's own flourish
+    ctx.rotate(tiltNow(w) + spin);
     const mFrom = w.prevMirror ? -1 : 1;
     const mTo = w.warpMirror ? -1 : 1;
     ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
@@ -1463,12 +1462,12 @@ export function drawWorld(ctx, w, save, art) {
     // Gates and debris then read as solid objects against any backdrop.
     const halo = skyLuma(w) > 0.42 ? "dark" : "light";
     for (const p of w.planets) {
-        const gy = liveGapY(p);
+        const gy = liveGapY(p, w);
         drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
         drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
         for (const b of p.blockers) {
-            const by = b.y + Math.sin(p.drift) * p.driftAmp;
-            const bx = p.x + b.xOff;
+            const by = b.y + gateOffset(p, w);
+            const bx = blockerX(p, b, w);
             const img = art.debris[b.debris];
             if (img)
                 drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
@@ -1854,11 +1853,11 @@ function drawTunnelWorld(ctx, w, save, art) {
 function drawRetroWorld(ctx, w, save, art) {
     const { W } = w;
     for (const p of w.planets) {
-        const gy = liveGapY(p);
+        const gy = liveGapY(p, w);
         retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
         retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
         for (const b of p.blockers) {
-            const by = b.y + Math.sin(p.drift) * p.driftAmp;
+            const by = b.y + gateOffset(p, w);
             retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
         }
     }
