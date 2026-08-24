@@ -1764,6 +1764,8 @@ export async function bootStandalone(root: HTMLElement) {
   function drawLevelSheet(def: LevelDef, mask: number) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard");
+    const raceBriefing = def.experimental && def.base === "race";
+    if (raceBriefing) sheet.classList.add("ac-racecard");
     // BETA: a level is a number and its three stars — no name, no place,
     // no modifier tags. The live page keeps the full briefing.
     const plain = HYPER_RUN_ENABLED && !def.experimental;
@@ -1794,6 +1796,38 @@ export async function bootStandalone(root: HTMLElement) {
       for (const t of fxs) tags.append(el("span", "ac-lvltag", t));
       sheet.append(tags);
     }
+    }
+    if (raceBriefing) {
+      const briefing = el("div", "ac-racebrief");
+      const objective = el("section", "ac-racebriefblock ac-raceobjective");
+      objective.append(
+        el("h3", "", "OBJECTIVE"),
+        el("p", "", "Thread blue gates to build speed and charge the wormhole. Take shortcuts and reach the finish as fast as possible. Acorns are an optional collection record and do not change your time."),
+      );
+      const controlRow = (input: string, action: string) => {
+        const row = el("div", "ac-racecontrol");
+        row.append(el("b", "", input), el("span", "", action));
+        return row;
+      };
+      const flight = el("section", "ac-racebriefblock");
+      flight.append(
+        el("h3", "", "SPACE FLIGHT"),
+        controlRow("HOLD", "Rise"),
+        controlRow("RELEASE", "Fall"),
+        controlRow("DOUBLE-TAP + HOLD", "Boost climb"),
+        controlRow("SWIPE DOWN", "Dive"),
+      );
+      const wormhole = el("section", "ac-racebriefblock");
+      wormhole.append(
+        el("h3", "", "WORMHOLE"),
+        controlRow("PRESS + DRAG", "Steer up and down"),
+        controlRow("WHITE RING", "Pass through the aperture"),
+        controlRow("CENTER RING", "Perfect connection · faster exit"),
+      );
+      const controls = el("div", "ac-racecontrols");
+      controls.append(flight, wormhole);
+      briefing.append(objective, controls);
+      sheet.append(briefing);
     }
     const goals = el("div", "ac-lvlgoals");
     def.goals.forEach((g, i) => {
@@ -1837,7 +1871,7 @@ export async function bootStandalone(root: HTMLElement) {
         labels.append(row);
       });
       sheet.append(labels);
-      sheet.append(el("p", "", `ACORNS  ${r.acorns} · THEORETICAL CONTENT CEILING  ${PROTOTYPE_RACE_MAX_ACORNS}`));
+      sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`));
       sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
       if (r.newBestAcorns) sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
       sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));

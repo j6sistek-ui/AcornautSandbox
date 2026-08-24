@@ -31,6 +31,30 @@ try {
   assert(artSource.includes('"return-back", "return-front", "return-glyphs", "scout-ship"')
     && artSource.includes("named(HYPER_RUN_ENABLED ? hyperRunIds : [], \"hyper-run\")"),
   "scout ship is not loaded atomically with the beta-gated Hyper Run bank");
+  const standaloneSource = readFileSync(join(gameDir, "standalone.ts"), "utf8");
+  for (const requiredCopy of [
+    "Thread blue gates to build speed and charge the wormhole.",
+    "Acorns are an optional collection record and do not change your time.",
+    "SPACE FLIGHT", "DOUBLE-TAP + HOLD", "SWIPE DOWN",
+    "WORMHOLE", "PRESS + DRAG", "WHITE RING", "CENTER RING",
+    "Perfect connection · faster exit",
+  ]) {
+    assert(standaloneSource.includes(requiredCopy),
+      `Hyper Run preflight briefing omitted ${JSON.stringify(requiredCopy)}`);
+  }
+  assert(standaloneSource.includes('const raceBriefing = def.experimental && def.base === "race"')
+    && standaloneSource.includes('def.experimental ? "START RUN"')
+    && standaloneSource.includes('`ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`')
+    && !standaloneSource.includes("THEORETICAL CONTENT CEILING"),
+  "Hyper Run briefing or launch CTA is not tied to every experimental race open");
+  const docsShell = readFileSync(join(root, "docs", "index.html"), "utf8");
+  const sandboxShell = readFileSync(join(root, "sandbox_assets", "index.html"), "utf8");
+  assert(docsShell === sandboxShell && docsShell.includes(".ac-lvlcard.ac-racecard")
+    && docsShell.includes("max-height: min(94vh, 820px)")
+    && docsShell.includes(".ac-racebriefblock h3 { margin: 0 0 8px; font: 900 14px")
+    && docsShell.includes(".ac-racecontrol b { color: #a9f5ff; font-size: 14px")
+    && docsShell.includes("@media (max-width: 619px), (max-height: 699px)"),
+  "mirrored responsive Hyper Run briefing shell changed or is missing its compact layout");
   const gameFiles = readdirSync(gameDir)
     .filter((name) => name.endsWith(".ts"))
     .map((name) => join("illustrated-src", "game", name));
@@ -79,6 +103,9 @@ try {
     RACE_MAX_INTERACTIVE_GAP,
     RACE_MAX_SPEED,
     RACE_MAX_WORMHOLES,
+    RACE_NORMAL_BOOST_PRESS_VY,
+    RACE_NORMAL_PRESS_VY,
+    RACE_NORMAL_RELEASE_BRAKE_VY,
     RACE_PILOT_X,
     RACE_PILOT_RADIUS,
     RACE_READY_COPY,
@@ -112,6 +139,7 @@ try {
     raceDecisionAge,
     raceRouteTarget,
     raceSignature,
+    raceTunnelFollowerY,
     raceTunnelGeometry,
     raceTunnelMirrored,
     raceTunnelQuality,
@@ -139,6 +167,7 @@ try {
     HYPER_RUN_GATE_FALLBACK_GEOMETRY,
     hyperRunChargeCopy,
     hyperRunGateUsesPaintedPairs,
+    hyperRunReadyLines,
     hyperRunShipLayout,
     hyperRunTunnelRingScreenX,
   } = drawApi;
@@ -201,6 +230,9 @@ try {
   function projectedNormalY(race, ticks, action) {
     let y = race.y;
     let vy = race.vy;
+    if (action === "boost" && !race.boost) vy = Math.min(vy, RACE_NORMAL_BOOST_PRESS_VY);
+    else if (action === "hold" && !race.held) vy = Math.min(vy, RACE_NORMAL_PRESS_VY);
+    if (action === "release" && race.held) vy = Math.max(vy, RACE_NORMAL_RELEASE_BRAKE_VY);
     const acceleration = action === "boost" ? -2_100 : action === "hold" ? -700 : 1_050;
     const minVy = action === "boost" ? -520 : -330;
     for (let i = 0; i < ticks; i++) {
@@ -210,6 +242,52 @@ try {
       if (y > 624) { y = 624; vy = Math.min(0, vy); }
     }
     return y;
+  }
+
+  const normalActionInput = (action) => ({
+    held: action !== "release",
+    boost: action === "boost",
+  });
+
+  function projectedNormalPlan(race, ticks, first, second, switchTick) {
+    let y = race.y;
+    let vy = race.vy;
+    let held = race.held;
+    let boost = race.boost;
+    for (let i = 0; i < ticks; i++) {
+      const action = i < switchTick ? first : second;
+      const nextHeld = action !== "release";
+      const nextBoost = action === "boost";
+      if (nextBoost && !boost) vy = Math.min(vy, RACE_NORMAL_BOOST_PRESS_VY);
+      else if (nextHeld && !held) vy = Math.min(vy, RACE_NORMAL_PRESS_VY);
+      if (held && !nextHeld) vy = Math.max(vy, RACE_NORMAL_RELEASE_BRAKE_VY);
+      held = nextHeld;
+      boost = nextBoost;
+      const acceleration = boost ? -2_100 : held ? -700 : 1_050;
+      const minVy = boost ? -520 : -330;
+      vy = Math.max(minVy, Math.min(390, vy + acceleration * RACE_DT));
+      y += vy * RACE_DT;
+      if (y < 16) { y = 16; vy = Math.max(0, vy); }
+      if (y > 624) { y = 624; vy = Math.min(0, vy); }
+    }
+    return { y, vy };
+  }
+
+  function bestNormalPlan(race, ticks, targetY, advanced) {
+    const actions = advanced ? ["release", "hold", "boost"] : ["release", "hold"];
+    const current = race.boost ? "boost" : race.held ? "hold" : "release";
+    let best = null;
+    for (const first of actions) for (const second of actions) {
+      for (let switchTick = 1; switchTick <= ticks; switchTick++) {
+        const projected = projectedNormalPlan(race, ticks, first, second, switchTick);
+        const cost = Math.abs(projected.y - targetY)
+          + Math.abs(projected.vy) * 0.012
+          + (first === current ? 0 : 2.5)
+          + (first === second || switchTick === ticks ? 0 : 1.5);
+        if (!best || cost < best.cost) best = { cost, first };
+      }
+    }
+    return normalActionInput(best.first);
   }
 
   function desiredNormalInput(race, selected, advanced, memory) {
@@ -257,8 +335,6 @@ try {
     }
 
     const ticks = normalTicksToPlane(race, targetX);
-    const seconds = Math.max(RACE_DT, ticks * RACE_DT);
-    const desiredVy = Math.max(-520, Math.min(390, (targetY - race.y) / seconds));
     const targetKey = `${targetX}:${targetY}`;
     const releaseEnd = projectedNormalY(race, ticks, "release");
     const plainEnd = projectedNormalY(race, ticks, "hold");
@@ -267,12 +343,7 @@ try {
       memory.lastDropTarget = targetKey;
       return { held: false, boost: false, drop: true };
     }
-    if (race.vy > desiredVy + 22) {
-      const boost = advanced && targetY < race.y && (plainEnd > targetY + 18 || desiredVy < -330);
-      return { held: true, boost };
-    }
-    if (race.vy < desiredVy - 22) return { held: false, boost: false };
-    return desiredVy < race.vy ? { held: true, boost: false } : { held: false, boost: false };
+    return bestNormalPlan(race, ticks, targetY, advanced);
   }
 
   function desiredTunnelInput(race, profile) {
@@ -832,6 +903,48 @@ try {
     { tick: 4, held: true, boost: true },
   ]);
   same(merged.inputs, [{ tick: 4, held: true, boost: true, drop: true }], "same-tick final state/drop merge changed");
+  const continuousHold = createRaceState(); continuousHold.held = true; continuousHold.vy = 0;
+  stepRace(continuousHold);
+  const freshHold = createRaceState(); freshHold.vy = 0;
+  queueRaceInput(freshHold, { held: true, boost: false }, 0); stepRace(freshHold);
+  near(freshHold.vy - continuousHold.vy, RACE_NORMAL_PRESS_VY, 1e-9,
+    "fresh plain press did not add its deterministic response edge");
+  assert(freshHold.y < continuousHold.y - 3,
+    "fresh plain press still lacked a visible first-tick displacement");
+  const continuousBoost = createRaceState(); continuousBoost.held = true; continuousBoost.boost = true; continuousBoost.vy = 0;
+  stepRace(continuousBoost);
+  const freshBoost = createRaceState(); freshBoost.vy = 0;
+  queueRaceInput(freshBoost, { held: true, boost: true }, 0); stepRace(freshBoost);
+  near(freshBoost.vy - continuousBoost.vy, RACE_NORMAL_BOOST_PRESS_VY, 1e-9,
+    "fresh boost did not add its deterministic response edge");
+  const alreadyReleased = createRaceState(); alreadyReleased.vy = -330;
+  stepRace(alreadyReleased);
+  const releasedEdge = createRaceState(); releasedEdge.held = true; releasedEdge.vy = -330;
+  queueRaceInput(releasedEdge, { held: false, boost: false }, 0); stepRace(releasedEdge);
+  near(releasedEdge.vy,
+    RACE_NORMAL_RELEASE_BRAKE_VY + (alreadyReleased.vy - (-330)), 1e-9,
+    "release edge did not brake upward carry before continuous fall acceleration");
+  const dropWins = createRaceState(); dropWins.held = true; dropWins.boost = true; dropWins.vy = -520;
+  queueRaceInput(dropWins, { held: false, boost: false, drop: true }, 0); stepRace(dropWins);
+  same([dropWins.vy, dropWins.dropTicks], [390, [0]],
+    "same-tick release/drop did not preserve the full dive as last writer");
+  const onePress = createRaceState();
+  loadRaceInputs(onePress, [{ tick: 0, held: true, boost: false }]);
+  stepRace(onePress); stepRace(onePress);
+  const repeatedPress = createRaceState();
+  loadRaceInputs(repeatedPress, [
+    { tick: 0, held: true, boost: false },
+    { tick: 1, held: true, boost: false },
+  ]);
+  stepRace(repeatedPress); stepRace(repeatedPress);
+  near(repeatedPress.vy, onePress.vy, 1e-9,
+    "repeated held snapshots stacked the fresh-press response edge");
+  const mergedEdge = createRaceState();
+  queueRaceInput(mergedEdge, { held: true, boost: false }, 0);
+  queueRaceInput(mergedEdge, { held: true, boost: true, drop: true }, 0);
+  stepRace(mergedEdge);
+  same([mergedEdge.vy, mergedEdge.boostTicks, mergedEdge.dropTicks], [345, [0], [0]],
+    "same-tick boost/drop merge changed edge order or drop precedence");
   let rejected = false;
   try { loadRaceInputs(createRaceState(), [{ tick: 0, held: false, boost: true }]); } catch { rejected = true; }
   assert(rejected, "boost=true with held=false was not rejected");
@@ -1034,12 +1147,20 @@ try {
   same(mappedDragTargets, requiredViewports.map(() => 370),
     "viewport mapping changed the canonical relative tunnel drag distance");
   same(RACE_READY_COPY, [
-    "HOLD TO RISE",
-    "DOUBLE-TAP + HOLD TO BOOST",
-    "SWIPE DOWN TO DIVE",
-    "WORMHOLE: PRESS + DRAG UP / DOWN",
+    "THREAD GATES · CHARGE SHORTCUTS · FINISH FAST",
+    "FLIGHT: HOLD / RELEASE",
+    "DOUBLE-TAP + HOLD: BOOST · SWIPE DOWN: DIVE",
+    "WORMHOLE: DRAG TO ALIGN · CENTER = FASTER EXIT",
+    "PRESS + HOLD TO LAUNCH",
   ],
     "race ready copy changed");
+  same(hyperRunReadyLines(360), [
+    "THREAD GATES · CHARGE SHORTCUTS", "FINISH FAST", "FLIGHT · HOLD / RELEASE",
+    "DOUBLE-TAP + HOLD · BOOST", "SWIPE DOWN · DIVE", "WORMHOLE · DRAG TO ALIGN",
+    "CENTER = FASTER EXIT", "PRESS + HOLD TO LAUNCH",
+  ], "compact READY panel omitted or merged a taught control");
+  same(hyperRunReadyLines(844), RACE_READY_COPY,
+    "landscape READY panel did not use the full reminder copy");
   const projectionWorld = makeWorld(390, 844);
   const projectionSave = defaultSave();
   resetRun(projectionWorld, projectionSave, "fly", false, PROTOTYPE_RACE_MISSION);
@@ -1643,8 +1764,22 @@ try {
     RACE_TUNNEL_RING_CLEARANCE,
     RACE_TUNNEL_PERFECT_CLEARANCE,
     RACE_TUNNEL_QUALITY_SPEED_GAIN,
-  ], [18, RACE_HEIGHT / 18, 58, 24, 42, 8, 3.75],
+  ], [48, RACE_HEIGHT / 48, 58, 30, 42, 14, 3.75],
   "drag traversal, nested apertures, or exit-speed derivation changed");
+  let fullFieldFollower = 0;
+  const followerSamples = [];
+  for (let step = 1; step <= RACE_TUNNEL_DRAG_TRAVERSAL_TICKS; step++) {
+    fullFieldFollower = raceTunnelFollowerY(fullFieldFollower, RACE_HEIGHT);
+    if ([1, 22, 48].includes(step)) followerSamples.push([step, fullFieldFollower]);
+  }
+  near(followerSamples[0][1], RACE_HEIGHT / 48, 1e-9,
+    "48-tick follower changed its first response step");
+  near(followerSamples[1][1], RACE_HEIGHT * 22 / 48, 1e-9,
+    "48-tick follower changed its mid-chase position");
+  near(followerSamples[2][1], RACE_HEIGHT, 1e-9,
+    "48-tick follower no longer traverses one canonical field exactly");
+  same(raceTunnelFollowerY(240, null), 240,
+    "released follower did not preserve its current position");
   for (const [width, height] of [[360, 640], [390, 844], [844, 390], [1_440, 900], [1_600, 600]]) {
     const viewport = raceViewport(width, height);
     for (const ringTick of RACE_TUNNEL_RING_TICKS) {
@@ -1715,6 +1850,14 @@ try {
         `cycle ${wormholes} ring ${index + 1} aperture escaped the corridor`);
     });
   }
+  const authoredTunnelTransfers = actualTunnelEntries.flatMap(({ wormholes, entryAnchorY }) => {
+    const rings = raceTunnelRings({ seed: RACE_SEED, wormholes, entryAnchorY });
+    return rings.slice(1).map((ring, index) => Math.abs(ring.y - rings[index].y));
+  });
+  const worstTunnelTransfer = Math.max(...authoredTunnelTransfers);
+  const worstTransferSteps = Math.ceil(worstTunnelTransfer / RACE_TUNNEL_DRAG_STEP);
+  assert(worstTransferSteps <= 22 && RACE_TUNNEL_RING_TICKS[1] - RACE_TUNNEL_RING_TICKS[0] - worstTransferSteps >= 14,
+    `slower follower cannot settle the authored ${worstTunnelTransfer}-unit transfer before judging`);
 
   function judgeFirstTunnelRing(error) {
     const race = makeTunnelRace();
@@ -1727,8 +1870,8 @@ try {
     return { outcome: race.tunnelRingLedger[0][0], cue: result.cues[0], decisionTick: race.tunnelRingDecisionTicks[0][0] };
   }
   same([
-    judgeFirstTunnelRing(8).outcome,
-    judgeFirstTunnelRing(8 + 1e-6).outcome,
+    judgeFirstTunnelRing(14).outcome,
+    judgeFirstTunnelRing(14 + 1e-6).outcome,
     judgeFirstTunnelRing(42).outcome,
     judgeFirstTunnelRing(42 + 1e-6).outcome,
   ], ["perfect", "passed", "passed", "missed"],
@@ -1742,6 +1885,17 @@ try {
   const firstDecision = judgeFirstTunnelRing(0);
   same([firstDecision.cue.id, firstDecision.cue.index, firstDecision.decisionTick], ["w1-g01", 0, 500],
     "tunnel ring decision did not bind to its exact crossing tick/id");
+
+  const noisyDrag = makeTunnelRace();
+  for (let step = 0; step < RACE_TUNNEL_TICKS; step++) {
+    const target = raceTunnelGeometry(noisyDrag, noisyDrag.phaseTick).center
+      + (step % 4 < 2 ? -12 : 12);
+    queueRaceInput(noisyDrag, { held: false, boost: false, dragY: target });
+    stepRace(noisyDrag);
+  }
+  const noisyQuality = raceTunnelQuality(noisyDrag, 0);
+  assert(noisyQuality.missed === 0 && noisyQuality.pending === 0 && noisyDrag.wallScrapeTicks.length === 0,
+    `bounded thumb-jitter proxy destabilized the slower follower ${JSON.stringify({ noisyQuality, wallScrapes: noisyDrag.wallScrapeTicks })}`);
 
   function runTunnelAlignment(wormholes, entryAnchorY, offsetForIndex) {
     const race = makeTunnelRace(wormholes, entryAnchorY);
@@ -2006,10 +2160,22 @@ try {
     mirrorBits,
     advancedFreeOptimisticLowerBound: fastestPlainBenchmark,
     courseAcornCeiling: RACE_MAX_ACORNS,
+    normalInputEdges: {
+      pressVy: RACE_NORMAL_PRESS_VY,
+      boostPressVy: RACE_NORMAL_BOOST_PRESS_VY,
+      releaseBrakeVy: RACE_NORMAL_RELEASE_BRAKE_VY,
+      firstTick: { plain: freshHold.vy, boost: freshBoost.vy, release: releasedEdge.vy },
+      dropLastWriterVy: dropWins.vy,
+    },
     tunnelDrag: {
       fullHeight: RACE_HEIGHT,
       traversalTicks: RACE_TUNNEL_DRAG_TRAVERSAL_TICKS,
       maximumStep: RACE_TUNNEL_DRAG_STEP,
+      followerSamples,
+      worstAuthoredTransfer: worstTunnelTransfer,
+      worstAuthoredTransferSteps: worstTransferSteps,
+      noisyDragQuality: noisyQuality,
+      noisyDragWallScrapes: noisyDrag.wallScrapeTicks,
     },
     tunnelAlignment: {
       ringTicks: [...RACE_TUNNEL_RING_TICKS],

@@ -65,7 +65,7 @@ try {
   const require = createRequire(import.meta.url);
   const {
     drawWorld, drawHud, hyperRunChargeCopy, hyperRunFlowSnapshot, hyperRunInlineWormholePresentation,
-    hyperRunShipLayout, hyperRunTunnelRingScreenX, hyperRunTunnelSampleCount,
+    hyperRunReadyLines, hyperRunShipLayout, hyperRunTunnelRingScreenX, hyperRunTunnelSampleCount,
   } = require(join(jsOut, "draw.js"));
   const { makeWorld } = require(join(jsOut, "sim.js"));
   const { defaultSave } = require(join(jsOut, "save.js"));
@@ -74,7 +74,8 @@ try {
   const {
     RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_HZ,
     RACE_LATEST_ENTRY_X, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_RADIUS, RACE_PILOT_X, RACE_RINGS,
-    RACE_READY_COPY, RACE_RETURN_TICKS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_PERFECT_APERTURE,
+    RACE_READY_COPY, RACE_RETURN_TICKS, RACE_TUNNEL_DISTANCE, RACE_TUNNEL_DRAG_STEP,
+    RACE_TUNNEL_DRAG_TRAVERSAL_TICKS, RACE_TUNNEL_PERFECT_APERTURE,
     RACE_TUNNEL_PERFECT_CLEARANCE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_RING_CLEARANCE,
     RACE_TUNNEL_RING_TICKS, RACE_TUNNEL_TICKS, createRaceState, raceTunnelGeometry,
     raceTunnelQuality, raceTunnelRings, stepRace,
@@ -690,12 +691,32 @@ try {
   const dragIdle = tunnelContentState(0, { W: 390, H: 844, cycle: 0 });
   const dragAbove = tunnelContentState(12, { W: 390, H: 844, cycle: 0, dragY: 180 });
   const dragBelow = tunnelContentState(24, { W: 844, H: 390, cycle: 0, dragY: 470 });
+  const dragPersistent = tunnelContentState(160, { W: 844, H: 390, cycle: 1, pilotY: 400, dragY: 220 });
+  const dragPersistentFrame = render(dragPersistent);
+  const dragPersistentIdleFrame = render(tunnelContentState(160,
+    { W: 844, H: 390, cycle: 1, pilotY: 400, dragY: null }));
   outputs.tunnelDragCue = { path: dragPath, ...sheet([
     labelled(render(dragIdle), "PORTRAIT / NEXT RING + DRAG", .42),
     labelled(render(dragAbove), "PORTRAIT / ACTIVE TARGET HIGH", .42),
     labelled(render(dragBelow), "LANDSCAPE / ACTIVE TARGET LOW", .42),
     labelled(render(dragBelow, { reduced: true }), "LANDSCAPE / REDUCED MOTION", .42),
+    labelled(dragPersistentFrame, "CYCLE 2 / ACTIVE TARGET PIPPER", .42),
   ], 2, dragPath) };
+
+  function dragFollowerState(steps, W, H) {
+    const s = tunnelContentState(0, { W, H, cycle: 0, pilotY: 320, dragY: 420 });
+    s.race.entryAnchorY = 320; s.race.entryStartY = 320;
+    for (let i = 0; i < steps; i++) stepRace(s.race);
+    return s;
+  }
+  const dragFollowerPath = join(outDir, "runtime-tunnel-drag-follower.png");
+  const dragFollowerFrames = [];
+  for (const [W, H] of [[390, 844], [844, 390]]) for (const steps of [0, 1, 2, 8]) {
+    dragFollowerFrames.push(labelled(render(dragFollowerState(steps, W, H)),
+      `${W}x${H} / TARGET +100 / STEP ${steps}`, Math.min(.42, 360 / W)));
+  }
+  outputs.tunnelDragFollower = { path: dragFollowerPath,
+    ...sheet(dragFollowerFrames, 4, dragFollowerPath), steps: [0, 1, 2, 8], targetDelta: 100 };
 
   const inlineSequenceFrames = [
     ...entryKeys.map((tick) => [entryState(tick), `ENTRY ${tick}`]),
@@ -708,6 +729,20 @@ try {
     entryTicks: entryKeys, tunnelTicks: [0], returnTicks: returnKeys };
 
   const approvedViewportSizes = [[360, 640], [390, 844], [844, 390], [1440, 900], [1600, 600]];
+  const readyEvidence = [];
+  for (const [W, H] of approvedViewportSizes) {
+    const readyState = scenario(W, H);
+    readyState.world.ready = true;
+    readyState.race.tick = 0;
+    readyState.race.phaseTick = 0;
+    const evidenceScale = Math.min(.46, 360 / W, 260 / H);
+    readyEvidence.push(labelled(render(readyState), `${W}x${H} / READY / TICK 0`, evidenceScale));
+    assert(readyState.race.tick === 0 && readyState.race.phaseTick === 0,
+      `${W}x${H} READY evidence advanced race authority`);
+  }
+  const readyPath = join(outDir, "runtime-ready-five-viewports.png");
+  outputs.readyViewports = { path: readyPath,
+    ...sheet(readyEvidence, 2, readyPath), sizes: approvedViewportSizes, authorityTick: 0 };
   const viewportEvidence = [];
   for (const [W, H] of approvedViewportSizes) {
     const evidenceScale = Math.min(.4, 300 / W, 240 / H);
@@ -757,6 +792,18 @@ try {
   });
   scoutShipEvidence.push(labelled(withPilotPlaneGuide(scoutFallback),
     "844x390 / MISSING SHIP -> NORMAL PILOT", .42));
+  const thrustIdleState = scoutShipState(844, 390);
+  const thrustHoldState = scoutShipState(844, 390); thrustHoldState.race.held = true;
+  const thrustBoostState = scoutShipState(844, 390);
+  thrustBoostState.race.held = true; thrustBoostState.race.boost = true;
+  const thrustIdleFrame = render(thrustIdleState, { hud: false });
+  const thrustHoldFrame = render(thrustHoldState, { hud: false });
+  const thrustBoostFrame = render(thrustBoostState, { hud: false });
+  scoutShipEvidence.push(
+    labelled(thrustIdleFrame, "IDLE PLUME", .42),
+    labelled(thrustHoldFrame, "FIRST-FRAME HOLD PLUME", .42),
+    labelled(thrustBoostFrame, "FIRST-FRAME BOOST PLUME", .42),
+  );
   const scoutShipPath = join(outDir, "runtime-scout-ship-five-viewports.png");
   outputs.scoutShip = { path: scoutShipPath,
     ...sheet(scoutShipEvidence, 2, scoutShipPath), sizes: approvedViewportSizes,
@@ -808,10 +855,28 @@ try {
     "tunnel pass clearance is not derived from the white outer ring");
   assert(RACE_TUNNEL_PERFECT_CLEARANCE === RACE_TUNNEL_PERFECT_APERTURE - RACE_PILOT_RADIUS,
     "tunnel perfect clearance is not derived from the white center ring");
-  assert(RACE_TUNNEL_RING_CLEARANCE === 42 && RACE_TUNNEL_PERFECT_CLEARANCE === 8,
+  assert(RACE_TUNNEL_RING_CLEARANCE === 42 && RACE_TUNNEL_PERFECT_CLEARANCE === 14,
     "tunnel alignment thresholds changed");
-  assert(RACE_READY_COPY.includes("WORMHOLE: PRESS + DRAG UP / DOWN"),
-    `race ready copy omitted drag control ${JSON.stringify(RACE_READY_COPY)}`);
+  assert(RACE_READY_COPY.includes("FLIGHT: HOLD / RELEASE")
+    && RACE_READY_COPY.includes("DOUBLE-TAP + HOLD: BOOST · SWIPE DOWN: DIVE")
+    && RACE_READY_COPY.includes("WORMHOLE: DRAG TO ALIGN · CENTER = FASTER EXIT")
+    && RACE_READY_COPY.at(-1) === "PRESS + HOLD TO LAUNCH",
+  `race ready copy omitted the objective or a control regime ${JSON.stringify(RACE_READY_COPY)}`);
+  assert(hyperRunReadyLines(360).length === 8 && hyperRunReadyLines(844) === RACE_READY_COPY
+    && hyperRunReadyLines(360).at(-1) === "PRESS + HOLD TO LAUNCH",
+  "responsive READY copy did not preserve every control or launch instruction");
+  assert(RACE_TUNNEL_DRAG_TRAVERSAL_TICKS === 48 && RACE_TUNNEL_DRAG_STEP === 640 / 48,
+    `tunnel follower response changed ${RACE_TUNNEL_DRAG_TRAVERSAL_TICKS}/${RACE_TUNNEL_DRAG_STEP}`);
+  const dragFollowerPositions = [0, 1, 2, 8].map((steps) => dragFollowerState(steps, 844, 390).race.y);
+  assert(Math.abs(dragFollowerPositions[0] - 320) < 1e-9
+    && Math.abs(dragFollowerPositions[1] - (320 + RACE_TUNNEL_DRAG_STEP)) < 1e-9
+    && Math.abs(dragFollowerPositions[2] - (320 + RACE_TUNNEL_DRAG_STEP * 2)) < 1e-9
+    && Math.abs(dragFollowerPositions[3] - 420) < 1e-9,
+  `tunnel follower visual fixtures changed ${JSON.stringify(dragFollowerPositions)}`);
+  const persistentPipperDiff = pixelDiff(dragPersistentFrame, dragPersistentIdleFrame,
+    { x: 0, y: 0, w: dragPersistentFrame.width, h: dragPersistentFrame.height });
+  assert(persistentPipperDiff.mean > .01 && persistentPipperDiff.max > 80,
+    `owned cycle-2 drag had no persistent target acknowledgment ${JSON.stringify(persistentPipperDiff)}`);
 
   const ringProjectionMatrix = approvedViewportSizes.map(([W, H]) => {
     const viewport = raceViewport(W, H);
@@ -895,8 +960,21 @@ try {
   });
   assert(shipDiff.mean > 1 && shipDiff.max > 40,
     `ship asset and normal-pilot fallback were not visibly distinct ${JSON.stringify(shipDiff)}`);
+  const thrustRect = {
+    x: Math.max(0, Math.floor(shipViewport.pilotX - 100 * shipViewport.scale)),
+    y: Math.max(0, Math.floor(raceViewportY(shipViewport, RACE_RINGS[0].y) - 28 * shipViewport.scale)),
+    w: Math.ceil(68 * shipViewport.scale),
+    h: Math.ceil(56 * shipViewport.scale),
+  };
+  const holdThrustDiff = pixelDiff(thrustIdleFrame, thrustHoldFrame, thrustRect);
+  const boostThrustDiff = pixelDiff(thrustHoldFrame, thrustBoostFrame, thrustRect);
+  assert(holdThrustDiff.mean > .01 && holdThrustDiff.max > 20,
+    `plain hold had no first-frame plume response ${JSON.stringify(holdThrustDiff)}`);
+  assert(boostThrustDiff.mean > .01 && boostThrustDiff.max > 20,
+    `boost had no first-frame plume response ${JSON.stringify(boostThrustDiff)}`);
   outputs.scoutShip.layoutMatrix = shipLayoutMatrix;
   outputs.scoutShip.shipFallbackDiff = shipDiff;
+  outputs.scoutShip.controlThrustDiff = { idleToHold: holdThrustDiff, holdToBoost: boostThrustDiff };
 
   const whiteViewport = raceViewport(whiteRingFrame.width, whiteRingFrame.height);
   const whiteX = hyperRunTunnelRingScreenX(whiteViewport, whiteRing.tick, 35);
