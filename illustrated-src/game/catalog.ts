@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "137";
+export const ART_VER = "138";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -606,6 +606,59 @@ export function bundlePrice(
   if (owed <= 0) return 0;                 // nothing left to sell
   if (owed >= total) return b.dust;
   return Math.max(10, Math.round((b.dust * owed) / total / 10) * 10);
+}
+
+
+/** THE CALIBRATION PANEL.
+ *
+ *  Wormhole Run's feel is being settled by hand, and "reduce the sensitivity
+ *  a bit" is not a number anyone can guess from a chair. So the dials that
+ *  decide it are exposed in the pause menu, mid-run, where the pilot can
+ *  feel a change immediately rather than describing one and waiting for a
+ *  build.
+ *
+ *  Every dial is a MULTIPLIER on the shipped value, never an absolute. That
+ *  way 1.00 always means "exactly what ships today", a reading can be
+ *  reported as "0.70 on lift" with no units to agree on first, and folding
+ *  a settled number back into the constants is a single edit that leaves
+ *  every dial back at 1.00.
+ *
+ *  Flip TUNE_PANEL to false once the numbers are locked. */
+export const TUNE_PANEL = true;
+
+export type TuneId = "lift" | "fall" | "vcap" | "speed" | "width" | "turn" | "debris";
+
+export const TUNE_DIALS: {
+  id: TuneId; label: string; hint: string; min: number; max: number;
+}[] = [
+  { id: "lift", label: "Lift", hint: "how hard a hold or tap pulls up", min: 0.4, max: 1.6 },
+  { id: "fall", label: "Fall", hint: "how hard it drops when you let go", min: 0.4, max: 1.6 },
+  { id: "vcap", label: "Top speed", hint: "fastest climb and dive", min: 0.5, max: 1.5 },
+  { id: "speed", label: "Flight speed", hint: "how fast the corridor arrives", min: 0.5, max: 1.5 },
+  { id: "width", label: "Corridor", hint: "how wide the tunnel runs", min: 0.6, max: 1.6 },
+  { id: "turn", label: "Volatility", hint: "how sharply the corridor wanders", min: 0.3, max: 1.8 },
+  { id: "debris", label: "Debris", hint: "how thickly hazards arrive", min: 0.3, max: 2 },
+];
+
+export const TUNE_STEP = 0.05;
+export const TUNE_DEFAULT = 1;
+
+/** every dial at 1.00 - the shipped feel, exactly */
+export function freshTune(): Record<TuneId, number> {
+  return Object.fromEntries(TUNE_DIALS.map((d) => [d.id, TUNE_DEFAULT])) as Record<TuneId, number>;
+}
+
+/** Clamp a stored panel back into its dials' ranges. A save carried across
+ *  a change to the ranges - or edited by hand - must never be able to hand
+ *  the sim a multiplier of zero and freeze a run. */
+export function cleanTune(raw: unknown): Record<TuneId, number> {
+  const out = freshTune();
+  const src = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  for (const d of TUNE_DIALS) {
+    const v = Number(src[d.id]);
+    if (Number.isFinite(v)) out[d.id] = Math.max(d.min, Math.min(d.max, v));
+  }
+  return out;
 }
 
 export const SHOP_SLOTS = 3;

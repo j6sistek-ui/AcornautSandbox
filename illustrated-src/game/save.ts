@@ -14,6 +14,9 @@ import {
   levelForXp,
   titleForLevel,
   BUNDLES,
+  cleanTune,
+  freshTune,
+  type TuneId,
   IS_BETA,
   GUIDE_SUIT,
   GUIDE_HELM,} from "./catalog";
@@ -38,6 +41,9 @@ export type SaveData = {
   pilotName: string;
   /** beta only: the one-time "here is enough dust for every pack" grant */
   betaDustGrant: boolean;
+  /** the Wormhole Run calibration dials, every one a multiplier on the
+   *  shipped value - see TUNE_DIALS */
+  tune: Record<TuneId, number>;
   /** highest star line already paid out, so a payout can never double-pay */
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
@@ -106,6 +112,7 @@ export function defaultSave(): SaveData {
     pilotName: "",
     starDust: 0,
     betaDustGrant: false,
+    tune: freshTune(),
     dustPaidTo: 0,
     lastDaily: "",
     dailyStreak: 0,
@@ -174,6 +181,7 @@ export function loadSave(): SaveData {
   if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
+  s.tune = cleanTune(s.tune);
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;

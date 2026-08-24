@@ -1,6 +1,6 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
+import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune, type TuneId } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
   createRaceState,
@@ -270,6 +270,8 @@ export type World = {
   bounceAnimStrength: number;
   /** beta wormhole flight: the finger is down, thrust is on */
   tunnelHeld: boolean;
+  /** the dials this run started with - see TUNE_DIALS */
+  tune: Record<TuneId, number>;
   hitCooldown: number;
   trailT: number;
   bounceUp: boolean;
@@ -407,6 +409,7 @@ export function makeWorld(W: number, H: number): World {
     bounceAnimDir: 0,
     bounceAnimStrength: 0,
     tunnelHeld: false,
+    tune: freshTune(),
     hitCooldown: 0,
     trailT: 0,
     bounceUp: false,
@@ -626,13 +629,13 @@ function paceOf(save: SaveData, w: World) {
 }
 
 function gravOf(save: SaveData, w: World) {
-  if (w.flight === "tunnel") return PHYS.gravity;
+  if (w.flight === "tunnel") return PHYS.gravity * w.tune.fall;
   const id = palId(save, w);
   return PHYS.gravity * (id === "pocketmoon" ? 0.85 : id === "nutsack" ? 1.2 : 1);
 }
 
 function flapOf(save: SaveData, w: World) {
-  if (w.flight === "tunnel") return PHYS.flap;
+  if (w.flight === "tunnel") return PHYS.flap * w.tune.lift;
   const id = palId(save, w);
   return PHYS.flap * (id === "nutsack" ? 0.71 : 1);
 }
@@ -1099,6 +1102,9 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.bounceAnimDir = 0;
   w.bounceAnimStrength = 0;
   w.tunnelHeld = false;
+  // a run keeps the dials it started with, so changing one mid-run cannot
+  // rewrite the corridor already generated behind the pilot
+  w.tune = cleanTune(save.tune);
   w.hitCooldown = 0;
   w.bounceUp = false;
   w.deadTimer = 0;
@@ -1369,7 +1375,9 @@ function addTunnelHazard(w: World, node: TunnelNode, lane: number, salt: number)
     section: node.section,
     pattern: node.pattern,
   });
-  t.nextHazardAt = absoluteX + 820 + tunnelNoise(t.seed, node.index, salt + 4) * 300;
+  // the dial reads as density, so a bigger number is LESS room between
+  t.nextHazardAt = absoluteX
+    + (820 + tunnelNoise(t.seed, node.index, salt + 4) * 300) / w.tune.debris;
   return true;
 }
 
@@ -1429,8 +1437,8 @@ function appendTunnelNode(w: World) {
   const patternLength = t.patternLength;
   const pattern = t.buildPattern;
   const progress = Math.min(1, index * TUNNEL_STEP / 30000);
-  const minHalf = Math.max(72, Math.min(88, w.H * 0.15));
-  const maxHalf = Math.max(minHalf + 38, Math.min(150, w.H * 0.27));
+  const minHalf = Math.max(72, Math.min(88, w.H * 0.15)) * w.tune.width;
+  const maxHalf = Math.max(minHalf + 38, Math.min(150, w.H * 0.27) * w.tune.width);
   const wave = Math.sin(index * 0.31 + t.seed) * 0.62 + Math.sin(index * 0.117 + 1.8) * 0.38;
   const baseHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 5;
   const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : t.patternStartHalf;
@@ -1446,7 +1454,7 @@ function appendTunnelNode(w: World) {
   // visual intensity can rise, but required vertical travel never rises at
   // the same time as the available space falls.
   const widthRoom = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
-  const maxTurn = 3.8 + widthRoom * 5.8;
+  const maxTurn = (3.8 + widthRoom * 5.8) * w.tune.turn;
   let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, shape.center - previousCenter));
   const safeHalf = half;
   center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
@@ -1540,7 +1548,7 @@ export function tunnelBoundsAt(w: World, x: number) {
 function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): string | null {
   const t = w.tunnel!;
   const progress = Math.min(1, w.distance / 30000);
-  const baseSpeed = 220 + progress * 160;
+  const baseSpeed = (220 + progress * 160) * w.tune.speed;
   // Surge is a real speed event, not just a louder-looking Ribbon. Its
   // corridor is deliberately wide and it never adds extra debris beyond
   // its one authored obstacle.
@@ -1551,10 +1559,15 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
   // The BETA's standalone Wormhole Run uses hold to rise/release to fall.
   // Hyper Run's alignment tunnel has its own drag authority in race.ts.
   // Live Wormhole Run keeps the classic tap until its beta control is approved.
+  // every one of these is the shipped constant times its dial, so a panel
+  // left at 1.00 is bit-for-bit the flight that shipped
+  const vLo = WORMHOLE_MIN_VY * w.tune.vcap;
+  const vHi = WORMHOLE_MAX_VY * w.tune.vcap;
   w.squirrel.vy = IS_BETA
-    ? Math.max(WORMHOLE_MIN_VY, Math.min(WORMHOLE_MAX_VY,
-        w.squirrel.vy + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL : WORMHOLE_RELEASE_ACCEL) * simDt))
-    : Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + gravOf(save, w) * simDt);
+    ? Math.max(vLo, Math.min(vHi, w.squirrel.vy
+        + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL * w.tune.lift
+                        : WORMHOLE_RELEASE_ACCEL * w.tune.fall) * simDt))
+    : Math.min(vHi, w.squirrel.vy + gravOf(save, w) * simDt);
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
   const move = w.speed * simDt;
