@@ -3493,28 +3493,41 @@ export function paintFlightPreview(
   t: number,
 ) {
   if (!art) return;
-  const PERIOD = 1.9;
+  // ONE TAP, THEN REST. The first pass crammed a tap, a rise, a stall and a
+  // fall into 1.9s, which read as twitchy rather than as a jump - the eye
+  // never settled on any of it. A tap every five seconds, played at half
+  // speed, shows the one thing worth showing: what THIS suit does when it
+  // flaps. Dive and the rest can come back if a suit ever earns a special.
+  const PERIOD = 5.0;
+  const RATE = 0.5;                       // the animation itself, slowed
   const p = ((t % PERIOD) + PERIOD) % PERIOD;
 
   // the tap itself, and the boost window that follows it
-  const tapAnimT = p < 0.30 ? p : -1;
-  const flapping = p < 0.24;
+  const tapAnimT = p < 0.30 / RATE ? p * RATE : -1;
+  const flapping = p < 0.24 / RATE;
   const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
   const speed = flapping ? 10 : 5;
-  const ft = t * speed;
+  const ft = t * speed * RATE;
   const idx = frames?.length ? Math.floor(ft) % frames.length : 0;
   const nxt = frames?.length ? (idx + 1) % frames.length : 0;
   const fr = ft - Math.floor(ft);
   const blend = fr * fr * (3 - 2 * fr);
 
-  // the arc: a hard kick up, then gravity taking it back down
-  const vy = p < 0.24
-    ? -230 + (p / 0.24) * 90
-    : Math.min(390, -140 + (p - 0.24) * 520);
+  // the arc, and then stillness: it kicks up, eases back to level, and
+  // waits there. No dive - a preview that is always moving has nothing to
+  // draw the eye when the thing worth seeing happens.
+  const kickEnd = 0.24 / RATE;
+  const settle = kickEnd + 1.1;
+  const vy = p < kickEnd
+    ? -230 + (p / kickEnd) * 90
+    : p < settle
+      ? -140 + ((p - kickEnd) / (settle - kickEnd)) * 140
+      : 0;
   const rot = Math.max(-0.34, Math.min(0.6, vy / 900));
 
   ctx.save();
-  ctx.translate(cx, cy + Math.sin(p / PERIOD * Math.PI * 2) * size * 0.06);
+  // a gentle idle bob only, not a lap of the frame
+  ctx.translate(cx, cy + Math.sin(t * 1.1) * size * 0.025);
   ctx.scale(size / 52, size / 52);
   const kick = flapping ? 1 - p / 0.24 : 0;
   const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;

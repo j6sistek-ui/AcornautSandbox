@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=132" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=133" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=132" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=133" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -362,6 +362,37 @@
     /* a suit that wears its own head closes the helmet shelf rather than
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
+
+    /* the acorn counter, matched to the Star Dust pill */
+    .ac-hub-idnut { display: inline-flex; align-items: center; gap: 5px; min-height: 30px;
+      padding: 0 10px; border-radius: 999px; color: #ffdf9a;
+      font: 800 12px/1 Figtree, sans-serif;
+      background: rgba(120,90,20,.28); border: 1px solid rgba(255,206,92,.4); }
+    .ac-hub-idnut svg { filter: drop-shadow(0 0 4px rgba(255,206,92,.6)); }
+    /* a price, never a bare number */
+    .ac-costtag { display: inline-flex; align-items: center; gap: 3px; color: #ffd76a;
+      font: 800 10px/1 Figtree, sans-serif; }
+    /* Active Effects, on the launch tile */
+    .ac-hub-active b { color: #b6acd6; font-weight: 800; }
+    /* the live pilot stage in the Loadout */
+    .ac-hangarstage { margin: 0 12px 8px; padding: 6px 8px 8px; }
+    .ac-hangarstage .ac-tocanvas { width: 300px; max-width: 100%; height: auto; }
+    /* the shop banner icon was inheriting the hub tile's size and bursting
+       out of a 60px row */
+    .ac-shopbanneric svg, .ac-shopbanneric img, .ac-shopbanneric canvas {
+      width: 30px; height: 30px; object-fit: contain; }
+    /* the pack purchase, second tap */
+    .ac-confirming { background: linear-gradient(180deg, #ffb0b0, #e05a5a); color: #2a0808; }
+    /* the daily receipt popup */
+    .ac-dailycard { text-align: center; }
+    .ac-dailybig { display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin: 6px 0 2px; color: #cbb4ff;
+      font: 900 34px/1 Figtree, sans-serif; text-shadow: 0 0 18px rgba(150,110,255,.8); }
+    .ac-dailycard .ac-pips { justify-content: center; margin: 10px 0 4px; }
+    /* mail mark */
+    .ac-markmail { background: linear-gradient(180deg, #3a4b6e, #1b2540);
+      border: 1px solid rgba(255,255,255,.14); }
+
 
     /* ---- what you just bought ---- */
     .ac-revealcard { max-height: min(84vh, 700px); }
@@ -964,7 +995,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js132/standalone.js";
+    import { bootStandalone } from "../js133/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
