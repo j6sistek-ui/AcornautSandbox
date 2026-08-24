@@ -46,7 +46,8 @@ export type PlanetCol = {
   scored: boolean;
   drift: number;
   driftAmp: number;
-  blockers: { y: number; r: number; kind: number; xOff: number; debris: number }[];
+  blockers: { y: number; r: number; kind: number; xOff: number; debris: number;
+              amp: number; rate: number; phase: number }[];
 };
 
 export type Pickup = {
@@ -691,6 +692,17 @@ function pickDebris(env: (typeof ENVS)[number]) {
 
 // Fully seal the corridor above the top gate and below the bottom one,
 // packed tight enough that the flight lane cannot be slipped around.
+/** WHERE A ROCK IS RIGHT NOW along the flight axis. Collision, both
+ *  debris sweeps and the painter all ask here, so what the pilot flies
+ *  into is what the pilot sees. Arcade keeps its rocks still - the retro
+ *  timeline is a different painter and a different feel. */
+export function blockerX(p: PlanetCol, b: PlanetCol["blockers"][number], w?: World) {
+  const home = p.x + (b.xOff || 0);
+  if (!w || !b.amp) return home;
+  if (w.flight !== "fly" && w.flight !== "deep" && w.flight !== "lost") return home;
+  return home + Math.sin(w.time * b.rate + b.phase) * b.amp;
+}
+
 /** How far the playfield can ever lean. Lost in Space drives its tilt
  *  continuously; the other modes only reach theirs while a warp runs. */
 export const LOST_TILT_MAX = (40 * Math.PI) / 180;
@@ -733,14 +745,25 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
   // The column PROJECTS past both screen edges, far enough that the lean
   // can never swing its cut end into view. See sealReach.
   const edge = -sealReach(w);
-  const put = (y: number, n: number) =>
+  const put = (y: number, n: number) => {
+    const rr = 19 + Math.random() * 7;
     blockers.push({
       y,
-      r: 19 + Math.random() * 7,
+      r: rr,
       kind: pickKind(w),
       xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
+      // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
+      // own clock - up to its own width either way, at its own speed, from
+      // its own phase - so a stack reads as debris hanging in space rather
+      // than as a wall of evenly spaced circles. Uniform amplitude is the
+      // point: plenty of rocks barely move, which is what stops the column
+      // pulsing as one body.
+      amp: Math.random() * 2 * rr,
+      rate: 0.45 + Math.random() * 0.9,        // one swing every 5s to 14s
+      phase: Math.random() * Math.PI * 2,
       debris: pickDebris(env),
     });
+  };
   // the cap was 12, which stopped the column short of even the old edge on
   // a tall field; it now has to be able to actually reach the new one
   const CAP = 40;
@@ -830,7 +853,7 @@ function tutReset(w: World, bx: number, by: number) {
   spark(w, bx, by, ["#7ad8ff", "#5dff9e", "#fff"], 16, "shield");
   for (const p of w.planets) {
     p.blockers = p.blockers.filter((b) => {
-      const ax = p.x + b.xOff;
+      const ax = blockerX(p, b, w);
       return Math.hypot(ax - bx, b.y - by) > 110 && Math.hypot(ax - sx, b.y - cy) > 150;
     });
   }
@@ -2181,7 +2204,7 @@ function safeY(w: World) {
 function clearDebrisNear(w: World, x: number, y: number, r1: number, x2: number, y2: number, r2: number) {
   for (const p of w.planets) {
     p.blockers = p.blockers.filter((b) => {
-      const ax = p.x + (b.xOff || 0);
+      const ax = blockerX(p, b, w);
       return Math.hypot(ax - x, b.y - y) > r1 && Math.hypot(ax - x2, b.y - y2) > r2;
     });
   }
@@ -2865,7 +2888,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (w.absorbGrace <= 0 && w.invulnLeft <= 0) {
     for (const p of w.planets) {
       for (const b of p.blockers) {
-        const bx = p.x + b.xOff;
+        const bx = blockerX(p, b, w);
         const by = b.y + gateOffset(p, w);
         if (circleHit(sx, sy, sr, bx, by, b.r * 0.92)) {
           if (w.shieldCharges > 0) {

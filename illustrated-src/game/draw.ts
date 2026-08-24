@@ -4,7 +4,7 @@ import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
-import { gateOffset, liveGapY, tiltNow, tunnelBoundsAt, type Particle, type World } from "./sim";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, type Particle, type World } from "./sim";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   RACE_ACORNS,
@@ -1643,7 +1643,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
-      const bx = p.x + b.xOff;
+      const bx = blockerX(p, b, w);
       const img = art.debris[b.debris];
       if (img) drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
       else drawPlanet(ctx, art, bx, by, b.r, b.kind, halo);

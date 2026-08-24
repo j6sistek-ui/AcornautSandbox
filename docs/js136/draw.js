@@ -3,7 +3,7 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=136";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=136";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=136";
-import { gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=136";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=136";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=136";
 import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=136";
 function frameOf(list, t, speed = 6) {
@@ -1467,7 +1467,7 @@ export function drawWorld(ctx, w, save, art) {
         drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
-            const bx = p.x + b.xOff;
+            const bx = blockerX(p, b, w);
             const img = art.debris[b.debris];
             if (img)
                 drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
