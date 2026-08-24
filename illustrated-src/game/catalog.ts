@@ -1,6 +1,6 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
-export const GAME_VERSION = "v1.2.0-illust";
+export const GAME_VERSION = "v1.2.1-illust";
 export const ART_VER = "127";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
