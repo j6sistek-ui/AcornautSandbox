@@ -330,6 +330,33 @@ function pickDebris(env) {
 }
 // Fully seal the corridor above the top gate and below the bottom one,
 // packed tight enough that the flight lane cannot be slipped around.
+/** How far the playfield can ever lean. Lost in Space drives its tilt
+ *  continuously; the other modes only reach theirs while a warp runs. */
+export const LOST_TILT_MAX = (40 * Math.PI) / 180;
+export const WARP_TILT_MAX = (25 * Math.PI) / 180;
+/** HOW FAR PAST THE SCREEN THE SEAL MUST REACH.
+ *
+ *  The column used to stop 20px INSIDE the edge, so its cut end was already
+ *  visible sitting still - and once the playfield leans, that end swings
+ *  properly into view and you can see where the rocks simply stop. The lean
+ *  carries a gate up to dx*sin(tilt) vertically, so the column is run out
+ *  that far plus a rock and the end stays off screen at every angle.
+ *
+ *  Capped against the field height, because a wide landscape window has an
+ *  enormous lever arm and a short field: uncapped it would ask for a column
+ *  several screens long, all of it rocks nobody will ever see. */
+function sealReach(w) {
+    const tilt = w.flight === "lost" ? LOST_TILT_MAX : WARP_TILT_MAX;
+    // the lean carries a gate this far vertically at the worst x
+    const lean = (w.W / 2 + PHYS.planetR) * Math.sin(tilt);
+    const cos = Math.max(0.2, Math.cos(tilt));
+    // ...and the same rotation COMPRESSES the column toward the middle by
+    // cos, so a rock parked exactly a lean past the edge still lands inside
+    // it. Solving for the world y that projects to the screen edge with the
+    // worst lean on top is what this is - my first cut used the lean alone
+    // and left the cut end up to 65px inside the frame.
+    return Math.min((w.H / 2 + lean + 26) / cos - w.H / 2, w.H * 1.1);
+}
 function sealBlockers(w, env, gapY, gap) {
     const r = PHYS.planetR;
     const blockers = [];
@@ -340,12 +367,9 @@ function sealBlockers(w, env, gapY, gap) {
     const short = w.H < 560;
     const pad = short ? 4 : 26;
     const step = short ? 22 : 30;
-    // Short fields PROJECT the column past the screen edges (owner call):
-    // a rock whose centre sits just off screen still shows its inner half,
-    // so the column visibly continues above and below the planets instead
-    // of stopping wherever the thin band ran out — and a higher or tighter
-    // gate can no longer open an empty-looking slip lane at the edge.
-    const edge = short ? -16 : 20;
+    // The column PROJECTS past both screen edges, far enough that the lean
+    // can never swing its cut end into view. See sealReach.
+    const edge = -sealReach(w);
     const put = (y, n) => blockers.push({
         y,
         r: 19 + Math.random() * 7,
@@ -353,11 +377,14 @@ function sealBlockers(w, env, gapY, gap) {
         xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
         debris: pickDebris(env),
     });
+    // the cap was 12, which stopped the column short of even the old edge on
+    // a tall field; it now has to be able to actually reach the new one
+    const CAP = 40;
     let y = gapY - gap / 2 - r * 2 - pad;
-    for (let n = 0; y > edge && n < 12; n++, y -= step)
+    for (let n = 0; y > edge && n < CAP; n++, y -= step)
         put(y, n);
     y = gapY + gap / 2 + r * 2 + pad;
-    for (let n = 0; y < w.H - edge && n < 12; n++, y += step)
+    for (let n = 0; y < w.H - edge && n < CAP; n++, y += step)
         put(y, n);
     return blockers;
 }
@@ -1819,12 +1846,13 @@ function absorb(w, bx, by) {
     spark(w, sx, cy, ["#7ad8ff", "#fff", "#4ad8ff"], 16, "shield");
 }
 function lostTiltAt(p) {
-    return ((40 * Math.PI) / 180) * (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
+    // the two weights sum to 1, so LOST_TILT_MAX is the exact peak, not a bound
+    return LOST_TILT_MAX * (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
 }
 function pickWarpVariant(w) {
     const variant = Math.floor(Math.random() * 5);
     w.warpMirror = variant < 3;
-    const TILT = (25 * Math.PI) / 180;
+    const TILT = WARP_TILT_MAX;
     w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
 }
 // The playfield is only visibly warped when it is mirrored or tilted.
@@ -1850,7 +1878,7 @@ function startSwirl(w, kind) {
     // no warp. Catching one then had no effect for fifteen seconds. Give
     // it a tilt so a wormhole always reorients something.
     if (kind !== "timeline" && w.flight !== "lost" && !warpVisible(w.warpTilt, w.warpMirror)) {
-        w.warpTilt = ((25 * Math.PI) / 180) * (Math.random() < 0.5 ? 1 : -1);
+        w.warpTilt = WARP_TILT_MAX * (Math.random() < 0.5 ? 1 : -1);
     }
     w.warpKind = kind;
     w.warpT = 1;
