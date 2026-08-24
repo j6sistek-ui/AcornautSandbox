@@ -78,6 +78,11 @@ export type Engine = {
   /** rename the pilot. Returns the name that was actually stored, which
    *  may differ from what was passed - it is sanitised on the way in. */
   setPilotName: (name: string) => string;
+  /** Ask for a suit's flight bank NOW rather than waiting for the
+   *  background sweep to reach it. Equipping already does this; the
+   *  previews need it too, because they show a suit the pilot has not
+   *  equipped and would otherwise animate only once the sweep arrives. */
+  wantSuitArt: (id: string) => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -278,6 +283,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
       return clean;
+    },
+    wantSuitArt(id) {
+      // only against the REAL bank - a load into the placeholder is thrown
+      // away with it, yet would still be marked done
+      if (art && art.ready) void loadSuitBank(art, id);
     },
     settleDust,
     dailyState,
