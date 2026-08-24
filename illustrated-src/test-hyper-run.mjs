@@ -28,10 +28,27 @@ function near(actual, expected, epsilon, message) {
 try {
   const gameDir = join(root, "illustrated-src", "game");
   const artSource = readFileSync(join(gameDir, "art.ts"), "utf8");
+  const catalogSource = readFileSync(join(gameDir, "catalog.ts"), "utf8");
   assert(artSource.includes('"return-back", "return-front", "return-glyphs", "scout-ship"')
     && artSource.includes("named(HYPER_RUN_ENABLED ? hyperRunIds : [], \"hyper-run\")"),
   "scout ship is not loaded atomically with the beta-gated Hyper Run bank");
   const standaloneSource = readFileSync(join(gameDir, "standalone.ts"), "utf8");
+  const modeSheetSource = standaloneSource.slice(
+    standaloneSource.indexOf("function drawModeSheet()"),
+    standaloneSource.indexOf("function labRootOf()"),
+  );
+  const homeSource = standaloneSource.slice(
+    standaloneSource.indexOf("function drawHome()"),
+    standaloneSource.indexOf("const MODE_FACE"),
+  );
+  const logSource = standaloneSource.slice(
+    standaloneSource.indexOf("function drawLog()"),
+    standaloneSource.indexOf("function drawLevelSheet"),
+  );
+  const levelSheetSource = standaloneSource.slice(
+    standaloneSource.indexOf("function drawLevelSheet"),
+    standaloneSource.indexOf("function drawLevelDone"),
+  );
   for (const requiredCopy of [
     "Thread blue gates to build speed and charge the wormhole.",
     "Acorns are an optional collection record and do not change your time.",
@@ -47,12 +64,33 @@ try {
     && standaloneSource.includes('`ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`')
     && !standaloneSource.includes("THEORETICAL CONTENT CEILING"),
   "Hyper Run briefing or launch CTA is not tied to every experimental race open");
+  assert(modeSheetSource.includes("if (HYPER_RUN_ENABLED)")
+    && modeSheetSource.includes('cls: "m-race"')
+    && modeSheetSource.includes('face: "race"')
+    && modeSheetSource.includes('label: "HYPER RUN"')
+    && modeSheetSource.includes("prototypeModeOpen = true"),
+  "beta-gated Hyper Run entry is missing from the formatted Modes rows");
+  assert(catalogSource.includes("export const HYPER_RUN_ENABLED = IS_BETA")
+    && modeSheetSource.indexOf('el("p", "ac-modeshead", "PROTOTYPES")')
+      < modeSheetSource.indexOf('label: "HYPER RUN"'),
+  "Hyper Run Modes visibility no longer matches the beta-only launch resolver");
+  assert(homeSource.includes("prototypeModeOpen && HYPER_RUN_ENABLED")
+    && homeSource.includes('drawLevelSheet(PROTOTYPE_RACE_MISSION, prototypeMask(), "modes")'),
+  "Modes did not route Hyper Run through its objective/control briefing");
+  assert(!logSource.includes("PROTOTYPE_RACE_MISSION")
+    && !logSource.includes("PROTOTYPE CHAPTER 1")
+    && !logSource.includes("EXPERIMENTAL MISSION"),
+  "Star Chart still exposes the old Hyper Run prototype entry");
+  assert(levelSheetSource.includes("launchPrototypeRace((id) => engine.flyLevel(id))")
+    && levelSheetSource.includes('origin: "chart" | "modes" = "chart"'),
+  "START RUN no longer uses the tested engine launch seam or Modes return path");
   const docsShell = readFileSync(join(root, "docs", "index.html"), "utf8");
   const sandboxShell = readFileSync(join(root, "sandbox_assets", "index.html"), "utf8");
   assert(docsShell === sandboxShell && docsShell.includes(".ac-lvlcard.ac-racecard")
     && docsShell.includes("max-height: min(94vh, 820px)")
     && docsShell.includes(".ac-racebriefblock h3 { margin: 0 0 8px; font: 900 14px")
     && docsShell.includes(".ac-racecontrol b { color: #a9f5ff; font-size: 14px")
+    && docsShell.includes(".m-race { --m1: #2f9fe9")
     && docsShell.includes("@media (max-width: 619px), (max-height: 699px)"),
   "mirrored responsive Hyper Run briefing shell changed or is missing its compact layout");
   const gameFiles = readdirSync(gameDir)
@@ -82,6 +120,7 @@ try {
   const drawApi = require(join(out, "draw.js"));
   const simApi = require(join(out, "sim.js"));
   const campaignApi = require(join(out, "campaign.js"));
+  const standaloneApi = require(join(out, "standalone.js"));
   const saveApi = require(join(out, "save.js"));
   const controlApi = require(join(out, "control-constants.js"));
   const {
@@ -174,11 +213,30 @@ try {
   const {
     makeWorld, pausePlay, planRaceCueEffects, resetRun, resizeWorld, setRaceInput, takeRaceCueEffects, updateWorld,
   } = simApi;
-  const { PROTOTYPE_RACE_MISSION } = campaignApi;
+  const { PROTOTYPE_RACE_MISSION, experimentalRaceById } = campaignApi;
+  const { launchPrototypeRace } = standaloneApi;
   const { defaultSave } = saveApi;
   const {
     QUICK_DROP_VY,
   } = controlApi;
+
+  const launchWorld = makeWorld(360, 640);
+  const launchSave = defaultSave();
+  const launchCalls = [];
+  const launchResult = launchPrototypeRace((id) => {
+    launchCalls.push(id);
+    const def = experimentalRaceById(id);
+    if (!def) return false;
+    resetRun(launchWorld, launchSave, "fly", false, def);
+    return true;
+  });
+  assert(launchResult === true, "Hyper Run launch helper discarded engine acceptance");
+  same(launchCalls, [PROTOTYPE_RACE_MISSION.id],
+    "Modes briefing CTA did not route the prototype mission ID to engine.flyLevel");
+  assert(launchWorld.screen === "play" && launchWorld.ready
+    && launchWorld.lvl?.def.id === PROTOTYPE_RACE_MISSION.id
+    && launchWorld.lvl.def.base === "race" && launchWorld.race !== null,
+  "Modes launch route did not initialize a READY fixed-step race world");
 
   const optimizedVisible = new Set([
     ...Array.from({ length: 20 }, (_, i) => i),
@@ -1317,6 +1375,10 @@ try {
   const world = makeWorld(360, 640);
   const save = defaultSave();
   resetRun(world, save, "fly", false, PROTOTYPE_RACE_MISSION);
+  assert(world.screen === "play" && world.ready
+    && world.lvl?.def.id === PROTOTYPE_RACE_MISSION.id
+    && world.lvl.def.base === "race" && world.race !== null,
+  "accepted Hyper Run launch did not initialize a READY fixed-step race world");
   const frozen = [world.race.tick, world.race.coursePosition, world.race.y];
   for (let i = 0; i < 30; i++) updateWorld(world, save, RACE_DT);
   same([world.race.tick, world.race.coursePosition, world.race.y], frozen, "READY advanced race authority");
