@@ -14,7 +14,9 @@ import {
   levelForXp,
   titleForLevel,
   BUNDLES,
-  IS_BETA,} from "./catalog";
+  IS_BETA,
+  GUIDE_SUIT,
+  GUIDE_HELM,} from "./catalog";
 
 export type SaveData = {
   highScore: number;
@@ -243,6 +245,16 @@ export function cleanPilotName(raw: string) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, PILOT_NAME_MAX);
+}
+
+/** THE TUTORIAL'S KIT. The guided path points at the Ion suit and helmet
+ *  and the coach calls them "your new ION SUIT" - but nothing ever granted
+ *  them, so a fresh pilot was sent to the hangar to admire a 140-acorn suit
+ *  they had 0 acorns for. Finishing the tutorial hands them over, which is
+ *  what the copy has always claimed. Idempotent: it only ever adds. */
+export function grantTutorialKit(s: SaveData) {
+  if (!s.unlockedSuits.includes(GUIDE_SUIT)) s.unlockedSuits.push(GUIDE_SUIT);
+  if (!s.unlocked.includes(GUIDE_HELM)) s.unlocked.push(GUIDE_HELM);
 }
 
 export function writeSave(s: SaveData) {

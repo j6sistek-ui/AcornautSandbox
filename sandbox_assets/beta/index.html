@@ -363,6 +363,30 @@
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
 
+    /* the pack row: give the words the space, cap the faces */
+    .ac-card.ac-bundle { grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto; gap: 10px; }
+    .ac-bundlestrip { flex-wrap: nowrap; max-width: 148px; overflow: hidden; }
+    .ac-bundlestrip img, .ac-bundlestrip canvas { width: 34px; height: 34px; }
+    .ac-card.ac-bundle .ac-modtxt { min-width: 0; }
+    .ac-card.ac-bundle .ac-sub { font-size: 11.5px; line-height: 1.35; }
+
+
+    /* the daily badge, the disc from the key art */
+    .ac-dailybadge { flex: none; width: 46px; height: 46px; object-fit: contain;
+      filter: drop-shadow(0 3px 9px rgba(120,80,220,.7)); }
+    .ac-dailybadgebig { display: block; width: 96px; height: 96px; margin: 2px auto 0;
+      object-fit: contain; filter: drop-shadow(0 5px 16px rgba(120,80,220,.85)); }
+    /* STAR DUST ON A PURPLE SHOP. The violet glyph sat on a violet sheet and
+       all but vanished. It keeps its colour and gains a dark disc to sit on,
+       so the contrast comes from the plate rather than from repainting the
+       currency a colour it does not mean. */
+    .ac-pill-dust svg, .ac-modprice.ac-dustprice svg, .ac-hub-iddust svg {
+      background: rgba(6,4,18,.72); border-radius: 999px; padding: 1px;
+      box-shadow: 0 0 0 1px rgba(203,180,255,.45); }
+    .ac-dustface { background: radial-gradient(70% 70% at 50% 30%, rgba(90,60,180,.5), rgba(4,3,12,.92));
+      border-color: rgba(203,180,255,.55); }
+
+
     /* the acorn counter, matched to the Star Dust pill */
     .ac-hub-idnut { display: inline-flex; align-items: center; gap: 5px; min-height: 30px;
       padding: 0 10px; border-radius: 999px; color: #ffdf9a;
