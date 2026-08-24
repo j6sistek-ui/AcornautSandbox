@@ -27,6 +27,10 @@ function near(actual, expected, epsilon, message) {
 
 try {
   const gameDir = join(root, "illustrated-src", "game");
+  const artSource = readFileSync(join(gameDir, "art.ts"), "utf8");
+  assert(artSource.includes('"return-back", "return-front", "return-glyphs", "scout-ship"')
+    && artSource.includes("named(HYPER_RUN_ENABLED ? hyperRunIds : [], \"hyper-run\")"),
+  "scout ship is not loaded atomically with the beta-gated Hyper Run bank");
   const gameFiles = readdirSync(gameDir)
     .filter((name) => name.endsWith(".ts"))
     .map((name) => join("illustrated-src", "game", name));
@@ -135,6 +139,7 @@ try {
     HYPER_RUN_GATE_FALLBACK_GEOMETRY,
     hyperRunChargeCopy,
     hyperRunGateUsesPaintedPairs,
+    hyperRunShipLayout,
     hyperRunTunnelRingScreenX,
   } = drawApi;
   const {
@@ -985,6 +990,17 @@ try {
       `${width}x${height} active clip left input is not canonical`);
     near(raceViewportX(viewport, canonicalLeft + viewport.virtualWidth), viewport.right, 1e-9,
       `${width}x${height} active clip right input is not canonical`);
+    const shipLayout = hyperRunShipLayout(viewport.pilotX, viewport.scale, {
+      width: 256,
+      height: 256,
+      box: { x: 10, y: 52, w: 236, h: 154 },
+    });
+    near(shipLayout.noseX, viewport.pilotX, 1e-9,
+      `${width}x${height} scout ship nose diverged from the gate authority plane`);
+    assert(shipLayout.centerX < viewport.pilotX && shipLayout.engineX < shipLayout.centerX,
+      `${width}x${height} scout ship body no longer trails its judged nose`);
+    assert(shipLayout.cockpitX > shipLayout.engineX && shipLayout.cockpitX < shipLayout.noseX,
+      `${width}x${height} live-pilot cockpit escaped the ship silhouette`);
   }
   const portraitLookahead = (canonicalViewport.right - canonicalViewport.pilotX) / canonicalViewport.scale;
   same(portraitLookahead, 264, "portrait future-course lookahead changed");

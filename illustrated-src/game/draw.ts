@@ -1373,6 +1373,108 @@ function drawRaceCueOverlay(
   }
 }
 
+function drawHyperRunShipExhaust(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  scale: number,
+  engineX: number,
+) {
+  const race = w.race!;
+  const hyperspeed = race.phase === "tunnel" ? 1
+    : race.phase === "entry" || race.phase === "return"
+      ? hyperRunInlineWormholePresentation(race.phase, race.phaseTick).energyAlpha
+      : 0;
+  const pulse = 0.5 + 0.5 * Math.sin(w.time * raceLerp(17, 26, hyperspeed));
+  const length = raceLerp(15, 25, hyperspeed) + pulse * raceLerp(4, 7, hyperspeed);
+  const half = raceLerp(4.2, 5.4, hyperspeed) * scale;
+  const tail = engineX - length * scale;
+  const gradient = ctx.createLinearGradient(engineX, 0, tail, 0);
+  gradient.addColorStop(0, "rgba(255,255,255,.96)");
+  gradient.addColorStop(0.18, "rgba(97,221,255,.92)");
+  gradient.addColorStop(0.58, "rgba(146,82,255,.66)");
+  gradient.addColorStop(1, "rgba(83,38,180,0)");
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(111,92,255,.82)";
+  ctx.shadowBlur = raceLerp(6, 10, hyperspeed) * scale;
+  ctx.beginPath();
+  ctx.moveTo(engineX, -half);
+  ctx.quadraticCurveTo(engineX - length * scale * 0.48, -half * 0.64, tail, 0);
+  ctx.quadraticCurveTo(engineX - length * scale * 0.48, half * 0.64, engineX, half);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+export function hyperRunShipLayout(
+  authorityX: number,
+  scale: number,
+  ship: Pick<Sprite, "box" | "width" | "height">,
+) {
+  const shipSize = 88 * scale;
+  const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
+  const fitScale = shipSize / Math.max(1, Math.max(box.w, box.h));
+  const noseOffset = box.w * fitScale / 2;
+  const centerX = authorityX - noseOffset;
+  return {
+    shipSize,
+    centerX,
+    cockpitX: centerX + 7.2 * scale,
+    cockpitY: -10.5 * scale,
+    engineX: centerX - box.w * fitScale / 2 + 1.5 * scale,
+    noseX: centerX + noseOffset,
+  };
+}
+
+/** Hyper Run's vehicle is a beta-only visual frame around the real equipped
+ * pilot. The ship nose, not its painted center, is registered to the race
+ * authority plane so a gate resolves when contact appears to happen. */
+function drawHyperRunPilot(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  save: SaveData,
+  art: ArtBank,
+  authorityX: number,
+  scale: number,
+) {
+  const ship = art.hyperRun["scout-ship"];
+  if (!ship) {
+    drawPilot(ctx, w, save, art, authorityX, scale);
+    return;
+  }
+
+  const layout = hyperRunShipLayout(0, scale, ship);
+  const bank = Math.max(-0.22, Math.min(0.25, w.squirrel.rot * 0.34));
+  const halo = raceReducedMotion() ? undefined
+    : w.race!.phase === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light";
+
+  ctx.save();
+  ctx.translate(authorityX, w.squirrel.y);
+  // Banking around the authority point keeps the nose/crossing registration
+  // stable while the body and exhaust sell the player's vertical intent.
+  ctx.rotate(bank);
+  drawHyperRunShipExhaust(ctx, w, scale, layout.engineX);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
+  ctx.clip();
+  const cockpitGlow = ctx.createRadialGradient(
+    layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1,
+    layout.cockpitX, layout.cockpitY, 15 * scale,
+  );
+  cockpitGlow.addColorStop(0, "rgba(71,112,166,.62)");
+  cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
+  ctx.fillStyle = cockpitGlow;
+  ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
+  drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+  ctx.restore();
+
+  drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", halo);
+  ctx.restore();
+}
+
 function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const race = w.race!;
   const viewport = raceViewport(w.W, w.H);
@@ -1381,7 +1483,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   if (race.phase === "normal" || race.phase === "finish") {
     const frame = buildRaceCourseFrame(w, viewport);
     drawRaceCourseUnderlay(ctx, w, art, viewport, frame);
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     drawRaceCourseOverlay(ctx, w, art, viewport, frame);
     drawRaceCueOverlay(ctx, w, viewport);
     if (race.phase === "normal" && frame.targetIndex != null && frame.targetY != null) {
@@ -1413,7 +1515,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
     drawHyperRunTunnelRingLayer(ctx, w, 0, "back");
     ctx.restore();
 
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     ctx.save();
     ctx.globalAlpha *= energyAlpha;
     drawHyperRunTunnelRingLayer(ctx, w, 0, "front");
@@ -1431,7 +1533,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   if (race.phase === "tunnel") {
     drawRaceTunnel(ctx, w, race.phaseTick);
     drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "back");
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "front");
     drawHyperRunTunnelDirector(ctx, w, race.phaseTick);
     drawHyperRunTunnelDragCue(ctx, w);
@@ -1456,7 +1558,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   drawRaceTunnel(ctx, w, RACE_TUNNEL_TICKS - 1, enclosure);
   ctx.restore();
 
-  drawPilot(ctx, w, save, art, pilotX, scale);
+  drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
   ctx.save();
   ctx.globalAlpha *= courseAlpha;
   drawRaceCourseOverlay(ctx, w, art, viewport, frame);
@@ -3204,9 +3306,11 @@ function drawPilot(
   art: ArtBank,
   xOverride?: number,
   localScale = 1,
+  yOverride?: number,
+  bankScale = 0.8,
 ) {
   const x = xOverride ?? w.W * PHYS.squirrelX;
-  const y = w.squirrel.y;
+  const y = yOverride ?? w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = helmetWornBy(save.equipped, save.equippedSuit);
   // The repainted flap frames are one coherent character, so the tap
@@ -3240,7 +3344,7 @@ function drawPilot(
   }
   // the sim's real pitch — dives nose down, bounces kick the body over;
   // the old ±6° bank made every impact read as nothing happening
-  let bank = w.squirrel.rot * 0.8;
+  let bank = w.squirrel.rot * bankScale;
   if (articulatedTap && !eclipseImpact) {
     // Every current model now uses the same eased visual pitch clock. Eclipse
     // supplies painted body poses; the other rigs use the identity-safe body

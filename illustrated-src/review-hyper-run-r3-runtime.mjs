@@ -65,7 +65,7 @@ try {
   const require = createRequire(import.meta.url);
   const {
     drawWorld, drawHud, hyperRunChargeCopy, hyperRunFlowSnapshot, hyperRunInlineWormholePresentation,
-    hyperRunTunnelRingScreenX, hyperRunTunnelSampleCount,
+    hyperRunShipLayout, hyperRunTunnelRingScreenX, hyperRunTunnelSampleCount,
   } = require(join(jsOut, "draw.js"));
   const { makeWorld } = require(join(jsOut, "sim.js"));
   const { defaultSave } = require(join(jsOut, "save.js"));
@@ -109,8 +109,14 @@ try {
     "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
     "gate-missed-back", "gate-missed-front", "entry-mouth", "entry-rim-back",
     "entry-glyphs", "entry-rim-front", "return-back", "return-glyphs", "return-front",
+    "scout-ship",
   ];
-  const [idle, flap, acorns, debris, flight, flightBody, flightTail, clear, sky, hyperEntries] = await Promise.all([
+  const [
+    idle, flap, acorns, debris,
+    flight, flightBody, flightTail, clear,
+    amethyst, amethystBody, amethystTail, amethystHelm,
+    sky, hyperEntries,
+  ] = await Promise.all([
     Promise.all(Array.from({ length: 4 }, (_, i) => sprite(join(artRoot, "squirrel", `idle-${i + 1}.png`)))),
     Promise.all(Array.from({ length: 4 }, (_, i) => sprite(join(artRoot, "squirrel", `flap-${i + 1}.png`)))),
     Promise.all(Array.from({ length: 4 }, (_, i) => sprite(join(artRoot, "acorn", `${i + 1}.png`)))),
@@ -119,15 +125,21 @@ try {
     sprite(join(artRoot, "suits", "flight-body.png")),
     sprite(join(artRoot, "suits", "flight-tail.png")),
     sprite(join(artRoot, "helms", "clear.png")),
+    sprite(join(artRoot, "suits", "amethyst.png")),
+    sprite(join(artRoot, "suits", "amethyst-body.png")),
+    sprite(join(artRoot, "suits", "amethyst-tail.png")),
+    sprite(join(artRoot, "helms", "amethyst.png")),
     loadImage(join(artRoot, "skies", "dark6-wide.jpg")),
     Promise.all(hyperIds.map(async (id) => [id, await sprite(join(artRoot, "hyper-run", `${id}.png`))])),
   ]);
   const hyperRun = Object.fromEntries(hyperEntries);
   const art = {
     ready: true, squirrelIdle: idle, squirrelFlap: flap, acorn: acorns,
-    golden: [], shield: [], planets: [], debris, pals: {}, helms: { clear }, suits: { flight },
+    golden: [], shield: [], planets: [], debris, pals: {}, helms: { clear, amethyst: amethystHelm },
+    suits: { flight, amethyst },
     sky, arcadeAcorn: null, frozen: null, shieldnut: null, frozenAnim: [], shieldAnim: [],
-    wormAnim: [], holeAnim: [], suitTail: { flight: flightTail }, suitBody: { flight: flightBody },
+    wormAnim: [], holeAnim: [], suitTail: { flight: flightTail, amethyst: amethystTail },
+    suitBody: { flight: flightBody, amethyst: amethystBody },
     suitTap: {}, suitTapTail: {}, hyperRun,
   };
   const save = defaultSave();
@@ -163,6 +175,7 @@ try {
 
   function render(s, {
     hud = true, partialArt = false, reduced = false, hyperRunOverride = null, skyOverride = null,
+    saveOverride = save,
   } = {}) {
     reducedMotion = reduced;
     sync(s);
@@ -174,7 +187,7 @@ try {
       : partialArt
         ? { ...baseBank, hyperRun: { ...hyperRun, "gate-passed-front": undefined } }
         : baseBank;
-    drawWorld(ctx, s.world, save, bank);
+    drawWorld(ctx, s.world, saveOverride, bank);
     if (hud) drawHud(ctx, s.world);
     return canvas;
   }
@@ -723,6 +736,32 @@ try {
   outputs.tunnelRingViewports = { path: ringViewportPath,
     ...sheet(ringViewportEvidence, 2, ringViewportPath), sizes: approvedViewportSizes };
 
+  function scoutShipState(W, H) {
+    const s = scenario(W, H), ring = RACE_RINGS[0];
+    s.race.phase = "normal"; s.race.coursePosition = ring.x; s.race.previousCoursePosition = ring.x - 1;
+    s.race.y = ring.y; s.race.previousY = ring.y; s.race.vy = 0;
+    return s;
+  }
+  const scoutShipEvidence = [];
+  for (const [W, H] of approvedViewportSizes) {
+    const evidenceScale = Math.min(.52, 360 / W, 260 / H);
+    scoutShipEvidence.push(labelled(withPilotPlaneGuide(render(scoutShipState(W, H))),
+      `${W}x${H} / LIVE FLIGHT PILOT / NOSE = PLANE`, evidenceScale));
+  }
+  const altSave = defaultSave();
+  altSave.equippedSuit = "amethyst"; altSave.equipped = "amethyst"; altSave.equippedPal = "none";
+  scoutShipEvidence.push(labelled(withPilotPlaneGuide(render(scoutShipState(844, 390), { saveOverride: altSave })),
+    "844x390 / LIVE AMETHYST LOADOUT", .42));
+  const scoutFallback = render(scoutShipState(844, 390), {
+    hyperRunOverride: hyperRunWithout(["scout-ship"]),
+  });
+  scoutShipEvidence.push(labelled(withPilotPlaneGuide(scoutFallback),
+    "844x390 / MISSING SHIP -> NORMAL PILOT", .42));
+  const scoutShipPath = join(outDir, "runtime-scout-ship-five-viewports.png");
+  outputs.scoutShip = { path: scoutShipPath,
+    ...sheet(scoutShipEvidence, 2, scoutShipPath), sizes: approvedViewportSizes,
+    equippedLoadouts: ["flight+clear", "amethyst+amethyst"], fallback: "normal pilot" };
+
   const reproItems = [];
   for (const [W, H] of [[390, 844], [844, 390]]) {
     const s = scenario(W, H); s.race.y = 500; s.race.tick = 301;
@@ -820,7 +859,9 @@ try {
   noRingState.race.tunnelRingLedger[0].fill("missed");
   noRingState.race.tunnelRingDecisionTicks[0].fill(1_000);
   const noRingFrame = render(noRingState, { hud: false });
-  const noHyperRunFrame = render(whiteRingState, { hud: false, hyperRunOverride: {} });
+  const noHyperRunFrame = render(whiteRingState, {
+    hud: false, hyperRunOverride: { "scout-ship": hyperRun["scout-ship"] },
+  });
   const whiteRingPath = join(outDir, "runtime-tunnel-ring-white-only.png");
   outputs.tunnelRingWhiteOnly = { path: whiteRingPath, ...sheet([
     labelled(whiteRingFrame, "CODE-NATIVE WHITE RINGS"),
@@ -831,6 +872,31 @@ try {
     { x: 0, y: 0, w: whiteRingFrame.width, h: whiteRingFrame.height });
   assert(ringArtIndependence.mean === 0 && ringArtIndependence.max === 0,
     `white tunnel rings depend on bitmap art ${JSON.stringify(ringArtIndependence)}`);
+
+  const shipLayoutMatrix = approvedViewportSizes.map(([W, H]) => {
+    const viewport = raceViewport(W, H);
+    const layout = hyperRunShipLayout(viewport.pilotX, viewport.scale, hyperRun["scout-ship"]);
+    assert(Math.abs(layout.noseX - viewport.pilotX) < 1e-9,
+      `${W}x${H} scout ship nose missed the authority plane by ${layout.noseX - viewport.pilotX}`);
+    assert(layout.engineX < layout.centerX && layout.cockpitX < layout.noseX,
+      `${W}x${H} scout ship registration inverted`);
+    return { size: [W, H], authorityX: viewport.pilotX, ...layout };
+  });
+  const shipFrame = render(scoutShipState(844, 390), { hud: false });
+  const fallbackFrame = render(scoutShipState(844, 390), {
+    hud: false, hyperRunOverride: hyperRunWithout(["scout-ship"]),
+  });
+  const shipViewport = raceViewport(844, 390);
+  const shipDiff = pixelDiff(shipFrame, fallbackFrame, {
+    x: Math.max(0, Math.floor(shipViewport.pilotX - 100 * shipViewport.scale)),
+    y: Math.max(0, Math.floor(raceViewportY(shipViewport, RACE_RINGS[0].y) - 70 * shipViewport.scale)),
+    w: Math.ceil(110 * shipViewport.scale),
+    h: Math.ceil(140 * shipViewport.scale),
+  });
+  assert(shipDiff.mean > 1 && shipDiff.max > 40,
+    `ship asset and normal-pilot fallback were not visibly distinct ${JSON.stringify(shipDiff)}`);
+  outputs.scoutShip.layoutMatrix = shipLayoutMatrix;
+  outputs.scoutShip.shipFallbackDiff = shipDiff;
 
   const whiteViewport = raceViewport(whiteRingFrame.width, whiteRingFrame.height);
   const whiteX = hyperRunTunnelRingScreenX(whiteViewport, whiteRing.tick, 35);
