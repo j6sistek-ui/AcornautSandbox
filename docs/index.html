@@ -363,6 +363,21 @@
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
 
+    /* ---- what you just bought ---- */
+    .ac-revealcard { max-height: min(84vh, 700px); }
+    /* a swipeable strip, snapping so a card never ends up half off-screen */
+    .ac-revealstrip { display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      padding: 4px 2px 10px; margin: 4px -2px 0; scrollbar-width: thin; }
+    .ac-revealitem { scroll-snap-align: center; flex: none; width: 106px; min-height: 132px; }
+    .ac-revealitem.on { box-shadow: inset 0 0 0 1px rgba(212,175,55,.55),
+      inset 0 -18px 26px -18px var(--pg, #c9b6ff), 0 0 0 2px #A99BE8; }
+    .ac-revealequip { width: 100%; margin-top: 2px; }
+    .ac-revealequip.off { opacity: .55; }
+    .ac-revealgo { width: 100%; }
+    .ac-revealhint { margin: 6px 0 2px; text-align: center; }
+
+
     /* ---- the pilot names themselves ---- */
     .ac-idnamerow { display: flex; align-items: center; gap: 7px; min-width: 0; }
     .ac-idnameedit { flex: none; width: 30px; height: 30px; border-radius: 9px;
@@ -488,6 +503,8 @@
     .ac-socialtxt b { font-size: 13px; font-weight: 800; letter-spacing: .04em; }
     .ac-socialtxt span { font-size: 11px; color: #8b95b0; }
     .ac-socialgo { flex: none; color: #8b95b0; font-size: 14px; font-weight: 800; }
+    .ac-markx { background: linear-gradient(180deg, #2b2b32, #0b0b0f);
+      border: 1px solid rgba(255,255,255,.16); box-shadow: 0 3px 10px -5px rgba(0,0,0,.9); }
 
 
 

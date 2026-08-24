@@ -413,6 +413,7 @@ export async function bootStandalone(root: HTMLElement) {
     "M4 20.4h4.2L19 9.6a2.1 2.1 0 0 0 0-3l-1.6-1.6a2.1 2.1 0 0 0-3 0L3.6 15.8z",
     "M13.4 6.2 17.8 10.6",
   ];
+  const I_X = ["M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"];
   const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
   const I_GEAR = [
     "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -2346,6 +2347,8 @@ export async function bootStandalone(root: HTMLElement) {
   // trying premium on, not equipping it, and nothing here is owned.
   let tryOn: { suit: string; helm: string; pal: string } = { suit: "", helm: "", pal: "" };
   let packOpen: string | null = null;      // the pack whose contents are open
+  let revealPack: string | null = null;    // a pack just bought, being shown off
+  let revealPick: string | null = null;    // the card tapped inside the reveal
   let editingName = false;                 // the Profile name is in edit mode
   const PILOT_FALLBACK = "Nutcracker";     // shown until a pilot picks one
 
@@ -2454,6 +2457,7 @@ export async function bootStandalone(root: HTMLElement) {
 
     scroll.append(grid);
     if (packOpen) box.append(drawPackSheet(packOpen));
+    if (revealPack) box.append(drawReveal(revealPack));
     // This used to read "premium is unlocked for everyone during the beta",
     // which stopped being true the moment the beta started BUYING packs
     // instead of being handed them.
@@ -2463,6 +2467,93 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));
     return box;
+  }
+
+  /** WHAT YOU JUST GOT. A purchase that closes a sheet and drops you back
+   *  on a list never shows you what you bought. Every item arrives as its
+   *  own card in a swipeable strip; tapping one offers to put it on there
+   *  and then, so the first thing after buying can be wearing it. */
+  function drawReveal(id: string) {
+    const s = engine.save;
+    const bn = BUNDLES.find((b) => b.id === id);
+    if (!bn) return el("div", "");
+    const close = () => { revealPack = null; revealPick = null; render(); };
+
+    type Got = { id: string; name: string; kind: "suit" | "helm" | "trail" | "pal" };
+    const got: Got[] = [];
+    for (const i of [...new Set(bn.items)]) {
+      const u = SUITS.find((x) => x.id === i);
+      if (u) got.push({ id: i, name: u.name, kind: "suit" });
+      const h = HELMETS.find((x) => x.id === i);
+      if (h) got.push({ id: i, name: h.name, kind: "helm" });
+      const t = TRAILS.find((x) => x.id === i);
+      if (t) got.push({ id: i, name: t.name, kind: "trail" });
+      const pl = PALS.find((x) => x.id === i);
+      if (pl) got.push({ id: i, name: pl.name, kind: "pal" });
+    }
+
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("div", "ac-lvlcard ac-revealcard");
+    sheet.append(el("p", "ac-kicker", "ADDED TO YOUR LOADOUT"));
+    sheet.append(el("h2", "ac-lvlname", bn.name));
+    sheet.append(el("p", "ac-sub", `${got.length} items are yours. Swipe to look through them.`));
+
+    const strip = el("div", "ac-revealstrip");
+    for (const g of got) {
+      const key = `${g.kind}:${g.id}`;
+      const card = el("button", revealPick === key ? "ac-card ac-revealitem on" : "ac-card ac-revealitem");
+      if (g.kind === "suit") { const u = SUITS.find((x) => x.id === g.id)!; card.append(suitCardOf(u, 66)); markPremium(card, u.glow); }
+      else if (g.kind === "helm") { const h = HELMETS.find((x) => x.id === g.id)!; card.append(helmCardOf(h, 66)); markPremium(card, h.glow); }
+      else if (g.kind === "trail") {
+        const t = TRAILS.find((x) => x.id === g.id)!;
+        const { c, ctx } = miniCanvas(66, 66);
+        if (ctx) paintTrailPreview(ctx, t, 33, 33, performance.now() / 1000);
+        card.append(c); markPremium(card, t.colors[0]);
+      } else {
+        const { c, ctx } = miniCanvas(66, 66);
+        if (ctx) paintPalPreview(ctx, engine.art, g.id, 33, 33, 60);
+        card.append(c); markPremium(card);
+      }
+      const KIND_LABEL = { suit: "SUIT", helm: "HELMET", trail: "TRAIL", pal: "PAL" };
+      card.append(document.createTextNode(`${g.name}\n${KIND_LABEL[g.kind]}`));
+      card.onclick = () => { revealPick = revealPick === key ? null : key; render(); };
+      strip.append(card);
+    }
+    sheet.append(strip);
+
+    // the tapped card's offer, named so it is never ambiguous which one
+    if (revealPick) {
+      const [kind, itemId] = revealPick.split(":");
+      const g = got.find((x) => `${x.kind}:${x.id}` === revealPick);
+      const worn = kind === "suit" ? s.equippedSuit === itemId
+        : kind === "helm" ? s.equipped === itemId
+        : kind === "trail" ? s.equippedTrail === itemId
+        : s.equippedPal === itemId;
+      const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
+      if (worn) { act.textContent = `${g?.name ?? ""} EQUIPPED`; act.disabled = true; }
+      else {
+        act.textContent = `EQUIP ${g?.name ?? ""}`;
+        act.onclick = () => {
+          tx(act, () => kind === "suit" ? engine.buySuit(itemId)
+            : kind === "helm" ? engine.buyHelmet(itemId)
+            : kind === "trail" ? engine.buyTrail(itemId)
+            : engine.equipPal(itemId));
+          render();
+        };
+      }
+      sheet.append(act);
+    } else {
+      sheet.append(el("p", "ac-fine ac-revealhint", "Tap a card to put it on."));
+    }
+
+    const toLoadout = el("button", "ac-primary ac-revealgo", "GO TO LOADOUT");
+    toLoadout.onclick = () => { revealPack = null; revealPick = null; engine.open("hangar"); };
+    const back = el("button", "ac-ghost", "CLOSE");
+    back.onclick = close;
+    sheet.append(toLoadout, back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    return wrap;
   }
 
   /** WHAT IS ACTUALLY IN THE PACK. A half-height sheet listing every item
@@ -2534,7 +2625,14 @@ export async function bootStandalone(root: HTMLElement) {
       buy.append(el("span", "", "BUY \u00b7 "), icon(I_DUST, 14, true),
                  el("span", "", bn.dust.toLocaleString()));
       buy.onclick = () => {
-        if (tx(buy, () => engine.buyBundle(bn.id), bn.dust, "dust")) close();
+        if (tx(buy, () => engine.buyBundle(bn.id), bn.dust, "dust")) {
+          // straight into the reveal: a purchase that just closes a sheet
+          // and returns you to a list never shows you what you bought
+          packOpen = null;
+          revealPack = bn.id;
+          revealPick = null;
+          render();
+        }
       };
     }
     const back = el("button", "ac-ghost", "BACK");
@@ -2813,6 +2911,19 @@ export async function bootStandalone(root: HTMLElement) {
     dtxt.append(el("b", "", "Discord"), el("span", "", "Flight chatter, bug reports, early looks."));
     discord.append(dwrap, dtxt, el("span", "ac-socialgo", "\u2197"));
     social.append(discord);
+
+    const x = document.createElement("a");
+    x.className = "ac-row ac-rowbtn ac-social";
+    x.href = "https://x.com/AcornautGame";
+    x.target = "_blank";
+    x.rel = "noopener noreferrer";
+    const xwrap = el("span", "ac-socialmark ac-markx");
+    xwrap.append(icon(I_X, 17, true));
+    const xtxt = el("span", "ac-socialtxt");
+    xtxt.append(el("b", "", "@AcornautGame"), el("span", "", "Patch notes, new art, and the occasional crash."));
+    x.append(xwrap, xtxt, el("span", "ac-socialgo", "\u2197"));
+    social.append(x);
+
     scroll.append(social);
 
     scroll.append(el("p", "ac-kicker ac-secthead", "News"));
