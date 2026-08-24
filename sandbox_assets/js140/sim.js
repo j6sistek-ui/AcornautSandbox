@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=139";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=139";
-import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=139";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=139";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=139";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=139";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=139";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=140";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=140";
+import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=140";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=140";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=140";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=140";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=140";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -60,6 +60,8 @@ export function makeWorld(W, H) {
         bounceAnimDir: 0,
         bounceAnimStrength: 0,
         tunnelHeld: false,
+        wormHold: null,
+        wormLeft: 0,
         tune: freshTune(),
         hitCooldown: 0,
         trailT: 0,
@@ -527,7 +529,7 @@ const HOLE_RATE_FLY = 0.018;
 /** the slot the wormhole used to occupy on a campaign level */
 const HOLE_RATE_LEVEL = 0.05;
 const WORM_RATE = {
-    lost: 0, // deliberately zero — see above
+    lost: 0.05, // back on, and now it actually transports you
 };
 function holeChance(w) {
     if (w.flight === "fly")
@@ -750,9 +752,10 @@ function spawnPair(w, save, x) {
         if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && Math.random() < 0.05) {
             w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
         }
-        // Wormholes flip your heading. Nothing spawns one today: Arcade's is
-        // retired and Lost in Space's rate is held at zero until it comes back
-        // in its new form. The path stays wired — see WORM_RATE.
+        // Wormholes are DOORS now, not reorientations: catching one flies the
+        // pilot down a real corridor for fifteen seconds and puts them back
+        // where they were. Lost in Space only - Arcade's reversal hazard stays
+        // retired. See enterWormhole.
         const wormRate = wormChance(w);
         if (!w.tut && !noHoles && wormRate > 0 && Math.random() < wormRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
@@ -805,6 +808,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.bounceAnimDir = 0;
     w.bounceAnimStrength = 0;
     w.tunnelHeld = false;
+    w.wormHold = null;
+    w.wormLeft = 0;
     // a run keeps the dials it started with, so changing one mid-run cannot
     // rewrite the corridor already generated behind the pilot
     w.tune = cleanTune(save.tune);
@@ -1216,7 +1221,104 @@ export function tunnelBoundsAt(w, x) {
     const f = Math.max(0, Math.min(1, (x - a.x) / Math.max(1, b.x - a.x)));
     return { top: a.top + (b.top - a.top) * f, bottom: a.bottom + (b.bottom - a.bottom) * f };
 }
+/** THE WORMHOLE ACTUALLY TAKES YOU SOMEWHERE.
+ *
+ *  It used to flip your heading and call that a wormhole. Catching one now
+ *  drops the pilot into a REAL corridor for fifteen seconds and then puts
+ *  them back on the gate run exactly where they left it - same planets,
+ *  same pickups, same height, same velocity, mid-flight.
+ *
+ *  The corridor's difficulty rides the gate it was caught at, on the
+ *  TUNNEL'S OWN curve rather than a second one invented beside it: the
+ *  entry is stamped into w.distance, which is what Wormhole Run already
+ *  reads to decide corridor width and speed. Gate 10 enters at 8% of that
+ *  curve; gate 120 and beyond enters at the top of it.
+ *
+ *  Score carries THROUGH rather than restarting - the corridor's run is
+ *  seeded with the gate score, so the HUD never drops to zero and jumps
+ *  back, and what the pilot earns in there is theirs to keep. A wormhole
+ *  is a reward for flying into one. */
+export const WORM_TRIP_SECONDS = 15;
+/** the gate at which a wormhole opens onto the hardest corridor there is */
+export const WORM_PEAK_GATE = 120;
+function wormEntryDistance(score) {
+    return Math.min(30000, (Math.max(0, score) / WORM_PEAK_GATE) * 30000);
+}
+function enterWormhole(w, save) {
+    w.wormHold = {
+        flight: w.flight,
+        planets: w.planets, pickups: w.pickups,
+        squirrel: { ...w.squirrel },
+        speed: w.speed, distance: w.distance,
+        lastSpawnX: w.lastSpawnX, lastGapY: w.lastGapY,
+        shieldCharges: w.shieldCharges, startShieldArmed: w.startShieldArmed,
+        warpTilt: w.warpTilt, warpMirror: w.warpMirror,
+        prevTilt: w.prevTilt, prevMirror: w.prevMirror,
+    };
+    const carried = w.score;
+    const shields = w.shieldCharges;
+    w.wormLeft = WORM_TRIP_SECONDS;
+    w.flight = "tunnel";
+    initTunnel(w, undefined);
+    // initTunnel clears the pilot's shields, because a Wormhole Run of its
+    // own has none. This is a DETOUR inside a run, so what the pilot was
+    // carrying goes with them.
+    w.shieldCharges = shields;
+    w.distance = wormEntryDistance(carried);
+    w.tunnel.scoreFloat = carried;
+    w.score = carried;
+    // the corridor is flown upright: Lost in Space's lean belongs to the
+    // gate run and is waiting for the pilot when they come back
+    w.warpTilt = 0;
+    w.warpMirror = false;
+    w.prevTilt = 0;
+    w.prevMirror = false;
+    w.warpT = 0;
+    w.warpLeft = 0;
+    w.warpGateEnd = -1;
+    w.particles = [];
+    w.recoveryMsg = "THROUGH THE WORMHOLE";
+    w.shake = 0.3;
+}
+/** Back to the gate run, exactly as it was left. */
+function exitWormhole(w) {
+    const hold = w.wormHold;
+    if (!hold)
+        return;
+    w.wormHold = null;
+    w.wormLeft = 0;
+    w.flight = hold.flight;
+    w.tunnel = null;
+    w.planets = hold.planets;
+    w.pickups = hold.pickups;
+    w.squirrel = { ...hold.squirrel };
+    w.speed = hold.speed;
+    w.distance = hold.distance;
+    w.lastSpawnX = hold.lastSpawnX;
+    w.lastGapY = hold.lastGapY;
+    w.startShieldArmed = hold.startShieldArmed;
+    w.warpTilt = hold.warpTilt;
+    w.warpMirror = hold.warpMirror;
+    w.prevTilt = hold.prevTilt;
+    w.prevMirror = hold.prevMirror;
+    w.particles = [];
+    w.tunnelHeld = false;
+    // a beat of grace on the way out: the pilot has been flying a corridor
+    // and is being handed a gate mouth back
+    w.absorbGrace = Math.max(w.absorbGrace, 1.2);
+    w.hitCooldown = 0;
+    w.recoveryMsg = "BACK ON COURSE";
+    w.shake = 0.24;
+}
 function updateTunnel(w, save, simDt, realDt) {
+    // a wormhole detour is on a clock; a real Wormhole Run is not
+    if (w.wormHold) {
+        w.wormLeft -= realDt;
+        if (w.wormLeft <= 0) {
+            exitWormhole(w);
+            return "shift";
+        }
+    }
     const t = w.tunnel;
     const progress = Math.min(1, w.distance / 30000);
     const baseSpeed = (220 + progress * 160) * w.tune.speed;
@@ -2142,6 +2244,12 @@ export function settleLevel(w, save, finished) {
     w.deadTimer = 0;
 }
 function die(w, save) {
+    // A crash inside a wormhole detour is a crash on the run that flew into
+    // it - the corridor is fifteen seconds of that run, not a run of its
+    // own. Come home first, so the score, the best and the result screen all
+    // belong to the flight the pilot actually chose.
+    if (w.wormHold)
+        exitWormhole(w);
     if (w.tut && w.tut.stage !== "free") {
         absorb(w);
         w.shieldCharges = Math.max(w.shieldCharges, 1);
@@ -2726,6 +2834,12 @@ export function updateWorld(w, save, dt) {
             exitWarp(w);
             spark(w, a.x, ay, ["#b45cff", "#fff", "#4ad8ff"], 20, "warp");
             snd = "shield";
+        }
+        else if (a.kind === "worm" && !w.wormHold && w.warpT <= 0) {
+            // not a reorientation any more: a door
+            spark(w, a.x, ay, ["#b45cff", "#fff", "#4ad8ff"], 26, "warp");
+            enterWormhole(w, save);
+            return "shift";
         }
         else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0 && w.warpGateEnd < 0) {
             startSwirl(w, a.kind === "worm" ? "worm" : "hole");
