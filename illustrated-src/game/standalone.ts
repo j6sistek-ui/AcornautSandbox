@@ -707,7 +707,12 @@ export async function bootStandalone(root: HTMLElement) {
   let hyperRunOpen = false;
 
   function nextStarReward(stars: number) {
-    return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
+    // "stage" rows opened a chapter, and chapters are gone - the chart is
+    // one linear road now. They still sit in STAR_REWARDS because the
+    // roadmap builder checks their thresholds against STAGES, but they
+    // grant nothing, so the hub must not advertise one as the next unlock.
+    // The rail already filters them; this had not caught up.
+    return STAR_REWARDS.find((r) => r.stars > stars && r.kind !== "stage") ?? null;
   }
 
   function hubIcon(name: string, blend = true) {
