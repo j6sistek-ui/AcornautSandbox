@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=131";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=132";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "131";
+export const ART_VER = "132";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 16:54 UTC";
+export const BUILD_TIME = "2026-08-24 18:11 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -169,8 +169,13 @@ export const SUITS = [
     { id: "amethyst", beta: true, name: "Amethyst", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#78529a", suitLite: "#c58ce1", suitDark: "#38214f", trim: "#e0ba65", glow: "#c86dff", dust: "#efc9ff" },
     { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#e8ddc5", suitLite: "#fffaf0", suitDark: "#9b8765", trim: "#d9ad55", glow: "#fff0b8", dust: "#fff7dd" },
     { id: "reactor", beta: true, name: "Reactor", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#61752f", suitLite: "#9aaf4a", suitDark: "#293914", trim: "#65ff32", glow: "#65ff32", dust: "#b8ff80" },
-    { id: "cyber", beta: true, name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
+    { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
+// Beta-only suits are stripped from production entirely. Anything a PACK
+// sells therefore may not carry `beta` - Cyber did, so the Circuit Pack
+// advertised three suits on the live page and could only ever deliver two.
+// A bundle-vs-catalog check would catch the next one; for now the rule is
+// simply that selling a thing requires shipping it.
 if (!IS_BETA) {
     for (let i = SUITS.length - 1; i >= 0; i--) {
         if (SUITS[i].beta)

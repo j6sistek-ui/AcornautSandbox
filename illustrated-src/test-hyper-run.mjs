@@ -69,14 +69,28 @@ try {
     && standaloneSource.includes('`ACORNS  ${r.acorns} / ${HYPER_RUN_MAX_ACORNS}`')
     && !standaloneSource.includes("THEORETICAL CONTENT CEILING"),
   "Hyper Run briefing or launch CTA is not tied to every standalone race open");
-  assert(modeSheetSource.includes('cls: "m-race"')
-    && modeSheetSource.includes('face: "race"')
-    && modeSheetSource.includes('label: "HYPER RUN"')
-    && modeSheetSource.includes("hyperRunOpen = true"),
+  // Hyper Run is now a MODES entry like every other way to fly, rather than
+  // a hand-written row: the sheet renders the list, so the contract moved
+  // from "this literal appears in drawModeSheet" to "this mode exists, in
+  // order, and the sheet renders MODES".
+  const modesTable = standaloneSource.slice(
+    standaloneSource.indexOf("const MODES:"),
+    standaloneSource.indexOf("function launchSelected"),
+  );
+  assert(modesTable.includes('id: "race"') && modesTable.includes('label: "HYPER RUN"')
+    && modesTable.includes('id: "tunnel"') && modesTable.includes('label: "WORMHOLE RUN"'),
   "Hyper Run entry is missing from the formatted Modes rows");
+  // NOTHING in the sheet may launch: picking a mode picks it, TAKE FLIGHT
+  // starts it, and a Star Chart level starts itself. This is what stopped
+  // Wormhole Run flying on contact while its neighbours only toggled.
+  assert(!modeSheetSource.includes('engine.fly("tunnel")')
+    && standaloneSource.includes("function launchSelected"),
+  "a Modes row launches directly again; TAKE FLIGHT must be the only mode launcher");
   assert(catalogSource.includes("export const HYPER_RUN_ENABLED = true"),
   "Hyper Run is gated again - it ships on both pages now");
-  assert(modeSheetSource.indexOf('label: "HYPER RUN"')
+  assert(modesTable.indexOf('label: "HYPER RUN"') > 0
+    && modeSheetSource.includes('el("p", "ac-modeshead", "PROTOTYPES")')
+    && modeSheetSource.indexOf("MODES.forEach")
       < modeSheetSource.indexOf('el("p", "ac-modeshead", "PROTOTYPES")'),
   "Hyper Run slid back below the PROTOTYPES divider; it is a shipped mode, not a lab door");
   assert(homeSource.includes("if (hyperRunOpen)")
@@ -94,7 +108,9 @@ try {
   assert(!logSource.includes("PROTOTYPE CHAPTER 1")
     && !logSource.includes("EXPERIMENTAL MISSION"),
   "Star Chart still exposes the old Hyper Run prototype chapter entry");
-  assert(chartSource.includes("ac-gatenode")
+  // the fields are a LINE of rubble across the road now, not one node
+  assert(chartSource.includes("ac-debris")
+    && chartSource.includes("ac-debristag")
     && chartSource.includes("RACE_GATES")
     && logSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "chart")'),
   "Star Chart debris fields are missing, or cannot open the run that clears them");

@@ -1,8 +1,8 @@
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 
@@ -106,12 +106,30 @@ export async function bootStandalone(root: HTMLElement) {
   // Specialized runs are deliberately NOT selectable by FREE FLIGHT.
   // WORMHOLE RUN and HYPER RUN are modes proper now, above the divider in
   // the Modes sheet, while external lab tools remain quieter doors.
-  const MODES: { id: "fly" | "deep" | "lost" | "arcade"; label: string; short: string; blurb: string }[] = [
+  // EVERY way to fly is a MODE, and picking one only picks it. The sheet
+  // used to launch Wormhole Run on contact while the other four toggled back
+  // to the hub, so one row behaved unlike its neighbours and the ribbon
+  // above TAKE FLIGHT went stale. One rule now: the sheet selects, TAKE
+  // FLIGHT starts, and the only other launch in the game is a Star Chart
+  // level starting itself.
+  const MODES: { id: "fly" | "deep" | "lost" | "arcade" | "tunnel" | "race";
+                 label: string; short: string; blurb: string }[] = [
     { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
     { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
     { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
     { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
+    { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
+    { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
   ];
+
+  /** Start whatever is selected. Hyper Run opens its briefing first - it
+   *  teaches two controls the other modes do not use, and that briefing is
+   *  the same one the debris field opens. */
+  function launchSelected() {
+    const m = MODES[selectedMode] ?? MODES[0];
+    if (m.id === "race") { modesOpen = false; hyperRunOpen = true; render(); return; }
+    engine.fly(m.id);
+  }
   let selectedMode = 0;
 
   // BUG: every re-render rebuilt the overlay from scratch, so buying or
@@ -391,6 +409,11 @@ export async function bootStandalone(root: HTMLElement) {
   // The Discord wordmark's face, drawn rather than linked so it needs no
   // network round trip and inherits currentColor like every other icon here.
   const I_DISCORD = ["M20.317 4.492a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.492a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.061.061 0 0 0-.031-.03zM8.02 15.278c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"];
+  const I_EDIT = [
+    "M4 20.4h4.2L19 9.6a2.1 2.1 0 0 0 0-3l-1.6-1.6a2.1 2.1 0 0 0-3 0L3.6 15.8z",
+    "M13.4 6.2 17.8 10.6",
+  ];
+  const I_X = ["M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"];
   const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
   const I_GEAR = [
     "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -638,7 +661,7 @@ export async function bootStandalone(root: HTMLElement) {
     // can never fire a flight.
     const launch = el("button", "ac-launch");
     launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
-    launch.onclick = () => engine.fly(MODES[selectedMode].id);
+    launch.onclick = () => launchSelected();
     controls.append(launch);
 
     // All modes visible at once. A mode the save has not earned stays on
@@ -685,7 +708,12 @@ export async function bootStandalone(root: HTMLElement) {
   let hyperRunOpen = false;
 
   function nextStarReward(stars: number) {
-    return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
+    // "stage" rows opened a chapter, and chapters are gone - the chart is
+    // one linear road now. They still sit in STAR_REWARDS because the
+    // roadmap builder checks their thresholds against STAGES, but they
+    // grant nothing, so the hub must not advertise one as the next unlock.
+    // The rail already filters them; this had not caught up.
+    return STAR_REWARDS.find((r) => r.stars > stars && r.kind !== "stage") ?? null;
   }
 
   function hubIcon(name: string, blend = true) {
@@ -721,10 +749,22 @@ export async function bootStandalone(root: HTMLElement) {
     acorns.setAttribute("aria-label", "Shop");
     acorns.append(icon(I_NUT, 15), el("span", "", s.acorns.toLocaleString()));
     acorns.onclick = () => engine.open("shop");
-    idcap.append(prof, acorns);
+    // Star Dust sits beside acorns and carries a plus, because the only
+    // way to get more is to buy it - so the counter may as well be the
+    // door to where you do that.
+    const dust = el("button", "ac-hub-iddust");
+    dust.setAttribute("aria-label", "Buy Star Dust");
+    dust.append(icon(I_DUST, 14, true), el("span", "", s.starDust.toLocaleString()),
+                el("i", "ac-hub-plus", "+"));
+    dust.onclick = () => { shopPage = "dust"; engine.open("shop"); };
+    idcap.append(prof, acorns, dust);
     const shopBtn = el("button", "ac-hub-sq");
     shopBtn.setAttribute("aria-label", "Shop");
     shopBtn.append(hubIcon("gift"));
+    // THE ONLY PROMPT THE DAILY GETS. An unclaimed day lights the shop
+    // button from behind rather than nagging with a banner; walking in is
+    // what claims it, so the glow is both the ask and the whole interaction.
+    if (!engine.dailyState().claimedToday) shopBtn.classList.add("ac-dailyready");
     shopBtn.onclick = () => engine.open("shop");
     const gear = el("button", "ac-hub-sq");
     gear.setAttribute("aria-label", "Settings and help");
@@ -772,8 +812,21 @@ export async function bootStandalone(root: HTMLElement) {
     lic.append(hubIcon("rocket", false));
     const ltxt = el("span", "ac-hub-launchtxt");
     ltxt.append(el("b", "", "FREE FLIGHT"), el("span", "ac-hubsub", "Begin your flight"));
+    // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
+    // and were previously invisible from here - you had to remember. One
+    // line, named plainly, so nobody launches wondering why the gates are
+    // still or the gravity is wrong.
+    {
+      const on: string[] = [];
+      for (const m of MODS) if (s[m.save]) on.push(m.name);
+      const palOn = PALS.find((x) => x.id === s.equippedPal);
+      if (palOn && palOn.id !== "none" && !s.noPalFx) on.push(`${palOn.name}: ${palOn.tag}`);
+      if (on.length) {
+        ltxt.append(el("span", "ac-hub-active", on.join(" \u00b7 ")));
+      }
+    }
     launch.append(lic, ltxt);
-    launch.onclick = () => engine.fly(MODES[selectedMode].id);
+    launch.onclick = () => launchSelected();
     tiles.append(launch);
 
     const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear",
@@ -885,6 +938,11 @@ export async function bootStandalone(root: HTMLElement) {
       c.append(el("i", "", "BEST"), el("b", "", String(n)));
       return c;
     };
+    const gateLockChip = (lvl: number) => {
+      const c = el("span", "ac-modelock");
+      c.append(icon(I_LOCK, 12), el("b", "", `LV ${lvl}`));
+      return c;
+    };
     const lockChip = (n: number) => {
       const c = el("span", "ac-modelock");
       c.append(icon(I_LOCK, 12), el("b", "", `\u2605 ${n}`));
@@ -914,61 +972,42 @@ export async function bootStandalone(root: HTMLElement) {
       return b;
     };
 
+    const firstGate = RACE_GATES[0];
+    const raceEarned = IS_BETA || (s.raceGates || []).includes(firstGate.after);
+    const raceRec = s.raceRecords?.[HYPER_RUN_MISSION.id];
+
     MODES.forEach((m, i) => {
-      const open = modeOpen(m.id);
+      const open = m.id === "race" ? raceEarned : modeOpen(m.id);
+      // each mode's chip is its own record, in its own units
+      const aside = m.id === "race"
+        ? (raceEarned
+            ? (raceRec?.bestFinishTicks ? bestChip(formatRaceTicks(raceRec.bestFinishTicks)) : null)
+            : gateLockChip(firstGate.after))
+        : m.id === "tunnel"
+          ? (s.tunnelBest ? bestChip(s.tunnelBest) : null)
+          : open ? bestChip(bests[m.id] ?? 0) : lockChip(modePrice(m.id));
       row({
-        cls: `m-${m.id}`,
+        cls: `m-${m.id === "tunnel" ? "tunnel" : m.id}`,
         face: MODE_FACE[m.id],
         label: m.label,
-        blurb: m.blurb,
-        aside: open ? bestChip(bests[m.id] ?? 0) : lockChip(modePrice(m.id)),
+        blurb: m.id === "race" && !raceEarned
+          ? `Clear the debris field after level ${firstGate.after} to unlock.`
+          : m.blurb,
+        aside,
         open,
         selected: open && i === selectedMode,
-        hit: () => { if (!open) return; selectedMode = i; modesOpen = false; render(); },
-      });
-    });
-
-    // HYPER RUN sits with the modes now, not under PROTOTYPES. It has its
-    // own art, its own record and its own rules; the only thing the old
-    // placement still said about it was that it had not shipped yet.
-    {
-      // HYPER RUN IS THE FIRST DEBRIS FIELD'S REWARD. Before that it is not
-      // a mode you can pick - the only way to fly it is the field itself,
-      // from the Star Chart, because that is the run it exists to be. Clear
-      // the field at 33 and it becomes yours to fly whenever you like.
-      const firstGate = RACE_GATES[0];
-      const earned = IS_BETA || (s.raceGates || []).includes(firstGate.after);
-      const record = s.raceRecords?.[HYPER_RUN_MISSION.id];
-      const lock = el("span", "ac-modelock");
-      lock.append(icon(I_LOCK, 12), el("b", "", `LV ${firstGate.after}`));
-      row({
-        cls: "m-race",
-        face: "race",
-        label: "HYPER RUN",
-        blurb: earned
-          ? "Thread gates. Center the wormhole rings."
-          : `Clear the debris field after level ${firstGate.after} to unlock.`,
-        aside: earned
-          ? (record?.bestFinishTicks ? bestChip(formatRaceTicks(record.bestFinishTicks)) : null)
-          : lock,
-        open: earned,
-        // locked, it still answers the tap - by showing the chart where the
-        // field actually is, rather than doing nothing
         hit: () => {
+          // a locked Hyper Run still answers: it shows the chart where the
+          // field that unlocks it actually is
+          if (!open) {
+            if (m.id === "race") { modesOpen = false; engine.open("log"); render(); }
+            return;
+          }
+          selectedMode = i;
           modesOpen = false;
-          if (earned) hyperRunOpen = true;
-          else engine.open("log");
           render();
         },
       });
-    }
-    row({
-      cls: "m-tunnel",
-      face: "worm",
-      label: "WORMHOLE RUN",
-      blurb: "Hold to thrust down the corridor.",
-      aside: s.tunnelBest ? bestChip(s.tunnelBest) : null,
-      hit: () => { modesOpen = false; engine.fly("tunnel"); },
     });
 
     // What remains under the divider really is a lab: utilities, not modes.
@@ -1166,21 +1205,6 @@ export async function bootStandalone(root: HTMLElement) {
     if (hue) node.style.setProperty("--pg", hue);
   }
 
-  /** An unowned premium card is not something you can use, so it must not
-   *  look like something you can use. It dims like every other locked card
-   *  and, instead of doing nothing, opens the shop that sells it - the same
-   *  "IN THE SHOP" contract the suit shelf already uses. Until now these
-   *  rendered bright and swallowed the tap in silence; beta auto-ownership
-   *  hid it, and taking that away exposed it. */
-  function premiumDoor(node: HTMLElement, name: string) {
-    node.classList.add("ac-cardoff");
-    // No status line here: opening the shop re-renders, which builds a
-    // fresh live region, so anything announced would be wiped in the same
-    // frame. Arriving at the shop IS the answer to the tap.
-    node.setAttribute("aria-label", `${name} \u2014 sold in a pack. Opens the shop.`);
-    node.onclick = () => engine.open("shop");
-  }
-
   function palCardOf(pl: (typeof PALS)[number], forShop = false) {
     const s = engine.save;
     const premium = isIap(pl.id);
@@ -1188,7 +1212,6 @@ export async function bootStandalone(root: HTMLElement) {
     const b = el("button", s.equippedPal === pl.id ? "ac-card ac-palcard on" : "ac-card ac-palcard");
     if (premium) markPremium(b);   // pals carry no palette of their own
     if (!open) b.classList.add("ac-cardoff");
-    if (premium && !open && !forShop) premiumDoor(b, pl.name);
     b.append(el("p", "ac-palname", pl.name));
     const { c, ctx } = miniCanvas(72, 60);
     if (ctx) paintPalPreview(ctx, engine.art, pl.id, 36, 30, 54);
@@ -1243,8 +1266,14 @@ export async function bootStandalone(root: HTMLElement) {
   // One status line, spoken once, plus a shake on the card that was refused
   // so the message is attached to the thing you touched.
   let denyEl: HTMLElement | null = null;
-  const DENY_TEXT: Record<string, (cost?: number) => string> = {
-    poor: (c) => c ? `Not enough acorns \u2014 ${c} needed.` : "Not enough acorns.",
+  // "poor" means the same thing whichever purse is short, so the message
+  // has to be told WHICH. It used to say acorns unconditionally, which read
+  // as nonsense on a pack priced in Star Dust.
+  const DENY_TEXT: Record<string, (cost?: number, cur?: "acorns" | "dust") => string> = {
+    poor: (c, cur) => {
+      const name = cur === "dust" ? "Star Dust" : "acorns";
+      return c ? `Not enough ${name} \u2014 ${c.toLocaleString()} needed.` : `Not enough ${name}.`;
+    },
     locked: () => "Locked. Earn more stars to open this.",
     suitOnly: () => "This one belongs to another suit.",
     missing: () => "That item is not in this build.",
@@ -1261,11 +1290,12 @@ export async function bootStandalone(root: HTMLElement) {
   }
   function clearDeny() { if (denyEl) { denyEl.textContent = ""; denyEl.classList.remove("on"); } }
   /** run a transaction and SAY what happened. Returns true if it went through. */
-  function tx(card: HTMLElement, run: () => string, cost?: number) {
+  function tx(card: HTMLElement, run: () => string, cost?: number,
+              currency: "acorns" | "dust" = "acorns") {
     const res = run();
     const explain = DENY_TEXT[res];
     if (!explain) { clearDeny(); return true; }          // "on"/"off"/"ok" - it worked
-    announce(explain(cost));
+    announce(explain(cost, currency));
     card.classList.remove("ac-shake");
     void card.offsetWidth;                                // restart the animation
     card.classList.add("ac-shake");
@@ -1341,7 +1371,8 @@ export async function bootStandalone(root: HTMLElement) {
       for (const sec of HELMET_SHELF) {
         const items = sec.ids
           .map((id) => HELMETS.find((h) => h.id === id))
-          .filter((h): h is (typeof HELMETS)[number] => !!h && !h.suitOnly);
+          .filter((h): h is (typeof HELMETS)[number] => !!h && !h.suitOnly)
+          .filter((h) => !isIap(h.id) || iapOwned(s, h.id));
         if (!items.length) continue;
         grid.append(el("p", "ac-shelfhead", sec.title));
         const row = el("div", "ac-shelfrow");
@@ -1356,7 +1387,6 @@ export async function bootStandalone(root: HTMLElement) {
               : owned ? "OWNED" : h.cost}`));
           if (premium) markPremium(b, h.glow);
           if (locked || !open) b.classList.add("ac-cardoff");
-          if (premium && !owned && !locked) premiumDoor(b, h.name);
           if (s.guide === "helmet" && h.id === GUIDE_HELM) b.classList.add("ac-pulse");
           b.onclick = () => { if (!locked && open && (!premium || owned)) tx(b, () => engine.buyHelmet(h.id), h.cost); };
           row.append(b);
@@ -1383,16 +1413,18 @@ export async function bootStandalone(root: HTMLElement) {
           nh.title = "Wears no helmet";
           b.append(nh);
         }
+        // owned premium keeps its bloom; unowned premium never reaches here
         if (premium) markPremium(b, u.glow);
         if (s.guide === "hangar" && u.id === GUIDE_SUIT) b.classList.add("ac-pulse");
         b.onclick = () => { if (!premium || owned) tx(b, () => engine.buySuit(u.id), u.cost); };
-        if (premium && !owned) premiumDoor(b, u.name);
         return b;
       };
       for (const sec of SUIT_SHELF) {
         const items = sec.ids
           .map((id) => SUITS.find((x) => x.id === id))
-          .filter((u): u is (typeof SUITS)[number] => !!u);
+          .filter((u): u is (typeof SUITS)[number] => !!u)
+          // premium you do not own belongs in the shop, not the wardrobe
+          .filter((u) => !isIap(u.id) || iapOwned(s, u.id));
         if (!items.length) continue;
         grid.append(el("p", "ac-shelfhead", sec.title));
         const row = el("div", "ac-shelfrow");
@@ -1432,7 +1464,7 @@ export async function bootStandalone(root: HTMLElement) {
         }
       }
     } else if (engine.shopTab === "trails") {
-      for (const t of TRAILS) {
+      for (const t of TRAILS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) {
         const premium = isIap(t.id);
         const open = trailUnlocked(s, t.id);
         const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
@@ -1446,7 +1478,6 @@ export async function bootStandalone(root: HTMLElement) {
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) markPremium(b, t.colors[0]);
         if (!open) b.classList.add("ac-cardoff");
-        if (premium && !open) premiumDoor(b, t.name);
         b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
         grid.append(b);
       }
@@ -1454,7 +1485,7 @@ export async function bootStandalone(root: HTMLElement) {
       // Pals carry a sentence, not a two-word tag, so their shelf runs two
       // wide where everything else runs four.
       grid.classList.add("ac-palgrid");
-      for (const p of PALS) grid.append(palCardOf(p));
+      for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) grid.append(palCardOf(p));
     } else {
       // Mods are BOUGHT, like everything else on this screen, so they get
       // the same card with the same price on it. They used to be two bare
@@ -1540,6 +1571,19 @@ export async function bootStandalone(root: HTMLElement) {
       }
     }
     scroll.append(grid);
+    // Premium left these shelves, so something has to say where it went -
+    // and it has to be a control, not a caption. It sits after every tab
+    // rather than inside one, because the answer is the same on all of them.
+    const shopBanner = el("button", "ac-shopbanner");
+    const sbIc = el("span", "ac-shopbanneric");
+    sbIc.append(hubIcon("gift"));
+    const sbTxt = el("span", "ac-shopbannertxt");
+    sbTxt.append(el("b", "", "UNLOCK PREMIUM SETS"),
+                 el("span", "", "Suits, helmets, trails and pals \u2014 sold in packs."));
+    shopBanner.append(sbIc, sbTxt, el("span", "ac-shopbannergo", "\u203A"));
+    shopBanner.onclick = () => { shopPage = "packs"; engine.open("shop"); };
+    scroll.append(shopBanner);
+
     if (s.guide === "hangar") box.append(coach("Tap your new ION SUIT to wear it"));
     else if (s.guide === "helmet") box.append(coach("Now the ION HELMET \u2014 tap to equip"));
     else if (s.guide === "levels") box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
@@ -1658,7 +1702,15 @@ export async function bootStandalone(root: HTMLElement) {
     ctx.restore();
   }
 
-  function rewardArt(item: (typeof TRACK)[number], px = 52) {
+  /** The rail feeds this both TRACK entries and STAR_REWARDS rows, and the
+   *  two do not share a kind union - callers were casting to TRACK's type to
+   *  paper over it, which is exactly why a new "dust" kind type-checked at
+   *  the call site and painted nothing here. The parameter now admits what
+   *  it is actually given. */
+  function rewardArt(
+    item: { lvl?: number; kind: string; id?: string; name?: string },
+    px = 52,
+  ) {
     if (item.kind === "suit" && item.id) {
       const suit = SUITS.find((u) => u.id === item.id);
       if (suit) return suitCardOf(suit, px);
@@ -1689,6 +1741,23 @@ export async function bootStandalone(root: HTMLElement) {
       drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "title") {
       drawRankBadge(ctx, item.name ?? "", px);
+    } else if (item.kind === "dust") {
+      // the same four-point crystal the counter and the shop use, drawn by
+      // hand because the rail paints to canvas rather than mounting an svg
+      ctx.save();
+      ctx.translate(px / 2, px / 2);
+      ctx.scale(px / 24, px / 24);
+      const g = ctx.createLinearGradient(0, -10, 0, 10);
+      g.addColorStop(0, "#e6dbff"); g.addColorStop(0.5, "#b494ff"); g.addColorStop(1, "#6d3fd1");
+      ctx.fillStyle = g;
+      ctx.shadowColor = "rgba(150,110,255,.9)";
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(0, -9.8); ctx.lineTo(1.9, -3); ctx.lineTo(8.4, 0);
+      ctx.lineTo(1.9, 3);  ctx.lineTo(0, 9.8);  ctx.lineTo(-1.9, 3);
+      ctx.lineTo(-8.4, 0); ctx.lineTo(-1.9, -3); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
     return c;
   }
@@ -1819,7 +1888,7 @@ export async function bootStandalone(root: HTMLElement) {
       const mark = el("div", total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
       mark.style.left = `${railX}px`;
       mark.style.top = `${mileY[i]}px`;
-      mark.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name } as (typeof TRACK)[number], 40));
+      mark.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
       mark.append(el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
       mark.append(el("span", "ac-rmarkname", r.name));
       map.append(mark);
@@ -1834,7 +1903,11 @@ export async function bootStandalone(root: HTMLElement) {
         "ac-mapnode" + (isCur ? " cur" : done ? " done" : can ? " todo" : " locked"));
       node.style.left = `${pos[i].x}px`;
       node.style.top = `${pos[i].y}px`;
-      if (can) node.append(starPips(mask, "sm"));
+      // Pips used to render on any UNLOCKED level, which in practice meant
+      // only the first level of each star-opened chapter - so 11, 21 and 31
+      // wore three grey stars and nothing else did. Stars appear when there
+      // are stars to show.
+      if (mask) node.append(starPips(mask, "sm"));
       const px = isCur ? 84 : 62;
       const { c, ctx } = miniCanvas(px, px);
       const bank = engine.art?.planets ?? [];
@@ -1858,37 +1931,58 @@ export async function bootStandalone(root: HTMLElement) {
       map.append(node);
     });
 
-    // THE DEBRIS FIELDS. One node per gate, parked on the road between the
-    // level it follows and the next, so the block is visible from a screen
-    // away rather than discovered by tapping a locked planet. It wears the
-    // scout ship because the ship is what gets you through it.
-    for (const g of RACE_GATES) {
-      const i = g.after - 1;                  // the level it sits after
+    // THE DEBRIS FIELDS. A single node was the wrong shape for this: it sat
+    // on one point of a nine-thousand-pixel scroll and read as another
+    // planet. A field BLOCKS, so it is drawn as one - a line of rubble laid
+    // clean across the road at the level it follows. Each gate takes its own
+    // debris sprite so the three are told apart at a glance, and the line
+    // stops short of the milestone rail so it never buries a reward.
+    for (let gi = 0; gi < RACE_GATES.length; gi++) {
+      const g = RACE_GATES[gi];
+      const i = g.after - 1;
       if (i < 0 || i >= pos.length) continue;
       const here = pos[i];
       const beyond = pos[i + 1] ?? { x: here.x, y: here.y - step };
+      const y = Math.round((here.y + beyond.y) / 2);
       const done = gatesDone.includes(g.after);
-      // blocking only if it is the one actually in the way
       const blocking = !done && !RACE_GATES.some((o) => o.after < g.after && !gatesDone.includes(o.after));
-      const node = el("button", `ac-gatenode${done ? " done" : blocking ? " blocking" : " locked"}`);
-      node.style.left = `${Math.round((here.x + beyond.x) / 2)}px`;
-      node.style.top = `${Math.round((here.y + beyond.y) / 2)}px`;
-      const disc = el("span", "ac-gatedisc");
+
+      const band = el("div", `ac-debris${done ? " done" : blocking ? " blocking" : " locked"}`);
+      band.style.top = `${y}px`;
+      band.style.width = `${roadW}px`;        // the road only: the rail keeps its lane
+
+      // one sprite, repeated along the line at varying size and tilt so it
+      // reads as rubble rather than as a row of identical stamps
+      const bank = engine.art?.debris ?? [];
+      const spriteIdx = bank.length ? (gi * 9 + 3) % bank.length : 0;
+      const COUNT = 9;
+      for (let k = 0; k < COUNT; k++) {
+        const px = 16 + ((k * 7 + gi * 5) % 3) * 5;      // 16 / 21 / 26
+        const { c, ctx } = miniCanvas(px, px);
+        if (ctx && bank.length) drawSpriteOn(ctx, bank[spriteIdx] ?? null, px / 2, px / 2, px);
+        const bit = el("span", "ac-debrisbit");
+        bit.style.left = `${Math.round((k + 0.5) / COUNT * roadW)}px`;
+        bit.style.transform = `translate(-50%,-50%) rotate(${(k * 47 + gi * 23) % 360}deg)`;
+        bit.append(c);
+        band.append(bit);
+      }
+      map.append(band);
+
+      // the label rides the line rather than floating beside it
+      const tag = el("button", `ac-debristag${done ? " done" : blocking ? " blocking" : " locked"}`);
+      tag.style.top = `${y}px`;
+      tag.style.left = `${Math.round(roadW / 2)}px`;
       const ship = document.createElement("img");
       ship.src = `${artRootUrl()}/hyper-run/scout-ship.png?v=${ART_VER}`;
       ship.alt = "";
-      ship.className = "ac-gateship";
-      disc.append(ship);
-      node.append(disc);
-      node.append(el("span", "ac-gatelabel", done ? "CLEAR" : g.label));
-      node.setAttribute("aria-label", done
+      ship.className = "ac-debrisship";
+      tag.append(ship, el("b", "", done ? "CLEAR" : g.label));
+      tag.setAttribute("aria-label", done
         ? `Debris field after level ${g.after}: cleared`
         : `Debris field after level ${g.after}. Finish Hyper Run in ${g.label} to pass.`);
-      // Only the field in your way opens. A later one is not a preview you
-      // can attempt early; it is simply not your problem yet.
-      if (blocking || done) node.onclick = () => { hyperRunOpen = true; render(); };
-      else node.disabled = true;
-      map.append(node);
+      if (blocking || done) tag.onclick = () => { hyperRunOpen = true; render(); };
+      else tag.disabled = true;
+      map.append(tag);
     }
 
     const wrap = el("div", "ac-chartmapwrap");
@@ -1942,7 +2036,7 @@ export async function bootStandalone(root: HTMLElement) {
         for (const r of STAR_REWARDS) {
           const row = el("div", total >= r.stars ? "ac-roaditem on" : "ac-roaditem future");
           if (r.kind !== "stage") {
-            row.append(rewardArt({ lvl: 0, kind: r.kind, id: r.id, name: r.name } as (typeof TRACK)[number]));
+            row.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }));
           }
           const txt = el("div", "ac-roadtxt");
           txt.append(el("p", "ac-roadlvl", `\u2605 ${r.stars}`));
@@ -2248,7 +2342,15 @@ export async function bootStandalone(root: HTMLElement) {
   // than two shelves of the same thing: PACKS spends Star Dust, DUST buys
   // it. Splitting them keeps a real-money purchase from ever sitting one
   // tap away from an in-game one by accident.
-  let shopPage: "packs" | "dust" = "packs";
+  let shopPage: "packs" | "preview" | "dust" = "packs";
+  // what the PREVIEW page is currently wearing. Not the save: you are
+  // trying premium on, not equipping it, and nothing here is owned.
+  let tryOn: { suit: string; helm: string; pal: string } = { suit: "", helm: "", pal: "" };
+  let packOpen: string | null = null;      // the pack whose contents are open
+  let revealPack: string | null = null;    // a pack just bought, being shown off
+  let revealPick: string | null = null;    // the card tapped inside the reveal
+  let editingName = false;                 // the Profile name is in edit mode
+  const PILOT_FALLBACK = "Nutcracker";     // shown until a pilot picks one
 
   function drawShop() {
     const s = engine.save;
@@ -2261,9 +2363,9 @@ export async function bootStandalone(root: HTMLElement) {
     // premium card in them was inert. The shop SELLS. What you own is the
     // Loadout's job.
     const tabs = el("div", "ac-cats");
-    for (const t of ["packs", "dust"] as const) {
+    for (const t of ["packs", "preview", "dust"] as const) {
       const b = el("button", t === shopPage ? "ac-cat on" : "ac-cat",
-                   t === "packs" ? "PACKS" : "STAR DUST");
+                   t === "packs" ? "PACKS" : t === "preview" ? "PREVIEW" : "STAR DUST");
       b.onclick = () => { shopPage = t; keptScroll = 0; render(); };
       tabs.append(b);
     }
@@ -2282,6 +2384,13 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(drawDaily());
 
     const grid = el("div", "ac-grid");
+
+    if (shopPage === "preview") {
+      scroll.append(drawTryOn());
+      box.append(scroll);
+      if (!BETA_FEATURES) box.append(tabbar("shop"));
+      return box;
+    }
 
     if (shopPage === "packs") {
       for (const bn of BUNDLES) {
@@ -2317,7 +2426,11 @@ export async function bootStandalone(root: HTMLElement) {
         card.append(price);
         if (owned) card.classList.add("on");
         card.append(el("span", "ac-bundlecount", `${worn} items`));
-        if (!owned) card.onclick = () => { tx(card, () => engine.buyBundle(bn.id), bn.dust); };
+        // Buying used to happen on this tap, which asked a pilot to spend
+        // four figures on a strip of four faces and a count. It opens the
+        // pack instead; the purchase lives inside, next to the list of what
+        // it actually contains.
+        card.onclick = () => { packOpen = bn.id; render(); };
         grid.append(card);
       }
       grid.append(codeRow());
@@ -2343,6 +2456,8 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     scroll.append(grid);
+    if (packOpen) box.append(drawPackSheet(packOpen));
+    if (revealPack) box.append(drawReveal(revealPack));
     // This used to read "premium is unlocked for everyone during the beta",
     // which stopped being true the moment the beta started BUYING packs
     // instead of being handed them.
@@ -2352,6 +2467,279 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));
     return box;
+  }
+
+  /** WHAT YOU JUST GOT. A purchase that closes a sheet and drops you back
+   *  on a list never shows you what you bought. Every item arrives as its
+   *  own card in a swipeable strip; tapping one offers to put it on there
+   *  and then, so the first thing after buying can be wearing it. */
+  function drawReveal(id: string) {
+    const s = engine.save;
+    const bn = BUNDLES.find((b) => b.id === id);
+    if (!bn) return el("div", "");
+    const close = () => { revealPack = null; revealPick = null; render(); };
+
+    type Got = { id: string; name: string; kind: "suit" | "helm" | "trail" | "pal" };
+    const got: Got[] = [];
+    for (const i of [...new Set(bn.items)]) {
+      const u = SUITS.find((x) => x.id === i);
+      if (u) got.push({ id: i, name: u.name, kind: "suit" });
+      const h = HELMETS.find((x) => x.id === i);
+      if (h) got.push({ id: i, name: h.name, kind: "helm" });
+      const t = TRAILS.find((x) => x.id === i);
+      if (t) got.push({ id: i, name: t.name, kind: "trail" });
+      const pl = PALS.find((x) => x.id === i);
+      if (pl) got.push({ id: i, name: pl.name, kind: "pal" });
+    }
+
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("div", "ac-lvlcard ac-revealcard");
+    sheet.append(el("p", "ac-kicker", "ADDED TO YOUR LOADOUT"));
+    sheet.append(el("h2", "ac-lvlname", bn.name));
+    sheet.append(el("p", "ac-sub", `${got.length} items are yours. Swipe to look through them.`));
+
+    const strip = el("div", "ac-revealstrip");
+    for (const g of got) {
+      const key = `${g.kind}:${g.id}`;
+      const card = el("button", revealPick === key ? "ac-card ac-revealitem on" : "ac-card ac-revealitem");
+      if (g.kind === "suit") { const u = SUITS.find((x) => x.id === g.id)!; card.append(suitCardOf(u, 66)); markPremium(card, u.glow); }
+      else if (g.kind === "helm") { const h = HELMETS.find((x) => x.id === g.id)!; card.append(helmCardOf(h, 66)); markPremium(card, h.glow); }
+      else if (g.kind === "trail") {
+        const t = TRAILS.find((x) => x.id === g.id)!;
+        const { c, ctx } = miniCanvas(66, 66);
+        if (ctx) paintTrailPreview(ctx, t, 33, 33, performance.now() / 1000);
+        card.append(c); markPremium(card, t.colors[0]);
+      } else {
+        const { c, ctx } = miniCanvas(66, 66);
+        if (ctx) paintPalPreview(ctx, engine.art, g.id, 33, 33, 60);
+        card.append(c); markPremium(card);
+      }
+      const KIND_LABEL = { suit: "SUIT", helm: "HELMET", trail: "TRAIL", pal: "PAL" };
+      card.append(document.createTextNode(`${g.name}\n${KIND_LABEL[g.kind]}`));
+      card.onclick = () => { revealPick = revealPick === key ? null : key; render(); };
+      strip.append(card);
+    }
+    sheet.append(strip);
+
+    // the tapped card's offer, named so it is never ambiguous which one
+    if (revealPick) {
+      const [kind, itemId] = revealPick.split(":");
+      const g = got.find((x) => `${x.kind}:${x.id}` === revealPick);
+      const worn = kind === "suit" ? s.equippedSuit === itemId
+        : kind === "helm" ? s.equipped === itemId
+        : kind === "trail" ? s.equippedTrail === itemId
+        : s.equippedPal === itemId;
+      const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
+      if (worn) { act.textContent = `${g?.name ?? ""} EQUIPPED`; act.disabled = true; }
+      else {
+        act.textContent = `EQUIP ${g?.name ?? ""}`;
+        act.onclick = () => {
+          tx(act, () => kind === "suit" ? engine.buySuit(itemId)
+            : kind === "helm" ? engine.buyHelmet(itemId)
+            : kind === "trail" ? engine.buyTrail(itemId)
+            : engine.equipPal(itemId));
+          render();
+        };
+      }
+      sheet.append(act);
+    } else {
+      sheet.append(el("p", "ac-fine ac-revealhint", "Tap a card to put it on."));
+    }
+
+    const toLoadout = el("button", "ac-primary ac-revealgo", "GO TO LOADOUT");
+    toLoadout.onclick = () => { revealPack = null; revealPick = null; engine.open("hangar"); };
+    const back = el("button", "ac-ghost", "CLOSE");
+    back.onclick = close;
+    sheet.append(toLoadout, back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    return wrap;
+  }
+
+  /** WHAT IS ACTUALLY IN THE PACK. A half-height sheet listing every item
+   *  by kind, with the buy sitting under the list rather than under a strip
+   *  of four faces and a number. Nobody should have to guess what 20 items
+   *  means before spending 1,200 on it. */
+  function drawPackSheet(id: string) {
+    const s = engine.save;
+    const bn = BUNDLES.find((b) => b.id === id);
+    if (!bn) return el("div", "");
+    const close = () => { packOpen = null; render(); };
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("div", "ac-lvlcard ac-packcard");
+    sheet.append(el("p", "ac-kicker", "PACK"));
+    sheet.append(el("h2", "ac-lvlname", bn.name));
+    sheet.append(el("p", "ac-sub", bn.blurb));
+
+    // grouped by kind, because "10 items" tells you nothing about whether
+    // the thing you wanted is in there
+    // A suit and its helmet share an id, so the items list carries that id
+    // twice - once meaning each. Deduping first is what stops a pack with
+    // three suits reporting six.
+    const uniq = [...new Set(bn.items)];
+    const pick = <T extends { id: string; name: string }>(src: readonly T[]) =>
+      uniq.map((i) => src.find((x) => x.id === i)).filter(Boolean) as T[];
+    const groups: [string, { id: string; name: string }[]][] = [
+      ["SUITS", pick(SUITS)],
+      ["HELMETS", pick(HELMETS)],
+      ["TRAILS", pick(TRAILS)],
+      ["PALS", pick(PALS)],
+    ];
+    const listWrap = el("div", "ac-packlist");
+    let total = 0;
+    for (const [title, items] of groups) {
+      if (!items.length) continue;
+      total += items.length;
+      listWrap.append(el("p", "ac-packhead", `${title} \u00b7 ${items.length}`));
+      const row = el("div", "ac-packrow");
+      for (const it of items) {
+        const chip = el("span", "ac-packchip");
+        const suit = SUITS.find((u) => u.id === it.id);
+        const helm = title === "HELMETS" ? HELMETS.find((h) => h.id === it.id) : null;
+        const pal = title === "PALS" ? PALS.find((x) => x.id === it.id) : null;
+        if (helm) chip.append(helmCardOf(helm, 34));
+        else if (title === "SUITS" && suit) chip.append(suitCardOf(suit, 34));
+        else if (pal) {
+          const { c, ctx } = miniCanvas(34, 34);
+          if (ctx) paintPalPreview(ctx, engine.art, pal.id, 17, 17, 30);
+          chip.append(c);
+        } else {
+          const t = TRAILS.find((x) => x.id === it.id);
+          const { c, ctx } = miniCanvas(34, 34);
+          if (ctx && t) paintTrailPreview(ctx, t, 17, 17, performance.now() / 1000);
+          chip.append(c);
+        }
+        chip.append(el("span", "", it.name));
+        if (iapOwned(s, it.id)) chip.classList.add("owned");
+        row.append(chip);
+      }
+      listWrap.append(row);
+    }
+    sheet.append(listWrap);
+    sheet.append(el("p", "ac-fine", `${total} items in this pack.`));
+
+    const owned = bn.items.every((i) => iapOwned(s, i));
+    const buy = el("button", "ac-primary ac-packbuy");
+    if (owned) { buy.textContent = "OWNED"; buy.disabled = true; }
+    else {
+      buy.append(el("span", "", "BUY \u00b7 "), icon(I_DUST, 14, true),
+                 el("span", "", bn.dust.toLocaleString()));
+      buy.onclick = () => {
+        if (tx(buy, () => engine.buyBundle(bn.id), bn.dust, "dust")) {
+          // straight into the reveal: a purchase that just closes a sheet
+          // and returns you to a list never shows you what you bought
+          packOpen = null;
+          revealPack = bn.id;
+          revealPick = null;
+          render();
+        }
+      };
+    }
+    const back = el("button", "ac-ghost", "BACK");
+    back.onclick = close;
+    sheet.append(buy, back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    return wrap;
+  }
+
+  /** TRY IT ON. The packs page sells; this one shows what you would be
+   *  wearing. Three side-scrolling shelves - suits, helmets, pals - holding
+   *  only premium content, because everything else is already in the
+   *  Loadout and a shop that re-lists the wardrobe is the mistake Wave 0
+   *  just deleted.
+   *
+   *  The stage above them is the game's own renderer, not a portrait: it
+   *  runs a real tap-rise-fall cycle so a suit with its own jump shows it.
+   *  Robo's articulated tap and Eclipse's impact squash are the whole
+   *  reason a still image was not good enough. */
+  function drawTryOn() {
+    const s = engine.save;
+    const wrap = el("div", "ac-tryon");
+
+    const suits = SUITS.filter((u) => isIap(u.id));
+    const helms = HELMETS.filter((h) => isIap(h.id));
+    const pals = PALS.filter((pl) => isIap(pl.id));
+    // first run: wear the first of each rather than an empty stage
+    if (!tryOn.suit) tryOn = { suit: suits[0]?.id ?? "", helm: helms[0]?.id ?? "", pal: pals[0]?.id ?? "" };
+    const suit = SUITS.find((u) => u.id === tryOn.suit) ?? suits[0] ?? SUITS[0];
+    // a fixed-head suit wears no helmet, so the stage must not paint one
+    const ownHead = wearsOwnHead(suit);
+    const helm = ownHead
+      ? HELMETS[0]
+      : (HELMETS.find((h) => h.id === tryOn.helm) ?? helms[0] ?? HELMETS[0]);
+
+    // ---- the stage
+    const stage = el("div", "ac-tostage");
+    const { c, ctx } = miniCanvas(300, 190);
+    c.className = "ac-tocanvas";
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", `${suit.name} preview, flying`);
+    stage.append(c);
+    const cap = el("div", "ac-tocap");
+    cap.append(el("b", "", suit.name + (ownHead ? "" : ` \u00b7 ${helm.name}`)));
+    const palDef = PALS.find((x) => x.id === tryOn.pal);
+    if (palDef) cap.append(el("span", "", `${palDef.name} \u00b7 ${palDef.tag}`));
+    stage.append(cap);
+    if (ownHead) stage.append(el("span", "ac-tonohelm", "WEARS ITS OWN HEAD"));
+    wrap.append(stage);
+
+    // The stage animates, and nothing else in these menus does, so it owns
+    // a frame loop. It stops itself the moment the canvas leaves the
+    // document - every re-render replaces it - rather than relying on some
+    // other screen to remember to cancel it.
+    if (ctx) {
+      const t0 = performance.now();
+      const tick = () => {
+        if (!c.isConnected) return;
+        const t = (performance.now() - t0) / 1000;
+        ctx.clearRect(0, 0, 300, 190);
+        if (palDef) paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
+        paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // ---- the three shelves
+    const shelf = (title: string, kind: "suit" | "helm" | "pal", items: { id: string; name: string }[]) => {
+      if (!items.length) return;
+      wrap.append(el("p", "ac-shelfhead", title));
+      const row = el("div", "ac-shelfrow");
+      for (const it of items) {
+        const on = tryOn[kind] === it.id;
+        const b = el("button", on ? "ac-card ac-tocard on" : "ac-card ac-tocard");
+        if (kind === "suit") {
+          const u = SUITS.find((x) => x.id === it.id)!;
+          b.append(suitCardOf(u, 56));
+          markPremium(b, u.glow);
+        } else if (kind === "helm") {
+          const h = HELMETS.find((x) => x.id === it.id)!;
+          b.append(helmCardOf(h, 56));
+          markPremium(b, h.glow);
+        } else {
+          const { c: pc, ctx: pctx } = miniCanvas(56, 56);
+          if (pctx) paintPalPreview(pctx, engine.art, it.id, 28, 28, 50);
+          b.append(pc);
+          markPremium(b);
+        }
+        b.append(document.createTextNode(`${it.name}\n${iapOwned(s, it.id) ? "OWNED" : "IN A PACK"}`));
+        b.onclick = () => { tryOn = { ...tryOn, [kind]: it.id }; render(); };
+        row.append(b);
+      }
+      wrap.append(row);
+    };
+    shelf("SUITS", "suit", suits);
+    // hiding the helmet shelf under a fixed-head suit would make the row
+    // jump; dimming it says WHY it cannot be used instead
+    const helmRow = helms;
+    shelf("HELMETS", "helm", helmRow);
+    shelf("PALS", "pal", pals);
+    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} wears its own head, so a helmet changes nothing on it.`));
+
+    wrap.append(el("p", "ac-fine",
+      "Everything here arrives in a pack. Open PACKS to see which one."));
+    return wrap;
   }
 
   /** the access-code redeem row, unchanged in behaviour, lifted out so the
@@ -2398,19 +2786,15 @@ export async function bootStandalone(root: HTMLElement) {
       pips.append(pip);
     }
     left.append(pips);
-    left.append(el("p", "ac-sub", st.claimedToday
-      ? `Claimed. Day ${st.streak} of ${DAILY_STREAK_LEN} \u2014 come back tomorrow.`
-      : st.bonusDay
-        ? `Day ${DAILY_STREAK_LEN}! Claim ${st.amount} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus.`
-        : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Claim ${st.amount}, and ${DAILY_STREAK_BONUS} more on day ${DAILY_STREAK_LEN}.`));
+    left.append(el("p", "ac-sub", st.bonusDay
+      ? `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`
+      : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
     card.append(left);
-    const go = el("button", st.claimedToday ? "ac-primary ac-dailygo off" : "ac-primary ac-dailygo");
-    if (st.claimedToday) { go.textContent = "CLAIMED"; go.disabled = true; }
-    else { go.append(el("span", "", "CLAIM "), icon(I_DUST, 13, true), el("span", "", `${st.amount}`)); }
-    go.onclick = () => {
-      if (engine.claimDaily() === "ok") render();
-    };
-    card.append(go);
+    // No button: arriving here already claimed it. This is a receipt and a
+    // streak tracker, not a control.
+    const got = el("div", "ac-dailygot");
+    got.append(icon(I_DUST, 15, true), el("b", "", `+${st.amount}`));
+    card.append(got);
     return card;
   }
 
@@ -2427,7 +2811,46 @@ export async function bootStandalone(root: HTMLElement) {
     face.append(portraitOf(helm, suit, 58));
     id.append(face);
     const idTxt = el("div", "ac-idtxt");
-    idTxt.append(el("p", "ac-idname", "Nutcracker"));
+    // THE PILOT NAMES THEMSELVES. It was hard-coded, which read as a bug the
+    // moment anyone looked at it twice. Empty means never chosen, so the
+    // fallback shows through without ever being written to the save - a name
+    // the player picked and one we picked for them stay different facts.
+    const nameRow = el("div", "ac-idnamerow");
+    if (editingName) {
+      const input = document.createElement("input");
+      input.className = "ac-idnameinput";
+      input.type = "text";
+      // The default goes in as REAL editable text, not a placeholder and not
+      // an empty box. A placeholder vanishes the moment you type and leaves
+      // nothing to edit down from; a name you can select, trim or keep is a
+      // starting point rather than a prompt.
+      input.value = s.pilotName || PILOT_FALLBACK;
+      input.maxLength = PILOT_NAME_MAX;
+      input.setAttribute("aria-label", "Pilot name");
+      const commit = () => {
+        engine.setPilotName(input.value);
+        editingName = false;
+        render();
+      };
+      // Enter commits, Escape abandons - the two keys anyone will try
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") { e.preventDefault(); commit(); }
+        else if (e.key === "Escape") { e.preventDefault(); editingName = false; render(); }
+      };
+      const ok = el("button", "ac-idnameok", "SAVE");
+      ok.onclick = commit;
+      nameRow.append(input, ok);
+      // focus after the node is in the document, or the caret goes nowhere
+      requestAnimationFrame(() => { input.focus(); input.select(); });
+    } else {
+      const nm = el("p", "ac-idname", s.pilotName || PILOT_FALLBACK);
+      const edit = el("button", "ac-idnameedit");
+      edit.setAttribute("aria-label", "Change pilot name");
+      edit.append(icon(I_EDIT, 15));
+      edit.onclick = () => { editingName = true; render(); };
+      nameRow.append(nm, edit);
+    }
+    idTxt.append(nameRow);
     idTxt.append(el("p", "ac-sub", `\u2605 ${starsOf(s)} \u00b7 ${starTitle(starsOf(s))}`));
     const tags = el("div", "ac-rigtags");
     if (IS_BETA) tags.append(el("span", "ac-tagpill ac-taggold", "BETA PILOT"));
@@ -2488,6 +2911,19 @@ export async function bootStandalone(root: HTMLElement) {
     dtxt.append(el("b", "", "Discord"), el("span", "", "Flight chatter, bug reports, early looks."));
     discord.append(dwrap, dtxt, el("span", "ac-socialgo", "\u2197"));
     social.append(discord);
+
+    const x = document.createElement("a");
+    x.className = "ac-row ac-rowbtn ac-social";
+    x.href = "https://x.com/AcornautGame";
+    x.target = "_blank";
+    x.rel = "noopener noreferrer";
+    const xwrap = el("span", "ac-socialmark ac-markx");
+    xwrap.append(icon(I_X, 17, true));
+    const xtxt = el("span", "ac-socialtxt");
+    xtxt.append(el("b", "", "@AcornautGame"), el("span", "", "Patch notes, new art, and the occasional crash."));
+    x.append(xwrap, xtxt, el("span", "ac-socialgo", "\u2197"));
+    social.append(x);
+
     scroll.append(social);
 
     scroll.append(el("p", "ac-kicker ac-secthead", "News"));

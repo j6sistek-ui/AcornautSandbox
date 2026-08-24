@@ -1,4 +1,4 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=131";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=132";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -476,16 +476,28 @@ export function gateClearedBy(cleared, finished, finishTicks) {
         return null;
     return finishTicks <= g.ticks ? g : null;
 }
-export function levelUnlocked(def, stars, total, gatesCleared) {
+export function levelUnlocked(def, stars, 
+/** kept in the signature, and deliberately unused: the star TOTAL was
+ *  what opened a chapter, and chapters are gone. Removing it would mean
+ *  editing five call sites whose next argument is also an array-ish
+ *  thing, which is a good way to pass gatesCleared as total by mistake. */
+_total, gatesCleared) {
     if (IS_BETA)
         return true;
     if (gateBefore(def.ord, gatesCleared))
         return false;
-    if (!stageUnlocked(def.stage, total))
-        return false;
-    if (def.n === 1)
+    if (def.ord <= 1)
         return true;
-    const prev = `${def.stage}-${def.n - 1}`;
+    // ONE WAY, IN ORDER. The chart used to be ten chapters, and a chapter
+    // opened on a star TOTAL - so the first level of each one was reachable
+    // the moment you could afford it, whether or not you had flown the
+    // ninety-nine before it. That made 61 and 81 playable out of nowhere and
+    // put two paths through a chart that only has one. Levels are 1-100 now
+    // and the only key to a level is the level before it.
+    //
+    // n is the position WITHIN the old stage, so at a boundary the previous
+    // level is the last of the stage below rather than "n - 1".
+    const prev = def.n > 1 ? `${def.stage}-${def.n - 1}` : `${def.stage - 1}-10`;
     return ((stars[prev] || 0) & 1) === 1;
 }
 // The ladder XP used to be. Stage openings are listed so the chart can

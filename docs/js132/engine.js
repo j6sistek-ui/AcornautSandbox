@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=131";
-import { sfx, unlockAudio, music } from "./audio.js?v=131";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=131";
-import { drawHud, drawWorld } from "./draw.js?v=131";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=131";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=131";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=131";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=131";
-import { raceViewport } from "./race-viewport.js?v=131";
+import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=132";
+import { sfx, unlockAudio, music } from "./audio.js?v=132";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=132";
+import { drawHud, drawWorld } from "./draw.js?v=132";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=132";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=132";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=132";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=132";
+import { raceViewport } from "./race-viewport.js?v=132";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -148,6 +148,13 @@ export async function createEngine(canvas) {
                 // settleDust is idempotent, so calling it on every screen change is
                 // free when nothing is owed.
                 settleDust();
+                // THE DAILY CLAIMS ITSELF. Asking a pilot to tap CLAIM after they
+                // already walked to the shop is a toll booth, not a reward - the
+                // walk IS the action being rewarded. Arriving pays; the tracker
+                // still shows the streak, and the shop button carries the glow that
+                // does the asking.
+                if (s === "shop")
+                    claimDaily();
             }
             world.screen = s;
             if (s === "title")
@@ -164,6 +171,13 @@ export async function createEngine(canvas) {
         equipPal: (id) => transactPal(id),
         toggleMod,
         setMod,
+        setPilotName(name) {
+            const clean = cleanPilotName(name);
+            save.pilotName = clean;
+            writeSave(save);
+            notify();
+            return clean;
+        },
         settleDust,
         dailyState,
         claimDaily,
@@ -918,4 +932,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=131";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=132";

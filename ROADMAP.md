@@ -47,12 +47,13 @@ for everyone.
 | 48 | **Aurora Helmet** — Polar light under glass. In the shop. |
 | 52 | **UFO** — Slow Effect in blackholes |
 | 56 | **Prism Shards** — Light, broken beautifully. |
-| 60 | **Robo Suit** — Full chrome, scanning visor. Now in the shop. |
+| 60 | **Paladin Helmet** — Crusader glass, gold-barred. Was premium; now earned. |
 | 66 | **Chapter 5 — MIDNIGHT RUN** — The dark opens. |
 | 66 | **Star Child** — Double Golden Effect |
 | 70 | **Meteor Helmet** — Burnished impact glass. In the shop. |
 | 72 | **Plasma Arc** — A live violet current. |
 | 75 | **TinTin** — Disables Blackholes |
+| 80 | **30 Star Dust** — A pocketful of dust. |
 | 84 | **Wisp** — More gate movement |
 | 88 | **Galaxy Dust** — A spiral arm behind you. |
 | 90 | **Chapter 6 — CRYSTAL BELT** — Deep-space levels open. |
@@ -60,18 +61,28 @@ for everyone.
 | 95 | **Chrono Helmet** — Brass clockwork glass. In the shop. |
 | 100 | **Alien Suit** — The visitor look, antennae included. |
 | 105 | **Aurora Ribbon** — The polar sky, towed. |
+| 112 | **40 Star Dust** — The long haul pays. |
 | 117 | **Chapter 7 — CRIMSON STORM** — The turbulence opens. |
 | 125 | **Frostbite** — A wake of hoarfrost. |
-| 140 | **Void Smoke** — What the dark exhales. |
 | 130 | **Ghost Suit** — Spectral tail, cyan-burning eyes. |
+| 133 | **50 Star Dust** — Dust from the crossing. |
+| 140 | **Void Smoke** — What the dark exhales. |
 | 147 | **Chapter 8 — LOST REACHES** — Lost-in-space levels open. |
+| 152 | **60 Star Dust** — Deep-space wages. |
 | 160 | **Big Booty Suit** — Maximum silhouette. Real jiggle. |
 | 170 | **Supernova** — The loudest exit there is. |
 | 180 | **Chapter 9 — THE BLACKOUT** — Lights out. |
-| 180 | **Flight Mods** — Steady Gates, Rough Air and Thrill Seeker unlock in the hangar. |
+| 180 | **Flight Mods** — Steady Gates and Thrill Seeker unlock in the hangar. |
+| 190 | **75 Star Dust** — Blackout bonus. |
+| 200 | **Chronarch Helmet** — Time under glass. Was premium; now earned. |
 | 216 | **Chapter 10 — EVENT HORIZON** — The last ten. |
+| 225 | **90 Star Dust** — The far side pays better. |
+| 245 | **100 Star Dust** — Still going. |
 | 250 | **GATECRASHER** — A title for the pilots who earn it. |
+| 270 | **120 Star Dust** — Almost the whole chart. |
+| 285 | **150 Star Dust** — The last stretch. |
 | 300 | **STARLORD** — Every star in the chart. |
+| 300 | **Cat Suit** — Eats no acorns. Earned by every star there is. |
 
 ## The chapters
 

@@ -18,6 +18,7 @@ import {
   suitRevealed,
   writeSave,
   type SaveData,
+  cleanPilotName,
 } from "./save";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
 import {
@@ -74,6 +75,9 @@ export type Engine = {
   startOver: () => void;
   /** the Founder's Pack door — and one more code that is a love letter */
   redeemAccessCode: (code: string) => "ok" | "love" | "denied";
+  /** rename the pilot. Returns the name that was actually stored, which
+   *  may differ from what was passed - it is sanitised on the way in. */
+  setPilotName: (name: string) => string;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -241,6 +245,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         // settleDust is idempotent, so calling it on every screen change is
         // free when nothing is owed.
         settleDust();
+        // THE DAILY CLAIMS ITSELF. Asking a pilot to tap CLAIM after they
+        // already walked to the shop is a toll booth, not a reward - the
+        // walk IS the action being rewarded. Arriving pays; the tracker
+        // still shows the streak, and the shop button carries the glow that
+        // does the asking.
+        if (s === "shop") claimDaily();
       }
       world.screen = s;
       if (s === "title") world.tut = null;
@@ -256,6 +266,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     equipPal: (id) => transactPal(id),
     toggleMod,
     setMod,
+    setPilotName(name) {
+      const clean = cleanPilotName(name);
+      save.pilotName = clean;
+      writeSave(save);
+      notify();
+      return clean;
+    },
     settleDust,
     dailyState,
     claimDaily,
