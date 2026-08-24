@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=128";
-import { sfx, unlockAudio, music } from "./audio.js?v=128";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog.js?v=128";
-import { drawHud, drawWorld } from "./draw.js?v=128";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=128";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked } from "./campaign.js?v=128";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=128";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=128";
-import { raceViewport } from "./race-viewport.js?v=128";
+import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=129";
+import { sfx, unlockAudio, music } from "./audio.js?v=129";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=129";
+import { drawHud, drawWorld } from "./draw.js?v=129";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=129";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=129";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=129";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=129";
+import { raceViewport } from "./race-viewport.js?v=129";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -142,6 +142,12 @@ export async function createEngine(canvas) {
                 cancelRaceControls();
                 setTunnelHeld(world, false);
                 swipe = null;
+                // Stars are written by the sim, which the engine does not observe.
+                // Every route back out of a run passes through here, so this is the
+                // one choke point where "you crossed a dust line" can be noticed.
+                // settleDust is idempotent, so calling it on every screen change is
+                // free when nothing is owed.
+                settleDust();
             }
             world.screen = s;
             if (s === "title")
@@ -158,6 +164,11 @@ export async function createEngine(canvas) {
         equipPal: (id) => transactPal(id),
         toggleMod,
         setMod,
+        settleDust,
+        dailyState,
+        claimDaily,
+        buyDust,
+        buyBundle,
         setMusicOff(off) {
             save.musicOff = off;
             writeSave(save);
@@ -353,6 +364,102 @@ export async function createEngine(canvas) {
         writeSave(save);
         notify();
         return "buy";
+    }
+    // ------------------------------------------------------------ star dust
+    /** today, in the PILOT'S local calendar. Deliberately local rather than
+     *  UTC: a daily reward should turn over at the player's midnight, not at
+     *  one that lands mid-evening for half the world. */
+    function today() {
+        const d = new Date();
+        const p2 = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+    }
+    function dayNumber(iso) {
+        if (!iso)
+            return NaN;
+        const [y, m, d] = iso.split("-").map(Number);
+        return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
+    }
+    /** Pay every dust line the pilot has crossed but not yet been paid for.
+     *  Idempotent by construction: dustPaidTo only ever moves forward, so
+     *  calling this twice pays once. Called on load and after every finish,
+     *  which also means a save from before dust existed collects its whole
+     *  backlog rather than losing it. */
+    function settleDust() {
+        const have = starsOf(save);
+        let owed = 0, high = save.dustPaidTo;
+        for (const r of STAR_REWARDS) {
+            if (r.kind !== "dust" || !r.amount)
+                continue;
+            if (r.stars <= have && r.stars > save.dustPaidTo) {
+                owed += r.amount;
+                high = Math.max(high, r.stars);
+            }
+        }
+        if (owed <= 0)
+            return 0;
+        save.starDust += owed;
+        save.dustPaidTo = high;
+        writeSave(save);
+        notify();
+        return owed;
+    }
+    /** How the daily stands right now, without claiming it. */
+    function dailyState() {
+        const t = dayNumber(today());
+        const last = dayNumber(save.lastDaily);
+        const claimedToday = !isNaN(last) && last === t;
+        // a streak survives exactly one night. Two nights and it starts over.
+        const continues = !isNaN(last) && t - last === 1;
+        const nextStreak = claimedToday ? save.dailyStreak : continues ? save.dailyStreak + 1 : 1;
+        const wrapped = ((nextStreak - 1) % DAILY_STREAK_LEN) + 1;
+        return {
+            claimedToday,
+            streak: claimedToday ? ((save.dailyStreak - 1) % DAILY_STREAK_LEN) + 1 : wrapped,
+            bonusDay: wrapped === DAILY_STREAK_LEN,
+            amount: DAILY_DUST + (wrapped === DAILY_STREAK_LEN ? DAILY_STREAK_BONUS : 0),
+        };
+    }
+    function claimDaily() {
+        const st = dailyState();
+        if (st.claimedToday)
+            return "claimed";
+        const t = dayNumber(today());
+        const last = dayNumber(save.lastDaily);
+        // a clock turned BACKWARDS must not re-open a claim already taken
+        if (!isNaN(last) && t < last)
+            return "claimed";
+        save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
+        save.lastDaily = today();
+        save.starDust += st.amount;
+        writeSave(save);
+        notify();
+        return "ok";
+    }
+    /** The payment rail is not built yet, so a pack GRANTS its dust and says
+     *  so plainly. When real billing lands this is the one place it hooks. */
+    function buyDust(id) {
+        const pack = DUST_PACKS.find((p) => p.id === id);
+        if (!pack)
+            return "missing";
+        save.starDust += pack.dust + pack.bonus;
+        writeSave(save);
+        notify();
+        return "ok";
+    }
+    function buyBundle(id) {
+        const bn = BUNDLES.find((b) => b.id === id);
+        if (!bn)
+            return "missing";
+        if (bn.items.every((i) => (save.purchased || []).includes(i)))
+            return "owned";
+        if (save.starDust < bn.dust)
+            return "poor";
+        save.starDust -= bn.dust;
+        save.purchased = [...new Set([...(save.purchased || []), ...bn.items])];
+        writeSave(save);
+        notify();
+        return "ok";
     }
     // A flight mod is bought once and then switched, so one call covers both:
     // if you do not own it this is a purchase, and if you do it is a toggle.
@@ -811,4 +918,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=128";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=129";

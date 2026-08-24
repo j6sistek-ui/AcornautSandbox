@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead } from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -378,6 +378,10 @@ export async function bootStandalone(root: HTMLElement) {
   const I_LAUNCH = ["M5 13.5 12 4l7 9.5", "M12 4v16", "M8.5 20h7"];
   const I_CHEV = ["m9 5 7 7-7 7"];
   const I_BACK = ["m15 5-7 7 7 7"];
+  // STAR DUST. Four points, the vertical pair longer than the horizontal
+  // and the waist pinched in, so it reads as the cut crystal rather than
+  // as the flat five-point star already used for chart progress.
+  const I_DUST = ["M12 2.2 13.9 9 20.4 12 13.9 15 12 21.8 10.1 15 3.6 12 10.1 9z"];
   const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
   const I_GEAR = [
     "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -423,6 +427,12 @@ export async function bootStandalone(root: HTMLElement) {
     return pill;
   }
 
+  function dustPill(n: number) {
+    const pill = el("div", "ac-pill ac-pill-dust");
+    pill.append(icon(I_DUST, 13, true), el("span", "", n.toLocaleString()));
+    return pill;
+  }
+
   // Five tabs on one bar. HOME is the raised dome in the middle: the
   // biggest target, and glass on every screen because it IS home —
   // the white is its identity, not the current screen's colour.
@@ -430,7 +440,7 @@ export async function bootStandalone(root: HTMLElement) {
   /** every menu header carries the same right-hand pair: acorns, then help */
   function headAside(acorns: number) {
     const wrap = el("div", "ac-headaside");
-    wrap.append(acornPill(acorns), helpDot());
+    wrap.append(acornPill(acorns), dustPill(engine.save.starDust), helpDot());
     return wrap;
   }
 
@@ -1096,12 +1106,22 @@ export async function bootStandalone(root: HTMLElement) {
     return c;
   }
 
+  /** Mark a card premium and tell it WHICH premium it is. Every suit and
+   *  helmet already carries a `glow` in catalog.ts and every trail a
+   *  palette - data the UI had never once read. Feeding it in here means a
+   *  premium card blooms in its own colour instead of twenty identical gold
+   *  cards, at the cost of one custom property and no new art. */
+  function markPremium(node: HTMLElement, hue?: string) {
+    node.classList.add("ac-premium");
+    if (hue) node.style.setProperty("--pg", hue);
+  }
+
   function palCardOf(pl: (typeof PALS)[number], forShop = false) {
     const s = engine.save;
     const premium = isIap(pl.id);
     const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
     const b = el("button", s.equippedPal === pl.id ? "ac-card ac-palcard on" : "ac-card ac-palcard");
-    if (premium) b.classList.add("ac-premium");
+    if (premium) markPremium(b);   // pals carry no palette of their own
     if (!open) b.classList.add("ac-cardoff");
     b.append(el("p", "ac-palname", pl.name));
     const { c, ctx } = miniCanvas(72, 60);
@@ -1268,7 +1288,7 @@ export async function bootStandalone(root: HTMLElement) {
             `${h.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
               : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
               : owned ? "OWNED" : h.cost}`));
-          if (premium) b.classList.add("ac-premium");
+          if (premium) markPremium(b, h.glow);
           if (locked || !open) b.classList.add("ac-cardoff");
           if (s.guide === "helmet" && h.id === GUIDE_HELM) b.classList.add("ac-pulse");
           b.onclick = () => { if (!locked && open && (!premium || owned)) tx(b, () => engine.buyHelmet(h.id), h.cost); };
@@ -1296,7 +1316,7 @@ export async function bootStandalone(root: HTMLElement) {
           nh.title = "Wears no helmet";
           b.append(nh);
         }
-        if (premium) b.classList.add("ac-premium");
+        if (premium) markPremium(b, u.glow);
         if (s.guide === "hangar" && u.id === GUIDE_SUIT) b.classList.add("ac-pulse");
         b.onclick = () => { if (!premium || owned) tx(b, () => engine.buySuit(u.id), u.cost); };
         return b;
@@ -1356,7 +1376,7 @@ export async function bootStandalone(root: HTMLElement) {
           `${t.name}\n${open ? (premium ? "OWNED" : "EARNED")
             : premium ? "PREMIUM"
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
-        if (premium) b.classList.add("ac-premium");
+        if (premium) markPremium(b, t.colors[0]);
         if (!open) b.classList.add("ac-cardoff");
         b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
         grid.append(b);
@@ -2076,16 +2096,14 @@ export async function bootStandalone(root: HTMLElement) {
   // for acquiring. Premium items still appear in the Hangar so a loadout
   // reads complete, but the pitch lives here.
 
-  // Bundles are priced under the sum of their parts — that IS the pitch, so
-  // the saving is stated on the card rather than left to be worked out.
-  // ONE bundle for the staged release: everything premium, in one pack.
-  // "Buying" it is an access code for now — the payment rail comes later.
-  const BUNDLES: { id: string; name: string; blurb: string; items: string[] }[] = [
-    { id: "bundle-founders", name: "Founder's Pack", blurb: "Every premium suit, helmet and pal. All of it, forever.",
-      items: [...IAP_ITEMS] },
-  ];
   let foundersOpen = false;
   let foundersMsg = "";
+
+  // THE SHOP HAS TWO PAGES, and they are different KINDS of thing rather
+  // than two shelves of the same thing: PACKS spends Star Dust, DUST buys
+  // it. Splitting them keeps a real-money purchase from ever sitting one
+  // tap away from an in-game one by accident.
+  let shopPage: "packs" | "dust" = "packs";
 
   function drawShop() {
     const s = engine.save;
@@ -2095,53 +2113,88 @@ export async function bootStandalone(root: HTMLElement) {
     // NO TYPE TABS. The shop used to re-list suits, helmets and pals - the
     // same art, wired to the same equip calls, that the Loadout already
     // shows. Three tabs of duplicate wardrobe, and on the live page every
-    // premium card in them was inert: iapOwned() resolves through
-    // BETA_UNLOCK_GATES, so all eighteen rendered bright, tappable, and did
-    // nothing at all. The shop SELLS. What you own is the Loadout's job.
+    // premium card in them was inert. The shop SELLS. What you own is the
+    // Loadout's job.
+    const tabs = el("div", "ac-cats");
+    for (const t of ["packs", "dust"] as const) {
+      const b = el("button", t === shopPage ? "ac-cat on" : "ac-cat",
+                   t === "packs" ? "PACKS" : "STAR DUST");
+      b.onclick = () => { shopPage = t; keptScroll = 0; render(); };
+      tabs.append(b);
+    }
+    box.append(tabs);
+
+    denyEl = el("p", "ac-deny");
+    denyEl.setAttribute("role", "status");
+    denyEl.setAttribute("aria-live", "polite");
+    box.append(denyEl);
 
     const scroll = el("div", "ac-sheet-scroll");
+
+    // THE DAILY. It sits above both pages because it is the one thing in
+    // here that costs nothing, and burying free currency under a tab is a
+    // good way to have nobody find it.
+    scroll.append(drawDaily());
+
     const grid = el("div", "ac-grid");
 
-    {
+    if (shopPage === "packs") {
       for (const bn of BUNDLES) {
         const owned = bn.items.every((i) => iapOwned(s, i));
         const card = el("button", "ac-card ac-bundle");
         const strip = el("div", "ac-bundlestrip");
-        // show what is in it, up to four faces, then a count
-        for (const id of bn.items.slice(0, 4)) {
+        const seen = new Set<string>();
+        for (const id of bn.items) {
+          if (seen.has(id)) continue;
+          seen.add(id);
+          if (seen.size > 4) break;
           const suit = SUITS.find((u) => u.id === id);
           const helm = HELMETS.find((h) => h.id === id);
           if (suit) strip.append(suitCardOf(suit, 40));
           else if (helm) strip.append(helmCardOf(helm, 40));
         }
-        if (bn.items.length > 4) strip.append(el("span", "ac-bundlemore", `+${bn.items.length - 4}`));
+        // A suit and its helmet SHARE an id in this catalog - owning
+        // "cryostar" grants both - so counting distinct ids undercounts what
+        // the pilot actually receives. Count the wearables instead.
+        const worn = bn.items.reduce((n, id) => n
+          + (SUITS.some((u) => u.id === id) ? 1 : 0)
+          + (HELMETS.some((h) => h.id === id) ? 1 : 0)
+          + (TRAILS.some((t) => t.id === id) ? 1 : 0)
+          + (PALS.some((pl) => pl.id === id) ? 1 : 0), 0);
+        if (seen.size > 4) strip.append(el("span", "ac-bundlemore", `+${worn - 4}`));
         card.append(strip);
         const txt = el("div", "ac-modtxt");
         txt.append(el("p", "ac-modname", bn.name), el("p", "ac-sub", bn.blurb));
-        card.append(txt, el("span", "ac-modprice", owned ? "OWNED" : "PREMIUM"));
+        card.append(txt);
+        const price = el("span", "ac-modprice ac-dustprice");
+        if (owned) price.textContent = "OWNED";
+        else { price.append(icon(I_DUST, 12, true), el("span", "", bn.dust.toLocaleString())); }
+        card.append(price);
         if (owned) card.classList.add("on");
-        card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
-        if (!owned) card.onclick = () => { foundersOpen = !foundersOpen; foundersMsg = ""; render(); };
+        card.append(el("span", "ac-bundlecount", `${worn} items`));
+        if (!owned) card.onclick = () => { tx(card, () => engine.buyBundle(bn.id), bn.dust); };
         grid.append(card);
-        if (!owned && foundersOpen) {
-          const row = el("div", "ac-coderow");
-          const input = document.createElement("input");
-          input.type = "tel";
-          input.inputMode = "numeric";
-          input.placeholder = "ACCESS CODE";
-          input.className = "ac-codein";
-          const go = el("button", "ac-primary ac-codego", "REDEEM");
-          go.onclick = () => {
-            const res = engine.redeemAccessCode(input.value);
-            if (res === "ok") { foundersOpen = false; foundersMsg = ""; }
-            else if (res === "love") { foundersOpen = false; foundersMsg = ""; showLoveNote(); render(); }
-            else { foundersMsg = "That code doesn't open this door."; render(); }
-          };
-          row.append(input, go);
-          grid.append(row);
-          if (foundersMsg) grid.append(el("p", "ac-fine ac-codemsg", foundersMsg));
-        }
       }
+      grid.append(codeRow());
+    } else {
+      for (const pk of DUST_PACKS) {
+        const card = el("button", "ac-card ac-bundle ac-dustpack");
+        const face = el("div", "ac-dustface");
+        face.append(icon(I_DUST, 40, true));
+        card.append(face);
+        const txt = el("div", "ac-modtxt");
+        txt.append(el("p", "ac-modname", `${pk.dust.toLocaleString()} Star Dust`),
+                   el("p", "ac-sub", pk.bonus ? `+${pk.bonus} bonus \u2014 ${(pk.dust + pk.bonus).toLocaleString()} total` : "Starter handful."));
+        card.append(txt, el("span", "ac-modprice", pk.price));
+        card.onclick = () => { tx(card, () => engine.buyDust(pk.id)); };
+        grid.append(card);
+      }
+      scroll.append(grid);
+      scroll.append(el("p", "ac-fine",
+        "The payment rail is not connected yet, so packs are granted during the beta."));
+      box.append(scroll);
+      if (!BETA_FEATURES) box.append(tabbar("shop"));
+      return box;
     }
 
     scroll.append(grid);
@@ -2151,6 +2204,66 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));
     return box;
+  }
+
+  /** the access-code redeem row, unchanged in behaviour, lifted out so the
+   *  pack page reads as a list of packs rather than a list plus a form */
+  function codeRow() {
+    const wrap = el("div", "ac-coderow-wrap");
+    const open = el("button", "ac-codeopen", foundersOpen ? "HIDE ACCESS CODE" : "HAVE AN ACCESS CODE?");
+    open.onclick = () => { foundersOpen = !foundersOpen; foundersMsg = ""; render(); };
+    wrap.append(open);
+    if (foundersOpen) {
+      const row = el("div", "ac-coderow");
+      const input = document.createElement("input");
+      input.type = "tel";
+      input.inputMode = "numeric";
+      input.placeholder = "ACCESS CODE";
+      input.className = "ac-codein";
+      const go = el("button", "ac-primary ac-codego", "REDEEM");
+      go.onclick = () => {
+        const res = engine.redeemAccessCode(input.value);
+        if (res === "ok") { foundersOpen = false; foundersMsg = ""; }
+        else if (res === "love") { foundersOpen = false; foundersMsg = ""; showLoveNote(); render(); }
+        else { foundersMsg = "That code doesn't open this door."; render(); }
+      };
+      row.append(input, go);
+      wrap.append(row);
+      if (foundersMsg) wrap.append(el("p", "ac-fine ac-codemsg", foundersMsg));
+    }
+    return wrap;
+  }
+
+  /** SIGN IN AND CLAIM. Seven pips, one per day of the streak; the seventh
+   *  pays the bonus. The pips are drawn even after claiming so the pilot can
+   *  see how far along the week they are rather than only being told. */
+  function drawDaily() {
+    const st = engine.dailyState();
+    const card = el("div", st.claimedToday ? "ac-daily done" : "ac-daily");
+    const left = el("div", "ac-dailytxt");
+    left.append(el("p", "ac-modname", "DAILY STAR DUST"));
+    const pips = el("div", "ac-pips");
+    for (let i = 1; i <= DAILY_STREAK_LEN; i++) {
+      const on = i <= st.streak;
+      const pip = el("i", `ac-pip${on ? " on" : ""}${i === DAILY_STREAK_LEN ? " big" : ""}`);
+      pip.setAttribute("aria-hidden", "true");
+      pips.append(pip);
+    }
+    left.append(pips);
+    left.append(el("p", "ac-sub", st.claimedToday
+      ? `Claimed. Day ${st.streak} of ${DAILY_STREAK_LEN} \u2014 come back tomorrow.`
+      : st.bonusDay
+        ? `Day ${DAILY_STREAK_LEN}! Claim ${st.amount} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus.`
+        : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Claim ${st.amount}, and ${DAILY_STREAK_BONUS} more on day ${DAILY_STREAK_LEN}.`));
+    card.append(left);
+    const go = el("button", st.claimedToday ? "ac-primary ac-dailygo off" : "ac-primary ac-dailygo");
+    if (st.claimedToday) { go.textContent = "CLAIMED"; go.disabled = true; }
+    else { go.append(el("span", "", "CLAIM "), icon(I_DUST, 13, true), el("span", "", `${st.amount}`)); }
+    go.onclick = () => {
+      if (engine.claimDaily() === "ok") render();
+    };
+    card.append(go);
+    return card;
   }
 
   function drawProfile() {
@@ -2293,7 +2406,24 @@ export async function bootStandalone(root: HTMLElement) {
     const one = (pick: "frozen" | "shieldnut") => (ctx: CanvasRenderingContext2D, px: number) =>
       drawSpriteOn(ctx, engine.art?.[pick] ?? null, px / 2, px / 2, px * 0.92);
 
-    item(pic(spr("acorn")), "ACORN", "Currency \u2014 spend it in the hangar.");
+    item(pic(spr("acorn")), "ACORN", "Earned by flying \u2014 spend it in the hangar.");
+    // TWO currencies, and the difference is the whole point: one is flown
+    // for, one is bought. Saying so here is cheaper than letting a pilot
+    // work it out from a price they cannot pay.
+    item(pic((ctx: CanvasRenderingContext2D, px: number) => {
+      // the help sheet paints to canvas, so the glyph is drawn by hand here
+      // from the same proportions as I_DUST rather than inlining an <svg>
+      ctx.save();
+      ctx.translate(px / 2, px / 2);
+      ctx.scale(px / 24, px / 24);
+      ctx.fillStyle = "#c9b6ff";
+      ctx.beginPath();
+      ctx.moveTo(0, -9.8); ctx.lineTo(1.9, -3); ctx.lineTo(8.4, 0);
+      ctx.lineTo(1.9, 3);  ctx.lineTo(0, 9.8);  ctx.lineTo(-1.9, 3);
+      ctx.lineTo(-8.4, 0); ctx.lineTo(-1.9, -3); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }), "STAR DUST", "Premium currency \u2014 buys packs. Claim 5 free every day, plus 25 on a seven-day streak.");
     item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
     item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
     item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce. In Wormhole Run it is the FLOW ACORN: fills Flow and guarantees at least \u00d72 score for 8 seconds.");

@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=128";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=128";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=129";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=129";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -12,6 +12,10 @@ export function defaultSave() {
         xp: 0,
         startShield: false,
         battery: false,
+        starDust: 0,
+        dustPaidTo: 0,
+        lastDaily: "",
+        dailyStreak: 0,
         steadyGates: false,
         roughAir: false,
         noPalFx: false,
@@ -81,6 +85,17 @@ export function loadSave() {
         s.equippedPal = "none";
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
         s.equippedPal = "none";
+    // saves written before Star Dust existed. dustPaidTo starts at 0 rather
+    // than at the pilot's current stars, so a long-standing save is PAID its
+    // backlog on next load instead of silently losing it.
+    if (typeof s.starDust !== "number" || !isFinite(s.starDust))
+        s.starDust = 0;
+    if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
+        s.dustPaidTo = 0;
+    if (typeof s.lastDaily !== "string")
+        s.lastDaily = "";
+    if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
+        s.dailyStreak = 0;
     // saves written before the flight mods existed
     for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"]) {
         if (typeof s[k] !== "boolean")

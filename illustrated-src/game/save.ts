@@ -24,6 +24,15 @@ export type SaveData = {
   xp: number;
   startShield: boolean;
   battery: boolean;
+  /** STAR DUST: the premium currency. Acorns are flown for and buy the
+   *  standard wardrobe; dust is bought or claimed and buys packs. */
+  starDust: number;
+  /** highest star line already paid out, so a payout can never double-pay */
+  dustPaidTo: number;
+  /** local date string of the last daily claim, e.g. "2026-08-24" */
+  lastDaily: string;
+  /** how many days in a row have been claimed, 1..DAILY_STREAK_LEN */
+  dailyStreak: number;
   /** flight mods, bought once and kept. See MODS in catalog.ts. */
   steadyGates: boolean;
   roughAir: boolean;
@@ -81,6 +90,10 @@ export function defaultSave(): SaveData {
     xp: 0,
     startShield: false,
     battery: false,
+    starDust: 0,
+    dustPaidTo: 0,
+    lastDaily: "",
+    dailyStreak: 0,
     steadyGates: false,
     roughAir: false,
     noPalFx: false,
@@ -139,6 +152,13 @@ export function loadSave(): SaveData {
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
+  // saves written before Star Dust existed. dustPaidTo starts at 0 rather
+  // than at the pilot's current stars, so a long-standing save is PAID its
+  // backlog on next load instead of silently losing it.
+  if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
+  if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
+  if (typeof s.lastDaily !== "string") s.lastDaily = "";
+  if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
