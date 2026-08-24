@@ -363,6 +363,84 @@
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
 
+    /* what is switched on, on the launch tile - one line, never wraps */
+    .ac-hub-active { display: block; margin-top: 2px; font: 800 10.5px/1.3 Figtree, sans-serif;
+      letter-spacing: .04em; color: #7cebc2; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 100%; }
+    /* the daily prompt: the shop button breathes until you visit */
+    @keyframes ac-dailypulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(150,110,255,.55), 0 0 14px -2px rgba(150,110,255,.6); }
+      50%     { box-shadow: 0 0 0 7px rgba(150,110,255,0), 0 0 22px 2px rgba(150,110,255,.95); }
+    }
+    .ac-hub-sq.ac-dailyready { animation: ac-dailypulse 1.9s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .ac-hub-sq.ac-dailyready { animation: none;
+        box-shadow: 0 0 0 2px rgba(150,110,255,.7), 0 0 16px -2px rgba(150,110,255,.8); }
+    }
+    /* the Star Dust counter beside acorns, with its plus */
+    .ac-hub-iddust { display: inline-flex; align-items: center; gap: 5px; min-height: 30px;
+      padding: 0 8px 0 9px; border-radius: 999px; color: #cbb4ff;
+      font: 800 12px/1 Figtree, sans-serif;
+      background: rgba(70,50,140,.35); border: 1px solid rgba(150,110,255,.42); }
+    .ac-hub-iddust svg { filter: drop-shadow(0 0 4px rgba(150,110,255,.8)); }
+    .ac-hub-plus { font-style: normal; font-weight: 900; font-size: 13px; color: #e6dbff;
+      opacity: .85; margin-left: 1px; }
+    /* the daily receipt, now that arriving claims it */
+    .ac-dailygot { flex: none; display: inline-flex; align-items: center; gap: 5px;
+      color: #cbb4ff; font: 900 15px/1 Figtree, sans-serif;
+      text-shadow: 0 0 9px rgba(150,110,255,.8); }
+    /* the hangar's way back to the shop: a control, not a caption */
+    .ac-shopbanner { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px;
+      width: 100%; margin-top: 12px; padding: 12px 14px; border-radius: 16px; text-align: left;
+      min-height: 60px; color: #f3efe4;
+      background: linear-gradient(100deg, rgba(109,63,209,.5), rgba(14,10,34,.6) 72%);
+      border: 1.5px solid rgba(169,155,232,.55);
+      box-shadow: 0 8px 22px -14px rgba(150,110,255,.9); }
+    .ac-shopbanneric { flex: none; width: 34px; height: 34px; display: flex;
+      align-items: center; justify-content: center; }
+    .ac-shopbannertxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .ac-shopbannertxt b { font: 900 13px/1.1 Figtree, sans-serif; letter-spacing: .08em; }
+    .ac-shopbannertxt span { font-size: 11px; color: #b6acd6; }
+    .ac-shopbannergo { flex: none; font-size: 20px; font-weight: 800; color: #cbb4ff; }
+    /* the pack contents sheet */
+    .ac-packcard { max-height: min(78vh, 640px); overflow-y: auto; }
+    .ac-packlist { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 2px; }
+    .ac-packhead { margin: 4px 0 0; font: 800 10px/1 Figtree, sans-serif; letter-spacing: .18em;
+      color: #8b95b0; }
+    .ac-packrow { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ac-packchip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 4px;
+      border-radius: 999px; background: rgba(20,27,48,.9); border: 1px solid #2a3454;
+      font: 700 11px/1 Figtree, sans-serif; color: #d7def0; }
+    .ac-packchip canvas { display: block; }
+    .ac-packchip.owned { border-color: #6ee7a8; color: #6ee7a8; }
+    .ac-packbuy { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+
+    /* ---- DEBRIS FIELDS: a line of rubble laid across the road ---- */
+    .ac-debris { position: absolute; left: 0; height: 34px; transform: translateY(-50%);
+      pointer-events: none; z-index: 2; }
+    .ac-debrisbit { position: absolute; top: 50%; display: block; }
+    .ac-debrisbit canvas { display: block; filter: drop-shadow(0 2px 5px rgba(0,0,0,.7)); }
+    .ac-debris.locked .ac-debrisbit canvas { filter: grayscale(1) brightness(.5); opacity: .5; }
+    .ac-debris.done { opacity: .28; }
+    /* the label rides the line and is the only part you can tap */
+    .ac-debristag { position: absolute; transform: translate(-50%,-50%); z-index: 4;
+      display: inline-flex; align-items: center; gap: 6px; min-height: 34px;
+      padding: 4px 11px 4px 5px; border-radius: 999px;
+      background: rgba(8,12,26,.92); border: 1.5px solid #6d7ba8; }
+    .ac-debristag b { font: 900 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+      letter-spacing: .08em; color: #9aa6c4; }
+    .ac-debrisship { width: 26px; height: 26px; object-fit: contain; }
+    .ac-debristag.blocking { border-color: #ffce5c;
+      box-shadow: 0 0 0 3px rgba(255,206,92,.16), 0 0 18px -3px rgba(255,206,92,.6); }
+    .ac-debristag.blocking b { color: #ffce5c; }
+    .ac-debristag.done { border-color: #6ee7a8; }
+    .ac-debristag.done b { color: #6ee7a8; }
+    .ac-debristag.locked { opacity: .4; }
+    .ac-gatenote b { color: #ffce5c; }
+    .ac-gatecleared b { letter-spacing: .06em; }
+
+
     /* ---- PREVIEW: trying premium on before you buy the pack ---- */
     .ac-tryon { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; }
     .ac-tostage { position: relative; display: flex; flex-direction: column; align-items: center;
@@ -397,30 +475,6 @@
     .ac-socialgo { flex: none; color: #8b95b0; font-size: 14px; font-weight: 800; }
 
 
-    /* ---- DEBRIS FIELDS: the Hyper Run gates on the Star Chart ---- */
-    /* Parked on the road, not beside it, so the block reads as part of the
-       route rather than as decoration in the margin. */
-    .ac-gatenode { position: absolute; transform: translate(-50%, -50%);
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      background: none; border: 0; padding: 0; min-height: 44px; z-index: 3; }
-    .ac-gatedisc { position: relative; width: 54px; height: 54px; border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(70% 70% at 50% 34%, rgba(70,90,150,.55), rgba(6,9,22,.9));
-      border: 2px dashed #6d7ba8; }
-    .ac-gateship { width: 40px; height: 40px; object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,.7)); }
-    .ac-gatelabel { font: 900 10px/1 "IBM Plex Mono", ui-monospace, monospace;
-      letter-spacing: .08em; color: #9aa6c4;
-      background: rgba(8,12,26,.85); border-radius: 999px; padding: 3px 7px; }
-    /* the one in your way is lit; the ones beyond it are not a preview */
-    .ac-gatenode.blocking .ac-gatedisc { border-color: #ffce5c; border-style: solid;
-      box-shadow: 0 0 0 3px rgba(255,206,92,.18), 0 0 16px -2px rgba(255,206,92,.5); }
-    .ac-gatenode.blocking .ac-gatelabel { color: #ffce5c; }
-    .ac-gatenode.done .ac-gatedisc { border-color: #6ee7a8; border-style: solid; opacity: .85; }
-    .ac-gatenode.done .ac-gatelabel { color: #6ee7a8; }
-    .ac-gatenode.locked { opacity: .38; }
-    .ac-gatenote b { color: #ffce5c; }
-    .ac-gatecleared b { letter-spacing: .06em; }
 
 
     /* ---- STAR DUST: the premium currency ---- */
@@ -428,7 +482,13 @@
        two currencies that share a colour are one currency with two numbers. */
     .ac-pill-dust { color: #cbb4ff; }
     .ac-pill-dust svg { filter: drop-shadow(0 0 4px rgba(150,110,255,.75)); }
-    .ac-dustprice { display: inline-flex; align-items: center; gap: 4px; color: #cbb4ff; }
+    /* TWO CLASSES, deliberately. .ac-modprice is declared 60 lines further
+       down and paints gold, so at equal specificity it won and every Star
+       Dust price rendered in the acorn colour - the same late-redeclaration
+       trap that hid the Founder's Pack layout. */
+    .ac-modprice.ac-dustprice { display: inline-flex; align-items: center; gap: 4px;
+      color: #cbb4ff; text-shadow: 0 0 8px rgba(150,110,255,.75); }
+    .ac-modprice.ac-dustprice svg { filter: drop-shadow(0 0 5px rgba(150,110,255,.9)); }
     .ac-dustface { display: flex; align-items: center; justify-content: center;
       width: 54px; height: 54px; flex: none; border-radius: 14px; color: #cbb4ff;
       background: radial-gradient(70% 70% at 50% 30%, rgba(120,86,220,.45), rgba(8,6,22,.7));

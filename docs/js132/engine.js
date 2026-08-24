@@ -148,6 +148,13 @@ export async function createEngine(canvas) {
                 // settleDust is idempotent, so calling it on every screen change is
                 // free when nothing is owed.
                 settleDust();
+                // THE DAILY CLAIMS ITSELF. Asking a pilot to tap CLAIM after they
+                // already walked to the shop is a toll booth, not a reward - the
+                // walk IS the action being rewarded. Arriving pays; the tracker
+                // still shows the streak, and the shop button carries the glow that
+                // does the asking.
+                if (s === "shop")
+                    claimDaily();
             }
             world.screen = s;
             if (s === "title")
