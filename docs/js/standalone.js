@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=137";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=137";
-import { drawSprite as drawSpriteOn } from "./art.js?v=137";
-import { createEngine } from "./engine.js?v=137";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=137";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=137";
-import { formatRaceTicks } from "./race.js?v=137";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=138";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=138";
+import { drawSprite as drawSpriteOn } from "./art.js?v=138";
+import { createEngine } from "./engine.js?v=138";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=138";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=138";
+import { formatRaceTicks } from "./race.js?v=138";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -179,6 +179,56 @@ export async function bootStandalone(root) {
                     row.append(mb);
                 });
                 sheet.append(row);
+            }
+            // THE CALIBRATION PANEL. Wormhole Run only, and only while the dials
+            // are still being settled - "reduce the sensitivity a bit" is not a
+            // number anyone can guess from a chair, so the pilot turns it here,
+            // mid-run, and reads the answer off the dial. Every value is a
+            // multiplier on the shipped constant, so 1.00 is exactly the flight
+            // that ships and a finding reports as "0.70 on lift".
+            if (TUNE_PANEL && engine.world.flight === "tunnel") {
+                const t = engine.save.tune;
+                const off = TUNE_DIALS.filter((d) => Math.abs(t[d.id] - 1) > 1e-6).length;
+                sheet.append(el("p", "ac-sub ac-tunehead", off ? `FLIGHT DIALS \u00b7 ${off} CHANGED` : "FLIGHT DIALS"));
+                const panel = el("div", "ac-tune");
+                for (const d of TUNE_DIALS) {
+                    const row = el("div", "ac-tunerow");
+                    const head = el("div", "ac-tunelabel");
+                    head.append(el("b", "", d.label), el("i", "", d.hint));
+                    row.append(head);
+                    const val = el("span", `ac-tuneval${Math.abs(t[d.id] - 1) > 1e-6 ? " on" : ""}`, t[d.id].toFixed(2));
+                    const bump = (by) => {
+                        const next = engine.setTune(d.id, engine.save.tune[d.id] + by);
+                        val.textContent = next.toFixed(2);
+                        render();
+                    };
+                    const minus = el("button", "ac-tunebtn", "\u2212");
+                    minus.onclick = () => bump(-TUNE_STEP);
+                    const plus = el("button", "ac-tunebtn", "+");
+                    plus.onclick = () => bump(TUNE_STEP);
+                    // the slider is the fast way to hunt; the buttons are the way to
+                    // land on a value worth writing down
+                    const slide = document.createElement("input");
+                    slide.type = "range";
+                    slide.className = "ac-tuneslide";
+                    slide.min = String(d.min);
+                    slide.max = String(d.max);
+                    slide.step = String(TUNE_STEP);
+                    slide.value = String(t[d.id]);
+                    slide.oninput = () => {
+                        const next = engine.setTune(d.id, Number(slide.value));
+                        val.textContent = next.toFixed(2);
+                    };
+                    slide.onchange = () => render();
+                    row.append(minus, slide, plus, val);
+                    panel.append(row);
+                }
+                sheet.append(panel);
+                const reset = el("button", "ac-ghost ac-tunereset", "RESET DIALS TO 1.00");
+                reset.onclick = () => { engine.resetTune(); render(); };
+                sheet.append(reset);
+                sheet.append(el("p", "ac-fine", "1.00 is the flight as it ships. The corridor ahead is already drawn, "
+                    + "so width, volatility and debris show on the next run."));
             }
             const resume = el("button", "ac-primary", "RESUME");
             resume.onclick = () => engine.resume();

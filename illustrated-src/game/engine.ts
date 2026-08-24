@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, cleanTune, freshTune, TUNE_DIALS, type TuneId, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -85,6 +85,12 @@ export type Engine = {
   wantSuitArt: (id: string) => void;
   /** the same, for a pal's idle bank */
   wantPalArt: (id: string) => void;
+  /** Nudge one Wormhole Run calibration dial. Applies to the LIVE run as
+   *  well as the save, so the pilot feels the change on resume rather than
+   *  on the next flight - which is the entire point of a pause-menu dial. */
+  setTune: (id: TuneId, value: number) => number;
+  /** put every dial back to the shipped feel */
+  resetTune: () => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -293,6 +299,28 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     wantPalArt(id) {
       if (art && art.ready) void loadPalBank(art, id);
+    },
+    setTune(id, value) {
+      const d = TUNE_DIALS.find((x) => x.id === id);
+      if (!d) return 1;
+      // snapped AND rounded: 0.05 has no exact binary form, so stepping
+      // down three times otherwise stores 0.8500000000000001 - which is the
+      // number that would come back in a report
+      const snapped = Math.round(value / 0.05) * 0.05;
+      const v = Number(Math.max(d.min, Math.min(d.max, snapped)).toFixed(2));
+      save.tune = cleanTune({ ...save.tune, [id]: v });
+      // the run in progress takes it too, or a pause-menu dial would be a
+      // note to self rather than a control
+      world.tune = cleanTune(save.tune);
+      writeSave(save);
+      notify();
+      return v;
+    },
+    resetTune() {
+      save.tune = freshTune();
+      world.tune = freshTune();
+      writeSave(save);
+      notify();
     },
     settleDust,
     dailyState,

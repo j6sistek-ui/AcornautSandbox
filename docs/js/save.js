@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=137";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=137";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=138";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, cleanTune, freshTune, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=138";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -15,6 +15,7 @@ export function defaultSave() {
         pilotName: "",
         starDust: 0,
         betaDustGrant: false,
+        tune: freshTune(),
         dustPaidTo: 0,
         lastDaily: "",
         dailyStreak: 0,
@@ -97,6 +98,7 @@ export function loadSave() {
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
         s.betaDustGrant = false;
+    s.tune = cleanTune(s.tune);
     s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";

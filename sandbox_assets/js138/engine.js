@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=137";
-import { sfx, unlockAudio, music } from "./audio.js?v=137";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=137";
-import { drawHud, drawWorld } from "./draw.js?v=137";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=137";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=137";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=137";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=137";
-import { raceViewport } from "./race-viewport.js?v=137";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=138";
+import { sfx, unlockAudio, music } from "./audio.js?v=138";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, cleanTune, freshTune, TUNE_DIALS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=138";
+import { drawHud, drawWorld } from "./draw.js?v=138";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=138";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=138";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=138";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=138";
+import { raceViewport } from "./race-viewport.js?v=138";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -187,6 +187,29 @@ export async function createEngine(canvas) {
         wantPalArt(id) {
             if (art && art.ready)
                 void loadPalBank(art, id);
+        },
+        setTune(id, value) {
+            const d = TUNE_DIALS.find((x) => x.id === id);
+            if (!d)
+                return 1;
+            // snapped AND rounded: 0.05 has no exact binary form, so stepping
+            // down three times otherwise stores 0.8500000000000001 - which is the
+            // number that would come back in a report
+            const snapped = Math.round(value / 0.05) * 0.05;
+            const v = Number(Math.max(d.min, Math.min(d.max, snapped)).toFixed(2));
+            save.tune = cleanTune({ ...save.tune, [id]: v });
+            // the run in progress takes it too, or a pause-menu dial would be a
+            // note to self rather than a control
+            world.tune = cleanTune(save.tune);
+            writeSave(save);
+            notify();
+            return v;
+        },
+        resetTune() {
+            save.tune = freshTune();
+            world.tune = freshTune();
+            writeSave(save);
+            notify();
         },
         settleDust,
         dailyState,
@@ -971,4 +994,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=137";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=138";
