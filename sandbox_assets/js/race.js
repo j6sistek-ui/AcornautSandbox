@@ -3,7 +3,7 @@
 // This module knows nothing about canvas size, render cadence, DOM events, or
 // the campaign. Feed it semantic input snapshots stamped with simulation ticks
 // and call stepRace exactly once per 1/60-second live race step.
-import { QUICK_DROP_VY } from "./control-constants.js?v=125";
+import { QUICK_DROP_VY } from "./control-constants.js?v=127";
 export const RACE_EVENT_ID = "prototype-chapter-1";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
@@ -27,12 +27,17 @@ export const RACE_TUNNEL_DISTANCE = 3375;
 export const RACE_ENTRY_TICKS = 48;
 export const RACE_TUNNEL_TICKS = 360;
 export const RACE_RETURN_TICKS = 36;
-export const RACE_TUNNEL_DRAG_TRAVERSAL_TICKS = 18;
-/** Maximum canonical Y travel per fixed step: one full 640px field in 18 ticks. */
+export const RACE_TUNNEL_DRAG_TRAVERSAL_TICKS = 48;
+/** Maximum canonical Y travel per fixed step: one full 640px field in 48 ticks. */
 export const RACE_TUNNEL_DRAG_STEP = RACE_HEIGHT / RACE_TUNNEL_DRAG_TRAVERSAL_TICKS;
+export function raceTunnelFollowerY(currentY, targetY) {
+    return targetY === null
+        ? currentY
+        : currentY + clamp(targetY - currentY, -RACE_TUNNEL_DRAG_STEP, RACE_TUNNEL_DRAG_STEP);
+}
 export const RACE_TUNNEL_RING_TICKS = [36, 72, 108, 144, 180, 216, 252, 288, 324];
 export const RACE_TUNNEL_RING_APERTURE = 58;
-export const RACE_TUNNEL_PERFECT_APERTURE = 24;
+export const RACE_TUNNEL_PERFECT_APERTURE = 30;
 export const RACE_TUNNEL_RING_CLEARANCE = RACE_TUNNEL_RING_APERTURE - RACE_PILOT_RADIUS;
 export const RACE_TUNNEL_PERFECT_CLEARANCE = RACE_TUNNEL_PERFECT_APERTURE - RACE_PILOT_RADIUS;
 /** One pass is one unit and one perfect is two; 18 units span return speed to max speed. */
@@ -50,10 +55,11 @@ export const RACE_THREE_STAR_TICKS = 5760;
 /** Hyper Run's authored course pickups; the alignment-only tunnel has no acorns. */
 export const RACE_MAX_ACORNS = 42;
 export const RACE_READY_COPY = [
-    "HOLD TO RISE",
-    "DOUBLE-TAP + HOLD TO BOOST",
-    "SWIPE DOWN TO DIVE",
-    "WORMHOLE: PRESS + DRAG UP / DOWN",
+    "THREAD GATES · CHARGE SHORTCUTS · FINISH FAST",
+    "FLIGHT: HOLD / RELEASE",
+    "DOUBLE-TAP + HOLD: BOOST · SWIPE DOWN: DIVE",
+    "WORMHOLE: DRAG TO ALIGN · CENTER = FASTER EXIT",
+    "PRESS + HOLD TO LAUNCH",
 ];
 // Smallest tunnel half-width (88) plus half the 16-pixel pilot radius (8).
 // This remains a geometric derivation, not an alias for the pilot screen X.
@@ -64,6 +70,9 @@ const NORMAL_BOOST_ACCEL = -2100;
 const NORMAL_MIN_VY = -330;
 const NORMAL_BOOST_MIN_VY = -520;
 const NORMAL_MAX_VY = 390;
+export const RACE_NORMAL_PRESS_VY = -210;
+export const RACE_NORMAL_BOOST_PRESS_VY = -420;
+export const RACE_NORMAL_RELEASE_BRAKE_VY = -120;
 export const RACE_LATEST_ENTRY_X = RACE_LENGTH - RACE_TUNNEL_DISTANCE;
 const RING_POINTS = [
     [600, 320], [1020, 280], [1440, 360], [1880, 240], [2320, 400], [2780, 200], [3240, 440],
@@ -323,11 +332,21 @@ function consumeInputs(race) {
         // Hold, boost, and drop belong to normal flight. The tunnel consumes only
         // its explicit drag target, so stale gesture state cannot alter its path.
         if (race.phase === "normal") {
+            const wasHeld = race.held;
             const wasBoosting = race.boost;
             race.held = input.held;
             race.boost = !!input.boost;
-            if (race.boost && !wasBoosting)
+            if (race.boost && !wasBoosting) {
+                race.vy = Math.min(race.vy, RACE_NORMAL_BOOST_PRESS_VY);
                 race.boostTicks.push(race.tick);
+            }
+            else if (race.held && !wasHeld) {
+                race.vy = Math.min(race.vy, RACE_NORMAL_PRESS_VY);
+            }
+            if (wasHeld && !race.held)
+                race.vy = Math.max(race.vy, RACE_NORMAL_RELEASE_BRAKE_VY);
+            // Drop is deliberately last-writer on a shared tick. A swipe that also
+            // releases or closes a boost must still produce the full familiar dive.
             if (input.drop) {
                 race.vy = QUICK_DROP_VY;
                 race.dropTicks.push(race.tick);
@@ -562,7 +581,7 @@ export function raceTunnelQuality(race, cycle = race.wormholes) {
 function stepTunnel(race) {
     const priorY = race.y;
     if (race.tunnelDragY !== null) {
-        race.y += clamp(race.tunnelDragY - race.y, -RACE_TUNNEL_DRAG_STEP, RACE_TUNNEL_DRAG_STEP);
+        race.y = raceTunnelFollowerY(race.y, race.tunnelDragY);
     }
     race.vy = (race.y - priorY) / RACE_DT;
     const geometry = raceTunnelGeometry(race, race.phaseTick);

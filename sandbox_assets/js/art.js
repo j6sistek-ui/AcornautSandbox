@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=125";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=127";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -366,7 +366,7 @@ export async function loadArt(eagerSuits = []) {
         "entry-mouth", "entry-rim-back", "entry-rim-front", "entry-glyphs",
         "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
         "gate-missed-back", "gate-missed-front",
-        "return-back", "return-front", "return-glyphs",
+        "return-back", "return-front", "return-glyphs", "scout-ship",
     ];
     async function namedSeries(counts, folder, separator) {
         const out = {};

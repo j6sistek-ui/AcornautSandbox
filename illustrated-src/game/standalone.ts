@@ -1042,22 +1042,33 @@ export async function bootStandalone(root: HTMLElement) {
       return c;
     }
 
+    if (id === "noPalFx") {
+      // a companion orb with a line through it: the pal is there, its
+      // effect is not
+      ctx.fillStyle = "#8fa2c4";
+      ctx.beginPath();
+      ctx.arc(px * 0.5, mid, px * 0.24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#39445c";
+      ctx.beginPath();
+      ctx.arc(px * 0.5, mid, px * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ff8a8a";
+      ctx.lineWidth = Math.max(2, px * 0.075);
+      ctx.beginPath();
+      ctx.moveTo(px * 0.2, mid + px * 0.3);
+      ctx.lineTo(px * 0.8, mid - px * 0.3);
+      ctx.stroke();
+      return c;
+    }
+
     disc(mid - gap);
     disc(mid + gap);
-    ctx.strokeStyle = id === "roughAir" ? "#ff9a5c" : "#7fe0b0";
+    ctx.strokeStyle = "#7fe0b0";
     ctx.lineWidth = Math.max(1.5, px * 0.06);
     ctx.beginPath();
-    if (id === "roughAir") {
-      for (let i = 0; i <= 24; i++) {
-        const t = i / 24;
-        const x = px * 0.12 + t * px * 0.76;
-        const y = mid + Math.sin(t * Math.PI * 3) * px * 0.13;
-        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-      }
-    } else {
-      ctx.moveTo(px * 0.12, mid);
-      ctx.lineTo(px * 0.88, mid);
-    }
+    ctx.moveTo(px * 0.12, mid);
+    ctx.lineTo(px * 0.88, mid);
     ctx.stroke();
     return c;
   }
@@ -1369,13 +1380,17 @@ export async function bootStandalone(root: HTMLElement) {
           `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
       }
       for (const m of MODS) {
-        const owned = s.purchased.includes(m.id);
+        const owned = m.always || s.purchased.includes(m.id);
         const on = !!s[m.save];
-        const b = mod(m.id, m.name, m.desc, m.cost,
-            !modsOpen ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
+        // an always-on mod ignores the star gate the others sit behind: it
+        // takes something away rather than granting it, so there is nothing
+        // to earn first
+        const open = m.always || modsOpen;
+        const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost,
+            !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
             modIcon(m.id, 56),
-            () => { if (modsOpen) engine.setMod(m.id); });
-        if (!modsOpen) b.classList.add("ac-cardoff");
+            () => { if (open) engine.setMod(m.id); });
+        if (!open) b.classList.add("ac-cardoff");
       }
     }
     scroll.append(grid);
@@ -1835,6 +1850,8 @@ export async function bootStandalone(root: HTMLElement) {
   function drawLevelSheet(def: LevelDef, mask: number) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard");
+    const raceBriefing = def.experimental && def.base === "race";
+    if (raceBriefing) sheet.classList.add("ac-racecard");
     // BETA: a level is a number and its three stars — no name, no place,
     // no modifier tags. The live page keeps the full briefing.
     const plain = HYPER_RUN_ENABLED && !def.experimental;
@@ -1865,6 +1882,38 @@ export async function bootStandalone(root: HTMLElement) {
       for (const t of fxs) tags.append(el("span", "ac-lvltag", t));
       sheet.append(tags);
     }
+    }
+    if (raceBriefing) {
+      const briefing = el("div", "ac-racebrief");
+      const objective = el("section", "ac-racebriefblock ac-raceobjective");
+      objective.append(
+        el("h3", "", "OBJECTIVE"),
+        el("p", "", "Thread blue gates to build speed and charge the wormhole. Take shortcuts and reach the finish as fast as possible. Acorns are an optional collection record and do not change your time."),
+      );
+      const controlRow = (input: string, action: string) => {
+        const row = el("div", "ac-racecontrol");
+        row.append(el("b", "", input), el("span", "", action));
+        return row;
+      };
+      const flight = el("section", "ac-racebriefblock");
+      flight.append(
+        el("h3", "", "SPACE FLIGHT"),
+        controlRow("HOLD", "Rise"),
+        controlRow("RELEASE", "Fall"),
+        controlRow("DOUBLE-TAP + HOLD", "Boost climb"),
+        controlRow("SWIPE DOWN", "Dive"),
+      );
+      const wormhole = el("section", "ac-racebriefblock");
+      wormhole.append(
+        el("h3", "", "WORMHOLE"),
+        controlRow("PRESS + DRAG", "Steer up and down"),
+        controlRow("WHITE RING", "Pass through the aperture"),
+        controlRow("CENTER RING", "Perfect connection · faster exit"),
+      );
+      const controls = el("div", "ac-racecontrols");
+      controls.append(flight, wormhole);
+      briefing.append(objective, controls);
+      sheet.append(briefing);
     }
     const goals = el("div", "ac-lvlgoals");
     def.goals.forEach((g, i) => {
@@ -1908,7 +1957,7 @@ export async function bootStandalone(root: HTMLElement) {
         labels.append(row);
       });
       sheet.append(labels);
-      sheet.append(el("p", "", `ACORNS  ${r.acorns} · THEORETICAL CONTENT CEILING  ${PROTOTYPE_RACE_MAX_ACORNS}`));
+      sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`));
       sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
       if (r.newBestAcorns) sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
       sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE — CAMPAIGN STARS UNCHANGED"));

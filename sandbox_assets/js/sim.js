@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=125";
-import { modsUnlocked, writeSave } from "./save.js?v=125";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=125";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=125";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=125";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=125";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=125";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=127";
+import { modsUnlocked, writeSave } from "./save.js?v=127";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=127";
+import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=127";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=127";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=127";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=127";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -224,6 +224,14 @@ export function envIndexFor(w, score) {
 function palId(save, w) {
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo"))
         return "buddy";
+    // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
+    // one question, so answering "none" here turns all of them off at once
+    // and cannot miss one the way a flag checked in fourteen places would.
+    // The pal is still EQUIPPED and still drawn - the draw path reads
+    // save.equippedPal directly - because the point of the switch is to keep
+    // the companion you like without the effect you do not.
+    if (save.noPalFx)
+        return "none";
     return save.equippedPal;
 }
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
@@ -238,14 +246,12 @@ function palId(save, w) {
 function modsLive(save, w) {
     return !w.tut && !w.lvl && modsUnlocked(save);
 }
-/** How hard the gates sway in Normal: 0 with Steady Gates, 2 with Rough Air. */
+/** How hard the gates sway in Normal: 0 with Steady Gates, 1 otherwise. */
 function driftModOf(save, w) {
     if (!modsLive(save, w))
         return 1;
     if (save.steadyGates)
         return 0;
-    if (save.roughAir)
-        return 2;
     return 1;
 }
 /** Thrill Seeker runs the whole world at double speed. See updateWorld.
@@ -647,7 +653,9 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.screen = "play";
     w.pausedFrom = null;
     w.shake = 0;
-    const canShield = save.equippedPal !== "nutsack" && save.equippedPal !== "tinbot";
+    // through palId so Pal Effects Off lifts the no-shield rule too
+    const shieldPal = palId(save, w);
+    const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
     w.startShieldArmed = !!(save.startShield && canShield);
     w.shieldCharges = w.startShieldArmed ? 1 : 0;
     w.absorbGrace = 0;
@@ -2260,7 +2268,6 @@ export function updateWorld(w, save, dt) {
         // Rough Air doubles how FAST a gate sways as well as how far, so the
         // two together read as turbulence rather than a slow deep breath.
         const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
-            * (w.flight === "fly" && save.roughAir && modsLive(save, w) ? 2 : 1)
             * (w.lvl?.def.fx.driftRate ?? 1);
         p.drift += simDt * driftRate;
     }

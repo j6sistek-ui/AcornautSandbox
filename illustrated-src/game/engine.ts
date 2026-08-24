@@ -429,14 +429,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function setMod(id: string) {
     const mod = MODS.find((m) => m.id === id);
     if (!mod) return "unknown";
-    if (!modsUnlocked(save)) return "locked";
+    // an always-on mod is a comfort switch: no star gate, no price, no
+    // purchase record. It answers only to the pilot toggling it.
+    if (!mod.always && !modsUnlocked(save)) return "locked";
     if (save[mod.save]) {
       save[mod.save] = false;
       writeSave(save);
       notify();
       return "off";
     }
-    const owned = save.purchased.includes(mod.id);
+    const owned = mod.always || save.purchased.includes(mod.id);
     if (!owned) {
       if (save.acorns < mod.cost) return "poor";
       save.acorns -= mod.cost;

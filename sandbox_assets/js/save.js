@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=125";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=125";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=127";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=127";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -14,6 +14,7 @@ export function defaultSave() {
         battery: false,
         steadyGates: false,
         roughAir: false,
+        noPalFx: false,
         thrillSeeker: false,
         tutorialDone: false,
         unlocked: ["clear"],
@@ -81,14 +82,16 @@ export function loadSave() {
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
         s.equippedPal = "none";
     // saves written before the flight mods existed
-    for (const k of ["steadyGates", "roughAir", "thrillSeeker"]) {
+    for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"]) {
         if (typeof s[k] !== "boolean")
             s[k] = false;
     }
     // Steady Gates and Rough Air are opposites; a save carrying both is
     // incoherent, and stilling the gates is the safer of the two to honour.
-    if (s.steadyGates && s.roughAir)
-        s.roughAir = false;
+    // Rough Air is retired; a save that still has it on simply stops using
+    // it, and the flag is left in place so an older build reading the same
+    // save is not confused by a missing key.
+    s.roughAir = false;
     // saves written before the lifetime tallies existed
     if (typeof s.runs !== "number")
         s.runs = 0;

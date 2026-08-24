@@ -88,6 +88,31 @@ export function skyLuma(w: World) {
   return a + (b - a) * w.envBlend;
 }
 
+// Rotate an [r,g,b,a] wash around the colour wheel, alpha untouched. The
+// saturation lift matches the one the plate gets, so the wash and the sky
+// under it land on the same new colour instead of two nearby ones.
+function rotateRgb(c: number[], deg: number): number[] {
+  const [r, g, bl] = c;
+  const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl);
+  const d = mx - mn;
+  let h = 0;
+  if (d) {
+    h = mx === r ? ((g - bl) / d) % 6 : mx === g ? (bl - r) / d + 2 : (r - g) / d + 4;
+    h *= 60;
+  }
+  const l = (mx + mn) / 2 / 255;
+  const sNow = d === 0 ? 0 : d / 255 / (1 - Math.abs(2 * l - 1) || 1);
+  const sat = Math.min(1, sNow * 1.75);
+  h = (((h + deg) % 360) + 360) % 360;
+  const cc = (1 - Math.abs(2 * l - 1)) * sat;
+  const x = cc * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - cc / 2;
+  const seg = Math.floor(h / 60) % 6;
+  const t: number[][] = [[cc, x, 0], [x, cc, 0], [0, cc, x], [0, x, cc], [x, 0, cc], [cc, 0, x]];
+  const [rr, gg, bb] = t[seg];
+  return [(rr + m) * 255, (gg + m) * 255, (bb + m) * 255, c[3]];
+}
+
 function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const { W, H } = w;
   // Each environment flies under its own sky; shifts crossfade. In the
@@ -151,12 +176,19 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const envA = ENVS[w.envA];
   const blend = w.envBlend;
   const ws = washScale(w.flight);
-  const wash = env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1)) as number[];
+  // PRISMWING again. The procedural plate carries the hue, but in flight
+  // that plate sits under this colour wash and the readability scrim, and
+  // those are what the eye actually reads - rotating the plate alone
+  // measured as a 3-point shift in mean colour, which is why the owner
+  // reported it as not working at all. The wash is backdrop, exactly like
+  // the plate, so it turns with it. Planets and debris still do not.
+  const spin = (c: number[]) => (w.prismHue ? rotateRgb(c, w.prismHue) : c);
+  const wash = spin(env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1)) as number[]);
   ctx.fillStyle = `rgba(${wash[0]},${wash[1]},${wash[2]},${wash[3]})`;
   ctx.beginPath();
   ctx.ellipse(W * 0.68, H * 0.28, W * 0.55, H * 0.28, 0.25, 0, Math.PI * 2);
   ctx.fill();
-  const wash2 = env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1)) as number[];
+  const wash2 = spin(env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1)) as number[]);
   ctx.fillStyle = `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${wash2[3]})`;
   ctx.beginPath();
   ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
@@ -827,10 +859,15 @@ function drawHyperRunTunnelDirector(ctx: CanvasRenderingContext2D, w: World, vie
 
 function drawHyperRunTunnelDragCue(ctx: CanvasRenderingContext2D, w: World) {
   const race = w.race!;
-  if (race.wormholes !== 0) return;
   const localTick = race.phase === "entry" ? Math.max(0, race.phaseTick - 12) : race.phaseTick + 36;
   if (race.phase !== "entry" && race.phase !== "tunnel") return;
-  const fade = localTick <= 72 ? 1 : 1 - raceSegment(localTick, 73, 96);
+  const tutorialFade = race.wormholes === 0
+    ? localTick <= 72 ? 1 : 1 - raceSegment(localTick, 73, 96)
+    : 0;
+  // Keep a restrained target pipper alive whenever a drag is owned. The
+  // slower follower then reads as deliberate steering rather than lag.
+  const activeTarget = race.phase === "tunnel" && race.tunnelDragY != null;
+  const fade = Math.max(tutorialFade, activeTarget ? 0.72 : 0);
   if (fade <= 0) return;
   const viewport = raceViewport(w.W, w.H);
   const pilotY = raceViewportY(viewport, race.y);
@@ -863,14 +900,30 @@ function drawHyperRunTunnelDragCue(ctx: CanvasRenderingContext2D, w: World) {
   }
   ctx.fillStyle = "#fff";
   ctx.beginPath(); ctx.arc(x, dotY, Math.max(2.5, 3.5 * viewport.scale), 0, Math.PI * 2); ctx.fill();
-  ctx.textAlign = "left";
-  ctx.font = `900 ${Math.max(8, 9 * viewport.scale)}px Figtree, system-ui`;
-  const labelX = Math.min(viewport.right - 72, x + 10 * viewport.scale);
-  const labelY = Math.max(viewport.top + 12, Math.min(viewport.bottom - 6, dotY + 3));
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "rgba(2,5,13,.9)";
-  ctx.strokeText("DRAG TO ALIGN", labelX, labelY);
-  ctx.fillText("DRAG TO ALIGN", labelX, labelY);
+  if (activeTarget) {
+    const pipper = Math.max(6, 8 * viewport.scale);
+    ctx.strokeStyle = "rgba(169,245,255,.92)";
+    ctx.lineWidth = Math.max(1, 1.4 * viewport.scale);
+    ctx.beginPath(); ctx.arc(x, dotY, pipper, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x - pipper - 4 * viewport.scale, dotY); ctx.lineTo(x - pipper / 2, dotY);
+    ctx.moveTo(x + pipper / 2, dotY); ctx.lineTo(x + pipper + 4 * viewport.scale, dotY);
+    ctx.moveTo(x, dotY - pipper - 4 * viewport.scale); ctx.lineTo(x, dotY - pipper / 2);
+    ctx.moveTo(x, dotY + pipper / 2); ctx.lineTo(x, dotY + pipper + 4 * viewport.scale);
+    ctx.stroke();
+  }
+  if (tutorialFade > 0) {
+    ctx.textAlign = "left";
+    ctx.font = `900 ${Math.max(8, 9 * viewport.scale)}px Figtree, system-ui`;
+    const labelX = Math.min(viewport.right - 102, x + 10 * viewport.scale);
+    const labelY = Math.max(viewport.top + 20, Math.min(viewport.bottom - 22, dotY));
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(2,5,13,.9)";
+    for (const [text, y] of [["DRAG TO ALIGN", labelY], ["CENTER = FASTER EXIT", labelY + 13]] as const) {
+      ctx.strokeText(text, labelX, y);
+      ctx.fillText(text, labelX, y);
+    }
+  }
   ctx.restore();
 }
 
@@ -1341,6 +1394,115 @@ function drawRaceCueOverlay(
   }
 }
 
+function drawHyperRunShipExhaust(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  scale: number,
+  engineX: number,
+) {
+  const race = w.race!;
+  const hyperspeed = race.phase === "tunnel" ? 1
+    : race.phase === "entry" || race.phase === "return"
+      ? hyperRunInlineWormholePresentation(race.phase, race.phaseTick).energyAlpha
+      : 0;
+  // The physics applies its deterministic press edge on the first fixed tick.
+  // Mirror that intent in the engine plume on the same rendered frame so a
+  // hold or boost never feels like it disappeared into an input queue.
+  const controlThrust = race.phase === "normal"
+    ? race.boost ? 1 : race.held ? 0.45 : 0
+    : 0;
+  const thrust = Math.max(hyperspeed, controlThrust);
+  const pulse = 0.5 + 0.5 * Math.sin(w.time * raceLerp(17, 26, thrust));
+  const length = raceLerp(15, 25, thrust) + pulse * raceLerp(4, 7, thrust);
+  const half = raceLerp(4.2, 5.4, thrust) * scale;
+  const tail = engineX - length * scale;
+  const gradient = ctx.createLinearGradient(engineX, 0, tail, 0);
+  gradient.addColorStop(0, "rgba(255,255,255,.96)");
+  gradient.addColorStop(0.18, "rgba(97,221,255,.92)");
+  gradient.addColorStop(0.58, "rgba(146,82,255,.66)");
+  gradient.addColorStop(1, "rgba(83,38,180,0)");
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(111,92,255,.82)";
+  ctx.shadowBlur = raceLerp(6, 10, thrust) * scale;
+  ctx.beginPath();
+  ctx.moveTo(engineX, -half);
+  ctx.quadraticCurveTo(engineX - length * scale * 0.48, -half * 0.64, tail, 0);
+  ctx.quadraticCurveTo(engineX - length * scale * 0.48, half * 0.64, engineX, half);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+export function hyperRunShipLayout(
+  authorityX: number,
+  scale: number,
+  ship: Pick<Sprite, "box" | "width" | "height">,
+) {
+  const shipSize = 88 * scale;
+  const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
+  const fitScale = shipSize / Math.max(1, Math.max(box.w, box.h));
+  const noseOffset = box.w * fitScale / 2;
+  const centerX = authorityX - noseOffset;
+  return {
+    shipSize,
+    centerX,
+    cockpitX: centerX + 7.2 * scale,
+    cockpitY: -10.5 * scale,
+    engineX: centerX - box.w * fitScale / 2 + 1.5 * scale,
+    noseX: centerX + noseOffset,
+  };
+}
+
+/** Hyper Run's vehicle is a beta-only visual frame around the real equipped
+ * pilot. The ship nose, not its painted center, is registered to the race
+ * authority plane so a gate resolves when contact appears to happen. */
+function drawHyperRunPilot(
+  ctx: CanvasRenderingContext2D,
+  w: World,
+  save: SaveData,
+  art: ArtBank,
+  authorityX: number,
+  scale: number,
+) {
+  const ship = art.hyperRun["scout-ship"];
+  if (!ship) {
+    drawPilot(ctx, w, save, art, authorityX, scale);
+    return;
+  }
+
+  const layout = hyperRunShipLayout(0, scale, ship);
+  const bank = Math.max(-0.22, Math.min(0.25, w.squirrel.rot * 0.34));
+  const halo = raceReducedMotion() ? undefined
+    : w.race!.phase === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light";
+
+  ctx.save();
+  ctx.translate(authorityX, w.squirrel.y);
+  // Banking around the authority point keeps the nose/crossing registration
+  // stable while the body and exhaust sell the player's vertical intent.
+  ctx.rotate(bank);
+  drawHyperRunShipExhaust(ctx, w, scale, layout.engineX);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
+  ctx.clip();
+  const cockpitGlow = ctx.createRadialGradient(
+    layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1,
+    layout.cockpitX, layout.cockpitY, 15 * scale,
+  );
+  cockpitGlow.addColorStop(0, "rgba(71,112,166,.62)");
+  cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
+  ctx.fillStyle = cockpitGlow;
+  ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
+  drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+  ctx.restore();
+
+  drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", halo);
+  ctx.restore();
+}
+
 function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const race = w.race!;
   const viewport = raceViewport(w.W, w.H);
@@ -1349,7 +1511,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   if (race.phase === "normal" || race.phase === "finish") {
     const frame = buildRaceCourseFrame(w, viewport);
     drawRaceCourseUnderlay(ctx, w, art, viewport, frame);
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     drawRaceCourseOverlay(ctx, w, art, viewport, frame);
     drawRaceCueOverlay(ctx, w, viewport);
     if (race.phase === "normal" && frame.targetIndex != null && frame.targetY != null) {
@@ -1381,7 +1543,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
     drawHyperRunTunnelRingLayer(ctx, w, 0, "back");
     ctx.restore();
 
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     ctx.save();
     ctx.globalAlpha *= energyAlpha;
     drawHyperRunTunnelRingLayer(ctx, w, 0, "front");
@@ -1399,7 +1561,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   if (race.phase === "tunnel") {
     drawRaceTunnel(ctx, w, race.phaseTick);
     drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "back");
-    drawPilot(ctx, w, save, art, pilotX, scale);
+    drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
     drawHyperRunTunnelRingLayer(ctx, w, race.phaseTick, "front");
     drawHyperRunTunnelDirector(ctx, w, race.phaseTick);
     drawHyperRunTunnelDragCue(ctx, w);
@@ -1424,7 +1586,7 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
   drawRaceTunnel(ctx, w, RACE_TUNNEL_TICKS - 1, enclosure);
   ctx.restore();
 
-  drawPilot(ctx, w, save, art, pilotX, scale);
+  drawHyperRunPilot(ctx, w, save, art, pilotX, scale);
   ctx.save();
   ctx.globalAlpha *= courseAlpha;
   drawRaceCourseOverlay(ctx, w, art, viewport, frame);
@@ -1564,7 +1726,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   // to FULL black. Drawn after the world and before the pal, so the
   // companion and the pilot stay lit and the pilot is never flying blind
   // about where they themselves are.
-  if (save.equippedPal === "nightglider" && !w.ready && !w.lvl && w.screen === "play") {
+  if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
     const t = w.lampT;
     const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
     if (a > 0) {
@@ -2857,7 +3019,15 @@ const RIG_PITCH_UP = (14 * Math.PI) / 180;    // eased back from Eclipse's 19
 const RIG_PITCH_DOWN = (30 * Math.PI) / 180;  // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// Suits the heading pitch must NOT touch. The rotation is calibrated for a
+// character painted belly-down at about +14 degrees, which is where the
+// whole family sits: Flight 14, Ion 12, Frost 16, Ghost 17, Eclipse 24.
+// A suit painted outside that band gets rotated from the wrong starting
+// attitude, and the further off it is the worse the result. The Alien is
+// painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
+// climb tipped it back until it sat upright in the sky rather than
+// climbing, which is what the owner saw as leading with its head.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
@@ -3164,9 +3334,11 @@ function drawPilot(
   art: ArtBank,
   xOverride?: number,
   localScale = 1,
+  yOverride?: number,
+  bankScale = 0.8,
 ) {
   const x = xOverride ?? w.W * PHYS.squirrelX;
-  const y = w.squirrel.y;
+  const y = yOverride ?? w.squirrel.y;
   const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
   const helm = helmetWornBy(save.equipped, save.equippedSuit);
   // The repainted flap frames are one coherent character, so the tap
@@ -3200,7 +3372,7 @@ function drawPilot(
   }
   // the sim's real pitch — dives nose down, bounces kick the body over;
   // the old ±6° bank made every impact read as nothing happening
-  let bank = w.squirrel.rot * 0.8;
+  let bank = w.squirrel.rot * bankScale;
   if (articulatedTap && !eclipseImpact) {
     // Every current model now uses the same eased visual pitch clock. Eclipse
     // supplies painted body poses; the other rigs use the identity-safe body
@@ -3411,6 +3583,20 @@ export function hyperRunChargeCopy(race: NonNullable<World["race"]>) {
   return `CHARGE ${race.charge}/100`;
 }
 
+export function hyperRunReadyLines(viewWidth: number): readonly string[] {
+  if (viewWidth >= 520) return RACE_READY_COPY;
+  return [
+    "THREAD GATES · CHARGE SHORTCUTS",
+    "FINISH FAST",
+    "FLIGHT · HOLD / RELEASE",
+    "DOUBLE-TAP + HOLD · BOOST",
+    "SWIPE DOWN · DIVE",
+    "WORMHOLE · DRAG TO ALIGN",
+    "CENTER = FASTER EXIT",
+    "PRESS + HOLD TO LAUNCH",
+  ];
+}
+
 export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
   const { W } = w;
   if (w.race) {
@@ -3466,10 +3652,27 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
     ctx.font = "700 14px Figtree, system-ui";
     ctx.fillText(`${race.acorns}`, 24, 28);
     if (w.ready) {
+      const readyLines = hyperRunReadyLines(W);
+      const compact = W < 520;
+      const lineHeight = compact ? 20 : 21;
+      const panelWidth = Math.min(W - 24, compact ? 430 : 560);
+      const panelHeight = readyLines.length * lineHeight + 28;
+      const panelTop = Math.min(w.H - panelHeight - 12, Math.max(96, w.H * 0.66));
+      ctx.fillStyle = "rgba(4,8,20,.78)";
+      ctx.strokeStyle = "rgba(169,245,255,.34)";
+      ctx.lineWidth = 1;
+      round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 12);
+      ctx.fill();
+      ctx.stroke();
       ctx.textAlign = "center";
-      ctx.fillStyle = "rgba(255,255,255,.88)";
-      ctx.font = "800 12px Figtree, system-ui";
-      RACE_READY_COPY.forEach((line, i) => ctx.fillText(line, W / 2, w.H * 0.78 + i * 18));
+      readyLines.forEach((line, i) => {
+        const isLaunch = i === readyLines.length - 1;
+        ctx.fillStyle = isLaunch ? "#ffe086" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
+        ctx.font = isLaunch
+          ? "900 15px Figtree, system-ui"
+          : i === 0 ? "900 14px Figtree, system-ui" : "800 14px Figtree, system-ui";
+        ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+      });
     }
     return;
   }

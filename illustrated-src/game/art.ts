@@ -444,7 +444,7 @@ export async function loadArt(eagerSuits: string[] = []): Promise<ArtBank> {
     "entry-mouth", "entry-rim-back", "entry-rim-front", "entry-glyphs",
     "gate-idle-back", "gate-idle-front", "gate-passed-back", "gate-passed-front",
     "gate-missed-back", "gate-missed-front",
-    "return-back", "return-front", "return-glyphs",
+    "return-back", "return-front", "return-glyphs", "scout-ship",
   ];
 
   async function namedSeries(counts: Record<string, number>, folder: string, separator: string) {

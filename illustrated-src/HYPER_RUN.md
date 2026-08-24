@@ -10,6 +10,35 @@
 
 **Revision 1 approval record (2026-08-20):** Move the proof of concept from proposed campaign level `2-6` to a beta-only experimental Log card named **PROTOTYPE CHAPTER 1**; keep `race` data-driven so several mechanically different events can be placed in later campaign chapters; confirm hold-to-rise/release-to-fall for both regimes; require matched back/front layers for every ordinary gate state so the pilot renders between the far and near rims; repair the GitHub copy's damaged UTF-8 characters (`×`, `≤`, and `²`); and replace the unexplained return clamp with `canonicalMinTunnelHalf + PHYS.squirrelR / 2 = max(72, min(88, 640 × 0.15)) + 16 / 2 = 88 + 8 = 96`, giving the derived canonical range `96…(640 - 96) = 96…544`.
 
+## Market-readiness control and onboarding polish — 2026-08-24 source contract
+
+The mission sheet now teaches the objective and both control regimes before every run. It states that blue gates build speed and shortcut charge, the finish is the time-trial objective, and acorns are an optional record that does not alter time. **SPACE FLIGHT** lists hold, release, double-tap + hold, and swipe down. **WORMHOLE** lists press + drag, the white outer ring, and the small precision ring. The READY panel repeats the route objective, both regimes, and **PRESS + HOLD TO LAUNCH** without advancing authority from tick zero. Result copy now reports the player-facing `ACORNS n / 42` record and removes the internal “theoretical content ceiling” label.
+
+Normal flight retains its approved continuous acceleration and velocity caps, but contact edges now provide immediate deterministic response before that tick's continuous acceleration:
+
+```text
+fresh plain press   vy = min(vy, -210)
+fresh boost edge    vy = min(vy, -420)
+hold -> release     vy = max(vy, -120)
+drop on shared tick vy = 380 last, then normal fixed-step acceleration/cap
+```
+
+At the 844 × 390 landscape scale (`390 / 640 = 0.609375`), a fresh plain press from rest moves about `3.69 canonical × 0.609375 = 2.25 screen pixels` on its first authority tick instead of about `0.12`. It reaches roughly `15.3` screen pixels of climb by 100 ms. Releasing from the `-330` plain cap brakes upward carry to `-120` before the `+1,050 px/s²` release acceleration, putting the apex within seven ticks and about 3.6 landscape pixels rather than drifting upward for roughly 19 ticks. The boost edge reaches its `-520` cap in three ticks. Edge tests cover fresh press, fresh boost, release brake, drop precedence, same-tick last-writer behavior, repeated snapshots without stacking, and replay/cadence equivalence.
+
+The scout ship's engine plume mirrors normal-flight input intent on the same rendered frame: plain hold expands it partway and boost drives the full plume. This is presentation-only feedback over the deterministic edge response; it does not feed authority. The shipping-path pixel review separately distinguishes idle→hold and hold→boost, so immediate visual acknowledgment cannot silently disappear.
+
+Tunnel drag is intentionally slower and more forgiving:
+
+```text
+RACE_TUNNEL_DRAG_STEP = 640 / 48 = 13.333… canonical pixels per tick
+perfect clearance       = 30 - 16 = 14 canonical pixels
+outer clearance         = 58 - 16 = 42 canonical pixels (unchanged)
+```
+
+The largest authored ring-center transfer is `288.688` canonical pixels. At the new follower cap it takes `ceil(288.688 / 13.333…) = 22` ticks, leaving 14 ticks to settle before the next 36-tick ring crossing. A restrained target pipper remains visible while a drag is owned, and the first tunnel teaches **DRAG TO ALIGN / CENTER = FASTER EXIT**. The deterministic ±12-canonical noisy-drag proxy clears 9/9 rings with zero wall scrapes.
+
+The passive, average, and optimized fixtures remain `9,000`, `5,966`, and `5,442` ticks because course speed, shortcut duration, and route geometry are unchanged. Average still clears 48 normal gates and two shortcuts; optimized clears 60, takes three shortcuts, uses boost/drop, centers 27/27 tunnel gates, and has no debris or wall contact. Passive-to-optimized separation remains `3,558` ticks / 59.3 seconds, so the approved `6,900 / 5,760` star thresholds remain derived and valid. The controller evidence now uses 711 raw average events (`7.151/s`) and 977 optimized events (`10.772/s`), replacing the earlier fixture's unrealistic per-tick gesture churn.
+
 ## Wormhole alignment-control update — source contract
 
 This update changes only Hyper Run's six-second wormhole gameplay. Normal-course flight remains **hold to rise / double-tap and hold to boost / swipe down to dive**. The separate Wormhole Run mission and its `setTunnelHeld` controls are unchanged.
@@ -27,10 +56,10 @@ Inside the Hyper Run wormhole, pointer, touch, and mouse input is a relative ver
 Replay input extends to `{tick, held, boost, drop?, dragY?}`. Numeric drag targets are finite, rounded to canonical integer Y, and clamped to `0…640`; `null` releases and omission leaves the current target unchanged. Same-tick target state is last-writer-wins while `drop` remains OR-preserved for normal flight. The follower moves at most
 
 ```text
-RACE_TUNNEL_DRAG_STEP = 640 / 18 = 35.555… canonical pixels per 60 Hz tick
+RACE_TUNNEL_DRAG_STEP = 640 / 48 = 13.333… canonical pixels per 60 Hz tick
 ```
 
-so a target can traverse the full canonical field in 18 ticks / 0.3 seconds. Authority still clamps the pilot inside the procedural corridor after movement. Inactive drag holds the last position with zero vertical velocity.
+so a target can traverse the full canonical field in 48 ticks / 0.8 seconds. Authority still clamps the pilot inside the procedural corridor after movement. Inactive drag holds the last position with zero vertical velocity.
 
 ### Nine white alignment gates
 
@@ -40,16 +69,16 @@ Each seeded/mirrored cycle places nine deterministic gates on the existing corri
 36, 72, 108, 144, 180, 216, 252, 288, 324
 ```
 
-Each gate is code-native white geometry with no bitmap dependency: a full outer ring of radius `58`, a nested precision ring of radius `24`, a dark neutral keyline for sky contrast, and thin lower near-rim arcs drawn in front of the pilot so both circles visibly thread in side view. Pending, clear, perfect, and miss feedback stays white; alpha, dash, bloom, and text carry state. A right-edge ring director preserves preview on portrait, the first cycle teaches **DRAG TO ALIGN**, and the tunnel HUD reports judged rings, perfects, and projected exit speed.
+Each gate is code-native white geometry with no bitmap dependency: a full outer ring of radius `58`, a nested precision ring of radius `30`, a dark neutral keyline for sky contrast, and thin lower near-rim arcs drawn in front of the pilot so both circles visibly thread in side view. Pending, clear, perfect, and miss feedback stays white; alpha, dash, bloom, and text carry state. A right-edge ring director preserves preview on portrait, the first cycle teaches **DRAG TO ALIGN / CENTER = FASTER EXIT**, and the tunnel HUD reports judged rings, perfects, and projected exit speed.
 
 With pilot radius `16`, the exact center-error thresholds are derived rather than guessed:
 
 ```text
 outer clear  = 58 - 16 = 42 pixels
-perfect      = 24 - 16 =  8 pixels
+perfect      = 30 - 16 = 14 pixels
 ```
 
-At the exact ring tick, error `≤8` is `perfect`, error `≤42` is `passed`, and larger error is `missed`. The decision, state change, and `wN-gNN` cue share that tick. The signature records per-cycle outcomes and decision ticks. Tunnel acorns are removed; the prototype's collectible ceiling is the 42 authored course acorns.
+At the exact ring tick, error `≤14` is `perfect`, error `≤42` is `passed`, and larger error is `missed`. The decision, state change, and `wN-gNN` cue share that tick. The signature records per-cycle outcomes and decision ticks. Tunnel acorns are removed; the prototype's collectible ceiling is the 42 authored course acorns.
 
 ### Accuracy-derived exit speed
 
@@ -64,7 +93,7 @@ All misses return at `292.5`; nine outer clears return at `326.25`; nine perfect
 
 ### Source acceptance record
 
-The six fixed-step suites pass with drag press/move/release reconstruction, integer/clamp/merge boundaries, both tunnel keyboard owners, owned resize/focus/pause cancellation, 30/60/120/mixed render cadence, five viewport sizes, exact `8 / 42` judging boundaries, all-miss/all-pass/all-perfect speed derivations, all three mirrored entry anchors, and the unchanged gate-plane/return-grace evidence.
+The six fixed-step suites pass with drag press/move/release reconstruction, integer/clamp/merge boundaries, both tunnel keyboard owners, owned resize/focus/pause cancellation, 30/60/120/mixed render cadence, five viewport sizes, exact `14 / 42` judging boundaries, all-miss/all-pass/all-perfect speed derivations, all three mirrored entry anchors, and the unchanged gate-plane/return-grace evidence.
 
 Measured deterministic profiles are:
 
