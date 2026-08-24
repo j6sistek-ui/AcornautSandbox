@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=140";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=140";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=140";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=140";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=140";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=140";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=140";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=140";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=141";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=141";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=141";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=141";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=141";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=141";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=141";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=141";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3285,24 +3285,21 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     const p = ((t % BEAT) + BEAT) % BEAT; // time since this beat's tap
     const tapWindow = 0.30 / RATE;
     const flapWindow = 0.24 / RATE;
-    // THE HEAD HAS TO STAY IN THE HELMET.
+    // THE HEAD DOES NOT SIT STILL IN THE HELMET, and holding the body pose to
+    // hide that was the wrong trade - it cost every rigged suit its animation,
+    // which is the whole reason the preview exists. The suits animate.
     //
-    // A rigged suit's tap poses move the head, but the dome is anchored to a
-    // single per-suit position ("suit:<id>") because no per-POSE anchors were
-    // ever measured for those banks. In flight that is hidden by 52px and a
-    // third of a second; in a preview at twice the size and half the speed it
-    // reads as a head sliding around inside its glass.
+    // The float itself is real and pre-existing: a rigged suit's tap poses
+    // move the head, but the dome is anchored to ONE per-suit position because
+    // no per-POSE anchors were ever measured for those banks. Suits that wear
+    // their own head - Cat, Volt, Cyber - never had the problem, which is
+    // exactly why Cyber looked right.
     //
-    // The preview therefore holds the STATIC body pose, whose anchor is the
-    // one the dome was measured against, and the motion comes from everything
-    // that does not touch the head: the arc, the pitch, the tail spring and
-    // the pal. Bonus - the tail layer only draws OUTSIDE the tap banks, so
-    // holding the pose is also what lets the plume swing through the beat.
-    //
-    // The generic idle and flap banks are unaffected either way: they carry
-    // per-frame anchors and paintIllustrated already glides between them.
-    const tapAnimT = -1;
-    const beatT = p < tapWindow ? p * RATE : -1; // the beat, for everything else
+    // Fixing it properly means a measured dome anchor per pose per rigged
+    // suit. Template-matching the head through the banks tracks Robo cleanly
+    // and drifts on Big Booty and Eclipse, so it is an art measurement rather
+    // than something to infer - see the note in the PR.
+    const tapAnimT = p < tapWindow ? p * RATE : -1;
     const flapping = p < flapWindow;
     const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
     const speed = flapping ? 10 : 5;
@@ -3327,7 +3324,7 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     // second half of every flap fed a NEGATIVE kick - tilting the wrong way
     // and shrinking the suit instead of popping it
     const kick = flapping ? 1 - p / flapWindow : 0;
-    const articulated = !!art.suitBody?.[suit.id] && beatT >= 0;
+    const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
     ctx.rotate(rot * 0.8 - (articulated ? 0 : kick * 0.12));
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
