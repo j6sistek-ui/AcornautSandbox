@@ -535,16 +535,64 @@
       .ac-hub-launchtxt { align-items: center; text-align: center; }
       .ac-hub-bar { max-width: 720px; align-self: center; }
     }
-    /* the mode sheet rows */
-    .ac-moderow { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
-      background: #141b30; border: 1px solid #2a3454; border-radius: 14px; padding: 11px 14px; color: #f3efe4; }
-    .ac-moderow.on { border-color: #A99BE8; background: rgba(153,142,177,.14); box-shadow: 0 0 0 3px rgba(169,155,232,.16); }
-    .ac-moderowtxt { min-width: 0; }
-    .ac-moderowtxt b { display: block; font-size: 13px; font-weight: 800; letter-spacing: .05em; }
-    .ac-moderowtxt span { display: block; font-size: 11px; color: #8b95b0; margin-top: 1px; }
-    .ac-moderowaside { flex: none; font-size: 10.5px; font-weight: 800; color: #ffd76a; letter-spacing: .05em; white-space: nowrap; }
-    .ac-modeshead { margin: 8px 0 0; letter-spacing: .22em; color: #8b95b0 !important; }
-    .ac-modedoor { border-style: dashed; color: #9aa6c4; }
+    /* ---- MODES: one saturated row per way to fly ---- */
+    .ac-modecard { gap: 9px; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .ac-moderow { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+      border-radius: 18px; padding: 10px 12px; color: #f3efe4;
+      background: linear-gradient(100deg, var(--mw, rgba(30,38,64,.55)), rgba(12,8,28,.5) 64%);
+      border: 1.5px solid var(--m1, #2a3454);
+      box-shadow: 0 6px 18px -12px rgba(0,0,0,.9); }
+    .ac-moderow.on { border-color: var(--mb, #A99BE8);
+      background: linear-gradient(100deg, var(--mw2, rgba(60,70,120,.75)), rgba(14,9,32,.55) 72%);
+      box-shadow: 0 0 0 1px var(--m1, #A99BE8), 0 10px 28px -12px var(--m1, #A99BE8),
+        inset 0 1px 0 rgba(255,255,255,.18); }
+    /* the face plate: real game art, lit by the mode's own hue */
+    .ac-modeic { position: relative; flex: none; width: 54px; height: 54px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(78% 78% at 50% 22%, var(--mw2, rgba(60,70,120,.5)), rgba(6,4,18,.72));
+      border: 1px solid var(--m1, #2a3454); }
+    .ac-modeic canvas, .ac-modeic img { width: 44px; height: 44px; object-fit: contain;
+      filter: drop-shadow(0 3px 7px rgba(0,0,0,.65)); }
+    .ac-modeicart { border-radius: 12px; }
+    .ac-modetick { position: absolute; right: -5px; bottom: -5px; width: 20px; height: 20px; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center; font-style: normal;
+      font: 900 11px/1 Figtree, sans-serif; color: #241500;
+      background: linear-gradient(180deg, #ffe08a, #e0a02a); border: 1.5px solid rgba(20,12,40,.9);
+      box-shadow: 0 2px 8px -2px rgba(255,190,80,.9); }
+    .ac-moderowtxt { flex: 1; min-width: 0; }
+    .ac-moderowtxt b { display: block; font-size: 15px; font-weight: 900; letter-spacing: .04em; }
+    .ac-moderowtxt span { display: block; font-size: 11.5px; color: #97a2bf; margin-top: 2px; }
+    /* the record chip — gold, like every number you earned */
+    .ac-modebest { flex: none; display: flex; flex-direction: column; align-items: center; gap: 1px;
+      border-radius: 999px; padding: 6px 14px;
+      background: linear-gradient(180deg, #ffd76a, #dd9c25); border: 1px solid rgba(255,238,190,.55);
+      box-shadow: 0 4px 12px -4px rgba(255,180,60,.65); }
+    .ac-modebest i { font: 800 8px/1 Figtree, sans-serif; font-style: normal; letter-spacing: .16em; color: #6b4400; }
+    .ac-modebest b { font: 900 16px/1 Figtree, sans-serif; color: #2a1800; }
+    .ac-modelock { flex: none; display: flex; align-items: center; gap: 5px; border-radius: 999px; padding: 8px 12px;
+      background: rgba(8,6,20,.72); border: 1px solid rgba(140,150,190,.3); color: #aeb8d4; }
+    .ac-modelock b { font: 900 12px/1 Figtree, sans-serif; }
+    .ac-modelock svg { opacity: .75; }
+    /* every mode its own hue, drawn from the hub's tile palette */
+    .m-fly { --m1: #3d7bfa; --mb: #9dc0ff; --mw: rgba(61,123,250,.20); --mw2: rgba(61,123,250,.42); }
+    .m-deep { --m1: #8a5ae4; --mb: #c9abff; --mw: rgba(138,90,228,.20); --mw2: rgba(138,90,228,.42); }
+    .m-lost { --m1: #e0447c; --mb: #ffa3c4; --mw: rgba(224,68,124,.20); --mw2: rgba(224,68,124,.42); }
+    .m-arcade { --m1: #eda03c; --mb: #ffd490; --mw: rgba(237,160,60,.20); --mw2: rgba(237,160,60,.42); }
+    .m-tunnel { --m1: #1db388; --mb: #7cebc2; --mw: rgba(29,179,136,.20); --mw2: rgba(29,179,136,.42); }
+    /* the lab, under a rule and deliberately quieter than a mode */
+    .ac-modeshead { display: flex; align-items: center; gap: 10px; margin: 8px 0 1px;
+      font: 800 9px/1 Figtree, sans-serif; letter-spacing: .2em; color: #7c86a4; }
+    .ac-modeshead::after { content: ""; flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(140,150,190,.35), transparent); }
+    .ac-modedoor { border: 1px dashed rgba(140,150,190,.3); background: rgba(10,7,26,.45);
+      color: #9aa6c4; padding: 11px 14px; box-shadow: none; }
+    .ac-modedoor .ac-moderowtxt b { font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+    .ac-modedoor svg { flex: none; opacity: .65; }
+    body.ac-beta .ac-modeback { margin-top: 6px; border-radius: 999px; padding: 15px;
+      font: 900 15px/1 Figtree, sans-serif; letter-spacing: .12em; color: #fff;
+      border: 1px solid rgba(206,186,255,.5);
+      background: linear-gradient(180deg, #8a5ae4, #4a279c);
+      box-shadow: 0 10px 26px -10px rgba(138,90,228,.85), inset 0 1px 0 rgba(255,255,255,.3); }
     /* ---- the chapter map ---- */
     .ac-chartmapwrap { display: flex; justify-content: center; padding: 4px 0 14px; }
     .ac-chartmap { position: relative; }
@@ -672,7 +720,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js124/standalone.js";
+    import { bootStandalone } from "./js125/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
