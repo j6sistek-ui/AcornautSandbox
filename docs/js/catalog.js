@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=132";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=133";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "132";
+export const ART_VER = "133";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 18:11 UTC";
+export const BUILD_TIME = "2026-08-24 19:02 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -514,16 +514,7 @@ export const MOD_BATTERY_COST = 500;
 // gate below it is earned; flipping it by hand is never needed again —
 // it follows the page, not the build.
 export const BETA_UNLOCK_GATES = IS_BETA;
-export const MODS = [
-    {
-        id: "steadyGates",
-        save: "steadyGates",
-        name: "Steady Gates",
-        cost: 400,
-        tag: "NORMAL",
-        desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
-    },
-    {
+export const MODS = [{
         // Rough Air used to sit here and it did the same job as the Wisp pal:
         // both exist to make the gates sway harder. Two switches for one
         // outcome is a menu asking a question it has already answered, so the
@@ -536,6 +527,14 @@ export const MODS = [
         always: true,
         tag: "ANY MODE",
         desc: "Fly with any companion for the look alone - none of its effect, good or bad.",
+    },
+    {
+        id: "steadyGates",
+        save: "steadyGates",
+        name: "Steady Gates",
+        cost: 400,
+        tag: "NORMAL",
+        desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
     },
     {
         id: "thrillSeeker",

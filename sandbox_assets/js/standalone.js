@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=132";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=132";
-import { drawSprite as drawSpriteOn } from "./art.js?v=132";
-import { createEngine } from "./engine.js?v=132";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=132";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=132";
-import { formatRaceTicks } from "./race.js?v=132";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=133";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=133";
+import { drawSprite as drawSpriteOn } from "./art.js?v=133";
+import { createEngine } from "./engine.js?v=133";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=133";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=133";
+import { formatRaceTicks } from "./race.js?v=133";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -412,6 +412,7 @@ export async function bootStandalone(root) {
         "M13.4 6.2 17.8 10.6",
     ];
     const I_X = ["M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"];
+    const I_MAIL = ["M3.4 6.6h17.2v10.8H3.4z", "m3.8 7.2 8.2 6 8.2-6"];
     const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
     const I_GEAR = [
         "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
@@ -447,6 +448,14 @@ export async function bootStandalone(root) {
         b.append(icon(I_HELP, 19));
         b.onclick = () => engine.open("help");
         return b;
+    }
+    /** a number that is a PRICE, never a bare integer. A card reading "70"
+     *  says nothing about which purse it wants, and next to a card reading
+     *  "OWNED" it reads like a score. */
+    function costTag(n) {
+        const w = el("span", "ac-costtag");
+        w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
+        return w;
     }
     function acornPill(n) {
         const pill = el("div", "ac-pill ac-pill-gold");
@@ -709,9 +718,12 @@ export async function bootStandalone(root) {
         prof.setAttribute("aria-label", "Profile");
         prof.append(portraitOf(helm, suit, 34));
         prof.onclick = () => engine.open("profile");
-        const acorns = el("button", "ac-hub-idacorns");
+        // matched to the Star Dust pill so the two currencies read as a pair.
+        // No plus: acorns are flown for, not bought, so there is nowhere to
+        // send a pilot who wants more of them.
+        const acorns = el("button", "ac-hub-idacorns ac-hub-idnut");
         acorns.setAttribute("aria-label", "Shop");
-        acorns.append(icon(I_NUT, 15), el("span", "", s.acorns.toLocaleString()));
+        acorns.append(icon(I_NUT, 14), el("span", "", s.acorns.toLocaleString()));
         acorns.onclick = () => engine.open("shop");
         // Star Dust sits beside acorns and carries a plus, because the only
         // way to get more is to buy it - so the counter may as well be the
@@ -776,10 +788,16 @@ export async function bootStandalone(root) {
                 if (s[m.save])
                     on.push(m.name);
             const palOn = PALS.find((x) => x.id === s.equippedPal);
+            // desc, not tag: "MAGNET" is a label, "Magnet Effect" is what the
+            // hangar card says and it is the one a pilot has actually read.
             if (palOn && palOn.id !== "none" && !s.noPalFx)
-                on.push(`${palOn.name}: ${palOn.tag}`);
+                on.push(`${palOn.name}: ${palOn.desc}`);
             if (on.length) {
-                ltxt.append(el("span", "ac-hub-active", on.join(" \u00b7 ")));
+                // prefixed, because an unlabelled green line beneath a launch button
+                // reads as a slogan rather than as the state of the run
+                const line = el("span", "ac-hub-active");
+                line.append(el("b", "", "Active Effects: "), el("span", "", on.join(" \u00b7 ")));
+                ltxt.append(line);
             }
         }
         launch.append(lic, ltxt);
@@ -838,6 +856,9 @@ export async function bootStandalone(root) {
     // the banks are already decoded and on screen during a flight.
     const MODE_FACE = {
         fly: "rocket", deep: "hole", lost: "tumble", arcade: "arcade",
+        // these two joined MODES and had no face, so both rows drew an empty
+        // plate. modeIcon already knew how to paint them.
+        tunnel: "worm", race: "race",
     };
     function modeIcon(kind, px = 44) {
         if (kind === "rocket") {
@@ -1296,6 +1317,38 @@ export async function bootStandalone(root) {
             load.append(c);
         }
         box.append(load);
+        // THE SAME STAGE THE SHOP USES, showing what is actually equipped. The
+        // hangar had portraits everywhere and no moving picture of the pilot,
+        // so a suit's flap - the thing that separates one from another - was
+        // only ever visible in a run or in the shop's preview.
+        {
+            const wornSuit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
+            const wornHelm = helmetWornBy(s.equipped, s.equippedSuit);
+            const stage = el("div", "ac-tostage ac-hangarstage");
+            const { c, ctx } = miniCanvas(300, 150);
+            c.className = "ac-tocanvas";
+            c.setAttribute("role", "img");
+            c.setAttribute("aria-label", `${wornSuit.name} in flight`);
+            stage.append(c);
+            const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
+            if (ctx) {
+                const t0 = performance.now();
+                const tick = () => {
+                    if (!c.isConnected)
+                        return;
+                    const tt = (performance.now() - t0) / 1000;
+                    ctx.clearRect(0, 0, 300, 150);
+                    if (palWorn && !s.noPalFx)
+                        paintPalPreview(ctx, engine.art, palWorn.id, 234, 48, 40);
+                    else if (palWorn)
+                        paintPalPreview(ctx, engine.art, palWorn.id, 234, 48, 40);
+                    paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, 132, 86, 100, tt);
+                    requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            }
+            box.append(stage);
+        }
         const tabs = el("div", "ac-cats");
         for (const t of ["suits", "helmets", "trails", "pals", "mods"]) {
             const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
@@ -1341,9 +1394,16 @@ export async function bootStandalone(root) {
                     const open = helmetRevealed(s, h.id);
                     const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
                     const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
-                    b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
+                    // A bare integer told the pilot nothing: "70" next to "OWNED"
+                    // reads as a score, and a free helmet rendered the word "0".
+                    // State stays in the text node; a real price becomes its own
+                    // element so it can wear the acorn it is denominated in.
+                    const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
                         : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
-                            : owned ? "OWNED" : h.cost}`));
+                            : owned ? "OWNED" : h.cost > 0 ? "" : "EARNED";
+                    b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+                    if (!premium && open && !owned && h.cost > 0)
+                        b.append(costTag(h.cost));
                     if (premium)
                         markPremium(b, h.glow);
                     if (locked || !open)
@@ -1366,7 +1426,9 @@ export async function bootStandalone(root) {
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
-                        : owned ? "OWNED" : u.cost === 0 ? "EARNED" : u.cost}`));
+                        : owned ? "OWNED" : u.cost === 0 ? "EARNED" : ""}`));
+                if (!premium && open && !owned && u.cost > 0)
+                    b.append(costTag(u.cost));
                 // a fixed head takes no helmet; the card says so up front
                 if (wearsOwnHead(u)) {
                     const nh = el("span", "ac-nohelm");
@@ -1480,6 +1542,30 @@ export async function bootStandalone(root) {
                 grid.append(b);
                 return b;
             };
+            // PAL EFFECTS OFF LEADS. It is the only mod that costs nothing and is
+            // never gated, so it is the one every pilot can actually use - burying
+            // it under two star-gated shield utilities put the free thing third.
+            // The flight mods come with it; the shield utilities follow.
+            // Flight mods change how a run FLIES rather than what you survive, so
+            // they say ON / OFF rather than OWNED: buying one does not force you
+            // to fly with it. They stay locked until LV 30 — a pilot should have
+            // flown the game as designed before rewriting how it moves.
+            const modsOpen = modsUnlocked(s);
+            if (!modsOpen) {
+                scroll.append(el("p", "ac-sub ac-modlock", `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
+            }
+            for (const m of MODS) {
+                const owned = m.always || s.purchased.includes(m.id);
+                const on = !!s[m.save];
+                // an always-on mod ignores the star gate the others sit behind: it
+                // takes something away rather than granting it, so there is nothing
+                // to earn first
+                const open = m.always || modsOpen;
+                const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost, !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null, modIcon(m.id, 56), () => { if (open)
+                    tx(b, () => engine.setMod(m.id), m.always ? undefined : m.cost); });
+                if (!open)
+                    b.classList.add("ac-cardoff");
+            }
             const shieldNut = () => {
                 const { c, ctx } = miniCanvas(56, 56);
                 if (ctx && engine.art?.shieldnut)
@@ -1503,26 +1589,6 @@ export async function bootStandalone(root) {
                 tx(batteryCard, () => engine.toggleMod("battery"), MOD_BATTERY_COST); });
             if (!batteryOpen)
                 batteryCard.classList.add("ac-cardoff");
-            // Flight mods change how a run FLIES rather than what you survive, so
-            // they say ON / OFF rather than OWNED: buying one does not force you
-            // to fly with it. They stay locked until LV 30 — a pilot should have
-            // flown the game as designed before rewriting how it moves.
-            const modsOpen = modsUnlocked(s);
-            if (!modsOpen) {
-                scroll.append(el("p", "ac-sub ac-modlock", `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
-            }
-            for (const m of MODS) {
-                const owned = m.always || s.purchased.includes(m.id);
-                const on = !!s[m.save];
-                // an always-on mod ignores the star gate the others sit behind: it
-                // takes something away rather than granting it, so there is nothing
-                // to earn first
-                const open = m.always || modsOpen;
-                const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost, !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null, modIcon(m.id, 56), () => { if (open)
-                    tx(b, () => engine.setMod(m.id), m.always ? undefined : m.cost); });
-                if (!open)
-                    b.classList.add("ac-cardoff");
-            }
         }
         scroll.append(grid);
         // Premium left these shelves, so something has to say where it went -
@@ -1914,7 +1980,15 @@ export async function bootStandalone(root) {
             const beyond = pos[i + 1] ?? { x: here.x, y: here.y - step };
             const y = Math.round((here.y + beyond.y) / 2);
             const done = gatesDone.includes(g.after);
-            const blocking = !done && !RACE_GATES.some((o) => o.after < g.after && !gatesDone.includes(o.after));
+            // A FIELD YOU HAVE NOT REACHED IS NOT YOURS TO CLEAR. "blocking" only
+            // meant "first uncleared gate", so on a save with nothing flown the
+            // field at 33 was live: a pilot could fly Hyper Run from the chart,
+            // beat 2:30, clear the gate and unlock the mode without ever having
+            // played a level. It blocks the road at 33, so it opens when you
+            // arrive at 33 - which means having finished it.
+            const arrived = ((stars[`${Math.ceil(g.after / 10)}-${((g.after - 1) % 10) + 1}`] || 0) & 1) === 1;
+            const blocking = !done && arrived
+                && !RACE_GATES.some((o) => o.after < g.after && !gatesDone.includes(o.after));
             const band = el("div", `ac-debris${done ? " done" : blocking ? " blocking" : " locked"}`);
             band.style.top = `${y}px`;
             band.style.width = `${roadW}px`; // the road only: the rail keeps its lane
@@ -1951,6 +2025,9 @@ export async function bootStandalone(root) {
                 tag.onclick = () => { hyperRunOpen = true; render(); };
             else
                 tag.disabled = true;
+            if (!done && !blocking && !arrived) {
+                tag.setAttribute("aria-label", `Debris field after level ${g.after}. Reach level ${g.after} to attempt it.`);
+            }
             map.append(tag);
         }
         const wrap = el("div", "ac-chartmapwrap");
@@ -2303,12 +2380,22 @@ export async function bootStandalone(root) {
     // trying premium on, not equipping it, and nothing here is owned.
     let tryOn = { suit: "", helm: "", pal: "" };
     let packOpen = null; // the pack whose contents are open
+    let confirmBuy = false; // the pack sheet is asking "are you sure"
+    /** set by the engine's arrival-claim so the shop can announce it once */
+    let dailyToast = null;
     let revealPack = null; // a pack just bought, being shown off
     let revealPick = null; // the card tapped inside the reveal
+    let revealScroll = 0; // where the swipe strip was left
     let editingName = false; // the Profile name is in edit mode
     const PILOT_FALLBACK = "Nutcracker"; // shown until a pilot picks one
     function drawShop() {
         const s = engine.save;
+        // open() already claimed on arrival; this is where the payment gets
+        // picked up and shown. takeDailyClaim clears as it hands over, so a
+        // re-render inside the same visit does not raise the popup again.
+        const claimed = engine.takeDailyClaim();
+        if (claimed)
+            dailyToast = claimed;
         const box = el("div", "ac-menu");
         box.append(header("Premium", "Shop", headAside(s.acorns)));
         // NO TYPE TABS. The shop used to re-list suits, helmets and pals - the
@@ -2387,7 +2474,7 @@ export async function bootStandalone(root) {
                 // four figures on a strip of four faces and a count. It opens the
                 // pack instead; the purchase lives inside, next to the list of what
                 // it actually contains.
-                card.onclick = () => { packOpen = bn.id; render(); };
+                card.onclick = () => { packOpen = bn.id; confirmBuy = false; render(); };
                 grid.append(card);
             }
             grid.append(codeRow());
@@ -2416,6 +2503,8 @@ export async function bootStandalone(root) {
             box.append(drawPackSheet(packOpen));
         if (revealPack)
             box.append(drawReveal(revealPack));
+        if (dailyToast)
+            box.append(drawDailyToast(dailyToast));
         // This used to read "premium is unlocked for everyone during the beta",
         // which stopped being true the moment the beta started BUYING packs
         // instead of being handed them.
@@ -2458,6 +2547,11 @@ export async function bootStandalone(root) {
         sheet.append(el("h2", "ac-lvlname", bn.name));
         sheet.append(el("p", "ac-sub", `${got.length} items are yours. Swipe to look through them.`));
         const strip = el("div", "ac-revealstrip");
+        // Tapping a card re-renders, and a newly built element starts at scroll
+        // 0 - so picking the eighth item threw the strip back to the first. Put
+        // it back where the pilot left it, and remember every move they make.
+        strip.addEventListener("scroll", () => { revealScroll = strip.scrollLeft; }, { passive: true });
+        requestAnimationFrame(() => { strip.scrollLeft = revealScroll; });
         for (const g of got) {
             const key = `${g.kind}:${g.id}`;
             const card = el("button", revealPick === key ? "ac-card ac-revealitem on" : "ac-card ac-revealitem");
@@ -2539,7 +2633,7 @@ export async function bootStandalone(root) {
         const bn = BUNDLES.find((b) => b.id === id);
         if (!bn)
             return el("div", "");
-        const close = () => { packOpen = null; render(); };
+        const close = () => { packOpen = null; confirmBuy = false; render(); };
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard ac-packcard");
         sheet.append(el("p", "ac-kicker", "PACK"));
@@ -2604,8 +2698,25 @@ export async function bootStandalone(root) {
             buy.disabled = true;
         }
         else {
-            buy.append(el("span", "", "BUY \u00b7 "), icon(I_DUST, 14, true), el("span", "", bn.dust.toLocaleString()));
+            // ONE TAP USED TO SPEND IT. Star Dust is earned and hoarded, so a
+            // mis-tap costing 1,200 of it is not something a pilot can undo. The
+            // first tap now asks and the second commits. The Star Dust PACKS are
+            // deliberately left alone: those cost real money and the platform's
+            // own payment sheet is the confirmation, so asking twice would be one
+            // dialog too many.
+            if (confirmBuy) {
+                buy.classList.add("ac-confirming");
+                buy.append(el("span", "", "CONFIRM \u00b7 SPEND "), icon(I_DUST, 14, true), el("span", "", bn.dust.toLocaleString()));
+            }
+            else {
+                buy.append(el("span", "", "BUY \u00b7 "), icon(I_DUST, 14, true), el("span", "", bn.dust.toLocaleString()));
+            }
             buy.onclick = () => {
+                if (!confirmBuy) {
+                    confirmBuy = true;
+                    render();
+                    return;
+                }
                 if (tx(buy, () => engine.buyBundle(bn.id), bn.dust, "dust")) {
                     // straight into the reveal: a purchase that just closes a sheet
                     // and returns you to a list never shows you what you bought
@@ -2616,9 +2727,11 @@ export async function bootStandalone(root) {
                 }
             };
         }
-        const back = el("button", "ac-ghost", "BACK");
-        back.onclick = close;
+        const back = el("button", "ac-ghost", confirmBuy ? "NOT YET" : "BACK");
+        back.onclick = confirmBuy ? () => { confirmBuy = false; render(); } : close;
         sheet.append(buy, back);
+        if (confirmBuy)
+            sheet.append(el("p", "ac-fine ac-mid", `This spends ${bn.dust.toLocaleString()} Star Dust. You have ${s.starDust.toLocaleString()}.`));
         wrap.append(sheet);
         wrap.onclick = (e) => { if (e.target === wrap)
             close(); };
@@ -2763,6 +2876,36 @@ export async function bootStandalone(root) {
             if (foundersMsg)
                 wrap.append(el("p", "ac-fine ac-codemsg", foundersMsg));
         }
+        return wrap;
+    }
+    /** THE DAILY SAYS SO. Arriving in the shop pays, which is the right
+     *  trade - but it paid in silence, so the reward happened to the pilot
+     *  rather than for them. This is the only thing in the shop that
+     *  interrupts, and it is closed by hand: a reward that vanishes on its
+     *  own timer is one a distracted player never saw. */
+    function drawDailyToast(t) {
+        const close = () => { dailyToast = null; render(); };
+        const wrap = el("div", "ac-lvlsheet");
+        const sheet = el("div", "ac-lvlcard ac-dailycard");
+        sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
+        const big = el("div", "ac-dailybig");
+        big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
+        sheet.append(big);
+        sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
+        sheet.append(el("p", "ac-sub", t.bonus
+            ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
+            : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+        const pips = el("div", "ac-pips");
+        for (let i = 1; i <= DAILY_STREAK_LEN; i++) {
+            pips.append(el("i", `ac-pip${i <= t.streak ? " on" : ""}${i === DAILY_STREAK_LEN ? " big" : ""}`));
+        }
+        sheet.append(pips);
+        const ok = el("button", "ac-primary", "NICE");
+        ok.onclick = close;
+        sheet.append(ok);
+        wrap.append(sheet);
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
         return wrap;
     }
     /** SIGN IN AND CLAIM. Seven pips, one per day of the streak; the seventh
@@ -2921,6 +3064,19 @@ export async function bootStandalone(root) {
         xtxt.append(el("b", "", "@AcornautGame"), el("span", "", "Patch notes, new art, and the occasional crash."));
         x.append(xwrap, xtxt, el("span", "ac-socialgo", "\u2197"));
         social.append(x);
+        // A mail link rather than a form: there is no backend to post to, and a
+        // support address a pilot can copy out of their own mail client beats a
+        // box that silently drops what they typed. The subject is prefilled so
+        // a report arrives already sorted.
+        const mail = document.createElement("a");
+        mail.className = "ac-row ac-rowbtn ac-social";
+        mail.href = "mailto:acornaut@outlook.com?subject=" + encodeURIComponent("Acornaut — feedback");
+        const mwrap = el("span", "ac-socialmark ac-markmail");
+        mwrap.append(icon(I_MAIL, 18));
+        const mtxt = el("span", "ac-socialtxt");
+        mtxt.append(el("b", "", "acornaut@outlook.com"), el("span", "", "Bugs, feedback and feature requests."));
+        mail.append(mwrap, mtxt, el("span", "ac-socialgo", "\u2197"));
+        social.append(mail);
         scroll.append(social);
         scroll.append(el("p", "ac-kicker ac-secthead", "News"));
         const news = el("div", "ac-rows");

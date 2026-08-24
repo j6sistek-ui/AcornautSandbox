@@ -82,6 +82,12 @@ export type Engine = {
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
   claimDaily: () => "ok" | "claimed";
+  /** Hand over a claim that has just been paid, ONCE. The shop claims on
+   *  arrival, inside open(), where the UI cannot see it happen - so the
+   *  payment is parked here and the next render collects it. Reading it
+   *  clears it, which is what stops the popup reappearing on every
+   *  re-render of the same visit. */
+  takeDailyClaim: () => { amount: number; streak: number; bonus: boolean } | null;
   buyDust: (id: string) => "ok" | "missing";
   buyBundle: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** start a Star Chart level; returns false if it is still locked */
@@ -276,6 +282,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     settleDust,
     dailyState,
     claimDaily,
+    takeDailyClaim() {
+      const p = pendingDaily;
+      pendingDaily = null;
+      return p;
+    },
     buyDust,
     buyBundle,
     setMusicOff(off) {
@@ -510,6 +521,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     };
   }
 
+  let pendingDaily: { amount: number; streak: number; bonus: boolean } | null = null;
+
   function claimDaily() {
     const st = dailyState();
     if (st.claimedToday) return "claimed";
@@ -520,6 +533,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
     save.lastDaily = today();
     save.starDust += st.amount;
+    pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay };
     writeSave(save);
     notify();
     return "ok";
@@ -764,6 +778,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
 
   window.addEventListener("keydown", (e) => {
+    // TYPING IS NOT FLYING. Space is the flap key, and this listener claimed
+    // it globally with preventDefault - so pressing space in the pilot-name
+    // box inserted nothing and, on the title screen, launched a run that
+    // re-rendered the field and threw the typed name away. Any key aimed at
+    // a text field belongs to that field. Checked on the focused element
+    // rather than the event target so it holds however focus was reached.
+    const focused = document.activeElement as HTMLElement | null;
+    if (focused && (focused.tagName === "INPUT" || focused.tagName === "TEXTAREA"
+        || focused.isContentEditable)) {
+      return;
+    }
     if (e.code === "Escape") {
       if (world.screen === "play") engine.pause();
       else if (world.screen === "pause") engine.resume();

@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "132";
+export const ART_VER = "133";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -665,16 +665,7 @@ export type Mod = {
   always?: boolean;
 };
 
-export const MODS: Mod[] = [
-  {
-    id: "steadyGates",
-    save: "steadyGates",
-    name: "Steady Gates",
-    cost: 400,
-    tag: "NORMAL",
-    desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
-  },
-  {
+export const MODS: Mod[] = [  {
     // Rough Air used to sit here and it did the same job as the Wisp pal:
     // both exist to make the gates sway harder. Two switches for one
     // outcome is a menu asking a question it has already answered, so the
@@ -687,6 +678,15 @@ export const MODS: Mod[] = [
     always: true,
     tag: "ANY MODE",
     desc: "Fly with any companion for the look alone - none of its effect, good or bad.",
+  },
+
+  {
+    id: "steadyGates",
+    save: "steadyGates",
+    name: "Steady Gates",
+    cost: 400,
+    tag: "NORMAL",
+    desc: "Stops the gates drifting up and down in Normal. Black holes still turn the world over.",
   },
   {
     id: "thrillSeeker",

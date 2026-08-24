@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=132";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=133";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -356,9 +356,14 @@ export async function loadArt(eagerSuits = []) {
         "cryostar",
         "eclipse",
         "volt",
+        // Cyber left this list when it started being SOLD. A suit in a pack has
+        // to exist wherever the pack does, and this list is a SECOND place that
+        // decides - promoting it in catalog.ts alone gave the live page a Cyber
+        // card with no painting behind it.
+        "cyber",
         ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
+            "abyssal", "amethyst", "ivoryguard", "reactor",
         ] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
