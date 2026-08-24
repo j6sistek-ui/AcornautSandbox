@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=127" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=128" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=127" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=128" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,14 +209,13 @@
 
     /* a mod or bundle card is a row, not a tile: it has to carry a
        sentence of explanation that a 3-up grid cannot hold */
-    .ac-bundle { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto;
+    .ac-card.ac-bundle { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto;
       align-items: center; gap: 12px; text-align: left; position: relative; }
     .ac-bundlestrip { display: flex; align-items: center; gap: 4px; }
     .ac-bundlestrip img, .ac-bundlestrip canvas { width: 40px; height: 40px; }
     .ac-bundlemore { font-size: 11px; font-weight: 800; color: #8b95b0; }
     .ac-bundlecount { position: absolute; right: 12px; bottom: 8px; font-size: 9px;
       letter-spacing: .14em; color: #6f7ba0; }
-    .ac-cardoff { opacity: .42; }
     .ac-lab { margin-top: 8px; border-style: dashed; color: #9aa6c4; }
     .ac-labnote { text-align: center; margin-top: 6px; color: #5d6885; }
 
@@ -351,6 +350,20 @@
     /* a suit that wears its own head closes the helmet shelf rather than
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
+    /* what happened when you tapped. A refused transaction used to change
+       nothing at all - no toast, no shake, no re-render - which is what made
+       the screen feel dead on a fresh save. */
+    .ac-deny { margin: 0 14px 6px; min-height: 0; font: 800 11.5px/1.35 Figtree, sans-serif;
+      letter-spacing: .04em; color: #ffb3c4; opacity: 0; transition: opacity .14s ease; }
+    .ac-deny.on { opacity: 1; }
+    @keyframes ac-shake { 10%, 90% { transform: translateX(-2px); }
+      30%, 70% { transform: translateX(3px); } 50% { transform: translateX(-3px); } }
+    .ac-shake { animation: ac-shake .34s cubic-bezier(.36,.07,.19,.97) both; }
+    /* motion is the accent here, never the message: the status line carries
+       the reason on its own for anyone who does not want the movement */
+    @media (prefers-reduced-motion: reduce) {
+      .ac-shake { animation: none; }
+    }
     .ac-lockednote { grid-column: 1 / -1; background: rgba(169,155,232,.1); border: 1px solid rgba(169,155,232,.32);
       border-radius: 14px; padding: 11px 13px; margin-bottom: 10px; }
     .ac-lockedhead { font-size: 12px; font-weight: 800; color: #e6e0ff; margin: 0 0 3px; }
@@ -736,7 +749,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js127/standalone.js";
+    import { bootStandalone } from "../js128/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

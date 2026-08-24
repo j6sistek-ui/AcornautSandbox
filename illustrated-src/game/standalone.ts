@@ -2,7 +2,7 @@ import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_
 import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
 import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef } from "./campaign";
 import { formatRaceTicks } from "./race";
 
@@ -1116,7 +1116,7 @@ export async function bootStandalone(root: HTMLElement) {
       : STAR_UNLOCKS.pals[pl.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.pals[pl.id]}`
       : forShop ? "EARNED BY FLYING" : "LOCKED";
     if (status) b.append(el("p", "ac-palstat", status));
-    b.onclick = () => { if (open) engine.equipPal(pl.id); };
+    b.onclick = () => { if (open) tx(b, () => engine.equipPal(pl.id)); };
     return b;
   }
 
@@ -1148,6 +1148,42 @@ export async function bootStandalone(root: HTMLElement) {
     }, 5000);
     wrap.addEventListener("pointerdown", () => { if (armed) wrap.remove(); });
     document.body.append(wrap);
+  }
+
+  // WHAT HAPPENED WHEN YOU TAPPED. The engine has always returned a reason -
+  // "poor", "locked", "suitOnly", "missing" - and every call site used to
+  // discard it. Worse, the engine returns BEFORE notify() on those paths, so
+  // there was no re-render either and a refused tap moved nothing at all.
+  // One status line, spoken once, plus a shake on the card that was refused
+  // so the message is attached to the thing you touched.
+  let denyEl: HTMLElement | null = null;
+  const DENY_TEXT: Record<string, (cost?: number) => string> = {
+    poor: (c) => c ? `Not enough acorns \u2014 ${c} needed.` : "Not enough acorns.",
+    locked: () => "Locked. Earn more stars to open this.",
+    suitOnly: () => "This one belongs to another suit.",
+    missing: () => "That item is not in this build.",
+    unknown: () => "That item is not in this build.",
+    owned: () => "Already yours.",
+  };
+  function announce(msg: string) {
+    if (!denyEl) return;
+    // re-set the text even when it repeats, or a second identical refusal
+    // is silent to a screen reader
+    denyEl.textContent = "";
+    denyEl.textContent = msg;
+    denyEl.classList.add("on");
+  }
+  function clearDeny() { if (denyEl) { denyEl.textContent = ""; denyEl.classList.remove("on"); } }
+  /** run a transaction and SAY what happened. Returns true if it went through. */
+  function tx(card: HTMLElement, run: () => string, cost?: number) {
+    const res = run();
+    const explain = DENY_TEXT[res];
+    if (!explain) { clearDeny(); return true; }          // "on"/"off"/"ok" - it worked
+    announce(explain(cost));
+    card.classList.remove("ac-shake");
+    void card.offsetWidth;                                // restart the animation
+    card.classList.add("ac-shake");
+    return false;
   }
 
   function drawHangar() {
@@ -1193,6 +1229,10 @@ export async function bootStandalone(root: HTMLElement) {
       tabs.append(b);
     }
     box.append(tabs);
+    denyEl = el("p", "ac-deny");
+    denyEl.setAttribute("role", "status");
+    denyEl.setAttribute("aria-live", "polite");
+    box.append(denyEl);
     const scroll = el("div", "ac-sheet-scroll");
     const grid = el("div", "ac-grid");
     if (engine.shopTab === "helmets") {
@@ -1231,7 +1271,7 @@ export async function bootStandalone(root: HTMLElement) {
           if (premium) b.classList.add("ac-premium");
           if (locked || !open) b.classList.add("ac-cardoff");
           if (s.guide === "helmet" && h.id === GUIDE_HELM) b.classList.add("ac-pulse");
-          b.onclick = () => { if (!locked && open && (!premium || owned)) engine.buyHelmet(h.id); };
+          b.onclick = () => { if (!locked && open && (!premium || owned)) tx(b, () => engine.buyHelmet(h.id), h.cost); };
           row.append(b);
         }
         grid.append(row);
@@ -1258,7 +1298,7 @@ export async function bootStandalone(root: HTMLElement) {
         }
         if (premium) b.classList.add("ac-premium");
         if (s.guide === "hangar" && u.id === GUIDE_SUIT) b.classList.add("ac-pulse");
-        b.onclick = () => { if (!premium || owned) engine.buySuit(u.id); };
+        b.onclick = () => { if (!premium || owned) tx(b, () => engine.buySuit(u.id), u.cost); };
         return b;
       };
       for (const sec of SUIT_SHELF) {
@@ -1318,7 +1358,7 @@ export async function bootStandalone(root: HTMLElement) {
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) b.classList.add("ac-premium");
         if (!open) b.classList.add("ac-cardoff");
-        b.onclick = () => { if (open) engine.buyTrail(t.id); };
+        b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
         grid.append(b);
       }
     } else if (engine.shopTab === "pals") {
@@ -1363,12 +1403,29 @@ export async function bootStandalone(root: HTMLElement) {
         if (ctx && engine.art?.shieldnut) drawSpriteOn(ctx, engine.art.shieldnut, 28, 28, 52);
         return c;
       };
-      mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.",
-          MOD_SHIELD_COST, s.startShield ? "ARMED" : "OFF", shieldNut(),
-          () => engine.toggleMod("shield"));
-      mod("battery", "Shield Battery", "Stack up to three shield charges instead of one. Bought once.",
-          MOD_BATTERY_COST, s.battery ? "OWNED" : null, batteryIcon(56),
-          () => engine.toggleMod("battery"));
+      // These two sit behind star gates exactly like the flight mods below,
+      // but only the MODS loop was dimming its locked cards. So on a fresh
+      // save Start Shield rendered as the brightest, most interactive-looking
+      // control on the screen and returned "locked" without moving a pixel,
+      // and Battery showed its price in the gold reserved for currency to a
+      // pilot holding zero acorns. A card that cannot be used has to look
+      // like one.
+      const shieldOpen = startShieldUnlocked(s);
+      const batteryOpen = batteryUnlocked(s);
+      const shieldCard = mod("shield", "Start Shield",
+          "Begin the next run already shielded. Charged each time you arm it.",
+          MOD_SHIELD_COST,
+          !shieldOpen ? `\u2605 ${STAR_UNLOCKS.startShield}` : s.startShield ? "ARMED" : "OFF",
+          shieldNut(),
+          () => { if (shieldOpen) tx(shieldCard, () => engine.toggleMod("shield"), MOD_SHIELD_COST); });
+      if (!shieldOpen) shieldCard.classList.add("ac-cardoff");
+      const batteryCard = mod("battery", "Shield Battery",
+          "Stack up to three shield charges instead of one. Bought once.",
+          MOD_BATTERY_COST,
+          !batteryOpen ? `\u2605 ${STAR_UNLOCKS.battery}` : s.battery ? "OWNED" : null,
+          batteryIcon(56),
+          () => { if (batteryOpen) tx(batteryCard, () => engine.toggleMod("battery"), MOD_BATTERY_COST); });
+      if (!batteryOpen) batteryCard.classList.add("ac-cardoff");
 
       // Flight mods change how a run FLIES rather than what you survive, so
       // they say ON / OFF rather than OWNED: buying one does not force you
@@ -1389,7 +1446,7 @@ export async function bootStandalone(root: HTMLElement) {
         const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost,
             !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
             modIcon(m.id, 56),
-            () => { if (open) engine.setMod(m.id); });
+            () => { if (open) tx(b, () => engine.setMod(m.id), m.always ? undefined : m.cost); });
         if (!open) b.classList.add("ac-cardoff");
       }
     }
@@ -2018,7 +2075,6 @@ export async function bootStandalone(root: HTMLElement) {
   // the Hangar: the Hangar is for changing what you already own, the Shop
   // for acquiring. Premium items still appear in the Hangar so a loadout
   // reads complete, but the pitch lives here.
-  let storeTab: "bundles" | "suits" | "helmets" | "pals" = "bundles";
 
   // Bundles are priced under the sum of their parts — that IS the pitch, so
   // the saving is stated on the card rather than left to be worked out.
@@ -2036,18 +2092,17 @@ export async function bootStandalone(root: HTMLElement) {
     const box = el("div", "ac-menu");
     box.append(header("Premium", "Shop", headAside(s.acorns)));
 
-    const tabs = el("div", "ac-cats");
-    for (const t of ["bundles", "suits", "helmets", "pals"] as const) {
-      const b = el("button", t === storeTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
-      b.onclick = () => { storeTab = t; keptScroll = 0; render(); };
-      tabs.append(b);
-    }
-    box.append(tabs);
+    // NO TYPE TABS. The shop used to re-list suits, helmets and pals - the
+    // same art, wired to the same equip calls, that the Loadout already
+    // shows. Three tabs of duplicate wardrobe, and on the live page every
+    // premium card in them was inert: iapOwned() resolves through
+    // BETA_UNLOCK_GATES, so all eighteen rendered bright, tappable, and did
+    // nothing at all. The shop SELLS. What you own is the Loadout's job.
 
     const scroll = el("div", "ac-sheet-scroll");
     const grid = el("div", "ac-grid");
 
-    if (storeTab === "bundles") {
+    {
       for (const bn of BUNDLES) {
         const owned = bn.items.every((i) => iapOwned(s, i));
         const card = el("button", "ac-card ac-bundle");
@@ -2087,38 +2142,12 @@ export async function bootStandalone(root: HTMLElement) {
           if (foundersMsg) grid.append(el("p", "ac-fine ac-codemsg", foundersMsg));
         }
       }
-    } else if (storeTab === "suits") {
-      for (const u of SUITS.filter((x) => isIap(x.id))) {
-        const owned = iapOwned(s, u.id);
-        const b = el("button", s.equippedSuit === u.id ? "ac-card ac-premium on" : "ac-card ac-premium");
-        b.append(suitCardOf(u, 64),
-                 document.createTextNode(`${u.name}\n${owned ? "OWNED" : "PREMIUM"}`));
-        b.onclick = () => { if (owned) engine.buySuit(u.id); };
-        grid.append(b);
-      }
-    } else if (storeTab === "helmets") {
-      for (const h of HELMETS.filter((x) => isIap(x.id))) {
-        const owned = iapOwned(s, h.id);
-        const b = el("button", s.equipped === h.id ? "ac-card ac-premium on" : "ac-card ac-premium");
-        b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${owned ? "OWNED" : "PREMIUM"}`));
-        b.onclick = () => { if (owned) engine.buyHelmet(h.id); };
-        grid.append(b);
-      }
-    } else {
-      // Standard pals are earned by flying; premium pals share the same
-      // shelf but keep the same purchase/ownership contract as premium art.
-      // Pals earned by flying live in the Hangar; the Shop only SELLS,
-      // so its shelf is the premium three alone.
-      grid.classList.add("ac-palgrid");
-      for (const pl of PALS.filter((x) => isIap(x.id))) grid.append(palCardOf(pl, true));
     }
 
     scroll.append(grid);
-    if (storeTab !== "pals") {
-      scroll.append(el("p", "ac-fine", BETA_FEATURES
-        ? "Premium items are unlocked for everyone during the beta."
-        : "Premium items arrive with the full release."));
-    }
+    scroll.append(el("p", "ac-fine", BETA_FEATURES
+      ? "Premium items are unlocked for everyone during the beta."
+      : "Premium items arrive with the full release."));
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));
     return box;
