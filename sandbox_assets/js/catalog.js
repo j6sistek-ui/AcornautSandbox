@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=142";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=143";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "142";
+export const ART_VER = "143";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 23:28 UTC";
+export const BUILD_TIME = "2026-08-24 23:31 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -324,9 +324,9 @@ export const ENVS = [
     { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 21, 11, 25], debrisBias: [16, 20], sky: "verdant" },
     { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [19, 13, 15, 10], debrisBias: [18, 23, 19, 9, 6], sky: "mono" },
     { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [21, 30, 22, 19], debrisBias: [9, 13, 2, 6], sky: "verdant" },
-    { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [15, 11, 17, 27, 10, 24], debrisBias: [22, 15], sky: "inferno" },
+    { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [15, 11, 17, 27, 10, 24], debrisBias: [15], sky: "inferno" },
     { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [26, 13, 23, 8], debrisBias: [9, 18], sky: "indigo" },
-    { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 1, 14, 7], debrisBias: [20, 8], sky: "vortex" },
+    { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 1, 14, 7], debrisBias: [8, 25], sky: "vortex" },
     { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [18, 16, 12, 24], debrisBias: [7, 5, 4], sky: "gold" },
     { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 3, 25, 21], debrisBias: [22, 16, 14, 25], sky: "gold" },
     { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [2, 5], debrisBias: [10, 3, 0], sky: "neon" },
@@ -339,9 +339,9 @@ export const ENVS = [
     { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [25, 11, 20], sky: "mono" },
     { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 13, 23], sky: "verdant" },
     { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 19, 11], sky: "inferno" },
-    { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 32, 25, 17], debrisBias: [17, 14, 4], sky: "ghost" },
-    { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [23, 21, 11], sky: "neon" },
-    { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 28, 24, 15], debrisBias: [11, 20, 15], sky: "vortex" },
+    { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 25, 11, 0], debrisBias: [17, 21], sky: "ghost" },
+    { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [21, 26, 1, 10], sky: "neon" },
+    { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 15, 19, 27, 25], debrisBias: [20, 22], sky: "vortex" },
 ];
 // The tail hinge. A damped spring, not a keyframe set: stiffness sets
 // how fast it returns, damping how many times it rings on the way. At
