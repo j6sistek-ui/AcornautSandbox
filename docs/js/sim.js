@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=132";
-import { modsUnlocked, writeSave } from "./save.js?v=132";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=132";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=132";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=132";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=132";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=132";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=133";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=133";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=133";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=133";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=133";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=133";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=133";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2108,6 +2108,9 @@ export function updateWorld(w, save, dt) {
             // controls are learned the moment gate practice begins — persist
             // NOW, so quitting mid-tutorial never re-runs it on the next load
             save.tutorialDone = true;
+            // and the kit the coach already calls "your new ION SUIT" is handed
+            // over here, at the same moment, rather than being pointed at
+            grantTutorialKit(save);
             writeSave(save);
         }
         if (w.tut.stage === "gates" && w.tut.gates >= 3) {
@@ -2126,6 +2129,7 @@ export function updateWorld(w, save, dt) {
         if (w.tut.stage === "ready" && w.tut.t > 1.6) {
             w.tut.stage = "free";
             save.tutorialDone = true;
+            grantTutorialKit(save);
         }
     }
     // TAP TO FLY means exactly that: until the first tap the run is held

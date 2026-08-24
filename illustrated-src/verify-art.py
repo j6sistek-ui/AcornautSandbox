@@ -269,6 +269,23 @@ def verify_catalog_assets(
     # two. Catching it here makes the next one a failed build rather than a
     # refund.
     trails = object_ids(catalog, "TRAILS")
+    # art.ts splits its id lists into an always-loaded head and an
+    # IS_BETA-only tail, and only the head reaches production.
+    suit_block = re.search(r"const suitIds = \[(.*?)\n  \];", art_source, re.S)
+    beta_only_art: set[str] = set()
+    if suit_block:
+        tail = re.search(r"\.\.\.\(IS_BETA \? \[(.*?)\]", suit_block.group(1), re.S)
+        beta_only_art = set(re.findall(r'"([^"]+)"', tail.group(1))) if tail else set()
+    # art.ts splits its id lists into an always-loaded head and an
+    # IS_BETA-only tail; only the head reaches production.
+    suit_block = re.search(r"const suitIds = \[(.*?)\n  \];", art_source, re.S)
+    beta_only_art: set[str] = set()
+    loaded_suits_live: set[str] = set()
+    if suit_block:
+        body = suit_block.group(1)
+        beta_tail = re.search(r"\.\.\.\(IS_BETA \? \[(.*?)\]", body, re.S)
+        beta_only_art = set(re.findall(r'"([^"]+)"', beta_tail.group(1))) if beta_tail else set()
+        loaded_suits_live = set(re.findall(r'"([^"]+)"', body)) - beta_only_art
     beta_only = {
         item for item in re.findall(r'\{\s*id:\s*"([^"]+)"[^{}]*?\bbeta:\s*true', catalog)
     }
@@ -287,6 +304,33 @@ def verify_catalog_assets(
                 qa.fail(
                     f"{name} sells beta-only items, which production strips: "
                     + clipped(gated)
+                )
+            # AND the ART has to ship. The catalog was only half the answer:
+            # art.ts keeps its own beta-gated id list, so an item can sit
+            # perfectly in SUITS and still paint an empty card on the live
+            # page because its picture never loaded. Cyber did exactly that
+            # after being promoted in one file and not the other - and the
+            # first version of this guard passed it.
+            art_gated = sorted({i for i in ids if i in beta_only_art})
+            if art_gated:
+                qa.fail(
+                    f"{name} sells items whose ART is beta-only, so the live "
+                    "card paints nothing: " + clipped(art_gated)
+                )
+            # AND the art has to ship too. The catalog is only half the
+            # answer: art.ts keeps its own beta-gated id lists, so an item
+            # can be perfectly present in SUITS and still render as an empty
+            # card on the live page because its painting never loaded. Cyber
+            # did exactly that after being promoted in one file and not the
+            # other.
+            art_gated = sorted({
+                i for i in ids
+                if i in beta_only_art and i not in loaded_suits_live
+            })
+            if art_gated:
+                qa.fail(
+                    f"{name} sells items whose ART is beta-only, so the live "
+                    f"card paints nothing: " + clipped(art_gated)
                 )
 
     comparisons = (

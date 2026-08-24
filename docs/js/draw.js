@@ -1,11 +1,11 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=132";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=132";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=132";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=132";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=132";
-import { tunnelBoundsAt } from "./sim.js?v=132";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=132";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=132";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=133";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=133";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=133";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=133";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=133";
+import { tunnelBoundsAt } from "./sim.js?v=133";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=133";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=133";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3234,25 +3234,38 @@ export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
 export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     if (!art)
         return;
-    const PERIOD = 1.9;
+    // ONE TAP, THEN REST. The first pass crammed a tap, a rise, a stall and a
+    // fall into 1.9s, which read as twitchy rather than as a jump - the eye
+    // never settled on any of it. A tap every five seconds, played at half
+    // speed, shows the one thing worth showing: what THIS suit does when it
+    // flaps. Dive and the rest can come back if a suit ever earns a special.
+    const PERIOD = 5.0;
+    const RATE = 0.5; // the animation itself, slowed
     const p = ((t % PERIOD) + PERIOD) % PERIOD;
     // the tap itself, and the boost window that follows it
-    const tapAnimT = p < 0.30 ? p : -1;
-    const flapping = p < 0.24;
+    const tapAnimT = p < 0.30 / RATE ? p * RATE : -1;
+    const flapping = p < 0.24 / RATE;
     const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
     const speed = flapping ? 10 : 5;
-    const ft = t * speed;
+    const ft = t * speed * RATE;
     const idx = frames?.length ? Math.floor(ft) % frames.length : 0;
     const nxt = frames?.length ? (idx + 1) % frames.length : 0;
     const fr = ft - Math.floor(ft);
     const blend = fr * fr * (3 - 2 * fr);
-    // the arc: a hard kick up, then gravity taking it back down
-    const vy = p < 0.24
-        ? -230 + (p / 0.24) * 90
-        : Math.min(390, -140 + (p - 0.24) * 520);
+    // the arc, and then stillness: it kicks up, eases back to level, and
+    // waits there. No dive - a preview that is always moving has nothing to
+    // draw the eye when the thing worth seeing happens.
+    const kickEnd = 0.24 / RATE;
+    const settle = kickEnd + 1.1;
+    const vy = p < kickEnd
+        ? -230 + (p / kickEnd) * 90
+        : p < settle
+            ? -140 + ((p - kickEnd) / (settle - kickEnd)) * 140
+            : 0;
     const rot = Math.max(-0.34, Math.min(0.6, vy / 900));
     ctx.save();
-    ctx.translate(cx, cy + Math.sin(p / PERIOD * Math.PI * 2) * size * 0.06);
+    // a gentle idle bob only, not a lap of the frame
+    ctx.translate(cx, cy + Math.sin(t * 1.1) * size * 0.025);
     ctx.scale(size / 52, size / 52);
     const kick = flapping ? 1 - p / 0.24 : 0;
     const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;

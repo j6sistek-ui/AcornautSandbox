@@ -1,5 +1,5 @@
 import {MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
-import { modsUnlocked, writeSave, type SaveData } from "./save";
+import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
@@ -2459,6 +2459,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       // controls are learned the moment gate practice begins — persist
       // NOW, so quitting mid-tutorial never re-runs it on the next load
       save.tutorialDone = true;
+      // and the kit the coach already calls "your new ION SUIT" is handed
+      // over here, at the same moment, rather than being pointed at
+      grantTutorialKit(save);
       writeSave(save);
     }
     if (w.tut.stage === "gates" && w.tut.gates >= 3) {
@@ -2477,6 +2480,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     if (w.tut.stage === "ready" && w.tut.t > 1.6) {
       w.tut.stage = "free";
       save.tutorialDone = true;
+      grantTutorialKit(save);
     }
   }
 

@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=132";
-import { sfx, unlockAudio, music } from "./audio.js?v=132";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=132";
-import { drawHud, drawWorld } from "./draw.js?v=132";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=132";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=132";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=132";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=132";
-import { raceViewport } from "./race-viewport.js?v=132";
+import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=133";
+import { sfx, unlockAudio, music } from "./audio.js?v=133";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=133";
+import { drawHud, drawWorld } from "./draw.js?v=133";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=133";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=133";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=133";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=133";
+import { raceViewport } from "./race-viewport.js?v=133";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -181,6 +181,11 @@ export async function createEngine(canvas) {
         settleDust,
         dailyState,
         claimDaily,
+        takeDailyClaim() {
+            const p = pendingDaily;
+            pendingDaily = null;
+            return p;
+        },
         buyDust,
         buyBundle,
         setMusicOff(off) {
@@ -434,6 +439,7 @@ export async function createEngine(canvas) {
             amount: DAILY_DUST + (wrapped === DAILY_STREAK_LEN ? DAILY_STREAK_BONUS : 0),
         };
     }
+    let pendingDaily = null;
     function claimDaily() {
         const st = dailyState();
         if (st.claimedToday)
@@ -446,6 +452,7 @@ export async function createEngine(canvas) {
         save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
         save.lastDaily = today();
         save.starDust += st.amount;
+        pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay };
         writeSave(save);
         notify();
         return "ok";
@@ -698,6 +705,17 @@ export async function createEngine(canvas) {
         e.preventDefault();
     });
     window.addEventListener("keydown", (e) => {
+        // TYPING IS NOT FLYING. Space is the flap key, and this listener claimed
+        // it globally with preventDefault - so pressing space in the pilot-name
+        // box inserted nothing and, on the title screen, launched a run that
+        // re-rendered the field and threw the typed name away. Any key aimed at
+        // a text field belongs to that field. Checked on the focused element
+        // rather than the event target so it holds however focus was reached.
+        const focused = document.activeElement;
+        if (focused && (focused.tagName === "INPUT" || focused.tagName === "TEXTAREA"
+            || focused.isContentEditable)) {
+            return;
+        }
         if (e.code === "Escape") {
             if (world.screen === "play")
                 engine.pause();
@@ -932,4 +950,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=132";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=133";

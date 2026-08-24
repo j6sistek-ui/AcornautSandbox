@@ -434,9 +434,14 @@ export async function loadArt(eagerSuits: string[] = []): Promise<ArtBank> {
     "cryostar",
     "eclipse",
     "volt",
+    // Cyber left this list when it started being SOLD. A suit in a pack has
+    // to exist wherever the pack does, and this list is a SECOND place that
+    // decides - promoting it in catalog.ts alone gave the live page a Cyber
+    // card with no painting behind it.
+    "cyber",
     ...(IS_BETA ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
+      "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
