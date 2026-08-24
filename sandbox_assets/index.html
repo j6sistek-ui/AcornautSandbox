@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=133" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=134" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=133" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=134" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -372,10 +372,32 @@
 
 
     /* the daily badge, the disc from the key art */
-    .ac-dailybadge { flex: none; width: 46px; height: 46px; object-fit: contain;
+    .ac-dailybadge { flex: none; width: 46px; height: 46px;
       filter: drop-shadow(0 3px 9px rgba(120,80,220,.7)); }
     .ac-dailybadgebig { display: block; width: 96px; height: 96px; margin: 2px auto 0;
-      object-fit: contain; filter: drop-shadow(0 5px 16px rgba(120,80,220,.85)); }
+      filter: drop-shadow(0 5px 16px rgba(120,80,220,.85)); }
+    /* THE BADGE TURNS. The disc is a 32-cell sprite sheet, 8 across and 4
+       down. The sheet steps across the columns, the row it sits in steps
+       down the rows, and this box crops a single cell - two nested boxes
+       because one element carries one transform. Every offset is a
+       percentage of the animated element's OWN size, so this one rule
+       serves the 46px row badge and the 96px popup badge without knowing
+       either number. 32 cells over 3.5s; the column leg is a quarter of
+       that, which is what keeps the two legs in phase.
+
+       The still disc is this box's own background. It is what shows while
+       the sheet loads, if the sheet never arrives, and for a pilot whose
+       system asked for less motion - so the badge is never missing. */
+    .ac-dustbadge { position: relative; overflow: hidden;
+      background-position: center; background-size: contain; background-repeat: no-repeat; }
+    .ac-dustbadgerow { position: absolute; left: 0; top: 0; width: 100%; height: 400%;
+      animation: ac-dustrow 3.5s steps(4) infinite; }
+    .ac-dustbadgecells { position: absolute; left: 0; top: 0; width: 800%; height: 100%;
+      background-position: left top; background-size: 100% 100%; background-repeat: no-repeat;
+      animation: ac-dustcol .875s steps(8) infinite; }
+    @keyframes ac-dustrow { to { transform: translateY(-100%); } }
+    @keyframes ac-dustcol { to { transform: translateX(-100%); } }
+    @media (prefers-reduced-motion: reduce) { .ac-dustbadgerow { display: none; } }
     /* STAR DUST ON A PURPLE SHOP. The violet glyph sat on a violet sheet and
        all but vanished. It keeps its colour and gains a dark disc to sit on,
        so the contrast comes from the plate rather than from repainting the
@@ -1018,7 +1040,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js133/standalone.js";
+    import { bootStandalone } from "./js134/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

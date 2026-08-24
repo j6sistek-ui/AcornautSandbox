@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=133";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=133";
-import { drawSprite as drawSpriteOn } from "./art.js?v=133";
-import { createEngine } from "./engine.js?v=133";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=133";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=133";
-import { formatRaceTicks } from "./race.js?v=133";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=134";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=134";
+import { drawSprite as drawSpriteOn } from "./art.js?v=134";
+import { createEngine } from "./engine.js?v=134";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=134";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=134";
+import { formatRaceTicks } from "./race.js?v=134";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2910,6 +2910,30 @@ export async function bootStandalone(root) {
         }
         return wrap;
     }
+    /** THE BADGE TURNS. The daily disc arrived as a 6s render whose badge
+     *  slowly zooms - the gold ring grows 1073px to 1137px across the clip -
+     *  so it was cut frame by frame against its OWN ring and resampled to one
+     *  fixed disc. What ships is a 32-cell sprite sheet, 8 across and 4 down.
+     *
+     *  Two nested boxes because one element carries one transform: the inner
+     *  sheet steps across the columns, the row it sits in steps down the rows,
+     *  and the outer box crops a single cell. Both offsets are percentages of
+     *  the animated element's own width, so one rule serves the 46px row badge
+     *  and the 96px popup badge without knowing either size.
+     *
+     *  The still disc stays as the box's own background: it is what shows
+     *  while the sheet loads, if the sheet never arrives, and for a pilot who
+     *  asked their system for less motion. */
+    function dustBadge(cls) {
+        const box = el("div", `ac-dustbadge ${cls}`);
+        box.style.backgroundImage = `url("${artRootUrl()}/ui/dust-badge.png?v=${ART_VER}")`;
+        const row = el("div", "ac-dustbadgerow");
+        const cells = el("div", "ac-dustbadgecells");
+        cells.style.backgroundImage = `url("${artRootUrl()}/ui/dust-badge-anim.webp?v=${ART_VER}")`;
+        row.append(cells);
+        box.append(row);
+        return box;
+    }
     /** THE DAILY SAYS SO. Arriving in the shop pays, which is the right
      *  trade - but it paid in silence, so the reward happened to the pilot
      *  rather than for them. This is the only thing in the shop that
@@ -2919,7 +2943,7 @@ export async function bootStandalone(root) {
         const close = () => { dailyToast = null; render(); };
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard ac-dailycard");
-        sheet.append((() => { const i = document.createElement("img"); i.src = `${artRootUrl()}/ui/dust-badge.png?v=${ART_VER}`; i.alt = ""; i.className = "ac-dailybadgebig"; return i; })());
+        sheet.append(dustBadge("ac-dailybadgebig"));
         sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
         const big = el("div", "ac-dailybig");
         big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
@@ -2948,7 +2972,7 @@ export async function bootStandalone(root) {
         const st = engine.dailyState();
         const card = el("div", st.claimedToday ? "ac-daily done" : "ac-daily");
         // the badge leads, so the row is recognisable before a word is read
-        card.append((() => { const i = document.createElement("img"); i.src = `${artRootUrl()}/ui/dust-badge.png?v=${ART_VER}`; i.alt = ""; i.className = "ac-dailybadge"; return i; })());
+        card.append(dustBadge("ac-dailybadge"));
         const left = el("div", "ac-dailytxt");
         left.append(el("p", "ac-modname", "DAILY STAR DUST"));
         const pips = el("div", "ac-pips");
