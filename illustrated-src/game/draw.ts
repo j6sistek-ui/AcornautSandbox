@@ -4,7 +4,7 @@ import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
-import { tunnelBoundsAt, type Particle, type World } from "./sim";
+import { gateOffset, liveGapY, tiltNow, tunnelBoundsAt, type Particle, type World } from "./sim";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   RACE_ACORNS,
@@ -42,17 +42,15 @@ function frameOf<T>(list: T[], t: number, speed = 6) {
   return list[Math.floor(t * speed) % list.length];
 }
 
-function liveGapY(p: World["planets"][number]) {
-  return p.gapY + Math.sin(p.drift) * p.driftAmp;
-}
-
 function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
   const lost = w.flight === "lost";
   const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return;
   ctx.translate(w.W / 2, w.H / 2);
   const spin = w.warpT > 0 ? Math.sin(wp * Math.PI) * 2.6 : 0;
-  ctx.rotate(w.prevTilt + (w.warpTilt - w.prevTilt) * wp + spin);
+  // tiltNow is the settled lean, shared with the gate edge limit so the two
+  // can never disagree; the fold's spin is this painter's own flourish
+  ctx.rotate(tiltNow(w) + spin);
   const mFrom = w.prevMirror ? -1 : 1;
   const mTo = w.warpMirror ? -1 : 1;
   ctx.scale(mFrom + (mTo - mFrom) * wp, 1);
@@ -1640,11 +1638,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   // Gates and debris then read as solid objects against any backdrop.
   const halo: "dark" | "light" = skyLuma(w) > 0.42 ? "dark" : "light";
   for (const p of w.planets) {
-    const gy = liveGapY(p);
+    const gy = liveGapY(p, w);
     drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
     drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
     for (const b of p.blockers) {
-      const by = b.y + Math.sin(p.drift) * p.driftAmp;
+      const by = b.y + gateOffset(p, w);
       const bx = p.x + b.xOff;
       const img = art.debris[b.debris];
       if (img) drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
@@ -2021,11 +2019,11 @@ function drawRetroWorld(
 ) {
   const { W } = w;
   for (const p of w.planets) {
-    const gy = liveGapY(p);
+    const gy = liveGapY(p, w);
     retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
     retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
     for (const b of p.blockers) {
-      const by = b.y + Math.sin(p.drift) * p.driftAmp;
+      const by = b.y + gateOffset(p, w);
       retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
     }
   }

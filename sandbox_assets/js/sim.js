@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=135";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=135";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=135";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=135";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=135";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=135";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=135";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=136";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=136";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=136";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=136";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=136";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=136";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=136";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -437,7 +437,7 @@ function tutReset(w, bx, by) {
         if (p.x + p.r >= sx - 20 && (!best || p.x < best.x))
             best = p;
     if (best)
-        cy = liveGapY(best);
+        cy = liveGapY(best, w);
     spark(w, bx, by, ["#7ad8ff", "#5dff9e", "#fff"], 16, "shield");
     for (const p of w.planets) {
         p.blockers = p.blockers.filter((b) => {
@@ -458,6 +458,36 @@ function tutReset(w, bx, by) {
 }
 function tutSafe(w) {
     return !!w.tut && w.tut.stage !== "free";
+}
+/** BLACK HOLE AND WORMHOLE SPAWN RATES, in one place.
+ *
+ *  Free Flight has always carried black holes. The Star Chart's Lost and
+ *  Arcade stages used to sell WORMHOLES; those levels take a black hole
+ *  instead now, at the rate the wormhole had, so the stage's rhythm is
+ *  unchanged and only the hazard's identity moves. Free-play Arcade loses
+ *  its reversal hazard outright.
+ *
+ *  Lost in Space is held at ZERO rather than deleted. It is coming back in
+ *  a different form, and a spawn that still reads as a spawn - one number
+ *  from being live again - is worth more than a branch someone has to
+ *  rebuild from memory. */
+const HOLE_RATE_FLY = 0.018;
+/** the slot the wormhole used to occupy on a campaign level */
+const HOLE_RATE_LEVEL = 0.05;
+const WORM_RATE = {
+    lost: 0, // deliberately zero — see above
+};
+function holeChance(w) {
+    if (w.flight === "fly")
+        return HOLE_RATE_FLY;
+    // a Star Chart level built on Lost or Arcade: the wormhole's slot, rekeyed
+    if (w.lvl && (w.flight === "lost" || w.flight === "arcade"))
+        return HOLE_RATE_LEVEL;
+    return 0;
+}
+/** Free play only. A campaign level never spawns one, whatever its base. */
+function wormChance(w) {
+    return w.lvl ? 0 : WORM_RATE[w.flight] ?? 0;
 }
 function spawnPair(w, save, x) {
     const env = ENVS[w.envB];
@@ -572,7 +602,8 @@ function spawnPair(w, save, x) {
         // scenery that looked like the exit — black holes inside the black
         // hole. The only hole that belongs in here is the one that ends it.
         const warping = w.warpGateEnd >= 0;
-        if (!w.tut && !noHoles && w.flight === "fly" && !warping && Math.random() < 0.018) {
+        const holeRate = holeChance(w);
+        if (!w.tut && !noHoles && !warping && holeRate > 0 && Math.random() < holeRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
         }
         // The way home. Once the fifteen gates are behind you the next gate
@@ -593,9 +624,11 @@ function spawnPair(w, save, x) {
         if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && Math.random() < 0.05) {
             w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
         }
-        // Wormholes flip your heading in Lost in Space and — now — in Arcade,
-        // where they are the reversal hazard the retro game runs on.
-        if (!w.tut && !noHoles && (w.flight === "lost" || w.flight === "arcade") && Math.random() < 0.05) {
+        // Wormholes flip your heading. Nothing spawns one today: Arcade's is
+        // retired and Lost in Space's rate is held at zero until it comes back
+        // in its new form. The path stays wired — see WORM_RATE.
+        const wormRate = wormChance(w);
+        if (!w.tut && !noHoles && wormRate > 0 && Math.random() < wormRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
         }
     }
@@ -1621,8 +1654,77 @@ export function dive(w) {
     spark(w, w.W * PHYS.squirrelX, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
     return "dive";
 }
-function liveGapY(p) {
-    return p.gapY + Math.sin(p.drift) * p.driftAmp;
+/** how much of a gate's planet must stay on screen once the world is tilted */
+export const PLANET_ON_SCREEN = 0.75;
+/** The tilt the playfield is CURRENTLY drawn at, without the fold's spin.
+ *  draw's applyWarp adds the spin on top; the spin is a half-second flourish
+ *  during which everything is turning anyway, so the edge limit below tracks
+ *  the settled angle and does not chase it. One function so the limit and
+ *  the render can never disagree about how far the world is leaning. */
+export function tiltNow(w) {
+    const lost = w.flight === "lost";
+    const wp = w.warpT > 0 ? 1 - w.warpT
+        : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
+    if (wp <= 0)
+        return 0;
+    return w.prevTilt + (w.warpTilt - w.prevTilt) * wp;
+}
+/** WHERE A GATE ACTUALLY SITS, with a limit on the screen edges.
+ *
+ *  The playfield is drawn rotated about its centre, so a gate dx from that
+ *  centre is painted dx*sin(t) away from where it sits. Lost in Space leans
+ *  up to 40 degrees continuously, which was walking whole planets off the
+ *  bottom on the approach - measured on the reporting phone, none of the
+ *  planet left on screen at the worst moment.
+ *
+ *  Clamping where gates may SPAWN would have cost 45% of Lost's vertical
+ *  range and a third of Normal's, because a spawn clamp has to reserve for
+ *  the worst tilt at all times. This limit is applied to the LIVE position
+ *  instead, so it costs nothing until the lean actually threatens an edge.
+ *
+ *  Both planets are held, not just the low one. Pushing a gate up to rescue
+ *  its bottom planet is exactly how the top one would leave the screen, so
+ *  the top's own limit caps the push - and when the gate is too tall to
+ *  satisfy both at that angle, the overflow is split evenly rather than
+ *  spent entirely on one edge.
+ *
+ *  Every reader goes through here - collision, the tutorial's safe spot and
+ *  both painters - so what the pilot flies into is what the pilot sees. */
+export function liveGapY(p, w) {
+    return p.gapY + gateOffset(p, w);
+}
+/** HOW FAR THE WHOLE GATE HAS MOVED from where it was spawned - its sway
+ *  plus whatever the edge limit is asking of it. The planets and the rocks
+ *  sealing the column both add THIS, so a gate that is nudged travels as one
+ *  piece; adding the sway in two places and the nudge in one is precisely
+ *  how a seal would tear away from its planets, and how collision would
+ *  start disagreeing with the picture. */
+export function gateOffset(p, w) {
+    const sway = Math.sin(p.drift) * p.driftAmp;
+    if (!w)
+        return sway;
+    const y = p.gapY + sway;
+    const t = tiltNow(w);
+    const cos = Math.cos(t);
+    if (!(Math.abs(cos) > 1e-3))
+        return sway;
+    const half = p.gap / 2 + p.r;
+    const lean = (p.x - w.W / 2) * Math.sin(t);
+    const mid = w.H / 2;
+    // the far edge of a planet may hang this far past the screen and still
+    // count as on it
+    const slack = p.r * (2 * PLANET_ON_SCREEN - 1);
+    const low = mid + lean + (y + half - mid) * cos; // bottom planet, on screen
+    const high = mid + lean + (y - half - mid) * cos; // top planet, on screen
+    const over = low - (w.H - slack); // >0: too low, wants to rise
+    const under = slack - high; // >0: too high, wants to sink
+    if (over <= 0 && under <= 0)
+        return sway;
+    // too tall to hold both at this angle: share the overflow instead of
+    // spending it all on one edge
+    if (over > 0 && under > 0)
+        return sway + (under - over) / (2 * cos);
+    return sway + (over > 0 ? -over / cos : under / cos);
 }
 function circleHit(x1, y1, r1, x2, y2, r2) {
     return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
@@ -1684,7 +1786,7 @@ function safeY(w) {
         if (!best || p.x < best.x)
             best = p;
     }
-    return best ? liveGapY(best) : w.H * 0.45;
+    return best ? liveGapY(best, w) : w.H * 0.45;
 }
 function clearDebrisNear(w, x, y, r1, x2, y2, r2) {
     for (const p of w.planets) {
@@ -2404,7 +2506,7 @@ export function updateWorld(w, save, dt) {
         for (const p of w.planets) {
             for (const b of p.blockers) {
                 const bx = p.x + b.xOff;
-                const by = b.y + Math.sin(p.drift) * p.driftAmp;
+                const by = b.y + gateOffset(p, w);
                 if (circleHit(sx, sy, sr, bx, by, b.r * 0.92)) {
                     if (w.shieldCharges > 0) {
                         absorb(w, bx, by);
@@ -2422,7 +2524,7 @@ export function updateWorld(w, save, dt) {
     }
     // Golden invuln phases debris only. Planet bounces stay live (live PR #42).
     for (const p of w.planets) {
-        const gy = liveGapY(p);
+        const gy = liveGapY(p, w);
         const topY = gy - p.gap / 2 - p.r;
         const botY = gy + p.gap / 2 + p.r;
         for (const py of [topY, botY]) {
