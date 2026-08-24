@@ -1,5 +1,5 @@
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save";
@@ -2248,7 +2248,10 @@ export async function bootStandalone(root: HTMLElement) {
   // than two shelves of the same thing: PACKS spends Star Dust, DUST buys
   // it. Splitting them keeps a real-money purchase from ever sitting one
   // tap away from an in-game one by accident.
-  let shopPage: "packs" | "dust" = "packs";
+  let shopPage: "packs" | "preview" | "dust" = "packs";
+  // what the PREVIEW page is currently wearing. Not the save: you are
+  // trying premium on, not equipping it, and nothing here is owned.
+  let tryOn: { suit: string; helm: string; pal: string } = { suit: "", helm: "", pal: "" };
 
   function drawShop() {
     const s = engine.save;
@@ -2261,9 +2264,9 @@ export async function bootStandalone(root: HTMLElement) {
     // premium card in them was inert. The shop SELLS. What you own is the
     // Loadout's job.
     const tabs = el("div", "ac-cats");
-    for (const t of ["packs", "dust"] as const) {
+    for (const t of ["packs", "preview", "dust"] as const) {
       const b = el("button", t === shopPage ? "ac-cat on" : "ac-cat",
-                   t === "packs" ? "PACKS" : "STAR DUST");
+                   t === "packs" ? "PACKS" : t === "preview" ? "PREVIEW" : "STAR DUST");
       b.onclick = () => { shopPage = t; keptScroll = 0; render(); };
       tabs.append(b);
     }
@@ -2282,6 +2285,13 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(drawDaily());
 
     const grid = el("div", "ac-grid");
+
+    if (shopPage === "preview") {
+      scroll.append(drawTryOn());
+      box.append(scroll);
+      if (!BETA_FEATURES) box.append(tabbar("shop"));
+      return box;
+    }
 
     if (shopPage === "packs") {
       for (const bn of BUNDLES) {
@@ -2352,6 +2362,105 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));
     return box;
+  }
+
+  /** TRY IT ON. The packs page sells; this one shows what you would be
+   *  wearing. Three side-scrolling shelves - suits, helmets, pals - holding
+   *  only premium content, because everything else is already in the
+   *  Loadout and a shop that re-lists the wardrobe is the mistake Wave 0
+   *  just deleted.
+   *
+   *  The stage above them is the game's own renderer, not a portrait: it
+   *  runs a real tap-rise-fall cycle so a suit with its own jump shows it.
+   *  Robo's articulated tap and Eclipse's impact squash are the whole
+   *  reason a still image was not good enough. */
+  function drawTryOn() {
+    const s = engine.save;
+    const wrap = el("div", "ac-tryon");
+
+    const suits = SUITS.filter((u) => isIap(u.id));
+    const helms = HELMETS.filter((h) => isIap(h.id));
+    const pals = PALS.filter((pl) => isIap(pl.id));
+    // first run: wear the first of each rather than an empty stage
+    if (!tryOn.suit) tryOn = { suit: suits[0]?.id ?? "", helm: helms[0]?.id ?? "", pal: pals[0]?.id ?? "" };
+    const suit = SUITS.find((u) => u.id === tryOn.suit) ?? suits[0] ?? SUITS[0];
+    // a fixed-head suit wears no helmet, so the stage must not paint one
+    const ownHead = wearsOwnHead(suit);
+    const helm = ownHead
+      ? HELMETS[0]
+      : (HELMETS.find((h) => h.id === tryOn.helm) ?? helms[0] ?? HELMETS[0]);
+
+    // ---- the stage
+    const stage = el("div", "ac-tostage");
+    const { c, ctx } = miniCanvas(300, 190);
+    c.className = "ac-tocanvas";
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", `${suit.name} preview, flying`);
+    stage.append(c);
+    const cap = el("div", "ac-tocap");
+    cap.append(el("b", "", suit.name + (ownHead ? "" : ` \u00b7 ${helm.name}`)));
+    const palDef = PALS.find((x) => x.id === tryOn.pal);
+    if (palDef) cap.append(el("span", "", `${palDef.name} \u00b7 ${palDef.tag}`));
+    stage.append(cap);
+    if (ownHead) stage.append(el("span", "ac-tonohelm", "WEARS ITS OWN HEAD"));
+    wrap.append(stage);
+
+    // The stage animates, and nothing else in these menus does, so it owns
+    // a frame loop. It stops itself the moment the canvas leaves the
+    // document - every re-render replaces it - rather than relying on some
+    // other screen to remember to cancel it.
+    if (ctx) {
+      const t0 = performance.now();
+      const tick = () => {
+        if (!c.isConnected) return;
+        const t = (performance.now() - t0) / 1000;
+        ctx.clearRect(0, 0, 300, 190);
+        if (palDef) paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
+        paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // ---- the three shelves
+    const shelf = (title: string, kind: "suit" | "helm" | "pal", items: { id: string; name: string }[]) => {
+      if (!items.length) return;
+      wrap.append(el("p", "ac-shelfhead", title));
+      const row = el("div", "ac-shelfrow");
+      for (const it of items) {
+        const on = tryOn[kind] === it.id;
+        const b = el("button", on ? "ac-card ac-tocard on" : "ac-card ac-tocard");
+        if (kind === "suit") {
+          const u = SUITS.find((x) => x.id === it.id)!;
+          b.append(suitCardOf(u, 56));
+          markPremium(b, u.glow);
+        } else if (kind === "helm") {
+          const h = HELMETS.find((x) => x.id === it.id)!;
+          b.append(helmCardOf(h, 56));
+          markPremium(b, h.glow);
+        } else {
+          const { c: pc, ctx: pctx } = miniCanvas(56, 56);
+          if (pctx) paintPalPreview(pctx, engine.art, it.id, 28, 28, 50);
+          b.append(pc);
+          markPremium(b);
+        }
+        b.append(document.createTextNode(`${it.name}\n${iapOwned(s, it.id) ? "OWNED" : "IN A PACK"}`));
+        b.onclick = () => { tryOn = { ...tryOn, [kind]: it.id }; render(); };
+        row.append(b);
+      }
+      wrap.append(row);
+    };
+    shelf("SUITS", "suit", suits);
+    // hiding the helmet shelf under a fixed-head suit would make the row
+    // jump; dimming it says WHY it cannot be used instead
+    const helmRow = helms;
+    shelf("HELMETS", "helm", helmRow);
+    shelf("PALS", "pal", pals);
+    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} wears its own head, so a helmet changes nothing on it.`));
+
+    wrap.append(el("p", "ac-fine",
+      "Everything here arrives in a pack. Open PACKS to see which one."));
+    return wrap;
   }
 
   /** the access-code redeem row, unchanged in behaviour, lifted out so the

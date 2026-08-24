@@ -10,9 +10,9 @@
   <meta property="og:description" content="Fly the gaps. Grab the acorns." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acornaut.app/" />
-  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=131" />
+  <meta property="og:image" content="https://acornaut.app/art/menu-splash.jpg?v=132" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=131" />
+  <meta name="twitter:image" content="https://acornaut.app/art/menu-splash.jpg?v=132" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -362,6 +362,27 @@
     /* a suit that wears its own head closes the helmet shelf rather than
        offering picks that would change nothing you can see */
     .ac-cardoff { opacity: .34; filter: grayscale(.6); cursor: default; }
+
+    /* ---- PREVIEW: trying premium on before you buy the pack ---- */
+    .ac-tryon { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; }
+    .ac-tostage { position: relative; display: flex; flex-direction: column; align-items: center;
+      gap: 6px; padding: 10px 8px 12px; margin-bottom: 4px; border-radius: 18px;
+      background: radial-gradient(120% 90% at 50% 8%, rgba(70,58,150,.42), rgba(6,8,22,.85) 70%);
+      border: 1px solid #2a3454; overflow: hidden; }
+    .ac-tocanvas { width: 300px; max-width: 100%; height: auto; display: block; }
+    .ac-tocap { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+    .ac-tocap b { font: 800 14px/1.2 Figtree, sans-serif; letter-spacing: .04em; color: #f3efe4; }
+    .ac-tocap span { font-size: 11px; color: #8b95b0; }
+    .ac-tonohelm { position: absolute; top: 8px; right: 10px;
+      font: 800 9px/1 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .1em;
+      color: #8b95b0; background: rgba(8,12,26,.8); border-radius: 999px; padding: 4px 8px; }
+    /* the shelves reuse the hangar's row, only narrower cards */
+    .ac-tocard { min-height: 96px; min-width: 78px; }
+    .ac-tocard.on { box-shadow: inset 0 0 0 1px rgba(212,175,55,.55),
+      inset 0 -18px 26px -18px var(--pg, #c9b6ff), 0 0 0 2px #A99BE8; }
+    /* the stage animates continuously; hold it still for anyone who asked */
+    @media (prefers-reduced-motion: reduce) { .ac-tocanvas { /* frames still paint, motion is inherent */ } }
+
 
     /* ---- Community: outward links from the Profile ---- */
     .ac-social { display: flex; align-items: center; gap: 11px; text-decoration: none;
@@ -850,7 +871,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js131/standalone.js";
+    import { bootStandalone } from "./js132/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

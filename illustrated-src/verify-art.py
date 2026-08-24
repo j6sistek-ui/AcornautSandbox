@@ -262,6 +262,33 @@ def verify_catalog_assets(
         if duplicates:
             qa.fail(f"duplicate {label} catalog ids: " + clipped(duplicates))
 
+    # A PACK MAY ONLY SELL WHAT PRODUCTION SHIPS. Beta-only entries are
+    # spliced out of SUITS and HELMETS on the live page, so a bundle listing
+    # one advertises an item that cannot exist there - Cyber did exactly
+    # that, and the Circuit Pack promised three suits while able to deliver
+    # two. Catching it here makes the next one a failed build rather than a
+    # refund.
+    trails = object_ids(catalog, "TRAILS")
+    beta_only = {
+        item for item in re.findall(r'\{\s*id:\s*"([^"]+)"[^{}]*?\bbeta:\s*true', catalog)
+    }
+    sellable = set(suits) | set(helmets) | set(pals) | set(trails)
+    bundle_block = re.search(r"BUNDLES[^=]*=\s*\[(.*?)\n\];", catalog, re.S)
+    if bundle_block:
+        for name, items in re.findall(
+            r'name:\s*"([^"]+)"[\s\S]*?items:\s*\[(.*?)\]', bundle_block.group(1), re.S
+        ):
+            ids = re.findall(r'"([^"]+)"', items)
+            missing = sorted({i for i in ids if i not in sellable})
+            gated = sorted({i for i in ids if i in beta_only})
+            if missing:
+                qa.fail(f"{name} sells items that are in no catalog list: " + clipped(missing))
+            if gated:
+                qa.fail(
+                    f"{name} sells beta-only items, which production strips: "
+                    + clipped(gated)
+                )
+
     comparisons = (
         ("suits", suits, loaded_suits),
         ("helmets", helmets, loaded_helmets),

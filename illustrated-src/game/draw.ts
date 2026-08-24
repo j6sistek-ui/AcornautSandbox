@@ -3470,6 +3470,64 @@ export function paintPortrait(
   if (!wearsOwnHead(suit)) paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
 }
 
+/** A LOOPING JUMP, painted with the game's own renderer.
+ *
+ *  The shop needs to show what a suit actually DOES, and a static portrait
+ *  cannot: Robo's articulated tap, Eclipse's impact squash and every rig's
+ *  pitch all live in the flight path, not the idle pose. drawPilot() owns
+ *  that path but reads a dozen fields off a live World, so rather than fake
+ *  a World this drives paintIllustrated directly - the same painter, given
+ *  a synthetic tap clock instead of a simulated one.
+ *
+ *  One cycle: tap, rise, stall, fall. Same shape as a real flap, so what
+ *  the shop shows is what the pilot will fly.
+ */
+export function paintFlightPreview(
+  ctx: CanvasRenderingContext2D,
+  art: ArtBank | null | undefined,
+  suit: (typeof SUITS)[number],
+  helmet: (typeof HELMETS)[number],
+  cx: number,
+  cy: number,
+  size: number,
+  t: number,
+) {
+  if (!art) return;
+  const PERIOD = 1.9;
+  const p = ((t % PERIOD) + PERIOD) % PERIOD;
+
+  // the tap itself, and the boost window that follows it
+  const tapAnimT = p < 0.30 ? p : -1;
+  const flapping = p < 0.24;
+  const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
+  const speed = flapping ? 10 : 5;
+  const ft = t * speed;
+  const idx = frames?.length ? Math.floor(ft) % frames.length : 0;
+  const nxt = frames?.length ? (idx + 1) % frames.length : 0;
+  const fr = ft - Math.floor(ft);
+  const blend = fr * fr * (3 - 2 * fr);
+
+  // the arc: a hard kick up, then gravity taking it back down
+  const vy = p < 0.24
+    ? -230 + (p / 0.24) * 90
+    : Math.min(390, -140 + (p - 0.24) * 520);
+  const rot = Math.max(-0.34, Math.min(0.6, vy / 900));
+
+  ctx.save();
+  ctx.translate(cx, cy + Math.sin(p / PERIOD * Math.PI * 2) * size * 0.06);
+  ctx.scale(size / 52, size / 52);
+  const kick = flapping ? 1 - p / 0.24 : 0;
+  const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
+  ctx.rotate(rot * 0.8 - (articulated ? 0 : kick * 0.12));
+  const pop = 1 + (articulated ? 0 : kick * 0.05);
+  ctx.scale(pop, pop);
+  paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art,
+    (flapping ? "flap-" : "idle-") + (idx + 1),
+    frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend,
+    "light", 0, tapAnimT, -1, 0, 0, vy, 2, 300);
+  ctx.restore();
+}
+
 export function paintPalPreview(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
