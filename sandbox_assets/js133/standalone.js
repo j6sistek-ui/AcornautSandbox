@@ -457,6 +457,29 @@ export async function bootStandalone(root) {
         w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
         return w;
     }
+    /** Sort key for a shelf. Owned first, then acorn prices ascending, then
+     *  star gates ascending far above them - a star gate is a different kind
+     *  of price and mixing the two numbers on one axis would read as random. */
+    function suitRank(u) {
+        const s = engine.save;
+        const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && iapOwned(s, u.id));
+        if (owned)
+            return -1;
+        const gate = STAR_UNLOCKS.suits[u.id];
+        if (gate !== undefined)
+            return 1000000 + gate;
+        return u.cost;
+    }
+    function helmRank(h) {
+        const s = engine.save;
+        const owned = s.unlocked.includes(h.id) || (isIap(h.id) && iapOwned(s, h.id));
+        if (owned)
+            return -1;
+        const gate = STAR_UNLOCKS.helmets[h.id];
+        if (gate !== undefined)
+            return 1000000 + gate;
+        return h.cost;
+    }
     function acornPill(n) {
         const pill = el("div", "ac-pill ac-pill-gold");
         pill.append(icon(I_NUT, 13), el("span", "", n.toLocaleString()));
@@ -1384,7 +1407,8 @@ export async function bootStandalone(root) {
                 const items = sec.ids
                     .map((id) => HELMETS.find((h) => h.id === id))
                     .filter((h) => !!h && !h.suitOnly)
-                    .filter((h) => !isIap(h.id) || iapOwned(s, h.id));
+                    .filter((h) => !isIap(h.id) || iapOwned(s, h.id))
+                    .sort((a, bq) => helmRank(a) - helmRank(bq));
                 if (!items.length)
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
@@ -1449,7 +1473,11 @@ export async function bootStandalone(root) {
                     .map((id) => SUITS.find((x) => x.id === id))
                     .filter((u) => !!u)
                     // premium you do not own belongs in the shop, not the wardrobe
-                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id));
+                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
+                    // cheapest first, so the shelf reads as a ladder rather than a
+                    // pile. Owned things lead (nothing left to pay), then acorn
+                    // prices in order, then star gates by their star price.
+                    .sort((a, bq) => suitRank(a) - suitRank(bq));
                 if (!items.length)
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
@@ -2449,7 +2477,11 @@ export async function bootStandalone(root) {
                 // A suit and its helmet SHARE an id in this catalog - owning
                 // "cryostar" grants both - so counting distinct ids undercounts what
                 // the pilot actually receives. Count the wearables instead.
-                const worn = bn.items.reduce((n, id) => n
+                // Count over the DEDUPED ids. A suit and its helmet share an id, so
+                // that id appears twice in items and each occurrence matched both
+                // lists - Aurora reported sixteen wearables for a pack of ten. The
+                // sheet already deduped; the card had not caught up.
+                const worn = [...new Set(bn.items)].reduce((n, id) => n
                     + (SUITS.some((u) => u.id === id) ? 1 : 0)
                     + (HELMETS.some((h) => h.id === id) ? 1 : 0)
                     + (TRAILS.some((t) => t.id === id) ? 1 : 0)
@@ -2887,6 +2919,7 @@ export async function bootStandalone(root) {
         const close = () => { dailyToast = null; render(); };
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard ac-dailycard");
+        sheet.append((() => { const i = document.createElement("img"); i.src = `${artRootUrl()}/ui/dust-badge.png?v=${ART_VER}`; i.alt = ""; i.className = "ac-dailybadgebig"; return i; })());
         sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
         const big = el("div", "ac-dailybig");
         big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
@@ -2914,6 +2947,8 @@ export async function bootStandalone(root) {
     function drawDaily() {
         const st = engine.dailyState();
         const card = el("div", st.claimedToday ? "ac-daily done" : "ac-daily");
+        // the badge leads, so the row is recognisable before a word is read
+        card.append((() => { const i = document.createElement("img"); i.src = `${artRootUrl()}/ui/dust-badge.png?v=${ART_VER}`; i.alt = ""; i.className = "ac-dailybadge"; return i; })());
         const left = el("div", "ac-dailytxt");
         left.append(el("p", "ac-modname", "DAILY STAR DUST"));
         const pips = el("div", "ac-pips");
