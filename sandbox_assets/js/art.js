@@ -272,22 +272,50 @@ export function loadSuitBank(bank, id) {
     suitBankLoads.set(id, p);
     return p;
 }
-/** The background sweep: after boot, walk the rest of the roster ONE suit
+// ------------------------------------------------------------- lazy pals
+// The pal IDLE banks were the last big thing still riding the boot load,
+// and by now they were the BIGGEST: 344 files and 18MB, against 1.3MB of
+// suits, for fourteen companions a pilot wears one of. They stream the
+// same way the suits do, and the draw path already falls back to the pal's
+// still sprite while a bank is in flight - a not-yet-loaded pal is not
+// broken, only briefly unanimated, exactly as with a suit.
+const palBankLoads = new Map();
+export function loadPalBank(bank, id) {
+    const hit = palBankLoads.get(id);
+    if (hit)
+        return hit;
+    const count = PAL_ANIM[id];
+    const p = count
+        ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
+            if (frames.length)
+                bank.palAnim[id] = frames;
+        })
+        : Promise.resolve();
+    palBankLoads.set(id, p);
+    return p;
+}
+/** The background sweep: after boot, walk the rest of the roster ONE bank
  *  at a time with a breather between each, so the pipe stays clear for
  *  whatever the player is actually doing. By the time they browse the
- *  loadout, most of it is already home. */
-export function prefetchSuitBanks(bank) {
+ *  loadout, most of it is already home. Pals lead - there are fewer of
+ *  them, they are what the menus animate, and one is on screen the moment
+ *  the hub paints. */
+export function prefetchArtBanks(bank) {
     let chain = Promise.resolve();
+    const breathe = () => new Promise((r) => setTimeout(r, 300));
+    for (const id of Object.keys(PAL_ANIM)) {
+        if (palBankLoads.has(id))
+            continue;
+        chain = chain.then(() => loadPalBank(bank, id)).then(breathe);
+    }
     for (const id of LAZY_SUIT_IDS) {
         if (suitBankLoads.has(id))
             continue;
-        chain = chain
-            .then(() => loadSuitBank(bank, id))
-            .then(() => new Promise((r) => setTimeout(r, 300)));
+        chain = chain.then(() => loadSuitBank(bank, id)).then(breathe);
     }
     void chain;
 }
-export async function loadArt(eagerSuits = []) {
+export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
         "bee",
@@ -404,9 +432,11 @@ export async function loadArt(eagerSuits = []) {
         many(`${base}/debris/`, DEBRIS_COUNT, 0),
         optional(`${base}/sky.jpg`),
         named(palIds, "solo"),
-        // every pal that has an idle bank; a pal without one simply
-        // keeps its still, which is what the draw path falls back to
-        namedSeries(PAL_ANIM, "solo", "-"),
+        // No pal idle banks ride the boot load. The one the save wears is
+        // pulled in below, beside the worn suit, and the rest stream behind
+        // the menu; a pal without a loaded bank keeps its still, which is
+        // what the draw path already falls back to.
+        Promise.resolve({}),
         named(suitIds, "suits"),
         named(helmIds, "helms"),
         optional(`${base}/acorn/arcade.png?v=${ART_VER}`),
@@ -467,8 +497,17 @@ export async function loadArt(eagerSuits = []) {
     };
     // FLIGHT is the game's face — its banks always ride the boot load — and
     // the suit the save is wearing must be flyable the moment PLAY is hit.
-    await Promise.all([...new Set(["flight", ...eagerSuits])]
-        .filter((id) => LAZY_SUIT_IDS.includes(id))
-        .map((id) => loadSuitBank(bank, id)));
+    // The worn pal rides with it: it is on screen in the hub the moment the
+    // menu paints, so it is the one bank a pilot would notice arriving late.
+    // Both go through the lazy loaders rather than around them, so the
+    // background sweep knows they are already home and does not refetch.
+    await Promise.all([
+        ...[...new Set(["flight", ...eagerSuits])]
+            .filter((id) => LAZY_SUIT_IDS.includes(id))
+            .map((id) => loadSuitBank(bank, id)),
+        ...[...new Set(eagerPals)]
+            .filter((id) => !!PAL_ANIM[id])
+            .map((id) => loadPalBank(bank, id)),
+    ]);
     return bank;
 }

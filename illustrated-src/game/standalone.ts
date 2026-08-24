@@ -1394,6 +1394,7 @@ export async function bootStandalone(root: HTMLElement) {
         // the worn suit is usually home already, but a pilot who equips and
         // opens the loadout inside the same second can still beat the load
         engine.wantSuitArt(wornSuit.id);
+        if (palWorn) engine.wantPalArt(palWorn.id);
         const t0 = performance.now();
         const tick = () => {
           if (!c.isConnected) return;
@@ -2830,6 +2831,7 @@ export async function bootStandalone(root: HTMLElement) {
       // background sweep happens to reach it, which for a suit late in the
       // roster is a long wait staring at a rigid sprite.
       engine.wantSuitArt(suit.id);
+      if (palDef) engine.wantPalArt(palDef.id);
       const t0 = performance.now();
       const tick = () => {
         if (!c.isConnected) return;

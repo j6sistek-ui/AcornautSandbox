@@ -640,6 +640,40 @@ def verify_sprite_sheets(qa: QA) -> None:
               f"{width // across}px, in step with the CSS")
 
 
+
+def verify_lazy_banks(qa: QA) -> None:
+    """The heavy rosters must stay OFF the boot load.
+
+    This is the check that would have caught the pals: suits were made lazy
+    and the pal banks quietly became the biggest thing the game downloads
+    before it can show a menu - 18MB of idle animation for the one
+    companion a pilot is wearing. Nothing failed, nothing was slower to
+    write, and no test noticed. So the shape is asserted rather than
+    remembered: each roster has a lazy loader, and the background sweep
+    walks both.
+    """
+    source = ART_SOURCE.read_text(encoding="utf8")
+    problems: list[str] = []
+    if "namedSeries(PAL_ANIM" in source:
+        problems.append(
+            "the boot load pulls EVERY pal idle bank again — 18MB of art "
+            "for the one pal the pilot wears; hand it the worn pal instead")
+    for loader, roster in (("loadSuitBank", "suits"), ("loadPalBank", "pals")):
+        if f"export function {loader}" not in source:
+            problems.append(f"{loader} is gone, so {roster} have no lazy path")
+    sweep = re.search(r"export function prefetchArtBanks\b.*?\n}", source, re.S)
+    if not sweep:
+        problems.append("the background sweep is gone, so nothing streams after boot")
+    else:
+        for loader, roster in (("loadSuitBank", "suits"), ("loadPalBank", "pals")):
+            if loader not in sweep.group(0):
+                problems.append(f"the background sweep no longer streams {roster}")
+    if problems:
+        qa.fail("boot payload: " + "; ".join(problems))
+    else:
+        qa.ok("heavy rosters stay off the boot load, and the sweep walks both")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -650,6 +684,7 @@ def main() -> int:
     _, _, pals, rigged = verify_catalog_assets(qa, files)
     if pals:
         verify_pal_bounds(qa, pals)
+    verify_lazy_banks(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     run_edge_audit(qa)
