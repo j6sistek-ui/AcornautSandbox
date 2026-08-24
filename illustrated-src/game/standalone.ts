@@ -802,10 +802,49 @@ export async function bootStandalone(root: HTMLElement) {
   // The mode picker: FREE FLIGHT's four rule-sets, with the Lab's
   // prototype doors riding at the bottom — one deliberate tap away,
   // exactly as Help used to carry them.
+  // Every mode wears a piece of the real game as its face: the painted
+  // black hole DEEP SPACE throws at you, the 8-bit acorn ARCADE spawns,
+  // a world knocked off its axis for LOST IN SPACE. No new art files —
+  // the banks are already decoded and on screen during a flight.
+  const MODE_FACE: Record<string, string> = {
+    fly: "rocket", deep: "hole", lost: "tumble", arcade: "arcade",
+  };
+
+  function modeIcon(kind: string, px = 44): HTMLElement {
+    if (kind === "rocket") {
+      const img = document.createElement("img");
+      img.src = `${artRootUrl()}/ui/rocket.png?v=${ART_VER}`;
+      img.alt = "";
+      img.draggable = false;
+      img.className = "ac-modeicart";
+      return img;
+    }
+    const { c, ctx } = miniCanvas(px, px);
+    const bank = engine.art;
+    if (ctx) {
+      if (kind === "hole") drawSpriteOn(ctx, bank?.holeAnim?.[0] ?? null, px / 2, px / 2, px);
+      else if (kind === "worm") drawSpriteOn(ctx, bank?.wormAnim?.[0] ?? null, px / 2, px / 2, px);
+      else if (kind === "arcade") drawSpriteOn(ctx, bank?.arcadeAcorn ?? null, px / 2, px / 2, px * 0.8);
+      else if (kind === "tumble") {
+        // LOST IN SPACE flies the pilot, not the other way round: its face
+        // is the squirrel going end over end
+        ctx.save();
+        ctx.translate(px / 2, px / 2);
+        ctx.rotate(2.42);
+        drawSpriteOn(ctx, bank?.squirrelFlap?.[1] ?? bank?.squirrelIdle?.[0] ?? null, 0, 0, px * 0.86);
+        ctx.restore();
+      }
+    }
+    return c;
+  }
+
+  // The mode picker: FREE FLIGHT's four rule-sets, each a saturated row in
+  // its own hue with its record on the right — then the Lab's prototype
+  // doors under a rule, deliberately quieter so they never read as modes.
   function drawModeSheet() {
     const s = engine.save;
     const wrap = el("div", "ac-lvlsheet");
-    const sheet = el("div", "ac-lvlcard");
+    const sheet = el("div", "ac-lvlcard ac-modecard");
     sheet.append(el("p", "ac-kicker", "FREE FLIGHT"), el("h2", "ac-lvlname", "Modes"));
     const bests: Record<string, number> = {
       fly: s.highScore, deep: s.deepBest, lost: s.lostBest, arcade: s.arcadeBest ?? 0,
@@ -814,18 +853,66 @@ export async function bootStandalone(root: HTMLElement) {
       id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
     const modePrice = (id: string) =>
       id === "deep" ? STAR_UNLOCKS.deep : id === "lost" ? STAR_UNLOCKS.lost : 0;
+
+    const bestChip = (n: number) => {
+      const c = el("span", "ac-modebest");
+      c.append(el("i", "", "BEST"), el("b", "", String(n)));
+      return c;
+    };
+    const lockChip = (n: number) => {
+      const c = el("span", "ac-modelock");
+      c.append(icon(I_LOCK, 12), el("b", "", `\u2605 ${n}`));
+      return c;
+    };
+
+    // one row for every way to fly: face, name, the rule in a sentence,
+    // and a chip that is either the record or the price of admission
+    const row = (o: {
+      cls: string; face: string; label: string; blurb?: string;
+      aside?: HTMLElement | null; open?: boolean; selected?: boolean; hit: () => void;
+    }) => {
+      const open = o.open !== false;
+      const b = el("button", `ac-moderow ${o.cls}`);
+      if (!open) b.classList.add("ac-cardoff");
+      if (o.selected) b.classList.add("on");
+      const ic = el("span", "ac-modeic");
+      ic.append(modeIcon(o.face));
+      if (o.selected) ic.append(el("i", "ac-modetick", "\u2713"));
+      const t = el("span", "ac-moderowtxt");
+      t.append(el("b", "", o.label));
+      if (o.blurb) t.append(el("span", "", o.blurb));
+      b.append(ic, t);
+      if (o.aside) b.append(o.aside);
+      b.onclick = o.hit;
+      sheet.append(b);
+      return b;
+    };
+
     MODES.forEach((m, i) => {
       const open = modeOpen(m.id);
-      const b = el("button", i === selectedMode ? "ac-moderow on" : "ac-moderow");
-      if (!open) b.classList.add("ac-cardoff");
-      const t = el("span", "ac-moderowtxt");
-      t.append(el("b", "", m.label), el("span", "", m.blurb));
-      b.append(t, el("span", "ac-moderowaside",
-        open ? `BEST ${bests[m.id] ?? 0}` : `★ ${modePrice(m.id)} TO OPEN`));
-      b.onclick = () => { if (!open) return; selectedMode = i; modesOpen = false; render(); };
-      sheet.append(b);
+      row({
+        cls: `m-${m.id}`,
+        face: MODE_FACE[m.id],
+        label: m.label,
+        blurb: m.blurb,
+        aside: open ? bestChip(bests[m.id] ?? 0) : lockChip(modePrice(m.id)),
+        open,
+        selected: open && i === selectedMode,
+        hit: () => { if (!open) return; selectedMode = i; modesOpen = false; render(); },
+      });
     });
-    sheet.append(el("p", "ac-kicker ac-modeshead", "PROTOTYPES · NOT PART OF THE GAME"));
+
+    sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
+    // WORMHOLE RUN is a real flight with a real record, so it keeps a mode
+    // row; the rest are lab doors and stay dashed and quiet.
+    row({
+      cls: "m-tunnel",
+      face: "worm",
+      label: "WORMHOLE RUN",
+      blurb: "Hold to thrust down the corridor.",
+      aside: s.tunnelBest ? bestChip(s.tunnelBest) : null,
+      hit: () => { modesOpen = false; engine.fly("tunnel"); },
+    });
     const door = (label: string, hit: () => void) => {
       const b = el("button", "ac-moderow ac-modedoor");
       const t = el("span", "ac-moderowtxt");
@@ -834,11 +921,10 @@ export async function bootStandalone(root: HTMLElement) {
       b.onclick = hit;
       sheet.append(b);
     };
-    door("WORMHOLE RUN", () => { modesOpen = false; engine.fly("tunnel"); });
     door("SURVIVAL TEST MODE", () => { window.location.href = labRootOf() + "spill/"; });
     door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
     if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
-    const back = el("button", "ac-ghost", "BACK");
+    const back = el("button", "ac-primary ac-modeback", "BACK");
     back.onclick = () => { modesOpen = false; render(); };
     sheet.append(back);
     wrap.append(sheet);
