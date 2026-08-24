@@ -419,6 +419,10 @@ export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null
  * cannot change chapter counts, unlock order, star totals, or rewards. */
 export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
 
+// Hyper Run's mission definition. The names here still say "prototype"
+// and that is deliberate: `id` is the KEY inside save.experimentalRaceRecords,
+// so renaming it would orphan every best time already recorded. The mode
+// shipped; the storage key it was born with has to outlive its old name.
 export const PROTOTYPE_RACE_MISSION: LevelDef = {
   id: "prototype-chapter-1",
   stage: 0,

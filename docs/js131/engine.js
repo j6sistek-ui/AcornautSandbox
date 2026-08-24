@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=130";
-import { sfx, unlockAudio, music } from "./audio.js?v=130";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=130";
-import { drawHud, drawWorld } from "./draw.js?v=130";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=130";
-import { emptyStats, experimentalRaceById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=130";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=130";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=130";
-import { raceViewport } from "./race-viewport.js?v=130";
+import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=131";
+import { sfx, unlockAudio, music } from "./audio.js?v=131";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=131";
+import { drawHud, drawWorld } from "./draw.js?v=131";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, } from "./save.js?v=131";
+import { emptyStats, experimentalRaceById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=131";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=131";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=131";
+import { raceViewport } from "./race-viewport.js?v=131";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -918,4 +918,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=130";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=131";

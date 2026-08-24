@@ -1,4 +1,4 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=130";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=131";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -313,6 +313,10 @@ export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
 export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
+// Hyper Run's mission definition. The names here still say "prototype"
+// and that is deliberate: `id` is the KEY inside save.experimentalRaceRecords,
+// so renaming it would orphan every best time already recorded. The mode
+// shipped; the storage key it was born with has to outlive its old name.
 export const PROTOTYPE_RACE_MISSION = {
     id: "prototype-chapter-1",
     stage: 0,

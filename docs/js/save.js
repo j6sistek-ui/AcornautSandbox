@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=130";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, } from "./catalog.js?v=130";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=131";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, } from "./catalog.js?v=131";
 export function defaultSave() {
     return {
         highScore: 0,

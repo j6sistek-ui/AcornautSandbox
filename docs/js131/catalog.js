@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=130";
-export const GAME_VERSION = "v1.2.0-illust";
-export const ART_VER = "130";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=131";
+export const GAME_VERSION = "v1.2.1-illust";
+export const ART_VER = "131";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -21,12 +21,18 @@ export const IS_BETA = typeof window !== "undefined" &&
 export const BETA_FEATURES = true;
 // The two the owner asked to hold back are gated on their own, so either can
 // be turned on by itself without touching anything else.
-export const HYPER_RUN_ENABLED = IS_BETA;
+// HYPER RUN SHIPS. It was gated to the beta while it was a prototype; it
+// is a finished mode now, with its own art, its own records and its own
+// place in the mode picker, so the gate is gone rather than merely set to
+// true for both pages. The constant stays because the art loader and a
+// couple of call sites read it, and a named constant that says what it
+// means beats `true` scattered through four files.
+export const HYPER_RUN_ENABLED = true;
 export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 16:02 UTC";
+export const BUILD_TIME = "2026-08-24 16:18 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so

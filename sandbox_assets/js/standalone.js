@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=130";
-import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=130";
-import { drawSprite as drawSpriteOn } from "./art.js?v=130";
-import { createEngine } from "./engine.js?v=130";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=130";
-import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, experimentalRaceById, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=130";
-import { formatRaceTicks } from "./race.js?v=130";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=131";
+import { paintPortrait, paintTrailPreview, paintPalPreview } from "./draw.js?v=131";
+import { drawSprite as drawSpriteOn } from "./art.js?v=131";
+import { createEngine } from "./engine.js?v=131";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked } from "./save.js?v=131";
+import { LEVELS, PROTOTYPE_RACE_MAX_ACORNS, PROTOTYPE_RACE_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle } from "./campaign.js?v=131";
+import { formatRaceTicks } from "./race.js?v=131";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -12,6 +12,12 @@ function el(tag, cls = "", text) {
     if (text)
         n.textContent = text;
     return n;
+}
+/** One testable launch seam shared by the Hyper Run briefing CTA and its
+ * fixed-step acceptance harness. Hyper Run ships on both pages now, so
+ * this is no longer gated - the Modes entry always offers it. */
+export function launchPrototypeRace(flyLevel) {
+    return flyLevel(PROTOTYPE_RACE_MISSION.id);
 }
 export async function bootStandalone(root) {
     // WIDESCREEN MODE: the stage sheds its phone cap and the canvas takes
@@ -90,10 +96,9 @@ export async function bootStandalone(root) {
     // The title picks ONE mode at a time: TAKE FLIGHT launches it, the
     // MODE bar cycles through the five. Selection lives here so it survives
     // a re-render of the title.
-    // WORMHOLE RUN is deliberately NOT here: it is an experiment, and the
-    // rule for experiments is the same one the Spill follows — hidden at the
-    // bottom of Help, one deliberate tap away, gone when the beta freezes
-    // unless it earns a real slot.
+    // Specialized runs are deliberately NOT selectable by FREE FLIGHT.
+    // WORMHOLE RUN and beta-only HYPER RUN have full rows under PROTOTYPES in
+    // the Modes sheet, while external lab tools remain quieter doors.
     const MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
@@ -641,6 +646,7 @@ export async function bootStandalone(root) {
     // button, the Lab rides inside MODES, and the Star Chart bar is the
     // campaign's stars made permanently visible.
     let modesOpen = false;
+    let prototypeModeOpen = false;
     function nextStarReward(stars) {
         return STAR_REWARDS.find((r) => r.stars > stars) ?? null;
     }
@@ -728,7 +734,7 @@ export async function bootStandalone(root) {
             drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
         // no dot: a badge should mean something NEW is inside, and nothing
         // in the mode sheet changes on its own
-        tile("t-modes", planet.c, "MODES", "4 ways to fly · Lab", () => { modesOpen = true; render(); });
+        tile("t-modes", planet.c, "MODES", "6 ways to fly · Lab", () => { modesOpen = true; render(); });
         box.append(tiles);
         // the Star Chart bar: campaign stars over the 300 total, plus what the
         // next handful buys — a second door into the chart
@@ -756,6 +762,9 @@ export async function bootStandalone(root) {
         }
         if (modesOpen)
             box.append(drawModeSheet());
+        if (prototypeModeOpen) {
+            box.append(drawLevelSheet(PROTOTYPE_RACE_MISSION, prototypeMask(), "modes"));
+        }
         return box;
     }
     // The mode picker: FREE FLIGHT's four rule-sets, with the Lab's
@@ -786,6 +795,8 @@ export async function bootStandalone(root) {
                 drawSpriteOn(ctx, bank?.wormAnim?.[0] ?? null, px / 2, px / 2, px);
             else if (kind === "arcade")
                 drawSpriteOn(ctx, bank?.arcadeAcorn ?? null, px / 2, px / 2, px * 0.8);
+            else if (kind === "race")
+                drawSpriteOn(ctx, bank?.hyperRun?.["scout-ship"] ?? bank?.squirrelIdle?.[0] ?? null, px / 2, px / 2, px * 0.94);
             else if (kind === "tumble") {
                 // LOST IN SPACE flies the pilot, not the other way round: its face
                 // is the squirrel going end over end
@@ -859,9 +870,20 @@ export async function bootStandalone(root) {
                     return; selectedMode = i; modesOpen = false; render(); },
             });
         });
-        sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
-        // WORMHOLE RUN is a real flight with a real record, so it keeps a mode
-        // row; the rest are lab doors and stay dashed and quiet.
+        // HYPER RUN sits with the modes now, not under PROTOTYPES. It has its
+        // own art, its own record and its own rules; the only thing the old
+        // placement still said about it was that it had not shipped yet.
+        {
+            const record = s.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
+            row({
+                cls: "m-race",
+                face: "race",
+                label: "HYPER RUN",
+                blurb: "Thread gates. Center the wormhole rings.",
+                aside: record?.bestFinishTicks ? bestChip(formatRaceTicks(record.bestFinishTicks)) : null,
+                hit: () => { modesOpen = false; prototypeModeOpen = true; render(); },
+            });
+        }
         row({
             cls: "m-tunnel",
             face: "worm",
@@ -870,6 +892,8 @@ export async function bootStandalone(root) {
             aside: s.tunnelBest ? bestChip(s.tunnelBest) : null,
             hit: () => { modesOpen = false; engine.fly("tunnel"); },
         });
+        // What remains under the divider really is a lab: utilities, not modes.
+        sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
         const door = (label, hit) => {
             const b = el("button", "ac-moderow ac-modedoor");
             const t = el("span", "ac-moderowtxt");
@@ -1831,20 +1855,6 @@ export async function bootStandalone(root) {
             scroll.append(ladder);
         }
         if (BETA_FEATURES) {
-            const record = sv.experimentalRaceRecords?.[PROTOTYPE_RACE_MISSION.id];
-            const proto = el("div", "ac-stagecard");
-            const phead = el("button", "ac-stagehead");
-            const ptitle = el("div", "ac-stagetitle");
-            ptitle.append(el("p", "ac-kicker", "EXPERIMENTAL MISSION"), el("p", "ac-stagename", "PROTOTYPE CHAPTER 1"), el("p", "ac-sub", "HYPER RUN · deterministic time trial"));
-            phead.append(ptitle);
-            phead.append(record?.bestFinishTicks
-                ? el("span", "ac-stagestars", `BEST ${formatRaceTicks(record.bestFinishTicks)}`)
-                : el("span", "ac-stagestars", "UNFLOWN"));
-            phead.onclick = () => { chartLevel = PROTOTYPE_RACE_MISSION.id; render(); };
-            proto.append(phead);
-            scroll.append(proto);
-        }
-        if (BETA_FEATURES) {
             scroll.append(fullChart(stars, total));
         }
         else {
@@ -1894,13 +1904,13 @@ export async function bootStandalone(root) {
             box.append(tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
-            const def = LEVELS.find((l) => l.id === chartLevel) ?? (HYPER_RUN_ENABLED ? experimentalRaceById(chartLevel) : null);
+            const def = LEVELS.find((l) => l.id === chartLevel);
             if (def)
-                box.append(drawLevelSheet(def, def.experimental ? prototypeMask() : stars[def.id] || 0));
+                box.append(drawLevelSheet(def, stars[def.id] || 0));
         }
         return box;
     }
-    function drawLevelSheet(def, mask) {
+    function drawLevelSheet(def, mask, origin = "chart") {
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard");
         const raceBriefing = def.experimental && def.base === "race";
@@ -1908,7 +1918,11 @@ export async function bootStandalone(root) {
             sheet.classList.add("ac-racecard");
         // BETA: a level is a number and its three stars — no name, no place,
         // no modifier tags. The live page keeps the full briefing.
-        const plain = HYPER_RUN_ENABLED && !def.experimental;
+        // This read HYPER_RUN_ENABLED, using it as a stand-in for IS_BETA back
+        // when the two were the same value. Promoting Hyper Run to live would
+        // therefore have stripped every live level briefing down to "Level 12"
+        // as a side effect. It now asks the question it actually means.
+        const plain = IS_BETA && !def.experimental;
         if (plain) {
             const gnum = LEVELS.findIndex((l) => l.id === def.id) + 1;
             sheet.append(el("p", "ac-kicker", "STAR CHART"));
@@ -1968,15 +1982,34 @@ export async function bootStandalone(root) {
         if (def.experimental)
             sheet.append(el("p", "ac-sub", "PROTOTYPE GRADE · CAMPAIGN STARS UNCHANGED"));
         const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.experimental ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
-        fly.onclick = () => { chartLevel = null; engine.flyLevel(def.id); };
+        fly.onclick = () => {
+            chartLevel = null;
+            prototypeModeOpen = false;
+            modesOpen = false;
+            const launched = def.id === PROTOTYPE_RACE_MISSION.id
+                ? launchPrototypeRace((id) => engine.flyLevel(id))
+                : engine.flyLevel(def.id);
+            // A beta-gate regression should leave the briefing recoverable rather
+            // than turning START RUN into another dead control.
+            if (!launched && origin === "modes") {
+                prototypeModeOpen = true;
+                render();
+            }
+        };
         const back = el("button", "ac-ghost", "BACK");
-        back.onclick = () => { chartLevel = null; render(); };
+        const close = () => {
+            chartLevel = null;
+            if (origin === "modes") {
+                prototypeModeOpen = false;
+                modesOpen = true;
+            }
+            render();
+        };
+        back.onclick = close;
         sheet.append(fly, back);
         wrap.append(sheet);
-        wrap.onclick = (e) => { if (e.target === wrap) {
-            chartLevel = null;
-            render();
-        } };
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
         return wrap;
     }
     function drawLevelDone(last) {
