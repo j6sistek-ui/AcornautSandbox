@@ -88,6 +88,31 @@ export function skyLuma(w: World) {
   return a + (b - a) * w.envBlend;
 }
 
+// Rotate an [r,g,b,a] wash around the colour wheel, alpha untouched. The
+// saturation lift matches the one the plate gets, so the wash and the sky
+// under it land on the same new colour instead of two nearby ones.
+function rotateRgb(c: number[], deg: number): number[] {
+  const [r, g, bl] = c;
+  const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl);
+  const d = mx - mn;
+  let h = 0;
+  if (d) {
+    h = mx === r ? ((g - bl) / d) % 6 : mx === g ? (bl - r) / d + 2 : (r - g) / d + 4;
+    h *= 60;
+  }
+  const l = (mx + mn) / 2 / 255;
+  const sNow = d === 0 ? 0 : d / 255 / (1 - Math.abs(2 * l - 1) || 1);
+  const sat = Math.min(1, sNow * 1.75);
+  h = (((h + deg) % 360) + 360) % 360;
+  const cc = (1 - Math.abs(2 * l - 1)) * sat;
+  const x = cc * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - cc / 2;
+  const seg = Math.floor(h / 60) % 6;
+  const t: number[][] = [[cc, x, 0], [x, cc, 0], [0, cc, x], [0, x, cc], [x, 0, cc], [cc, 0, x]];
+  const [rr, gg, bb] = t[seg];
+  return [(rr + m) * 255, (gg + m) * 255, (bb + m) * 255, c[3]];
+}
+
 function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const { W, H } = w;
   // Each environment flies under its own sky; shifts crossfade. In the
@@ -151,12 +176,19 @@ function drawBackdrop(ctx: CanvasRenderingContext2D, w: World, art: ArtBank) {
   const envA = ENVS[w.envA];
   const blend = w.envBlend;
   const ws = washScale(w.flight);
-  const wash = env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1)) as number[];
+  // PRISMWING again. The procedural plate carries the hue, but in flight
+  // that plate sits under this colour wash and the readability scrim, and
+  // those are what the eye actually reads - rotating the plate alone
+  // measured as a 3-point shift in mean colour, which is why the owner
+  // reported it as not working at all. The wash is backdrop, exactly like
+  // the plate, so it turns with it. Planets and debris still do not.
+  const spin = (c: number[]) => (w.prismHue ? rotateRgb(c, w.prismHue) : c);
+  const wash = spin(env.wash.map((v, i) => (envA.wash[i] + (v - envA.wash[i]) * blend) * (i === 3 ? ws : 1)) as number[]);
   ctx.fillStyle = `rgba(${wash[0]},${wash[1]},${wash[2]},${wash[3]})`;
   ctx.beginPath();
   ctx.ellipse(W * 0.68, H * 0.28, W * 0.55, H * 0.28, 0.25, 0, Math.PI * 2);
   ctx.fill();
-  const wash2 = env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1)) as number[];
+  const wash2 = spin(env.wash2.map((v, i) => (envA.wash2[i] + (v - envA.wash2[i]) * blend) * (i === 3 ? ws : 1)) as number[]);
   ctx.fillStyle = `rgba(${wash2[0]},${wash2[1]},${wash2[2]},${wash2[3]})`;
   ctx.beginPath();
   ctx.ellipse(W * 0.22, H * 0.78, W * 0.45, H * 0.22, -0.2, 0, Math.PI * 2);
@@ -2857,7 +2889,15 @@ const RIG_PITCH_UP = (14 * Math.PI) / 180;    // eased back from Eclipse's 19
 const RIG_PITCH_DOWN = (30 * Math.PI) / 180;  // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail lags by
 // Suits whose own animation is already approved and must not be touched.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit"]);
+// Suits the heading pitch must NOT touch. The rotation is calibrated for a
+// character painted belly-down at about +14 degrees, which is where the
+// whole family sits: Flight 14, Ion 12, Frost 16, Ghost 17, Eclipse 24.
+// A suit painted outside that band gets rotated from the wrong starting
+// attitude, and the further off it is the worse the result. The Alien is
+// painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
+// climb tipped it back until it sat upright in the sky rather than
+// climbing, which is what the owner saw as leading with its head.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
