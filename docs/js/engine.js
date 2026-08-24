@@ -205,6 +205,11 @@ export async function createEngine(canvas) {
             notify();
             return v;
         },
+        setShelfGrid(on) {
+            save.shelfGrid = !!on;
+            writeSave(save);
+            notify();
+        },
         resetTune() {
             save.tune = freshTune();
             world.tune = freshTune();

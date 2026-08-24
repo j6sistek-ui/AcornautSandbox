@@ -91,6 +91,8 @@ export type Engine = {
   setTune: (id: TuneId, value: number) => number;
   /** put every dial back to the shipped feel */
   resetTune: () => void;
+  /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
+  setShelfGrid: (on: boolean) => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -315,6 +317,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
       return v;
+    },
+    setShelfGrid(on) {
+      save.shelfGrid = !!on;
+      writeSave(save);
+      notify();
     },
     resetTune() {
       save.tune = freshTune();

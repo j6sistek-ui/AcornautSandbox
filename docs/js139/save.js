@@ -16,6 +16,7 @@ export function defaultSave() {
         starDust: 0,
         betaDustGrant: false,
         tune: freshTune(),
+        shelfGrid: false,
         dustPaidTo: 0,
         lastDaily: "",
         dailyStreak: 0,
@@ -99,6 +100,8 @@ export function loadSave() {
     if (typeof s.betaDustGrant !== "boolean")
         s.betaDustGrant = false;
     s.tune = cleanTune(s.tune);
+    if (typeof s.shelfGrid !== "boolean")
+        s.shelfGrid = false;
     s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";
