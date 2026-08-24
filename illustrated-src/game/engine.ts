@@ -1,4 +1,4 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks, type ArtBank } from "./art";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
@@ -78,6 +78,13 @@ export type Engine = {
   /** rename the pilot. Returns the name that was actually stored, which
    *  may differ from what was passed - it is sanitised on the way in. */
   setPilotName: (name: string) => string;
+  /** Ask for a suit's flight bank NOW rather than waiting for the
+   *  background sweep to reach it. Equipping already does this; the
+   *  previews need it too, because they show a suit the pilot has not
+   *  equipped and would otherwise animate only once the sweep arrives. */
+  wantSuitArt: (id: string) => void;
+  /** the same, for a pal's idle bank */
+  wantPalArt: (id: string) => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -279,6 +286,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
       return clean;
     },
+    wantSuitArt(id) {
+      // only against the REAL bank - a load into the placeholder is thrown
+      // away with it, yet would still be marked done
+      if (art && art.ready) void loadSuitBank(art, id);
+    },
+    wantPalArt(id) {
+      if (art && art.ready) void loadPalBank(art, id);
+    },
     settleDust,
     dailyState,
     claimDaily,
@@ -435,6 +450,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   function transactPal(id: string) {
     if (!palUnlocked(save, id)) return "locked";
+    // the sweep usually has this home already; if the player beats it,
+    // jump the queue so their pal flies animated rather than still
+    if (art && art.ready) void loadPalBank(art, id);
     if (!save.unlockedPals.includes(id)) save.unlockedPals.push(id);
     save.equippedPal = id;
     writeSave(save);
@@ -975,13 +993,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // needs its own signal. This resolves either way — a failed load must
   // never leave the app stuck behind a progress bar.
   // FLIGHT plus whatever the save wears ride the boot load; the rest of
-  // the roster's flight banks stream in one suit at a time afterwards.
-  engine.artReady = loadArt([save.equippedSuit])
+  // the roster's flight banks stream in one at a time afterwards. The pal
+  // is named here for the same reason the suit is: it is the one the pilot
+  // is looking at, so it is the one that must not arrive late.
+  engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
     .then((bank) => {
       art = bank;
       engine.art = bank;
       notify();
-      prefetchSuitBanks(bank);
+      prefetchArtBanks(bank);
     })
     .catch(() => {});
   notify();

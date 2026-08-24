@@ -1,12 +1,12 @@
-import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks } from "./art.js?v=134";
-import { sfx, unlockAudio, music } from "./audio.js?v=134";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=134";
-import { drawHud, drawWorld } from "./draw.js?v=134";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=134";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=134";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=134";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=134";
-import { raceViewport } from "./race-viewport.js?v=134";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=135";
+import { sfx, unlockAudio, music } from "./audio.js?v=135";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=135";
+import { drawHud, drawWorld } from "./draw.js?v=135";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=135";
+import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=135";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=135";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=135";
+import { raceViewport } from "./race-viewport.js?v=135";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -178,6 +178,16 @@ export async function createEngine(canvas) {
             notify();
             return clean;
         },
+        wantSuitArt(id) {
+            // only against the REAL bank - a load into the placeholder is thrown
+            // away with it, yet would still be marked done
+            if (art && art.ready)
+                void loadSuitBank(art, id);
+        },
+        wantPalArt(id) {
+            if (art && art.ready)
+                void loadPalBank(art, id);
+        },
         settleDust,
         dailyState,
         claimDaily,
@@ -347,6 +357,10 @@ export async function createEngine(canvas) {
     function transactPal(id) {
         if (!palUnlocked(save, id))
             return "locked";
+        // the sweep usually has this home already; if the player beats it,
+        // jump the queue so their pal flies animated rather than still
+        if (art && art.ready)
+            void loadPalBank(art, id);
         if (!save.unlockedPals.includes(id))
             save.unlockedPals.push(id);
         save.equippedPal = id;
@@ -938,16 +952,18 @@ export async function createEngine(canvas) {
     // needs its own signal. This resolves either way — a failed load must
     // never leave the app stuck behind a progress bar.
     // FLIGHT plus whatever the save wears ride the boot load; the rest of
-    // the roster's flight banks stream in one suit at a time afterwards.
-    engine.artReady = loadArt([save.equippedSuit])
+    // the roster's flight banks stream in one at a time afterwards. The pal
+    // is named here for the same reason the suit is: it is the one the pilot
+    // is looking at, so it is the one that must not arrive late.
+    engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
         .then((bank) => {
         art = bank;
         engine.art = bank;
         notify();
-        prefetchSuitBanks(bank);
+        prefetchArtBanks(bank);
     })
         .catch(() => { });
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=134";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=135";

@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=134";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=134";
-import { drawSprite as drawSpriteOn } from "./art.js?v=134";
-import { createEngine } from "./engine.js?v=134";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=134";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=134";
-import { formatRaceTicks } from "./race.js?v=134";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=135";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=135";
+import { drawSprite as drawSpriteOn } from "./art.js?v=135";
+import { createEngine } from "./engine.js?v=135";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=135";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=135";
+import { formatRaceTicks } from "./race.js?v=135";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1355,6 +1355,11 @@ export async function bootStandalone(root) {
             stage.append(c);
             const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
             if (ctx) {
+                // the worn suit is usually home already, but a pilot who equips and
+                // opens the loadout inside the same second can still beat the load
+                engine.wantSuitArt(wornSuit.id);
+                if (palWorn)
+                    engine.wantPalArt(palWorn.id);
                 const t0 = performance.now();
                 const tick = () => {
                     if (!c.isConnected)
@@ -2815,6 +2820,13 @@ export async function bootStandalone(root) {
         // document - every re-render replaces it - rather than relying on some
         // other screen to remember to cancel it.
         if (ctx) {
+            // The stage shows a suit the pilot has NOT equipped, so nothing has
+            // asked for its flight bank: without this it animates only once the
+            // background sweep happens to reach it, which for a suit late in the
+            // roster is a long wait staring at a rigid sprite.
+            engine.wantSuitArt(suit.id);
+            if (palDef)
+                engine.wantPalArt(palDef.id);
             const t0 = performance.now();
             const tick = () => {
                 if (!c.isConnected)

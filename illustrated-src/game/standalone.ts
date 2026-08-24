@@ -1391,6 +1391,10 @@ export async function bootStandalone(root: HTMLElement) {
       stage.append(c);
       const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
       if (ctx) {
+        // the worn suit is usually home already, but a pilot who equips and
+        // opens the loadout inside the same second can still beat the load
+        engine.wantSuitArt(wornSuit.id);
+        if (palWorn) engine.wantPalArt(palWorn.id);
         const t0 = performance.now();
         const tick = () => {
           if (!c.isConnected) return;
@@ -2822,6 +2826,12 @@ export async function bootStandalone(root: HTMLElement) {
     // document - every re-render replaces it - rather than relying on some
     // other screen to remember to cancel it.
     if (ctx) {
+      // The stage shows a suit the pilot has NOT equipped, so nothing has
+      // asked for its flight bank: without this it animates only once the
+      // background sweep happens to reach it, which for a suit late in the
+      // roster is a long wait staring at a rigid sprite.
+      engine.wantSuitArt(suit.id);
+      if (palDef) engine.wantPalArt(palDef.id);
       const t0 = performance.now();
       const tick = () => {
         if (!c.isConnected) return;

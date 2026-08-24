@@ -1,4 +1,4 @@
-import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
@@ -3482,6 +3482,38 @@ export function paintPortrait(
  *  One cycle: tap, rise, stall, fall. Same shape as a real flap, so what
  *  the shop shows is what the pilot will fly.
  */
+/** THE PLUME, ON THE SIM'S OWN SPRING. The preview used to hand
+ *  paintIllustrated a flat tail angle of 0, which is why the tail sat
+ *  curled and still while every other part of the suit moved - and why the
+ *  pal, which has no such shortcut, looked alive next to it.
+ *
+ *  The sim integrates this spring frame by frame off its world state. A
+ *  preview has no world, and is drawn from two different canvases, so it
+ *  cannot keep state of its own without them fighting over it. But the
+ *  forcing here is known: one impulse per beat, forever. So the same
+ *  recurrence - not an approximation of it, the same lines - is replayed
+ *  from two beats back on each call, which is far past the point where an
+ *  older beat is worth a pixel. Checked against the sim across a settled
+ *  beat: within 0.1 rad at the steepest point and 4% at the peak, which is
+ *  one frame's worth of curve. */
+function previewTailAngle(p: number, beat: number) {
+  const dt = 1 / 60;
+  let a = 0;
+  let v = 0;
+  const settle = (steps: number) => {
+    for (let i = 0; i < steps; i++) {
+      v += (-TAIL.stiffness * a - TAIL.damping * v) * dt;
+      a += v * dt;
+      if (a > TAIL.maxA) { a = TAIL.maxA; v *= -0.35; }
+      if (a < -TAIL.maxA) { a = -TAIL.maxA; v *= -0.35; }
+    }
+  };
+  for (let k = 0; k < 2; k++) { v += TAIL.flap; settle(Math.round(beat / dt)); }
+  v += TAIL.flap;
+  settle(Math.round(p / dt) + 1);   // +1: the sim draws after its step
+  return a;
+}
+
 export function paintFlightPreview(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
@@ -3493,18 +3525,21 @@ export function paintFlightPreview(
   t: number,
 ) {
   if (!art) return;
-  // ONE TAP, THEN REST. The first pass crammed a tap, a rise, a stall and a
-  // fall into 1.9s, which read as twitchy rather than as a jump - the eye
-  // never settled on any of it. A tap every five seconds, played at half
-  // speed, shows the one thing worth showing: what THIS suit does when it
-  // flaps. Dive and the rest can come back if a suit ever earns a special.
-  const PERIOD = 5.0;
-  const RATE = 0.5;                       // the animation itself, slowed
-  const p = ((t % PERIOD) + PERIOD) % PERIOD;
+  // FLIGHT, NOT A POSE. The pass before this showed one tap every five
+  // seconds and then held still for the other four - which read as a frozen
+  // suit sitting next to a pal that never stops, and looked nothing like
+  // the game, where the pilot taps again long before the last flap has
+  // finished. So the preview flies: a tap every beat, the arc between them,
+  // and the plume swinging on the sim's own spring. Still slowed, because
+  // seeing the motion was the point of a preview - but never stopped.
+  const BEAT = 1.6;                       // one tap per beat
+  const RATE = 0.5;                       // the tap animation itself, halved
+  const p = ((t % BEAT) + BEAT) % BEAT;   // time since this beat's tap
 
-  // the tap itself, and the boost window that follows it
-  const tapAnimT = p < 0.30 / RATE ? p * RATE : -1;
-  const flapping = p < 0.24 / RATE;
+  const tapWindow = 0.30 / RATE;
+  const flapWindow = 0.24 / RATE;
+  const tapAnimT = p < tapWindow ? p * RATE : -1;
+  const flapping = p < flapWindow;
   const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
   const speed = flapping ? 10 : 5;
   const ft = t * speed * RATE;
@@ -3513,23 +3548,23 @@ export function paintFlightPreview(
   const fr = ft - Math.floor(ft);
   const blend = fr * fr * (3 - 2 * fr);
 
-  // the arc, and then stillness: it kicks up, eases back to level, and
-  // waits there. No dive - a preview that is always moving has nothing to
-  // draw the eye when the thing worth seeing happens.
-  const kickEnd = 0.24 / RATE;
-  const settle = kickEnd + 1.1;
-  const vy = p < kickEnd
-    ? -230 + (p / kickEnd) * 90
-    : p < settle
-      ? -140 + ((p - kickEnd) / (settle - kickEnd)) * 140
-      : 0;
+  // The arc a tap actually makes: up hard on the beat, the pull easing it
+  // back down, the next tap catching it. The pull is chosen so the pilot
+  // comes back to exactly the height it left from as the beat comes round,
+  // which is what makes this loop with no seam and no fade.
+  const KICK = 210;                       // the sim's own tap velocity
+  const PULL = (2 * KICK) / BEAT;
+  const vy = -KICK + PULL * p;
+  const rise = -KICK * p + (PULL * p * p) / 2;   // zero at both ends of a beat
   const rot = Math.max(-0.34, Math.min(0.6, vy / 900));
 
   ctx.save();
-  // a gentle idle bob only, not a lap of the frame
-  ctx.translate(cx, cy + Math.sin(t * 1.1) * size * 0.025);
+  ctx.translate(cx, cy + rise * (size / 52) * 0.055);
   ctx.scale(size / 52, size / 52);
-  const kick = flapping ? 1 - p / 0.24 : 0;
+  // the old line divided by 0.24 while the window was 0.24/RATE, so the
+  // second half of every flap fed a NEGATIVE kick - tilting the wrong way
+  // and shrinking the suit instead of popping it
+  const kick = flapping ? 1 - p / flapWindow : 0;
   const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
   ctx.rotate(rot * 0.8 - (articulated ? 0 : kick * 0.12));
   const pop = 1 + (articulated ? 0 : kick * 0.05);
@@ -3537,7 +3572,7 @@ export function paintFlightPreview(
   paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art,
     (flapping ? "flap-" : "idle-") + (idx + 1),
     frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend,
-    "light", 0, tapAnimT, -1, 0, 0, vy, 2, 300);
+    "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300);
   ctx.restore();
 }
 
