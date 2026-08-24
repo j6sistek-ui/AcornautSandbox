@@ -1116,6 +1116,21 @@ export async function bootStandalone(root: HTMLElement) {
     if (hue) node.style.setProperty("--pg", hue);
   }
 
+  /** An unowned premium card is not something you can use, so it must not
+   *  look like something you can use. It dims like every other locked card
+   *  and, instead of doing nothing, opens the shop that sells it - the same
+   *  "IN THE SHOP" contract the suit shelf already uses. Until now these
+   *  rendered bright and swallowed the tap in silence; beta auto-ownership
+   *  hid it, and taking that away exposed it. */
+  function premiumDoor(node: HTMLElement, name: string) {
+    node.classList.add("ac-cardoff");
+    // No status line here: opening the shop re-renders, which builds a
+    // fresh live region, so anything announced would be wiped in the same
+    // frame. Arriving at the shop IS the answer to the tap.
+    node.setAttribute("aria-label", `${name} \u2014 sold in a pack. Opens the shop.`);
+    node.onclick = () => engine.open("shop");
+  }
+
   function palCardOf(pl: (typeof PALS)[number], forShop = false) {
     const s = engine.save;
     const premium = isIap(pl.id);
@@ -1123,6 +1138,7 @@ export async function bootStandalone(root: HTMLElement) {
     const b = el("button", s.equippedPal === pl.id ? "ac-card ac-palcard on" : "ac-card ac-palcard");
     if (premium) markPremium(b);   // pals carry no palette of their own
     if (!open) b.classList.add("ac-cardoff");
+    if (premium && !open && !forShop) premiumDoor(b, pl.name);
     b.append(el("p", "ac-palname", pl.name));
     const { c, ctx } = miniCanvas(72, 60);
     if (ctx) paintPalPreview(ctx, engine.art, pl.id, 36, 30, 54);
@@ -1290,6 +1306,7 @@ export async function bootStandalone(root: HTMLElement) {
               : owned ? "OWNED" : h.cost}`));
           if (premium) markPremium(b, h.glow);
           if (locked || !open) b.classList.add("ac-cardoff");
+          if (premium && !owned && !locked) premiumDoor(b, h.name);
           if (s.guide === "helmet" && h.id === GUIDE_HELM) b.classList.add("ac-pulse");
           b.onclick = () => { if (!locked && open && (!premium || owned)) tx(b, () => engine.buyHelmet(h.id), h.cost); };
           row.append(b);
@@ -1319,6 +1336,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (premium) markPremium(b, u.glow);
         if (s.guide === "hangar" && u.id === GUIDE_SUIT) b.classList.add("ac-pulse");
         b.onclick = () => { if (!premium || owned) tx(b, () => engine.buySuit(u.id), u.cost); };
+        if (premium && !owned) premiumDoor(b, u.name);
         return b;
       };
       for (const sec of SUIT_SHELF) {
@@ -1378,6 +1396,7 @@ export async function bootStandalone(root: HTMLElement) {
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) markPremium(b, t.colors[0]);
         if (!open) b.classList.add("ac-cardoff");
+        if (premium && !open) premiumDoor(b, t.name);
         b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
         grid.append(b);
       }
@@ -2198,8 +2217,11 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     scroll.append(grid);
-    scroll.append(el("p", "ac-fine", BETA_FEATURES
-      ? "Premium items are unlocked for everyone during the beta."
+    // This used to read "premium is unlocked for everyone during the beta",
+    // which stopped being true the moment the beta started BUYING packs
+    // instead of being handed them.
+    scroll.append(el("p", "ac-fine", IS_BETA
+      ? "Beta pilots start with enough Star Dust for every pack \u2014 buy them here to test the shop."
       : "Premium items arrive with the full release."));
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("shop"));

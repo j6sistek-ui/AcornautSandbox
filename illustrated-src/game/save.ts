@@ -11,7 +11,8 @@ import {
   TRAILS,
   levelForXp,
   titleForLevel,
-} from "./catalog";
+  BUNDLES,
+  IS_BETA,} from "./catalog";
 
 export type SaveData = {
   highScore: number;
@@ -27,6 +28,8 @@ export type SaveData = {
   /** STAR DUST: the premium currency. Acorns are flown for and buy the
    *  standard wardrobe; dust is bought or claimed and buys packs. */
   starDust: number;
+  /** beta only: the one-time "here is enough dust for every pack" grant */
+  betaDustGrant: boolean;
   /** highest star line already paid out, so a payout can never double-pay */
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
@@ -91,6 +94,7 @@ export function defaultSave(): SaveData {
     startShield: false,
     battery: false,
     starDust: 0,
+    betaDustGrant: false,
     dustPaidTo: 0,
     lastDaily: "",
     dailyStreak: 0,
@@ -157,6 +161,7 @@ export function loadSave(): SaveData {
   // backlog on next load instead of silently losing it.
   if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
+  if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
@@ -190,6 +195,14 @@ export function loadSave(): SaveData {
     s.xp = Math.round(4 * (s.highScore + s.deepBest + s.lostBest) + s.acorns + 200 * owned);
   }
   if (BETA_UNLOCK_GATES && s.acorns < 10000) s.acorns = 10000;
+  // BETA STARTING DUST: exactly the price of every pack, summed from
+  // BUNDLES rather than written as a number, so re-pricing a pack can never
+  // leave a tester unable to afford the set. Granted ONCE - a tester who
+  // spends it is meant to stay spent, or the ledger is untestable too.
+  if (IS_BETA && !s.betaDustGrant) {
+    s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+    s.betaDustGrant = true;
+  }
   return s;
 }
 
@@ -260,10 +273,15 @@ export function suitRevealed(s: SaveData, id: string) {
   return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
 
-// Premium items are owned only once bought for real money. The beta
-// grants them outright so they can be flown and judged before release.
+// Premium items are owned only once bought - on BOTH pages. The beta used
+// to hand them over outright, which meant the one thing the beta could
+// never test was the shop itself: every pack read as already owned, so the
+// buy path, the price check and the dust ledger were all dead code to a
+// tester. The beta is granted enough Star Dust to buy every pack instead
+// (see betaDustGrant below), so the mechanic gets exercised and the items
+// still end up in the hangar.
 export function iapOwned(s: SaveData, id: string) {
-  return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
+  return (s.purchased || []).includes(id);
 }
 
 // Flight mods change how the game FEELS, so they are held back until a

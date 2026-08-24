@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=129";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=129";
+import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=130";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, } from "./catalog.js?v=130";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -13,6 +13,7 @@ export function defaultSave() {
         startShield: false,
         battery: false,
         starDust: 0,
+        betaDustGrant: false,
         dustPaidTo: 0,
         lastDaily: "",
         dailyStreak: 0,
@@ -92,6 +93,8 @@ export function loadSave() {
         s.starDust = 0;
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
+    if (typeof s.betaDustGrant !== "boolean")
+        s.betaDustGrant = false;
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
@@ -134,6 +137,14 @@ export function loadSave() {
     }
     if (BETA_UNLOCK_GATES && s.acorns < 10000)
         s.acorns = 10000;
+    // BETA STARTING DUST: exactly the price of every pack, summed from
+    // BUNDLES rather than written as a number, so re-pricing a pack can never
+    // leave a tester unable to afford the set. Granted ONCE - a tester who
+    // spends it is meant to stay spent, or the ledger is untestable too.
+    if (IS_BETA && !s.betaDustGrant) {
+        s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+        s.betaDustGrant = true;
+    }
     return s;
 }
 export function writeSave(s) {
@@ -205,10 +216,15 @@ export function suitRevealed(s, id) {
         return BETA_UNLOCK_GATES;
     return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
-// Premium items are owned only once bought for real money. The beta
-// grants them outright so they can be flown and judged before release.
+// Premium items are owned only once bought - on BOTH pages. The beta used
+// to hand them over outright, which meant the one thing the beta could
+// never test was the shop itself: every pack read as already owned, so the
+// buy path, the price check and the dust ledger were all dead code to a
+// tester. The beta is granted enough Star Dust to buy every pack instead
+// (see betaDustGrant below), so the mechanic gets exercised and the items
+// still end up in the hangar.
 export function iapOwned(s, id) {
-    return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
+    return (s.purchased || []).includes(id);
 }
 // Flight mods change how the game FEELS, so they are held back until a
 // player has flown enough of the chart to have an opinion about it.
