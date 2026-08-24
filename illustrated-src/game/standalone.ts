@@ -2722,8 +2722,11 @@ export async function bootStandalone(root: HTMLElement) {
       const input = document.createElement("input");
       input.className = "ac-idnameinput";
       input.type = "text";
-      input.value = s.pilotName || "";
-      input.placeholder = PILOT_FALLBACK;
+      // The default goes in as REAL editable text, not a placeholder and not
+      // an empty box. A placeholder vanishes the moment you type and leaves
+      // nothing to edit down from; a name you can select, trim or keep is a
+      // starting point rather than a prompt.
+      input.value = s.pilotName || PILOT_FALLBACK;
       input.maxLength = PILOT_NAME_MAX;
       input.setAttribute("aria-label", "Pilot name");
       const commit = () => {
@@ -2743,7 +2746,6 @@ export async function bootStandalone(root: HTMLElement) {
       requestAnimationFrame(() => { input.focus(); input.select(); });
     } else {
       const nm = el("p", "ac-idname", s.pilotName || PILOT_FALLBACK);
-      if (!s.pilotName) nm.classList.add("unset");
       const edit = el("button", "ac-idnameedit");
       edit.setAttribute("aria-label", "Change pilot name");
       edit.append(icon(I_EDIT, 15));
