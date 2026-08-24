@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=127";
-import { modsUnlocked, writeSave } from "./save.js?v=127";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=127";
-import { countBits, emptyStats, goalMet, goldGatesFor } from "./campaign.js?v=127";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=127";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=127";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=127";
+import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=131";
+import { modsUnlocked, writeSave } from "./save.js?v=131";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=131";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=131";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=131";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=131";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=131";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -1823,8 +1823,8 @@ export function settleLevel(w, save, finished) {
         ? [goalMet(def.goals[0], lvl.stats), goalMet(def.goals[1], lvl.stats), goalMet(def.goals[2], lvl.stats)]
         : [false, false, false];
     const mask = (met[0] ? 1 : 0) | (met[1] ? 2 : 0) | (met[2] ? 4 : 0);
-    if (def.experimental && def.base === "race") {
-        const records = save.experimentalRaceRecords ?? (save.experimentalRaceRecords = {});
+    if (def.standalone && def.base === "race") {
+        const records = save.raceRecords ?? (save.raceRecords = {});
         const prior = records[def.raceEventId ?? def.id];
         const finishTicks = Math.max(0, Math.floor(lvl.stats.finishTicks));
         const priorTicks = prior?.bestFinishTicks ?? 0;
@@ -1834,6 +1834,16 @@ export function settleLevel(w, save, finished) {
         const bestFinishTicks = newBestTime ? finishTicks : priorTicks;
         const bestAcorns = Math.max(priorAcorns, lvl.stats.acorns);
         records[def.raceEventId ?? def.id] = { bestFinishTicks, bestAcorns };
+        // DEBRIS FIELD. A finish inside the time clears the gate the pilot is
+        // actually standing at - the first uncleared one - and only that one.
+        // Beating 1:42 at the very first field does not silently bank all
+        // three: each field is its own trip back.
+        const gate = gateClearedBy(save.raceGates, finished, finishTicks);
+        let clearedGate = null;
+        if (gate) {
+            save.raceGates = [...new Set([...(save.raceGates || []), gate.after])];
+            clearedGate = { after: gate.after, label: gate.label };
+        }
         const total = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
         writeSave(save);
         w.lastLevel = {
@@ -1852,6 +1862,7 @@ export function settleLevel(w, save, finished) {
                 bestAcorns,
                 newBestTime,
                 newBestAcorns,
+                clearedGate,
             },
         };
         w.lvl = null;

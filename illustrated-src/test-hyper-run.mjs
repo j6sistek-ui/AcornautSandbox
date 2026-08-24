@@ -31,7 +31,7 @@ try {
   const catalogSource = readFileSync(join(gameDir, "catalog.ts"), "utf8");
   assert(artSource.includes('"return-back", "return-front", "return-glyphs", "scout-ship"')
     && artSource.includes("named(HYPER_RUN_ENABLED ? hyperRunIds : [], \"hyper-run\")"),
-  "scout ship is not loaded atomically with the beta-gated Hyper Run bank");
+  "scout ship is not loaded atomically with the Hyper Run bank");
   const standaloneSource = readFileSync(join(gameDir, "standalone.ts"), "utf8");
   const modeSheetSource = standaloneSource.slice(
     standaloneSource.indexOf("function drawModeSheet()"),
@@ -44,6 +44,11 @@ try {
   const logSource = standaloneSource.slice(
     standaloneSource.indexOf("function drawLog()"),
     standaloneSource.indexOf("function drawLevelSheet"),
+  );
+  // the debris fields are drawn by fullChart(), which sits ABOVE drawLog()
+  const chartSource = standaloneSource.slice(
+    standaloneSource.indexOf("function fullChart("),
+    standaloneSource.indexOf("function drawLog()"),
   );
   const levelSheetSource = standaloneSource.slice(
     standaloneSource.indexOf("function drawLevelSheet"),
@@ -59,29 +64,41 @@ try {
     assert(standaloneSource.includes(requiredCopy),
       `Hyper Run preflight briefing omitted ${JSON.stringify(requiredCopy)}`);
   }
-  assert(standaloneSource.includes('const raceBriefing = def.experimental && def.base === "race"')
-    && standaloneSource.includes('def.experimental ? "START RUN"')
-    && standaloneSource.includes('`ACORNS  ${r.acorns} / ${PROTOTYPE_RACE_MAX_ACORNS}`')
+  assert(standaloneSource.includes('const raceBriefing = def.standalone && def.base === "race"')
+    && standaloneSource.includes('def.standalone ? "START RUN"')
+    && standaloneSource.includes('`ACORNS  ${r.acorns} / ${HYPER_RUN_MAX_ACORNS}`')
     && !standaloneSource.includes("THEORETICAL CONTENT CEILING"),
-  "Hyper Run briefing or launch CTA is not tied to every experimental race open");
-  assert(modeSheetSource.includes("if (HYPER_RUN_ENABLED)")
-    && modeSheetSource.includes('cls: "m-race"')
+  "Hyper Run briefing or launch CTA is not tied to every standalone race open");
+  assert(modeSheetSource.includes('cls: "m-race"')
     && modeSheetSource.includes('face: "race"')
     && modeSheetSource.includes('label: "HYPER RUN"')
-    && modeSheetSource.includes("prototypeModeOpen = true"),
-  "beta-gated Hyper Run entry is missing from the formatted Modes rows");
-  assert(catalogSource.includes("export const HYPER_RUN_ENABLED = IS_BETA")
-    && modeSheetSource.indexOf('el("p", "ac-modeshead", "PROTOTYPES")')
-      < modeSheetSource.indexOf('label: "HYPER RUN"'),
-  "Hyper Run Modes visibility no longer matches the beta-only launch resolver");
-  assert(homeSource.includes("prototypeModeOpen && HYPER_RUN_ENABLED")
-    && homeSource.includes('drawLevelSheet(PROTOTYPE_RACE_MISSION, prototypeMask(), "modes")'),
+    && modeSheetSource.includes("hyperRunOpen = true"),
+  "Hyper Run entry is missing from the formatted Modes rows");
+  assert(catalogSource.includes("export const HYPER_RUN_ENABLED = true"),
+  "Hyper Run is gated again - it ships on both pages now");
+  assert(modeSheetSource.indexOf('label: "HYPER RUN"')
+      < modeSheetSource.indexOf('el("p", "ac-modeshead", "PROTOTYPES")'),
+  "Hyper Run slid back below the PROTOTYPES divider; it is a shipped mode, not a lab door");
+  assert(homeSource.includes("if (hyperRunOpen)")
+    && homeSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes")'),
   "Modes did not route Hyper Run through its objective/control briefing");
-  assert(!logSource.includes("PROTOTYPE_RACE_MISSION")
-    && !logSource.includes("PROTOTYPE CHAPTER 1")
+  // The chart must not carry the OLD entry - the "PROTOTYPE CHAPTER 1"
+  // stage card that #123 removed. It legitimately references
+  // HYPER_RUN_MISSION now, because the debris fields live on this screen
+  // and their briefing renders here; that is a different thing from
+  // listing Hyper Run as a chapter, so the check names what it forbids
+  // rather than banning the symbol outright.
+  // ac-stagecard is the ordinary chapter card and must stay; what may not
+  // come back is the Hyper Run entry that used to sit among them, which
+  // was only ever identifiable by its copy.
+  assert(!logSource.includes("PROTOTYPE CHAPTER 1")
     && !logSource.includes("EXPERIMENTAL MISSION"),
-  "Star Chart still exposes the old Hyper Run prototype entry");
-  assert(levelSheetSource.includes("launchPrototypeRace((id) => engine.flyLevel(id))")
+  "Star Chart still exposes the old Hyper Run prototype chapter entry");
+  assert(chartSource.includes("ac-gatenode")
+    && chartSource.includes("RACE_GATES")
+    && logSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "chart")'),
+  "Star Chart debris fields are missing, or cannot open the run that clears them");
+  assert(levelSheetSource.includes("launchHyperRun((id) => engine.flyLevel(id))")
     && levelSheetSource.includes('origin: "chart" | "modes" = "chart"'),
   "START RUN no longer uses the tested engine launch seam or Modes return path");
   const docsShell = readFileSync(join(root, "docs", "index.html"), "utf8");
@@ -213,8 +230,8 @@ try {
   const {
     makeWorld, pausePlay, planRaceCueEffects, resetRun, resizeWorld, setRaceInput, takeRaceCueEffects, updateWorld,
   } = simApi;
-  const { PROTOTYPE_RACE_MISSION, experimentalRaceById } = campaignApi;
-  const { launchPrototypeRace } = standaloneApi;
+  const { HYPER_RUN_MISSION, hyperRunById } = campaignApi;
+  const { launchHyperRun } = standaloneApi;
   const { defaultSave } = saveApi;
   const {
     QUICK_DROP_VY,
@@ -223,18 +240,18 @@ try {
   const launchWorld = makeWorld(360, 640);
   const launchSave = defaultSave();
   const launchCalls = [];
-  const launchResult = launchPrototypeRace((id) => {
+  const launchResult = launchHyperRun((id) => {
     launchCalls.push(id);
-    const def = experimentalRaceById(id);
+    const def = hyperRunById(id);
     if (!def) return false;
     resetRun(launchWorld, launchSave, "fly", false, def);
     return true;
   });
   assert(launchResult === true, "Hyper Run launch helper discarded engine acceptance");
-  same(launchCalls, [PROTOTYPE_RACE_MISSION.id],
+  same(launchCalls, [HYPER_RUN_MISSION.id],
     "Modes briefing CTA did not route the prototype mission ID to engine.flyLevel");
   assert(launchWorld.screen === "play" && launchWorld.ready
-    && launchWorld.lvl?.def.id === PROTOTYPE_RACE_MISSION.id
+    && launchWorld.lvl?.def.id === HYPER_RUN_MISSION.id
     && launchWorld.lvl.def.base === "race" && launchWorld.race !== null,
   "Modes launch route did not initialize a READY fixed-step race world");
 
@@ -596,7 +613,7 @@ try {
       key: (index) => [...stored.keys()][index] ?? null,
       get length() { return stored.size; },
     };
-    resetRun(world, save, "fly", false, PROTOTYPE_RACE_MISSION);
+    resetRun(world, save, "fly", false, HYPER_RUN_MISSION);
     resizeWorld(world, width, height);
     loadRaceInputs(world.race, transitions);
     world.ready = false;
@@ -824,7 +841,7 @@ try {
     { kind: "tunnel-ring-miss", tick: 7, id: "w1-g03", index: 2, y: 320, chargeDelta: 0 },
     { kind: "entry", tick: 7, id: "r20", index: 19, y: 320, chargeDelta: 0 },
     { kind: "return", tick: 7, id: "w1", index: 0, y: 320, chargeDelta: 0 },
-    { kind: "finish", tick: 7, id: "prototype-chapter-1", index: -1, y: 320, chargeDelta: 0 },
+    { kind: "finish", tick: 7, id: "hyper-run", index: -1, y: 320, chargeDelta: 0 },
   ];
   const allCuePlans = planRaceCueEffects(allCueKindsAtOneTick);
   same(allCuePlans.map((effect) => [effect.cue.kind, effect.sfx, effect.notify]), [
@@ -1221,7 +1238,7 @@ try {
     "landscape READY panel did not use the full reminder copy");
   const projectionWorld = makeWorld(390, 844);
   const projectionSave = defaultSave();
-  resetRun(projectionWorld, projectionSave, "fly", false, PROTOTYPE_RACE_MISSION);
+  resetRun(projectionWorld, projectionSave, "fly", false, HYPER_RUN_MISSION);
   near(projectionWorld.squirrel.y, raceViewportY(tallViewport, projectionWorld.race.y), 1e-9,
     "READY reset did not use the centered race viewport");
   near(projectionWorld.squirrel.vy, 0, 1e-9, "READY reset projected nonzero race velocity");
@@ -1244,7 +1261,7 @@ try {
   ];
   function makeResizePhaseWorld(spec) {
     const phaseWorld = makeWorld(360, 640);
-    resetRun(phaseWorld, defaultSave(), "fly", false, PROTOTYPE_RACE_MISSION);
+    resetRun(phaseWorld, defaultSave(), "fly", false, HYPER_RUN_MISSION);
     const race = phaseWorld.race;
     phaseWorld.ready = spec.ready;
     phaseWorld.screen = spec.phase === "finish" ? "lvldone" : "play";
@@ -1374,9 +1391,9 @@ try {
 
   const world = makeWorld(360, 640);
   const save = defaultSave();
-  resetRun(world, save, "fly", false, PROTOTYPE_RACE_MISSION);
+  resetRun(world, save, "fly", false, HYPER_RUN_MISSION);
   assert(world.screen === "play" && world.ready
-    && world.lvl?.def.id === PROTOTYPE_RACE_MISSION.id
+    && world.lvl?.def.id === HYPER_RUN_MISSION.id
     && world.lvl.def.base === "race" && world.race !== null,
   "accepted Hyper Run launch did not initialize a READY fixed-step race world");
   const frozen = [world.race.tick, world.race.coursePosition, world.race.y];
@@ -1767,7 +1784,7 @@ try {
   "clean 95 +5 gate did not enter immediately at authority tick 0");
   const cueWorld = makeWorld(360, 640);
   const cueSave = defaultSave();
-  resetRun(cueWorld, cueSave, "fly", false, PROTOTYPE_RACE_MISSION);
+  resetRun(cueWorld, cueSave, "fly", false, HYPER_RUN_MISSION);
   cueWorld.race = createCoexistRace();
   cueWorld.ready = false;
   updateWorld(cueWorld, cueSave, RACE_DT);
@@ -1777,7 +1794,7 @@ try {
   pausePlay(cueWorld);
   updateWorld(cueWorld, cueSave, RACE_DT);
   same(takeRaceCueEffects(cueWorld), [], "pause replayed a consumed race cue");
-  resetRun(cueWorld, cueSave, "fly", false, PROTOTYPE_RACE_MISSION);
+  resetRun(cueWorld, cueSave, "fly", false, HYPER_RUN_MISSION);
   same([cueWorld.raceCues, cueWorld.raceCueEffects], [[], []], "race reset retained cue history/effects");
   updateWorld(cueWorld, cueSave, RACE_DT);
   same(takeRaceCueEffects(cueWorld), [], "READY replayed a stale race cue");
@@ -2135,7 +2152,7 @@ try {
   }
   assert(settles === 1, `finish emitted ${settles} settlements`);
   same(finishSteps.map((result) => result.cues), [[
-    { kind: "finish", tick: 0, id: "prototype-chapter-1", index: -1, y: once.y, chargeDelta: 0 },
+    { kind: "finish", tick: 0, id: "hyper-run", index: -1, y: once.y, chargeDelta: 0 },
   ], [], []], "finish cue did not emit exactly once on its authority step");
 
   const evidence = {

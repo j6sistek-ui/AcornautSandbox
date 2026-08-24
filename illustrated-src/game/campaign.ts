@@ -81,7 +81,7 @@ export type LevelDef = {
   fx: LevelFx;
   goals: [Goal, Goal, Goal];
   /** Experimental cards are Log-only and never enter LEVELS/progression. */
-  experimental?: boolean;
+  standalone?: boolean;
   raceEventId?: string;
 };
 
@@ -417,10 +417,14 @@ export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null
 
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
-export const PROTOTYPE_RACE_MAX_ACORNS = RACE_MAX_ACORNS;
+export const HYPER_RUN_MAX_ACORNS = RACE_MAX_ACORNS;
 
-export const PROTOTYPE_RACE_MISSION: LevelDef = {
-  id: "prototype-chapter-1",
+// Hyper Run's mission definition. The names here still say "prototype"
+// and that is deliberate: `id` is the KEY inside save.raceRecords,
+// so renaming it would orphan every best time already recorded. The mode
+// shipped; the storage key it was born with has to outlive its old name.
+export const HYPER_RUN_MISSION: LevelDef = {
+  id: "hyper-run",
   stage: 0,
   n: 1,
   ord: 0,
@@ -433,12 +437,12 @@ export const PROTOTYPE_RACE_MISSION: LevelDef = {
     { kind: "time", ticks: RACE_TWO_STAR_TICKS },
     { kind: "time", ticks: RACE_THREE_STAR_TICKS },
   ],
-  experimental: true,
-  raceEventId: "prototype-chapter-1",
+  standalone: true,
+  raceEventId: "hyper-run",
 };
 
-export const experimentalRaceById = (id: string) =>
-  id === PROTOTYPE_RACE_MISSION.id ? PROTOTYPE_RACE_MISSION : null;
+export const hyperRunById = (id: string) =>
+  id === HYPER_RUN_MISSION.id ? HYPER_RUN_MISSION : null;
 
 // ------------------------------------------------------------------ prose
 
@@ -554,8 +558,61 @@ export function stageUnlocked(stageNum: number, total: number) {
 }
 
 /** a level opens when its stage is open and the level before it is finished */
-export function levelUnlocked(def: LevelDef, stars: Record<string, number>, total: number) {
+// DEBRIS FIELDS. Every 33 levels the road is blocked outright and the only
+// way past is a Hyper Run inside a time. They award no stars on purpose: a
+// gate is passed or not yet passed, never scored, so it can never sit
+// half-finished the way a three-star level can. The times tighten as the
+// chart does - the first is close to autopilot (the no-input replay
+// profile finishes in exactly 9000 ticks), the last wants a real run.
+export const RACE_GATES: { after: number; ticks: number; label: string }[] = [
+  { after: 33, ticks: 9_000, label: "2:30" },
+  { after: 66, ticks: 7_200, label: "2:00" },
+  { after: 99, ticks: 6_120, label: "1:42" },
+];
+
+/** the gate standing between the pilot and this level, or null if the road
+ *  is clear. Checks every gate below the level, not just the nearest, so a
+ *  skipped one can never be walked around. */
+export function gateBefore(ord: number, cleared: number[] | undefined) {
+  const done = cleared || [];
+  for (const g of RACE_GATES) {
+    if (ord > g.after && !done.includes(g.after)) return g;
+  }
+  return null;
+}
+
+/** the gate a Hyper Run would be attempting right now: the first uncleared
+ *  one. A run clears the gate in FRONT of the pilot and no more, so beating
+ *  1:42 early does not silently bank all three. */
+export function nextGate(cleared: number[] | undefined) {
+  const done = cleared || [];
+  return RACE_GATES.find((g) => !done.includes(g.after)) ?? null;
+}
+
+/** THE CLEAR RULE, kept pure so it can be tested without flying a race.
+ *  A finish opens the gate in front of the pilot when it was an actual
+ *  finish and the clock beat the limit. Returns the gate that opened, or
+ *  null when nothing did. */
+export function gateClearedBy(
+  cleared: number[] | undefined,
+  finished: boolean,
+  finishTicks: number,
+) {
+  const g = nextGate(cleared);
+  if (!g || !finished) return null;
+  // a zero or negative clock is a quit or a broken read, never a pass
+  if (!(finishTicks > 0)) return null;
+  return finishTicks <= g.ticks ? g : null;
+}
+
+export function levelUnlocked(
+  def: LevelDef,
+  stars: Record<string, number>,
+  total: number,
+  gatesCleared?: number[],
+) {
   if (IS_BETA) return true;
+  if (gateBefore(def.ord, gatesCleared)) return false;
   if (!stageUnlocked(def.stage, total)) return false;
   if (def.n === 1) return true;
   const prev = `${def.stage}-${def.n - 1}`;
@@ -566,10 +623,12 @@ export function levelUnlocked(def: LevelDef, stars: Record<string, number>, tota
 
 export type StarReward = {
   stars: number;
-  kind: "pal" | "mod" | "mode" | "suit" | "helmet" | "trail" | "title" | "stage";
+  kind: "pal" | "mod" | "mode" | "suit" | "helmet" | "trail" | "title" | "stage" | "dust";
   id?: string;
   name: string;
   desc: string;
+  /** "dust" rewards only: how much Star Dust crossing this line pays out */
+  amount?: number;
 };
 
 // The ladder XP used to be. Stage openings are listed so the chart can
@@ -600,12 +659,13 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 48, kind: "helmet", id: "aurora", name: "Aurora Helmet", desc: "Polar light under glass. In the shop." },
   { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Slow Effect in blackholes" },
   { stars: 56, kind: "trail", id: "prism", name: "Prism Shards", desc: "Light, broken beautifully." },
-  { stars: 60, kind: "suit", id: "robo", name: "Robo Suit", desc: "Full chrome, scanning visor. Now in the shop." },
+  { stars: 60, kind: "helmet", id: "paladin", name: "Paladin Helmet", desc: "Crusader glass, gold-barred. Was premium; now earned." },
   { stars: 66, kind: "stage", name: "Chapter 5 — MIDNIGHT RUN", desc: "The dark opens." },
   { stars: 66, kind: "pal", id: "starpup", name: "Star Child", desc: "Double Golden Effect" },
   { stars: 70, kind: "helmet", id: "meteor", name: "Meteor Helmet", desc: "Burnished impact glass. In the shop." },
   { stars: 72, kind: "trail", id: "plasma", name: "Plasma Arc", desc: "A live violet current." },
   { stars: 75, kind: "pal", id: "tinbot", name: "TinTin", desc: "Disables Blackholes" },
+  { stars: 80, kind: "dust", amount: 30, name: "30 Star Dust", desc: "A pocketful of dust." },
   { stars: 84, kind: "pal", id: "wisp", name: "Wisp", desc: "More gate movement" },
   { stars: 88, kind: "trail", id: "galaxy", name: "Galaxy Dust", desc: "A spiral arm behind you." },
   { stars: 90, kind: "stage", name: "Chapter 6 — CRYSTAL BELT", desc: "Deep-space levels open." },
@@ -613,18 +673,26 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 95, kind: "helmet", id: "chrono", name: "Chrono Helmet", desc: "Brass clockwork glass. In the shop." },
   { stars: 100, kind: "suit", id: "alien", name: "Alien Suit", desc: "The visitor look, antennae included." },
   { stars: 105, kind: "trail", id: "aurora", name: "Aurora Ribbon", desc: "The polar sky, towed." },
+  { stars: 112, kind: "dust", amount: 40, name: "40 Star Dust", desc: "The long haul pays." },
   { stars: 117, kind: "stage", name: "Chapter 7 — CRIMSON STORM", desc: "The turbulence opens." },
   { stars: 125, kind: "trail", id: "frost", name: "Frostbite", desc: "A wake of hoarfrost." },
-  { stars: 140, kind: "trail", id: "voidsmoke", name: "Void Smoke", desc: "What the dark exhales." },
   { stars: 130, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes." },
+  { stars: 133, kind: "dust", amount: 50, name: "50 Star Dust", desc: "Dust from the crossing." },
+  { stars: 140, kind: "trail", id: "voidsmoke", name: "Void Smoke", desc: "What the dark exhales." },
   { stars: 147, kind: "stage", name: "Chapter 8 — LOST REACHES", desc: "Lost-in-space levels open." },
+  { stars: 152, kind: "dust", amount: 60, name: "60 Star Dust", desc: "Deep-space wages." },
   { stars: 160, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle." },
   { stars: 170, kind: "trail", id: "supernova", name: "Supernova", desc: "The loudest exit there is." },
   { stars: 180, kind: "stage", name: "Chapter 9 — THE BLACKOUT", desc: "Lights out." },
-  { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
-  { stars: 200, kind: "suit", id: "volt", name: "Volt Suit", desc: "Storm-charged armor. The tail crackles." },
+  { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates and Thrill Seeker unlock in the hangar." },
+  { stars: 190, kind: "dust", amount: 75, name: "75 Star Dust", desc: "Blackout bonus." },
+  { stars: 200, kind: "helmet", id: "chronarch", name: "Chronarch Helmet", desc: "Time under glass. Was premium; now earned." },
   { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
+  { stars: 225, kind: "dust", amount: 90, name: "90 Star Dust", desc: "The far side pays better." },
+  { stars: 245, kind: "dust", amount: 100, name: "100 Star Dust", desc: "Still going." },
   { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
+  { stars: 270, kind: "dust", amount: 120, name: "120 Star Dust", desc: "Almost the whole chart." },
+  { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
   { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
   { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned by every star there is." },
 ];

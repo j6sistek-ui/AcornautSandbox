@@ -1,4 +1,6 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign";
+import { STAR_UNLOCKS, totalStars,
+  RACE_GATES,
+} from "./campaign";
 import {
   BETA_UNLOCK_GATES,
   HELMETS,
@@ -11,7 +13,8 @@ import {
   TRAILS,
   levelForXp,
   titleForLevel,
-} from "./catalog";
+  BUNDLES,
+  IS_BETA,} from "./catalog";
 
 export type SaveData = {
   highScore: number;
@@ -24,6 +27,17 @@ export type SaveData = {
   xp: number;
   startShield: boolean;
   battery: boolean;
+  /** STAR DUST: the premium currency. Acorns are flown for and buy the
+   *  standard wardrobe; dust is bought or claimed and buys packs. */
+  starDust: number;
+  /** beta only: the one-time "here is enough dust for every pack" grant */
+  betaDustGrant: boolean;
+  /** highest star line already paid out, so a payout can never double-pay */
+  dustPaidTo: number;
+  /** local date string of the last daily claim, e.g. "2026-08-24" */
+  lastDaily: string;
+  /** how many days in a row have been claimed, 1..DAILY_STREAK_LEN */
+  dailyStreak: number;
   /** flight mods, bought once and kept. See MODS in catalog.ts. */
   steadyGates: boolean;
   roughAir: boolean;
@@ -66,7 +80,9 @@ export type SaveData = {
   // however carefully their magnitudes were damped.
   eclipseMotionMode?: number;
   /** Experimental records are isolated from chapter stars and rewards. */
-  experimentalRaceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
+  raceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
+  /** debris fields cleared, stored by the level they sit after (33/66/99) */
+  raceGates: number[];
 };
 
 export function defaultSave(): SaveData {
@@ -81,6 +97,11 @@ export function defaultSave(): SaveData {
     xp: 0,
     startShield: false,
     battery: false,
+    starDust: 0,
+    betaDustGrant: false,
+    dustPaidTo: 0,
+    lastDaily: "",
+    dailyStreak: 0,
     steadyGates: false,
     roughAir: false,
     noPalFx: false,
@@ -102,7 +123,8 @@ export function defaultSave(): SaveData {
     allStars: false,
     musicOff: false,
     eclipseMotionMode: 2,
-    experimentalRaceRecords: {},
+    raceRecords: {},
+    raceGates: [],
   };
 }
 
@@ -139,6 +161,14 @@ export function loadSave(): SaveData {
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
+  // saves written before Star Dust existed. dustPaidTo starts at 0 rather
+  // than at the pilot's current stars, so a long-standing save is PAID its
+  // backlog on next load instead of silently losing it.
+  if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
+  if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
+  if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
+  if (typeof s.lastDaily !== "string") s.lastDaily = "";
+  if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
@@ -158,8 +188,18 @@ export function loadSave(): SaveData {
   // game — never walk a veteran to the hangar
   if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
   if (typeof s.allStars !== "boolean") s.allStars = false;
-  if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
-    s.experimentalRaceRecords = {};
+  // Hyper Run's records used to live under experimentalRaceRecords, keyed
+  // by "prototype-chapter-1". Both names were prototype-era and the owner
+  // confirmed the only records were their own testing, so the old key is
+  // dropped rather than migrated - left in place it would sit in every
+  // save forever, describing a mission id that no longer exists.
+  delete (s as Record<string, unknown>).experimentalRaceRecords;
+  if (!Array.isArray(s.raceGates)) s.raceGates = [];
+  // only ever the three real gate ids, de-duplicated - a hand-edited save
+  // cannot invent a fourth and unlock the chart with it
+  s.raceGates = [...new Set(s.raceGates.filter((n) => RACE_GATES.some((g) => g.after === n)))];
+  if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
+    s.raceRecords = {};
   }
   if (parsed && typeof parsed.xp !== "number") {
     const owned =
@@ -170,6 +210,14 @@ export function loadSave(): SaveData {
     s.xp = Math.round(4 * (s.highScore + s.deepBest + s.lostBest) + s.acorns + 200 * owned);
   }
   if (BETA_UNLOCK_GATES && s.acorns < 10000) s.acorns = 10000;
+  // BETA STARTING DUST: exactly the price of every pack, summed from
+  // BUNDLES rather than written as a number, so re-pricing a pack can never
+  // leave a tester unable to afford the set. Granted ONCE - a tester who
+  // spends it is meant to stay spent, or the ledger is untestable too.
+  if (IS_BETA && !s.betaDustGrant) {
+    s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+    s.betaDustGrant = true;
+  }
   return s;
 }
 
@@ -240,10 +288,15 @@ export function suitRevealed(s: SaveData, id: string) {
   return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
 
-// Premium items are owned only once bought for real money. The beta
-// grants them outright so they can be flown and judged before release.
+// Premium items are owned only once bought - on BOTH pages. The beta used
+// to hand them over outright, which meant the one thing the beta could
+// never test was the shop itself: every pack read as already owned, so the
+// buy path, the price check and the dust ledger were all dead code to a
+// tester. The beta is granted enough Star Dust to buy every pack instead
+// (see betaDustGrant below), so the mechanic gets exercised and the items
+// still end up in the hangar.
 export function iapOwned(s: SaveData, id: string) {
-  return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
+  return (s.purchased || []).includes(id);
 }
 
 // Flight mods change how the game FEELS, so they are held back until a

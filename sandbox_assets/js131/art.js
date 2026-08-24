@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=127";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=131";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -423,8 +423,10 @@ export async function loadArt(eagerSuits = []) {
         Promise.resolve({}),
         Promise.resolve({}),
         Promise.resolve({}),
-        // Beta-only, like the tap banks: production can never fly the race,
-        // so it never spends a byte downloading the portal set.
+        // Ships on both pages now that Hyper Run has: 14 files, ~900K, and
+        // production can fly the race, so it needs the portal set. The
+        // conditional stays because the constant is the one place that
+        // decides, not because the answer can currently be no.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
     ]);
     const bank = {

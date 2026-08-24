@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars } from "./campaign.js?v=127";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, } from "./catalog.js?v=127";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=131";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, } from "./catalog.js?v=131";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -12,6 +12,11 @@ export function defaultSave() {
         xp: 0,
         startShield: false,
         battery: false,
+        starDust: 0,
+        betaDustGrant: false,
+        dustPaidTo: 0,
+        lastDaily: "",
+        dailyStreak: 0,
         steadyGates: false,
         roughAir: false,
         noPalFx: false,
@@ -33,7 +38,8 @@ export function defaultSave() {
         allStars: false,
         musicOff: false,
         eclipseMotionMode: 2,
-        experimentalRaceRecords: {},
+        raceRecords: {},
+        raceGates: [],
     };
 }
 function readRaw(key) {
@@ -81,6 +87,19 @@ export function loadSave() {
         s.equippedPal = "none";
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
         s.equippedPal = "none";
+    // saves written before Star Dust existed. dustPaidTo starts at 0 rather
+    // than at the pilot's current stars, so a long-standing save is PAID its
+    // backlog on next load instead of silently losing it.
+    if (typeof s.starDust !== "number" || !isFinite(s.starDust))
+        s.starDust = 0;
+    if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
+        s.dustPaidTo = 0;
+    if (typeof s.betaDustGrant !== "boolean")
+        s.betaDustGrant = false;
+    if (typeof s.lastDaily !== "string")
+        s.lastDaily = "";
+    if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
+        s.dailyStreak = 0;
     // saves written before the flight mods existed
     for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"]) {
         if (typeof s[k] !== "boolean")
@@ -107,8 +126,19 @@ export function loadSave() {
         s.guide = s.tutorialDone ? "done" : "pending";
     if (typeof s.allStars !== "boolean")
         s.allStars = false;
-    if (!s.experimentalRaceRecords || typeof s.experimentalRaceRecords !== "object" || Array.isArray(s.experimentalRaceRecords)) {
-        s.experimentalRaceRecords = {};
+    // Hyper Run's records used to live under experimentalRaceRecords, keyed
+    // by "prototype-chapter-1". Both names were prototype-era and the owner
+    // confirmed the only records were their own testing, so the old key is
+    // dropped rather than migrated - left in place it would sit in every
+    // save forever, describing a mission id that no longer exists.
+    delete s.experimentalRaceRecords;
+    if (!Array.isArray(s.raceGates))
+        s.raceGates = [];
+    // only ever the three real gate ids, de-duplicated - a hand-edited save
+    // cannot invent a fourth and unlock the chart with it
+    s.raceGates = [...new Set(s.raceGates.filter((n) => RACE_GATES.some((g) => g.after === n)))];
+    if (!s.raceRecords || typeof s.raceRecords !== "object" || Array.isArray(s.raceRecords)) {
+        s.raceRecords = {};
     }
     if (parsed && typeof parsed.xp !== "number") {
         const owned = Math.max(0, (s.unlocked?.length || 1) - 1) +
@@ -119,6 +149,14 @@ export function loadSave() {
     }
     if (BETA_UNLOCK_GATES && s.acorns < 10000)
         s.acorns = 10000;
+    // BETA STARTING DUST: exactly the price of every pack, summed from
+    // BUNDLES rather than written as a number, so re-pricing a pack can never
+    // leave a tester unable to afford the set. Granted ONCE - a tester who
+    // spends it is meant to stay spent, or the ledger is untestable too.
+    if (IS_BETA && !s.betaDustGrant) {
+        s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+        s.betaDustGrant = true;
+    }
     return s;
 }
 export function writeSave(s) {
@@ -190,10 +228,15 @@ export function suitRevealed(s, id) {
         return BETA_UNLOCK_GATES;
     return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
 }
-// Premium items are owned only once bought for real money. The beta
-// grants them outright so they can be flown and judged before release.
+// Premium items are owned only once bought - on BOTH pages. The beta used
+// to hand them over outright, which meant the one thing the beta could
+// never test was the shop itself: every pack read as already owned, so the
+// buy path, the price check and the dust ledger were all dead code to a
+// tester. The beta is granted enough Star Dust to buy every pack instead
+// (see betaDustGrant below), so the mechanic gets exercised and the items
+// still end up in the hangar.
 export function iapOwned(s, id) {
-    return BETA_UNLOCK_GATES || (s.purchased || []).includes(id);
+    return (s.purchased || []).includes(id);
 }
 // Flight mods change how the game FEELS, so they are held back until a
 // player has flown enough of the chart to have an opinion about it.

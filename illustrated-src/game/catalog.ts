@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "127";
+export const ART_VER = "131";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -26,7 +26,13 @@ export const BETA_FEATURES = true;
 
 // The two the owner asked to hold back are gated on their own, so either can
 // be turned on by itself without touching anything else.
-export const HYPER_RUN_ENABLED = IS_BETA;
+// HYPER RUN SHIPS. It was gated to the beta while it was a prototype; it
+// is a finished mode now, with its own art, its own records and its own
+// place in the mode picker, so the gate is gone rather than merely set to
+// true for both pages. The constant stays because the art loader and a
+// couple of call sites read it, and a named constant that says what it
+// means beats `true` scattered through four files.
+export const HYPER_RUN_ENABLED = true;
 export const STORY_MODE_ENABLED = IS_BETA;
 
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
@@ -479,14 +485,75 @@ export const TITLES: [number, string][] = [
 // Premium items. These never appear on the level track — no amount of
 // flying reveals them — and acorns cannot buy them; they are bought for
 // real money. The beta hands them over so they can be played and judged.
-export const IAP_ITEMS = [
-  "gemmie", "phoenix", "sammie", "seraph",
-  "chronarch", "leviathan", "paladin", "princess",
-  "verdant", "cryostar", "eclipse",
-  "prismwing", "clockling", "nightglider",
-  "opalfeather", "clockwork", "celestialtide",
-  "phoenixplume", "verdantflourish", "eclipseglyph",
+// THE THREE PACKS. Premium is sold as themed sets rather than a wall of
+// single items: a pack is a LOOK - suit, its helmet, its trail, its
+// companion - so buying one dresses the pilot completely instead of
+// leaving them half-matched.
+//
+// Cyber, Volt and Robo moved in here from the Star Chart. That is a real
+// trade and it is deliberate: they become premium skins, and the two
+// reward slots they vacated (\u2605 60 and \u2605 200) are refilled below with
+// helmets that used to be premium and are now earned. Nothing was simply
+// taken away.
+export const BUNDLES: {
+  id: string; name: string; blurb: string; dust: number; items: string[];
+}[] = [
+  {
+    id: "bundle-aurora",
+    name: "Aurora Pack",
+    blurb: "Ice, growth and eclipse \u2014 three skies, worn.",
+    dust: 900,
+    items: [
+      "cryostar", "verdant", "eclipse",                       // suits
+      "cryostar", "verdant", "eclipse",                       // helmets (same ids)
+      "celestialtide", "verdantflourish", "eclipseglyph",     // trails
+      "prismwing",                                            // pal
+    ],
+  },
+  {
+    id: "bundle-regalia",
+    name: "Regalia Pack",
+    blurb: "Gemcut, seraphim and the deep \u2014 the ceremonial set.",
+    dust: 1200,
+    items: [
+      "gemmie", "sammie", "seraph", "leviathan",              // suits
+      "gemmie", "sammie", "seraph", "leviathan",              // helmets
+      "opalfeather", "clockwork", "phoenixplume",             // trails
+      "clockling",                                            // pal
+    ],
+  },
+  {
+    id: "bundle-circuit",
+    name: "Circuit Pack",
+    blurb: "Chrome, current and code. These three wear their own heads.",
+    dust: 750,
+    items: [
+      "cyber", "volt", "robo",                                // suits, no helmets
+      "nightglider",                                          // pal
+    ],
+  },
 ];
+
+// Premium is now DEFINED by the packs rather than kept as a parallel list
+// that could drift out of step with them. An item is premium precisely
+// because a pack sells it.
+export const IAP_ITEMS = [...new Set(BUNDLES.flatMap((b) => b.items))];
+
+// STAR DUST is the premium currency. Acorns are earned by flying and buy
+// the standard wardrobe; dust is bought (or claimed daily) and buys packs.
+// Two currencies, two jobs, and the header shows both so neither can be
+// mistaken for the other.
+export const DUST_PACKS: { id: string; dust: number; bonus: number; price: string }[] = [
+  { id: "dust-100",  dust: 100,  bonus: 0,   price: "$0.99" },
+  { id: "dust-550",  dust: 500,  bonus: 50,  price: "$4.99" },
+  { id: "dust-1200", dust: 1000, bonus: 200, price: "$9.99" },
+  { id: "dust-2600", dust: 2000, bonus: 600, price: "$19.99" },
+];
+
+/** claimed once per day; the seventh straight day pays the streak bonus */
+export const DAILY_DUST = 5;
+export const DAILY_STREAK_BONUS = 25;
+export const DAILY_STREAK_LEN = 7;
 
 // THE HANGAR SHELVES. The suit wall stopped being one grid the day it
 // passed twenty cards: a grid ranks nothing, and the one thing a hangar

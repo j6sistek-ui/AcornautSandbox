@@ -509,8 +509,10 @@ export async function loadArt(eagerSuits: string[] = []): Promise<ArtBank> {
       Promise.resolve({} as Record<string, Sprite[]>),
       Promise.resolve({} as Record<string, Sprite[]>),
       Promise.resolve({} as Record<string, Sprite[]>),
-      // Beta-only, like the tap banks: production can never fly the race,
-      // so it never spends a byte downloading the portal set.
+      // Ships on both pages now that Hyper Run has: 14 files, ~900K, and
+      // production can fly the race, so it needs the portal set. The
+      // conditional stays because the constant is the one place that
+      // decides, not because the answer can currently be no.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
     ]);
   const bank: ArtBank = {
