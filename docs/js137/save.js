@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=136";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=136";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=137";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=137";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -156,7 +156,7 @@ export function loadSave() {
     // leave a tester unable to afford the set. Granted ONCE - a tester who
     // spends it is meant to stay spent, or the ledger is untestable too.
     if (IS_BETA && !s.betaDustGrant) {
-        s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);
+        s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0); // every pack, at sticker price
         s.betaDustGrant = true;
     }
     return s;

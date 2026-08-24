@@ -295,7 +295,23 @@ def verify_catalog_assets(
         for name, items in re.findall(
             r'name:\s*"([^"]+)"[\s\S]*?items:\s*\[(.*?)\]', bundle_block.group(1), re.S
         ):
-            ids = re.findall(r'"([^"]+)"', items)
+            # Each slot names its own kind now, so the parse is exact -
+            # a bare '"..."' sweep would pick the kind up as if it were an
+            # id and report every pack as selling something called "suit".
+            slots = re.findall(r'kind:\s*"([^"]+)"\s*,\s*id:\s*"([^"]+)"', items)
+            ids = [i for _, i in slots]
+            by_kind = {"suit": set(suits), "helm": set(helmets),
+                       "trail": set(trails), "pal": set(pals)}
+            # AND THE KIND HAS TO BE TRUE. Writing the kind down is only
+            # worth anything if it is checked: a trail filed as a suit would
+            # price at three times its weight, paint from the wrong list and
+            # never say so.
+            miskind = sorted({
+                f"{i} is sold as a {k}" for k, i in slots
+                if k in by_kind and i not in by_kind[k]
+            })
+            if miskind:
+                qa.fail(f"{name} mislabels what it sells: " + clipped(miskind))
             missing = sorted({i for i in ids if i not in sellable})
             gated = sorted({i for i in ids if i in beta_only})
             if missing:
