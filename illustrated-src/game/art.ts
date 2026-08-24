@@ -268,7 +268,104 @@ export function drawSprite(
   ctx.drawImage(spr, box.x, box.y, box.w, box.h, dx, dy, dw, dh);
 }
 
-export async function loadArt(): Promise<ArtBank> {
+// ------------------------------------------------------------- lazy suits
+// The per-suit FLIGHT banks — hinged tail/body layers and the animation
+// series — are the heaviest thing the game ships (tens of megabytes across
+// the roster, and the roster keeps growing). Only FLIGHT and the suit the
+// save is wearing load with the boot bank; the rest stream in one suit at
+// a time once the menu is up, so a fresh phone sees the game in a fraction
+// of the old download. Every draw path already falls back to the rigid
+// whole-suit sprite until a bank lands, so a not-yet-loaded suit is never
+// broken — just briefly un-animated.
+// Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
+// still touches its plume in the source, but the guarded mainline cut is
+// safer than the earlier colour split and remains an active rig.
+const RIGGED_SUITS = [
+  "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
+  "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
+  "catsuit", "gemmie", "sammie", "seraph", "leviathan",
+  "verdant", "cryostar", "eclipse", "volt",
+  ...(IS_BETA ? [
+    "cinderforge", "groveguard", "cosmic", "sunforged",
+    "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
+  ] : []),
+];
+const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
+  // Existing approved custom banks remain live everywhere.
+  robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
+  // The Robo-timing rollout stays beta-only until the owner has flown
+  // every silhouette. Production keeps its current universal rig path.
+  ...(IS_BETA ? {
+    flight: 16, iontrim: 16, copper: 16, frost: 16,
+    voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
+    ghost: 16, gemmie: 16, sammie: 16,
+    seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+    cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
+    abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
+  } : {}),
+} : {};
+const TAIL_TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
+const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+const ASC_BANKS: Record<string, number> =
+  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
+const DESC_BANKS: Record<string, number> =
+  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
+const LAZY_SUIT_IDS = [...new Set([
+  ...RIGGED_SUITS,
+  ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
+  ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
+])];
+
+// one load per suit for the page's lifetime — repeat calls (equip, the
+// background sweep, a re-equip) all share the same in-flight promise
+const suitBankLoads = new Map<string, Promise<void>>();
+export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
+  const hit = suitBankLoads.get(id);
+  if (hit) return hit;
+  const base = artBase();
+  const layer = (suffix: string) =>
+    loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
+  const p = (async () => {
+    const rigged = RIGGED_SUITS.includes(id);
+    const [tail, body] = await Promise.all([
+      rigged ? layer("-tail") : Promise.resolve(null),
+      rigged ? layer("-body") : Promise.resolve(null),
+    ]);
+    const [tap, tailTap, bounce, asc, desc] = await Promise.all([
+      TAP_BANKS[id] ? many(`${base}/suits/${id}-tap-`, TAP_BANKS[id]) : Promise.resolve([]),
+      TAIL_TAP_BANKS[id] ? many(`${base}/suits/${id}-tail-tap-`, TAIL_TAP_BANKS[id]) : Promise.resolve([]),
+      BOUNCE_BANKS[id] ? many(`${base}/suits/${id}-bounce-`, BOUNCE_BANKS[id]) : Promise.resolve([]),
+      ASC_BANKS[id] ? many(`${base}/suits/${id}-asc-`, ASC_BANKS[id]) : Promise.resolve([]),
+      DESC_BANKS[id] ? many(`${base}/suits/${id}-desc-`, DESC_BANKS[id]) : Promise.resolve([]),
+    ]);
+    if (tail) bank.suitTail[id] = tail;
+    if (body) bank.suitBody[id] = body;
+    if (tap.length) bank.suitTap[id] = tap;
+    if (tailTap.length) bank.suitTapTail[id] = tailTap;
+    if (bounce.length) bank.suitBounce[id] = bounce;
+    if (asc.length) bank.suitAsc[id] = asc;
+    if (desc.length) bank.suitDesc[id] = desc;
+  })();
+  suitBankLoads.set(id, p);
+  return p;
+}
+
+/** The background sweep: after boot, walk the rest of the roster ONE suit
+ *  at a time with a breather between each, so the pipe stays clear for
+ *  whatever the player is actually doing. By the time they browse the
+ *  loadout, most of it is already home. */
+export function prefetchSuitBanks(bank: ArtBank) {
+  let chain: Promise<unknown> = Promise.resolve();
+  for (const id of LAZY_SUIT_IDS) {
+    if (suitBankLoads.has(id)) continue;
+    chain = chain
+      .then(() => loadSuitBank(bank, id))
+      .then(() => new Promise((r) => setTimeout(r, 300)));
+  }
+  void chain;
+}
+
+export async function loadArt(eagerSuits: string[] = []): Promise<ArtBank> {
   const base = artBase();
   const palIds = [
     "bee",
@@ -315,19 +412,6 @@ export async function loadArt(): Promise<ArtBank> {
       "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
   ];
-  // Current catalog suits carry neck-cut tail/body pairs. Seraph's wing
-  // still touches its plume in the source, but the guarded mainline cut is
-  // safer than the earlier colour split and remains an active rig.
-  const RIGGED_SUITS = [
-    "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
-    "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
-    "catsuit", "gemmie", "sammie", "seraph", "leviathan",
-    "verdant", "cryostar", "eclipse", "volt",
-    ...(IS_BETA ? [
-      "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
-    ] : []),
-  ];
   const suitIds = [
     "flight",
     "iontrim",
@@ -363,6 +447,16 @@ export async function loadArt(): Promise<ArtBank> {
     "return-back", "return-front", "return-glyphs",
   ];
 
+  async function namedSeries(counts: Record<string, number>, folder: string, separator: string) {
+    const out: Record<string, Sprite[]> = {};
+    await Promise.all(
+      Object.entries(counts).map(async ([id, count]) => {
+        out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
+      }),
+    );
+    return out;
+  }
+
   async function named(ids: string[], folder: string, suffix = "", required = false) {
     const out: Record<string, Sprite> = {};
     await Promise.all(
@@ -378,15 +472,7 @@ export async function loadArt(): Promise<ArtBank> {
     return out;
   }
 
-  async function namedSeries(counts: Record<string, number>, folder: string, separator: string) {
-    const out: Record<string, Sprite[]> = {};
-    await Promise.all(
-      Object.entries(counts).map(async ([id, count]) => {
-        out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
-      }),
-    );
-    return out;
-  }
+
 
   const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
     await Promise.all([
@@ -416,33 +502,18 @@ export async function loadArt(): Promise<ArtBank> {
       // paces it.
       many(`${base}/vortex/hole-`, 9),
       many(`${base}/vortex/holeenter-`, 16),
-      named(RIGGED_SUITS, "suits", "-tail"),
-      named(RIGGED_SUITS, "suits", "-body"),
-      namedSeries(TAP_ANIM_ENABLED ? {
-        // Existing approved custom banks remain live everywhere.
-        robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-        // The Robo-timing rollout stays beta-only until the owner has flown
-        // every silhouette. Production keeps its current universal rig path.
-        // IS_BETA, not BETA_FEATURES: this list is 384 images, and the flag
-        // split sent all of them to production, where none is ever drawn.
-        ...(IS_BETA ? {
-          flight: 16, iontrim: 16, copper: 16, frost: 16,
-          voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
-          ghost: 16, gemmie: 16, sammie: 16,
-          seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
-          cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
-          abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
-        } : {}),
-      } : {}, "suits", "-tap-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 12 } : {}, "suits", "-tail-tap-"),
-      namedSeries(BOUNCE_ANIM_ENABLED ? { volt: 16 } : {}, "suits", "-bounce-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-asc-"),
-      namedSeries(TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, ...(IS_BETA ? { cyber: 9 } : {}) } : {}, "suits", "-desc-"),
+      Promise.resolve({} as Record<string, Sprite>),
+      Promise.resolve({} as Record<string, Sprite>),
+      Promise.resolve({} as Record<string, Sprite[]>),
+      Promise.resolve({} as Record<string, Sprite[]>),
+      Promise.resolve({} as Record<string, Sprite[]>),
+      Promise.resolve({} as Record<string, Sprite[]>),
+      Promise.resolve({} as Record<string, Sprite[]>),
       // Beta-only, like the tap banks: production can never fly the race,
       // so it never spends a byte downloading the portal set.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
     ]);
-  return {
+  const bank: ArtBank = {
     ready: true,
     squirrelIdle,
     squirrelFlap,
@@ -473,4 +544,12 @@ export async function loadArt(): Promise<ArtBank> {
     suitDesc,
     hyperRun,
   };
+  // FLIGHT is the game's face — its banks always ride the boot load — and
+  // the suit the save is wearing must be flyable the moment PLAY is hit.
+  await Promise.all(
+    [...new Set(["flight", ...eagerSuits])]
+      .filter((id) => LAZY_SUIT_IDS.includes(id))
+      .map((id) => loadSuitBank(bank, id)),
+  );
+  return bank;
 }

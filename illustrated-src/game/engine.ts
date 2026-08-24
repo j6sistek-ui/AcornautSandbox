@@ -1,4 +1,4 @@
-import { emptyArt, loadArt, type ArtBank } from "./art";
+import { emptyArt, loadArt, loadSuitBank, prefetchSuitBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM } from "./catalog";
 import { drawHud, drawWorld } from "./draw";
@@ -343,6 +343,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const item = SUITS.find((h) => h.id === id);
     if (!item) return "missing";
     if (!suitRevealed(save, id)) return "locked";
+    // the background sweep usually has this bank home already; if the
+    // player beats it here, jump the queue so their suit flies animated.
+    // Only against the REAL bank — a load into the placeholder would be
+    // thrown away with it, yet still marked done.
+    if (art && art.ready) void loadSuitBank(art, id);
     if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id)) || (save.purchased || []).includes(id)) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
@@ -816,11 +821,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // The art bank arrives after the engine does, so the loading screen
   // needs its own signal. This resolves either way — a failed load must
   // never leave the app stuck behind a progress bar.
-  engine.artReady = loadArt()
+  // FLIGHT plus whatever the save wears ride the boot load; the rest of
+  // the roster's flight banks stream in one suit at a time afterwards.
+  engine.artReady = loadArt([save.equippedSuit])
     .then((bank) => {
       art = bank;
       engine.art = bank;
       notify();
+      prefetchSuitBanks(bank);
     })
     .catch(() => {});
   notify();
