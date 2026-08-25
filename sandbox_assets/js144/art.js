@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=143";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=144";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -204,9 +204,14 @@ const RIGGED_SUITS = [
     "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
     "catsuit", "gemmie", "sammie", "seraph", "leviathan",
     "verdant", "cryostar", "eclipse", "volt",
+    // Cyber is NOT beta-gated any more. It started beta-only, then the shop
+    // overhaul sold it on production in two bundles - and its rig stayed
+    // behind this flag, so a pilot who bought it flew a flat sticker while
+    // the beta page flew the animation. A suit's art must follow the suit.
+    "cyber",
     ...(IS_BETA ? [
         "cinderforge", "groveguard", "cosmic", "sunforged",
-        "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
+        "abyssal", "amethyst", "ivoryguard", "reactor",
     ] : []),
 ];
 const TAP_BANKS = TAP_ANIM_ENABLED ? {
@@ -225,8 +230,8 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
-const ASC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
-const DESC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
+const ASC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {};
+const DESC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),

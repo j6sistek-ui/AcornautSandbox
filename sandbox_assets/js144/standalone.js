@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=143";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=143";
-import { drawSprite as drawSpriteOn } from "./art.js?v=143";
-import { createEngine } from "./engine.js?v=143";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=143";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=143";
-import { formatRaceTicks } from "./race.js?v=143";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=144";
+import { drawSprite as drawSpriteOn } from "./art.js?v=144";
+import { createEngine } from "./engine.js?v=144";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=144";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=144";
+import { formatRaceTicks } from "./race.js?v=144";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -506,6 +506,15 @@ export async function bootStandalone(root) {
         const w = el("span", "ac-costtag");
         w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
         return w;
+    }
+    /** The one card "state" that was never a state. A revealed, unowned,
+     *  free suit or helmet is a reward sitting there UNCLAIMED - the tap
+     *  that reads as "equip" everywhere else is the collection itself.
+     *  "EARNED" described the past and asked for nothing; this says what
+     *  the tap does, and pulses so the eye finds it in a full shelf. It
+     *  leaves the fused name text node so it can carry its own type. */
+    function collectTag() {
+        return el("span", "ac-collect", "Collect Reward");
     }
     /** Sort key for a shelf. Owned first, then acorn prices ascending, then
      *  star gates ascending far above them - a star gate is a different kind
@@ -1481,10 +1490,13 @@ export async function bootStandalone(root) {
                     // reads as a score, and a free helmet rendered the word "0".
                     // State stays in the text node; a real price becomes its own
                     // element so it can wear the acorn it is denominated in.
+                    const claim = !premium && open && !owned && h.cost <= 0;
                     const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
                         : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
-                            : owned ? "OWNED" : h.cost > 0 ? "" : "EARNED";
+                            : owned ? "OWNED" : "";
                     b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+                    if (claim)
+                        b.append(collectTag());
                     if (!premium && open && !owned && h.cost > 0)
                         b.append(costTag(h.cost));
                     if (premium)
@@ -1509,9 +1521,12 @@ export async function bootStandalone(root) {
                 const open = suitRevealed(s, u.id);
                 const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
+                const claim = !premium && open && !owned && u.cost <= 0;
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
-                        : owned ? "OWNED" : u.cost === 0 ? "EARNED" : ""}`));
+                        : owned ? "OWNED" : ""}`));
+                if (claim)
+                    b.append(collectTag());
                 if (!premium && open && !owned && u.cost > 0)
                     b.append(costTag(u.cost));
                 // a fixed head takes no helmet; the card says so up front
@@ -1587,7 +1602,10 @@ export async function bootStandalone(root) {
                 c.setAttribute("aria-label", `${t.name} trail preview`);
                 if (ctx)
                     paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
-                b.append(c, document.createTextNode(`${t.name}\n${open ? (premium ? "OWNED" : "EARNED")
+                // A trail has no unclaimed state: unlocking one IS owning it, and
+                // the tap only ever equips. "EARNED" was OWNED wearing the wrong
+                // word, so it says OWNED - there is no reward here to collect.
+                b.append(c, document.createTextNode(`${t.name}\n${open ? "OWNED"
                     : premium ? "PREMIUM"
                         : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
                 if (premium)

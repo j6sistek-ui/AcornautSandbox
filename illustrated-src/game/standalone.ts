@@ -514,6 +514,16 @@ export async function bootStandalone(root: HTMLElement) {
     return w;
   }
 
+  /** The one card "state" that was never a state. A revealed, unowned,
+   *  free suit or helmet is a reward sitting there UNCLAIMED - the tap
+   *  that reads as "equip" everywhere else is the collection itself.
+   *  "EARNED" described the past and asked for nothing; this says what
+   *  the tap does, and pulses so the eye finds it in a full shelf. It
+   *  leaves the fused name text node so it can carry its own type. */
+  function collectTag() {
+    return el("span", "ac-collect", "Collect Reward");
+  }
+
   /** Sort key for a shelf. Owned first, then acorn prices ascending, then
    *  star gates ascending far above them - a star gate is a different kind
    *  of price and mixing the two numbers on one axis would read as random. */
@@ -1515,10 +1525,12 @@ export async function bootStandalone(root: HTMLElement) {
           // reads as a score, and a free helmet rendered the word "0".
           // State stays in the text node; a real price becomes its own
           // element so it can wear the acorn it is denominated in.
+          const claim = !premium && open && !owned && h.cost <= 0;
           const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
             : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
-            : owned ? "OWNED" : h.cost > 0 ? "" : "EARNED";
+            : owned ? "OWNED" : "";
           b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+          if (claim) b.append(collectTag());
           if (!premium && open && !owned && h.cost > 0) b.append(costTag(h.cost));
           if (premium) markPremium(b, h.glow);
           if (locked || !open) b.classList.add("ac-cardoff");
@@ -1536,13 +1548,15 @@ export async function bootStandalone(root: HTMLElement) {
         const open = suitRevealed(s, u.id);
         const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
         const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
+        const claim = !premium && open && !owned && u.cost <= 0;
         b.append(
           suitCardOf(u, 64),
           document.createTextNode(
             `${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
               : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
-              : owned ? "OWNED" : u.cost === 0 ? "EARNED" : ""}`),
+              : owned ? "OWNED" : ""}`),
         );
+        if (claim) b.append(collectTag());
         if (!premium && open && !owned && u.cost > 0) b.append(costTag(u.cost));
         // a fixed head takes no helmet; the card says so up front
         if (wearsOwnHead(u)) {
@@ -1613,8 +1627,11 @@ export async function bootStandalone(root: HTMLElement) {
         c.setAttribute("role", "img");
         c.setAttribute("aria-label", `${t.name} trail preview`);
         if (ctx) paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
+        // A trail has no unclaimed state: unlocking one IS owning it, and
+        // the tap only ever equips. "EARNED" was OWNED wearing the wrong
+        // word, so it says OWNED - there is no reward here to collect.
         b.append(c, document.createTextNode(
-          `${t.name}\n${open ? (premium ? "OWNED" : "EARNED")
+          `${t.name}\n${open ? "OWNED"
             : premium ? "PREMIUM"
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) markPremium(b, t.colors[0]);

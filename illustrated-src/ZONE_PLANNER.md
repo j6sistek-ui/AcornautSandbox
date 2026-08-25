@@ -45,8 +45,9 @@ and nothing complains.
    not, the study was graded against data that has since moved and the
    proposal needs regenerating rather than applying.
 
-## Zones with no grading yet
+## Zones deliberately kept as-is
 
 18 CORAL SHALLOWS · 20 PULSAR FIELD · 21 BLACKOUT ZONE · 22 AURORA CROWN ·
-23 RUST BELT — untouched by either study so far, still on their original
-pools.
+23 RUST BELT — neither study regraded these, and that was the call, not an
+oversight: their existing pools are the ones we want. Treat them as settled
+rather than pending, and leave them alone unless a later study grades them.

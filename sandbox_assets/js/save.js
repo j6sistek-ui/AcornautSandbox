@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=143";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, cleanTune, freshTune, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=143";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=144";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, cleanTune, freshTune, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=144";
 export function defaultSave() {
     return {
         highScore: 0,

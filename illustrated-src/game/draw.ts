@@ -2484,12 +2484,16 @@ const DOME: Record<string, [number, number, number]> = {
   "suit:aurorasuit": [181, 101, 44],
   "suit:ember": [182, 100, 44],
   "suit:stardust": [179, 95, 44],
-  "suit:robo": [180, 99, 45],
+  // owner-tuned: the dome was drawn a size too big, so the glass swallowed
+  // the head instead of sitting on it
+  "suit:robo": [181, 99, 38],
   // re-rendered bare-headed on a black plate (the pale-on-cream key was
   // unrecoverable); measured against the new art, and near-identical to
   // flight, which is the same pose in the same framing
   "suit:ghost": [182, 93, 44],
-  "suit:bigbooty": [175, 107, 45],
+  // owner-tuned: sat low, left and oversized - the glass cut into the body
+  // and the head walked out of it on the late tap poses
+  "suit:bigbooty": [185, 101, 35],
   "suit:catsuit": [212, 86, 50],
   "suit:gemmie": [204, 92, 58],
   "suit:phoenix": [207, 92, 41],

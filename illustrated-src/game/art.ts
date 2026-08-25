@@ -285,9 +285,14 @@ const RIGGED_SUITS = [
   "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
   "catsuit", "gemmie", "sammie", "seraph", "leviathan",
   "verdant", "cryostar", "eclipse", "volt",
+  // Cyber is NOT beta-gated any more. It started beta-only, then the shop
+  // overhaul sold it on production in two bundles - and its rig stayed
+  // behind this flag, so a pilot who bought it flew a flat sticker while
+  // the beta page flew the animation. A suit's art must follow the suit.
+  "cyber",
   ...(IS_BETA ? [
     "cinderforge", "groveguard", "cosmic", "sunforged",
-    "abyssal", "amethyst", "ivoryguard", "reactor", "cyber",
+    "abyssal", "amethyst", "ivoryguard", "reactor",
   ] : []),
 ];
 const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
@@ -307,9 +312,9 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
 const TAIL_TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
 const ASC_BANKS: Record<string, number> =
-  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
+  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {};
 const DESC_BANKS: Record<string, number> =
-  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, ...(IS_BETA ? { cyber: 9 } : {}) } : {};
+  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {};
 const LAZY_SUIT_IDS = [...new Set([
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
