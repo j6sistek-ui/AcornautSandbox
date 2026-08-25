@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-25 01:14 UTC";
+export const BUILD_TIME = "2026-08-25 01:25 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -480,6 +480,32 @@ export function bundlePrice(b, owns) {
  *  every dial back at 1.00.
  *
  *  Flip TUNE_PANEL to false once the numbers are locked. */
+/** THE THREE WORMHOLE CONTROLS, so they can be flown back to back instead
+ *  of argued about. Dropping out of Lost in Space into a corridor that
+ *  answers to a different verb is the whole problem: you are already moving
+ *  before you know what the screen wants.
+ *
+ *  0 is what the live page has always flown, 1 is what the beta flies today,
+ *  2 is Hyper Run's drag. Beta picks; live keeps 0 until one is chosen. */
+export const TUNNEL_CONTROLS = [
+    ["Tap to fly", "The classic flap. Each tap resets your climb and gravity owns the fall."],
+    ["Hold to rise", "Press and hold to climb, release to fall."],
+    ["Slide and hold", "Drag anywhere; the pilot follows your finger, like Hyper Run."],
+];
+export const TUNNEL_CONTROL_DEFAULT = 1;
+export function cleanTunnelControl(raw) {
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n >= 0 && n < TUNNEL_CONTROLS.length ? n : TUNNEL_CONTROL_DEFAULT;
+}
+/** THE LEAD-IN: open, straight, empty corridor at the mouth of a wormhole.
+ *  A Lost in Space pilot is thrown in mid-flight with no READY screen, at a
+ *  distance scaled to their gate - so the walls were already narrow and
+ *  already moving before they had found the control. These nodes are held
+ *  dead centre at full width and carry nothing, then the corridor eases
+ *  into its real shape over the blend rather than snapping to it.
+ *  At 56px a node and 220px/s that is about three seconds of room. */
+export const TUNNEL_LEAD_NODES = 12;
+export const TUNNEL_LEAD_BLEND = 6;
 export const TUNE_PANEL = true;
 export const TUNE_DIALS = [
     { id: "lift", label: "Lift", hint: "how hard a hold or tap pulls up", min: 0.4, max: 1.6 },

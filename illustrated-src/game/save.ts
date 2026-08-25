@@ -15,6 +15,8 @@ import {
   titleForLevel,
   BUNDLES,
   cleanTune,
+  cleanTunnelControl,
+  TUNNEL_CONTROL_DEFAULT,
   freshTune,
   type TuneId,
   IS_BETA,
@@ -46,6 +48,8 @@ export type SaveData = {
   tune: Record<TuneId, number>;
   /** shelves laid out as a wrapping GRID rather than side-scrolling rows */
   shelfGrid: boolean;
+  /** which of TUNNEL_CONTROLS the beta's Wormhole Run answers to */
+  tunnelControl: number;
   /** highest star line already paid out, so a payout can never double-pay */
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
@@ -116,6 +120,7 @@ export function defaultSave(): SaveData {
     betaDustGrant: false,
     tune: freshTune(),
     shelfGrid: false,
+    tunnelControl: TUNNEL_CONTROL_DEFAULT,
     dustPaidTo: 0,
     lastDaily: "",
     dailyStreak: 0,
@@ -186,6 +191,7 @@ export function loadSave(): SaveData {
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   s.tune = cleanTune(s.tune);
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
+  s.tunnelControl = cleanTunnelControl(s.tunnelControl);
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;

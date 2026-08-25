@@ -1,4 +1,4 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=144";
 import { drawSprite as drawSpriteOn } from "./art.js?v=144";
 import { createEngine } from "./engine.js?v=144";
@@ -187,6 +187,23 @@ export async function bootStandalone(root) {
             // multiplier on the shipped constant, so 1.00 is exactly the flight
             // that ships and a finding reports as "0.70 on lift".
             if (TUNE_PANEL && engine.world.flight === "tunnel") {
+                // THE CONTROL COMES FIRST, above the dials, because it is the thing
+                // that decides whether the dials mean anything. Dropping out of Lost
+                // in Space into a corridor that answers to a different verb is what
+                // kills a run before the pilot has read the screen, so all three are
+                // here to be flown back to back.
+                if (IS_BETA) {
+                    const cur = engine.save.tunnelControl;
+                    sheet.append(el("p", "ac-sub ac-tunehead", "WORMHOLE CONTROL"));
+                    const bar = el("div", "ac-ctlbar");
+                    TUNNEL_CONTROLS.forEach(([name, hint], i) => {
+                        const b = el("button", i === cur ? "ac-ctlopt on" : "ac-ctlopt");
+                        b.append(el("b", "", name), el("i", "", hint));
+                        b.onclick = () => { engine.setTunnelControl(i); render(); };
+                        bar.append(b);
+                    });
+                    sheet.append(bar);
+                }
                 const t = engine.save.tune;
                 const off = TUNE_DIALS.filter((d) => Math.abs(t[d.id] - 1) > 1e-6).length;
                 sheet.append(el("p", "ac-sub ac-tunehead", off ? `FLIGHT DIALS \u00b7 ${off} CHANGED` : "FLIGHT DIALS"));

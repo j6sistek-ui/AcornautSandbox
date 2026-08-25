@@ -393,6 +393,15 @@
        purpose: seven dials have to fit above RESUME on a phone without the
        sheet scrolling away from the button that gets you back to the run. */
     .ac-tunehead { margin: 10px 0 4px; letter-spacing: .12em; font-size: 11px; }
+    /* the three Wormhole controls, flown back to back */
+    .ac-ctlbar { display: grid; gap: 6px; margin: 0 0 10px; }
+    .ac-ctlopt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+      text-align: left; padding: 9px 12px; border-radius: 12px; color: #d7def0;
+      background: rgba(12,18,38,.6); border: 1px solid #2a3454; }
+    .ac-ctlopt b { font: 800 13px/1.2 Figtree, sans-serif; letter-spacing: .02em; }
+    .ac-ctlopt i { font: 600 11px/1.35 Figtree, sans-serif; font-style: normal; color: #8f9ab8; }
+    .ac-ctlopt.on { border-color: #A99BE8; background: rgba(153,142,177,.18); color: #f3efe4; }
+    .ac-ctlopt.on i { color: #c3bde0; }
     .ac-tune { display: grid; gap: 6px; width: 100%; margin-bottom: 8px; }
     .ac-tunerow { display: grid; grid-template-columns: 1fr 28px auto 28px 44px;
       grid-template-areas: "label label label label label" "minus slide slide plus val";

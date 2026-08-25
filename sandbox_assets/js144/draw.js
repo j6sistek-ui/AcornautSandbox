@@ -1,4 +1,4 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, IS_BETA, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=144";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=144";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=144";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=144";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=144";
@@ -1419,6 +1419,11 @@ function drawHyperRunWorld(ctx, w, save, art) {
     drawRaceCourseOverlay(ctx, w, art, viewport, frame);
     ctx.restore();
     drawRaceCueOverlay(ctx, w, viewport);
+}
+/** What the corridor wants, in the pilot's own words. Kept in one place so
+ *  the READY card and the lead-in can never disagree about the control. */
+function tunnelControlLabel(w) {
+    return ["TAP TO RISE", "HOLD TO RISE", "SLIDE AND HOLD"][w.tunnelControl] ?? "TAP TO RISE";
 }
 export function drawWorld(ctx, w, save, art) {
     const { W, H } = w;
@@ -3644,8 +3649,24 @@ export function drawHud(ctx, w, art) {
         ctx.fillStyle = "rgba(255,255,255,0.85)";
         ctx.font = "700 18px Figtree, system-ui";
         ctx.globalAlpha = 0.75 + 0.25 * Math.sin(w.time * 4);
-        ctx.fillText(w.flight === "tunnel" ? (IS_BETA ? "HOLD TO RISE" : "TAP TO RISE") : "TAP TO FLY", W / 2, w.H * 0.38);
+        ctx.fillText(w.flight === "tunnel" ? tunnelControlLabel(w) : "TAP TO FLY", W / 2, w.H * 0.38);
         ctx.globalAlpha = 1;
+    }
+    // THE LEAD-IN HINT. A wormhole entry never shows READY - the pilot is
+    // thrown straight in from Lost in Space - so the only place the corridor
+    // can say which verb it wants is here, over the open run of it. It fades
+    // out as the walls arrive rather than vanishing at a hard edge.
+    if (!w.ready && !w.tut && w.flight === "tunnel" && w.tunnel && w.tunnel.leadNodes > 0) {
+        const nose = w.tunnel.nodes.find((n) => n.x > w.W * PHYS.squirrelX);
+        const left = nose ? w.tunnel.leadNodes - nose.index : 0;
+        if (left > 0) {
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#6ef0d8";
+            ctx.font = "800 19px Figtree, system-ui";
+            ctx.globalAlpha = Math.min(1, left / 4) * (0.72 + 0.28 * Math.sin(w.time * 5));
+            ctx.fillText(tunnelControlLabel(w), W / 2, w.H * 0.30);
+            ctx.globalAlpha = 1;
+        }
     }
     if (w.tut?.hold) {
         const st = w.tut.stage;
