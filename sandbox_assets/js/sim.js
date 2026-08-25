@@ -4,7 +4,7 @@ import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=145
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=145";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=145";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, } from "./control-constants.js?v=145";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, TUNE_AUTO_LEAD, TUNE_AUTO_DAMP, TUNE_HIT_FLASH, } from "./control-constants.js?v=145";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -62,6 +62,12 @@ export function makeWorld(W, H) {
         tunnelHeld: false,
         tunnelDragY: null,
         tunnelControl: 0,
+        tuneTest: false,
+        tuneAuto: true,
+        tuneHits: 0,
+        tuneHitT: 0,
+        tuneClean: 0,
+        tuneCleanBest: 0,
         wormHold: null,
         wormLeft: 0,
         tune: freshTune(),
@@ -842,6 +848,14 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.bounceAnimStrength = 0;
     w.tunnelHeld = false;
     w.tunnelDragY = null;
+    // Every ordinary run is a real run. A tuning flight opts back IN after
+    // resetRun returns - so no path into the corridor can leave a pilot
+    // accidentally immortal. tuneAuto is a preference and survives.
+    w.tuneTest = false;
+    w.tuneHits = 0;
+    w.tuneHitT = 0;
+    w.tuneClean = 0;
+    w.tuneCleanBest = 0;
     w.wormHold = null;
     w.wormLeft = 0;
     // a run keeps the dials it started with, so changing one mid-run cannot
@@ -1403,6 +1417,101 @@ function exitWormhole(w) {
     w.recoveryMsg = "BACK ON COURSE";
     w.shake = 0.24;
 }
+/** Where the autopilot wants to be: the middle of the corridor that is open
+ *  across the WHOLE look-ahead, not just the slice underfoot. Aiming at the
+ *  centre of the current node walks straight into a pinch that was visible a
+ *  second earlier, which reads as the autopilot being bad at the game rather
+ *  than as the corridor being too tight - the opposite of what the panel is
+ *  for. */
+function tuneAutoAim(w, sx) {
+    const t = w.tunnel;
+    const lead = Math.max(60, w.speed * TUNE_AUTO_LEAD);
+    const margin = PHYS.squirrelR + 6;
+    let top = -Infinity;
+    let bottom = Infinity;
+    for (let i = 0; i <= 4; i++) {
+        const b = tunnelBoundsAt(w, sx + (lead * i) / 4);
+        top = Math.max(top, b.top);
+        bottom = Math.min(bottom, b.bottom);
+    }
+    // The corridor closes to nothing somewhere in the look-ahead - it bends
+    // faster than the pilot can see through. Fall back to the window it is
+    // actually in and take the bend as it arrives.
+    if (bottom - top < margin * 2) {
+        const b = tunnelBoundsAt(w, sx);
+        top = b.top;
+        bottom = b.bottom;
+    }
+    let aim = (top + bottom) / 2;
+    for (const h of t.hazards) {
+        if (h.x < sx - 20 || h.x > sx + lead)
+            continue;
+        const clear = PHYS.squirrelR + h.r * 0.65 + 14;
+        if (Math.abs(aim - h.y) >= clear)
+            continue;
+        // step to whichever side of the rock still fits inside the window,
+        // preferring the shorter move when both do
+        const up = h.y - clear;
+        const down = h.y + clear;
+        const upOk = up - margin >= top;
+        const downOk = down + margin <= bottom;
+        if (upOk && (!downOk || Math.abs(up - aim) <= Math.abs(down - aim)))
+            aim = up;
+        else if (downOk)
+            aim = down;
+    }
+    return {
+        aim: Math.max(top + margin, Math.min(bottom - margin, aim)),
+        top: top + margin,
+        bottom: bottom - margin,
+    };
+}
+/** Fly the corridor using the PILOT'S control, not a shortcut. Whichever of
+ *  TUNNEL_CONTROLS is selected, the autopilot produces the input a finger
+ *  would produce and lets the ordinary physics consume it - so lift, fall
+ *  and top speed are being exercised for real, and a dial that changes the
+ *  flight visibly changes what the autopilot can hold. */
+function tuneAutopilot(w, save, control) {
+    const { aim, top, bottom } = tuneAutoAim(w, w.W * PHYS.squirrelX);
+    if (control === 2) {
+        w.tunnelDragY = aim;
+        return;
+    }
+    if (control === 1) {
+        // HOLD is an accelerating body, so project the current velocity forward
+        // or the controller hunts around the centre line and never settles.
+        w.tunnelHeld = w.squirrel.y + w.squirrel.vy * TUNE_AUTO_DAMP > aim;
+        return;
+    }
+    // TAP is ballistic: every tap throws the pilot up by a fixed RISE and
+    // gravity brings them back down. So the line to tap on is not the aim -
+    // it is half a rise BELOW it, which puts the whole sawtooth centred on
+    // the aim instead of hanging off one side of it. Tapping on the aim
+    // itself flies the corridor's top half and scrapes the ceiling.
+    const g = gravOf(save, w);
+    const vf = flapOf(save, w); // negative: upward
+    const rise = (vf * vf) / (2 * Math.max(1, g)); // how far one tap climbs
+    const line = Math.max(top, Math.min(bottom, aim + rise * 0.5));
+    // one frame of lead, so the discrete step does not overshoot the line
+    // by however far the pilot fell between two updates
+    const at = w.squirrel.y + w.squirrel.vy / 60;
+    // never chain-tap while already climbing hard, or the arcs stack into
+    // the roof and the pilot rides the ceiling instead of the corridor
+    if (at >= line && w.squirrel.vy > vf * 0.35)
+        flap(w, save);
+}
+/** A contact that an ordinary run would not have survived. Counting them -
+ *  and the stretch flown between them - is the whole reading a tuning run
+ *  exists to produce. */
+function registerTuneHit(w) {
+    if (w.tuneHitT > 0)
+        return; // one contact, not one per frame
+    w.tuneHits += 1;
+    w.tuneHitT = TUNE_HIT_FLASH;
+    w.tuneCleanBest = Math.max(w.tuneCleanBest, w.tuneClean);
+    w.tuneClean = 0;
+    w.shake = 0.18;
+}
 function updateTunnel(w, save, simDt, realDt) {
     // a wormhole detour is on a clock; a real Wormhole Run is not
     if (w.wormHold) {
@@ -1431,6 +1540,8 @@ function updateTunnel(w, save, simDt, realDt) {
     const vHi = WORMHOLE_MAX_VY * w.tune.vcap;
     const control = tunnelControlOf(save);
     w.tunnelControl = control;
+    if (w.tuneTest && w.tuneAuto)
+        tuneAutopilot(w, save, control);
     if (control === 2) {
         // SLIDE AND HOLD: the pilot is a rate-limited FOLLOWER, not an
         // accelerating body, which is the whole reason Hyper Run's tunnel reads
@@ -1460,6 +1571,12 @@ function updateTunnel(w, save, simDt, realDt) {
     w.distance += move;
     t.visualT += simDt;
     t.time += simDt;
+    if (w.tuneTest) {
+        w.tuneClean += simDt;
+        w.tuneCleanBest = Math.max(w.tuneCleanBest, w.tuneClean);
+        if (w.tuneHitT > 0)
+            w.tuneHitT = Math.max(0, w.tuneHitT - realDt);
+    }
     refreshTunnelMultiplier(t);
     t.scoreFloat += move / 100 * t.multiplier;
     w.score = Math.floor(t.scoreFloat);
@@ -1527,8 +1644,20 @@ function updateTunnel(w, save, simDt, realDt) {
     w.palPos.x += (palTargetX - w.palPos.x) * palFollow;
     w.palPos.y += (palTargetY - w.palPos.y) * palFollow;
     const bounds = tunnelBoundsAt(w, sx);
-    if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom)
-        return die(w, save);
+    if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom) {
+        if (!w.tuneTest)
+            return die(w, save);
+        // A tuning run reads the wall instead of dying on it, and is set back
+        // inside the corridor rather than left grinding along the outside of
+        // it, which would count a contact every frame and read as nonsense.
+        registerTuneHit(w);
+        const mid = (bounds.top + bounds.bottom) / 2;
+        const half = Math.max(1, (bounds.bottom - bounds.top) / 2 - PHYS.squirrelR - 2);
+        w.squirrel.y = Math.max(mid - half, Math.min(mid + half, sy));
+        w.squirrel.vy = 0;
+        if (w.tunnelDragY !== null)
+            w.tunnelDragY = w.squirrel.y;
+    }
     for (const h of t.hazards) {
         if (!h.warned && h.x <= w.W + 150) {
             h.warned = true;
@@ -1536,8 +1665,11 @@ function updateTunnel(w, save, simDt, realDt) {
                 sound = "warning";
         }
         const hitRadius = PHYS.squirrelR + h.r * 0.65;
-        if (sweptCircleHit(sx, oldSy, sx, sy, h.x + move, h.y, h.x, h.y, hitRadius))
-            return die(w, save);
+        if (sweptCircleHit(sx, oldSy, sx, sy, h.x + move, h.y, h.x, h.y, hitRadius)) {
+            if (!w.tuneTest)
+                return die(w, save);
+            registerTuneHit(w);
+        }
         if (!h.nearMissed && h.x <= sx && h.x + move > sx) {
             h.nearMissed = true;
             const cross = move > 0 ? Math.max(0, Math.min(1, (h.x + move - sx) / move)) : 1;
@@ -2631,7 +2763,11 @@ export function updateWorld(w, save, dt) {
             w.bounceAnimStrength = 0;
         }
     }
-    const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
+    // READY holds the world still until the pilot's first input. A tuning run
+    // on autopilot has no pilot to wait for, so it would sit frozen forever
+    // on a screen whose whole purpose is to be watched moving.
+    const frozen = (w.ready && !(w.tuneTest && w.tuneAuto))
+        || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
         w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
     if (w.flight === "deep" && w.warpT <= 0 && w.warpLeft <= 0) {

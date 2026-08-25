@@ -944,6 +944,68 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
+def verify_tuning_run_gated(qa: QA) -> None:
+    """The Tuning Run cannot end and cannot reach a player.
+
+    It is the one mode in the game where the corridor is not allowed to kill
+    you, which makes it the one mode whose gate actually matters. Two things
+    hold it in place, and both are one careless edit from gone:
+
+      * resetRun must CLEAR tuneTest. Every ordinary run goes through it, so
+        the moment it stops clearing, a pilot who has visited the tuning run
+        once is immortal in every run afterwards - and nothing on screen
+        would say so.
+      * the door into it must be beta-gated, or the live page grows a
+        prototype entrance in its Modes sheet.
+
+    The harness proves the behaviour by flying it. This proves the SHAPE, so
+    a refactor that moves the flag or the door has to come past here too.
+    """
+    sim = (ROOT / "illustrated-src/game/sim.ts").read_text(encoding="utf8")
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    problems: list[str] = []
+
+    body = sim.split("export function resetRun", 1)
+    if len(body) < 2:
+        problems.append("resetRun is gone - this guard is stale")
+    else:
+        # up to the next top-level export is the body we care about
+        rest = body[1]
+        end = rest.find("\nexport ")
+        reset_body = rest[:end if end > 0 else len(rest)]
+        # a commented-out assignment still contains the text of one, and this
+        # guard exists precisely for the edit that comments it out
+        reset_body = "\n".join(ln.split("//", 1)[0] for ln in reset_body.splitlines())
+        if "w.tuneTest = false" not in reset_body:
+            problems.append("resetRun no longer clears tuneTest - an ordinary run "
+                            "after a tuning run would be immortal")
+
+    lines = ui.splitlines()
+    calls = [i for i, ln in enumerate(lines) if "flyTuning()" in ln]
+    if not calls:
+        problems.append("nothing opens the tuning run any more - either the door "
+                        "was deleted, or this guard is stale")
+    for i in calls:
+        # the gate is an `if` above the door, not on the door's own line
+        window = "\n".join(lines[max(0, i - 3):i + 1])
+        if "IS_BETA" not in window:
+            problems.append(f"the tuning run door is not beta-gated: "
+                            f"{lines[i].strip()[:70]}")
+
+    # and the rig itself only draws for a run that opted in
+    rig = [ln for ln in ui.splitlines() if "tuningRig()" in ln and "function " not in ln]
+    if not rig:
+        problems.append("the tuning rig is never drawn")
+    for ln in rig:
+        if "tuneTest" not in ln:
+            problems.append(f"the tuning rig draws without checking tuneTest: {ln.strip()[:70]}")
+
+    if problems:
+        qa.fail("tuning run: " + "; ".join(problems))
+    else:
+        qa.ok("the tuning run stays beta-only, and every ordinary run stays mortal")
+
+
 def verify_scroll_not_squash(qa: QA) -> None:
     """A scrollable, height-capped flex column must not shrink its children.
 
@@ -1015,6 +1077,7 @@ def main() -> int:
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
+    verify_tuning_run_gated(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)

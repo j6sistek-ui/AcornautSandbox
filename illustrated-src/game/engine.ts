@@ -89,7 +89,16 @@ export type Engine = {
   /** Nudge one Wormhole Run calibration dial. Applies to the LIVE run as
    *  well as the save, so the pilot feels the change on resume rather than
    *  on the next flight - which is the entire point of a pause-menu dial. */
-  setTune: (id: TuneId, value: number) => number;
+  /** Turn a dial. QUIET is what a slider drag uses: it changes the flight
+   *  immediately but does NOT notify, because a notify rebuilds the overlay
+   *  and destroys the slider the finger is still holding. The drag's end
+   *  commits loudly. */
+  setTune: (id: TuneId, value: number, quiet?: boolean) => number;
+  /** start a TUNING RUN: Wormhole Run that cannot end, with the dials on
+   *  screen while it flies */
+  flyTuning: () => void;
+  /** hand the tuning run back and forth between the autopilot and the pilot */
+  setTuneAuto: (on: boolean) => void;
   /** put every dial back to the shipped feel */
   resetTune: () => void;
   /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
@@ -310,7 +319,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     wantPalArt(id) {
       if (art && art.ready) void loadPalBank(art, id);
     },
-    setTune(id, value) {
+    setTune(id, value, quiet) {
       const d = TUNE_DIALS.find((x) => x.id === id);
       if (!d) return 1;
       // snapped AND rounded: 0.05 has no exact binary form, so stepping
@@ -322,9 +331,29 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // the run in progress takes it too, or a pause-menu dial would be a
       // note to self rather than a control
       world.tune = cleanTune(save.tune);
+      // A quiet turn is mid-drag: the flight takes it, but the save and the
+      // overlay wait for the finger to lift. Writing localStorage on every
+      // pointermove is a stutter, and notifying is worse - render() empties
+      // the overlay, so the slider being dragged is torn out from under it.
+      if (quiet) return v;
       writeSave(save);
       notify();
       return v;
+    },
+    flyTuning() {
+      unlockAudio();
+      resetRun(world, save, "tunnel", false);
+      world.tuneTest = true;
+      resetInputTracking();
+      notify();
+    },
+    setTuneAuto(on) {
+      world.tuneAuto = !!on;
+      // handing control over must not leave the autopilot's last input
+      // latched - a synthesised hold becomes a stuck climb under a finger
+      world.tunnelHeld = false;
+      world.tunnelDragY = null;
+      notify();
     },
     setTunnelControl(n) {
       save.tunnelControl = cleanTunnelControl(n);

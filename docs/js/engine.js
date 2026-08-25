@@ -188,7 +188,7 @@ export async function createEngine(canvas) {
             if (art && art.ready)
                 void loadPalBank(art, id);
         },
-        setTune(id, value) {
+        setTune(id, value, quiet) {
             const d = TUNE_DIALS.find((x) => x.id === id);
             if (!d)
                 return 1;
@@ -201,9 +201,30 @@ export async function createEngine(canvas) {
             // the run in progress takes it too, or a pause-menu dial would be a
             // note to self rather than a control
             world.tune = cleanTune(save.tune);
+            // A quiet turn is mid-drag: the flight takes it, but the save and the
+            // overlay wait for the finger to lift. Writing localStorage on every
+            // pointermove is a stutter, and notifying is worse - render() empties
+            // the overlay, so the slider being dragged is torn out from under it.
+            if (quiet)
+                return v;
             writeSave(save);
             notify();
             return v;
+        },
+        flyTuning() {
+            unlockAudio();
+            resetRun(world, save, "tunnel", false);
+            world.tuneTest = true;
+            resetInputTracking();
+            notify();
+        },
+        setTuneAuto(on) {
+            world.tuneAuto = !!on;
+            // handing control over must not leave the autopilot's last input
+            // latched - a synthesised hold becomes a stuck climb under a finger
+            world.tunnelHeld = false;
+            world.tunnelDragY = null;
+            notify();
         },
         setTunnelControl(n) {
             save.tunnelControl = cleanTunnelControl(n);
