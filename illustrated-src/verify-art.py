@@ -946,6 +946,57 @@ MOTION_TAP_OVERLAP = {
 }
 
 
+def verify_pause_has_an_exit(qa: QA) -> None:
+    """The pause sheet can always be left.
+
+    .ac-sheet is a fixed-height flex column, overflow:hidden, centred. That
+    is fine until something makes it taller than the phone - and the
+    calibration panel does exactly that, taking it to ~1070px on a 932px
+    screen. Centred overflow clips SYMMETRICALLY, so it spilled off both
+    ends and took RESUME and ABORT with it: every dial readable, no way out.
+    Reported from a real phone, where the browser chrome makes it worse.
+
+    Two properties keep it escapable and both are one edit from gone, so
+    both are asserted:
+
+      * the sheet SCROLLS rather than clipping
+      * the actions are STICKY, so they cannot be scrolled away either
+
+    Either one alone is not enough. Scrolling without sticky means the way
+    out exists but is off-screen until you discover you can scroll; sticky
+    without scrolling means the content above it is unreachable.
+    """
+    css = (ROOT / "docs/index.html").read_text(encoding="utf8")
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+
+    def rule(sel: str) -> str:
+        m = re.search(r"\n\s*" + re.escape(sel) + r"\s*\{([^}]*)\}", css)
+        return " ".join(m.group(1).split()) if m else ""
+
+    problems: list[str] = []
+    sheet = rule(".ac-pausesheet")
+    if "overflow-y: auto" not in sheet:
+        problems.append(".ac-pausesheet does not scroll - a tall pause menu will "
+                        "clip off both ends and strand the pilot")
+    if "flex: none" not in rule(".ac-pausesheet > *"):
+        problems.append(".ac-pausesheet children can shrink - the sheet will "
+                        "squash instead of scrolling")
+    act = rule(".ac-pauseact")
+    if "position: sticky" not in act:
+        problems.append(".ac-pauseact is not sticky - RESUME scrolls away with "
+                        "everything else")
+    # and the markup still has to USE them
+    if "ac-sheet ac-center ac-pausesheet" not in ui:
+        problems.append("the pause sheet no longer carries ac-pausesheet")
+    if 'el("div", "ac-pauseact")' not in ui:
+        problems.append("RESUME and ABORT are no longer inside ac-pauseact")
+
+    if problems:
+        qa.fail("pause exit: " + "; ".join(problems))
+    else:
+        qa.ok("the pause menu can always be left, however tall it gets")
+
+
 def verify_one_tree(qa: QA) -> None:
     """There is ONE shipping tree, and it is docs/.
 
@@ -1182,6 +1233,7 @@ def main() -> int:
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
+    verify_pause_has_an_exit(qa)
     verify_one_tree(qa)
     verify_motion_banks(qa)
     verify_tuning_run_gated(qa)
