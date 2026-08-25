@@ -337,6 +337,12 @@ function pickDebris(env) {
  *  debris sweeps and the painter all ask here, so what the pilot flies
  *  into is what the pilot sees. Arcade keeps its rocks still - the retro
  *  timeline is a different painter and a different feel. */
+/** How fast a rock drifts, as a fraction of the first pass's rate. The
+ *  original swing was one every 5s to 14s, which is a readable wobble on a
+ *  static column and far too busy once the whole field is moving. At a
+ *  quarter speed it is one swing every 19s to 56s: slow enough to register
+ *  as drift rather than motion, which is the whole point of the effect. */
+export const DEBRIS_DRIFT_RATE = 0.25;
 export function blockerX(p, b, w) {
     const home = p.x + (b.xOff || 0);
     if (!w || !b.amp)
@@ -402,7 +408,12 @@ function sealBlockers(w, env, gapY, gap) {
             // It was a full width either way at first, which spread the column too
             // far to still read as one seal. Halved.
             amp: Math.random() * rr,
-            rate: 0.45 + Math.random() * 0.9, // one swing every 5s to 14s
+            // The SPREAD was right and the SPEED was not: at full rate the column
+            // read as arcade jitter rather than anything hanging in space. Only
+            // the clock is scaled here - amplitude, phase and the per-rock variety
+            // are all untouched, so the stack keeps exactly the diversity it had
+            // and simply takes four times as long to get anywhere.
+            rate: (0.45 + Math.random() * 0.9) * DEBRIS_DRIFT_RATE,
             phase: Math.random() * Math.PI * 2,
             debris: pickDebris(env),
         });
