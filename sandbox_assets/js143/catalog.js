@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-24 23:31 UTC";
+export const BUILD_TIME = "2026-08-25 00:35 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -541,6 +541,69 @@ export function shopBundles(now, owns) {
         .slice(0, SHOP_SLOTS);
 }
 export const IAP_ITEMS = [...new Set(BUNDLES.flatMap(bundleIds))];
+// ------------------------------------------------------- A LA CARTE
+// The storefront sells single items as well as packs, so a single item
+// needs a price - and there was never one. ITEM_WEIGHT already says what a
+// slot is worth relative to the others, and the packs already imply a rate,
+// so the a la carte price is that rate, set ABOVE the dearest pack. That
+// ordering is the whole point: if a single cost what a pack charges per
+// slot, the small packs would offer nothing and nobody would ever buy one.
+export const DUST_PER_WEIGHT = 90;
+// A suit and its matching helmet SHARE an ownership id - buying "cryostar"
+// hands over both - so a price is asked of the id, not of the render. This
+// walks the catalogue rather than hard-coding, so a new set is priced the
+// moment it is added.
+export function idWeight(id) {
+    let w = 0;
+    if (SUITS.some((u) => u.id === id))
+        w += ITEM_WEIGHT.suit;
+    if (HELMETS.some((h) => h.id === id))
+        w += ITEM_WEIGHT.helm;
+    if (PALS.some((p) => p.id === id))
+        w += ITEM_WEIGHT.pal;
+    if (TRAILS.some((t) => t.id === id))
+        w += ITEM_WEIGHT.trail;
+    return w;
+}
+export function idDust(id) {
+    return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 10) * 10);
+}
+// THE FREE TRAIL. Buying a set hands over its trail as well: the trail is
+// the part of a look nobody would pick on its own, and giving it away with
+// the suit and helmet is what makes a set feel like a set rather than an
+// invoice. Only sets with a trail painted for them appear here.
+export const SET_TRAIL = {
+    cryostar: "celestialtide",
+    verdant: "verdantflourish",
+    eclipse: "eclipseglyph",
+    gemmie: "opalfeather",
+    seraph: "phoenixplume",
+    cyber: "clockwork",
+};
+/** every id a purchase of `id` actually hands over */
+export function idGrants(id) {
+    const t = SET_TRAIL[id];
+    return t ? [id, t] : [id];
+}
+/** what the ids you do NOT own would cost bought one at a time */
+export function alaCarteTotal(ids, owns) {
+    return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+}
+/** THE FEATURED PACK. One at a time, and always the best deal on the
+ *  shelf: half of what its remaining contents would cost singly. Half of
+ *  what REMAINS, so a pack whose suit you already bought quietly costs
+ *  less rather than charging for it twice. */
+export const FEATURE_DISCOUNT = 0.5;
+export function featurePrice(b, owns) {
+    const due = alaCarteTotal(bundleIds(b), owns);
+    if (due <= 0)
+        return 0;
+    return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
+}
+// HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
+// is a reason to come back, not an inventory. Trails are never sold singly
+// for now - they arrive free with their set.
+export const SHOP_CYCLE = { suits: 3, helms: 4, pals: 1, trails: 0 };
 // STAR DUST is the premium currency. Acorns are earned by flying and buy
 // the standard wardrobe; dust is bought (or claimed daily) and buys packs.
 // Two currencies, two jobs, and the header shows both so neither can be
