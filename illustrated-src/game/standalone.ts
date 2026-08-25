@@ -414,6 +414,10 @@ export async function bootStandalone(root: HTMLElement) {
       if (sc && keptScroll) sc.scrollTop = keptScroll;
       return;
     }
+    if (snap.screen === "scores") {
+      overlay.append(drawScores());
+      return;
+    }
     if (snap.screen === "help") {
       overlay.append(drawHelp());
     }
@@ -592,10 +596,10 @@ export async function bootStandalone(root: HTMLElement) {
     return el("div", "ac-coach", text);
   }
 
-  function tabbar(active: "hangar" | "log" | "title" | "profile" | "shop" | "none") {
+  function tabbar(active: "hangar" | "log" | "title" | "profile" | "shop" | "scores" | "none") {
     const bar = el("nav", "ac-tabbar");
     const side = (
-      screen: "hangar" | "log" | "profile" | "shop",
+      screen: "hangar" | "log" | "profile" | "shop" | "scores",
       paths: string[],
       label: string,
     ) => {
@@ -877,11 +881,18 @@ export async function bootStandalone(root: HTMLElement) {
     // what claims it, so the glow is both the ask and the whole interaction.
     if (!engine.dailyState().claimedToday) shopBtn.classList.add("ac-dailyready");
     shopBtn.onclick = () => engine.open("shop");
+    // NEXT TO THE SHOP, in the rail, wearing painted art like the gift
+    // beside it - this rail speaks in renders, and the dock that speaks in
+    // line glyphs is not rendered at all while BETA_FEATURES is on.
+    const boardBtn = el("button", "ac-hub-sq");
+    boardBtn.setAttribute("aria-label", "Leaderboard");
+    boardBtn.append(hubIcon("trophy"));
+    boardBtn.onclick = () => engine.open("scores");
     const gear = el("button", "ac-hub-sq");
     gear.setAttribute("aria-label", "Settings and help");
     gear.append(icon(I_GEAR, 22));
     gear.onclick = () => engine.open("help");
-    rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, gear);
+    rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);
 
     const mark = el("div", "ac-hub-wordmark");
@@ -3815,6 +3826,71 @@ export async function bootStandalone(root: HTMLElement) {
 
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("profile"));
+    return box;
+  }
+
+  /** THE BOARD. Every mode's best, ranked against each other, with the top
+   *  three on the podium the art is already drawing.
+   *
+   *  It is a PERSONAL board, and it says so on the screen rather than
+   *  implying otherwise: there is no server behind this game, so there is
+   *  nobody else's score to show. Built to take one later - the rows are a
+   *  list of {name, score, rank}, and where that list comes from is the only
+   *  thing that has to change.
+   */
+  function drawScores() {
+    const s = engine.save;
+    const runs = [
+      { id: "fly", name: "Free Flight", best: s.highScore || 0, unit: "gates" },
+      { id: "deep", name: "Deep Space", best: s.deepBest || 0, unit: "gates" },
+      { id: "lost", name: "Lost in Space", best: s.lostBest || 0, unit: "gates" },
+      { id: "arcade", name: "Arcade", best: s.arcadeBest || 0, unit: "gates" },
+      { id: "tunnel", name: "Wormhole Run", best: s.tunnelBest || 0, unit: "score" },
+    ].sort((a, b) => b.best - a.best);
+
+    const box = el("div", "ac-menu");
+    box.append(header("Your bests", "Leaderboard", headAside(s.acorns)));
+    const scroll = el("div", "ac-sheet-scroll");
+
+    const hero = el("div", "ac-boardhero");
+    const img = document.createElement("img");
+    img.src = `${artRootUrl()}/ui/trophy.png?v=${ART_VER}`;
+    img.alt = "";
+    img.width = 176; img.height = 176;
+    hero.append(img);
+    const flown = runs.filter((r) => r.best > 0).length;
+    hero.append(el("p", "ac-boardtag",
+      flown === 0 ? "Nothing on the board yet"
+      : flown === 1 ? "One mode on the board"
+      : `${flown} modes on the board`));
+    scroll.append(hero);
+
+    scroll.append(el("p", "ac-shelfhead", "BEST RUN, BY MODE"));
+    const list = el("div", "ac-boardlist");
+    runs.forEach((r, i) => {
+      const row = el("div", r.best > 0 && i < 3 ? `ac-boardrow ac-medal${i + 1}` : "ac-boardrow");
+      row.append(el("span", "ac-boardpos", r.best > 0 ? String(i + 1) : "\u2014"));
+      const t = el("div", "ac-boardtxt");
+      t.append(el("b", "", r.name));
+      t.append(el("span", "ac-sub", r.best > 0 ? `Best ${r.unit}` : "Not flown yet"));
+      row.append(t);
+      row.append(el("span", "ac-boardscore", r.best > 0 ? r.best.toLocaleString() : "\u2013"));
+      list.append(row);
+    });
+    scroll.append(list);
+
+    // The one honest sentence. A board with no server behind it is a
+    // personal record, and calling it anything else would be a lie the
+    // player finds out the moment they look for someone to beat.
+    scroll.append(el("p", "ac-fine",
+      "These are your own records. There is no online board yet \u2014 when there is, "
+      + "these are the runs that will be sent to it."));
+    box.append(scroll);
+    // same gate every other screen uses: with BETA_FEATURES on, the dock
+    // lives on the title screen alone and these sheets are left by their
+    // own back control. Appending it here regardless would give the board a
+    // navigation bar nothing else in the app has.
+    if (!BETA_FEATURES) box.append(tabbar("scores"));
     return box;
   }
 
