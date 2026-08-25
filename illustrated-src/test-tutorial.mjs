@@ -42,6 +42,7 @@ function firstFlight(name, habit, W = 430, H = 932) {
   sim.resetRun(w, s, "fly", true);
   w.ready = false;
   let swipeY = null, rescues = 0, prevShield = w.shieldCharges, done = false;
+  let overlap = null, dropToGap = null;
   const stages = [];
   for (let i = 0; i < 60 * 240; i++) {
     const t = w.tut;
@@ -53,12 +54,26 @@ function firstFlight(name, habit, W = 430, H = 932) {
     sim.updateWorld(w, s, 1 / 60);
     const st = w.tut?.stage;
     if (st && stages[stages.length - 1] !== st) stages.push(st);
-    if (st === "swipe" && swipeY === null) swipeY = w.squirrel.y;
+    if (st === "swipe" && swipeY === null) {
+      swipeY = w.squirrel.y;
+      const sx = W * cat.PHYS.squirrelX;
+      const R = cat.PHYS.squirrelR;
+      for (const p of w.planets) {
+        for (const cy of [p.gapY - p.gap / 2 - p.r, p.gapY + p.gap / 2 + p.r]) {
+          const d = Math.hypot(p.x - sx, cy - swipeY) - (p.r + R);
+          if (d < 0 && overlap === null) {
+            overlap = `a planet ${Math.round(-d)}px into the pilot`;
+          }
+        }
+      }
+      const ahead = w.planets.filter((p) => p.x > sx - 20).sort((a, b) => a.x - b.x)[0];
+      dropToGap = ahead ? Math.round(ahead.gapY - swipeY) : null;
+    }
     if (w.shieldCharges > prevShield) rescues += 1;
     prevShield = w.shieldCharges;
     if (s.tutorialDone) { done = true; break; }
   }
-  return { name, swipeY, H, rescues, done, stages };
+  return { name, swipeY, H, rescues, done, stages, overlap, dropToGap };
 }
 
 const LEARNERS = [
@@ -76,28 +91,46 @@ for (const [name, habit] of LEARNERS) {
   // a tall phone and a short one - the short one is where room runs out first
   for (const [W, H] of [[430, 932], [390, 690]]) {
     const r = firstFlight(name, habit, W, H);
-    const at = r.swipeY === null ? null : r.swipeY / H;
-    ok(at !== null,
+    ok(r.swipeY !== null,
       `${name} @${W}x${H}: never reached the swipe lesson (${r.stages.join(" > ")})`);
-    if (at !== null) {
-      // A BAND, NOT A FLOOR. The first version of this asserted only that
-      // there was room BELOW - at <= 0.5 - which is half the property and
-      // passed a lesson opening at 15% of the screen. The stage is entered
-      // off a planet bounce, so the pilot can arrive at the ceiling just as
-      // easily as at the floor, and "swipe down and make the gap" from the
-      // ceiling means diving most of a screen to a gap you can barely see.
-      // The lesson has ONE authored height and every beginner sees it there.
-      ok(Math.abs(at - cat.TUT_SWIPE_TOP) <= 0.05,
-        `${name} @${W}x${H}: swipe lesson opened at ${(at * 100).toFixed(0)}% of the `
-        + `screen, not the authored ${(cat.TUT_SWIPE_TOP * 100).toFixed(0)}% `
-        + `(${((1 - at) * 100).toFixed(0)}% below the pilot)`);
+    if (r.swipeY !== null) {
+      // THE LESSON HAS TO BE FLYABLE, and that is three things, none of
+      // which is "the pilot is at some fraction of the screen".
+      //
+      // 1. NOT INSIDE ANYTHING. The first fix parked the pilot at a fixed
+      //    screen fraction with y set directly - no collision - so on a real
+      //    phone they ended up standing ON the bounce planet, and "swipe
+      //    down and make the gap" dived straight through it. Measured: 3px
+      //    of overlap on two of six learners.
+      ok(r.overlap === null,
+        `${name} @${W}x${H}: the swipe lesson opens with the pilot inside `
+        + `geometry - ${r.overlap}. A dive from there phases through it.`);
+      // 2. THE GAP IS ACTUALLY BELOW. The instruction says dive to it.
+      ok(r.dropToGap !== null && r.dropToGap > 40,
+        `${name} @${W}x${H}: the gap the pilot is told to dive into is `
+        + `${r.dropToGap}px below them - it is not below them at all`);
+      // 3. NO RESCUE. Being rescued mid-lesson is the loop that was reported.
+      ok(r.rescues === 0,
+        `${name} @${W}x${H}: the tutorial rescued the pilot ${r.rescues}x during `
+        + `the lesson - it is being taught somewhere it cannot be survived`);
     }
-    ok(r.rescues === 0,
-      `${name} @${W}x${H}: the tutorial rescued the pilot ${r.rescues}x - the lesson `
-      + `is being taught somewhere it cannot be survived`);
     ok(r.done,
       `${name} @${W}x${H}: the tutorial never finished (${r.stages.join(" > ")})`);
   }
+}
+
+// EVERY BEGINNER SEES THE SAME LESSON. The carry works from both directions
+// or it does not work at all: a pilot thrown to the ceiling by the bounce
+// and one dropped to the floor by neglect must arrive at the same place.
+for (const [W, H] of [[430, 932], [390, 690]]) {
+  const heights = LEARNERS
+    .map(([name, habit]) => firstFlight(name, habit, W, H).swipeY)
+    .filter((y) => y !== null);
+  const spread = Math.max(...heights) - Math.min(...heights);
+  ok(spread <= 24,
+    `@${W}x${H}: the lesson opens across a ${Math.round(spread)}px spread `
+    + `(${heights.map((y) => Math.round(y)).join(", ")}) - the carry is not `
+    + `reaching the same height from both directions`);
 }
 
 // The lift is a carry, not a teleport: it must not overshoot the authored

@@ -402,6 +402,8 @@ export type World = {
     nudge: string;
     retries: number;
     springs: number;
+    /** the height the course was built around - see buildTutorialCourse */
+    apexY: number;
     bounced: boolean;
   } | null;
   lastRun: Snapshot["dead"];
@@ -865,6 +867,11 @@ function buildTutorialCourse(w: World, save: SaveData) {
   const dLand = PHYS.baseSpeed * (0.8 + 0.55 + tLand);
   const tApex = (640 - 60) / g;          // the −640 spring up to the freeze
   const yApex = yLand - (640 * tApex - 0.5 * g * tApex * tApex);
+  // THE COURSE IS BUILT AROUND THIS HEIGHT. dyDive below places the
+  // recovery gate relative to the apex, so the swipe lesson only makes
+  // sense with the pilot AT the apex - anywhere else and "dive back down
+  // and make the gap" points at a gap that is not below them.
+  if (w.tut) w.tut.apexY = yApex;
   const dApex = dLand + PHYS.baseSpeed * tApex;
   // the recovery gate: as deep below the apex as the screen allows
   const dyDive = Math.max(120, Math.min(352, w.H - 70 - gap / 2 - yApex - 20));
@@ -1335,7 +1342,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   else for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
   w.tut = w.race || flight === "tunnel" ? null : tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
-        retries: 0, springs: 0, bounced: false }
+        retries: 0, springs: 0, apexY: 0, bounced: false }
     : null;
   if (w.tut) buildTutorialCourse(w, save);
 }
@@ -1954,6 +1961,38 @@ function registerTuneHit(w: World) {
   w.tuneCleanBest = Math.max(w.tuneCleanBest, w.tuneClean);
   w.tuneClean = 0;
   w.shake = 0.18;
+}
+
+/** A height near `want` that no planet is standing in.
+ *
+ *  The apex the course was built around is the RIGHT place for the swipe
+ *  lesson - the recovery gate is placed relative to it - but on a short
+ *  screen clampY compresses the course and the apex can land inside the
+ *  bounce planet the pilot just came off. Two pixels of overlap is enough
+ *  to make a dive read as phasing through solid ground, which is exactly
+ *  how it was reported. So the apex is a target, not a promise: push it
+ *  clear of anything at the flight line and keep the lesson honest.
+ */
+function tutClearY(w: World, want: number) {
+  const sx = w.W * PHYS.squirrelX;
+  let y = want;
+  for (let pass = 0; pass < 6; pass++) {
+    let moved = false;
+    for (const p of w.planets) {
+      if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40) continue;
+      const gy = liveGapY(p, w);
+      for (const cy of [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
+        const need = p.r + PHYS.squirrelR + 8;
+        const d = y - cy;
+        if (Math.abs(d) < need) {
+          y = cy + (d < 0 ? -need : need);
+          moved = true;
+        }
+      }
+    }
+    if (!moved) break;
+  }
+  return Math.max(60, Math.min(w.H - 60, y));
 }
 
 function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): string | null {
@@ -3100,7 +3139,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       // the gap" meant diving most of a screen to a gap you could barely
       // see. Same defect, other end. The lesson opens at ONE authored
       // height, carried there from wherever the bounce left them.
-      const wantY = w.H * TUT_SWIPE_TOP;
+      // NOT A SCREEN FRACTION. The first pass carried the pilot to a fixed
+      // fraction of the screen, which severed the relationship the whole
+      // stage rests on: buildTutorialCourse computes yApex - where the
+      // spring was designed to leave them - and places the recovery gate
+      // dyDive BELOW it. Park them anywhere else and the gap they are told
+      // to dive into is not under them. On a real phone that meant standing
+      // on top of the bounce planet being told to swipe down through it.
+      const wantY = tutClearY(w, w.tut.apexY > 0 ? w.tut.apexY : w.H * TUT_SWIPE_TOP);
       const dy = wantY - w.squirrel.y;
       if (Math.abs(dy) > TUT_SWIPE_BAND) {
         const step = TUT_SWIPE_LIFT * dt;
