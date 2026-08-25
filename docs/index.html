@@ -1081,6 +1081,119 @@
     .ac-crashscore span { font-size: 11px; font-weight: 800; letter-spacing: .22em; color: #b7c0da; }
     .ac-crashrows { width: min(320px, 86vw); text-align: left; }
     .ac-rowdim { color: #cdd5ea; font-weight: 800; }
+    /* ============ THE BETA STOREFRONT: one page, art-led ============ */
+    .ac-shopbeta .ac-sheet-scroll { padding-bottom: 12px; }
+    /* the stage the whole page dresses */
+    .ac-shopstage { margin: 4px 0 10px; padding: 10px 0 12px; border-radius: 18px;
+      background: radial-gradient(120% 90% at 50% 0%, rgba(138,90,228,.28), rgba(10,7,26,.55) 70%);
+      border: 1px solid rgba(170,140,240,.28); }
+    /* the combo bar: what the stage costs */
+    .ac-combobar { display: flex; align-items: center; gap: 12px; width: 100%;
+      border-radius: 16px; padding: 12px 14px; margin-bottom: 6px;
+      background: linear-gradient(100deg, rgba(138,90,228,.24), rgba(12,8,28,.5) 70%);
+      border: 1.5px solid rgba(196,160,255,.5); }
+    .ac-combotxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .ac-combotxt b { font: 900 14px/1.2 Figtree, sans-serif; letter-spacing: .05em; }
+    .ac-combotxt span { font-size: 11.5px; color: #a9b2ce; }
+    .ac-combobuy { flex: none; display: flex; align-items: center; gap: 6px;
+      border-radius: 999px; padding: 12px 18px; font: 900 15px/1 Figtree, sans-serif;
+      color: #241500; border: 1px solid rgba(255,238,190,.6);
+      background: linear-gradient(180deg, #ffd76a, #dd9c25);
+      box-shadow: 0 6px 16px -6px rgba(255,180,60,.7); }
+    .ac-combobuy svg { fill: #241500; }
+    .ac-combobar.ac-comboheld { border-color: rgba(255,150,90,.55);
+      background: linear-gradient(100deg, rgba(224,120,60,.22), rgba(12,8,28,.5) 70%); }
+    .ac-comboheld .ac-combobuy { background: linear-gradient(180deg, #ffb45c, #c56a15); }
+    .ac-combobar.ac-comboowned { justify-content: center; text-align: center;
+      flex-direction: column; gap: 2px; border-color: rgba(127,224,176,.45);
+      background: linear-gradient(100deg, rgba(29,179,136,.2), rgba(12,8,28,.5) 70%); }
+    .ac-comboowned b { font: 900 13px/1.2 Figtree, sans-serif; letter-spacing: .1em; color: #7fe0b0; }
+    .ac-comboowned span { font-size: 11.5px; color: #a9b2ce; }
+    /* shelf headings carry the cycle word */
+    .ac-shopshelfhead { display: flex; align-items: baseline; gap: 8px; }
+    .ac-shelfnote { font: 800 9px/1 Figtree, sans-serif; letter-spacing: .16em;
+      color: #ffd76a; border: 1px solid rgba(255,206,92,.4); border-radius: 999px; padding: 4px 8px; }
+    /* the tiles: art first, then name, then price */
+    .ac-shoptile { min-width: 96px; padding: 8px 6px 7px; gap: 3px; }
+    .ac-tilename { font: 800 11px/1.2 Figtree, sans-serif; text-align: center; }
+    .ac-tileprice { display: flex; align-items: center; justify-content: center; gap: 4px;
+      font: 900 11px/1 Figtree, sans-serif; color: #ffd76a; }
+    .ac-tileprice svg { fill: #cbb2ff; }
+    .ac-tileprice.owned { color: #7fe0b0; letter-spacing: .08em; font-size: 9.5px; }
+    .ac-tilebonus { font: 800 8.5px/1 Figtree, sans-serif; letter-spacing: .1em; color: #7fe0b0; }
+    /* the featured pack */
+    .ac-featurehead { color: #ffd76a !important; }
+    .ac-featurecard { position: relative; }
+    .ac-featureoff { position: absolute; top: 8px; right: 10px;
+      font: 900 9.5px/1 Figtree, sans-serif; letter-spacing: .1em; color: #241500;
+      background: linear-gradient(180deg, #ffd76a, #dd9c25); border-radius: 999px; padding: 5px 9px;
+      box-shadow: 0 3px 10px -3px rgba(255,180,60,.8); }
+    .ac-dustrow .ac-dustface { flex: none; width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(70% 70% at 50% 30%, rgba(138,90,228,.5), rgba(8,5,22,.7));
+      border: 1px solid rgba(170,140,240,.35); }
+    .ac-cashprice { color: #ffd76a; font-weight: 900; }
+    /* the storefront's rows and cards own their width - a bare .ac-card
+       shrink-wraps outside a grid, which is what left the dust rows ragged */
+    .ac-shopbeta .ac-sheet-scroll > .ac-card { width: 100%; }
+    .ac-card.ac-featurecard { width: 100%; min-height: 0; flex-direction: row;
+      align-items: center; justify-content: flex-start; gap: 12px; text-align: left;
+      padding: 12px 14px; border-color: rgba(255,206,92,.45);
+      background: linear-gradient(100deg, rgba(237,160,60,.18), rgba(12,8,28,.5) 68%); }
+    .ac-card.ac-featurecard .ac-bundlestrip { flex: none; display: flex; align-items: center; gap: 2px; }
+    .ac-card.ac-featurecard .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
+    .ac-card.ac-featurecard .ac-modprice { flex: none; display: flex; flex-direction: column;
+      align-items: flex-end; gap: 1px; }
+    .ac-card.ac-featurecard .ac-wasprice { margin: 0; }
+    .ac-card.ac-featurecard .ac-bundlecount { position: static; align-self: flex-end; }
+    .ac-card.ac-dustrow { width: 100%; min-height: 0; flex-direction: row; align-items: center;
+      justify-content: flex-start; gap: 12px; text-align: left; padding: 11px 14px; }
+    .ac-card.ac-dustrow .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
+    /* the last shelf must clear the preproduction bar pinned under it */
+    .ac-shopbeta .ac-sheet-scroll { padding-bottom: 18px; }
+    .ac-featuresheet { max-height: 92vh; overflow-y: auto; }
+    .ac-featuresheet .ac-shelfhead { margin-top: 4px; }
+    .ac-featurebuy { display: flex; align-items: center; justify-content: center; gap: 6px;
+      flex-wrap: wrap; border-radius: 999px; margin-top: 6px;
+      color: #241500; border: 1px solid rgba(255,238,190,.6);
+      background: linear-gradient(180deg, #ffd76a, #dd9c25); }
+    .ac-featurebuy svg { fill: #241500; }
+    .ac-featurebuy .ac-wasprice { flex: none; margin: 0; color: rgba(36,21,0,.6); }
+    .ac-tileprice.locked { color: #ffb45c; letter-spacing: .06em; font-size: 9px; }
+    /* ---- PREPRODUCTION: what the cycle is holding back ---- */
+    .ac-devroll { flex: none; border-top: 1px solid rgba(170,140,240,.28);
+      background: rgba(10,6,24,.96); }
+    .ac-devbar { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      width: 100%; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: none; border: 0; color: #9aa6c4; text-align: left; }
+    .ac-devbar b { font: 800 10px/1 Figtree, sans-serif; letter-spacing: .16em; color: #c4a0ff; }
+    .ac-devbar span { font: 500 10px/1 "IBM Plex Mono", ui-monospace, monospace; color: #7c86a4; }
+    .ac-devroll.open .ac-devbar { padding-bottom: 10px; }
+    .ac-devpanel { max-height: 46vh; overflow-y: auto; padding: 0 16px calc(14px + env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; gap: 12px; }
+    .ac-devday { font: 500 10px/1.4 "IBM Plex Mono", ui-monospace, monospace; color: #7c86a4; margin: 0; }
+    .ac-devgroup { display: flex; flex-direction: column; gap: 5px; }
+    .ac-devhead { font: 800 9.5px/1 Figtree, sans-serif; letter-spacing: .14em; color: #ffd76a; margin: 0; }
+    .ac-devwhy { font-size: 10.5px; color: #7c86a4; margin: 0; }
+    .ac-devlist { display: flex; flex-wrap: wrap; gap: 5px; }
+    .ac-devchip { display: flex; align-items: center; gap: 6px; border-radius: 8px; padding: 4px 8px;
+      background: rgba(30,20,62,.85); border: 1px solid rgba(170,140,240,.22); }
+    .ac-devchip b { font: 700 10px/1 Figtree, sans-serif; color: #dfe4f7; }
+    .ac-devchip i { font: 500 9.5px/1 "IBM Plex Mono", ui-monospace, monospace; font-style: normal; color: #cbb2ff; }
+    .ac-devnone { font-size: 10.5px; color: #5b6480; }
+    /* the storefront is the first menu to be told about landscape */
+    @media (orientation: landscape) {
+      .ac-shopbeta .ac-sheet-scroll { padding-left: max(16px, calc(50% - 380px));
+        padding-right: max(16px, calc(50% - 380px)); }
+      .ac-shopbeta .ac-devpanel, .ac-shopbeta .ac-devbar {
+        padding-left: max(16px, calc(50% - 380px)); padding-right: max(16px, calc(50% - 380px)); }
+      /* a 200px-tall stage eats a 430px-tall window, so the shelves are
+         never reached. The canvas carries inline dimensions from
+         miniCanvas, which is why these have to shout. */
+      .ac-shopbeta .ac-shopstage { padding: 6px 0 8px; }
+      .ac-shopbeta .ac-shopstage .ac-tocanvas { width: 208px !important; height: 130px !important; }
+      .ac-shopbeta .ac-combobar { padding: 9px 12px; }
+    }
   </style>
 </head>
 <body>
@@ -1095,7 +1208,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js143/standalone.js";
+    import { bootStandalone } from "./js144/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

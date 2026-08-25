@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "143";
+export const ART_VER = "144";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -695,6 +695,75 @@ export function shopBundles(now: number, owns: (id: string) => boolean) {
 }
 
 export const IAP_ITEMS = [...new Set(BUNDLES.flatMap(bundleIds))];
+
+// ------------------------------------------------------- A LA CARTE
+// The storefront sells single items as well as packs, so a single item
+// needs a price - and there was never one. ITEM_WEIGHT already says what a
+// slot is worth relative to the others, and the packs already imply a rate,
+// so the a la carte price is that rate, set ABOVE the dearest pack. That
+// ordering is the whole point: if a single cost what a pack charges per
+// slot, the small packs would offer nothing and nobody would ever buy one.
+export const DUST_PER_WEIGHT = 90;
+
+// A suit and its matching helmet SHARE an ownership id - buying "cryostar"
+// hands over both - so a price is asked of the id, not of the render. This
+// walks the catalogue rather than hard-coding, so a new set is priced the
+// moment it is added.
+export function idWeight(id: string) {
+  let w = 0;
+  if (SUITS.some((u) => u.id === id)) w += ITEM_WEIGHT.suit;
+  if (HELMETS.some((h) => h.id === id)) w += ITEM_WEIGHT.helm;
+  if (PALS.some((p) => p.id === id)) w += ITEM_WEIGHT.pal;
+  if (TRAILS.some((t) => t.id === id)) w += ITEM_WEIGHT.trail;
+  return w;
+}
+export function idDust(id: string) {
+  return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 10) * 10);
+}
+
+// THE FREE TRAIL. Buying a set hands over its trail as well: the trail is
+// the part of a look nobody would pick on its own, and giving it away with
+// the suit and helmet is what makes a set feel like a set rather than an
+// invoice. Only sets with a trail painted for them appear here.
+export const SET_TRAIL: Record<string, string> = {
+  cryostar: "celestialtide",
+  verdant: "verdantflourish",
+  eclipse: "eclipseglyph",
+  gemmie: "opalfeather",
+  seraph: "phoenixplume",
+  cyber: "clockwork",
+};
+
+/** every id a purchase of `id` actually hands over */
+export function idGrants(id: string) {
+  const t = SET_TRAIL[id];
+  return t ? [id, t] : [id];
+}
+
+/** what the ids you do NOT own would cost bought one at a time */
+export function alaCarteTotal(ids: string[], owns: (id: string) => boolean) {
+  return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+}
+
+/** THE FEATURED PACK. One at a time, and always the best deal on the
+ *  shelf: half of what its remaining contents would cost singly. Half of
+ *  what REMAINS, so a pack whose suit you already bought quietly costs
+ *  less rather than charging for it twice. */
+export const FEATURE_DISCOUNT = 0.5;
+export function featurePrice(
+  b: (typeof BUNDLES)[number],
+  owns: (id: string) => boolean,
+) {
+  const due = alaCarteTotal(bundleIds(b), owns);
+  if (due <= 0) return 0;
+  return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
+}
+
+// HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
+// is a reason to come back, not an inventory. Trails are never sold singly
+// for now - they arrive free with their set.
+export const SHOP_CYCLE = { suits: 3, helms: 4, pals: 1, trails: 0 };
+
 
 // STAR DUST is the premium currency. Acorns are earned by flying and buy
 // the standard wardrobe; dust is bought (or claimed daily) and buys packs.
