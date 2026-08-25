@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-25 21:51 UTC";
+export const BUILD_TIME = "2026-08-25 21:56 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -548,6 +548,8 @@ export const TUNE_DIALS = [
  *  cancelled by a planet contact - see the note in updateWorld. */
 export const TUT_SWIPE_TOP = 0.34;
 export const TUT_SWIPE_LIFT = 620; // px per second
+/** how close to the authored height counts as arrived */
+export const TUT_SWIPE_BAND = 6;
 export const TUNE_TEST = TUNE_PANEL;
 export const TUNE_STEP = 0.05;
 export const TUNE_DEFAULT = 1;

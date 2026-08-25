@@ -1,4 +1,4 @@
-import {TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune, type TuneId } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
@@ -3092,11 +3092,21 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       // contact cancels. This is authored choreography, so the height is
       // authored: carry the pilot up at a readable rate that nothing in the
       // world can undo, and open the lesson when the room is real.
+      // BOTH DIRECTIONS. The first cut only carried the pilot UP, on the
+      // assumption that arriving too low was the whole problem. It is not:
+      // the stage is entered off a PLANET BOUNCE, which throws the pilot
+      // hard upward, so they can just as easily arrive at the ceiling - and
+      // then the lesson opened at 15% of the screen and "swipe down and make
+      // the gap" meant diving most of a screen to a gap you could barely
+      // see. Same defect, other end. The lesson opens at ONE authored
+      // height, carried there from wherever the bounce left them.
       const wantY = w.H * TUT_SWIPE_TOP;
-      if (w.squirrel.y > wantY) {
-        w.squirrel.y = Math.max(wantY, w.squirrel.y - TUT_SWIPE_LIFT * dt);
+      const dy = wantY - w.squirrel.y;
+      if (Math.abs(dy) > TUT_SWIPE_BAND) {
+        const step = TUT_SWIPE_LIFT * dt;
+        w.squirrel.y += Math.max(-step, Math.min(step, dy));
         w.squirrel.vy = 0;
-        w.squirrel.rot = -0.22;          // nose up, so the lift reads as flight
+        w.squirrel.rot = dy < 0 ? -0.22 : 0.22;   // nose into the travel
         w.tut.springs = 0;
       } else if (w.squirrel.vy > -60 || w.tut.t > 1.1) {
         w.tut.stage = "swipe";

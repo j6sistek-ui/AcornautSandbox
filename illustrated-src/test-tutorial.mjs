@@ -67,6 +67,9 @@ const LEARNERS = [
   ["taps rarely", (w, i) => i % 50 === 0],
   ["panics near the floor", (w) => w.squirrel.y > w.H * 0.80],
   ["hugs the ceiling", (w) => w.squirrel.y > w.H * 0.25],
+  // enters the bounce stage climbing hard - the case that opened the lesson
+  // at the ceiling and made the whole thing worse than before it was fixed
+  ["taps hard through the bounce", (w) => w.tut?.stage === "glide" || w.tut?.stage === "bounce"],
 ];
 
 for (const [name, habit] of LEARNERS) {
@@ -77,11 +80,17 @@ for (const [name, habit] of LEARNERS) {
     ok(at !== null,
       `${name} @${W}x${H}: never reached the swipe lesson (${r.stages.join(" > ")})`);
     if (at !== null) {
-      // half the screen is the floor of what the lesson can be taught in;
-      // the authored height is 0.34, so this has real margin either side
-      ok(at <= 0.5,
+      // A BAND, NOT A FLOOR. The first version of this asserted only that
+      // there was room BELOW - at <= 0.5 - which is half the property and
+      // passed a lesson opening at 15% of the screen. The stage is entered
+      // off a planet bounce, so the pilot can arrive at the ceiling just as
+      // easily as at the floor, and "swipe down and make the gap" from the
+      // ceiling means diving most of a screen to a gap you can barely see.
+      // The lesson has ONE authored height and every beginner sees it there.
+      ok(Math.abs(at - cat.TUT_SWIPE_TOP) <= 0.05,
         `${name} @${W}x${H}: swipe lesson opened at ${(at * 100).toFixed(0)}% of the `
-        + `screen - a beginner is told to dive with ${((1 - at) * 100).toFixed(0)}% below them`);
+        + `screen, not the authored ${(cat.TUT_SWIPE_TOP * 100).toFixed(0)}% `
+        + `(${((1 - at) * 100).toFixed(0)}% below the pilot)`);
     }
     ok(r.rescues === 0,
       `${name} @${W}x${H}: the tutorial rescued the pilot ${r.rescues}x - the lesson `

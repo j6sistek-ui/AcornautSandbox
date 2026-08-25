@@ -701,6 +701,8 @@ export const TUNE_DIALS: {
  *  cancelled by a planet contact - see the note in updateWorld. */
 export const TUT_SWIPE_TOP = 0.34;
 export const TUT_SWIPE_LIFT = 620;      // px per second
+/** how close to the authored height counts as arrived */
+export const TUT_SWIPE_BAND = 6;
 
 export const TUNE_TEST = TUNE_PANEL;
 
