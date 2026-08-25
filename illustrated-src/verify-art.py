@@ -772,10 +772,20 @@ def verify_card_states(qa: QA) -> None:
     if ui.count("b.append(collectTag());") < 2:
         problems.append("only one shelf offers the collect chip; suits and "
                         "helmets both have free unclaimed cards")
+    # A FIXED HELMET IS ONE FACT, so it gets one phrasing. Three views state
+    # it - the loadout stage tag, the shop case tag, and the note where the
+    # helmet shelf would be - and each had drifted to its own words. They now
+    # read OWN_HEAD_TAG / OWN_HEAD_LINE, and a literal here means one drifted
+    # back. "Its own head" also described the ART instead of the RULE, which
+    # is the part a pilot actually needs.
+    for bad in re.finditer(r'"[^"]*(?:own head|wears no helmet|helmet cannot be changed)[^"]*"',
+                           code, re.I):
+        problems.append(f"a fixed-head suit says {bad.group(0)} instead of the "
+                        f"shared OWN_HEAD_TAG / OWN_HEAD_LINE")
     if problems:
         qa.fail("card states: " + "; ".join(problems))
     else:
-        qa.ok("free unclaimed suits and helmets ask to be collected")
+        qa.ok("free unclaimed suits ask to be collected; fixed helmets speak once")
 
 
 def verify_beta_art_gates(qa: QA) -> None:
@@ -845,6 +855,47 @@ def verify_beta_art_gates(qa: QA) -> None:
         qa.ok("every production-reachable suit has its art off the beta flag")
 
 
+def verify_dev_instruments(qa: QA) -> None:
+    """A panel that calls itself preproduction must be gated on the beta.
+
+    This is the check that would have caught the cycle roll-up. It was
+    written beta-only and commented "beta page only" - but only because the
+    whole storefront sat behind IS_BETA. The moment the shop was promoted to
+    live, an unconditional `box.append(drawCycleRoll(cy))` would have put a
+    developer panel listing every item the shop is holding back, and why, in
+    front of every pilot on acornaut.app. Nothing failed, nothing looked
+    wrong in the diff, and the comment still said beta.
+
+    So the comment is held to its word: a call site whose own comment claims
+    beta/dev/preproduction has to be inside an IS_BETA test.
+    """
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    lines = ui.splitlines()
+    problems: list[str] = []
+    claim = re.compile(r"//.*\b(beta[ -]?(page|only)|preproduction|dev(eloper)? (panel|only))",
+                       re.I)
+    for i, line in enumerate(lines):
+        if not claim.search(line):
+            continue
+        # the call the comment introduces: the next few non-blank code lines
+        for nxt in lines[i + 1:i + 4]:
+            body = nxt.strip()
+            if not body or body.startswith("//") or body.startswith("*"):
+                continue
+            if "IS_BETA" in body or "BETA_UNLOCK_GATES" in body:
+                break
+            if body.startswith(("box.append", "scroll.append", "wrap.append",
+                                "sheet.append", "panel.append")):
+                problems.append(
+                    f"standalone.ts:{i + 2} calls {body[:46]}... under a comment "
+                    f"claiming beta/preproduction, with no IS_BETA test")
+            break
+    if problems:
+        qa.fail("dev instruments: " + "; ".join(problems))
+    else:
+        qa.ok("every panel that calls itself preproduction is gated on the beta")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -859,6 +910,7 @@ def main() -> int:
     verify_ui_classes(qa)
     verify_beta_art_gates(qa)
     verify_card_states(qa)
+    verify_dev_instruments(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     run_edge_audit(qa)

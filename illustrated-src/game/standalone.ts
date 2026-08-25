@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -1433,41 +1433,45 @@ export async function bootStandalone(root: HTMLElement) {
       ? header("Suits & gear", "Loadout", headAside(s.acorns))
       : header("Customize your squirrel", "Hangar", headAside(s.acorns)));
 
-    // The equipped rig stays pinned above the categories, so the preview
-    // is never a mystery while you shop.
-    const load = el("div", "ac-rig");
-    const rigArt = el("div", "ac-rigart");
-    rigArt.append(portraitOf(helm, suit, 100));
-    load.append(rigArt);
-    const loadTxt = el("div", "ac-rigtxt");
-    loadTxt.append(el("p", "ac-rigname", suit.name));
-    const headline = suit.cat || suit.ownHead ? "Own helmet" : helm.name;
-    loadTxt.append(el("p", "ac-sub", `${headline} · ${trail.name} · ${pal?.name ?? "No pal"}`));
-    const tags = el("div", "ac-rigtags");
-    tags.append(el("span", "ac-tagpill", "EQUIPPED"));
-    if (s.startShield) tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD"));
-    loadTxt.append(tags);
-    load.append(loadTxt);
-    if (pal && pal.id !== "none") {
-      const { c, ctx } = miniCanvas(40, 40);
-      if (ctx) paintPalPreview(ctx, engine.art, pal.id, 20, 20, 36);
-      load.append(c);
-    }
-    box.append(load);
-    // THE SAME STAGE THE SHOP USES, showing what is actually equipped. The
-    // hangar had portraits everywhere and no moving picture of the pilot,
-    // so a suit's flap - the thing that separates one from another - was
-    // only ever visible in a run or in the shop's preview.
+    // ONE PILOT, AND IT MOVES. The loadout showed the equipped rig TWICE:
+    // a static portrait in a banner, then the animated stage right beneath
+    // it. Two pictures of the same squirrel, and the still one held the top
+    // of the screen - while the flap is the whole thing that tells two suits
+    // apart. So the banner goes and the animation takes the slot, wearing
+    // the shop's case: the pilot has already learned to read that frame
+    // there, and the name, helmet, trail and pal ride its plate.
     {
       const wornSuit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
       const wornHelm = helmetWornBy(s.equipped, s.equippedSuit);
-      const stage = el("div", "ac-tostage ac-hangarstage");
-      const { c, ctx } = miniCanvas(300, 150);
-      c.className = "ac-tocanvas";
+      const ownHead = wearsOwnHead(wornSuit);
+      const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
+      const CASE_W = 344, CASE_H = 236;
+      const stage = el("div", "ac-shopcase ac-hangarcase");
+      stage.style.setProperty("--case-glow", wornSuit.glow ?? wornSuit.trim ?? "#c4a0ff");
+      stage.style.setProperty("--case-lite", wornSuit.suitLite ?? "#8a5ae4");
+      stage.style.setProperty("--case-deep", wornSuit.suitDark ?? "#160f34");
+      const pane = el("div", "ac-casepane");
+      const { c, ctx } = miniCanvas(CASE_W, CASE_H);
+      c.className = "ac-tocanvas ac-casecanvas";
       c.setAttribute("role", "img");
       c.setAttribute("aria-label", `${wornSuit.name} in flight`);
-      stage.append(c);
-      const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
+      pane.append(el("i", "ac-casebeam"), c, el("i", "ac-casefloor"));
+      for (const corner of ["tl", "tr", "bl", "br"]) {
+        pane.append(el("i", `ac-casecorner ac-c-${corner}`));
+      }
+      if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
+      stage.append(pane);
+      const plate = el("div", "ac-caseplate");
+      plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
+      plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
+      plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palWorn?.name ?? "No pal"}`));
+      if (s.startShield) {
+        const tags = el("div", "ac-rigtags");
+        tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD"));
+        plate.append(tags);
+      }
+      stage.append(plate);
+      box.append(stage);
       if (ctx) {
         // the worn suit is usually home already, but a pilot who equips and
         // opens the loadout inside the same second can still beat the load
@@ -1477,15 +1481,15 @@ export async function bootStandalone(root: HTMLElement) {
         const tick = () => {
           if (!c.isConnected) return;
           const tt = (performance.now() - t0) / 1000;
-          ctx.clearRect(0, 0, 300, 150);
-          if (palWorn && !s.noPalFx) paintPalPreview(ctx, engine.art, palWorn.id, 234, 48, 40);
-          else if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, 234, 48, 40);
-          paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, 132, 86, 100, tt);
+          ctx.clearRect(0, 0, CASE_W, CASE_H);
+          // the old pair of branches here tested noPalFx and then did the
+          // same thing either way, so the switch never switched anything
+          if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
+          paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt);
           requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
       }
-      box.append(stage);
     }
 
     const tabs = el("div", "ac-cats");
@@ -1514,8 +1518,8 @@ export async function bootStandalone(root: HTMLElement) {
       if (locked) {
         const note = el("div", "ac-lockednote");
         note.append(
-          el("p", "ac-lockedhead", `${suit.name} has its own head`),
-          el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."),
+          el("p", "ac-lockedhead", `${suit.name}: ${OWN_HEAD_LINE}`),
+          el("p", "ac-sub", "The helmet is part of the character. Equip another suit to change helmets."),
         );
         scroll.append(note);
       }
@@ -1578,7 +1582,7 @@ export async function bootStandalone(root: HTMLElement) {
         // a fixed head takes no helmet; the card says so up front
         if (wearsOwnHead(u)) {
           const nh = el("span", "ac-nohelm");
-          nh.title = "Wears no helmet";
+          nh.title = OWN_HEAD_LINE;
           b.append(nh);
         }
         // owned premium keeps its bloom; unowned premium never reaches here
@@ -2697,7 +2701,7 @@ export async function bootStandalone(root: HTMLElement) {
     for (const corner of ["tl", "tr", "bl", "br"]) {
       pane.append(el("i", `ac-casecorner ac-c-${corner}`));
     }
-    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "HELMET CANNOT BE CHANGED"));
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
     stage.append(pane);
     const plate = el("div", "ac-caseplate");
     plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
@@ -2748,7 +2752,7 @@ export async function bootStandalone(root: HTMLElement) {
         : combo.trails.length > 1
           ? ` ${combo.trails.length} trails come free.`
           : "";
-      const headBit = combo.ownHead ? " Helmet cannot be changed." : "";
+      const headBit = combo.ownHead ? ` ${OWN_HEAD_LINE}.` : "";
       t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
       const go = el("button", "ac-primary ac-combobuy");
       go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
@@ -2875,11 +2879,18 @@ export async function bootStandalone(root: HTMLElement) {
       scroll.append(row);
     }
     scroll.append(codeRow());
-    scroll.append(el("p", "ac-fine", "The payment rail is not connected yet, so dust is granted during the beta."));
+    // The rail is unconnected on BOTH pages, so live needs to be told too -
+    // just not in the beta's words.
+    scroll.append(el("p", "ac-fine", IS_BETA
+      ? "The payment rail is not connected yet, so dust is granted during the beta."
+      : "Star Dust purchases are not open yet. Everything else on this page works."));
 
     box.append(scroll);
-    // preproduction instrument, beta page only
-    box.append(drawCycleRoll(cy));
+    // A PREPRODUCTION INSTRUMENT, and it was "beta page only" only because
+    // the whole storefront was. Promoting the shop would have shipped a
+    // developer panel - what the shop is holding back today and why - to
+    // every live pilot. It says beta, so it is gated on beta.
+    if (IS_BETA) box.append(drawCycleRoll(cy));
     if (featureOpen) box.append(drawFeatureSheet(featureOpen));
     if (dailyToast) box.append(drawDailyToast(dailyToast));
     return box;
@@ -3058,9 +3069,12 @@ export async function bootStandalone(root: HTMLElement) {
   }
 
   function drawShop() {
-    // BETA gets the one-page storefront. Live keeps the tabbed shop until
-    // this has been flown.
-    if (IS_BETA) return drawShopBeta();
+    // THE STOREFRONT IS THE SHOP NOW, on both pages. It was beta-gated while
+    // it was unflown; it has been flown. The tabbed shop below is kept, not
+    // deleted, because it is the only written record of what the old screen
+    // did - and if something turns out to be missing from the storefront it
+    // is rebuilt there, deliberately, rather than recovered from a diff.
+    return drawShopBeta();
     const s = engine.save;
     // open() already claimed on arrival; this is where the payment gets
     // picked up and shown. takeDailyClaim clears as it hands over, so a
@@ -3450,7 +3464,7 @@ export async function bootStandalone(root: HTMLElement) {
     const palDef = PALS.find((x) => x.id === tryOn.pal);
     if (palDef) cap.append(el("span", "", `${palDef.name} \u00b7 ${palDef.tag}`));
     stage.append(cap);
-    if (ownHead) stage.append(el("span", "ac-tonohelm", "WEARS ITS OWN HEAD"));
+    if (ownHead) stage.append(el("span", "ac-tonohelm", OWN_HEAD_TAG));
     wrap.append(stage);
 
     // The stage animates, and nothing else in these menus does, so it owns
@@ -3512,7 +3526,7 @@ export async function bootStandalone(root: HTMLElement) {
     const helmRow = helms;
     shelf("HELMETS", "helm", helmRow);
     shelf("PALS", "pal", pals);
-    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} wears its own head, so a helmet changes nothing on it.`));
+    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} has a custom helmet, so changing helmets does nothing on it.`));
 
     wrap.append(el("p", "ac-fine",
       "Everything here arrives in a pack. Open PACKS to see which one."));

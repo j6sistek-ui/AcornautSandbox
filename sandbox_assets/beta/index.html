@@ -1120,6 +1120,11 @@
        A lit vitrine, not a rectangle of empty purple. Every colour comes
        from --case-glow / --case-lite / --case-deep, which the suit on show
        sets, so changing character re-lights the glass. */
+    /* the loadout wears the shop's case, but it sits above the category
+       tabs rather than at the top of a scroll, so it carries its own
+       breathing room and does not need the shop's lead-in gap */
+    .ac-hangarcase { margin: 0 12px 10px; }
+    .ac-hangarcase .ac-caseeyebrow { color: #7cebc2; }
     .ac-shopcase { --case-glow: #c4a0ff; --case-lite: #8a5ae4; --case-deep: #160f34;
       position: relative; margin: 6px 0 12px; border-radius: 20px; overflow: hidden;
       border: 1.5px solid color-mix(in srgb, var(--case-glow) 55%, transparent);

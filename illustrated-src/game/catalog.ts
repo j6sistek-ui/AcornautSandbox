@@ -542,7 +542,7 @@ export const BUNDLES: {
   {
     id: "bundle-circuit",
     name: "Circuit Pack",
-    blurb: "Chrome, current and code. These three wear their own heads.",
+    blurb: "Chrome, current and code. All three come with custom helmets.",
     dust: 750,
     items: [
       { kind: "suit", id: "cyber" }, { kind: "suit", id: "volt" }, { kind: "suit", id: "robo" },
@@ -631,6 +631,16 @@ export function bundlePrice(
  *
  *  0 is what the live page has always flown, 1 is what the beta flies today,
  *  2 is Hyper Run's drag. Beta picks; live keeps 0 until one is chosen. */
+/** WHAT A FIXED-HEAD SUIT SAYS. Three views tell the pilot the same fact -
+ *  a corner tag on the loadout stage, another on the shop case, and a note
+ *  where the helmet shelf would be - and they were each wording it
+ *  differently ("WEARS ITS OWN HEAD", "HELMET CANNOT BE CHANGED", "has its
+ *  own head"). "Its own head" also describes the ART rather than the RULE:
+ *  what the pilot needs to know is that the helmet is fixed, not that the
+ *  character was drawn with one. One phrasing, in one place. */
+export const OWN_HEAD_TAG = "CUSTOM HELMET \u00b7 CANNOT CHANGE";
+export const OWN_HEAD_LINE = "Custom helmet: cannot change";
+
 export const TUNNEL_CONTROLS: [string, string][] = [
   ["Tap to fly", "The classic flap. Each tap resets your climb and gravity owns the fall."],
   ["Hold to rise", "Press and hold to climb, release to fall."],
