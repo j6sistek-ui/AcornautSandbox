@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, cleanTune, cleanTunnelControl, freshTune, TUNE_DIALS, type TuneId, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, cleanTune, cleanTunnelControl, freshTune, TUNE_DIALS, type TuneId, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -108,6 +108,11 @@ export type Engine = {
   takeDailyClaim: () => { amount: number; streak: number; bonus: boolean } | null;
   buyDust: (id: string) => "ok" | "missing";
   buyBundle: (id: string) => "ok" | "missing" | "owned" | "poor";
+  /** buy ONE shop id with Star Dust. A set id hands over its suit, its
+   *  matching helmet and its trail together - see idGrants. */
+  buyShopItem: (id: string) => "ok" | "missing" | "owned" | "poor";
+  /** buy the featured pack at the featured (half) price */
+  buyFeature: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   open: (s: Screen) => void;
@@ -352,6 +357,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     buyDust,
     buyBundle,
+    buyShopItem,
+    buyFeature,
     setMusicOff(off) {
       save.musicOff = off;
       writeSave(save);
@@ -628,6 +635,40 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (save.starDust < due) return "poor";
     save.starDust -= due;
     save.purchased = [...new Set([...(save.purchased || []), ...ids])];
+    writeSave(save);
+    notify();
+    return "ok";
+  }
+
+  // ONE item off the shelf. The id is the ownership atom, so this also
+  // covers a set: buying "cryostar" hands over the suit, the helmet that
+  // matches it and the trail painted for it, for one price.
+  function buyShopItem(id: string) {
+    if (!IAP_ITEMS.includes(id)) return "missing";
+    if ((save.purchased || []).includes(id)) return "owned";
+    const due = idDust(id);
+    if (save.starDust < due) return "poor";
+    save.starDust -= due;
+    save.purchased = [...new Set([...(save.purchased || []), ...idGrants(id)])];
+    writeSave(save);
+    notify();
+    return "ok";
+  }
+
+  // The featured pack charges the FEATURED price - half of what is left -
+  // not the sticker on the BUNDLES entry, which is what the shelf shows.
+  function buyFeature(id: string) {
+    const bn = BUNDLES.find((b) => b.id === id);
+    if (!bn) return "missing";
+    const ids = bundleIds(bn);
+    if (ids.every((i) => (save.purchased || []).includes(i))) return "owned";
+    const due = featurePrice(bn, (i) => (save.purchased || []).includes(i));
+    if (save.starDust < due) return "poor";
+    save.starDust -= due;
+    // a pack hands over its trails too, and idGrants folds in any set trail
+    // that the pack listed only by its suit
+    const grants = ids.flatMap((i) => idGrants(i));
+    save.purchased = [...new Set([...(save.purchased || []), ...grants])];
     writeSave(save);
     notify();
     return "ok";

@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -2547,7 +2547,520 @@ export async function bootStandalone(root: HTMLElement) {
   let editingName = false;                 // the Profile name is in edit mode
   const PILOT_FALLBACK = "Nutcracker";     // shown until a pilot picks one
 
+  // ==================================================== THE STOREFRONT
+  // Beta only. One page, no tabs: the look is worn on the squirrel at the
+  // top, the pieces that make it are bought underneath, and the featured
+  // pack sits below as the bulk alternative.
+  //
+  // IS_BETA, not BETA_FEATURES: the feature flag has been on everywhere
+  // since the beta set was promoted, so it would put this on the live
+  // storefront. This one is genuinely not ready for that.
+  let devRollOpen = false;
+  let featureOpen: string | null = null;   // the featured pack, opened
+
+  function shopDayIndex() {
+    return Math.floor(Date.now() / 86400000);
+  }
+
+  // A stable deal: the same day always lays out the same shelf, and
+  // tomorrow lays out a different one, with no server to ask.
+  function dealFrom(pool: string[], n: number, seed: number) {
+    const a = [...pool];
+    let x = (seed * 2654435761) >>> 0;
+    for (let i = a.length - 1; i > 0; i--) {
+      x = (x * 1103515245 + 12345) >>> 0;
+      const j = x % (i + 1);
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a.slice(0, Math.max(0, n));
+  }
+
+  /** what the shop is showing today - and what it is deliberately not */
+  function shopCycle() {
+    const s = engine.save;
+    const owns = (i: string) => iapOwned(s, i);
+    const day = shopDayIndex();
+    // ONE featured pack, never one already owned outright
+    const open = BUNDLES.filter((b) => !bundleIds(b).every(owns));
+    const feature = open.length ? open[day % open.length] : null;
+    // THE CATCH. What the pack holds cannot also be bought singly today.
+    // You can put it on the squirrel and look at it; you cannot have it
+    // unless you take the pack, or wait for the cycle to hand it over
+    // on its own later.
+    const held = new Set<string>(feature ? bundleIds(feature) : []);
+    const shelfOf = (ids: string[]) => ids.filter((i) => !held.has(i) && !owns(i));
+    const suitPool = shelfOf(SUITS.filter((u) => isIap(u.id)).map((u) => u.id));
+    const helmPool = shelfOf(HELMETS.filter((h) => isIap(h.id)).map((h) => h.id));
+    const palPool = shelfOf(PALS.filter((p) => isIap(p.id)).map((p) => p.id));
+    // HELMETS ARE DEALT FIRST. A premium helmet always shares its id with a
+    // suit, so dealing suits first ate the helmet pool and left the helmet
+    // shelf with one tile. Helmets draw from the narrow pool, then suits
+    // take what is left - including the three suits that have no helmet of
+    // their own, which is exactly what that shelf is for.
+    const helms = dealFrom(helmPool, SHOP_CYCLE.helms, day * 13 + 5);
+    const suits = dealFrom(suitPool.filter((i) => !helms.includes(i)), SHOP_CYCLE.suits, day * 7 + 1);
+    const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
+    return { day, feature, held, suits, helms, pals, owns };
+  }
+
+  type Cycle = ReturnType<typeof shopCycle>;
+
+  /** the price of the look currently on the stage, minus anything owned */
+  /** WHAT IS IN THE CASE IS WHAT YOU BUY.
+   *
+   *  Everything standing on the stage counts - the suit, the helmet it is
+   *  wearing, and the pal flying beside it. The plate already names all
+   *  three, so pricing only two of them made the bar disagree with the
+   *  picture directly above it.
+   *
+   *  A self-contained suit - Cyber, Volt, Robo and the rest that wear their
+   *  own head - contributes no helmet, which is why its price does not
+   *  compound: weight 3 rather than 4. */
+  function comboOf(cy: Cycle) {
+    const worn = SUITS.find((u) => u.id === tryOn.suit);
+    const ownHead = !!worn && wearsOwnHead(worn);
+    const parts = ownHead
+      ? [tryOn.suit, tryOn.pal]
+      : [tryOn.suit, tryOn.helm, tryOn.pal];
+    const ids = [...new Set(parts.filter(Boolean))]
+      .filter((i) => isIap(i) && !cy.owns(i));
+    const heldIds = ids.filter((i) => cy.held.has(i));
+    const dust = ids.reduce((n, i) => n + idDust(i), 0);
+    const trails = [...new Set(ids.map((i) => SET_TRAIL[i]).filter(Boolean))] as string[];
+    return { ids, heldIds, dust, trails, ownHead };
+  }
+
+  /** name one shop id by what it actually hands over */
+  function describeId(id: string, ownHead: boolean) {
+    const u = SUITS.find((x) => x.id === id);
+    const h = HELMETS.find((x) => x.id === id);
+    const p = PALS.find((x) => x.id === id);
+    if (u && h && !ownHead) return `${u.name} with its helmet`;
+    if (u) return u.name;
+    if (h) return `the ${h.name} helmet`;
+    if (p) return p.name;
+    return id;
+  }
+
+  function drawShopBeta() {
+    const s = engine.save;
+    // open() already claimed on arrival; collect the payment for the strip
+    const claimed = engine.takeDailyClaim();
+    if (claimed) dailyToast = claimed;
+    const cy = shopCycle();
+
+    const box = el("div", "ac-menu ac-shopbeta");
+    box.append(header("Premium", "Shop", headAside(s.acorns)));
+    denyEl = el("p", "ac-deny");
+    denyEl.setAttribute("role", "status");
+    denyEl.setAttribute("aria-live", "polite");
+    box.append(denyEl);
+
+    const scroll = el("div", "ac-sheet-scroll");
+    scroll.append(drawDaily());
+
+    // ---- THE STAGE. Everything below re-dresses this.
+    const shelved = [...cy.suits, ...cy.helms];
+    const heldList = [...cy.held];
+    if (!tryOn.suit || (!shelved.includes(tryOn.suit) && !cy.held.has(tryOn.suit) && !cy.owns(tryOn.suit))) {
+      const firstSuit = cy.suits[0] ?? heldList.find((i) => SUITS.some((u) => u.id === i)) ?? SUITS[0].id;
+      tryOn = {
+        suit: firstSuit,
+        helm: HELMETS.some((h) => h.id === firstSuit) ? firstSuit : (cy.helms[0] ?? tryOn.helm),
+        pal: cy.pals[0] ?? tryOn.pal,
+      };
+    }
+    const suit = SUITS.find((u) => u.id === tryOn.suit) ?? SUITS[0];
+    const ownHead = wearsOwnHead(suit);
+    const helm = ownHead ? HELMETS[0] : (HELMETS.find((h) => h.id === tryOn.helm) ?? HELMETS[0]);
+    const palDef = PALS.find((x) => x.id === tryOn.pal);
+
+    // THE CASE. The stage was a big quiet rectangle, which read as empty
+    // space rather than as the thing the page is about. It is a lit display
+    // case now: corner brackets, a spotlight, a pedestal the pilot stands
+    // over, and a name plate - and the whole case takes its colour from the
+    // suit being shown, so changing character re-lights the glass.
+    const CASE_W = 344;
+    const CASE_H = 236;
+    const stage = el("div", "ac-shopcase");
+    stage.style.setProperty("--case-glow", suit.glow ?? suit.trim ?? "#c4a0ff");
+    stage.style.setProperty("--case-lite", suit.suitLite ?? "#8a5ae4");
+    stage.style.setProperty("--case-deep", suit.suitDark ?? "#160f34");
+    const pane = el("div", "ac-casepane");
+    const { c, ctx } = miniCanvas(CASE_W, CASE_H);
+    c.className = "ac-tocanvas ac-casecanvas";
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", `${suit.name} preview, flying`);
+    pane.append(el("i", "ac-casebeam"));
+    pane.append(c);
+    pane.append(el("i", "ac-casefloor"));
+    for (const corner of ["tl", "tr", "bl", "br"]) {
+      pane.append(el("i", `ac-casecorner ac-c-${corner}`));
+    }
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "HELMET CANNOT BE CHANGED"));
+    stage.append(pane);
+    const plate = el("div", "ac-caseplate");
+    plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
+    plate.append(el("b", "", suit.name + (ownHead ? "" : ` · ${helm.name}`)));
+    if (palDef) plate.append(el("span", "ac-casesub", `${palDef.name} · ${palDef.tag}`));
+    stage.append(plate);
+    scroll.append(stage);
+    if (ctx) {
+      engine.wantSuitArt(suit.id);
+      if (palDef) engine.wantPalArt(palDef.id);
+      const t0 = performance.now();
+      const tick = () => {
+        if (!c.isConnected) return;
+        const t = (performance.now() - t0) / 1000;
+        ctx.clearRect(0, 0, CASE_W, CASE_H);
+        if (palDef) paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
+        paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // ---- THE COMBO BAR. Prices exactly what is on the stage.
+    const combo = comboOf(cy);
+    const bar = el("div", "ac-combobar");
+    if (!combo.ids.length) {
+      bar.classList.add("ac-comboowned");
+      bar.append(el("b", "", "YOU OWN THIS LOOK"),
+        el("span", "", "Equip it in the Loadout."));
+    } else if (combo.heldIds.length) {
+      // the catch, said out loud
+      bar.classList.add("ac-comboheld");
+      const t = el("span", "ac-combotxt");
+      t.append(el("b", "", "ONLY IN THE FEATURED PACK"),
+        el("span", "", `${cy.feature?.name ?? "The pack"} — not sold separately today.`));
+      const go = el("button", "ac-primary ac-combobuy", "SEE THE PACK");
+      go.onclick = () => { featureOpen = cy.feature?.id ?? null; confirmBuy = false; render(); };
+      bar.append(t, go);
+    } else {
+      const t = el("span", "ac-combotxt");
+      t.append(el("b", "", "BUY THIS SET"));
+      const names = combo.ids.map((i) => describeId(i, combo.ownHead));
+      const listed = names.length > 1
+        ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+        : names[0];
+      const trailBit = combo.trails.length === 1
+        ? ` ${TRAILS.find((x) => x.id === combo.trails[0])?.name ?? "The trail"} comes free.`
+        : combo.trails.length > 1
+          ? ` ${combo.trails.length} trails come free.`
+          : "";
+      const headBit = combo.ownHead ? " Helmet cannot be changed." : "";
+      t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
+      const go = el("button", "ac-primary ac-combobuy");
+      go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
+      go.onclick = () => {
+        let ok = true;
+        for (const id of combo.ids) {
+          if (!tx(bar, () => engine.buyShopItem(id), idDust(id), "dust")) { ok = false; break; }
+        }
+        if (ok) render();
+      };
+      bar.append(t, go);
+    }
+    scroll.append(bar);
+
+    // ---- THE SHELVES. Today's cycle, and only today's.
+    const shelf = (title: string, kind: "suit" | "helm" | "pal", ids: string[], note?: string) => {
+      if (!ids.length) return;
+      const head = el("p", "ac-shelfhead ac-shopshelfhead", title);
+      if (note) head.append(el("span", "ac-shelfnote", note));
+      scroll.append(head);
+      const row = el("div", "ac-shelfrow");
+      for (const id of ids) {
+        const on = kind === "pal" ? tryOn.pal === id : (kind === "suit" ? tryOn.suit === id : tryOn.helm === id);
+        const b = el("button", on ? "ac-card ac-tocard ac-shoptile on" : "ac-card ac-tocard ac-shoptile");
+        if (kind === "suit") {
+          const u = SUITS.find((x) => x.id === id);
+          if (u) { b.append(suitCardOf(u, 60)); markPremium(b, u.glow); }
+        } else if (kind === "helm") {
+          const h = HELMETS.find((x) => x.id === id);
+          if (h) { b.append(helmCardOf(h, 60)); markPremium(b, h.glow); }
+        } else {
+          const { c: pc, ctx: pctx } = miniCanvas(60, 60);
+          if (pctx) paintPalPreview(pctx, engine.art, id, 30, 30, 54);
+          b.append(pc);
+          markPremium(b);
+        }
+        const name = kind === "suit"
+          ? (SUITS.find((x) => x.id === id)?.name ?? id)
+          : kind === "helm"
+            ? (HELMETS.find((x) => x.id === id)?.name ?? id)
+            : (PALS.find((x) => x.id === id)?.name ?? id);
+        b.append(el("span", "ac-tilename", name));
+        const owned = cy.owns(id);
+        const price = el("span", owned ? "ac-tileprice owned" : "ac-tileprice");
+        if (owned) price.append(el("span", "", "OWNED"));
+        else price.append(icon(I_DUST, 11, true), el("span", "", idDust(id).toLocaleString()));
+        b.append(price);
+        if (SET_TRAIL[id] && !owned) b.append(el("span", "ac-tilebonus", "+ TRAIL"));
+        b.onclick = () => {
+          // one tap dresses the squirrel; the combo bar does the buying
+          if (kind === "pal") tryOn = { ...tryOn, pal: id };
+          else if (kind === "suit") {
+            // a set is one purchase, so wearing the suit wears its helmet -
+            // otherwise the combo bar quietly charges for two sets
+            const matched = HELMETS.some((h) => h.id === id);
+            tryOn = { ...tryOn, suit: id, helm: matched ? id : tryOn.helm };
+          } else {
+            // A HELMET HAS TO BE VISIBLE WHEN IT IS TAPPED. On a day whose
+            // suits all wear their own head, tapping one changed nothing at
+            // all - a whole shelf of dead tiles. The id owns the set, so
+            // wearing the helmet means wearing the head that can show it.
+            const worn = SUITS.find((u) => u.id === tryOn.suit);
+            const needsHead = !worn || wearsOwnHead(worn);
+            const ownSuit = SUITS.some((u) => u.id === id);
+            tryOn = { ...tryOn, helm: id, suit: needsHead && ownSuit ? id : tryOn.suit };
+          }
+          render();
+        };
+        row.append(b);
+      }
+      scroll.append(row);
+    };
+    shelf("SUITS", "suit", cy.suits, "today");
+    shelf("HELMETS", "helm", cy.helms, "today");
+    shelf("PALS", "pal", cy.pals, "today");
+    scroll.append(el("p", "ac-fine",
+      "The shelf restocks tomorrow. Trails are not sold on their own — they arrive with their set."));
+
+    // ---- THE FEATURED PACK.
+    if (cy.feature) {
+      const bn = cy.feature;
+      const full = alaCarteTotal(bundleIds(bn), cy.owns);
+      const due = featurePrice(bn, cy.owns);
+      const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
+      scroll.append(el("p", "ac-shelfhead ac-featurehead", "FEATURED PACK"));
+      const card = el("button", "ac-card ac-featurecard");
+      const strip = el("div", "ac-bundlestrip");
+      const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);
+      for (const it of faces) {
+        const u = SUITS.find((x) => x.id === it.id);
+        if (u) strip.append(suitCardOf(u, 46));
+      }
+      if (bn.items.length > faces.length) {
+        strip.append(el("span", "ac-bundlemore", `+${bn.items.length - faces.length}`));
+      }
+      card.append(strip);
+      const txt = el("div", "ac-modtxt");
+      txt.append(el("p", "ac-modname", bn.name), el("p", "ac-sub", bn.blurb));
+      card.append(txt);
+      const pr = el("span", "ac-modprice ac-dustprice");
+      pr.append(icon(I_DUST, 13, true), el("span", "", due.toLocaleString()));
+      if (off > 0) pr.append(el("s", "ac-wasprice", full.toLocaleString()));
+      card.append(pr);
+      if (off > 0) card.append(el("span", "ac-featureoff", `${off}% OFF`));
+      card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
+      card.onclick = () => { featureOpen = bn.id; confirmBuy = false; render(); };
+      scroll.append(card);
+      scroll.append(el("p", "ac-fine",
+        "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
+    }
+
+    // ---- TOP UP.
+    scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
+    for (const dp of DUST_PACKS) {
+      const row = el("button", "ac-card ac-modcard ac-dustrow");
+      const face = el("span", "ac-dustface");
+      face.append(icon(I_DUST, 30, true));
+      row.append(face);
+      const t = el("div", "ac-modtxt");
+      t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`),
+        el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
+      row.append(t, el("span", "ac-modprice ac-cashprice", dp.price));
+      row.onclick = () => { tx(row, () => engine.buyDust(dp.id)); render(); };
+      scroll.append(row);
+    }
+    scroll.append(codeRow());
+    scroll.append(el("p", "ac-fine", "The payment rail is not connected yet, so dust is granted during the beta."));
+
+    box.append(scroll);
+    // preproduction instrument, beta page only
+    box.append(drawCycleRoll(cy));
+    if (featureOpen) box.append(drawFeatureSheet(featureOpen));
+    if (dailyToast) box.append(drawDailyToast(dailyToast));
+    return box;
+  }
+
+  /** THE PACK, OPENED. Every character in it goes on the squirrel — and
+   *  none of them is for sale on its own. That IS the offer: you see
+   *  exactly what you are missing, and the only door to it is the pack.
+   *  The patient get it on the single shelf after it rotates out. */
+  function drawFeatureSheet(id: string) {
+    const wrap = el("div", "ac-lvlsheet");
+    const bn = BUNDLES.find((b) => b.id === id);
+    if (!bn) return wrap;
+    const s = engine.save;
+    const owns = (i: string) => iapOwned(s, i);
+    const sheet = el("div", "ac-lvlcard ac-featuresheet");
+    const full = alaCarteTotal(bundleIds(bn), owns);
+    const due = featurePrice(bn, owns);
+    const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
+
+    sheet.append(el("p", "ac-kicker", "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
+    sheet.append(el("p", "ac-sub", bn.blurb));
+
+    const group = (title: string, kind: "suit" | "helm" | "trail" | "pal") => {
+      const items = bn.items.filter((it) => it.kind === kind);
+      if (!items.length) return;
+      sheet.append(el("p", "ac-shelfhead", `${title} · ${items.length}`));
+      const row = el("div", "ac-shelfrow");
+      for (const it of items) {
+        const wearable = kind === "suit" || kind === "helm" || kind === "pal";
+        const on = kind === "suit" ? tryOn.suit === it.id
+          : kind === "helm" ? tryOn.helm === it.id
+          : kind === "pal" ? tryOn.pal === it.id : false;
+        const b = el("button", on ? "ac-card ac-tocard ac-shoptile on" : "ac-card ac-tocard ac-shoptile");
+        let name = it.id;
+        if (kind === "suit") {
+          const u = SUITS.find((x) => x.id === it.id);
+          if (u) { b.append(suitCardOf(u, 56)); name = u.name; markPremium(b, u.glow); }
+        } else if (kind === "helm") {
+          const h = HELMETS.find((x) => x.id === it.id);
+          if (h) { b.append(helmCardOf(h, 56)); name = h.name; markPremium(b, h.glow); }
+        } else if (kind === "pal") {
+          const { c: pc, ctx: pctx } = miniCanvas(56, 56);
+          if (pctx) paintPalPreview(pctx, engine.art, it.id, 28, 28, 50);
+          b.append(pc);
+          name = PALS.find((x) => x.id === it.id)?.name ?? it.id;
+          markPremium(b);
+        } else {
+          const t = TRAILS.find((x) => x.id === it.id);
+          const { c: tc, ctx: tctx } = miniCanvas(56, 48);
+          if (tctx && t) paintTrailPreview(tctx, t, 28, 24, performance.now() / 1000);
+          b.append(tc);
+          name = t?.name ?? it.id;
+        }
+        b.append(el("span", "ac-tilename", name));
+        b.append(el("span", owns(it.id) ? "ac-tileprice owned" : "ac-tileprice locked",
+          owns(it.id) ? "OWNED" : "IN THE PACK"));
+        if (wearable) {
+          b.onclick = () => {
+            if (kind === "suit") {
+              const matched = bn.items.some((x) => x.kind === "helm" && x.id === it.id);
+              tryOn = { ...tryOn, suit: it.id, helm: matched ? it.id : tryOn.helm };
+            } else if (kind === "helm") {
+              const worn = SUITS.find((u) => u.id === tryOn.suit);
+              const needsHead = !worn || wearsOwnHead(worn);
+              const ownSuit = SUITS.some((u) => u.id === it.id);
+              tryOn = { ...tryOn, helm: it.id, suit: needsHead && ownSuit ? it.id : tryOn.suit };
+            } else tryOn = { ...tryOn, pal: it.id };
+            render();
+          };
+        } else {
+          b.classList.add("ac-cardoff");
+        }
+        row.append(b);
+      }
+      sheet.append(row);
+    };
+    group("SUITS", "suit");
+    group("HELMETS", "helm");
+    group("TRAILS", "trail");
+    group("PALS", "pal");
+
+    sheet.append(el("p", "ac-fine",
+      "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
+
+    // the sheet covers the page, so it carries its own status line - the
+    // one up in the menu would be announced to nobody
+    const sheetDeny = el("p", "ac-deny");
+    sheetDeny.setAttribute("role", "status");
+    sheetDeny.setAttribute("aria-live", "polite");
+    sheet.append(sheetDeny);
+    denyEl = sheetDeny;
+
+    const buy = el("button", "ac-primary ac-featurebuy");
+    if (due <= 0) {
+      buy.textContent = "ALREADY YOURS";
+      buy.classList.add("ac-cardoff");
+    } else {
+      buy.append(el("span", "", confirmBuy ? "CONFIRM · SPEND " : "BUY THE PACK · "),
+        icon(I_DUST, 14, true), el("span", "", due.toLocaleString()));
+      if (off > 0) buy.append(el("s", "ac-wasprice", full.toLocaleString()));
+      buy.onclick = () => {
+        if (!confirmBuy) { confirmBuy = true; render(); return; }
+        // only re-render on success: a re-render rebuilds the status line,
+        // which would wipe the refusal before anyone could read it
+        if (tx(buy, () => engine.buyFeature(bn.id), due, "dust")) {
+          featureOpen = null;
+          confirmBuy = false;
+          render();
+        }
+      };
+    }
+    sheet.append(buy);
+    const back = el("button", "ac-ghost", "BACK");
+    back.onclick = () => { featureOpen = null; confirmBuy = false; render(); };
+    sheet.append(back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) { featureOpen = null; confirmBuy = false; render(); } };
+    return wrap;
+  }
+
+
+  /** THE CYCLE INSPECTOR. Preproduction only: everything the shop is
+   *  holding back today, and why it is holding it. Rolls up to a bar so it
+   *  costs one line of screen when it is not wanted. */
+  function drawCycleRoll(cy: Cycle) {
+    const wrap = el("div", devRollOpen ? "ac-devroll open" : "ac-devroll");
+    const shown = new Set([...cy.suits, ...cy.helms, ...cy.pals]);
+    const held: string[] = [];
+    const resting: string[] = [];
+    const owned: string[] = [];
+    for (const id of IAP_ITEMS) {
+      if (cy.owns(id)) owned.push(id);
+      else if (cy.held.has(id)) held.push(id);
+      else if (!shown.has(id)) resting.push(id);
+    }
+    const bar = el("button", "ac-devbar");
+    bar.setAttribute("aria-expanded", String(devRollOpen));
+    bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"),
+      el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} owned`));
+    bar.onclick = () => { devRollOpen = !devRollOpen; render(); };
+    wrap.append(bar);
+    if (!devRollOpen) return wrap;
+
+    const panel = el("div", "ac-devpanel");
+    const nameOf = (id: string) => {
+      const u = SUITS.find((x) => x.id === id);
+      const h = HELMETS.find((x) => x.id === id);
+      const p = PALS.find((x) => x.id === id);
+      const t = TRAILS.find((x) => x.id === id);
+      const kinds = [u && "suit", h && "helm", p && "pal", t && "trail"].filter(Boolean).join("+");
+      return `${u?.name ?? h?.name ?? p?.name ?? t?.name ?? id} (${kinds})`;
+    };
+    const group = (title: string, ids: string[], why: string) => {
+      const g = el("div", "ac-devgroup");
+      g.append(el("p", "ac-devhead", `${title} · ${ids.length}`));
+      g.append(el("p", "ac-devwhy", why));
+      const list = el("div", "ac-devlist");
+      if (!ids.length) list.append(el("span", "ac-devnone", "none"));
+      for (const id of ids) {
+        const chip = el("span", "ac-devchip");
+        chip.append(el("b", "", nameOf(id)));
+        chip.append(el("i", "", `${idDust(id)}`));
+        list.append(chip);
+      }
+      g.append(list);
+      panel.append(g);
+    };
+    panel.append(el("p", "ac-devday", `Cycle day ${cy.day} · seed is the date · shelf: ${cy.suits.length} suits, ${cy.helms.length} helmets, ${cy.pals.length} pal, 0 trails`));
+    group("HELD BY THE FEATURED PACK", held,
+      `${cy.feature?.name ?? "no pack"} — not buyable singly until it rotates out.`);
+    group("RESTING", resting, "In the pool, not dealt today. Comes back on a future day.");
+    group("OWNED", owned, "Bought already, so the shelf never offers it again.");
+    wrap.append(panel);
+    return wrap;
+  }
+
   function drawShop() {
+    // BETA gets the one-page storefront. Live keeps the tabbed shop until
+    // this has been flown.
+    if (IS_BETA) return drawShopBeta();
     const s = engine.save;
     // open() already claimed on arrival; this is where the payment gets
     // picked up and shown. takeDailyClaim clears as it hands over, so a
