@@ -474,13 +474,16 @@ function buildTutorialCourse(w, save) {
     const tDive = (-PHYS.dive + Math.sqrt(PHYS.dive * PHYS.dive + 2 * g * dyDive)) / g;
     const mk = (dist, gapY, sealed) => {
         const yy = clampY(gapY);
+        const tutKind = pickKind(w);
         const pair = {
             x: sx + dist,
             gapY: yy,
             gap,
             r: PHYS.planetR,
-            topKind: pickKind(w),
-            botKind: pickKind(w),
+            // one planet per gate - see the note in spawnPair. These are the FIRST
+            // gates anyone ever sees, so they are the last place to break the rule.
+            topKind: tutKind,
+            botKind: tutKind,
             scored: false,
             drift: 0,
             driftAmp: 0,
@@ -658,13 +661,22 @@ function spawnPair(w, save, x) {
         : w.flight === "lost" ? 12
             : w.tut ? 0
                 : gap * 0.15 * normalDrift) * lvlDrift;
+    const pairKind = pickKind(w);
     w.planets.push({
         x,
         gapY,
         gap,
         r,
-        topKind: pickKind(w),
-        botKind: pickKind(w),
+        // ONE PLANET PER GATE, drawn once. The two halves of a gate are one
+        // object as far as the eye is concerned - a striped giant above and an
+        // ice moon below reads as two things that happen to be near each other,
+        // not as a gap through a place. Diversity lives ACROSS gates, which is
+        // what pickKind is already for: 55% from the zone's own family and 45%
+        // a free pick that will not vanish into the sky. This is the same rule
+        // pickDebris already follows, and for the same reason - a zone should
+        // read as one place.
+        topKind: pairKind,
+        botKind: pairKind,
         scored: false,
         drift: Math.random() * Math.PI * 2,
         driftAmp,
@@ -795,8 +807,11 @@ function spawnPair(w, save, x) {
         // pilot down a real corridor for fifteen seconds and puts them back
         // where they were. Lost in Space only - Arcade's reversal hazard stays
         // retired. See enterWormhole.
+        // ...and not while already warped, for exactly the reason the hole roll
+        // above is guarded. A door to somewhere else, opening inside a black
+        // hole, reads as the way out and is not.
         const wormRate = wormChance(w);
-        if (!w.tut && !noHoles && wormRate > 0 && Math.random() < wormRate) {
+        if (!w.tut && !noHoles && !warping && wormRate > 0 && Math.random() < wormRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
         }
     }
@@ -2346,6 +2361,19 @@ function enterWarp(w, save) {
     const sx = w.W * PHYS.squirrelX;
     const cy = safeY(w);
     clearDebrisNear(w, sx, cy, 150, sx, cy, 150);
+    // AND SWEEP THE DOORS ALREADY IN FLIGHT.
+    //
+    // The spawn guard stops new holes being rolled while warped, which is
+    // most of the job - but a hole spawns 64px ahead of a gate, so one can
+    // already be on its way when the pilot catches a DIFFERENT hole a gate
+    // earlier. That one is not a new roll and the guard never saw it: it
+    // just scrolls into the warp behind them. Measured at about one warp in
+    // seventy, which is exactly the rate at which this keeps being spotted
+    // and not reproduced.
+    //
+    // The exit is deliberately exempt - it is the only hole that belongs in
+    // here, and on a gate-counted stretch it may already have spawned.
+    w.pickups = w.pickups.filter((a) => a.got || a.exit || (a.kind !== "hole" && a.kind !== "worm"));
     w.squirrel.y = cy;
     w.squirrel.vy = 0;
     w.squirrel.rot = 0;

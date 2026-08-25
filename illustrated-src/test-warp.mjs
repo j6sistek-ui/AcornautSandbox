@@ -159,6 +159,59 @@ if (arcadeLvl) {
     `the guard is too broad and has turned the hazard off entirely`);
 }
 
+// ---- NO DOOR INSIDE A DOOR, including the ones already in flight -------
+//
+// The spawn guard stops new holes being ROLLED while warped, and that has
+// been in place for a while. It was never the whole job: a hole spawns 64px
+// ahead of its gate, so one can already be on its way when the pilot catches
+// a DIFFERENT hole a gate earlier. That one is not a new roll, the guard
+// never sees it, and it scrolls into the warp behind them - a black hole
+// inside the black hole, at about one warp in thirty. Rare enough to be
+// spotted and never reproduced, which is exactly why it needs a harness.
+//
+// Flown on a fixed RNG so the number means the same thing twice.
+{
+  const mk = (n) => { let x = n >>> 0; return () => {
+    x ^= x << 13; x >>>= 0; x ^= x >> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; }; };
+  const realRandom = Math.random;
+  let warps = 0, dirty = 0;
+  const sample = [];
+  for (let seed = 1; seed <= 1600; seed++) {
+    Math.random = mk(seed * 7919);
+    const w = sim.makeWorld(430, 932);
+    const s = save.loadSave();
+    sim.resetRun(w, s, "fly", false);
+    w.ready = false; w.screen = "play";
+    let inWarp = false, flagged = false;
+    for (let i = 0; i < 60 * 260; i++) {
+      const p = w.planets.find((q) => q.x > w.W * 0.28);
+      if (p && p.gapY - w.squirrel.y < -8) sim.flap(w, s);
+      sim.updateWorld(w, s, 1 / 60);
+      if (w.screen !== "play") break;
+      // the SETTLED warp, after enterWarp: the entry fold is mid-crossing and
+      // its sweep is still pending, so counting it would flag the transition
+      const settled = w.warpGateEnd >= 0 || w.warpLeft > 0;
+      if (settled && !inWarp) { inWarp = true; warps += 1; flagged = false; }
+      if (settled && !flagged) {
+        const stray = w.pickups.find((a) =>
+          (a.kind === "hole" || a.kind === "worm") && !a.exit && !a.got
+          && a.x > -40 && a.x < w.W + 40);
+        if (stray) {
+          flagged = true; dirty += 1;
+          if (sample.length < 3) sample.push({ seed, kind: stray.kind, x: Math.round(stray.x) });
+        }
+      }
+      if (!settled && !(w.warpT > 0)) inWarp = false;
+    }
+  }
+  Math.random = realRandom;
+  results.doorInsideADoor = { warps, dirty, sample };
+  ok(warps > 100, `only ${warps} warps flown - too small a sample to mean anything`);
+  ok(dirty === 0,
+    `${dirty} of ${warps} warps (${(100 * dirty / warps).toFixed(1)}%) had a second door ` +
+    `on screen inside them: ${JSON.stringify(sample)}`);
+}
+
 // ---- the seal cannot develop gaps as rocks shrink ----------------------
 const MIN_R = 19 * sim.DEBRIS_SIZE, STEP = 30;
 ok(2 * MIN_R > STEP,
