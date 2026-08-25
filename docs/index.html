@@ -420,6 +420,24 @@
       border: 1px solid rgba(203,180,255,.35); background: rgba(20,14,44,.8);
       color: #e8e2ff; font-size: 15px; line-height: 1; }
     .ac-tunereset { margin-bottom: 4px; font-size: 12px; }
+    /* THE PAUSE SHEET CAN BE TALLER THAN THE PHONE. With the calibration
+       panel open it runs to ~943px, and .ac-sheet is a fixed-height flex
+       column with overflow:hidden and justify-content:center — so it spilled
+       off BOTH ends and RESUME went with it. You could read every dial and
+       have no way to leave. .ac-result already solved exactly this; the pause
+       sheet never got it. `safe center` centres while it fits and falls back
+       to the top when it does not, instead of clipping symmetrically. */
+    .ac-pausesheet { overflow-y: auto; justify-content: safe center;
+      padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+    .ac-pausesheet > * { flex: none; }
+    /* and the way out never scrolls away, whatever is above it */
+    .ac-pauseact { position: sticky; bottom: 0; z-index: 3; width: 100%;
+      display: grid; gap: 8px; margin-top: 4px;
+      padding: 12px 0 max(2px, env(safe-area-inset-bottom));
+      background: linear-gradient(to top, rgba(7,11,22,.97) 64%, rgba(7,11,22,0)); }
+    body.ac-beta .ac-pauseact {
+      background: linear-gradient(to top, rgba(16,8,36,.97) 64%, rgba(16,8,36,0)); }
+    .ac-tunego { margin-top: 6px; }
 
     /* THE TUNING RIG. The dials, on screen, while the corridor is moving —
        because the pause menu is the one place they cannot do their job.
@@ -908,6 +926,13 @@
     @keyframes ac-pulse { 0%,100% { box-shadow: 0 0 8px rgba(232,164,74,.18); } 50% { box-shadow: 0 0 18px rgba(232,164,74,.4); } }
     .ac-log.on { border-color: rgba(232,164,74,.4); background: #141b30; }
     .ac-playbar { display: flex; justify-content: flex-end; padding: 12px; }
+    /* the first flight can be left; the button sits beside pause and is
+       deliberately quiet, so it reads as an escape hatch rather than an
+       invitation to leave the lesson */
+    .ac-tutskip { font-size: 11px; padding: 8px 14px; letter-spacing: .1em;
+      align-self: center; margin-right: 8px; opacity: .75;
+      min-height: 44px; min-width: 60px; }
+    .ac-playbar { align-items: center; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
 
     /* ================= THE HUB (v85) =================

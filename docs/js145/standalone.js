@@ -154,6 +154,17 @@ export async function bootStandalone(root) {
         overlay.innerHTML = "";
         if (snap.screen === "play") {
             const bar = el("div", "ac-playbar");
+            // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
+            // anyone who already knows how to play, or who hits a lesson that is
+            // not landing - and the first flight is exactly where a beginner is
+            // most likely to be stuck and least likely to know it is skippable.
+            // Skipping still hands over the suit and helmet it would have given.
+            if (engine.world.tut) {
+                const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
+                skip.setAttribute("aria-label", "Skip the first flight");
+                skip.onclick = () => engine.skipTutorial();
+                bar.append(skip);
+            }
             const pause = el("button", "ac-iconbtn", "II");
             pause.onclick = () => engine.pause();
             bar.append(pause);
@@ -163,7 +174,7 @@ export async function bootStandalone(root) {
             return;
         }
         if (snap.screen === "pause") {
-            const sheet = el("div", "ac-sheet ac-center");
+            const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}` : `Score ${engine.world.score}`));
             // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
             // drawn, so the row is there when Eclipse is the pilot and nowhere else.
@@ -252,12 +263,32 @@ export async function bootStandalone(root) {
                 sheet.append(reset);
                 sheet.append(el("p", "ac-fine", "1.00 is the flight as it ships. The corridor ahead is already drawn, "
                     + "so width, volatility and debris show on the next run."));
+                // THE DOOR BELONGS HERE. Turning a dial from a pause is the thing that
+                // does not work - the run is frozen, the corridor ahead is already
+                // drawn, and reading a setting means surviving it first. This is where
+                // a pilot IS when they want to tune, so this is where the tuning run
+                // is offered, rather than only at the bottom of the prototypes list
+                // where nobody looking for it would think to go.
+                if (IS_BETA && TUNE_TEST && !engine.world.tuneTest) {
+                    const tune = el("button", "ac-primary ac-tunego", "OPEN THE TUNING RUN");
+                    tune.onclick = () => engine.flyTuning();
+                    sheet.append(tune);
+                    sheet.append(el("p", "ac-fine", "A corridor that never ends and cannot kill you, flown by autopilot, "
+                        + "with these dials live on screen while it flies."));
+                }
             }
+            // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
+            // past 940px on a phone, and .ac-sheet is a fixed-height centred column
+            // - so it spilled off BOTH ends and took RESUME with it. You could read
+            // every dial and not leave. These two now sit in a sticky footer that
+            // cannot scroll away, whatever is above them.
+            const act = el("div", "ac-pauseact");
             const resume = el("button", "ac-primary", "RESUME");
             resume.onclick = () => engine.resume();
             const abort = el("button", "ac-ghost", "ABORT TO TITLE");
             abort.onclick = () => engine.open("title");
-            sheet.append(resume, abort);
+            act.append(resume, abort);
+            sheet.append(act);
             overlay.append(sheet);
             return;
         }

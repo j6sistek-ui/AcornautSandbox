@@ -1,4 +1,4 @@
-import {TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune, type TuneId } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
@@ -3045,19 +3045,33 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       }
     }
     if (w.tut.stage === "bounce") {
-      // freeze at the top of the launch — and if the apex is still low
-      // (a floor-level rescue), boing again, so the swipe prompt always
-      // arrives with real room to dive below
-      if (w.squirrel.vy > -60 || w.tut.t > 1.1) {
-        if (w.squirrel.y > w.H * 0.55 && w.tut.springs < 5) {
-          w.tut.springs += 1;
-          w.squirrel.vy = -640;
-          w.tut.t = 0;
-        } else {
-          w.tut.stage = "swipe";
-          w.tut.hold = true;
-          w.tut.t = 0;
-        }
+      // THE SWIPE LESSON NEEDS A SCREEN TO DIVE INTO, and it has to get one
+      // every time, not most of the time.
+      //
+      // This used to re-fire the launch - vy = -640, up to five times - and
+      // judge the result on `vy > -60`. That test is satisfied INSTANTLY by
+      // a planet contact, which zeroes vy on touch. Traced: the pilot lands
+      // on a planet, the next frame springs and is cancelled, and all five
+      // springs burn in FOUR FRAMES having moved the pilot nothing. The
+      // lesson then opened at 67% of the screen telling a beginner to dive,
+      // the dive met the floor, and the tutorial rescued them in a loop.
+      // Whether it happened at all depended on a planet being underneath -
+      // which is why it struck about half the time.
+      //
+      // Velocity is the wrong instrument, because velocity is exactly what a
+      // contact cancels. This is authored choreography, so the height is
+      // authored: carry the pilot up at a readable rate that nothing in the
+      // world can undo, and open the lesson when the room is real.
+      const wantY = w.H * TUT_SWIPE_TOP;
+      if (w.squirrel.y > wantY) {
+        w.squirrel.y = Math.max(wantY, w.squirrel.y - TUT_SWIPE_LIFT * dt);
+        w.squirrel.vy = 0;
+        w.squirrel.rot = -0.22;          // nose up, so the lift reads as flight
+        w.tut.springs = 0;
+      } else if (w.squirrel.vy > -60 || w.tut.t > 1.1) {
+        w.tut.stage = "swipe";
+        w.tut.hold = true;
+        w.tut.t = 0;
       }
     }
     if (w.tut.stage === "dive" && (w.tut.gates - w.tut.gateBase >= 1 || w.tut.t > 3)) {

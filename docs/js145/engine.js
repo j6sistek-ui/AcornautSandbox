@@ -2,7 +2,7 @@ import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "
 import { sfx, unlockAudio, music } from "./audio.js?v=145";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, cleanTune, cleanTunnelControl, freshTune, TUNE_DIALS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=145";
 import { drawHud, drawWorld } from "./draw.js?v=145";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=145";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=145";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=145";
 import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, setTunnelDrag, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=145";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=145";
@@ -210,6 +210,18 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
             return v;
+        },
+        /** LEAVE THE FIRST FLIGHT, keeping everything it would have given you.
+         *  A tutorial with no exit is a trap for anyone who already knows how to
+         *  play, or who hits a lesson that is not landing - and it hands the
+         *  pilot straight to the Loadout, which is where the tutorial was
+         *  walking them anyway. */
+        skipTutorial() {
+            save.tutorialDone = true;
+            grantTutorialKit(save);
+            writeSave(save);
+            world.tut = null;
+            this.open("hangar");
         },
         flyTuning() {
             unlockAudio();
