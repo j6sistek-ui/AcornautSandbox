@@ -296,15 +296,22 @@ const RIGGED_SUITS = [
   ] : []),
 ];
 const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
-  // Existing approved custom banks remain live everywhere.
+  // The Robo-timing rollout is DONE: it was beta-only while the owner flew
+  // each silhouette, and the verdict is that the painted bank beats the rig.
+  // Production used to fall back to the universal rig path, whose tap is a
+  // scale trick - ctx.scale(1 + p*0.052, 1 - p*0.028) squashing the whole
+  // body 2.8% vertically - which is the belly-tuck the owner saw on live and
+  // not on beta. A painted frame has no such thing: the pose IS the art.
+  // Every one of these banks already shipped in the production art folder;
+  // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-  // The Robo-timing rollout stays beta-only until the owner has flown
-  // every silhouette. Production keeps its current universal rig path.
+  flight: 16, iontrim: 16, copper: 16, frost: 16,
+  voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
+  ghost: 16, gemmie: 16, sammie: 16,
+  seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+  // These eight stay here only because the SUITS do - they are beta-gated in
+  // catalog.ts, so production never loads them. Promote the pair together.
   ...(IS_BETA ? {
-    flight: 16, iontrim: 16, copper: 16, frost: 16,
-    voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
-    ghost: 16, gemmie: 16, sammie: 16,
-    seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
     cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
     abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
   } : {}),

@@ -799,12 +799,14 @@ def verify_beta_art_gates(qa: QA) -> None:
 
     # what art.ts hides behind IS_BETA, per bank table
     gated: dict[str, set[str]] = {}
-    # Only the tables that decide whether a suit MOVES AT ALL. TAP_BANKS,
-    # BOUNCE_BANKS and TAIL_TAP_BANKS are enhancements layered over a working
-    # rig - the 16-frame rollout is deliberately beta-first while the owner
-    # flies each silhouette, and production keeps the universal rig path. A
-    # guard that flagged those would be reporting the plan as a defect.
-    for table in ("RIGGED_SUITS", "ASC_BANKS", "DESC_BANKS"):
+    # The 16-frame rollout is finished, so TAP_BANKS joins the motion floor:
+    # a live suit left out of it silently falls back to the universal rig,
+    # whose tap squashes the body instead of playing painted poses. The only
+    # suits that may sit in a beta arm are the ones whose SUIT is beta-gated
+    # in catalog.ts - the pair has to move together or the art goes missing
+    # exactly the way Cyber's did.
+    for table in ("RIGGED_SUITS", "ASC_BANKS", "DESC_BANKS", "TAP_BANKS",
+                  "BOUNCE_BANKS", "TAIL_TAP_BANKS"):
         i = art.find(f"const {table}")
         if i < 0:
             continue
@@ -820,11 +822,17 @@ def verify_beta_art_gates(qa: QA) -> None:
             ids |= set(re.findall(r"^\s*([a-z]+):", m.group(1), re.M))
             gated.setdefault(table, set()).update(ids)
 
-    # what a production pilot can reach: bundle suits and star-gated suits
-    reachable = set(re.findall(r'kind: "suit", id: "([a-z]+)"', cat))
-    stars = re.search(r"suits: \{(.*?)\}", cat, re.S)
-    if stars:
-        reachable |= set(re.findall(r"(\w+):", stars.group(1)))
+    # What a production pilot can reach = every suit that SURVIVES the
+    # `if (!IS_BETA) SUITS.splice(...)` strip, i.e. every suit not carrying
+    # `beta: true`. That is the honest denominator: a beta-gated suit does
+    # not exist on the live page, so gating its art with it is correct.
+    suits = re.search(r"export const SUITS[^\n]*\n(.*?)^\];", cat, re.S | re.M)
+    reachable = set()
+    if suits:
+        for line in suits.group(1).splitlines():
+            m = re.search(r'\{ id: "([a-z]+)"', line)
+            if m and "beta: true" not in line:
+                reachable.add(m.group(1))
 
     problems: list[str] = []
     for table, ids in gated.items():
