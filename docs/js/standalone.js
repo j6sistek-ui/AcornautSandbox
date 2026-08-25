@@ -2532,17 +2532,43 @@ export async function bootStandalone(root) {
         return { day, feature, held, suits, helms, pals, owns };
     }
     /** the price of the look currently on the stage, minus anything owned */
+    /** WHAT IS IN THE CASE IS WHAT YOU BUY.
+     *
+     *  Everything standing on the stage counts - the suit, the helmet it is
+     *  wearing, and the pal flying beside it. The plate already names all
+     *  three, so pricing only two of them made the bar disagree with the
+     *  picture directly above it.
+     *
+     *  A self-contained suit - Cyber, Volt, Robo and the rest that wear their
+     *  own head - contributes no helmet, which is why its price does not
+     *  compound: weight 3 rather than 4. */
     function comboOf(cy) {
         const worn = SUITS.find((u) => u.id === tryOn.suit);
-        // a fixed-head suit takes no helmet, so the combo must not quietly
-        // charge for one the pilot would never see on it
-        const parts = worn && wearsOwnHead(worn) ? [tryOn.suit] : [tryOn.suit, tryOn.helm];
+        const ownHead = !!worn && wearsOwnHead(worn);
+        const parts = ownHead
+            ? [tryOn.suit, tryOn.pal]
+            : [tryOn.suit, tryOn.helm, tryOn.pal];
         const ids = [...new Set(parts.filter(Boolean))]
             .filter((i) => isIap(i) && !cy.owns(i));
         const heldIds = ids.filter((i) => cy.held.has(i));
         const dust = ids.reduce((n, i) => n + idDust(i), 0);
-        const trails = ids.map((i) => SET_TRAIL[i]).filter(Boolean);
-        return { ids, heldIds, dust, trails };
+        const trails = [...new Set(ids.map((i) => SET_TRAIL[i]).filter(Boolean))];
+        return { ids, heldIds, dust, trails, ownHead };
+    }
+    /** name one shop id by what it actually hands over */
+    function describeId(id, ownHead) {
+        const u = SUITS.find((x) => x.id === id);
+        const h = HELMETS.find((x) => x.id === id);
+        const p = PALS.find((x) => x.id === id);
+        if (u && h && !ownHead)
+            return `${u.name} with its helmet`;
+        if (u)
+            return u.name;
+        if (h)
+            return `the ${h.name} helmet`;
+        if (p)
+            return p.name;
+        return id;
     }
     function drawShopBeta() {
         const s = engine.save;
@@ -2641,18 +2667,18 @@ export async function bootStandalone(root) {
         }
         else {
             const t = el("span", "ac-combotxt");
-            const twoSets = combo.ids.length > 1;
-            t.append(el("b", "", twoSets ? "BUY THIS COMBO" : "BUY THIS SET"));
-            const names = combo.ids.map((i) => SUITS.find((u) => u.id === i)?.name ?? HELMETS.find((h) => h.id === i)?.name ?? i);
-            const trailName = combo.trails.length
-                ? (TRAILS.find((x) => x.id === combo.trails[0])?.name ?? "its trail")
-                : "";
-            const line = twoSets
-                ? `Two sets — ${names.join(" and ")}${combo.trails.length ? `, ${combo.trails.length} trail${combo.trails.length > 1 ? "s" : ""} free` : ""}.`
-                : combo.trails.length
-                    ? `Suit, matching helmet and ${trailName} — the trail is free.`
-                    : "Suit and matching helmet.";
-            t.append(el("span", "", line));
+            t.append(el("b", "", "BUY THIS SET"));
+            const names = combo.ids.map((i) => describeId(i, combo.ownHead));
+            const listed = names.length > 1
+                ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+                : names[0];
+            const trailBit = combo.trails.length === 1
+                ? ` ${TRAILS.find((x) => x.id === combo.trails[0])?.name ?? "The trail"} comes free.`
+                : combo.trails.length > 1
+                    ? ` ${combo.trails.length} trails come free.`
+                    : "";
+            const headBit = combo.ownHead ? " Wears its own head." : "";
+            t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
             const go = el("button", "ac-primary ac-combobuy");
             go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
             go.onclick = () => {
@@ -2727,8 +2753,16 @@ export async function bootStandalone(root) {
                         const matched = HELMETS.some((h) => h.id === id);
                         tryOn = { ...tryOn, suit: id, helm: matched ? id : tryOn.helm };
                     }
-                    else
-                        tryOn = { ...tryOn, helm: id };
+                    else {
+                        // A HELMET HAS TO BE VISIBLE WHEN IT IS TAPPED. On a day whose
+                        // suits all wear their own head, tapping one changed nothing at
+                        // all - a whole shelf of dead tiles. The id owns the set, so
+                        // wearing the helmet means wearing the head that can show it.
+                        const worn = SUITS.find((u) => u.id === tryOn.suit);
+                        const needsHead = !worn || wearsOwnHead(worn);
+                        const ownSuit = SUITS.some((u) => u.id === id);
+                        tryOn = { ...tryOn, helm: id, suit: needsHead && ownSuit ? id : tryOn.suit };
+                    }
                     render();
                 };
                 row.append(b);
@@ -2867,8 +2901,12 @@ export async function bootStandalone(root) {
                             const matched = bn.items.some((x) => x.kind === "helm" && x.id === it.id);
                             tryOn = { ...tryOn, suit: it.id, helm: matched ? it.id : tryOn.helm };
                         }
-                        else if (kind === "helm")
-                            tryOn = { ...tryOn, helm: it.id };
+                        else if (kind === "helm") {
+                            const worn = SUITS.find((u) => u.id === tryOn.suit);
+                            const needsHead = !worn || wearsOwnHead(worn);
+                            const ownSuit = SUITS.some((u) => u.id === it.id);
+                            tryOn = { ...tryOn, helm: it.id, suit: needsHead && ownSuit ? it.id : tryOn.suit };
+                        }
                         else
                             tryOn = { ...tryOn, pal: it.id };
                         render();
