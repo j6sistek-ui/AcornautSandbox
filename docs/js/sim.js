@@ -1,10 +1,10 @@
-import { MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=144";
+import { TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=144";
 import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=144";
 import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=144";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=144";
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=144";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=144";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, } from "./control-constants.js?v=144";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, } from "./control-constants.js?v=144";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -60,6 +60,8 @@ export function makeWorld(W, H) {
         bounceAnimDir: 0,
         bounceAnimStrength: 0,
         tunnelHeld: false,
+        tunnelDragY: null,
+        tunnelControl: 0,
         wormHold: null,
         wormLeft: 0,
         tune: freshTune(),
@@ -337,6 +339,19 @@ function pickDebris(env) {
  *  debris sweeps and the painter all ask here, so what the pilot flies
  *  into is what the pilot sees. Arcade keeps its rocks still - the retro
  *  timeline is a different painter and a different feel. */
+/** Rock size, as a fraction of the first pass's radius. The base spread is
+ *  19-26px; at 0.9 that becomes 17.1-23.4px. The floor that matters is the
+ *  SEAL: rocks are laid down every 30px, so twice the smallest radius has to
+ *  stay above that step or the column develops gaps a pilot can see - and
+ *  aim - through. At 0.9 the smallest rock still spans 34.2px against a 30px
+ *  step, so the seal holds. test-drift.mjs asserts it. */
+export const DEBRIS_SIZE = 0.9;
+/** How fast a rock drifts, as a fraction of the first pass's rate. The
+ *  original swing was one every 5s to 14s, which is a readable wobble on a
+ *  static column and far too busy once the whole field is moving. At a
+ *  quarter speed it is one swing every 19s to 56s: slow enough to register
+ *  as drift rather than motion, which is the whole point of the effect. */
+export const DEBRIS_DRIFT_RATE = 0.25;
 export function blockerX(p, b, w) {
     const home = p.x + (b.xOff || 0);
     if (!w || !b.amp)
@@ -386,7 +401,7 @@ function sealBlockers(w, env, gapY, gap) {
     // can never swing its cut end into view. See sealReach.
     const edge = -sealReach(w);
     const put = (y, n) => {
-        const rr = 19 + Math.random() * 7;
+        const rr = (19 + Math.random() * 7) * DEBRIS_SIZE;
         blockers.push({
             y,
             r: rr,
@@ -402,7 +417,12 @@ function sealBlockers(w, env, gapY, gap) {
             // It was a full width either way at first, which spread the column too
             // far to still read as one seal. Halved.
             amp: Math.random() * rr,
-            rate: 0.45 + Math.random() * 0.9, // one swing every 5s to 14s
+            // The SPREAD was right and the SPEED was not: at full rate the column
+            // read as arcade jitter rather than anything hanging in space. Only
+            // the clock is scaled here - amplitude, phase and the per-rock variety
+            // are all untouched, so the stack keeps exactly the diversity it had
+            // and simply takes four times as long to get anywhere.
+            rate: (0.45 + Math.random() * 0.9) * DEBRIS_DRIFT_RATE,
             phase: Math.random() * Math.PI * 2,
             debris: pickDebris(env),
         });
@@ -732,7 +752,13 @@ function spawnPair(w, save, x) {
         // could not be entered (the catch is guarded on warp state), so it was
         // scenery that looked like the exit — black holes inside the black
         // hole. The only hole that belongs in here is the one that ends it.
-        const warping = w.warpGateEnd >= 0;
+        // A warp has THREE representations and the guard only knew one of them.
+        // enterWarp sets warpGateEnd for Free Flight and a warpLeft TIMER for
+        // everything else - so on a Star Chart level built on Arcade, where
+        // holeChance is 0.05, the whole fifteen-second stretch kept rolling for
+        // new holes: black holes inside the black hole, exactly what this guard
+        // was written to stop. warpT covers the entry swirl on the way in.
+        const warping = w.warpGateEnd >= 0 || w.warpLeft > 0 || w.warpT > 0;
         const holeRate = holeChance(w);
         if (!w.tut && !noHoles && !warping && holeRate > 0 && Math.random() < holeRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
@@ -741,7 +767,11 @@ function spawnPair(w, save, x) {
         // carries the exit, dead centre in the mouth so it cannot be missed by
         // accident — you leave the way you came in, through a hole, rather than
         // having the flight quietly right itself underneath you.
-        if (warping && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
+        // GATE-COUNTED stretches only. `warping` now also covers timer warps,
+        // and warpGateEnd is -1 for those - so testing it here would make
+        // `score >= -1` trivially true and hang a fake way-out on the first gate
+        // of every Deep Space and Arcade warp, which end on their own clock.
+        if (w.warpGateEnd >= 0 && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
             w.warpExitSpawned = true;
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
         }
@@ -811,6 +841,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.bounceAnimDir = 0;
     w.bounceAnimStrength = 0;
     w.tunnelHeld = false;
+    w.tunnelDragY = null;
     w.wormHold = null;
     w.wormLeft = 0;
     // a run keeps the dials it started with, so changing one mid-run cannot
@@ -881,11 +912,22 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     if (w.tut)
         buildTutorialCourse(w, save);
 }
-/** The beta's wormhole flight is hold-to-rise. Returns false anywhere it
- *  does not apply (live page, other modes) so the caller falls back to the
- *  classic flap. Grabbing the screen also launches a run still on READY. */
-export function setTunnelHeld(w, held) {
-    if (!IS_BETA || w.flight !== "tunnel" || !w.tunnel)
+/** Which of TUNNEL_CONTROLS this run answers to. The beta chooses; the live
+ *  page stays on the tap it has always flown until one is picked, so nothing
+ *  about this experiment can reach a pilot who did not opt into it. */
+export function tunnelControlOf(save) {
+    if (!IS_BETA)
+        return 0;
+    const n = Math.round(Number(save?.tunnelControl));
+    return Number.isFinite(n) && n >= 0 && n < TUNNEL_CONTROLS.length ? n : TUNNEL_CONTROL_DEFAULT;
+}
+/** HOLD TO RISE. Returns false wherever it does not apply - the live page,
+ *  another mode, or a run set to tap or slide - so the caller falls back to
+ *  the classic flap. Grabbing the screen also launches a run still on READY. */
+export function setTunnelHeld(w, save, held) {
+    if (w.flight !== "tunnel" || !w.tunnel)
+        return false;
+    if (tunnelControlOf(save) !== 1)
         return false;
     if (held) {
         if (w.screen !== "play")
@@ -896,6 +938,25 @@ export function setTunnelHeld(w, held) {
             w.lvl.stats.taps += 1;
     }
     w.tunnelHeld = held;
+    return true;
+}
+/** SLIDE AND HOLD. `y` is a world y to steer toward; null lifts the finger
+ *  and leaves the pilot where it is. Returns false wherever the control does
+ *  not apply, so the caller can fall back like it does for hold. */
+export function setTunnelDrag(w, save, y) {
+    if (w.flight !== "tunnel" || !w.tunnel)
+        return false;
+    if (tunnelControlOf(save) !== 2)
+        return false;
+    if (y !== null) {
+        if (w.screen !== "play")
+            return false;
+        if (w.ready)
+            w.ready = false;
+        if (w.lvl)
+            w.lvl.stats.taps += 1;
+    }
+    w.tunnelDragY = y === null ? null : Math.max(0, Math.min(w.H, y));
     return true;
 }
 /** Semantic race input is tick-stamped and consumed before the next race step. */
@@ -1130,7 +1191,18 @@ function appendTunnelNode(w) {
     const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : t.patternStartHalf;
     const room = Math.max(0, Math.min(1, (baseHalf - minHalf) / Math.max(1, maxHalf - minHalf)));
     const shape = tunnelPatternShape(w, pattern, patternPos / Math.max(1, patternLength - 1), baseHalf, room, t.patternStartCenter, t.patternDirection);
-    const targetHalf = Math.max(minHalf, Math.min(maxHalf, shape.half));
+    // THE LEAD-IN. A pilot thrown in from Lost in Space gets open, straight,
+    // empty corridor first: full width, dead centre, nothing in it. Then the
+    // real shape is eased in over the blend, because snapping from a straight
+    // pipe to a moving one at full speed is the same ambush by another route.
+    const lead = t.leadNodes;
+    const leadPos = lead > 0 ? index - lead : Infinity;
+    const inLead = leadPos < 0;
+    const leadMix = leadPos >= TUNNEL_LEAD_BLEND ? 1
+        : leadPos < 0 ? 0
+            : (leadPos + 1) / (TUNNEL_LEAD_BLEND + 1);
+    const targetHalf = inLead ? maxHalf
+        : Math.max(minHalf, Math.min(maxHalf, shape.half)) * leadMix + maxHalf * (1 - leadMix);
     const half = Math.max(minHalf, Math.min(maxHalf, previousHalf + Math.max(-8, Math.min(8, targetHalf - previousHalf))));
     const previousCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
     // Tight corridors turn more slowly. This is the core feasibility rule:
@@ -1138,7 +1210,9 @@ function appendTunnelNode(w) {
     // the same time as the available space falls.
     const widthRoom = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
     const maxTurn = (3.8 + widthRoom * 5.8) * w.tune.turn;
-    let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, shape.center - previousCenter));
+    const wantCenter = inLead ? w.H * 0.5
+        : shape.center * leadMix + w.H * 0.5 * (1 - leadMix);
+    let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, wantCenter - previousCenter));
     const safeHalf = half;
     center = Math.max(safeHalf + 18, Math.min(w.H - safeHalf - 18, center));
     const node = {
@@ -1157,10 +1231,12 @@ function appendTunnelNode(w) {
         cleared: false,
     };
     t.nodes.push(node);
-    populateTunnelNode(w, node, patternPos, patternLength);
+    // nothing lives in the lead-in: no hazard, no pickup, no decision
+    if (!inLead)
+        populateTunnelNode(w, node, patternPos, patternLength);
     t.patternPos += 1;
 }
-function initTunnel(w, forcedSeed) {
+function initTunnel(w, forcedSeed, leadNodes = 0) {
     w.tunnel = {
         nodes: [], hazards: [], scoreFloat: 0,
         multiplier: 1, bestMultiplier: 1, multiplierLeft: 0,
@@ -1168,6 +1244,7 @@ function initTunnel(w, forcedSeed) {
         sectionsCleared: 0, time: 0, nearMisses: 0,
         nextHazardAt: 1800, nextPickupAt: 720,
         seed: Math.max(1, Math.floor(forcedSeed ?? (Math.random() * 1000000 + 1))),
+        leadNodes: 0,
         buildSection: -1, buildPattern: "launch", buildRegion: 0,
         patternPos: 0, patternLength: 0,
         patternStartCenter: w.H * 0.5, patternStartHalf: Math.min(150, w.H * 0.27),
@@ -1178,6 +1255,16 @@ function initTunnel(w, forcedSeed) {
         banner: `${TUNNEL_REGION_NAMES[0]} · ${TUNNEL_PATTERN_NAMES.launch}`,
         bannerKind: "region", bannerLeft: 2.8, nextMilestone: 50,
     };
+    w.tunnel.leadNodes = leadNodes;
+    // Push the first hazard and pickup past the lead-in as well. Both are
+    // DISTANCE thresholds, and a wormhole entry jumps w.distance to as much as
+    // 30,000 - so the stock 1800/720 were already long behind the pilot and
+    // the corridor started armed.
+    if (leadNodes > 0) {
+        const room = leadNodes * TUNNEL_STEP;
+        w.tunnel.nextHazardAt = w.distance + room;
+        w.tunnel.nextPickupAt = w.distance + room * 0.6;
+    }
     while (w.tunnel.nodes.length < Math.ceil((w.W + 360) / TUNNEL_STEP) + 2)
         appendTunnelNode(w);
     w.squirrel.y = w.H * 0.5;
@@ -1262,12 +1349,14 @@ function enterWormhole(w, save) {
     const shields = w.shieldCharges;
     w.wormLeft = WORM_TRIP_SECONDS;
     w.flight = "tunnel";
-    initTunnel(w, undefined);
+    // distance first: initTunnel arms the hazard and pickup thresholds off it,
+    // and a wormhole entry jumps it by up to 30,000
+    w.distance = wormEntryDistance(carried);
+    initTunnel(w, undefined, TUNNEL_LEAD_NODES);
     // initTunnel clears the pilot's shields, because a Wormhole Run of its
     // own has none. This is a DETOUR inside a run, so what the pilot was
     // carrying goes with them.
     w.shieldCharges = shields;
-    w.distance = wormEntryDistance(carried);
     w.tunnel.scoreFloat = carried;
     w.score = carried;
     // the corridor is flown upright: Lost in Space's lean belongs to the
@@ -1306,6 +1395,7 @@ function exitWormhole(w) {
     w.prevMirror = hold.prevMirror;
     w.particles = [];
     w.tunnelHeld = false;
+    w.tunnelDragY = null;
     // a beat of grace on the way out: the pilot has been flying a corridor
     // and is being handed a gate mouth back
     w.absorbGrace = Math.max(w.absorbGrace, 1.2);
@@ -1339,12 +1429,32 @@ function updateTunnel(w, save, simDt, realDt) {
     // left at 1.00 is bit-for-bit the flight that shipped
     const vLo = WORMHOLE_MIN_VY * w.tune.vcap;
     const vHi = WORMHOLE_MAX_VY * w.tune.vcap;
-    w.squirrel.vy = IS_BETA
-        ? Math.max(vLo, Math.min(vHi, w.squirrel.vy
+    const control = tunnelControlOf(save);
+    w.tunnelControl = control;
+    if (control === 2) {
+        // SLIDE AND HOLD: the pilot is a rate-limited FOLLOWER, not an
+        // accelerating body, which is the whole reason Hyper Run's tunnel reads
+        // as steering rather than as flying. The cap is a traversal time, so it
+        // feels the same on a phone and on a tablet. vy is kept honest purely so
+        // the pose and the tail still lean into the movement.
+        const step = (w.H / WORMHOLE_DRAG_TRAVERSAL) * simDt * w.tune.lift;
+        const prevY = w.squirrel.y;
+        if (w.tunnelDragY !== null) {
+            const d = w.tunnelDragY - w.squirrel.y;
+            w.squirrel.y += Math.max(-step, Math.min(step, d));
+        }
+        w.squirrel.vy = simDt > 0 ? (w.squirrel.y - prevY) / simDt : 0;
+    }
+    else if (control === 1) {
+        w.squirrel.vy = Math.max(vLo, Math.min(vHi, w.squirrel.vy
             + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL * w.tune.lift
-                : WORMHOLE_RELEASE_ACCEL * w.tune.fall) * simDt))
-        : Math.min(vHi, w.squirrel.vy + gravOf(save, w) * simDt);
-    w.squirrel.y += w.squirrel.vy * simDt;
+                : WORMHOLE_RELEASE_ACCEL * w.tune.fall) * simDt));
+        w.squirrel.y += w.squirrel.vy * simDt;
+    }
+    else {
+        w.squirrel.vy = Math.min(vHi, w.squirrel.vy + gravOf(save, w) * simDt);
+        w.squirrel.y += w.squirrel.vy * simDt;
+    }
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
     const move = w.speed * simDt;
     w.distance += move;

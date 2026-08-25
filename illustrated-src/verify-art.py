@@ -73,6 +73,16 @@ BASE_SUIT_IDS = (
 BASE_HELMET_SCALE_MIN = 0.235
 BASE_HELMET_SCALE_MAX = 0.243
 BASE_HELMET_SCALE_SPREAD_MAX = 0.005
+# Two base suits are not painted to the family's proportions, and holding
+# them to the family's scale put a helmet on them a size too big - the glass
+# swallowed the head and cut into the body. Robo is a compact head on bulky
+# armour; Big Booty is the joke in the name. This audit divides by the whole
+# CHARACTER's bounding box, which is the right yardstick only while every
+# suit shares a head-to-body ratio, so these two carry the owner's measured
+# scale instead. Held to +/-5%, so a typo here is still caught - they are
+# calibrated, not exempt.
+OFF_FAMILY_HELMET_SCALES = {"robo": 0.2011, "bigbooty": 0.1872}
+OFF_FAMILY_HELMET_TOLERANCE = 0.05
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -551,10 +561,17 @@ def verify_base_helmet_scale(qa: QA) -> None:
     if problems:
         qa.fail("base helmet scale contract\n" + "\n".join(problems))
         return
+    off = []
+    for suit, want in OFF_FAMILY_HELMET_SCALES.items():
+        got = scales.pop(suit, None)
+        if got is None:
+            continue
+        if abs(got - want) / want > OFF_FAMILY_HELMET_TOLERANCE:
+            off.append(f"{suit} {got:.4f} (calibrated {want:.4f})")
     low = min(scales.values())
     high = max(scales.values())
     spread = high - low
-    outliers = [
+    outliers = off + [
         f"{suit} {scale:.4f}"
         for suit, scale in scales.items()
         if scale < BASE_HELMET_SCALE_MIN or scale > BASE_HELMET_SCALE_MAX
@@ -567,8 +584,9 @@ def verify_base_helmet_scale(qa: QA) -> None:
         )
         return
     qa.ok(
-        "base helmet display scale harmonized "
-        f"({low:.4f}-{high:.4f}, {spread / low * 100:.1f}% spread)"
+        f"base helmet display scale harmonized across {len(scales)} family suits "
+        f"({low:.4f}-{high:.4f}, {spread / low * 100:.1f}% spread), "
+        f"{len(OFF_FAMILY_HELMET_SCALES)} calibrated off-family"
     )
 
 
@@ -690,6 +708,143 @@ def verify_lazy_banks(qa: QA) -> None:
         qa.ok("heavy rosters stay off the boot load, and the sweep walks both")
 
 
+# Classes the UI attaches deliberately WITHOUT styling them: semantic hooks
+# that ride alongside a styled companion class. Every entry is a decision,
+# not an accident - that is the point of listing them here.
+UNSTYLED_HOOKS = {
+    "ac-raceobjective",   # modifier on ac-racebriefblock; no look of its own
+}
+
+
+def verify_ui_classes(qa: QA) -> None:
+    """Every class the UI creates must be styled in BOTH twins.
+
+    This is the check that would have caught a styled element shipped with
+    its CSS in only one of the two hand-edited pages. The failure is
+    completely silent: the element renders, the text is there, and the
+    class simply does nothing - so on one page a pulsing gold reward chip
+    is a line of plain 10px body text and nothing anywhere complains.
+    Reading the source cannot catch it either, because the source that is
+    wrong is the page you are not looking at.
+    """
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    wanted: set[str] = set()
+    for m in re.finditer(r'\bel\(\s*"[a-z0-9]+"\s*,\s*"([^"]*)"', ui):
+        wanted |= set(m.group(1).split())
+    for m in re.finditer(r'classList\.(?:add|toggle|remove)\(\s*"([^"]*)"', ui):
+        wanted |= set(m.group(1).split())
+    wanted = {c for c in wanted if c.startswith("ac-")} - UNSTYLED_HOOKS
+
+    problems: list[str] = []
+    for page in ("docs/index.html", "sandbox_assets/index.html"):
+        text = (ROOT / page).read_text(encoding="utf8")
+        gone = sorted(
+            c for c in wanted
+            if not re.search(r"\." + re.escape(c) + r"(?![\w-])", text))
+        if gone:
+            problems.append(f"{page} styles none of: {', '.join(gone)}")
+    if problems:
+        qa.fail("UI classes: " + "; ".join(problems))
+    else:
+        qa.ok(f"all {len(wanted)} UI classes are styled in both pages")
+
+
+def verify_card_states(qa: QA) -> None:
+    """A free, revealed, unowned suit or helmet must ASK to be collected.
+
+    "EARNED" named the past and asked for nothing, on a card whose only
+    job is to be tapped - the tap is the collection. The wording is the
+    feature here, so it is asserted: no bare EARNED state survives, and
+    the collect chip is still wired to both shelves.
+    """
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    # Strip comments first: this file EXPLAINS why "EARNED" was retired, and
+    # a guard that trips over its own rationale teaches people to delete the
+    # rationale.
+    code = re.sub(r"/\*.*?\*/", "", ui, flags=re.S)
+    code = re.sub(r"^\s*//.*$", "", code, flags=re.M)
+    problems: list[str] = []
+    # "EARNED BY FLYING" is a LOCKED pal's hint, not a state - leave it be.
+    for m in re.finditer(r'"EARNED(?! BY FLYING)[^"]*"', code):
+        problems.append(f'the bare state {m.group(0)} is back on a card')
+    if 'function collectTag' not in ui:
+        problems.append("collectTag is gone, so no card can ask to be collected")
+    if ui.count("b.append(collectTag());") < 2:
+        problems.append("only one shelf offers the collect chip; suits and "
+                        "helmets both have free unclaimed cards")
+    if problems:
+        qa.fail("card states: " + "; ".join(problems))
+    else:
+        qa.ok("free unclaimed suits and helmets ask to be collected")
+
+
+def verify_beta_art_gates(qa: QA) -> None:
+    """A suit sold on production must have its ART on production.
+
+    This is the check that would have caught Cyber. It shipped beta-only,
+    so its rig and its nine-frame glide banks sat inside `IS_BETA ? ... :`
+    in art.ts - correct at the time. Then the shop overhaul put Cyber in
+    two bundles, which are the production purchase path, and nothing
+    connected the two facts. A pilot could buy the suit on acornaut.app and
+    fly a flat sticker, while the beta page flew the animation: no error,
+    no missing file, no failing test, and the art directory full of frames
+    the production build would never ask for.
+
+    So the rule is asserted instead of remembered: every suit reachable
+    without the beta flag - sold in a bundle, or hung off a star gate -
+    must have its art wired without the beta flag too.
+    """
+    art = (ROOT / "illustrated-src/game/art.ts").read_text(encoding="utf8")
+    cat = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
+
+    # what art.ts hides behind IS_BETA, per bank table
+    gated: dict[str, set[str]] = {}
+    # The 16-frame rollout is finished, so TAP_BANKS joins the motion floor:
+    # a live suit left out of it silently falls back to the universal rig,
+    # whose tap squashes the body instead of playing painted poses. The only
+    # suits that may sit in a beta arm are the ones whose SUIT is beta-gated
+    # in catalog.ts - the pair has to move together or the art goes missing
+    # exactly the way Cyber's did.
+    for table in ("RIGGED_SUITS", "ASC_BANKS", "DESC_BANKS", "TAP_BANKS",
+                  "BOUNCE_BANKS", "TAIL_TAP_BANKS"):
+        i = art.find(f"const {table}")
+        if i < 0:
+            continue
+        # bound the slice to THIS declaration: everything up to the next
+        # top-level const, so one table's beta block is never read as
+        # another's
+        seg = art[i:i + 2000]
+        nxt = seg.find("\nconst ", 1)
+        if nxt > 0:
+            seg = seg[:nxt]
+        for m in re.finditer(r"IS_BETA \? [\[{](.*?)[\]}] :", seg, re.S):
+            ids = set(re.findall(r'"([a-z]+)"', m.group(1)))
+            ids |= set(re.findall(r"^\s*([a-z]+):", m.group(1), re.M))
+            gated.setdefault(table, set()).update(ids)
+
+    # What a production pilot can reach = every suit that SURVIVES the
+    # `if (!IS_BETA) SUITS.splice(...)` strip, i.e. every suit not carrying
+    # `beta: true`. That is the honest denominator: a beta-gated suit does
+    # not exist on the live page, so gating its art with it is correct.
+    suits = re.search(r"export const SUITS[^\n]*\n(.*?)^\];", cat, re.S | re.M)
+    reachable = set()
+    if suits:
+        for line in suits.group(1).splitlines():
+            m = re.search(r'\{ id: "([a-z]+)"', line)
+            if m and "beta: true" not in line:
+                reachable.add(m.group(1))
+
+    problems: list[str] = []
+    for table, ids in gated.items():
+        for sid in sorted(ids & reachable):
+            problems.append(f"{sid} is reachable on production but its "
+                            f"{table} entry is behind IS_BETA")
+    if problems:
+        qa.fail("beta art gates: " + "; ".join(problems))
+    else:
+        qa.ok("every production-reachable suit has its art off the beta flag")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -701,6 +856,9 @@ def main() -> int:
     if pals:
         verify_pal_bounds(qa, pals)
     verify_lazy_banks(qa)
+    verify_ui_classes(qa)
+    verify_beta_art_gates(qa)
+    verify_card_states(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     run_edge_audit(qa)

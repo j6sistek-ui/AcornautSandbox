@@ -1,10 +1,10 @@
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=144";
 import { sfx, unlockAudio, music } from "./audio.js?v=144";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, cleanTune, freshTune, TUNE_DIALS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, cleanTune, cleanTunnelControl, freshTune, TUNE_DIALS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
 import { drawHud, drawWorld } from "./draw.js?v=144";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=144";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=144";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=144";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, setTunnelHeld, setTunnelDrag, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=144";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=144";
 import { raceViewport } from "./race-viewport.js?v=144";
 export async function createEngine(canvas) {
@@ -62,7 +62,7 @@ export async function createEngine(canvas) {
         },
         stop() {
             cancelRaceControls();
-            setTunnelHeld(world, false);
+            setTunnelHeld(world, save, false);
             swipe = null;
             running = false;
             cancelAnimationFrame(raf);
@@ -140,7 +140,7 @@ export async function createEngine(canvas) {
         open(s) {
             if (s !== "play") {
                 cancelRaceControls();
-                setTunnelHeld(world, false);
+                setTunnelHeld(world, save, false);
                 swipe = null;
                 // Stars are written by the sim, which the engine does not observe.
                 // Every route back out of a run passes through here, so this is the
@@ -205,6 +205,16 @@ export async function createEngine(canvas) {
             notify();
             return v;
         },
+        setTunnelControl(n) {
+            save.tunnelControl = cleanTunnelControl(n);
+            // A control change mid-corridor must not leave the old one latched:
+            // a held finger under hold-to-rise becomes a stuck climb under tap.
+            world.tunnelHeld = false;
+            world.tunnelDragY = null;
+            world.tunnelControl = cleanTunnelControl(n);
+            writeSave(save);
+            notify();
+        },
         setShelfGrid(on) {
             save.shelfGrid = !!on;
             writeSave(save);
@@ -257,7 +267,7 @@ export async function createEngine(canvas) {
         },
         pause() {
             cancelRaceControls();
-            setTunnelHeld(world, false);
+            setTunnelHeld(world, save, false);
             swipe = null;
             // A race pause discards the incomplete presentation-frame remainder.
             // Resume starts from the next whole 60 Hz authority step, so focus loss
@@ -727,7 +737,14 @@ export async function createEngine(canvas) {
             return;
         }
         swipe = { y0: p.y, t0: performance.now(), fired: false };
-        const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
+        // SLIDE AND HOLD grabs the corridor rather than flapping in it. It
+        // answers first, and returns false anywhere it does not apply, so hold
+        // and then the classic tap still fall through in order.
+        if (setTunnelDrag(world, save, pos(e).y)) {
+            notify();
+            return;
+        }
+        const ev = setTunnelHeld(world, save, true) ? "flap" : flap(world, save);
         if (ev === "flap")
             sfx.flap();
         if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
@@ -751,6 +768,9 @@ export async function createEngine(canvas) {
             }
             return;
         }
+        if (world.tunnelDragY !== null && world.screen === "play"
+            && setTunnelDrag(world, save, pos(e).y))
+            return;
         if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
             return;
         const p = pos(e);
@@ -776,7 +796,8 @@ export async function createEngine(canvas) {
         }
         if (world.race)
             return;
-        setTunnelHeld(world, false);
+        setTunnelDrag(world, save, null);
+        setTunnelHeld(world, save, false);
         swipe = null;
     };
     canvas.addEventListener("pointerup", end);
@@ -837,7 +858,7 @@ export async function createEngine(canvas) {
                             : pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
                 }
                 else {
-                    const ev = setTunnelHeld(world, true) ? "flap" : flap(world, save);
+                    const ev = setTunnelHeld(world, save, true) ? "flap" : flap(world, save);
                     if (ev === "flap")
                         sfx.flap();
                 }
@@ -876,7 +897,7 @@ export async function createEngine(canvas) {
                 applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
             }
             else if (!world.race)
-                setTunnelHeld(world, false);
+                setTunnelHeld(world, save, false);
         }
         if (e.code === "ArrowDown") {
             if (raceResizeKeyboardReleasePending === "keyboard-drop") {
@@ -894,7 +915,7 @@ export async function createEngine(canvas) {
             return;
         }
         cancelRaceControls();
-        setTunnelHeld(world, false);
+        setTunnelHeld(world, save, false);
         swipe = null;
     });
     document.addEventListener("visibilitychange", () => {
@@ -904,7 +925,7 @@ export async function createEngine(canvas) {
                 return;
             }
             cancelRaceControls();
-            setTunnelHeld(world, false);
+            setTunnelHeld(world, save, false);
             swipe = null;
         }
     });

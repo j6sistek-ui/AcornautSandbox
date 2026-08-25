@@ -1,4 +1,4 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=144";
 import { drawSprite as drawSpriteOn } from "./art.js?v=144";
 import { createEngine } from "./engine.js?v=144";
@@ -187,6 +187,23 @@ export async function bootStandalone(root) {
             // multiplier on the shipped constant, so 1.00 is exactly the flight
             // that ships and a finding reports as "0.70 on lift".
             if (TUNE_PANEL && engine.world.flight === "tunnel") {
+                // THE CONTROL COMES FIRST, above the dials, because it is the thing
+                // that decides whether the dials mean anything. Dropping out of Lost
+                // in Space into a corridor that answers to a different verb is what
+                // kills a run before the pilot has read the screen, so all three are
+                // here to be flown back to back.
+                if (IS_BETA) {
+                    const cur = engine.save.tunnelControl;
+                    sheet.append(el("p", "ac-sub ac-tunehead", "WORMHOLE CONTROL"));
+                    const bar = el("div", "ac-ctlbar");
+                    TUNNEL_CONTROLS.forEach(([name, hint], i) => {
+                        const b = el("button", i === cur ? "ac-ctlopt on" : "ac-ctlopt");
+                        b.append(el("b", "", name), el("i", "", hint));
+                        b.onclick = () => { engine.setTunnelControl(i); render(); };
+                        bar.append(b);
+                    });
+                    sheet.append(bar);
+                }
                 const t = engine.save.tune;
                 const off = TUNE_DIALS.filter((d) => Math.abs(t[d.id] - 1) > 1e-6).length;
                 sheet.append(el("p", "ac-sub ac-tunehead", off ? `FLIGHT DIALS \u00b7 ${off} CHANGED` : "FLIGHT DIALS"));
@@ -506,6 +523,15 @@ export async function bootStandalone(root) {
         const w = el("span", "ac-costtag");
         w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
         return w;
+    }
+    /** The one card "state" that was never a state. A revealed, unowned,
+     *  free suit or helmet is a reward sitting there UNCLAIMED - the tap
+     *  that reads as "equip" everywhere else is the collection itself.
+     *  "EARNED" described the past and asked for nothing; this says what
+     *  the tap does, and pulses so the eye finds it in a full shelf. It
+     *  leaves the fused name text node so it can carry its own type. */
+    function collectTag() {
+        return el("span", "ac-collect", "Collect Reward");
     }
     /** Sort key for a shelf. Owned first, then acorn prices ascending, then
      *  star gates ascending far above them - a star gate is a different kind
@@ -1481,10 +1507,13 @@ export async function bootStandalone(root) {
                     // reads as a score, and a free helmet rendered the word "0".
                     // State stays in the text node; a real price becomes its own
                     // element so it can wear the acorn it is denominated in.
+                    const claim = !premium && open && !owned && h.cost <= 0;
                     const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
                         : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
-                            : owned ? "OWNED" : h.cost > 0 ? "" : "EARNED";
+                            : owned ? "OWNED" : "";
                     b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+                    if (claim)
+                        b.append(collectTag());
                     if (!premium && open && !owned && h.cost > 0)
                         b.append(costTag(h.cost));
                     if (premium)
@@ -1509,9 +1538,12 @@ export async function bootStandalone(root) {
                 const open = suitRevealed(s, u.id);
                 const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
+                const claim = !premium && open && !owned && u.cost <= 0;
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
-                        : owned ? "OWNED" : u.cost === 0 ? "EARNED" : ""}`));
+                        : owned ? "OWNED" : ""}`));
+                if (claim)
+                    b.append(collectTag());
                 if (!premium && open && !owned && u.cost > 0)
                     b.append(costTag(u.cost));
                 // a fixed head takes no helmet; the card says so up front
@@ -1587,7 +1619,10 @@ export async function bootStandalone(root) {
                 c.setAttribute("aria-label", `${t.name} trail preview`);
                 if (ctx)
                     paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
-                b.append(c, document.createTextNode(`${t.name}\n${open ? (premium ? "OWNED" : "EARNED")
+                // A trail has no unclaimed state: unlocking one IS owning it, and
+                // the tap only ever equips. "EARNED" was OWNED wearing the wrong
+                // word, so it says OWNED - there is no reward here to collect.
+                b.append(c, document.createTextNode(`${t.name}\n${open ? "OWNED"
                     : premium ? "PREMIUM"
                         : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
                 if (premium)
