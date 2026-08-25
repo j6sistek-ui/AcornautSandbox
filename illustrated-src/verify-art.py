@@ -944,6 +944,93 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
+# Suits that ship a tap bank a motion bank has already made unreachable.
+# Both are pre-existing and both are waiting on a decision, so they are
+# recorded here rather than failing the build - but a NEW suit that does it
+# still fails, which is the point.
+MOTION_TAP_OVERLAP = {
+    "flight": "616 KB that loads and never draws. Harmless, purely wasted; "
+              "drop it when the folder is next rewritten.",
+    "eclipse": "1.5 MB, and tied to the open question of whether Eclipse keeps "
+               "its asc/desc experiment at all. Resolving that resolves this.",
+}
+
+
+def verify_motion_banks(qa: QA) -> None:
+    """A velocity-indexed pose bank is complete and its head holds still.
+
+    This is the tier MOTION_SPEC.md makes the standard, and it has two
+    failure modes that both pass a casual look:
+
+      * A MISSING DOME ANCHOR. paintDome returns silently on a key it does
+        not have, so the fault is not a drifting helmet - it is NO helmet,
+        on that one pose, at that one attitude. On a contact sheet of eight
+        frames it reads as "the climb frames look bare", if it reads at all.
+      * A HEAD THAT CHANGES SIZE across the bank. One scale fits the helmet
+        to the head, so a bank whose head grows and shrinks makes the dome
+        breathe against the face along the ramp. Flight holds 33px on all
+        eight - 0.0% spread - which is what makes any of the 20-odd helmets
+        sit correctly at every attitude.
+
+    Also catches the waste: a suit with a motion bank can never reach a tap
+    bank, because fullMotion is tested first and has no time gate.
+    """
+    draw = (ROOT / "illustrated-src/game/draw.ts").read_text(encoding="utf8")
+    art = (ROOT / "illustrated-src/game/art.ts").read_text(encoding="utf8")
+    dome = {k: [float(x) for x in v.split(",")]
+            for k, v in re.findall(r'"([a-z]+-(?:asc|desc)-\d+)":\s*\[([^\]]+)\]', draw)}
+
+    def banks(name: str) -> dict[str, int]:
+        m = re.search(name + r"[^{]*\{([^}]*)\}", art, re.S)
+        if not m:
+            return {}
+        return {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", m.group(1))}
+
+    asc, desc, tap = banks("ASC_BANKS"), banks("DESC_BANKS"), banks("TAP_BANKS")
+    # A suit that wears its own head never calls paintDome at all, so it has
+    # no anchors to be missing. Cyber is the case: nine ascent and nine
+    # descent frames, no DOME keys, and correct.
+    catalog = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
+    own_head = {m.group(1) for m in re.finditer(
+        r'\{\s*id:\s*"(\w+)"[^}]*?(?:ownHead|cat):\s*true', catalog)}
+    problems: list[str] = []
+    checked = 0
+    for suit in sorted(set(asc) & set(desc)):
+        checked += 1
+        fixed_helmet = suit in own_head
+        radii: list[float] = []
+        for kind, n in (("asc", asc[suit]), ("desc", desc[suit])):
+            for i in range(1, n + 1):
+                key = f"{suit}-{kind}-{i}"
+                png = ROOT / f"docs/art/suits/{key}.png"
+                if not png.exists():
+                    problems.append(f"{key}.png is missing but the bank declares it")
+                    continue
+                if key not in dome:
+                    if not fixed_helmet:
+                        problems.append(f"{key} has no DOME anchor - that pose draws "
+                                        f"NO helmet at all, silently")
+                    continue
+                radii.append(dome[key][2])
+        if len(radii) > 1:
+            spread = (max(radii) - min(radii)) / (sum(radii) / len(radii))
+            if spread > 0.04:
+                problems.append(f"{suit}: head radius swings {min(radii):.0f}-"
+                                f"{max(radii):.0f} across its bank ({spread * 100:.1f}%) "
+                                f"- the helmet will breathe along the ramp")
+        if suit in tap and suit not in MOTION_TAP_OVERLAP:
+            problems.append(f"{suit} ships BOTH a motion bank and a {tap[suit]}-frame "
+                            f"tap bank; fullMotion wins with no time gate, so the tap "
+                            f"frames load and never draw")
+
+    if problems:
+        qa.fail("motion banks: " + "; ".join(problems))
+    else:
+        qa.ok(f"velocity-indexed pose banks complete for {checked} suits "
+              f"(anchor per frame, head radius held), {len(MOTION_TAP_OVERLAP)} "
+              f"with a declared dead tap bank")
+
+
 def verify_tuning_run_gated(qa: QA) -> None:
     """The Tuning Run cannot end and cannot reach a player.
 
@@ -1077,6 +1164,7 @@ def main() -> int:
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
+    verify_motion_banks(qa)
     verify_tuning_run_gated(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)

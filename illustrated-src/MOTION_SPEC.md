@@ -1,0 +1,121 @@
+# Acornaut motion spec — how a suit flies
+
+**The standard is Flight.** Owner ruling, 25 Aug 2026: a new model must meet
+it. A model may keep a path of its own when its *shape* is genuinely
+different — Robo and Cyber are the two — but that is a declared exception,
+not somewhere a suit drifts to because nobody wrote the standard down.
+
+Splitting a character into parts, or driving it from a motion file, was
+considered and **rejected**. It was tried before, the splits were not clean,
+and the motion was still bad. It also would not be cheaper: Flight's whole
+flight envelope is eight drawn frames, which is *half* what a tap bank costs.
+
+## Three tiers ship today
+
+| tier | how the pose is chosen | suits |
+|---|---|---|
+| **Velocity-indexed pose bank** | the sim's vertical velocity picks the frame | flight, eclipse, cyber |
+| Tap bank | a 1.0s clip on a tap clock | 20 suits |
+| Layered rig | body + tail layers, `scale(1 + p*0.052, 1 − p*0.028)` | everything else |
+
+Only the first is the standard. The difference is not frame count — Flight
+has **fewer** frames than a tap bank. It is that the pose cannot disagree
+with the physics, because the physics *is* the index. A tap bank is a fixed
+clip, and in real play the pilot taps again long before it finishes, so the
+clip is always showing a moment that is not the moment you are in. The
+layered rig is worse again: it squashes the whole body 2.8% vertically,
+which is the belly-tuck read — a sticker being pinched, not a body moving.
+
+## The contract
+
+```
+v    = smoothMotionVy(vy)          rising → −1…0,  falling → 0…1
+bank = v < 0 ? ascFrames : descFrames
+idx  = round(|v| × (bank.length − 1))
+```
+
+Draw-path priority in `paintIllustrated` is `fullBounce` → `fullMotion` →
+`fullTap`, and **`fullMotion` has no time gate**. So a suit that ships
+ascent and descent banks will never draw a tap bank, in flight or in the
+loadout preview. Flight ships 16 unreachable tap frames (616 KB); Eclipse
+ships 28 (1.5 MB). Do not author both.
+
+## What to render
+
+Everything in `ART_SPEC.md` still applies — 1408 × 1408, bare-headed, no
+ground plane, no cast shadow. On top of that:
+
+- **Three ascent frames, five descent frames.** The asymmetry is deliberate
+  and it is not about importance: the descent is where the arc is slow and
+  the eye has time to read it, so it gets the resolution.
+- **Frame 1 of each bank is the level pose.** `idx` is 0 whenever `|v|` is
+  near zero, so `asc-1` and `desc-1` are what a pilot sees at the top of
+  every arc. Measured on Flight they sit at −14.3° and +13.8° of body pitch
+  — a 28° flip as the velocity crosses zero. It reads as a flick at the
+  apex and the owner's verdict on it is *fine*, so this is a recorded
+  property, not a defect. It is also the first thing to look at if a new
+  model's motion feels wrong at the top of the arc.
+- **A monotonic pitch ramp, accelerating into the dive.** Flight, measured
+  as the principal axis of the opaque mass:
+
+  ```
+  asc    −14.3°   −16.7°   −23.1°
+  desc   +13.8°   +17.5°   +35.8°   +42.6°   +76.3°
+  ```
+
+  The climb is a narrow band; the dive opens out. A ramp that is not
+  monotonic will read as the pilot twitching, because `idx` walks it in
+  both directions continuously.
+- **Every frame is a whole character** — body, tail, head, suit, drawn
+  together. No layers, no compositing, nothing cut. This is the property
+  that makes the tier work and it is the one the parts experiment lost.
+- **The same canvas and the same character scale on all eight.** The code
+  uses `ascFrames[0].box` as the registration reference for *every* frame in
+  *both* banks, so a frame that was re-centred or re-cropped on its own will
+  jump. The content bbox is free to change — that is the pose; Flight's runs
+  125–154 wide and 120–148 tall — but the canvas and the scale are not.
+
+## The head must not change size
+
+**Flight's head radius is 33 px on all eight frames. Spread: 0.0%.**
+
+The head *centre* travels a long way — 15 px across and 50 px down, from
+`(174, 88)` on the deepest climb to `(164, 138)` on the steepest dive. The
+*radius* never moves at all.
+
+That is the whole reason any of the 20-odd helmets sits correctly at every
+attitude. A bank whose head grows and shrinks cannot be fitted by one
+scale, and the helmet will breathe against the face across the ramp.
+Measure it; do not eyeball it.
+
+## Every frame needs its own dome anchor
+
+Keyed `<id>-asc-<n>` and `<id>-desc-<n>` in `DOME`, one per frame, all eight.
+
+`paintDome` **returns silently on a missing key**. A missing anchor is not a
+drifting helmet — it is *no helmet at all*, on that pose only, which is
+exactly the kind of fault that survives a casual look at a contact sheet.
+`verify_motion_banks` fails the build on it.
+
+## Adding a motion bank
+
+```
+# 1. render the 8 poses to the ART_SPEC contract, then key and seat them
+#    in the family's framing in ONE resample, same as the still
+python3 illustrated-src/key-render.py  ...
+# 2. measure the dome anchor on EACH of the eight
+python3 illustrated-src/measure-art.py --poses <id>-asc-1..3 <id>-desc-1..5
+# 3. paste the eight printed lines into DOME in draw.ts
+# 4. add the id to ASC_BANKS / DESC_BANKS in art.ts, and do NOT add it to
+#    TAP_BANKS — a motion bank makes a tap bank unreachable
+# 5. python3 illustrated-src/verify-art.py     (verify_motion_banks)
+# 6. fly it in the loadout preview, then bump ART_VER and re-export
+```
+
+## What is not the standard
+
+- **Parts, skeletons, motion files.** Rejected 25 Aug 2026, on the evidence
+  that the splits were not clean and the result was still bad — and on the
+  arithmetic, which does not favour them at eight frames a suit.
+- **A unique path because a model was liked.** Robo and Cyber earn theirs on
+  shape. Anything else meets the standard or it is not ready.

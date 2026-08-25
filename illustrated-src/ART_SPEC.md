@@ -39,6 +39,12 @@ from a plausible-looking proxy, and the plausible proxies all lie:
   shell hides most of the sphere's edge. Measuring Sammie's visor gave 78
   where the answer was 124.
 
+## How it flies
+
+Fitting is this file. **Motion is `MOTION_SPEC.md`**, and a new model has to
+meet both: Flight's velocity-indexed pose bank is the standard, eight drawn
+frames, head radius held constant across all of them.
+
 ## What to render for a new model
 
 - **1408 × 1408**, character centred, plain flat background.
