@@ -75,6 +75,51 @@ ground plane, no cast shadow. On top of that:
   jump. The content bbox is free to change — that is the pose; Flight's runs
   125–154 wide and 120–148 tall — but the canvas and the scale are not.
 
+## The art has to CONTAIN attitude, and most of it does not
+
+This is the acceptance test that decides whether a suit can carry the
+standard at all, and it is worth measuring before rendering anything.
+
+Flight's eight frames span **99 degrees** of body pitch, from -23 climbing
+to +76 in the dive. That range IS the model - the sim picks a frame by
+vertical velocity, so if the frames do not differ in attitude there is
+nothing for velocity to pick between.
+
+Measured across every 16-frame tap bank that ships, as the principal axis
+of the opaque mass:
+
+| suit | pitch span | carries the model? |
+|---|---|---|
+| eclipse | 112° | yes |
+| volt | 76° | yes |
+| robo, bigbooty | 64° | yes |
+| **the other 24** | **16-20°** | **no** |
+
+Twenty-four of twenty-eight suits have essentially no attitude in them.
+Their tap frames are a FLAP - the body stays rigid and the tail does the
+work - which is exactly why they read as a sticker being pinched next to
+Flight. Note that Flight's own tap bank spans 18°, flat like the rest: its
+asc/desc frames are separate art, authored as attitudes rather than as a
+wing-beat.
+
+**So no amount of re-indexing converts them.** A velocity-indexed bank
+built from frames that all point the same way is still frames that all
+point the same way. Those suits need eight new attitude frames each, and
+that is the real cost of the standard - not the code.
+
+**The four with range may convert for free.** Each has at least three climb
+poses and five dive poses among its sixteen, and selecting a 3+5 ramp out
+of them produces a monotonic sequence. Worth prototyping before drawing
+anything, with the caveat that pitch is a proxy: a frame at -27° might be
+mid-wing-beat with the arms somewhere the neighbouring frame's are not, so
+a ramp selected on pitch alone can read as jitter. It needs an eye, not
+just a number.
+
+**Rule for a new model:** render the eight poses to span at least 60° of
+pitch. Under that, the bank cannot carry velocity indexing, and the money
+is better spent on a wider spread of four frames than a tight spread of
+eight. `verify_motion_banks` measures it.
+
 ## The head must not change size
 
 **Flight's head radius is 33 px on all eight frames. Spread: 0.0%.**

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections import deque
 import hashlib
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -877,6 +878,18 @@ def verify_pose_domes(qa: QA) -> None:
                             f"{','.join(map(str, missing))} - those poses fall back "
                             f"to the static anchor and the glass jumps")
         radii = {r for _, _, r in frames.values()}
+        # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
+        # velocity, so frames that all point the same way give velocity
+        # nothing to pick between - a 16-degree bank is a wing-beat wearing
+        # a ramp's clothes. Flight, the standard, spans 99 degrees. Measured
+        # across the shipping tap banks, 24 of 28 suits sit at 16-20 and
+        # cannot carry this model at all; see MOTION_SPEC.md.
+        if len(pitches) > 1:
+            span = max(pitches) - min(pitches)
+            if span < MOTION_MIN_PITCH_SPAN:
+                problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
+                                f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
+                                f"velocity indexing has nothing to pick between")
         if len(radii) > 1:
             problems.append(f"{suit}'s helmet changes size mid-gesture: radii "
                             f"{sorted(radii)}")
@@ -932,6 +945,40 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.fail("dev instruments: " + "; ".join(problems))
     else:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
+
+
+# Flight's authored ramp spans 99 degrees. Sixty is the floor at which a
+# bank still has something for velocity to choose between - below it the
+# money is better spent on a wider spread of four frames than a tight
+# spread of eight. See MOTION_SPEC.md.
+MOTION_MIN_PITCH_SPAN = 60.0
+
+
+def sprite_pitch(path: Path) -> float | None:
+    """The body's attitude, as the principal axis of its opaque mass.
+
+    A crude proxy for "which way is the character pointing", and crude is
+    fine: what is being asked is whether the frames DIFFER, not what the
+    exact angle is.
+    """
+    try:
+        from PIL import Image
+        import numpy as np
+    except Exception:
+        return None
+    try:
+        im = Image.open(path).convert("RGBA")
+    except Exception:
+        return None
+    alpha = np.array(im)[..., 3] > 24
+    ys, xs = np.nonzero(alpha)
+    if len(xs) < 50:
+        return None
+    pts = np.stack([xs - xs.mean(), ys - ys.mean()])
+    _, vec = np.linalg.eigh(np.cov(pts))
+    ax = vec[:, -1]
+    deg = math.degrees(math.atan2(ax[1], ax[0]))
+    return deg - 180 if deg > 90 else deg + 180 if deg < -90 else deg
 
 
 # Suits that ship a tap bank a motion bank has already made unreachable.
@@ -1068,6 +1115,7 @@ def verify_motion_banks(qa: QA) -> None:
         checked += 1
         fixed_helmet = suit in own_head
         radii: list[float] = []
+        pitches: list[float] = []
         for kind, n in (("asc", asc[suit]), ("desc", desc[suit])):
             for i in range(1, n + 1):
                 key = f"{suit}-{kind}-{i}"
@@ -1075,6 +1123,9 @@ def verify_motion_banks(qa: QA) -> None:
                 if not png.exists():
                     problems.append(f"{key}.png is missing but the bank declares it")
                     continue
+                p = sprite_pitch(png)
+                if p is not None:
+                    pitches.append(p)
                 if key not in dome:
                     if not fixed_helmet:
                         problems.append(f"{key} has no DOME anchor - that pose draws "
