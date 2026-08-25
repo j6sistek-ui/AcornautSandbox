@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-25 21:13 UTC";
+export const BUILD_TIME = "2026-08-25 21:21 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -541,6 +541,13 @@ export const TUNE_DIALS = [
  *  physics consume it. A dial that changes the flight has to change the
  *  autopilot too, or the panel would be reading a number nothing on
  *  screen answers to. */
+/** WHERE THE SWIPE LESSON OPENS, and how fast the pilot is carried there.
+ *  The dive has to have somewhere to go: at 0.34 there is two thirds of a
+ *  screen below, which survives a browser chrome bar and a short phone.
+ *  The lift is a scripted rate rather than an impulse because an impulse is
+ *  cancelled by a planet contact - see the note in updateWorld. */
+export const TUT_SWIPE_TOP = 0.34;
+export const TUT_SWIPE_LIFT = 620; // px per second
 export const TUNE_TEST = TUNE_PANEL;
 export const TUNE_STEP = 0.05;
 export const TUNE_DEFAULT = 1;

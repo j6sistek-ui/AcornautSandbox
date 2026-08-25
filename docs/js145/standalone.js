@@ -154,6 +154,17 @@ export async function bootStandalone(root) {
         overlay.innerHTML = "";
         if (snap.screen === "play") {
             const bar = el("div", "ac-playbar");
+            // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
+            // anyone who already knows how to play, or who hits a lesson that is
+            // not landing - and the first flight is exactly where a beginner is
+            // most likely to be stuck and least likely to know it is skippable.
+            // Skipping still hands over the suit and helmet it would have given.
+            if (engine.world.tut) {
+                const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
+                skip.setAttribute("aria-label", "Skip the first flight");
+                skip.onclick = () => engine.skipTutorial();
+                bar.append(skip);
+            }
             const pause = el("button", "ac-iconbtn", "II");
             pause.onclick = () => engine.pause();
             bar.append(pause);

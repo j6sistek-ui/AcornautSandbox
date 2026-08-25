@@ -926,6 +926,13 @@
     @keyframes ac-pulse { 0%,100% { box-shadow: 0 0 8px rgba(232,164,74,.18); } 50% { box-shadow: 0 0 18px rgba(232,164,74,.4); } }
     .ac-log.on { border-color: rgba(232,164,74,.4); background: #141b30; }
     .ac-playbar { display: flex; justify-content: flex-end; padding: 12px; }
+    /* the first flight can be left; the button sits beside pause and is
+       deliberately quiet, so it reads as an escape hatch rather than an
+       invitation to leave the lesson */
+    .ac-tutskip { font-size: 11px; padding: 8px 14px; letter-spacing: .1em;
+      align-self: center; margin-right: 8px; opacity: .75;
+      min-height: 44px; min-width: 60px; }
+    .ac-playbar { align-items: center; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
 
     /* ================= THE HUB (v85) =================

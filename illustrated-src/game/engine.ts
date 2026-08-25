@@ -12,6 +12,7 @@ import {
   lostUnlocked,
   modsUnlocked,
   loadSave,
+  grantTutorialKit,
   palUnlocked,
   startShieldUnlocked,
   starsOf,
@@ -94,6 +95,8 @@ export type Engine = {
    *  and destroys the slider the finger is still holding. The drag's end
    *  commits loudly. */
   setTune: (id: TuneId, value: number, quiet?: boolean) => number;
+  /** leave the first flight early, keeping the suit and helmet it grants */
+  skipTutorial: () => void;
   /** start a TUNING RUN: Wormhole Run that cannot end, with the dials on
    *  screen while it flies */
   flyTuning: () => void;
@@ -339,6 +342,18 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
       return v;
+    },
+    /** LEAVE THE FIRST FLIGHT, keeping everything it would have given you.
+     *  A tutorial with no exit is a trap for anyone who already knows how to
+     *  play, or who hits a lesson that is not landing - and it hands the
+     *  pilot straight to the Loadout, which is where the tutorial was
+     *  walking them anyway. */
+    skipTutorial() {
+      save.tutorialDone = true;
+      grantTutorialKit(save);
+      writeSave(save);
+      world.tut = null;
+      this.open("hangar");
     },
     flyTuning() {
       unlockAudio();
