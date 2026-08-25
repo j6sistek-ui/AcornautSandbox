@@ -32,6 +32,8 @@ import {
   planRaceCueEffects,
   resizeWorld,
   resetRun,
+  flightRecording,
+  flightMarkCount,
   resumePlay,
   setRaceInput,
   snapshot,
@@ -90,6 +92,10 @@ export type Engine = {
    *  on the next flight - which is the entire point of a pause-menu dial. */
   /** leave the first flight early, keeping the suit and helmet it grants */
   skipTutorial: () => void;
+  /** the first flight, written down: every input, when it landed, and what
+   *  the pilot was doing. Exported by the pilot, sent nowhere on its own. */
+  flightRecording: () => string;
+  flightMarks: () => number;
   /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
   setShelfGrid: (on: boolean) => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
@@ -274,6 +280,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         // still shows the streak, and the shop button carries the glow that
         // does the asking.
         if (s === "shop") claimDaily();
+        // THE GUIDE OPENS THE TAB IT IS TALKING ABOUT. The hub said "put on
+        // your new Ion suit" and the Loadout opened on HELMETS, with only a
+        // faint pulse on the SUITS pill to say so - so the instruction and
+        // the screen disagreed the moment you arrived. Reported exactly
+        // that way. Whichever step is live picks the shelf.
+        if (s === "hangar") {
+          if (save.guide === "hangar") { shopTab = "suits"; engine.shopTab = "suits"; }
+          else if (save.guide === "helmet") { shopTab = "helmets"; engine.shopTab = "helmets"; }
+        }
       }
       world.screen = s;
       if (s === "title") world.tut = null;
@@ -309,9 +324,22 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
      *  play, or who hits a lesson that is not landing - and it hands the
      *  pilot straight to the Loadout, which is where the tutorial was
      *  walking them anyway. */
+    flightRecording() {
+      return flightRecording(world);
+    },
+    flightMarks() {
+      return flightMarkCount();
+    },
     skipTutorial() {
       save.tutorialDone = true;
       grantTutorialKit(save);
+      // AND JOIN THE GUIDED PATH. Skipping used to leave guide on "pending",
+      // which is the state that means "the first flight has not finished
+      // yet" - so the walk to the Loadout never started, the shelf never
+      // knew which tab to open, and a pilot who skipped was simply dropped
+      // somewhere with no next step. The kit has just been handed over;
+      // "hangar" is the step that says go and put it on.
+      if (save.guide === "pending" || save.guide === "reward") save.guide = "hangar";
       writeSave(save);
       world.tut = null;
       this.open("hangar");
@@ -394,6 +422,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function guideStep(ev: "suit" | "helm" | "level") {
     if (ev === "suit" && save.guide === "hangar" && save.equippedSuit === GUIDE_SUIT) {
       save.guide = save.equipped === GUIDE_HELM ? "levels" : "helmet";
+      // AND MOVE THE SHELF WITH THE STEP. Equipping the suit advances the
+      // guide to the helmet, but the pilot is still standing on the SUITS
+      // shelf - so the instruction named something that was not on screen
+      // and had no target to point at. open() sets the tab on arrival; this
+      // is the same rule for a step that advances while already here.
+      if (save.guide === "helmet") { shopTab = "helmets"; engine.shopTab = "helmets"; }
     } else if (ev === "helm" && save.guide === "helmet" && save.equipped === GUIDE_HELM) {
       save.guide = "levels";
     } else if (ev === "level" && save.guide === "levels") {

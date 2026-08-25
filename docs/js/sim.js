@@ -1,4 +1,4 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
 import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
@@ -919,10 +919,12 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
     w.tut = w.race || flight === "tunnel" ? null : tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
-            retries: 0, springs: 0, apexY: 0, bounced: false }
+            retries: 0, springs: 0, apexY: 0, launched: false, bounced: false }
         : null;
-    if (w.tut)
+    if (w.tut) {
         buildTutorialCourse(w, save);
+        flightRecorderReset(w);
+    }
 }
 /** Semantic race input is tick-stamped and consumed before the next race step. */
 export function setRaceInput(w, input) {
@@ -1901,13 +1903,60 @@ export function spawnTrail(w, save, scale = 1) {
         }
     }
 }
+let flightLog = [];
+let lastTutStage = "";
+let flightT = 0;
+export function flightRecorderReset(w) {
+    flightLog = [];
+    flightT = 0;
+    lastTutStage = "";
+    mark(w, "start", "");
+}
+export function flightRecorderTick(dt) {
+    flightT += dt;
+}
+export function mark(w, kind, note = "", ignored = false) {
+    if (!w.tut && kind !== "end")
+        return;
+    if (flightLog.length > 4000)
+        return;
+    flightLog.push({
+        t: +flightT.toFixed(3),
+        kind,
+        stage: w.tut?.stage ?? "-",
+        y: Math.round(w.squirrel.y),
+        vy: Math.round(w.squirrel.vy),
+        pct: +((w.squirrel.y / Math.max(1, w.H)) * 100).toFixed(1),
+        ...(ignored ? { ignored: true } : {}),
+        ...(note ? { note } : {}),
+    });
+}
+/** The recording, as something that can be pasted into a message. */
+export function flightRecording(w) {
+    return JSON.stringify({
+        screen: { w: w.W, h: w.H },
+        gravity: PHYS.gravity,
+        flap: PHYS.flap,
+        marks: flightLog,
+    });
+}
+export function flightMarkCount() {
+    return flightLog.length;
+}
 export function flap(w, save) {
     if (w.screen === "pause")
         return "none";
     if (w.screen !== "play")
         return "none";
-    if (w.tut?.hold && w.tut.t < TUT_ARM)
+    // A REFUSED TAP IS DATA. The prompt arms after TUT_ARM, and a pilot
+    // tapping quickly lands several before it does - which is the owner's
+    // first note, that fast tapping before "tap to fly" may be moving the
+    // start. Those taps are recorded as ignored rather than dropped, so a
+    // recording shows them.
+    if (w.tut?.hold && w.tut.t < TUT_ARM) {
+        mark(w, "tap", `too early by ${(TUT_ARM - w.tut.t).toFixed(2)}s`, true);
         return "none";
+    }
     if (w.tut?.hold && w.tut.stage === "swipe") {
         w.tut.nudge = "drag downward — not a tap";
         return "none";
@@ -1932,6 +1981,7 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
+    mark(w, "tap");
     if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce"))
         return "none";
     w.run.taps += 1;
@@ -1973,6 +2023,7 @@ export function dive(w) {
     if (w.tut?.hold && w.tut.t < TUT_ARM)
         return "none";
     if (w.tut?.hold && w.tut.stage === "swipe") {
+        mark(w, "dive");
         w.tut.hold = false;
         w.tut.stage = "dive";
         w.tut.t = 0;
@@ -2074,6 +2125,14 @@ function circleHit(x1, y1, r1, x2, y2, r2) {
     return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
 }
 function bounceOff(w, save, px, py) {
+    // THE TEACHING LAUNCH IS NOT INTERRUPTIBLE. The tutorial's bounce stage
+    // fires one arc that peaks exactly where the swipe lesson is taught, and
+    // this function overwrites vy on contact - which is precisely how that
+    // arc kept being cancelled, leaving the pilot on the floor being told to
+    // dive. The pilot is mid-scripted-flight here; a second contact is not a
+    // new event, it is the same planet they are leaving.
+    if (w.tut?.stage === "bounce" && w.tut.launched)
+        return;
     const sx = w.W * PHYS.squirrelX;
     const sy = w.squirrel.y;
     let dx = sx - px;
@@ -2369,6 +2428,7 @@ function die(w, save) {
     if (w.wormHold)
         exitWormhole(w);
     if (w.tut && w.tut.stage !== "free") {
+        mark(w, "rescue");
         absorb(w);
         w.shieldCharges = Math.max(w.shieldCharges, 1);
         return "shield";
@@ -2519,6 +2579,13 @@ export function updateWorld(w, save, dt) {
     }
     if (w.tut) {
         w.tut.t += dt;
+        flightRecorderTick(dt);
+        // one line rather than a mark at every transition - the stage machine has
+        // a dozen of them and any one added later would be missed
+        if (w.tut.stage !== lastTutStage) {
+            lastTutStage = w.tut.stage;
+            mark(w, "stage");
+        }
         if (w.tut.stage === "intro" && w.tut.t > 0.55) {
             w.tut.stage = "tap";
             w.tut.hold = true;
@@ -2548,51 +2615,44 @@ export function updateWorld(w, save, dt) {
             }
         }
         if (w.tut.stage === "bounce") {
-            // THE SWIPE LESSON NEEDS A SCREEN TO DIVE INTO, and it has to get one
-            // every time, not most of the time.
+            // ONE ARC, FLOWN BY THE GAME'S OWN PHYSICS.
             //
-            // This used to re-fire the launch - vy = -640, up to five times - and
-            // judge the result on `vy > -60`. That test is satisfied INSTANTLY by
-            // a planet contact, which zeroes vy on touch. Traced: the pilot lands
-            // on a planet, the next frame springs and is cancelled, and all five
-            // springs burn in FOUR FRAMES having moved the pilot nothing. The
-            // lesson then opened at 67% of the screen telling a beginner to dive,
-            // the dive met the floor, and the tutorial rescued them in a loop.
-            // Whether it happened at all depended on a planet being underneath -
-            // which is why it struck about half the time.
+            // Every previous attempt at this scripted the pilot's POSITION - five
+            // re-fired springs, then a carry at a fixed rate - and a carry is a
+            // slide: it overrides gravity, ignores what it passes through, and
+            // reads as being teleported. Reported exactly that way.
             //
-            // Velocity is the wrong instrument, because velocity is exactly what a
-            // contact cancels. This is authored choreography, so the height is
-            // authored: carry the pilot up at a readable rate that nothing in the
-            // world can undo, and open the lesson when the room is real.
-            // BOTH DIRECTIONS. The first cut only carried the pilot UP, on the
-            // assumption that arriving too low was the whole problem. It is not:
-            // the stage is entered off a PLANET BOUNCE, which throws the pilot
-            // hard upward, so they can just as easily arrive at the ceiling - and
-            // then the lesson opened at 15% of the screen and "swipe down and make
-            // the gap" meant diving most of a screen to a gap you could barely
-            // see. Same defect, other end. The lesson opens at ONE authored
-            // height, carried there from wherever the bounce left them.
-            // NOT A SCREEN FRACTION. The first pass carried the pilot to a fixed
-            // fraction of the screen, which severed the relationship the whole
-            // stage rests on: buildTutorialCourse computes yApex - where the
-            // spring was designed to leave them - and places the recovery gate
-            // dyDive BELOW it. Park them anywhere else and the gap they are told
-            // to dive into is not under them. On a real phone that meant standing
-            // on top of the bounce planet being told to swipe down through it.
+            // So nothing is scripted except the launch, and the launch is chosen
+            // rather than guessed: the velocity whose ballistic arc PEAKS at the
+            // height the lesson is taught. From there it is ordinary flight -
+            // real gravity, real arc, the same shape a tap makes - and it arrives
+            // at the right place because the arithmetic says so, not because
+            // something dragged it there.
+            //
+            //     v = -sqrt(2 g h)   peaks exactly h above where it started
+            //
+            // bounceOff refuses to touch the pilot while this is in the air, or
+            // the planet they are leaving cancels the arc they are leaving on.
             const wantY = tutClearY(w, w.tut.apexY > 0 ? w.tut.apexY : w.H * TUT_SWIPE_TOP);
-            const dy = wantY - w.squirrel.y;
-            if (Math.abs(dy) > TUT_SWIPE_BAND) {
-                const step = TUT_SWIPE_LIFT * dt;
-                w.squirrel.y += Math.max(-step, Math.min(step, dy));
-                w.squirrel.vy = 0;
-                w.squirrel.rot = dy < 0 ? -0.22 : 0.22; // nose into the travel
-                w.tut.springs = 0;
-            }
-            else if (w.squirrel.vy > -60 || w.tut.t > 1.1) {
+            const teach = () => {
                 w.tut.stage = "swipe";
                 w.tut.hold = true;
                 w.tut.t = 0;
+            };
+            if (w.squirrel.y <= wantY + 4 && !w.tut.launched) {
+                // already at or above the lesson height: no launch needed. Let
+                // gravity bring them down to the line and teach there.
+                if (w.squirrel.y >= wantY - 4 || w.tut.t > 2.2)
+                    teach();
+            }
+            else if (!w.tut.launched) {
+                w.tut.launched = true;
+                const drop = Math.max(0, w.squirrel.y - wantY);
+                w.squirrel.vy = -Math.sqrt(2 * gravOf(save, w) * drop);
+                w.tut.t = 0;
+            }
+            else if (w.squirrel.vy > -30 || w.tut.t > 2.2) {
+                teach();
             }
         }
         if (w.tut.stage === "dive" && (w.tut.gates - w.tut.gateBase >= 1 || w.tut.t > 3)) {

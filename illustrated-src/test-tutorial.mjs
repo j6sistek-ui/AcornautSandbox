@@ -154,6 +154,50 @@ for (const [W, H] of [[430, 932], [390, 690]]) {
     + `${(cat.TUT_SWIPE_TOP * 100).toFixed(0)}%, not a launch`);
 }
 
+// THE LAUNCH IS A FLIGHT, NOT A SLIDE.
+//
+// Reported as "the random auto shoot up to the swipe down point like
+// teleports you somewhere and it's awkward". It did: the pilot's POSITION
+// was being scripted at a fixed rate, which overrides gravity, ignores what
+// it passes through, and reads exactly like being dragged.
+//
+// Nothing is scripted now except the launch velocity, chosen so its
+// ballistic arc peaks at the lesson height. So the test is not "did it
+// arrive" - it is "did it FLY there": vy has to sweep, and the measured
+// acceleration has to be the game's own gravity.
+{
+  const w = sim.makeWorld(430, 932);
+  const s = save.loadSave();
+  s.tutorialDone = false;
+  sim.resetRun(w, s, "fly", true);
+  w.ready = false;
+  const trace = [];
+  let stage = "";
+  for (let i = 0; i < 60 * 90; i++) {
+    const t = w.tut;
+    if (t?.hold && t.t > cat.TUT_ARM + 0.25 && t.stage !== "swipe") sim.flap(w, s);
+    sim.updateWorld(w, s, 1 / 60);
+    if (!w.tut) break;
+    if (w.tut.stage !== stage) { stage = w.tut.stage; if (stage === "bounce") trace.length = 0; }
+    if (stage === "bounce") trace.push({ y: w.squirrel.y, vy: w.squirrel.vy });
+    if (stage === "swipe") break;
+  }
+  ok(trace.length > 8, `the launch lasted ${trace.length} frames - too short to be a flight`);
+  if (trace.length > 8) {
+    const vys = trace.map((t) => t.vy);
+    const sweep = Math.max(...vys) - Math.min(...vys);
+    ok(sweep > 300,
+      `vy only moved ${sweep.toFixed(0)} across the launch - a carry pins it near 0, `
+      + `a flight sweeps it`);
+    const dys = trace.slice(1).map((t, i) => t.y - trace[i].y);
+    const accel = dys.slice(1).map((d, i) => (d - dys[i]) * 3600);
+    const mean = accel.reduce((a, b) => a + b, 0) / accel.length;
+    ok(Math.abs(mean - cat.PHYS.gravity) / cat.PHYS.gravity < 0.15,
+      `the launch accelerates at ${mean.toFixed(0)} px/s^2 against gravity `
+      + `${cat.PHYS.gravity} - it is being moved at a scripted rate, not flown`);
+  }
+}
+
 if (fail.length) {
   console.error("TUTORIAL FAILURES:");
   for (const f of fail) console.error("  - " + f);
