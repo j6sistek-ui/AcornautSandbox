@@ -19,7 +19,7 @@ import {
   WORMHOLE_DRAG_TRAVERSAL,
 } from "./control-constants";
 
-export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "play" | "dead" | "pause" | "lvldone";
+export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "scores" | "play" | "dead" | "pause" | "lvldone";
 export type FlightMode = "fly" | "deep" | "lost" | "arcade" | "tunnel";
 export type TutStage =
   | "intro"

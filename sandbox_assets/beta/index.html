@@ -1291,6 +1291,30 @@
     .ac-featurebuy svg { fill: #241500; }
     .ac-featurebuy .ac-wasprice { flex: none; margin: 0; color: rgba(36,21,0,.6); }
     .ac-tileprice.locked { color: #ffb45c; letter-spacing: .06em; font-size: 9px; }
+    /* ---- THE LEADERBOARD ---- */
+    .ac-boardhero { display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 6px 0 10px; }
+    .ac-boardhero img { width: 132px; height: 132px; object-fit: contain;
+      filter: drop-shadow(0 10px 22px rgba(255, 201, 77, .22)); }
+    .ac-boardtag { font: 800 10px/1 Figtree, sans-serif; letter-spacing: .14em;
+      text-transform: uppercase; color: #8b95b0; }
+    .ac-boardlist { display: flex; flex-direction: column; gap: 6px; }
+    .ac-boardrow { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 14px; background: rgba(12,18,38,.6); border: 1px solid #2a3454; }
+    /* the podium colours the art is already promising: gold, silver, bronze */
+    .ac-boardrow.ac-medal1 { border-color: rgba(255,201,77,.55); background: rgba(255,201,77,.10); }
+    .ac-boardrow.ac-medal2 { border-color: rgba(198,208,232,.45); background: rgba(198,208,232,.07); }
+    .ac-boardrow.ac-medal3 { border-color: rgba(214,144,74,.45); background: rgba(214,144,74,.08); }
+    .ac-boardpos { flex: none; width: 24px; text-align: center;
+      font: 900 15px/1 Fraunces, Georgia, serif; color: #8b95b0; }
+    .ac-medal1 .ac-boardpos { color: #ffd76a; }
+    .ac-medal2 .ac-boardpos { color: #dbe3f5; }
+    .ac-medal3 .ac-boardpos { color: #e0a06a; }
+    .ac-boardtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .ac-boardtxt b { font: 800 14px/1.2 Figtree, sans-serif; color: #f3efe4; }
+    .ac-boardtxt .ac-sub { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
+    .ac-boardscore { flex: none; font: 900 17px/1 Figtree, sans-serif; color: #ffd76a;
+      font-variant-numeric: tabular-nums; }
     /* ---- PREPRODUCTION: what the cycle is holding back ---- */
     .ac-devroll { flex: none; border-top: 1px solid rgba(170,140,240,.28);
       background: rgba(10,6,24,.96); }
