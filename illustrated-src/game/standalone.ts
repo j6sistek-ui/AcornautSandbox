@@ -629,8 +629,13 @@ export async function bootStandalone(root: HTMLElement) {
   // it belongs to no tab and must not light one up.
   // The coach: one line of guidance, pinned above the tab bar, that only
   // exists while the post-tutorial path is live. It never blocks a tap.
-  function coach(text: string) {
-    return el("div", "ac-coach", text);
+  function coach(text: string, inline = false) {
+    // The coach floats over the screen by default, which is right on the
+    // hangar and the level sheet - there is nothing under it that matters.
+    // On the hub it was landing directly on the STAR CHART bar it points at,
+    // covering that bar's own progress line: the instruction hid its target.
+    // Inline puts it in the flow instead, above what it is talking about.
+    return el("div", inline ? "ac-coach ac-coach-inline" : "ac-coach", text);
   }
 
   function tabbar(active: "hangar" | "log" | "title" | "profile" | "shop" | "scores" | "none") {
@@ -963,6 +968,41 @@ export async function bootStandalone(root: HTMLElement) {
       return b;
     };
 
+    // WHILE THE GUIDE IS RUNNING, THE STEP IS THE HERO.
+    //
+    // The hub's biggest, brightest control said FREE FLIGHT - an endless
+    // mode with no progression - while a new pilot was being told to go and
+    // wear their new suit, or fly Mission 1. The instruction was a small
+    // line at the bottom and the campaign was a status strip under it, so
+    // the loudest thing on screen pointed away from the only thing the
+    // player had been asked to do. Nothing was broken; the hierarchy was
+    // simply upside down for the one pilot who most needs it right.
+    //
+    // So for the three guided states the step takes the top slot, at hero
+    // size, and FREE FLIGHT steps down for the two minutes that lasts.
+    const guiding = s.guide === "hangar" || s.guide === "helmet" || s.guide === "levels";
+    if (guiding) {
+      box.classList.add("ac-guiding");
+      const toChart = s.guide === "levels";
+      const step = el("button", "ac-hubtile t-guide ac-pulse");
+      step.append(el("span", "ac-hub-ribbon", toChart ? "NEXT \u00b7 MISSION 1" : "NEXT \u00b7 YOUR NEW GEAR"));
+      const gic = el("span", "ac-hubic");
+      if (toChart) gic.append(el("span", "ac-hub-stepstar", "\u2605"));
+      else gic.append(portraitOf(
+        HELMETS.find((h) => h.id === GUIDE_HELM) ?? helm,
+        SUITS.find((u) => u.id === GUIDE_SUIT) ?? suit, 50));
+      const gtxt = el("span", "ac-hub-launchtxt");
+      gtxt.append(
+        el("b", "", toChart ? "FLY MISSION 1" : "OPEN LOADOUT"),
+        el("span", "ac-hubsub", toChart
+          ? "Your first mission on the Star Chart"
+          : s.guide === "helmet" ? "Now put on the Ion helmet" : "Put on your new Ion suit"),
+      );
+      step.append(gic, gtxt);
+      step.onclick = () => engine.open(toChart ? "log" : "hangar");
+      tiles.append(step);
+    }
+
     // FREE FLIGHT is the endless game; missions live on the Star Chart.
     // The ribbon names the selected mode so launching is never a mystery.
     const launch = el("button", "ac-hubtile t-launch");
@@ -1028,11 +1068,11 @@ export async function bootStandalone(root: HTMLElement) {
     if (s.guide === "levels") bar.classList.add("ac-pulse");
     box.append(bar);
 
-    if (s.guide === "hangar" || s.guide === "helmet") {
-      box.append(coach("Your new gear is waiting — open LOADOUT"));
-    } else if (s.guide === "levels") {
-      box.append(coach("Mission 1 is ready — open the STAR CHART"));
-    }
+    // NO SECOND LINE. The guided step above is the instruction - it names
+    // the destination, says why, and is the thing you press. The old coach
+    // pill added a third piece of text for the same message and, being
+    // absolutely positioned, landed on top of the STAR CHART bar it was
+    // pointing at, covering that bar's own progress line.
     if (modesOpen) box.append(drawModeSheet());
     if (hyperRunOpen) {
       box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes"));

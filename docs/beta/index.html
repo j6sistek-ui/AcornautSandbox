@@ -929,6 +929,30 @@
     /* the first flight can be left; the button sits beside pause and is
        deliberately quiet, so it reads as an escape hatch rather than an
        invitation to leave the lesson */
+    /* THE GUIDED STEP. For the two minutes the guided path runs, the next
+       thing to do is the loudest thing on screen — and FREE FLIGHT, which
+       points away from it, steps down. Gold rather than blue, so the two
+       are never mistaken for each other at a glance. */
+    .ac-hubtile.t-guide { grid-column: 1 / -1; flex-direction: row;
+      justify-content: center; gap: 13px; padding: 13px 10px;
+      --m1: #f0b64a; --m2: #b8730a; --t1: #c98a1a; --t2: #6b3d05;
+      --tb: #ffd782; border-color: rgba(255, 214, 130, .85);
+      box-shadow: 0 0 0 2px rgba(255,210,130,.45), 0 0 26px rgba(230,170,60,.5),
+        0 12px 26px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.3),
+        inset 0 -3px 0 rgba(0,0,0,.28); }
+    .ac-hubtile.t-guide b { font-size: 21px; }
+    .ac-hub-stepstar { font-size: 34px; line-height: 1; color: #ffd782;
+      text-shadow: 0 0 14px rgba(255, 200, 90, .7); }
+    /* while guiding, the endless mode is present but no longer shouting */
+    .ac-guiding .ac-hubtile.t-launch { filter: saturate(.55) brightness(.78);
+      transform: scale(.985); }
+    .ac-guiding .ac-hubtile.t-launch .ac-hub-ribbon { opacity: .7; }
+    /* IN THE FLOW, not floating. The absolute coach was landing on top of
+       the STAR CHART bar it was pointing at and covering that bar's own
+       progress line — the instruction hid its target. */
+    .ac-coach.ac-coach-inline { position: static; left: auto; right: auto;
+      bottom: auto; margin: 8px 0 0; z-index: auto; }
+    body.ac-beta .ac-coach.ac-coach-inline { bottom: auto; }
     .ac-tutskip { font-size: 11px; padding: 8px 14px; letter-spacing: .1em;
       align-self: center; margin-right: 8px; opacity: .75;
       min-height: 44px; min-width: 60px; }
