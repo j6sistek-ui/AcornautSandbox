@@ -1,4 +1,4 @@
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
@@ -1514,8 +1514,8 @@ export async function bootStandalone(root: HTMLElement) {
       if (locked) {
         const note = el("div", "ac-lockednote");
         note.append(
-          el("p", "ac-lockedhead", `${suit.name} has its own head`),
-          el("p", "ac-sub", "Its head is part of the character. Equip another suit to change helmets."),
+          el("p", "ac-lockedhead", `${suit.name}: ${OWN_HEAD_LINE}`),
+          el("p", "ac-sub", "The helmet is part of the character. Equip another suit to change helmets."),
         );
         scroll.append(note);
       }
@@ -1578,7 +1578,7 @@ export async function bootStandalone(root: HTMLElement) {
         // a fixed head takes no helmet; the card says so up front
         if (wearsOwnHead(u)) {
           const nh = el("span", "ac-nohelm");
-          nh.title = "Wears no helmet";
+          nh.title = OWN_HEAD_LINE;
           b.append(nh);
         }
         // owned premium keeps its bloom; unowned premium never reaches here
@@ -2697,7 +2697,7 @@ export async function bootStandalone(root: HTMLElement) {
     for (const corner of ["tl", "tr", "bl", "br"]) {
       pane.append(el("i", `ac-casecorner ac-c-${corner}`));
     }
-    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "HELMET CANNOT BE CHANGED"));
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
     stage.append(pane);
     const plate = el("div", "ac-caseplate");
     plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
@@ -2748,7 +2748,7 @@ export async function bootStandalone(root: HTMLElement) {
         : combo.trails.length > 1
           ? ` ${combo.trails.length} trails come free.`
           : "";
-      const headBit = combo.ownHead ? " Helmet cannot be changed." : "";
+      const headBit = combo.ownHead ? ` ${OWN_HEAD_LINE}.` : "";
       t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
       const go = el("button", "ac-primary ac-combobuy");
       go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
@@ -3450,7 +3450,7 @@ export async function bootStandalone(root: HTMLElement) {
     const palDef = PALS.find((x) => x.id === tryOn.pal);
     if (palDef) cap.append(el("span", "", `${palDef.name} \u00b7 ${palDef.tag}`));
     stage.append(cap);
-    if (ownHead) stage.append(el("span", "ac-tonohelm", "WEARS ITS OWN HEAD"));
+    if (ownHead) stage.append(el("span", "ac-tonohelm", OWN_HEAD_TAG));
     wrap.append(stage);
 
     // The stage animates, and nothing else in these menus does, so it owns
@@ -3512,7 +3512,7 @@ export async function bootStandalone(root: HTMLElement) {
     const helmRow = helms;
     shelf("HELMETS", "helm", helmRow);
     shelf("PALS", "pal", pals);
-    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} wears its own head, so a helmet changes nothing on it.`));
+    if (ownHead) wrap.append(el("p", "ac-fine", `${suit.name} has a custom helmet, so changing helmets does nothing on it.`));
 
     wrap.append(el("p", "ac-fine",
       "Everything here arrives in a pack. Open PACKS to see which one."));

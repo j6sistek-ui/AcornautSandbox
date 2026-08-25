@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-08-25 01:35 UTC";
+export const BUILD_TIME = "2026-08-25 01:42 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -407,7 +407,7 @@ export const BUNDLES = [
     {
         id: "bundle-circuit",
         name: "Circuit Pack",
-        blurb: "Chrome, current and code. These three wear their own heads.",
+        blurb: "Chrome, current and code. All three come with custom helmets.",
         dust: 750,
         items: [
             { kind: "suit", id: "cyber" }, { kind: "suit", id: "volt" }, { kind: "suit", id: "robo" },
@@ -487,6 +487,15 @@ export function bundlePrice(b, owns) {
  *
  *  0 is what the live page has always flown, 1 is what the beta flies today,
  *  2 is Hyper Run's drag. Beta picks; live keeps 0 until one is chosen. */
+/** WHAT A FIXED-HEAD SUIT SAYS. Three views tell the pilot the same fact -
+ *  a corner tag on the loadout stage, another on the shop case, and a note
+ *  where the helmet shelf would be - and they were each wording it
+ *  differently ("WEARS ITS OWN HEAD", "HELMET CANNOT BE CHANGED", "has its
+ *  own head"). "Its own head" also describes the ART rather than the RULE:
+ *  what the pilot needs to know is that the helmet is fixed, not that the
+ *  character was drawn with one. One phrasing, in one place. */
+export const OWN_HEAD_TAG = "CUSTOM HELMET \u00b7 CANNOT CHANGE";
+export const OWN_HEAD_LINE = "Custom helmet: cannot change";
 export const TUNNEL_CONTROLS = [
     ["Tap to fly", "The classic flap. Each tap resets your climb and gravity owns the fall."],
     ["Hold to rise", "Press and hold to climb, release to fall."],

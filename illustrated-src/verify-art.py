@@ -772,10 +772,20 @@ def verify_card_states(qa: QA) -> None:
     if ui.count("b.append(collectTag());") < 2:
         problems.append("only one shelf offers the collect chip; suits and "
                         "helmets both have free unclaimed cards")
+    # A FIXED HELMET IS ONE FACT, so it gets one phrasing. Three views state
+    # it - the loadout stage tag, the shop case tag, and the note where the
+    # helmet shelf would be - and each had drifted to its own words. They now
+    # read OWN_HEAD_TAG / OWN_HEAD_LINE, and a literal here means one drifted
+    # back. "Its own head" also described the ART instead of the RULE, which
+    # is the part a pilot actually needs.
+    for bad in re.finditer(r'"[^"]*(?:own head|wears no helmet|helmet cannot be changed)[^"]*"',
+                           code, re.I):
+        problems.append(f"a fixed-head suit says {bad.group(0)} instead of the "
+                        f"shared OWN_HEAD_TAG / OWN_HEAD_LINE")
     if problems:
         qa.fail("card states: " + "; ".join(problems))
     else:
-        qa.ok("free unclaimed suits and helmets ask to be collected")
+        qa.ok("free unclaimed suits ask to be collected; fixed helmets speak once")
 
 
 def verify_beta_art_gates(qa: QA) -> None:
