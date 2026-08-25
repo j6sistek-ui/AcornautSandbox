@@ -14,11 +14,6 @@ import {
   levelForXp,
   titleForLevel,
   BUNDLES,
-  cleanTune,
-  cleanTunnelControl,
-  TUNNEL_CONTROL_DEFAULT,
-  freshTune,
-  type TuneId,
   IS_BETA,
   GUIDE_SUIT,
   GUIDE_HELM,} from "./catalog";
@@ -43,13 +38,13 @@ export type SaveData = {
   pilotName: string;
   /** beta only: the one-time "here is enough dust for every pack" grant */
   betaDustGrant: boolean;
-  /** the Wormhole Run calibration dials, every one a multiplier on the
-   *  shipped value - see TUNE_DIALS */
-  tune: Record<TuneId, number>;
+  // A save written before the wormhole was settled still carries `tune` and
+  // `tunnelControl`. They are simply not read any more - the dials are folded
+  // into the shipped constants and the control is fixed at tap to fly - and
+  // an unread key costs nothing. SAVE_KEY is untouched, so nobody's progress
+  // moves.
   /** shelves laid out as a wrapping GRID rather than side-scrolling rows */
   shelfGrid: boolean;
-  /** which of TUNNEL_CONTROLS the beta's Wormhole Run answers to */
-  tunnelControl: number;
   /** highest star line already paid out, so a payout can never double-pay */
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
@@ -118,9 +113,7 @@ export function defaultSave(): SaveData {
     pilotName: "",
     starDust: 0,
     betaDustGrant: false,
-    tune: freshTune(),
     shelfGrid: false,
-    tunnelControl: TUNNEL_CONTROL_DEFAULT,
     dustPaidTo: 0,
     lastDaily: "",
     dailyStreak: 0,
@@ -189,9 +182,7 @@ export function loadSave(): SaveData {
   if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
-  s.tune = cleanTune(s.tune);
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
-  s.tunnelControl = cleanTunnelControl(s.tunnelControl);
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;

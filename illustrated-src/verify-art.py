@@ -1100,66 +1100,58 @@ def verify_motion_banks(qa: QA) -> None:
               f"with a declared dead tap bank")
 
 
-def verify_tuning_run_gated(qa: QA) -> None:
-    """The Tuning Run cannot end and cannot reach a player.
+def verify_one_wormhole_control(qa: QA) -> None:
+    """The Wormhole answers to a tap, and to nothing else.
 
-    It is the one mode in the game where the corridor is not allowed to kill
-    you, which makes it the one mode whose gate actually matters. Two things
-    hold it in place, and both are one careless edit from gone:
+    Three controls were built and flown back to back - tap, hold to rise,
+    and Hyper Run's slide. Tap won on the ground that it MATCHES LOST IN
+    SPACE: a wormhole is something you fall into out of another mode,
+    mid-flight, with no briefing, and arriving in a corridor that answers to
+    a different verb than the run you were just flying is what kills those
+    runs. The other two read fine on their own and are gone.
 
-      * resetRun must CLEAR tuneTest. Every ordinary run goes through it, so
-        the moment it stops clearing, a pilot who has visited the tuning run
-        once is immortal in every run afterwards - and nothing on screen
-        would say so.
-      * the door into it must be beta-gated, or the live page grows a
-        prototype entrance in its Modes sheet.
-
-    The harness proves the behaviour by flying it. This proves the SHAPE, so
-    a refactor that moves the flag or the door has to come past here too.
+    The dials that settled the corridor's numbers went with them - they are
+    folded into control-constants.ts now - so this also checks that no
+    multiplier has crept back in. A dial is a thing somebody has to be told
+    the right value of; a constant is the value.
     """
     sim = (ROOT / "illustrated-src/game/sim.ts").read_text(encoding="utf8")
     ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    cat = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
+    ctl = (ROOT / "illustrated-src/game/control-constants.ts").read_text(encoding="utf8")
     problems: list[str] = []
 
-    body = sim.split("export function resetRun", 1)
-    if len(body) < 2:
-        problems.append("resetRun is gone - this guard is stale")
-    else:
-        # up to the next top-level export is the body we care about
-        rest = body[1]
-        end = rest.find("\nexport ")
-        reset_body = rest[:end if end > 0 else len(rest)]
-        # a commented-out assignment still contains the text of one, and this
-        # guard exists precisely for the edit that comments it out
-        reset_body = "\n".join(ln.split("//", 1)[0] for ln in reset_body.splitlines())
-        if "w.tuneTest = false" not in reset_body:
-            problems.append("resetRun no longer clears tuneTest - an ordinary run "
-                            "after a tuning run would be immortal")
+    for name, text, where in [
+        ("tunnelControlOf", sim, "sim.ts"),
+        ("setTunnelHeld", sim, "sim.ts"),
+        ("setTunnelDrag", sim, "sim.ts"),
+        ("TUNNEL_CONTROLS", cat, "catalog.ts"),
+        ("TUNE_DIALS", cat, "catalog.ts"),
+        ("TUNE_PANEL", cat, "catalog.ts"),
+    ]:
+        if name in text:
+            problems.append(f"{name} is back in {where} - the wormhole has one "
+                            f"control and no dials")
+    if "ac-tunerig" in ui:
+        problems.append("the tuning rig is back in the UI")
+    if "w.tune." in sim:
+        problems.append("a corridor value is being multiplied by a dial again "
+                        "(w.tune.*) - the settled numbers live in "
+                        "control-constants.ts")
 
-    lines = ui.splitlines()
-    calls = [i for i, ln in enumerate(lines) if "flyTuning()" in ln]
-    if not calls:
-        problems.append("nothing opens the tuning run any more - either the door "
-                        "was deleted, or this guard is stale")
-    for i in calls:
-        # the gate is an `if` above the door, not on the door's own line
-        window = "\n".join(lines[max(0, i - 3):i + 1])
-        if "IS_BETA" not in window:
-            problems.append(f"the tuning run door is not beta-gated: "
-                            f"{lines[i].strip()[:70]}")
-
-    # and the rig itself only draws for a run that opted in
-    rig = [ln for ln in ui.splitlines() if "tuningRig()" in ln and "function " not in ln]
-    if not rig:
-        problems.append("the tuning rig is never drawn")
-    for ln in rig:
-        if "tuneTest" not in ln:
-            problems.append(f"the tuning rig draws without checking tuneTest: {ln.strip()[:70]}")
+    # the settled values themselves, so a silent revert to the old feel fails
+    for name, want in [("WORMHOLE_FLAP", "-315"), ("WORMHOLE_GRAVITY", "975"),
+                       ("WORMHOLE_SPEED_BASE", "253"), ("WORMHOLE_WIDTH", "1.15"),
+                       ("WORMHOLE_TURN", "1.8")]:
+        if not re.search(rf"export const {name} = {re.escape(want)}\b", ctl):
+            problems.append(f"{name} is no longer {want} - the corridor was "
+                            f"settled by flying it, so a change here is a "
+                            f"re-tune and wants saying out loud")
 
     if problems:
-        qa.fail("tuning run: " + "; ".join(problems))
+        qa.fail("wormhole control: " + "; ".join(problems))
     else:
-        qa.ok("the tuning run stays beta-only, and every ordinary run stays mortal")
+        qa.ok("the wormhole answers to one control, with its numbers settled")
 
 
 def verify_scroll_not_squash(qa: QA) -> None:
@@ -1236,7 +1228,7 @@ def main() -> int:
     verify_pause_has_an_exit(qa)
     verify_one_tree(qa)
     verify_motion_banks(qa)
-    verify_tuning_run_gated(qa)
+    verify_one_wormhole_control(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)

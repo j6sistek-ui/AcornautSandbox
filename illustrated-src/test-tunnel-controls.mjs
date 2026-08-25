@@ -7,8 +7,8 @@
  *  gate - which means the walls were narrow and moving from the first frame.
  *
  *  This asserts the lead-in is actually open and actually empty, and that
- *  each control moves the pilot in its own way rather than all three
- *  quietly falling through to the same branch.
+ *  the corridor answers to a TAP and to nothing else - the other two
+ *  controls were flown against it and retired, and neither may creep back.
  */
 // IS_BETA is read off `window` at module load, so the flag has to be on the
 // window shim and has to be there BEFORE the first import.
@@ -26,60 +26,42 @@ const ctl = await import("../docs/js/control-constants.js");
 
 const fail = [];
 const ok = (c, m) => { if (!c) fail.push(m); };
-const fresh = (control) => {
-  const s = save.freshSave ? save.freshSave() : save.loadSave();
-  s.tunnelControl = control;
-  return s;
-};
+const fresh = () => (save.freshSave ? save.freshSave() : save.loadSave());
 
-/** Fly the corridor under one control. `drive` is handed the corridor's own
- *  bounds so a test can aim INSIDE it - steering at the screen edge just
- *  flies into a wall, and a dead pilot measures the death animation rather
- *  than the control. The run stops the moment it dies, for the same reason. */
-function tunnelRun(control, drive, frames = 90) {
+/** Fly the corridor and see what the pilot does. */
+function tunnelRun(drive, frames = 90) {
   const w = sim.makeWorld(430, 900);
-  const s = fresh(control);
+  const s = fresh();
   sim.resetRun(w, s, "tunnel", false);
   w.screen = "play"; w.ready = false;
   const start = w.squirrel.y;
-  let died = false;
   for (let i = 0; i < frames; i++) {
-    if (w.screen !== "play") { died = true; break; }
-    const b = sim.tunnelBoundsAt(w, w.W * 0.28);
-    drive(w, s, b, i);
+    if (w.screen !== "play") break;
+    drive(w, s, i);
     sim.updateWorld(w, s, 1 / 60);
   }
-  return { moved: w.squirrel.y - start, control: w.tunnelControl, y: w.squirrel.y, died };
+  return { moved: w.squirrel.y - start };
 }
 
-// ---- each control has to do its own thing -------------------------------
-const NUDGE = 24;                       // how far inside the wall to aim
-const tap = tunnelRun(0, () => {}, 30);                       // gravity only
-const holdDown = tunnelRun(1, (w, s) => sim.setTunnelHeld(w, s, false), 30);
-const holdUp = tunnelRun(1, (w, s) => sim.setTunnelHeld(w, s, true), 30);
-const slideUp = tunnelRun(2, (w, s, b) => sim.setTunnelDrag(w, s, b.top + NUDGE));
-const slideDown = tunnelRun(2, (w, s, b) => sim.setTunnelDrag(w, s, b.bottom - NUDGE));
+// ---- ONE CONTROL: TAP TO FLY -------------------------------------------
+//
+// Three were built and flown back to back - tap, hold to rise, and Hyper
+// Run's slide - and tap won because it MATCHES LOST IN SPACE. A wormhole is
+// something you fall into out of another mode, mid-flight, with no
+// briefing; arriving in a corridor that answers to a different verb than
+// the run you were just flying is what kills those runs. The other two are
+// gone, and this checks the corridor answers to a tap and to nothing else.
+const idle = tunnelRun(() => {}, 30);
+ok(idle.moved > 40, `untouched, the pilot should fall; moved ${idle.moved.toFixed(0)}px`);
 
-ok(tap.control === 0 && holdUp.control === 1 && slideUp.control === 2,
-  `the run did not fly the control it was given: tap=${tap.control} ` +
-  `hold=${holdUp.control} slide=${slideUp.control}`);
-ok(tap.moved > 40, `TAP: untouched, the pilot should fall; moved ${tap.moved.toFixed(0)}px`);
-ok(holdUp.moved < -40, `HOLD: held, the pilot should climb; moved ${holdUp.moved.toFixed(0)}px`);
-ok(holdDown.moved > 40, `HOLD: released, the pilot should fall; moved ${holdDown.moved.toFixed(0)}px`);
-ok(slideUp.moved < -40, `SLIDE: dragged up, the pilot should climb; moved ${slideUp.moved.toFixed(0)}px`);
-ok(slideDown.moved > 40, `SLIDE: dragged down, the pilot should fall; moved ${slideDown.moved.toFixed(0)}px`);
-// SLIDE is a FOLLOWER, not a thrust: it arrives at the finger and STOPS.
-// Steering to the roof of a live corridor and staying alive is the proof.
-ok(!slideUp.died && !slideDown.died,
-  `SLIDE flew into a wall while steering inside the corridor ` +
-  `(up died: ${slideUp.died}, down died: ${slideDown.died}) - it is overshooting`);
-// RATE LIMITED, or a flick teleports the squirrel across the corridor
-const step = (900 / ctl.WORMHOLE_DRAG_TRAVERSAL) / 60;
-const flick = tunnelRun(2, (w, s, b) => sim.setTunnelDrag(w, s, b.bottom - NUDGE), 1);
-ok(Math.abs(flick.moved) <= step + 0.5,
-  `one frame of drag moved ${Math.abs(flick.moved).toFixed(1)}px against a ` +
-  `${step.toFixed(1)}px cap - a flick would teleport the pilot`);
-ok(cat.TUNNEL_CONTROLS.length === 3, "there should be three controls to choose between");
+const tapped = tunnelRun((w, s, i) => { if (i % 6 === 0) sim.flap(w, s); }, 30);
+ok(tapped.moved < -20, `tapping should climb; moved ${tapped.moved.toFixed(0)}px`);
+
+// the retired controls must not have left a back door open
+ok(typeof sim.setTunnelHeld !== "function", "setTunnelHeld is still exported");
+ok(typeof sim.setTunnelDrag !== "function", "setTunnelDrag is still exported");
+ok(typeof sim.tunnelControlOf !== "function", "tunnelControlOf is still exported");
+ok(cat.TUNNEL_CONTROLS === undefined, "TUNNEL_CONTROLS still exists");
 
 // ---- the lead-in --------------------------------------------------------
 function wormholeEntry(gate) {
@@ -121,7 +103,7 @@ if (w.flight !== "tunnel") {
   if (!lead.length) {
     // report the miss rather than throwing on it: a crashing test still
     // fails, but it stops every later assertion from ever being reached
-    console.log(JSON.stringify({ suite: "wormhole controls + lead-in", failures: fail }, null, 1));
+    console.log(JSON.stringify({ suite: "wormhole control + lead-in", failures: fail }, null, 1));
     process.exit(1);
   }
   // OPEN: every lead node at full width
@@ -142,12 +124,12 @@ if (w.flight !== "tunnel") {
     `the first hazard is already armed at entry (${t.nextHazardAt} vs distance ${Math.round(w.distance)})`);
 }
 
-console.log(JSON.stringify({ suite: "wormhole controls + lead-in",
-  controls: cat.TUNNEL_CONTROLS.map((c) => c[0]),
-  moved: { tap: +tap.moved.toFixed(0), holdUp: +holdUp.moved.toFixed(0),
-           holdDown: +holdDown.moved.toFixed(0), slideUp: +slideUp.moved.toFixed(0),
-           slideDown: +slideDown.moved.toFixed(0) },
-  slideSurvived: !slideUp.died && !slideDown.died,
-  dragCapPxPerFrame: +step.toFixed(1),
-  leadNodes: w.tunnel?.leadNodes ?? null, failures: fail }, null, 1));
+console.log(JSON.stringify({
+  suite: "wormhole control + lead-in",
+  control: "tap to fly - the only one, matching Lost in Space",
+  moved: { untouched: +idle.moved.toFixed(0), tapping: +tapped.moved.toFixed(0) },
+  retired: ["hold to rise", "slide and hold"],
+  leadNodes: cat.TUNNEL_LEAD_NODES,
+  failures: fail,
+}, null, 1));
 process.exit(fail.length ? 1 : 0);

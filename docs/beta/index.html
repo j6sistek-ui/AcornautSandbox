@@ -392,34 +392,15 @@
     /* THE CALIBRATION PANEL, in the Wormhole Run pause menu. Dense on
        purpose: seven dials have to fit above RESUME on a phone without the
        sheet scrolling away from the button that gets you back to the run. */
-    .ac-tunehead { margin: 10px 0 4px; letter-spacing: .12em; font-size: 11px; }
     /* the three Wormhole controls, flown back to back */
-    .ac-ctlbar { display: grid; gap: 6px; margin: 0 0 10px; }
-    .ac-ctlopt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
       text-align: left; padding: 9px 12px; border-radius: 12px; color: #d7def0;
       background: rgba(12,18,38,.6); border: 1px solid #2a3454; }
-    .ac-ctlopt b { font: 800 13px/1.2 Figtree, sans-serif; letter-spacing: .02em; }
-    .ac-ctlopt i { font: 600 11px/1.35 Figtree, sans-serif; font-style: normal; color: #8f9ab8; }
-    .ac-ctlopt.on { border-color: #A99BE8; background: rgba(153,142,177,.18); color: #f3efe4; }
-    .ac-ctlopt.on i { color: #c3bde0; }
-    .ac-tune { display: grid; gap: 6px; width: 100%; margin-bottom: 8px; }
-    .ac-tunerow { display: grid; grid-template-columns: 1fr 28px auto 28px 44px;
       grid-template-areas: "label label label label label" "minus slide slide plus val";
       align-items: center; gap: 6px; }
-    .ac-tunelabel { grid-area: label; display: flex; align-items: baseline; gap: 6px;
       justify-content: flex-start; }
-    .ac-tunelabel b { font-size: 12.5px; }
-    .ac-tunelabel i { font-style: normal; font-size: 10.5px; opacity: .6; }
-    .ac-tunerow .ac-tunebtn:first-of-type { grid-area: minus; }
-    .ac-tunerow .ac-tunebtn:last-of-type { grid-area: plus; }
-    .ac-tuneslide { grid-area: slide; width: 100%; accent-color: #8f6bff; margin: 0; }
-    .ac-tuneval { grid-area: val; text-align: right; font-variant-numeric: tabular-nums;
       font-size: 12.5px; opacity: .7; }
-    .ac-tuneval.on { opacity: 1; color: #cbb4ff; font-weight: 700; }
-    .ac-tunebtn { width: 28px; height: 28px; border-radius: 8px; padding: 0;
       border: 1px solid rgba(203,180,255,.35); background: rgba(20,14,44,.8);
       color: #e8e2ff; font-size: 15px; line-height: 1; }
-    .ac-tunereset { margin-bottom: 4px; font-size: 12px; }
     /* THE PAUSE SHEET CAN BE TALLER THAN THE PHONE. With the calibration
        panel open it runs to ~943px, and .ac-sheet is a fixed-height flex
        column with overflow:hidden and justify-content:center — so it spilled
@@ -437,7 +418,6 @@
       background: linear-gradient(to top, rgba(7,11,22,.97) 64%, rgba(7,11,22,0)); }
     body.ac-beta .ac-pauseact {
       background: linear-gradient(to top, rgba(16,8,36,.97) 64%, rgba(16,8,36,0)); }
-    .ac-tunego { margin-top: 6px; }
 
     /* THE TUNING RIG. The dials, on screen, while the corridor is moving —
        because the pause menu is the one place they cannot do their job.
@@ -445,7 +425,6 @@
        being judged and it uses the full height, so the rig takes a column
        and leaves the flight visible beside it. Collapsing gives back a
        clear screen for flying the setting by hand. */
-    .ac-tunerig { position: absolute; right: 8px; bottom: 8px; z-index: 4;
       width: min(268px, calc(100% - 16px)); max-height: calc(100% - 76px);
       display: flex; flex-direction: column; overflow: auto;
       padding: 9px 11px 10px; border-radius: 14px; color: #e9edf8;
@@ -458,38 +437,15 @@
        that matters is the moment the dial is moving. So it fades under the
        finger and comes back on release: you see the change you are making,
        where it is happening, without letting go. */
-    .ac-tunerig.peek { opacity: .42; }
-    .ac-tunerig.peek .ac-tuneslide, .ac-tunerig.peek .ac-tuneval { opacity: 1; }
-    .ac-tunerig > * { flex: none; }
-    .ac-tunerig.hit { border-color: #ff6a8a; box-shadow: 0 0 0 1px rgba(255,106,138,.5); }
-    .ac-tunerighead { display: flex; align-items: center; gap: 8px; }
-    .ac-tunerighead b { font: 800 11px/1.2 Figtree, sans-serif; letter-spacing: .14em; }
-    .ac-tunehits { flex: 1; min-width: 0; text-align: right;
       font: 600 10.5px/1.2 Figtree, sans-serif; color: #94a0bd;
       font-variant-numeric: tabular-nums; }
-    .ac-tunefold { width: 26px; height: 26px; flex: none; padding: 0; border-radius: 8px;
       border: 1px solid rgba(203,180,255,.35); background: rgba(20,14,44,.8);
       color: #e8e2ff; font-size: 15px; line-height: 1; }
-    .ac-tunerig.open .ac-tunerighead { margin-bottom: 10px; }
-    .ac-tunewho { grid-template-columns: 1fr 1fr; }
-    .ac-tunerig .ac-ctlbar { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 5px; }
-    .ac-tunerig .ac-tunewho { grid-template-columns: 1fr 1fr; }
-    .ac-tunerig .ac-ctlopt { padding: 7px 8px; border-radius: 10px; align-items: center;
       text-align: center; }
-    .ac-tunerig .ac-ctlopt b { font-size: 10.5px; letter-spacing: 0; }
     /* live rows are one line each: name, slider, number — there is no room
        for the hint text, and by the time you are flying you know the dial */
-    .ac-tunelive .ac-tunerow { grid-template-columns: 62px minmax(0,1fr) 38px;
       grid-template-areas: "name slide val"; gap: 8px; }
-    .ac-tunename { grid-area: name; font: 700 11px/1.2 Figtree, sans-serif; }
-    .ac-tunelive .ac-tuneval { font-size: 11.5px; }
-    .ac-tunefoot { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-    .ac-tunefoot .ac-ghost { font-size: 11px; padding: 8px 6px; }
-    .ac-tunerig .ac-fine { margin: 8px 0 0; font-size: 10px; line-height: 1.4; }
     @media (orientation: portrait) {
-      .ac-tunerig { left: 8px; right: 8px; width: auto; max-height: 46%; padding: 8px 10px 9px; }
-      .ac-tunelive .ac-tunerow { gap: 6px; }
-      .ac-tunelive { grid-template-columns: 1fr 1fr; column-gap: 14px; }
     }
 
     /* THE ROTATING SHELF. A pack whose contents the pilot part-owns shows

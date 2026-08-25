@@ -1,4 +1,4 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_TEST, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=145";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=145";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=145";
 import { drawSprite as drawSpriteOn } from "./art.js?v=145";
 import { createEngine } from "./engine.js?v=145";
@@ -169,8 +169,6 @@ export async function bootStandalone(root) {
             pause.onclick = () => engine.pause();
             bar.append(pause);
             overlay.append(bar);
-            if (engine.world.tuneTest)
-                overlay.append(tuningRig());
             return;
         }
         if (snap.screen === "pause") {
@@ -192,90 +190,6 @@ export async function bootStandalone(root) {
                     row.append(mb);
                 });
                 sheet.append(row);
-            }
-            // THE CALIBRATION PANEL. Wormhole Run only, and only while the dials
-            // are still being settled - "reduce the sensitivity a bit" is not a
-            // number anyone can guess from a chair, so the pilot turns it here,
-            // mid-run, and reads the answer off the dial. Every value is a
-            // multiplier on the shipped constant, so 1.00 is exactly the flight
-            // that ships and a finding reports as "0.70 on lift".
-            if (TUNE_PANEL && engine.world.flight === "tunnel") {
-                // THE CONTROL COMES FIRST, above the dials, because it is the thing
-                // that decides whether the dials mean anything. Dropping out of Lost
-                // in Space into a corridor that answers to a different verb is what
-                // kills a run before the pilot has read the screen, so all three are
-                // here to be flown back to back.
-                if (IS_BETA) {
-                    const cur = engine.save.tunnelControl;
-                    sheet.append(el("p", "ac-sub ac-tunehead", "WORMHOLE CONTROL"));
-                    const bar = el("div", "ac-ctlbar");
-                    TUNNEL_CONTROLS.forEach(([name, hint], i) => {
-                        const b = el("button", i === cur ? "ac-ctlopt on" : "ac-ctlopt");
-                        b.append(el("b", "", name), el("i", "", hint));
-                        b.onclick = () => { engine.setTunnelControl(i); render(); };
-                        bar.append(b);
-                    });
-                    sheet.append(bar);
-                }
-                const t = engine.save.tune;
-                const off = TUNE_DIALS.filter((d) => Math.abs(t[d.id] - 1) > 1e-6).length;
-                sheet.append(el("p", "ac-sub ac-tunehead", off ? `FLIGHT DIALS \u00b7 ${off} CHANGED` : "FLIGHT DIALS"));
-                const panel = el("div", "ac-tune");
-                for (const d of TUNE_DIALS) {
-                    const row = el("div", "ac-tunerow");
-                    const head = el("div", "ac-tunelabel");
-                    head.append(el("b", "", d.label), el("i", "", d.hint));
-                    row.append(head);
-                    const val = el("span", `ac-tuneval${Math.abs(t[d.id] - 1) > 1e-6 ? " on" : ""}`, t[d.id].toFixed(2));
-                    const bump = (by) => {
-                        const next = engine.setTune(d.id, engine.save.tune[d.id] + by);
-                        val.textContent = next.toFixed(2);
-                        render();
-                    };
-                    const minus = el("button", "ac-tunebtn", "\u2212");
-                    minus.onclick = () => bump(-TUNE_STEP);
-                    const plus = el("button", "ac-tunebtn", "+");
-                    plus.onclick = () => bump(TUNE_STEP);
-                    // the slider is the fast way to hunt; the buttons are the way to
-                    // land on a value worth writing down
-                    const slide = document.createElement("input");
-                    slide.type = "range";
-                    slide.className = "ac-tuneslide";
-                    slide.min = String(d.min);
-                    slide.max = String(d.max);
-                    slide.step = String(TUNE_STEP);
-                    slide.value = String(t[d.id]);
-                    // QUIET while the finger is down. setTune used to notify on every
-                    // pointermove, and notify re-renders the overlay from scratch - so
-                    // the slider being dragged was torn out from under the finger and
-                    // the drag died on a detached node. The release commits loudly.
-                    slide.oninput = () => {
-                        const next = engine.setTune(d.id, Number(slide.value), true);
-                        val.textContent = next.toFixed(2);
-                    };
-                    slide.onchange = () => { engine.setTune(d.id, Number(slide.value)); render(); };
-                    row.append(minus, slide, plus, val);
-                    panel.append(row);
-                }
-                sheet.append(panel);
-                const reset = el("button", "ac-ghost ac-tunereset", "RESET DIALS TO 1.00");
-                reset.onclick = () => { engine.resetTune(); render(); };
-                sheet.append(reset);
-                sheet.append(el("p", "ac-fine", "1.00 is the flight as it ships. The corridor ahead is already drawn, "
-                    + "so width, volatility and debris show on the next run."));
-                // THE DOOR BELONGS HERE. Turning a dial from a pause is the thing that
-                // does not work - the run is frozen, the corridor ahead is already
-                // drawn, and reading a setting means surviving it first. This is where
-                // a pilot IS when they want to tune, so this is where the tuning run
-                // is offered, rather than only at the bottom of the prototypes list
-                // where nobody looking for it would think to go.
-                if (IS_BETA && TUNE_TEST && !engine.world.tuneTest) {
-                    const tune = el("button", "ac-primary ac-tunego", "OPEN THE TUNING RUN");
-                    tune.onclick = () => engine.flyTuning();
-                    sheet.append(tune);
-                    sheet.append(el("p", "ac-fine", "A corridor that never ends and cannot kill you, flown by autopilot, "
-                        + "with these dials live on screen while it flies."));
-                }
             }
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
@@ -1180,12 +1094,6 @@ export async function bootStandalone(root) {
         door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
         if (IS_BETA)
             door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
-        // The wormhole's numbers are settled by flying them, not by describing
-        // them. This is the door to that: a corridor that cannot end, with the
-        // dials on screen while it runs.
-        if (IS_BETA && TUNE_TEST) {
-            door("WORMHOLE TUNING RUN", () => { modesOpen = false; engine.flyTuning(); });
-        }
         const back = el("button", "ac-primary ac-modeback", "BACK");
         back.onclick = () => { modesOpen = false; render(); };
         sheet.append(back);
@@ -1195,126 +1103,6 @@ export async function bootStandalone(root) {
             render();
         } };
         return wrap;
-    }
-    // THE TUNING RIG. The dials, on screen, while the corridor is moving.
-    //
-    // The panel used to be in the pause menu, which is the one place it cannot
-    // do its job: pausing freezes the thing being judged, and every resume
-    // hands back a corridor already in motion. Here the sim flies, the pilot
-    // watches, and a dial shows up in the next second of corridor.
-    //
-    // It is built ONCE per render and then updates itself from a frame loop
-    // that stops when the node leaves the document, so dragging a slider is
-    // never interrupted by a re-render it caused itself.
-    let tuneOpen = true;
-    function tuningRig() {
-        const w = engine.world;
-        const rig = el("div", tuneOpen ? "ac-tunerig open" : "ac-tunerig");
-        const head = el("div", "ac-tunerighead");
-        const title = el("b", "", "TUNING RUN");
-        const hits = el("span", "ac-tunehits", "");
-        const fold = el("button", "ac-tunefold", tuneOpen ? "\u2013" : "+");
-        fold.setAttribute("aria-label", tuneOpen ? "Hide the dials" : "Show the dials");
-        fold.onclick = () => { tuneOpen = !tuneOpen; render(); };
-        head.append(title, hits, fold);
-        rig.append(head);
-        if (!tuneOpen) {
-            watch(rig, hits, null);
-            return rig;
-        }
-        // WHO IS FLYING. Autopilot first, because reading a dial should not
-        // require surviving it; manual second, to try the answer by hand.
-        const who = el("div", "ac-ctlbar ac-tunewho");
-        [["Autopilot", true], ["Fly it myself", false]]
-            .forEach(([name, auto]) => {
-            const b = el("button", w.tuneAuto === auto ? "ac-ctlopt on" : "ac-ctlopt");
-            b.append(el("b", "", name));
-            b.onclick = () => { engine.setTuneAuto(auto); render(); };
-            who.append(b);
-        });
-        rig.append(who);
-        // THE CONTROL, because it decides whether the dials below mean anything
-        // - and because the autopilot flies whichever one is chosen, switching
-        // here changes what is on screen immediately.
-        const cur = engine.save.tunnelControl;
-        const bar = el("div", "ac-ctlbar");
-        TUNNEL_CONTROLS.forEach(([name], i) => {
-            const b = el("button", i === cur ? "ac-ctlopt on" : "ac-ctlopt");
-            b.append(el("b", "", name));
-            b.onclick = () => { engine.setTunnelControl(i); render(); };
-            bar.append(b);
-        });
-        rig.append(bar);
-        const t = engine.save.tune;
-        const panel = el("div", "ac-tune ac-tunelive");
-        for (const d of TUNE_DIALS) {
-            const row = el("div", "ac-tunerow");
-            row.append(el("b", "ac-tunename", d.label));
-            const val = el("span", `ac-tuneval${Math.abs(t[d.id] - 1) > 1e-6 ? " on" : ""}`, t[d.id].toFixed(2));
-            const slide = document.createElement("input");
-            slide.type = "range";
-            slide.className = "ac-tuneslide";
-            slide.min = String(d.min);
-            slide.max = String(d.max);
-            slide.step = String(TUNE_STEP);
-            slide.value = String(t[d.id]);
-            slide.setAttribute("aria-label", d.label);
-            // quiet on the way, loud on release - see the pause panel above
-            slide.oninput = () => {
-                const next = engine.setTune(d.id, Number(slide.value), true);
-                val.textContent = next.toFixed(2);
-                val.classList.toggle("on", Math.abs(next - 1) > 1e-6);
-            };
-            slide.onchange = () => { engine.setTune(d.id, Number(slide.value)); };
-            // fade the rig while this dial is being turned, so the corridor it is
-            // changing is visible at the moment it changes
-            const peek = (on) => rig.classList.toggle("peek", on);
-            slide.onpointerdown = () => peek(true);
-            slide.onpointerup = () => peek(false);
-            slide.onpointercancel = () => peek(false);
-            slide.onblur = () => peek(false);
-            row.append(slide, val);
-            panel.append(row);
-        }
-        rig.append(panel);
-        const foot = el("div", "ac-tunefoot");
-        const reset = el("button", "ac-ghost", "DIALS TO 1.00");
-        reset.onclick = () => { engine.resetTune(); render(); };
-        const done = el("button", "ac-ghost", "END RUN");
-        done.onclick = () => engine.open("title");
-        foot.append(reset, done);
-        rig.append(foot);
-        rig.append(el("p", "ac-fine", "1.00 is the flight as it ships. Nothing here can end the run \u2014 "
-            + "contacts are counted, not fatal."));
-        watch(rig, hits, null);
-        return rig;
-    }
-    /** Keep the rig's readout honest without rebuilding it. The loop stops on
-     *  its own the moment the node leaves the document, so a re-render never
-     *  leaves a second one running behind it. */
-    function watch(rig, hits, _unused) {
-        let lastHits = -1;
-        let lastTxt = "";
-        const tick = () => {
-            if (!rig.isConnected)
-                return;
-            const w = engine.world;
-            const txt = `${w.tuneHits} hit${w.tuneHits === 1 ? "" : "s"} \u00b7 `
-                + `${w.tuneClean.toFixed(0)}s clean \u00b7 best ${w.tuneCleanBest.toFixed(0)}s`;
-            if (txt !== lastTxt) {
-                hits.textContent = txt;
-                lastTxt = txt;
-            }
-            if (w.tuneHits !== lastHits) {
-                lastHits = w.tuneHits;
-                if (lastHits > 0) {
-                    rig.classList.add("hit");
-                    window.setTimeout(() => rig.classList.remove("hit"), 260);
-                }
-            }
-            requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
     }
     function labRootOf() {
         return IS_BETA ? "../lab/" : "./lab/";

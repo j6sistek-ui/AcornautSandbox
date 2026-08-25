@@ -1593,9 +1593,10 @@ function drawHyperRunWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDa
 }
 
 /** What the corridor wants, in the pilot's own words. Kept in one place so
- *  the READY card and the lead-in can never disagree about the control. */
-function tunnelControlLabel(w: World) {
-  return ["TAP TO RISE", "HOLD TO RISE", "SLIDE AND HOLD"][w.tunnelControl] ?? "TAP TO RISE";
+ *  the READY card and the lead-in can never disagree about the control -
+ *  there is only one now, and it is the same verb Lost in Space uses. */
+function tunnelControlLabel(_w: World) {
+  return "TAP TO RISE";
 }
 
 export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
