@@ -2899,11 +2899,12 @@ export async function bootStandalone(root: HTMLElement) {
       : "Star Dust purchases are not open yet. Everything else on this page works."));
 
     box.append(scroll);
-    // A PREPRODUCTION INSTRUMENT, and it was "beta page only" only because
-    // the whole storefront was. Promoting the shop would have shipped a
-    // developer panel - what the shop is holding back today and why - to
-    // every live pilot. It says beta, so it is gated on beta.
-    if (IS_BETA) box.append(drawCycleRoll(cy));
+    // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
+    // the storefront was, but the storefront is the shop on both pages now
+    // and the cycle is tuned by watching a real shelf - which is the live
+    // one. It stays rolled up to a single line until it is asked for, so
+    // it costs a player who never opens it nothing but a row of small type.
+    box.append(drawCycleRoll(cy));
     if (featureOpen) box.append(drawFeatureSheet(featureOpen));
     if (dailyToast) box.append(drawDailyToast(dailyToast));
     return box;
