@@ -1270,6 +1270,19 @@
     /* the last shelf must clear the preproduction bar pinned under it */
     .ac-shopbeta .ac-sheet-scroll { padding-bottom: 18px; }
     .ac-featuresheet { max-height: 92vh; overflow-y: auto; }
+    /* A SHEET THAT SCROLLS MUST NOT ALSO SQUASH. This is a flex column
+       pinned at 92vh with overflow-y:auto - it is meant to scroll when the
+       pack is tall. But flex items shrink by default, so instead of
+       scrolling it COMPRESSED every shelf: rows went 128px -> 110px while
+       the 118px cards inside kept their min-height and, being overflow
+       visible, spilled over the heading beneath them. That is the overlap.
+       Nothing in this sheet is meant to flex - every child is grow:0 - so
+       nothing may shrink either, and the scroll does its job. */
+    .ac-featuresheet > * { flex: none; }
+    /* Capped + scrolling means SCROLL, never squash - see the pack sheet.
+       Low specificity on purpose: a child that genuinely wants to flex can
+       still say so with a class rule, which outranks this. */
+    .ac-lvlcard.ac-racecard > *, .ac-packcard > *, .ac-modecard > * { flex: none; }
     .ac-featuresheet .ac-shelfhead { margin-top: 4px; }
     .ac-featurebuy { display: flex; align-items: center; justify-content: center; gap: 6px;
       flex-wrap: wrap; border-radius: 999px; margin-top: 6px;
@@ -1289,6 +1302,11 @@
     .ac-devroll.open .ac-devbar { padding-bottom: 10px; }
     .ac-devpanel { max-height: 46vh; overflow-y: auto; padding: 0 16px calc(14px + env(safe-area-inset-bottom));
       display: flex; flex-direction: column; gap: 12px; }
+    /* same trap as the pack sheet: capped, scrolling, and a flex column, so
+       its groups would compress instead of the panel scrolling. Found by the
+       guard rather than by eye - it opens only when someone taps the roll-up,
+       which is exactly the state a live check never reaches. */
+    .ac-devpanel > * { flex: none; }
     .ac-devday { font: 500 10px/1.4 "IBM Plex Mono", ui-monospace, monospace; color: #7c86a4; margin: 0; }
     .ac-devgroup { display: flex; flex-direction: column; gap: 5px; }
     .ac-devhead { font: 800 9.5px/1 Figtree, sans-serif; letter-spacing: .14em; color: #ffd76a; margin: 0; }

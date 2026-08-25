@@ -944,6 +944,61 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
+def verify_scroll_not_squash(qa: QA) -> None:
+    """A scrollable, height-capped flex column must not shrink its children.
+
+    This is the check that would have caught the pack sheet. It is a flex
+    column pinned at 92vh with overflow-y:auto - meant to SCROLL when a pack
+    is tall. But flex items shrink by default, so it COMPRESSED instead:
+    every shelf row went 128px to 110px while the 118px cards inside kept
+    their min-height and, being overflow:visible, spilled over the heading
+    below them. On a phone it reads as the rows hugging each other.
+
+    Nothing errors, nothing warns, and it only appears when the content is
+    tall enough to trigger it - which is exactly the case nobody opens while
+    building the thing. So the pairing is asserted: cap the height and scroll,
+    and you owe the children a flex:none.
+    """
+    problems: list[str] = []
+    for page in ("docs/index.html", "sandbox_assets/index.html"):
+        css = (ROOT / page).read_text(encoding="utf8")
+        rules: dict[str, str] = {}
+        # Grouped selectors are ordinary CSS - `a > *, b > * { ... }` - so each
+        # comma-separated part gets its own entry. The first cut looked up one
+        # exact string and reported three false failures against a rule that
+        # already covered them.
+        for m in re.finditer(r"\n\s*([.#][\w.\-\s>:()*,]+?)\s*\{([^}]*)\}", css):
+            body = " ".join(m.group(2).split())
+            for part in m.group(1).split(","):
+                sel = " ".join(part.split())
+                if not sel:
+                    continue
+                rules[sel] = rules.get(sel, "") + " " + body
+        for sel, body in rules.items():
+            scrolls = re.search(r"overflow-y:\s*(auto|scroll)", body)
+            capped = re.search(r"max-height:|(?<!min-)\bheight:", body)
+            if not (scrolls and capped):
+                continue
+            # DELIBERATELY NOT also requiring display:flex here. The first cut
+            # did, and it missed the very bug it was written for: the pack
+            # sheet caps and scrolls under .ac-featuresheet but takes its flex
+            # column from .ac-lvlcard, a different rule on the same element.
+            # Composed classes are normal, so the pairing is asked of every
+            # capped scroller - on a container that never becomes a flex
+            # column, `> * { flex: none }` is inert, which makes over-asking
+            # free and under-asking a live bug.
+            kids = rules.get(f"{sel} > *", "")
+            if not re.search(r"flex:\s*none|flex-shrink:\s*0", kids):
+                problems.append(
+                    f"{page}: {sel} scrolls and caps its height but its children "
+                    f"can shrink - it will squash instead of scrolling; give it "
+                    f"`{sel} > * {{ flex: none; }}`")
+    if problems:
+        qa.fail("scroll vs squash: " + "; ".join(problems))
+    else:
+        qa.ok("every scrollable flex column scrolls rather than squashing")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -956,6 +1011,7 @@ def main() -> int:
         verify_pal_bounds(qa, pals)
     verify_lazy_banks(qa)
     verify_ui_classes(qa)
+    verify_scroll_not_squash(qa)
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
