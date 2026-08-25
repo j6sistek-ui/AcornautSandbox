@@ -708,6 +708,14 @@ function pickDebris(env: (typeof ENVS)[number]) {
  *  debris sweeps and the painter all ask here, so what the pilot flies
  *  into is what the pilot sees. Arcade keeps its rocks still - the retro
  *  timeline is a different painter and a different feel. */
+/** Rock size, as a fraction of the first pass's radius. The base spread is
+ *  19-26px; at 0.9 that becomes 17.1-23.4px. The floor that matters is the
+ *  SEAL: rocks are laid down every 30px, so twice the smallest radius has to
+ *  stay above that step or the column develops gaps a pilot can see - and
+ *  aim - through. At 0.9 the smallest rock still spans 34.2px against a 30px
+ *  step, so the seal holds. test-drift.mjs asserts it. */
+export const DEBRIS_SIZE = 0.9;
+
 /** How fast a rock drifts, as a fraction of the first pass's rate. The
  *  original swing was one every 5s to 14s, which is a readable wobble on a
  *  static column and far too busy once the whole field is moving. At a
@@ -765,7 +773,7 @@ function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: n
   // can never swing its cut end into view. See sealReach.
   const edge = -sealReach(w);
   const put = (y: number, n: number) => {
-    const rr = 19 + Math.random() * 7;
+    const rr = (19 + Math.random() * 7) * DEBRIS_SIZE;
     blockers.push({
       y,
       r: rr,
@@ -1120,7 +1128,13 @@ function spawnPair(w: World, save: SaveData, x: number) {
     // could not be entered (the catch is guarded on warp state), so it was
     // scenery that looked like the exit — black holes inside the black
     // hole. The only hole that belongs in here is the one that ends it.
-    const warping = w.warpGateEnd >= 0;
+    // A warp has THREE representations and the guard only knew one of them.
+    // enterWarp sets warpGateEnd for Free Flight and a warpLeft TIMER for
+    // everything else - so on a Star Chart level built on Arcade, where
+    // holeChance is 0.05, the whole fifteen-second stretch kept rolling for
+    // new holes: black holes inside the black hole, exactly what this guard
+    // was written to stop. warpT covers the entry swirl on the way in.
+    const warping = w.warpGateEnd >= 0 || w.warpLeft > 0 || w.warpT > 0;
     const holeRate = holeChance(w);
     if (!w.tut && !noHoles && !warping && holeRate > 0 && Math.random() < holeRate) {
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
@@ -1129,7 +1143,11 @@ function spawnPair(w: World, save: SaveData, x: number) {
     // carries the exit, dead centre in the mouth so it cannot be missed by
     // accident — you leave the way you came in, through a hole, rather than
     // having the flight quietly right itself underneath you.
-    if (warping && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
+    // GATE-COUNTED stretches only. `warping` now also covers timer warps,
+    // and warpGateEnd is -1 for those - so testing it here would make
+    // `score >= -1` trivially true and hang a fake way-out on the first gate
+    // of every Deep Space and Arcade warp, which end on their own clock.
+    if (w.warpGateEnd >= 0 && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
       w.warpExitSpawned = true;
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
     }
