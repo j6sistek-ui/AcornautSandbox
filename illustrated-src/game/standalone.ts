@@ -2663,7 +2663,7 @@ export async function bootStandalone(root: HTMLElement) {
     for (const corner of ["tl", "tr", "bl", "br"]) {
       pane.append(el("i", `ac-casecorner ac-c-${corner}`));
     }
-    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "WEARS ITS OWN HEAD"));
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "HELMET CANNOT BE CHANGED"));
     stage.append(pane);
     const plate = el("div", "ac-caseplate");
     plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
@@ -2714,7 +2714,7 @@ export async function bootStandalone(root: HTMLElement) {
         : combo.trails.length > 1
           ? ` ${combo.trails.length} trails come free.`
           : "";
-      const headBit = combo.ownHead ? " Wears its own head." : "";
+      const headBit = combo.ownHead ? " Helmet cannot be changed." : "";
       t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
       const go = el("button", "ac-primary ac-combobuy");
       go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
