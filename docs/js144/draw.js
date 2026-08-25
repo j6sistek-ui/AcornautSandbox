@@ -2330,6 +2330,71 @@ const DOME = {
     // The twelve originals were re-rendered bare-headed, so every one of
     // these was measured again against flight's face. Ghost is the exception
     // and still wears a painted dome -- see bakedDome in catalog.ts.
+    // ---------------------------------------------------------------- TAP
+    // PER-POSE DOME ANCHORS. Three suits have tap banks that MOVE THE HEAD -
+    // robo, bigbooty and eclipse - and the single "suit:<id>" anchor is right
+    // for exactly one of the sixteen poses. The other fifteen leave the glass
+    // behind: at loadout size the head walks clean out of the helmet.
+    //
+    // The other fifteen rigged suits do NOT need this. Their banks animate the
+    // TAIL and hold the head still, which is why the one anchor has always
+    // been fine for them - checked by rendering every one of them with a
+    // helmet through all sixteen frames.
+    //
+    // Measured, not guessed: a head patch cut from each suit's own static
+    // render is matched through its bank in the bank's reference box, then the
+    // track is median-filtered because a head cannot teleport between frames.
+    // Robo and Eclipse tracked cleanly (smoothing moved <= 4px); Big Booty's
+    // matcher loses a small head against a large body, so its numbers moved up
+    // to 14px and were checked by eye rather than trusted outright.
+    "robo-tap-1": [190, 103, 40],
+    "robo-tap-2": [190, 103, 40],
+    "robo-tap-3": [190, 101, 40],
+    "robo-tap-4": [191, 96, 40],
+    "robo-tap-5": [191, 88, 40],
+    "robo-tap-6": [192, 82, 40],
+    "robo-tap-7": [192, 80, 40],
+    "robo-tap-8": [191, 84, 40],
+    "robo-tap-9": [190, 93, 40],
+    "robo-tap-10": [189, 103, 40],
+    "robo-tap-11": [189, 110, 40],
+    "robo-tap-12": [190, 111, 40],
+    "robo-tap-13": [191, 110, 40],
+    "robo-tap-14": [192, 107, 40],
+    "robo-tap-15": [191, 104, 40],
+    "robo-tap-16": [191, 100, 40],
+    "bigbooty-tap-1": [209, 83, 41],
+    "bigbooty-tap-2": [209, 84, 41],
+    "bigbooty-tap-3": [209, 81, 41],
+    "bigbooty-tap-4": [209, 74, 41],
+    "bigbooty-tap-5": [210, 67, 41],
+    "bigbooty-tap-6": [211, 66, 41],
+    "bigbooty-tap-7": [209, 72, 41],
+    "bigbooty-tap-8": [205, 82, 41],
+    "bigbooty-tap-9": [206, 82, 41],
+    "bigbooty-tap-10": [212, 73, 41],
+    "bigbooty-tap-11": [216, 69, 41],
+    "bigbooty-tap-12": [212, 74, 41],
+    "bigbooty-tap-13": [206, 82, 41],
+    "bigbooty-tap-14": [203, 85, 41],
+    "bigbooty-tap-15": [205, 80, 41],
+    "bigbooty-tap-16": [209, 75, 41],
+    "eclipse-tap-1": [196, 89, 53],
+    "eclipse-tap-2": [196, 87, 53],
+    "eclipse-tap-3": [194, 81, 53],
+    "eclipse-tap-4": [190, 73, 53],
+    "eclipse-tap-5": [186, 66, 53],
+    "eclipse-tap-6": [183, 60, 53],
+    "eclipse-tap-7": [182, 59, 53],
+    "eclipse-tap-8": [183, 61, 53],
+    "eclipse-tap-9": [186, 67, 53],
+    "eclipse-tap-10": [191, 76, 53],
+    "eclipse-tap-11": [195, 82, 53],
+    "eclipse-tap-12": [197, 85, 53],
+    "eclipse-tap-13": [198, 87, 53],
+    "eclipse-tap-14": [198, 88, 53],
+    "eclipse-tap-15": [198, 88, 53],
+    "eclipse-tap-16": [198, 88, 53],
     "suit:flight": [185, 82, 44],
     "suit:iontrim": [178, 88, 48],
     "suit:copper": [183, 85, 45],
@@ -3045,8 +3110,17 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             const idx = Math.min(15, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 16));
             const ref16 = tapFrames[0].box ?? ref;
             drawRigLayer(ctx, tapFrames[idx], ref16, x, y, size, 0, undefined, halo);
-            if (!wearsOwnHead(suit))
-                paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+            if (!wearsOwnHead(suit)) {
+                // A per-pose anchor where the bank moves the head; the single static
+                // anchor everywhere else, which is correct for banks that hold it
+                // still. Measured against the BANK's own box, so it is read with the
+                // bank's first frame as the reference body - same as asc/desc above.
+                const pose = `${suit.id}-tap-${idx + 1}`;
+                if (DOME[pose])
+                    paintDome(ctx, tapFrames[0], pose, helmet, x, y, size, art);
+                else
+                    paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+            }
         }
         else if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
             // Universal body impulse: scale from the tail hinge, not the canvas
@@ -3279,6 +3353,28 @@ function previewTailAngle(p, beat) {
     settle(Math.round(p / dt) + 1); // +1: the sim draws after its step
     return a;
 }
+/** The preview's lean, smoothed and LOOP-CONSISTENT.
+ *
+ *  A damped follower has memory, so its value at a given phase depends on
+ *  everything before it - and a preview is entered at an arbitrary time.
+ *  Replaying two whole beats first lands on the loop's steady state rather
+ *  than on whatever the first painted frame happened to start from, so the
+ *  same phase always draws the same lean no matter when the menu opened.
+ *  Same trick previewTailAngle uses for the plume.
+ */
+function previewRot(p, beat, kick, pull) {
+    const dt = 1 / 120;
+    const tau = 0.085; // ~85ms to ease through a tap
+    const k = 1 - Math.exp(-dt / tau);
+    let r = 0;
+    const end = beat * 2 + p;
+    for (let tt = 0; tt < end; tt += dt) {
+        const ph = ((tt % beat) + beat) % beat;
+        const vy = -kick + pull * ph;
+        r += (Math.max(-0.34, Math.min(0.6, vy / 900)) - r) * k;
+    }
+    return r;
+}
 export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     if (!art)
         return;
@@ -3292,7 +3388,15 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     const BEAT = 1.6; // one tap per beat
     const RATE = 0.5; // the tap animation itself, halved
     const p = ((t % BEAT) + BEAT) % BEAT; // time since this beat's tap
-    const tapWindow = 0.30 / RATE;
+    // THE TAP PLAYS THE WHOLE BANK. It used to play a FIFTH of it: the window
+    // ran 0.6s and fed the clock straight through as tapAnimT = p * RATE, so
+    // tapAnimT never passed 0.30 against a TAP_ANIM_DURATION of 1.0 - which
+    // indexes frames 0..4 of sixteen and then hard-cuts back to the rig pose
+    // mid-gesture. That cut is the jolt: measured at 10px of travel and 15% of
+    // silhouette in a single frame on Robo. Mapping the window onto the whole
+    // duration plays all sixteen and lands on the frame the bank was drawn to
+    // land on, which is the rig pose it returns to.
+    const tapWindow = TAP_ANIM_DURATION;
     const flapWindow = 0.24 / RATE;
     // THE HEAD DOES NOT SIT STILL IN THE HELMET, and holding the body pose to
     // hide that was the wrong trade - it cost every rigged suit its animation,
@@ -3308,7 +3412,7 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     // suit. Template-matching the head through the banks tracks Robo cleanly
     // and drifts on Big Booty and Eclipse, so it is an art measurement rather
     // than something to infer - see the note in the PR.
-    const tapAnimT = p < tapWindow ? p * RATE : -1;
+    const tapAnimT = p < tapWindow ? (p / tapWindow) * TAP_ANIM_DURATION : -1;
     const flapping = p < flapWindow;
     const frames = flapping ? art.squirrelFlap : art.squirrelIdle;
     const speed = flapping ? 10 : 5;
@@ -3325,7 +3429,13 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     const PULL = (2 * KICK) / BEAT;
     const vy = -KICK + PULL * p;
     const rise = -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
-    const rot = Math.max(-0.34, Math.min(0.6, vy / 900));
+    // ROTATION IS SMOOTHED, because the arc's VELOCITY is a sawtooth: vy runs
+    // -210 up to +210 across a beat and then snaps back to -210 at the next
+    // tap. Position loops seamlessly - rise is zero at both ends - but a
+    // rotation taken straight off vy jumps 27 degrees on every beat boundary.
+    // In flight that is hidden by speed and by the pose changing on the same
+    // frame; at half speed and 158px it reads as the pilot flinching.
+    const rot = previewRot(p, BEAT, KICK, PULL);
     ctx.save();
     ctx.translate(cx, cy + rise * (size / 52) * 0.055);
     ctx.scale(size / 52, size / 52);

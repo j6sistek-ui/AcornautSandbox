@@ -896,6 +896,48 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok("every panel that calls itself preproduction is gated on the beta")
 
 
+def verify_pose_domes(qa: QA) -> None:
+    """A per-pose dome table must be COMPLETE and one size.
+
+    Three suits have tap banks that move the head, so their helmet needs an
+    anchor per pose rather than the single "suit:<id>" one. A table like that
+    fails quietly in two ways: a missing frame silently falls back to the
+    static anchor for that pose alone - one frame in sixteen where the glass
+    jumps off the head - and a radius that drifts between poses resizes the
+    helmet mid-gesture. Neither shows up in a diff, and both are invisible
+    until someone watches the loop at full size.
+
+    So the shape is asserted: sixteen consecutive frames, one radius.
+    """
+    source = DRAW_SOURCE.read_text(encoding="utf8")
+    table = re.search(r"\bconst\s+DOME(?:\s*:[^=]+)?\s*=\s*\{(.*?)\}\s*;",
+                      source, re.DOTALL)
+    if not table:
+        qa.fail("could not find the DOME table")
+        return
+    poses: dict[str, dict[int, tuple[float, float, float]]] = {}
+    for suit, n, x, y, r in re.findall(
+            r'"([a-z]+)-tap-(\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\]',
+            table.group(1)):
+        poses.setdefault(suit, {})[int(n)] = (float(x), float(y), float(r))
+    problems: list[str] = []
+    for suit, frames in sorted(poses.items()):
+        missing = [n for n in range(1, 17) if n not in frames]
+        if missing:
+            problems.append(f"{suit} has {len(frames)}/16 pose anchors, missing "
+                            f"{','.join(map(str, missing))} - those poses fall back "
+                            f"to the static anchor and the glass jumps")
+        radii = {r for _, _, r in frames.values()}
+        if len(radii) > 1:
+            problems.append(f"{suit}'s helmet changes size mid-gesture: radii "
+                            f"{sorted(radii)}")
+    if problems:
+        qa.fail("pose domes: " + "; ".join(problems))
+    else:
+        qa.ok(f"per-pose dome tables complete for {len(poses)} suits "
+              f"({16 * len(poses)} anchors, one radius each)")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -913,6 +955,7 @@ def main() -> int:
     verify_dev_instruments(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
+    verify_pose_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()
