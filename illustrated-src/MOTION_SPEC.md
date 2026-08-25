@@ -115,10 +115,16 @@ mid-wing-beat with the arms somewhere the neighbouring frame's are not, so
 a ramp selected on pitch alone can read as jitter. It needs an eye, not
 just a number.
 
-**Rule for a new model:** render the eight poses to span at least 60° of
-pitch. Under that, the bank cannot carry velocity indexing, and the money
-is better spent on a wider spread of four frames than a tight spread of
-eight. `verify_motion_banks` measures it.
+**Rule for a new model:** render the eight poses to span at least **45°**
+of pitch, and aim for Flight's 99. `verify_motion_banks` measures it.
+
+The floor is calibrated, not chosen. The first cut was 60 — "0.6 of
+Flight's 99" — and it promptly failed **cyber at 59°**, a suit that ships
+and works. The number was wrong, not the suit. The measurements leave an
+enormous empty middle: flat banks sit at 16–20 and working ones start at
+cyber's 59, with nothing in between. 45 sits in that gap with better than
+double the margin either way. It is not a quality bar — it is the line
+between "these frames differ" and "these frames are the same pose".
 
 ## The head must not change size
 

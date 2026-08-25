@@ -878,18 +878,6 @@ def verify_pose_domes(qa: QA) -> None:
                             f"{','.join(map(str, missing))} - those poses fall back "
                             f"to the static anchor and the glass jumps")
         radii = {r for _, _, r in frames.values()}
-        # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
-        # velocity, so frames that all point the same way give velocity
-        # nothing to pick between - a 16-degree bank is a wing-beat wearing
-        # a ramp's clothes. Flight, the standard, spans 99 degrees. Measured
-        # across the shipping tap banks, 24 of 28 suits sit at 16-20 and
-        # cannot carry this model at all; see MOTION_SPEC.md.
-        if len(pitches) > 1:
-            span = max(pitches) - min(pitches)
-            if span < MOTION_MIN_PITCH_SPAN:
-                problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
-                                f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
-                                f"velocity indexing has nothing to pick between")
         if len(radii) > 1:
             problems.append(f"{suit}'s helmet changes size mid-gesture: radii "
                             f"{sorted(radii)}")
@@ -947,11 +935,21 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
-# Flight's authored ramp spans 99 degrees. Sixty is the floor at which a
-# bank still has something for velocity to choose between - below it the
-# money is better spent on a wider spread of four frames than a tight
-# spread of eight. See MOTION_SPEC.md.
-MOTION_MIN_PITCH_SPAN = 60.0
+# CALIBRATED, not chosen. The first cut at this was 60 - "0.6 of Flight's
+# 99" - a round fraction that promptly failed CYBER at 59, a suit that
+# ships, works, and the owner picked out as good. The number was wrong, not
+# the suit.
+#
+# The measurements leave an enormous empty middle:
+#
+#   flat banks, which cannot carry the model    16 - 20 degrees
+#   ...nothing at all in between...
+#   banks that work    cyber 59, robo/bigbooty 64, volt 76, flight 99, eclipse 112
+#
+# 45 sits in that gap with better than double the margin either way. It is
+# not a quality bar - it is the line between "these frames differ" and
+# "these frames are the same pose". See MOTION_SPEC.md.
+MOTION_MIN_PITCH_SPAN = 45.0
 
 
 def sprite_pitch(path: Path) -> float | None:
@@ -1132,6 +1130,18 @@ def verify_motion_banks(qa: QA) -> None:
                                         f"NO helmet at all, silently")
                     continue
                 radii.append(dome[key][2])
+        # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
+        # velocity, so frames that all point the same way give velocity
+        # nothing to pick between - a 16-degree bank is a wing-beat wearing
+        # a ramp's clothes. Flight, the standard, spans 99 degrees. Measured
+        # across the shipping tap banks, 24 of 28 suits sit at 16-20 and
+        # cannot carry this model at all; see MOTION_SPEC.md.
+        if len(pitches) > 1:
+            span = max(pitches) - min(pitches)
+            if span < MOTION_MIN_PITCH_SPAN:
+                problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
+                                f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
+                                f"velocity indexing has nothing to pick between")
         if len(radii) > 1:
             spread = (max(radii) - min(radii)) / (sum(radii) / len(radii))
             if spread > 0.04:
