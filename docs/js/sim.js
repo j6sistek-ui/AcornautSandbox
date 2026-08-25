@@ -1,10 +1,10 @@
-import { TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=144";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=144";
-import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=144";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=144";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=144";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=144";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, } from "./control-constants.js?v=144";
+import { TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
+import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=145";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=145";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=145";
+import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, } from "./control-constants.js?v=145";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",

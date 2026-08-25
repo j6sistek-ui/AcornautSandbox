@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=144";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=144";
-import { drawSprite as drawSpriteOn } from "./art.js?v=144";
-import { createEngine } from "./engine.js?v=144";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=144";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=144";
-import { formatRaceTicks } from "./race.js?v=144";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, TUNE_PANEL, TUNE_DIALS, TUNE_STEP, TUNNEL_CONTROLS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=145";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=145";
+import { drawSprite as drawSpriteOn } from "./art.js?v=145";
+import { createEngine } from "./engine.js?v=145";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=145";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=145";
+import { formatRaceTicks } from "./race.js?v=145";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2524,6 +2524,10 @@ export async function bootStandalone(root) {
     // storefront. This one is genuinely not ready for that.
     let devRollOpen = false;
     let featureOpen = null; // the featured pack, opened
+    // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
+    // and the bar adds up whatever is in here. Nothing is forced along with
+    // anything else; a helmet does not drag its suit onto the stage.
+    let picked = new Set();
     function shopDayIndex() {
         return Math.floor(Date.now() / 86400000);
     }
@@ -2569,35 +2573,32 @@ export async function bootStandalone(root) {
         return { day, feature, held, suits, helms, pals, owns };
     }
     /** the price of the look currently on the stage, minus anything owned */
-    /** WHAT IS IN THE CASE IS WHAT YOU BUY.
+    /** WHAT YOU TICKED IS WHAT YOU BUY.
      *
-     *  Everything standing on the stage counts - the suit, the helmet it is
-     *  wearing, and the pal flying beside it. The plate already names all
-     *  three, so pricing only two of them made the bar disagree with the
-     *  picture directly above it.
+     *  The bar used to price whatever happened to be standing on the stage,
+     *  which meant tapping a helmet had to drag its suit on with it just to
+     *  keep the price honest. Selecting and previewing are separate things
+     *  now: a tap adds the item to the cart and shows it if it can be shown,
+     *  and the total is the sum of the cart in whatever order it was built.
      *
-     *  A self-contained suit - Cyber, Volt, Robo and the rest that wear their
-     *  own head - contributes no helmet, which is why its price does not
-     *  compound: weight 3 rather than 4. */
-    function comboOf(cy) {
-        const worn = SUITS.find((u) => u.id === tryOn.suit);
-        const ownHead = !!worn && wearsOwnHead(worn);
-        const parts = ownHead
-            ? [tryOn.suit, tryOn.pal]
-            : [tryOn.suit, tryOn.helm, tryOn.pal];
-        const ids = [...new Set(parts.filter(Boolean))]
-            .filter((i) => isIap(i) && !cy.owns(i));
-        const heldIds = ids.filter((i) => cy.held.has(i));
+     *  A self-contained suit - one whose helmet cannot be changed - carries
+     *  no helmet in its price, which is why it costs 270 and not 360. */
+    function cartOf(cy) {
+        const ids = [...picked].filter((i) => isIap(i) && !cy.owns(i));
         const dust = ids.reduce((n, i) => n + idDust(i), 0);
         const trails = [...new Set(ids.map((i) => SET_TRAIL[i]).filter(Boolean))];
-        return { ids, heldIds, dust, trails, ownHead };
+        return { ids, dust, trails };
+    }
+    /** is anything currently ON THE STAGE locked inside the featured pack? */
+    function heldOnStage(cy) {
+        return [tryOn.suit, tryOn.helm, tryOn.pal].filter(Boolean).filter((i) => cy.held.has(i));
     }
     /** name one shop id by what it actually hands over */
-    function describeId(id, ownHead) {
+    function describeId(id) {
         const u = SUITS.find((x) => x.id === id);
         const h = HELMETS.find((x) => x.id === id);
         const p = PALS.find((x) => x.id === id);
-        if (u && h && !ownHead)
+        if (u && h && !wearsOwnHead(u))
             return `${u.name} with its helmet`;
         if (u)
             return u.name;
@@ -2668,6 +2669,19 @@ export async function bootStandalone(root) {
         if (palDef)
             plate.append(el("span", "ac-casesub", `${palDef.name} · ${palDef.tag}`));
         stage.append(plate);
+        // THE CATCH, on the case rather than the bar. The bar is a cart now, so
+        // the "you cannot buy this one" message belongs next to the thing being
+        // looked at - which is the only place it is true.
+        const heldNow = heldOnStage(cy);
+        if (heldNow.length) {
+            const note = el("div", "ac-caseheld");
+            const t = el("span", "ac-caseheldtxt");
+            t.append(el("b", "", "IN THE FEATURED PACK"), el("span", "", `${cy.feature?.name ?? "The pack"} — not sold separately today.`));
+            const go = el("button", "ac-caseheldgo", "SEE THE PACK");
+            go.onclick = () => { featureOpen = cy.feature?.id ?? null; confirmBuy = false; render(); };
+            note.append(t, go);
+            stage.append(note);
+        }
         scroll.append(stage);
         if (ctx) {
             engine.wantSuitArt(suit.id);
@@ -2687,46 +2701,44 @@ export async function bootStandalone(root) {
             requestAnimationFrame(tick);
         }
         // ---- THE COMBO BAR. Prices exactly what is on the stage.
-        const combo = comboOf(cy);
+        const cart = cartOf(cy);
         const bar = el("div", "ac-combobar");
-        if (!combo.ids.length) {
-            bar.classList.add("ac-comboowned");
-            bar.append(el("b", "", "YOU OWN THIS LOOK"), el("span", "", "Equip it in the Loadout."));
-        }
-        else if (combo.heldIds.length) {
-            // the catch, said out loud
-            bar.classList.add("ac-comboheld");
+        if (!cart.ids.length) {
+            bar.classList.add("ac-cartempty");
             const t = el("span", "ac-combotxt");
-            t.append(el("b", "", "ONLY IN THE FEATURED PACK"), el("span", "", `${cy.feature?.name ?? "The pack"} — not sold separately today.`));
-            const go = el("button", "ac-primary ac-combobuy", "SEE THE PACK");
-            go.onclick = () => { featureOpen = cy.feature?.id ?? null; confirmBuy = false; render(); };
-            bar.append(t, go);
+            t.append(el("b", "", "NOTHING SELECTED"), el("span", "", "Tap anything below to add it. Pick as many as you like."));
+            bar.append(t);
         }
         else {
             const t = el("span", "ac-combotxt");
-            t.append(el("b", "", "BUY THIS SET"));
-            const names = combo.ids.map((i) => describeId(i, combo.ownHead));
+            t.append(el("b", "", cart.ids.length === 1 ? "1 ITEM SELECTED" : `${cart.ids.length} ITEMS SELECTED`));
+            const names = cart.ids.map(describeId);
             const listed = names.length > 1
                 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
                 : names[0];
-            const trailBit = combo.trails.length === 1
-                ? ` ${TRAILS.find((x) => x.id === combo.trails[0])?.name ?? "The trail"} comes free.`
-                : combo.trails.length > 1
-                    ? ` ${combo.trails.length} trails come free.`
+            const trailBit = cart.trails.length === 1
+                ? ` ${TRAILS.find((x) => x.id === cart.trails[0])?.name ?? "The trail"} comes free.`
+                : cart.trails.length > 1
+                    ? ` ${cart.trails.length} trails come free.`
                     : "";
-            const headBit = combo.ownHead ? ` ${OWN_HEAD_LINE}.` : "";
-            t.append(el("span", "", `${listed}.${headBit}${trailBit}`));
+            t.append(el("span", "", `${listed}.${trailBit}`));
+            const clear = el("button", "ac-cartclear", "Clear");
+            clear.onclick = () => { picked = new Set(); render(); };
+            t.append(clear);
             const go = el("button", "ac-primary ac-combobuy");
-            go.append(icon(I_DUST, 14, true), el("span", "", combo.dust.toLocaleString()));
+            go.append(icon(I_DUST, 14, true), el("span", "", cart.dust.toLocaleString()));
             go.onclick = () => {
-                let ok = true;
-                for (const id of combo.ids) {
-                    if (!tx(bar, () => engine.buyShopItem(id), idDust(id), "dust")) {
-                        ok = false;
+                // charge the cheap ones first so a short balance still lands
+                // something rather than refusing the whole basket
+                const order = [...cart.ids].sort((a, b) => idDust(a) - idDust(b));
+                let bought = 0;
+                for (const id of order) {
+                    if (!tx(bar, () => engine.buyShopItem(id), idDust(id), "dust"))
                         break;
-                    }
+                    picked.delete(id);
+                    bought += 1;
                 }
-                if (ok)
+                if (bought)
                     render();
             };
             bar.append(t, go);
@@ -2780,26 +2792,28 @@ export async function bootStandalone(root) {
                 b.append(price);
                 if (SET_TRAIL[id] && !owned)
                     b.append(el("span", "ac-tilebonus", "+ TRAIL"));
+                if (picked.has(id)) {
+                    b.classList.add("on");
+                    b.append(el("i", "ac-tickbadge", "\u2713"));
+                }
+                const showing = kind === "pal" ? tryOn.pal === id
+                    : kind === "suit" ? tryOn.suit === id : tryOn.helm === id;
+                if (showing)
+                    b.classList.add("ac-previewing");
                 b.onclick = () => {
-                    // one tap dresses the squirrel; the combo bar does the buying
+                    // ONE TAP INCLUDES IT. Selecting and previewing are separate: the
+                    // tile is shown on the stage if the stage can show it, but nothing
+                    // else is dragged along to make that work.
+                    if (picked.has(id))
+                        picked.delete(id);
+                    else
+                        picked.add(id);
                     if (kind === "pal")
                         tryOn = { ...tryOn, pal: id };
-                    else if (kind === "suit") {
-                        // a set is one purchase, so wearing the suit wears its helmet -
-                        // otherwise the combo bar quietly charges for two sets
-                        const matched = HELMETS.some((h) => h.id === id);
-                        tryOn = { ...tryOn, suit: id, helm: matched ? id : tryOn.helm };
-                    }
-                    else {
-                        // A HELMET HAS TO BE VISIBLE WHEN IT IS TAPPED. On a day whose
-                        // suits all wear their own head, tapping one changed nothing at
-                        // all - a whole shelf of dead tiles. The id owns the set, so
-                        // wearing the helmet means wearing the head that can show it.
-                        const worn = SUITS.find((u) => u.id === tryOn.suit);
-                        const needsHead = !worn || wearsOwnHead(worn);
-                        const ownSuit = SUITS.some((u) => u.id === id);
-                        tryOn = { ...tryOn, helm: id, suit: needsHead && ownSuit ? id : tryOn.suit };
-                    }
+                    else if (kind === "suit")
+                        tryOn = { ...tryOn, suit: id };
+                    else
+                        tryOn = { ...tryOn, helm: id };
                     render();
                 };
                 row.append(b);
@@ -2864,12 +2878,12 @@ export async function bootStandalone(root) {
             ? "The payment rail is not connected yet, so dust is granted during the beta."
             : "Star Dust purchases are not open yet. Everything else on this page works."));
         box.append(scroll);
-        // A PREPRODUCTION INSTRUMENT, and it was "beta page only" only because
-        // the whole storefront was. Promoting the shop would have shipped a
-        // developer panel - what the shop is holding back today and why - to
-        // every live pilot. It says beta, so it is gated on beta.
-        if (IS_BETA)
-            box.append(drawCycleRoll(cy));
+        // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
+        // the storefront was, but the storefront is the shop on both pages now
+        // and the cycle is tuned by watching a real shelf - which is the live
+        // one. It stays rolled up to a single line until it is asked for, so
+        // it costs a player who never opens it nothing but a row of small type.
+        box.append(drawCycleRoll(cy));
         if (featureOpen)
             box.append(drawFeatureSheet(featureOpen));
         if (dailyToast)
