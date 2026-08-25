@@ -2618,17 +2618,35 @@ export async function bootStandalone(root: HTMLElement) {
     const helm = ownHead ? HELMETS[0] : (HELMETS.find((h) => h.id === tryOn.helm) ?? HELMETS[0]);
     const palDef = PALS.find((x) => x.id === tryOn.pal);
 
-    const stage = el("div", "ac-tostage ac-shopstage");
-    const { c, ctx } = miniCanvas(320, 200);
-    c.className = "ac-tocanvas";
+    // THE CASE. The stage was a big quiet rectangle, which read as empty
+    // space rather than as the thing the page is about. It is a lit display
+    // case now: corner brackets, a spotlight, a pedestal the pilot stands
+    // over, and a name plate - and the whole case takes its colour from the
+    // suit being shown, so changing character re-lights the glass.
+    const CASE_W = 344;
+    const CASE_H = 236;
+    const stage = el("div", "ac-shopcase");
+    stage.style.setProperty("--case-glow", suit.glow ?? suit.trim ?? "#c4a0ff");
+    stage.style.setProperty("--case-lite", suit.suitLite ?? "#8a5ae4");
+    stage.style.setProperty("--case-deep", suit.suitDark ?? "#160f34");
+    const pane = el("div", "ac-casepane");
+    const { c, ctx } = miniCanvas(CASE_W, CASE_H);
+    c.className = "ac-tocanvas ac-casecanvas";
     c.setAttribute("role", "img");
     c.setAttribute("aria-label", `${suit.name} preview, flying`);
-    stage.append(c);
-    const cap = el("div", "ac-tocap");
-    cap.append(el("b", "", suit.name + (ownHead ? "" : ` · ${helm.name}`)));
-    if (palDef) cap.append(el("span", "", `${palDef.name} · ${palDef.tag}`));
-    stage.append(cap);
-    if (ownHead) stage.append(el("span", "ac-tonohelm", "WEARS ITS OWN HEAD"));
+    pane.append(el("i", "ac-casebeam"));
+    pane.append(c);
+    pane.append(el("i", "ac-casefloor"));
+    for (const corner of ["tl", "tr", "bl", "br"]) {
+      pane.append(el("i", `ac-casecorner ac-c-${corner}`));
+    }
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", "WEARS ITS OWN HEAD"));
+    stage.append(pane);
+    const plate = el("div", "ac-caseplate");
+    plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
+    plate.append(el("b", "", suit.name + (ownHead ? "" : ` · ${helm.name}`)));
+    if (palDef) plate.append(el("span", "ac-casesub", `${palDef.name} · ${palDef.tag}`));
+    stage.append(plate);
     scroll.append(stage);
     if (ctx) {
       engine.wantSuitArt(suit.id);
@@ -2637,9 +2655,9 @@ export async function bootStandalone(root: HTMLElement) {
       const tick = () => {
         if (!c.isConnected) return;
         const t = (performance.now() - t0) / 1000;
-        ctx.clearRect(0, 0, 320, 200);
-        if (palDef) paintPalPreview(ctx, engine.art, palDef.id, 250, 64, 46);
-        paintFlightPreview(ctx, engine.art, suit, helm, 142, 110, 112, t);
+        ctx.clearRect(0, 0, CASE_W, CASE_H);
+        if (palDef) paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
+        paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t);
         requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);

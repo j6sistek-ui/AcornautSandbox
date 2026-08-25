@@ -1083,10 +1083,62 @@
     .ac-rowdim { color: #cdd5ea; font-weight: 800; }
     /* ============ THE BETA STOREFRONT: one page, art-led ============ */
     .ac-shopbeta .ac-sheet-scroll { padding-bottom: 12px; }
-    /* the stage the whole page dresses */
-    .ac-shopstage { margin: 4px 0 10px; padding: 10px 0 12px; border-radius: 18px;
-      background: radial-gradient(120% 90% at 50% 0%, rgba(138,90,228,.28), rgba(10,7,26,.55) 70%);
-      border: 1px solid rgba(170,140,240,.28); }
+    /* ---- THE DISPLAY CASE ----
+       A lit vitrine, not a rectangle of empty purple. Every colour comes
+       from --case-glow / --case-lite / --case-deep, which the suit on show
+       sets, so changing character re-lights the glass. */
+    .ac-shopcase { --case-glow: #c4a0ff; --case-lite: #8a5ae4; --case-deep: #160f34;
+      position: relative; margin: 6px 0 12px; border-radius: 20px; overflow: hidden;
+      border: 1.5px solid color-mix(in srgb, var(--case-glow) 55%, transparent);
+      background:
+        radial-gradient(90% 70% at 50% -10%, color-mix(in srgb, var(--case-glow) 26%, transparent), transparent 68%),
+        linear-gradient(180deg, color-mix(in srgb, var(--case-lite) 22%, #0b0720), #0b0720 72%);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.05) inset,
+        0 14px 34px -18px color-mix(in srgb, var(--case-glow) 70%, transparent),
+        0 3px 14px rgba(0,0,0,.6); }
+    .ac-casepane { position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 10px 0 4px; }
+    .ac-casecanvas { position: relative; z-index: 2; }
+    /* the spotlight the case is lit by */
+    .ac-casebeam { position: absolute; top: -18%; left: 50%; transform: translateX(-50%);
+      width: 78%; height: 96%; pointer-events: none; z-index: 1;
+      background: radial-gradient(52% 62% at 50% 0%,
+        color-mix(in srgb, var(--case-glow) 34%, transparent), transparent 72%); }
+    /* the pedestal it stands over */
+    /* a pool of cast light, not a plinth - the pilot is flying, not standing */
+    .ac-casefloor { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+      width: 44%; height: 15px; pointer-events: none; z-index: 1; border-radius: 50%;
+      background: radial-gradient(50% 50% at 50% 50%,
+        color-mix(in srgb, var(--case-glow) 50%, transparent), transparent 72%);
+      filter: blur(3px); opacity: .55; }
+    /* corner brackets: the thing that makes it read as a case */
+    .ac-casecorner { position: absolute; width: 17px; height: 17px; z-index: 3; pointer-events: none;
+      border: 2px solid color-mix(in srgb, var(--case-glow) 85%, transparent); opacity: .85; }
+    .ac-c-tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
+    .ac-c-tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; border-radius: 0 6px 0 0; }
+    .ac-c-bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; border-radius: 0 0 0 6px; }
+    .ac-c-br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
+    .ac-casetag { position: absolute; top: 12px; right: 32px; z-index: 4; }
+    /* the name plate, lit from the same hue */
+    .ac-caseplate { position: relative; z-index: 3; display: flex; flex-direction: column;
+      align-items: center; gap: 1px; text-align: center;
+      padding: 9px 14px calc(11px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: 11px;
+      border-top: 1px solid color-mix(in srgb, var(--case-glow) 30%, transparent);
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--case-deep) 70%, #06040f)); }
+    .ac-caseeyebrow { font: 800 8.5px/1 Figtree, sans-serif; letter-spacing: .26em;
+      color: color-mix(in srgb, var(--case-glow) 80%, #fff); }
+    .ac-caseplate b { font: 800 17px/1.15 Fraunces, Georgia, serif; letter-spacing: .01em; color: #fff; }
+    .ac-casesub { font-size: 11px; color: #9aa4c0; }
+    /* older engines without color-mix still get a lit case, just a violet one */
+    @supports not (color: color-mix(in srgb, red 50%, blue)) {
+      .ac-shopcase { border-color: rgba(196,160,255,.5);
+        background: radial-gradient(90% 70% at 50% -10%, rgba(138,90,228,.3), transparent 68%), #0b0720; }
+      .ac-casecorner { border-color: rgba(196,160,255,.85); }
+      .ac-casebeam { background: radial-gradient(52% 62% at 50% 0%, rgba(196,160,255,.3), transparent 72%); }
+      .ac-casefloor { background: radial-gradient(50% 50% at 50% 50%, rgba(196,160,255,.45), transparent 72%); }
+      .ac-caseeyebrow { color: #d8c6ff; }
+    }
     /* the combo bar: what the stage costs */
     .ac-combobar { display: flex; align-items: center; gap: 12px; width: 100%;
       border-radius: 16px; padding: 12px 14px; margin-bottom: 6px;
@@ -1190,8 +1242,12 @@
       /* a 200px-tall stage eats a 430px-tall window, so the shelves are
          never reached. The canvas carries inline dimensions from
          miniCanvas, which is why these have to shout. */
-      .ac-shopbeta .ac-shopstage { padding: 6px 0 8px; }
-      .ac-shopbeta .ac-shopstage .ac-tocanvas { width: 208px !important; height: 130px !important; }
+      /* a case stretched to the full window leaves the pilot marooned in
+         the middle of it, so the vitrine keeps its own proportions */
+      .ac-shopbeta .ac-shopcase { max-width: 460px; margin-left: auto; margin-right: auto; }
+      .ac-shopbeta .ac-casepane { padding: 4px 0 0; }
+      .ac-shopbeta .ac-casecanvas { width: 236px !important; height: 162px !important; }
+      .ac-shopbeta .ac-caseplate b { font-size: 15px; }
       .ac-shopbeta .ac-combobar { padding: 9px 12px; }
     }
   </style>
