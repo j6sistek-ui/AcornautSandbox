@@ -855,45 +855,93 @@ def verify_beta_art_gates(qa: QA) -> None:
         qa.ok("every production-reachable suit has its art off the beta flag")
 
 
-def verify_dev_instruments(qa: QA) -> None:
-    """A panel that calls itself preproduction must be gated on the beta.
+def verify_pose_domes(qa: QA) -> None:
+    """A per-pose dome table must be COMPLETE and one size.
 
-    This is the check that would have caught the cycle roll-up. It was
-    written beta-only and commented "beta page only" - but only because the
-    whole storefront sat behind IS_BETA. The moment the shop was promoted to
-    live, an unconditional `box.append(drawCycleRoll(cy))` would have put a
-    developer panel listing every item the shop is holding back, and why, in
-    front of every pilot on acornaut.app. Nothing failed, nothing looked
-    wrong in the diff, and the comment still said beta.
+    Three suits have tap banks that move the head, so their helmet needs an
+    anchor per pose rather than the single "suit:<id>" one. A table like that
+    fails quietly in two ways: a missing frame silently falls back to the
+    static anchor for that pose alone - one frame in sixteen where the glass
+    jumps off the head - and a radius that drifts between poses resizes the
+    helmet mid-gesture. Neither shows up in a diff, and both are invisible
+    until someone watches the loop at full size.
 
-    So the comment is held to its word: a call site whose own comment claims
-    beta/dev/preproduction has to be inside an IS_BETA test.
+    So the shape is asserted: sixteen consecutive frames, one radius.
     """
-    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
-    lines = ui.splitlines()
+    source = DRAW_SOURCE.read_text(encoding="utf8")
+    table = re.search(r"\bconst\s+DOME(?:\s*:[^=]+)?\s*=\s*\{(.*?)\}\s*;",
+                      source, re.DOTALL)
+    if not table:
+        qa.fail("could not find the DOME table")
+        return
+    poses: dict[str, dict[int, tuple[float, float, float]]] = {}
+    for suit, n, x, y, r in re.findall(
+            r'"([a-z]+)-tap-(\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\]',
+            table.group(1)):
+        poses.setdefault(suit, {})[int(n)] = (float(x), float(y), float(r))
     problems: list[str] = []
-    claim = re.compile(r"//.*\b(beta[ -]?(page|only)|preproduction|dev(eloper)? (panel|only))",
-                       re.I)
-    for i, line in enumerate(lines):
-        if not claim.search(line):
+    for suit, frames in sorted(poses.items()):
+        missing = [n for n in range(1, 17) if n not in frames]
+        if missing:
+            problems.append(f"{suit} has {len(frames)}/16 pose anchors, missing "
+                            f"{','.join(map(str, missing))} - those poses fall back "
+                            f"to the static anchor and the glass jumps")
+        radii = {r for _, _, r in frames.values()}
+        if len(radii) > 1:
+            problems.append(f"{suit}'s helmet changes size mid-gesture: radii "
+                            f"{sorted(radii)}")
+    if problems:
+        qa.fail("pose domes: " + "; ".join(problems))
+    else:
+        qa.ok(f"per-pose dome tables complete for {len(poses)} suits "
+              f"({16 * len(poses)} anchors, one radius each)")
+
+
+# WHICH DEV INSTRUMENTS SHIP WHERE. A panel that exists to tune the game
+# rather than to play it is a DECISION, and decisions belong in a table.
+#
+# The first version of this check inferred the decision from a nearby
+# comment - it looked for "beta page only" or "preproduction" and demanded an
+# IS_BETA beside it. That was defeated the first time it mattered: another
+# branch moved the cycle inspector onto the live page and rewrote the comment
+# in the same edit, so the check saw nothing to complain about and passed.
+#
+# A guard that a rewrite can silence is not a guard. So the placement is
+# declared here, and the check holds the code to the declaration in BOTH
+# directions - gating something listed as "both", or ungating something
+# listed as "beta", each fails until this table is updated on purpose.
+DEV_INSTRUMENTS = {
+    # builder            where     why
+    "drawCycleRoll":     "both",   # the shop's cycle inspector. Deliberately
+                                   # live: the cycle is tuned by watching a
+                                   # real shelf, and the real shelf is the
+                                   # live one. Rolled up to one line unopened.
+}
+
+
+def verify_dev_instruments(qa: QA) -> None:
+    """Every dev instrument sits where DEV_INSTRUMENTS says it does."""
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    problems: list[str] = []
+    for name, where in sorted(DEV_INSTRUMENTS.items()):
+        calls = [ln for ln in ui.splitlines()
+                 if f"{name}(" in ln and "function " not in ln]
+        if not calls:
+            problems.append(f"{name} is declared {where} but is never called - "
+                            f"either it was deleted, or this table is stale")
             continue
-        # the call the comment introduces: the next few non-blank code lines
-        for nxt in lines[i + 1:i + 4]:
-            body = nxt.strip()
-            if not body or body.startswith("//") or body.startswith("*"):
-                continue
-            if "IS_BETA" in body or "BETA_UNLOCK_GATES" in body:
-                break
-            if body.startswith(("box.append", "scroll.append", "wrap.append",
-                                "sheet.append", "panel.append")):
-                problems.append(
-                    f"standalone.ts:{i + 2} calls {body[:46]}... under a comment "
-                    f"claiming beta/preproduction, with no IS_BETA test")
-            break
+        for ln in calls:
+            gated = "IS_BETA" in ln
+            if where == "beta" and not gated:
+                problems.append(f"{name} is declared beta-only but ships on BOTH "
+                                f"pages: {ln.strip()[:60]}")
+            if where == "both" and gated:
+                problems.append(f"{name} is declared to ship on both pages but is "
+                                f"gated on beta: {ln.strip()[:60]}")
     if problems:
         qa.fail("dev instruments: " + "; ".join(problems))
     else:
-        qa.ok("every panel that calls itself preproduction is gated on the beta")
+        qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
 def main() -> int:
@@ -913,6 +961,7 @@ def main() -> int:
     verify_dev_instruments(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
+    verify_pose_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()
