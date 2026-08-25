@@ -362,17 +362,17 @@ Phase B creates review-only, code-native composites and motion evidence; it does
 
 Phase B also requires real-timing motion evidence, not only selected frames: an 844 × 390 clip of 2–3 seconds of normal flight at both 225 and 360 units/s including one decision-tick target switch, a continuous entry-0 through tunnel-5 clip, and a continuous return-0 through return-35 clip. Provide default-motion and reduced-motion landscape clips; other view sizes may remain static. At least one full landscape tunnel frame must prove pilot-left side view, registered readable walls, and no first-person vortex. Transition strips include transform overlays for entry-47/tunnel-0, tunnel-359/return-0, and return-9/10, including portal layers as well as the pilot.
 
-The review harness writes frames, strips, and required short clips only to an OS temporary directory or attaches them to the PR. No contact sheet goes in `docs/` or `sandbox_assets/`, and no generated output is committed. The approved ordinary gates and portal paintings are inputs and remain byte-identical. Any proposal for a new runtime bitmap requires separate approval; the default implementation is procedural Canvas 2D over existing art. Phase B stops for visual sign-off.
+The review harness writes frames, strips, and required short clips only to an OS temporary directory or attaches them to the PR. No contact sheet goes in `docs/`, and no generated output is committed. The approved ordinary gates and portal paintings are inputs and remain byte-identical. Any proposal for a new runtime bitmap requires separate approval; the default implementation is procedural Canvas 2D over existing art. Phase B stops for visual sign-off.
 
 #### Phase B change and verification statement
 
-Phase B added the source-only `review-hyper-run-r3.mjs` reference renderer and generated all frames and clips only in an OS temporary directory. It introduced no runtime bitmap, changed no approved gate, entry, or return PNG, and wrote no review output under `docs/` or `sandbox_assets/`. The approved composition keeps a pilot-left side view and future-to-past flow, uses full circular two-layer gates with a registered blue 38-pixel safe-center membrane, and grows the same sky and airflow through the portal into literal tunnel walls instead of cutting to a first-person or opaque scene.
+Phase B added the source-only `review-hyper-run-r3.mjs` reference renderer and generated all frames and clips only in an OS temporary directory. It introduced no runtime bitmap, changed no approved gate, entry, or return PNG, and wrote no review output under `docs/`. The approved composition keeps a pilot-left side view and future-to-past flow, uses full circular two-layer gates with a registered blue 38-pixel safe-center membrane, and grows the same sky and airflow through the portal into literal tunnel walls instead of cutting to a first-person or opaque scene.
 
 The combined reference and shipping-path review matrix covers all five required view sizes; centered and `±38` / `±38.0001` gate cases and the complete pass/miss age sets; simultaneous pass/debris feedback, threading, and pilot-plane guides; up/down/level, maximum-gap, and 240/200/160 director states; the 0/5/15/20/95/100/entry/late/max-cycle/insufficient meter states; central and Y496 entries; Y96/Y544 returns; tick-180/255/285 tunnel content; the authored d06/d07 debris pinch and a22/a23/a24 high-low-high line; grayscale, deuteranopia, and reduced-motion treatments; and complete, partial, and missing portal-art states. Default and reduced-motion clips cover the three-second 225-to-360 normal-flow handoff, all 48 entry ticks plus tunnel ticks 0–5, and all 36 return ticks. Transform overlays pair entry-47/tunnel-0, tunnel-359/return-0, and return-9/10. Phase B was approved before Phase C.
 
 ### Phase C — source implementation and acceptance, then stop
 
-Phase C may change authored TypeScript and source-only harnesses after Phase B approval. It does not edit or commit generated `docs/js*` or `sandbox_assets/js*`, does not change the approved gate/portal PNGs unless separately authorized, and does not change current `ART_VER = 80`, `SAVE_KEY`, `LEGACY_KEYS`, `prototype-chapter-1`, or the record-continuity decision.
+Phase C may change authored TypeScript and source-only harnesses after Phase B approval. It does not edit or commit generated `docs/js*`, does not change the approved gate/portal PNGs unless separately authorized, and does not change current `ART_VER = 80`, `SAVE_KEY`, `LEGACY_KEYS`, `prototype-chapter-1`, or the record-continuity decision.
 
 The existing six top-level acceptance cases remain the release structure and are extended as follows:
 
@@ -637,8 +637,8 @@ Phase B replaces only the six ordinary-gate PNGs. The approved four-layer entry 
 - All six files share one canvas center, transform, collision-aperture registration, and scale. The three back/front composites share one core outer silhouette and aperture geometry; the front files remain thin arcs rather than duplicating the back silhouette. The projected aperture remains the same radius-54 collision hole in every state.
 - The gate is face-on. Apparent major/minor axis ratio is at least 0.96 and authored tilt is at most about 3 degrees. Color, glow, and particles may change state; silhouette and aperture may not.
 - The review composite shows each layer separately, the pair without a pilot, the pilot between layers, all three states at 148-pixel game size over representative dark skies, and the radius-54 collision overlay.
-- Store the contact sheet at `art-src/hyper-run/hyper-run-r2-contact-sheet.png` or attach it to the PR. Never put it in `docs/` or `sandbox_assets/`.
-- Mirror only the six approved runtime PNGs into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/`; paired roots must be byte-identical by SHA-256.
+- Store the contact sheet at `art-src/hyper-run/hyper-run-r2-contact-sheet.png` or attach it to the PR. Never put it in `docs/`.
+- Place only the six approved runtime PNGs into `docs/art/hyper-run/`; the single root must be byte-identical by SHA-256.
 
 #### Phase B change and verification statement
 
@@ -659,7 +659,7 @@ Phase B stops after those game-scale composites and hash/geometry checks for sep
 5. **Swept objects and exact gate plane:** Swept gate/debris checks run at 300 and 480. The ledger remains pending before the plane, stamps its decision only on the first crossing step, and advances synchronized 27/39-tick layer fades from that stamp. The pass/miss frame strips are the visible evidence companion. The procedural fallback composite is also a full face-on ring; it may not retain the shipped half-ellipse horseshoe.
 6. **Tunnel parity and handoff:** One tunnel advances exactly 4,500 units in 360 ticks, then returns after 36 ticks with charge zero, speed 390, Y inside the separately derived `96…544` band, and no double settlement. One-tick parity checks prove race-tunnel plain release/hold matches beta Wormhole Run's `+1,300 / −2,100` and `−520…+620`, then exercise deterministic boost/drop reward lines and both seed/cycle mirror outcomes inside the tunnel.
 
-The Hyper Run art loader stays beta-gated. Phase C changes source and source-level tests only; it does not edit or commit generated `docs/js*` or `sandbox_assets/js*`. `ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Phase C stops with all six tests passing and reports exact fixture evidence for review.
+The Hyper Run art loader stays beta-gated. Phase C changes source and source-level tests only; it does not edit or commit generated `docs/js*`. `ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Phase C stops with all six tests passing and reports exact fixture evidence for review.
 
 #### Phase C change and verification statement
 
@@ -700,7 +700,7 @@ The proof of concept is an experimental Log mission named **PROTOTYPE CHAPTER 1*
 - Time goals evaluated by the existing goal and level-result path. Prototype stars are a run grade only; campaign star masks, totals, unlocks, and rewards are not changed.
 - A prototype race result-sheet variant in the existing level-complete overlay.
 - A deterministic replay test extending the pattern in `illustrated-src/test-tunnel.mjs`.
-- The approved ring, entry, and return-portal production sprites, mirrored into `docs/art/hyper-run/` and `sandbox_assets/art/hyper-run/`; the review-only contact sheet lives once at `illustrated-src/hyper-run-contact-sheet.png`.
+- The approved ring, entry, and return-portal production sprites, placed in `docs/art/hyper-run/`; the review-only contact sheet lives once at `illustrated-src/hyper-run-contact-sheet.png`.
 
 ### Explicitly out until later courses
 
@@ -723,7 +723,7 @@ The proof of concept is an experimental Log mission named **PROTOTYPE CHAPTER 1*
 | Replay testing | Fixed `1 / 60` input replay pattern in `test-tunnel.mjs` | Canonical race step, press/release events, finish-tick and acorn assertions |
 | Art loading/drawing | Existing art bank and Canvas 2D draw path | Painted gate/portal layers and their engine-driven animation |
 
-`ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Generated files under `docs/js*` and `sandbox_assets/js*` are maintainer-owned and are not part of this work.
+`ART_VER`, `SAVE_KEY`, and `LEGACY_KEYS` remain unchanged. Generated files under `docs/js*` are maintainer-owned and are not part of this work.
 
 ## Course and mission data
 
@@ -1054,7 +1054,7 @@ After both approvals, implementation should be limited to source and tests in th
 - Existing save type/source only for optional `experimentalRaceRecords`; no save-key or legacy-key changes and no effect on campaign star totals.
 - The existing replay-test area for determinism and benchmark scripts.
 
-Do not run or edit build outputs. Do not change `ART_VER`, `SAVE_KEY`, or `LEGACY_KEYS`. Do not commit generated `docs/js*` or `sandbox_assets/js*`. The maintainer builds and versions on merge.
+Do not run or edit build outputs. Do not change `ART_VER`, `SAVE_KEY`, or `LEGACY_KEYS`. Do not commit generated `docs/js*`. The maintainer builds and versions on merge.
 
 ## Decisions and deviations from the starting concept
 

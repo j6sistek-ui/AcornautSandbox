@@ -29,7 +29,6 @@ except ImportError:  # pragma: no cover - dependency failure is the message
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ART = ROOT / "docs" / "art"
-SANDBOX_ART = ROOT / "sandbox_assets" / "art"
 CATALOG = ROOT / "illustrated-src" / "game" / "catalog.ts"
 ART_SOURCE = ROOT / "illustrated-src" / "game" / "art.ts"
 DRAW_SOURCE = ROOT / "illustrated-src" / "game" / "draw.ts"
@@ -137,32 +136,23 @@ def clipped(items: Iterable[str], limit: int = 12) -> str:
     return "; ".join(shown) + suffix
 
 
-def verify_mirrors(qa: QA) -> dict[str, Path]:
-    if not DOCS_ART.is_dir() or not SANDBOX_ART.is_dir():
-        qa.fail("docs/art and sandbox_assets/art must both exist")
+def verify_art_inventory(qa: QA) -> dict[str, Path]:
+    """docs/art is the whole shipping art tree, and it is the only one.
+
+    This used to compare docs/art against a byte-identical sandbox_assets/art
+    and fail on drift between them. The mirror is gone - nothing ever loaded
+    from it - so the check that remains is the one that was always underneath:
+    the tree exists, and here is what is in it for every group below to walk.
+    """
+    if not DOCS_ART.is_dir():
+        qa.fail("docs/art is missing - that is the whole shipping art tree")
         return {}
-
-    docs = regular_files(DOCS_ART)
-    sandbox = regular_files(SANDBOX_ART)
-    only_docs = sorted(set(docs) - set(sandbox))
-    only_sandbox = sorted(set(sandbox) - set(docs))
-    if only_docs or only_sandbox:
-        detail = []
-        if only_docs:
-            detail.append("docs only: " + clipped(only_docs))
-        if only_sandbox:
-            detail.append("sandbox only: " + clipped(only_sandbox))
-        qa.fail("art mirror path drift\n" + "\n".join(detail))
-
-    changed = [
-        rel for rel in sorted(set(docs) & set(sandbox))
-        if sha256(docs[rel]) != sha256(sandbox[rel])
-    ]
-    if changed:
-        qa.fail("art mirror content drift: " + clipped(changed))
-    if not only_docs and not only_sandbox and not changed:
-        qa.ok(f"docs/art and sandbox_assets/art match ({len(docs)} files)")
-    return docs
+    files = regular_files(DOCS_ART)
+    if not files:
+        qa.fail("docs/art is empty")
+        return {}
+    qa.ok(f"docs/art holds {len(files)} shipping files")
+    return files
 
 
 def decode_rasters(qa: QA, files: dict[str, Path]) -> dict[str, tuple[tuple[int, int], tuple[str, ...]]]:
@@ -184,7 +174,7 @@ def decode_rasters(qa: QA, files: dict[str, Path]) -> dict[str, tuple[tuple[int,
     if broken:
         qa.fail("raster decode failures\n" + "\n".join(broken))
     else:
-        qa.ok(f"decoded all {len(rasters)} mirrored raster assets")
+        qa.ok(f"decoded all {len(rasters)} raster assets")
     return metadata
 
 
@@ -736,7 +726,7 @@ def verify_ui_classes(qa: QA) -> None:
     wanted = {c for c in wanted if c.startswith("ac-")} - UNSTYLED_HOOKS
 
     problems: list[str] = []
-    for page in ("docs/index.html", "sandbox_assets/index.html"):
+    for page in ("docs/index.html", "docs/beta/index.html"):
         text = (ROOT / page).read_text(encoding="utf8")
         gone = sorted(
             c for c in wanted
@@ -746,7 +736,7 @@ def verify_ui_classes(qa: QA) -> None:
     if problems:
         qa.fail("UI classes: " + "; ".join(problems))
     else:
-        qa.ok(f"all {len(wanted)} UI classes are styled in both pages")
+        qa.ok(f"all {len(wanted)} UI classes are styled in the page and its beta")
 
 
 def verify_card_states(qa: QA) -> None:
@@ -944,6 +934,183 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
+# Suits that ship a tap bank a motion bank has already made unreachable.
+# Both are pre-existing and both are waiting on a decision, so they are
+# recorded here rather than failing the build - but a NEW suit that does it
+# still fails, which is the point.
+MOTION_TAP_OVERLAP = {
+    "flight": "616 KB that loads and never draws. Harmless, purely wasted; "
+              "drop it when the folder is next rewritten.",
+    "eclipse": "1.5 MB, and tied to the open question of whether Eclipse keeps "
+               "its asc/desc experiment at all. Resolving that resolves this.",
+}
+
+
+def verify_one_tree(qa: QA) -> None:
+    """There is ONE shipping tree, and it is docs/.
+
+    sandbox_assets/ was a byte-identical copy of docs/ - 85 MB of duplicate
+    art plus the whole built game - that nothing ever loaded. No page, no
+    manifest, no deploy step, no workflow. It was simply the output directory
+    from before docs/ existed as the Pages root, and it was kept in step for
+    years by a mirror write in every art script and two QA checks whose only
+    job was to confirm the copy still matched the original.
+
+    Several one-off drop scripts under art-src/ still write to both paths.
+    They are archival - the record of how a past art drop was built - and
+    rewriting five of them to remove a mirror they would only recreate if
+    somebody deliberately re-ran an old drop is churn that can go stale.
+    This check cannot go stale: whatever the route back - an old script, a
+    stray copy, a bad merge - the tree reappearing fails the build here.
+    """
+    ghost = ROOT / "sandbox_assets"
+    if not ghost.exists():
+        qa.ok("one shipping tree: docs/")
+        return
+    n = len(regular_files(ghost)) if ghost.is_dir() else 1
+    qa.fail(f"sandbox_assets/ is back ({n} files). Nothing loads from it - it is a "
+            f"duplicate of docs/. Something re-created it: most likely an art-src "
+            f"drop script that still mirrors, or a copy step in a build. Delete it "
+            f"and stop whatever wrote it.")
+
+
+def verify_motion_banks(qa: QA) -> None:
+    """A velocity-indexed pose bank is complete and its head holds still.
+
+    This is the tier MOTION_SPEC.md makes the standard, and it has two
+    failure modes that both pass a casual look:
+
+      * A MISSING DOME ANCHOR. paintDome returns silently on a key it does
+        not have, so the fault is not a drifting helmet - it is NO helmet,
+        on that one pose, at that one attitude. On a contact sheet of eight
+        frames it reads as "the climb frames look bare", if it reads at all.
+      * A HEAD THAT CHANGES SIZE across the bank. One scale fits the helmet
+        to the head, so a bank whose head grows and shrinks makes the dome
+        breathe against the face along the ramp. Flight holds 33px on all
+        eight - 0.0% spread - which is what makes any of the 20-odd helmets
+        sit correctly at every attitude.
+
+    Also catches the waste: a suit with a motion bank can never reach a tap
+    bank, because fullMotion is tested first and has no time gate.
+    """
+    draw = (ROOT / "illustrated-src/game/draw.ts").read_text(encoding="utf8")
+    art = (ROOT / "illustrated-src/game/art.ts").read_text(encoding="utf8")
+    dome = {k: [float(x) for x in v.split(",")]
+            for k, v in re.findall(r'"([a-z]+-(?:asc|desc)-\d+)":\s*\[([^\]]+)\]', draw)}
+
+    def banks(name: str) -> dict[str, int]:
+        m = re.search(name + r"[^{]*\{([^}]*)\}", art, re.S)
+        if not m:
+            return {}
+        return {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", m.group(1))}
+
+    asc, desc, tap = banks("ASC_BANKS"), banks("DESC_BANKS"), banks("TAP_BANKS")
+    # A suit that wears its own head never calls paintDome at all, so it has
+    # no anchors to be missing. Cyber is the case: nine ascent and nine
+    # descent frames, no DOME keys, and correct.
+    catalog = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
+    own_head = {m.group(1) for m in re.finditer(
+        r'\{\s*id:\s*"(\w+)"[^}]*?(?:ownHead|cat):\s*true', catalog)}
+    problems: list[str] = []
+    checked = 0
+    for suit in sorted(set(asc) & set(desc)):
+        checked += 1
+        fixed_helmet = suit in own_head
+        radii: list[float] = []
+        for kind, n in (("asc", asc[suit]), ("desc", desc[suit])):
+            for i in range(1, n + 1):
+                key = f"{suit}-{kind}-{i}"
+                png = ROOT / f"docs/art/suits/{key}.png"
+                if not png.exists():
+                    problems.append(f"{key}.png is missing but the bank declares it")
+                    continue
+                if key not in dome:
+                    if not fixed_helmet:
+                        problems.append(f"{key} has no DOME anchor - that pose draws "
+                                        f"NO helmet at all, silently")
+                    continue
+                radii.append(dome[key][2])
+        if len(radii) > 1:
+            spread = (max(radii) - min(radii)) / (sum(radii) / len(radii))
+            if spread > 0.04:
+                problems.append(f"{suit}: head radius swings {min(radii):.0f}-"
+                                f"{max(radii):.0f} across its bank ({spread * 100:.1f}%) "
+                                f"- the helmet will breathe along the ramp")
+        if suit in tap and suit not in MOTION_TAP_OVERLAP:
+            problems.append(f"{suit} ships BOTH a motion bank and a {tap[suit]}-frame "
+                            f"tap bank; fullMotion wins with no time gate, so the tap "
+                            f"frames load and never draw")
+
+    if problems:
+        qa.fail("motion banks: " + "; ".join(problems))
+    else:
+        qa.ok(f"velocity-indexed pose banks complete for {checked} suits "
+              f"(anchor per frame, head radius held), {len(MOTION_TAP_OVERLAP)} "
+              f"with a declared dead tap bank")
+
+
+def verify_tuning_run_gated(qa: QA) -> None:
+    """The Tuning Run cannot end and cannot reach a player.
+
+    It is the one mode in the game where the corridor is not allowed to kill
+    you, which makes it the one mode whose gate actually matters. Two things
+    hold it in place, and both are one careless edit from gone:
+
+      * resetRun must CLEAR tuneTest. Every ordinary run goes through it, so
+        the moment it stops clearing, a pilot who has visited the tuning run
+        once is immortal in every run afterwards - and nothing on screen
+        would say so.
+      * the door into it must be beta-gated, or the live page grows a
+        prototype entrance in its Modes sheet.
+
+    The harness proves the behaviour by flying it. This proves the SHAPE, so
+    a refactor that moves the flag or the door has to come past here too.
+    """
+    sim = (ROOT / "illustrated-src/game/sim.ts").read_text(encoding="utf8")
+    ui = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    problems: list[str] = []
+
+    body = sim.split("export function resetRun", 1)
+    if len(body) < 2:
+        problems.append("resetRun is gone - this guard is stale")
+    else:
+        # up to the next top-level export is the body we care about
+        rest = body[1]
+        end = rest.find("\nexport ")
+        reset_body = rest[:end if end > 0 else len(rest)]
+        # a commented-out assignment still contains the text of one, and this
+        # guard exists precisely for the edit that comments it out
+        reset_body = "\n".join(ln.split("//", 1)[0] for ln in reset_body.splitlines())
+        if "w.tuneTest = false" not in reset_body:
+            problems.append("resetRun no longer clears tuneTest - an ordinary run "
+                            "after a tuning run would be immortal")
+
+    lines = ui.splitlines()
+    calls = [i for i, ln in enumerate(lines) if "flyTuning()" in ln]
+    if not calls:
+        problems.append("nothing opens the tuning run any more - either the door "
+                        "was deleted, or this guard is stale")
+    for i in calls:
+        # the gate is an `if` above the door, not on the door's own line
+        window = "\n".join(lines[max(0, i - 3):i + 1])
+        if "IS_BETA" not in window:
+            problems.append(f"the tuning run door is not beta-gated: "
+                            f"{lines[i].strip()[:70]}")
+
+    # and the rig itself only draws for a run that opted in
+    rig = [ln for ln in ui.splitlines() if "tuningRig()" in ln and "function " not in ln]
+    if not rig:
+        problems.append("the tuning rig is never drawn")
+    for ln in rig:
+        if "tuneTest" not in ln:
+            problems.append(f"the tuning rig draws without checking tuneTest: {ln.strip()[:70]}")
+
+    if problems:
+        qa.fail("tuning run: " + "; ".join(problems))
+    else:
+        qa.ok("the tuning run stays beta-only, and every ordinary run stays mortal")
+
+
 def verify_scroll_not_squash(qa: QA) -> None:
     """A scrollable, height-capped flex column must not shrink its children.
 
@@ -960,7 +1127,7 @@ def verify_scroll_not_squash(qa: QA) -> None:
     and you owe the children a flex:none.
     """
     problems: list[str] = []
-    for page in ("docs/index.html", "sandbox_assets/index.html"):
+    for page in ("docs/index.html", "docs/beta/index.html"):
         css = (ROOT / page).read_text(encoding="utf8")
         rules: dict[str, str] = {}
         # Grouped selectors are ordinary CSS - `a > *, b > * { ... }` - so each
@@ -1002,7 +1169,7 @@ def verify_scroll_not_squash(qa: QA) -> None:
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
-    files = verify_mirrors(qa)
+    files = verify_art_inventory(qa)
     metadata = decode_rasters(qa, files) if files else {}
     if metadata:
         verify_sprite_dimensions(qa, metadata)
@@ -1015,6 +1182,9 @@ def main() -> int:
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
+    verify_one_tree(qa)
+    verify_motion_banks(qa)
+    verify_tuning_run_gated(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)

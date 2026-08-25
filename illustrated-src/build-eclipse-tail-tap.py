@@ -16,7 +16,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/art/suits/eclipse-tail.png"
 MASTER_OUT = ROOT / "art-src/animation/eclipse-tail"
-MIRRORS = [ROOT / "docs/art/suits", ROOT / "sandbox_assets/art/suits"]
+# docs/ is the only shipping tree; there is no mirror to keep in step
+MIRRORS = [ROOT / "docs/art/suits"]
 
 # Same hinge used by draw.ts.  The tail runs up and left from this point.
 PIVOT = (105.0, 143.0)

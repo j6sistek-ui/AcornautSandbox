@@ -678,6 +678,24 @@ export const TUNE_DIALS: {
   { id: "debris", label: "Debris", hint: "how thickly hazards arrive", min: 0.3, max: 2 },
 ];
 
+/** THE TUNING RUN. A calibration flight, not a game: the corridor never
+ *  ends, nothing in it can end the run, and the dials are ON SCREEN while
+ *  it flies rather than behind a pause.
+ *
+ *  The panel used to live in the pause menu, which made it useless for the
+ *  job it exists for. Pausing freezes the very thing being judged, every
+ *  resume hands back a corridor already in motion, and reading a dial as
+ *  "better" means surviving long enough to form an opinion. So: the sim
+ *  flies it, the pilot watches, and a change shows up in the next second
+ *  of corridor instead of the next run.
+ *
+ *  AUTOPILOT FLIES THE PILOT'S OWN CONTROL. It does not steer by a private
+ *  shortcut - it synthesises a hold, a drag or a tap and lets the same
+ *  physics consume it. A dial that changes the flight has to change the
+ *  autopilot too, or the panel would be reading a number nothing on
+ *  screen answers to. */
+export const TUNE_TEST = TUNE_PANEL;
+
 export const TUNE_STEP = 0.05;
 export const TUNE_DEFAULT = 1;
 

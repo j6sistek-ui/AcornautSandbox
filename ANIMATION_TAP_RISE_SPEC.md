@@ -57,7 +57,7 @@ Every frame must satisfy all of the following:
 
 - 256 x 256 RGBA with true transparency;
 - identical copies in `docs/art/suits/` and
-  `sandbox_assets/art/suits/`;
+  `docs/art/suits/`;
 - frames 1 and 16 are pixel-identical to the shipped `<suit>.png` static;
 - fixed character root and planted tail hinge;
 - exact static head, face, collar, and helmet-socket pixels in every frame;

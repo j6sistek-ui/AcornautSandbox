@@ -39,6 +39,12 @@ from a plausible-looking proxy, and the plausible proxies all lie:
   shell hides most of the sphere's edge. Measuring Sammie's visor gave 78
   where the answer was 124.
 
+## How it flies
+
+Fitting is this file. **Motion is `MOTION_SPEC.md`**, and a new model has to
+meet both: Flight's velocity-indexed pose bank is the standard, eight drawn
+frames, head radius held constant across all of them.
+
 ## What to render for a new model
 
 - **1408 × 1408**, character centred, plain flat background.
@@ -148,7 +154,7 @@ Run the mechanical gate from the repository root:
 python3 illustrated-src/verify-art.py
 ```
 
-It verifies that `docs/art` and `sandbox_assets/art` are byte-identical,
+It walks `docs/art`, the one shipping tree,
 decodes every shipping raster, enforces runtime dimensions and alpha,
 checks catalog/load coverage, audits the reviewed planet/debris cutouts,
 and runs the full tail-rig audit.
