@@ -1,10 +1,10 @@
-import { TUNNEL_CONTROLS, TUNNEL_CONTROL_DEFAULT, TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
 import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
-import { GUIDE_SUIT, GUIDE_HELM, cleanTune, freshTune } from "./catalog.js?v=145";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=145";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=145";
-import { WORMHOLE_HOLD_ACCEL, WORMHOLE_MAX_VY, WORMHOLE_MIN_VY, WORMHOLE_RELEASE_ACCEL, WORMHOLE_DRAG_TRAVERSAL, TUNE_AUTO_LEAD, TUNE_AUTO_DAMP, TUNE_HIT_FLASH, } from "./control-constants.js?v=145";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, } from "./control-constants.js?v=145";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -59,18 +59,8 @@ export function makeWorld(W, H) {
         bounceAnimT: -1,
         bounceAnimDir: 0,
         bounceAnimStrength: 0,
-        tunnelHeld: false,
-        tunnelDragY: null,
-        tunnelControl: 0,
-        tuneTest: false,
-        tuneAuto: true,
-        tuneHits: 0,
-        tuneHitT: 0,
-        tuneClean: 0,
-        tuneCleanBest: 0,
         wormHold: null,
         wormLeft: 0,
-        tune: freshTune(),
         hitCooldown: 0,
         trailT: 0,
         bounceUp: false,
@@ -280,13 +270,13 @@ function paceOf(save, w) {
 }
 function gravOf(save, w) {
     if (w.flight === "tunnel")
-        return PHYS.gravity * w.tune.fall;
+        return WORMHOLE_GRAVITY;
     const id = palId(save, w);
     return PHYS.gravity * (id === "pocketmoon" ? 0.85 : id === "nutsack" ? 1.2 : 1);
 }
 function flapOf(save, w) {
     if (w.flight === "tunnel")
-        return PHYS.flap * w.tune.lift;
+        return WORMHOLE_FLAP;
     const id = palId(save, w);
     return PHYS.flap * (id === "nutsack" ? 0.71 : 1);
 }
@@ -468,19 +458,28 @@ function buildTutorialCourse(w, save) {
     const dLand = PHYS.baseSpeed * (0.8 + 0.55 + tLand);
     const tApex = (640 - 60) / g; // the −640 spring up to the freeze
     const yApex = yLand - (640 * tApex - 0.5 * g * tApex * tApex);
+    // THE COURSE IS BUILT AROUND THIS HEIGHT. dyDive below places the
+    // recovery gate relative to the apex, so the swipe lesson only makes
+    // sense with the pilot AT the apex - anywhere else and "dive back down
+    // and make the gap" points at a gap that is not below them.
+    if (w.tut)
+        w.tut.apexY = yApex;
     const dApex = dLand + PHYS.baseSpeed * tApex;
     // the recovery gate: as deep below the apex as the screen allows
     const dyDive = Math.max(120, Math.min(352, w.H - 70 - gap / 2 - yApex - 20));
     const tDive = (-PHYS.dive + Math.sqrt(PHYS.dive * PHYS.dive + 2 * g * dyDive)) / g;
     const mk = (dist, gapY, sealed) => {
         const yy = clampY(gapY);
+        const tutKind = pickKind(w);
         const pair = {
             x: sx + dist,
             gapY: yy,
             gap,
             r: PHYS.planetR,
-            topKind: pickKind(w),
-            botKind: pickKind(w),
+            // one planet per gate - see the note in spawnPair. These are the FIRST
+            // gates anyone ever sees, so they are the last place to break the rule.
+            topKind: tutKind,
+            botKind: tutKind,
             scored: false,
             drift: 0,
             driftAmp: 0,
@@ -658,13 +657,22 @@ function spawnPair(w, save, x) {
         : w.flight === "lost" ? 12
             : w.tut ? 0
                 : gap * 0.15 * normalDrift) * lvlDrift;
+    const pairKind = pickKind(w);
     w.planets.push({
         x,
         gapY,
         gap,
         r,
-        topKind: pickKind(w),
-        botKind: pickKind(w),
+        // ONE PLANET PER GATE, drawn once. The two halves of a gate are one
+        // object as far as the eye is concerned - a striped giant above and an
+        // ice moon below reads as two things that happen to be near each other,
+        // not as a gap through a place. Diversity lives ACROSS gates, which is
+        // what pickKind is already for: 55% from the zone's own family and 45%
+        // a free pick that will not vanish into the sky. This is the same rule
+        // pickDebris already follows, and for the same reason - a zone should
+        // read as one place.
+        topKind: pairKind,
+        botKind: pairKind,
         scored: false,
         drift: Math.random() * Math.PI * 2,
         driftAmp,
@@ -795,8 +803,11 @@ function spawnPair(w, save, x) {
         // pilot down a real corridor for fifteen seconds and puts them back
         // where they were. Lost in Space only - Arcade's reversal hazard stays
         // retired. See enterWormhole.
+        // ...and not while already warped, for exactly the reason the hole roll
+        // above is guarded. A door to somewhere else, opening inside a black
+        // hole, reads as the way out and is not.
         const wormRate = wormChance(w);
-        if (!w.tut && !noHoles && wormRate > 0 && Math.random() < wormRate) {
+        if (!w.tut && !noHoles && !warping && wormRate > 0 && Math.random() < wormRate) {
             w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
         }
     }
@@ -846,21 +857,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.bounceAnimT = -1;
     w.bounceAnimDir = 0;
     w.bounceAnimStrength = 0;
-    w.tunnelHeld = false;
-    w.tunnelDragY = null;
-    // Every ordinary run is a real run. A tuning flight opts back IN after
-    // resetRun returns - so no path into the corridor can leave a pilot
-    // accidentally immortal. tuneAuto is a preference and survives.
-    w.tuneTest = false;
-    w.tuneHits = 0;
-    w.tuneHitT = 0;
-    w.tuneClean = 0;
-    w.tuneCleanBest = 0;
     w.wormHold = null;
     w.wormLeft = 0;
-    // a run keeps the dials it started with, so changing one mid-run cannot
-    // rewrite the corridor already generated behind the pilot
-    w.tune = cleanTune(save.tune);
     w.hitCooldown = 0;
     w.bounceUp = false;
     w.deadTimer = 0;
@@ -921,57 +919,10 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
     w.tut = w.race || flight === "tunnel" ? null : tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
-            retries: 0, springs: 0, bounced: false }
+            retries: 0, springs: 0, apexY: 0, bounced: false }
         : null;
     if (w.tut)
         buildTutorialCourse(w, save);
-}
-/** Which of TUNNEL_CONTROLS this run answers to. The beta chooses; the live
- *  page stays on the tap it has always flown until one is picked, so nothing
- *  about this experiment can reach a pilot who did not opt into it. */
-export function tunnelControlOf(save) {
-    if (!IS_BETA)
-        return 0;
-    const n = Math.round(Number(save?.tunnelControl));
-    return Number.isFinite(n) && n >= 0 && n < TUNNEL_CONTROLS.length ? n : TUNNEL_CONTROL_DEFAULT;
-}
-/** HOLD TO RISE. Returns false wherever it does not apply - the live page,
- *  another mode, or a run set to tap or slide - so the caller falls back to
- *  the classic flap. Grabbing the screen also launches a run still on READY. */
-export function setTunnelHeld(w, save, held) {
-    if (w.flight !== "tunnel" || !w.tunnel)
-        return false;
-    if (tunnelControlOf(save) !== 1)
-        return false;
-    if (held) {
-        if (w.screen !== "play")
-            return false;
-        if (w.ready)
-            w.ready = false;
-        if (w.lvl)
-            w.lvl.stats.taps += 1;
-    }
-    w.tunnelHeld = held;
-    return true;
-}
-/** SLIDE AND HOLD. `y` is a world y to steer toward; null lifts the finger
- *  and leaves the pilot where it is. Returns false wherever the control does
- *  not apply, so the caller can fall back like it does for hold. */
-export function setTunnelDrag(w, save, y) {
-    if (w.flight !== "tunnel" || !w.tunnel)
-        return false;
-    if (tunnelControlOf(save) !== 2)
-        return false;
-    if (y !== null) {
-        if (w.screen !== "play")
-            return false;
-        if (w.ready)
-            w.ready = false;
-        if (w.lvl)
-            w.lvl.stats.taps += 1;
-    }
-    w.tunnelDragY = y === null ? null : Math.max(0, Math.min(w.H, y));
-    return true;
 }
 /** Semantic race input is tick-stamped and consumed before the next race step. */
 export function setRaceInput(w, input) {
@@ -1039,6 +990,23 @@ const TUNNEL_SEQUENCE = [
     "surge",
     "breather",
 ];
+/** THE CORRIDOR'S WIDTH, in one place.
+ *
+ *  These used to be written out wherever they were needed, and the copies
+ *  agreed because they were the same literal arithmetic. Folding the tuned
+ *  corridor multiplier in broke that: maxHalf grew 15% and the three other
+ *  sites - the pattern's starting half, its ratio, and the opening speed -
+ *  kept the old numbers. The visible symptom was a lead-in that could no
+ *  longer reach full width, because the corridor slews at most 8px a node
+ *  and now had 15% further to climb in the same twelve nodes. Caught by
+ *  test-tunnel-controls, which asserts the lead-in is actually OPEN.
+ */
+function tunnelMinHalf(H) {
+    return Math.max(72, Math.min(88, H * 0.15)) * WORMHOLE_WIDTH;
+}
+function tunnelMaxHalf(H) {
+    return Math.max(tunnelMinHalf(H) + 38, Math.min(150, H * 0.27) * WORMHOLE_WIDTH);
+}
 function tunnelNoise(seed, index, salt = 0) {
     const x = Math.sin(seed * 0.001 + index * 91.733 + salt * 37.119) * 43758.5453;
     return x - Math.floor(x);
@@ -1055,7 +1023,7 @@ function beginTunnelSection(w) {
     t.buildRegion = Math.floor(t.buildSection / 2) % TUNNEL_REGION_NAMES.length;
     const prev = t.nodes[t.nodes.length - 1];
     t.patternStartCenter = prev ? (prev.top + prev.bottom) * 0.5 : w.H * 0.5;
-    t.patternStartHalf = prev ? (prev.bottom - prev.top) * 0.5 : Math.min(150, w.H * 0.27);
+    t.patternStartHalf = prev ? (prev.bottom - prev.top) * 0.5 : tunnelMaxHalf(w.H);
     t.patternStartCenterRatio = prev ? prev.centerRatio : 0.5;
     t.patternStartHalfRatio = prev ? prev.halfRatio : t.patternStartHalf / w.H;
     t.patternDirection = tunnelNoise(t.seed, t.buildSection, 21) < 0.5 ? -1 : 1;
@@ -1140,7 +1108,7 @@ function addTunnelHazard(w, node, lane, salt) {
     });
     // the dial reads as density, so a bigger number is LESS room between
     t.nextHazardAt = absoluteX
-        + (820 + tunnelNoise(t.seed, node.index, salt + 4) * 300) / w.tune.debris;
+        + (820 + tunnelNoise(t.seed, node.index, salt + 4) * 300) * WORMHOLE_DEBRIS_SPACING;
     return true;
 }
 function populateTunnelNode(w, node, patternPos, patternLength) {
@@ -1198,8 +1166,8 @@ function appendTunnelNode(w) {
     const patternLength = t.patternLength;
     const pattern = t.buildPattern;
     const progress = Math.min(1, index * TUNNEL_STEP / 30000);
-    const minHalf = Math.max(72, Math.min(88, w.H * 0.15)) * w.tune.width;
-    const maxHalf = Math.max(minHalf + 38, Math.min(150, w.H * 0.27) * w.tune.width);
+    const minHalf = tunnelMinHalf(w.H);
+    const maxHalf = tunnelMaxHalf(w.H);
     const wave = Math.sin(index * 0.31 + t.seed) * 0.62 + Math.sin(index * 0.117 + 1.8) * 0.38;
     const baseHalf = maxHalf - (maxHalf - minHalf) * progress + wave * 5;
     const previousHalf = prev ? (prev.bottom - prev.top) * 0.5 : t.patternStartHalf;
@@ -1223,7 +1191,7 @@ function appendTunnelNode(w) {
     // visual intensity can rise, but required vertical travel never rises at
     // the same time as the available space falls.
     const widthRoom = Math.max(0, Math.min(1, (half - minHalf) / Math.max(1, maxHalf - minHalf)));
-    const maxTurn = (3.8 + widthRoom * 5.8) * w.tune.turn;
+    const maxTurn = (3.8 + widthRoom * 5.8) * WORMHOLE_TURN;
     const wantCenter = inLead ? w.H * 0.5
         : shape.center * leadMix + w.H * 0.5 * (1 - leadMix);
     let center = previousCenter + Math.max(-maxTurn, Math.min(maxTurn, wantCenter - previousCenter));
@@ -1261,9 +1229,9 @@ function initTunnel(w, forcedSeed, leadNodes = 0) {
         leadNodes: 0,
         buildSection: -1, buildPattern: "launch", buildRegion: 0,
         patternPos: 0, patternLength: 0,
-        patternStartCenter: w.H * 0.5, patternStartHalf: Math.min(150, w.H * 0.27),
+        patternStartCenter: w.H * 0.5, patternStartHalf: tunnelMaxHalf(w.H),
         patternStartCenterRatio: 0.5,
-        patternStartHalfRatio: Math.min(150, w.H * 0.27) / w.H,
+        patternStartHalfRatio: tunnelMaxHalf(w.H) / w.H,
         patternDirection: 1,
         activePattern: "launch", activeRegion: 0, previousRegion: 0, regionBlend: 1, visualT: 0,
         banner: `${TUNNEL_REGION_NAMES[0]} · ${TUNNEL_PATTERN_NAMES.launch}`,
@@ -1283,7 +1251,7 @@ function initTunnel(w, forcedSeed, leadNodes = 0) {
         appendTunnelNode(w);
     w.squirrel.y = w.H * 0.5;
     w.lastGapY = w.H * 0.5;
-    w.speed = 220;
+    w.speed = WORMHOLE_SPEED_BASE;
     w.planets = [];
     w.startShieldArmed = false;
     w.shieldCharges = 0;
@@ -1408,8 +1376,6 @@ function exitWormhole(w) {
     w.prevTilt = hold.prevTilt;
     w.prevMirror = hold.prevMirror;
     w.particles = [];
-    w.tunnelHeld = false;
-    w.tunnelDragY = null;
     // a beat of grace on the way out: the pilot has been flying a corridor
     // and is being handed a gate mouth back
     w.absorbGrace = Math.max(w.absorbGrace, 1.2);
@@ -1417,100 +1383,38 @@ function exitWormhole(w) {
     w.recoveryMsg = "BACK ON COURSE";
     w.shake = 0.24;
 }
-/** Where the autopilot wants to be: the middle of the corridor that is open
- *  across the WHOLE look-ahead, not just the slice underfoot. Aiming at the
- *  centre of the current node walks straight into a pinch that was visible a
- *  second earlier, which reads as the autopilot being bad at the game rather
- *  than as the corridor being too tight - the opposite of what the panel is
- *  for. */
-function tuneAutoAim(w, sx) {
-    const t = w.tunnel;
-    const lead = Math.max(60, w.speed * TUNE_AUTO_LEAD);
-    const margin = PHYS.squirrelR + 6;
-    let top = -Infinity;
-    let bottom = Infinity;
-    for (let i = 0; i <= 4; i++) {
-        const b = tunnelBoundsAt(w, sx + (lead * i) / 4);
-        top = Math.max(top, b.top);
-        bottom = Math.min(bottom, b.bottom);
+/** A height near `want` that no planet is standing in.
+ *
+ *  The apex the course was built around is the RIGHT place for the swipe
+ *  lesson - the recovery gate is placed relative to it - but on a short
+ *  screen clampY compresses the course and the apex can land inside the
+ *  bounce planet the pilot just came off. Two pixels of overlap is enough
+ *  to make a dive read as phasing through solid ground, which is exactly
+ *  how it was reported. So the apex is a target, not a promise: push it
+ *  clear of anything at the flight line and keep the lesson honest.
+ */
+function tutClearY(w, want) {
+    const sx = w.W * PHYS.squirrelX;
+    let y = want;
+    for (let pass = 0; pass < 6; pass++) {
+        let moved = false;
+        for (const p of w.planets) {
+            if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40)
+                continue;
+            const gy = liveGapY(p, w);
+            for (const cy of [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
+                const need = p.r + PHYS.squirrelR + 8;
+                const d = y - cy;
+                if (Math.abs(d) < need) {
+                    y = cy + (d < 0 ? -need : need);
+                    moved = true;
+                }
+            }
+        }
+        if (!moved)
+            break;
     }
-    // The corridor closes to nothing somewhere in the look-ahead - it bends
-    // faster than the pilot can see through. Fall back to the window it is
-    // actually in and take the bend as it arrives.
-    if (bottom - top < margin * 2) {
-        const b = tunnelBoundsAt(w, sx);
-        top = b.top;
-        bottom = b.bottom;
-    }
-    let aim = (top + bottom) / 2;
-    for (const h of t.hazards) {
-        if (h.x < sx - 20 || h.x > sx + lead)
-            continue;
-        const clear = PHYS.squirrelR + h.r * 0.65 + 14;
-        if (Math.abs(aim - h.y) >= clear)
-            continue;
-        // step to whichever side of the rock still fits inside the window,
-        // preferring the shorter move when both do
-        const up = h.y - clear;
-        const down = h.y + clear;
-        const upOk = up - margin >= top;
-        const downOk = down + margin <= bottom;
-        if (upOk && (!downOk || Math.abs(up - aim) <= Math.abs(down - aim)))
-            aim = up;
-        else if (downOk)
-            aim = down;
-    }
-    return {
-        aim: Math.max(top + margin, Math.min(bottom - margin, aim)),
-        top: top + margin,
-        bottom: bottom - margin,
-    };
-}
-/** Fly the corridor using the PILOT'S control, not a shortcut. Whichever of
- *  TUNNEL_CONTROLS is selected, the autopilot produces the input a finger
- *  would produce and lets the ordinary physics consume it - so lift, fall
- *  and top speed are being exercised for real, and a dial that changes the
- *  flight visibly changes what the autopilot can hold. */
-function tuneAutopilot(w, save, control) {
-    const { aim, top, bottom } = tuneAutoAim(w, w.W * PHYS.squirrelX);
-    if (control === 2) {
-        w.tunnelDragY = aim;
-        return;
-    }
-    if (control === 1) {
-        // HOLD is an accelerating body, so project the current velocity forward
-        // or the controller hunts around the centre line and never settles.
-        w.tunnelHeld = w.squirrel.y + w.squirrel.vy * TUNE_AUTO_DAMP > aim;
-        return;
-    }
-    // TAP is ballistic: every tap throws the pilot up by a fixed RISE and
-    // gravity brings them back down. So the line to tap on is not the aim -
-    // it is half a rise BELOW it, which puts the whole sawtooth centred on
-    // the aim instead of hanging off one side of it. Tapping on the aim
-    // itself flies the corridor's top half and scrapes the ceiling.
-    const g = gravOf(save, w);
-    const vf = flapOf(save, w); // negative: upward
-    const rise = (vf * vf) / (2 * Math.max(1, g)); // how far one tap climbs
-    const line = Math.max(top, Math.min(bottom, aim + rise * 0.5));
-    // one frame of lead, so the discrete step does not overshoot the line
-    // by however far the pilot fell between two updates
-    const at = w.squirrel.y + w.squirrel.vy / 60;
-    // never chain-tap while already climbing hard, or the arcs stack into
-    // the roof and the pilot rides the ceiling instead of the corridor
-    if (at >= line && w.squirrel.vy > vf * 0.35)
-        flap(w, save);
-}
-/** A contact that an ordinary run would not have survived. Counting them -
- *  and the stretch flown between them - is the whole reading a tuning run
- *  exists to produce. */
-function registerTuneHit(w) {
-    if (w.tuneHitT > 0)
-        return; // one contact, not one per frame
-    w.tuneHits += 1;
-    w.tuneHitT = TUNE_HIT_FLASH;
-    w.tuneCleanBest = Math.max(w.tuneCleanBest, w.tuneClean);
-    w.tuneClean = 0;
-    w.shake = 0.18;
+    return Math.max(60, Math.min(w.H - 60, y));
 }
 function updateTunnel(w, save, simDt, realDt) {
     // a wormhole detour is on a clock; a real Wormhole Run is not
@@ -1523,7 +1427,7 @@ function updateTunnel(w, save, simDt, realDt) {
     }
     const t = w.tunnel;
     const progress = Math.min(1, w.distance / 30000);
-    const baseSpeed = (220 + progress * 160) * w.tune.speed;
+    const baseSpeed = WORMHOLE_SPEED_BASE + progress * WORMHOLE_SPEED_RAMP;
     // Surge is a real speed event, not just a louder-looking Ribbon. Its
     // corridor is deliberately wide and it never adds extra debris beyond
     // its one authored obstacle.
@@ -1531,52 +1435,23 @@ function updateTunnel(w, save, simDt, realDt) {
     // Tunnel flight deliberately reuses the main game's gravity and flap
     // impulse. A tap resets upward velocity; gravity owns the descent.
     const oldSy = w.squirrel.y;
-    // The BETA's standalone Wormhole Run uses hold to rise/release to fall.
-    // Hyper Run's alignment tunnel has its own drag authority in race.ts.
-    // Live Wormhole Run keeps the classic tap until its beta control is approved.
-    // every one of these is the shipped constant times its dial, so a panel
-    // left at 1.00 is bit-for-bit the flight that shipped
-    const vLo = WORMHOLE_MIN_VY * w.tune.vcap;
-    const vHi = WORMHOLE_MAX_VY * w.tune.vcap;
-    const control = tunnelControlOf(save);
-    w.tunnelControl = control;
-    if (w.tuneTest && w.tuneAuto)
-        tuneAutopilot(w, save, control);
-    if (control === 2) {
-        // SLIDE AND HOLD: the pilot is a rate-limited FOLLOWER, not an
-        // accelerating body, which is the whole reason Hyper Run's tunnel reads
-        // as steering rather than as flying. The cap is a traversal time, so it
-        // feels the same on a phone and on a tablet. vy is kept honest purely so
-        // the pose and the tail still lean into the movement.
-        const step = (w.H / WORMHOLE_DRAG_TRAVERSAL) * simDt * w.tune.lift;
-        const prevY = w.squirrel.y;
-        if (w.tunnelDragY !== null) {
-            const d = w.tunnelDragY - w.squirrel.y;
-            w.squirrel.y += Math.max(-step, Math.min(step, d));
-        }
-        w.squirrel.vy = simDt > 0 ? (w.squirrel.y - prevY) / simDt : 0;
-    }
-    else if (control === 1) {
-        w.squirrel.vy = Math.max(vLo, Math.min(vHi, w.squirrel.vy
-            + (w.tunnelHeld ? WORMHOLE_HOLD_ACCEL * w.tune.lift
-                : WORMHOLE_RELEASE_ACCEL * w.tune.fall) * simDt));
-        w.squirrel.y += w.squirrel.vy * simDt;
-    }
-    else {
-        w.squirrel.vy = Math.min(vHi, w.squirrel.vy + gravOf(save, w) * simDt);
-        w.squirrel.y += w.squirrel.vy * simDt;
-    }
+    // TAP TO FLY, and only tap to fly.
+    //
+    // Three controls were built and flown back to back - tap, hold to rise,
+    // and Hyper Run's slide - and tap won on the ground that it MATCHES LOST
+    // IN SPACE. A wormhole is something you fall into out of another mode,
+    // mid-flight, with no briefing; arriving in a corridor that answers to a
+    // different verb than the run you were just flying is the thing that
+    // kills those runs. The other two read fine on their own and are gone.
+    //
+    // A tap sets vy outright (see flapOf); gravity owns the rest of the arc.
+    w.squirrel.vy = Math.min(WORMHOLE_MAX_VY, w.squirrel.vy + gravOf(save, w) * simDt);
+    w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.squirrel.vy / 720));
     const move = w.speed * simDt;
     w.distance += move;
     t.visualT += simDt;
     t.time += simDt;
-    if (w.tuneTest) {
-        w.tuneClean += simDt;
-        w.tuneCleanBest = Math.max(w.tuneCleanBest, w.tuneClean);
-        if (w.tuneHitT > 0)
-            w.tuneHitT = Math.max(0, w.tuneHitT - realDt);
-    }
     refreshTunnelMultiplier(t);
     t.scoreFloat += move / 100 * t.multiplier;
     w.score = Math.floor(t.scoreFloat);
@@ -1644,20 +1519,8 @@ function updateTunnel(w, save, simDt, realDt) {
     w.palPos.x += (palTargetX - w.palPos.x) * palFollow;
     w.palPos.y += (palTargetY - w.palPos.y) * palFollow;
     const bounds = tunnelBoundsAt(w, sx);
-    if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom) {
-        if (!w.tuneTest)
-            return die(w, save);
-        // A tuning run reads the wall instead of dying on it, and is set back
-        // inside the corridor rather than left grinding along the outside of
-        // it, which would count a contact every frame and read as nonsense.
-        registerTuneHit(w);
-        const mid = (bounds.top + bounds.bottom) / 2;
-        const half = Math.max(1, (bounds.bottom - bounds.top) / 2 - PHYS.squirrelR - 2);
-        w.squirrel.y = Math.max(mid - half, Math.min(mid + half, sy));
-        w.squirrel.vy = 0;
-        if (w.tunnelDragY !== null)
-            w.tunnelDragY = w.squirrel.y;
-    }
+    if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom)
+        return die(w, save);
     for (const h of t.hazards) {
         if (!h.warned && h.x <= w.W + 150) {
             h.warned = true;
@@ -1665,11 +1528,8 @@ function updateTunnel(w, save, simDt, realDt) {
                 sound = "warning";
         }
         const hitRadius = PHYS.squirrelR + h.r * 0.65;
-        if (sweptCircleHit(sx, oldSy, sx, sy, h.x + move, h.y, h.x, h.y, hitRadius)) {
-            if (!w.tuneTest)
-                return die(w, save);
-            registerTuneHit(w);
-        }
+        if (sweptCircleHit(sx, oldSy, sx, sy, h.x + move, h.y, h.x, h.y, hitRadius))
+            return die(w, save);
         if (!h.nearMissed && h.x <= sx && h.x + move > sx) {
             h.nearMissed = true;
             const cross = move > 0 ? Math.max(0, Math.min(1, (h.x + move - sx) / move)) : 1;
@@ -2346,6 +2206,19 @@ function enterWarp(w, save) {
     const sx = w.W * PHYS.squirrelX;
     const cy = safeY(w);
     clearDebrisNear(w, sx, cy, 150, sx, cy, 150);
+    // AND SWEEP THE DOORS ALREADY IN FLIGHT.
+    //
+    // The spawn guard stops new holes being rolled while warped, which is
+    // most of the job - but a hole spawns 64px ahead of a gate, so one can
+    // already be on its way when the pilot catches a DIFFERENT hole a gate
+    // earlier. That one is not a new roll and the guard never saw it: it
+    // just scrolls into the warp behind them. Measured at about one warp in
+    // seventy, which is exactly the rate at which this keeps being spotted
+    // and not reproduced.
+    //
+    // The exit is deliberately exempt - it is the only hole that belongs in
+    // here, and on a gate-counted stretch it may already have spawned.
+    w.pickups = w.pickups.filter((a) => a.got || a.exit || (a.kind !== "hole" && a.kind !== "worm"));
     w.squirrel.y = cy;
     w.squirrel.vy = 0;
     w.squirrel.rot = 0;
@@ -2692,11 +2565,28 @@ export function updateWorld(w, save, dt) {
             // contact cancels. This is authored choreography, so the height is
             // authored: carry the pilot up at a readable rate that nothing in the
             // world can undo, and open the lesson when the room is real.
-            const wantY = w.H * TUT_SWIPE_TOP;
-            if (w.squirrel.y > wantY) {
-                w.squirrel.y = Math.max(wantY, w.squirrel.y - TUT_SWIPE_LIFT * dt);
+            // BOTH DIRECTIONS. The first cut only carried the pilot UP, on the
+            // assumption that arriving too low was the whole problem. It is not:
+            // the stage is entered off a PLANET BOUNCE, which throws the pilot
+            // hard upward, so they can just as easily arrive at the ceiling - and
+            // then the lesson opened at 15% of the screen and "swipe down and make
+            // the gap" meant diving most of a screen to a gap you could barely
+            // see. Same defect, other end. The lesson opens at ONE authored
+            // height, carried there from wherever the bounce left them.
+            // NOT A SCREEN FRACTION. The first pass carried the pilot to a fixed
+            // fraction of the screen, which severed the relationship the whole
+            // stage rests on: buildTutorialCourse computes yApex - where the
+            // spring was designed to leave them - and places the recovery gate
+            // dyDive BELOW it. Park them anywhere else and the gap they are told
+            // to dive into is not under them. On a real phone that meant standing
+            // on top of the bounce planet being told to swipe down through it.
+            const wantY = tutClearY(w, w.tut.apexY > 0 ? w.tut.apexY : w.H * TUT_SWIPE_TOP);
+            const dy = wantY - w.squirrel.y;
+            if (Math.abs(dy) > TUT_SWIPE_BAND) {
+                const step = TUT_SWIPE_LIFT * dt;
+                w.squirrel.y += Math.max(-step, Math.min(step, dy));
                 w.squirrel.vy = 0;
-                w.squirrel.rot = -0.22; // nose up, so the lift reads as flight
+                w.squirrel.rot = dy < 0 ? -0.22 : 0.22; // nose into the travel
                 w.tut.springs = 0;
             }
             else if (w.squirrel.vy > -60 || w.tut.t > 1.1) {
@@ -2777,11 +2667,7 @@ export function updateWorld(w, save, dt) {
             w.bounceAnimStrength = 0;
         }
     }
-    // READY holds the world still until the pilot's first input. A tuning run
-    // on autopilot has no pilot to wait for, so it would sit frozen forever
-    // on a screen whose whole purpose is to be watched moving.
-    const frozen = (w.ready && !(w.tuneTest && w.tuneAuto))
-        || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
+    const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
         w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
     if (w.flight === "deep" && w.warpT <= 0 && w.warpLeft <= 0) {

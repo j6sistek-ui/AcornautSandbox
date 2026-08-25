@@ -1,6 +1,6 @@
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, cleanTune, cleanTunnelControl, freshTune, TUNE_DIALS, type TuneId, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
   batteryUnlocked,
@@ -34,8 +34,6 @@ import {
   resetRun,
   resumePlay,
   setRaceInput,
-  setTunnelHeld,
-  setTunnelDrag,
   snapshot,
   takeRaceCueEffects,
   updateWorld,
@@ -90,24 +88,10 @@ export type Engine = {
   /** Nudge one Wormhole Run calibration dial. Applies to the LIVE run as
    *  well as the save, so the pilot feels the change on resume rather than
    *  on the next flight - which is the entire point of a pause-menu dial. */
-  /** Turn a dial. QUIET is what a slider drag uses: it changes the flight
-   *  immediately but does NOT notify, because a notify rebuilds the overlay
-   *  and destroys the slider the finger is still holding. The drag's end
-   *  commits loudly. */
-  setTune: (id: TuneId, value: number, quiet?: boolean) => number;
   /** leave the first flight early, keeping the suit and helmet it grants */
   skipTutorial: () => void;
-  /** start a TUNING RUN: Wormhole Run that cannot end, with the dials on
-   *  screen while it flies */
-  flyTuning: () => void;
-  /** hand the tuning run back and forth between the autopilot and the pilot */
-  setTuneAuto: (on: boolean) => void;
-  /** put every dial back to the shipped feel */
-  resetTune: () => void;
   /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
   setShelfGrid: (on: boolean) => void;
-  /** cycle the beta's Wormhole Run between the three control variants */
-  setTunnelControl: (n: number) => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -205,7 +189,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     stop() {
       cancelRaceControls();
-      setTunnelHeld(world, save, false);
       swipe = null;
       running = false;
       cancelAnimationFrame(raf);
@@ -278,7 +261,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     open(s) {
       if (s !== "play") {
         cancelRaceControls();
-        setTunnelHeld(world, save, false);
         swipe = null;
         // Stars are written by the sim, which the engine does not observe.
         // Every route back out of a run passes through here, so this is the
@@ -322,27 +304,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     wantPalArt(id) {
       if (art && art.ready) void loadPalBank(art, id);
     },
-    setTune(id, value, quiet) {
-      const d = TUNE_DIALS.find((x) => x.id === id);
-      if (!d) return 1;
-      // snapped AND rounded: 0.05 has no exact binary form, so stepping
-      // down three times otherwise stores 0.8500000000000001 - which is the
-      // number that would come back in a report
-      const snapped = Math.round(value / 0.05) * 0.05;
-      const v = Number(Math.max(d.min, Math.min(d.max, snapped)).toFixed(2));
-      save.tune = cleanTune({ ...save.tune, [id]: v });
-      // the run in progress takes it too, or a pause-menu dial would be a
-      // note to self rather than a control
-      world.tune = cleanTune(save.tune);
-      // A quiet turn is mid-drag: the flight takes it, but the save and the
-      // overlay wait for the finger to lift. Writing localStorage on every
-      // pointermove is a stutter, and notifying is worse - render() empties
-      // the overlay, so the slider being dragged is torn out from under it.
-      if (quiet) return v;
-      writeSave(save);
-      notify();
-      return v;
-    },
     /** LEAVE THE FIRST FLIGHT, keeping everything it would have given you.
      *  A tutorial with no exit is a trap for anyone who already knows how to
      *  play, or who hits a lesson that is not landing - and it hands the
@@ -355,39 +316,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       world.tut = null;
       this.open("hangar");
     },
-    flyTuning() {
-      unlockAudio();
-      resetRun(world, save, "tunnel", false);
-      world.tuneTest = true;
-      resetInputTracking();
-      notify();
-    },
-    setTuneAuto(on) {
-      world.tuneAuto = !!on;
-      // handing control over must not leave the autopilot's last input
-      // latched - a synthesised hold becomes a stuck climb under a finger
-      world.tunnelHeld = false;
-      world.tunnelDragY = null;
-      notify();
-    },
-    setTunnelControl(n) {
-      save.tunnelControl = cleanTunnelControl(n);
-      // A control change mid-corridor must not leave the old one latched:
-      // a held finger under hold-to-rise becomes a stuck climb under tap.
-      world.tunnelHeld = false;
-      world.tunnelDragY = null;
-      world.tunnelControl = cleanTunnelControl(n);
-      writeSave(save);
-      notify();
-    },
     setShelfGrid(on) {
       save.shelfGrid = !!on;
-      writeSave(save);
-      notify();
-    },
-    resetTune() {
-      save.tune = freshTune();
-      world.tune = freshTune();
       writeSave(save);
       notify();
     },
@@ -431,7 +361,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     pause() {
       cancelRaceControls();
-      setTunnelHeld(world, save, false);
       swipe = null;
       // A race pause discards the incomplete presentation-frame remainder.
       // Resume starts from the next whole 60 Hz authority step, so focus loss
@@ -869,14 +798,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
       swipe = { y0: p.y, t0: performance.now(), fired: false };
-      // SLIDE AND HOLD grabs the corridor rather than flapping in it. It
-      // answers first, and returns false anywhere it does not apply, so hold
-      // and then the classic tap still fall through in order.
-      if (setTunnelDrag(world, save, pos(e).y)) {
-        notify();
-        return;
-      }
-      const ev = setTunnelHeld(world, save, true) ? "flap" : flap(world, save);
+      // A tap is a tap everywhere, the corridor included. Hold-to-rise and
+      // slide-and-hold were flown against it and retired - see the note in
+      // updateTunnel - so nothing intercepts this any more.
+      const ev = flap(world, save);
       if (ev === "flap") sfx.flap();
       if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
         world.tut.hold = false;
@@ -903,8 +828,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         }
         return;
       }
-      if (world.tunnelDragY !== null && world.screen === "play"
-          && setTunnelDrag(world, save, pos(e).y)) return;
+
       if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
@@ -927,8 +851,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     if (world.race) return;
-    setTunnelDrag(world, save, null);
-    setTunnelHeld(world, save, false);
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
@@ -980,7 +902,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
             ? pressRaceKeyboardDragGesture(raceGesture, "keyboard-rise", world.race.tick, 0)
             : pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
         } else {
-          const ev = setTunnelHeld(world, save, true) ? "flap" : flap(world, save);
+          const ev = flap(world, save);
           if (ev === "flap") sfx.flap();
         }
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
@@ -1013,7 +935,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       if (raceGesture.owner === "keyboard-rise") {
         applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
-      } else if (!world.race) setTunnelHeld(world, save, false);
+      }
     }
     if (e.code === "ArrowDown") {
       if (raceResizeKeyboardReleasePending === "keyboard-drop") {
@@ -1031,7 +953,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     cancelRaceControls();
-    setTunnelHeld(world, save, false);
     swipe = null;
   });
   document.addEventListener("visibilitychange", () => {
@@ -1041,7 +962,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
       cancelRaceControls();
-      setTunnelHeld(world, save, false);
       swipe = null;
     }
   });
