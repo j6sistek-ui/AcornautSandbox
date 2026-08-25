@@ -1357,6 +1357,26 @@
       .ac-shopbeta .ac-casecanvas { width: 236px !important; height: 162px !important; }
       .ac-shopbeta .ac-caseplate b { font-size: 15px; }
       .ac-shopbeta .ac-combobar { padding: 9px 12px; }
+      /* THE LOADOUT BORROWED THE CASE AND NOT ITS LANDSCAPE MANNERS. Every
+         rule above is scoped to .ac-shopbeta, so when the loadout adopted
+         the same vitrine it inherited the portrait sizing and nothing else:
+         header 66 + case 230 + pills 58 + toggle 32 left the item grid a
+         TWENTY PIXEL window, and NONE of its sixteen cards could be
+         reached. Measured at 932x430, then fixed.
+         Stacking was the wrong shape anyway. Landscape is 932px WIDE and
+         430 tall - the scarce axis is the one the case was eating. So the
+         pilot moves BESIDE the grid instead of on top of it, which hands
+         the whole remaining height back to the thing you came to shop. */
+      .ac-menu:has(> .ac-hangarcase) {
+        display: grid; grid-template-columns: 320px minmax(0, 1fr);
+        column-gap: 12px; align-content: start; }
+      .ac-menu:has(> .ac-hangarcase) > * { grid-column: 2; }
+      .ac-menu:has(> .ac-hangarcase) > .ac-menuhead { grid-column: 1 / -1; }
+      .ac-menu:has(> .ac-hangarcase) > .ac-hangarcase {
+        grid-column: 1; grid-row: 2 / 99; align-self: start; margin: 0 0 0 12px; }
+      .ac-hangarcase .ac-casepane { padding: 2px 0 0; }
+      .ac-hangarcase .ac-casecanvas { width: 236px !important; height: 162px !important; }
+      .ac-hangarcase .ac-caseplate b { font-size: 14px; }
     }
   </style>
 </head>
