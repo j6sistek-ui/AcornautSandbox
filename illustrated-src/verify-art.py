@@ -29,7 +29,6 @@ except ImportError:  # pragma: no cover - dependency failure is the message
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ART = ROOT / "docs" / "art"
-SANDBOX_ART = ROOT / "sandbox_assets" / "art"
 CATALOG = ROOT / "illustrated-src" / "game" / "catalog.ts"
 ART_SOURCE = ROOT / "illustrated-src" / "game" / "art.ts"
 DRAW_SOURCE = ROOT / "illustrated-src" / "game" / "draw.ts"
@@ -137,32 +136,23 @@ def clipped(items: Iterable[str], limit: int = 12) -> str:
     return "; ".join(shown) + suffix
 
 
-def verify_mirrors(qa: QA) -> dict[str, Path]:
-    if not DOCS_ART.is_dir() or not SANDBOX_ART.is_dir():
-        qa.fail("docs/art and sandbox_assets/art must both exist")
+def verify_art_inventory(qa: QA) -> dict[str, Path]:
+    """docs/art is the whole shipping art tree, and it is the only one.
+
+    This used to compare docs/art against a byte-identical sandbox_assets/art
+    and fail on drift between them. The mirror is gone - nothing ever loaded
+    from it - so the check that remains is the one that was always underneath:
+    the tree exists, and here is what is in it for every group below to walk.
+    """
+    if not DOCS_ART.is_dir():
+        qa.fail("docs/art is missing - that is the whole shipping art tree")
         return {}
-
-    docs = regular_files(DOCS_ART)
-    sandbox = regular_files(SANDBOX_ART)
-    only_docs = sorted(set(docs) - set(sandbox))
-    only_sandbox = sorted(set(sandbox) - set(docs))
-    if only_docs or only_sandbox:
-        detail = []
-        if only_docs:
-            detail.append("docs only: " + clipped(only_docs))
-        if only_sandbox:
-            detail.append("sandbox only: " + clipped(only_sandbox))
-        qa.fail("art mirror path drift\n" + "\n".join(detail))
-
-    changed = [
-        rel for rel in sorted(set(docs) & set(sandbox))
-        if sha256(docs[rel]) != sha256(sandbox[rel])
-    ]
-    if changed:
-        qa.fail("art mirror content drift: " + clipped(changed))
-    if not only_docs and not only_sandbox and not changed:
-        qa.ok(f"docs/art and sandbox_assets/art match ({len(docs)} files)")
-    return docs
+    files = regular_files(DOCS_ART)
+    if not files:
+        qa.fail("docs/art is empty")
+        return {}
+    qa.ok(f"docs/art holds {len(files)} shipping files")
+    return files
 
 
 def decode_rasters(qa: QA, files: dict[str, Path]) -> dict[str, tuple[tuple[int, int], tuple[str, ...]]]:
@@ -184,7 +174,7 @@ def decode_rasters(qa: QA, files: dict[str, Path]) -> dict[str, tuple[tuple[int,
     if broken:
         qa.fail("raster decode failures\n" + "\n".join(broken))
     else:
-        qa.ok(f"decoded all {len(rasters)} mirrored raster assets")
+        qa.ok(f"decoded all {len(rasters)} raster assets")
     return metadata
 
 
@@ -736,7 +726,7 @@ def verify_ui_classes(qa: QA) -> None:
     wanted = {c for c in wanted if c.startswith("ac-")} - UNSTYLED_HOOKS
 
     problems: list[str] = []
-    for page in ("docs/index.html", "sandbox_assets/index.html"):
+    for page in ("docs/index.html", "docs/beta/index.html"):
         text = (ROOT / page).read_text(encoding="utf8")
         gone = sorted(
             c for c in wanted
@@ -746,7 +736,7 @@ def verify_ui_classes(qa: QA) -> None:
     if problems:
         qa.fail("UI classes: " + "; ".join(problems))
     else:
-        qa.ok(f"all {len(wanted)} UI classes are styled in both pages")
+        qa.ok(f"all {len(wanted)} UI classes are styled in the page and its beta")
 
 
 def verify_card_states(qa: QA) -> None:
@@ -956,6 +946,34 @@ MOTION_TAP_OVERLAP = {
 }
 
 
+def verify_one_tree(qa: QA) -> None:
+    """There is ONE shipping tree, and it is docs/.
+
+    sandbox_assets/ was a byte-identical copy of docs/ - 85 MB of duplicate
+    art plus the whole built game - that nothing ever loaded. No page, no
+    manifest, no deploy step, no workflow. It was simply the output directory
+    from before docs/ existed as the Pages root, and it was kept in step for
+    years by a mirror write in every art script and two QA checks whose only
+    job was to confirm the copy still matched the original.
+
+    Several one-off drop scripts under art-src/ still write to both paths.
+    They are archival - the record of how a past art drop was built - and
+    rewriting five of them to remove a mirror they would only recreate if
+    somebody deliberately re-ran an old drop is churn that can go stale.
+    This check cannot go stale: whatever the route back - an old script, a
+    stray copy, a bad merge - the tree reappearing fails the build here.
+    """
+    ghost = ROOT / "sandbox_assets"
+    if not ghost.exists():
+        qa.ok("one shipping tree: docs/")
+        return
+    n = len(regular_files(ghost)) if ghost.is_dir() else 1
+    qa.fail(f"sandbox_assets/ is back ({n} files). Nothing loads from it - it is a "
+            f"duplicate of docs/. Something re-created it: most likely an art-src "
+            f"drop script that still mirrors, or a copy step in a build. Delete it "
+            f"and stop whatever wrote it.")
+
+
 def verify_motion_banks(qa: QA) -> None:
     """A velocity-indexed pose bank is complete and its head holds still.
 
@@ -1109,7 +1127,7 @@ def verify_scroll_not_squash(qa: QA) -> None:
     and you owe the children a flex:none.
     """
     problems: list[str] = []
-    for page in ("docs/index.html", "sandbox_assets/index.html"):
+    for page in ("docs/index.html", "docs/beta/index.html"):
         css = (ROOT / page).read_text(encoding="utf8")
         rules: dict[str, str] = {}
         # Grouped selectors are ordinary CSS - `a > *, b > * { ... }` - so each
@@ -1151,7 +1169,7 @@ def verify_scroll_not_squash(qa: QA) -> None:
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
-    files = verify_mirrors(qa)
+    files = verify_art_inventory(qa)
     metadata = decode_rasters(qa, files) if files else {}
     if metadata:
         verify_sprite_dimensions(qa, metadata)
@@ -1164,6 +1182,7 @@ def main() -> int:
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
+    verify_one_tree(qa)
     verify_motion_banks(qa)
     verify_tuning_run_gated(qa)
     verify_sprite_sheets(qa)

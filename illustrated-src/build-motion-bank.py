@@ -309,7 +309,7 @@ def main():
             im2 = rescale_about_centre(im, k)
             ax = (anc[0] - CANVAS / 2) * k + CANVAS / 2
             ay = (anc[1] - CANVAS / 2) * k + CANVAS / 2
-            for root in ("docs/art/suits", "sandbox_assets/art/suits"):
+            for root in ("docs/art/suits",):
                 im2.save(f"{root}/{suit}-{name}-{n}.png")
             out[f"{suit}-{name}-{n}"] = [round(ax, 1), round(ay, 1), round(radius * k, 1)]
         r, fm = foot_core_ratio([np.array(rescale_about_centre(i, k)).astype(np.float64)

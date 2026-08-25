@@ -63,7 +63,7 @@ def main():
         r = im.resize((w2, h2), Image.LANCZOS)
         out = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
         out.alpha_composite(r, (round(scx - ucx * k), round(scy - ucy * k)))
-        for root in ("docs/art/solo", "sandbox_assets/art/solo"):
+        for root in ("docs/art/solo",):
             out.save(f"{root}/{pal}-{n}.png")
 
     sizes = []

@@ -154,7 +154,7 @@ Run the mechanical gate from the repository root:
 python3 illustrated-src/verify-art.py
 ```
 
-It verifies that `docs/art` and `sandbox_assets/art` are byte-identical,
+It walks `docs/art`, the one shipping tree,
 decodes every shipping raster, enforces runtime dimensions and alpha,
 checks catalog/load coverage, audits the reviewed planet/debris cutouts,
 and runs the full tail-rig audit.

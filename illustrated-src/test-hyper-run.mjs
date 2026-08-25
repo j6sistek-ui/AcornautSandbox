@@ -117,15 +117,21 @@ try {
   assert(levelSheetSource.includes("launchHyperRun((id) => engine.flyLevel(id))")
     && levelSheetSource.includes('origin: "chart" | "modes" = "chart"'),
   "START RUN no longer uses the tested engine launch seam or Modes return path");
+  // The shell used to be asserted byte-equal against a sandbox_assets copy
+  // that nothing loaded. docs/ is the only tree now, so what is checked is
+  // what actually ships - and the BETA page, which is generated from it and
+  // is the one that can silently lose a rule.
   const docsShell = readFileSync(join(root, "docs", "index.html"), "utf8");
-  const sandboxShell = readFileSync(join(root, "sandbox_assets", "index.html"), "utf8");
-  assert(docsShell === sandboxShell && docsShell.includes(".ac-lvlcard.ac-racecard")
+  const betaShell = readFileSync(join(root, "docs", "beta", "index.html"), "utf8");
+  assert(betaShell.includes(".ac-racecontrol b { color: #a9f5ff; font-size: 14px"),
+  "the generated beta page lost the Hyper Run briefing styling");
+  assert(docsShell.includes(".ac-lvlcard.ac-racecard")
     && docsShell.includes("max-height: min(94vh, 820px)")
     && docsShell.includes(".ac-racebriefblock h3 { margin: 0 0 8px; font: 900 14px")
     && docsShell.includes(".ac-racecontrol b { color: #a9f5ff; font-size: 14px")
     && docsShell.includes(".m-race { --m1: #2f9fe9")
     && docsShell.includes("@media (max-width: 619px), (max-height: 699px)"),
-  "mirrored responsive Hyper Run briefing shell changed or is missing its compact layout");
+  "the responsive Hyper Run briefing shell changed or is missing its compact layout");
   const gameFiles = readdirSync(gameDir)
     .filter((name) => name.endsWith(".ts"))
     .map((name) => join("illustrated-src", "game", name));
