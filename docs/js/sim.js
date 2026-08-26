@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=145";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=145";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=145";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=146";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=146";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=146";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=146";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=146";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=146";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=146";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
