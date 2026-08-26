@@ -15,7 +15,7 @@ Two outputs from one source:
 
 Run prep-assets.py first - it derives assets/ from docs/art/.
 """
-import argparse, base64, json, os, re, sys
+import argparse, base64, hashlib, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "site-src")
@@ -97,6 +97,37 @@ HEAD_META = """<meta charset="utf-8">
 """
 
 
+def stamp_worker(out_dir):
+    """Write sw.js with its cache name derived from everything else emitted.
+
+    The worker answers assets cache-first and never revalidates inside a cache
+    generation, so the cache NAME is the only cache-busting mechanism the site
+    has. Hardcoding it means a changed asset stays invisible to every returning
+    visitor until a human remembers to bump a constant - so derive it instead.
+
+    Hashes sorted (relative path, bytes) over the whole output, excluding sw.js
+    itself, which would otherwise be circular. Deterministic: identical output
+    gives an identical name, so redeploying unchanged content does not flush
+    anyone's cache for nothing.
+    """
+    h = hashlib.sha256()
+    for root, dirs, files in os.walk(out_dir):
+        dirs.sort()
+        for f in sorted(files):
+            if f == "sw.js":
+                continue
+            full = os.path.join(root, f)
+            h.update(os.path.relpath(full, out_dir).replace(os.sep, "/").encode())
+            with open(full, "rb") as fh:
+                h.update(fh.read())
+    version = h.hexdigest()[:12]
+    worker = part("sw.js").replace("__CACHE_VERSION__", version)
+    if "__CACHE_VERSION__" in worker:
+        sys.exit("sw.js: cache version placeholder still present after substitution")
+    open(os.path.join(out_dir, "sw.js"), "w", encoding="utf-8").write(worker)
+    return version
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=("inline", "files"), default="inline")
@@ -157,6 +188,10 @@ def main():
         # referenced from <head> rather than the body, so copy them explicitly
         for extra in ("og.jpg", "favicon-192.png", "apple-touch-icon.png"):
             em.asset(extra)
+        # the app shell: the manifest is static, the worker is stamped
+        open(os.path.join(out_dir, "manifest.webmanifest"), "w", encoding="utf-8").write(
+            part("manifest.webmanifest"))
+        stamp_worker(out_dir)
 
     size = os.path.getsize(dst)
     print("%s -> %s (%.2f MB)" % (args.mode, dst, size / 1048576))
@@ -165,6 +200,9 @@ def main():
         total = sum(os.path.getsize(os.path.join(r, f))
                     for r, _, fs in os.walk(out_dir) for f in fs)
         print("site total %.2f MB" % (total / 1048576))
+        cache = re.search(r"const CACHE = '([^']+)'",
+                          open(os.path.join(out_dir, "sw.js"), encoding="utf-8").read())
+        print("sw cache   %s" % (cache.group(1) if cache else "?"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,81 @@
+# Builds site-src/ and publishes it to j6sistek-ui/acornaut, which serves
+# acornaut.io from its repo root via GitHub Pages.
+#
+# This repo cannot be the Pages source for that domain - one Pages site per
+# repo, and this repo's docs/ already serves acornaut.app - so the built
+# output is pushed across.
+name: Deploy acornaut.io
+
+on:
+  push:
+    branches: [main]
+    # The game lives in docs/ and must never trigger a site deploy.
+    paths:
+      - 'site-src/**'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+# A second push while one is mid-flight would race on the same branch.
+concurrency:
+  group: deploy-acornaut-io
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@v4
+
+      # build.py imports only argparse, base64, hashlib, json, os, re, sys, so
+      # the runner's python is enough - no setup-python, no pip install.
+      # prep-assets.py needs Pillow but does NOT run here: its outputs are
+      # committed, and it is only re-run when the game's source art changes.
+      - name: Build the site
+        run: python3 site-src/build.py --mode files --out _site
+
+      - name: Check out the target
+        uses: actions/checkout@v4
+        with:
+          repository: j6sistek-ui/acornaut
+          token: ${{ secrets.ACORNAUT_DEPLOY_TOKEN }}
+          path: _target
+          fetch-depth: 0
+
+      # Every path here is one the build OWNS. arcade/, beta/, LICENSE,
+      # README.md and the root icons are not produced by the build and must
+      # survive untouched - so nothing wildcards over the target.
+      - name: Sync the built output
+        run: |
+          set -euo pipefail
+          rm -rf _target/assets _target/clips
+          cp -r _site/assets _site/clips _target/
+          for f in index.html manifest.webmanifest sw.js robots.txt sitemap.xml CNAME; do
+            cp "_site/$f" "_target/$f"
+          done
+
+      - name: Confirm the arcade survived
+        run: |
+          set -euo pipefail
+          test -f _target/arcade/index.html
+          test -f _target/beta/index.html
+          grep -q "register('../sw.js')" _target/arcade/index.html
+          grep -q '"start_url": "./arcade/"' _target/manifest.webmanifest
+
+      - name: Commit and push if anything changed
+        working-directory: _target
+        run: |
+          set -euo pipefail
+          git config user.name  "acornaut-deploy"
+          git config user.email "acornaut@outlook.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change in the built output - nothing to deploy."
+            exit 0
+          fi
+          git diff --cached --stat | tail -5
+          git commit -q -m "Deploy acornaut.io from AcornautSandbox@${GITHUB_SHA:0:7}
+
+          Built by .github/workflows/deploy-site.yml from site-src/.
+          Do not hand-edit the landing page here - edit site-src/ and push."
+          git push origin HEAD:main
