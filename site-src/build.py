@@ -22,7 +22,8 @@ SRC = os.path.join(ROOT, "site-src")
 PARTS, ASSETS, CLIPS = (os.path.join(SRC, d) for d in ("parts", "assets", "clips"))
 
 MIME = {".jpg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".mp4": "video/mp4"}
-CLIP_NAMES = ["mode-fly.mp4", "mode-arcade.mp4", "mode-race.mp4", "squad.mp4"]
+CLIP_NAMES = ["hero.mp4", "worlds.mp4", "mode-fly.mp4", "mode-arcade.mp4",
+              "mode-race.mp4", "squad.mp4"]
 
 SITE_URL = "https://acornaut.io"
 PLAY_URL = "https://acornaut.app"

@@ -28,8 +28,11 @@ HELMS = ("seraph", "cryostar", "eclipse", "comet", "nebula", "aurora", "cosmic",
 
 KEY_ART = (
     # source,                dest,            width, quality
-    ("menu-splash-wide.jpg", "bg-wide.jpg",   1500,  68),   # hero ground
-    ("menu-hub.jpg",         "bg-tall.jpg",    760,  70),   # hero ground, portrait
+    # The hero ground carries no character of its own - the film in the frame
+    # is the character. A painted squirrel here fights it for the same corner.
+    ("sky-wide.jpg",         "hero-wide.jpg", 1500,  70),   # hero ground
+    ("menu-splash-wide.jpg", "bg-wide.jpg",   1500,  68),   # closing band
+    ("menu-hub.jpg",         "bg-tall.jpg",    760,  70),   # unused ground, portrait
     ("chart-bg.jpg",         "bg-chart.jpg",  1200,  64),   # star chart band
 )
 
@@ -118,6 +121,16 @@ def main():
     im.resize((720, 1270), Image.LANCZOS).save(os.path.join(out, "poster.jpg"),
                                                "JPEG", quality=70, optimize=True, progressive=True)
     total += os.path.getsize(os.path.join(out, "poster.jpg"))
+
+    # portrait crop of the hero ground, for phones
+    im = Image.open(os.path.join(ART, "sky-wide.jpg")).convert("RGB")
+    tgt = 760 / 1351
+    w, h = im.size
+    if w / h > tgt:
+        nw = int(h * tgt); im = im.crop(((w - nw) // 2, 0, (w - nw) // 2 + nw, h))
+    im.resize((760, round(760 / tgt)), Image.LANCZOS).save(
+        os.path.join(out, "hero-tall.jpg"), "JPEG", quality=70, optimize=True, progressive=True)
+    total += os.path.getsize(os.path.join(out, "hero-tall.jpg"))
 
     json.dump(suits, open(os.path.join(out, "suits.json"), "w"), indent=1)
     print("-> %s  (%.0f KB)" % (out, total / 1024))

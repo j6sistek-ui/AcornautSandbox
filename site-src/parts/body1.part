@@ -4,8 +4,8 @@
 <header class="hero" id="s-top">
   <div class="hero-art">
     <picture>
-      <source media="(max-width:900px)" srcset="{{A:bg-tall.jpg}}">
-      <img src="{{A:bg-wide.jpg}}" alt="Acornaut key art: a squirrel in a spacesuit standing on a moon, a ringed planet overhead" fetchpriority="high">
+      <source media="(max-width:900px)" srcset="{{A:hero-tall.jpg}}">
+      <img src="{{A:hero-wide.jpg}}" alt="" fetchpriority="high">
     </picture>
   </div>
   <div class="wrap">
@@ -19,6 +19,9 @@
       </div>
       <p class="note hero-micro">Runs in any phone browser. Add it to your home screen and it opens like any other game on the phone.</p>
     </div>
+    <figure class="shot hero-film">
+      <div class="phone"><video width="400" height="712" data-src="{{V:hero.mp4}}" poster="{{A:hero-poster.jpg}}" muted loop playsinline preload="none" aria-label="Acornaut title film"></video></div>
+    </figure>
   </div>
 </header>
 
