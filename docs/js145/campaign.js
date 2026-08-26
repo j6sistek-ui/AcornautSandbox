@@ -262,7 +262,8 @@ export const LEVELS = STAGES.flatMap((st) => Array.from({ length: 10 }, (_, i) =
         name: st.names[i],
         base: t.base ?? st.base,
         gates,
-        fx: { env: st.env, ...t.fx },
+        // the very first mission on the chart carries it; nothing else does
+        fx: { env: st.env, ...t.fx, ...((st.num - 1) * 10 + i + 1 === 1 ? { noFail: true } : {}) },
         goals: [{ kind: "finish" }, g2, g3],
     };
 }));

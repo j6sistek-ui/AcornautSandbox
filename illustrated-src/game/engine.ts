@@ -33,8 +33,6 @@ import {
   planRaceCueEffects,
   resizeWorld,
   resetRun,
-  flightRecording,
-  flightMarkCount,
   resumePlay,
   setRaceInput,
   snapshot,
@@ -93,12 +91,11 @@ export type Engine = {
    *  on the next flight - which is the entire point of a pause-menu dial. */
   /** leave the first flight early, keeping the suit and helmet it grants */
   skipTutorial: () => void;
-  /** the first flight, written down: every input, when it landed, and what
-   *  the pilot was doing. Exported by the pilot, sent nowhere on its own. */
-  flightRecording: () => string;
-  flightMarks: () => number;
   /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
   setShelfGrid: (on: boolean) => void;
+  /** the first flight is FLOWN, not skipped: leave the portal and walk
+   *  straight into the guided Loadout that collects the reward */
+  finishTutorial: () => void;
   /** THE LEAN EDITOR. Working values live in the save so they survive the
    *  reload it takes to fly a change; leanExport() hands back a block to
    *  paste into SUIT_LEAN once a number is settled. */
@@ -332,12 +329,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
      *  play, or who hits a lesson that is not landing - and it hands the
      *  pilot straight to the Loadout, which is where the tutorial was
      *  walking them anyway. */
-    flightRecording() {
-      return flightRecording(world);
-    },
-    flightMarks() {
-      return flightMarkCount();
-    },
     skipTutorial() {
       save.tutorialDone = true;
       grantTutorialKit(save);
@@ -350,6 +341,19 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (save.guide === "pending" || save.guide === "reward") save.guide = "hangar";
       writeSave(save);
       world.tut = null;
+      this.open("hangar");
+    },
+    finishTutorial() {
+      // The same handoff as skipTutorial, and deliberately so - what the
+      // pilot did differs, where they land does not. The kit was granted at
+      // the handover; "hangar" is the step that says go and put it on.
+      save.tutorialDone = true;
+      grantTutorialKit(save);
+      if (save.guide === "pending" || save.guide === "reward") save.guide = "hangar";
+      writeSave(save);
+      world.tut = null;
+      shopTab = "suits";
+      engine.shopTab = "suits";
       this.open("hangar");
     },
     setShelfGrid(on) {
@@ -918,7 +922,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       if (p.y - swipe.y0 >= 34) {
         swipe.fired = true;
-        const ev = dive(world);
+        const ev = dive(world, save);
         if (ev === "dive") sfx.dive();
         notify();
       }
@@ -1003,7 +1007,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       } else if (applyRaceGesture(dropRaceGesture(raceGesture))) sfx.dive();
       notify();
     } else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
-      const ev = dive(world);
+      const ev = dive(world, save);
       if (ev === "dive") sfx.dive();
       notify();
     }

@@ -1,4 +1,4 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SLOW, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=145";
 import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
@@ -236,7 +236,7 @@ export function envIndexFor(w, score) {
     return w.envOrder[Math.min(step, ENVS.length - 1)];
 }
 function palId(save, w) {
-    if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo"))
+    if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
         return "buddy";
     // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
     // one question, so answering "none" here turns all of them off at once
@@ -481,49 +481,134 @@ function buildTutorialCourse(w, save) {
     // the recovery gate: as deep below the apex as the screen allows
     const dyDive = Math.max(120, Math.min(352, w.H - 70 - gap / 2 - yApex - 20));
     const tDive = (-PHYS.dive + Math.sqrt(PHYS.dive * PHYS.dive + 2 * g * dyDive)) / g;
-    const mk = (dist, gapY, sealed) => {
-        const yy = clampY(gapY);
-        const tutKind = pickKind(w);
-        const pair = {
-            x: sx + dist,
-            gapY: yy,
-            gap,
-            r: PHYS.planetR,
-            // one planet per gate - see the note in spawnPair. These are the FIRST
-            // gates anyone ever sees, so they are the last place to break the rule.
-            topKind: tutKind,
-            botKind: tutKind,
-            scored: false,
-            drift: 0,
-            driftAmp: 0,
-            blockers: sealed ? sealBlockers(w, env, yy, gap) : [],
-        };
-        w.planets.push(pair);
-        return pair;
-    };
-    // 1 — the bounce planet: its top surface exactly on the touchdown point
-    mk(dLand, yLand + 6 - gap / 2, false);
-    // 2 — the dive gate, sitting low, already visible from the apex freeze
-    const d2 = dApex + PHYS.baseSpeed * tDive;
-    const p2 = mk(d2, yApex + dyDive, false);
-    // 3–7 — practice gates easing back to the flight line, fully sealed so
-    // they read as REAL gates (every mistake is protected while learning)
-    const path = [y0 + 80, y0 - 40, y0 + 60, y0 - 20, y0 + 40];
-    let d = d2;
-    const rest = [];
-    for (const yy of path) {
+    // NOTHING IS PRE-PLACED FOR THE SCRIPTED BEATS. The bounce planet and
+    // the gates that follow are laid at the moment their beat begins, from
+    // where the pilot actually is - see placeBouncePlanet and
+    // buildTutorialGates. Pre-computing them meant assuming when the pilot
+    // would tap, and the pilot now decides that.
+    w.lastSpawnX = sx + 240;
+    w.lastGapY = w.H * 0.45;
+    // and NOT the three gates: the handover lays those, positioned against
+    // wherever the bounce actually left the pilot. Laying them here as well
+    // put six gates in the three-gate stretch - the extra three scrolled past
+    // uncounted and then showed up in the pal's tally, twelve gates flown for
+    // a course of ten.
+}
+/** Lay `count` sealed practice gates ahead of the pilot, with an acorn in
+ *  each mouth, and leave the spawner pointing past them.
+ *
+ *  Shared by the course and by tutRewind, which is the point: the three
+ *  gates a pilot is sent back to are laid by the same arithmetic that laid
+ *  them the first time, so a restart cannot quietly be a different course.
+ *  Sealed so they read as REAL gates - every mistake is protected here. */
+/** Put the bounce planet exactly where THIS dive is going to land.
+ *
+ *  The course used to place it at build time, from an assumed run of the
+ *  lesson: tap at 0.8s, tap again at 0.55s, fall for 0.9s. That held only
+ *  while the tutorial drove the taps. Now the pilot answers each beat when
+ *  they like, so those timings are whatever they are - and the planet sat
+ *  where the old arithmetic said, while the dive went past it to the floor.
+ *  Measured: the pilot ended the dive at y 870-928 on a 900px screen,
+ *  bouncing off the bottom edge instead of a planet.
+ *
+ *  So it is placed at the moment the swipe is answered, from the pilot's
+ *  real position and velocity. Same arithmetic, evaluated against what is
+ *  actually happening:
+ *
+ *      dy = yLand - y0,  v = PHYS.dive,  t = (-v + sqrt(v^2 + 2 g dy)) / g
+ *
+ *  and the planet goes at the distance the world will have travelled in t.
+ */
+function placeBouncePlanet(w, save) {
+    const env = ENVS[w.envB];
+    const sx = w.W * PHYS.squirrelX;
+    const gap = 176;
+    const g = gravOf(save, w);
+    const y0 = w.squirrel.y;
+    // land in the lower third, but never so low the planet clips the floor
+    const yLand = Math.max(y0 + 140, Math.min(w.H * 0.74, w.H - 120));
+    const dy = Math.max(20, yLand - y0);
+    const v = PHYS.dive;
+    const t = (-v + Math.sqrt(v * v + 2 * g * dy)) / g;
+    const kind = pickKind(w);
+    w.planets.push({
+        x: sx + Math.max(180, w.speed * t),
+        gapY: yLand + 6 - gap / 2,
+        gap, r: PHYS.planetR,
+        topKind: kind, botKind: kind,
+        scored: true, // the teaching planet is not a gate to score
+        drift: 0, driftAmp: 0,
+        blockers: [],
+    });
+    void env;
+}
+function buildTutorialGates(w, save, count) {
+    const env = ENVS[w.envB];
+    const sx = w.W * PHYS.squirrelX;
+    const gap = 176;
+    const y0 = w.H * 0.45;
+    const clampY = (y) => Math.max(70 + gap / 2, Math.min(w.H - 70 - gap / 2, y));
+    // a gentle weave back to the flight line, repeating for longer stretches
+    const weave = [80, -40, 60, -20, 40, -60, 30];
+    let d = Math.max(w.lastSpawnX, sx + 240);
+    let lastY = w.lastGapY;
+    for (let i = 0; i < count; i++) {
         d += 260;
-        rest.push(mk(d, yy, true));
+        const yy = clampY(y0 + weave[i % weave.length]);
+        const kind = pickKind(w);
+        w.planets.push({
+            x: d, gapY: yy, gap, r: PHYS.planetR,
+            topKind: kind, botKind: kind,
+            scored: false, drift: 0, driftAmp: 0,
+            blockers: sealBlockers(w, env, yy, gap),
+        });
+        w.pickups.push({ x: d + 8, y: yy, got: false,
+            bob: Math.random() * Math.PI * 2, kind: "acorn" });
+        lastY = yy;
     }
-    const acorn = (x, y) => w.pickups.push({ x, y, got: false, bob: Math.random() * Math.PI * 2, kind: "acorn" });
-    acorn(p2.x + 8, p2.gapY);
-    rest.forEach((p, i) => acorn(p.x + 8, p.gapY + (i >= 3 ? (i % 2 ? -1 : 1) * 85 : 0)));
-    // hand the reins back to the normal spawner beyond the course
-    w.lastSpawnX = sx + d;
-    w.lastGapY = rest[rest.length - 1].gapY;
+    w.lastSpawnX = d;
+    w.lastGapY = lastY;
 }
 // While the tutorial teaches, a debris hit is a free reset — the whole
 // shield theatre without spending anything. Unlimited, but only here.
+/** PROTECTION IS NOT PROGRESS.
+ *
+ *  The three gates before the companion are the pass mark of the whole
+ *  lesson: the pilot has to string them together. Protection keeps them
+ *  alive when they clip one - it must not hand them the gate. Without this,
+ *  a player could bump off every gate in the course and arrive at the
+ *  portal having never actually flown one, which is the failure mode the
+ *  owner named.
+ *
+ *  So a contact inside the three sends the streak to zero and puts the
+ *  stretch back. The stretch is REBUILT from the deterministic course
+ *  builder rather than restored from a snapshot: the layout is a pure
+ *  function of the screen and the physics, so rebuilding cannot drift out
+ *  of step with the director the way a saved-and-restored world can.
+ */
+function tutRewind(w, save) {
+    const t = w.tut;
+    if (!t)
+        return;
+    t.streak = 0;
+    t.restarts += 1;
+    t.nudge = t.restarts === 1 ? "all three in a row - from the top"
+        : t.restarts < 4 ? "again - three clean passes"
+            : "take your time. three in a row.";
+    // clear the stretch and lay it out again from the same arithmetic
+    const sx = w.W * PHYS.squirrelX;
+    w.planets = w.planets.filter((p) => p.x + p.r < sx - 12);
+    w.pickups = w.pickups.filter((a) => a.x < sx - 12);
+    buildTutorialGates(w, save, 3);
+    w.squirrel.y = w.H * 0.45;
+    w.squirrel.vy = 0;
+    w.squirrel.rot = 0;
+    w.bounceUp = false;
+    w.hitCooldown = 0;
+    w.shieldFreeze = 0.45;
+    w.shieldSlow = 2.6;
+    w.recoveryMsg = "THREE IN A ROW — FROM THE TOP";
+}
 function tutReset(w, bx, by) {
     const sx = w.W * PHYS.squirrelX;
     let cy = w.H * 0.45;
@@ -552,6 +637,13 @@ function tutReset(w, bx, by) {
     spark(w, sx, cy, ["#7ad8ff", "#fff"], 14, "shield");
 }
 function tutSafe(w) {
+    // THE FIRST FLIGHT, AND THE FIRST MISSION. Both protect the pilot for the
+    // same reason and through the same path: a beginner who crashes out in
+    // their first minute has been told the game is not for them. Level one
+    // carries fx.noFail and nothing else does, so the mercy stops the moment
+    // the pilot has actually flown something.
+    if (w.lvl?.def.fx.noFail)
+        return true;
     return !!w.tut && w.tut.stage !== "free";
 }
 /** BLACK HOLE AND WORMHOLE SPAWN RATES, in one place.
@@ -692,7 +784,7 @@ function spawnPair(w, save, x) {
         blockers,
     });
     const pal = palId(save, w);
-    const noPick = pal === "bee" || (w.tut && w.tut.stage !== "palDemo" && w.tut.stage !== "free" && w.tut.stage !== "ready");
+    const noPick = pal === "bee" || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
     // A collection star must never be lost to the spawn dice: a level with
     // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
     // achievable inside the level's own gate count with room to miss a few.
@@ -768,7 +860,7 @@ function spawnPair(w, save, x) {
             }
         }
         if (!slotUsed && (w.tut || Math.random() < acornOdds)) {
-            const off = w.tut?.stage === "palDemo" ? (Math.random() < 0.5 ? -1 : 1) * gap * 0.32 : (Math.random() - 0.5) * gap * 0.35;
+            const off = w.tut?.stage === "gates7" ? (Math.random() < 0.5 ? -1 : 1) * gap * 0.32 : (Math.random() - 0.5) * gap * 0.35;
             w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
             slotUsed = true;
         }
@@ -945,12 +1037,12 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
     w.tut = w.race || flight === "tunnel" ? null : tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
-            retries: 0, springs: 0, apexY: 0, launched: false, bounced: false }
+            retries: 0, springs: 0, apexY: 0, launched: false, bounced: false,
+            locked: true, want: null, streak: 0, streakX: 0, restarts: 0 }
         : null;
     if (w.tut)
         buildTutorialCourse(w, save);
     // the recorder arms for EVERY run - see mark()
-    flightRecorderReset(w);
 }
 /** Semantic race input is tick-stamped and consumed before the next race step. */
 export function setRaceInput(w, input) {
@@ -2068,96 +2160,146 @@ export function spawnTrail(w, save, scale = 1) {
         }
     }
 }
-let flightLog = [];
-let lastTutStage = "";
-let flightT = 0;
-export function flightRecorderReset(w) {
-    flightLog = [];
-    flightT = 0;
-    lastTutStage = "";
-    mark(w, "start", "");
-}
-export function flightRecorderTick(dt) {
-    flightT += dt;
-}
-export function mark(w, kind, note = "", ignored = false) {
-    // ANY RUN, NOT JUST THE TUTORIAL.
-    //
-    // This used to bail unless w.tut, which made the recorder useless for the
-    // one job it was built for: "you can't copy my taps because i am forced
-    // through the prompts that don't work". If the only flight it records is
-    // the flight that is broken, there is no way to hand over a recording of
-    // anything. Now every run records, and COPY FLIGHT sits in the pause menu
-    // where it can always be reached.
-    if (flightLog.length > 4000)
-        return;
-    flightLog.push({
-        t: +flightT.toFixed(3),
-        kind,
-        stage: w.tut?.stage ?? "-",
-        y: Math.round(w.squirrel.y),
-        vy: Math.round(w.squirrel.vy),
-        pct: +((w.squirrel.y / Math.max(1, w.H)) * 100).toFixed(1),
-        ...(ignored ? { ignored: true } : {}),
-        ...(note ? { note } : {}),
-    });
-}
-/** The recording, as something that can be pasted into a message. */
-export function flightRecording(w) {
-    return JSON.stringify({
-        screen: { w: w.W, h: w.H },
-        mode: w.flight,
-        tutorial: !!w.tut,
-        score: w.score,
-        gravity: PHYS.gravity,
-        flap: PHYS.flap,
-        marks: flightLog,
-    });
-}
-export function flightMarkCount() {
-    return flightLog.length;
+/** THE GESTURE RECOGNISER, and the reason the lesson is teachable.
+ *
+ *  While the tutorial is LOCKED a tap or a swipe is not a force. It is an
+ *  answer to the beat on screen: the director checks whether it is the
+ *  gesture being asked for, and if it is, runs the beat itself - on the
+ *  game's own physics, so what the pilot sees is the real thing rather than
+ *  an animation of it.
+ *
+ *  Two properties matter, and both were missing before:
+ *
+ *    * THERE IS NO WINDOW. The beat waits indefinitely. A pilot cannot be
+ *      early, cannot be late, and never learns that the game ignores them.
+ *    * A REPEAT DOES NOTHING. `want` is cleared the moment a gesture lands,
+ *      so the second tap of an eager double-tap falls through to a beat
+ *      that is no longer asking for anything.
+ *
+ *  Returns true when the gesture was consumed, which is the caller's signal
+ *  to apply no physics of its own.
+ */
+function tutGesture(w, save, kind) {
+    const t = w.tut;
+    // THE LOCK AND THE FREEZE ARE DIFFERENT QUESTIONS. `locked` decides
+    // whether a tap flies the pilot; `hold` means a popup is up waiting to be
+    // pressed past. The pal beat freezes AFTER control has been handed over,
+    // so gating this on the lock alone left it unanswerable - the lesson
+    // stalled there for good, with the tap going to ordinary flight instead.
+    if (!t || (!t.locked && !t.hold))
+        return false;
+    // a tap answers a "press to go on" beat as readily as a "tap" one
+    const answered = t.want === kind || (t.want === "continue" && kind === "tap");
+    if (!answered) {
+        // the wrong gesture is not a failure, it is a nudge - and a tap during
+        // the swipe lesson is the one everybody tries first
+        if (t.want === "swipe" && kind === "tap")
+            t.nudge = "swipe DOWN - drag, don't tap";
+        return true; // consumed either way: nothing is flown while locked
+    }
+    t.want = null;
+    t.nudge = "";
+    t.t = 0;
+    switch (t.stage) {
+        case "doTap1":
+        case "doTap2":
+            // the beat IS a tap, so it flies one - real impulse, real gravity
+            t.hold = false;
+            t.stage = t.stage === "doTap1" ? "levelOff" : "learnDive";
+            w.squirrel.vy = flapOf(save, w);
+            w.flapBoost = 0.22;
+            w.tapAnimFromRot = w.squirrel.rot;
+            w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
+            w.tapAnimDir = 1;
+            break;
+        case "doDive":
+            t.hold = false;
+            t.stage = "diving";
+            w.bounceUp = false;
+            w.squirrel.vy = PHYS.dive;
+            w.squirrel.rot = 0.5;
+            // the planet goes where THIS dive lands, worked out from the pilot's
+            // real position and the dive they were just given
+            placeBouncePlanet(w, save);
+            break;
+        case "learnTap":
+        case "learnTap2":
+        case "boing":
+        case "pal":
+            // a frozen popup the pilot presses past
+            t.hold = false;
+            t.stage = t.stage === "learnTap" ? "doTap1"
+                : t.stage === "learnTap2" ? "doTap2"
+                    : t.stage === "boing" ? "bouncing" : "gates7";
+            // THE BOUNCE HAS TO ACTUALLY FLY. Leaving `boing` on whatever
+            // velocity the contact left behind meant the bounce beat resolved on
+            // its first frame and the pilot never saw the arc they were just told
+            // about. The spring is fired here, and from there it is ordinary
+            // gravity - the same one-impulse rule as every other beat.
+            if (t.stage === "bouncing") {
+                w.bounceUp = false;
+                w.squirrel.vy = -640;
+                w.hitCooldown = 0;
+                // AT FULL SPEED. Touching the teaching planet trips the protection,
+                // and the protection drags the world to 0.55x - so the bounce the
+                // pilot was just promised played at 0.55 squared of gravity, 393
+                // against 1300. The planet is a lesson, not a save; the slow is
+                // cleared so the arc is the one they will actually fly.
+                w.shieldSlow = 0;
+                w.shieldFreeze = 0;
+            }
+            if (t.stage === "doTap1" || t.stage === "doTap2")
+                t.want = "tap";
+            // the companion's stretch is laid when the companion arrives, so a
+            // rewind inside the three never has to tidy up gates from later on
+            if (t.stage === "gates7") {
+                buildTutorialGates(w, save, 7);
+                w.pickups.push({ x: w.lastSpawnX + 300, y: w.lastGapY, got: false, bob: 0,
+                    kind: "portal", r: 64 });
+            }
+            break;
+        case "handover":
+            // THE ONE PLACE THE LOCK COMES OFF, and it never goes back on
+            t.hold = false;
+            t.locked = false;
+            t.stage = "gates3";
+            t.streak = 0;
+            t.gates = 0;
+            t.streakX = w.distance;
+            // the gate the coach says is "lined up" is laid now, ahead of
+            // wherever the bounce actually left the pilot
+            w.lastSpawnX = w.W * PHYS.squirrelX + 240;
+            w.lastGapY = w.squirrel.y;
+            buildTutorialGates(w, save, 3);
+            break;
+        default:
+            break;
+    }
+    return true;
 }
 export function flap(w, save) {
     if (w.screen === "pause")
         return "none";
     if (w.screen !== "play")
         return "none";
-    // A REFUSED TAP IS DATA. The prompt arms after TUT_ARM, and a pilot
-    // tapping quickly lands several before it does - which is the owner's
-    // first note, that fast tapping before "tap to fly" may be moving the
-    // start. Those taps are recorded as ignored rather than dropped, so a
-    // recording shows them.
-    if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM)) {
-        mark(w, "tap", `too early by ${((tutDwell(TUT_ARM) - w.tut.t) / TUT_SLOW).toFixed(2)}s`, true);
+    // WHILE THE LESSON IS SCRIPTED, A TAP IS AN ANSWER, NOT A FORCE.
+    // tutGesture runs the beat itself when the gesture is the one being
+    // asked for; either way nothing here flies the pilot.
+    if (w.tut?.locked || w.tut?.hold) {
+        // THE WORLD HAS TO BE RUNNING FOR THE LESSON TO BE FLYABLE. `ready`
+        // freezes everything until the first tap, and returning before this
+        // line left it set for the whole scripted phase - the director fired
+        // its beats, the impulses landed, and nothing moved because the sim was
+        // still held. Every beat then resolved on its timeout instead of on the
+        // physics, which is exactly the "scripted rate" failure this design
+        // exists to avoid.
+        if (w.ready)
+            w.ready = false;
+        tutGesture(w, save, "tap");
         return "none";
-    }
-    if (w.tut?.hold && w.tut.stage === "swipe") {
-        w.tut.nudge = "drag downward — not a tap";
-        return "none";
-    }
-    // The tap that answers a TAP prompt must itself flap — it is the very
-    // thing being taught. The second one froze mid-fall, switched straight
-    // into "glide" and was then swallowed by the glide guard below, so the
-    // pilot resumed plummeting with no lift and met the floor instead of
-    // the planned touchdown arc.
-    let tapAccepted = false;
-    if (w.tut?.hold && (w.tut.stage === "tap" || w.tut.stage === "tap2")) {
-        w.tut.hold = false;
-        w.tut.t = 0;
-        w.tut.stage = w.tut.stage === "tap" ? "tapdone" : "glide";
-        tapAccepted = true;
-    }
-    else if (w.tut?.hold && w.tut.stage === "yourturn") {
-        w.tut.hold = false;
-        w.tut.stage = "gates";
-        w.tut.t = 0;
-        w.tut.gates = 0;
     }
     if (w.ready)
         w.ready = false;
-    mark(w, "tap");
-    if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce"))
-        return "none";
     w.run.taps += 1;
     if (w.lvl) {
         w.lvl.stats.taps += 1;
@@ -2188,28 +2330,19 @@ export function flap(w, save) {
     spawnTrail(w, save);
     return "flap";
 }
-export function dive(w) {
+export function dive(w, save) {
     if (w.screen !== "play" || w.ready)
         return "none";
     // a dive throws the tail the other way, harder — it over-rotates past
     // home on the way back and rings down, which reads as weight falling
     w.tailV -= TAIL.dive;
-    if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM))
-        return "none";
-    if (w.tut?.hold && w.tut.stage === "swipe") {
-        mark(w, "dive");
-        w.tut.hold = false;
-        w.tut.stage = "dive";
-        w.tut.t = 0;
-        w.tut.nudge = ""; // the swipe hint has done its job
-        w.tut.gateBase = w.tut.gates;
-        w.bounceUp = false;
-        w.squirrel.vy = PHYS.dive;
-        w.squirrel.rot = 0.5;
-        return "dive";
+    // the same rule as a tap: while the lesson is scripted the swipe is an
+    // answer, and the director flies the dive if this is the beat for it
+    if (w.tut?.locked || w.tut?.hold) {
+        const before = w.tut.stage;
+        tutGesture(w, save, "swipe");
+        return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
     }
-    if (w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce" || w.tut.stage === "intro" || w.tut.stage === "tap" || w.tut.stage === "tap2"))
-        return "none";
     if (w.bounceUp && w.hitCooldown > 0) {
         w.bounceUp = false;
         w.squirrel.vy = PHYS.bounceCancel;
@@ -2305,7 +2438,7 @@ function bounceOff(w, save, px, py) {
     // arc kept being cancelled, leaving the pilot on the floor being told to
     // dive. The pilot is mid-scripted-flight here; a second contact is not a
     // new event, it is the same planet they are leaving.
-    if (w.tut?.stage === "bounce" && w.tut.launched)
+    if (w.tut?.stage === "bouncing" && w.tut.launched)
         return;
     const sx = w.W * PHYS.squirrelX;
     const sy = w.squirrel.y;
@@ -2601,8 +2734,11 @@ function die(w, save) {
     // belong to the flight the pilot actually chose.
     if (w.wormHold)
         exitWormhole(w);
-    if (w.tut && w.tut.stage !== "free") {
-        mark(w, "rescue");
+    // The first flight and the first mission are both unfailable, and this is
+    // the last door out - settleLevel below would end the run as a LOSS, which
+    // for level one means a new pilot's first mission after the tutorial tells
+    // them they failed. Unlimited tries, by never reaching that branch.
+    if (tutSafe(w)) {
         absorb(w);
         w.shieldCharges = Math.max(w.shieldCharges, 1);
         return "shield";
@@ -2691,27 +2827,6 @@ export function resumePlay(w) {
     w.screen = "play";
     w.pausedFrom = null;
 }
-/** A DWELL, in real seconds, on the tutorial's slowed clock.
- *
- *  Two different kinds of timeout share `tut.t`, and slowing the frame
- *  separates them for the first time:
- *
- *    * WORLD timeouts wait on the physics - the pilot falling, the teaching
- *      arc completing, the next gate arriving. Those are authored against
- *      the world and must stretch with it, so they use their value as-is.
- *    * DWELLS are pure pacing - how long a message sits, how long before a
- *      tap counts. Those are about the person, not the world, and must NOT
- *      stretch: at a tenth speed the 1.25s arming delay became a TWELVE AND
- *      A HALF SECOND dead wait staring at "tap to fly" while taps were
- *      silently refused, which is a worse tutorial than the one being fixed.
- *
- *  Scaling the threshold rather than adding a second clock keeps one source
- *  of truth: there are a dozen `tut.t = 0` resets and a second field would
- *  have to be reset at every one of them or drift out of step.
- */
-function tutDwell(seconds) {
-    return seconds * TUT_SLOW;
-}
 export function updateWorld(w, save, dt) {
     // THE FIRST FLIGHT RUNS IN SLOW MOTION.
     //
@@ -2731,8 +2846,6 @@ export function updateWorld(w, save, dt) {
     //
     // The freeze acorn's own factor stays what it is; this multiplies with it
     // like any other, so a slow acorn in the tutorial is simply slower still.
-    if (w.tut)
-        dt *= TUT_SLOW;
     // A fixed-step cue is edge-triggered. The engine drains it immediately;
     // clearing here also prevents a paused or READY update from replaying a
     // prior step if a non-engine caller chose not to drain it.
@@ -2792,116 +2905,98 @@ export function updateWorld(w, save, dt) {
         }
         return result.sound;
     }
-    flightRecorderTick(dt);
+    // ---------------------------------------------------------------------
+    // THE DIRECTOR
+    //
+    // One beat at a time. A beat either WAITS for a gesture - in which case
+    // tutGesture answers it and this does nothing - or waits on the world:
+    // the body coming level, a planet arriving, a gate being passed.
+    //
+    // Nothing here scripts the pilot's POSITION. Every motion in the lesson
+    // is the game's own physics given one impulse, which is why it looks like
+    // flying rather than like being dragged.
+    // ---------------------------------------------------------------------
     if (w.tut) {
-        w.tut.t += dt;
-        // one line rather than a mark at every transition - the stage machine has
-        // a dozen of them and any one added later would be missed
-        if (w.tut.stage !== lastTutStage) {
-            lastTutStage = w.tut.stage;
-            mark(w, "stage");
+        const t = w.tut;
+        t.t += dt;
+        const freeze = (stage, want = "continue") => {
+            t.stage = stage;
+            t.hold = true; // hold IS the freeze: see `frozen` below
+            t.want = want;
+            t.t = 0;
+        };
+        switch (t.stage) {
+            // a beat of stillness so the pilot sees the squirrel before being
+            // told anything at all
+            case "intro":
+                if (t.t > 0.55)
+                    freeze("learnTap");
+                break;
+            // the popup has been read and pressed past; the indicator is up and
+            // the director is waiting. There is no timeout here on purpose.
+            case "learnTap":
+            case "learnTap2":
+            case "doTap1":
+            case "doTap2":
+            case "doDive":
+            case "boing":
+            case "handover":
+            case "pal":
+                break;
+            // THE BODY COMING LEVEL, which is the cue the spec asks for: the tap
+            // has been flown, the arc has peaked, and the squirrel is horizontal
+            // again. Measured off the real rotation so it lands with the picture.
+            case "levelOff":
+                if (w.squirrel.vy >= 0 && Math.abs(w.squirrel.rot) < 0.12)
+                    freeze("learnTap2");
+                else if (t.t > 4)
+                    freeze("learnTap2"); // never strand the lesson
+                break;
+            // the second tap is climbing; teach the dive at the top of it
+            case "learnDive":
+                if (w.squirrel.vy >= -30 || t.t > 3)
+                    freeze("doDive", "swipe");
+                break;
+            // the dive is flying toward the staged planet. bounceUp is set by
+            // bounceOff the instant it lands.
+            case "diving":
+                if (w.bounceUp && !t.bounced) {
+                    t.bounced = true;
+                    freeze("boing");
+                }
+                else if (t.t > 3.5) {
+                    t.bounced = true;
+                    freeze("boing");
+                }
+                break;
+            // the bounce flies on its own spring and pauses at the top
+            case "bouncing":
+                if (w.squirrel.vy >= -30 || t.t > 3)
+                    freeze("handover");
+                break;
+            // THREE IN A ROW. gates counts clean passes; a contact rewinds the
+            // stretch (see tutRewind) rather than letting protection buy it.
+            case "gates3":
+                if (t.streak >= 3)
+                    freeze("pal");
+                break;
+            // practice with the pal - protected, forgiving, and no rewind
+            case "gates7":
+                if (t.gates >= 10)
+                    t.stage = "portal";
+                break;
+            case "portal":
+            case "done":
+            case "free":
+                break;
         }
-        if (w.tut.stage === "intro" && w.tut.t > tutDwell(0.55)) {
-            w.tut.stage = "tap";
-            w.tut.hold = true;
-            w.tut.t = 0;
-        }
-        if (w.tut.stage === "tapdone" && w.tut.t > tutDwell(0.55)) {
-            w.tut.stage = "tap2";
-            w.tut.hold = true;
-            w.tut.t = 0;
-        }
-        if (w.tut.stage === "glide") {
-            // the touchdown was computed for 0.9s out; a missed beat (odd frame
-            // pacing, a resize) must not strand the lesson — spring anyway. The
-            // world itself is never rearranged.
-            if (w.bounceUp && !w.tut.bounced) {
-                w.tut.bounced = true;
-                w.tut.stage = "bounce";
-                w.tut.t = 0;
-                w.squirrel.vy = -640;
-            }
-            else if (w.tut.t > 1.6 || w.squirrel.y > w.H * 0.82) {
-                w.tut.bounced = true;
-                w.tut.stage = "bounce";
-                w.tut.t = 0;
-                w.bounceUp = false;
-                w.squirrel.vy = -640;
-            }
-        }
-        if (w.tut.stage === "bounce") {
-            // ONE ARC, FLOWN BY THE GAME'S OWN PHYSICS.
-            //
-            // Every previous attempt at this scripted the pilot's POSITION - five
-            // re-fired springs, then a carry at a fixed rate - and a carry is a
-            // slide: it overrides gravity, ignores what it passes through, and
-            // reads as being teleported. Reported exactly that way.
-            //
-            // So nothing is scripted except the launch, and the launch is chosen
-            // rather than guessed: the velocity whose ballistic arc PEAKS at the
-            // height the lesson is taught. From there it is ordinary flight -
-            // real gravity, real arc, the same shape a tap makes - and it arrives
-            // at the right place because the arithmetic says so, not because
-            // something dragged it there.
-            //
-            //     v = -sqrt(2 g h)   peaks exactly h above where it started
-            //
-            // bounceOff refuses to touch the pilot while this is in the air, or
-            // the planet they are leaving cancels the arc they are leaving on.
-            const wantY = tutClearY(w, w.tut.apexY > 0 ? w.tut.apexY : w.H * TUT_SWIPE_TOP);
-            const teach = () => {
-                w.tut.stage = "swipe";
-                w.tut.hold = true;
-                w.tut.t = 0;
-            };
-            if (w.squirrel.y <= wantY + 4 && !w.tut.launched) {
-                // already at or above the lesson height: no launch needed. Let
-                // gravity bring them down to the line and teach there.
-                if (w.squirrel.y >= wantY - 4 || w.tut.t > 2.2)
-                    teach();
-            }
-            else if (!w.tut.launched) {
-                w.tut.launched = true;
-                const drop = Math.max(0, w.squirrel.y - wantY);
-                w.squirrel.vy = -Math.sqrt(2 * gravOf(save, w) * drop);
-                w.tut.t = 0;
-            }
-            else if (w.squirrel.vy > -30 || w.tut.t > 2.2) {
-                teach();
-            }
-        }
-        if (w.tut.stage === "dive" && (w.tut.gates - w.tut.gateBase >= 1 || w.tut.t > 3)) {
-            w.tut.stage = "yourturn";
-            w.tut.hold = true;
-            w.tut.t = 0;
-            w.tut.gates = 0;
-        }
-        if (w.tut.stage === "gates" && !save.tutorialDone) {
-            // controls are learned the moment gate practice begins — persist
-            // NOW, so quitting mid-tutorial never re-runs it on the next load
+        // controls are learned the moment gate practice begins - persist NOW so
+        // quitting mid-tutorial never re-runs it, and hand over the kit the
+        // Loadout is about to be pointed at
+        if (!t.locked && !save.tutorialDone) {
             save.tutorialDone = true;
-            // and the kit the coach already calls "your new ION SUIT" is handed
-            // over here, at the same moment, rather than being pointed at
             grantTutorialKit(save);
             writeSave(save);
-        }
-        if (w.tut.stage === "gates" && w.tut.gates >= 3) {
-            w.tut.stage = "pal";
-            w.tut.hold = true;
-            w.tut.t = 0;
-        }
-        if (w.tut.stage === "pal" && !w.tut.hold && w.tut.t > tutDwell(0.2)) {
-            w.tut.stage = "palDemo";
-            w.tut.t = 0;
-        }
-        if (w.tut.stage === "palDemo" && w.tut.t > tutDwell(4.2)) {
-            w.tut.stage = "ready";
-            w.tut.t = 0;
-        }
-        if (w.tut.stage === "ready" && w.tut.t > 1.6) {
-            w.tut.stage = "free";
-            save.tutorialDone = true;
-            grantTutorialKit(save);
         }
     }
     // TAP TO FLY means exactly that: until the first tap the run is held
@@ -3066,8 +3161,14 @@ export function updateWorld(w, save, dt) {
     w.lastSpawnX -= move;
     const lineReached = !!w.lvl && w.score >= w.lvl.def.gates;
     if (!lineReached) {
-        while (w.lastSpawnX < w.W + 90)
-            spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+        // THE FIRST FLIGHT IS AN AUTHORED COURSE, not a random one. The spawner
+        // was left running underneath it, so past the three gates and the seven
+        // it kept adding its own: the pilot met fourteen gates on the way to a
+        // portal placed after ten. Held until the lesson is over.
+        if (!w.tut || w.tut.stage === "free") {
+            while (w.lastSpawnX < w.W + 90)
+                spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+        }
     }
     else if (w.lvl && !w.lvl.portal) {
         // the last gate is passed: the field goes quiet and the FINISH portal
@@ -3109,8 +3210,18 @@ export function updateWorld(w, save, dt) {
         if (!p.scored && p.x + p.r < sx - 12) {
             p.scored = true;
             w.score += 1;
-            if (w.tut && (w.tut.stage === "gates" || w.tut.stage === "dive" || w.tut.stage === "palDemo"))
+            if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
                 w.tut.gates += 1;
+                if (w.tut.stage === "gates3") {
+                    // THREE IN A ROW MEANS THREE FLOWN. A gate that was touched does
+                    // not count however it ended - protection keeps the pilot alive,
+                    // it does not pass them - and it takes the stretch back.
+                    if (p.touched)
+                        tutRewind(w, save);
+                    else
+                        w.tut.streak += 1;
+                }
+            }
         }
     }
     const pal = palId(save, w);
@@ -3121,7 +3232,7 @@ export function updateWorld(w, save, dt) {
     w.palPos.y += (ty - w.palPos.y) * k;
     if (w.palPos.dart > 0)
         w.palPos.dart = Math.max(0, w.palPos.dart - dt);
-    if (pal === "buddy" || (w.tut && (w.tut.stage === "palDemo" || w.tut.stage === "ready"))) {
+    if (pal === "buddy" || (w.tut && (w.tut.stage === "gates7" || w.tut.stage === "portal"))) {
         // Pull at a fixed speed, not in proportion to the distance. A
         // proportional pull looks right and never lands: the world drags the
         // acorn LEFT at w.speed while the magnet drags it right at dx * 4.2, so
@@ -3154,11 +3265,21 @@ export function updateWorld(w, save, dt) {
     }
     if (sy > w.H + 36) {
         if (tutSafe(w)) {
-            const st = w.tut.stage;
-            if (st === "dive" || st === "gates" || st === "palDemo") {
+            // tutSafe now covers the first MISSION as well as the first FLIGHT,
+            // and a mission has no w.tut - reading the stage unconditionally here
+            // crashed level one on its first touch of the floor.
+            const st = w.tut?.stage;
+            if (!w.tut) {
+                // level one: scoop them back onto the flight line, unlimited tries
+                tutReset(w, sx, w.H + 10);
+            }
+            else if (st === "gates3" || st === "gates7" || st === "portal") {
                 // practice time: scoop them straight back onto the flight line
                 // rather than let them flounder along the floor
-                tutReset(w, sx, w.H + 10);
+                if (st === "gates3")
+                    tutRewind(w, save);
+                else
+                    tutReset(w, sx, w.H + 10);
             }
             else {
                 w.squirrel.y = Math.max(24, Math.min(w.H - 24, w.squirrel.y));
@@ -3184,8 +3305,14 @@ export function updateWorld(w, save, dt) {
                         return "shield";
                     }
                     if (tutSafe(w)) {
-                        if (w.hitCooldown <= 0 && w.shieldFreeze <= 0)
-                            tutReset(w, bx, by);
+                        if (w.hitCooldown <= 0 && w.shieldFreeze <= 0) {
+                            // inside the three, protection saves the pilot and takes the
+                            // stretch back - it never buys the gate
+                            if (w.tut?.stage === "gates3")
+                                tutRewind(w, save);
+                            else
+                                tutReset(w, bx, by);
+                        }
                         continue;
                     }
                     return die(w, save);
@@ -3205,6 +3332,12 @@ export function updateWorld(w, save, dt) {
                 if (w.shieldCharges > 0 && w.tut?.stage === "free") {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
+                // ANY contact marks the gate, whichever path handles it after.
+                // The streak is judged on this one flag rather than on catching
+                // every collision route, which is how "protection buys the gate"
+                // slipped through: the counter only ever asked whether the planet
+                // had scrolled past the pilot, not whether they had flown it.
+                p.touched = true;
                 bounceOff(w, save, p.x, py);
                 w.run.bounces += 1;
                 return "bounce";
@@ -3269,6 +3402,17 @@ export function updateWorld(w, save, dt) {
         else if ((a.kind === "hole" || a.kind === "worm") && w.warpT <= 0 && w.warpLeft <= 0 && w.warpGateEnd < 0) {
             startSwirl(w, a.kind === "worm" ? "worm" : "hole");
             snd = "shield";
+        }
+        else if (a.kind === "portal" && w.tut) {
+            // the first flight's finish line. It freezes on the congratulations
+            // rather than settling a level - there is no level here, and the
+            // reward is collected in the Loadout the coach is about to point at.
+            spark(w, a.x, ay, ["#ffd060", "#5dff9e", "#fff"], 26, "warp");
+            w.tut.stage = "done";
+            w.tut.hold = true;
+            w.tut.want = "continue";
+            w.tut.t = 0;
+            return "shift";
         }
         else if (a.kind === "portal" && w.lvl) {
             spark(w, a.x, ay, ["#ffd060", "#5dff9e", "#fff"], 26, "warp");

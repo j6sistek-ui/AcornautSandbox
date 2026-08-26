@@ -163,15 +163,21 @@ export async function bootStandalone(root: HTMLElement) {
       // most likely to be stuck and least likely to know it is skippable.
       // Skipping still hands over the suit and helmet it would have given.
       if (engine.world.tut) {
-        // The flight recorder used to sit here beside SKIP, and it was in
-        // the wrong place twice over: it overlapped the score badge on a
-        // phone, and it could only ever record the tutorial - which is the
-        // one flight a stuck pilot cannot finish. It lives in the pause
-        // menu now, where every run can reach it. This bar keeps the exit.
-        const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
-        skip.setAttribute("aria-label", "Skip the first flight");
-        skip.onclick = () => engine.skipTutorial();
-        bar.append(skip);
+        // THE FINISH IS A DOOR, NOT A DISMISSAL. Reaching the portal earns
+        // the walk to the Loadout, so the last beat replaces SKIP with the
+        // way onward - the pilot who flew it should not be offered an exit
+        // that reads like giving up.
+        if (engine.world.tut.stage === "done") {
+          const go = el("button", "ac-primary ac-tutskip", "EXIT TO LOADOUT");
+          go.setAttribute("aria-label", "Collect your reward in the Loadout");
+          go.onclick = () => engine.finishTutorial();
+          bar.append(go);
+        } else {
+          const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
+          skip.setAttribute("aria-label", "Skip the first flight");
+          skip.onclick = () => engine.skipTutorial();
+          bar.append(skip);
+        }
       }
       const pause = el("button", "ac-iconbtn", "II");
       pause.onclick = () => engine.pause();
@@ -202,35 +208,6 @@ export async function bootStandalone(root: HTMLElement) {
         });
         sheet.append(row);
       }
-      // THE FLIGHT RECORDER, reachable from any run.
-      //
-      // It used to live only on the tutorial's own button bar, which made it
-      // useless for the job it exists to do: "you can't copy my taps because
-      // i am forced through the prompts that don't work". A recorder you can
-      // only reach by completing the broken thing records nothing. Pause any
-      // flight - tutorial or not - and the taps are here, refused ones
-      // included, with the mode and score they happened in.
-      const rec = el("button", "ac-ghost", "COPY FLIGHT");
-      rec.setAttribute("aria-label", "Copy this flight's tap recording");
-      rec.onclick = () => {
-        const text = engine.flightRecording();
-        const done = () => {
-          rec.textContent = `COPIED ${engine.flightMarks()} TAPS`;
-          window.setTimeout(() => { rec.textContent = "COPY FLIGHT"; }, 2400);
-        };
-        if (navigator.clipboard?.writeText) {
-          navigator.clipboard.writeText(text).then(done, () => { rec.textContent = "TAP AGAIN"; });
-        } else {
-          const ta = document.createElement("textarea");
-          ta.value = text;
-          ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
-          document.body.append(ta);
-          ta.select();
-          try { document.execCommand("copy"); done(); } catch { /* leave it to copy by hand */ }
-          window.setTimeout(() => ta.remove(), 8000);
-        }
-      };
-      sheet.append(rec);
       // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
       // past 940px on a phone, and .ac-sheet is a fixed-height centred column
       // - so it spilled off BOTH ends and took RESUME with it. You could read

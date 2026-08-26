@@ -1,4 +1,4 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=145";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=145";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=145";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=145";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=145";
@@ -1569,7 +1569,7 @@ export function drawWorld(ctx, w, save, art) {
             ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
         }
     }
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
+    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
     if (pal && pal !== "none") {
@@ -1934,7 +1934,7 @@ function drawRetroWorld(ctx, w, save, art) {
             }
         }
     }
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "palDemo" || w.tut.stage === "ready")
+    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
     if (pal && pal !== "none") {
@@ -3855,19 +3855,24 @@ export function drawHud(ctx, w, art) {
             ctx.globalAlpha = 1;
         }
     }
+    // ---- THE COACH ------------------------------------------------------
+    //
+    // Every line the first flight says, in one place, keyed by beat. A frozen
+    // beat gets the panel; a beat that is flying gets a single line at the top
+    // so it never covers what the pilot is meant to be watching.
     if (w.tut?.hold) {
         const st = w.tut.stage;
-        const title = st === "tap" ? "TAP"
-            : st === "tap2" ? "TAP AGAIN"
-                : st === "swipe" ? "SWIPE DOWN"
-                    : st === "yourturn" ? "YOUR TURN!"
-                        : "A COMPANION APPEARS!";
-        const body = st === "tap" ? "anywhere — a boost upward"
-            : st === "tap2" ? "one more boost — then just watch"
-                : st === "swipe" ? "dive back down and make the gap"
-                    : st === "yourturn" ? "fly the gaps · grab the acorns"
-                        : "The Acorn pal reels in nearby acorns.";
-        drawPrompt(ctx, w, title, body, st === "swipe" ? w.H * 0.58 : w.H * 0.36);
+        const say = {
+            learnTap: ["THIS IS HOW YOU FLY", "a tap gives you a boost upward"],
+            learnTap2: ["TRY IT AGAIN", "one more, and watch the arc"],
+            boing: ["BOING!", "planets are bouncy - they never hurt you"],
+            handover: ["NOW YOU'RE IN CONTROL", "tap to fly through the gap in each gate"],
+            pal: ["A COMPANION APPEARS!", "the Acorn pal reels in nearby acorns"],
+            done: ["FLIGHT TUTORIAL COMPLETE", "head to the Loadout to collect your reward"],
+        };
+        const [title, body] = say[st] ?? ["", ""];
+        if (title)
+            drawPrompt(ctx, w, title, body, w.H * 0.36);
         if (w.tut.nudge) {
             ctx.fillStyle = "#ffd080";
             ctx.font = "700 13px Figtree, system-ui";
@@ -3875,33 +3880,87 @@ export function drawHud(ctx, w, art) {
             ctx.fillText(w.tut.nudge, W / 2, w.H * 0.68);
         }
     }
-    else if (w.tut?.stage === "glide" || w.tut?.stage === "bounce") {
+    // ---- THE GESTURE INDICATOR ------------------------------------------
+    //
+    // A TAPPING INDICATOR, not a target. Owner's ruling: it says "now, like
+    // this", not "here". A tap anywhere answers the beat - the real game
+    // takes a tap anywhere, and teaching a control the game does not have
+    // would be worse than teaching nothing.
+    //
+    // Centred, a third up from the bottom, which is where a thumb already
+    // rests on a phone and clear of the HUD at both ends.
+    if (w.tut?.want === "tap" || w.tut?.want === "swipe") {
+        const cx = W / 2;
+        const cy = w.H * 0.667;
+        const beat = 0.5 + 0.5 * Math.sin(w.time * 3.4);
+        ctx.save();
         ctx.textAlign = "center";
-        ctx.fillStyle = "#ffb84d";
-        ctx.font = "800 14px Figtree, system-ui";
-        ctx.fillText(w.tut.stage === "bounce" ? "BOING! PLANETS BOUNCE YOU"
-            : "PLANET AHEAD — LAND ON IT", W / 2, 86);
+        if (w.tut.want === "tap") {
+            // a ring that pulses outward, and a solid core that does not move -
+            // the core is the thumb, the ring is the press
+            ctx.strokeStyle = `rgba(255,92,92,${0.28 + 0.42 * (1 - beat)})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 26 + beat * 16, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(255,92,92,0.9)";
+            ctx.beginPath();
+            ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#fff";
+            ctx.font = "800 11px Figtree, system-ui";
+            ctx.fillText("TAP", cx, cy + 4);
+        }
+        else {
+            // a downward stroke with a head that travels it, drawn from the same
+            // anchor so the two lessons read as one vocabulary
+            const y0 = cy - 44;
+            const y1 = cy + 44;
+            ctx.strokeStyle = "rgba(255,92,92,0.35)";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(cx, y0);
+            ctx.lineTo(cx, y1);
+            ctx.stroke();
+            const hy = y0 + (y1 - y0) * beat;
+            ctx.fillStyle = "rgba(255,92,92,0.92)";
+            ctx.beginPath();
+            ctx.arc(cx, hy, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(cx - 7, y1 - 12);
+            ctx.lineTo(cx, y1 - 3);
+            ctx.lineTo(cx + 7, y1 - 12);
+            ctx.stroke();
+            ctx.fillStyle = "#fff";
+            ctx.font = "800 11px Figtree, system-ui";
+            ctx.fillText("SWIPE DOWN", cx, y1 + 20);
+        }
+        ctx.restore();
     }
-    else if (w.tut?.stage === "dive") {
+    // ---- a single line while a beat is FLYING ---------------------------
+    const flying = {
+        levelOff: "WATCH THE ARC",
+        learnDive: "SOMETIMES YOU NEED DOWN, FAST",
+        diving: "PLANET AHEAD",
+        bouncing: "BOING!",
+        gates3: "THREE IN A ROW",
+        gates7: "FLY THE GAPS  ·  GRAB THE ACORNS",
+        portal: "MAKE FOR THE PORTAL",
+    };
+    const line = w.tut && !w.tut.hold ? flying[w.tut.stage] : undefined;
+    if (line) {
         ctx.textAlign = "center";
-        ctx.fillStyle = "#ffb84d";
-        ctx.font = "800 14px Figtree, system-ui";
-        ctx.fillText("MAKE THE GAP", W / 2, 86);
-        ctx.fillStyle = "rgba(255,255,255,0.7)";
-        ctx.font = "700 12px Figtree, system-ui";
-        ctx.fillText("a tap levels you off", W / 2, 104);
-    }
-    else if (w.tut?.stage === "gates" || w.tut?.stage === "palDemo") {
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(243,239,228,0.8)";
-        ctx.font = "700 13px Figtree, system-ui";
-        ctx.fillText(w.tut.stage === "gates" ? "FLY THE GAPS  ·  GRAB THE ACORNS" : "WATCH THE MAGNET", W / 2, 86);
-    }
-    else if (w.tut?.stage === "ready") {
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#fff";
-        ctx.font = "800 20px Figtree, system-ui";
-        ctx.fillText("YOU'RE READY, PILOT", W / 2, w.H * 0.3);
+        ctx.fillStyle = "rgba(243,239,228,0.82)";
+        ctx.font = "800 13px Figtree, system-ui";
+        ctx.fillText(line, W / 2, 86);
+        if (w.tut?.stage === "gates3") {
+            ctx.fillStyle = "#ffd080";
+            ctx.font = "700 12px Figtree, system-ui";
+            ctx.fillText(`${w.tut.streak} / 3`, W / 2, 104);
+        }
     }
 }
 function drawPrompt(ctx, w, title, body, cy) {
@@ -3920,14 +3979,16 @@ function drawPrompt(ctx, w, title, body, cy) {
     ctx.fillStyle = "rgba(243,239,228,0.72)";
     ctx.font = "600 12px Figtree, system-ui";
     ctx.fillText(body, w.W / 2, cy + 16);
+    // THE CALL TO ACTION FADES IN, and it no longer waits on an arming
+    // window - there is no window any more. It is a beat of breathing room so
+    // the title lands before the instruction does.
     if (w.tut?.hold) {
-        const armA = Math.max(0, Math.min(1, (w.tut.t - TUT_ARM) / 0.3));
-        if (armA > 0) {
-            ctx.globalAlpha = armA * (0.7 + 0.3 * Math.sin(w.time * 4));
-            ctx.fillStyle = w.tut.stage === "swipe" ? "#ffb84d" : "#6ef0ff";
+        const inA = Math.max(0, Math.min(1, w.tut.t / 0.35));
+        if (inA > 0) {
+            ctx.globalAlpha = inA * (0.7 + 0.3 * Math.sin(w.time * 4));
+            ctx.fillStyle = "#6ef0ff";
             ctx.font = "700 12px Figtree, system-ui";
-            ctx.fillText(w.tut.stage === "swipe" ? "try it now"
-                : w.tut.stage === "yourturn" ? "tap to begin" : "tap to continue", w.W / 2, cy + 36);
+            ctx.fillText("tap to continue", w.W / 2, cy + 36);
             ctx.globalAlpha = 1;
         }
     }

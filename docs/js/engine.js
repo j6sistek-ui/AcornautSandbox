@@ -5,7 +5,7 @@ import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, M
 import { drawHud, drawWorld } from "./draw.js?v=145";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=145";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=145";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, flightRecording, flightMarkCount, resumePlay, setRaceInput, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=145";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=145";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=145";
 import { raceViewport } from "./race-viewport.js?v=145";
 export async function createEngine(canvas) {
@@ -207,12 +207,6 @@ export async function createEngine(canvas) {
          *  play, or who hits a lesson that is not landing - and it hands the
          *  pilot straight to the Loadout, which is where the tutorial was
          *  walking them anyway. */
-        flightRecording() {
-            return flightRecording(world);
-        },
-        flightMarks() {
-            return flightMarkCount();
-        },
         skipTutorial() {
             save.tutorialDone = true;
             grantTutorialKit(save);
@@ -226,6 +220,20 @@ export async function createEngine(canvas) {
                 save.guide = "hangar";
             writeSave(save);
             world.tut = null;
+            this.open("hangar");
+        },
+        finishTutorial() {
+            // The same handoff as skipTutorial, and deliberately so - what the
+            // pilot did differs, where they land does not. The kit was granted at
+            // the handover; "hangar" is the step that says go and put it on.
+            save.tutorialDone = true;
+            grantTutorialKit(save);
+            if (save.guide === "pending" || save.guide === "reward")
+                save.guide = "hangar";
+            writeSave(save);
+            world.tut = null;
+            shopTab = "suits";
+            engine.shopTab = "suits";
             this.open("hangar");
         },
         setShelfGrid(on) {
@@ -827,7 +835,7 @@ export async function createEngine(canvas) {
         }
         if (p.y - swipe.y0 >= 34) {
             swipe.fired = true;
-            const ev = dive(world);
+            const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
             notify();
@@ -926,7 +934,7 @@ export async function createEngine(canvas) {
             notify();
         }
         else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
-            const ev = dive(world);
+            const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
             notify();
