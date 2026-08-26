@@ -55,6 +55,12 @@ export type LevelFx = {
   fog?: number;        // 0 none .. 1 blind: sight circle around the pilot
   strobe?: boolean;    // world lit only briefly after each tap
   acornEvery?: boolean;// guarantee an acorn on every gate
+  /** THE FIRST MISSION CANNOT BE FAILED. Owner's call: level one is flown
+   *  for real and earns its star, but a crash is a free reset rather than a
+   *  loss - unlimited tries. A new pilot who has just finished the tutorial
+   *  and immediately fails their first mission has been told the game is
+   *  not for them, which is the one lesson it must never teach. */
+  noFail?: boolean;
 };
 
 export type Goal =
@@ -364,7 +370,8 @@ export const LEVELS: LevelDef[] = STAGES.flatMap((st) =>
       name: st.names[i],
       base: t.base ?? st.base,
       gates,
-      fx: { env: st.env, ...t.fx },
+      // the very first mission on the chart carries it; nothing else does
+      fx: { env: st.env, ...t.fx, ...((st.num - 1) * 10 + i + 1 === 1 ? { noFail: true } : {}) },
       goals: [{ kind: "finish" }, g2, g3] as [Goal, Goal, Goal],
     };
   }),

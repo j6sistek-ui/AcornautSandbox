@@ -1087,6 +1087,12 @@ function tutReset(w: World, bx: number, by: number) {
 }
 
 function tutSafe(w: World) {
+  // THE FIRST FLIGHT, AND THE FIRST MISSION. Both protect the pilot for the
+  // same reason and through the same path: a beginner who crashes out in
+  // their first minute has been told the game is not for them. Level one
+  // carries fx.noFail and nothing else does, so the mercy stops the moment
+  // the pilot has actually flown something.
+  if (w.lvl?.def.fx.noFail) return true;
   return !!w.tut && w.tut.stage !== "free";
 }
 
@@ -3174,7 +3180,11 @@ function die(w: World, save: SaveData) {
   // own. Come home first, so the score, the best and the result screen all
   // belong to the flight the pilot actually chose.
   if (w.wormHold) exitWormhole(w);
-  if (w.tut && w.tut.stage !== "free") {
+  // The first flight and the first mission are both unfailable, and this is
+  // the last door out - settleLevel below would end the run as a LOSS, which
+  // for level one means a new pilot's first mission after the tutorial tells
+  // them they failed. Unlimited tries, by never reaching that branch.
+  if (tutSafe(w)) {
     absorb(w);
     w.shieldCharges = Math.max(w.shieldCharges, 1);
     return "shield";
@@ -3670,11 +3680,17 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   if (sy > w.H + 36) {
     if (tutSafe(w)) {
-      const st = w.tut!.stage;
-      if (st === "gates3" || st === "gates7" || st === "portal") {
+      // tutSafe now covers the first MISSION as well as the first FLIGHT,
+      // and a mission has no w.tut - reading the stage unconditionally here
+      // crashed level one on its first touch of the floor.
+      const st = w.tut?.stage;
+      if (!w.tut) {
+        // level one: scoop them back onto the flight line, unlimited tries
+        tutReset(w, sx, w.H + 10);
+      } else if (st === "gates3" || st === "gates7" || st === "portal") {
         // practice time: scoop them straight back onto the flight line
         // rather than let them flounder along the floor
-        if (w.tut?.stage === "gates3") tutRewind(w, save);
+        if (st === "gates3") tutRewind(w, save);
         else tutReset(w, sx, w.H + 10);
       } else {
         w.squirrel.y = Math.max(24, Math.min(w.H - 24, w.squirrel.y));

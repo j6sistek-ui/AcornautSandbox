@@ -178,6 +178,44 @@ for (const [W, H] of SCREENS) {
   ok(w.tut.stage === "gates3", `the rewind should stay in the three, went to ${w.tut.stage}`);
 }
 
+// ---- and the first MISSION cannot be failed either ---------------------
+// Owner's call: level one is flown for real and earns its star, but a crash
+// is a free reset - unlimited tries. A pilot who finishes the tutorial and
+// immediately fails their first mission has been told the game is not for
+// them, which is the one lesson it must never teach. The mercy stops there:
+// level two is an ordinary level and this proves both halves.
+{
+  const camp = await import("../docs/js/campaign.js");
+  const suicide = (lvl) => {
+    const w = sim.makeWorld(430, 932);
+    const s = fresh();
+    sim.resetRun(w, s, lvl.base, false, lvl);
+    w.screen = "play";
+    w.ready = false;
+    for (let i = 0; i < 60 * 120; i++) {
+      // fly into the nearest planet body on every single frame
+      const p = w.planets.find((q) => q.x + q.r > w.W * 0.18);
+      if (p) { w.squirrel.y = Math.max(20, p.gapY - p.gap); w.squirrel.vy = 0; }
+      sim.updateWorld(w, s, 1 / 60);
+      if (w.screen !== "play") {
+        return { ended: w.screen, finished: !!w.lastLevel?.finished, stars: w.lastLevel?.gained ?? 0 };
+      }
+    }
+    return { ended: "never ended", finished: false, stars: 0 };
+  };
+  const one = suicide(camp.LEVELS[0]);
+  const two = suicide(camp.LEVELS[1]);
+  ok(camp.LEVELS.filter((l) => l.fx.noFail).map((l) => l.id).join(",") === "1-1",
+    `exactly level 1-1 should be unfailable, got ` +
+    `${camp.LEVELS.filter((l) => l.fx.noFail).map((l) => l.id).join(",") || "none"}`);
+  ok(one.finished && one.stars >= 1,
+    `level 1-1 was flown into a planet every frame and still must finish with its star, ` +
+    `got finished=${one.finished} stars=${one.stars}`);
+  ok(!two.finished,
+    `level 1-2 must be an ordinary level - the mercy stops after the first mission - ` +
+    `but the same suicidal run finished it`);
+}
+
 console.log(JSON.stringify({
   suite: "the first flight, beat by beat",
   beats: WANT.length,
