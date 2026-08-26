@@ -1,0 +1,204 @@
+<script>
+/* ============================================================
+   THE ONE RULE — a real flight, not a video.
+   Constants below are the game's own: FLIGHT_GRAVITY 1300,
+   flap impulse -450, baseSpeed 165, gapBase 168, planetR 42.
+   Art is the real 16-frame Seraph tap bank.
+   ============================================================ */
+(function(){
+"use strict";
+var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var host = document.getElementById("toy"), cv = document.getElementById("cv");
+if(!host || !cv) return;
+
+var FRAMES = window.__FLAP__ || [], PLANETS = window.__PLANETS__ || [];
+
+/* Reduced motion gets the contact sheet instead — sixteen painted
+   frames laid out flat is arguably the better proof anyway. */
+if(RM){
+  var sheet = document.createElement("div");
+  sheet.className = "sheet";
+  FRAMES.forEach(function(src,i){
+    var im = document.createElement("img"); im.src = src; im.loading = "lazy";
+    im.alt = i === 0 ? "The sixteen painted frames of one flap" : "";
+    sheet.appendChild(im);
+  });
+  host.replaceWith(sheet);
+  var cr = document.getElementById("craft");
+  if(cr){ cr.classList.add("on"); cr.textContent = "One flap, sixteen hand-painted frames. Most suits have their own set."; }
+  return;
+}
+
+var ctx = cv.getContext("2d"), DPR = Math.min(devicePixelRatio || 1, 2);
+var W = 0, H = 0, S = 1;
+var imgs = [], planets = [], ready = 0;
+FRAMES.forEach(function(src,i){ var im = new Image(); im.onload = function(){ ready++; }; im.src = src; imgs[i] = im; });
+PLANETS.forEach(function(src,i){ var im = new Image(); im.src = src; planets[i] = im; });
+
+var stars = [], gates = [], drift = [];
+var y, vy, animT, alive, score, best, shake, dead, started;
+try { best = parseInt(localStorage.getItem("acornaut.toy") || "0", 10) || 0; } catch(e){ best = 0; }
+document.getElementById("bs").textContent = best;
+
+function resize(){
+  var r = cv.getBoundingClientRect();
+  W = r.width; H = r.height;
+  cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  S = H/320;                                   /* the band is a cropped viewport */
+  stars = [];
+  for(var i=0;i<110;i++) stars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.25+.25, a:Math.random()*.6+.2, s:Math.random()*.5+.15});
+  drift = [];
+  for(var j=0;j<5;j++) drift.push({x:Math.random()*W, y:Math.random()*H, k:j%PLANETS.length, sc:(.2+Math.random()*.3), sp:.1+Math.random()*.2, a:.05+Math.random()*.07});
+}
+
+function reset(full){
+  y = H*0.44; vy = 0; animT = -1; alive = true; dead = 0; shake = 0;
+  if(full){ score = 0; document.getElementById("sc").textContent = "0"; }
+  gates = [];
+  spawn(W + 120*S);
+  spawn(W + 120*S + 340*S);
+  spawn(W + 120*S + 680*S);
+}
+function spawn(x){
+  var gap = 168*S*0.98, r = 42*S;
+  var lo = gap/2 + r*0.55 + 14, hi = H - gap/2 - r*0.55 - 14;
+  gates.push({x:x, cy:lo + Math.random()*(hi-lo), gap:gap, r:r, kt:(Math.random()*PLANETS.length)|0, kb:(Math.random()*PLANETS.length)|0, done:false, spin:Math.random()*6.28});
+}
+
+var startEl = document.getElementById("start"), everFlew = false;
+function idle(){
+  startEl.classList.remove("gone");
+  startEl.querySelector("b").textContent = everFlew ? "Fly it again" : "Tap to flap";
+}
+function flap(){
+  if(!started){
+    started = true; everFlew = true;
+    startEl.classList.add("gone");
+    var cr = document.getElementById("craft"); if(cr) cr.classList.add("on");
+  }
+  if(!alive) return;
+  vy = -450*S; animT = 0;
+}
+host.addEventListener("pointerdown", function(e){ e.preventDefault(); flap(); });
+host.addEventListener("keydown", function(e){
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); flap(); }
+});
+
+var last = 0, running = false;
+function frame(t){
+  if(!running) return;
+  var dt = Math.min((t - last)/1000 || 0, .05); last = t;
+  step(dt); paint();
+  requestAnimationFrame(frame);
+}
+function step(dt){
+  if(!started){                                  /* attract: gentle bob, no gates */
+    y = H*0.44 + Math.sin(performance.now()/900)*10*S;
+    drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160) { d.x = W+160; d.y = Math.random()*H; } });
+    stars.forEach(function(s){ s.x -= s.s*14*dt; if(s.x < 0) s.x = W; });
+    return;
+  }
+  if(animT >= 0){ animT += dt; if(animT > 16/26) animT = -1; }
+  drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160){ d.x = W+160; d.y = Math.random()*H; } });
+  stars.forEach(function(s){ s.x -= s.s*22*dt; if(s.x < 0) s.x = W; });
+  if(shake > 0) shake = Math.max(0, shake - dt*3.4);
+
+  if(!alive){
+    dead += dt;
+    y += vy*dt; vy += 1300*S*dt;
+    if(dead > .9){ reset(true); started = false; idle(); }
+    return;
+  }
+
+  vy += 1300*S*dt;
+  vy = Math.min(vy, 620*S);
+  y += vy*dt;
+
+  var speed = 165*S*1.5, sx = W*0.26, sr = 27*S;
+  for(var i=gates.length-1; i>=0; i--){
+    var g = gates[i];
+    g.x -= speed*dt; g.spin += dt*.25;
+    if(!g.done && g.x < sx - g.r*0.4){
+      g.done = true; score++;
+      document.getElementById("sc").textContent = score;
+      if(score > best){ best = score; document.getElementById("bs").textContent = best;
+        try{ localStorage.setItem("acornaut.toy", String(best)); }catch(e){} }
+    }
+    if(g.x < -g.r*2){ gates.splice(i,1); spawn(gates[gates.length-1].x + 340*S); }
+    var ty = g.cy - g.gap/2 - g.r, by = g.cy + g.gap/2 + g.r;
+    if(hit(sx, y, sr, g.x, ty, g.r*.82) || hit(sx, y, sr, g.x, by, g.r*.82)) die();
+  }
+  if(y < sr*0.55){ y = sr*0.55; if(vy < 0) vy = 0; }
+  if(y > H - sr*0.7) die();
+}
+function hit(ax,ay,ar,bx,by,br){ var dx=ax-bx, dy=ay-by; return dx*dx+dy*dy < (ar+br)*(ar+br); }
+function die(){
+  if(!alive) return;
+  alive = false; shake = 1; vy = -160*S;
+}
+
+function paint(){
+  var ox = shake ? (Math.random()-.5)*10*shake : 0, oy = shake ? (Math.random()-.5)*10*shake : 0;
+  ctx.save(); ctx.translate(ox, oy);
+  var g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#0a0620"); g.addColorStop(.55,"#08040f"); g.addColorStop(1,"#0d0722");
+  ctx.fillStyle = g; ctx.fillRect(-12,-12,W+24,H+24);
+
+  ctx.fillStyle = "#cbb4ff";
+  stars.forEach(function(s){ ctx.globalAlpha = s.a; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.284); ctx.fill(); });
+  ctx.globalAlpha = 1;
+
+  drift.forEach(function(d){
+    var im = planets[d.k]; if(!im || !im.complete) return;
+    var sz = 190*S*d.sc; ctx.globalAlpha = d.a;
+    ctx.drawImage(im, d.x - sz/2, d.y - sz/2, sz, sz);
+  });
+  ctx.globalAlpha = 1;
+
+  if(started){
+    gates.forEach(function(gt){
+      var t = planets[gt.kt], b = planets[gt.kb], d = gt.r*2.35;
+      var ty = gt.cy - gt.gap/2 - gt.r, by = gt.cy + gt.gap/2 + gt.r;
+      if(t && t.complete) ring(t, gt.x, ty, d, gt.spin);
+      if(b && b.complete) ring(b, gt.x, by, d, -gt.spin);
+    });
+  }
+
+  var im = imgs[animT >= 0 ? Math.min(15, (animT*26)|0) : 0];
+  if(im && im.complete){
+    var sz = 132*S, sx = W*0.26;
+    ctx.save();
+    ctx.translate(sx, y);
+    ctx.rotate(Math.max(-.42, Math.min(.72, (vy/S)/1100)));
+    ctx.globalAlpha = alive ? 1 : Math.max(0, 1 - dead*1.1);
+    ctx.drawImage(im, -sz/2, -sz/2, sz, sz);
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+function ring(im, x, cy, d, spin){
+  ctx.save(); ctx.translate(x, cy); ctx.rotate(spin*.12);
+  ctx.drawImage(im, -d/2, -d/2, d, d);
+  ctx.restore();
+}
+
+function boot(){
+  resize(); reset(true); started = false;
+  running = true; last = performance.now();
+  requestAnimationFrame(frame);
+}
+addEventListener("resize", function(){ var s = score, b = started; resize(); reset(true); score = s; started = b; document.getElementById("sc").textContent = s; });
+
+/* only run the loop while the strip is on screen */
+if("IntersectionObserver" in window){
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ if(!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } }
+      else running = false;
+    });
+  },{threshold:.12}).observe(host);
+}
+if(document.readyState !== "loading") boot(); else addEventListener("DOMContentLoaded", boot);
+})();
+</script>

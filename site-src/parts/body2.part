@@ -1,0 +1,102 @@
+<!-- ============ THE ROAD ============ -->
+<section class="road-band" id="s-road" data-node>
+  <div class="road-art"><img src="{{A:bg-chart.jpg}}" alt="" loading="lazy"></div>
+  <div class="wrap">
+    <div class="road-grid">
+      <figure class="shot rise" style="margin:0">
+        <div class="phone"><img src="{{A:mk-chart.jpg}}" alt="The Star Chart: a road of numbered planets climbing the screen, with a rail of rewards beside it" loading="lazy"></div>
+        <figcaption>The actual screen</figcaption>
+      </figure>
+      <div class="rise">
+        <p class="kicker">The Star Chart</p>
+        <h2>A hundred missions on one climbing road.</h2>
+        <p class="lede" style="margin-top:20px">Numbered 1 to 100, three stars each. The rewards hang on a rail beside the road, so before you go for a star you already know exactly what it buys. Nothing on this chart sits behind a question mark.</p>
+        <p class="goldline"><span class="num">100 missions</span> <s>&middot;</s> <span class="num">300 stars</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE FITTING ROOM ============ -->
+<section class="fit-band" id="s-fit" data-node>
+  <div class="wrap">
+    <div class="hd rise">
+      <p class="kicker">The Fitting Room</p>
+      <h2>Thirty suits. Not one of them is a recolour.</h2>
+      <p class="lede">Every suit is its own painting, with a helmet built to match, a trail that burns in its own colour, and pals that fly alongside you. In the game you build the look in a lit display case and the squirrel wears your picks live while you decide. Pick one below &mdash; the case is the same one.</p>
+    </div>
+
+    <div class="case-grid">
+        <div class="case rise" id="case">
+          <span class="case-beam" aria-hidden="true"></span>
+          <span class="case-floor" aria-hidden="true"></span>
+          <span class="case-cnr tl" aria-hidden="true"></span><span class="case-cnr tr" aria-hidden="true"></span>
+          <span class="case-cnr bl" aria-hidden="true"></span><span class="case-cnr br" aria-hidden="true"></span>
+          <p class="case-plate">Now showing</p>
+          <div class="case-stage"><img id="caseImg" alt=""></div>
+          <p class="case-name"><b id="caseName">Seraph</b><span>Suit &middot; matching helmet &middot; trail</span></p>
+        </div>
+      <figure class="shot rise" style="margin:0">
+        <div class="phone"><video width="400" height="712" data-src="{{V:squad.mp4}}" poster="{{A:squad-poster.jpg}}" muted loop playsinline preload="none" aria-label="A crew of squirrels in different suits flying together"></video></div>
+        <figcaption>The whole crew, suited</figcaption>
+      </figure>
+      <figure class="shot rise" style="margin:0">
+        <div class="phone"><img src="{{A:mk-shop.jpg}}" alt="The Acornaut shop: a display case above shelves of suits, helmets and pals, with a running combo price" loading="lazy"></div>
+        <figcaption>The shop, in the game</figcaption>
+      </figure>
+    </div>
+    <div class="wall rise">
+      <div class="rail" id="railA"><div class="rail-in" id="railAin"></div></div>
+      <div class="rail rev" id="railB"><div class="rail-in" id="railBin"></div></div>
+      <p class="tiny" style="margin-top:16px;text-align:center">30 suits &middot; 31 helmets &middot; 18 trails &middot; 15 pals &mdash; every one of them painted, not tinted.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STRAIGHT ANSWERS ============ -->
+<section class="ans-band" id="s-ans" data-node>
+  <div class="wrap">
+    <div class="hd rise">
+      <p class="kicker">Before you ask</p>
+      <h2>What it costs, what it isn't, who made it.</h2>
+    </div>
+    <div class="ans rise">
+      <div>
+        <h3>What does it cost?</h3>
+        <p>Nothing to play. There is a shop, and it is built to be easy to ignore: the shelf restocks each day, anything you already own leaves it for good instead of being dangled at you, and one featured pack sits at half price. Everything on that shelf is a suit, a helmet, a trail or a pal.</p>
+      </div>
+      <div>
+        <h3>Do I need an account?</h3>
+        <p>No. No sign-in, no email, no download. Your progress lives in the browser you play it in.</p>
+      </div>
+      <div>
+        <h3>Is it a real app?</h3>
+        <p>It runs in the browser today, and it installs to a phone home screen if you want it there. There is no app store listing yet &mdash; that is where this is heading.</p>
+      </div>
+      <div>
+        <h3>Who made it?</h3>
+        <p>One person. Every suit, planet and animation frame in it was painted for this game and nothing else.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSE ============ -->
+<section class="close">
+  <div class="hero-art"><img src="{{A:bg-wide.jpg}}" alt="" loading="lazy"></div>
+  <div class="wrap">
+    <p class="kicker" style="justify-content:center">One more thing</p>
+    <h2>You have now read more about this game than it takes to play it.</h2>
+    <a class="btn" href="https://acornaut.app" target="_blank" rel="noopener" style="margin-top:14px">Play Acornaut</a>
+    <p class="note" style="text-align:center">Free. No account. Add it to your home screen and it runs like an app from there.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Acornaut &mdash; hand-painted, frame by frame, by one person.</span>
+    <a href="https://acornaut.app" target="_blank" rel="noopener">acornaut.app</a>
+  </div>
+</footer>
+
+<div class="dock" id="dock"><a class="btn" href="https://acornaut.app" target="_blank" rel="noopener">&#9654;&nbsp; Play free &mdash; no account</a></div>
