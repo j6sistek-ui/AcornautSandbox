@@ -4,7 +4,7 @@ import { proceduralSky, hueShifted } from "./sky-gen.js?v=145";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=145";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=145";
 import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=145";
-import { WORM_EXIT_LEAD } from "./control-constants.js?v=145";
+import { WORM_EXIT_LEAD, suitLean } from "./control-constants.js?v=145";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=145";
 import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=145";
 function frameOf(list, t, speed = 6) {
@@ -2991,7 +2991,10 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
         let rigPitch = 0;
         if (rigPitchOn) {
             const hp = trackHeadingMotion(_t, motionVy, motionVx);
-            rigPitch = hp < 0 ? hp * RIG_PITCH_UP : hp * RIG_PITCH_DOWN;
+            // the same dial, so one number governs a suit's lean however it is
+            // drawn - a rigged suit carries both sources and feels it twice
+            const rigLean = suitLean(suit.id);
+            rigPitch = hp < 0 ? hp * RIG_PITCH_UP * rigLean.up : hp * RIG_PITCH_DOWN * rigLean.down;
         }
         const pitched = rigPitch !== 0;
         if (pitched) {
@@ -3248,14 +3251,20 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     }
     // the sim's real pitch — dives nose down, bounces kick the body over;
     // the old ±6° bank made every impact read as nothing happening
-    let bank = w.squirrel.rot * bankScale;
+    // THE LEAN DIAL, applied to the rotation every suit gets - painted bank
+    // or not. Split by direction because climbing and diving are separately
+    // tunable: negative rot is nose-up. At 1 this is exactly the expression
+    // it replaced. See SUIT_LEAN in control-constants.ts.
+    const lean = suitLean(suit.id);
+    let bank = w.squirrel.rot * bankScale * (w.squirrel.rot < 0 ? lean.up : lean.down);
     if (articulatedTap && !eclipseImpact) {
         // Every current model now uses the same eased visual pitch clock. Eclipse
         // supplies painted body poses; the other rigs use the identity-safe body
         // pulse and sectional tail bend in paintIllustrated below.
         const raw = Math.max(0, Math.min(1, w.tapAnimT / 0.14));
         const eased = 1 - Math.pow(1 - raw, 3);
-        bank = w.tapAnimFromRot * 0.8 * (1 - eased) + bank * eased;
+        const fromLean = w.tapAnimFromRot < 0 ? lean.up : lean.down;
+        bank = w.tapAnimFromRot * 0.8 * fromLean * (1 - eased) + bank * eased;
     }
     const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
     ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));

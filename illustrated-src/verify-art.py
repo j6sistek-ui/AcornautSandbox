@@ -1097,6 +1097,59 @@ def verify_one_tree(qa: QA) -> None:
             f"and stop whatever wrote it.")
 
 
+def verify_suit_lean(qa: QA) -> None:
+    """Every shipping suit has its own lean dial, and the dials are sane.
+
+    Owner ruling, 26 Aug 2026: "the custom aren't custom pitch, they're
+    custom animations." Lean is a separate axis from the art, so every suit
+    on the roster carries its own number - including the five with custom
+    animation, whose FRAMES are untouchable but whose TIP is not.
+
+    The failure this exists to stop is silent: a suit added to SUITS but not
+    to SUIT_LEAN falls through to the default and flies with a lean nobody
+    chose for it, which is indistinguishable from a lean somebody did choose
+    until you look at the table. Nothing crashes, nothing looks obviously
+    wrong, and the suit quietly inherits someone else's feel.
+
+    It also bounds the values. A multiplier is not a free-for-all: past
+    about 2 the body starts rotating through attitudes no frame was drawn
+    for, and negative would tip the suit the wrong way down its own dive.
+    """
+    consts = (ROOT / "illustrated-src/game/control-constants.ts").read_text(encoding="utf8")
+    catalog = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
+
+    block = re.search(r"export const SUIT_LEAN:[^{]*\{(.*?)\n\};", consts, re.S)
+    if not block:
+        qa.fail("suit lean: SUIT_LEAN is missing from control-constants.ts")
+        return
+    dials = {m.group(1): (float(m.group(2)), float(m.group(3)))
+             for m in re.finditer(
+                 r"(\w+):\s*\{\s*up:\s*([\d.]+),\s*down:\s*([\d.]+)\s*\}",
+                 block.group(1))}
+
+    suits = re.findall(r'\{\s*id:\s*"(\w+)"', 
+                       re.search(r"export const SUITS[^=]*=\s*\[(.*?)\n\];", catalog, re.S).group(1))
+    suits = list(dict.fromkeys(suits))
+
+    problems: list[str] = []
+    for suit in suits:
+        if suit not in dials:
+            problems.append(f"{suit} ships but has no SUIT_LEAN dial - it would fly "
+                            f"with a lean nobody chose for it")
+    for suit in sorted(set(dials) - set(suits)):
+        problems.append(f"{suit} has a SUIT_LEAN dial but is not a shipping suit")
+    for suit, (up, down) in sorted(dials.items()):
+        for name, v in (("up", up), ("down", down)):
+            if not 0 <= v <= 2:
+                problems.append(f"{suit}.{name} is {v}; a lean multiplier lives in 0..2 "
+                                f"(0 pins it flat, 1 is what ships, 2 is double)")
+
+    if problems:
+        qa.fail("suit lean: " + "; ".join(problems))
+    else:
+        qa.ok(f"all {len(suits)} suits carry their own lean dial")
+
+
 def verify_motion_banks(qa: QA) -> None:
     """A velocity-indexed pose bank is complete and its head holds still.
 
@@ -1341,6 +1394,7 @@ def main() -> int:
     verify_pause_has_an_exit(qa)
     verify_one_tree(qa)
     verify_motion_banks(qa)
+    verify_suit_lean(qa)
     verify_one_wormhole_control(qa)
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
