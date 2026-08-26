@@ -133,6 +133,14 @@ def main():
         open(dst, "w", encoding="utf-8").write(page)
     else:
         meta = HEAD_META.format(desc=DESCRIPTION, site=SITE_URL)
+        # Runs before anything paints. An installed icon whose start_url is
+        # still "/" (every iOS install predating the move) lands on the game.
+        standalone = (
+            '<script>(function(){try{'
+            'if(matchMedia("(display-mode: standalone)").matches||navigator.standalone){'
+            'location.replace("./arcade/");}'
+            '}catch(e){}})();</script>\n')
+        meta = meta + standalone
         head_end = page.rfind("</style>") + len("</style>")
         dst = os.path.join(out_dir, "index.html")
         open(dst, "w", encoding="utf-8").write(
