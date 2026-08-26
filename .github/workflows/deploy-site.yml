@@ -24,6 +24,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Merging the PR that adds this workflow touches site-src/, so the first
+      # run happens before anyone has had a chance to add the secret. Without
+      # this, that run dies inside actions/checkout with an opaque 403.
+      - name: Require the deploy token
+        env:
+          TOKEN: ${{ secrets.ACORNAUT_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "${TOKEN}" ]; then
+            echo "::error::ACORNAUT_DEPLOY_TOKEN is not set, so nothing was deployed."
+            echo "::error::Add a fine-grained PAT scoped to j6sistek-ui/acornaut only,"
+            echo "::error::with Contents: Read and write, under Settings -> Secrets and"
+            echo "::error::variables -> Actions. Then re-run this workflow."
+            exit 1
+          fi
+
       - name: Check out the source
         uses: actions/checkout@v4
 
@@ -74,8 +89,7 @@ jobs:
             exit 0
           fi
           git diff --cached --stat | tail -5
-          git commit -q -m "Deploy acornaut.io from AcornautSandbox@${GITHUB_SHA:0:7}
-
-          Built by .github/workflows/deploy-site.yml from site-src/.
-          Do not hand-edit the landing page here - edit site-src/ and push."
+          git commit -q \
+            -m "Deploy acornaut.io from AcornautSandbox@${GITHUB_SHA:0:7}" \
+            -m "Built by .github/workflows/deploy-site.yml from site-src/. Do not hand-edit the landing page here - edit site-src/ and push."
           git push origin HEAD:main
