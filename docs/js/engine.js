@@ -821,7 +821,7 @@ export async function createEngine(canvas) {
         }
         if (p.y - swipe.y0 >= 34) {
             swipe.fired = true;
-            const ev = dive(world);
+            const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
             notify();
@@ -920,7 +920,7 @@ export async function createEngine(canvas) {
             notify();
         }
         else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
-            const ev = dive(world);
+            const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
             notify();
