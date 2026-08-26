@@ -120,8 +120,25 @@ if (w.flight !== "tunnel") {
   const leadEndX = lead[lead.length - 1].x;
   const inLead = (t.hazards || []).filter((h) => h.x <= leadEndX).length;
   ok(inLead === 0, `${inLead} hazard(s) sit inside the lead-in`);
-  ok(t.nextHazardAt > w.distance,
-    `the first hazard is already armed at entry (${t.nextHazardAt} vs distance ${Math.round(w.distance)})`);
+  // ...and the threshold that holds it back is read in NODE SPACE, so that
+  // is the unit it has to be asserted in. This line used to compare it
+  // against w.distance, which agrees only when the corridor starts at
+  // distance 0 - and a wormhole detour jumps w.distance to as much as
+  // 30,000 before building. Written the old way it passed a corridor whose
+  // hazard and pickup thresholds were parked past the end of the trip, so
+  // the detour spawned nothing at all for fifteen seconds.
+  const step = t.nodes[1].x - t.nodes[0].x;
+  const leadEndNodeX = lead[lead.length - 1].index * step;
+  ok(t.nextHazardAt >= leadEndNodeX,
+    `the first hazard is armed inside the lead-in (${Math.round(t.nextHazardAt)} ` +
+    `against a lead-in ending at ${Math.round(leadEndNodeX)} in node space)`);
+  // ...and NOT parked past the whole trip either, which is the failure the
+  // old w.distance comparison hid: a fifteen-second trip covers roughly
+  // 4,000px, so a threshold beyond that means an empty corridor.
+  ok(t.nextHazardAt < 4000 && t.nextPickupAt < 4000,
+    `the corridor spawns nothing inside a fifteen-second trip: hazard at ` +
+    `${Math.round(t.nextHazardAt)}, pickup at ${Math.round(t.nextPickupAt)}, ` +
+    `against roughly 4,000px flown`);
 }
 
 console.log(JSON.stringify({

@@ -1,5 +1,36 @@
 # Acornaut motion spec — how a suit flies
 
+## THE RULE (owner, 26 Aug 2026)
+
+> **Everything gets the default flight treatment unless the owner says there
+> is a custom animation, or supplies custom flight sprite sheets. The
+> default is Flight. The special ones are given, not derived.**
+
+Read that as a standing rule with two halves, because both matter:
+
+1. **Default is not a fallback, it is the answer.** A suit with no
+   owner-supplied sheets is not waiting for art — it is finished. Nobody
+   commissions, generates, selects or derives a motion bank for it. There is
+   no backlog of suits that "still need" one.
+2. **Custom is granted, never inferred.** A suit joins the custom tier
+   because the owner said so and handed over sheets. It does not join it
+   because its pitch measured well, because a generator was available, or
+   because someone thought it looked better. Measurement can *describe* the
+   roster; it cannot *promote* into it.
+
+The suits with custom flight animation today are **eclipse, volt, bigbooty,
+robo, catsuit** — good as they are, and not to be regenerated, re-selected
+or re-indexed. `verify_motion_banks` enforces the tier's membership so it
+cannot be widened quietly; changing it takes an owner ruling and a matching
+edit to `CUSTOM_FLIGHT_SUITS` in `illustrated-src/verify-art.py`.
+
+**The 24-suit render project this document used to describe was cancelled
+under this rule and is not to be revived.** What follows is kept because it
+is the measured record of the roster and the recipe for a genuinely new
+model authored from scratch — not a work order for anything that ships.
+
+---
+
 **The standard is Flight.** Owner ruling, 25 Aug 2026: a new model must meet
 it. A model may keep a path of its own when its *shape* is genuinely
 different — Robo and Cyber are the two — but that is a declared exception,
@@ -74,6 +105,67 @@ ground plane, no cast shadow. On top of that:
   *both* banks, so a frame that was re-centred or re-cropped on its own will
   jump. The content bbox is free to change — that is the pose; Flight's runs
   125–154 wide and 120–148 tall — but the canvas and the scale are not.
+
+## The art has to CONTAIN attitude, and most of it does not
+
+This is the acceptance test that decides whether a suit can carry the
+standard at all, and it is worth measuring before rendering anything.
+
+Flight's eight frames span **99 degrees** of body pitch, from -23 climbing
+to +76 in the dive. That range IS the model - the sim picks a frame by
+vertical velocity, so if the frames do not differ in attitude there is
+nothing for velocity to pick between.
+
+Measured across every 16-frame tap bank that ships, as the principal axis
+of the opaque mass:
+
+| suit | pitch span | carries the model? |
+|---|---|---|
+| eclipse | 112° | yes |
+| volt | 76° | yes |
+| robo, bigbooty | 64° | yes |
+| **the other 24** | **16-20°** | **no** |
+
+Twenty-four of twenty-eight suits have essentially no attitude in them.
+Their tap frames are a FLAP - the body stays rigid and the tail does the
+work - which is exactly why they read as a sticker being pinched next to
+Flight. Note that Flight's own tap bank spans 18°, flat like the rest: its
+asc/desc frames are separate art, authored as attitudes rather than as a
+wing-beat.
+
+**So no amount of re-indexing converts them.** A velocity-indexed bank
+built from frames that all point the same way is still frames that all
+point the same way. Converting them would mean eight new attitude frames
+each, and that is the real cost of the standard - not the code.
+
+### What the measurement is, and is not, for
+
+The cliff in that table — 112° down to 36° for five suits, 24° and below for
+the other 23 — happens to fall exactly where the owner's custom tier sits.
+That is a useful sanity check and nothing more. **The five are custom because
+the owner supplied them, not because they measured well**, and a 24th suit
+does not earn promotion by scoring 45°. See THE RULE at the top.
+
+Read the table as a description of the roster, then stop.
+
+**The ones with range were candidates to convert for free** - a 3+5 ramp
+selected out of their existing sixteen, no new art. Not being done either:
+they are among the five that were ruled good as they are, and a selection
+is still a change to a flight animation that the owner has flown and
+approved. Pitch was only ever a proxy anyway - a frame at -27° may be
+mid-wing-beat with the arms somewhere the neighbour's are not, so a ramp
+chosen on the number alone can read as jitter.
+
+**Rule for a new model:** render the eight poses to span at least **45°**
+of pitch, and aim for Flight's 99. `verify_motion_banks` measures it.
+
+The floor is calibrated, not chosen. The first cut was 60 — "0.6 of
+Flight's 99" — and it promptly failed **cyber at 59°**, a suit that ships
+and works. The number was wrong, not the suit. The measurements leave an
+enormous empty middle: flat banks sit at 16–20 and working ones start at
+cyber's 59, with nothing in between. 45 sits in that gap with better than
+double the margin either way. It is not a quality bar — it is the line
+between "these frames differ" and "these frames are the same pose".
 
 ## The head must not change size
 

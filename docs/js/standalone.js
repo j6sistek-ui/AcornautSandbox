@@ -160,6 +160,44 @@ export async function bootStandalone(root) {
             // most likely to be stuck and least likely to know it is skippable.
             // Skipping still hands over the suit and helmet it would have given.
             if (engine.world.tut) {
+                // THE FLIGHT RECORDER, exported by the pilot.
+                //
+                // The owner's suggestion, and a far better instrument than guessing:
+                // fly the first flight on a real phone, press this, and the game
+                // hands over exactly what happened - every input including the ones
+                // it REFUSED, when each landed, and what the pilot was doing at that
+                // instant. Then the choreography can be rebuilt against a real run
+                // rather than against a simulation of what a beginner might do.
+                //
+                // It copies to the clipboard. Nothing is sent anywhere.
+                const rec = el("button", "ac-ghost ac-tutskip", "COPY FLIGHT");
+                rec.setAttribute("aria-label", "Copy this flight's recording");
+                rec.onclick = () => {
+                    const text = engine.flightRecording();
+                    const done = () => {
+                        rec.textContent = `COPIED ${engine.flightMarks()}`;
+                        window.setTimeout(() => { rec.textContent = "COPY FLIGHT"; }, 2200);
+                    };
+                    if (navigator.clipboard?.writeText) {
+                        navigator.clipboard.writeText(text).then(done, () => { rec.textContent = "TAP AGAIN"; });
+                    }
+                    else {
+                        // older iOS Safari without the async clipboard: a selectable
+                        // field is the fallback that still lets a phone copy it
+                        const ta = document.createElement("textarea");
+                        ta.value = text;
+                        ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:120px;z-index:99";
+                        document.body.append(ta);
+                        ta.select();
+                        try {
+                            document.execCommand("copy");
+                            done();
+                        }
+                        catch { /* leave it on screen to copy by hand */ }
+                        window.setTimeout(() => ta.remove(), 6000);
+                    }
+                };
+                bar.append(rec);
                 const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
                 skip.setAttribute("aria-label", "Skip the first flight");
                 skip.onclick = () => engine.skipTutorial();
@@ -1520,7 +1558,7 @@ export async function bootStandalone(root) {
                     if (locked || !open)
                         b.classList.add("ac-cardoff");
                     if (s.guide === "helmet" && h.id === GUIDE_HELM)
-                        b.classList.add("ac-pulse");
+                        b.classList.add("ac-pulse", "ac-guidetarget");
                     b.onclick = () => { if (!locked && open && (!premium || owned))
                         tx(b, () => engine.buyHelmet(h.id), h.cost); };
                     row.append(b);
@@ -1555,7 +1593,7 @@ export async function bootStandalone(root) {
                 if (premium)
                     markPremium(b, u.glow);
                 if (s.guide === "hangar" && u.id === GUIDE_SUIT)
-                    b.classList.add("ac-pulse");
+                    b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
                     tx(b, () => engine.buySuit(u.id), u.cost); };
                 return b;
@@ -1725,12 +1763,41 @@ export async function bootStandalone(root) {
         shopBanner.append(sbIc, sbTxt, el("span", "ac-shopbannergo", "\u203A"));
         shopBanner.onclick = () => { shopPage = "packs"; engine.open("shop"); };
         scroll.append(shopBanner);
-        if (s.guide === "hangar")
-            box.append(coach("Tap your new ION SUIT to wear it"));
-        else if (s.guide === "helmet")
-            box.append(coach("Now the ION HELMET \u2014 tap to equip"));
-        else if (s.guide === "levels")
+        // THE INSTRUCTION HAS TO FIND THE THING FOR YOU.
+        //
+        // Reported, and all three are true at once: the banner said "equip Ion
+        // suit" while the Loadout opened on HELMETS; the Ion helmet sits in the
+        // SECOND row with no sign you have to scroll to it; and two other cards
+        // said COLLECT REWARD, which reads far more like the thing to press
+        // than the one you were actually sent for.
+        //
+        // So the coach is a control now, not a caption. It names the item, and
+        // pressing it scrolls that card into the middle of the screen and lights
+        // it. Everything else on the shelf dims while a step is live, which is
+        // what makes a COLLECT REWARD badge stop competing with the instruction.
+        if (s.guide === "hangar" || s.guide === "helmet") {
+            const suitStep = s.guide === "hangar";
+            box.classList.add("ac-guiding");
+            const c = coach(suitStep
+                ? "Tap your new ION SUIT to wear it"
+                : "Now the ION HELMET \u2014 tap to equip");
+            c.classList.add("ac-coachfind");
+            c.append(el("i", "ac-coachhint", "tap here to show me"));
+            c.onclick = () => {
+                const target = box.querySelector(".ac-guidetarget");
+                if (!target)
+                    return;
+                target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+                target.classList.add("ac-guideflash");
+                window.setTimeout(() => target.classList.remove("ac-guideflash"), 1400);
+            };
+            // sticky needs a scrolling ancestor: inside the shelf column, not
+            // floating over it
+            (box.querySelector(".ac-sheet-scroll") ?? box).append(c);
+        }
+        else if (s.guide === "levels") {
             box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
+        }
         box.append(scroll);
         if (!BETA_FEATURES)
             box.append(tabbar("hangar"));

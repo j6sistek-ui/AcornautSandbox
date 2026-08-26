@@ -103,6 +103,41 @@ for (const b of BUNDLES) {
   }
 }
 
+// ---- the first shelf a new pilot ever sees ------------------------------
+// "Collect Reward" is not a decoration: it is the loudest badge on a card
+// and it means FREE, REVEALED, UNCLAIMED. Two helmets shipped that way with
+// no star gate to hold them, so the guided step that says "equip the Ion
+// helmet" opened onto a shelf where two other cards begged to be pressed
+// first. A cosmetic that is free on day one has to be one the pilot already
+// owns - anything else is a price or a gate.
+{
+  const SAVE = await import("../docs/js/save.js");
+  const s0 = SAVE.defaultSave();
+  const freeAndWaiting = (list, ownedIds) =>
+    list.filter((x) => !C.isIap(x.id) && !ownedIds.includes(x.id) && (x.cost || 0) <= 0);
+
+  const helms = freeAndWaiting(C.HELMETS, s0.unlocked).filter((h) => SAVE.helmetRevealed(s0, h.id));
+  ok(helms.length === 0,
+    `no helmet may read "Collect Reward" on a brand-new save; ${helms.map((h) => h.id).join(", ")} does`);
+
+  const suits = freeAndWaiting(C.SUITS, s0.unlockedSuits).filter((u) => SAVE.suitRevealed(s0, u.id));
+  ok(suits.length === 0,
+    `no suit may read "Collect Reward" on a brand-new save; ${suits.map((u) => u.id).join(", ")} does`);
+
+  // and the two that caused it are shop stock behind a chart gate, not prizes
+  const CAMP = await import("../docs/js/campaign.js");
+  for (const id of ["phoenix", "princess"]) {
+    const h = C.HELMETS.find((x) => x.id === id);
+    ok(h && h.cost > 0, `${id} must carry an acorn price, has ${h && h.cost}`);
+    const gate = CAMP.STAR_UNLOCKS.helmets[id];
+    ok(gate > 0, `${id} must sit behind a star gate, has ${gate}`);
+    ok(!SAVE.helmetRevealed(s0, id), `${id} must be locked on a new save`);
+    const at = SAVE.defaultSave();
+    at.allStars = true;
+    ok(SAVE.helmetRevealed(at, id), `${id} must open once the chart is earned`);
+  }
+}
+
 const t0 = 1_800_000_000_000;
 console.log(JSON.stringify({
   suite: "shop rotation and cross-pack pricing",

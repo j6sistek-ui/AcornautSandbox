@@ -1,0 +1,226 @@
+[
+ {
+  "suit": "abyssal",
+  "tapSpan": 17,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "amethyst",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 3,
+  "divePoses": 13,
+  "stillExists": true
+ },
+ {
+  "suit": "aurorasuit",
+  "tapSpan": 16,
+  "route": "render",
+  "climbPoses": 2,
+  "divePoses": 14,
+  "stillExists": true
+ },
+ {
+  "suit": "bigbooty",
+  "tapSpan": 64,
+  "route": "select",
+  "climbPoses": 6,
+  "divePoses": 10,
+  "stillExists": true
+ },
+ {
+  "suit": "catsuit",
+  "tapSpan": 36,
+  "route": "render",
+  "climbPoses": 16,
+  "divePoses": 0,
+  "stillExists": true
+ },
+ {
+  "suit": "cinderforge",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "copper",
+  "tapSpan": 16,
+  "route": "render",
+  "climbPoses": 7,
+  "divePoses": 9,
+  "stillExists": true
+ },
+ {
+  "suit": "cosmic",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "cryostar",
+  "tapSpan": 20,
+  "route": "render",
+  "climbPoses": 0,
+  "divePoses": 16,
+  "stillExists": true
+ },
+ {
+  "suit": "eclipse",
+  "tapSpan": 112,
+  "route": "select",
+  "climbPoses": 6,
+  "divePoses": 10,
+  "stillExists": true
+ },
+ {
+  "suit": "ember",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 1,
+  "divePoses": 15,
+  "stillExists": true
+ },
+ {
+  "suit": "flight",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 5,
+  "divePoses": 11,
+  "stillExists": true
+ },
+ {
+  "suit": "frost",
+  "tapSpan": 19,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "gemmie",
+  "tapSpan": 20,
+  "route": "render",
+  "climbPoses": 2,
+  "divePoses": 14,
+  "stillExists": true
+ },
+ {
+  "suit": "ghost",
+  "tapSpan": 20,
+  "route": "render",
+  "climbPoses": 2,
+  "divePoses": 14,
+  "stillExists": true
+ },
+ {
+  "suit": "groveguard",
+  "tapSpan": 17,
+  "route": "render",
+  "climbPoses": 3,
+  "divePoses": 13,
+  "stillExists": true
+ },
+ {
+  "suit": "iontrim",
+  "tapSpan": 16,
+  "route": "render",
+  "climbPoses": 7,
+  "divePoses": 9,
+  "stillExists": true
+ },
+ {
+  "suit": "ivoryguard",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 3,
+  "divePoses": 13,
+  "stillExists": true
+ },
+ {
+  "suit": "leviathan",
+  "tapSpan": 24,
+  "route": "render",
+  "climbPoses": 1,
+  "divePoses": 15,
+  "stillExists": true
+ },
+ {
+  "suit": "reactor",
+  "tapSpan": 18,
+  "route": "render",
+  "climbPoses": 1,
+  "divePoses": 15,
+  "stillExists": true
+ },
+ {
+  "suit": "robo",
+  "tapSpan": 64,
+  "route": "select",
+  "climbPoses": 10,
+  "divePoses": 6,
+  "stillExists": true
+ },
+ {
+  "suit": "sammie",
+  "tapSpan": 20,
+  "route": "render",
+  "climbPoses": 1,
+  "divePoses": 15,
+  "stillExists": true
+ },
+ {
+  "suit": "seraph",
+  "tapSpan": 24,
+  "route": "render",
+  "climbPoses": 0,
+  "divePoses": 16,
+  "stillExists": true
+ },
+ {
+  "suit": "stardust",
+  "tapSpan": 20,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "sunforged",
+  "tapSpan": 19,
+  "route": "render",
+  "climbPoses": 0,
+  "divePoses": 16,
+  "stillExists": true
+ },
+ {
+  "suit": "verdant",
+  "tapSpan": 19,
+  "route": "render",
+  "climbPoses": 0,
+  "divePoses": 16,
+  "stillExists": true
+ },
+ {
+  "suit": "voidsuit",
+  "tapSpan": 19,
+  "route": "render",
+  "climbPoses": 4,
+  "divePoses": 12,
+  "stillExists": true
+ },
+ {
+  "suit": "volt",
+  "tapSpan": 76,
+  "route": "select",
+  "climbPoses": 11,
+  "divePoses": 5,
+  "stillExists": true
+ }
+]

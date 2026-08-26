@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections import deque
 import hashlib
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -934,6 +935,77 @@ def verify_dev_instruments(qa: QA) -> None:
         qa.ok(f"all {len(DEV_INSTRUMENTS)} dev instruments sit where the table says")
 
 
+# CALIBRATED, not chosen. The first cut at this was 60 - "0.6 of Flight's
+# 99" - a round fraction that promptly failed CYBER at 59, a suit that
+# ships, works, and the owner picked out as good. The number was wrong, not
+# the suit.
+#
+# The measurements leave an enormous empty middle:
+#
+#   flat banks, which cannot carry the model    16 - 20 degrees
+#   ...nothing at all in between...
+#   banks that work    cyber 59, robo/bigbooty 64, volt 76, flight 99, eclipse 112
+#
+# 45 sits in that gap with better than double the margin either way. It is
+# not a quality bar - it is the line between "these frames differ" and
+# "these frames are the same pose". See MOTION_SPEC.md.
+MOTION_MIN_PITCH_SPAN = 45.0
+
+# THE CUSTOM FLIGHT TIER IS A GRANT, NOT A MEASUREMENT.
+#
+# Owner rule, 26 Aug 2026: "everything gets the default flight treatment
+# unless I say there's a custom animation or give custom flight sprite
+# sheets. the default is flight, but i've given you special ones."
+#
+# So membership here is a LIST OF NAMES THE OWNER SAID, and the checker's
+# job is to make sure the code's registries agree with it. It exists
+# because the failure mode is not a crash - it is a suit quietly acquiring
+# a bespoke flight path because a generator was to hand and its pitch
+# measured well, which is exactly the 24-suit render project that got
+# cancelled. Widening this set takes an owner ruling, and the ruling should
+# be written into MOTION_SPEC.md in the same change.
+#
+# `flight` is here as the DEFAULT itself - it is the treatment every other
+# suit falls back to, so of course it carries the banks that define it.
+# Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
+# tap banks, which are an approved rollout every suit shares.
+CUSTOM_FLIGHT_SUITS = {
+    "flight",     # the default, and the reference the rest are measured against
+    "eclipse",    # owner-supplied, and the only granted suit on this tier today
+    "cyber",      # declared shape exception, 25 Aug 2026
+    # volt, bigbooty, robo and catsuit are granted custom flight animation
+    # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
+    # as they are; do not convert them onto this tier to "finish" the set.
+}
+
+
+def sprite_pitch(path: Path) -> float | None:
+    """The body's attitude, as the principal axis of its opaque mass.
+
+    A crude proxy for "which way is the character pointing", and crude is
+    fine: what is being asked is whether the frames DIFFER, not what the
+    exact angle is.
+    """
+    try:
+        from PIL import Image
+        import numpy as np
+    except Exception:
+        return None
+    try:
+        im = Image.open(path).convert("RGBA")
+    except Exception:
+        return None
+    alpha = np.array(im)[..., 3] > 24
+    ys, xs = np.nonzero(alpha)
+    if len(xs) < 50:
+        return None
+    pts = np.stack([xs - xs.mean(), ys - ys.mean()])
+    _, vec = np.linalg.eigh(np.cov(pts))
+    ax = vec[:, -1]
+    deg = math.degrees(math.atan2(ax[1], ax[0]))
+    return deg - 180 if deg > 90 else deg + 180 if deg < -90 else deg
+
+
 # Suits that ship a tap bank a motion bank has already made unreachable.
 # Both are pre-existing and both are waiting on a decision, so they are
 # recorded here rather than failing the build - but a NEW suit that does it
@@ -1056,18 +1128,44 @@ def verify_motion_banks(qa: QA) -> None:
         return {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", m.group(1))}
 
     asc, desc, tap = banks("ASC_BANKS"), banks("DESC_BANKS"), banks("TAP_BANKS")
+
+    # THE TIER IS A GRANT. Everything defaults to Flight's treatment, and a
+    # suit only leaves that default because the owner said so and handed
+    # over sheets - so the registries have to match the granted list, in
+    # both directions. An id that appears here without a grant is exactly
+    # the quiet promotion the rule exists to stop; a granted id missing its
+    # registration means the owner's art is not being drawn at all.
+    problems: list[str] = []
+    # SCOPE: the MOTION-BANK tier only - ASC_BANKS / DESC_BANKS.
+    #
+    # Not TAP_BANKS. The sixteen-frame painted tap banks are a rollout the
+    # owner approved on its own merits ("the verdict is that the painted
+    # bank beats the rig"), and all 28 of them ship. They are part of what a
+    # suit gets by default, not a bespoke flight path someone granted it.
+    #
+    # The motion-bank tier is the one that can widen quietly - it is what
+    # the cancelled 24-suit render project was going to fill, and adding an
+    # id to it silently makes every tap frame that suit ships unreachable
+    # (fullMotion beats fullTap and has no time gate). So that is the tier
+    # held to the granted list.
+    motion = set(asc) | set(desc)
+    for suit in sorted(motion - CUSTOM_FLIGHT_SUITS):
+        problems.append(
+            f"{suit} has a velocity-indexed motion bank but is not in "
+            f"CUSTOM_FLIGHT_SUITS - everything defaults to Flight unless the "
+            f"owner grants a custom animation (MOTION_SPEC.md, THE RULE)")
     # A suit that wears its own head never calls paintDome at all, so it has
     # no anchors to be missing. Cyber is the case: nine ascent and nine
     # descent frames, no DOME keys, and correct.
     catalog = (ROOT / "illustrated-src/game/catalog.ts").read_text(encoding="utf8")
     own_head = {m.group(1) for m in re.finditer(
         r'\{\s*id:\s*"(\w+)"[^}]*?(?:ownHead|cat):\s*true', catalog)}
-    problems: list[str] = []
     checked = 0
     for suit in sorted(set(asc) & set(desc)):
         checked += 1
         fixed_helmet = suit in own_head
         radii: list[float] = []
+        pitches: list[float] = []
         for kind, n in (("asc", asc[suit]), ("desc", desc[suit])):
             for i in range(1, n + 1):
                 key = f"{suit}-{kind}-{i}"
@@ -1075,12 +1173,27 @@ def verify_motion_banks(qa: QA) -> None:
                 if not png.exists():
                     problems.append(f"{key}.png is missing but the bank declares it")
                     continue
+                p = sprite_pitch(png)
+                if p is not None:
+                    pitches.append(p)
                 if key not in dome:
                     if not fixed_helmet:
                         problems.append(f"{key} has no DOME anchor - that pose draws "
                                         f"NO helmet at all, silently")
                     continue
                 radii.append(dome[key][2])
+        # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
+        # velocity, so frames that all point the same way give velocity
+        # nothing to pick between - a 16-degree bank is a wing-beat wearing
+        # a ramp's clothes. Flight, the standard, spans 99 degrees. Measured
+        # across the shipping tap banks, 24 of 28 suits sit at 16-20 and
+        # cannot carry this model at all; see MOTION_SPEC.md.
+        if len(pitches) > 1:
+            span = max(pitches) - min(pitches)
+            if span < MOTION_MIN_PITCH_SPAN:
+                problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
+                                f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
+                                f"velocity indexing has nothing to pick between")
         if len(radii) > 1:
             spread = (max(radii) - min(radii)) / (sum(radii) / len(radii))
             if spread > 0.04:

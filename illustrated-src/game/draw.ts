@@ -4,7 +4,8 @@ import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, type Particle, type World } from "./sim";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
+import { WORM_EXIT_LEAD } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   RACE_ACORNS,
@@ -1999,6 +2000,22 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
       ctx.strokeStyle = `rgba(150,225,255,${0.35 + 0.2 * Math.sin(w.time * 6)})`;
       ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.arc(a.x, y, 21 + Math.sin(w.time * 6) * 2, 0, Math.PI * 2); ctx.stroke();
+    } else if (a.exit) {
+      // THE WAY HOME, and it has to read as a door from across the screen.
+      // The corridor's own else-branch drew every unknown kind as an acorn,
+      // which would have made the exit look like one more pickup to graze
+      // past - the opposite of the one thing the pilot must aim at.
+      const spin = frameOf(art.wormAnim, w.time, 9);
+      const r = a.r ?? 46;
+      if (spin) {
+        const sz = r * 4;
+        ctx.drawImage(spin, a.x - sz / 2, y - sz / 2, sz, sz);
+      } else {
+        drawVortex(ctx, a.x, y, true, w.time, r);
+      }
+      ctx.strokeStyle = `rgba(201,140,255,${0.45 + 0.3 * Math.sin(w.time * 5)})`;
+      ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.arc(a.x, y, r + 6 + Math.sin(w.time * 5) * 3, 0, Math.PI * 2); ctx.stroke();
     } else drawSprite(ctx, frameOf(art.acorn, w.time, 10), a.x, y, 28);
   }
   for (const p of w.particles) drawParticle(ctx, p);
@@ -3940,6 +3957,26 @@ if (w.lvl) {
   }
   if (w.flight === "tunnel" && w.tunnel) {
     const t = w.tunnel;
+    if (t.detour) {
+      // A DETOUR HAS A DIFFERENT JOB TO REPORT. Flow is the standalone
+      // mode's scoring and pays nothing here, so a meter that filled and
+      // glowed while the gate count sat frozen was reporting a number that
+      // did not exist - "meaningless", in one word. What a trip is worth is
+      // acorns, and what the pilot needs is how long is left and where the
+      // door is, so that is what the strip says instead.
+      const left = Math.max(0, w.wormLeft);
+      const closing = left <= WORM_EXIT_LEAD;
+      const tone = closing ? "#c98cff" : "#78dfff";
+      ctx.fillStyle = tone;
+      ctx.font = "800 10px Figtree, system-ui";
+      ctx.fillText(closing ? "FLY INTO THE EXIT" : `WORMHOLE  ${Math.ceil(left)}s`, W / 2, 64);
+      const barW = 80;
+      const barX = W / 2 - barW / 2;
+      ctx.fillStyle = "rgba(255,255,255,.15)";
+      ctx.fillRect(barX, 69, barW, 3);
+      ctx.fillStyle = tone;
+      ctx.fillRect(barX, 69, barW * Math.min(1, left / WORM_TRIP_SECONDS), 3);
+    } else {
     const flowColor = t.multiplier >= 3 ? "#f3b4ff" : t.multiplier === 2 ? "#ffe680" : "#78dfff";
     ctx.fillStyle = flowColor;
     ctx.font = "800 10px Figtree, system-ui";
@@ -3950,6 +3987,7 @@ if (w.lvl) {
     ctx.fillRect(barX, 69, barW, 3);
     ctx.fillStyle = flowColor;
     ctx.fillRect(barX, 69, barW * (t.flow / 100), 3);
+    }
     if (t.bannerLeft > 0) {
       ctx.globalAlpha = Math.min(1, t.bannerLeft);
       ctx.fillStyle = t.bannerKind === "region" || t.bannerKind === "milestone"

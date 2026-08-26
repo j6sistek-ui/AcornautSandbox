@@ -826,11 +826,53 @@
     @keyframes acLoveIn { from { opacity: 0; transform: scale(.9); } }
     @keyframes acHeart { 0% { transform: translateY(0) scale(.6) rotate(-8deg); opacity: 0; }
       12% { opacity: 1; } 100% { transform: translateY(-92vh) scale(1.15) rotate(10deg); opacity: 0; } }
+    /* WHILE A GUIDED STEP IS LIVE, ONLY THE STEP IS BRIGHT.
+       Two other cards on the same shelf say COLLECT REWARD, which reads far
+       more like the thing to press than the one the instruction sent you
+       for. Dimming the rest is what stops them competing — the target keeps
+       full colour and gets an arrow; everything else stays visible (you can
+       still browse) but stops shouting. */
+    /* `> button` would make this (0,2,1) and quietly outrank the un-dim
+       below it at (0,2,0) - the target stayed dimmed with both rules
+       matching. `> *` keeps them level so source order decides, which is
+       what was intended. */
+    .ac-guiding .ac-card, .ac-guiding .ac-shelfrow > * { opacity: .38; filter: saturate(.5); }
+    .ac-guiding .ac-guidetarget { opacity: 1; filter: none; }
+    /* THE ARROW SITS INSIDE THE CARD. Above it is the obvious place and it
+       does not work: the shelf is a horizontal scroller (overflow:auto), so
+       anything drawn outside a card's own box is clipped away and the arrow
+       simply never appeared. Inside the top edge, pointing down into the
+       item, cannot be clipped by anything. */
+    .ac-guidetarget { position: relative; z-index: 3;
+      box-shadow: 0 0 0 2px #ffd782, 0 0 22px rgba(255,205,110,.55); }
+    .ac-guidetarget::after {
+      content: ""; position: absolute; left: 50%; top: 5px; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent;
+      border-top: 12px solid #ffd782;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,.85));
+      animation: acGuideArrow 1.05s ease-in-out infinite; }
+    @keyframes acGuideArrow { 0%,100% { top: 3px; } 50% { top: 9px; } }
+    @media (prefers-reduced-motion: reduce) {
+      .ac-guidetarget::after { animation: none; } }
+    .ac-guideflash { box-shadow: 0 0 0 3px #ffd782, 0 0 26px rgba(255,205,110,.85) !important; }
+    .ac-coachfind .ac-coachhint { display: block; font-style: normal; margin-top: 3px;
+      font: 700 11px/1.2 Figtree, sans-serif; letter-spacing: .08em;
+      text-transform: uppercase; color: #ffd782; opacity: .95; }
     .ac-coach { position: absolute; left: 18px; right: 18px; bottom: 96px; z-index: 40;
       background: #1a2340; border: 1px solid #d4af37; border-radius: 14px; padding: 11px 14px;
       font-size: 12px; font-weight: 800; letter-spacing: .03em; color: #ffe9a8; text-align: center;
       box-shadow: 0 8px 26px rgba(0,0,0,.55); animation: acCoachIn .35s ease; pointer-events: none; }
     @keyframes acCoachIn { from { opacity: 0; transform: translateY(10px); } }
+    /* THE COACH BECOMES A CONTROL, so it has to stop being a caption.
+       The base .ac-coach is `pointer-events: none` and floats at
+       bottom:96px - which is why tapping it did nothing, and why it kept
+       landing on top of a card. Sticky puts it in the flow at the bottom of
+       the shelf: always on screen, never over an item, and pressable. */
+    .ac-coachfind { position: sticky; left: auto; right: auto; bottom: 10px;
+      z-index: 60; pointer-events: auto; cursor: pointer;
+      margin: 14px 0 4px; animation: none;
+      -webkit-tap-highlight-color: transparent; }
+    .ac-coachfind:active { transform: scale(.985); }
     .ac-pulse { animation: acPulse 1.15s ease-in-out infinite; border-color: #ffd76a !important; }
     @keyframes acPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 106, .55); }
       55% { box-shadow: 0 0 0 8px rgba(255, 215, 106, 0); } }

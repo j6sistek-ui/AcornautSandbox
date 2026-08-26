@@ -1,0 +1,50 @@
+[
+ {
+  "frame": "asc-1",
+  "pitch": -14.3,
+  "index": 0,
+  "role": "climb"
+ },
+ {
+  "frame": "asc-2",
+  "pitch": -16.7,
+  "index": 1,
+  "role": "climb"
+ },
+ {
+  "frame": "asc-3",
+  "pitch": -23.1,
+  "index": 2,
+  "role": "climb"
+ },
+ {
+  "frame": "desc-1",
+  "pitch": 13.8,
+  "index": 3,
+  "role": "dive"
+ },
+ {
+  "frame": "desc-2",
+  "pitch": 17.5,
+  "index": 4,
+  "role": "dive"
+ },
+ {
+  "frame": "desc-3",
+  "pitch": 35.8,
+  "index": 5,
+  "role": "dive"
+ },
+ {
+  "frame": "desc-4",
+  "pitch": 42.6,
+  "index": 6,
+  "role": "dive"
+ },
+ {
+  "frame": "desc-5",
+  "pitch": 76.3,
+  "index": 7,
+  "role": "dive"
+ }
+]
