@@ -15,10 +15,19 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ART = os.path.join(ROOT, "docs", "art")
 
-# The suit flown by the playable strip. Its 16-frame tap bank IS the animation
-# a stranger sees first, so it has to be one whose bank is finished - Flight is
-# the standard the others are measured against (see art-src/motion-banks/).
-TOY_SUIT = "flight"
+# The suit flown by the playable strip.
+#
+# It flies on its MOTION BANK - the asc/desc attitude frames the engine indexes
+# by vertical speed - not on a tap bank. A tap bank is a wing-beat: the body
+# stays rigid and only the tail moves, which is why most of them read as a
+# sticker being pinched. A motion bank is a ramp of authored attitudes, so the
+# pose IS the pitch and the engine draws it with zero rotation.
+#
+# Eclipse and Flight are the two with finished ramps (eclipse spans 112 degrees,
+# flight 99; see art-src/motion-banks/roster.json). Eclipse's is the fuller one
+# at 8 frames each way, and its tail carries the read.
+TOY_SUIT = "eclipse"
+TOY_MOTION = 8          # frames per direction in the asc/desc ramp
 
 # Planet renders used as the toy's gates and its background drift.
 TOY_PLANETS = (3, 7, 12, 18, 24, 29)
@@ -87,12 +96,13 @@ def main():
         total += webp(p, os.path.join(out, "s-%s.webp" % s["id"]), (176, 176), 82)
     print("suits      %2d" % len(suits))
 
-    for i in range(1, 17):
-        p = os.path.join(ART, "suits", "%s-tap-%d.png" % (TOY_SUIT, i))
-        if not os.path.exists(p):
-            sys.exit("MISSING TOY FRAME: " + p)
-        total += webp(p, os.path.join(out, "flap-%d.webp" % i), (200, 200), 78)
-    print("flap bank  16  (%s)" % TOY_SUIT)
+    for way in ("asc", "desc"):
+        for i in range(1, TOY_MOTION + 1):
+            p = os.path.join(ART, "suits", "%s-%s-%d.png" % (TOY_SUIT, way, i))
+            if not os.path.exists(p):
+                sys.exit("MISSING TOY FRAME: " + p)
+            total += webp(p, os.path.join(out, "%s-%d.webp" % (way, i)), (200, 200), 78)
+    print("motion    %2d  (%s, %d each way)" % (TOY_MOTION * 2, TOY_SUIT, TOY_MOTION))
 
     for i in TOY_PLANETS:
         total += webp(os.path.join(ART, "planets", "%d.png" % i),

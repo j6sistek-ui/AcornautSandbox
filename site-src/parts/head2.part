@@ -63,6 +63,7 @@ h1 em{font-style:normal; color:var(--violet-lite)}
 .toy canvas{display:block; width:100%; height:clamp(300px,42vw,392px)}
 .toy-hud{position:absolute; top:14px; left:14px; right:14px; display:flex; justify-content:space-between;
   gap:12px; pointer-events:none; font-weight:700}
+.chipset{display:flex; gap:8px; flex-wrap:wrap}
 .chip{background:rgba(10,14,28,.78); border:1px solid var(--line); border-radius:999px;
   padding:7px 15px; font-size:.76rem; letter-spacing:.13em; text-transform:uppercase;
   color:var(--ink-2); backdrop-filter:blur(7px); font-variant-numeric:tabular-nums}

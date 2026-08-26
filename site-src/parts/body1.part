@@ -41,13 +41,16 @@
     <div class="hd rise">
       <p class="kicker">The whole control scheme</p>
       <h2>Tap. That is the entire input.</h2>
-      <p class="lede">No buttons to learn, no tutorial to sit through. The gap between two planets is either wide enough or it isn't. Thirty suits, a hundred missions and six rule-sets all hang off that one motion &mdash; and the strip below is running the game's own art and its own gravity, so you can feel it before you decide anything.</p>
+      <p class="lede">No buttons to learn and no tutorial to sit through. Planets don&rsquo;t kill you &mdash; you bounce off them, and the run keeps count. Only the floor is fatal. Thirty suits, a hundred missions and six rule-sets all hang off that one motion, and the strip below runs the game&rsquo;s own gravity, its own bounce, and Eclipse&rsquo;s own flight frames.</p>
     </div>
 
     <div class="toy rise" id="toy" role="button" tabindex="0" aria-label="Playable demo: tap or press space to flap">
       <canvas id="cv"></canvas>
       <div class="toy-hud">
-        <span class="chip">Gates <b class="num" id="sc">0</b></span>
+        <span class="chipset">
+          <span class="chip">Gates <b class="num" id="sc">0</b></span>
+          <span class="chip">Bounces <b class="num" id="bo">0</b></span>
+        </span>
         <span class="chip rec">Best <b class="num" id="bs">0</b></span>
       </div>
       <div class="toy-start" id="start">
@@ -57,8 +60,8 @@
     </div>
 
     <div class="toy-foot">
-      <p class="reveal" id="craft">That flap is sixteen hand-painted frames, and most suits have their own set.</p>
-      <p class="tiny">Same gravity, same flap, same art as the real thing &mdash; but this one is only a toy.</p>
+      <p class="reveal" id="craft">Sixteen painted attitudes &mdash; eight climbing, eight diving. The pose is the pitch, not a tilted sprite.</p>
+      <p class="tiny">Same gravity, same flap, same bounce, same frames &mdash; but this one is only a toy.</p>
     </div>
   </div>
 </section>

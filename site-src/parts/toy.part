@@ -1,9 +1,19 @@
 <script>
 /* ============================================================
-   THE ONE RULE — a real flight, not a video.
-   Constants below are the game's own: FLIGHT_GRAVITY 1300,
-   flap impulse -450, baseSpeed 165, gapBase 168, planetR 42.
-   Art is the real 16-frame Seraph tap bank.
+   THE ONE RULE - a real flight, not a video.
+
+   Physics and rules are the game's own, from sim.ts / catalog.ts:
+     FLIGHT_GRAVITY 1300, flap -450, baseSpeed 165, gapBase 168, planetR 42
+     PLANETS BOUNCE. They are not lethal - bounceOff() throws you off them
+       and the run counts it. Only debris and the floor kill, and this strip
+       carries no debris, so the floor is the only way down.
+     THE CEILING BOUNCES you back down too: vy = |vy| * 0.45 + 90.
+
+   The squirrel is ECLIPSE, flying on its MOTION BANK: eight authored climb
+   attitudes and eight dive attitudes, indexed by smoothed vertical speed
+   exactly as draw.ts does it - and drawn with ZERO rotation, because the
+   pose is the pitch. The helmet dome the engine composites per frame is the
+   one thing not reproduced here.
    ============================================================ */
 (function(){
 "use strict";
@@ -11,32 +21,35 @@ var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 var host = document.getElementById("toy"), cv = document.getElementById("cv");
 if(!host || !cv) return;
 
-var FRAMES = window.__FLAP__ || [], PLANETS = window.__PLANETS__ || [];
+var ASC = window.__ASC__ || [], DESC = window.__DESC__ || [], PLANETS = window.__PLANETS__ || [];
 
-/* Reduced motion gets the contact sheet instead — sixteen painted
-   frames laid out flat is arguably the better proof anyway. */
+/* Reduced motion gets the ramp laid out flat - sixteen attitudes side by
+   side is arguably the better proof anyway. */
 if(RM){
   var sheet = document.createElement("div");
   sheet.className = "sheet";
-  FRAMES.forEach(function(src,i){
+  ASC.slice().reverse().concat(DESC).forEach(function(src,i){
     var im = document.createElement("img"); im.src = src; im.loading = "lazy";
-    im.alt = i === 0 ? "The sixteen painted frames of one flap" : "";
+    im.alt = i === 0 ? "Eclipse's sixteen painted flight attitudes, steepest climb to steepest dive" : "";
     sheet.appendChild(im);
   });
   host.replaceWith(sheet);
   var cr = document.getElementById("craft");
-  if(cr){ cr.classList.add("on"); cr.textContent = "One flap, sixteen hand-painted frames. Most suits have their own set."; }
+  if(cr){ cr.classList.add("on");
+    cr.textContent = "Sixteen painted attitudes: eight climbing, eight diving. The pose is the pitch."; }
   return;
 }
 
 var ctx = cv.getContext("2d"), DPR = Math.min(devicePixelRatio || 1, 2);
 var W = 0, H = 0, S = 1;
-var imgs = [], planets = [], ready = 0;
-FRAMES.forEach(function(src,i){ var im = new Image(); im.onload = function(){ ready++; }; im.src = src; imgs[i] = im; });
+var asc = [], desc = [], planets = [];
+ASC.forEach(function(src,i){ var im = new Image(); im.src = src; asc[i] = im; });
+DESC.forEach(function(src,i){ var im = new Image(); im.src = src; desc[i] = im; });
 PLANETS.forEach(function(src,i){ var im = new Image(); im.src = src; planets[i] = im; });
 
 var stars = [], gates = [], drift = [];
-var y, vy, animT, alive, score, best, shake, dead, started;
+var y, vy, alive, dead, score, bounces, best, shake, started, cool, smoothVy;
+var pose = null;
 try { best = parseInt(localStorage.getItem("acornaut.toy") || "0", 10) || 0; } catch(e){ best = 0; }
 document.getElementById("bs").textContent = best;
 
@@ -53,17 +66,23 @@ function resize(){
 }
 
 function reset(full){
-  y = H*0.44; vy = 0; animT = -1; alive = true; dead = 0; shake = 0;
-  if(full){ score = 0; document.getElementById("sc").textContent = "0"; }
+  y = H*0.44; vy = 0; alive = true; dead = 0; shake = 0; cool = 0; smoothVy = 0;
+  if(full){ score = 0; bounces = 0; hud(); }
   gates = [];
   spawn(W + 120*S);
   spawn(W + 120*S + 340*S);
   spawn(W + 120*S + 680*S);
 }
+function hud(){
+  document.getElementById("sc").textContent = score;
+  var b = document.getElementById("bo"); if(b) b.textContent = bounces;
+}
 function spawn(x){
   var gap = 168*S*0.98, r = 42*S;
   var lo = gap/2 + r*0.55 + 14, hi = H - gap/2 - r*0.55 - 14;
-  gates.push({x:x, cy:lo + Math.random()*(hi-lo), gap:gap, r:r, kt:(Math.random()*PLANETS.length)|0, kb:(Math.random()*PLANETS.length)|0, done:false, spin:Math.random()*6.28});
+  gates.push({x:x, cy:lo + Math.random()*(hi-lo), gap:gap, r:r,
+              kt:(Math.random()*PLANETS.length)|0, kb:(Math.random()*PLANETS.length)|0,
+              done:false, spin:Math.random()*6.28});
 }
 
 var startEl = document.getElementById("start"), everFlew = false;
@@ -78,7 +97,7 @@ function flap(){
     var cr = document.getElementById("craft"); if(cr) cr.classList.add("on");
   }
   if(!alive) return;
-  vy = -450*S; animT = 0;
+  vy = -450*S;
 }
 host.addEventListener("pointerdown", function(e){ e.preventDefault(); flap(); });
 host.addEventListener("keydown", function(e){
@@ -92,21 +111,36 @@ function frame(t){
   step(dt); paint();
   requestAnimationFrame(frame);
 }
+
+/* THE POSE. draw.ts: a light exponential smooth on vy, normalised over
+   -470 climbing and 620 diving, then rounded across the bank. Velocities
+   here are scaled by S, so they go back to game units before mapping. */
+function poseFrame(dt){
+  smoothVy += (vy - smoothVy) * Math.min(1, dt*9);
+  var sv = smoothVy / S;
+  var v = sv < 0 ? -Math.min(1, -sv/470) : Math.min(1, sv/620);
+  var bank = v < 0 ? asc : desc;
+  if(!bank.length) return null;
+  var idx = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1))));
+  return bank[idx];
+}
+
 function step(dt){
   if(!started){                                  /* attract: gentle bob, no gates */
     y = H*0.44 + Math.sin(performance.now()/900)*10*S;
-    drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160) { d.x = W+160; d.y = Math.random()*H; } });
-    stars.forEach(function(s){ s.x -= s.s*14*dt; if(s.x < 0) s.x = W; });
+    vy = Math.cos(performance.now()/900)*40*S;
+    drape(dt);
+    pose = poseFrame(dt) || pose;
     return;
   }
-  if(animT >= 0){ animT += dt; if(animT > 16/26) animT = -1; }
-  drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160){ d.x = W+160; d.y = Math.random()*H; } });
-  stars.forEach(function(s){ s.x -= s.s*22*dt; if(s.x < 0) s.x = W; });
+  drape(dt);
   if(shake > 0) shake = Math.max(0, shake - dt*3.4);
+  if(cool > 0) cool -= dt;
 
   if(!alive){
     dead += dt;
     y += vy*dt; vy += 1300*S*dt;
+    pose = poseFrame(dt) || pose;
     if(dead > .9){ reset(true); started = false; idle(); }
     return;
   }
@@ -115,22 +149,60 @@ function step(dt){
   vy = Math.min(vy, 620*S);
   y += vy*dt;
 
-  var speed = 165*S*1.5, sx = W*0.26, sr = 27*S;
+  var sr = 27*S, sx = W*0.26, speed = 165*S*1.5;
+
+  /* THE CEILING BOUNCES. Only debris is lethal up there, and there is none. */
+  if(y < sr*0.6 && vy < 0){
+    y = sr*0.6;
+    vy = Math.abs(vy)*0.45 + 90*S;
+  }
+
   for(var i=gates.length-1; i>=0; i--){
     var g = gates[i];
     g.x -= speed*dt; g.spin += dt*.25;
     if(!g.done && g.x < sx - g.r*0.4){
-      g.done = true; score++;
-      document.getElementById("sc").textContent = score;
+      g.done = true; score++; hud();
       if(score > best){ best = score; document.getElementById("bs").textContent = best;
         try{ localStorage.setItem("acornaut.toy", String(best)); }catch(e){} }
     }
     if(g.x < -g.r*2){ gates.splice(i,1); spawn(gates[gates.length-1].x + 340*S); }
     var ty = g.cy - g.gap/2 - g.r, by = g.cy + g.gap/2 + g.r;
-    if(hit(sx, y, sr, g.x, ty, g.r*.82) || hit(sx, y, sr, g.x, by, g.r*.82)) die();
+    for(var k=0;k<2;k++){
+      var py = k ? by : ty;
+      if(!hit(sx, y, sr, g.x, py, g.r*0.82)) continue;
+      if(cool <= 0) bounce(g.x, py);
+      else pushOut(g.x, py, g.r*0.82, sr, sx);
+    }
   }
-  if(y < sr*0.55){ y = sr*0.55; if(vy < 0) vy = 0; }
-  if(y > H - sr*0.7) die();
+
+  /* THE FLOOR is the only way down. */
+  if(y > H + 12*S) die();
+
+  pose = poseFrame(dt) || pose;
+}
+function drape(dt){
+  drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160){ d.x = W+160; d.y = Math.random()*H; } });
+  stars.forEach(function(s){ s.x -= s.s*22*dt; if(s.x < 0) s.x = W; });
+}
+
+/* bounceOff(), from sim.ts */
+function bounce(px, py){
+  var sx = W*0.26;
+  var dx = sx - px, dy = y - py;
+  var dist = Math.hypot(dx, dy) || 1;
+  dy /= dist;
+  var mag = Math.min(560*S, 170*S + Math.abs(vy)*0.5);
+  vy = dy*mag + (dy >= 0 ? 90*S : -160*S);
+  y += dy*14*S;
+  cool = 0.55;
+  shake = 0.5;
+  bounces++; hud();
+}
+function pushOut(px, py, pr, sr, sx){
+  var dx = sx - px, dy = y - py;
+  var dist = Math.hypot(dx, dy) || 1;
+  if(dist >= pr + sr) return;
+  y = py + (dy/dist) * (pr + sr);
 }
 function hit(ax,ay,ar,bx,by,br){ var dx=ax-bx, dy=ay-by; return dx*dx+dy*dy < (ar+br)*(ar+br); }
 function die(){
@@ -165,12 +237,12 @@ function paint(){
     });
   }
 
-  var im = imgs[animT >= 0 ? Math.min(15, (animT*26)|0) : 0];
+  var im = pose;
   if(im && im.complete){
     var sz = 132*S, sx = W*0.26;
     ctx.save();
     ctx.translate(sx, y);
-    ctx.rotate(Math.max(-.42, Math.min(.72, (vy/S)/1100)));
+    /* no rotation: the motion bank's frames carry the attitude themselves */
     ctx.globalAlpha = alive ? 1 : Math.max(0, 1 - dead*1.1);
     ctx.drawImage(im, -sz/2, -sz/2, sz, sz);
     ctx.restore(); ctx.globalAlpha = 1;
@@ -185,10 +257,14 @@ function ring(im, x, cy, d, spin){
 
 function boot(){
   resize(); reset(true); started = false;
+  pose = desc[0] || asc[0] || null;
   running = true; last = performance.now();
   requestAnimationFrame(frame);
 }
-addEventListener("resize", function(){ var s = score, b = started; resize(); reset(true); score = s; started = b; document.getElementById("sc").textContent = s; });
+addEventListener("resize", function(){
+  var s = score, b = bounces, st = started;
+  resize(); reset(true); score = s; bounces = b; started = st; hud();
+});
 
 /* only run the loop while the strip is on screen */
 if("IntersectionObserver" in window){

@@ -116,12 +116,13 @@ def main():
         if os.path.exists(os.path.join(ASSETS, "s-%s.webp" % s["id"])):
             suits.append({"id": s["id"], "name": s["name"], "glow": s["glow"] or "#c9b6ff",
                           "src": em.asset("s-%s.webp" % s["id"])})
-    flap = [em.asset("flap-%d.webp" % i) for i in range(1, 17)]
+    asc = [em.asset("asc-%d.webp" % i) for i in range(1, 9)]
+    desc = [em.asset("desc-%d.webp" % i) for i in range(1, 9)]
     planets = [em.asset("p-%d.webp" % i) for i in (3, 7, 12, 18, 24, 29)]
     clips = {c: em.clip(c) for c in CLIP_NAMES}
 
-    data = ("<script>window.__SUITS__=%s;window.__FLAP__=%s;window.__PLANETS__=%s;window.__CLIPS__=%s;</script>"
-            % (json.dumps(suits), json.dumps(flap), json.dumps(planets), json.dumps(clips)))
+    data = ("<script>window.__SUITS__=%s;window.__ASC__=%s;window.__DESC__=%s;window.__PLANETS__=%s;window.__CLIPS__=%s;</script>"
+            % (json.dumps(suits), json.dumps(asc), json.dumps(desc), json.dumps(planets), json.dumps(clips)))
 
     head = "\n".join([part("head.part"), part("head2.part"), part("head3.part")])
     page = "\n".join([head, body, data, part("js.part"), part("toy.part")])
@@ -151,7 +152,7 @@ def main():
 
     size = os.path.getsize(dst)
     print("%s -> %s (%.2f MB)" % (args.mode, dst, size / 1048576))
-    print("suits %d  flap %d  planets %d  clips %d" % (len(suits), len(flap), len(planets), len(clips)))
+    print("suits %d  motion %d  planets %d  clips %d" % (len(suits), len(asc) + len(desc), len(planets), len(clips)))
     if args.mode == "files":
         total = sum(os.path.getsize(os.path.join(r, f))
                     for r, _, fs in os.walk(out_dir) for f in fs)
