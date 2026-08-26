@@ -165,7 +165,9 @@ export async function bootStandalone(root) {
                 // way onward - the pilot who flew it should not be offered an exit
                 // that reads like giving up.
                 if (engine.world.tut.stage === "done") {
-                    const go = el("button", "ac-primary ac-tutskip", "EXIT TO LOADOUT");
+                    // lit like every other guided step, because it IS one - the walk
+                    // to the Loadout starts here and a flat button read as optional
+                    const go = el("button", "ac-primary ac-tutskip ac-pulse ac-guidetarget", "EXIT TO LOADOUT");
                     go.setAttribute("aria-label", "Collect your reward in the Loadout");
                     go.onclick = () => engine.finishTutorial();
                     bar.append(go);

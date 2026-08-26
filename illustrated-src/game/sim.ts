@@ -1050,6 +1050,13 @@ function tutRewind(w: World, save: SaveData) {
   const sx = w.W * PHYS.squirrelX;
   w.planets = w.planets.filter((p) => p.x + p.r < sx - 12);
   w.pickups = w.pickups.filter((a) => a.x < sx - 12);
+  // AND RESET THE SPAWN ORIGIN. buildTutorialGates continues from
+  // w.lastSpawnX, which still pointed at the END of the stretch that was
+  // just thrown away - so a rewind on the first gate laid the new three
+  // more than a thousand pixels off the right of a 430px screen. Reported
+  // as "THREE IN A ROW 0/3" over empty space with nothing ever arriving.
+  w.lastSpawnX = sx + 240;
+  w.lastGapY = w.squirrel.y;
   buildTutorialGates(w, save, 3);
   w.squirrel.y = w.H * 0.45;
   w.squirrel.vy = 0;
@@ -2700,7 +2707,16 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
         w.shieldSlow = 0;
         w.shieldFreeze = 0;
       }
-      if (t.stage === "doTap1" || t.stage === "doTap2") t.want = "tap";
+      if (t.stage === "doTap1" || t.stage === "doTap2") {
+        t.want = "tap";
+        // A WAITING BEAT HOLDS THE WORLD. The indicator says "tap now" and
+        // the director waits as long as it takes - but gravity was still
+        // running underneath, so the pilot sank the whole time they were
+        // reading it. On the reported run the squirrel fell most of a
+        // screen between the prompt appearing and the tap landing, which
+        // makes the lesson's own instruction the thing that drops you.
+        t.hold = true;
+      }
       // the companion's stretch is laid when the companion arrives, so a
       // rewind inside the three never has to tidy up gates from later on
       if (t.stage === "gates7") {
