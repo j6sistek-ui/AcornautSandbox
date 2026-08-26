@@ -60,6 +60,35 @@ Both modes render the same page; a parity check on visible text confirms it.
 
 ## Deploying
 
-`acornaut.io` is a separate repo on GitHub Pages. Copy the `files` output to its
-publish root and push. The page's Play controls point at `https://acornaut.app`,
-which is this repo's `docs/` — the two sites stay independent.
+Automatic. `.github/workflows/deploy-site.yml` fires on any push to `main` that
+touches `site-src/`, rebuilds, and pushes the output to `j6sistek-ui/acornaut`,
+which serves acornaut.io from its repo root. Live in about two minutes.
+
+It needs one secret: `ACORNAUT_DEPLOY_TOKEN`, a fine-grained PAT scoped to
+`j6sistek-ui/acornaut` alone with *Contents: Read and write*. Nothing else needs
+a credential — both repos are public, so the source checkout uses `GITHUB_TOKEN`.
+
+The workflow only writes paths the build owns: `index.html`, `assets/`, `clips/`,
+`manifest.webmanifest`, `sw.js`, `robots.txt`, `sitemap.xml`, `CNAME`. It never
+touches `arcade/`, `beta/`, `LICENSE`, `README.md` or the root icons, and a guard
+step fails the run if the arcade shell or the manifest's `start_url` went missing.
+
+**Do not hand-edit the landing page in the acornaut repo.** Edit here and push;
+anything edited there is overwritten on the next deploy.
+
+### Why sw.js is generated
+
+The worker answers assets **cache-first** and never revalidates inside a cache
+generation, so the cache NAME is the site's only cache-busting mechanism. It used
+to be a hardcoded constant with a comment saying it "MUST change on every
+release" — the kind of instruction that gets missed, after which a changed asset
+is invisible to every returning visitor forever.
+
+`build.py` now stamps it from a sha256 over everything else it emits. Identical
+output keeps the same name, so a no-op redeploy doesn't flush anyone's cache;
+any content change produces a new name, and the existing `activate` handler
+purges the old generation. `parts/sw.js` is the template — edit that, not the
+generated file, and leave `__CACHE_VERSION__` alone.
+
+The page's Play controls point at `https://acornaut.app`, which is this repo's
+`docs/` — the two sites stay independent.
