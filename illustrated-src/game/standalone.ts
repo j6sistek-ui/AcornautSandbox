@@ -168,7 +168,10 @@ export async function bootStandalone(root: HTMLElement) {
         // way onward - the pilot who flew it should not be offered an exit
         // that reads like giving up.
         if (engine.world.tut.stage === "done") {
-          const go = el("button", "ac-primary ac-tutskip", "EXIT TO LOADOUT");
+          // lit like every other guided step, because it IS one - the walk
+          // to the Loadout starts here and a flat button read as optional
+          const go = el("button", "ac-primary ac-tutskip ac-pulse ac-guidetarget",
+                        "EXIT TO LOADOUT");
           go.setAttribute("aria-label", "Collect your reward in the Loadout");
           go.onclick = () => engine.finishTutorial();
           bar.append(go);
@@ -465,6 +468,13 @@ export async function bootStandalone(root: HTMLElement) {
       const back = el("button", "ac-backbtn");
       back.setAttribute("aria-label", "Back to home");
       back.append(icon(I_BACK, 20));
+      // THE NEXT STEP IS BEHIND THIS DOOR. Once the pilot is suited up the
+      // walk continues on the Star Chart, which lives on the hub - so the
+      // way out is the instruction, and it says so instead of sitting there
+      // looking like every other back arrow.
+      if (engine.save.guide === "levels" && engine.world.screen === "hangar") {
+        back.classList.add("ac-pulse", "ac-guidetarget");
+      }
       back.onclick = () => engine.open("title");
       h.append(back);
     }
@@ -1898,7 +1908,7 @@ export async function bootStandalone(root: HTMLElement) {
       // floating over it
       (box.querySelector(".ac-sheet-scroll") ?? box).append(c);
     } else if (s.guide === "levels") {
-      box.append(coach("Suited up! Mission 1 is ready \u2014 open LEVELS"));
+      box.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
     }
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("hangar"));
@@ -2612,6 +2622,18 @@ export async function bootStandalone(root: HTMLElement) {
     const sheet = el("div", "ac-sheet ac-center");
     sheet.append(el("p", "ac-kicker", `LEVEL ${last.def.id} \u00b7 ${last.def.name}`));
     sheet.append(el("h2", "", last.finished ? "LEVEL COMPLETE" : "LOST"));
+    // THE END OF THE WALK. Mission 1 is the last step the guide takes, and
+    // finishing it is the moment a new pilot stops being walked anywhere -
+    // so it is marked, and it names the two places they can go next rather
+    // than dropping them back on a menu with no suggestion.
+    if (last.def.id === "1-1" && last.finished && engine.save.guide === "done") {
+      const win = el("div", "ac-gear");
+      win.append(el("p", "ac-gold ac-gearhead", "TUTORIAL COMPLETE"));
+      win.append(el("p", "ac-sub ac-mid",
+        "That is the whole game. Fly more missions on the Star Chart, " +
+        "or take FREE FLIGHT as far as you can."));
+      sheet.append(win);
+    }
     const pips = el("div", "ac-bigpips");
     last.met.forEach((ok, i) => {
       const owned = (last.newMask >> i) & 1;

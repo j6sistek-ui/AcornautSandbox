@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=145";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=145";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=145";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=146";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=146";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=146";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=146";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=146";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=146";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=146";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -599,6 +599,13 @@ function tutRewind(w, save) {
     const sx = w.W * PHYS.squirrelX;
     w.planets = w.planets.filter((p) => p.x + p.r < sx - 12);
     w.pickups = w.pickups.filter((a) => a.x < sx - 12);
+    // AND RESET THE SPAWN ORIGIN. buildTutorialGates continues from
+    // w.lastSpawnX, which still pointed at the END of the stretch that was
+    // just thrown away - so a rewind on the first gate laid the new three
+    // more than a thousand pixels off the right of a 430px screen. Reported
+    // as "THREE IN A ROW 0/3" over empty space with nothing ever arriving.
+    w.lastSpawnX = sx + 240;
+    w.lastGapY = w.squirrel.y;
     buildTutorialGates(w, save, 3);
     w.squirrel.y = w.H * 0.45;
     w.squirrel.vy = 0;
@@ -2248,8 +2255,16 @@ function tutGesture(w, save, kind) {
                 w.shieldSlow = 0;
                 w.shieldFreeze = 0;
             }
-            if (t.stage === "doTap1" || t.stage === "doTap2")
+            if (t.stage === "doTap1" || t.stage === "doTap2") {
                 t.want = "tap";
+                // A WAITING BEAT HOLDS THE WORLD. The indicator says "tap now" and
+                // the director waits as long as it takes - but gravity was still
+                // running underneath, so the pilot sank the whole time they were
+                // reading it. On the reported run the squirrel fell most of a
+                // screen between the prompt appearing and the tap landing, which
+                // makes the lesson's own instruction the thing that drops you.
+                t.hold = true;
+            }
             // the companion's stretch is laid when the companion arrives, so a
             // rewind inside the three never has to tidy up gates from later on
             if (t.stage === "gates7") {
@@ -3212,15 +3227,13 @@ export function updateWorld(w, save, dt) {
             w.score += 1;
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
                 w.tut.gates += 1;
-                if (w.tut.stage === "gates3") {
-                    // THREE IN A ROW MEANS THREE FLOWN. A gate that was touched does
-                    // not count however it ended - protection keeps the pilot alive,
-                    // it does not pass them - and it takes the stretch back.
-                    if (p.touched)
-                        tutRewind(w, save);
-                    else
-                        w.tut.streak += 1;
-                }
+                // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the
+                // lesson: two beats earlier the pilot was told "planets are bouncy,
+                // they never hurt you". Failing them for a bounce teaches the
+                // opposite of what the tutorial just taught. DEBRIS is the only
+                // thing that costs the streak - see the blocker path, which rewinds.
+                if (w.tut.stage === "gates3")
+                    w.tut.streak += 1;
             }
         }
     }
@@ -3275,11 +3288,10 @@ export function updateWorld(w, save, dt) {
             }
             else if (st === "gates3" || st === "gates7" || st === "portal") {
                 // practice time: scoop them straight back onto the flight line
-                // rather than let them flounder along the floor
-                if (st === "gates3")
-                    tutRewind(w, save);
-                else
-                    tutReset(w, sx, w.H + 10);
+                // rather than let them flounder along the floor. NOT a rewind even
+                // inside the three - debris is the only failure, and the gate they
+                // were heading for is still ahead of them to fly.
+                tutReset(w, sx, w.H + 10);
             }
             else {
                 w.squirrel.y = Math.max(24, Math.min(w.H - 24, w.squirrel.y));
@@ -3332,12 +3344,6 @@ export function updateWorld(w, save, dt) {
                 if (w.shieldCharges > 0 && w.tut?.stage === "free") {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
-                // ANY contact marks the gate, whichever path handles it after.
-                // The streak is judged on this one flag rather than on catching
-                // every collision route, which is how "protection buys the gate"
-                // slipped through: the counter only ever asked whether the planet
-                // had scrolled past the pilot, not whether they had flown it.
-                p.touched = true;
                 bounceOff(w, save, p.x, py);
                 w.run.bounces += 1;
                 return "bounce";

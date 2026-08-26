@@ -861,8 +861,16 @@
        below it at (0,2,0) - the target stayed dimmed with both rules
        matching. `> *` keeps them level so source order decides, which is
        what was intended. */
-    .ac-guiding .ac-card, .ac-guiding .ac-shelfrow > * { opacity: .38; filter: saturate(.5); }
-    .ac-guiding .ac-guidetarget { opacity: 1; filter: none; }
+    /* A GUIDED STEP IS EXCLUSIVE. Dimming told the pilot where to look and
+       then let them tap anything anyway - so the step could be walked past
+       without being done, which is how a first-timer ends up equipped with
+       the wrong thing and no idea why the coach is still nagging. Only the
+       target answers a tap while a step is live.
+       The two selectors are the SAME specificity (0,2,0), so the target
+       rule wins on source order alone - it has to stay below this one. */
+    .ac-guiding .ac-card, .ac-guiding .ac-shelfrow > * {
+      opacity: .38; filter: saturate(.5); pointer-events: none; }
+    .ac-guiding .ac-guidetarget { opacity: 1; filter: none; pointer-events: auto; }
     /* THE ARROW SITS INSIDE THE CARD. Above it is the obvious place and it
        does not work: the shelf is a horizontal scroller (overflow:auto), so
        anything drawn outside a card's own box is clipped away and the arrow
@@ -1517,7 +1525,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js145/standalone.js";
+    import { bootStandalone } from "./js146/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>
