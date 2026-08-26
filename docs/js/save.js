@@ -16,6 +16,7 @@ export function defaultSave() {
         starDust: 0,
         betaDustGrant: false,
         shelfGrid: false,
+        suitLean: {},
         dustPaidTo: 0,
         lastDaily: "",
         dailyStreak: 0,
@@ -100,6 +101,19 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
+    // an old save has no lean table, and a corrupted one must not be able to
+    // tip every suit sideways - anything that is not two finite numbers in
+    // range is dropped rather than trusted
+    if (!s.suitLean || typeof s.suitLean !== "object")
+        s.suitLean = {};
+    else {
+        for (const id of Object.keys(s.suitLean)) {
+            const v = s.suitLean[id];
+            const okNum = (n) => typeof n === "number" && isFinite(n) && n >= 0 && n <= 2;
+            if (!v || !okNum(v.up) || !okNum(v.down))
+                delete s.suitLean[id];
+        }
+    }
     s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";

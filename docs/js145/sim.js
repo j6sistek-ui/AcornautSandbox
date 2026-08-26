@@ -1,4 +1,4 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SLOW, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog.js?v=145";
 import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=145";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=145";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=145";
@@ -947,10 +947,10 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
             retries: 0, springs: 0, apexY: 0, launched: false, bounced: false }
         : null;
-    if (w.tut) {
+    if (w.tut)
         buildTutorialCourse(w, save);
-        flightRecorderReset(w);
-    }
+    // the recorder arms for EVERY run - see mark()
+    flightRecorderReset(w);
 }
 /** Semantic race input is tick-stamped and consumed before the next race step. */
 export function setRaceInput(w, input) {
@@ -2081,8 +2081,14 @@ export function flightRecorderTick(dt) {
     flightT += dt;
 }
 export function mark(w, kind, note = "", ignored = false) {
-    if (!w.tut && kind !== "end")
-        return;
+    // ANY RUN, NOT JUST THE TUTORIAL.
+    //
+    // This used to bail unless w.tut, which made the recorder useless for the
+    // one job it was built for: "you can't copy my taps because i am forced
+    // through the prompts that don't work". If the only flight it records is
+    // the flight that is broken, there is no way to hand over a recording of
+    // anything. Now every run records, and COPY FLIGHT sits in the pause menu
+    // where it can always be reached.
     if (flightLog.length > 4000)
         return;
     flightLog.push({
@@ -2100,6 +2106,9 @@ export function mark(w, kind, note = "", ignored = false) {
 export function flightRecording(w) {
     return JSON.stringify({
         screen: { w: w.W, h: w.H },
+        mode: w.flight,
+        tutorial: !!w.tut,
+        score: w.score,
         gravity: PHYS.gravity,
         flap: PHYS.flap,
         marks: flightLog,
@@ -2118,8 +2127,8 @@ export function flap(w, save) {
     // first note, that fast tapping before "tap to fly" may be moving the
     // start. Those taps are recorded as ignored rather than dropped, so a
     // recording shows them.
-    if (w.tut?.hold && w.tut.t < TUT_ARM) {
-        mark(w, "tap", `too early by ${(TUT_ARM - w.tut.t).toFixed(2)}s`, true);
+    if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM)) {
+        mark(w, "tap", `too early by ${((tutDwell(TUT_ARM) - w.tut.t) / TUT_SLOW).toFixed(2)}s`, true);
         return "none";
     }
     if (w.tut?.hold && w.tut.stage === "swipe") {
@@ -2185,7 +2194,7 @@ export function dive(w) {
     // a dive throws the tail the other way, harder — it over-rotates past
     // home on the way back and rings down, which reads as weight falling
     w.tailV -= TAIL.dive;
-    if (w.tut?.hold && w.tut.t < TUT_ARM)
+    if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM))
         return "none";
     if (w.tut?.hold && w.tut.stage === "swipe") {
         mark(w, "dive");
@@ -2682,7 +2691,48 @@ export function resumePlay(w) {
     w.screen = "play";
     w.pausedFrom = null;
 }
+/** A DWELL, in real seconds, on the tutorial's slowed clock.
+ *
+ *  Two different kinds of timeout share `tut.t`, and slowing the frame
+ *  separates them for the first time:
+ *
+ *    * WORLD timeouts wait on the physics - the pilot falling, the teaching
+ *      arc completing, the next gate arriving. Those are authored against
+ *      the world and must stretch with it, so they use their value as-is.
+ *    * DWELLS are pure pacing - how long a message sits, how long before a
+ *      tap counts. Those are about the person, not the world, and must NOT
+ *      stretch: at a tenth speed the 1.25s arming delay became a TWELVE AND
+ *      A HALF SECOND dead wait staring at "tap to fly" while taps were
+ *      silently refused, which is a worse tutorial than the one being fixed.
+ *
+ *  Scaling the threshold rather than adding a second clock keeps one source
+ *  of truth: there are a dozen `tut.t = 0` resets and a second field would
+ *  have to be reset at every one of them or drift out of step.
+ */
+function tutDwell(seconds) {
+    return seconds * TUT_SLOW;
+}
 export function updateWorld(w, save, dt) {
+    // THE FIRST FLIGHT RUNS IN SLOW MOTION.
+    //
+    // Owner's call, 26 Aug 2026: play the tutorial at a tenth speed, like a
+    // freeze acorn, so the tap can be placed exactly. The lesson was never
+    // hard to understand - it was hard to HIT, and a beginner missing the
+    // window learns that the game does not respond rather than that they were
+    // early. At a tenth, the window is ten times wider in real seconds and
+    // the arc can be watched all the way up.
+    //
+    // Scaled HERE, at the top, rather than folded into the `slow` factor
+    // further down, and that is deliberate: everything in a frame reads off
+    // this one number - the world, the tutorial's own stage clock, the arming
+    // timer, the recorder. Slowing only the physics would leave the prompts
+    // firing on wall time against a world moving at a tenth, which is a
+    // different broken tutorial rather than a fixed one.
+    //
+    // The freeze acorn's own factor stays what it is; this multiplies with it
+    // like any other, so a slow acorn in the tutorial is simply slower still.
+    if (w.tut)
+        dt *= TUT_SLOW;
     // A fixed-step cue is edge-triggered. The engine drains it immediately;
     // clearing here also prevents a paused or READY update from replaying a
     // prior step if a non-engine caller chose not to drain it.
@@ -2742,21 +2792,21 @@ export function updateWorld(w, save, dt) {
         }
         return result.sound;
     }
+    flightRecorderTick(dt);
     if (w.tut) {
         w.tut.t += dt;
-        flightRecorderTick(dt);
         // one line rather than a mark at every transition - the stage machine has
         // a dozen of them and any one added later would be missed
         if (w.tut.stage !== lastTutStage) {
             lastTutStage = w.tut.stage;
             mark(w, "stage");
         }
-        if (w.tut.stage === "intro" && w.tut.t > 0.55) {
+        if (w.tut.stage === "intro" && w.tut.t > tutDwell(0.55)) {
             w.tut.stage = "tap";
             w.tut.hold = true;
             w.tut.t = 0;
         }
-        if (w.tut.stage === "tapdone" && w.tut.t > 0.55) {
+        if (w.tut.stage === "tapdone" && w.tut.t > tutDwell(0.55)) {
             w.tut.stage = "tap2";
             w.tut.hold = true;
             w.tut.t = 0;
@@ -2840,11 +2890,11 @@ export function updateWorld(w, save, dt) {
             w.tut.hold = true;
             w.tut.t = 0;
         }
-        if (w.tut.stage === "pal" && !w.tut.hold && w.tut.t > 0.2) {
+        if (w.tut.stage === "pal" && !w.tut.hold && w.tut.t > tutDwell(0.2)) {
             w.tut.stage = "palDemo";
             w.tut.t = 0;
         }
-        if (w.tut.stage === "palDemo" && w.tut.t > 4.2) {
+        if (w.tut.stage === "palDemo" && w.tut.t > tutDwell(4.2)) {
             w.tut.stage = "ready";
             w.tut.t = 0;
         }

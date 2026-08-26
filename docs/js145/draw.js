@@ -4,7 +4,7 @@ import { proceduralSky, hueShifted } from "./sky-gen.js?v=145";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=145";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=145";
 import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=145";
-import { WORM_EXIT_LEAD, suitLean } from "./control-constants.js?v=145";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=145";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=145";
 import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=145";
 function frameOf(list, t, speed = 6) {
@@ -2892,6 +2892,14 @@ const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
 // A rigged suit gets the silhouette of the motion, not the performance, and
 // that gap is the argument for transferring real frames onto the suits that
 // matter most rather than settling here.
+/** The lean actually in force for a suit: the editor's working value if the
+ *  pilot is dialling one in, otherwise the shipped table, otherwise neutral.
+ *  Every rotation site goes through here so the hangar preview and the real
+ *  flight can never disagree about what a number means. */
+function leanFor(save, id) {
+    const edited = save?.suitLean?.[id];
+    return edited ?? suitLean(id);
+}
 const RIG_PITCH_UP = (14 * Math.PI) / 180; // eased back from Eclipse's 19
 const RIG_PITCH_DOWN = (30 * Math.PI) / 180; // eased back from Eclipse's 40
 const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
@@ -2960,7 +2968,11 @@ function trackRateMotion(t, vy) {
     ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
     return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0) {
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0, 
+// the lean in force for this suit. Passed rather than looked up because
+// paintIllustrated has no save: the caller already resolved it, and two
+// resolutions could disagree.
+lean = SUIT_LEAN_DEFAULT) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -2993,7 +3005,7 @@ function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frame
             const hp = trackHeadingMotion(_t, motionVy, motionVx);
             // the same dial, so one number governs a suit's lean however it is
             // drawn - a rigged suit carries both sources and feels it twice
-            const rigLean = suitLean(suit.id);
+            const rigLean = lean;
             rigPitch = hp < 0 ? hp * RIG_PITCH_UP * rigLean.up : hp * RIG_PITCH_DOWN * rigLean.down;
         }
         const pitched = rigPitch !== 0;
@@ -3255,7 +3267,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     // or not. Split by direction because climbing and diving are separately
     // tunable: negative rot is nose-up. At 1 this is exactly the expression
     // it replaced. See SUIT_LEAN in control-constants.ts.
-    const lean = suitLean(suit.id);
+    const lean = leanFor(save, suit.id);
     let bank = w.squirrel.rot * bankScale * (w.squirrel.rot < 0 ? lean.up : lean.down);
     if (articulatedTap && !eclipseImpact) {
         // Every current model now uses the same eased visual pitch clock. Eclipse
@@ -3274,7 +3286,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed);
+    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed, lean);
     ctx.restore();
 }
 const PAL_ANIM_FPS = 12;
@@ -3406,7 +3418,14 @@ function previewRot(p, beat, kick, pull) {
     }
     return r;
 }
-export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
+export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
+// THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap
+// arc that never reaches the attitudes a real dive does, so dialling a
+// lean against it would be tuning the wrong end of the range. In sweep
+// mode the pilot rolls slowly between FULL CLIMB and FULL DIVE - the
+// clamps the sim actually uses - so the number being changed is judged at
+// the extremes where it matters.
+sweep = false) {
     if (!art)
         return;
     // FLIGHT, NOT A POSE. The pass before this showed one tap every five
@@ -3466,7 +3485,10 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     // rotation taken straight off vy jumps 27 degrees on every beat boundary.
     // In flight that is hidden by speed and by the pose changing on the same
     // frame; at half speed and 158px it reads as the pilot flinching.
-    const rot = previewRot(p, BEAT, KICK, PULL);
+    const rot = sweep
+        // the sim's own clamps: -0.55 at full climb, +0.95 at full dive
+        ? -0.55 + (0.95 + 0.55) * (0.5 - 0.5 * Math.cos((t / 2.6) * Math.PI * 2))
+        : previewRot(p, BEAT, KICK, PULL);
     ctx.save();
     ctx.translate(cx, cy + rise * (size / 52) * 0.055);
     ctx.scale(size / 52, size / 52);
@@ -3475,10 +3497,12 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t) {
     // and shrinking the suit instead of popping it
     const kick = flapping ? 1 - p / flapWindow : 0;
     const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
-    ctx.rotate(rot * 0.8 - (articulated ? 0 : kick * 0.12));
+    // the same expression the real flight uses, so what the editor shows is
+    // what the run does
+    ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12));
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
-    paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300);
+    paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean);
     ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {

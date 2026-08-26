@@ -160,44 +160,11 @@ export async function bootStandalone(root) {
             // most likely to be stuck and least likely to know it is skippable.
             // Skipping still hands over the suit and helmet it would have given.
             if (engine.world.tut) {
-                // THE FLIGHT RECORDER, exported by the pilot.
-                //
-                // The owner's suggestion, and a far better instrument than guessing:
-                // fly the first flight on a real phone, press this, and the game
-                // hands over exactly what happened - every input including the ones
-                // it REFUSED, when each landed, and what the pilot was doing at that
-                // instant. Then the choreography can be rebuilt against a real run
-                // rather than against a simulation of what a beginner might do.
-                //
-                // It copies to the clipboard. Nothing is sent anywhere.
-                const rec = el("button", "ac-ghost ac-tutskip", "COPY FLIGHT");
-                rec.setAttribute("aria-label", "Copy this flight's recording");
-                rec.onclick = () => {
-                    const text = engine.flightRecording();
-                    const done = () => {
-                        rec.textContent = `COPIED ${engine.flightMarks()}`;
-                        window.setTimeout(() => { rec.textContent = "COPY FLIGHT"; }, 2200);
-                    };
-                    if (navigator.clipboard?.writeText) {
-                        navigator.clipboard.writeText(text).then(done, () => { rec.textContent = "TAP AGAIN"; });
-                    }
-                    else {
-                        // older iOS Safari without the async clipboard: a selectable
-                        // field is the fallback that still lets a phone copy it
-                        const ta = document.createElement("textarea");
-                        ta.value = text;
-                        ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:120px;z-index:99";
-                        document.body.append(ta);
-                        ta.select();
-                        try {
-                            document.execCommand("copy");
-                            done();
-                        }
-                        catch { /* leave it on screen to copy by hand */ }
-                        window.setTimeout(() => ta.remove(), 6000);
-                    }
-                };
-                bar.append(rec);
+                // The flight recorder used to sit here beside SKIP, and it was in
+                // the wrong place twice over: it overlapped the score badge on a
+                // phone, and it could only ever record the tutorial - which is the
+                // one flight a stuck pilot cannot finish. It lives in the pause
+                // menu now, where every run can reach it. This bar keeps the exit.
                 const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
                 skip.setAttribute("aria-label", "Skip the first flight");
                 skip.onclick = () => engine.skipTutorial();
@@ -229,6 +196,40 @@ export async function bootStandalone(root) {
                 });
                 sheet.append(row);
             }
+            // THE FLIGHT RECORDER, reachable from any run.
+            //
+            // It used to live only on the tutorial's own button bar, which made it
+            // useless for the job it exists to do: "you can't copy my taps because
+            // i am forced through the prompts that don't work". A recorder you can
+            // only reach by completing the broken thing records nothing. Pause any
+            // flight - tutorial or not - and the taps are here, refused ones
+            // included, with the mode and score they happened in.
+            const rec = el("button", "ac-ghost", "COPY FLIGHT");
+            rec.setAttribute("aria-label", "Copy this flight's tap recording");
+            rec.onclick = () => {
+                const text = engine.flightRecording();
+                const done = () => {
+                    rec.textContent = `COPIED ${engine.flightMarks()} TAPS`;
+                    window.setTimeout(() => { rec.textContent = "COPY FLIGHT"; }, 2400);
+                };
+                if (navigator.clipboard?.writeText) {
+                    navigator.clipboard.writeText(text).then(done, () => { rec.textContent = "TAP AGAIN"; });
+                }
+                else {
+                    const ta = document.createElement("textarea");
+                    ta.value = text;
+                    ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
+                    document.body.append(ta);
+                    ta.select();
+                    try {
+                        document.execCommand("copy");
+                        done();
+                    }
+                    catch { /* leave it to copy by hand */ }
+                    window.setTimeout(() => ta.remove(), 8000);
+                }
+            };
+            sheet.append(rec);
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
             // - so it spilled off BOTH ends and took RESUME with it. You could read
@@ -781,6 +782,10 @@ export async function bootStandalone(root) {
     // button, the Lab rides inside MODES, and the Star Chart bar is the
     // campaign's stars made permanently visible.
     let modesOpen = false;
+    // THE LEAN EDITOR, open or shut. Purely a view state - the values live in
+    // the save - so it resets on reload, which is right: it is an instrument
+    // you open to dial something in, not a mode the game sits in.
+    let leanEdit = false;
     let hyperRunOpen = false;
     function nextStarReward(stars) {
         // "stage" rows opened a chapter, and chapters are gone - the chart is
@@ -1484,11 +1489,89 @@ export async function bootStandalone(root) {
                     // same thing either way, so the switch never switched anything
                     if (palWorn)
                         paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-                    paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt);
+                    paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit);
                     requestAnimationFrame(tick);
                 };
                 requestAnimationFrame(tick);
             }
+            // ---- THE LEAN EDITOR -------------------------------------------
+            //
+            // How far this suit tips climbing and diving, changed here and seen
+            // in the case above at the attitudes that matter: opening it puts the
+            // preview into a slow sweep between FULL CLIMB and FULL DIVE, which
+            // are the two ends the ordinary tap arc never reaches.
+            //
+            // It lives in the LOADOUT, beside the suit it belongs to, and not in
+            // the pause menu - a dial you meet mid-flight and cannot leave is the
+            // exact thing that was removed on 25 Aug and is not coming back. This
+            // one is somewhere you go on purpose and can walk away from.
+            //
+            // The numbers are working values in the save so they survive the
+            // reload it takes to fly a change. COPY LEAN hands back the whole
+            // table to paste into SUIT_LEAN once one is settled.
+            const leanBox = el("div", "ac-leanbox");
+            const cur = engine.suitLeanOf(wornSuit.id);
+            const deg = (mult, rot) => (rot * 0.8 * mult * 180 / Math.PI).toFixed(0);
+            const head = el("button", "ac-leanhead");
+            head.append(el("b", "", "LEAN"), el("span", "ac-leanread", `climb ${deg(cur.up, -0.55)}\u00b0 \u00b7 dive ${deg(cur.down, 0.95)}\u00b0`), el("span", "ac-leancaret", leanEdit ? "\u2715" : "EDIT"));
+            head.onclick = () => { leanEdit = !leanEdit; render(); };
+            leanBox.append(head);
+            if (leanEdit) {
+                const row = (label, key, rot) => {
+                    const r = el("div", "ac-leanrow");
+                    const val = el("span", "ac-leanval", "");
+                    const paint = () => {
+                        const l = engine.suitLeanOf(wornSuit.id);
+                        val.textContent = `${l[key].toFixed(2)}  (${deg(l[key], rot)}\u00b0)`;
+                    };
+                    const step = (d) => {
+                        const l = engine.suitLeanOf(wornSuit.id);
+                        engine.setSuitLean(wornSuit.id, key === "up" ? l.up + d : l.up, key === "down" ? l.down + d : l.down);
+                        paint();
+                    };
+                    const minus = el("button", "ac-leanstep", "\u2212");
+                    minus.setAttribute("aria-label", `less ${label}`);
+                    minus.onclick = () => step(-0.05);
+                    const plus = el("button", "ac-leanstep", "+");
+                    plus.setAttribute("aria-label", `more ${label}`);
+                    plus.onclick = () => step(0.05);
+                    paint();
+                    r.append(el("span", "ac-leanlabel", label), minus, val, plus);
+                    return r;
+                };
+                leanBox.append(row("CLIMB", "up", -0.55), row("DIVE", "down", 0.95));
+                const acts = el("div", "ac-leanacts");
+                const reset = el("button", "ac-ghost", "RESET");
+                reset.onclick = () => { engine.resetSuitLean(wornSuit.id); render(); };
+                const copy = el("button", "ac-ghost", "COPY LEAN");
+                copy.onclick = () => {
+                    const text = engine.leanExport();
+                    const done = () => {
+                        copy.textContent = "COPIED";
+                        window.setTimeout(() => { copy.textContent = "COPY LEAN"; }, 2000);
+                    };
+                    if (navigator.clipboard?.writeText) {
+                        navigator.clipboard.writeText(text).then(done, () => { copy.textContent = "TAP AGAIN"; });
+                    }
+                    else {
+                        const ta = document.createElement("textarea");
+                        ta.value = text;
+                        ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
+                        document.body.append(ta);
+                        ta.select();
+                        try {
+                            document.execCommand("copy");
+                            done();
+                        }
+                        catch { /* leave it to copy by hand */ }
+                        window.setTimeout(() => ta.remove(), 8000);
+                    }
+                };
+                acts.append(reset, copy);
+                leanBox.append(acts);
+                leanBox.append(el("p", "ac-leannote", "The case sweeps full climb to full dive. 1.00 is what ships."));
+            }
+            box.append(leanBox);
         }
         const tabs = el("div", "ac-cats");
         for (const t of ["suits", "helmets", "trails", "pals", "mods"]) {
