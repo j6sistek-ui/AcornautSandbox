@@ -1,3 +1,4 @@
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=145";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=145";
 import { sfx, unlockAudio, music } from "./audio.js?v=145";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=145";
@@ -231,6 +232,45 @@ export async function createEngine(canvas) {
             save.shelfGrid = !!on;
             writeSave(save);
             notify();
+        },
+        setSuitLean(id, up, down) {
+            // clamped to the same 0..2 the checker enforces on the shipped table,
+            // so the editor can never produce a value that would fail the build
+            const clamp = (n) => Math.max(0, Math.min(2, Math.round(n * 20) / 20));
+            save.suitLean = { ...(save.suitLean ?? {}), [id]: { up: clamp(up), down: clamp(down) } };
+            writeSave(save);
+            notify();
+        },
+        resetSuitLean(id) {
+            const next = { ...(save.suitLean ?? {}) };
+            delete next[id];
+            save.suitLean = next;
+            writeSave(save);
+            notify();
+        },
+        suitLeanOf(id) {
+            return save.suitLean?.[id] ?? suitLean(id);
+        },
+        leanExport() {
+            // Everything, not just what was edited: a settled table is pasted over
+            // SUIT_LEAN wholesale, and a partial block silently keeps whatever the
+            // old file had for the suits it omits.
+            // THE UNION, not just the suits this page ships.
+            //
+            // SUITS is build-dependent - the production page carries 22 of the 30,
+            // with eight beta-only suits absent - so exporting from live and
+            // pasting the result over SUIT_LEAN would DELETE those eight and fail
+            // verify_suit_lean on the next build. The table in the file is the
+            // whole roster whichever page you dialled from.
+            const ids = [...new Set([...SUITS.map((u) => u.id), ...Object.keys(SUIT_LEAN)])];
+            const rows = ids.map((id) => {
+                const l = save.suitLean?.[id] ?? suitLean(id);
+                const pad = " ".repeat(Math.max(0, 12 - id.length));
+                return `  ${id}:${pad}{ up: ${l.up}, down: ${l.down} },`;
+            });
+            const edited = ids.filter((id) => save.suitLean?.[id]);
+            return `// SUIT_LEAN - edited in the hangar${edited.length ? `: ${edited.join(", ")}` : " (nothing changed yet)"}\n`
+                + rows.join("\n") + "\n";
         },
         settleDust,
         dailyState,

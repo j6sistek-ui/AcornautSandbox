@@ -45,6 +45,18 @@ export type SaveData = {
   // moves.
   /** shelves laid out as a wrapping GRID rather than side-scrolling rows */
   shelfGrid: boolean;
+  /** THE LEAN EDITOR'S WORKING VALUES.
+   *
+   *  Overrides SUIT_LEAN per suit while a lean is being dialled in. It lives
+   *  in the save rather than in memory so a value survives the reload it
+   *  takes to fly the change - tuning a feel means going back and forth
+   *  between the hangar and a real run, and losing the number on the way
+   *  makes that loop useless.
+   *
+   *  These are WORKING values, not the shipped ones: COPY LEAN in the hangar
+   *  exports them as a block to paste into SUIT_LEAN, which is where a
+   *  settled number belongs. Optional so every existing save loads clean. */
+  suitLean?: Record<string, { up: number; down: number }>;
   /** highest star line already paid out, so a payout can never double-pay */
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
@@ -114,6 +126,7 @@ export function defaultSave(): SaveData {
     starDust: 0,
     betaDustGrant: false,
     shelfGrid: false,
+    suitLean: {},
     dustPaidTo: 0,
     lastDaily: "",
     dailyStreak: 0,
@@ -183,6 +196,17 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
+  // an old save has no lean table, and a corrupted one must not be able to
+  // tip every suit sideways - anything that is not two finite numbers in
+  // range is dropped rather than trusted
+  if (!s.suitLean || typeof s.suitLean !== "object") s.suitLean = {};
+  else {
+    for (const id of Object.keys(s.suitLean)) {
+      const v = s.suitLean[id] as { up?: unknown; down?: unknown };
+      const okNum = (n: unknown) => typeof n === "number" && isFinite(n) && n >= 0 && n <= 2;
+      if (!v || !okNum(v.up) || !okNum(v.down)) delete s.suitLean[id];
+    }
+  }
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;

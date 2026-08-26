@@ -670,6 +670,31 @@
       background: radial-gradient(120% 90% at 50% 8%, rgba(70,58,150,.42), rgba(6,8,22,.85) 70%);
       border: 1px solid #2a3454; overflow: hidden; }
     .ac-tocanvas { width: 300px; max-width: 100%; height: auto; display: block; }
+    /* THE LEAN EDITOR. Sits under the loadout case, shut by default: it is
+       an instrument you open on purpose, not a panel in the way of the suit
+       you came to look at. Everything is >=44px so it works on a phone. */
+    .ac-leanbox { margin: 8px 0 2px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px; background: rgba(255,255,255,.03); overflow: hidden; }
+    .ac-leanhead { display: flex; align-items: center; gap: 10px; width: 100%;
+      min-height: 44px; padding: 0 12px; background: none; border: 0; cursor: pointer;
+      color: #e8e4d8; font: 800 12px/1 Figtree, sans-serif; letter-spacing: .08em; }
+    .ac-leanhead b { color: #ffd782; }
+    .ac-leanread { flex: 1; text-align: left; opacity: .72; font-weight: 600;
+      letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+    .ac-leancaret { opacity: .8; font-size: 11px; }
+    .ac-leanrow { display: flex; align-items: center; gap: 10px; padding: 6px 12px; }
+    .ac-leanlabel { width: 52px; font: 800 11px/1 Figtree, sans-serif;
+      letter-spacing: .08em; opacity: .8; }
+    .ac-leanval { flex: 1; text-align: center; font: 700 13px/1 Figtree, sans-serif;
+      font-variant-numeric: tabular-nums; color: #f3efe4; }
+    .ac-leanstep { width: 44px; height: 44px; border-radius: 10px; cursor: pointer;
+      border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06);
+      color: #f3efe4; font: 800 18px/1 Figtree, sans-serif; }
+    .ac-leanstep:active { background: rgba(255,255,255,.14); }
+    .ac-leanacts { display: flex; gap: 8px; padding: 4px 12px 10px; }
+    .ac-leanacts > * { flex: 1; min-height: 44px; }
+    .ac-leannote { margin: 0 12px 10px; opacity: .6;
+      font: 600 11px/1.4 Figtree, sans-serif; }
     .ac-tocap { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
     .ac-tocap b { font: 800 14px/1.2 Figtree, sans-serif; letter-spacing: .04em; color: #f3efe4; }
     .ac-tocap span { font-size: 11px; color: #8b95b0; }
