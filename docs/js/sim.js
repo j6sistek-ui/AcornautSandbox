@@ -488,7 +488,11 @@ function buildTutorialCourse(w, save) {
     // would tap, and the pilot now decides that.
     w.lastSpawnX = sx + 240;
     w.lastGapY = w.H * 0.45;
-    buildTutorialGates(w, save, 3);
+    // and NOT the three gates: the handover lays those, positioned against
+    // wherever the bounce actually left the pilot. Laying them here as well
+    // put six gates in the three-gate stretch - the extra three scrolled past
+    // uncounted and then showed up in the pal's tally, twelve gates flown for
+    // a course of ten.
 }
 /** Lay `count` sealed practice gates ahead of the pilot, with an acorn in
  *  each mouth, and leave the spawner pointing past them.
@@ -2170,7 +2174,12 @@ export function spawnTrail(w, save, scale = 1) {
  */
 function tutGesture(w, save, kind) {
     const t = w.tut;
-    if (!t || !t.locked)
+    // THE LOCK AND THE FREEZE ARE DIFFERENT QUESTIONS. `locked` decides
+    // whether a tap flies the pilot; `hold` means a popup is up waiting to be
+    // pressed past. The pal beat freezes AFTER control has been handed over,
+    // so gating this on the lock alone left it unanswerable - the lesson
+    // stalled there for good, with the tap going to ordinary flight instead.
+    if (!t || (!t.locked && !t.hold))
         return false;
     // a tap answers a "press to go on" beat as readily as a "tap" one
     const answered = t.want === kind || (t.want === "continue" && kind === "tap");
@@ -2269,7 +2278,7 @@ export function flap(w, save) {
     // WHILE THE LESSON IS SCRIPTED, A TAP IS AN ANSWER, NOT A FORCE.
     // tutGesture runs the beat itself when the gesture is the one being
     // asked for; either way nothing here flies the pilot.
-    if (w.tut?.locked) {
+    if (w.tut?.locked || w.tut?.hold) {
         // THE WORLD HAS TO BE RUNNING FOR THE LESSON TO BE FLYABLE. `ready`
         // freezes everything until the first tap, and returning before this
         // line left it set for the whole scripted phase - the director fired
@@ -2322,7 +2331,7 @@ export function dive(w, save) {
     w.tailV -= TAIL.dive;
     // the same rule as a tap: while the lesson is scripted the swipe is an
     // answer, and the director flies the dive if this is the beat for it
-    if (w.tut?.locked) {
+    if (w.tut?.locked || w.tut?.hold) {
         const before = w.tut.stage;
         tutGesture(w, save, "swipe");
         return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
@@ -3141,8 +3150,14 @@ export function updateWorld(w, save, dt) {
     w.lastSpawnX -= move;
     const lineReached = !!w.lvl && w.score >= w.lvl.def.gates;
     if (!lineReached) {
-        while (w.lastSpawnX < w.W + 90)
-            spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+        // THE FIRST FLIGHT IS AN AUTHORED COURSE, not a random one. The spawner
+        // was left running underneath it, so past the three gates and the seven
+        // it kept adding its own: the pilot met fourteen gates on the way to a
+        // portal placed after ten. Held until the lesson is over.
+        if (!w.tut || w.tut.stage === "free") {
+            while (w.lastSpawnX < w.W + 90)
+                spawnPair(w, save, w.lastSpawnX + nextGapSpacing(w));
+        }
     }
     else if (w.lvl && !w.lvl.portal) {
         // the last gate is passed: the field goes quiet and the FINISH portal

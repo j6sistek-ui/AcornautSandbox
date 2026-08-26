@@ -163,15 +163,21 @@ export async function bootStandalone(root: HTMLElement) {
       // most likely to be stuck and least likely to know it is skippable.
       // Skipping still hands over the suit and helmet it would have given.
       if (engine.world.tut) {
-        // The flight recorder used to sit here beside SKIP, and it was in
-        // the wrong place twice over: it overlapped the score badge on a
-        // phone, and it could only ever record the tutorial - which is the
-        // one flight a stuck pilot cannot finish. It lives in the pause
-        // menu now, where every run can reach it. This bar keeps the exit.
-        const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
-        skip.setAttribute("aria-label", "Skip the first flight");
-        skip.onclick = () => engine.skipTutorial();
-        bar.append(skip);
+        // THE FINISH IS A DOOR, NOT A DISMISSAL. Reaching the portal earns
+        // the walk to the Loadout, so the last beat replaces SKIP with the
+        // way onward - the pilot who flew it should not be offered an exit
+        // that reads like giving up.
+        if (engine.world.tut.stage === "done") {
+          const go = el("button", "ac-primary ac-tutskip", "EXIT TO LOADOUT");
+          go.setAttribute("aria-label", "Collect your reward in the Loadout");
+          go.onclick = () => engine.finishTutorial();
+          bar.append(go);
+        } else {
+          const skip = el("button", "ac-ghost ac-tutskip", "SKIP");
+          skip.setAttribute("aria-label", "Skip the first flight");
+          skip.onclick = () => engine.skipTutorial();
+          bar.append(skip);
+        }
       }
       const pause = el("button", "ac-iconbtn", "II");
       pause.onclick = () => engine.pause();

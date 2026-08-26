@@ -222,6 +222,20 @@ export async function createEngine(canvas) {
             world.tut = null;
             this.open("hangar");
         },
+        finishTutorial() {
+            // The same handoff as skipTutorial, and deliberately so - what the
+            // pilot did differs, where they land does not. The kit was granted at
+            // the handover; "hangar" is the step that says go and put it on.
+            save.tutorialDone = true;
+            grantTutorialKit(save);
+            if (save.guide === "pending" || save.guide === "reward")
+                save.guide = "hangar";
+            writeSave(save);
+            world.tut = null;
+            shopTab = "suits";
+            engine.shopTab = "suits";
+            this.open("hangar");
+        },
         setShelfGrid(on) {
             save.shelfGrid = !!on;
             writeSave(save);
