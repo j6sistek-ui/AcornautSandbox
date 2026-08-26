@@ -1,0 +1,152 @@
+[
+ {
+  "id": "flight",
+  "name": "Flight",
+  "glow": "#c9b6ff"
+ },
+ {
+  "id": "iontrim",
+  "name": "Ion",
+  "glow": "#4ad8ff"
+ },
+ {
+  "id": "copper",
+  "name": "Copper",
+  "glow": "#ff8a2a"
+ },
+ {
+  "id": "frost",
+  "name": "Frost",
+  "glow": "#9fe4ff"
+ },
+ {
+  "id": "voidsuit",
+  "name": "Void",
+  "glow": "#b45cff"
+ },
+ {
+  "id": "aurorasuit",
+  "name": "Aurora",
+  "glow": "#5dffd0"
+ },
+ {
+  "id": "ember",
+  "name": "Ember",
+  "glow": "#ff5a1e"
+ },
+ {
+  "id": "stardust",
+  "name": "Stardust",
+  "glow": "#8fb8ff"
+ },
+ {
+  "id": "robo",
+  "name": "Robo",
+  "glow": "#35e0ff"
+ },
+ {
+  "id": "alien",
+  "name": "Alien",
+  "glow": "#7dff4d"
+ },
+ {
+  "id": "ghost",
+  "name": "Ghost",
+  "glow": "#9fd8ff"
+ },
+ {
+  "id": "bigbooty",
+  "name": "Big Booty",
+  "glow": "#ffb84d"
+ },
+ {
+  "id": "catsuit",
+  "name": "Cat",
+  "glow": "#c9b6ff"
+ },
+ {
+  "id": "gemmie",
+  "name": "Gemmie",
+  "glow": "#ffb8f0"
+ },
+ {
+  "id": "sammie",
+  "name": "Sammie",
+  "glow": "#c9b6ff"
+ },
+ {
+  "id": "seraph",
+  "name": "Seraph",
+  "glow": "#ffe9a8"
+ },
+ {
+  "id": "leviathan",
+  "name": "Leviathan",
+  "glow": "#4fe8dd"
+ },
+ {
+  "id": "verdant",
+  "name": "Verdant",
+  "glow": "#38ff9a"
+ },
+ {
+  "id": "cryostar",
+  "name": "Cryostar",
+  "glow": "#54d8ff"
+ },
+ {
+  "id": "eclipse",
+  "name": "Eclipse",
+  "glow": "#b552ff"
+ },
+ {
+  "id": "volt",
+  "name": "Volt",
+  "glow": "#54ff2e"
+ },
+ {
+  "id": "cinderforge",
+  "name": "Cinderforge",
+  "glow": "#ff3b22"
+ },
+ {
+  "id": "groveguard",
+  "name": "Groveguard",
+  "glow": "#65dca1"
+ },
+ {
+  "id": "cosmic",
+  "name": "Cosmic",
+  "glow": "#d687ff"
+ },
+ {
+  "id": "sunforged",
+  "name": "Sunforged",
+  "glow": "#ffad2b"
+ },
+ {
+  "id": "abyssal",
+  "name": "Abyssal",
+  "glow": "#39dcff"
+ },
+ {
+  "id": "amethyst",
+  "name": "Amethyst",
+  "glow": "#c86dff"
+ },
+ {
+  "id": "ivoryguard",
+  "name": "Ivoryguard",
+  "glow": "#fff0b8"
+ },
+ {
+  "id": "reactor",
+  "name": "Reactor",
+  "glow": "#65ff32"
+ },
+ {
+  "id": "cyber",
+  "name": "Cyber",
+  "glow": "#7030df"
+ }
+]

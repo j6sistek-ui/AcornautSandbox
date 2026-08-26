@@ -1,0 +1,114 @@
+<script>
+(function(){
+"use strict";
+var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- scroll reveals ---------- */
+var rises = [].slice.call(document.querySelectorAll(".rise"));
+if ("IntersectionObserver" in window && !RM){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+  },{rootMargin:"0px 0px -12% 0px", threshold:.08});
+  rises.forEach(function(el,i){ el.style.transitionDelay = (Math.min(i%6,4)*55)+"ms"; io.observe(el); });
+} else { rises.forEach(function(el){ el.classList.add("in"); }); }
+
+/* ---------- the road: scroll spine + section nodes ---------- */
+var road = document.querySelector(".road"), fill = document.getElementById("roadFill");
+var nodes = [].slice.call(document.querySelectorAll("[data-node]")).map(function(sec){
+  var u = document.createElement("u"); road.appendChild(u); return {sec:sec, el:u};
+});
+function layout(){
+  var docH = document.documentElement.scrollHeight, span = road.clientHeight * .76, top = road.clientHeight * .12;
+  nodes.forEach(function(n){
+    var mid = n.sec.offsetTop + n.sec.offsetHeight/2;
+    n.el.style.top = (top + span * (mid/docH)) + "px";
+    n.pos = mid;
+  });
+}
+function spine(){
+  var y = window.scrollY + window.innerHeight*.5;
+  var docH = document.documentElement.scrollHeight;
+  fill.style.height = (road.clientHeight*.76) * Math.max(0, Math.min(1, y/docH)) + "px";
+  nodes.forEach(function(n){ n.el.setAttribute("data-on", y >= n.pos ? "1" : "0"); });
+  var dock = document.getElementById("dock");
+  dock.classList.toggle("on", window.scrollY > window.innerHeight*.85);
+}
+addEventListener("resize", function(){ layout(); spine(); });
+addEventListener("scroll", spine, {passive:true});
+layout(); spine();
+
+/* the sticky play bar steps aside while the toy is in reach */
+var toyEl = document.getElementById("toy");
+if(toyEl && "IntersectionObserver" in window){
+  new IntersectionObserver(function(es){
+    document.getElementById("dock").classList.toggle("hush", es[0].isIntersecting);
+  },{threshold:.14}).observe(toyEl);
+}
+
+/* ---------- clips: nothing downloads until the frame is in reach ---------- */
+var vids = [].slice.call(document.querySelectorAll("video[data-src]"));
+function wake(v){
+  if(v.dataset.on) return;
+  v.dataset.on = "1";
+  v.src = (window.__CLIPS__ || {})[v.dataset.src] || v.dataset.src;
+  v.load();
+  if(!RM){ var p = v.play(); if(p && p.catch) p.catch(function(){}); }
+}
+if(vids.length){
+  if("IntersectionObserver" in window){
+    var vio = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting) wake(e.target);
+        else if(e.target.dataset.on && !e.target.paused) e.target.pause();
+      });
+    },{rootMargin:"260px 0px", threshold:.05});
+    vids.forEach(function(v){ vio.observe(v); });
+  } else { vids.forEach(wake); }
+  // a still poster with no way to start it is a dead control
+  vids.forEach(function(v){
+    v.addEventListener("click", function(){
+      wake(v);
+      if(v.paused) v.play().catch(function(){}); else v.pause();
+    });
+  });
+}
+
+/* ---------- the fitting room ---------- */
+var SUITS = window.__SUITS__ || [];
+var railA = document.getElementById("railAin"), railB = document.getElementById("railBin");
+var caseEl = document.getElementById("case"), caseImg = document.getElementById("caseImg"), caseName = document.getElementById("caseName");
+var chosen = null;
+function pick(s, btn){
+  if(chosen === s) return;
+  chosen = s;
+  caseEl.style.setProperty("--accent", s.glow);
+  caseImg.src = s.src; caseImg.alt = s.name + " suit";
+  caseName.textContent = s.name;
+  [].forEach.call(document.querySelectorAll(".sw"), function(b){ b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+}
+function swatch(s){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.setAttribute("aria-pressed","false");
+  b.title = s.name; b.setAttribute("aria-label","Show the " + s.name + " suit in the case");
+  var i = document.createElement("img"); i.src = s.src; i.alt = ""; i.loading = "lazy";
+  b.appendChild(i);
+  b.addEventListener("click", function(){ pick(s, b); });
+  return b;
+}
+if(SUITS.length){
+  var half = Math.ceil(SUITS.length/2);
+  var A = SUITS.slice(0, half), B = SUITS.slice(half);
+  var reps = RM ? 1 : 2;
+  for(var r=0; r<reps; r++){
+    A.forEach(function(s){ railA.appendChild(swatch(s)); });
+    B.forEach(function(s){ railB.appendChild(swatch(s)); });
+  }
+  var first = SUITS.filter(function(s){ return s.id === "seraph"; })[0] || SUITS[0];
+  pick(first, railA.querySelector('.sw[title="' + first.name + '"]'));
+  if(!RM){
+    railA.style.animationDuration = (A.length*2.4)+"s";
+    railB.style.animationDuration = (B.length*2.7)+"s";
+  }
+}
+})();
+</script>
