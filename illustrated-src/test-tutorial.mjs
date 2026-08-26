@@ -163,19 +163,21 @@ for (const [W, H] of SCREENS) {
     sim.updateWorld(w, s, 1 / 60);
   }
   ok(w.tut.streak === 2, `could not fly two clean gates, streak is ${w.tut.streak}`);
+  // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the
+  // lesson: two beats earlier the pilot was told planets are bouncy and
+  // never hurt them. Bounce off the third gate and it should still count.
   const restartsBefore = w.tut.restarts;
-  // now fly into a planet
-  for (let i = 0; i < 60 * 20 && w.tut.restarts === restartsBefore; i++) {
+  const streakBefore = w.tut.streak;
+  for (let i = 0; i < 60 * 20 && w.tut.streak === streakBefore; i++) {
     const p = w.planets.find((q) => q.x + q.r > w.W * 0.18);
-    if (p) { w.squirrel.y = p.gapY - p.gap; w.squirrel.vy = 0; }
+    if (p) { w.squirrel.y = p.gapY - p.gap * 0.5; w.squirrel.vy = 0; }
     sim.updateWorld(w, s, 1 / 60);
   }
-  ok(w.tut.restarts > restartsBefore,
-    "a contact inside the three should rewind the stretch, and did not");
-  ok(w.tut.streak === 0,
-    `after a contact the streak should be back to 0, it is ${w.tut.streak} - ` +
-    `protection must not buy the gate`);
-  ok(w.tut.stage === "gates3", `the rewind should stay in the three, went to ${w.tut.stage}`);
+  ok(w.tut.restarts === restartsBefore,
+    `bouncing off a planet restarted the three - the lesson just taught that ` +
+    `planets are bouncy and never hurt you`);
+  ok(w.tut.streak > streakBefore,
+    `a gate flown with a bounce should still count, streak stayed at ${w.tut.streak}`);
   // AND THE GATES COME BACK WHERE THEY CAN BE REACHED. buildTutorialGates
   // continues from w.lastSpawnX, which after a rewind still pointed at the
   // END of the stretch just thrown away - so the new three landed more than
@@ -195,12 +197,20 @@ for (const [W, H] of SCREENS) {
   const r2 = flyLesson(430, 932, { stopAt: "gates3" });
   const { w, s } = r2;
   ok(w.tut.stage === "gates3", "did not reach the three-gate stretch");
-  for (let i = 0; i < 60 * 20 && w.tut.restarts === 0; i++) {
+  // DEBRIS is the only failure now, so that is what a rewind test has to
+  // fly into: the blockers sealing the space above and below the mouth.
+  const intoDebris = () => {
     const p = w.planets.find((q) => q.x + q.r > w.W * 0.18);
-    if (p) { w.squirrel.y = Math.max(20, p.gapY - p.gap); w.squirrel.vy = 0; }
+    if (!p || !p.blockers?.length) return;
+    const b = p.blockers[Math.floor(p.blockers.length / 2)];
+    w.squirrel.y = b.y;
+    w.squirrel.vy = 0;
+  };
+  for (let i = 0; i < 60 * 20 && w.tut.restarts === 0; i++) {
+    intoDebris();
     sim.updateWorld(w, s, 1 / 60);
   }
-  ok(w.tut.restarts > 0, "crashing on the first gate should rewind the stretch");
+  ok(w.tut.restarts > 0, "hitting debris on the first gate should rewind the stretch");
   // AND THEY COME BACK AT THE SAME REACH EVERY TIME.
   //
   // Measured, because the first guess was wrong: the stale origin does not
@@ -221,8 +231,7 @@ for (const [W, H] of SCREENS) {
   for (let round = 0; round < 3; round++) {
     const was = w.tut.restarts;
     for (let i = 0; i < 60 * 30 && w.tut.restarts === was; i++) {
-      const p = w.planets.find((q) => q.x + q.r > w.W * 0.18);
-      if (p) { w.squirrel.y = Math.max(20, p.gapY - p.gap); w.squirrel.vy = 0; }
+      intoDebris();
       sim.updateWorld(w, s, 1 / 60);
     }
     gaps.push(gap());

@@ -3227,15 +3227,13 @@ export function updateWorld(w, save, dt) {
             w.score += 1;
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
                 w.tut.gates += 1;
-                if (w.tut.stage === "gates3") {
-                    // THREE IN A ROW MEANS THREE FLOWN. A gate that was touched does
-                    // not count however it ended - protection keeps the pilot alive,
-                    // it does not pass them - and it takes the stretch back.
-                    if (p.touched)
-                        tutRewind(w, save);
-                    else
-                        w.tut.streak += 1;
-                }
+                // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the
+                // lesson: two beats earlier the pilot was told "planets are bouncy,
+                // they never hurt you". Failing them for a bounce teaches the
+                // opposite of what the tutorial just taught. DEBRIS is the only
+                // thing that costs the streak - see the blocker path, which rewinds.
+                if (w.tut.stage === "gates3")
+                    w.tut.streak += 1;
             }
         }
     }
@@ -3290,11 +3288,10 @@ export function updateWorld(w, save, dt) {
             }
             else if (st === "gates3" || st === "gates7" || st === "portal") {
                 // practice time: scoop them straight back onto the flight line
-                // rather than let them flounder along the floor
-                if (st === "gates3")
-                    tutRewind(w, save);
-                else
-                    tutReset(w, sx, w.H + 10);
+                // rather than let them flounder along the floor. NOT a rewind even
+                // inside the three - debris is the only failure, and the gate they
+                // were heading for is still ahead of them to fly.
+                tutReset(w, sx, w.H + 10);
             }
             else {
                 w.squirrel.y = Math.max(24, Math.min(w.H - 24, w.squirrel.y));
@@ -3347,12 +3344,6 @@ export function updateWorld(w, save, dt) {
                 if (w.shieldCharges > 0 && w.tut?.stage === "free") {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
-                // ANY contact marks the gate, whichever path handles it after.
-                // The streak is judged on this one flag rather than on catching
-                // every collision route, which is how "protection buys the gate"
-                // slipped through: the counter only ever asked whether the planet
-                // had scrolled past the pilot, not whether they had flown it.
-                p.touched = true;
                 bounceOff(w, save, p.x, py);
                 w.run.bounces += 1;
                 return "bounce";
