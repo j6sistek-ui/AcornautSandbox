@@ -1,0 +1,114 @@
+<title>Acornaut</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap">
+<meta name="description" content="Fly a squirrel in a spacesuit through the gaps between hand-painted planets. Tap to flap is the whole control. Free in your browser — no install, no account.">
+<style>
+/* ============================================================
+   ACORNAUT — landing page
+   Palette and faces are the game's own (Fraunces / Figtree,
+   #070b16 ground, #f3efe4 warm ink, #8a5ae4 violet).
+   Gold #ffd76a is reserved: stars, records, currency. Never a
+   button, never a heading — the same rule the game itself keeps.
+   Single-theme by intent: the product is one dark world.
+   ============================================================ */
+:root{
+  --void:#05020e; --ground:#080c18; --deep:#0b1122;
+  --panel:#121a2e; --panel-2:#18213a;
+  --line:#2a3454; --line-soft:#1b2340;
+  --ink:#f3efe4; --ink-2:#d7def0; --dim:#8b95b0; --faint:#6d768f;
+  --violet:#8a5ae4; --violet-hi:#a276ff; --violet-lite:#c9b6ff;
+  --gold:#ffd76a;
+  --accent:#c9b6ff;
+  --col:1120px;
+  --pad:clamp(20px,5vw,44px);
+  --band:clamp(62px,10vw,132px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%; display:block}
+a{color:var(--violet-lite)}
+:focus-visible{outline:2px solid var(--violet-hi); outline-offset:3px; border-radius:6px}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- type ---------- */
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:800; margin:0; text-wrap:balance}
+h1{font-size:clamp(2.55rem,6.4vw,4.5rem); line-height:.94; letter-spacing:-.022em}
+h2{font-size:clamp(1.85rem,3.9vw,2.9rem); line-height:1.02; letter-spacing:-.016em}
+h3{font-size:1.06rem; font-weight:700; letter-spacing:-.005em}
+p{margin:0}
+.kicker{
+  font-family:Figtree,sans-serif; font-weight:700; font-size:.7rem;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--violet-lite);
+  margin:0 0 14px; display:flex; align-items:center; gap:10px;
+}
+.kicker::after{content:""; height:1px; flex:1; max-width:120px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--violet-lite) 55%,transparent),transparent)}
+.lede{color:var(--ink-2); font-size:clamp(1.02rem,1.5vw,1.13rem); max-width:62ch}
+.note{color:var(--dim); font-size:.9rem; max-width:58ch}
+.tiny{color:var(--faint); font-size:.8rem; letter-spacing:.01em}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.wrap{width:min(var(--col),100% - var(--pad)*2); margin-inline:auto}
+section{position:relative; padding-block:var(--band)}
+.hd{display:flex; flex-direction:column; gap:16px; margin-bottom:44px}
+
+/* ---------- the road: scroll spine ---------- */
+.road{position:fixed; left:34px; top:0; bottom:0; width:22px; z-index:30; pointer-events:none; display:none}
+@media (min-width:1240px){.road{display:block}}
+.road i{position:absolute; left:10px; top:12vh; bottom:12vh; width:2px;
+  background-image:radial-gradient(circle,rgba(203,180,255,.5) 1px,transparent 1.4px);
+  background-size:2px 9px; opacity:.5}
+.road b{position:absolute; left:10px; top:12vh; width:2px; height:0;
+  background:linear-gradient(180deg,var(--gold),#e0a02a); border-radius:2px;
+  box-shadow:0 0 10px rgba(255,215,106,.55)}
+.road u{position:absolute; left:4px; width:14px; height:14px; margin-top:-7px; border-radius:50%;
+  background:var(--deep); border:1.5px solid var(--line); transition:background .35s,border-color .35s,box-shadow .35s}
+.road u[data-on="1"]{background:var(--gold); border-color:#e0a02a; box-shadow:0 0 12px rgba(255,215,106,.6)}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:11px;
+  font-family:Figtree,sans-serif; font-weight:800; font-size:1.03rem;
+  letter-spacing:.045em; text-transform:uppercase; text-decoration:none;
+  color:#fff; background:linear-gradient(180deg,#9d6bf0,#7440d6);
+  border:1px solid #b58cff; border-radius:15px; padding:17px 30px;
+  box-shadow:0 12px 30px -12px rgba(138,90,228,.85), inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.btn:hover{transform:translateY(-2px); filter:brightness(1.07); box-shadow:0 18px 38px -14px rgba(138,90,228,.95), inset 0 1px 0 rgba(255,255,255,.3)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent; border-color:var(--line); color:var(--ink-2);
+  box-shadow:none; font-size:.86rem; padding:13px 22px}
+.btn.ghost:hover{border-color:var(--violet); color:#fff; filter:none}
+.arrow{font-family:Figtree,sans-serif; font-weight:700; font-size:.86rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--violet-lite); text-decoration:none;
+  display:inline-flex; gap:8px; align-items:center}
+.arrow:hover{color:#fff}
+.arrow span{transition:transform .18s ease; display:inline-block}
+.arrow:hover span{transform:translateX(4px)}
+
+/* ---------- phone frame: every game shot lives in one ---------- */
+.phone{
+  position:relative; border-radius:30px; padding:5px;
+  background:linear-gradient(165deg,#2c2350,#10132a 45%,#241c46);
+  border:1px solid color-mix(in srgb,var(--violet) 45%,transparent);
+  box-shadow:0 40px 80px -34px rgba(0,0,0,.95), 0 0 0 1px rgba(0,0,0,.5),
+             inset 0 1px 0 rgba(255,255,255,.13);
+  flex:none;
+}
+.phone > img,.phone > video{border-radius:25px; width:100%; height:auto; display:block; background:var(--void)}
+.phone::after{content:""; position:absolute; inset:5px; border-radius:25px; pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.shot{display:flex; flex-direction:column; gap:14px; align-items:flex-start}
+.shot figcaption{color:var(--faint); font-size:.78rem; letter-spacing:.09em; text-transform:uppercase; font-weight:600}
+</style>

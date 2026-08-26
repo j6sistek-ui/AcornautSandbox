@@ -1,0 +1,280 @@
+<script>
+/* ============================================================
+   THE ONE RULE - a real flight, not a video.
+
+   Physics and rules are the game's own, from sim.ts / catalog.ts:
+     FLIGHT_GRAVITY 1300, flap -450, baseSpeed 165, gapBase 168, planetR 42
+     PLANETS BOUNCE. They are not lethal - bounceOff() throws you off them
+       and the run counts it. Only debris and the floor kill, and this strip
+       carries no debris, so the floor is the only way down.
+     THE CEILING BOUNCES you back down too: vy = |vy| * 0.45 + 90.
+
+   The squirrel is ECLIPSE, flying on its MOTION BANK: eight authored climb
+   attitudes and eight dive attitudes, indexed by smoothed vertical speed
+   exactly as draw.ts does it - and drawn with ZERO rotation, because the
+   pose is the pitch. The helmet dome the engine composites per frame is the
+   one thing not reproduced here.
+   ============================================================ */
+(function(){
+"use strict";
+var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var host = document.getElementById("toy"), cv = document.getElementById("cv");
+if(!host || !cv) return;
+
+var ASC = window.__ASC__ || [], DESC = window.__DESC__ || [], PLANETS = window.__PLANETS__ || [];
+
+/* Reduced motion gets the ramp laid out flat - sixteen attitudes side by
+   side is arguably the better proof anyway. */
+if(RM){
+  var sheet = document.createElement("div");
+  sheet.className = "sheet";
+  ASC.slice().reverse().concat(DESC).forEach(function(src,i){
+    var im = document.createElement("img"); im.src = src; im.loading = "lazy";
+    im.alt = i === 0 ? "Eclipse's sixteen painted flight attitudes, steepest climb to steepest dive" : "";
+    sheet.appendChild(im);
+  });
+  host.replaceWith(sheet);
+  var cr = document.getElementById("craft");
+  if(cr){ cr.classList.add("on");
+    cr.textContent = "Sixteen painted attitudes: eight climbing, eight diving. The pose is the pitch."; }
+  return;
+}
+
+var ctx = cv.getContext("2d"), DPR = Math.min(devicePixelRatio || 1, 2);
+var W = 0, H = 0, S = 1;
+var asc = [], desc = [], planets = [];
+ASC.forEach(function(src,i){ var im = new Image(); im.src = src; asc[i] = im; });
+DESC.forEach(function(src,i){ var im = new Image(); im.src = src; desc[i] = im; });
+PLANETS.forEach(function(src,i){ var im = new Image(); im.src = src; planets[i] = im; });
+
+var stars = [], gates = [], drift = [];
+var y, vy, alive, dead, score, bounces, best, shake, started, cool, smoothVy;
+var pose = null;
+try { best = parseInt(localStorage.getItem("acornaut.toy") || "0", 10) || 0; } catch(e){ best = 0; }
+document.getElementById("bs").textContent = best;
+
+function resize(){
+  var r = cv.getBoundingClientRect();
+  W = r.width; H = r.height;
+  cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  S = H/320;                                   /* the band is a cropped viewport */
+  stars = [];
+  for(var i=0;i<110;i++) stars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.25+.25, a:Math.random()*.6+.2, s:Math.random()*.5+.15});
+  drift = [];
+  for(var j=0;j<5;j++) drift.push({x:Math.random()*W, y:Math.random()*H, k:j%PLANETS.length, sc:(.2+Math.random()*.3), sp:.1+Math.random()*.2, a:.05+Math.random()*.07});
+}
+
+function reset(full){
+  y = H*0.44; vy = 0; alive = true; dead = 0; shake = 0; cool = 0; smoothVy = 0;
+  if(full){ score = 0; bounces = 0; hud(); }
+  gates = [];
+  spawn(W + 120*S);
+  spawn(W + 120*S + 340*S);
+  spawn(W + 120*S + 680*S);
+}
+function hud(){
+  document.getElementById("sc").textContent = score;
+  var b = document.getElementById("bo"); if(b) b.textContent = bounces;
+}
+function spawn(x){
+  var gap = 168*S*0.98, r = 42*S;
+  var lo = gap/2 + r*0.55 + 14, hi = H - gap/2 - r*0.55 - 14;
+  gates.push({x:x, cy:lo + Math.random()*(hi-lo), gap:gap, r:r,
+              kt:(Math.random()*PLANETS.length)|0, kb:(Math.random()*PLANETS.length)|0,
+              done:false, spin:Math.random()*6.28});
+}
+
+var startEl = document.getElementById("start"), everFlew = false;
+function idle(){
+  startEl.classList.remove("gone");
+  startEl.querySelector("b").textContent = everFlew ? "Fly it again" : "Tap to flap";
+}
+function flap(){
+  if(!started){
+    started = true; everFlew = true;
+    startEl.classList.add("gone");
+    var cr = document.getElementById("craft"); if(cr) cr.classList.add("on");
+  }
+  if(!alive) return;
+  vy = -450*S;
+}
+host.addEventListener("pointerdown", function(e){ e.preventDefault(); flap(); });
+host.addEventListener("keydown", function(e){
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); flap(); }
+});
+
+var last = 0, running = false;
+function frame(t){
+  if(!running) return;
+  var dt = Math.min((t - last)/1000 || 0, .05); last = t;
+  step(dt); paint();
+  requestAnimationFrame(frame);
+}
+
+/* THE POSE. draw.ts: a light exponential smooth on vy, normalised over
+   -470 climbing and 620 diving, then rounded across the bank. Velocities
+   here are scaled by S, so they go back to game units before mapping. */
+function poseFrame(dt){
+  smoothVy += (vy - smoothVy) * Math.min(1, dt*9);
+  var sv = smoothVy / S;
+  var v = sv < 0 ? -Math.min(1, -sv/470) : Math.min(1, sv/620);
+  var bank = v < 0 ? asc : desc;
+  if(!bank.length) return null;
+  var idx = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1))));
+  return bank[idx];
+}
+
+function step(dt){
+  if(!started){                                  /* attract: gentle bob, no gates */
+    y = H*0.44 + Math.sin(performance.now()/900)*10*S;
+    vy = Math.cos(performance.now()/900)*40*S;
+    drape(dt);
+    pose = poseFrame(dt) || pose;
+    return;
+  }
+  drape(dt);
+  if(shake > 0) shake = Math.max(0, shake - dt*3.4);
+  if(cool > 0) cool -= dt;
+
+  if(!alive){
+    dead += dt;
+    y += vy*dt; vy += 1300*S*dt;
+    pose = poseFrame(dt) || pose;
+    if(dead > .9){ reset(true); started = false; idle(); }
+    return;
+  }
+
+  vy += 1300*S*dt;
+  vy = Math.min(vy, 620*S);
+  y += vy*dt;
+
+  var sr = 27*S, sx = W*0.26, speed = 165*S*1.5;
+
+  /* THE CEILING BOUNCES. Only debris is lethal up there, and there is none. */
+  if(y < sr*0.6 && vy < 0){
+    y = sr*0.6;
+    vy = Math.abs(vy)*0.45 + 90*S;
+  }
+
+  for(var i=gates.length-1; i>=0; i--){
+    var g = gates[i];
+    g.x -= speed*dt; g.spin += dt*.25;
+    if(!g.done && g.x < sx - g.r*0.4){
+      g.done = true; score++; hud();
+      if(score > best){ best = score; document.getElementById("bs").textContent = best;
+        try{ localStorage.setItem("acornaut.toy", String(best)); }catch(e){} }
+    }
+    if(g.x < -g.r*2){ gates.splice(i,1); spawn(gates[gates.length-1].x + 340*S); }
+    var ty = g.cy - g.gap/2 - g.r, by = g.cy + g.gap/2 + g.r;
+    for(var k=0;k<2;k++){
+      var py = k ? by : ty;
+      if(!hit(sx, y, sr, g.x, py, g.r*0.82)) continue;
+      if(cool <= 0) bounce(g.x, py);
+      else pushOut(g.x, py, g.r*0.82, sr, sx);
+    }
+  }
+
+  /* THE FLOOR is the only way down. */
+  if(y > H + 12*S) die();
+
+  pose = poseFrame(dt) || pose;
+}
+function drape(dt){
+  drift.forEach(function(d){ d.x -= d.sp*40*S*dt; if(d.x < -160){ d.x = W+160; d.y = Math.random()*H; } });
+  stars.forEach(function(s){ s.x -= s.s*22*dt; if(s.x < 0) s.x = W; });
+}
+
+/* bounceOff(), from sim.ts */
+function bounce(px, py){
+  var sx = W*0.26;
+  var dx = sx - px, dy = y - py;
+  var dist = Math.hypot(dx, dy) || 1;
+  dy /= dist;
+  var mag = Math.min(560*S, 170*S + Math.abs(vy)*0.5);
+  vy = dy*mag + (dy >= 0 ? 90*S : -160*S);
+  y += dy*14*S;
+  cool = 0.55;
+  shake = 0.5;
+  bounces++; hud();
+}
+function pushOut(px, py, pr, sr, sx){
+  var dx = sx - px, dy = y - py;
+  var dist = Math.hypot(dx, dy) || 1;
+  if(dist >= pr + sr) return;
+  y = py + (dy/dist) * (pr + sr);
+}
+function hit(ax,ay,ar,bx,by,br){ var dx=ax-bx, dy=ay-by; return dx*dx+dy*dy < (ar+br)*(ar+br); }
+function die(){
+  if(!alive) return;
+  alive = false; shake = 1; vy = -160*S;
+}
+
+function paint(){
+  var ox = shake ? (Math.random()-.5)*10*shake : 0, oy = shake ? (Math.random()-.5)*10*shake : 0;
+  ctx.save(); ctx.translate(ox, oy);
+  var g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#0a0620"); g.addColorStop(.55,"#08040f"); g.addColorStop(1,"#0d0722");
+  ctx.fillStyle = g; ctx.fillRect(-12,-12,W+24,H+24);
+
+  ctx.fillStyle = "#cbb4ff";
+  stars.forEach(function(s){ ctx.globalAlpha = s.a; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.284); ctx.fill(); });
+  ctx.globalAlpha = 1;
+
+  drift.forEach(function(d){
+    var im = planets[d.k]; if(!im || !im.complete) return;
+    var sz = 190*S*d.sc; ctx.globalAlpha = d.a;
+    ctx.drawImage(im, d.x - sz/2, d.y - sz/2, sz, sz);
+  });
+  ctx.globalAlpha = 1;
+
+  if(started){
+    gates.forEach(function(gt){
+      var t = planets[gt.kt], b = planets[gt.kb], d = gt.r*2.35;
+      var ty = gt.cy - gt.gap/2 - gt.r, by = gt.cy + gt.gap/2 + gt.r;
+      if(t && t.complete) ring(t, gt.x, ty, d, gt.spin);
+      if(b && b.complete) ring(b, gt.x, by, d, -gt.spin);
+    });
+  }
+
+  var im = pose;
+  if(im && im.complete){
+    var sz = 132*S, sx = W*0.26;
+    ctx.save();
+    ctx.translate(sx, y);
+    /* no rotation: the motion bank's frames carry the attitude themselves */
+    ctx.globalAlpha = alive ? 1 : Math.max(0, 1 - dead*1.1);
+    ctx.drawImage(im, -sz/2, -sz/2, sz, sz);
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+function ring(im, x, cy, d, spin){
+  ctx.save(); ctx.translate(x, cy); ctx.rotate(spin*.12);
+  ctx.drawImage(im, -d/2, -d/2, d, d);
+  ctx.restore();
+}
+
+function boot(){
+  resize(); reset(true); started = false;
+  pose = desc[0] || asc[0] || null;
+  running = true; last = performance.now();
+  requestAnimationFrame(frame);
+}
+addEventListener("resize", function(){
+  var s = score, b = bounces, st = started;
+  resize(); reset(true); score = s; bounces = b; started = st; hud();
+});
+
+/* only run the loop while the strip is on screen */
+if("IntersectionObserver" in window){
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ if(!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } }
+      else running = false;
+    });
+  },{threshold:.12}).observe(host);
+}
+if(document.readyState !== "loading") boot(); else addEventListener("DOMContentLoaded", boot);
+})();
+</script>

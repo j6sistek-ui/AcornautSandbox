@@ -1,0 +1,106 @@
+<nav class="road" aria-hidden="true"><i></i><b id="roadFill"></b></nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="s-top">
+  <div class="hero-art">
+    <picture>
+      <source media="(max-width:900px)" srcset="{{A:hero-tall.jpg}}">
+      <img src="{{A:hero-wide.jpg}}" alt="" fetchpriority="high">
+    </picture>
+  </div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Free in your browser <s></s> No install <s></s> No account</p>
+      <h1>One tap.<br>Thirty suits.<br><em>A hundred missions.</em></h1>
+      <p class="lede hero-sub">You&rsquo;re a squirrel in a spacesuit, threading the gaps between hand-painted planets. Tap and he rises. Stop and gravity takes him back. That is the entire control scheme.</p>
+      <div class="hero-cta">
+        <a class="btn" href="https://acornaut.app" target="_blank" rel="noopener">Play Acornaut</a>
+        <a class="arrow" href="#s-rule">Try the controls here <span>&#8594;</span></a>
+      </div>
+      <p class="note hero-micro">Runs in any phone browser. Add it to your home screen and it opens like any other game on the phone.</p>
+    </div>
+    <figure class="shot hero-film">
+      <div class="phone"><video width="400" height="712" data-src="{{V:hero.mp4}}" poster="{{A:hero-poster.jpg}}" muted loop playsinline preload="none" aria-label="Acornaut title film"></video></div>
+    </figure>
+  </div>
+</header>
+
+<!-- ============ STATS ============ -->
+<section class="stats" style="padding-block:0">
+  <div class="wrap">
+    <div class="stat"><b class="num">100</b><span>Missions</span></div>
+    <div class="stat"><b class="num">33</b><span>Painted planets</span></div>
+    <div class="stat"><b class="num">30</b><span>Suits</span></div>
+    <div class="stat"><b class="num">6</b><span>Ways to fly</span></div>
+  </div>
+</section>
+
+<!-- ============ THE ONE RULE ============ -->
+<section class="toy-band" id="s-rule" data-node>
+  <div class="wrap">
+    <div class="hd rise">
+      <p class="kicker">The whole control scheme</p>
+      <h2>Tap. That is the entire input.</h2>
+      <p class="lede">No buttons to learn and no tutorial to sit through. Planets don&rsquo;t kill you &mdash; you bounce off them, and the run keeps count. Only the floor is fatal. Thirty suits, a hundred missions and six rule-sets all hang off that one motion, and the strip below runs the game&rsquo;s own gravity, its own bounce, and Eclipse&rsquo;s own flight frames.</p>
+    </div>
+
+    <div class="toy rise" id="toy" role="button" tabindex="0" aria-label="Playable demo: tap or press space to flap">
+      <canvas id="cv"></canvas>
+      <div class="toy-hud">
+        <span class="chipset">
+          <span class="chip">Gates <b class="num" id="sc">0</b></span>
+          <span class="chip">Bounces <b class="num" id="bo">0</b></span>
+        </span>
+        <span class="chip rec">Best <b class="num" id="bs">0</b></span>
+      </div>
+      <div class="toy-start" id="start">
+        <i>Tap &middot; click &middot; space</i>
+        <b>Tap to flap</b>
+      </div>
+    </div>
+
+    <div class="toy-foot">
+      <p class="reveal" id="craft">Sixteen painted attitudes &mdash; eight climbing, eight diving. The pose is the pitch, not a tilted sprite.</p>
+      <p class="tiny">Same gravity, same flap, same bounce, same frames &mdash; but this one is only a toy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODES ============ -->
+<section class="modes-band" id="s-modes" data-node>
+  <div class="wrap">
+    <div class="hd rise">
+      <p class="kicker">Free Flight</p>
+      <h2>Six ways to fly. The same one control.</h2>
+      <p class="lede">Three of them are below, running. No trailer cuts and no mock-ups &mdash; these are captures of the game being played, at the speed it is played.</p>
+    </div>
+
+    <div class="reel">
+      <figure class="clip rise">
+        <div class="phone"><video width="400" height="868" data-src="{{V:mode-fly.mp4}}" poster="{{A:poster-fly.jpg}}" muted loop playsinline preload="none" aria-label="Normal mode gameplay"></video></div>
+        <figcaption><b>Normal</b><span>Standard gates and power-ups. The flight everything else is measured against.</span></figcaption>
+      </figure>
+      <figure class="clip rise">
+        <div class="phone"><video width="400" height="868" data-src="{{V:mode-arcade.mp4}}" poster="{{A:poster-arcade.jpg}}" muted loop playsinline preload="none" aria-label="Arcade mode gameplay"></video></div>
+        <figcaption><b>Arcade</b><span>Double power-ups, and the whole run switches to arcade graphics.</span></figcaption>
+      </figure>
+      <figure class="clip rise">
+        <div class="phone"><video width="400" height="868" data-src="{{V:mode-race.mp4}}" poster="{{A:poster-race.jpg}}" muted loop playsinline preload="none" aria-label="Hyper Run gameplay"></video></div>
+        <figcaption><b>Hyper Run</b><span>A different machine entirely: hold to thrust, thread the rings, beat the clock. <i>Earned at level 33.</i></span></figcaption>
+      </figure>
+    </div>
+
+    <div class="modes-grid">
+      <div class="mlist">
+        <p class="kicker" style="margin-bottom:4px">And three more</p>
+        <div class="mode rise hole" style="--accent:#b45cff"><span class="dot"></span><div><h3>Deep Space</h3><p>Endless back-to-back black holes. No gates, no scenery, just the next mouth.</p></div></div>
+        <div class="mode rise locked" style="--accent:#8fb8ff"><span class="dot"></span><div><h3>Lost in Space</h3><p>Space is in control here &mdash; the world tilts and mirrors while you fly.</p></div><span class="tag">&#9733; 45 to unlock</span></div>
+        <div class="mode rise" style="--accent:#4fe8dd"><span class="dot"></span><div><h3>Wormhole Run</h3><p>Hold to thrust down the corridor. One finger, no gaps, no mercy.</p></div></div>
+      </div>
+      <figure class="shot rise" style="margin:0">
+        <div class="phone"><img src="{{A:mk-modes.jpg}}" alt="The Acornaut mode picker, showing six flight modes with personal bests" loading="lazy"></div>
+        <figcaption>Picking one, in the game</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
