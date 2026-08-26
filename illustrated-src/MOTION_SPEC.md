@@ -1,5 +1,36 @@
 # Acornaut motion spec — how a suit flies
 
+## THE RULE (owner, 26 Aug 2026)
+
+> **Everything gets the default flight treatment unless the owner says there
+> is a custom animation, or supplies custom flight sprite sheets. The
+> default is Flight. The special ones are given, not derived.**
+
+Read that as a standing rule with two halves, because both matter:
+
+1. **Default is not a fallback, it is the answer.** A suit with no
+   owner-supplied sheets is not waiting for art — it is finished. Nobody
+   commissions, generates, selects or derives a motion bank for it. There is
+   no backlog of suits that "still need" one.
+2. **Custom is granted, never inferred.** A suit joins the custom tier
+   because the owner said so and handed over sheets. It does not join it
+   because its pitch measured well, because a generator was available, or
+   because someone thought it looked better. Measurement can *describe* the
+   roster; it cannot *promote* into it.
+
+The suits with custom flight animation today are **eclipse, volt, bigbooty,
+robo, catsuit** — good as they are, and not to be regenerated, re-selected
+or re-indexed. `verify_motion_banks` enforces the tier's membership so it
+cannot be widened quietly; changing it takes an owner ruling and a matching
+edit to `CUSTOM_FLIGHT_SUITS` in `illustrated-src/verify-art.py`.
+
+**The 24-suit render project this document used to describe was cancelled
+under this rule and is not to be revived.** What follows is kept because it
+is the measured record of the roster and the recipe for a genuinely new
+model authored from scratch — not a work order for anything that ships.
+
+---
+
 **The standard is Flight.** Owner ruling, 25 Aug 2026: a new model must meet
 it. A model may keep a path of its own when its *shape* is genuinely
 different — Robo and Cyber are the two — but that is a declared exception,
@@ -107,24 +138,15 @@ built from frames that all point the same way is still frames that all
 point the same way. Converting them would mean eight new attitude frames
 each, and that is the real cost of the standard - not the code.
 
-## OWNER RULING, 26 Aug 2026: the roster is closed
+### What the measurement is, and is not, for
 
-**That render project is not happening, and this section is the record of
-why it was not run rather than a brief for running it later.**
+The cliff in that table — 112° down to 36° for five suits, 24° and below for
+the other 23 — happens to fall exactly where the owner's custom tier sits.
+That is a useful sanity check and nothing more. **The five are custom because
+the owner supplied them, not because they measured well**, and a 24th suit
+does not earn promotion by scoring 45°. See THE RULE at the top.
 
-Five suits have real custom flight animation and they are GOOD AS THEY
-ARE - `eclipse`, `volt`, `bigbooty`, `robo`, `catsuit`. They are not to be
-regenerated, re-selected, re-indexed or otherwise touched. The measured
-table above is what identifies them: they are the five above the cliff,
-112° down to 36°, against 24° and below for everything else.
-
-Everything without a real 16-frame animation ships the standard instead of
-getting bespoke art. Nothing else on the roster gets its own motion bank.
-
-The template in `art-src/motion-banks/` stays as reference for the ONE case
-it still serves - a brand new model authored to the standard from the start,
-where the eight attitudes cost nothing extra because the art does not exist
-yet. It is not a work order for the existing roster.
+Read the table as a description of the roster, then stop.
 
 **The ones with range were candidates to convert for free** - a 3+5 ramp
 selected out of their existing sixteen, no new art. Not being done either:

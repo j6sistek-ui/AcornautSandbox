@@ -1,13 +1,17 @@
 # Motion bank template — for a NEW model, not for the existing roster
 
-> **Owner ruling, 26 Aug 2026 — read this before using this file.**
+> **THE RULE (owner, 26 Aug 2026) — read this before using this file.**
 >
-> The roster is closed. The five suits with real custom flight animation —
-> `eclipse`, `volt`, `bigbooty`, `robo`, `catsuit` — are good as they are
-> and are **not to be changed**, by re-render or by re-selection. Everything
-> without a real 16-frame animation ships the standard rather than getting
-> bespoke art. The 24-suit render project described below **was not run and
-> is not to be run**.
+> *"Everything gets the default flight treatment unless I say there's a
+> custom animation or give custom flight sprite sheets. The default is
+> flight, but I've given you special ones."*
+>
+> A suit with no owner-supplied sheets is **finished**, not waiting for art.
+> Custom is granted, never derived — not from a good pitch measurement, not
+> because a generator was to hand. The special ones today are `eclipse`,
+> `volt`, `bigbooty`, `robo`, `catsuit`, and they are good as they are.
+> The 24-suit render project described below **was not run and is not to be
+> run.** `verify_motion_banks` enforces the tier's membership.
 >
 > What this file is still for: a **brand new model**, authored to the
 > standard from the start, where the eight attitudes cost nothing extra
