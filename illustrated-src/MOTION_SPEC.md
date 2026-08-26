@@ -104,16 +104,35 @@ wing-beat.
 
 **So no amount of re-indexing converts them.** A velocity-indexed bank
 built from frames that all point the same way is still frames that all
-point the same way. Those suits need eight new attitude frames each, and
-that is the real cost of the standard - not the code.
+point the same way. Converting them would mean eight new attitude frames
+each, and that is the real cost of the standard - not the code.
 
-**The four with range may convert for free.** Each has at least three climb
-poses and five dive poses among its sixteen, and selecting a 3+5 ramp out
-of them produces a monotonic sequence. Worth prototyping before drawing
-anything, with the caveat that pitch is a proxy: a frame at -27° might be
-mid-wing-beat with the arms somewhere the neighbouring frame's are not, so
-a ramp selected on pitch alone can read as jitter. It needs an eye, not
-just a number.
+## OWNER RULING, 26 Aug 2026: the roster is closed
+
+**That render project is not happening, and this section is the record of
+why it was not run rather than a brief for running it later.**
+
+Five suits have real custom flight animation and they are GOOD AS THEY
+ARE - `eclipse`, `volt`, `bigbooty`, `robo`, `catsuit`. They are not to be
+regenerated, re-selected, re-indexed or otherwise touched. The measured
+table above is what identifies them: they are the five above the cliff,
+112° down to 36°, against 24° and below for everything else.
+
+Everything without a real 16-frame animation ships the standard instead of
+getting bespoke art. Nothing else on the roster gets its own motion bank.
+
+The template in `art-src/motion-banks/` stays as reference for the ONE case
+it still serves - a brand new model authored to the standard from the start,
+where the eight attitudes cost nothing extra because the art does not exist
+yet. It is not a work order for the existing roster.
+
+**The ones with range were candidates to convert for free** - a 3+5 ramp
+selected out of their existing sixteen, no new art. Not being done either:
+they are among the five that were ruled good as they are, and a selection
+is still a change to a flight animation that the owner has flown and
+approved. Pitch was only ever a proxy anyway - a frame at -27° may be
+mid-wing-beat with the arms somewhere the neighbour's are not, so a ramp
+chosen on the number alone can read as jitter.
 
 **Rule for a new model:** render the eight poses to span at least **45°**
 of pitch, and aim for Flight's 99. `verify_motion_banks` measures it.

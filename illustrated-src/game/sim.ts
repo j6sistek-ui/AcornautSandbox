@@ -20,6 +20,11 @@ import {
   WORMHOLE_WIDTH,
   WORMHOLE_TURN,
   WORMHOLE_DEBRIS_SPACING,
+  WORM_EVERY_GATES,
+  WORM_CALM_SECONDS,
+  WORM_CALM_SPEED,
+  WORM_EXIT_LEAD,
+  WORM_EXIT_GRACE,
 } from "./control-constants";
 
 export type Screen = "splash" | "title" | "hangar" | "log" | "profile" | "help" | "shop" | "scores" | "play" | "dead" | "pause" | "lvldone";
@@ -148,6 +153,9 @@ export type TunnelState = {
   leadNodes: number;
   hazards: TunnelHazard[];
   scoreFloat: number;
+  /** true when this corridor is a DETOUR out of a gate run rather than a
+   *  Wormhole Run of its own. A detour scores nothing and runs no flow. */
+  detour: boolean;
   multiplier: number;
   bestMultiplier: number;
   multiplierLeft: number;
@@ -281,6 +289,21 @@ export type World = {
   wormHold: WormHold | null;
   /** seconds left in the corridor */
   wormLeft: number;
+  /** seconds of calibration left at a wormhole mouth. Both mouths are slow:
+   *  the corridor is entered at a crawl so the walls can be read, and the
+   *  gate run is handed back the same way. */
+  wormCalm: number;
+  /** the gate the NEXT wormhole is scheduled for. Counted in gates SPAWNED,
+   *  which is the same ladder the pilot climbs - see spawnGate. */
+  wormNextGate: number;
+  /** gates built so far this run, the clock the schedule runs on */
+  gatesSpawned: number;
+  /** the exit door has been put in the corridor */
+  wormExitArmed: boolean;
+  /** how many zones the pilot has been carried past by wormholes. A trip
+   *  is supposed to MOVE you: coming back out into the sky you left is the
+   *  whole reason the detour read as pointless. */
+  zoneJump: number;
   hitCooldown: number;
   trailT: number;
   bounceUp: boolean;
@@ -423,6 +446,11 @@ export function makeWorld(W: number, H: number): World {
     bounceAnimStrength: 0,
     wormHold: null,
     wormLeft: 0,
+    wormCalm: 0,
+    wormNextGate: WORM_EVERY_GATES,
+    gatesSpawned: 0,
+    wormExitArmed: false,
+    zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
     bounceUp: false,
@@ -594,7 +622,14 @@ export function envIndexFor(w: World, score: number) {
   // a level is ten-to-thirty gates under ONE sky — the stage's identity —
   // so the zone ladder does not apply inside one
   if (w.lvl && w.lvl.def.fx.env !== undefined) return w.lvl.def.fx.env;
-  return w.envOrder[Math.min(Math.floor(score / ENV_GATES), ENVS.length - 1)];
+  const step = Math.floor(score / ENV_GATES);
+  // A run that has never met a wormhole climbs the ladder and stops at the
+  // last zone, exactly as it always did - zoneJump is 0 and this is the
+  // same expression it was. A run that HAS been thrown across space wraps
+  // instead of pinning, because a pilot who keeps taking wormholes should
+  // keep arriving somewhere, not run out of sky.
+  if (w.zoneJump > 0) return w.envOrder[(step + w.zoneJump) % ENVS.length];
+  return w.envOrder[Math.min(step, ENVS.length - 1)];
 }
 
 function palId(save: SaveData, w: World) {
@@ -1189,13 +1224,21 @@ function spawnPair(w: World, save: SaveData, x: number) {
     // ...and not while already warped, for exactly the reason the hole roll
     // above is guarded. A door to somewhere else, opening inside a black
     // hole, reads as the way out and is not.
-    const wormRate = wormChance(w);
-    if (!w.tut && !noHoles && !warping && wormRate > 0 && Math.random() < wormRate) {
+    //
+    // ON A SCHEDULE, NOT A ROLL. It used to be a 5%-a-gate dice throw,
+    // which meant a run could meet three in twenty gates or none in
+    // eighty - and since a trip was worth roughly forty gates of credit,
+    // the dice were also deciding the run. One every twenty gates is a
+    // rhythm a pilot can learn and fly toward: twenty gates of Lost in
+    // Space, a corridor, and out again at twenty-one.
+    if (!w.tut && !noHoles && !warping && wormChance(w) > 0 && w.gatesSpawned >= w.wormNextGate) {
+      w.wormNextGate = w.gatesSpawned + WORM_EVERY_GATES;
       w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
     }
   }
   w.lastSpawnX = x;
   w.lastGapY = gapY;
+  w.gatesSpawned += 1;
 }
 
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, level?: LevelDef, tunnelSeed?: number) {
@@ -1243,6 +1286,11 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.bounceAnimStrength = 0;
   w.wormHold = null;
   w.wormLeft = 0;
+  w.wormCalm = 0;
+  w.wormNextGate = WORM_EVERY_GATES;
+  w.gatesSpawned = 0;
+  w.wormExitArmed = false;
+  w.zoneJump = 0;
   w.hitCooldown = 0;
   w.bounceUp = false;
   w.deadTimer = 0;
@@ -1569,8 +1617,22 @@ function populateTunnelNode(w: World, node: TunnelNode, patternPos: number, patt
   if (absoluteX < t.nextPickupAt) return;
   const lane = center + (tunnelNoise(t.seed, node.index, 7) - 0.5) * half * 0.62;
   const roll = tunnelNoise(t.seed, node.index, 6);
+  // A DETOUR IS AN ACORN RUN, and the cadence has to say so.
+  //
+  // The standalone Wormhole Run is a survival mode: it is flown for minutes
+  // and its acorns are punctuation, one every 330-540px. A detour is
+  // FIFTEEN SECONDS and pays nothing else - no gates, no flow, no score -
+  // so on that cadence the pilot flew through an empty corridor for the
+  // length of the trip and came out with nothing. Measured on the shipped
+  // build: THREE pickups offered across a whole 13.8-second trip, which is
+  // exactly the empty tunnel in the report.
+  //
+  // On a detour they come four times as thick, so the corridor reads as a
+  // seam worth flying and the trip pays what it promised.
+  const spacing = t.detour ? 82 + tunnelNoise(t.seed, node.index, 52) * 52
+    : 330 + tunnelNoise(t.seed, node.index, 52) * 210;
   addTunnelPickup(w, node, roll < 0.08 ? "multiplier" : "acorn", lane, 8);
-  t.nextPickupAt = absoluteX + 330 + tunnelNoise(t.seed, node.index, 52) * 210;
+  t.nextPickupAt = absoluteX + spacing;
 }
 
 function appendTunnelNode(w: World) {
@@ -1639,7 +1701,7 @@ function appendTunnelNode(w: World) {
 
 function initTunnel(w: World, forcedSeed?: number, leadNodes = 0) {
   w.tunnel = {
-    nodes: [], hazards: [], scoreFloat: 0,
+    nodes: [], hazards: [], scoreFloat: 0, detour: false,
     multiplier: 1, bestMultiplier: 1, multiplierLeft: 0,
     flow: 0, flowBest: 0, flowGrace: 0, chain: 0, bestChain: 0,
     sectionsCleared: 0, time: 0, nearMisses: 0,
@@ -1657,14 +1719,25 @@ function initTunnel(w: World, forcedSeed?: number, leadNodes = 0) {
     bannerKind: "region", bannerLeft: 2.8, nextMilestone: 50,
   };
   w.tunnel.leadNodes = leadNodes;
-  // Push the first hazard and pickup past the lead-in as well. Both are
-  // DISTANCE thresholds, and a wormhole entry jumps w.distance to as much as
-  // 30,000 - so the stock 1800/720 were already long behind the pilot and
-  // the corridor started armed.
+  // Push the first hazard and pickup past the lead-in as well.
+  //
+  // THE UNIT HERE IS NODE SPACE, NOT w.distance. Both thresholds are read
+  // back as `node.index * TUNNEL_STEP` - see maybePlaceTunnelHazard and
+  // maybePlaceTunnelPickup - and node indices start at 0 for every fresh
+  // corridor. On a standalone Wormhole Run w.distance also starts at 0, so
+  // the two agreed and the mix-up was invisible.
+  //
+  // On a DETOUR it is anything but: enterWormhole jumps w.distance to as
+  // much as 30,000 to pick the corridor's difficulty, so adding it here
+  // parked both thresholds thousands of pixels past anything a fifteen
+  // second trip could reach. The corridor then spawned NOTHING - no
+  // hazards to dodge, and four acorns across a 3,858px trip. That is the
+  // empty tunnel in the report, and it is why the detour paid nothing:
+  // there was nothing in it to pay with.
   if (leadNodes > 0) {
     const room = leadNodes * TUNNEL_STEP;
-    w.tunnel.nextHazardAt = w.distance + room;
-    w.tunnel.nextPickupAt = w.distance + room * 0.6;
+    w.tunnel.nextHazardAt = room;
+    w.tunnel.nextPickupAt = room * 0.6;
   }
   while (w.tunnel.nodes.length < Math.ceil((w.W + 360) / TUNNEL_STEP) + 2) appendTunnelNode(w);
   w.squirrel.y = w.H * 0.5;
@@ -1676,12 +1749,18 @@ function initTunnel(w: World, forcedSeed?: number, leadNodes = 0) {
 }
 
 function addTunnelFlow(t: TunnelState, amount: number) {
+  // FLOW IS THE STANDALONE MODE'S SCORING, and on a detour it scores
+  // nothing - so it was a meter that filled, glowed, and meant precisely
+  // nothing, sitting where the pilot needed to read the clock and the
+  // acorn take. Reported in one word: "meaningless". It stays off here.
+  if (t.detour) return;
   t.flow = Math.max(0, Math.min(100, t.flow + amount));
   t.flowBest = Math.max(t.flowBest, t.flow);
   t.flowGrace = 2.2;
 }
 
 function refreshTunnelMultiplier(t: TunnelState) {
+  if (t.detour) { t.multiplier = 1; return; }
   const flowTier = t.flow >= 72 ? 3 : t.flow >= 30 ? 2 : 1;
   t.multiplier = Math.max(flowTier, t.multiplierLeft > 0 ? 2 : 1);
   t.bestMultiplier = Math.max(t.bestMultiplier, t.multiplier);
@@ -1741,6 +1820,7 @@ type WormHold = {
   planets: PlanetCol[];
   pickups: Pickup[];
   squirrel: { y: number; vy: number; rot: number };
+  score: number;
   speed: number; distance: number; lastSpawnX: number; lastGapY: number;
   shieldCharges: number; startShieldArmed: boolean;
   warpTilt: number; warpMirror: boolean; prevTilt: number; prevMirror: boolean;
@@ -1755,6 +1835,7 @@ function enterWormhole(w: World, save: SaveData) {
     flight: w.flight,
     planets: w.planets, pickups: w.pickups,
     squirrel: { ...w.squirrel },
+    score: w.score,
     speed: w.speed, distance: w.distance,
     lastSpawnX: w.lastSpawnX, lastGapY: w.lastGapY,
     shieldCharges: w.shieldCharges, startShieldArmed: w.startShieldArmed,
@@ -1764,6 +1845,13 @@ function enterWormhole(w: World, save: SaveData) {
   const carried = w.score;
   const shields = w.shieldCharges;
   w.wormLeft = WORM_TRIP_SECONDS;
+  w.wormExitArmed = false;
+  // THE FIRST MOUTH. Being dropped into a corridor at full pace with no
+  // idea where its walls are is not difficulty, it is a coin flip - and it
+  // is the half of this the report called "instantly teleports you back
+  // full swing, with no time to know the position". Both mouths get the
+  // same two seconds to read the room.
+  w.wormCalm = WORM_CALM_SECONDS;
   w.flight = "tunnel";
   // distance first: initTunnel arms the hazard and pickup thresholds off it,
   // and a wormhole entry jumps it by up to 30,000
@@ -1773,7 +1861,21 @@ function enterWormhole(w: World, save: SaveData) {
   // own has none. This is a DETOUR inside a run, so what the pilot was
   // carrying goes with them.
   w.shieldCharges = shields;
-  w.tunnel!.scoreFloat = carried;
+  // THE GATE COUNTER DOES NOT RUN IN HERE.
+  //
+  // A Wormhole Run scores itself by distance flown - scoreFloat climbs and
+  // becomes w.score - and that is right for the standalone mode, where
+  // w.score IS the mode's score. On a detour w.score is the GATE COUNT of
+  // the run outside, so the corridor was paying gates by the metre:
+  // measured at 43 gates for a single fifteen-second trip on Lost, 49 on
+  // Deep. Reported as "within two runs i was almost at level 200", which
+  // is exactly what two or three trips buy.
+  //
+  // So the corridor keeps its own float at zero and the frozen gate count
+  // is held aside. The trip pays ACORNS. That is the whole benefit, and
+  // it is the one the pilot flies for.
+  w.tunnel!.scoreFloat = 0;
+  w.tunnel!.detour = true;
   w.score = carried;
   // the corridor is flown upright: Lost in Space's lean belongs to the
   // gate run and is waiting for the pilot when they come back
@@ -1803,11 +1905,24 @@ function exitWormhole(w: World) {
   w.warpTilt = hold.warpTilt; w.warpMirror = hold.warpMirror;
   w.prevTilt = hold.prevTilt; w.prevMirror = hold.prevMirror;
   w.particles = [];
-  // a beat of grace on the way out: the pilot has been flying a corridor
-  // and is being handed a gate mouth back
+  w.wormExitArmed = false;
+  // ONE GATE ON, and not one more. The corridor pays acorns; the ladder is
+  // climbed by flying gates. In at twenty, out at twenty-one.
+  w.score = hold.score + 1;
+  // THE SECOND MOUTH, and the same two seconds. The pilot has been flying a
+  // corridor and is being handed back a tilted gate run whose next gate is
+  // already on screen; at full pace that is a coin flip, which is what
+  // "no time to know the position" meant.
+  w.wormCalm = WORM_CALM_SECONDS;
+  // A TRIP HAS TO MOVE YOU. Coming back out into the same sky is what made
+  // the detour read as a light show with a timer - the whole promise of a
+  // wormhole is that the other side is somewhere else. So the zone ladder
+  // steps forward one rung per trip, on top of whatever the gate count has
+  // earned, and the pilot lands looking at a place they have not flown.
+  w.zoneJump += 1;
   w.absorbGrace = Math.max(w.absorbGrace, 1.2);
   w.hitCooldown = 0;
-  w.recoveryMsg = "BACK ON COURSE";
+  w.recoveryMsg = "OUT THE FAR SIDE";
   w.shake = 0.24;
 }
 
@@ -1843,19 +1958,68 @@ function tutClearY(w: World, want: number) {
   return Math.max(60, Math.min(w.H - 60, y));
 }
 
+/** BOTH MOUTHS ARE SLOW.
+ *
+ *  A wormhole should feel like being thrown across space, and the two
+ *  moments that decide whether it feels like that or like a glitch are the
+ *  ones where the pilot has no idea where they are: dropped into a corridor
+ *  whose walls they have not seen, and dropped back into a gate run whose
+ *  next gate is already on top of them.
+ *
+ *  So both ends open at WORM_CALM_SPEED and ease back to pace over
+ *  WORM_CALM_SECONDS. It is a calibration window, not a power-up: it is
+ *  short, it is on both sides, and it costs the pilot nothing.
+ *
+ *  Ticked HERE rather than in the callers because exactly one of the two
+ *  update paths runs on any given frame - the tunnel's, or the gate run's -
+ *  and putting the clock beside the only thing that reads it means it can
+ *  never be double-ticked or forgotten.
+ */
+function wormCalmFactor(w: World, realDt: number) {
+  if (w.wormCalm <= 0) return 1;
+  w.wormCalm = Math.max(0, w.wormCalm - realDt);
+  const eased = 1 - w.wormCalm / WORM_CALM_SECONDS;   // 0 at the mouth, 1 at pace
+  return WORM_CALM_SPEED + (1 - WORM_CALM_SPEED) * eased * eased;
+}
+
+/** The door home, put where it can be flown into: the middle of the
+ *  corridor a screen and a half ahead, which is far enough to be seen
+ *  coming and near enough to be reached. */
+function spawnWormExit(w: World) {
+  const x = w.W + 150;
+  const b = tunnelBoundsAt(w, x);
+  w.pickups.push({
+    x, y: (b.top + b.bottom) * 0.5,
+    got: false, bob: 0, kind: "worm", r: 46, exit: true,
+  });
+}
+
 function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): string | null {
+  const t = w.tunnel!;
   // a wormhole detour is on a clock; a real Wormhole Run is not
   if (w.wormHold) {
     w.wormLeft -= realDt;
-    if (w.wormLeft <= 0) { exitWormhole(w); return "shift"; }
+    // THE TRIP ENDS BY BEING FLOWN OUT OF. The clock used to simply post
+    // the pilot home mid-corridor, which is the "instantly teleports you
+    // back" half of the report - no warning, no aim, no moment. Now the
+    // exit opens a few seconds early, in the middle of the corridor where
+    // it can actually be reached, and catching it is what ends the trip.
+    if (!w.wormExitArmed && w.wormLeft <= WORM_EXIT_LEAD) {
+      w.wormExitArmed = true;
+      spawnWormExit(w);
+    }
+    // and if it was missed, put another one up rather than trapping the
+    // run in a corridor with no door - the same contract the black hole's
+    // exit hole has. The grace is the backstop under that.
+    if (w.wormExitArmed && w.wormLeft <= 0 && !w.pickups.some((a) => a.exit)) spawnWormExit(w);
+    if (w.wormLeft <= -WORM_EXIT_GRACE) { exitWormhole(w); return "shift"; }
   }
-  const t = w.tunnel!;
   const progress = Math.min(1, w.distance / 30000);
   const baseSpeed = WORMHOLE_SPEED_BASE + progress * WORMHOLE_SPEED_RAMP;
   // Surge is a real speed event, not just a louder-looking Ribbon. Its
   // corridor is deliberately wide and it never adds extra debris beyond
   // its one authored obstacle.
-  w.speed = baseSpeed * (t.activePattern === "surge" ? 1.08 : 1);
+  w.speed = baseSpeed * (t.activePattern === "surge" ? 1.08 : 1) * wormCalmFactor(w, realDt);
   // Tunnel flight deliberately reuses the main game's gravity and flap
   // impulse. A tap resets upward velocity; gravity owns the descent.
   const oldSy = w.squirrel.y;
@@ -1877,12 +2041,17 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
   t.visualT += simDt;
   t.time += simDt;
   refreshTunnelMultiplier(t);
-  t.scoreFloat += move / 100 * t.multiplier;
-  w.score = Math.floor(t.scoreFloat);
+  // a detour's corridor scores nothing at all: w.score is the gate count of
+  // the run waiting outside and it is held exactly where it was left
+  if (!t.detour) {
+    t.scoreFloat += move / 100 * t.multiplier;
+    w.score = Math.floor(t.scoreFloat);
+  }
   if (t.multiplierLeft > 0) {
     t.multiplierLeft = Math.max(0, t.multiplierLeft - realDt);
   }
-  if (t.flowGrace > 0) t.flowGrace = Math.max(0, t.flowGrace - realDt);
+  if (t.detour) { t.flow = 0; t.flowGrace = 0; }
+  else if (t.flowGrace > 0) t.flowGrace = Math.max(0, t.flowGrace - realDt);
   else t.flow = Math.max(0, t.flow - realDt * 3.5);
   if (t.bannerLeft > 0) t.bannerLeft = Math.max(0, t.bannerLeft - realDt);
   if (t.regionBlend < 1) t.regionBlend = Math.min(1, t.regionBlend + realDt * 0.8);
@@ -1962,6 +2131,16 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
   for (const a of w.pickups) {
     if (a.got) continue;
     const ay = a.y + Math.sin(a.bob) * 4;
+    // the way home is a DOOR, not an acorn: it is drawn big and it is
+    // caught on its own radius, because a two-second window to find and
+    // hit an 18px target after fifteen seconds of corridor is a trap
+    if (a.exit) {
+      if (!circleHit(sx, sy, PHYS.squirrelR, a.x, ay, a.r ?? 46)) continue;
+      a.got = true;
+      spark(w, a.x, ay, ["#b45cff", "#fff", "#4ad8ff"], 26, "warp");
+      exitWormhole(w);
+      return "shift";
+    }
     if (!circleHit(sx, sy, PHYS.squirrelR, a.x, ay, 18)) continue;
     a.got = true;
     if (a.kind === "multiplier") {
@@ -1984,10 +2163,10 @@ function updateTunnel(w: World, save: SaveData, simDt: number, realDt: number): 
     }
   }
   for (const a of w.pickups) {
-    if (!a.got && !a.missed && a.x < sx - 22 && a.kind === "acorn") {
+    if (!a.got && !a.missed && a.x < sx - 22 && a.kind === "acorn" && !a.exit) {
       a.missed = true;
       t.chain = 0;
-      t.flow = Math.max(0, t.flow - 12);
+      if (!t.detour) t.flow = Math.max(0, t.flow - 12);
     }
   }
   w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got && !a.missed);
@@ -3209,7 +3388,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     w.clockMul += (1 - w.clockMul) * Math.min(1, simDt * 2.2);
     if (Math.abs(w.clockMul - 1) < 0.005) w.clockMul = 1;
   }
-  w.speed = d.speed * w.clockMul;
+  // ...and the far mouth of a wormhole, for the two seconds after one
+  w.speed = d.speed * w.clockMul * wormCalmFactor(w, dt);
   w.squirrel.vy += gravOf(save, w) * simDt;
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));

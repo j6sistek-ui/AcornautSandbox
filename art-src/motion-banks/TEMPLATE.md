@@ -1,4 +1,19 @@
-# Motion bank template — adapting Flight's model to the rest of the roster
+# Motion bank template — for a NEW model, not for the existing roster
+
+> **Owner ruling, 26 Aug 2026 — read this before using this file.**
+>
+> The roster is closed. The five suits with real custom flight animation —
+> `eclipse`, `volt`, `bigbooty`, `robo`, `catsuit` — are good as they are
+> and are **not to be changed**, by re-render or by re-selection. Everything
+> without a real 16-frame animation ships the standard rather than getting
+> bespoke art. The 24-suit render project described below **was not run and
+> is not to be run**.
+>
+> What this file is still for: a **brand new model**, authored to the
+> standard from the start, where the eight attitudes cost nothing extra
+> because none of the art exists yet. Read everything below as the recipe
+> for that one case.
+
 
 Flight flies better than every other suit, and the reason is not that it has
 more art. It has **less**: eight frames against a tap bank's sixteen. What it
@@ -48,7 +63,10 @@ needs an eye, not just a number.
 
 **RENDER (24 suits)** — everything else. Their tap banks span 16–20°: the
 body is rigid and the tail does the work. That is a flap, not a ramp, and no
-amount of re-indexing converts it. These need eight new frames each.
+amount of re-indexing converts it. Converting them would need eight new
+frames each — **which is exactly the project the owner ruled against.** They
+keep what they ship. The split is kept here only because it is the measured
+record of why the roster looks the way it does.
 
 ## What to render
 

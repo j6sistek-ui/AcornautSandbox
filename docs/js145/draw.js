@@ -3,7 +3,8 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=145";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=145";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=145";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt } from "./sim.js?v=145";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=145";
+import { WORM_EXIT_LEAD } from "./control-constants.js?v=145";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=145";
 import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=145";
 function frameOf(list, t, speed = 6) {
@@ -1831,6 +1832,26 @@ function drawTunnelWorld(ctx, w, save, art) {
             ctx.lineWidth = 1.8;
             ctx.beginPath();
             ctx.arc(a.x, y, 21 + Math.sin(w.time * 6) * 2, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        else if (a.exit) {
+            // THE WAY HOME, and it has to read as a door from across the screen.
+            // The corridor's own else-branch drew every unknown kind as an acorn,
+            // which would have made the exit look like one more pickup to graze
+            // past - the opposite of the one thing the pilot must aim at.
+            const spin = frameOf(art.wormAnim, w.time, 9);
+            const r = a.r ?? 46;
+            if (spin) {
+                const sz = r * 4;
+                ctx.drawImage(spin, a.x - sz / 2, y - sz / 2, sz, sz);
+            }
+            else {
+                drawVortex(ctx, a.x, y, true, w.time, r);
+            }
+            ctx.strokeStyle = `rgba(201,140,255,${0.45 + 0.3 * Math.sin(w.time * 5)})`;
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.arc(a.x, y, r + 6 + Math.sin(w.time * 5) * 3, 0, Math.PI * 2);
             ctx.stroke();
         }
         else
@@ -3669,16 +3690,38 @@ export function drawHud(ctx, w, art) {
     }
     if (w.flight === "tunnel" && w.tunnel) {
         const t = w.tunnel;
-        const flowColor = t.multiplier >= 3 ? "#f3b4ff" : t.multiplier === 2 ? "#ffe680" : "#78dfff";
-        ctx.fillStyle = flowColor;
-        ctx.font = "800 10px Figtree, system-ui";
-        ctx.fillText(`FLOW  ×${t.multiplier}`, W / 2, 64);
-        const barW = 80;
-        const barX = W / 2 - barW / 2;
-        ctx.fillStyle = "rgba(255,255,255,.15)";
-        ctx.fillRect(barX, 69, barW, 3);
-        ctx.fillStyle = flowColor;
-        ctx.fillRect(barX, 69, barW * (t.flow / 100), 3);
+        if (t.detour) {
+            // A DETOUR HAS A DIFFERENT JOB TO REPORT. Flow is the standalone
+            // mode's scoring and pays nothing here, so a meter that filled and
+            // glowed while the gate count sat frozen was reporting a number that
+            // did not exist - "meaningless", in one word. What a trip is worth is
+            // acorns, and what the pilot needs is how long is left and where the
+            // door is, so that is what the strip says instead.
+            const left = Math.max(0, w.wormLeft);
+            const closing = left <= WORM_EXIT_LEAD;
+            const tone = closing ? "#c98cff" : "#78dfff";
+            ctx.fillStyle = tone;
+            ctx.font = "800 10px Figtree, system-ui";
+            ctx.fillText(closing ? "FLY INTO THE EXIT" : `WORMHOLE  ${Math.ceil(left)}s`, W / 2, 64);
+            const barW = 80;
+            const barX = W / 2 - barW / 2;
+            ctx.fillStyle = "rgba(255,255,255,.15)";
+            ctx.fillRect(barX, 69, barW, 3);
+            ctx.fillStyle = tone;
+            ctx.fillRect(barX, 69, barW * Math.min(1, left / WORM_TRIP_SECONDS), 3);
+        }
+        else {
+            const flowColor = t.multiplier >= 3 ? "#f3b4ff" : t.multiplier === 2 ? "#ffe680" : "#78dfff";
+            ctx.fillStyle = flowColor;
+            ctx.font = "800 10px Figtree, system-ui";
+            ctx.fillText(`FLOW  ×${t.multiplier}`, W / 2, 64);
+            const barW = 80;
+            const barX = W / 2 - barW / 2;
+            ctx.fillStyle = "rgba(255,255,255,.15)";
+            ctx.fillRect(barX, 69, barW, 3);
+            ctx.fillStyle = flowColor;
+            ctx.fillRect(barX, 69, barW * (t.flow / 100), 3);
+        }
         if (t.bannerLeft > 0) {
             ctx.globalAlpha = Math.min(1, t.bannerLeft);
             ctx.fillStyle = t.bannerKind === "region" || t.bannerKind === "milestone"
