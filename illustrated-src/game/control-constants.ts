@@ -59,3 +59,84 @@ export const WORM_EXIT_LEAD = 2.6;
 /** and if the pilot misses it, this much longer before the corridor gives
  *  up and posts them home anyway. A missed door must never trap a run. */
 export const WORM_EXIT_GRACE = 6;
+
+/** HOW FAR EACH SUIT LEANS.
+ *
+ *  Owner ruling, 26 Aug 2026: *"the custom aren't custom pitch, they're
+ *  custom animations."* A suit having its own painted frames says nothing
+ *  about how far the engine should tip it — those are two separate axes,
+ *  and every suit on the roster gets a dial here, painted bank or not.
+ *
+ *  WHAT THE NUMBER MEANS. It is a MULTIPLIER on the lean the suit already
+ *  gets, split by direction: `up` scales the climb, `down` scales the dive.
+ *  1 is exactly what ships today, so a table of all-1s changes nothing —
+ *  which is how this landed, so the dials could go in without moving the
+ *  game underneath them. 0 pins the suit flat; 0.6 takes off 40%.
+ *
+ *  WHAT IT SCALES. Both sources of body rotation, so one number governs a
+ *  suit however it happens to be drawn:
+ *
+ *    * the velocity bank in drawPilot - `squirrel.rot * 0.8` - which every
+ *      suit gets, custom animation or not. In normal flight `rot` runs
+ *      -0.55..+0.95 rad, so the bank is roughly -25° climbing to +44°
+ *      diving before this multiplier.
+ *    * the heading pitch in paintIllustrated - RIG_PITCH_UP/DOWN, 14° and
+ *      30° - which only rigged suits without a painted bank receive.
+ *
+ *  A rigged suit therefore carries both and feels the dial twice, which is
+ *  the point: the dial answers "how much does THIS suit lean", not "which
+ *  code path drew it".
+ *
+ *  HOW TO TUNE ONE. Change the number, reload, fly it. There is no in-game
+ *  tuning UI on purpose - that was removed 25 Aug and is not coming back.
+ *  `verify_suit_lean` fails the build if a shipping suit is missing from
+ *  this table, so a new suit cannot quietly inherit someone else's feel.
+ */
+export type SuitLean = { up: number; down: number };
+export const SUIT_LEAN_DEFAULT: SuitLean = { up: 1, down: 1 };
+export const SUIT_LEAN: Record<string, SuitLean> = {
+  // the standard, and the reference every other suit is read against
+  flight:      { up: 1, down: 1 },
+
+  // --- rigged suits: these carry the velocity bank AND the heading pitch,
+  //     so they are the ones most likely to read as over-tipped
+  iontrim:     { up: 1, down: 1 },
+  copper:      { up: 1, down: 1 },
+  frost:       { up: 1, down: 1 },
+  voidsuit:    { up: 1, down: 1 },
+  aurorasuit:  { up: 1, down: 1 },
+  ember:       { up: 1, down: 1 },
+  stardust:    { up: 1, down: 1 },
+  ghost:       { up: 1, down: 1 },
+  gemmie:      { up: 1, down: 1 },
+  sammie:      { up: 1, down: 1 },
+  seraph:      { up: 1, down: 1 },
+  leviathan:   { up: 1, down: 1 },
+  verdant:     { up: 1, down: 1 },
+  cryostar:    { up: 1, down: 1 },
+  cinderforge: { up: 1, down: 1 },
+  groveguard:  { up: 1, down: 1 },
+  cosmic:      { up: 1, down: 1 },
+  sunforged:   { up: 1, down: 1 },
+  abyssal:     { up: 1, down: 1 },
+  amethyst:    { up: 1, down: 1 },
+  ivoryguard:  { up: 1, down: 1 },
+  reactor:     { up: 1, down: 1 },
+
+  // --- custom ANIMATION suits. Their frames are the owner's and are not to
+  //     be touched; their LEAN is a dial like everyone else's.
+  eclipse:     { up: 1, down: 1 },
+  volt:        { up: 1, down: 1 },
+  bigbooty:    { up: 1, down: 1 },
+  robo:        { up: 1, down: 1 },
+  catsuit:     { up: 1, down: 1 },
+
+  // --- declared shape exceptions
+  cyber:       { up: 1, down: 1 },
+  alien:       { up: 1, down: 1 },
+};
+
+/** The dial for a suit, or the default for one that has none yet. */
+export function suitLean(id: string): SuitLean {
+  return SUIT_LEAN[id] ?? SUIT_LEAN_DEFAULT;
+}
