@@ -192,24 +192,10 @@ for (const [W, H] of [[430, 932], [390, 690]]) {
     const dys = trace.slice(1).map((t, i) => t.y - trace[i].y);
     const accel = dys.slice(1).map((d, i) => (d - dys[i]) * 3600);
     const mean = accel.reduce((a, b) => a + b, 0) / accel.length;
-    // MEASURED IN WALL FRAMES, SO THE TARGET IS SCALED THE SAME WAY.
-    //
-    // The tutorial runs at TUT_SLOW of real time, and acceleration goes as
-    // dt SQUARED - so a launch that is perfectly ballistic in the world
-    // reads as gravity * TUT_SLOW^2 when sampled once per wall frame. At a
-    // tenth that is 13 px/s^2 against 1300, which is what this assertion
-    // reported the first time the lesson was slowed. The flight was right;
-    // the yardstick was in the wrong frame.
-    //
-    // Deriving the target from the constant rather than hard-coding 13
-    // keeps this honest if the speed is ever retuned - and it still fails
-    // for the reason it was written, because a SCRIPTED carry pins the
-    // acceleration near zero at any speed.
-    const wantAccel = cat.PHYS.gravity * cat.TUT_SLOW * cat.TUT_SLOW;
+    const wantAccel = cat.PHYS.gravity;
     ok(Math.abs(mean - wantAccel) / wantAccel < 0.15,
       `the launch accelerates at ${mean.toFixed(0)} px/s^2 against an expected `
-      + `${wantAccel.toFixed(0)} (gravity ${cat.PHYS.gravity} at ${cat.TUT_SLOW}x) `
-      + `- it is being moved at a scripted rate, not flown`);
+      + `${wantAccel.toFixed(0)} - it is being moved at a scripted rate, not flown`);
   }
 }
 

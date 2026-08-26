@@ -5,7 +5,7 @@ import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, M
 import { drawHud, drawWorld } from "./draw.js?v=145";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=145";
 import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=145";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, flightRecording, flightMarkCount, resumePlay, setRaceInput, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=145";
+import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, setRaceInput, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=145";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=145";
 import { raceViewport } from "./race-viewport.js?v=145";
 export async function createEngine(canvas) {
@@ -207,12 +207,6 @@ export async function createEngine(canvas) {
          *  play, or who hits a lesson that is not landing - and it hands the
          *  pilot straight to the Loadout, which is where the tutorial was
          *  walking them anyway. */
-        flightRecording() {
-            return flightRecording(world);
-        },
-        flightMarks() {
-            return flightMarkCount();
-        },
         skipTutorial() {
             save.tutorialDone = true;
             grantTutorialKit(save);

@@ -196,40 +196,6 @@ export async function bootStandalone(root) {
                 });
                 sheet.append(row);
             }
-            // THE FLIGHT RECORDER, reachable from any run.
-            //
-            // It used to live only on the tutorial's own button bar, which made it
-            // useless for the job it exists to do: "you can't copy my taps because
-            // i am forced through the prompts that don't work". A recorder you can
-            // only reach by completing the broken thing records nothing. Pause any
-            // flight - tutorial or not - and the taps are here, refused ones
-            // included, with the mode and score they happened in.
-            const rec = el("button", "ac-ghost", "COPY FLIGHT");
-            rec.setAttribute("aria-label", "Copy this flight's tap recording");
-            rec.onclick = () => {
-                const text = engine.flightRecording();
-                const done = () => {
-                    rec.textContent = `COPIED ${engine.flightMarks()} TAPS`;
-                    window.setTimeout(() => { rec.textContent = "COPY FLIGHT"; }, 2400);
-                };
-                if (navigator.clipboard?.writeText) {
-                    navigator.clipboard.writeText(text).then(done, () => { rec.textContent = "TAP AGAIN"; });
-                }
-                else {
-                    const ta = document.createElement("textarea");
-                    ta.value = text;
-                    ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
-                    document.body.append(ta);
-                    ta.select();
-                    try {
-                        document.execCommand("copy");
-                        done();
-                    }
-                    catch { /* leave it to copy by hand */ }
-                    window.setTimeout(() => ta.remove(), 8000);
-                }
-            };
-            sheet.append(rec);
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
             // - so it spilled off BOTH ends and took RESUME with it. You could read

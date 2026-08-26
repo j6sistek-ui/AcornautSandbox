@@ -1,4 +1,4 @@
-import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_SLOW, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
@@ -1351,7 +1351,6 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     : null;
   if (w.tut) buildTutorialCourse(w, save);
   // the recorder arms for EVERY run - see mark()
-  flightRecorderReset(w);
 }
 
 export type RaceSemanticInput = {
@@ -2472,87 +2471,6 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   }
 }
 
-/** THE FLIGHT RECORDER.
- *
- *  The owner's idea, and a much better instrument than my guessing: fly the
- *  first flight on a real phone, and have the game write down exactly what
- *  happened - every input, when it landed, and what the pilot was doing at
- *  that moment - so the choreography can be rebuilt against a real run
- *  instead of against a simulation of what a beginner might do.
- *
- *  It records the TUTORIAL only, it costs one array, and it is exported by
- *  a button rather than sent anywhere. Nothing leaves the phone unless the
- *  pilot presses it.
- */
-export type FlightMark = {
-  /** seconds since the first flight began */
-  t: number;
-  kind: "tap" | "dive" | "stage" | "rescue" | "start" | "end";
-  /** the lesson on screen when it happened */
-  stage: string;
-  /** pilot state at that instant */
-  y: number;
-  vy: number;
-  /** how far down the screen, so a recording means the same on any phone */
-  pct: number;
-  /** true if the input was REFUSED - armed too early, wrong lesson */
-  ignored?: boolean;
-  note?: string;
-};
-
-let flightLog: FlightMark[] = [];
-let lastTutStage = "";
-let flightT = 0;
-
-export function flightRecorderReset(w: World) {
-  flightLog = [];
-  flightT = 0;
-  lastTutStage = "";
-  mark(w, "start", "");
-}
-
-export function flightRecorderTick(dt: number) {
-  flightT += dt;
-}
-
-export function mark(w: World, kind: FlightMark["kind"], note = "", ignored = false) {
-  // ANY RUN, NOT JUST THE TUTORIAL.
-  //
-  // This used to bail unless w.tut, which made the recorder useless for the
-  // one job it was built for: "you can't copy my taps because i am forced
-  // through the prompts that don't work". If the only flight it records is
-  // the flight that is broken, there is no way to hand over a recording of
-  // anything. Now every run records, and COPY FLIGHT sits in the pause menu
-  // where it can always be reached.
-  if (flightLog.length > 4000) return;
-  flightLog.push({
-    t: +flightT.toFixed(3),
-    kind,
-    stage: w.tut?.stage ?? "-",
-    y: Math.round(w.squirrel.y),
-    vy: Math.round(w.squirrel.vy),
-    pct: +((w.squirrel.y / Math.max(1, w.H)) * 100).toFixed(1),
-    ...(ignored ? { ignored: true } : {}),
-    ...(note ? { note } : {}),
-  });
-}
-
-/** The recording, as something that can be pasted into a message. */
-export function flightRecording(w: World) {
-  return JSON.stringify({
-    screen: { w: w.W, h: w.H },
-    mode: w.flight,
-    tutorial: !!w.tut,
-    score: w.score,
-    gravity: PHYS.gravity,
-    flap: PHYS.flap,
-    marks: flightLog,
-  });
-}
-
-export function flightMarkCount() {
-  return flightLog.length;
-}
 
 export function flap(w: World, save: SaveData) {
   if (w.screen === "pause") return "none";
@@ -2562,8 +2480,7 @@ export function flap(w: World, save: SaveData) {
   // first note, that fast tapping before "tap to fly" may be moving the
   // start. Those taps are recorded as ignored rather than dropped, so a
   // recording shows them.
-  if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM)) {
-    mark(w, "tap", `too early by ${((tutDwell(TUT_ARM) - w.tut.t) / TUT_SLOW).toFixed(2)}s`, true);
+  if (w.tut?.hold && w.tut.t < TUT_ARM) {
     return "none";
   }
   if (w.tut?.hold && w.tut.stage === "swipe") {
@@ -2588,7 +2505,6 @@ export function flap(w: World, save: SaveData) {
     w.tut.gates = 0;
   }
   if (w.ready) w.ready = false;
-  mark(w, "tap");
   if (!tapAccepted && w.tut && (w.tut.stage === "glide" || w.tut.stage === "bounce")) return "none";
   w.run.taps += 1;
   if (w.lvl) {
@@ -2625,9 +2541,8 @@ export function dive(w: World) {
   // a dive throws the tail the other way, harder — it over-rotates past
   // home on the way back and rings down, which reads as weight falling
   w.tailV -= TAIL.dive;
-  if (w.tut?.hold && w.tut.t < tutDwell(TUT_ARM)) return "none";
+  if (w.tut?.hold && w.tut.t < TUT_ARM) return "none";
   if (w.tut?.hold && w.tut.stage === "swipe") {
-    mark(w, "dive");
     w.tut.hold = false;
     w.tut.stage = "dive";
     w.tut.t = 0;
@@ -3031,7 +2946,6 @@ function die(w: World, save: SaveData) {
   // belong to the flight the pilot actually chose.
   if (w.wormHold) exitWormhole(w);
   if (w.tut && w.tut.stage !== "free") {
-    mark(w, "rescue");
     absorb(w);
     w.shieldCharges = Math.max(w.shieldCharges, 1);
     return "shield";
@@ -3115,28 +3029,6 @@ export function resumePlay(w: World) {
   w.pausedFrom = null;
 }
 
-/** A DWELL, in real seconds, on the tutorial's slowed clock.
- *
- *  Two different kinds of timeout share `tut.t`, and slowing the frame
- *  separates them for the first time:
- *
- *    * WORLD timeouts wait on the physics - the pilot falling, the teaching
- *      arc completing, the next gate arriving. Those are authored against
- *      the world and must stretch with it, so they use their value as-is.
- *    * DWELLS are pure pacing - how long a message sits, how long before a
- *      tap counts. Those are about the person, not the world, and must NOT
- *      stretch: at a tenth speed the 1.25s arming delay became a TWELVE AND
- *      A HALF SECOND dead wait staring at "tap to fly" while taps were
- *      silently refused, which is a worse tutorial than the one being fixed.
- *
- *  Scaling the threshold rather than adding a second clock keeps one source
- *  of truth: there are a dozen `tut.t = 0` resets and a second field would
- *  have to be reset at every one of them or drift out of step.
- */
-function tutDwell(seconds: number) {
-  return seconds * TUT_SLOW;
-}
-
 export function updateWorld(w: World, save: SaveData, dt: number): string | null {
   // THE FIRST FLIGHT RUNS IN SLOW MOTION.
   //
@@ -3156,7 +3048,6 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   //
   // The freeze acorn's own factor stays what it is; this multiplies with it
   // like any other, so a slow acorn in the tutorial is simply slower still.
-  if (w.tut) dt *= TUT_SLOW;
   // A fixed-step cue is edge-triggered. The engine drains it immediately;
   // clearing here also prevents a paused or READY update from replaying a
   // prior step if a non-engine caller chose not to drain it.
@@ -3212,18 +3103,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     return result.sound;
   }
 
-  flightRecorderTick(dt);
   if (w.tut) {
     w.tut.t += dt;
-    // one line rather than a mark at every transition - the stage machine has
-    // a dozen of them and any one added later would be missed
-    if (w.tut.stage !== lastTutStage) { lastTutStage = w.tut.stage; mark(w, "stage"); }
-    if (w.tut.stage === "intro" && w.tut.t > tutDwell(0.55)) {
+    if (w.tut.stage === "intro" && w.tut.t > 0.55) {
       w.tut.stage = "tap";
       w.tut.hold = true;
       w.tut.t = 0;
     }
-    if (w.tut.stage === "tapdone" && w.tut.t > tutDwell(0.55)) {
+    if (w.tut.stage === "tapdone" && w.tut.t > 0.55) {
       w.tut.stage = "tap2";
       w.tut.hold = true;
       w.tut.t = 0;
@@ -3303,11 +3190,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       w.tut.hold = true;
       w.tut.t = 0;
     }
-    if (w.tut.stage === "pal" && !w.tut.hold && w.tut.t > tutDwell(0.2)) {
+    if (w.tut.stage === "pal" && !w.tut.hold && w.tut.t > 0.2) {
       w.tut.stage = "palDemo";
       w.tut.t = 0;
     }
-    if (w.tut.stage === "palDemo" && w.tut.t > tutDwell(4.2)) {
+    if (w.tut.stage === "palDemo" && w.tut.t > 4.2) {
       w.tut.stage = "ready";
       w.tut.t = 0;
     }

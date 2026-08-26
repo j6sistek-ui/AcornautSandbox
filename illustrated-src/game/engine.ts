@@ -33,8 +33,6 @@ import {
   planRaceCueEffects,
   resizeWorld,
   resetRun,
-  flightRecording,
-  flightMarkCount,
   resumePlay,
   setRaceInput,
   snapshot,
@@ -93,10 +91,6 @@ export type Engine = {
    *  on the next flight - which is the entire point of a pause-menu dial. */
   /** leave the first flight early, keeping the suit and helmet it grants */
   skipTutorial: () => void;
-  /** the first flight, written down: every input, when it landed, and what
-   *  the pilot was doing. Exported by the pilot, sent nowhere on its own. */
-  flightRecording: () => string;
-  flightMarks: () => number;
   /** lay the grouped shelves out as a wrapping grid instead of scrolling rows */
   setShelfGrid: (on: boolean) => void;
   /** THE LEAN EDITOR. Working values live in the save so they survive the
@@ -332,12 +326,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
      *  play, or who hits a lesson that is not landing - and it hands the
      *  pilot straight to the Loadout, which is where the tutorial was
      *  walking them anyway. */
-    flightRecording() {
-      return flightRecording(world);
-    },
-    flightMarks() {
-      return flightMarkCount();
-    },
     skipTutorial() {
       save.tutorialDone = true;
       grantTutorialKit(save);

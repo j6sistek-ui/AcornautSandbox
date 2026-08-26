@@ -638,21 +638,6 @@ export const TUNNEL_LEAD_BLEND = 6;
  *  screen below, which survives a browser chrome bar and a short phone.
  *  The lift is a scripted rate rather than an impulse because an impulse is
  *  cancelled by a planet contact - see the note in updateWorld. */
-/** THE FIRST FLIGHT'S CLOCK, as a fraction of real time.
- *
- *  A tenth. The tutorial's problem was never comprehension, it was TIMING:
- *  the prompt arms, the pilot taps a beat early or late, nothing happens,
- *  and the lesson reads as broken rather than as missed. Slowing the whole
- *  frame makes every window ten times wider in real seconds without moving
- *  a single one of the choreography's numbers - the arc, the arming delay
- *  and the stage timeouts all keep their values and simply take longer.
- *
- *  It is applied to dt at the very top of updateWorld, so it governs the
- *  world, the stage clock and the recorder alike. Raise it toward 1 to
- *  speed the lesson back up.
- */
-export const TUT_SLOW = 0.1;
-
 export const TUT_SWIPE_TOP = 0.34;
 export const TUT_SWIPE_LIFT = 620;      // px per second
 /** how close to the authored height counts as arrived */
