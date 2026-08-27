@@ -45,12 +45,17 @@ function flyLesson(W, H, opts = {}) {
   let lockOffAt = -1;
   let frames = 0;
   const trace = [];
+  let diveTargets = -1;
   for (let i = 0; i < 60 * 200; i++) {
     const t = w.tut;
     if (!t) break;
     if (t.stage !== last) { last = t.stage; order.push(t.stage); }
     if (!t.locked && lockOffAt < 0) lockOffAt = order.length - 1;
     if (t.stage === "bouncing") trace.push({ y: w.squirrel.y, vy: w.squirrel.vy });
+    // what is on screen the moment the pilot is ASKED to dive
+    if (t.stage === "doDive" && diveTargets < 0) {
+      diveTargets = w.planets.filter((q) => q.x + q.r > 0 && q.x - q.r < w.W).length;
+    }
     // answer the beat
     if (t.want === "tap" || t.want === "continue") sim.flap(w, s);
     else if (t.want === "swipe") sim.dive(w, s);
@@ -75,7 +80,7 @@ function flyLesson(W, H, opts = {}) {
     if (w.tut && !w.tut.locked && lockOffAt < 0) lockOffAt = order.length - 1;
     if (opts.stopAt && w.tut?.stage === opts.stopAt) break;
   }
-  return { w, s, order, lockOffAt, frames, trace };
+  return { w, s, order, lockOffAt, frames, trace, diveTargets };
 }
 
 // ---- the beats run in order, on every screen ---------------------------
@@ -86,6 +91,14 @@ for (const [W, H] of SCREENS) {
   const got = r.order.slice(0, WANT.length);
   ok(JSON.stringify(got) === JSON.stringify(WANT),
     `@${W}x${H}: the beats ran ${got.join(" -> ")}, wanted ${WANT.join(" -> ")}`);
+  // THE DIVE NEEDS SOMETHING TO DIVE AT. The planet used to be laid when
+  // the swipe was ANSWERED, so the pilot was asked to dive at an empty sky
+  // and only found out what for afterwards - reported as "the swipe down
+  // was a big miss - if there was a planet or gap there it would probably
+  // be fixed", with a second and a half of SWIPE DOWN over nothing.
+  ok(r.diveTargets > 0,
+    `@${W}x${H}: the swipe lesson asks for a dive with ${r.diveTargets} planets on ` +
+    `screen - there is nothing to aim at`);
   ok(r.lockOffAt === WANT.indexOf("gates3"),
     `@${W}x${H}: control unlocked at beat ${r.lockOffAt}, it must unlock at the handover ` +
     `(beat ${WANT.indexOf("gates3")}) and nowhere else`);

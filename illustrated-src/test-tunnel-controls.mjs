@@ -79,7 +79,8 @@ function wormholeEntry(gate) {
       const d = p.x - w.W * 0.28;
       if (d > -60 && d < best) { best = d; tgt = sim.liveGapY(p, w); }
     }
-    w.squirrel.y = tgt; w.squirrel.vy = 0; w.shields = 9; w.hitCooldown = 1;
+    w.squirrel.y = tgt; w.squirrel.vy = 0; w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     if (i === 30) {
       w.pickups.push({ x: w.W * 0.28, y: w.squirrel.y, got: false, bob: 0,

@@ -1518,88 +1518,7 @@ export async function bootStandalone(root: HTMLElement) {
         requestAnimationFrame(tick);
       }
 
-      // ---- THE LEAN EDITOR -------------------------------------------
-      //
-      // How far this suit tips climbing and diving, changed here and seen
-      // in the case above at the attitudes that matter: opening it puts the
-      // preview into a slow sweep between FULL CLIMB and FULL DIVE, which
-      // are the two ends the ordinary tap arc never reaches.
-      //
-      // It lives in the LOADOUT, beside the suit it belongs to, and not in
-      // the pause menu - a dial you meet mid-flight and cannot leave is the
-      // exact thing that was removed on 25 Aug and is not coming back. This
-      // one is somewhere you go on purpose and can walk away from.
-      //
-      // The numbers are working values in the save so they survive the
-      // reload it takes to fly a change. COPY LEAN hands back the whole
-      // table to paste into SUIT_LEAN once one is settled.
-      const leanBox = el("div", "ac-leanbox");
-      const cur = engine.suitLeanOf(wornSuit.id);
-      const deg = (mult: number, rot: number) => (rot * 0.8 * mult * 180 / Math.PI).toFixed(0);
-      const head = el("button", "ac-leanhead");
-      head.append(
-        el("b", "", "LEAN"),
-        el("span", "ac-leanread",
-          `climb ${deg(cur.up, -0.55)}\u00b0 \u00b7 dive ${deg(cur.down, 0.95)}\u00b0`),
-        el("span", "ac-leancaret", leanEdit ? "\u2715" : "EDIT"),
-      );
-      head.onclick = () => { leanEdit = !leanEdit; render(); };
-      leanBox.append(head);
-
-      if (leanEdit) {
-        const row = (label: string, key: "up" | "down", rot: number) => {
-          const r = el("div", "ac-leanrow");
-          const val = el("span", "ac-leanval", "");
-          const paint = () => {
-            const l = engine.suitLeanOf(wornSuit.id);
-            val.textContent = `${l[key].toFixed(2)}  (${deg(l[key], rot)}\u00b0)`;
-          };
-          const step = (d: number) => {
-            const l = engine.suitLeanOf(wornSuit.id);
-            engine.setSuitLean(wornSuit.id, key === "up" ? l.up + d : l.up,
-              key === "down" ? l.down + d : l.down);
-            paint();
-          };
-          const minus = el("button", "ac-leanstep", "\u2212");
-          minus.setAttribute("aria-label", `less ${label}`);
-          minus.onclick = () => step(-0.05);
-          const plus = el("button", "ac-leanstep", "+");
-          plus.setAttribute("aria-label", `more ${label}`);
-          plus.onclick = () => step(0.05);
-          paint();
-          r.append(el("span", "ac-leanlabel", label), minus, val, plus);
-          return r;
-        };
-        leanBox.append(row("CLIMB", "up", -0.55), row("DIVE", "down", 0.95));
-
-        const acts = el("div", "ac-leanacts");
-        const reset = el("button", "ac-ghost", "RESET");
-        reset.onclick = () => { engine.resetSuitLean(wornSuit.id); render(); };
-        const copy = el("button", "ac-ghost", "COPY LEAN");
-        copy.onclick = () => {
-          const text = engine.leanExport();
-          const done = () => {
-            copy.textContent = "COPIED";
-            window.setTimeout(() => { copy.textContent = "COPY LEAN"; }, 2000);
-          };
-          if (navigator.clipboard?.writeText) {
-            navigator.clipboard.writeText(text).then(done, () => { copy.textContent = "TAP AGAIN"; });
-          } else {
-            const ta = document.createElement("textarea");
-            ta.value = text;
-            ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
-            document.body.append(ta);
-            ta.select();
-            try { document.execCommand("copy"); done(); } catch { /* leave it to copy by hand */ }
-            window.setTimeout(() => ta.remove(), 8000);
-          }
-        };
-        acts.append(reset, copy);
-        leanBox.append(acts);
-        leanBox.append(el("p", "ac-leannote",
-          "The case sweeps full climb to full dive. 1.00 is what ships."));
-      }
-      box.append(leanBox);
+      if (IS_BETA) box.append(leanTuner(wornSuit, render));
     }
 
     const tabs = el("div", "ac-cats");
@@ -1913,6 +1832,102 @@ export async function bootStandalone(root: HTMLElement) {
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("hangar"));
     return box;
+  }
+
+  /** THE LEAN TUNER — beta only.
+   *
+   *  An instrument for FINDING a number, not a setting for players to keep.
+   *  The roster is calibrated in SUIT_LEAN now (0.80 climb, 0.30 dive, found
+   *  right here), and a live pilot has no reason to meet a panel of
+   *  multipliers under their suit - it reads as something they broke.
+   *
+   *  Built as a named function called from ONE gated line, so
+   *  verify_dev_instruments can hold it to the beta page the same way it
+   *  holds every other instrument. An inline `if (IS_BETA)` block would have
+   *  been invisible to that table and free to drift onto live.
+   */
+  function leanTuner(wornSuit: (typeof SUITS)[number], render: () => void) {
+  //
+  // How far this suit tips climbing and diving, changed here and seen
+  // in the case above at the attitudes that matter: opening it puts the
+  // preview into a slow sweep between FULL CLIMB and FULL DIVE, which
+  // are the two ends the ordinary tap arc never reaches.
+  //
+  // It lives in the LOADOUT, beside the suit it belongs to, and not in
+  // the pause menu - a dial you meet mid-flight and cannot leave is the
+  // exact thing that was removed on 25 Aug and is not coming back. This
+  // one is somewhere you go on purpose and can walk away from.
+  //
+  // The numbers are working values in the save so they survive the
+  // reload it takes to fly a change. COPY LEAN hands back the whole
+  // table to paste into SUIT_LEAN once one is settled.
+  const leanBox = el("div", "ac-leanbox");
+  const cur = engine.suitLeanOf(wornSuit.id);
+  const deg = (mult: number, rot: number) => (rot * 0.8 * mult * 180 / Math.PI).toFixed(0);
+  const head = el("button", "ac-leanhead");
+  head.append(
+    el("b", "", "LEAN"),
+    el("span", "ac-leanread",
+      `climb ${deg(cur.up, -0.55)}\u00b0 \u00b7 dive ${deg(cur.down, 0.95)}\u00b0`),
+    el("span", "ac-leancaret", leanEdit ? "\u2715" : "EDIT"),
+  );
+  head.onclick = () => { leanEdit = !leanEdit; render(); };
+  leanBox.append(head);
+
+  if (leanEdit) {
+    const row = (label: string, key: "up" | "down", rot: number) => {
+      const r = el("div", "ac-leanrow");
+      const val = el("span", "ac-leanval", "");
+      const paint = () => {
+        const l = engine.suitLeanOf(wornSuit.id);
+        val.textContent = `${l[key].toFixed(2)}  (${deg(l[key], rot)}\u00b0)`;
+      };
+      const step = (d: number) => {
+        const l = engine.suitLeanOf(wornSuit.id);
+        engine.setSuitLean(wornSuit.id, key === "up" ? l.up + d : l.up,
+          key === "down" ? l.down + d : l.down);
+        paint();
+      };
+      const minus = el("button", "ac-leanstep", "\u2212");
+      minus.setAttribute("aria-label", `less ${label}`);
+      minus.onclick = () => step(-0.05);
+      const plus = el("button", "ac-leanstep", "+");
+      plus.setAttribute("aria-label", `more ${label}`);
+      plus.onclick = () => step(0.05);
+      paint();
+      r.append(el("span", "ac-leanlabel", label), minus, val, plus);
+      return r;
+    };
+    leanBox.append(row("CLIMB", "up", -0.55), row("DIVE", "down", 0.95));
+
+    const acts = el("div", "ac-leanacts");
+    const reset = el("button", "ac-ghost", "RESET");
+    reset.onclick = () => { engine.resetSuitLean(wornSuit.id); render(); };
+    const copy = el("button", "ac-ghost", "COPY LEAN");
+    copy.onclick = () => {
+      const text = engine.leanExport();
+      const done = () => {
+        copy.textContent = "COPIED";
+        window.setTimeout(() => { copy.textContent = "COPY LEAN"; }, 2000);
+      };
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(done, () => { copy.textContent = "TAP AGAIN"; });
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
+        document.body.append(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch { /* leave it to copy by hand */ }
+        window.setTimeout(() => ta.remove(), 8000);
+      }
+    };
+    acts.append(reset, copy);
+    leanBox.append(acts);
+    leanBox.append(el("p", "ac-leannote",
+      "The case sweeps full climb to full dive. 1.00 is what ships."));
+  }
+    return leanBox;
   }
 
   // Every rank earns its OWN emblem — a cadet chevron through the

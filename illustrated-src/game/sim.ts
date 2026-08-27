@@ -2674,9 +2674,6 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.bounceUp = false;
       w.squirrel.vy = PHYS.dive;
       w.squirrel.rot = 0.5;
-      // the planet goes where THIS dive lands, worked out from the pilot's
-      // real position and the dive they were just given
-      placeBouncePlanet(w, save);
       break;
     case "learnTap":
     case "learnTap2":
@@ -3405,7 +3402,23 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
 
       // the second tap is climbing; teach the dive at the top of it
       case "learnDive":
-        if (w.squirrel.vy >= -30 || t.t > 3) freeze("doDive", "swipe");
+        if (w.squirrel.vy >= -30 || t.t > 3) {
+          // THE DIVE NEEDS SOMETHING TO DIVE AT.
+          //
+          // The planet used to be laid when the swipe was ANSWERED, so the
+          // pilot was asked to dive at an empty sky and only found out what
+          // for afterwards. Reported as "the swipe down was a big miss - if
+          // there was a planet or gap there it would probably be fixed",
+          // and the clip shows a second and a half of SWIPE DOWN over
+          // nothing at all.
+          //
+          // It goes down as the lesson OPENS. The world is held for the
+          // whole ask, so the pilot cannot drift away from the arithmetic
+          // that placed it - what they are looking at when they swipe is
+          // exactly where they are going.
+          placeBouncePlanet(w, save);
+          freeze("doDive", "swipe");
+        }
         break;
 
       // the dive is flying toward the staged planet. bounceUp is set by

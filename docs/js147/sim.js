@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=146";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=146";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=146";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=146";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=146";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=146";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=146";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=147";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=147";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=147";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=147";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=147";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=147";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=147";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2225,9 +2225,6 @@ function tutGesture(w, save, kind) {
             w.bounceUp = false;
             w.squirrel.vy = PHYS.dive;
             w.squirrel.rot = 0.5;
-            // the planet goes where THIS dive lands, worked out from the pilot's
-            // real position and the dive they were just given
-            placeBouncePlanet(w, save);
             break;
         case "learnTap":
         case "learnTap2":
@@ -2969,8 +2966,23 @@ export function updateWorld(w, save, dt) {
                 break;
             // the second tap is climbing; teach the dive at the top of it
             case "learnDive":
-                if (w.squirrel.vy >= -30 || t.t > 3)
+                if (w.squirrel.vy >= -30 || t.t > 3) {
+                    // THE DIVE NEEDS SOMETHING TO DIVE AT.
+                    //
+                    // The planet used to be laid when the swipe was ANSWERED, so the
+                    // pilot was asked to dive at an empty sky and only found out what
+                    // for afterwards. Reported as "the swipe down was a big miss - if
+                    // there was a planet or gap there it would probably be fixed",
+                    // and the clip shows a second and a half of SWIPE DOWN over
+                    // nothing at all.
+                    //
+                    // It goes down as the lesson OPENS. The world is held for the
+                    // whole ask, so the pilot cannot drift away from the arithmetic
+                    // that placed it - what they are looking at when they swipe is
+                    // exactly where they are going.
+                    placeBouncePlanet(w, save);
                     freeze("doDive", "swipe");
+                }
                 break;
             // the dive is flying toward the staged planet. bounceUp is set by
             // bounceOff the instant it lands.
