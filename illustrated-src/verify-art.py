@@ -1439,6 +1439,71 @@ def verify_guide_arrow(qa: QA) -> None:
         qa.ok("the guided step's coach sits in the shelf and measures its own fold")
 
 
+def verify_baked_domes(qa: QA) -> None:
+    """Only the original squirrel frames carry a painted helmet.
+
+    The Clear helmet is the one cosmetic that draws NOTHING when the art it
+    sits on already has a dome painted in - stacking two would be worse than
+    none. `bakedDome` decides that, and its rule used to be "any key that is
+    not `suit:<id>` is baked", written when the eight original squirrel
+    frames were the only frame keys there were.
+
+    Seventy-two more arrived since: the per-suit tap, ascent and descent
+    banks. Every one of them is bare-headed art that inherited "baked" by
+    accident, so Clear drew nothing the moment a bank played and the pilot
+    lost their helmet - in flight AND standing in the Loadout, whose preview
+    flies the ascent bank. Reported as "flight+clear helmet = no helmet
+    equipped". No other helmet reads this flag, which is why it survived.
+
+    The classification is checkable against the files, so it is checked:
+    every baked key must be a frame under art/squirrel (the paintings that
+    really do wear a dome), and every other frame key must be a per-suit bank
+    frame under art/suits. The blanket rule is named and rejected outright -
+    it is the shape of the bug, not just its effect.
+    """
+    source = DRAW_SOURCE.read_text(encoding="utf8")
+    fn = re.search(r"function bakedDome\(key: string\) \{(.*?)\n\}", source, re.DOTALL)
+    if not fn:
+        qa.fail("baked domes: bakedDome is gone from draw.ts")
+        return
+    problems: list[str] = []
+    if re.search(r'if \(!key\.startsWith\("suit:"\)\)\s*return true', fn.group(1)):
+        problems.append(
+            "bakedDome treats every non-`suit:` key as baked - that is the "
+            "per-suit bank frames too, and Clear draws nothing on them")
+    baked = re.search(r"const BAKED_FRAMES = new Set\(\[(.*?)\]\)", source, re.DOTALL)
+    if not baked:
+        problems.append("BAKED_FRAMES is gone - nothing names the domed art")
+        keys: list[str] = []
+    else:
+        keys = re.findall(r'"([^"]+)"', baked.group(1))
+        if "BAKED_FRAMES" not in fn.group(1):
+            problems.append("bakedDome does not consult BAKED_FRAMES")
+    for k in keys:
+        if k == "__mix":          # the crossfade between two of those frames
+            continue
+        if not (ROOT / f"docs/art/squirrel/{k}.png").exists():
+            problems.append(
+                f"{k} is listed as carrying a painted dome but there is no "
+                f"art/squirrel/{k}.png - only the original frames do")
+    table = re.search(r"\bconst\s+DOME(?:\s*:[^=]+)?\s*=\s*\{(.*?)\}\s*;",
+                      source, re.DOTALL)
+    if table:
+        for k in re.findall(r'^\s*"([^"]+)"\s*:', table.group(1), re.M):
+            if k.startswith("suit:") or k in keys:
+                continue
+            if not (ROOT / f"docs/art/suits/{k}.png").exists():
+                problems.append(
+                    f"the dome anchor {k} names neither a baked squirrel frame "
+                    f"nor a bank frame at art/suits/{k}.png - it cannot be "
+                    f"classified, so Clear's behaviour on it is a guess")
+    if problems:
+        qa.fail("baked domes: " + "; ".join(problems))
+    else:
+        qa.ok(f"{len([k for k in keys if k != '__mix'])} frames carry a painted "
+              f"dome; every other anchor is bare-headed bank art")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -1464,6 +1529,7 @@ def main() -> int:
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)
+    verify_baked_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()

@@ -2953,12 +2953,30 @@ function bounceShape(t: number, strength: number) {
 }
 
 
-// Which art still has a helmet painted into it. The eight flight animation
-// frames do (they were never re-rendered), and so does any suit flagged
-// bakedDome in the catalog. Everything else ships bare-headed and needs a
-// helmet drawn on it — including Clear.
+// Which art still has a helmet painted into it. Exactly the eight ORIGINAL
+// squirrel frames do - idle-1..4 and flap-1..4, checked against the files -
+// and so does any suit flagged bakedDome in the catalog. Everything else
+// ships bare-headed and needs a helmet drawn on it, including Clear.
+//
+// THE RULE USED TO BE "ANY KEY THAT IS NOT `suit:<id>` IS BAKED", which was
+// true when those eight were the only frame keys there were. Seventy-two
+// more have arrived since - the per-suit tap, ascent and descent banks -
+// and every one of them is bare-headed art that inherited "baked" by
+// accident. So Clear drew nothing the moment a bank played, and the pilot
+// lost their helmet mid-flight. Reported as "flight+clear helmet = no
+// helmet equipped"; the loadout preview flies the ascent bank, so it was
+// true standing still too. Every other helmet was unaffected - this guard
+// is the only thing that reads the flag - which is why it went unseen.
+const BAKED_FRAMES = new Set([
+  "idle-1", "idle-2", "idle-3", "idle-4",
+  "flap-1", "flap-2", "flap-3", "flap-4",
+  "__mix",   // the crossfade between two of those eight, and only ever that
+]);
 function bakedDome(key: string) {
-  if (!key.startsWith("suit:")) return true;
+  if (BAKED_FRAMES.has(key)) return true;
+  // a per-suit bank frame - flight-asc-2, robo-tap-9, eclipse-desc-4 - is
+  // painted bare-headed like the suit render it animates
+  if (!key.startsWith("suit:")) return false;
   const id = key.slice(5);
   return SUITS.some((u) => u.id === id && u.bakedDome === true);
 }
