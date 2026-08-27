@@ -81,6 +81,13 @@ export type PlanetCol = {
   topKind: number;
   botKind: number;
   scored: boolean;
+  /** A LONE TEACHING PLANET, not a gate. The tutorial's bounce lesson wants
+   *  one rock to land on, so it opens the mouth wide enough to carry the
+   *  top half off the screen - and the on-screen nudge in gateOffset, which
+   *  exists to stop exactly that, then shoves the whole thing back down.
+   *  Solo planets are placed deliberately and keep the position they were
+   *  given. */
+  solo?: boolean;
   drift: number;
   driftAmp: number;
   blockers: { y: number; r: number; kind: number; xOff: number; debris: number;
@@ -969,7 +976,6 @@ function buildTutorialCourse(w: World, save: SaveData) {
 function placeBouncePlanet(w: World, save: SaveData) {
   const env = ENVS[w.envB];
   const sx = w.W * PHYS.squirrelX;
-  const gap = 176;
   const g = gravOf(save, w);
   const y0 = w.squirrel.y;
   // land in the lower third, but never so low the planet clips the floor
@@ -978,12 +984,47 @@ function placeBouncePlanet(w: World, save: SaveData) {
   const v = PHYS.dive;
   const t = (-v + Math.sqrt(v * v + 2 * g * dy)) / g;
   const kind = pickKind(w);
+  // ONE PLANET, NOT A GATE.
+  //
+  // A PlanetCol is always a PAIR - the collision loop tests both halves -
+  // and the teaching planet is supposed to be a lone rock to land on. With
+  // the pair sitting where the fall actually reaches it, the pilot met the
+  // TOP half on the way down and "bounced" a quarter of a second into a
+  // dive they were meant to ride all the way. So the mouth is opened wide
+  // enough to carry the top half clean off the screen, leaving exactly the
+  // one planet the lesson talks about.
+  //
+  //     gapY + gap/2 = yLand + 6      the landing surface
+  //     gapY - gap/2 < 0              the top half, gone
+  //
+  // which needs gap > yLand + 6. The extra 6r is NOT arithmetic slack: a
+  // planet is DRAWN larger than the radius it collides on, so clearing the
+  // collision circle still left a rock hanging over the top of the screen
+  // looking like something to avoid. Six radii puts the top half at -7r,
+  // far enough that no sprite scale brings it back into frame.
+  const gap = yLand + 6 + 6 * PHYS.planetR;
   w.planets.push({
-    x: sx + Math.max(180, w.speed * t),
+    // THE LEAD IS WHAT THE FALL EARNS, and nothing else.
+    //
+    // This used to read Math.max(180, speed * t) - a floor meant to stop the
+    // planet spawning on top of the pilot. It broke the one thing the
+    // arithmetic exists for: the planet reaches the pilot's line after
+    // (x - sx) / speed seconds, the pilot reaches yLand after t, and the two
+    // are the same instant ONLY when x - sx is exactly speed * t. The floor
+    // bound on every screen tried - the fall earns about 93px of travel and
+    // the floor forced 180 - so the planet arrived half a second late and
+    // the dive passed 3px clear of it. The "boing" then fired off its
+    // timeout rather than off a contact: the lesson said planets are bouncy
+    // straight after a dive that visibly missed one.
+    //
+    // A small floor remains against literal overlap; at r=42 a 60px lead
+    // still leaves daylight, and the fall earns more than that anyway.
+    x: sx + Math.max(60, w.speed * t),
     gapY: yLand + 6 - gap / 2,
     gap, r: PHYS.planetR,
     topKind: kind, botKind: kind,
     scored: true,               // the teaching planet is not a gate to score
+    solo: true,                 // and it is not nudged to keep a top half on screen
     drift: 0, driftAmp: 0,
     blockers: [],
   });
@@ -2863,6 +2904,8 @@ export function liveGapY(p: PlanetCol, w?: World) {
  *  start disagreeing with the picture. */
 export function gateOffset(p: PlanetCol, w?: World) {
   const sway = Math.sin(p.drift) * p.driftAmp;
+  // a solo teaching planet is where it was put, on purpose - see PlanetCol
+  if (p.solo) return sway;
   if (!w) return sway;
   const y = p.gapY + sway;
   const t = tiltNow(w);

@@ -46,6 +46,7 @@ function flyLesson(W, H, opts = {}) {
   let frames = 0;
   const trace = [];
   let diveTargets = -1;
+  let diveFrames = 0;
   for (let i = 0; i < 60 * 200; i++) {
     const t = w.tut;
     if (!t) break;
@@ -56,6 +57,7 @@ function flyLesson(W, H, opts = {}) {
     if (t.stage === "doDive" && diveTargets < 0) {
       diveTargets = w.planets.filter((q) => q.x + q.r > 0 && q.x - q.r < w.W).length;
     }
+    if (t.stage === "diving") diveFrames++;
     // answer the beat
     if (t.want === "tap" || t.want === "continue") sim.flap(w, s);
     else if (t.want === "swipe") sim.dive(w, s);
@@ -80,7 +82,8 @@ function flyLesson(W, H, opts = {}) {
     if (w.tut && !w.tut.locked && lockOffAt < 0) lockOffAt = order.length - 1;
     if (opts.stopAt && w.tut?.stage === opts.stopAt) break;
   }
-  return { w, s, order, lockOffAt, frames, trace, diveTargets };
+  return { w, s, order, lockOffAt, frames, trace, diveTargets,
+           diveSeconds: +(diveFrames / 60).toFixed(2) };
 }
 
 // ---- the beats run in order, on every screen ---------------------------
@@ -99,6 +102,16 @@ for (const [W, H] of SCREENS) {
   ok(r.diveTargets > 0,
     `@${W}x${H}: the swipe lesson asks for a dive with ${r.diveTargets} planets on ` +
     `screen - there is nothing to aim at`);
+  // AND THE DIVE HAS TO REACH IT. The beat times out after 3.5s and says
+  // "boing, planets are bouncy" either way, so a miss was indistinguishable
+  // from a landing unless the clock is checked. It missed three separate
+  // ways: the placement floor desynchronised the fall from the scroll (3px
+  // clear), then the gate's TOP half blocked the dive a quarter second in,
+  // then gateOffset's on-screen nudge shoved the whole planet 228px down
+  // because the wide mouth looked like a gate hanging off the screen.
+  ok(r.diveSeconds > 0 && r.diveSeconds < 2,
+    `@${W}x${H}: the dive took ${r.diveSeconds}s to end - the beat times out at ` +
+    `3.5s, so anything near that is the clock talking, not a landing`);
   ok(r.lockOffAt === WANT.indexOf("gates3"),
     `@${W}x${H}: control unlocked at beat ${r.lockOffAt}, it must unlock at the handover ` +
     `(beat ${WANT.indexOf("gates3")}) and nowhere else`);
