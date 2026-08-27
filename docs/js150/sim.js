@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=148";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=148";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=148";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=148";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=148";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=148";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=148";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=150";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=150";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=150";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=150";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=150";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=150";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=150";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2229,6 +2229,18 @@ function tutGesture(w, save, kind) {
     // stalled there for good, with the tap going to ordinary flight instead.
     if (!t || (!t.locked && !t.hold))
         return false;
+    // A MESSAGE GETS A MOMENT TO BE READ.
+    //
+    // The companion's popup arrives while the pilot is mid-rhythm on the gate
+    // run, so the tap already on its way dismissed it before the words were on
+    // screen - "you fly through the message instantly". A beat that is WAITING
+    // for a gesture still waits forever; this only holds off the press-to-go-on
+    // beats, and only for TUT_READ, which is the same moment the "tap to
+    // continue" line finishes fading in. It is not an arming window on a
+    // lesson - nothing is being asked of the pilot yet - so it cannot teach
+    // them that the game ignores taps.
+    if (t.want === "continue" && t.t < TUT_READ)
+        return true;
     // a tap answers a "press to go on" beat as readily as a "tap" one
     const answered = t.want === kind || (t.want === "continue" && kind === "tap");
     if (!answered) {

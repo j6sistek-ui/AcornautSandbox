@@ -1815,17 +1815,70 @@ export async function bootStandalone(root: HTMLElement) {
         ? "Tap your new ION SUIT to wear it"
         : "Now the ION HELMET \u2014 tap to equip");
       c.classList.add("ac-coachfind");
-      c.append(el("i", "ac-coachhint", "tap here to show me"));
+      const hint = el("i", "ac-coachhint", "tap here to show me");
+      c.append(hint);
+      // the coach IS the fold. It is `position: sticky; bottom: 10px`, so
+      // while there is shelf left to scroll it rides the bottom edge of the
+      // visible area, and anything under it is a card you can neither read
+      // nor press. Measuring its top beats guessing at a margin, and it
+      // costs nothing to clamp to the window in case the shelf column ever
+      // runs off the end of the screen.
+      // Sticky needs a scrolling ancestor, and it has to be THE one. This
+      // looked it up with `box.querySelector(".ac-sheet-scroll")` - which
+      // runs before `box.append(scroll)` at the end of this function, so it
+      // found nothing, fell back to `box`, and parked the coach ABOVE the
+      // shelf (measured: coach 510-575, shelf starting at 579). Sticky never
+      // engaged and the coach was a caption again. Append to the column we
+      // are holding.
+      const host = scroll;
+      const foldY = () => Math.min(c.getBoundingClientRect().top,
+                                   window.innerHeight || 1e9);
       c.onclick = () => {
         const target = box.querySelector(".ac-guidetarget") as HTMLElement | null;
         if (!target) return;
-        target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+        // "centre it" is not good enough on a short phone: the coach is
+        // sticky over the bottom of the shelf, so a centred card still had
+        // its lower half under the coach and the arrow stayed lit. Scroll
+        // by exactly the overlap instead, and the card lands clear.
+        const over = target.getBoundingClientRect().bottom - (foldY() - 10);
+        if (over > 0) host.scrollBy({ top: over, behavior: "smooth" });
+        else target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
         target.classList.add("ac-guideflash");
         window.setTimeout(() => target.classList.remove("ac-guideflash"), 1400);
       };
-      // sticky needs a scrolling ancestor: inside the shelf column, not
-      // floating over it
-      (box.querySelector(".ac-sheet-scroll") ?? box).append(c);
+      host.append(c);
+      // SAY IT IS DOWN THERE, WHEN IT IS.
+      //
+      // The Ion helmet is the FIRST card of the SECOND section - eight clear
+      // visors sit above it - so on a phone the step names something that is
+      // not on screen and the shelf above looks like the whole shelf. The
+      // coach grows an arrow and says which way, but only after MEASURING
+      // that the card is actually below the fold: on a tall screen or in
+      // grid mode it may be visible already, and an arrow pointing at
+      // something in plain sight is worse than none.
+      //
+      // Measure against what the EYE can see, which is neither of the two
+      // things the first cut of this used. `frame.bottom` is the scroll
+      // host's LAYOUT bottom, which runs off the end of the screen, so a
+      // card at y=752 of a 900px phone measured as "already in view" and
+      // the arrow never came. And `seen.top` is the wrong edge: a card
+      // whose top has just crept above the fold is still unreadable and
+      // untappable. So the question is whether the WHOLE card clears the
+      // coach's own top edge.
+      const belowFold = () => {
+        const target = box.querySelector(".ac-guidetarget") as HTMLElement | null;
+        if (!target || !c.isConnected) return false;
+        const seen = target.getBoundingClientRect();
+        return seen.bottom > foldY();
+      };
+      const arrow = () => {
+        const down = belowFold();
+        c.classList.toggle("ac-coachdown", down);
+        hint.textContent = down ? "scroll down \u2014 or tap here" : "tap here to show me";
+      };
+      requestAnimationFrame(arrow);
+      // and it has to STOP pointing once they get there
+      host.addEventListener("scroll", arrow, { passive: true });
     } else if (s.guide === "levels") {
       box.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
     }

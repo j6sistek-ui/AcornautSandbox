@@ -1,12 +1,12 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=148";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=148";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=148";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=148";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=148";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=148";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=148";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=148";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=148";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=150";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=150";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=150";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=150";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=150";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=150";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=150";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=150";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=150";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2749,13 +2749,32 @@ function bounceShape(t, strength) {
         y: 1 + strength * (-squash * 0.13 + stretch * 0.085 - settle * 0.018),
     };
 }
-// Which art still has a helmet painted into it. The eight flight animation
-// frames do (they were never re-rendered), and so does any suit flagged
-// bakedDome in the catalog. Everything else ships bare-headed and needs a
-// helmet drawn on it — including Clear.
+// Which art still has a helmet painted into it. Exactly the eight ORIGINAL
+// squirrel frames do - idle-1..4 and flap-1..4, checked against the files -
+// and so does any suit flagged bakedDome in the catalog. Everything else
+// ships bare-headed and needs a helmet drawn on it, including Clear.
+//
+// THE RULE USED TO BE "ANY KEY THAT IS NOT `suit:<id>` IS BAKED", which was
+// true when those eight were the only frame keys there were. Seventy-two
+// more have arrived since - the per-suit tap, ascent and descent banks -
+// and every one of them is bare-headed art that inherited "baked" by
+// accident. So Clear drew nothing the moment a bank played, and the pilot
+// lost their helmet mid-flight. Reported as "flight+clear helmet = no
+// helmet equipped"; the loadout preview flies the ascent bank, so it was
+// true standing still too. Every other helmet was unaffected - this guard
+// is the only thing that reads the flag - which is why it went unseen.
+const BAKED_FRAMES = new Set([
+    "idle-1", "idle-2", "idle-3", "idle-4",
+    "flap-1", "flap-2", "flap-3", "flap-4",
+    "__mix", // the crossfade between two of those eight, and only ever that
+]);
 function bakedDome(key) {
-    if (!key.startsWith("suit:"))
+    if (BAKED_FRAMES.has(key))
         return true;
+    // a per-suit bank frame - flight-asc-2, robo-tap-9, eclipse-desc-4 - is
+    // painted bare-headed like the suit render it animates
+    if (!key.startsWith("suit:"))
+        return false;
     const id = key.slice(5);
     return SUITS.some((u) => u.id === id && u.bakedDome === true);
 }

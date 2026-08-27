@@ -1380,6 +1380,130 @@ def verify_scroll_not_squash(qa: QA) -> None:
         qa.ok("every scrollable flex column scrolls rather than squashing")
 
 
+def verify_guide_arrow(qa: QA) -> None:
+    """The guided step's coach must live in the shelf it points into.
+
+    Shipped broken twice, both times silently. The coach is
+    `position: sticky` so it rides the bottom of the shelf and stays
+    pressable - but it was appended to `box.querySelector(".ac-sheet-scroll")`,
+    a lookup that runs BEFORE `box.append(scroll)` at the end of drawLoadout.
+    It found nothing, fell back to `box`, and parked the coach above the shelf
+    (measured on a 430x900 page: coach 510-575, shelf starting at 579). Sticky
+    never engaged, and the down-arrow that asks "is my target under the coach?"
+    could not be right about anything.
+
+    So two things are asserted, and both are the bug:
+
+      * the coach is appended to the `scroll` column the function is holding,
+        never re-found by selector
+      * the fold is measured from the COACH's own rect. `frame.bottom` is the
+        column's LAYOUT bottom, which runs off the end of the screen, so the
+        first cut read a card at y=752 of a 900px phone as "already in view"
+        and never showed the arrow.
+    """
+    src = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    # anchor on the coach itself: the guide condition appears four times in
+    # this file and the first one is a different screen entirely.
+    start = src.find('c.classList.add("ac-coachfind")')
+    if start < 0:
+        qa.fail("guide arrow: the guided loadout step is gone from drawLoadout")
+        return
+    block = src[start:start + 4200]
+    # the comments in that block explain the two bugs by name, so the code
+    # checks below read the block with `//` lines stripped out.
+    code = "\n".join(l for l in block.splitlines()
+                     if not l.lstrip().startswith("//"))
+    problems: list[str] = []
+    if not re.search(r"const host = scroll", code):
+        problems.append(
+            "the coach is not appended to the `scroll` column drawLoadout is "
+            "holding - a `.ac-sheet-scroll` lookup here runs before "
+            "`box.append(scroll)` and lands the coach above the shelf")
+    if "getBoundingClientRect" not in code or "foldY" not in code:
+        problems.append(
+            "the fold is not measured from the coach's own rect - a card under "
+            "the sticky coach reads as visible and the arrow never comes")
+    if re.search(r"frame\.bottom", code):
+        problems.append(
+            "the fold is measured from the column's layout bottom, which runs "
+            "off the end of the screen")
+    if "ac-coachdown" not in code:
+        problems.append("nothing ever adds .ac-coachdown, so the arrow cannot appear")
+    for page in ("docs/index.html", "docs/beta/index.html"):
+        css = (ROOT / page).read_text(encoding="utf8")
+        if ".ac-coachdown::after" not in css:
+            problems.append(f"{page}: .ac-coachdown draws no arrow")
+    if problems:
+        qa.fail("guide arrow: " + "; ".join(problems))
+    else:
+        qa.ok("the guided step's coach sits in the shelf and measures its own fold")
+
+
+def verify_baked_domes(qa: QA) -> None:
+    """Only the original squirrel frames carry a painted helmet.
+
+    The Clear helmet is the one cosmetic that draws NOTHING when the art it
+    sits on already has a dome painted in - stacking two would be worse than
+    none. `bakedDome` decides that, and its rule used to be "any key that is
+    not `suit:<id>` is baked", written when the eight original squirrel
+    frames were the only frame keys there were.
+
+    Seventy-two more arrived since: the per-suit tap, ascent and descent
+    banks. Every one of them is bare-headed art that inherited "baked" by
+    accident, so Clear drew nothing the moment a bank played and the pilot
+    lost their helmet - in flight AND standing in the Loadout, whose preview
+    flies the ascent bank. Reported as "flight+clear helmet = no helmet
+    equipped". No other helmet reads this flag, which is why it survived.
+
+    The classification is checkable against the files, so it is checked:
+    every baked key must be a frame under art/squirrel (the paintings that
+    really do wear a dome), and every other frame key must be a per-suit bank
+    frame under art/suits. The blanket rule is named and rejected outright -
+    it is the shape of the bug, not just its effect.
+    """
+    source = DRAW_SOURCE.read_text(encoding="utf8")
+    fn = re.search(r"function bakedDome\(key: string\) \{(.*?)\n\}", source, re.DOTALL)
+    if not fn:
+        qa.fail("baked domes: bakedDome is gone from draw.ts")
+        return
+    problems: list[str] = []
+    if re.search(r'if \(!key\.startsWith\("suit:"\)\)\s*return true', fn.group(1)):
+        problems.append(
+            "bakedDome treats every non-`suit:` key as baked - that is the "
+            "per-suit bank frames too, and Clear draws nothing on them")
+    baked = re.search(r"const BAKED_FRAMES = new Set\(\[(.*?)\]\)", source, re.DOTALL)
+    if not baked:
+        problems.append("BAKED_FRAMES is gone - nothing names the domed art")
+        keys: list[str] = []
+    else:
+        keys = re.findall(r'"([^"]+)"', baked.group(1))
+        if "BAKED_FRAMES" not in fn.group(1):
+            problems.append("bakedDome does not consult BAKED_FRAMES")
+    for k in keys:
+        if k == "__mix":          # the crossfade between two of those frames
+            continue
+        if not (ROOT / f"docs/art/squirrel/{k}.png").exists():
+            problems.append(
+                f"{k} is listed as carrying a painted dome but there is no "
+                f"art/squirrel/{k}.png - only the original frames do")
+    table = re.search(r"\bconst\s+DOME(?:\s*:[^=]+)?\s*=\s*\{(.*?)\}\s*;",
+                      source, re.DOTALL)
+    if table:
+        for k in re.findall(r'^\s*"([^"]+)"\s*:', table.group(1), re.M):
+            if k.startswith("suit:") or k in keys:
+                continue
+            if not (ROOT / f"docs/art/suits/{k}.png").exists():
+                problems.append(
+                    f"the dome anchor {k} names neither a baked squirrel frame "
+                    f"nor a bank frame at art/suits/{k}.png - it cannot be "
+                    f"classified, so Clear's behaviour on it is a guess")
+    if problems:
+        qa.fail("baked domes: " + "; ".join(problems))
+    else:
+        qa.ok(f"{len([k for k in keys if k != '__mix'])} frames carry a painted "
+              f"dome; every other anchor is bare-headed bank art")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -1393,6 +1517,7 @@ def main() -> int:
     verify_lazy_banks(qa)
     verify_ui_classes(qa)
     verify_scroll_not_squash(qa)
+    verify_guide_arrow(qa)
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)
@@ -1404,6 +1529,7 @@ def main() -> int:
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)
+    verify_baked_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()
