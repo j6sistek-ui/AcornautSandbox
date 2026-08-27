@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=146";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=146";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=146";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=146";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=146";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=146";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=146";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=148";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=148";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=148";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=148";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=148";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=148";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=148";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -522,7 +522,6 @@ function buildTutorialCourse(w, save) {
 function placeBouncePlanet(w, save) {
     const env = ENVS[w.envB];
     const sx = w.W * PHYS.squirrelX;
-    const gap = 176;
     const g = gravOf(save, w);
     const y0 = w.squirrel.y;
     // land in the lower third, but never so low the planet clips the floor
@@ -531,12 +530,47 @@ function placeBouncePlanet(w, save) {
     const v = PHYS.dive;
     const t = (-v + Math.sqrt(v * v + 2 * g * dy)) / g;
     const kind = pickKind(w);
+    // ONE PLANET, NOT A GATE.
+    //
+    // A PlanetCol is always a PAIR - the collision loop tests both halves -
+    // and the teaching planet is supposed to be a lone rock to land on. With
+    // the pair sitting where the fall actually reaches it, the pilot met the
+    // TOP half on the way down and "bounced" a quarter of a second into a
+    // dive they were meant to ride all the way. So the mouth is opened wide
+    // enough to carry the top half clean off the screen, leaving exactly the
+    // one planet the lesson talks about.
+    //
+    //     gapY + gap/2 = yLand + 6      the landing surface
+    //     gapY - gap/2 < 0              the top half, gone
+    //
+    // which needs gap > yLand + 6. The extra 6r is NOT arithmetic slack: a
+    // planet is DRAWN larger than the radius it collides on, so clearing the
+    // collision circle still left a rock hanging over the top of the screen
+    // looking like something to avoid. Six radii puts the top half at -7r,
+    // far enough that no sprite scale brings it back into frame.
+    const gap = yLand + 6 + 6 * PHYS.planetR;
     w.planets.push({
-        x: sx + Math.max(180, w.speed * t),
+        // THE LEAD IS WHAT THE FALL EARNS, and nothing else.
+        //
+        // This used to read Math.max(180, speed * t) - a floor meant to stop the
+        // planet spawning on top of the pilot. It broke the one thing the
+        // arithmetic exists for: the planet reaches the pilot's line after
+        // (x - sx) / speed seconds, the pilot reaches yLand after t, and the two
+        // are the same instant ONLY when x - sx is exactly speed * t. The floor
+        // bound on every screen tried - the fall earns about 93px of travel and
+        // the floor forced 180 - so the planet arrived half a second late and
+        // the dive passed 3px clear of it. The "boing" then fired off its
+        // timeout rather than off a contact: the lesson said planets are bouncy
+        // straight after a dive that visibly missed one.
+        //
+        // A small floor remains against literal overlap; at r=42 a 60px lead
+        // still leaves daylight, and the fall earns more than that anyway.
+        x: sx + Math.max(60, w.speed * t),
         gapY: yLand + 6 - gap / 2,
         gap, r: PHYS.planetR,
         topKind: kind, botKind: kind,
         scored: true, // the teaching planet is not a gate to score
+        solo: true, // and it is not nudged to keep a top half on screen
         drift: 0, driftAmp: 0,
         blockers: [],
     });
@@ -2225,9 +2259,6 @@ function tutGesture(w, save, kind) {
             w.bounceUp = false;
             w.squirrel.vy = PHYS.dive;
             w.squirrel.rot = 0.5;
-            // the planet goes where THIS dive lands, worked out from the pilot's
-            // real position and the dive they were just given
-            placeBouncePlanet(w, save);
             break;
         case "learnTap":
         case "learnTap2":
@@ -2418,6 +2449,9 @@ export function liveGapY(p, w) {
  *  start disagreeing with the picture. */
 export function gateOffset(p, w) {
     const sway = Math.sin(p.drift) * p.driftAmp;
+    // a solo teaching planet is where it was put, on purpose - see PlanetCol
+    if (p.solo)
+        return sway;
     if (!w)
         return sway;
     const y = p.gapY + sway;
@@ -2969,8 +3003,23 @@ export function updateWorld(w, save, dt) {
                 break;
             // the second tap is climbing; teach the dive at the top of it
             case "learnDive":
-                if (w.squirrel.vy >= -30 || t.t > 3)
+                if (w.squirrel.vy >= -30 || t.t > 3) {
+                    // THE DIVE NEEDS SOMETHING TO DIVE AT.
+                    //
+                    // The planet used to be laid when the swipe was ANSWERED, so the
+                    // pilot was asked to dive at an empty sky and only found out what
+                    // for afterwards. Reported as "the swipe down was a big miss - if
+                    // there was a planet or gap there it would probably be fixed",
+                    // and the clip shows a second and a half of SWIPE DOWN over
+                    // nothing at all.
+                    //
+                    // It goes down as the lesson OPENS. The world is held for the
+                    // whole ask, so the pilot cannot drift away from the arithmetic
+                    // that placed it - what they are looking at when they swipe is
+                    // exactly where they are going.
+                    placeBouncePlanet(w, save);
                     freeze("doDive", "swipe");
+                }
                 break;
             // the dive is flying toward the staged planet. bounceUp is set by
             // bounceOff the instant it lands.

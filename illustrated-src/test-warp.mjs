@@ -81,7 +81,8 @@ function attempt(mode, level) {
       if (d > -60 && d < best) { best = d; tgt = sim.liveGapY(p, w); }
     }
     w.squirrel.y = tgt; w.squirrel.vy = 0;
-    w.shields = 9; w.hitCooldown = 1;
+    w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     // hold the stretch open for the whole attempt so every gate is a sample
     if (mode === "fly") w.warpGateEnd = Math.max(w.warpGateEnd, w.score + 2);
     else w.warpLeft = Math.max(w.warpLeft, 0.5);
@@ -144,7 +145,8 @@ if (arcadeLvl) {
       const d = p.x - w.W * 0.28;
       if (d > -60 && d < best) { best = d; tgt = sim.liveGapY(p, w); }
     }
-    w.squirrel.y = tgt; w.squirrel.vy = 0; w.shields = 9; w.hitCooldown = 1;
+    w.squirrel.y = tgt; w.squirrel.vy = 0; w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     w.warpGateEnd = -1; w.warpLeft = 0; w.warpT = 0;     // never warping
     if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     sim.updateWorld(w, s, 1 / 60);

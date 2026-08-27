@@ -69,10 +69,22 @@ for (const hp of [-1, -0.5, 0.5, 1]) {
   ok(Math.abs(rigAt(hp, ONE) - want) < 1e-9,
     `at hp ${hp} a dial of 1 must reproduce the old heading pitch, got ${rigAt(hp, ONE).toFixed(4)}`);
 }
-ok(Object.values(SUIT_LEAN).every((l) => l.up === 1 && l.down === 1),
-  "the shipped table is no longer all 1s - that is fine, but this assertion " +
-  "guards the CLAIM that landing the dials changed nothing, so retire it " +
-  "deliberately rather than by accident");
+// RETIRED DELIBERATELY, 26 Aug 2026. This used to assert the table was all
+// 1s, guarding the claim that landing the dials changed nothing. The owner
+// has since flown the tuner and calibrated the roster, so that claim is
+// over - and the message was written to say so rather than let the
+// assertion be deleted quietly when it finally went red.
+//
+// What replaces it is the calibration itself: one number for the whole
+// roster, which is what was chosen.
+{
+  const vals = new Set(Object.values(SUIT_LEAN).map((l) => `${l.up}/${l.down}`));
+  ok(vals.size === 1,
+    `the roster was calibrated to one lean and now carries ${vals.size} different ` +
+    `ones (${[...vals].join(", ")}) - if that is deliberate, this is the line to change`);
+  ok(vals.has("0.8/0.3"),
+    `the calibrated lean is 0.80 climb / 0.30 dive, the table says ${[...vals].join(", ")}`);
+}
 
 // ---- the dial actually moves the pilot, and only in its own direction ---
 for (const [name, lean, rot, want] of [
@@ -92,8 +104,17 @@ for (const id of CUSTOM) {
   ok(SUIT_LEAN[id] !== undefined,
     `${id} has custom ANIMATION, which is not custom PITCH - it still needs a lean dial`);
 }
-ok(suitLean("no-such-suit").up === 1 && suitLean("no-such-suit").down === 1,
-  "an unknown suit should fall back to a neutral dial, not undefined");
+{
+  // A suit missing from the table should fly like the REST OF THE ROSTER,
+  // not like the un-calibrated game - so the fallback tracks the calibration
+  // rather than sitting at a neutral 1 nobody flies any more.
+  const fell = suitLean("no-such-suit");
+  ok(fell && typeof fell.up === "number" && typeof fell.down === "number",
+    "an unknown suit should fall back to a dial, not undefined");
+  ok(fell.up === CC.SUIT_LEAN_DEFAULT.up && fell.down === CC.SUIT_LEAN_DEFAULT.down,
+    `an unknown suit fell back to ${fell.up}/${fell.down}, not the shipped default ` +
+    `${CC.SUIT_LEAN_DEFAULT.up}/${CC.SUIT_LEAN_DEFAULT.down}`);
+}
 
 // ---- what the roster actually flies at today ---------------------------
 const table = Object.keys(SUIT_LEAN).sort().map((id) => {

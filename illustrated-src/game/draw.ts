@@ -4212,13 +4212,18 @@ if (w.lvl) {
   const flying: Partial<Record<string, string>> = {
     levelOff: "WATCH THE ARC",
     learnDive: "SOMETIMES YOU NEED DOWN, FAST",
+    doDive: "SOMETIMES YOU NEED DOWN, FAST",
     diving: "PLANET AHEAD",
     bouncing: "BOING!",
     gates3: "THREE IN A ROW",
     gates7: "FLY THE GAPS  ·  GRAB THE ACORNS",
     portal: "MAKE FOR THE PORTAL",
   };
-  const line = w.tut && !w.tut.hold ? flying[w.tut.stage] : undefined;
+  // The reason stays on screen while the ask is up: the line vanished the
+  // moment the indicator appeared, so "sometimes you need down, fast" was
+  // gone by the time the pilot was being asked to do it.
+  const asking = !!w.tut?.want && w.tut.want !== "continue";
+  const line = w.tut && (!w.tut.hold || asking) ? flying[w.tut.stage] : undefined;
   if (line) {
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(243,239,228,0.82)";

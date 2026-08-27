@@ -63,7 +63,8 @@ function trip(mode, atGate) {
       }
       w.squirrel.y = tgt; w.squirrel.vy = 0;
     }
-    w.shields = 9; w.hitCooldown = 1;
+    w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
   };
 
   // 1. climb toward the entry gate. A wormhole met on the way IS the thing
@@ -109,22 +110,59 @@ function trip(mode, atGate) {
   };
 }
 
-const runs = [trip("lost", 40), trip("fly", 40), trip("deep", 40)];
+/** A trip long enough to say anything about.
+ *
+ *  The autopilot sometimes dies inside the corridor, and die() comes home
+ *  before it ends the run - so the ride loop sees the flight leave "tunnel"
+ *  and stops with a three-second sample. The corridor was healthy in those
+ *  runs (acorns still arriving at the usual rate); there was just not enough
+ *  of it to judge. Asserting on the stub failed about one run in ten and
+ *  taught nothing, which is the worst thing a gate can do.
+ *
+ *  So a short trip is RESAMPLED rather than judged, and running out of
+ *  attempts is itself the failure - if the corridor really did start ending
+ *  early, every attempt would be short and this would say so.
+ */
+const trips = (mode, atGate) => {
+  let last = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    last = trip(mode, atGate);
+    if (!last.dove || (last.seconds ?? 0) >= 8) return last;
+  }
+  return { ...last, everyAttemptShort: true };
+};
+
+const runs = [trips("lost", 40), trips("fly", 40), trips("deep", 40)];
 for (const r of runs) {
   ok(r.dove, `${r.mode}: catching a wormhole should start a trip`);
   if (!r.dove) continue;
   ok(!r.stillTunnel, `${r.mode}: the trip should end on its own`);
+  ok(!r.everyAttemptShort,
+    `${r.mode}: four trips in a row ended inside 8s (last was ${r.seconds}s) - ` +
+    `the corridor is cutting itself short, not just an unlucky sample`);
   ok(r.credit === 1,
     `${r.mode}: a trip should return the pilot exactly one gate on, paid ${r.credit} ` +
     `(in at ${r.gateIn}, out at ${r.gateOut})`);
   ok(r.peakInside <= r.gateIn + 1,
     `${r.mode}: the gate counter must not climb inside the corridor, peaked at ` +
     `${r.peakInside} from ${r.gateIn}`);
-  ok(r.offered >= 20,
-    `${r.mode}: a fifteen-second corridor that pays only acorns has to OFFER them; ` +
-    `it put up ${r.offered}`);
-  ok(r.acornGain >= 8,
-    `${r.mode}: the trip should pay a real acorn bonus, paid ${r.acornGain}`);
+  // MEASURED AS A RATE, not a total. The total is length-sensitive: a trip
+  // that ends early through an exit caught on the first pass offers fewer
+  // simply because it is shorter, and that made this line fail about one
+  // run in twenty on a corridor that was perfectly healthy. The rate does
+  // not care how long the trip was.
+  //
+  // It still separates cleanly. The bug this was written for offered 3
+  // across 13.8s - 0.22 a second. A healthy corridor runs about 2.2. The
+  // floor sits an order of magnitude below healthy and an order above the
+  // bug, so it cannot be tripped by a short sample or slept through.
+  const rate = r.offered / Math.max(0.1, r.seconds);
+  ok(rate >= 1,
+    `${r.mode}: a corridor that pays only acorns offered ${r.offered} across ` +
+    `${r.seconds}s - ${rate.toFixed(2)} a second, against about 2.2 when it is working`);
+  ok(r.acornGain / Math.max(0.1, r.seconds) >= 0.5,
+    `${r.mode}: the trip should pay a real acorn bonus, paid ${r.acornGain} across ` +
+    `${r.seconds}s`);
 }
 
 // ---- and it arrives on the CLOCK, not on the dice ----------------------
@@ -154,7 +192,8 @@ const cadence = (() => {
       }
       w.squirrel.y = tgt; w.squirrel.vy = 0;
     }
-    w.shields = 9; w.hitCooldown = 1;
+    w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
     sim.updateWorld(w, s, 1 / 60);
   }
   return entries;
@@ -189,7 +228,8 @@ const calm = (() => {
       }
       w.squirrel.y = tgt; w.squirrel.vy = 0;
     }
-    w.shields = 9; w.hitCooldown = 1;
+    w.shieldCharges = 9; w.hitCooldown = 1;
+    if (w.screen !== "play") { w.screen = "play"; w.deadTimer = 0; }
   };
   let paceBefore = 0;
   for (let i = 0; i < 60 * 600; i++) { fly(); paceBefore = w.speed; sim.updateWorld(w, s, 1 / 60); if (w.flight === "tunnel") break; }

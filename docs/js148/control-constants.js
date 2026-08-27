@@ -57,44 +57,44 @@ export const WORM_EXIT_LEAD = 2.6;
 /** and if the pilot misses it, this much longer before the corridor gives
  *  up and posts them home anyway. A missed door must never trap a run. */
 export const WORM_EXIT_GRACE = 6;
-export const SUIT_LEAN_DEFAULT = { up: 1, down: 1 };
+export const SUIT_LEAN_DEFAULT = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN = {
     // the standard, and the reference every other suit is read against
-    flight: { up: 1, down: 1 },
+    flight: { up: 0.8, down: 0.3 },
     // --- rigged suits: these carry the velocity bank AND the heading pitch,
     //     so they are the ones most likely to read as over-tipped
-    iontrim: { up: 1, down: 1 },
-    copper: { up: 1, down: 1 },
-    frost: { up: 1, down: 1 },
-    voidsuit: { up: 1, down: 1 },
-    aurorasuit: { up: 1, down: 1 },
-    ember: { up: 1, down: 1 },
-    stardust: { up: 1, down: 1 },
-    ghost: { up: 1, down: 1 },
-    gemmie: { up: 1, down: 1 },
-    sammie: { up: 1, down: 1 },
-    seraph: { up: 1, down: 1 },
-    leviathan: { up: 1, down: 1 },
-    verdant: { up: 1, down: 1 },
-    cryostar: { up: 1, down: 1 },
-    cinderforge: { up: 1, down: 1 },
-    groveguard: { up: 1, down: 1 },
-    cosmic: { up: 1, down: 1 },
-    sunforged: { up: 1, down: 1 },
-    abyssal: { up: 1, down: 1 },
-    amethyst: { up: 1, down: 1 },
-    ivoryguard: { up: 1, down: 1 },
-    reactor: { up: 1, down: 1 },
+    iontrim: { up: 0.8, down: 0.3 },
+    copper: { up: 0.8, down: 0.3 },
+    frost: { up: 0.8, down: 0.3 },
+    voidsuit: { up: 0.8, down: 0.3 },
+    aurorasuit: { up: 0.8, down: 0.3 },
+    ember: { up: 0.8, down: 0.3 },
+    stardust: { up: 0.8, down: 0.3 },
+    ghost: { up: 0.8, down: 0.3 },
+    gemmie: { up: 0.8, down: 0.3 },
+    sammie: { up: 0.8, down: 0.3 },
+    seraph: { up: 0.8, down: 0.3 },
+    leviathan: { up: 0.8, down: 0.3 },
+    verdant: { up: 0.8, down: 0.3 },
+    cryostar: { up: 0.8, down: 0.3 },
+    cinderforge: { up: 0.8, down: 0.3 },
+    groveguard: { up: 0.8, down: 0.3 },
+    cosmic: { up: 0.8, down: 0.3 },
+    sunforged: { up: 0.8, down: 0.3 },
+    abyssal: { up: 0.8, down: 0.3 },
+    amethyst: { up: 0.8, down: 0.3 },
+    ivoryguard: { up: 0.8, down: 0.3 },
+    reactor: { up: 0.8, down: 0.3 },
     // --- custom ANIMATION suits. Their frames are the owner's and are not to
     //     be touched; their LEAN is a dial like everyone else's.
-    eclipse: { up: 1, down: 1 },
-    volt: { up: 1, down: 1 },
-    bigbooty: { up: 1, down: 1 },
-    robo: { up: 1, down: 1 },
-    catsuit: { up: 1, down: 1 },
+    eclipse: { up: 0.8, down: 0.3 },
+    volt: { up: 0.8, down: 0.3 },
+    bigbooty: { up: 0.8, down: 0.3 },
+    robo: { up: 0.8, down: 0.3 },
+    catsuit: { up: 0.8, down: 0.3 },
     // --- declared shape exceptions
-    cyber: { up: 1, down: 1 },
-    alien: { up: 1, down: 1 },
+    cyber: { up: 0.8, down: 0.3 },
+    alien: { up: 0.8, down: 0.3 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {
