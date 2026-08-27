@@ -1,4 +1,4 @@
-import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
@@ -2686,6 +2686,17 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
   // so gating this on the lock alone left it unanswerable - the lesson
   // stalled there for good, with the tap going to ordinary flight instead.
   if (!t || (!t.locked && !t.hold)) return false;
+  // A MESSAGE GETS A MOMENT TO BE READ.
+  //
+  // The companion's popup arrives while the pilot is mid-rhythm on the gate
+  // run, so the tap already on its way dismissed it before the words were on
+  // screen - "you fly through the message instantly". A beat that is WAITING
+  // for a gesture still waits forever; this only holds off the press-to-go-on
+  // beats, and only for TUT_READ, which is the same moment the "tap to
+  // continue" line finishes fading in. It is not an arming window on a
+  // lesson - nothing is being asked of the pilot yet - so it cannot teach
+  // them that the game ignores taps.
+  if (t.want === "continue" && t.t < TUT_READ) return true;
   // a tap answers a "press to go on" beat as readily as a "tap" one
   const answered = t.want === kind || (t.want === "continue" && kind === "tap");
   if (!answered) {

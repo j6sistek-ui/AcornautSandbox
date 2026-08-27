@@ -1380,6 +1380,65 @@ def verify_scroll_not_squash(qa: QA) -> None:
         qa.ok("every scrollable flex column scrolls rather than squashing")
 
 
+def verify_guide_arrow(qa: QA) -> None:
+    """The guided step's coach must live in the shelf it points into.
+
+    Shipped broken twice, both times silently. The coach is
+    `position: sticky` so it rides the bottom of the shelf and stays
+    pressable - but it was appended to `box.querySelector(".ac-sheet-scroll")`,
+    a lookup that runs BEFORE `box.append(scroll)` at the end of drawLoadout.
+    It found nothing, fell back to `box`, and parked the coach above the shelf
+    (measured on a 430x900 page: coach 510-575, shelf starting at 579). Sticky
+    never engaged, and the down-arrow that asks "is my target under the coach?"
+    could not be right about anything.
+
+    So two things are asserted, and both are the bug:
+
+      * the coach is appended to the `scroll` column the function is holding,
+        never re-found by selector
+      * the fold is measured from the COACH's own rect. `frame.bottom` is the
+        column's LAYOUT bottom, which runs off the end of the screen, so the
+        first cut read a card at y=752 of a 900px phone as "already in view"
+        and never showed the arrow.
+    """
+    src = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    # anchor on the coach itself: the guide condition appears four times in
+    # this file and the first one is a different screen entirely.
+    start = src.find('c.classList.add("ac-coachfind")')
+    if start < 0:
+        qa.fail("guide arrow: the guided loadout step is gone from drawLoadout")
+        return
+    block = src[start:start + 4200]
+    # the comments in that block explain the two bugs by name, so the code
+    # checks below read the block with `//` lines stripped out.
+    code = "\n".join(l for l in block.splitlines()
+                     if not l.lstrip().startswith("//"))
+    problems: list[str] = []
+    if not re.search(r"const host = scroll", code):
+        problems.append(
+            "the coach is not appended to the `scroll` column drawLoadout is "
+            "holding - a `.ac-sheet-scroll` lookup here runs before "
+            "`box.append(scroll)` and lands the coach above the shelf")
+    if "getBoundingClientRect" not in code or "foldY" not in code:
+        problems.append(
+            "the fold is not measured from the coach's own rect - a card under "
+            "the sticky coach reads as visible and the arrow never comes")
+    if re.search(r"frame\.bottom", code):
+        problems.append(
+            "the fold is measured from the column's layout bottom, which runs "
+            "off the end of the screen")
+    if "ac-coachdown" not in code:
+        problems.append("nothing ever adds .ac-coachdown, so the arrow cannot appear")
+    for page in ("docs/index.html", "docs/beta/index.html"):
+        css = (ROOT / page).read_text(encoding="utf8")
+        if ".ac-coachdown::after" not in css:
+            problems.append(f"{page}: .ac-coachdown draws no arrow")
+    if problems:
+        qa.fail("guide arrow: " + "; ".join(problems))
+    else:
+        qa.ok("the guided step's coach sits in the shelf and measures its own fold")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -1393,6 +1452,7 @@ def main() -> int:
     verify_lazy_banks(qa)
     verify_ui_classes(qa)
     verify_scroll_not_squash(qa)
+    verify_guide_arrow(qa)
     verify_beta_art_gates(qa)
     verify_card_states(qa)
     verify_dev_instruments(qa)

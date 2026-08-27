@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=148";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=148";
-import { drawSprite as drawSpriteOn } from "./art.js?v=148";
-import { createEngine } from "./engine.js?v=148";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=148";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=148";
-import { formatRaceTicks } from "./race.js?v=148";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=149";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=149";
+import { drawSprite as drawSpriteOn } from "./art.js?v=149";
+import { createEngine } from "./engine.js?v=149";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=149";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=149";
+import { formatRaceTicks } from "./race.js?v=149";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1771,18 +1771,73 @@ export async function bootStandalone(root) {
                 ? "Tap your new ION SUIT to wear it"
                 : "Now the ION HELMET \u2014 tap to equip");
             c.classList.add("ac-coachfind");
-            c.append(el("i", "ac-coachhint", "tap here to show me"));
+            const hint = el("i", "ac-coachhint", "tap here to show me");
+            c.append(hint);
+            // the coach IS the fold. It is `position: sticky; bottom: 10px`, so
+            // while there is shelf left to scroll it rides the bottom edge of the
+            // visible area, and anything under it is a card you can neither read
+            // nor press. Measuring its top beats guessing at a margin, and it
+            // costs nothing to clamp to the window in case the shelf column ever
+            // runs off the end of the screen.
+            // Sticky needs a scrolling ancestor, and it has to be THE one. This
+            // looked it up with `box.querySelector(".ac-sheet-scroll")` - which
+            // runs before `box.append(scroll)` at the end of this function, so it
+            // found nothing, fell back to `box`, and parked the coach ABOVE the
+            // shelf (measured: coach 510-575, shelf starting at 579). Sticky never
+            // engaged and the coach was a caption again. Append to the column we
+            // are holding.
+            const host = scroll;
+            const foldY = () => Math.min(c.getBoundingClientRect().top, window.innerHeight || 1e9);
             c.onclick = () => {
                 const target = box.querySelector(".ac-guidetarget");
                 if (!target)
                     return;
-                target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+                // "centre it" is not good enough on a short phone: the coach is
+                // sticky over the bottom of the shelf, so a centred card still had
+                // its lower half under the coach and the arrow stayed lit. Scroll
+                // by exactly the overlap instead, and the card lands clear.
+                const over = target.getBoundingClientRect().bottom - (foldY() - 10);
+                if (over > 0)
+                    host.scrollBy({ top: over, behavior: "smooth" });
+                else
+                    target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
                 target.classList.add("ac-guideflash");
                 window.setTimeout(() => target.classList.remove("ac-guideflash"), 1400);
             };
-            // sticky needs a scrolling ancestor: inside the shelf column, not
-            // floating over it
-            (box.querySelector(".ac-sheet-scroll") ?? box).append(c);
+            host.append(c);
+            // SAY IT IS DOWN THERE, WHEN IT IS.
+            //
+            // The Ion helmet is the FIRST card of the SECOND section - eight clear
+            // visors sit above it - so on a phone the step names something that is
+            // not on screen and the shelf above looks like the whole shelf. The
+            // coach grows an arrow and says which way, but only after MEASURING
+            // that the card is actually below the fold: on a tall screen or in
+            // grid mode it may be visible already, and an arrow pointing at
+            // something in plain sight is worse than none.
+            //
+            // Measure against what the EYE can see, which is neither of the two
+            // things the first cut of this used. `frame.bottom` is the scroll
+            // host's LAYOUT bottom, which runs off the end of the screen, so a
+            // card at y=752 of a 900px phone measured as "already in view" and
+            // the arrow never came. And `seen.top` is the wrong edge: a card
+            // whose top has just crept above the fold is still unreadable and
+            // untappable. So the question is whether the WHOLE card clears the
+            // coach's own top edge.
+            const belowFold = () => {
+                const target = box.querySelector(".ac-guidetarget");
+                if (!target || !c.isConnected)
+                    return false;
+                const seen = target.getBoundingClientRect();
+                return seen.bottom > foldY();
+            };
+            const arrow = () => {
+                const down = belowFold();
+                c.classList.toggle("ac-coachdown", down);
+                hint.textContent = down ? "scroll down \u2014 or tap here" : "tap here to show me";
+            };
+            requestAnimationFrame(arrow);
+            // and it has to STOP pointing once they get there
+            host.addEventListener("scroll", arrow, { passive: true });
         }
         else if (s.guide === "levels") {
             box.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));

@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "148";
+export const ART_VER = "149";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -638,6 +638,20 @@ export const TUNNEL_LEAD_BLEND = 6;
  *  screen below, which survives a browser chrome bar and a short phone.
  *  The lift is a scripted rate rather than an impulse because an impulse is
  *  cancelled by a planet contact - see the note in updateWorld. */
+/** How long a tutorial POPUP holds before a tap can dismiss it.
+ *
+ *  The companion's message arrives while the pilot is mid-rhythm on the gate
+ *  run, and the tap already travelling dismissed it before the words were up.
+ *  Half a second is enough that a stray tap lands on nothing and the next one
+ *  is deliberate - and it is matched to the "tap to continue" fade, so the
+ *  affordance appearing IS the moment it starts working.
+ *
+ *  This is not the arming window that broke the old tutorial: nothing is
+ *  being asked of the pilot here, so a refused tap cannot read as the game
+ *  ignoring them. Beats that ask for a TAP or a SWIPE still wait forever.
+ */
+export const TUT_READ = 0.5;
+
 export const TUT_SWIPE_TOP = 0.34;
 export const TUT_SWIPE_LIFT = 620;      // px per second
 /** how close to the authored height counts as arrived */
