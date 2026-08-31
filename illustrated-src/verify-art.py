@@ -1531,6 +1531,35 @@ def _torso_mass(path) -> float:
     return float(col[int(x0 + 0.28 * w):int(x0 + 0.73 * w) + 1].mean())
 
 
+def verify_motion_release(qa: QA) -> None:
+    """A release clock may only be granted to a suit that flies a motion bank.
+
+    MOTION_RELEASE slows a suit's return-to-level so a carried pose (Seraph's
+    spread wings) lingers instead of shuttering. It keys on suit id and is
+    consulted only on the fullMotion path - so an entry for a suit without
+    ascent/descent banks is a silent no-op, and a typo'd id is a fix that
+    never arrives. Both are held here: every key must be a suit registered
+    in ASC_BANKS, and the tracker must still take the release parameter.
+    """
+    draw = DRAW_SOURCE.read_text(encoding="utf8")
+    art = ART_SOURCE.read_text(encoding="utf8")
+    m = re.search(r"const MOTION_RELEASE: Record<string, number> = \{([^}]*)\}", draw)
+    if not m:
+        qa.ok("no per-suit motion release table")
+        return
+    keys = re.findall(r"(\w+)\s*:", m.group(1))
+    asc = re.search(r"const ASC_BANKS[^=]*=([^;]*);", art, re.DOTALL)
+    granted = set(re.findall(r"(\w+)\s*:\s*\d+", asc.group(1))) if asc else set()
+    problems = [f"{k} has a release clock but no ascent bank - the entry is a "
+                f"silent no-op" for k in keys if k not in granted]
+    if "release = 0.12" not in draw or "MOTION_RELEASE[suit.id]" not in draw:
+        problems.append("the tracker no longer consults MOTION_RELEASE")
+    if problems:
+        qa.fail("motion release: " + "; ".join(problems))
+    else:
+        qa.ok(f"{len(keys)} suit(s) carry a pose-release clock, all with motion banks")
+
+
 def verify_tap_frame_skip(qa: QA) -> None:
     """A bank may only skip frames WORSE than every frame it keeps.
 
@@ -1625,6 +1654,7 @@ def main() -> int:
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)
     verify_tap_frame_skip(qa)
+    verify_motion_release(qa)
     verify_baked_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)

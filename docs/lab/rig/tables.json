@@ -1,5 +1,5 @@
 {
- "artVer": "126",
+ "artVer": "153",
  "suits": [
   {
    "id": "flight",
@@ -119,9 +119,9 @@
    "key": "suit:robo",
    "file": "suits/robo.png",
    "dome": [
-    180,
+    181,
     99,
-    45
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -147,9 +147,9 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    175,
-    107,
-    45
+    185,
+    101,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -378,6 +378,230 @@
    "ownHead": false,
    "bakedDome": false,
    "frame": false
+  },
+  {
+   "id": "seraph-asc-1",
+   "name": "Seraph asc 1",
+   "key": "seraph-asc-1",
+   "file": "suits/seraph-asc-1.png",
+   "dome": [
+    203,
+    135,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-2",
+   "name": "Seraph asc 2",
+   "key": "seraph-asc-2",
+   "file": "suits/seraph-asc-2.png",
+   "dome": [
+    203,
+    132,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-3",
+   "name": "Seraph asc 3",
+   "key": "seraph-asc-3",
+   "file": "suits/seraph-asc-3.png",
+   "dome": [
+    203,
+    129,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-4",
+   "name": "Seraph asc 4",
+   "key": "seraph-asc-4",
+   "file": "suits/seraph-asc-4.png",
+   "dome": [
+    204,
+    138,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-5",
+   "name": "Seraph asc 5",
+   "key": "seraph-asc-5",
+   "file": "suits/seraph-asc-5.png",
+   "dome": [
+    203,
+    135,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-6",
+   "name": "Seraph asc 6",
+   "key": "seraph-asc-6",
+   "file": "suits/seraph-asc-6.png",
+   "dome": [
+    203,
+    132,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-7",
+   "name": "Seraph asc 7",
+   "key": "seraph-asc-7",
+   "file": "suits/seraph-asc-7.png",
+   "dome": [
+    203,
+    129,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-asc-8",
+   "name": "Seraph asc 8",
+   "key": "seraph-asc-8",
+   "file": "suits/seraph-asc-8.png",
+   "dome": [
+    202,
+    126,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-1",
+   "name": "Seraph desc 1",
+   "key": "seraph-desc-1",
+   "file": "suits/seraph-desc-1.png",
+   "dome": [
+    203,
+    135,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-2",
+   "name": "Seraph desc 2",
+   "key": "seraph-desc-2",
+   "file": "suits/seraph-desc-2.png",
+   "dome": [
+    203,
+    138,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-3",
+   "name": "Seraph desc 3",
+   "key": "seraph-desc-3",
+   "file": "suits/seraph-desc-3.png",
+   "dome": [
+    203,
+    141,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-4",
+   "name": "Seraph desc 4",
+   "key": "seraph-desc-4",
+   "file": "suits/seraph-desc-4.png",
+   "dome": [
+    203,
+    144,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-5",
+   "name": "Seraph desc 5",
+   "key": "seraph-desc-5",
+   "file": "suits/seraph-desc-5.png",
+   "dome": [
+    202,
+    147,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-6",
+   "name": "Seraph desc 6",
+   "key": "seraph-desc-6",
+   "file": "suits/seraph-desc-6.png",
+   "dome": [
+    201,
+    150,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-7",
+   "name": "Seraph desc 7",
+   "key": "seraph-desc-7",
+   "file": "suits/seraph-desc-7.png",
+   "dome": [
+    202,
+    160,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "seraph-desc-8",
+   "name": "Seraph desc 8",
+   "key": "seraph-desc-8",
+   "file": "suits/seraph-desc-8.png",
+   "dome": [
+    200,
+    164,
+    34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
   }
  ],
  "helmets": [
