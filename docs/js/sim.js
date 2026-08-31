@@ -1,10 +1,10 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=154";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=154";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=154";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=154";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=154";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=154";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=154";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=155";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=155";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=155";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=155";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=155";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=155";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=155";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2872,6 +2872,54 @@ function die(w, save) {
         save.startShield = false;
     spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
     return "die";
+}
+// ------------------------------------------------- the acorn continue
+//
+// THE AD SLOT, PAID IN ACORNS FOR NOW. Owner's spec, verbatim: "free
+// flight temporary ad replacement spot is, on death, 10 acorns to
+// continue, or 50 acorns if over level 100. temporary, don't argue
+// economics of it. it's the ad screen." So this is the ad screen: the
+// crash sheet offers a continue, the wallet pays what the ad will one day
+// pay, and when the rail exists the trigger swaps and nothing else moves.
+//
+// The run was already BANKED by die() - acorns, bests, XP, the runs tally
+// - so a continue is a continuation of the score, not of the bank:
+// runAcorns restarts at zero and the next crash banks only what was
+// gathered after the revive. Score, distance and difficulty carry on.
+// Free flight only: a mission has protection and a restart of its own,
+// a wormhole corridor is a fifteen-second side trip, and Hyper Run is a
+// deterministic time trial where a continue would be a lie.
+export function reviveCost(w) {
+    return w.score > 100 ? 50 : 10;
+}
+export function reviveRun(w, save) {
+    if (w.screen !== "dead" || w.lvl || w.race || w.flight === "tunnel")
+        return false;
+    const cost = reviveCost(w);
+    if ((save.acorns ?? 0) < cost)
+        return false;
+    save.acorns -= cost;
+    writeSave(save);
+    // the same landing the shield gives, without spending one: the killzone
+    // is swept, the pilot re-enters at the nearest safe height under a short
+    // freeze, and the recovery banner says what happened
+    const sx = w.W * PHYS.squirrelX;
+    const cy = safeY(w);
+    clearDebrisNear(w, sx, cy, 260, sx, cy, 300);
+    w.planets = w.planets.filter((p) => p.x - p.r > sx + 90 || p.x + p.r < sx - 150);
+    w.runAcorns = 0;
+    w.squirrel.y = cy;
+    w.squirrel.vy = 0;
+    w.squirrel.rot = 0;
+    w.hitCooldown = 0;
+    w.bounceUp = false;
+    w.shieldFreeze = 0.9;
+    w.shieldSlow = 3;
+    w.absorbGrace = 2.2;
+    w.recoveryMsg = "FLIGHT CONTINUES!";
+    w.deadTimer = 0;
+    w.screen = "play";
+    return true;
 }
 export function bankDeathLevels(_w, _save) {
     /* levels are now stamped in die() */

@@ -34,6 +34,8 @@ import {
   resizeWorld,
   resetRun,
   resumePlay,
+  reviveCost,
+  reviveRun,
   setRaceInput,
   snapshot,
   takeRaceCueEffects,
@@ -122,6 +124,13 @@ export type Engine = {
   buyFeature: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
+  /** restart the mission being flown or paused - same level, fresh run */
+  restartLevel: () => boolean;
+  /** the crash sheet's acorn continue: pay the ad-slot's stand-in price
+   *  and fly on. False when it isn't a free flight or the wallet is short. */
+  continueRun: () => boolean;
+  /** what that continue costs right now (10, or 50 past gate 100) */
+  continueCost: () => number;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
   buySuit: (id: string) => string;
@@ -422,6 +431,21 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       save.eclipseMotionMode = ((mode % 3) + 3) % 3;
       writeSave(save);
       notify();
+    },
+    restartLevel() {
+      const id = world.lvl?.def.id;
+      if (!id) return false;
+      // leave the paused run without settling it as a loss twice: flyLevel
+      // resets the world outright, and the pause screen is simply replaced
+      return engine.flyLevel(id);
+    },
+    continueCost() {
+      return reviveCost(world);
+    },
+    continueRun() {
+      const ok = reviveRun(world, save);
+      if (ok) notify();
+      return ok;
     },
     dismissDead() {
       world.screen = "title";

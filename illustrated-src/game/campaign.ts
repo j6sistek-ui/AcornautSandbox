@@ -527,6 +527,54 @@ export function goldGatesFor(def: LevelDef): number[] {
   return out;
 }
 
+// ------------------------------------------------- the pinned objectives
+//
+// While a mission is FLOWN its three goals ride the top of the screen, so
+// the pilot always knows what is still winnable. Each pill is judged LIVE:
+//
+//   green - complete (a target reached) or still holding (a constraint
+//           unbroken: no bounce yet, taps still under the cap)
+//   red   - failed, permanently: the touch on "touch no planet", the
+//           28th tap against a cap of 27
+//   white - an accumulating target not yet reached
+//
+// A constraint shows GREEN while it holds rather than white: "currently
+// passing" is the honest reading of an unbroken constraint, and the flip
+// to red is the event worth noticing.
+
+export type GoalHudState = "live" | "done" | "lost";
+export type GoalHudPill = { text: string; state: GoalHudState };
+
+export function goalHud(g: Goal, s: RunStats, gatesDone: number, def: LevelDef): GoalHudPill {
+  switch (g.kind) {
+    case "finish": {
+      const n = Math.min(gatesDone, def.gates);
+      return { text: `PORTAL ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
+    }
+    case "acorns":
+      return { text: `ACORNS ${Math.min(s.acorns, g.n)}/${g.n}`, state: s.acorns >= g.n ? "done" : "live" };
+    case "gold":
+      return { text: `GOLD ${Math.min(s.gold, g.n)}/${g.n}`, state: s.gold >= g.n ? "done" : "live" };
+    case "noBounce":
+      return { text: "NO TOUCHES", state: s.bounces > 0 ? "lost" : "done" };
+    case "noShield":
+      return { text: "NO SHIELDS", state: s.shieldsSpent > 0 ? "lost" : "done" };
+    case "flawless":
+      return { text: "FLAWLESS", state: s.bounces > 0 || s.shieldsSpent > 0 ? "lost" : "done" };
+    case "maxTaps":
+      return { text: `TAPS ${s.taps}/${g.n}`, state: s.taps > g.n ? "lost" : "done" };
+    case "flow":
+      return { text: `FLOW ×${s.flow}/${g.n}`, state: s.flow >= g.n ? "done" : "live" };
+    case "score":
+      return { text: `SCORE ${Math.min(s.score, g.n)}/${g.n}`, state: s.score >= g.n ? "done" : "live" };
+    case "time": {
+      const sec = Math.ceil(g.ticks / 60);
+      return { text: `UNDER ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`,
+        state: s.finishTicks === 0 ? "live" : s.finishTicks <= g.ticks ? "done" : "lost" };
+    }
+  }
+}
+
 /** did this finished run meet the goal? (star 1 is the finish itself) */
 export function goalMet(g: Goal, s: RunStats): boolean {
   switch (g.kind) {

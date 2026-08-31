@@ -1628,6 +1628,46 @@ def verify_tap_frame_skip(qa: QA) -> None:
         qa.ok("no tap bank skips frames")
 
 
+def verify_run_lifelines(qa: QA) -> None:
+    """The three run lifelines stay wired the way the owner specced them.
+
+    Three owner calls from one message, each a small wire that a refactor
+    could cut without a type error: the mission objectives pinned to the
+    top of a level run, RESTART LEVEL on the pause sheet for missions only,
+    and the crash sheet's acorn continue - the ad slot's stand-in. Each is
+    held by the wire that makes it real, not by its copy.
+    """
+    draw = DRAW_SOURCE.read_text(encoding="utf8")
+    st = (ROOT / "illustrated-src/game/standalone.ts").read_text(encoding="utf8")
+    en = (ROOT / "illustrated-src/game/engine.ts").read_text(encoding="utf8")
+    problems: list[str] = []
+    # the pills: drawn from goalHud, inside the level HUD
+    if "goalHud(" not in draw:
+        problems.append("draw.ts no longer renders the pinned objectives (goalHud)")
+    # restart: the button exists AND is gated on a live mission
+    i = st.find('"RESTART LEVEL"')
+    if i < 0:
+        problems.append("the pause sheet lost RESTART LEVEL")
+    elif "engine.world.lvl" not in st[max(0, i - 600):i]:
+        problems.append("RESTART LEVEL is no longer gated on a mission being flown - "
+                        "free flight would grow a restart that means TRY AGAIN")
+    if "engine.restartLevel()" not in st:
+        problems.append("RESTART LEVEL is not wired to engine.restartLevel")
+    # the continue: sheet -> engine -> sim, and the two prices
+    if "engine.continueRun()" not in st:
+        problems.append("the crash sheet lost its acorn continue")
+    if "reviveRun(world, save)" not in en:
+        problems.append("engine.continueRun no longer consults sim.reviveRun")
+    sim = (ROOT / "illustrated-src/game/sim.ts").read_text(encoding="utf8")
+    if not re.search(r"w\.score > 100 \? 50 : 10", sim):
+        problems.append("the continue prices drifted from the owner's spec "
+                        "(10, or 50 past gate 100)")
+    if problems:
+        qa.fail("run lifelines: " + "; ".join(problems))
+    else:
+        qa.ok("objectives pinned, mission restart gated, acorn continue wired at both prices")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -1655,6 +1695,7 @@ def main() -> int:
     verify_pose_domes(qa)
     verify_tap_frame_skip(qa)
     verify_motion_release(qa)
+    verify_run_lifelines(qa)
     verify_baked_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)

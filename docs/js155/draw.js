@@ -1,12 +1,13 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=154";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=154";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=154";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=154";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=154";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=154";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=154";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=154";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=154";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=155";
+import { goalHud } from "./campaign.js?v=155";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=155";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=155";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=155";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=155";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=155";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=155";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=155";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=155";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3800,6 +3801,37 @@ export function drawHud(ctx, w, art) {
         ctx.font = "700 11px Figtree, system-ui";
         ctx.fillStyle = "rgba(255,224,128,0.9)";
         ctx.fillText(w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.id} · ${w.lvl.def.name}`, W / 2, 64);
+        // THE THREE OBJECTIVES RIDE THE TOP OF THE RUN. Owner's call: pinned,
+        // with counters, green while complete or holding, red the moment one is
+        // lost - the touch on "touch no planet", the 28th tap against a cap of
+        // 27. Gate missions only: a wormhole or race mission runs its own strip
+        // in this exact band and two banners deep is a windshield, not a HUD.
+        if (w.lvl.def.base !== "tunnel" && w.lvl.def.base !== "race" && w.lvl.def.base !== "spill") {
+            // stats the pills read must be LIVE: taps/bounces/shields tick in the
+            // sim, but acorns and gold sync into stats only at the judge - so the
+            // run's own counters stand in for them here
+            const live = { ...w.lvl.stats, acorns: w.runAcorns };
+            const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl.def));
+            ctx.font = "800 9.5px Figtree, system-ui";
+            const padX = 7, gapX = 6, ph = 17, py = 74;
+            const widths = pills.map((p) => ctx.measureText(p.text).width + padX * 2);
+            let x = W / 2 - (widths.reduce((a, b) => a + b, 0) + gapX * (pills.length - 1)) / 2;
+            for (let i = 0; i < pills.length; i++) {
+                const p = pills[i];
+                ctx.fillStyle = p.state === "done" ? "rgba(52,140,88,.42)"
+                    : p.state === "lost" ? "rgba(168,44,36,.5)" : "rgba(16,24,44,.55)";
+                round(ctx, x, py, widths[i], ph, 8);
+                ctx.fill();
+                ctx.strokeStyle = p.state === "done" ? "rgba(111,210,144,.8)"
+                    : p.state === "lost" ? "rgba(255,122,104,.85)" : "rgba(255,255,255,.22)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.fillStyle = p.state === "done" ? "#8df0b4"
+                    : p.state === "lost" ? "#ffa294" : "#d7e6f7";
+                ctx.fillText(p.text, x + widths[i] / 2, py + 12);
+                x += widths[i] + gapX;
+            }
+        }
     }
     else {
         ctx.fillText(String(w.score), W / 2, 46);

@@ -1,4 +1,5 @@
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
@@ -4071,6 +4072,37 @@ if (w.lvl) {
       w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.id} · ${w.lvl.def.name}`,
       W / 2, 64,
     );
+    // THE THREE OBJECTIVES RIDE THE TOP OF THE RUN. Owner's call: pinned,
+    // with counters, green while complete or holding, red the moment one is
+    // lost - the touch on "touch no planet", the 28th tap against a cap of
+    // 27. Gate missions only: a wormhole or race mission runs its own strip
+    // in this exact band and two banners deep is a windshield, not a HUD.
+    if (w.lvl.def.base !== "tunnel" && w.lvl.def.base !== "race" && w.lvl.def.base !== "spill") {
+      // stats the pills read must be LIVE: taps/bounces/shields tick in the
+      // sim, but acorns and gold sync into stats only at the judge - so the
+      // run's own counters stand in for them here
+      const live = { ...w.lvl.stats, acorns: w.runAcorns };
+      const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl!.def));
+      ctx.font = "800 9.5px Figtree, system-ui";
+      const padX = 7, gapX = 6, ph = 17, py = 74;
+      const widths = pills.map((p) => ctx.measureText(p.text).width + padX * 2);
+      let x = W / 2 - (widths.reduce((a, b) => a + b, 0) + gapX * (pills.length - 1)) / 2;
+      for (let i = 0; i < pills.length; i++) {
+        const p = pills[i];
+        ctx.fillStyle = p.state === "done" ? "rgba(52,140,88,.42)"
+          : p.state === "lost" ? "rgba(168,44,36,.5)" : "rgba(16,24,44,.55)";
+        round(ctx, x, py, widths[i], ph, 8);
+        ctx.fill();
+        ctx.strokeStyle = p.state === "done" ? "rgba(111,210,144,.8)"
+          : p.state === "lost" ? "rgba(255,122,104,.85)" : "rgba(255,255,255,.22)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = p.state === "done" ? "#8df0b4"
+          : p.state === "lost" ? "#ffa294" : "#d7e6f7";
+        ctx.fillText(p.text, x + widths[i] / 2, py + 12);
+        x += widths[i] + gapX;
+      }
+    }
   } else {
     ctx.fillText(String(w.score), W / 2, 46);
   }
