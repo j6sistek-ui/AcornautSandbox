@@ -1,12 +1,12 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=150";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=150";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=150";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=150";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=150";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=150";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=150";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=150";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=150";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=151";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=151";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=151";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=151";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=151";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=151";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=151";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=151";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=151";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2939,6 +2939,38 @@ const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
 const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
+// THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
+// from one shared motion, and that motion loses the pilot's LOWER BODY at
+// its extremes - hip, haunch and hind leg leave the silhouette entirely and
+// the torso becomes a bar from neck to tail. Measured, not guessed: every
+// one of those twenty-two banks bottoms out on the SAME frame, 5, while the
+// five hand-animated banks bottom out at 9, 10, 14 and 15. An identical
+// damage point across twenty-two sheets is a shared generator, not a
+// coincidence.
+//
+// Redrawing them is the real fix. Until then a bank can name the frames it
+// lost, and the tap plays the survivors across the same duration - the
+// gesture keeps its timing and its endpoints, it just steps through fewer
+// poses. Purely subtractive: no frame is altered, and emptying a list
+// restores the bank exactly.
+const TAP_FRAME_SKIP = {
+    // Ion, measured torso mass per frame as a share of the bank's best:
+    //   1:100  2:97  3:88  4:78  5:73  6:75  7:81  8:89
+    //   9:96  10:99 11:95 12:84 13:81 14:83 15:90 16:100
+    // Two troughs, not one. Dropping only the severe 5-7 lifted the median
+    // from 89% to 97% on screen but left the thin frames visible, so the cut
+    // is at 88%: everything below it loses the hip and the hind leg.
+    iontrim: [4, 5, 6, 7, 12, 13, 14],
+};
+/** The frames of a bank that are actually fit to draw, 0-based. */
+function tapFrameOrder(id, n) {
+    const skip = TAP_FRAME_SKIP[id];
+    const all = [];
+    for (let i = 0; i < n; i++)
+        if (!skip || skip.indexOf(i + 1) < 0)
+            all.push(i);
+    return all.length ? all : [0];
+}
 let headingA = 0;
 let headingClock = -1;
 function trackHeadingMotion(t, vy, vx) {
@@ -3163,7 +3195,10 @@ lean = SUIT_LEAN_DEFAULT) {
         else if (fullTap) {
             // frame registration comes from the bank's own first frame, so every
             // frame lands at the same scale and the character never pulses in size
-            const idx = Math.min(15, Math.floor((tapAnimT / TAP_ANIM_DURATION) * 16));
+            // play the surviving frames over the whole tap, so a skipped frame
+            // costs a pose rather than shortening the gesture
+            const order = tapFrameOrder(suit.id, tapFrames.length);
+            const idx = order[Math.min(order.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * order.length))];
             const ref16 = tapFrames[0].box ?? ref;
             drawRigLayer(ctx, tapFrames[idx], ref16, x, y, size, 0, undefined, halo);
             if (!wearsOwnHead(suit)) {
