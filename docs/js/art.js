@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=151";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=152";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -227,7 +227,10 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     flight: 16, iontrim: 16, copper: 16, frost: 16,
     voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
     ghost: 16, gemmie: 16, sammie: 16,
-    seraph: 16, leviathan: 16, verdant: 16, cryostar: 16,
+    // seraph's generated tap bank is retired: its GENERATED motion lost the
+    // pilot's lower body at its extremes, and the suit flies a painted
+    // ascent/descent ramp now - the first delivery of the flight-bank sweep.
+    leviathan: 16, verdant: 16, cryostar: 16,
     // These eight stay here only because the SUITS do - they are beta-gated in
     // catalog.ts, so production never loads them. Promote the pair together.
     ...(IS_BETA ? {
@@ -237,8 +240,8 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
-const ASC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9 } : {};
-const DESC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9 } : {};
+const ASC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8 } : {};
+const DESC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8 } : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
