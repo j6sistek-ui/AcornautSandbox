@@ -1,5 +1,5 @@
 {
- "artVer": "154",
+ "artVer": "156",
  "suits": [
   {
    "id": "flight",
@@ -385,9 +385,9 @@
    "key": "seraph-asc-1",
    "file": "suits/seraph-asc-1.png",
    "dome": [
-    203,
-    135,
-    34
+    205,
+    129,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -399,9 +399,9 @@
    "key": "seraph-asc-2",
    "file": "suits/seraph-asc-2.png",
    "dome": [
-    203,
-    132,
-    34
+    205,
+    126,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -413,9 +413,9 @@
    "key": "seraph-asc-3",
    "file": "suits/seraph-asc-3.png",
    "dome": [
-    203,
-    129,
-    34
+    205,
+    123,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -427,9 +427,9 @@
    "key": "seraph-asc-4",
    "file": "suits/seraph-asc-4.png",
    "dome": [
-    204,
-    138,
-    34
+    206,
+    132,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -441,9 +441,9 @@
    "key": "seraph-asc-5",
    "file": "suits/seraph-asc-5.png",
    "dome": [
-    203,
-    135,
-    34
+    205,
+    129,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -455,9 +455,9 @@
    "key": "seraph-asc-6",
    "file": "suits/seraph-asc-6.png",
    "dome": [
-    203,
-    132,
-    34
+    205,
+    126,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -469,9 +469,9 @@
    "key": "seraph-asc-7",
    "file": "suits/seraph-asc-7.png",
    "dome": [
-    203,
-    129,
-    34
+    205,
+    123,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -483,9 +483,9 @@
    "key": "seraph-asc-8",
    "file": "suits/seraph-asc-8.png",
    "dome": [
-    202,
-    126,
-    34
+    204,
+    120,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -497,9 +497,9 @@
    "key": "seraph-desc-1",
    "file": "suits/seraph-desc-1.png",
    "dome": [
-    203,
-    135,
-    34
+    205,
+    129,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -511,9 +511,9 @@
    "key": "seraph-desc-2",
    "file": "suits/seraph-desc-2.png",
    "dome": [
-    203,
-    138,
-    34
+    205,
+    132,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -525,9 +525,9 @@
    "key": "seraph-desc-3",
    "file": "suits/seraph-desc-3.png",
    "dome": [
-    203,
-    141,
-    34
+    205,
+    135,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -539,9 +539,9 @@
    "key": "seraph-desc-4",
    "file": "suits/seraph-desc-4.png",
    "dome": [
-    203,
-    144,
-    34
+    205,
+    138,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -553,9 +553,9 @@
    "key": "seraph-desc-5",
    "file": "suits/seraph-desc-5.png",
    "dome": [
-    202,
-    147,
-    34
+    204,
+    141,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -567,9 +567,9 @@
    "key": "seraph-desc-6",
    "file": "suits/seraph-desc-6.png",
    "dome": [
-    201,
-    150,
-    34
+    203,
+    144,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -581,9 +581,9 @@
    "key": "seraph-desc-7",
    "file": "suits/seraph-desc-7.png",
    "dome": [
-    202,
-    160,
-    34
+    204,
+    154,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -595,9 +595,9 @@
    "key": "seraph-desc-8",
    "file": "suits/seraph-desc-8.png",
    "dome": [
-    200,
-    164,
-    34
+    202,
+    158,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -610,10 +610,10 @@
    "name": "Clear",
    "file": "helms/clear.png",
    "glass": [
-    136,
-    151,
-    120.1,
-    8
+    129,
+    128,
+    125,
+    0
    ]
   },
   {
@@ -621,10 +621,10 @@
    "name": "Ion",
    "file": "helms/ion.png",
    "glass": [
-    136,
-    151,
-    120.1,
-    8
+    129,
+    128,
+    125,
+    0
    ]
   },
   {
@@ -632,10 +632,10 @@
    "name": "Solar",
    "file": "helms/solar.png",
    "glass": [
-    135,
-    151,
-    120.1,
-    8
+    128,
+    128,
+    125,
+    0
    ]
   },
   {
@@ -643,10 +643,10 @@
    "name": "Nebula",
    "file": "helms/nebula.png",
    "glass": [
-    136,
-    152,
-    120.1,
-    8
+    129,
+    129,
+    125,
+    0
    ]
   },
   {
@@ -654,10 +654,10 @@
    "name": "Lunar",
    "file": "helms/lunar.png",
    "glass": [
-    136,
-    149,
-    120.1,
-    8
+    129,
+    126,
+    125,
+    -4
    ]
   },
   {
@@ -665,10 +665,10 @@
    "name": "Void",
    "file": "helms/void.png",
    "glass": [
-    132,
-    151,
-    120.1,
-    8
+    125,
+    128,
+    125,
+    0
    ]
   },
   {
@@ -676,10 +676,10 @@
    "name": "Comet",
    "file": "helms/comet.png",
    "glass": [
-    136,
-    152,
-    120.1,
-    8
+    129,
+    129,
+    125,
+    0
    ]
   },
   {
@@ -687,10 +687,10 @@
    "name": "Cherry",
    "file": "helms/cherry.png",
    "glass": [
-    133,
-    151,
-    120.1,
-    8
+    126,
+    128,
+    125,
+    0
    ]
   },
   {
@@ -709,10 +709,10 @@
    "name": "Aurora",
    "file": "helms/aurora.png",
    "glass": [
-    135.1,
-    150.5,
-    122.5,
-    8
+    128,
+    127,
+    127.5,
+    0
    ]
   },
   {
@@ -720,10 +720,10 @@
    "name": "Meteor",
    "file": "helms/meteor.png",
    "glass": [
-    135.1,
-    150.5,
-    122.5,
-    8
+    128,
+    127,
+    127.5,
+    0
    ]
   },
   {
@@ -731,10 +731,10 @@
    "name": "Chrono",
    "file": "helms/chrono.png",
    "glass": [
-    139.1,
-    149.5,
-    122.5,
-    8
+    132,
+    126,
+    127.5,
+    0
    ]
   },
   {
@@ -742,10 +742,10 @@
    "name": "Opal",
    "file": "helms/gemmie.png",
    "glass": [
-    135.4,
-    152.3,
-    126.7,
-    8
+    128,
+    128,
+    131.9,
+    0
    ]
   },
   {
@@ -753,10 +753,10 @@
    "name": "Phoenix",
    "file": "helms/phoenix.png",
    "glass": [
-    137.2,
-    139.8,
-    124.1,
-    8
+    130,
+    116,
+    129.2,
+    -2
    ]
   },
   {
@@ -775,10 +775,10 @@
    "name": "Seraph",
    "file": "helms/seraph.png",
    "glass": [
-    131.2,
-    171.2,
-    105.7,
-    8
+    125,
+    151,
+    110,
+    0
    ]
   },
   {
@@ -786,10 +786,10 @@
    "name": "Chronarch",
    "file": "helms/chronarch.png",
    "glass": [
-    134.1,
-    143.6,
-    120.7,
-    8
+    127.1,
+    120.5,
+    125.6,
+    0
    ]
   },
   {
@@ -809,10 +809,10 @@
    "name": "Paladin",
    "file": "helms/paladin.png",
    "glass": [
-    139.7,
-    159,
-    114.9,
-    8
+    133,
+    137,
+    119.6,
+    0
    ]
   },
   {
@@ -831,10 +831,10 @@
    "name": "Verdant",
    "file": "helms/verdant.png",
    "glass": [
-    148.1,
-    139.3,
-    121.6,
-    8
+    141,
+    116,
+    126.6,
+    0
    ]
   },
   {
@@ -842,10 +842,10 @@
    "name": "Cryostar",
    "file": "helms/cryostar.png",
    "glass": [
-    133.5,
-    145.8,
-    129.3,
-    8
+    126,
+    121,
+    134.6,
+    0
    ]
   },
   {
@@ -853,10 +853,10 @@
    "name": "Eclipse",
    "file": "helms/eclipse.png",
    "glass": [
-    134.8,
-    154.5,
-    133,
-    8
+    127,
+    129,
+    138.4,
+    0
    ]
   },
   {
@@ -864,10 +864,10 @@
    "name": "Cinderforge",
    "file": "helms/cinderforge.png",
    "glass": [
-    134.5,
-    146.3,
-    111.4,
-    8
+    128,
+    125,
+    115.9,
+    0
    ]
   },
   {
@@ -875,10 +875,10 @@
    "name": "Groveguard",
    "file": "helms/groveguard.png",
    "glass": [
-    135.9,
-    143.5,
-    101.8,
-    8
+    130,
+    124,
+    106,
+    0
    ],
    "suitOnly": "groveguard",
    "opaqueVisor": true
@@ -888,10 +888,10 @@
    "name": "Cosmic",
    "file": "helms/cosmic.png",
    "glass": [
-    141,
-    141.9,
-    119.3,
-    8
+    134,
+    119,
+    124.2,
+    0
    ]
   },
   {
@@ -899,10 +899,10 @@
    "name": "Sunforged",
    "file": "helms/sunforged.png",
    "glass": [
-    130.2,
-    151.7,
-    123.9,
-    8
+    123,
+    128,
+    129,
+    0
    ],
    "suitOnly": "sunforged",
    "opaqueVisor": true
@@ -912,10 +912,10 @@
    "name": "Abyssal",
    "file": "helms/abyssal.png",
    "glass": [
-    132.2,
-    154.7,
-    123.8,
-    8
+    125,
+    131,
+    128.8,
+    0
    ]
   },
   {
@@ -923,10 +923,10 @@
    "name": "Amethyst",
    "file": "helms/amethyst.png",
    "glass": [
-    134.1,
-    151.2,
-    121.3,
-    8
+    127,
+    128,
+    126.3,
+    0
    ]
   },
   {
@@ -934,10 +934,10 @@
    "name": "Ivoryguard",
    "file": "helms/ivoryguard.png",
    "glass": [
-    134.3,
-    150,
-    125.5,
-    8
+    127,
+    126,
+    130.6,
+    0
    ]
   },
   {
@@ -945,10 +945,10 @@
    "name": "Reactor",
    "file": "helms/reactor.png",
    "glass": [
-    145.4,
-    127.7,
-    92.4,
-    8
+    140,
+    110,
+    96.2,
+    0
    ]
   }
  ]
