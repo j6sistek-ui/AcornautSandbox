@@ -3316,6 +3316,55 @@ function die(w: World, save: SaveData) {
   return "die";
 }
 
+// ------------------------------------------------- the acorn continue
+//
+// THE AD SLOT, PAID IN ACORNS FOR NOW. Owner's spec, verbatim: "free
+// flight temporary ad replacement spot is, on death, 10 acorns to
+// continue, or 50 acorns if over level 100. temporary, don't argue
+// economics of it. it's the ad screen." So this is the ad screen: the
+// crash sheet offers a continue, the wallet pays what the ad will one day
+// pay, and when the rail exists the trigger swaps and nothing else moves.
+//
+// The run was already BANKED by die() - acorns, bests, XP, the runs tally
+// - so a continue is a continuation of the score, not of the bank:
+// runAcorns restarts at zero and the next crash banks only what was
+// gathered after the revive. Score, distance and difficulty carry on.
+// Free flight only: a mission has protection and a restart of its own,
+// a wormhole corridor is a fifteen-second side trip, and Hyper Run is a
+// deterministic time trial where a continue would be a lie.
+
+export function reviveCost(w: World) {
+  return w.score > 100 ? 50 : 10;
+}
+
+export function reviveRun(w: World, save: SaveData): boolean {
+  if (w.screen !== "dead" || w.lvl || w.race || w.flight === "tunnel") return false;
+  const cost = reviveCost(w);
+  if ((save.acorns ?? 0) < cost) return false;
+  save.acorns -= cost;
+  writeSave(save);
+  // the same landing the shield gives, without spending one: the killzone
+  // is swept, the pilot re-enters at the nearest safe height under a short
+  // freeze, and the recovery banner says what happened
+  const sx = w.W * PHYS.squirrelX;
+  const cy = safeY(w);
+  clearDebrisNear(w, sx, cy, 260, sx, cy, 300);
+  w.planets = w.planets.filter((p) => p.x - p.r > sx + 90 || p.x + p.r < sx - 150);
+  w.runAcorns = 0;
+  w.squirrel.y = cy;
+  w.squirrel.vy = 0;
+  w.squirrel.rot = 0;
+  w.hitCooldown = 0;
+  w.bounceUp = false;
+  w.shieldFreeze = 0.9;
+  w.shieldSlow = 3;
+  w.absorbGrace = 2.2;
+  w.recoveryMsg = "FLIGHT CONTINUES!";
+  w.deadTimer = 0;
+  w.screen = "play";
+  return true;
+}
+
 export function bankDeathLevels(_w: World, _save: SaveData) {
   /* levels are now stamped in die() */
 }

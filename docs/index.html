@@ -918,6 +918,13 @@
       55% { transform: translate(-50%, 6px); opacity: 1; } }
     @media (prefers-reduced-motion: reduce) {
       .ac-coachdown::after { animation: none; opacity: 1; } }
+    /* the run lifelines: the continue leads with the acorn's gold, the
+       shortfall note stays quiet, and a mission's restart reads as the
+       middle path between resume and abort */
+    .ac-continue { background: linear-gradient(180deg, #ffd76a, #d4a12e);
+      color: #241a04; border-color: #ffe9a8; }
+    .ac-continue-short { opacity: .75; margin: 2px 0 6px; }
+    .ac-restart { border-color: rgba(255,215,106,.55); color: #ffd76a; }
     .ac-pulse { animation: acPulse 1.15s ease-in-out infinite; border-color: #ffd76a !important; }
     @keyframes acPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 106, .55); }
       55% { box-shadow: 0 0 0 8px rgba(255, 215, 106, 0); } }
@@ -1537,7 +1544,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js154/standalone.js";
+    import { bootStandalone } from "./js156/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

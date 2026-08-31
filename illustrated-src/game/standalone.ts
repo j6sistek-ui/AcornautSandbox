@@ -221,7 +221,15 @@ export async function bootStandalone(root: HTMLElement) {
       resume.onclick = () => engine.resume();
       const abort = el("button", "ac-ghost", "ABORT TO TITLE");
       abort.onclick = () => engine.open("title");
-      act.append(resume, abort);
+      // A MISSION CAN START OVER FROM THE PAUSE. Owner's call: a pilot two
+      // gates into a ruined three-star attempt should not have to abort to
+      // the title and walk the chart back in. Same level, fresh run, no
+      // loss recorded - the pause simply becomes the launch.
+      if (engine.world.lvl) {
+        const restart = el("button", "ac-ghost ac-restart", "RESTART LEVEL");
+        restart.onclick = () => engine.restartLevel();
+        act.append(resume, restart, abort);
+      } else act.append(resume, abort);
       sheet.append(act);
       overlay.append(sheet);
       return;
@@ -292,7 +300,25 @@ export async function bootStandalone(root: HTMLElement) {
           gift.append(grow, el("p", "ac-sub ac-mid", "Yours, free — waiting in the Loadout."));
           sheet.append(gift);
         }
-        const again = el("button", "ac-primary", "TRY AGAIN");
+        // THE AD SLOT, PAID IN ACORNS FOR NOW - the owner's stand-in for
+        // the rewarded revive: 10 acorns to fly on, 50 past gate 100. The
+        // wallet already holds this run's acorns (the crash banks before
+        // this sheet opens), so a good run usually funds its own continue.
+        // Not offered over the graduation gift - a brand-new pilot's first
+        // crash is the gear moment, not a paywall.
+        if (engine.save.guide !== "reward") {
+          const cost = engine.continueCost();
+          const funds = engine.save.acorns ?? 0;
+          if (funds >= cost) {
+            const cont = el("button", "ac-primary ac-continue", `CONTINUE — ${cost} ACORNS`);
+            cont.onclick = () => engine.continueRun();
+            sheet.append(cont);
+          } else {
+            sheet.append(el("p", "ac-sub ac-continue-short",
+              `Continue costs ${cost} acorns — you have ${funds}`));
+          }
+        }
+        const again = el("button", engine.save.guide !== "reward" && (engine.save.acorns ?? 0) >= engine.continueCost() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
         again.onclick = () => engine.fly(snap.flight);
         const menu = el("button", "ac-ghost", engine.save.guide === "reward" ? "COLLECT" : "MAIN MENU");
         menu.onclick = () => engine.dismissDead();
