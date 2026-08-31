@@ -2667,28 +2667,37 @@ const DOME: Record<string, [number, number, number]> = {
 // helmet uses it yet, so every entry below is three numbers and draws
 // exactly as it did before the field existed. The rig editor writes it.
 const HELM_GLASS: Record<string, [number, number, number] | [number, number, number, number]> = {
-  comet: [129, 129, 125],
-  "clear": [129, 128, 125],
-  "ion": [129, 128, 125],
-  "solar": [128, 128, 125],
-  "nebula": [129, 129, 125],
-  "lunar": [129, 126, 125, -4],
-  "void": [125, 128, 125],
-  "cherry": [126, 128, 125],
+  // THE LUNAR CALIBRATION, 31 Aug 2026. The owner fitted Lunar's glass by
+  // hand in the rig editor - forward 5.6% of the glass radius, raised
+  // 18.4%, drawn 4% larger, tilted to +8 - and asked for that effect
+  // replicated across the roster ("try using just the lunar values and
+  // replicating the effect"). Every BUBBLE below carries the same
+  // proportional transform. The four non-bubble shells keep their measured
+  // geometry - royal's crown, princess and sammie's face openings, and
+  // leviathan's suit-locked hand fit - because an opening is a position,
+  // not a proportion; refit those in the editor if they need it.
+  "comet": [136, 152, 120.1, 8],
+  "clear": [136, 151, 120.1, 8],
+  "ion": [136, 151, 120.1, 8],
+  "solar": [135, 151, 120.1, 8],
+  "nebula": [136, 152, 120.1, 8],
+  "lunar": [136, 149, 120.1, 8],
+  "void": [132, 151, 120.1, 8],
+  "cherry": [133, 151, 120.1, 8],
   // Royal wears a crown, so its sphere is scaled down inside the frame
   // and never measured 125 like the bare bubbles. Measured off the art.
   "royal": [124, 156, 98],
-  "aurora": [128, 127, 127.5],
-  "meteor": [128, 127, 127.5],
-  "chrono": [132, 126, 127.5],
+  "aurora": [135.1, 150.5, 122.5, 8],
+  "meteor": [135.1, 150.5, 122.5, 8],
+  "chrono": [139.1, 149.5, 122.5, 8],
   // measured off the corrected art. These renders are three-quarter
   // views, so the visor sits right of frame centre — that offset is real
   // and paintDome relies on it to seat the helmet on the head.
-  "gemmie": [128, 128, 131.9],
-  "phoenix": [130, 116, 129.2, -2],
-  "seraph": [125, 151, 110],
-  "chronarch": [127.1, 120.5, 125.6],
-  "paladin": [133, 137, 119.6],
+  "gemmie": [135.4, 152.3, 126.7, 8],
+  "phoenix": [137.2, 139.8, 124.1, 8],
+  "seraph": [131.2, 171.2, 105.7, 8],
+  "chronarch": [134.1, 143.6, 120.7, 8],
+  "paladin": [139.7, 159, 114.9, 8],
   // Princess is a shell with a face opening, not a bubble, so the head does
   // not sit at the shell's centre — it sits behind the opening, back from it
   // by about a fifth of its own radius, because the squirrel's face is
@@ -2707,17 +2716,17 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   // suit (suitOnly in catalog.ts), so this number never has to sit right
   // on anyone else.
   "leviathan": [129.8, 110.6, 103.6, 12],
-  "verdant": [141, 116, 126.6],
-  "cryostar": [126, 121, 134.6],
-  "eclipse": [127, 129, 138.4],
-  "cinderforge": [128, 125, 115.9],
-  "groveguard": [130, 124, 106],
-  "cosmic": [134, 119, 124.2],
-  "sunforged": [123, 128, 129],
-  "abyssal": [125, 131, 128.8],
-  "amethyst": [127, 128, 126.3],
-  "ivoryguard": [127, 126, 130.6],
-  "reactor": [140, 110, 96.2],
+  "verdant": [148.1, 139.3, 121.6, 8],
+  "cryostar": [133.5, 145.8, 129.3, 8],
+  "eclipse": [134.8, 154.5, 133, 8],
+  "cinderforge": [134.5, 146.3, 111.4, 8],
+  "groveguard": [135.9, 143.5, 101.8, 8],
+  "cosmic": [141, 141.9, 119.3, 8],
+  "sunforged": [130.2, 151.7, 123.9, 8],
+  "abyssal": [132.2, 154.7, 123.8, 8],
+  "amethyst": [134.1, 151.2, 121.3, 8],
+  "ivoryguard": [134.3, 150, 125.5, 8],
+  "reactor": [145.4, 127.7, 92.4, 8],
 };
 
 // The real helmet art, its glass centre punched translucent once so the
