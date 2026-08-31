@@ -978,6 +978,12 @@ CUSTOM_FLIGHT_SUITS = {
     "flight",     # the default, and the reference the rest are measured against
     "eclipse",    # owner-supplied, and the only granted suit on this tier today
     "cyber",      # declared shape exception, 25 Aug 2026
+    "seraph",     # owner-granted 31 Aug 2026: first delivery of the Grok
+                  # flight-bank sweep - an 8/8 ascent/descent ramp replacing
+                  # the generated tap bank that lost the pilot's lower body.
+                  # The sweep will grant the remaining generated-bank suits
+                  # the same way, one delivery at a time, each added HERE on
+                  # arrival - the grant stays per-suit and deliberate.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
