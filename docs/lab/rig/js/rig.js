@@ -550,10 +550,17 @@ export async function bootRig(root) {
     const modeSel = mkSel([
         { v: "suit", t: "one suit × all helmets" },
         { v: "helm", t: "one helmet × all suits" },
+        { v: "frames", t: "one helmet × animation frames" },
         { v: "one", t: "one × one" },
         { v: "all", t: "everything" },
     ], S.mode, (v) => {
         S.mode = v;
+        // A FITTING PASS OVER FRAMES EDITS FRAMES. In the frames view the
+        // whole point is per-frame numbers, and the HELMET target would make
+        // one drag move every tile at once - the owner hit exactly that. So
+        // entering the view snaps the target to the frame's own head.
+        if (v === "frames")
+            S.target = "suit";
         build();
     });
     const suitSel = mkSel(tables.suits.map((s) => ({ v: s.id, t: s.name })), S.suit, (v) => {
@@ -682,6 +689,12 @@ export async function bootRig(root) {
             return wearable
                 .filter((s) => wears(s, helmOf(S.helm)))
                 .map((s) => [s, helmOf(S.helm)]);
+        // the fitting pass the frame entries exist for: every animation frame
+        // in one screen under one helmet, no statics between them
+        if (S.mode === "frames")
+            return wearable
+                .filter((s) => s.frame && wears(s, helmOf(S.helm)))
+                .map((s) => [s, helmOf(S.helm)]);
         const out = [];
         for (const s of wearable)
             for (const h of tables.helmets)
@@ -693,7 +706,7 @@ export async function bootRig(root) {
         modeSel.value = S.mode;
         suitSel.value = S.suit;
         helmSel.value = S.helm;
-        suitSel.style.display = S.mode === "helm" ? "none" : "";
+        suitSel.style.display = S.mode === "helm" || S.mode === "frames" ? "none" : "";
         helmSel.style.display = S.mode === "suit" ? "none" : "";
         stage.innerHTML = "";
         tiles = [];

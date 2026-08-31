@@ -149,7 +149,7 @@ function punch(rec: Loaded, id: string, g: Glass, opaque = false) {
 
 // ------------------------------------------------------------------ state
 
-type Mode = "one" | "suit" | "helm" | "all";
+type Mode = "one" | "suit" | "helm" | "frames" | "all";
 type Target = "helm" | "suit" | "pair";
 
 const S = {
@@ -599,12 +599,18 @@ export async function bootRig(root: HTMLElement) {
     [
       { v: "suit", t: "one suit × all helmets" },
       { v: "helm", t: "one helmet × all suits" },
+      { v: "frames", t: "one helmet × animation frames" },
       { v: "one", t: "one × one" },
       { v: "all", t: "everything" },
     ],
     S.mode,
     (v) => {
       S.mode = v as Mode;
+      // A FITTING PASS OVER FRAMES EDITS FRAMES. In the frames view the
+      // whole point is per-frame numbers, and the HELMET target would make
+      // one drag move every tile at once - the owner hit exactly that. So
+      // entering the view snaps the target to the frame's own head.
+      if (v === "frames") S.target = "suit";
       build();
     },
   );
@@ -755,6 +761,12 @@ export async function bootRig(root: HTMLElement) {
       return wearable
         .filter((s) => wears(s, helmOf(S.helm)))
         .map((s) => [s, helmOf(S.helm)] as [SuitRow, HelmRow]);
+    // the fitting pass the frame entries exist for: every animation frame
+    // in one screen under one helmet, no statics between them
+    if (S.mode === "frames")
+      return wearable
+        .filter((s) => s.frame && wears(s, helmOf(S.helm)))
+        .map((s) => [s, helmOf(S.helm)] as [SuitRow, HelmRow]);
     const out: [SuitRow, HelmRow][] = [];
     for (const s of wearable) for (const h of tables.helmets) if (wears(s, h)) out.push([s, h]);
     return out;
@@ -764,7 +776,7 @@ export async function bootRig(root: HTMLElement) {
     (modeSel as HTMLSelectElement).value = S.mode;
     (suitSel as HTMLSelectElement).value = S.suit;
     (helmSel as HTMLSelectElement).value = S.helm;
-    suitSel.style.display = S.mode === "helm" ? "none" : "";
+    suitSel.style.display = S.mode === "helm" || S.mode === "frames" ? "none" : "";
     helmSel.style.display = S.mode === "suit" ? "none" : "";
     stage.innerHTML = "";
     tiles = [];
