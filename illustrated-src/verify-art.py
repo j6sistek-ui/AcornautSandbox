@@ -1504,6 +1504,95 @@ def verify_baked_domes(qa: QA) -> None:
               f"dome; every other anchor is bare-headed bank art")
 
 
+def _torso_mass(path) -> float:
+    """Mean silhouette thickness across the middle of the body.
+
+    The generated banks lose the pilot's HIP, HAUNCH and HIND LEG at their
+    extremes - the torso becomes a bar from neck to tail. Total alpha area
+    does not catch it (the tail grows as the body shrinks, so area holds to
+    within 10%), and neither does the bounding box. Thickness through the
+    body band does.
+    """
+    import numpy as np
+    with Image.open(path) as im:
+        a = np.array(im.convert("RGBA"))[:, :, 3] > 16
+    ys, xs = np.where(a)
+    if not len(xs):
+        return 0.0
+    x0, x1 = int(xs.min()), int(xs.max())
+    w = x1 - x0 + 1
+    col = a.sum(0).astype(float)
+    return float(col[int(x0 + 0.28 * w):int(x0 + 0.73 * w) + 1].mean())
+
+
+def verify_tap_frame_skip(qa: QA) -> None:
+    """A bank may only skip frames WORSE than every frame it keeps.
+
+    Twenty-two of the tap banks came off one shared generated motion that
+    loses the pilot's lower body at its extremes - measured, every one of
+    them bottoms out on the same frame, 5, while the five hand-animated
+    banks bottom out at 9, 10, 14 and 15. Redrawing them is the real fix;
+    TAP_FRAME_SKIP is the interim, and it is dangerous in one specific way:
+    it is a hand-written list of numbers that silently deletes art.
+
+    So the list is held to the art it describes. Every skipped frame must
+    measure thinner through the torso than every frame kept - which makes
+    the table impossible to justify after the fact and impossible to drift.
+    Skip a good frame, or keep a bad one, and this fails. A bank must also
+    keep enough poses to still read as a gesture.
+    """
+    src = DRAW_SOURCE.read_text(encoding="utf8")
+    m = re.search(r"const TAP_FRAME_SKIP: Record<string, number\[\]> = \{(.*?)\n\};",
+                  src, re.DOTALL)
+    if not m:
+        qa.fail("tap frame skip: TAP_FRAME_SKIP is gone from draw.ts")
+        return
+    body = "\n".join(l for l in m.group(1).splitlines()
+                     if not l.lstrip().startswith("//"))
+    table = {sid: [int(n) for n in re.findall(r"\d+", nums)]
+             for sid, nums in re.findall(r"(\w+)\s*:\s*\[([^\]]*)\]", body)}
+    if not re.search(r"function tapFrameOrder\b", src) or "tapFrameOrder(" not in src.split("function tapFrameOrder")[-1]:
+        qa.fail("tap frame skip: tapFrameOrder is gone, so the table does nothing")
+        return
+    problems: list[str] = []
+    checked = 0
+    for sid, skip in sorted(table.items()):
+        frames = sorted((ROOT / "docs/art/suits").glob(f"{sid}-tap-*.png"),
+                        key=lambda f: int(re.search(r"-(\d+)\.png$", f.name).group(1)))
+        if not frames:
+            problems.append(f"{sid} has no tap bank, so skipping frames of it is a typo")
+            continue
+        n = len(frames)
+        bad = [i for i in skip if i < 1 or i > n]
+        if bad:
+            problems.append(f"{sid} skips frame(s) {bad} of a {n}-frame bank")
+            continue
+        kept = [i for i in range(1, n + 1) if i not in skip]
+        if len(kept) < 8:
+            problems.append(f"{sid} would play only {len(kept)} poses - too few to read "
+                            f"as a tap; the bank needs redrawing, not more skipping")
+            continue
+        mass = {i: _torso_mass(frames[i - 1]) for i in range(1, n + 1)}
+        worst_kept = min(mass[i] for i in kept)
+        best_skipped = max(mass[i] for i in skip)
+        if best_skipped >= worst_kept:
+            wk = min(kept, key=lambda i: mass[i])
+            bs = max(skip, key=lambda i: mass[i])
+            problems.append(
+                f"{sid} skips frame {bs} (torso {mass[bs]:.0f}px) while keeping frame "
+                f"{wk} (torso {mass[wk]:.0f}px) - a skip list may only remove frames "
+                f"thinner than everything it keeps")
+            continue
+        checked += 1
+    if problems:
+        qa.fail("tap frame skip: " + "; ".join(problems))
+    elif checked:
+        qa.ok(f"{checked} tap bank(s) skip only frames measurably thinner than every "
+              f"frame they keep")
+    else:
+        qa.ok("no tap bank skips frames")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -1529,6 +1618,7 @@ def main() -> int:
     verify_sprite_sheets(qa)
     verify_base_helmet_scale(qa)
     verify_pose_domes(qa)
+    verify_tap_frame_skip(qa)
     verify_baked_domes(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
