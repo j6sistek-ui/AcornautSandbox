@@ -73,13 +73,19 @@ export function buildTables(root) {
   const suits = [];
   for (const r of suitRows) {
     const key = "suit:" + r.id;
-    if (!dome[key]) continue; // a suit with no measured head cannot be seated
+    // A suit with no measured head cannot be SEATED - but an own-head suit
+    // is still a suit, and a picker that silently drops four of the
+    // roster's thirty-one reads as broken. Own-head suits get their tile
+    // with a dummy dome the editor never uses; anything else without an
+    // anchor stays out, because showing it would invite fitting a helmet
+    // the game has nowhere to put.
+    if (!dome[key] && !r.ownHead) continue;
     suits.push({
       id: r.id,
       name: r.name,
       key,
       file: `suits/${r.id}.png`,
-      dome: dome[key].slice(0, 3),
+      dome: dome[key] ? dome[key].slice(0, 3) : [128, 128, 40],
       ownHead: r.ownHead,
       bakedDome: r.bakedDome,
       frame: false,
@@ -90,41 +96,37 @@ export function buildTables(root) {
   // eight frames no longer form another 160 helmet combinations. They are
   // reviewed as Clear-only animation art in the visual-audit page instead.
 
-  // A VELOCITY BANK'S FRAMES ARE SEATABLE ART. A Grok-swept suit flies a
-  // painted ascent/descent ramp whose head moves frame to frame, so each
-  // frame carries its own dome anchor in DOME - and each one is
-  // hand-fittable here exactly like a static. Emitted as frame entries:
-  // the editor already knows a frame tile must not hijack the suit
-  // selector, and its COPY report prints the same keys draw.ts uses, so a
-  // fitting session pastes straight back into the table. Not hardcoded to
-  // a roster: any `<suit>-asc-N` anchor in DOME earns its tile, so each
-  // sweep delivery shows up here the moment its anchors land. Flight's own
+  // A BANK'S FRAMES ARE SEATABLE ART - every bank, not just the velocity
+  // ramps. A Grok-swept suit flies a painted ascent/descent ramp whose
+  // head moves frame to frame; Robo, Big Booty and Eclipse tap through
+  // painted banks the same way. Each anchored frame is hand-fittable here
+  // exactly like a static: the editor already knows a frame tile must not
+  // hijack the suit selector, and its COPY report prints the same keys
+  // draw.ts uses, so a fitting session pastes straight back into the
+  // table. Not hardcoded to a roster: any `<suit>-asc/desc/tap/bounce-N`
+  // anchor in DOME earns its tile the moment it lands. Flight's asc/desc
   // frames are the one deliberate exception (bare art, baked Clear dome -
   // see above).
-  const frameSuits = [...new Set(
-    Object.keys(dome)
-      .map((k) => /^(\w+)-(?:asc|desc)-\d+$/.exec(k)?.[1])
-      .filter((s) => s && s !== "flight"),
-  )].sort();
-  for (const sid of frameSuits) {
-    const label = sid[0].toUpperCase() + sid.slice(1);
-    for (const kind of ["asc", "desc"]) {
-      for (let i = 1; i <= 8; i++) {
-        const key = `${sid}-${kind}-${i}`;
-        if (!dome[key]) continue;
-        suits.push({
-          id: key,
-          name: `${label} ${kind} ${i}`,
-          key,
-          file: `suits/${key}.png`,
-          // frames keep their 4th value: the pose's helmet rotation
-          dome: dome[key].slice(0, 4),
-          ownHead: false,
-          bakedDome: false,
-          frame: true,
-        });
-      }
-    }
+  const KIND_ORDER = ["asc", "desc", "tap", "bounce"];
+  const label = (r, sid) => (r ? r.name : sid[0].toUpperCase() + sid.slice(1));
+  const frameTiles = Object.keys(dome)
+    .map((k) => /^(\w+?)-(asc|desc|tap|bounce)-(\d+)$/.exec(k))
+    .filter((m) => m && !(m[1] === "flight" && m[2] !== "tap"))
+    .sort((a, b) => a[1].localeCompare(b[1])
+      || KIND_ORDER.indexOf(a[2]) - KIND_ORDER.indexOf(b[2])
+      || Number(a[3]) - Number(b[3]));
+  for (const [key, sid, kind, n] of frameTiles) {
+    suits.push({
+      id: key,
+      name: `${label(suitRows.find((r) => r.id === sid), sid)} ${kind} ${n}`,
+      key,
+      file: `suits/${key}.png`,
+      // frames keep their 4th value: the pose's helmet rotation
+      dome: dome[key].slice(0, 4),
+      ownHead: false,
+      bakedDome: false,
+      frame: true,
+    });
   }
 
   // AN OWN-HEAD BANK IS REVIEWABLE ART TOO. Alien, Alien 2 and Cyber fly
@@ -142,24 +144,58 @@ export function buildTables(root) {
   };
   const ascN = bankCounts("ASC_BANKS");
   const descN = bankCounts("DESC_BANKS");
+  const tapN = bankCounts("TAP_BANKS");
+  const bounceN = bankCounts("BOUNCE_BANKS");
   const ownHeadIds = new Set(suitRows.filter((r) => r.ownHead).map((r) => r.id));
+  const ownHeadTile = (sid, kind, i) => ({
+    id: `${sid}-${kind}-${i}`,
+    name: `${label(suitRows.find((r) => r.id === sid), sid)} ${kind} ${i}`,
+    key: `${sid}-${kind}-${i}`,
+    file: `suits/${sid}-${kind}-${i}.png`,
+    dome: [128, 128, 40],
+    ownHead: true,
+    bakedDome: false,
+    frame: true,
+  });
   for (const sid of Object.keys(ascN).sort()) {
     if (!ownHeadIds.has(sid) || !descN[sid]) continue;
-    const row = suitRows.find((r) => r.id === sid);
-    const label = row ? row.name : sid[0].toUpperCase() + sid.slice(1);
     for (const [kind, n] of [["asc", ascN[sid]], ["desc", descN[sid]]]) {
-      for (let i = 1; i <= n; i++) {
-        suits.push({
-          id: `${sid}-${kind}-${i}`,
-          name: `${label} ${kind} ${i}`,
-          key: `${sid}-${kind}-${i}`,
-          file: `suits/${sid}-${kind}-${i}.png`,
-          dome: [128, 128, 40],
-          ownHead: true,
-          bakedDome: false,
-          frame: true,
-        });
-      }
+      for (let i = 1; i <= n; i++) suits.push(ownHeadTile(sid, kind, i));
+    }
+  }
+  // Own-head TAP and BOUNCE banks are reviewable the same way - the cat
+  // and Volt animate through painted frames no other view shows.
+  for (const [reg, kind] of [[tapN, "tap"], [bounceN, "bounce"]]) {
+    for (const sid of Object.keys(reg).sort()) {
+      if (!ownHeadIds.has(sid)) continue;
+      for (let i = 1; i <= reg[sid]; i++) suits.push(ownHeadTile(sid, kind, i));
+    }
+  }
+
+  // A TAP BANK WITHOUT PER-FRAME ANCHORS STILL WEARS THE HELMET - the game
+  // seats it at the suit's single static anchor on every frame (draw.ts
+  // falls back to `suit:<id>` when `<id>-tap-N` is absent). Those frames
+  // are exactly where seat drift hides, so each one gets a tile seeded
+  // from the static anchor: the fitter can SEE the drift frame by frame,
+  // and the COPY report mints the per-frame `<id>-tap-N` keys, which
+  // draw.ts starts honoring the moment they are pasted into DOME. Suits
+  // whose tap anchors already exist (Robo, Big Booty, Eclipse) came in
+  // through the DOME scan above and are skipped here.
+  for (const sid of Object.keys(tapN).sort()) {
+    if (ownHeadIds.has(sid) || dome[`${sid}-tap-1`]) continue;
+    const seat = dome["suit:" + sid];
+    if (!seat) continue; // no measured head to seed from
+    for (let i = 1; i <= tapN[sid]; i++) {
+      suits.push({
+        id: `${sid}-tap-${i}`,
+        name: `${label(suitRows.find((r) => r.id === sid), sid)} tap ${i}`,
+        key: `${sid}-tap-${i}`,
+        file: `suits/${sid}-tap-${i}.png`,
+        dome: seat.slice(0, 3),
+        ownHead: false,
+        bakedDome: false,
+        frame: true,
+      });
     }
   }
 
