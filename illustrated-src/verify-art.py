@@ -1006,6 +1006,8 @@ CUSTOM_FLIGHT_SUITS = {
     "cryostar",   # owner-delivered 1 Sep 2026: sweep deliveries #9-#11,
     "verdant",    # same batch treatment as #6-#8.
     "gemmie",     #
+    "sammie",     # owner-delivered 1 Sep 2026: sweep deliveries #12-#13.
+    "frost",      # frost's anchors came from the pale-fur tracker variant.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

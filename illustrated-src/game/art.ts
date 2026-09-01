@@ -308,8 +308,8 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // Every one of these banks already shipped in the production art folder;
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-  flight: 16, frost: 16,
-  ghost: 16, sammie: 16,
+  flight: 16,
+  ghost: 16,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -341,14 +341,16 @@ const ASC_BANKS: Record<string, number> =
         // frame cuts - the black desc swirl and the bled-over spiral asc).
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8 }
+        cryostar: 8, verdant: 8, gemmie: 8,
+        sammie: 8, frost: 8 }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8 }
+        cryostar: 8, verdant: 8, gemmie: 8,
+        sammie: 8, frost: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
   ...RIGGED_SUITS,
