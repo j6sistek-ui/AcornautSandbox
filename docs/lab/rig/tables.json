@@ -1,5 +1,5 @@
 {
- "artVer": "161",
+ "artVer": "162",
  "suits": [
   {
    "id": "flight",
@@ -1533,6 +1533,678 @@
     40
    ],
    "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-1",
+   "name": "Alien asc 1",
+   "key": "alien-asc-1",
+   "file": "suits/alien-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-2",
+   "name": "Alien asc 2",
+   "key": "alien-asc-2",
+   "file": "suits/alien-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-3",
+   "name": "Alien asc 3",
+   "key": "alien-asc-3",
+   "file": "suits/alien-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-4",
+   "name": "Alien asc 4",
+   "key": "alien-asc-4",
+   "file": "suits/alien-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-5",
+   "name": "Alien asc 5",
+   "key": "alien-asc-5",
+   "file": "suits/alien-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-6",
+   "name": "Alien asc 6",
+   "key": "alien-asc-6",
+   "file": "suits/alien-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-asc-7",
+   "name": "Alien asc 7",
+   "key": "alien-asc-7",
+   "file": "suits/alien-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-1",
+   "name": "Alien desc 1",
+   "key": "alien-desc-1",
+   "file": "suits/alien-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-2",
+   "name": "Alien desc 2",
+   "key": "alien-desc-2",
+   "file": "suits/alien-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-3",
+   "name": "Alien desc 3",
+   "key": "alien-desc-3",
+   "file": "suits/alien-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-4",
+   "name": "Alien desc 4",
+   "key": "alien-desc-4",
+   "file": "suits/alien-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-5",
+   "name": "Alien desc 5",
+   "key": "alien-desc-5",
+   "file": "suits/alien-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-6",
+   "name": "Alien desc 6",
+   "key": "alien-desc-6",
+   "file": "suits/alien-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien-desc-7",
+   "name": "Alien desc 7",
+   "key": "alien-desc-7",
+   "file": "suits/alien-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-1",
+   "name": "Alien 2 asc 1",
+   "key": "alien2-asc-1",
+   "file": "suits/alien2-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-2",
+   "name": "Alien 2 asc 2",
+   "key": "alien2-asc-2",
+   "file": "suits/alien2-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-3",
+   "name": "Alien 2 asc 3",
+   "key": "alien2-asc-3",
+   "file": "suits/alien2-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-4",
+   "name": "Alien 2 asc 4",
+   "key": "alien2-asc-4",
+   "file": "suits/alien2-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-5",
+   "name": "Alien 2 asc 5",
+   "key": "alien2-asc-5",
+   "file": "suits/alien2-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-6",
+   "name": "Alien 2 asc 6",
+   "key": "alien2-asc-6",
+   "file": "suits/alien2-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-7",
+   "name": "Alien 2 asc 7",
+   "key": "alien2-asc-7",
+   "file": "suits/alien2-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-asc-8",
+   "name": "Alien 2 asc 8",
+   "key": "alien2-asc-8",
+   "file": "suits/alien2-asc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-1",
+   "name": "Alien 2 desc 1",
+   "key": "alien2-desc-1",
+   "file": "suits/alien2-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-2",
+   "name": "Alien 2 desc 2",
+   "key": "alien2-desc-2",
+   "file": "suits/alien2-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-3",
+   "name": "Alien 2 desc 3",
+   "key": "alien2-desc-3",
+   "file": "suits/alien2-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-4",
+   "name": "Alien 2 desc 4",
+   "key": "alien2-desc-4",
+   "file": "suits/alien2-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-5",
+   "name": "Alien 2 desc 5",
+   "key": "alien2-desc-5",
+   "file": "suits/alien2-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-6",
+   "name": "Alien 2 desc 6",
+   "key": "alien2-desc-6",
+   "file": "suits/alien2-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-7",
+   "name": "Alien 2 desc 7",
+   "key": "alien2-desc-7",
+   "file": "suits/alien2-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "alien2-desc-8",
+   "name": "Alien 2 desc 8",
+   "key": "alien2-desc-8",
+   "file": "suits/alien2-desc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-1",
+   "name": "Cyber asc 1",
+   "key": "cyber-asc-1",
+   "file": "suits/cyber-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-2",
+   "name": "Cyber asc 2",
+   "key": "cyber-asc-2",
+   "file": "suits/cyber-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-3",
+   "name": "Cyber asc 3",
+   "key": "cyber-asc-3",
+   "file": "suits/cyber-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-4",
+   "name": "Cyber asc 4",
+   "key": "cyber-asc-4",
+   "file": "suits/cyber-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-5",
+   "name": "Cyber asc 5",
+   "key": "cyber-asc-5",
+   "file": "suits/cyber-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-6",
+   "name": "Cyber asc 6",
+   "key": "cyber-asc-6",
+   "file": "suits/cyber-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-7",
+   "name": "Cyber asc 7",
+   "key": "cyber-asc-7",
+   "file": "suits/cyber-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-8",
+   "name": "Cyber asc 8",
+   "key": "cyber-asc-8",
+   "file": "suits/cyber-asc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-asc-9",
+   "name": "Cyber asc 9",
+   "key": "cyber-asc-9",
+   "file": "suits/cyber-asc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-1",
+   "name": "Cyber desc 1",
+   "key": "cyber-desc-1",
+   "file": "suits/cyber-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-2",
+   "name": "Cyber desc 2",
+   "key": "cyber-desc-2",
+   "file": "suits/cyber-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-3",
+   "name": "Cyber desc 3",
+   "key": "cyber-desc-3",
+   "file": "suits/cyber-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-4",
+   "name": "Cyber desc 4",
+   "key": "cyber-desc-4",
+   "file": "suits/cyber-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-5",
+   "name": "Cyber desc 5",
+   "key": "cyber-desc-5",
+   "file": "suits/cyber-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-6",
+   "name": "Cyber desc 6",
+   "key": "cyber-desc-6",
+   "file": "suits/cyber-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-7",
+   "name": "Cyber desc 7",
+   "key": "cyber-desc-7",
+   "file": "suits/cyber-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-8",
+   "name": "Cyber desc 8",
+   "key": "cyber-desc-8",
+   "file": "suits/cyber-desc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cyber-desc-9",
+   "name": "Cyber desc 9",
+   "key": "cyber-desc-9",
+   "file": "suits/cyber-desc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
    "bakedDome": false,
    "frame": true
   }

@@ -993,10 +993,12 @@ CUSTOM_FLIGHT_SUITS = {
     "voidsuit",   # owner-delivered 1 Sep 2026: sweep delivery #4, same 8/8
                   # ramp, tap bank retired with it.
     "alien",      # owner-delivered 1 Sep 2026: custom-posed bank, replacing
-                  # the whole character (new master, re-cut tail rig). Its
-                  # descent runs SEVEN frames - the owner excluded the
-                  # delivered desc-7 (a heavy black swirl that would flash
-                  # on colored skies) and desc-8 took its slot.
+                  # the whole character (new master, re-cut tail rig). Both
+                  # ramps run SEVEN frames by the owner's cuts: desc-7 (a
+                  # heavy black swirl that would flash on colored skies) and
+                  # asc-2 (the SPIRAL tail - the other character's look,
+                  # bled over by the generator) are out, later frames
+                  # renumbered down a slot.
     "alien2",     # the owner's A/B twin for the alien test: the same new
                   # visitor flown on the standard-spec bank, beta-only.
                   # One of the two wins; delete the loser and this grant.

@@ -1,13 +1,13 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=161";
-import { goalHud } from "./campaign.js?v=161";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=161";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=161";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=161";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=161";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=161";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=161";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=161";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=161";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=162";
+import { goalHud } from "./campaign.js?v=162";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=162";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=162";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=162";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=162";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=162";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=162";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=162";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=162";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3134,7 +3134,17 @@ lean = SUIT_LEAN_DEFAULT) {
     // the pilot — then the body over it.
     const rigT = suited ? art?.suitTail?.[suit.id] : null;
     const rigB = suited ? art?.suitBody?.[suit.id] : null;
-    if (rigT && rigB && suited) {
+    // A COMPLETE MOTION BANK IS ITS OWN TICKET IN. This gate used to demand
+    // rig layers, which silently held Alien 2 - a bank-only suit with no
+    // body/tail cut - to the static-sprite path below: 16 painted attitudes
+    // shipped and the pilot never moved. The frames carry the whole
+    // character, so a suit that has them needs no rig to fly them; every
+    // branch in here that touches rigT/rigB is unreachable on that route
+    // (fullMotion is checked first and returns).
+    const bankReady = suited
+        ? (art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0
+        : false;
+    if (suited && ((rigT && rigB) || bankReady)) {
         // Rig-driven heading flight: the whole character pitches to point along
         // its flight path, and the tail trails that pitch instead of following it
         // rigidly. Only for suits with no painted bank of their own, and never
