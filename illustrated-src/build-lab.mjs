@@ -31,7 +31,6 @@ function tsc(entry, outDir) {
   }
 }
 
-tsc("illustrated-src/lab/spill.ts", join(root, "docs/lab/spill/js"));
 tsc("illustrated-src/lab/rig.ts", join(root, "docs/lab/rig/js"));
 tsc("illustrated-src/lab/skytest.ts", join(root, "docs/lab/skytest/js"));
 
@@ -39,6 +38,6 @@ tsc("illustrated-src/lab/skytest.ts", join(root, "docs/lab/skytest/js"));
 // draw.ts at build time.
 const t = writeTables(root, join(root, "docs/lab/rig"));
 console.log(
-  "built lab: docs/lab/spill/js, docs/lab/rig/js " +
+  "built lab: docs/lab/rig/js, docs/lab/skytest/js " +
     `(${t.suits.length} heads, ${t.helmets.length} helmets, art v${t.artVer})`,
 );

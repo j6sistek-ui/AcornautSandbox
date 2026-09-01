@@ -1008,6 +1008,37 @@
       min-height: 44px; min-width: 60px; }
     .ac-playbar { align-items: center; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
+    /* THE SPILL. Two buttons stack in the bottom-RIGHT corner: a lunge for
+       anyone who misses the swipe, and the PULSE the graze meter pays for.
+       The right half of the field is the one place the pilot can never be
+       (the band stops at the halfway line), so nothing here can cover the
+       sprite or the floor's red warning glow; the column stays transparent
+       to taps between the buttons. */
+    .ac-overlay > .ac-spillbar { position: absolute; right: 16px; bottom: calc(14px + env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
+    .ac-spillbar button { pointer-events: auto; min-width: 88px; min-height: 44px; padding: 10px 16px; border-radius: 999px;
+      font: 800 12px/1 Figtree, sans-serif; letter-spacing: .14em; border: 1px solid rgba(255,255,255,.18);
+      background: rgba(14,20,38,.8); color: #7c8bb0; }
+    .ac-spillbar .ac-lunge { color: #7fd6ff; border-color: rgba(127,214,255,.4); }
+    .ac-spillbar .ac-lunge.spent { opacity: .45; }
+    .ac-spillbar .ac-pulse.ready { color: #06121e; background: linear-gradient(180deg, #9fe6ff, #6fb8ff);
+      border-color: #cfefff; box-shadow: 0 0 22px rgba(120,200,255,.55); }
+    /* the Depot: three shelves, the Ore balance, and the way on */
+    .ac-depotcard { gap: 8px; max-height: 94vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      width: min(720px, 100%); margin-inline: auto; overscroll-behavior: contain; }
+    .ac-depotcard > * { flex: none; }
+    .ac-depotore { display: flex; justify-content: space-between; align-items: baseline;
+      font: 800 11px/1 Figtree, sans-serif; letter-spacing: .14em; color: #c99bff; }
+    .ac-depotore b { font-family: Fraunces, Georgia, serif; font-size: 26px; letter-spacing: 0; color: #d9b8ff; }
+    .ac-offer { align-items: center; min-height: 64px; }
+    .ac-offer .ac-moderowtxt span { white-space: normal; }
+    .ac-offertier { display: block; font: 800 9px/1 Figtree, sans-serif; letter-spacing: .12em; color: #8b95b0; margin-bottom: 4px; }
+    .ac-offerprice { flex: none; font: 800 12px/1 Figtree, sans-serif; color: #ffd76a; padding: 7px 10px;
+      border: 1px solid rgba(255,215,106,.45); border-radius: 999px; white-space: nowrap; }
+    .ac-offer.ac-cardoff .ac-offerprice { color: #ff9a8c; border-color: rgba(255,154,140,.4); }
+    .ac-offer.sold { justify-content: center; color: #6f7a99; font: 800 11px/1 Figtree, sans-serif; letter-spacing: .16em; }
+    .ac-depotact { display: flex; gap: 8px; }
+    .ac-depotact .ac-ghost { flex: 1; font-size: 12px; padding: 12px 8px; letter-spacing: .06em; white-space: nowrap; }
 
     /* ================= THE HUB (v85) =================
        The home is a hub of saturated tiles over the purple key art.
@@ -1146,6 +1177,7 @@
     .m-arcade { --m1: #eda03c; --mb: #ffd490; --mw: rgba(237,160,60,.20); --mw2: rgba(237,160,60,.42); }
     .m-tunnel { --m1: #1db388; --mb: #7cebc2; --mw: rgba(29,179,136,.20); --mw2: rgba(29,179,136,.42); }
     .m-race { --m1: #2f9fe9; --mb: #a9f5ff; --mw: rgba(47,159,233,.20); --mw2: rgba(47,159,233,.44); }
+    .m-spill { --m1: #8a5cf0; --mb: #d9b8ff; --mw: rgba(138,92,240,.20); --mw2: rgba(138,92,240,.44); }
     /* the lab, under a rule and deliberately quieter than a mode */
     .ac-modeshead { display: flex; align-items: center; gap: 10px; margin: 8px 0 1px;
       font: 800 9px/1 Figtree, sans-serif; letter-spacing: .2em; color: #7c86a4; }
@@ -1552,7 +1584,7 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js166/standalone.js";
+    import { bootStandalone } from "../js167/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

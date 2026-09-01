@@ -27,6 +27,9 @@ export type ArtBank = {
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
   shieldnut: Sprite | null;
+  /** THE SPILL's Ore: the mode's own pickup, a crystal the field spills.
+   *  One painting; it bobs rather than cycles */
+  ore: Sprite | null;
   /** the animated pickup cycles — frozen and shield now MOVE like the
    *  acorns always have; the single files above stay as icons/fallbacks */
   frozenAnim: Sprite[];
@@ -184,7 +187,7 @@ export function emptyArt(): ArtBank {
     ready: false,
     squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
     planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
-    suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
+    suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
   };
@@ -548,7 +551,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
 
 
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -590,6 +593,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
       // conditional stays because the constant is the one place that
       // decides, not because the answer can currently be no.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
+      optional(`${base}/pickups/ore.png?v=${ART_VER}`),
     ]);
   const bank: ArtBank = {
     ready: true,
@@ -608,6 +612,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn as HTMLImageElement) : null,
     frozen: frozen ? asSprite(frozen as HTMLImageElement) : null,
     shieldnut: shieldnut ? asSprite(shieldnut as HTMLImageElement) : null,
+    ore: ore ? asSprite(ore as HTMLImageElement) : null,
     frozenAnim,
     shieldAnim,
     wormAnim,

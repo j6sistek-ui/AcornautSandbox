@@ -1,10 +1,11 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=166";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=166";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=166";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=166";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=166";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=166";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=166";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=167";
+import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=167";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=167";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=167";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=167";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=167";
+import { createSpill, resizeSpill, spillCleared, spillDive, spillFlap, stepSpill, } from "./spill.js?v=167";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=167";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -45,6 +46,8 @@ export function makeWorld(W, H) {
         race: null,
         raceCues: [],
         raceCueEffects: [],
+        spill: null,
+        spillCues: [],
         stars: [],
         speed: PHYS.baseSpeed,
         distance: 0,
@@ -169,7 +172,7 @@ export function resizeWorld(w, W, H) {
     }
     // every planet mode — anything that is not the tunnel, which remapped
     // itself above, and not a race, which owns its own viewport
-    const remapPlanets = w.flight !== "tunnel" && !w.tut && !w.race &&
+    const remapPlanets = w.flight !== "tunnel" && !w.tut && !w.race && !w.spill &&
         oldW > 0 && oldH > 0 && (oldW !== W || oldH !== H);
     w.W = W;
     w.H = H;
@@ -211,6 +214,15 @@ export function resizeWorld(w, W, H) {
         w.squirrel.y = raceViewportY(viewport, w.race.y);
         w.squirrel.vy = w.race.vy * viewport.scale;
     }
+    if (w.spill) {
+        resizeSpill(w.spill, W, H);
+        w.squirrel.y = w.spill.pilot.y;
+    }
+}
+/** where the pilot is drawn. Every mode but the Spill pins it to one lane;
+ *  the Spill's lunge moves it, so the trail and the rings follow */
+export function pilotX(w) {
+    return w.spill ? w.spill.pilot.x : w.W * PHYS.squirrelX;
 }
 function shuffleEnv(w) {
     const mid = ENVS.map((_, i) => i).slice(1, -1);
@@ -998,6 +1010,13 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.race = w.lvl?.def.base === "race" ? createRaceState() : null;
     w.raceCues = [];
     w.raceCueEffects = [];
+    // A Spill mission flies a FIXED field: the seed is the level's ordinal,
+    // so mission 3-8 is the same ladder for every pilot. The endless mode
+    // rolls a fresh one every run.
+    w.spill = flight === "spill"
+        ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0)
+        : null;
+    w.spillCues = [];
     w.speed = PHYS.baseSpeed;
     w.distance = 0;
     w.lastSpawnX = w.W * 0.55;
@@ -1071,12 +1090,19 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         w.startShieldArmed = false;
         w.shieldCharges = 0;
     }
+    else if (w.spill) {
+        // the Spill carries its own shield and hull; the hangar's start
+        // shield stays in the hangar
+        w.squirrel.y = w.spill.pilot.y;
+        w.startShieldArmed = false;
+        w.shieldCharges = 0;
+    }
     else if (flight === "tunnel")
         initTunnel(w, tunnelSeed);
     else
         for (let i = 0; i < 3; i++)
             spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
-    w.tut = w.race || flight === "tunnel" ? null : tutorial
+    w.tut = w.race || w.spill || flight === "tunnel" ? null : tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
             retries: 0, springs: 0, apexY: 0, launched: false, bounced: false,
             locked: true, want: null, streak: 0, streakX: 0, restarts: 0 }
@@ -1916,7 +1942,7 @@ function spark(w, x, y, colors, n = 12, kind = "spark") {
 export function spawnTrail(w, save, scale = 1) {
     // the painted pilot's tail sweeps far to the left — emit behind it or
     // the whole plume is swallowed by the sprite
-    const sx = w.W * PHYS.squirrelX - 34;
+    const sx = pilotX(w) - 34;
     const sy = w.squirrel.y + 8;
     if (scale < 1 && Math.random() > scale)
         return;
@@ -2358,6 +2384,11 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
+    // THE SPILL flies its own pilot. A tap its phase refuses - the wave card,
+    // the Depot, the respawn freeze - is not a tap, so nothing below counts
+    // it or animates it.
+    if (w.spill && !spillFlap(w.spill))
+        return "none";
     w.run.taps += 1;
     if (w.lvl) {
         w.lvl.stats.taps += 1;
@@ -2381,7 +2412,8 @@ export function flap(w, save) {
             w.tapAnimDir = -1;
         }
     }
-    w.squirrel.vy = flapOf(save, w);
+    if (!w.spill)
+        w.squirrel.vy = flapOf(save, w);
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back
     w.tailV += TAIL.flap;
@@ -2394,6 +2426,12 @@ export function dive(w, save) {
     // a dive throws the tail the other way, harder — it over-rotates past
     // home on the way back and rings down, which reads as weight falling
     w.tailV -= TAIL.dive;
+    if (w.spill) {
+        if (!spillDive(w.spill))
+            return "none";
+        spark(w, w.spill.pilot.x, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
+        return "dive";
+    }
     // the same rule as a tap: while the lesson is scripted the swipe is an
     // answer, and the director flies the dive if this is the beat for it
     if (w.tut?.locked || w.tut?.hold) {
@@ -2704,6 +2742,12 @@ export function settleLevel(w, save, finished) {
         w.lvl.stats.score = w.score;
         w.lvl.stats.flow = w.tunnel.bestMultiplier;
     }
+    // A Spill mission grades off the Spill's own ledger the same way
+    if (w.lvl && w.lvl.def.base === "spill" && w.spill) {
+        w.lvl.stats.score = Math.floor(w.spill.score);
+        w.lvl.stats.ore = w.spill.oreMined;
+        w.lvl.stats.hits = w.spill.hits;
+    }
     const lvl = w.lvl;
     const def = lvl.def;
     const met = finished
@@ -2843,7 +2887,9 @@ function die(w, save) {
                     ? w.score >= save.arcadeBest
                     : w.flight === "tunnel"
                         ? w.score > save.tunnelBest
-                        : w.score >= save.highScore,
+                        : w.flight === "spill"
+                            ? w.score > 0 && w.score >= save.spillBest
+                            : w.score >= save.highScore,
         flowBest: w.tunnel?.flowBest ?? 0,
         bestChain: w.tunnel?.bestChain ?? 0,
         sections: w.tunnel?.sectionsCleared ?? 0,
@@ -2866,11 +2912,13 @@ function die(w, save) {
         save.arcadeBest = Math.max(save.arcadeBest, w.score);
     else if (w.flight === "tunnel")
         save.tunnelBest = Math.max(save.tunnelBest, w.score);
+    else if (w.flight === "spill")
+        save.spillBest = Math.max(save.spillBest ?? 0, w.score);
     else
         save.highScore = Math.max(save.highScore, w.score);
     if (w.startShieldArmed)
         save.startShield = false;
-    spark(w, w.W * PHYS.squirrelX, w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
+    spark(w, pilotX(w), w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
     return "die";
 }
 // ------------------------------------------------- the acorn continue
@@ -2892,8 +2940,74 @@ function die(w, save) {
 export function reviveCost(w) {
     return w.score > 100 ? 50 : 10;
 }
+// ------------------------------------------------------------- the Spill
+//
+// The Spill is stepped here and nowhere else. spill.ts owns the rules; this
+// is the seam: the pilot is mirrored into the world's squirrel so the
+// shared painter draws the equipped suit, the field's bursts become world
+// particles so the shared particle painter draws them, the score is the
+// highest wave cleared so the crash sheet and the record chip agree, and a
+// dead or finished run leaves through die() and settleLevel() like every
+// other run does.
+const SPILL_TONES = {
+    hit: ["#ffd8a0", "#ff9a5c", "#fff2d8", "#ffffff"],
+    shatter: ["#ffd8a0", "#ff9a5c", "#fff2d8"],
+    ore: ["#c99bff", "#7fe4ff", "#f3e9ff"],
+    gold: ["#ffe9a0", "#ffd76a", "#fff"],
+    shield: ["#9fe8ff", "#cfefff", "#ffffff"],
+    hull: ["#8df0b4", "#d9ffe6", "#ffffff"],
+    lunge: ["#8fd6ff", "#cfefff"],
+    graze: ["#9fe8ff"],
+};
+/** what the engine turns into sound and a re-render, once per frame */
+export function takeSpillCues(w) {
+    const cues = w.spillCues;
+    w.spillCues = [];
+    return cues;
+}
+function updateSpill(w, save, dt) {
+    const s = w.spill;
+    const cues = stepSpill(s, dt);
+    w.squirrel.y = s.pilot.y;
+    w.squirrel.vy = s.pilot.vy;
+    w.squirrel.rot = s.pilot.rot;
+    w.score = spillCleared(s);
+    w.distance += dt * 100;
+    if (s.shake > w.shake)
+        w.shake = s.shake;
+    for (const b of s.bursts) {
+        const colors = SPILL_TONES[b.tone] ?? SPILL_TONES.hit;
+        for (let i = 0; i < b.n; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const sp = (60 + Math.random() * 230) * b.power;
+            w.particles.push({
+                x: b.x, y: b.y,
+                vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+                life: 0.35 + Math.random() * 0.5, max: 0.85,
+                r: 1.5 + Math.random() * 3.2,
+                color: colors[i % colors.length],
+                kind: "spark",
+            });
+        }
+    }
+    s.bursts = [];
+    if (w.lvl) {
+        w.lvl.stats.score = Math.floor(s.score);
+        w.lvl.stats.ore = s.oreMined;
+        w.lvl.stats.hits = s.hits;
+    }
+    w.spillCues.push(...cues);
+    if (cues.includes("mission") && w.lvl) {
+        settleLevel(w, save, true);
+        return "finish";
+    }
+    if (cues.includes("dead"))
+        return die(w, save);
+    return null;
+}
 export function reviveRun(w, save) {
-    if (w.screen !== "dead" || w.lvl || w.race || w.flight === "tunnel")
+    // the Spill sells its own extra life in the Depot; the wallet stays shut
+    if (w.screen !== "dead" || w.lvl || w.race || w.spill || w.flight === "tunnel")
         return false;
     const cost = reviveCost(w);
     if ((save.acorns ?? 0) < cost)
@@ -3237,6 +3351,8 @@ export function updateWorld(w, save, dt) {
     if (w.lvl)
         w.lvl.strobeT += dt;
     w.lampT += dt;
+    if (w.spill)
+        return updateSpill(w, save, dt);
     if (w.flight === "tunnel" && w.tunnel)
         return updateTunnel(w, save, simDt, dt);
     const d = difficulty(w);

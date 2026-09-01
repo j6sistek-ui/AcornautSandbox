@@ -43,6 +43,7 @@ what was matched and what was added.
 | **Installable** | Manifest and maskable icons |
 | **The Star Chart** | 100-level campaign in ten stages: portal finish lines, three stars a level, star-total progression replacing the XP ladder. Replaces the Flight Log tab. See `ROADMAP.md` |
 | **Wormhole Run** *(experiment)* | Tap-only tunnel endurance: authored pattern director, Flow multiplier, five palette regions, deterministic seeds. Hidden at the bottom of Help beside the other experiments |
+| **The Spill** | A seventh mode, graduated from the lab: wave survival in a debris field with a forward lunge, a graze meter that pays for PULSE, a three-pip hull, Ore that lives and dies inside the run, and a Depot every fifth wave. Twenty authored waves, then endless. See `illustrated-src/SPILL.md` |
 
 ## Still thinner, or deliberately different
 

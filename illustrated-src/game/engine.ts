@@ -22,13 +22,12 @@ import {
   type SaveData,
   cleanPilotName,
 } from "./save";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
+import { hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
 import {
   dive,
   flap,
   initStars,
   makeWorld,
-  settleLevel,
   pausePlay,
   planRaceCueEffects,
   resizeWorld,
@@ -39,6 +38,7 @@ import {
   setRaceInput,
   snapshot,
   takeRaceCueEffects,
+  takeSpillCues,
   updateWorld,
   type FlightMode,
   type Screen,
@@ -61,6 +61,7 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
+import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, spillPulse, spillReroll, type SpillCue } from "./spill";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "mods";
 
@@ -131,6 +132,14 @@ export type Engine = {
   continueRun: () => boolean;
   /** what that continue costs right now (10, or 50 past gate 100) */
   continueCost: () => number;
+  /** THE SPILL's own controls: the two on-screen buttons and the Depot.
+   *  Tap and dive ride the shared pointer path like every other mode. */
+  spillLunge: () => void;
+  spillPulse: () => void;
+  spillBuy: (slot: number) => string;
+  spillReroll: () => string;
+  spillExtend: () => string;
+  spillLeaveDepot: () => void;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
   buySuit: (id: string) => string;
@@ -173,26 +182,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((fn) => fn());
 
-
-  // A finished Spill mission left its result in the hallway on the way
-  // back. Bank it before the first render: stars land, and the pilot
-  // walks straight into the result sheet instead of the title.
-  try {
-    const raw = localStorage.getItem("acornaut_spill_result");
-    if (raw) {
-      localStorage.removeItem("acornaut_spill_result");
-      const r = JSON.parse(raw) as { id?: unknown; finished?: unknown; score?: unknown };
-      const def = levelById(String(r.id));
-      if (def && def.base === "spill") {
-        world.lvl = {
-          def,
-          stats: { ...emptyStats(), score: Math.max(0, Math.floor(Number(r.score) || 0)) },
-          portal: false, strobeT: 0, goldGates: [], spawnOrd: 0,
-        };
-        settleLevel(world, save, r.finished === true);
-      }
-    }
-  } catch { /* a malformed record is dropped, never fatal */ }
+  // The Spill used to live on a lab page and post its mission result back
+  // through localStorage for the boot to bank. It flies inside the engine
+  // now, so a stale record from that era is simply dropped.
+  try { localStorage.removeItem("acornaut_spill_result"); } catch { /* private mode */ }
   let shopTab: ShopTab = "helmets";
 
   const engine: Engine = {
@@ -255,21 +248,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // starsOf, not the raw tally: Briella's code opens chapters here too
       if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save), save.raceGates)) return false;
       unlockAudio();
-      // A SPILL mission lives on the lab page: hand it the mission card
-      // and go. It writes one result record at the end, and the boot code
-      // banks the stars the moment the pilot is back.
-      if (def.base === "spill") {
-        const s2 = def.goals[1].kind === "score" ? def.goals[1].n : 0;
-        const s3 = def.goals[2].kind === "score" ? def.goals[2].n : 0;
-        guideStep("level");
-        window.location.href =
-          `../lab/spill/?mission=${def.id}&target=${def.gates}&s2=${s2}&s3=${s3}`;
-        return true;
-      }
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless.
       // A Wormhole mission flies a FIXED corridor: the seed is the level's
       // ordinal, so mission 3-4 is the same test for every pilot, forever.
+      // A Spill mission does the same with its wave ladder (see resetRun).
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? 7000 + def.ord : undefined);
       resetInputTracking();
@@ -308,6 +291,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (s === "title") world.tut = null;
       if (s === "title" || s === "log") {
         world.race = null;
+        world.spill = null;
         raceAccumulator = 0;
       }
       notify();
@@ -447,9 +431,51 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ok) notify();
       return ok;
     },
+    spillLunge() {
+      if (!world.spill || world.screen !== "play") return;
+      // on the ready card a lunge is a launch, and a launch has to go
+      // through the tap path: that is what clears w.ready, and a run
+      // started around it would sit frozen on the wave card forever
+      if (world.ready) {
+        if (flap(world, save) === "flap") sfx.flap();
+        notify();
+        return;
+      }
+      if (spillLunge(world.spill)) { sfx.near(); notify(); }
+    },
+    spillPulse() {
+      if (!world.spill || world.screen !== "play") return;
+      if (spillPulse(world.spill)) { sfx.shift(); notify(); }
+    },
+    spillBuy(slot) {
+      if (!world.spill || world.screen !== "play") return "closed";
+      const r = spillBuy(world.spill, slot);
+      if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
+      notify();
+      return r;
+    },
+    spillReroll() {
+      if (!world.spill || world.screen !== "play") return "closed";
+      const r = spillReroll(world.spill);
+      if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
+      notify();
+      return r;
+    },
+    spillExtend() {
+      if (!world.spill || world.screen !== "play") return "closed";
+      const r = spillExtend(world.spill);
+      if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
+      notify();
+      return r;
+    },
+    spillLeaveDepot() {
+      if (!world.spill || world.screen !== "play") return;
+      if (spillLeaveDepot(world.spill)) { sfx.section(); notify(); }
+    },
     dismissDead() {
       world.screen = "title";
       world.lastRun = null;
+      world.spill = null;
       // collecting the graduation gift moves the coach to the hangar door
       if (save.guide === "reward") save.guide = "hangar";
       writeSave(save);
@@ -856,7 +882,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (ownedRaceResize) notify();
   }
 
-  let swipe: { y0: number; t0: number; fired: boolean } | null = null;
+  let swipe: { x0: number; y0: number; t0: number; fired: boolean } | null = null;
 
   function applyRaceGesture(result: RaceGestureResult) {
     raceGesture = result.state;
@@ -906,7 +932,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         notify();
         return;
       }
-      swipe = { y0: p.y, t0: performance.now(), fired: false };
+      swipe = { x0: p.x, y0: p.y, t0: performance.now(), fired: false };
       // A tap is a tap everywhere, the corridor included. Hold-to-rise and
       // slide-and-hold were flown against it and retired - see the note in
       // updateTunnel - so nothing intercepts this any more.
@@ -942,6 +968,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const p = pos(e);
       if (performance.now() - swipe.t0 > 320) {
         swipe = null;
+        return;
+      }
+      // THE SPILL's third control: a swipe RIGHT is the lunge. Read before
+      // the dive so a diagonal goes to whichever axis it mostly travelled.
+      if (world.spill && p.x - swipe.x0 >= 40 && p.x - swipe.x0 > Math.abs(p.y - swipe.y0)) {
+        swipe.fired = true;
+        if (spillLunge(world.spill)) sfx.near();
+        notify();
         return;
       }
       if (p.y - swipe.y0 >= 34) {
@@ -1035,6 +1069,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ev === "dive") sfx.dive();
       notify();
     }
+    // the Spill's two extra keys: right for the lunge, P for the PULSE
+    if (world.spill && world.screen === "play" && !e.repeat) {
+      if (e.code === "ArrowRight" || e.code === "KeyD") {
+        e.preventDefault();
+        engine.spillLunge();
+      } else if (e.code === "KeyP" || e.code === "ShiftLeft" || e.code === "ShiftRight") {
+        e.preventDefault();
+        engine.spillPulse();
+      }
+    }
   });
   window.addEventListener("keyup", (e) => {
     if (e.code === "Space" || e.code === "ArrowUp") {
@@ -1110,6 +1154,38 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
     if (shouldNotify) notify();
   }
+  // THE SPILL's cues, once per frame. Tap and dive already sounded on the
+  // pointer path, so they are skipped here; everything the field does on
+  // its own - a hit, a shatter, a wave card, the Depot - sounds here, once
+  // per kind per frame, so a PULSE through six rocks is one thud, not six.
+  function dispatchSpillCues(cues: SpillCue[]) {
+    if (!cues.length) return;
+    // one sound per SOUND per frame, not per cue: a hit and the shatter it
+    // causes share the hull thud, a Depot-wave clear and its milestone share
+    // the fanfare, and neither should play twice
+    const sounds = new Set<keyof typeof sfx>();
+    let shouldNotify = false;
+    // a graze is deliberately not a re-render: the play overlay is only the
+    // two buttons and pause, and "charged" already relights PULSE
+    const NOTIFY: SpillCue[] = ["hit", "hull", "charged", "pulse", "wave", "depot", "depot-close",
+      "buy", "deny", "respawn", "recharge", "mission"];
+    const SOUND: Partial<Record<SpillCue, keyof typeof sfx>> = {
+      hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
+      graze: "near", pulse: "shift", wave: "section", clear: "milestone", milestone: "milestone",
+      depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning", warn: "warning",
+      mission: "milestone",
+    };
+    for (const c of new Set(cues)) {
+      const snd = SOUND[c];
+      if (snd) sounds.add(snd);
+      // the Depot clock repaints itself in place; a full re-render every
+      // second would pull a shelf out from under a finger, so "tick" is
+      // deliberately not on the list
+      if (NOTIFY.includes(c)) shouldNotify = true;
+    }
+    for (const snd of sounds) sfx[snd]();
+    if (shouldNotify) notify();
+  }
   function loop(now: number) {
     const frameDt = Math.min(0.25, (now - last) / 1000);
     noteFrameCost(now - last);
@@ -1128,6 +1204,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     } else {
       raceAccumulator = 0;
       dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
+      if (world.spill) dispatchSpillCues(takeSpillCues(world));
     }
     // Four scores, one at a time: the chiptune rides the retro renderer
     // (arcade + shifted stretches, exactly as always); the Hyper Run time
