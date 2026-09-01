@@ -1,13 +1,14 @@
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=167";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=167";
-import { sfx, unlockAudio, music } from "./audio.js?v=167";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=167";
-import { drawHud, drawWorld } from "./draw.js?v=167";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=167";
-import { emptyStats, hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=167";
-import { dive, flap, initStars, makeWorld, settleLevel, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, updateWorld, } from "./sim.js?v=167";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=167";
-import { raceViewport } from "./race-viewport.js?v=167";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=168";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=168";
+import { sfx, unlockAudio, music } from "./audio.js?v=168";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=168";
+import { drawHud, drawWorld } from "./draw.js?v=168";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=168";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=168";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, updateWorld, } from "./sim.js?v=168";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=168";
+import { raceViewport } from "./race-viewport.js?v=168";
+import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, spillPulse, spillReroll } from "./spill.js?v=168";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -27,26 +28,13 @@ export async function createEngine(canvas) {
     let raceResizeKeyboardReleasePending = null;
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
-    // A finished Spill mission left its result in the hallway on the way
-    // back. Bank it before the first render: stars land, and the pilot
-    // walks straight into the result sheet instead of the title.
+    // The Spill used to live on a lab page and post its mission result back
+    // through localStorage for the boot to bank. It flies inside the engine
+    // now, so a stale record from that era is simply dropped.
     try {
-        const raw = localStorage.getItem("acornaut_spill_result");
-        if (raw) {
-            localStorage.removeItem("acornaut_spill_result");
-            const r = JSON.parse(raw);
-            const def = levelById(String(r.id));
-            if (def && def.base === "spill") {
-                world.lvl = {
-                    def,
-                    stats: { ...emptyStats(), score: Math.max(0, Math.floor(Number(r.score) || 0)) },
-                    portal: false, strobeT: 0, goldGates: [], spawnOrd: 0,
-                };
-                settleLevel(world, save, r.finished === true);
-            }
-        }
+        localStorage.removeItem("acornaut_spill_result");
     }
-    catch { /* a malformed record is dropped, never fatal */ }
+    catch { /* private mode */ }
     let shopTab = "helmets";
     const engine = {
         canvas,
@@ -115,21 +103,11 @@ export async function createEngine(canvas) {
             if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save), save.raceGates))
                 return false;
             unlockAudio();
-            // A SPILL mission lives on the lab page: hand it the mission card
-            // and go. It writes one result record at the end, and the boot code
-            // banks the stars the moment the pilot is back.
-            if (def.base === "spill") {
-                const s2 = def.goals[1].kind === "score" ? def.goals[1].n : 0;
-                const s3 = def.goals[2].kind === "score" ? def.goals[2].n : 0;
-                guideStep("level");
-                window.location.href =
-                    `../lab/spill/?mission=${def.id}&target=${def.gates}&s2=${s2}&s3=${s3}`;
-                return true;
-            }
             // levels never run the tutorial: the chart itself is gated behind
             // having a save, and a first-timer meets the tutorial in endless.
             // A Wormhole mission flies a FIXED corridor: the seed is the level's
             // ordinal, so mission 3-4 is the same test for every pilot, forever.
+            // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
             resetInputTracking();
             raceAccumulator = 0;
@@ -175,6 +153,7 @@ export async function createEngine(canvas) {
                 world.tut = null;
             if (s === "title" || s === "log") {
                 world.race = null;
+                world.spill = null;
                 raceAccumulator = 0;
             }
             notify();
@@ -320,9 +299,76 @@ export async function createEngine(canvas) {
                 notify();
             return ok;
         },
+        spillLunge() {
+            if (!world.spill || world.screen !== "play")
+                return;
+            // on the ready card a lunge is a launch, and a launch has to go
+            // through the tap path: that is what clears w.ready, and a run
+            // started around it would sit frozen on the wave card forever
+            if (world.ready) {
+                if (flap(world, save) === "flap")
+                    sfx.flap();
+                notify();
+                return;
+            }
+            if (spillLunge(world.spill)) {
+                sfx.near();
+                notify();
+            }
+        },
+        spillPulse() {
+            if (!world.spill || world.screen !== "play")
+                return;
+            if (spillPulse(world.spill)) {
+                sfx.shift();
+                notify();
+            }
+        },
+        spillBuy(slot) {
+            if (!world.spill || world.screen !== "play")
+                return "closed";
+            const r = spillBuy(world.spill, slot);
+            if (r === "ok")
+                sfx.ui();
+            else if (r === "poor")
+                sfx.warning();
+            notify();
+            return r;
+        },
+        spillReroll() {
+            if (!world.spill || world.screen !== "play")
+                return "closed";
+            const r = spillReroll(world.spill);
+            if (r === "ok")
+                sfx.ui();
+            else if (r === "poor")
+                sfx.warning();
+            notify();
+            return r;
+        },
+        spillExtend() {
+            if (!world.spill || world.screen !== "play")
+                return "closed";
+            const r = spillExtend(world.spill);
+            if (r === "ok")
+                sfx.ui();
+            else if (r === "poor")
+                sfx.warning();
+            notify();
+            return r;
+        },
+        spillLeaveDepot() {
+            if (!world.spill || world.screen !== "play")
+                return;
+            if (spillLeaveDepot(world.spill)) {
+                sfx.section();
+                notify();
+            }
+        },
         dismissDead() {
             world.screen = "title";
             world.lastRun = null;
+            world.spill = null;
             // collecting the graduation gift moves the coach to the hangar door
             if (save.guide === "reward")
                 save.guide = "hangar";
@@ -815,7 +861,7 @@ export async function createEngine(canvas) {
             notify();
             return;
         }
-        swipe = { y0: p.y, t0: performance.now(), fired: false };
+        swipe = { x0: p.x, y0: p.y, t0: performance.now(), fired: false };
         // A tap is a tap everywhere, the corridor included. Hold-to-rise and
         // slide-and-hold were flown against it and retired - see the note in
         // updateTunnel - so nothing intercepts this any more.
@@ -848,6 +894,15 @@ export async function createEngine(canvas) {
         const p = pos(e);
         if (performance.now() - swipe.t0 > 320) {
             swipe = null;
+            return;
+        }
+        // THE SPILL's third control: a swipe RIGHT is the lunge. Read before
+        // the dive so a diagonal goes to whichever axis it mostly travelled.
+        if (world.spill && p.x - swipe.x0 >= 40 && p.x - swipe.x0 > Math.abs(p.y - swipe.y0)) {
+            swipe.fired = true;
+            if (spillLunge(world.spill))
+                sfx.near();
+            notify();
             return;
         }
         if (p.y - swipe.y0 >= 34) {
@@ -956,6 +1011,17 @@ export async function createEngine(canvas) {
                 sfx.dive();
             notify();
         }
+        // the Spill's two extra keys: right for the lunge, P for the PULSE
+        if (world.spill && world.screen === "play" && !e.repeat) {
+            if (e.code === "ArrowRight" || e.code === "KeyD") {
+                e.preventDefault();
+                engine.spillLunge();
+            }
+            else if (e.code === "KeyP" || e.code === "ShiftLeft" || e.code === "ShiftRight") {
+                e.preventDefault();
+                engine.spillPulse();
+            }
+        }
     });
     window.addEventListener("keyup", (e) => {
         if (e.code === "Space" || e.code === "ArrowUp") {
@@ -1047,6 +1113,43 @@ export async function createEngine(canvas) {
         if (shouldNotify)
             notify();
     }
+    // THE SPILL's cues, once per frame. Tap and dive already sounded on the
+    // pointer path, so they are skipped here; everything the field does on
+    // its own - a hit, a shatter, a wave card, the Depot - sounds here, once
+    // per kind per frame, so a PULSE through six rocks is one thud, not six.
+    function dispatchSpillCues(cues) {
+        if (!cues.length)
+            return;
+        // one sound per SOUND per frame, not per cue: a hit and the shatter it
+        // causes share the hull thud, a Depot-wave clear and its milestone share
+        // the fanfare, and neither should play twice
+        const sounds = new Set();
+        let shouldNotify = false;
+        // a graze is deliberately not a re-render: the play overlay is only the
+        // two buttons and pause, and "charged" already relights PULSE
+        const NOTIFY = ["hit", "hull", "charged", "pulse", "wave", "depot", "depot-close",
+            "buy", "deny", "respawn", "recharge", "mission"];
+        const SOUND = {
+            hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
+            graze: "near", pulse: "shift", wave: "section", clear: "milestone", milestone: "milestone",
+            depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning", warn: "warning",
+            mission: "milestone",
+        };
+        for (const c of new Set(cues)) {
+            const snd = SOUND[c];
+            if (snd)
+                sounds.add(snd);
+            // the Depot clock repaints itself in place; a full re-render every
+            // second would pull a shelf out from under a finger, so "tick" is
+            // deliberately not on the list
+            if (NOTIFY.includes(c))
+                shouldNotify = true;
+        }
+        for (const snd of sounds)
+            sfx[snd]();
+        if (shouldNotify)
+            notify();
+    }
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
@@ -1067,6 +1170,8 @@ export async function createEngine(canvas) {
         else {
             raceAccumulator = 0;
             dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
+            if (world.spill)
+                dispatchSpillCues(takeSpillCues(world));
         }
         // Four scores, one at a time: the chiptune rides the retro renderer
         // (arcade + shifted stretches, exactly as always); the Hyper Run time
@@ -1126,4 +1231,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=167";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=168";

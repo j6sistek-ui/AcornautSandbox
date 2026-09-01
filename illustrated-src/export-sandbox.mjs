@@ -28,6 +28,7 @@ const sources = [
   "illustrated-src/game/art.ts",
   "illustrated-src/game/audio.ts",
   "illustrated-src/game/engine.ts",
+  "illustrated-src/game/spill.ts",
   "illustrated-src/game/standalone.ts",
   "illustrated-src/game/cosmetics.ts",
 ];

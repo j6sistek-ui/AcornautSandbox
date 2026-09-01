@@ -24,6 +24,10 @@ export type SaveData = {
   lostBest: number;
   arcadeBest: number;
   tunnelBest: number;
+  /** THE SPILL: the highest wave cleared. Ore never lands here - it is
+   *  spent inside the run and gone with it, so the mode's economy cannot
+   *  reach the wallet or the shop */
+  spillBest: number;
   purchased: string[];
   acorns: number;
   xp: number;
@@ -117,6 +121,7 @@ export function defaultSave(): SaveData {
     lostBest: 0,
     arcadeBest: 0,
     tunnelBest: 0,
+    spillBest: 0,
     purchased: [],
     acorns: 0,
     xp: 0,
@@ -235,6 +240,8 @@ export function loadSave(): SaveData {
   // dropped rather than migrated - left in place it would sit in every
   // save forever, describing a mission id that no longer exists.
   delete (s as Record<string, unknown>).experimentalRaceRecords;
+  // saves written before the Spill was a mode
+  if (typeof s.spillBest !== "number" || !isFinite(s.spillBest)) s.spillBest = 0;
   if (!Array.isArray(s.raceGates)) s.raceGates = [];
   // only ever the three real gate ids, de-duplicated - a hand-edited save
   // cannot invent a fourth and unlock the chart with it

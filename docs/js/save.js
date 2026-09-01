@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=167";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=167";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=168";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=168";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -7,6 +7,7 @@ export function defaultSave() {
         lostBest: 0,
         arcadeBest: 0,
         tunnelBest: 0,
+        spillBest: 0,
         purchased: [],
         acorns: 0,
         xp: 0,
@@ -151,6 +152,9 @@ export function loadSave() {
     // dropped rather than migrated - left in place it would sit in every
     // save forever, describing a mission id that no longer exists.
     delete s.experimentalRaceRecords;
+    // saves written before the Spill was a mode
+    if (typeof s.spillBest !== "number" || !isFinite(s.spillBest))
+        s.spillBest = 0;
     if (!Array.isArray(s.raceGates))
         s.raceGates = [];
     // only ever the three real gate ids, de-duplicated - a hand-edited save

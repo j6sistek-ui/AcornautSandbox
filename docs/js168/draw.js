@@ -1,13 +1,14 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=167";
-import { goalHud } from "./campaign.js?v=167";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=167";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=167";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=167";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=167";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=167";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=167";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=167";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=167";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=168";
+import { goalHud } from "./campaign.js?v=168";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=168";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=168";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=168";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=168";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=168";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=168";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=168";
+import { SPILL, SPILL_MOD_INFO, spillMod, spillWaveLeft, } from "./spill.js?v=168";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=168";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1428,6 +1429,483 @@ function drawHyperRunWorld(ctx, w, save, art) {
 function tunnelControlLabel(_w) {
     return "TAP TO RISE";
 }
+// ------------------------------------------------------------- THE SPILL
+//
+// Its own deep space, on purpose: a cold base, two drifting nebula pools
+// and a warm bloom on the right, where the spill is coming FROM. It borrows
+// none of the painted skies so the mode never reads as one of the
+// environments. Everything you can hit wears the light rim the dark skies
+// use, so a rock separates from the void; the pilot is the shared painter's,
+// so the equipped suit and helmet fly it.
+const wrap = (v, m) => ((v % m) + m) % m;
+function spillBackdrop(ctx, w, s) {
+    const { W, H } = w;
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#05060f");
+    g.addColorStop(0.55, "#0a0d1e");
+    g.addColorStop(1, "#05070f");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    const drift = s.t * 6;
+    const pool = (cx, cy, rx, ry, col) => {
+        const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+        rg.addColorStop(0, col);
+        rg.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(1, ry / Math.max(rx, ry));
+        ctx.translate(-cx, -cy);
+        ctx.fillStyle = rg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(rx, ry), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    };
+    pool(wrap(W * 0.75 - drift * 0.4, W * 1.6) - W * 0.3, H * 0.3, W * 0.7, H * 0.34, "rgba(70,60,160,0.20)");
+    pool(wrap(W * 0.2 - drift * 0.25, W * 1.6) - W * 0.3, H * 0.78, W * 0.6, H * 0.28, "rgba(150,50,120,0.13)");
+    // the wound the debris is coming out of
+    pool(W * 1.02, H * 0.45, W * 0.5, H * 0.6, "rgba(255,140,60,0.10)");
+    // the world's stars, streaming: the field is flying INTO the spill, and
+    // the bigger a star the nearer, so the nearer the faster
+    for (const st of w.stars) {
+        const x = wrap(st.x - s.t * (10 + st.r * 20), W);
+        ctx.globalAlpha = st.a * (0.55 + 0.45 * Math.sin(st.tw));
+        ctx.fillStyle = st.r > 1.2 ? "#eaf2ff" : "#cfe0ff";
+        ctx.beginPath();
+        ctx.arc(x, st.y, st.r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+}
+function drawSpillRock(ctx, art, r) {
+    const img = art.debris[r.sprite % Math.max(1, art.debris.length)];
+    ctx.save();
+    ctx.translate(r.x, r.y);
+    ctx.rotate(r.rot);
+    if (img)
+        drawSprite(ctx, img, 0, 0, r.r * 2, "core", "light");
+    else {
+        ctx.fillStyle = "#6b6357";
+        ctx.beginPath();
+        ctx.arc(0, 0, r.r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+    if (r.kind === "hulk") {
+        // a hulk gets a rim so it reads as the thing you must not be near
+        ctx.strokeStyle = "rgba(255,150,90,0.5)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r + 5, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+}
+/** a hulk announces itself from the edge before it enters. Being killed by
+ *  something you could not yet see is the one death that is not the
+ *  player's fault, and this mode has no gates to read the field by */
+function drawSpillWarning(ctx, w, r) {
+    const a = 0.35 + 0.45 * Math.sin(w.time * 14);
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = "#ff9a4c";
+    ctx.lineWidth = 3;
+    const x = w.W - 16;
+    ctx.beginPath();
+    ctx.moveTo(x, r.y - 16);
+    ctx.lineTo(x - 13, r.y);
+    ctx.lineTo(x, r.y + 16);
+    ctx.stroke();
+    ctx.globalAlpha = a * 0.35;
+    ctx.fillStyle = "#ff9a4c";
+    ctx.fillRect(w.W - 5, r.y - 26, 5, 52);
+    ctx.restore();
+}
+function drawSpillWorld(ctx, w, save, art) {
+    const s = w.spill;
+    const { W, H } = w;
+    spillBackdrop(ctx, w, s);
+    const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
+    for (const n of s.nuts) {
+        if (n.got)
+            continue;
+        const y = n.y + Math.sin(n.bob) * 3;
+        const special = n.kind !== "ore";
+        // the rare ones carry a halo, so they read as worth crossing for
+        if (special) {
+            const pull = 20 + Math.sin(w.time * 5 + n.bob) * 3;
+            const g = ctx.createRadialGradient(n.x, y, 0, n.x, y, pull);
+            g.addColorStop(0, n.kind === "shield" ? "rgba(120,225,255,0.55)"
+                : n.kind === "hull" ? "rgba(120,255,170,0.5)" : "rgba(255,215,120,0.5)");
+            g.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(n.x, y, pull, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        if (n.kind === "ore")
+            drawSprite(ctx, art.ore ?? frameOf(art.acorn, w.time, 10), n.x, y, 28);
+        else if (n.kind === "gold")
+            drawSprite(ctx, frameOf(art.golden, w.time, 10) ?? art.ore, n.x, y, 34);
+        else if (n.kind === "shield")
+            drawSprite(ctx, frameOf(art.shieldAnim, w.time, 10) ?? art.shieldnut, n.x, y, 34);
+        else {
+            // a hull fragment: a green plate with a cross, the pip it restores
+            ctx.save();
+            ctx.translate(n.x, y);
+            ctx.rotate(Math.sin(n.bob) * 0.2);
+            ctx.fillStyle = "#5fd48a";
+            round(ctx, -11, -11, 22, 22, 6);
+            ctx.fill();
+            ctx.fillStyle = "#0a2a18";
+            ctx.fillRect(-2, -7, 4, 14);
+            ctx.fillRect(-7, -2, 14, 4);
+            ctx.restore();
+        }
+    }
+    for (const r of s.rocks) {
+        if (r.dead)
+            continue;
+        if (r.warn > 0)
+            drawSpillWarning(ctx, w, r);
+        else
+            drawSpillRock(ctx, art, r);
+    }
+    if (blackout) {
+        // THE BLACKOUT dims the field to rims and warnings. The veil goes over
+        // the rocks and under the pilot, so the one thing that must stay
+        // readable is the one thing left lit
+        ctx.fillStyle = "rgba(0,0,0,0.62)";
+        ctx.fillRect(0, 0, W, H);
+        for (const r of s.rocks)
+            if (!r.dead && r.warn > 0)
+                drawSpillWarning(ctx, w, r);
+    }
+    // the floor announces itself before it kills - and under FLIP it is the
+    // ceiling that does
+    if (s.floorT > SPILL.floorWarn && s.phase !== "over") {
+        const f = Math.min(1, (s.floorT - SPILL.floorWarn) / (SPILL.floorGrace - SPILL.floorWarn));
+        const flipped = spillMod(s, "flip");
+        const g = flipped
+            ? ctx.createLinearGradient(0, 90, 0, 0)
+            : ctx.createLinearGradient(0, H - 90, 0, H);
+        g.addColorStop(0, "rgba(255,60,60,0)");
+        g.addColorStop(1, `rgba(255,60,60,${(0.2 + f * 0.5).toFixed(2)})`);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, flipped ? 0 : H - 90, W, 90);
+    }
+    for (const p of w.particles)
+        drawParticle(ctx, p);
+    if (s.phase !== "over" && w.screen !== "dead") {
+        // a lunge leaves a ghost behind it, so the dash reads as a dash rather
+        // than as the pilot teleporting sideways
+        if (s.lunge > 0) {
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+            drawPilot(ctx, w, save, art, s.pilot.x - 18);
+            ctx.restore();
+        }
+        // the hull's invulnerability blinks the pilot rather than hiding him
+        const blink = s.iframes > 0 && Math.floor(w.time * 18) % 2 === 0;
+        ctx.save();
+        if (blink)
+            ctx.globalAlpha = 0.35;
+        drawPilot(ctx, w, save, art, s.pilot.x);
+        ctx.restore();
+        if (s.gold > 0) {
+            ctx.strokeStyle = `rgba(255,208,96,${0.35 + 0.25 * Math.sin(w.time * 10)})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(s.pilot.x, s.pilot.y, 30, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (s.shield > 0) {
+            ctx.strokeStyle = `rgba(150,230,255,${(0.4 + 0.3 * Math.sin(w.time * 5) + s.shieldFlash).toFixed(2)})`;
+            ctx.lineWidth = s.shield > 1 ? 3.5 : 2;
+            ctx.beginPath();
+            ctx.arc(s.pilot.x, s.pilot.y, 26, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+    else if (w.screen === "dead") {
+        drawPilot(ctx, w, save, art, s.pilot.x);
+    }
+    if (s.pulseFlash > 0) {
+        const reach = s.owned.widepulse ? 320 : SPILL.pulseR;
+        const g = ctx.createRadialGradient(s.pilot.x, s.pilot.y, 0, s.pilot.x, s.pilot.y, reach);
+        g.addColorStop(0, `rgba(255,225,180,${0.5 * s.pulseFlash})`);
+        g.addColorStop(1, "rgba(255,150,60,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+    }
+    if (s.hitFlash > 0) {
+        ctx.fillStyle = `rgba(255,70,50,${(0.22 * s.hitFlash).toFixed(3)})`;
+        ctx.fillRect(0, 0, W, H);
+    }
+}
+/** a two-line teaching panel: the rule's name, then what to do about it.
+ *  It sits a quarter of the way down, or under the status stack if the
+ *  screen is too short for both */
+function drawSpillHint(ctx, w, text, alpha, below = 0) {
+    const cut = text.indexOf(": ");
+    const title = cut > 0 ? text.slice(0, cut) : "";
+    let body = cut > 0 ? text.slice(cut + 2) : text;
+    const bw = Math.min(360, w.W - 32);
+    ctx.font = "600 12px Figtree, system-ui";
+    // a body wider than the panel breaks once, at the separator nearest the
+    // middle - a dot if the line has them, so a list never breaks mid-item
+    const lines = [];
+    if (ctx.measureText(body).width > bw - 28) {
+        const sep = body.includes(" · ") ? " · " : " ";
+        let best = -1;
+        for (let i = body.indexOf(sep); i >= 0; i = body.indexOf(sep, i + 1)) {
+            if (best < 0 || Math.abs(i - body.length / 2) < Math.abs(best - body.length / 2))
+                best = i;
+        }
+        if (best > 0) {
+            lines.push(body.slice(0, best), body.slice(best + sep.length));
+            body = "";
+        }
+    }
+    if (body)
+        lines.push(body);
+    const bh = 30 + (title ? 18 : 0) + lines.length * 16;
+    const cy = Math.max(w.H * 0.24, below + 8 + bh / 2);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "rgba(12,18,36,0.82)";
+    ctx.strokeStyle = "rgba(127,214,255,0.45)";
+    ctx.lineWidth = 1.5;
+    round(ctx, w.W / 2 - bw / 2, cy - bh / 2, bw, bh, 14);
+    ctx.fill();
+    ctx.stroke();
+    ctx.textAlign = "center";
+    let y = cy - bh / 2 + 22;
+    if (title) {
+        ctx.fillStyle = "#9fe6ff";
+        ctx.font = "800 14px Figtree, system-ui";
+        ctx.fillText(title, w.W / 2, y);
+        y += 18;
+    }
+    ctx.fillStyle = "rgba(243,239,228,0.85)";
+    ctx.font = "600 12px Figtree, system-ui";
+    for (const line of lines) {
+        ctx.fillText(line, w.W / 2, y);
+        y += 16;
+    }
+    ctx.restore();
+}
+function drawSpillHud(ctx, w, art) {
+    const s = w.spill;
+    const { W, H } = w;
+    ctx.textAlign = "center";
+    // the wave sits where every other mode puts its score; a mission counts
+    // it against the rung it has to reach
+    ctx.fillStyle = "#fff";
+    ctx.font = "800 36px Figtree, system-ui";
+    ctx.fillText(s.target ? `${s.wave}/${s.target}` : String(s.wave), W / 2, 46);
+    ctx.font = "700 11px Figtree, system-ui";
+    ctx.fillStyle = "rgba(255,224,128,0.9)";
+    const names = s.liveMods.map((m) => SPILL_MOD_INFO[m].name).filter(Boolean).join(" + ");
+    const sub = s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
+        : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
+            : s.phase === "tally" ? `WAVE ${s.wave} · CLEAR`
+                : s.phase === "depot" ? `DEPOT · ${Math.ceil(s.depot?.timer ?? 0)}s`
+                    : s.phase === "respawn" ? "RESPAWN CORE"
+                        : s.phase === "card" ? `WAVE ${s.wave}` : "THE SPILL";
+    ctx.fillText(sub, W / 2, 64);
+    // the meter that pays for PULSE
+    const barW = 80;
+    const barX = W / 2 - barW / 2;
+    ctx.fillStyle = "rgba(255,255,255,.15)";
+    ctx.fillRect(barX, 69, barW, 3);
+    ctx.fillStyle = s.charge >= 1 ? "#ffe680" : "#8fd6ff";
+    ctx.fillRect(barX, 69, barW * Math.min(1, s.charge), 3);
+    if (s.charge >= 1 && s.phase !== "depot") {
+        ctx.fillStyle = "#ffe680";
+        ctx.font = "800 10px Figtree, system-ui";
+        ctx.globalAlpha = 0.7 + 0.3 * Math.sin(w.time * 8);
+        ctx.fillText("PULSE READY", W / 2, 84);
+        ctx.globalAlpha = 1;
+    }
+    // Ore, top-left, where the acorns sit in every other mode
+    if (art?.ore)
+        drawSprite(ctx, art.ore, 22, 24, 24);
+    else {
+        ctx.fillStyle = "#c99bff";
+        ctx.beginPath();
+        ctx.moveTo(22, 15);
+        ctx.lineTo(30, 24);
+        ctx.lineTo(22, 33);
+        ctx.lineTo(14, 24);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.textAlign = "left";
+    ctx.font = "700 14px Figtree, system-ui";
+    ctx.fillStyle = "#d9b8ff";
+    ctx.fillText(`${s.ore}`, 38, 28);
+    if (s.combo > 1) {
+        ctx.fillStyle = "#ffd76a";
+        ctx.font = "800 12px Figtree, system-ui";
+        ctx.fillText(`×${s.combo}`, 38, 44);
+    }
+    // the hull, top-right, clear of the pause button that sits in the corner
+    for (let i = 0; i < s.maxHull; i++) {
+        const x = W - 70 - i * 18;
+        const lit = i < s.hull;
+        const lost = !lit && i === s.hull && s.hitFlash > 0;
+        ctx.fillStyle = lit ? "#5fd48a" : lost ? `rgba(255,90,70,${s.hitFlash.toFixed(2)})` : "rgba(255,255,255,.14)";
+        round(ctx, x - 8, 21, 16, 7, 3);
+        ctx.fill();
+    }
+    for (let i = 0; i < s.shield; i++) {
+        ctx.fillStyle = "rgba(122,216,255,0.9)";
+        ctx.beginPath();
+        ctx.arc(W - 70 - i * 16, 40, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.7)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    // status lines stack under the meter
+    let hudY = 100;
+    const hudLine = (text, color) => {
+        ctx.textAlign = "center";
+        ctx.fillStyle = color;
+        ctx.font = "700 13px Figtree, system-ui";
+        ctx.fillText(text, W / 2, hudY);
+        hudY += 18;
+    };
+    if (s.bannerT > 0 && s.phase !== "card") {
+        ctx.globalAlpha = Math.min(1, s.bannerT * 1.6);
+        hudLine(s.banner, s.banner.startsWith("HULL") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
+        ctx.globalAlpha = 1;
+    }
+    if (s.gold > 0)
+        hudLine(`GOLD  ${Math.ceil(s.gold)}s`, "#ffd060");
+    if (s.surgeT > 0)
+        hudLine(`SURGE  ${Math.ceil(s.surgeT)}s`, "#ff9a4c");
+    // a mission's three objectives ride the top of the run, live
+    if (w.lvl && w.lvl.def.base === "spill") {
+        const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
+        const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl.def));
+        ctx.font = "800 9.5px Figtree, system-ui";
+        const padX = 7, gapX = 6, ph = 17, py = hudY - 10;
+        const widths = pills.map((p) => ctx.measureText(p.text).width + padX * 2);
+        let x = W / 2 - (widths.reduce((a, b) => a + b, 0) + gapX * (pills.length - 1)) / 2;
+        ctx.textAlign = "center";
+        for (let i = 0; i < pills.length; i++) {
+            const p = pills[i];
+            ctx.fillStyle = p.state === "done" ? "rgba(52,140,88,.42)"
+                : p.state === "lost" ? "rgba(168,44,36,.5)" : "rgba(16,24,44,.55)";
+            round(ctx, x, py, widths[i], ph, 8);
+            ctx.fill();
+            ctx.strokeStyle = p.state === "done" ? "rgba(111,210,144,.8)"
+                : p.state === "lost" ? "rgba(255,122,104,.85)" : "rgba(255,255,255,.22)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.fillStyle = p.state === "done" ? "#8df0b4" : p.state === "lost" ? "#ffa294" : "#d7e6f7";
+            ctx.fillText(p.text, x + widths[i] / 2, py + 12);
+            x += widths[i] + gapX;
+        }
+        hudY += 14;
+    }
+    // the free lesson, while it runs
+    if (s.hintT > 0 && (s.phase === "wave" || s.phase === "drain")) {
+        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), hudY - 10);
+    }
+    if (s.phase === "ready") {
+        const compact = W < 520;
+        // a phone gets the same briefing in shorter lines, never a clipped one
+        const lines = compact ? [
+            "SURVIVE THE WAVE · MINE ORE",
+            "TAP: THRUST · SWIPE DOWN: DIVE",
+            "SWIPE RIGHT: LUNGE · GRAZE TO CHARGE PULSE",
+            "DO NOT RIDE THE FLOOR · THREE HITS ENDS IT",
+            "TAP TO LAUNCH",
+        ] : [
+            "SURVIVE THE WAVE · MINE ORE · SPEND IT AT THE DEPOT",
+            "TAP: THRUST · SWIPE DOWN: DIVE · SWIPE RIGHT: LUNGE",
+            "GRAZE DEBRIS TO CHARGE PULSE · DO NOT RIDE THE FLOOR",
+            "THREE HULL HITS AND THE RUN IS OVER",
+            "TAP TO LAUNCH",
+        ];
+        const lineHeight = compact ? 20 : 21;
+        const panelWidth = Math.min(W - 24, compact ? 430 : 560);
+        const panelHeight = lines.length * lineHeight + 28;
+        const panelTop = Math.min(H - panelHeight - 12, Math.max(96, H * 0.6));
+        ctx.fillStyle = "rgba(4,8,20,.78)";
+        ctx.strokeStyle = "rgba(201,155,255,.4)";
+        ctx.lineWidth = 1;
+        round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 12);
+        ctx.fill();
+        ctx.stroke();
+        ctx.textAlign = "center";
+        lines.forEach((line, i) => {
+            const isLaunch = i === lines.length - 1;
+            ctx.fillStyle = isLaunch ? "#ffe086" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
+            ctx.globalAlpha = isLaunch ? 0.75 + 0.25 * Math.sin(w.time * 4) : 1;
+            ctx.font = isLaunch ? "900 15px Figtree, system-ui" : i === 0 ? "900 13px Figtree, system-ui" : "800 12px Figtree, system-ui";
+            ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+        });
+        ctx.globalAlpha = 1;
+        // the title clears the status stack on a short landscape screen
+        const titleY = Math.max(H * 0.3, hudY + 24);
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 30px Figtree, system-ui";
+        ctx.fillText("THE SPILL", W / 2, titleY);
+        ctx.fillStyle = "rgba(215,230,247,.8)";
+        ctx.font = "600 12px Figtree, system-ui";
+        if (compact) {
+            ctx.fillText("A mining rig let go one system over.", W / 2, titleY + 22);
+            ctx.fillText("What reached us is travelling one way.", W / 2, titleY + 38);
+        }
+        else {
+            ctx.fillText("A mining rig let go one system over. What reached us is travelling one way.", W / 2, titleY + 22);
+        }
+    }
+    if (s.phase === "card") {
+        // the wave card: the number lands first, then the rule it carries
+        const t = s.phaseT;
+        const inA = Math.min(1, t / 0.25);
+        ctx.save();
+        ctx.globalAlpha = inA;
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 40px Figtree, system-ui";
+        ctx.fillText(`WAVE ${s.wave}`, W / 2, H * 0.36);
+        let y = H * 0.36 + 28;
+        if (names) {
+            ctx.fillStyle = "#ff9a4c";
+            ctx.font = "800 16px Figtree, system-ui";
+            ctx.fillText(names, W / 2, y);
+            y += 22;
+        }
+        if (s.cardNote) {
+            ctx.fillStyle = "#9fe6ff";
+            ctx.font = "800 12px Figtree, system-ui";
+            ctx.fillText(s.cardNote, W / 2, y);
+            y += 20;
+        }
+        if (s.target) {
+            ctx.fillStyle = "rgba(215,230,247,.8)";
+            ctx.font = "700 12px Figtree, system-ui";
+            ctx.fillText(`CLEAR WAVE ${s.target} TO FINISH`, W / 2, y);
+        }
+        ctx.restore();
+        if (s.hintT > 0)
+            drawSpillHint(ctx, w, s.hint, Math.min(1, t * 2), hudY - 10);
+    }
+    if (s.phase === "respawn") {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffe086";
+        ctx.font = "900 26px Figtree, system-ui";
+        ctx.fillText("RESPAWN CORE", W / 2, H * 0.36);
+        ctx.fillStyle = "rgba(215,230,247,.85)";
+        ctx.font = "700 12px Figtree, system-ui";
+        ctx.fillText("hull restored · three seconds of Gold", W / 2, H * 0.36 + 22);
+    }
+}
 export function drawWorld(ctx, w, save, art) {
     const { W, H } = w;
     ctx.save();
@@ -1437,6 +1915,11 @@ export function drawWorld(ctx, w, save, art) {
     }
     if (w.flight === "tunnel" && w.tunnel) {
         drawTunnelWorld(ctx, w, save, art);
+        ctx.restore();
+        return;
+    }
+    if (w.spill) {
+        drawSpillWorld(ctx, w, save, art);
         ctx.restore();
         return;
     }
@@ -3933,6 +4416,10 @@ export function hyperRunReadyLines(viewWidth) {
 }
 export function drawHud(ctx, w, art) {
     const { W } = w;
+    if (w.spill) {
+        drawSpillHud(ctx, w, art);
+        return;
+    }
     if (w.race) {
         const race = w.race;
         ctx.textAlign = "center";

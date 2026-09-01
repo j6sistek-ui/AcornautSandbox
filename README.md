@@ -44,7 +44,7 @@ build if it comes back.
 
 ```bash
 node illustrated-src/export-sandbox.mjs   # the game -> docs/
-node illustrated-src/build-lab.mjs        # the lab  -> docs/lab/{spill,rig}/
+node illustrated-src/build-lab.mjs        # the lab  -> docs/lab/{rig,skytest}/
 node illustrated-src/build-roadmap.mjs    # the campaign -> ROADMAP.md
 ```
 
@@ -61,14 +61,20 @@ often costs more than offline play is worth here.
 ## The lab
 
 Prototypes on their own pages. The game imports none of it; the only way in
-is two hidden buttons at the bottom of Help, both marked delete-when-frozen.
+is the PROTOTYPES doors at the bottom of the Modes sheet (and of Help on the
+live page), marked delete-when-frozen.
 
-- **`docs/lab/spill/`** — THE SPILL, a debris-field survival mode.
 - **`docs/lab/rig/`** — the rig editor, a fitting bench for heads and helmets.
+- **`docs/lab/skytest/`** — the procedural sky bench (beta only).
 - **`docs/lab/visual-audit/`** — all suit/helmet combinations and collision
   art on split light/dark plates.
 
-Design notes for both: `illustrated-src/lab/README.md`.
+THE SPILL started here as a debris-field survival prototype and has
+graduated: it is a mode now — waves, a hull, Ore and a Depot — and lives in
+`illustrated-src/game/spill.ts`. Its design notes are `illustrated-src/SPILL.md`;
+its test is `illustrated-src/test-spill.mjs`.
+
+Design notes for the rig editor: `illustrated-src/lab/README.md`.
 
 ## Art
 

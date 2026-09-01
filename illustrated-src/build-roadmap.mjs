@@ -97,16 +97,17 @@ md += `
   rise within each chapter, modifiers sharpen across chapters, and the star
   goals tighten. A pilot who only ever takes ★1 can still walk the whole
   chart; the last stages' unlock totals demand roughly two stars a level.
-- **Refinement path**: two experiments are queued as future chapters once
-  they earn promotion, both reachable today from the bottom of Help.
-  **Wormhole Run** is the nearer fit — it already lives in the engine as a
-  FlightMode with sections, a deterministic seed and its own counters
-  (sections, Flow tier, chains, near misses), so a Wormhole chapter's goals
-  write themselves: *reach section N* is the portal, *best Flow x3* and
-  *no near-miss spent* are the discipline stars. **The Spill** (lab page)
-  needs engine integration first; its survive-T-seconds shape drops
-  straight into the goal system after that. New modifiers (mirror-only,
-  tiny-pilot, heavy-gravity) are one line each in \`LevelFx\`.
+- **Refinement path**: two modes are queued as future chapters once they
+  earn a place on the live chart, both flyable today from the Modes sheet.
+  **Wormhole Run** lives in the engine as a FlightMode with sections, a
+  deterministic seed and its own counters (sections, Flow tier, chains,
+  near misses), so a Wormhole chapter's goals write themselves: *reach
+  section N* is the portal, *best Flow x3* and *no near-miss spent* are
+  the discipline stars. **The Spill** is a wave ladder with a hull and its
+  own Ore economy, and the beta chart already flies it as level 8 of every
+  chapter from 2: *clear wave N* is the portal, *mine N Ore* and *take no
+  hull damage* the stars. New modifiers (mirror-only, tiny-pilot,
+  heavy-gravity) are one line each in \`LevelFx\`.
 `;
 
 writeFileSync(join(root, "ROADMAP.md"), md);
