@@ -698,10 +698,14 @@ export async function bootRig(root) {
                 .filter((s) => wears(s, helmOf(S.helm)))
                 .map((s) => [s, helmOf(S.helm)]);
         // the fitting pass the frame entries exist for: every animation frame
-        // in one screen under one helmet, no statics between them
+        // in one screen under one helmet, no statics between them. OWN-HEAD
+        // frames (Alien, Alien 2, Cyber) join this view too - not to seat a
+        // helmet, but because it is the one place every frame of a bank sits
+        // side by side for review; their tiles draw the art and the own-head
+        // label, nothing to drag.
         if (S.mode === "frames")
-            return wearable
-                .filter((s) => s.frame && wears(s, helmOf(S.helm)))
+            return tables.suits
+                .filter((s) => s.frame && (s.ownHead || wears(s, helmOf(S.helm))))
                 .map((s) => [s, helmOf(S.helm)]);
         const out = [];
         for (const s of wearable)

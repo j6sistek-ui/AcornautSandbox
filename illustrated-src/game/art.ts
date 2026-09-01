@@ -333,7 +333,10 @@ const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } 
 const ASC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8, alien2: 8 }
+        // alien ascends on SEVEN too: the delivered asc-2 wore the SPIRAL
+        // tail - the other character's look, bled over by the generator -
+        // so the owner pulled it and asc-3..8 shifted down a slot.
+        voidsuit: 8, alien: 7, alien2: 8 }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED

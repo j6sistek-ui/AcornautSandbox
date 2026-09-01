@@ -3372,7 +3372,17 @@ function paintIllustrated(
   // the pilot — then the body over it.
   const rigT = suited ? art?.suitTail?.[suit.id] : null;
   const rigB = suited ? art?.suitBody?.[suit.id] : null;
-  if (rigT && rigB && suited) {
+  // A COMPLETE MOTION BANK IS ITS OWN TICKET IN. This gate used to demand
+  // rig layers, which silently held Alien 2 - a bank-only suit with no
+  // body/tail cut - to the static-sprite path below: 16 painted attitudes
+  // shipped and the pilot never moved. The frames carry the whole
+  // character, so a suit that has them needs no rig to fly them; every
+  // branch in here that touches rigT/rigB is unreachable on that route
+  // (fullMotion is checked first and returns).
+  const bankReady = suited
+    ? (art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0
+    : false;
+  if (suited && ((rigT && rigB) || bankReady)) {
     // Rig-driven heading flight: the whole character pitches to point along
     // its flight path, and the tail trails that pitch instead of following it
     // rigidly. Only for suits with no painted bank of their own, and never

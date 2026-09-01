@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=161";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=162";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -251,7 +251,10 @@ const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
 // bank while "alien" flies the custom-posed one.
 const ASC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8, alien2: 8 }
+        // alien ascends on SEVEN too: the delivered asc-2 wore the SPIRAL
+        // tail - the other character's look, bled over by the generator -
+        // so the owner pulled it and asc-3..8 shifted down a slot.
+        voidsuit: 8, alien: 7, alien2: 8 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,

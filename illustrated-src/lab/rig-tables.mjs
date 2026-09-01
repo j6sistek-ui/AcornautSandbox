@@ -127,6 +127,42 @@ export function buildTables(root) {
     }
   }
 
+  // AN OWN-HEAD BANK IS REVIEWABLE ART TOO. Alien, Alien 2 and Cyber fly
+  // painted ramps but never wear a seated helmet, so they have no DOME
+  // frame anchors - and the frames view used to show them nothing at all.
+  // Their tiles come from the bank REGISTRIES instead (ASC/DESC_BANKS in
+  // art.ts), with a dummy dome the editor never uses: an ownHead tile
+  // draws the art and the "own head" label and skips the helmet entirely.
+  const art = readFileSync(join(root, "illustrated-src/game/art.ts"), "utf8");
+  const bankCounts = (name) => {
+    const m = art.match(new RegExp(name + "[^{]*\\{([^}]*)\\}"));
+    const out = {};
+    if (m) for (const b of m[1].matchAll(/(\w+):\s*(\d+)/g)) out[b[1]] = Number(b[2]);
+    return out;
+  };
+  const ascN = bankCounts("ASC_BANKS");
+  const descN = bankCounts("DESC_BANKS");
+  const ownHeadIds = new Set(suitRows.filter((r) => r.ownHead).map((r) => r.id));
+  for (const sid of Object.keys(ascN).sort()) {
+    if (!ownHeadIds.has(sid) || !descN[sid]) continue;
+    const row = suitRows.find((r) => r.id === sid);
+    const label = row ? row.name : sid[0].toUpperCase() + sid.slice(1);
+    for (const [kind, n] of [["asc", ascN[sid]], ["desc", descN[sid]]]) {
+      for (let i = 1; i <= n; i++) {
+        suits.push({
+          id: `${sid}-${kind}-${i}`,
+          name: `${label} ${kind} ${i}`,
+          key: `${sid}-${kind}-${i}`,
+          file: `suits/${sid}-${kind}-${i}.png`,
+          dome: [128, 128, 40],
+          ownHead: true,
+          bakedDome: false,
+          frame: true,
+        });
+      }
+    }
+  }
+
   const helmets = helmRows
     .filter((r) => glass[r.id])
     .map((r) => ({
