@@ -1003,6 +1003,9 @@ CUSTOM_FLIGHT_SUITS = {
     "stardust",   # owner-delivered 1 Sep 2026: sweep deliveries #6-#8, one
     "aurorasuit", # batch - same 8/8 ramps, tap banks retired with them,
     "ember",      # pose rotations seeded from measured tilt.
+    "cryostar",   # owner-delivered 1 Sep 2026: sweep deliveries #9-#11,
+    "verdant",    # same batch treatment as #6-#8.
+    "gemmie",     #
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
