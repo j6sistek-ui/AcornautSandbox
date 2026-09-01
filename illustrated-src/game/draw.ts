@@ -2648,6 +2648,26 @@ const DOME: Record<string, [number, number, number]> = {
   "seraph-desc-6": [203, 144, 35],
   "seraph-desc-7": [204, 154, 35],
   "seraph-desc-8": [202, 158, 35],
+  // ION's velocity bank - Grok delivery #2. Head found per frame by the
+  // fur-blob tracker (top-weighted centroid, so the jaw fur doesn't drag
+  // the dome down), then verified by overlay sheet. One radius, sized to
+  // the SKULL of the delivered art - never to the box ratio.
+  "iontrim-asc-1": [184, 100, 36],
+  "iontrim-asc-2": [184, 96, 36],
+  "iontrim-asc-3": [189, 100, 36],
+  "iontrim-asc-4": [186, 96, 36],
+  "iontrim-asc-5": [177, 83, 36],
+  "iontrim-asc-6": [183, 80, 36],
+  "iontrim-asc-7": [183, 84, 36],
+  "iontrim-asc-8": [178, 74, 36],
+  "iontrim-desc-1": [184, 100, 36],
+  "iontrim-desc-2": [196, 110, 36],
+  "iontrim-desc-3": [185, 138, 36],
+  "iontrim-desc-4": [187, 153, 36],
+  "iontrim-desc-5": [187, 147, 36],
+  "iontrim-desc-6": [179, 159, 36],
+  "iontrim-desc-7": [180, 156, 36],
+  "iontrim-desc-8": [177, 165, 36],
   "suit:cinderforge": [183, 93, 44],
   "suit:groveguard": [183, 93, 44],
   "suit:cosmic": [183, 93, 44],
@@ -3197,13 +3217,10 @@ const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 // poses. Purely subtractive: no frame is altered, and emptying a list
 // restores the bank exactly.
 const TAP_FRAME_SKIP: Record<string, number[]> = {
-  // Ion, measured torso mass per frame as a share of the bank's best:
-  //   1:100  2:97  3:88  4:78  5:73  6:75  7:81  8:89
-  //   9:96  10:99 11:95 12:84 13:81 14:83 15:90 16:100
-  // Two troughs, not one. Dropping only the severe 5-7 lifted the median
-  // from 89% to 97% on screen but left the thin frames visible, so the cut
-  // is at 88%: everything below it loses the hip and the hind leg.
-  iontrim: [4, 5, 6, 7, 12, 13, 14],
+  // Ion's skip list is gone: the redraw arrived. Its damaged tap bank is
+  // retired outright for a painted asc/desc ramp, and the skip died with
+  // the bank it patched - a skip entry for a suit with no tap bank is a
+  // typo, and the verifier says so.
 };
 
 /** The frames of a bank that are actually fit to draw, 0-based. */

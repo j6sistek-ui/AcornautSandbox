@@ -984,6 +984,10 @@ CUSTOM_FLIGHT_SUITS = {
                   # The sweep will grant the remaining generated-bank suits
                   # the same way, one delivery at a time, each added HERE on
                   # arrival - the grant stays per-suit and deliberate.
+    "iontrim",    # owner-delivered 1 Sep 2026: sweep delivery #2, same 8/8
+                  # ramp. Its tap bank AND its TAP_FRAME_SKIP stopgap are
+                  # retired together - the skip existed only to hide the
+                  # frames this delivery redrew.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

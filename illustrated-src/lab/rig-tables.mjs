@@ -90,27 +90,39 @@ export function buildTables(root) {
   // eight frames no longer form another 160 helmet combinations. They are
   // reviewed as Clear-only animation art in the visual-audit page instead.
 
-  // A VELOCITY BANK'S FRAMES ARE SEATABLE ART. Seraph flies a painted
-  // ascent/descent ramp whose head moves frame to frame, so each frame
-  // carries its own dome anchor in DOME - and each one is hand-fittable
-  // here exactly like a static. Emitted as frame entries: the editor
-  // already knows a frame tile must not hijack the suit selector, and its
-  // COPY report prints the same keys draw.ts uses, so a fitting session
-  // pastes straight back into the table.
-  for (const kind of ["asc", "desc"]) {
-    for (let i = 1; i <= 8; i++) {
-      const key = `seraph-${kind}-${i}`;
-      if (!dome[key]) continue;
-      suits.push({
-        id: key,
-        name: `Seraph ${kind} ${i}`,
-        key,
-        file: `suits/${key}.png`,
-        dome: dome[key].slice(0, 3),
-        ownHead: false,
-        bakedDome: false,
-        frame: true,
-      });
+  // A VELOCITY BANK'S FRAMES ARE SEATABLE ART. A Grok-swept suit flies a
+  // painted ascent/descent ramp whose head moves frame to frame, so each
+  // frame carries its own dome anchor in DOME - and each one is
+  // hand-fittable here exactly like a static. Emitted as frame entries:
+  // the editor already knows a frame tile must not hijack the suit
+  // selector, and its COPY report prints the same keys draw.ts uses, so a
+  // fitting session pastes straight back into the table. Not hardcoded to
+  // a roster: any `<suit>-asc-N` anchor in DOME earns its tile, so each
+  // sweep delivery shows up here the moment its anchors land. Flight's own
+  // frames are the one deliberate exception (bare art, baked Clear dome -
+  // see above).
+  const frameSuits = [...new Set(
+    Object.keys(dome)
+      .map((k) => /^(\w+)-(?:asc|desc)-\d+$/.exec(k)?.[1])
+      .filter((s) => s && s !== "flight"),
+  )].sort();
+  for (const sid of frameSuits) {
+    const label = sid[0].toUpperCase() + sid.slice(1);
+    for (const kind of ["asc", "desc"]) {
+      for (let i = 1; i <= 8; i++) {
+        const key = `${sid}-${kind}-${i}`;
+        if (!dome[key]) continue;
+        suits.push({
+          id: key,
+          name: `${label} ${kind} ${i}`,
+          key,
+          file: `suits/${key}.png`,
+          dome: dome[key].slice(0, 3),
+          ownHead: false,
+          bakedDome: false,
+          frame: true,
+        });
+      }
     }
   }
 
