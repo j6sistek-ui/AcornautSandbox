@@ -1,10 +1,10 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=163";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=163";
-import { drawSprite as drawSpriteOn } from "./art.js?v=163";
-import { createEngine } from "./engine.js?v=163";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=163";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=163";
-import { formatRaceTicks } from "./race.js?v=163";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=164";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=164";
+import { drawSprite as drawSpriteOn } from "./art.js?v=164";
+import { createEngine } from "./engine.js?v=164";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=164";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=164";
+import { formatRaceTicks } from "./race.js?v=164";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -863,7 +863,8 @@ export async function bootStandalone(root) {
         boardBtn.onclick = () => engine.open("scores");
         const gear = el("button", "ac-hub-sq");
         gear.setAttribute("aria-label", "Settings and help");
-        gear.append(icon(I_GEAR, 22));
+        // the owner's painted acorn-gear plate replaces the line glyph
+        gear.append(hubIcon("settings", false));
         gear.onclick = () => engine.open("help");
         rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
         box.append(rail);
