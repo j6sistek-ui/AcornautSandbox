@@ -1,13 +1,13 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=159";
-import { goalHud } from "./campaign.js?v=159";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=159";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=159";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=159";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=159";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=159";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=159";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=159";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=159";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=160";
+import { goalHud } from "./campaign.js?v=160";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=160";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=160";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=160";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=160";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=160";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=160";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=160";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=160";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2341,6 +2341,8 @@ function hexRgb(hex) {
 // target r / max(trimmed box) ~= 0.239, within one source pixel of that target.
 // Their helmet footprint now varies by less than 2% on screen; small raw-radius
 // differences remain only to compensate for each painting's crop.
+// x, y, r — and on motion-bank frames an optional 4th value: the pose's
+// helmet rotation in degrees, added to HELM_GLASS's own art rot.
 const DOME = {
     "idle-1": [192, 106, 56],
     "idle-2": [192, 103, 51],
@@ -2490,16 +2492,16 @@ const DOME = {
     "seraph-asc-4": [206, 132, 35],
     "seraph-asc-5": [205, 129, 35],
     "seraph-asc-6": [205, 126, 35],
-    "seraph-asc-7": [205, 123, 35],
-    "seraph-asc-8": [204, 120, 35],
+    "seraph-asc-7": [205, 123, 35, -10],
+    "seraph-asc-8": [204, 120, 35, -10],
     "seraph-desc-1": [205, 129, 35],
     "seraph-desc-2": [205, 132, 35],
     "seraph-desc-3": [205, 135, 35],
-    "seraph-desc-4": [205, 138, 35],
-    "seraph-desc-5": [204, 141, 35],
-    "seraph-desc-6": [203, 144, 35],
-    "seraph-desc-7": [204, 154, 35],
-    "seraph-desc-8": [202, 158, 35],
+    "seraph-desc-4": [205, 138, 35, 10],
+    "seraph-desc-5": [204, 141, 35, 15],
+    "seraph-desc-6": [203, 144, 35, 15],
+    "seraph-desc-7": [204, 154, 35, 35],
+    "seraph-desc-8": [202, 158, 35, 40],
     // ION's velocity bank - Grok delivery #2. Head found per frame by the
     // fur-blob tracker (top-weighted centroid, so the jaw fur doesn't drag
     // the dome down), then verified by overlay sheet. One radius, sized to
@@ -2508,18 +2510,18 @@ const DOME = {
     "iontrim-asc-2": [184, 96, 36],
     "iontrim-asc-3": [189, 100, 36],
     "iontrim-asc-4": [186, 96, 36],
-    "iontrim-asc-5": [177, 83, 36],
-    "iontrim-asc-6": [183, 80, 36],
-    "iontrim-asc-7": [183, 84, 36],
-    "iontrim-asc-8": [178, 74, 36],
+    "iontrim-asc-5": [177, 83, 36, -25],
+    "iontrim-asc-6": [183, 80, 36, -25],
+    "iontrim-asc-7": [183, 84, 36, -35],
+    "iontrim-asc-8": [178, 74, 36, -35],
     "iontrim-desc-1": [184, 100, 36],
     "iontrim-desc-2": [196, 110, 36],
-    "iontrim-desc-3": [185, 138, 36],
-    "iontrim-desc-4": [187, 153, 36],
-    "iontrim-desc-5": [187, 147, 36],
-    "iontrim-desc-6": [179, 159, 36],
-    "iontrim-desc-7": [180, 156, 36],
-    "iontrim-desc-8": [177, 165, 36],
+    "iontrim-desc-3": [185, 138, 36, 25],
+    "iontrim-desc-4": [187, 153, 36, 30],
+    "iontrim-desc-5": [187, 147, 36, 25],
+    "iontrim-desc-6": [179, 159, 36, 40],
+    "iontrim-desc-7": [180, 156, 36, 35],
+    "iontrim-desc-8": [177, 165, 36, 40],
     // COPPER's velocity bank - Grok delivery #3. Same fur-blob tracker as
     // Ion, with a +5/-8 nudge measured off the overlay sheet (Copper's jaw
     // fur drags the raw centroid low-left of the skull). Radius sized to
@@ -2527,19 +2529,19 @@ const DOME = {
     "copper-asc-1": [181, 99, 46],
     "copper-asc-2": [182, 98, 46],
     "copper-asc-3": [180, 100, 46],
-    "copper-asc-4": [174, 91, 46],
+    "copper-asc-4": [174, 91, 46, -25],
     "copper-asc-5": [182, 96, 46],
     "copper-asc-6": [182, 98, 46],
-    "copper-asc-7": [177, 86, 46],
-    "copper-asc-8": [176, 87, 46],
+    "copper-asc-7": [177, 86, 46, -30],
+    "copper-asc-8": [176, 87, 46, -40],
     "copper-desc-1": [181, 99, 46],
     "copper-desc-2": [193, 111, 46],
-    "copper-desc-3": [195, 136, 46],
-    "copper-desc-4": [194, 150, 46],
-    "copper-desc-5": [194, 143, 46],
-    "copper-desc-6": [187, 154, 46],
-    "copper-desc-7": [190, 149, 46],
-    "copper-desc-8": [185, 156, 46],
+    "copper-desc-3": [195, 136, 46, 25],
+    "copper-desc-4": [194, 150, 46, 30],
+    "copper-desc-5": [194, 143, 46, 30],
+    "copper-desc-6": [187, 154, 46, 35],
+    "copper-desc-7": [190, 149, 46, 35],
+    "copper-desc-8": [185, 156, 46, 40],
     // VOIDSUIT's velocity bank - Grok delivery #4. Same tracker, with a
     // +4/+6 nudge measured off the overlay sheet (Void's fluffy crown fur
     // pulls the top-weighted centroid high-left of the face).
@@ -2547,18 +2549,18 @@ const DOME = {
     "voidsuit-asc-2": [183, 105, 45],
     "voidsuit-asc-3": [183, 102, 45],
     "voidsuit-asc-4": [183, 98, 45],
-    "voidsuit-asc-5": [179, 88, 45],
-    "voidsuit-asc-6": [174, 83, 45],
-    "voidsuit-asc-7": [173, 95, 45],
-    "voidsuit-asc-8": [173, 91, 45],
+    "voidsuit-asc-5": [179, 88, 45, -10],
+    "voidsuit-asc-6": [174, 83, 45, -25],
+    "voidsuit-asc-7": [173, 95, 45, -25],
+    "voidsuit-asc-8": [173, 91, 45, -35],
     "voidsuit-desc-1": [182, 105, 45],
-    "voidsuit-desc-2": [188, 141, 45],
-    "voidsuit-desc-3": [177, 148, 45],
-    "voidsuit-desc-4": [178, 155, 45],
-    "voidsuit-desc-5": [177, 154, 45],
-    "voidsuit-desc-6": [171, 162, 45],
-    "voidsuit-desc-7": [179, 159, 45],
-    "voidsuit-desc-8": [172, 165, 45],
+    "voidsuit-desc-2": [188, 141, 45, 15],
+    "voidsuit-desc-3": [177, 148, 45, 25],
+    "voidsuit-desc-4": [178, 155, 45, 30],
+    "voidsuit-desc-5": [177, 154, 45, 30],
+    "voidsuit-desc-6": [171, 162, 45, 35],
+    "voidsuit-desc-7": [179, 159, 45, 30],
+    "voidsuit-desc-8": [172, 165, 45, 40],
     "suit:cinderforge": [183, 93, 44],
     "suit:groveguard": [183, 93, 44],
     "suit:cosmic": [183, 93, 44],
@@ -2889,7 +2891,12 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
         const punched = punchedHelm(helmSpr, helmet.id, helmet.opaqueVisor === true);
         if (punched) {
             const s2 = (r * 1.04) / g[2];
-            const rot = g[3] || 0;
+            // Two rotations, two owners. g[3] is the helmet ART's own measured
+            // tilt (a property of the painting, lives in HELM_GLASS). a[3] is
+            // the POSE's head pitch - a motion frame whose head dives 55 degrees
+            // carries that in its own dome anchor, so the rim and neck ring
+            // follow the head instead of staying level through the dive.
+            const rot = (g[3] || 0) + (a[3] || 0);
             if (rot) {
                 ctx.save();
                 ctx.translate(hx, hy);

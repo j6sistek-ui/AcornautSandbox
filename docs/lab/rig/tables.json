@@ -1,5 +1,5 @@
 {
- "artVer": "159",
+ "artVer": "160",
  "suits": [
   {
    "id": "flight",
@@ -429,7 +429,8 @@
    "dome": [
     174,
     91,
-    46
+    46,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -471,7 +472,8 @@
    "dome": [
     177,
     86,
-    46
+    46,
+    -30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -485,7 +487,8 @@
    "dome": [
     176,
     87,
-    46
+    46,
+    -40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -527,7 +530,8 @@
    "dome": [
     195,
     136,
-    46
+    46,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -541,7 +545,8 @@
    "dome": [
     194,
     150,
-    46
+    46,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -555,7 +560,8 @@
    "dome": [
     194,
     143,
-    46
+    46,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -569,7 +575,8 @@
    "dome": [
     187,
     154,
-    46
+    46,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -583,7 +590,8 @@
    "dome": [
     190,
     149,
-    46
+    46,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -597,7 +605,8 @@
    "dome": [
     185,
     156,
-    46
+    46,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -891,7 +900,8 @@
    "dome": [
     177,
     83,
-    36
+    36,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -905,7 +915,8 @@
    "dome": [
     183,
     80,
-    36
+    36,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -919,7 +930,8 @@
    "dome": [
     183,
     84,
-    36
+    36,
+    -35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -933,7 +945,8 @@
    "dome": [
     178,
     74,
-    36
+    36,
+    -35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -975,7 +988,8 @@
    "dome": [
     185,
     138,
-    36
+    36,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -989,7 +1003,8 @@
    "dome": [
     187,
     153,
-    36
+    36,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1003,7 +1018,8 @@
    "dome": [
     187,
     147,
-    36
+    36,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1017,7 +1033,8 @@
    "dome": [
     179,
     159,
-    36
+    36,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1031,7 +1048,8 @@
    "dome": [
     180,
     156,
-    36
+    36,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1045,7 +1063,8 @@
    "dome": [
     177,
     165,
-    36
+    36,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1143,7 +1162,8 @@
    "dome": [
     205,
     123,
-    35
+    35,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1157,7 +1177,8 @@
    "dome": [
     204,
     120,
-    35
+    35,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1213,7 +1234,8 @@
    "dome": [
     205,
     138,
-    35
+    35,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1227,7 +1249,8 @@
    "dome": [
     204,
     141,
-    35
+    35,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1241,7 +1264,8 @@
    "dome": [
     203,
     144,
-    35
+    35,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1255,6 +1279,7 @@
    "dome": [
     204,
     154,
+    35,
     35
    ],
    "ownHead": false,
@@ -1269,7 +1294,8 @@
    "dome": [
     202,
     158,
-    35
+    35,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1339,7 +1365,8 @@
    "dome": [
     179,
     88,
-    45
+    45,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1353,7 +1380,8 @@
    "dome": [
     174,
     83,
-    45
+    45,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1367,7 +1395,8 @@
    "dome": [
     173,
     95,
-    45
+    45,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1381,7 +1410,8 @@
    "dome": [
     173,
     91,
-    45
+    45,
+    -35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1409,7 +1439,8 @@
    "dome": [
     188,
     141,
-    45
+    45,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1423,7 +1454,8 @@
    "dome": [
     177,
     148,
-    45
+    45,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1437,7 +1469,8 @@
    "dome": [
     178,
     155,
-    45
+    45,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1451,7 +1484,8 @@
    "dome": [
     177,
     154,
-    45
+    45,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1465,7 +1499,8 @@
    "dome": [
     171,
     162,
-    45
+    45,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1479,7 +1514,8 @@
    "dome": [
     179,
     159,
-    45
+    45,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1493,7 +1529,8 @@
    "dome": [
     172,
     165,
-    45
+    45,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,

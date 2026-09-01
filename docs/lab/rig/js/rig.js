@@ -176,7 +176,9 @@ function effective(s, h) {
     const a = ov
         ? [s.dome[0] + ov[0], s.dome[1] + ov[1], s.dome[2] * (1 + ov[2])]
         : [s.dome[0], s.dome[1], s.dome[2]];
-    const rot = h.glass[3] + (ov ? ov[3] : 0);
+    // a motion frame's dome carries its own pose rotation as a 4th value -
+    // the game adds it to the glass rot, so the editor previews the same sum
+    const rot = h.glass[3] + (s.dome[3] || 0) + (ov ? ov[3] : 0);
     return { a, g: h.glass, rot };
 }
 function saveLocal() {
@@ -366,6 +368,12 @@ function spin(deg, s, h) {
         const ov = ((_a = S.over)[key] || (_a[key] = [0, 0, 0, 0]));
         ov[3] += deg;
     }
+    else if (s.frame) {
+        // in the frames view ROT dials THIS FRAME's pose rotation, not the
+        // helmet art's - one frame's dive angle must never re-tilt the glass
+        // under every suit on the roster
+        s.dome[3] = (s.dome[3] || 0) + deg;
+    }
     else {
         h.glass[3] += deg;
     }
@@ -373,7 +381,7 @@ function spin(deg, s, h) {
 function resetTile(s, h) {
     const b = S.base;
     if (S.target === "suit") {
-        s.dome = b.suits.find((x) => x.key === s.key).dome.slice(0, 3);
+        s.dome = b.suits.find((x) => x.key === s.key).dome.slice(0, 4);
     }
     else if (S.target === "pair") {
         delete S.over[pairKey(s.id, h.id)];

@@ -1254,6 +1254,14 @@ def verify_motion_banks(qa: QA) -> None:
                                         f"NO helmet at all, silently")
                     continue
                 radii.append(dome[key][2])
+                # A frame's optional 4th value is its helmet POSE ROTATION.
+                # The steepest dive in any bank is ~65 degrees, so a value
+                # beyond 75 is a typo (a coordinate in the rot slot), and a
+                # typo here spins the helmet off the pilot's head in-game.
+                if len(dome[key]) > 3 and abs(dome[key][3]) > 75:
+                    problems.append(f"{key} has pose rotation {dome[key][3]:.0f} - "
+                                    f"beyond any attitude in the art, likely a "
+                                    f"misplaced coordinate")
         # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
         # velocity, so frames that all point the same way give velocity
         # nothing to pick between - a 16-degree bank is a wing-beat wearing

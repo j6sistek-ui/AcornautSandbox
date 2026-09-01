@@ -21,7 +21,7 @@
 // Nothing here writes to the repo. Work is kept in localStorage and comes
 // back out as JSON or as paste-ready TypeScript.
 
-type Tri = [number, number, number];
+type Tri = [number, number, number, number?]; // x, y, r, pose rotation (deg, frames only)
 type Glass = [number, number, number, number]; // x, y, r, rotation (deg)
 type Delta = [number, number, number, number]; // dx, dy, dScale, dRot
 
@@ -200,7 +200,9 @@ function effective(s: SuitRow, h: HelmRow) {
   const a: Tri = ov
     ? [s.dome[0] + ov[0], s.dome[1] + ov[1], s.dome[2] * (1 + ov[2])]
     : [s.dome[0], s.dome[1], s.dome[2]];
-  const rot = h.glass[3] + (ov ? ov[3] : 0);
+  // a motion frame's dome carries its own pose rotation as a 4th value -
+  // the game adds it to the glass rot, so the editor previews the same sum
+  const rot = h.glass[3] + (s.dome[3] || 0) + (ov ? ov[3] : 0);
   return { a, g: h.glass, rot };
 }
 
@@ -390,6 +392,11 @@ function spin(deg: number, s: SuitRow, h: HelmRow) {
     const key = pairKey(s.id, h.id);
     const ov = (S.over[key] ||= [0, 0, 0, 0]);
     ov[3] += deg;
+  } else if (s.frame) {
+    // in the frames view ROT dials THIS FRAME's pose rotation, not the
+    // helmet art's - one frame's dive angle must never re-tilt the glass
+    // under every suit on the roster
+    s.dome[3] = (s.dome[3] || 0) + deg;
   } else {
     h.glass[3] += deg;
   }
@@ -398,7 +405,7 @@ function spin(deg: number, s: SuitRow, h: HelmRow) {
 function resetTile(s: SuitRow, h: HelmRow) {
   const b = S.base!;
   if (S.target === "suit") {
-    s.dome = b.suits.find((x) => x.key === s.key)!.dome.slice(0, 3) as Tri;
+    s.dome = b.suits.find((x) => x.key === s.key)!.dome.slice(0, 4) as Tri;
   } else if (S.target === "pair") {
     delete S.over[pairKey(s.id, h.id)];
   } else {

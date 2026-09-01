@@ -117,7 +117,8 @@ export function buildTables(root) {
           name: `${label} ${kind} ${i}`,
           key,
           file: `suits/${key}.png`,
-          dome: dome[key].slice(0, 3),
+          // frames keep their 4th value: the pose's helmet rotation
+          dome: dome[key].slice(0, 4),
           ownHead: false,
           bakedDome: false,
           frame: true,
