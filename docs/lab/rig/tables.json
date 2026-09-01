@@ -1,5 +1,5 @@
 {
- "artVer": "166",
+ "artVer": "167",
  "suits": [
   {
    "id": "flight",
@@ -21,9 +21,9 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
-    178,
-    88,
-    48
+    184,
+    100,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -35,9 +35,9 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    183,
-    85,
-    45
+    181,
+    99,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -49,9 +49,9 @@
    "key": "suit:frost",
    "file": "suits/frost.png",
    "dome": [
-    186,
-    98,
-    43
+    175,
+    112,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -63,9 +63,9 @@
    "key": "suit:voidsuit",
    "file": "suits/voidsuit.png",
    "dome": [
-    181,
-    102,
-    42
+    182,
+    105,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -77,9 +77,9 @@
    "key": "suit:aurorasuit",
    "file": "suits/aurorasuit.png",
    "dome": [
-    181,
-    101,
-    44
+    163,
+    97,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -91,9 +91,9 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    182,
+    168,
     100,
-    44
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -105,9 +105,9 @@
    "key": "suit:stardust",
    "file": "suits/stardust.png",
    "dome": [
-    179,
-    95,
-    44
+    162,
+    97,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -133,9 +133,9 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    182,
-    93,
-    44
+    176,
+    83,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -175,9 +175,9 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    204,
-    92,
-    58
+    183,
+    102,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -189,9 +189,9 @@
    "key": "suit:sammie",
    "file": "suits/sammie.png",
    "dome": [
-    206,
-    90,
-    59
+    186,
+    102,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -203,9 +203,9 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    207,
-    97,
-    57
+    205,
+    129,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -231,9 +231,9 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    204,
-    93,
-    58
+    186,
+    92,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -245,9 +245,9 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    207,
-    93,
-    58
+    191,
+    94,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2012,6 +2012,238 @@
     153,
     40,
     35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-1",
+   "name": "Ghost asc 1",
+   "key": "ghost-asc-1",
+   "file": "suits/ghost-asc-1.png",
+   "dome": [
+    176,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-2",
+   "name": "Ghost asc 2",
+   "key": "ghost-asc-2",
+   "file": "suits/ghost-asc-2.png",
+   "dome": [
+    172,
+    79,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-3",
+   "name": "Ghost asc 3",
+   "key": "ghost-asc-3",
+   "file": "suits/ghost-asc-3.png",
+   "dome": [
+    174,
+    76,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-4",
+   "name": "Ghost asc 4",
+   "key": "ghost-asc-4",
+   "file": "suits/ghost-asc-4.png",
+   "dome": [
+    173,
+    76,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-5",
+   "name": "Ghost asc 5",
+   "key": "ghost-asc-5",
+   "file": "suits/ghost-asc-5.png",
+   "dome": [
+    176,
+    81,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-6",
+   "name": "Ghost asc 6",
+   "key": "ghost-asc-6",
+   "file": "suits/ghost-asc-6.png",
+   "dome": [
+    168,
+    72,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-7",
+   "name": "Ghost asc 7",
+   "key": "ghost-asc-7",
+   "file": "suits/ghost-asc-7.png",
+   "dome": [
+    168,
+    72,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-8",
+   "name": "Ghost asc 8",
+   "key": "ghost-asc-8",
+   "file": "suits/ghost-asc-8.png",
+   "dome": [
+    170,
+    73,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-1",
+   "name": "Ghost desc 1",
+   "key": "ghost-desc-1",
+   "file": "suits/ghost-desc-1.png",
+   "dome": [
+    176,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-2",
+   "name": "Ghost desc 2",
+   "key": "ghost-desc-2",
+   "file": "suits/ghost-desc-2.png",
+   "dome": [
+    177,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-3",
+   "name": "Ghost desc 3",
+   "key": "ghost-desc-3",
+   "file": "suits/ghost-desc-3.png",
+   "dome": [
+    176,
+    84,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-4",
+   "name": "Ghost desc 4",
+   "key": "ghost-desc-4",
+   "file": "suits/ghost-desc-4.png",
+   "dome": [
+    191,
+    136,
+    38,
+    55
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-5",
+   "name": "Ghost desc 5",
+   "key": "ghost-desc-5",
+   "file": "suits/ghost-desc-5.png",
+   "dome": [
+    191,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-6",
+   "name": "Ghost desc 6",
+   "key": "ghost-desc-6",
+   "file": "suits/ghost-desc-6.png",
+   "dome": [
+    188,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-7",
+   "name": "Ghost desc 7",
+   "key": "ghost-desc-7",
+   "file": "suits/ghost-desc-7.png",
+   "dome": [
+    185,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-8",
+   "name": "Ghost desc 8",
+   "key": "ghost-desc-8",
+   "file": "suits/ghost-desc-8.png",
+   "dome": [
+    186,
+    109,
+    38,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,

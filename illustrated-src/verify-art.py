@@ -73,15 +73,31 @@ BASE_SUIT_IDS = (
 BASE_HELMET_SCALE_MIN = 0.235
 BASE_HELMET_SCALE_MAX = 0.243
 BASE_HELMET_SCALE_SPREAD_MAX = 0.005
-# Two base suits are not painted to the family's proportions, and holding
-# them to the family's scale put a helmet on them a size too big - the glass
-# swallowed the head and cut into the body. Robo is a compact head on bulky
-# armour; Big Booty is the joke in the name. This audit divides by the whole
+# Suits not painted to the family's proportions, and holding them to the
+# family's scale put a helmet on them a size too big - the glass swallowed
+# the head and cut into the body. Robo is a compact head on bulky armour;
+# Big Booty is the joke in the name. This audit divides by the whole
 # CHARACTER's bounding box, which is the right yardstick only while every
-# suit shares a head-to-body ratio, so these two carry the owner's measured
+# suit shares a head-to-body ratio, so these carry the owner's measured
 # scale instead. Held to +/-5%, so a typo here is still caught - they are
 # calibrated, not exempt.
-OFF_FAMILY_HELMET_SCALES = {"robo": 0.2011, "bigbooty": 0.1872}
+#
+# The 2026-09 shelf-drift fix promoted every swept suit's master to its own
+# bank asc-1 frame, so each of those suits now shows ITS art's proportions,
+# not the shared flight template's. Their measured display scales join the
+# calibrated table; flight stays the lone family-band reference.
+OFF_FAMILY_HELMET_SCALES = {
+    "robo": 0.2011,
+    "bigbooty": 0.1872,
+    "iontrim": 0.1895,
+    "copper": 0.2255,
+    "frost": 0.2130,
+    "voidsuit": 0.2250,
+    "aurorasuit": 0.2171,
+    "ember": 0.2249,
+    "stardust": 0.2222,
+    "ghost": 0.1689,
+}
 OFF_FAMILY_HELMET_TOLERANCE = 0.05
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
@@ -1008,6 +1024,11 @@ CUSTOM_FLIGHT_SUITS = {
     "gemmie",     #
     "sammie",     # owner-delivered 1 Sep 2026: sweep deliveries #12-#13.
     "frost",      # frost's anchors came from the pale-fur tracker variant.
+    "ghost",      # the owner's custom spectral rebuild, 1 Sep 2026: new
+                  # character, bank-only (wisp tail has no neck to cut),
+                  # pale-fur tracker anchors. One delivery still outstanding:
+                  # LEVIATHAN flies its generated tap ramp until its painted
+                  # bank arrives.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
