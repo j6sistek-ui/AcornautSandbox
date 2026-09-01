@@ -992,16 +992,17 @@ CUSTOM_FLIGHT_SUITS = {
                   # ramp, tap bank retired with it.
     "voidsuit",   # owner-delivered 1 Sep 2026: sweep delivery #4, same 8/8
                   # ramp, tap bank retired with it.
-    "alien",      # owner-delivered 1 Sep 2026: custom-posed bank, replacing
-                  # the whole character (new master, re-cut tail rig). Both
-                  # ramps run SEVEN frames by the owner's cuts: desc-7 (a
-                  # heavy black swirl that would flash on colored skies) and
-                  # asc-2 (the SPIRAL tail - the other character's look,
-                  # bled over by the generator) are out, later frames
-                  # renumbered down a slot.
-    "alien2",     # the owner's A/B twin for the alien test: the same new
-                  # visitor flown on the standard-spec bank, beta-only.
-                  # One of the two wins; delete the loser and this grant.
+    "alien",      # the A/B WINNER (owner's call, 1 Sep 2026): the
+                  # standard-spec spiral-tail bank, 8/8, flying production.
+                  # Bank-only - the spiral master has no neck to cut, so
+                  # the suit carries no rig layers and zero lean ("the
+                  # animation does the work").
+    "alien2",     # the RETIRED custom-posed character, kept on the beta
+                  # shelf as "Alien 1". Runs 7/7 by the owner's frame cuts
+                  # (the black desc swirl and the bled-over spiral asc).
+    "stardust",   # owner-delivered 1 Sep 2026: sweep deliveries #6-#8, one
+    "aurorasuit", # batch - same 8/8 ramps, tap banks retired with them,
+    "ember",      # pose rotations seeded from measured tilt.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
