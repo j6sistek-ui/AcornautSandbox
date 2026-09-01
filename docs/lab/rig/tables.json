@@ -1,5 +1,5 @@
 {
- "artVer": "158",
+ "artVer": "159",
  "suits": [
   {
    "id": "flight",
@@ -1270,6 +1270,230 @@
     202,
     158,
     35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-1",
+   "name": "Voidsuit asc 1",
+   "key": "voidsuit-asc-1",
+   "file": "suits/voidsuit-asc-1.png",
+   "dome": [
+    182,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-2",
+   "name": "Voidsuit asc 2",
+   "key": "voidsuit-asc-2",
+   "file": "suits/voidsuit-asc-2.png",
+   "dome": [
+    183,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-3",
+   "name": "Voidsuit asc 3",
+   "key": "voidsuit-asc-3",
+   "file": "suits/voidsuit-asc-3.png",
+   "dome": [
+    183,
+    102,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-4",
+   "name": "Voidsuit asc 4",
+   "key": "voidsuit-asc-4",
+   "file": "suits/voidsuit-asc-4.png",
+   "dome": [
+    183,
+    98,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-5",
+   "name": "Voidsuit asc 5",
+   "key": "voidsuit-asc-5",
+   "file": "suits/voidsuit-asc-5.png",
+   "dome": [
+    179,
+    88,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-6",
+   "name": "Voidsuit asc 6",
+   "key": "voidsuit-asc-6",
+   "file": "suits/voidsuit-asc-6.png",
+   "dome": [
+    174,
+    83,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-7",
+   "name": "Voidsuit asc 7",
+   "key": "voidsuit-asc-7",
+   "file": "suits/voidsuit-asc-7.png",
+   "dome": [
+    173,
+    95,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-8",
+   "name": "Voidsuit asc 8",
+   "key": "voidsuit-asc-8",
+   "file": "suits/voidsuit-asc-8.png",
+   "dome": [
+    173,
+    91,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-1",
+   "name": "Voidsuit desc 1",
+   "key": "voidsuit-desc-1",
+   "file": "suits/voidsuit-desc-1.png",
+   "dome": [
+    182,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-2",
+   "name": "Voidsuit desc 2",
+   "key": "voidsuit-desc-2",
+   "file": "suits/voidsuit-desc-2.png",
+   "dome": [
+    188,
+    141,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-3",
+   "name": "Voidsuit desc 3",
+   "key": "voidsuit-desc-3",
+   "file": "suits/voidsuit-desc-3.png",
+   "dome": [
+    177,
+    148,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-4",
+   "name": "Voidsuit desc 4",
+   "key": "voidsuit-desc-4",
+   "file": "suits/voidsuit-desc-4.png",
+   "dome": [
+    178,
+    155,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-5",
+   "name": "Voidsuit desc 5",
+   "key": "voidsuit-desc-5",
+   "file": "suits/voidsuit-desc-5.png",
+   "dome": [
+    177,
+    154,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-6",
+   "name": "Voidsuit desc 6",
+   "key": "voidsuit-desc-6",
+   "file": "suits/voidsuit-desc-6.png",
+   "dome": [
+    171,
+    162,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-7",
+   "name": "Voidsuit desc 7",
+   "key": "voidsuit-desc-7",
+   "file": "suits/voidsuit-desc-7.png",
+   "dome": [
+    179,
+    159,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-8",
+   "name": "Voidsuit desc 8",
+   "key": "voidsuit-desc-8",
+   "file": "suits/voidsuit-desc-8.png",
+   "dome": [
+    172,
+    165,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,

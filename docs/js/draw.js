@@ -1,13 +1,13 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=158";
-import { goalHud } from "./campaign.js?v=158";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=158";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=158";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=158";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=158";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=158";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=158";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=158";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=158";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=159";
+import { goalHud } from "./campaign.js?v=159";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=159";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=159";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=159";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=159";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=159";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=159";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=159";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=159";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2540,6 +2540,25 @@ const DOME = {
     "copper-desc-6": [187, 154, 46],
     "copper-desc-7": [190, 149, 46],
     "copper-desc-8": [185, 156, 46],
+    // VOIDSUIT's velocity bank - Grok delivery #4. Same tracker, with a
+    // +4/+6 nudge measured off the overlay sheet (Void's fluffy crown fur
+    // pulls the top-weighted centroid high-left of the face).
+    "voidsuit-asc-1": [182, 105, 45],
+    "voidsuit-asc-2": [183, 105, 45],
+    "voidsuit-asc-3": [183, 102, 45],
+    "voidsuit-asc-4": [183, 98, 45],
+    "voidsuit-asc-5": [179, 88, 45],
+    "voidsuit-asc-6": [174, 83, 45],
+    "voidsuit-asc-7": [173, 95, 45],
+    "voidsuit-asc-8": [173, 91, 45],
+    "voidsuit-desc-1": [182, 105, 45],
+    "voidsuit-desc-2": [188, 141, 45],
+    "voidsuit-desc-3": [177, 148, 45],
+    "voidsuit-desc-4": [178, 155, 45],
+    "voidsuit-desc-5": [177, 154, 45],
+    "voidsuit-desc-6": [171, 162, 45],
+    "voidsuit-desc-7": [179, 159, 45],
+    "voidsuit-desc-8": [172, 165, 45],
     "suit:cinderforge": [183, 93, 44],
     "suit:groveguard": [183, 93, 44],
     "suit:cosmic": [183, 93, 44],
