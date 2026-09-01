@@ -988,6 +988,8 @@ CUSTOM_FLIGHT_SUITS = {
                   # ramp. Its tap bank AND its TAP_FRAME_SKIP stopgap are
                   # retired together - the skip existed only to hide the
                   # frames this delivery redrew.
+    "copper",     # owner-delivered 1 Sep 2026: sweep delivery #3, same 8/8
+                  # ramp, tap bank retired with it.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

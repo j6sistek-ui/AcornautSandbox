@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=157";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=158";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -224,13 +224,13 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // Every one of these banks already shipped in the production art folder;
     // only this list kept production from asking for them.
     robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-    flight: 16, copper: 16, frost: 16,
+    flight: 16, frost: 16,
     voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
     ghost: 16, gemmie: 16, sammie: 16,
-    // seraph's and iontrim's generated tap banks are retired: their GENERATED
-    // motion lost the pilot's lower body at its extremes, and both fly a
-    // painted ascent/descent ramp now - deliveries #1 and #2 of the
-    // flight-bank sweep. Iontrim's retirement also deletes its TAP_FRAME_SKIP
+    // seraph's, iontrim's and copper's generated tap banks are retired: their
+    // GENERATED motion lost the pilot's lower body at its extremes, and each
+    // flies a painted ascent/descent ramp now - deliveries #1-#3 of the
+    // flight-bank sweep. Iontrim's retirement also deleted its TAP_FRAME_SKIP
     // stopgap in draw.ts: the skip dies with the bank it patched.
     leviathan: 16, verdant: 16, cryostar: 16,
     // These eight stay here only because the SUITS do - they are beta-gated in
@@ -242,8 +242,12 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
-const ASC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8 } : {};
-const DESC_BANKS = TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8 } : {};
+const ASC_BANKS = TAP_ANIM_ENABLED
+    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8 }
+    : {};
+const DESC_BANKS = TAP_ANIM_ENABLED
+    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8 }
+    : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),

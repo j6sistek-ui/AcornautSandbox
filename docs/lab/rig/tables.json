@@ -1,5 +1,5 @@
 {
- "artVer": "157",
+ "artVer": "158",
  "suits": [
   {
    "id": "flight",
@@ -378,6 +378,230 @@
    "ownHead": false,
    "bakedDome": false,
    "frame": false
+  },
+  {
+   "id": "copper-asc-1",
+   "name": "Copper asc 1",
+   "key": "copper-asc-1",
+   "file": "suits/copper-asc-1.png",
+   "dome": [
+    181,
+    99,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-2",
+   "name": "Copper asc 2",
+   "key": "copper-asc-2",
+   "file": "suits/copper-asc-2.png",
+   "dome": [
+    182,
+    98,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-3",
+   "name": "Copper asc 3",
+   "key": "copper-asc-3",
+   "file": "suits/copper-asc-3.png",
+   "dome": [
+    180,
+    100,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-4",
+   "name": "Copper asc 4",
+   "key": "copper-asc-4",
+   "file": "suits/copper-asc-4.png",
+   "dome": [
+    174,
+    91,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-5",
+   "name": "Copper asc 5",
+   "key": "copper-asc-5",
+   "file": "suits/copper-asc-5.png",
+   "dome": [
+    182,
+    96,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-6",
+   "name": "Copper asc 6",
+   "key": "copper-asc-6",
+   "file": "suits/copper-asc-6.png",
+   "dome": [
+    182,
+    98,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-7",
+   "name": "Copper asc 7",
+   "key": "copper-asc-7",
+   "file": "suits/copper-asc-7.png",
+   "dome": [
+    177,
+    86,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-8",
+   "name": "Copper asc 8",
+   "key": "copper-asc-8",
+   "file": "suits/copper-asc-8.png",
+   "dome": [
+    176,
+    87,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-1",
+   "name": "Copper desc 1",
+   "key": "copper-desc-1",
+   "file": "suits/copper-desc-1.png",
+   "dome": [
+    181,
+    99,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-2",
+   "name": "Copper desc 2",
+   "key": "copper-desc-2",
+   "file": "suits/copper-desc-2.png",
+   "dome": [
+    193,
+    111,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-3",
+   "name": "Copper desc 3",
+   "key": "copper-desc-3",
+   "file": "suits/copper-desc-3.png",
+   "dome": [
+    195,
+    136,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-4",
+   "name": "Copper desc 4",
+   "key": "copper-desc-4",
+   "file": "suits/copper-desc-4.png",
+   "dome": [
+    194,
+    150,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-5",
+   "name": "Copper desc 5",
+   "key": "copper-desc-5",
+   "file": "suits/copper-desc-5.png",
+   "dome": [
+    194,
+    143,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-6",
+   "name": "Copper desc 6",
+   "key": "copper-desc-6",
+   "file": "suits/copper-desc-6.png",
+   "dome": [
+    187,
+    154,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-7",
+   "name": "Copper desc 7",
+   "key": "copper-desc-7",
+   "file": "suits/copper-desc-7.png",
+   "dome": [
+    190,
+    149,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-8",
+   "name": "Copper desc 8",
+   "key": "copper-desc-8",
+   "file": "suits/copper-desc-8.png",
+   "dome": [
+    185,
+    156,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
   },
   {
    "id": "eclipse-asc-1",

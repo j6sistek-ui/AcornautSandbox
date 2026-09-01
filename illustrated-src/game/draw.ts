@@ -2668,6 +2668,26 @@ const DOME: Record<string, [number, number, number]> = {
   "iontrim-desc-6": [179, 159, 36],
   "iontrim-desc-7": [180, 156, 36],
   "iontrim-desc-8": [177, 165, 36],
+  // COPPER's velocity bank - Grok delivery #3. Same fur-blob tracker as
+  // Ion, with a +5/-8 nudge measured off the overlay sheet (Copper's jaw
+  // fur drags the raw centroid low-left of the skull). Radius sized to
+  // Copper's own head - the biggest of the swept suits so far.
+  "copper-asc-1": [181, 99, 46],
+  "copper-asc-2": [182, 98, 46],
+  "copper-asc-3": [180, 100, 46],
+  "copper-asc-4": [174, 91, 46],
+  "copper-asc-5": [182, 96, 46],
+  "copper-asc-6": [182, 98, 46],
+  "copper-asc-7": [177, 86, 46],
+  "copper-asc-8": [176, 87, 46],
+  "copper-desc-1": [181, 99, 46],
+  "copper-desc-2": [193, 111, 46],
+  "copper-desc-3": [195, 136, 46],
+  "copper-desc-4": [194, 150, 46],
+  "copper-desc-5": [194, 143, 46],
+  "copper-desc-6": [187, 154, 46],
+  "copper-desc-7": [190, 149, 46],
+  "copper-desc-8": [185, 156, 46],
   "suit:cinderforge": [183, 93, 44],
   "suit:groveguard": [183, 93, 44],
   "suit:cosmic": [183, 93, 44],
