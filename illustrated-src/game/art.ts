@@ -305,14 +305,15 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // Every one of these banks already shipped in the production art folder;
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-  flight: 16, copper: 16, frost: 16,
-  voidsuit: 16, aurorasuit: 16, ember: 16, stardust: 16,
+  flight: 16, frost: 16,
+  aurorasuit: 16, ember: 16, stardust: 16,
   ghost: 16, gemmie: 16, sammie: 16,
-  // seraph's and iontrim's generated tap banks are retired: their GENERATED
-  // motion lost the pilot's lower body at its extremes, and both fly a
-  // painted ascent/descent ramp now - deliveries #1 and #2 of the
-  // flight-bank sweep. Iontrim's retirement also deletes its TAP_FRAME_SKIP
-  // stopgap in draw.ts: the skip dies with the bank it patched.
+  // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
+  // retired: their GENERATED motion lost the pilot's lower body at its
+  // extremes, and each flies a painted ascent/descent ramp now -
+  // deliveries #1-#4 of the flight-bank sweep. Iontrim's retirement also
+  // deleted its TAP_FRAME_SKIP stopgap in draw.ts: the skip dies with the
+  // bank it patched.
   leviathan: 16, verdant: 16, cryostar: 16,
   // These eight stay here only because the SUITS do - they are beta-gated in
   // catalog.ts, so production never loads them. Promote the pair together.
@@ -323,10 +324,22 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+// Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
+// heavy black tail-swirl that would flash on colored skies, so the owner
+// excluded it from the loop - desc-8 was renumbered into its slot. Banks
+// have never owed anyone 8/8 (Flight itself flies 3/5). "alien2" is the
+// owner's A/B twin (beta-only, see catalog.ts) flying the standard-spec
+// bank while "alien" flies the custom-posed one.
 const ASC_BANKS: Record<string, number> =
-  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8 } : {};
+  TAP_ANIM_ENABLED
+    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 8, alien2: 8 }
+    : {};
 const DESC_BANKS: Record<string, number> =
-  TAP_ANIM_ENABLED ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8 } : {};
+  TAP_ANIM_ENABLED
+    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 7, alien2: 8 }
+    : {};
 const LAZY_SUIT_IDS = [...new Set([
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -466,6 +479,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "stardust",
     "robo",
     "alien",
+    "alien2",
     "ghost",
     "bigbooty",
     "catsuit",

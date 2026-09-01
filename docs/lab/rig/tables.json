@@ -1,5 +1,5 @@
 {
- "artVer": "157",
+ "artVer": "161",
  "suits": [
   {
    "id": "flight",
@@ -380,6 +380,239 @@
    "frame": false
   },
   {
+   "id": "copper-asc-1",
+   "name": "Copper asc 1",
+   "key": "copper-asc-1",
+   "file": "suits/copper-asc-1.png",
+   "dome": [
+    181,
+    99,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-2",
+   "name": "Copper asc 2",
+   "key": "copper-asc-2",
+   "file": "suits/copper-asc-2.png",
+   "dome": [
+    182,
+    98,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-3",
+   "name": "Copper asc 3",
+   "key": "copper-asc-3",
+   "file": "suits/copper-asc-3.png",
+   "dome": [
+    180,
+    100,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-4",
+   "name": "Copper asc 4",
+   "key": "copper-asc-4",
+   "file": "suits/copper-asc-4.png",
+   "dome": [
+    174,
+    91,
+    46,
+    -25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-5",
+   "name": "Copper asc 5",
+   "key": "copper-asc-5",
+   "file": "suits/copper-asc-5.png",
+   "dome": [
+    182,
+    96,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-6",
+   "name": "Copper asc 6",
+   "key": "copper-asc-6",
+   "file": "suits/copper-asc-6.png",
+   "dome": [
+    182,
+    98,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-7",
+   "name": "Copper asc 7",
+   "key": "copper-asc-7",
+   "file": "suits/copper-asc-7.png",
+   "dome": [
+    177,
+    86,
+    46,
+    -30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-asc-8",
+   "name": "Copper asc 8",
+   "key": "copper-asc-8",
+   "file": "suits/copper-asc-8.png",
+   "dome": [
+    176,
+    87,
+    46,
+    -40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-1",
+   "name": "Copper desc 1",
+   "key": "copper-desc-1",
+   "file": "suits/copper-desc-1.png",
+   "dome": [
+    181,
+    99,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-2",
+   "name": "Copper desc 2",
+   "key": "copper-desc-2",
+   "file": "suits/copper-desc-2.png",
+   "dome": [
+    193,
+    111,
+    46
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-3",
+   "name": "Copper desc 3",
+   "key": "copper-desc-3",
+   "file": "suits/copper-desc-3.png",
+   "dome": [
+    195,
+    136,
+    46,
+    25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-4",
+   "name": "Copper desc 4",
+   "key": "copper-desc-4",
+   "file": "suits/copper-desc-4.png",
+   "dome": [
+    194,
+    150,
+    46,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-5",
+   "name": "Copper desc 5",
+   "key": "copper-desc-5",
+   "file": "suits/copper-desc-5.png",
+   "dome": [
+    194,
+    143,
+    46,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-6",
+   "name": "Copper desc 6",
+   "key": "copper-desc-6",
+   "file": "suits/copper-desc-6.png",
+   "dome": [
+    187,
+    154,
+    46,
+    35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-7",
+   "name": "Copper desc 7",
+   "key": "copper-desc-7",
+   "file": "suits/copper-desc-7.png",
+   "dome": [
+    190,
+    149,
+    46,
+    35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "copper-desc-8",
+   "name": "Copper desc 8",
+   "key": "copper-desc-8",
+   "file": "suits/copper-desc-8.png",
+   "dome": [
+    185,
+    156,
+    46,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
    "id": "eclipse-asc-1",
    "name": "Eclipse asc 1",
    "key": "eclipse-asc-1",
@@ -667,7 +900,8 @@
    "dome": [
     177,
     83,
-    36
+    36,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -681,7 +915,8 @@
    "dome": [
     183,
     80,
-    36
+    36,
+    -25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -695,7 +930,8 @@
    "dome": [
     183,
     84,
-    36
+    36,
+    -35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -709,7 +945,8 @@
    "dome": [
     178,
     74,
-    36
+    36,
+    -35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -751,7 +988,8 @@
    "dome": [
     185,
     138,
-    36
+    36,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -765,7 +1003,8 @@
    "dome": [
     187,
     153,
-    36
+    36,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -779,7 +1018,8 @@
    "dome": [
     187,
     147,
-    36
+    36,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -793,7 +1033,8 @@
    "dome": [
     179,
     159,
-    36
+    36,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -807,7 +1048,8 @@
    "dome": [
     180,
     156,
-    36
+    36,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -821,7 +1063,8 @@
    "dome": [
     177,
     165,
-    36
+    36,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -919,7 +1162,8 @@
    "dome": [
     205,
     123,
-    35
+    35,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -933,7 +1177,8 @@
    "dome": [
     204,
     120,
-    35
+    35,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -989,7 +1234,8 @@
    "dome": [
     205,
     138,
-    35
+    35,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1003,7 +1249,8 @@
    "dome": [
     204,
     141,
-    35
+    35,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1017,7 +1264,8 @@
    "dome": [
     203,
     144,
-    35
+    35,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1031,6 +1279,7 @@
    "dome": [
     204,
     154,
+    35,
     35
    ],
    "ownHead": false,
@@ -1045,7 +1294,243 @@
    "dome": [
     202,
     158,
+    35,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-1",
+   "name": "Voidsuit asc 1",
+   "key": "voidsuit-asc-1",
+   "file": "suits/voidsuit-asc-1.png",
+   "dome": [
+    182,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-2",
+   "name": "Voidsuit asc 2",
+   "key": "voidsuit-asc-2",
+   "file": "suits/voidsuit-asc-2.png",
+   "dome": [
+    183,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-3",
+   "name": "Voidsuit asc 3",
+   "key": "voidsuit-asc-3",
+   "file": "suits/voidsuit-asc-3.png",
+   "dome": [
+    183,
+    102,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-4",
+   "name": "Voidsuit asc 4",
+   "key": "voidsuit-asc-4",
+   "file": "suits/voidsuit-asc-4.png",
+   "dome": [
+    183,
+    98,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-5",
+   "name": "Voidsuit asc 5",
+   "key": "voidsuit-asc-5",
+   "file": "suits/voidsuit-asc-5.png",
+   "dome": [
+    179,
+    88,
+    45,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-6",
+   "name": "Voidsuit asc 6",
+   "key": "voidsuit-asc-6",
+   "file": "suits/voidsuit-asc-6.png",
+   "dome": [
+    174,
+    83,
+    45,
+    -25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-7",
+   "name": "Voidsuit asc 7",
+   "key": "voidsuit-asc-7",
+   "file": "suits/voidsuit-asc-7.png",
+   "dome": [
+    173,
+    95,
+    45,
+    -25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-asc-8",
+   "name": "Voidsuit asc 8",
+   "key": "voidsuit-asc-8",
+   "file": "suits/voidsuit-asc-8.png",
+   "dome": [
+    173,
+    91,
+    45,
+    -35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-1",
+   "name": "Voidsuit desc 1",
+   "key": "voidsuit-desc-1",
+   "file": "suits/voidsuit-desc-1.png",
+   "dome": [
+    182,
+    105,
+    45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-2",
+   "name": "Voidsuit desc 2",
+   "key": "voidsuit-desc-2",
+   "file": "suits/voidsuit-desc-2.png",
+   "dome": [
+    188,
+    141,
+    45,
+    15
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-3",
+   "name": "Voidsuit desc 3",
+   "key": "voidsuit-desc-3",
+   "file": "suits/voidsuit-desc-3.png",
+   "dome": [
+    177,
+    148,
+    45,
+    25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-4",
+   "name": "Voidsuit desc 4",
+   "key": "voidsuit-desc-4",
+   "file": "suits/voidsuit-desc-4.png",
+   "dome": [
+    178,
+    155,
+    45,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-5",
+   "name": "Voidsuit desc 5",
+   "key": "voidsuit-desc-5",
+   "file": "suits/voidsuit-desc-5.png",
+   "dome": [
+    177,
+    154,
+    45,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-6",
+   "name": "Voidsuit desc 6",
+   "key": "voidsuit-desc-6",
+   "file": "suits/voidsuit-desc-6.png",
+   "dome": [
+    171,
+    162,
+    45,
     35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-7",
+   "name": "Voidsuit desc 7",
+   "key": "voidsuit-desc-7",
+   "file": "suits/voidsuit-desc-7.png",
+   "dome": [
+    179,
+    159,
+    45,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "voidsuit-desc-8",
+   "name": "Voidsuit desc 8",
+   "key": "voidsuit-desc-8",
+   "file": "suits/voidsuit-desc-8.png",
+   "dome": [
+    172,
+    165,
+    45,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,

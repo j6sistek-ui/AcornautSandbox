@@ -988,6 +988,18 @@ CUSTOM_FLIGHT_SUITS = {
                   # ramp. Its tap bank AND its TAP_FRAME_SKIP stopgap are
                   # retired together - the skip existed only to hide the
                   # frames this delivery redrew.
+    "copper",     # owner-delivered 1 Sep 2026: sweep delivery #3, same 8/8
+                  # ramp, tap bank retired with it.
+    "voidsuit",   # owner-delivered 1 Sep 2026: sweep delivery #4, same 8/8
+                  # ramp, tap bank retired with it.
+    "alien",      # owner-delivered 1 Sep 2026: custom-posed bank, replacing
+                  # the whole character (new master, re-cut tail rig). Its
+                  # descent runs SEVEN frames - the owner excluded the
+                  # delivered desc-7 (a heavy black swirl that would flash
+                  # on colored skies) and desc-8 took its slot.
+    "alien2",     # the owner's A/B twin for the alien test: the same new
+                  # visitor flown on the standard-spec bank, beta-only.
+                  # One of the two wins; delete the loser and this grant.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
@@ -1250,6 +1262,14 @@ def verify_motion_banks(qa: QA) -> None:
                                         f"NO helmet at all, silently")
                     continue
                 radii.append(dome[key][2])
+                # A frame's optional 4th value is its helmet POSE ROTATION.
+                # The steepest dive in any bank is ~65 degrees, so a value
+                # beyond 75 is a typo (a coordinate in the rot slot), and a
+                # typo here spins the helmet off the pilot's head in-game.
+                if len(dome[key]) > 3 and abs(dome[key][3]) > 75:
+                    problems.append(f"{key} has pose rotation {dome[key][3]:.0f} - "
+                                    f"beyond any attitude in the art, likely a "
+                                    f"misplaced coordinate")
         # THE BANK HAS TO CONTAIN ATTITUDE. The sim picks a frame by vertical
         # velocity, so frames that all point the same way give velocity
         # nothing to pick between - a 16-degree bank is a wing-beat wearing
