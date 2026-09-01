@@ -1026,11 +1026,18 @@
     .ac-hub > .ac-hub-art, .ac-hub > .ac-hub-scrim { position: absolute; }
     .ac-hub > .ac-lvlsheet { position: fixed; }
     .ac-hub-art, .ac-hub-scrim { position: absolute; }
-    .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 9px; }
+    /* ONE bar for the whole top rail (owner's call): the capsule background
+       that used to sit on each cluster now wraps the group, and every item
+       inside carries its own slight pill so the spacing reads as one unit. */
+    .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 6px; background: rgba(22,14,48,.92);
+      border: 1.5px solid rgba(170,140,240,.3); border-radius: 22px; padding: 5px 6px; }
     .ac-hub-acorns { background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); padding: 8px 15px 8px 12px; font-size: 15px; }
     .ac-hub-railgap { flex: 1; }
-    .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 14px; background: rgba(22,14,48,.92);
-      border: 1.5px solid rgba(170,140,240,.3); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
+    .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 12px; background: rgba(8,10,24,.5);
+      border: 1px solid rgba(170,140,240,.18); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
+    /* the painted settings plate carries its own frame - no screen blend */
+    .ac-hub-sq .ac-hubic-art { width: 40px; height: 40px; max-width: none; max-height: none;
+      object-fit: cover; border-radius: 10px; mix-blend-mode: normal; }
     .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px; }
     .ac-hub-sq canvas { width: 36px; height: 36px; }
     .ac-hub-wordmark { margin-top: 10px; text-align: center; }
@@ -1217,13 +1224,13 @@
     .ac-palmarkstar { font: 800 9px/1 Figtree, sans-serif; color: #ffd76a; background: rgba(16,8,36,.85);
       border: 1px solid rgba(255,206,92,.4); border-radius: 999px; padding: 2.5px 7px; letter-spacing: .06em; }
     /* the fused pilot + acorns capsule, left side of the rail */
-    .ac-hub-id { display: flex; align-items: center; gap: 2px; background: rgba(22,14,48,.92);
-      border: 1.5px solid rgba(170,140,240,.3); border-radius: 16px; padding: 4px; }
+    .ac-hub-id { display: flex; align-items: center; gap: 5px; }
     .ac-hub-idport { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      background: rgba(8,10,24,.45); box-shadow: inset 0 2px 4px rgba(0,0,0,.35); }
+      background: rgba(8,10,24,.55); border: 1px solid rgba(170,140,240,.18); box-shadow: inset 0 2px 4px rgba(0,0,0,.35); }
     .ac-hub-idport canvas { width: 34px; height: 34px; }
-    .ac-hub-idacorns { display: flex; align-items: center; gap: 6px; background: none; color: #ffdf9a;
-      font-size: 15px; font-weight: 800; padding: 0 12px 0 7px; }
+    .ac-hub-idacorns { display: flex; align-items: center; gap: 6px; color: #ffdf9a; min-height: 34px;
+      background: rgba(8,10,24,.5); border: 1px solid rgba(170,140,240,.18); border-radius: 999px;
+      font-size: 15px; font-weight: 800; padding: 0 11px 0 8px; }
     /* hub icons that carry their own painted plate: no blend, just rounding */
     .ac-hubic .ac-hubic-art { width: 100%; height: 100%; max-width: none; max-height: none;
       object-fit: cover; border-radius: 14px; }
@@ -1544,7 +1551,7 @@
     window.__ACORNAUT_ART__ = "./art";
   </script>
   <script type="module">
-    import { bootStandalone } from "./js162/standalone.js";
+    import { bootStandalone } from "./js166/standalone.js";
     bootStandalone(document.getElementById("app"));
   </script>
 </body>

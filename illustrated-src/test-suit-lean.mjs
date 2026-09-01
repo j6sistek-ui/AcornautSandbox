@@ -78,7 +78,18 @@ for (const hp of [-1, -0.5, 0.5, 1]) {
 // What replaces it is the calibration itself: one number for the whole
 // roster, which is what was chosen.
 {
-  const vals = new Set(Object.values(SUIT_LEAN).map((l) => `${l.up}/${l.down}`));
+  // THE ALIENS ARE THE DECLARED EXCEPTION (owner, 1 Sep 2026): both fly
+  // full painted banks with "dive and pitch at 0 for both - the animation
+  // does the work". Everything else stays on the one calibrated lean.
+  const ZERO_LEAN = new Set(["alien", "alien2"]);
+  for (const id of ZERO_LEAN) {
+    const l = SUIT_LEAN[id];
+    ok(!!l && l.up === 0 && l.down === 0,
+      `${id} is declared zero-lean and must carry 0/0, got ${l ? `${l.up}/${l.down}` : "no dial"}`);
+  }
+  const vals = new Set(Object.entries(SUIT_LEAN)
+    .filter(([id]) => !ZERO_LEAN.has(id))
+    .map(([, l]) => `${l.up}/${l.down}`));
   ok(vals.size === 1,
     `the roster was calibrated to one lean and now carries ${vals.size} different ` +
     `ones (${[...vals].join(", ")}) - if that is deliberate, this is the line to change`);

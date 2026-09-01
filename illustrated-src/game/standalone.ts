@@ -896,7 +896,8 @@ export async function bootStandalone(root: HTMLElement) {
     boardBtn.onclick = () => engine.open("scores");
     const gear = el("button", "ac-hub-sq");
     gear.setAttribute("aria-label", "Settings and help");
-    gear.append(icon(I_GEAR, 22));
+    // the owner's painted acorn-gear plate replaces the line glyph
+    gear.append(hubIcon("settings", false));
     gear.onclick = () => engine.open("help");
     rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);

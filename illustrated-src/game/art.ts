@@ -282,7 +282,10 @@ export function drawSprite(
 // safer than the earlier colour split and remains an active rig.
 const RIGGED_SUITS = [
   "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
-  "ember", "stardust", "robo", "alien", "ghost", "bigbooty",
+  // alien is NOT rigged any more: its new spiral-tail master has no neck
+  // to cut (neck-cut.py itself refused the art), and the suit flies a full
+  // 8/8 painted bank - the static master is the honest loading fallback.
+  "ember", "stardust", "robo", "ghost", "bigbooty",
   "catsuit", "gemmie", "sammie", "seraph", "leviathan",
   "verdant", "cryostar", "eclipse", "volt",
   // Cyber is NOT beta-gated any more. It started beta-only, then the shop
@@ -305,16 +308,15 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // Every one of these banks already shipped in the production art folder;
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-  flight: 16, frost: 16,
-  aurorasuit: 16, ember: 16, stardust: 16,
-  ghost: 16, gemmie: 16, sammie: 16,
+  flight: 16,
+  ghost: 16,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
   // deliveries #1-#4 of the flight-bank sweep. Iontrim's retirement also
   // deleted its TAP_FRAME_SKIP stopgap in draw.ts: the skip dies with the
   // bank it patched.
-  leviathan: 16, verdant: 16, cryostar: 16,
+  leviathan: 16,
   // These eight stay here only because the SUITS do - they are beta-gated in
   // catalog.ts, so production never loads them. Promote the pair together.
   ...(IS_BETA ? {
@@ -333,15 +335,22 @@ const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } 
 const ASC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        // alien ascends on SEVEN too: the delivered asc-2 wore the SPIRAL
-        // tail - the other character's look, bled over by the generator -
-        // so the owner pulled it and asc-3..8 shifted down a slot.
-        voidsuit: 8, alien: 7, alien2: 8 }
+        // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
+        // won and flies production "alien" at 8/8; the custom-posed bank
+        // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
+        // frame cuts - the black desc swirl and the bled-over spiral asc).
+        voidsuit: 8, alien: 8, alien2: 7,
+        stardust: 8, aurorasuit: 8, ember: 8,
+        cryostar: 8, verdant: 8, gemmie: 8,
+        sammie: 8, frost: 8 }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 7, alien2: 8 }
+        voidsuit: 8, alien: 8, alien2: 7,
+        stardust: 8, aurorasuit: 8, ember: 8,
+        cryostar: 8, verdant: 8, gemmie: 8,
+        sammie: 8, frost: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
   ...RIGGED_SUITS,
