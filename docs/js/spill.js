@@ -21,7 +21,7 @@
 // intensity curve became a ladder of authored waves; instant death became a
 // three-pip hull; acorns became Ore, a currency that lives and dies inside
 // the run; and a Depot opens every fifth wave to spend it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=167";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=168";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the pilot may roam this share of the width. The right edge stops at

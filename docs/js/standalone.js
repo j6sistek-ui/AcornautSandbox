@@ -1,11 +1,11 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=167";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=167";
-import { drawSprite as drawSpriteOn } from "./art.js?v=167";
-import { createEngine } from "./engine.js?v=167";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=167";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=167";
-import { formatRaceTicks } from "./race.js?v=167";
-import { SPILL, spillExtendPrice, spillItem, spillRerollPrice } from "./spill.js?v=167";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=168";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=168";
+import { drawSprite as drawSpriteOn } from "./art.js?v=168";
+import { createEngine } from "./engine.js?v=168";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=168";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=168";
+import { formatRaceTicks } from "./race.js?v=168";
+import { SPILL, spillExtendPrice, spillItem, spillRerollPrice } from "./spill.js?v=168";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1773,6 +1773,16 @@ export async function bootStandalone(root) {
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
                 const row = el("div", "ac-shelfrow");
+                // Aurora and Stardust left this shelf for the beta bench (their
+                // banks drifted); production shows one placeholder card in their
+                // spot so the row reads "more coming", not "two got deleted".
+                if (sec.title === "STANDARD" && !SUITS.some((x) => x.id === "aurorasuit")) {
+                    const ph = el("div", "ac-card ac-card-soon");
+                    ph.append(el("span", "ac-soonmark", "?"));
+                    ph.append(el("p", "ac-cardname", "NEW SUITS"));
+                    ph.append(el("p", "ac-soonnote", "In the workshop"));
+                    row.append(ph);
+                }
                 for (const u of items) {
                     // on the purchased shelf, a premium suit not yet bought is a door
                     // to the shop, not a dead locked card

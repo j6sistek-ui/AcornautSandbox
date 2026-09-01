@@ -1,14 +1,14 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=167";
-import { goalHud } from "./campaign.js?v=167";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=167";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=167";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=167";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=167";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=167";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=167";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=167";
-import { SPILL, SPILL_MOD_INFO, spillMod, spillWaveLeft, } from "./spill.js?v=167";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=167";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=168";
+import { goalHud } from "./campaign.js?v=168";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=168";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=168";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=168";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=168";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=168";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=168";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=168";
+import { SPILL, SPILL_MOD_INFO, spillMod, spillWaveLeft, } from "./spill.js?v=168";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=168";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2904,31 +2904,31 @@ const DOME = {
     "eclipse-tap-15": [198, 88, 53],
     "eclipse-tap-16": [198, 88, 53],
     "suit:flight": [185, 82, 44],
-    "suit:iontrim": [178, 88, 48],
-    "suit:copper": [183, 85, 45],
-    "suit:frost": [186, 98, 43],
-    "suit:voidsuit": [181, 102, 42],
-    "suit:aurorasuit": [181, 101, 44],
-    "suit:ember": [182, 100, 44],
-    "suit:stardust": [179, 95, 44],
+    "suit:iontrim": [184, 100, 36],
+    "suit:copper": [181, 99, 46],
+    "suit:frost": [175, 112, 36],
+    "suit:voidsuit": [182, 105, 45],
+    "suit:aurorasuit": [163, 97, 38],
+    "suit:ember": [168, 100, 38],
+    "suit:stardust": [162, 97, 38],
     // owner-tuned: the dome was drawn a size too big, so the glass swallowed
     // the head instead of sitting on it
     "suit:robo": [181, 99, 38],
     // re-rendered bare-headed on a black plate (the pale-on-cream key was
     // unrecoverable); measured against the new art, and near-identical to
     // flight, which is the same pose in the same framing
-    "suit:ghost": [182, 93, 44],
+    "suit:ghost": [176, 83, 38],
     // owner-tuned: sat low, left and oversized - the glass cut into the body
     // and the head walked out of it on the late tap poses
     "suit:bigbooty": [185, 101, 35],
     "suit:catsuit": [212, 86, 50],
-    "suit:gemmie": [204, 92, 58],
+    "suit:gemmie": [183, 102, 40],
     "suit:phoenix": [207, 92, 41],
-    "suit:sammie": [206, 90, 59],
-    "suit:seraph": [207, 97, 57],
+    "suit:sammie": [186, 102, 38],
+    "suit:seraph": [205, 129, 35],
     "suit:leviathan": [207, 81, 57],
-    "suit:verdant": [204, 93, 58],
-    "suit:cryostar": [207, 93, 58],
+    "suit:verdant": [186, 92, 40],
+    "suit:cryostar": [191, 94, 40],
     "suit:eclipse": [204, 86, 58],
     // Eclipse's physics-pose banks are HEAD-NORMALIZED: every frame is
     // scaled so the (rigid) head is identical, which pins the character's
@@ -3182,6 +3182,26 @@ const DOME = {
     "frost-desc-6": [172, 148, 36, 30],
     "frost-desc-7": [170, 153, 36, 35],
     "frost-desc-8": [172, 152, 36, 30],
+    // GHOST - the owner's custom spectral rebuild, replacing the whole
+    // character (new master, bank-only: its wisp tail has no neck to cut,
+    // neck-cut claimed 5.5% and that is a fragment, not a tail). Pale-fur
+    // tracker anchors, overlay-verified.
+    "ghost-asc-1": [176, 83, 38],
+    "ghost-asc-2": [172, 79, 38],
+    "ghost-asc-3": [174, 76, 38],
+    "ghost-asc-4": [173, 76, 38],
+    "ghost-asc-5": [176, 81, 38],
+    "ghost-asc-6": [168, 72, 38, -10],
+    "ghost-asc-7": [168, 72, 38, -10],
+    "ghost-asc-8": [170, 73, 38, -10],
+    "ghost-desc-1": [176, 83, 38],
+    "ghost-desc-2": [177, 83, 38],
+    "ghost-desc-3": [176, 84, 38],
+    "ghost-desc-4": [191, 136, 38, 55],
+    "ghost-desc-5": [191, 138, 38, 60],
+    "ghost-desc-6": [188, 138, 38, 60],
+    "ghost-desc-7": [185, 138, 38, 60],
+    "ghost-desc-8": [186, 109, 38, 30],
     "suit:cinderforge": [183, 93, 44],
     "suit:groveguard": [183, 93, 44],
     "suit:cosmic": [183, 93, 44],
@@ -3303,24 +3323,22 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     cyber: [101, 125],
-    aurorasuit: [99, 139],
+    aurorasuit: [100, 137],
     bigbooty: [92, 129],
     catsuit: [74, 149],
-    copper: [99, 131],
-    ember: [107, 136],
+    copper: [105, 142],
+    ember: [108, 135],
     flight: [102, 130],
-    frost: [107, 140],
-    gemmie: [101, 149],
-    ghost: [103, 128],
-    iontrim: [100, 130],
+    frost: [107, 139],
+    gemmie: [101, 147],
+    iontrim: [104, 141],
     leviathan: [101, 131],
     robo: [101, 140],
-    sammie: [99, 148],
-    seraph: [105, 138],
-    stardust: [104, 140],
-    voidsuit: [105, 142],
-    verdant: [103, 149],
-    cryostar: [103, 151],
+    sammie: [100, 145],
+    stardust: [102, 139],
+    voidsuit: [105, 147],
+    verdant: [102, 142],
+    cryostar: [106, 146],
     volt: [107, 136],
     eclipse: [105, 143],
     cinderforge: [104, 132],

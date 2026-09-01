@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=167";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=168";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -204,8 +204,13 @@ const RIGGED_SUITS = [
     // alien is NOT rigged any more: its new spiral-tail master has no neck
     // to cut (neck-cut.py itself refused the art), and the suit flies a full
     // 8/8 painted bank - the static master is the honest loading fallback.
-    "ember", "stardust", "robo", "ghost", "bigbooty",
-    "catsuit", "gemmie", "sammie", "seraph", "leviathan",
+    // ghost went bank-only with its spectral rebuild: the wisp tail has no
+    // neck to cut, and a full bank needs no rig.
+    "ember", "stardust", "robo", "bigbooty",
+    // seraph left the rig list with the shelf-card promotion: its winged
+    // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
+    // full bank - the static master is its loading fallback, like alien.
+    "catsuit", "gemmie", "sammie", "leviathan",
     "verdant", "cryostar", "eclipse", "volt",
     // Cyber is NOT beta-gated any more. It started beta-only, then the shop
     // overhaul sold it on production in two bundles - and its rig stayed
@@ -228,7 +233,6 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // only this list kept production from asking for them.
     robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
     flight: 16,
-    ghost: 16,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -260,14 +264,14 @@ const ASC_BANKS = TAP_ANIM_ENABLED
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8 }
+        sammie: 8, frost: 8, ghost: 8 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8 }
+        sammie: 8, frost: 8, ghost: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,

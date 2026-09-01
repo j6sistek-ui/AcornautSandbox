@@ -1802,6 +1802,16 @@ export async function bootStandalone(root: HTMLElement) {
         if (!items.length) continue;
         grid.append(el("p", "ac-shelfhead", sec.title));
         const row = el("div", "ac-shelfrow");
+        // Aurora and Stardust left this shelf for the beta bench (their
+        // banks drifted); production shows one placeholder card in their
+        // spot so the row reads "more coming", not "two got deleted".
+        if (sec.title === "STANDARD" && !SUITS.some((x) => x.id === "aurorasuit")) {
+          const ph = el("div", "ac-card ac-card-soon");
+          ph.append(el("span", "ac-soonmark", "?"));
+          ph.append(el("p", "ac-cardname", "NEW SUITS"));
+          ph.append(el("p", "ac-soonnote", "In the workshop"));
+          row.append(ph);
+        }
         for (const u of items) {
           // on the purchased shelf, a premium suit not yet bought is a door
           // to the shop, not a dead locked card

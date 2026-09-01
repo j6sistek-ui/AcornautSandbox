@@ -1,5 +1,5 @@
 {
- "artVer": "167",
+ "artVer": "168",
  "suits": [
   {
    "id": "flight",
@@ -21,9 +21,9 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
-    178,
-    88,
-    48
+    184,
+    100,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -35,9 +35,9 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    183,
-    85,
-    45
+    181,
+    99,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -49,9 +49,9 @@
    "key": "suit:frost",
    "file": "suits/frost.png",
    "dome": [
-    186,
-    98,
-    43
+    175,
+    112,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -63,9 +63,9 @@
    "key": "suit:voidsuit",
    "file": "suits/voidsuit.png",
    "dome": [
-    181,
-    102,
-    42
+    182,
+    105,
+    45
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -77,9 +77,9 @@
    "key": "suit:aurorasuit",
    "file": "suits/aurorasuit.png",
    "dome": [
-    181,
-    101,
-    44
+    163,
+    97,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -91,9 +91,9 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    182,
+    168,
     100,
-    44
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -105,9 +105,9 @@
    "key": "suit:stardust",
    "file": "suits/stardust.png",
    "dome": [
-    179,
-    95,
-    44
+    162,
+    97,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -128,14 +128,42 @@
    "frame": false
   },
   {
+   "id": "alien",
+   "name": "Alien",
+   "key": "suit:alien",
+   "file": "suits/alien.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "alien2",
+   "name": "Alien 1",
+   "key": "suit:alien2",
+   "file": "suits/alien2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
    "id": "ghost",
    "name": "Ghost",
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    182,
-    93,
-    44
+    176,
+    83,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -175,9 +203,9 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    204,
-    92,
-    58
+    183,
+    102,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -189,9 +217,9 @@
    "key": "suit:sammie",
    "file": "suits/sammie.png",
    "dome": [
-    206,
-    90,
-    59
+    186,
+    102,
+    38
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -203,9 +231,9 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    207,
-    97,
-    57
+    205,
+    129,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -231,9 +259,9 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    204,
-    93,
-    58
+    186,
+    92,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -245,9 +273,9 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    207,
-    93,
-    58
+    191,
+    94,
+    40
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -264,6 +292,20 @@
     58
    ],
    "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "volt",
+   "name": "Volt",
+   "key": "suit:volt",
+   "file": "suits/volt.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
    "bakedDome": false,
    "frame": false
   },
@@ -380,8 +422,22 @@
    "frame": false
   },
   {
+   "id": "cyber",
+   "name": "Cyber",
+   "key": "suit:cyber",
+   "file": "suits/cyber.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
    "id": "aurorasuit-asc-1",
-   "name": "Aurorasuit asc 1",
+   "name": "Aurora asc 1",
    "key": "aurorasuit-asc-1",
    "file": "suits/aurorasuit-asc-1.png",
    "dome": [
@@ -395,7 +451,7 @@
   },
   {
    "id": "aurorasuit-asc-2",
-   "name": "Aurorasuit asc 2",
+   "name": "Aurora asc 2",
    "key": "aurorasuit-asc-2",
    "file": "suits/aurorasuit-asc-2.png",
    "dome": [
@@ -409,7 +465,7 @@
   },
   {
    "id": "aurorasuit-asc-3",
-   "name": "Aurorasuit asc 3",
+   "name": "Aurora asc 3",
    "key": "aurorasuit-asc-3",
    "file": "suits/aurorasuit-asc-3.png",
    "dome": [
@@ -423,7 +479,7 @@
   },
   {
    "id": "aurorasuit-asc-4",
-   "name": "Aurorasuit asc 4",
+   "name": "Aurora asc 4",
    "key": "aurorasuit-asc-4",
    "file": "suits/aurorasuit-asc-4.png",
    "dome": [
@@ -437,7 +493,7 @@
   },
   {
    "id": "aurorasuit-asc-5",
-   "name": "Aurorasuit asc 5",
+   "name": "Aurora asc 5",
    "key": "aurorasuit-asc-5",
    "file": "suits/aurorasuit-asc-5.png",
    "dome": [
@@ -452,7 +508,7 @@
   },
   {
    "id": "aurorasuit-asc-6",
-   "name": "Aurorasuit asc 6",
+   "name": "Aurora asc 6",
    "key": "aurorasuit-asc-6",
    "file": "suits/aurorasuit-asc-6.png",
    "dome": [
@@ -467,7 +523,7 @@
   },
   {
    "id": "aurorasuit-asc-7",
-   "name": "Aurorasuit asc 7",
+   "name": "Aurora asc 7",
    "key": "aurorasuit-asc-7",
    "file": "suits/aurorasuit-asc-7.png",
    "dome": [
@@ -482,7 +538,7 @@
   },
   {
    "id": "aurorasuit-asc-8",
-   "name": "Aurorasuit asc 8",
+   "name": "Aurora asc 8",
    "key": "aurorasuit-asc-8",
    "file": "suits/aurorasuit-asc-8.png",
    "dome": [
@@ -497,7 +553,7 @@
   },
   {
    "id": "aurorasuit-desc-1",
-   "name": "Aurorasuit desc 1",
+   "name": "Aurora desc 1",
    "key": "aurorasuit-desc-1",
    "file": "suits/aurorasuit-desc-1.png",
    "dome": [
@@ -511,7 +567,7 @@
   },
   {
    "id": "aurorasuit-desc-2",
-   "name": "Aurorasuit desc 2",
+   "name": "Aurora desc 2",
    "key": "aurorasuit-desc-2",
    "file": "suits/aurorasuit-desc-2.png",
    "dome": [
@@ -526,7 +582,7 @@
   },
   {
    "id": "aurorasuit-desc-3",
-   "name": "Aurorasuit desc 3",
+   "name": "Aurora desc 3",
    "key": "aurorasuit-desc-3",
    "file": "suits/aurorasuit-desc-3.png",
    "dome": [
@@ -541,7 +597,7 @@
   },
   {
    "id": "aurorasuit-desc-4",
-   "name": "Aurorasuit desc 4",
+   "name": "Aurora desc 4",
    "key": "aurorasuit-desc-4",
    "file": "suits/aurorasuit-desc-4.png",
    "dome": [
@@ -556,7 +612,7 @@
   },
   {
    "id": "aurorasuit-desc-5",
-   "name": "Aurorasuit desc 5",
+   "name": "Aurora desc 5",
    "key": "aurorasuit-desc-5",
    "file": "suits/aurorasuit-desc-5.png",
    "dome": [
@@ -571,7 +627,7 @@
   },
   {
    "id": "aurorasuit-desc-6",
-   "name": "Aurorasuit desc 6",
+   "name": "Aurora desc 6",
    "key": "aurorasuit-desc-6",
    "file": "suits/aurorasuit-desc-6.png",
    "dome": [
@@ -586,7 +642,7 @@
   },
   {
    "id": "aurorasuit-desc-7",
-   "name": "Aurorasuit desc 7",
+   "name": "Aurora desc 7",
    "key": "aurorasuit-desc-7",
    "file": "suits/aurorasuit-desc-7.png",
    "dome": [
@@ -601,7 +657,7 @@
   },
   {
    "id": "aurorasuit-desc-8",
-   "name": "Aurorasuit desc 8",
+   "name": "Aurora desc 8",
    "key": "aurorasuit-desc-8",
    "file": "suits/aurorasuit-desc-8.png",
    "dome": [
@@ -609,6 +665,230 @@
     152,
     38,
     40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-1",
+   "name": "Big Booty tap 1",
+   "key": "bigbooty-tap-1",
+   "file": "suits/bigbooty-tap-1.png",
+   "dome": [
+    209,
+    83,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-2",
+   "name": "Big Booty tap 2",
+   "key": "bigbooty-tap-2",
+   "file": "suits/bigbooty-tap-2.png",
+   "dome": [
+    209,
+    84,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-3",
+   "name": "Big Booty tap 3",
+   "key": "bigbooty-tap-3",
+   "file": "suits/bigbooty-tap-3.png",
+   "dome": [
+    209,
+    81,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-4",
+   "name": "Big Booty tap 4",
+   "key": "bigbooty-tap-4",
+   "file": "suits/bigbooty-tap-4.png",
+   "dome": [
+    209,
+    74,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-5",
+   "name": "Big Booty tap 5",
+   "key": "bigbooty-tap-5",
+   "file": "suits/bigbooty-tap-5.png",
+   "dome": [
+    210,
+    67,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-6",
+   "name": "Big Booty tap 6",
+   "key": "bigbooty-tap-6",
+   "file": "suits/bigbooty-tap-6.png",
+   "dome": [
+    211,
+    66,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-7",
+   "name": "Big Booty tap 7",
+   "key": "bigbooty-tap-7",
+   "file": "suits/bigbooty-tap-7.png",
+   "dome": [
+    209,
+    72,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-8",
+   "name": "Big Booty tap 8",
+   "key": "bigbooty-tap-8",
+   "file": "suits/bigbooty-tap-8.png",
+   "dome": [
+    205,
+    82,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-9",
+   "name": "Big Booty tap 9",
+   "key": "bigbooty-tap-9",
+   "file": "suits/bigbooty-tap-9.png",
+   "dome": [
+    206,
+    82,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-10",
+   "name": "Big Booty tap 10",
+   "key": "bigbooty-tap-10",
+   "file": "suits/bigbooty-tap-10.png",
+   "dome": [
+    212,
+    73,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-11",
+   "name": "Big Booty tap 11",
+   "key": "bigbooty-tap-11",
+   "file": "suits/bigbooty-tap-11.png",
+   "dome": [
+    216,
+    69,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-12",
+   "name": "Big Booty tap 12",
+   "key": "bigbooty-tap-12",
+   "file": "suits/bigbooty-tap-12.png",
+   "dome": [
+    212,
+    74,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-13",
+   "name": "Big Booty tap 13",
+   "key": "bigbooty-tap-13",
+   "file": "suits/bigbooty-tap-13.png",
+   "dome": [
+    206,
+    82,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-14",
+   "name": "Big Booty tap 14",
+   "key": "bigbooty-tap-14",
+   "file": "suits/bigbooty-tap-14.png",
+   "dome": [
+    203,
+    85,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-15",
+   "name": "Big Booty tap 15",
+   "key": "bigbooty-tap-15",
+   "file": "suits/bigbooty-tap-15.png",
+   "dome": [
+    205,
+    80,
+    41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "bigbooty-tap-16",
+   "name": "Big Booty tap 16",
+   "key": "bigbooty-tap-16",
+   "file": "suits/bigbooty-tap-16.png",
+   "dome": [
+    209,
+    75,
+    41
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1303,6 +1583,230 @@
     178,
     157,
     52
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-1",
+   "name": "Eclipse tap 1",
+   "key": "eclipse-tap-1",
+   "file": "suits/eclipse-tap-1.png",
+   "dome": [
+    196,
+    89,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-2",
+   "name": "Eclipse tap 2",
+   "key": "eclipse-tap-2",
+   "file": "suits/eclipse-tap-2.png",
+   "dome": [
+    196,
+    87,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-3",
+   "name": "Eclipse tap 3",
+   "key": "eclipse-tap-3",
+   "file": "suits/eclipse-tap-3.png",
+   "dome": [
+    194,
+    81,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-4",
+   "name": "Eclipse tap 4",
+   "key": "eclipse-tap-4",
+   "file": "suits/eclipse-tap-4.png",
+   "dome": [
+    190,
+    73,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-5",
+   "name": "Eclipse tap 5",
+   "key": "eclipse-tap-5",
+   "file": "suits/eclipse-tap-5.png",
+   "dome": [
+    186,
+    66,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-6",
+   "name": "Eclipse tap 6",
+   "key": "eclipse-tap-6",
+   "file": "suits/eclipse-tap-6.png",
+   "dome": [
+    183,
+    60,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-7",
+   "name": "Eclipse tap 7",
+   "key": "eclipse-tap-7",
+   "file": "suits/eclipse-tap-7.png",
+   "dome": [
+    182,
+    59,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-8",
+   "name": "Eclipse tap 8",
+   "key": "eclipse-tap-8",
+   "file": "suits/eclipse-tap-8.png",
+   "dome": [
+    183,
+    61,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-9",
+   "name": "Eclipse tap 9",
+   "key": "eclipse-tap-9",
+   "file": "suits/eclipse-tap-9.png",
+   "dome": [
+    186,
+    67,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-10",
+   "name": "Eclipse tap 10",
+   "key": "eclipse-tap-10",
+   "file": "suits/eclipse-tap-10.png",
+   "dome": [
+    191,
+    76,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-11",
+   "name": "Eclipse tap 11",
+   "key": "eclipse-tap-11",
+   "file": "suits/eclipse-tap-11.png",
+   "dome": [
+    195,
+    82,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-12",
+   "name": "Eclipse tap 12",
+   "key": "eclipse-tap-12",
+   "file": "suits/eclipse-tap-12.png",
+   "dome": [
+    197,
+    85,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-13",
+   "name": "Eclipse tap 13",
+   "key": "eclipse-tap-13",
+   "file": "suits/eclipse-tap-13.png",
+   "dome": [
+    198,
+    87,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-14",
+   "name": "Eclipse tap 14",
+   "key": "eclipse-tap-14",
+   "file": "suits/eclipse-tap-14.png",
+   "dome": [
+    198,
+    88,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-15",
+   "name": "Eclipse tap 15",
+   "key": "eclipse-tap-15",
+   "file": "suits/eclipse-tap-15.png",
+   "dome": [
+    198,
+    88,
+    53
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "eclipse-tap-16",
+   "name": "Eclipse tap 16",
+   "key": "eclipse-tap-16",
+   "file": "suits/eclipse-tap-16.png",
+   "dome": [
+    198,
+    88,
+    53
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2018,8 +2522,240 @@
    "frame": true
   },
   {
+   "id": "ghost-asc-1",
+   "name": "Ghost asc 1",
+   "key": "ghost-asc-1",
+   "file": "suits/ghost-asc-1.png",
+   "dome": [
+    176,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-2",
+   "name": "Ghost asc 2",
+   "key": "ghost-asc-2",
+   "file": "suits/ghost-asc-2.png",
+   "dome": [
+    172,
+    79,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-3",
+   "name": "Ghost asc 3",
+   "key": "ghost-asc-3",
+   "file": "suits/ghost-asc-3.png",
+   "dome": [
+    174,
+    76,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-4",
+   "name": "Ghost asc 4",
+   "key": "ghost-asc-4",
+   "file": "suits/ghost-asc-4.png",
+   "dome": [
+    173,
+    76,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-5",
+   "name": "Ghost asc 5",
+   "key": "ghost-asc-5",
+   "file": "suits/ghost-asc-5.png",
+   "dome": [
+    176,
+    81,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-6",
+   "name": "Ghost asc 6",
+   "key": "ghost-asc-6",
+   "file": "suits/ghost-asc-6.png",
+   "dome": [
+    168,
+    72,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-7",
+   "name": "Ghost asc 7",
+   "key": "ghost-asc-7",
+   "file": "suits/ghost-asc-7.png",
+   "dome": [
+    168,
+    72,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-asc-8",
+   "name": "Ghost asc 8",
+   "key": "ghost-asc-8",
+   "file": "suits/ghost-asc-8.png",
+   "dome": [
+    170,
+    73,
+    38,
+    -10
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-1",
+   "name": "Ghost desc 1",
+   "key": "ghost-desc-1",
+   "file": "suits/ghost-desc-1.png",
+   "dome": [
+    176,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-2",
+   "name": "Ghost desc 2",
+   "key": "ghost-desc-2",
+   "file": "suits/ghost-desc-2.png",
+   "dome": [
+    177,
+    83,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-3",
+   "name": "Ghost desc 3",
+   "key": "ghost-desc-3",
+   "file": "suits/ghost-desc-3.png",
+   "dome": [
+    176,
+    84,
+    38
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-4",
+   "name": "Ghost desc 4",
+   "key": "ghost-desc-4",
+   "file": "suits/ghost-desc-4.png",
+   "dome": [
+    191,
+    136,
+    38,
+    55
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-5",
+   "name": "Ghost desc 5",
+   "key": "ghost-desc-5",
+   "file": "suits/ghost-desc-5.png",
+   "dome": [
+    191,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-6",
+   "name": "Ghost desc 6",
+   "key": "ghost-desc-6",
+   "file": "suits/ghost-desc-6.png",
+   "dome": [
+    188,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-7",
+   "name": "Ghost desc 7",
+   "key": "ghost-desc-7",
+   "file": "suits/ghost-desc-7.png",
+   "dome": [
+    185,
+    138,
+    38,
+    60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ghost-desc-8",
+   "name": "Ghost desc 8",
+   "key": "ghost-desc-8",
+   "file": "suits/ghost-desc-8.png",
+   "dome": [
+    186,
+    109,
+    38,
+    30
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
    "id": "iontrim-asc-1",
-   "name": "Iontrim asc 1",
+   "name": "Ion asc 1",
    "key": "iontrim-asc-1",
    "file": "suits/iontrim-asc-1.png",
    "dome": [
@@ -2033,7 +2769,7 @@
   },
   {
    "id": "iontrim-asc-2",
-   "name": "Iontrim asc 2",
+   "name": "Ion asc 2",
    "key": "iontrim-asc-2",
    "file": "suits/iontrim-asc-2.png",
    "dome": [
@@ -2047,7 +2783,7 @@
   },
   {
    "id": "iontrim-asc-3",
-   "name": "Iontrim asc 3",
+   "name": "Ion asc 3",
    "key": "iontrim-asc-3",
    "file": "suits/iontrim-asc-3.png",
    "dome": [
@@ -2061,7 +2797,7 @@
   },
   {
    "id": "iontrim-asc-4",
-   "name": "Iontrim asc 4",
+   "name": "Ion asc 4",
    "key": "iontrim-asc-4",
    "file": "suits/iontrim-asc-4.png",
    "dome": [
@@ -2075,7 +2811,7 @@
   },
   {
    "id": "iontrim-asc-5",
-   "name": "Iontrim asc 5",
+   "name": "Ion asc 5",
    "key": "iontrim-asc-5",
    "file": "suits/iontrim-asc-5.png",
    "dome": [
@@ -2090,7 +2826,7 @@
   },
   {
    "id": "iontrim-asc-6",
-   "name": "Iontrim asc 6",
+   "name": "Ion asc 6",
    "key": "iontrim-asc-6",
    "file": "suits/iontrim-asc-6.png",
    "dome": [
@@ -2105,7 +2841,7 @@
   },
   {
    "id": "iontrim-asc-7",
-   "name": "Iontrim asc 7",
+   "name": "Ion asc 7",
    "key": "iontrim-asc-7",
    "file": "suits/iontrim-asc-7.png",
    "dome": [
@@ -2120,7 +2856,7 @@
   },
   {
    "id": "iontrim-asc-8",
-   "name": "Iontrim asc 8",
+   "name": "Ion asc 8",
    "key": "iontrim-asc-8",
    "file": "suits/iontrim-asc-8.png",
    "dome": [
@@ -2135,7 +2871,7 @@
   },
   {
    "id": "iontrim-desc-1",
-   "name": "Iontrim desc 1",
+   "name": "Ion desc 1",
    "key": "iontrim-desc-1",
    "file": "suits/iontrim-desc-1.png",
    "dome": [
@@ -2149,7 +2885,7 @@
   },
   {
    "id": "iontrim-desc-2",
-   "name": "Iontrim desc 2",
+   "name": "Ion desc 2",
    "key": "iontrim-desc-2",
    "file": "suits/iontrim-desc-2.png",
    "dome": [
@@ -2163,7 +2899,7 @@
   },
   {
    "id": "iontrim-desc-3",
-   "name": "Iontrim desc 3",
+   "name": "Ion desc 3",
    "key": "iontrim-desc-3",
    "file": "suits/iontrim-desc-3.png",
    "dome": [
@@ -2178,7 +2914,7 @@
   },
   {
    "id": "iontrim-desc-4",
-   "name": "Iontrim desc 4",
+   "name": "Ion desc 4",
    "key": "iontrim-desc-4",
    "file": "suits/iontrim-desc-4.png",
    "dome": [
@@ -2193,7 +2929,7 @@
   },
   {
    "id": "iontrim-desc-5",
-   "name": "Iontrim desc 5",
+   "name": "Ion desc 5",
    "key": "iontrim-desc-5",
    "file": "suits/iontrim-desc-5.png",
    "dome": [
@@ -2208,7 +2944,7 @@
   },
   {
    "id": "iontrim-desc-6",
-   "name": "Iontrim desc 6",
+   "name": "Ion desc 6",
    "key": "iontrim-desc-6",
    "file": "suits/iontrim-desc-6.png",
    "dome": [
@@ -2223,7 +2959,7 @@
   },
   {
    "id": "iontrim-desc-7",
-   "name": "Iontrim desc 7",
+   "name": "Ion desc 7",
    "key": "iontrim-desc-7",
    "file": "suits/iontrim-desc-7.png",
    "dome": [
@@ -2238,13 +2974,237 @@
   },
   {
    "id": "iontrim-desc-8",
-   "name": "Iontrim desc 8",
+   "name": "Ion desc 8",
    "key": "iontrim-desc-8",
    "file": "suits/iontrim-desc-8.png",
    "dome": [
     177,
     165,
     36,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-1",
+   "name": "Robo tap 1",
+   "key": "robo-tap-1",
+   "file": "suits/robo-tap-1.png",
+   "dome": [
+    190,
+    103,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-2",
+   "name": "Robo tap 2",
+   "key": "robo-tap-2",
+   "file": "suits/robo-tap-2.png",
+   "dome": [
+    190,
+    103,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-3",
+   "name": "Robo tap 3",
+   "key": "robo-tap-3",
+   "file": "suits/robo-tap-3.png",
+   "dome": [
+    190,
+    101,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-4",
+   "name": "Robo tap 4",
+   "key": "robo-tap-4",
+   "file": "suits/robo-tap-4.png",
+   "dome": [
+    191,
+    96,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-5",
+   "name": "Robo tap 5",
+   "key": "robo-tap-5",
+   "file": "suits/robo-tap-5.png",
+   "dome": [
+    191,
+    88,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-6",
+   "name": "Robo tap 6",
+   "key": "robo-tap-6",
+   "file": "suits/robo-tap-6.png",
+   "dome": [
+    192,
+    82,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-7",
+   "name": "Robo tap 7",
+   "key": "robo-tap-7",
+   "file": "suits/robo-tap-7.png",
+   "dome": [
+    192,
+    80,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-8",
+   "name": "Robo tap 8",
+   "key": "robo-tap-8",
+   "file": "suits/robo-tap-8.png",
+   "dome": [
+    191,
+    84,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-9",
+   "name": "Robo tap 9",
+   "key": "robo-tap-9",
+   "file": "suits/robo-tap-9.png",
+   "dome": [
+    190,
+    93,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-10",
+   "name": "Robo tap 10",
+   "key": "robo-tap-10",
+   "file": "suits/robo-tap-10.png",
+   "dome": [
+    189,
+    103,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-11",
+   "name": "Robo tap 11",
+   "key": "robo-tap-11",
+   "file": "suits/robo-tap-11.png",
+   "dome": [
+    189,
+    110,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-12",
+   "name": "Robo tap 12",
+   "key": "robo-tap-12",
+   "file": "suits/robo-tap-12.png",
+   "dome": [
+    190,
+    111,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-13",
+   "name": "Robo tap 13",
+   "key": "robo-tap-13",
+   "file": "suits/robo-tap-13.png",
+   "dome": [
+    191,
+    110,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-14",
+   "name": "Robo tap 14",
+   "key": "robo-tap-14",
+   "file": "suits/robo-tap-14.png",
+   "dome": [
+    192,
+    107,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-15",
+   "name": "Robo tap 15",
+   "key": "robo-tap-15",
+   "file": "suits/robo-tap-15.png",
+   "dome": [
+    191,
+    104,
+    40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "robo-tap-16",
+   "name": "Robo tap 16",
+   "key": "robo-tap-16",
+   "file": "suits/robo-tap-16.png",
+   "dome": [
+    191,
+    100,
     40
    ],
    "ownHead": false,
@@ -3194,7 +4154,7 @@
   },
   {
    "id": "voidsuit-asc-1",
-   "name": "Voidsuit asc 1",
+   "name": "Void asc 1",
    "key": "voidsuit-asc-1",
    "file": "suits/voidsuit-asc-1.png",
    "dome": [
@@ -3208,7 +4168,7 @@
   },
   {
    "id": "voidsuit-asc-2",
-   "name": "Voidsuit asc 2",
+   "name": "Void asc 2",
    "key": "voidsuit-asc-2",
    "file": "suits/voidsuit-asc-2.png",
    "dome": [
@@ -3222,7 +4182,7 @@
   },
   {
    "id": "voidsuit-asc-3",
-   "name": "Voidsuit asc 3",
+   "name": "Void asc 3",
    "key": "voidsuit-asc-3",
    "file": "suits/voidsuit-asc-3.png",
    "dome": [
@@ -3236,7 +4196,7 @@
   },
   {
    "id": "voidsuit-asc-4",
-   "name": "Voidsuit asc 4",
+   "name": "Void asc 4",
    "key": "voidsuit-asc-4",
    "file": "suits/voidsuit-asc-4.png",
    "dome": [
@@ -3250,7 +4210,7 @@
   },
   {
    "id": "voidsuit-asc-5",
-   "name": "Voidsuit asc 5",
+   "name": "Void asc 5",
    "key": "voidsuit-asc-5",
    "file": "suits/voidsuit-asc-5.png",
    "dome": [
@@ -3265,7 +4225,7 @@
   },
   {
    "id": "voidsuit-asc-6",
-   "name": "Voidsuit asc 6",
+   "name": "Void asc 6",
    "key": "voidsuit-asc-6",
    "file": "suits/voidsuit-asc-6.png",
    "dome": [
@@ -3280,7 +4240,7 @@
   },
   {
    "id": "voidsuit-asc-7",
-   "name": "Voidsuit asc 7",
+   "name": "Void asc 7",
    "key": "voidsuit-asc-7",
    "file": "suits/voidsuit-asc-7.png",
    "dome": [
@@ -3295,7 +4255,7 @@
   },
   {
    "id": "voidsuit-asc-8",
-   "name": "Voidsuit asc 8",
+   "name": "Void asc 8",
    "key": "voidsuit-asc-8",
    "file": "suits/voidsuit-asc-8.png",
    "dome": [
@@ -3310,7 +4270,7 @@
   },
   {
    "id": "voidsuit-desc-1",
-   "name": "Voidsuit desc 1",
+   "name": "Void desc 1",
    "key": "voidsuit-desc-1",
    "file": "suits/voidsuit-desc-1.png",
    "dome": [
@@ -3324,7 +4284,7 @@
   },
   {
    "id": "voidsuit-desc-2",
-   "name": "Voidsuit desc 2",
+   "name": "Void desc 2",
    "key": "voidsuit-desc-2",
    "file": "suits/voidsuit-desc-2.png",
    "dome": [
@@ -3339,7 +4299,7 @@
   },
   {
    "id": "voidsuit-desc-3",
-   "name": "Voidsuit desc 3",
+   "name": "Void desc 3",
    "key": "voidsuit-desc-3",
    "file": "suits/voidsuit-desc-3.png",
    "dome": [
@@ -3354,7 +4314,7 @@
   },
   {
    "id": "voidsuit-desc-4",
-   "name": "Voidsuit desc 4",
+   "name": "Void desc 4",
    "key": "voidsuit-desc-4",
    "file": "suits/voidsuit-desc-4.png",
    "dome": [
@@ -3369,7 +4329,7 @@
   },
   {
    "id": "voidsuit-desc-5",
-   "name": "Voidsuit desc 5",
+   "name": "Void desc 5",
    "key": "voidsuit-desc-5",
    "file": "suits/voidsuit-desc-5.png",
    "dome": [
@@ -3384,7 +4344,7 @@
   },
   {
    "id": "voidsuit-desc-6",
-   "name": "Voidsuit desc 6",
+   "name": "Void desc 6",
    "key": "voidsuit-desc-6",
    "file": "suits/voidsuit-desc-6.png",
    "dome": [
@@ -3399,7 +4359,7 @@
   },
   {
    "id": "voidsuit-desc-7",
-   "name": "Voidsuit desc 7",
+   "name": "Void desc 7",
    "key": "voidsuit-desc-7",
    "file": "suits/voidsuit-desc-7.png",
    "dome": [
@@ -3414,7 +4374,7 @@
   },
   {
    "id": "voidsuit-desc-8",
-   "name": "Voidsuit desc 8",
+   "name": "Void desc 8",
    "key": "voidsuit-desc-8",
    "file": "suits/voidsuit-desc-8.png",
    "dome": [
@@ -4096,6 +5056,2918 @@
     40
    ],
    "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-1",
+   "name": "Cat tap 1",
+   "key": "catsuit-tap-1",
+   "file": "suits/catsuit-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-2",
+   "name": "Cat tap 2",
+   "key": "catsuit-tap-2",
+   "file": "suits/catsuit-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-3",
+   "name": "Cat tap 3",
+   "key": "catsuit-tap-3",
+   "file": "suits/catsuit-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-4",
+   "name": "Cat tap 4",
+   "key": "catsuit-tap-4",
+   "file": "suits/catsuit-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-5",
+   "name": "Cat tap 5",
+   "key": "catsuit-tap-5",
+   "file": "suits/catsuit-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-6",
+   "name": "Cat tap 6",
+   "key": "catsuit-tap-6",
+   "file": "suits/catsuit-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-7",
+   "name": "Cat tap 7",
+   "key": "catsuit-tap-7",
+   "file": "suits/catsuit-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-8",
+   "name": "Cat tap 8",
+   "key": "catsuit-tap-8",
+   "file": "suits/catsuit-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-9",
+   "name": "Cat tap 9",
+   "key": "catsuit-tap-9",
+   "file": "suits/catsuit-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-10",
+   "name": "Cat tap 10",
+   "key": "catsuit-tap-10",
+   "file": "suits/catsuit-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-11",
+   "name": "Cat tap 11",
+   "key": "catsuit-tap-11",
+   "file": "suits/catsuit-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-12",
+   "name": "Cat tap 12",
+   "key": "catsuit-tap-12",
+   "file": "suits/catsuit-tap-12.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-13",
+   "name": "Cat tap 13",
+   "key": "catsuit-tap-13",
+   "file": "suits/catsuit-tap-13.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-14",
+   "name": "Cat tap 14",
+   "key": "catsuit-tap-14",
+   "file": "suits/catsuit-tap-14.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-15",
+   "name": "Cat tap 15",
+   "key": "catsuit-tap-15",
+   "file": "suits/catsuit-tap-15.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "catsuit-tap-16",
+   "name": "Cat tap 16",
+   "key": "catsuit-tap-16",
+   "file": "suits/catsuit-tap-16.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-1",
+   "name": "Volt tap 1",
+   "key": "volt-tap-1",
+   "file": "suits/volt-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-2",
+   "name": "Volt tap 2",
+   "key": "volt-tap-2",
+   "file": "suits/volt-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-3",
+   "name": "Volt tap 3",
+   "key": "volt-tap-3",
+   "file": "suits/volt-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-4",
+   "name": "Volt tap 4",
+   "key": "volt-tap-4",
+   "file": "suits/volt-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-5",
+   "name": "Volt tap 5",
+   "key": "volt-tap-5",
+   "file": "suits/volt-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-6",
+   "name": "Volt tap 6",
+   "key": "volt-tap-6",
+   "file": "suits/volt-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-7",
+   "name": "Volt tap 7",
+   "key": "volt-tap-7",
+   "file": "suits/volt-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-8",
+   "name": "Volt tap 8",
+   "key": "volt-tap-8",
+   "file": "suits/volt-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-9",
+   "name": "Volt tap 9",
+   "key": "volt-tap-9",
+   "file": "suits/volt-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-10",
+   "name": "Volt tap 10",
+   "key": "volt-tap-10",
+   "file": "suits/volt-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-11",
+   "name": "Volt tap 11",
+   "key": "volt-tap-11",
+   "file": "suits/volt-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-12",
+   "name": "Volt tap 12",
+   "key": "volt-tap-12",
+   "file": "suits/volt-tap-12.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-13",
+   "name": "Volt tap 13",
+   "key": "volt-tap-13",
+   "file": "suits/volt-tap-13.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-14",
+   "name": "Volt tap 14",
+   "key": "volt-tap-14",
+   "file": "suits/volt-tap-14.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-15",
+   "name": "Volt tap 15",
+   "key": "volt-tap-15",
+   "file": "suits/volt-tap-15.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-tap-16",
+   "name": "Volt tap 16",
+   "key": "volt-tap-16",
+   "file": "suits/volt-tap-16.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-1",
+   "name": "Volt bounce 1",
+   "key": "volt-bounce-1",
+   "file": "suits/volt-bounce-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-2",
+   "name": "Volt bounce 2",
+   "key": "volt-bounce-2",
+   "file": "suits/volt-bounce-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-3",
+   "name": "Volt bounce 3",
+   "key": "volt-bounce-3",
+   "file": "suits/volt-bounce-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-4",
+   "name": "Volt bounce 4",
+   "key": "volt-bounce-4",
+   "file": "suits/volt-bounce-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-5",
+   "name": "Volt bounce 5",
+   "key": "volt-bounce-5",
+   "file": "suits/volt-bounce-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-6",
+   "name": "Volt bounce 6",
+   "key": "volt-bounce-6",
+   "file": "suits/volt-bounce-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-7",
+   "name": "Volt bounce 7",
+   "key": "volt-bounce-7",
+   "file": "suits/volt-bounce-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-8",
+   "name": "Volt bounce 8",
+   "key": "volt-bounce-8",
+   "file": "suits/volt-bounce-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-9",
+   "name": "Volt bounce 9",
+   "key": "volt-bounce-9",
+   "file": "suits/volt-bounce-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-10",
+   "name": "Volt bounce 10",
+   "key": "volt-bounce-10",
+   "file": "suits/volt-bounce-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-11",
+   "name": "Volt bounce 11",
+   "key": "volt-bounce-11",
+   "file": "suits/volt-bounce-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-12",
+   "name": "Volt bounce 12",
+   "key": "volt-bounce-12",
+   "file": "suits/volt-bounce-12.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-13",
+   "name": "Volt bounce 13",
+   "key": "volt-bounce-13",
+   "file": "suits/volt-bounce-13.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-14",
+   "name": "Volt bounce 14",
+   "key": "volt-bounce-14",
+   "file": "suits/volt-bounce-14.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-15",
+   "name": "Volt bounce 15",
+   "key": "volt-bounce-15",
+   "file": "suits/volt-bounce-15.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "volt-bounce-16",
+   "name": "Volt bounce 16",
+   "key": "volt-bounce-16",
+   "file": "suits/volt-bounce-16.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-1",
+   "name": "Abyssal tap 1",
+   "key": "abyssal-tap-1",
+   "file": "suits/abyssal-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-2",
+   "name": "Abyssal tap 2",
+   "key": "abyssal-tap-2",
+   "file": "suits/abyssal-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-3",
+   "name": "Abyssal tap 3",
+   "key": "abyssal-tap-3",
+   "file": "suits/abyssal-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-4",
+   "name": "Abyssal tap 4",
+   "key": "abyssal-tap-4",
+   "file": "suits/abyssal-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-5",
+   "name": "Abyssal tap 5",
+   "key": "abyssal-tap-5",
+   "file": "suits/abyssal-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-6",
+   "name": "Abyssal tap 6",
+   "key": "abyssal-tap-6",
+   "file": "suits/abyssal-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-7",
+   "name": "Abyssal tap 7",
+   "key": "abyssal-tap-7",
+   "file": "suits/abyssal-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-8",
+   "name": "Abyssal tap 8",
+   "key": "abyssal-tap-8",
+   "file": "suits/abyssal-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-9",
+   "name": "Abyssal tap 9",
+   "key": "abyssal-tap-9",
+   "file": "suits/abyssal-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-10",
+   "name": "Abyssal tap 10",
+   "key": "abyssal-tap-10",
+   "file": "suits/abyssal-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-11",
+   "name": "Abyssal tap 11",
+   "key": "abyssal-tap-11",
+   "file": "suits/abyssal-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-12",
+   "name": "Abyssal tap 12",
+   "key": "abyssal-tap-12",
+   "file": "suits/abyssal-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-13",
+   "name": "Abyssal tap 13",
+   "key": "abyssal-tap-13",
+   "file": "suits/abyssal-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-14",
+   "name": "Abyssal tap 14",
+   "key": "abyssal-tap-14",
+   "file": "suits/abyssal-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-15",
+   "name": "Abyssal tap 15",
+   "key": "abyssal-tap-15",
+   "file": "suits/abyssal-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-tap-16",
+   "name": "Abyssal tap 16",
+   "key": "abyssal-tap-16",
+   "file": "suits/abyssal-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-1",
+   "name": "Amethyst tap 1",
+   "key": "amethyst-tap-1",
+   "file": "suits/amethyst-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-2",
+   "name": "Amethyst tap 2",
+   "key": "amethyst-tap-2",
+   "file": "suits/amethyst-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-3",
+   "name": "Amethyst tap 3",
+   "key": "amethyst-tap-3",
+   "file": "suits/amethyst-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-4",
+   "name": "Amethyst tap 4",
+   "key": "amethyst-tap-4",
+   "file": "suits/amethyst-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-5",
+   "name": "Amethyst tap 5",
+   "key": "amethyst-tap-5",
+   "file": "suits/amethyst-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-6",
+   "name": "Amethyst tap 6",
+   "key": "amethyst-tap-6",
+   "file": "suits/amethyst-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-7",
+   "name": "Amethyst tap 7",
+   "key": "amethyst-tap-7",
+   "file": "suits/amethyst-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-8",
+   "name": "Amethyst tap 8",
+   "key": "amethyst-tap-8",
+   "file": "suits/amethyst-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-9",
+   "name": "Amethyst tap 9",
+   "key": "amethyst-tap-9",
+   "file": "suits/amethyst-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-10",
+   "name": "Amethyst tap 10",
+   "key": "amethyst-tap-10",
+   "file": "suits/amethyst-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-11",
+   "name": "Amethyst tap 11",
+   "key": "amethyst-tap-11",
+   "file": "suits/amethyst-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-12",
+   "name": "Amethyst tap 12",
+   "key": "amethyst-tap-12",
+   "file": "suits/amethyst-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-13",
+   "name": "Amethyst tap 13",
+   "key": "amethyst-tap-13",
+   "file": "suits/amethyst-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-14",
+   "name": "Amethyst tap 14",
+   "key": "amethyst-tap-14",
+   "file": "suits/amethyst-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-15",
+   "name": "Amethyst tap 15",
+   "key": "amethyst-tap-15",
+   "file": "suits/amethyst-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "amethyst-tap-16",
+   "name": "Amethyst tap 16",
+   "key": "amethyst-tap-16",
+   "file": "suits/amethyst-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-1",
+   "name": "Cinderforge tap 1",
+   "key": "cinderforge-tap-1",
+   "file": "suits/cinderforge-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-2",
+   "name": "Cinderforge tap 2",
+   "key": "cinderforge-tap-2",
+   "file": "suits/cinderforge-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-3",
+   "name": "Cinderforge tap 3",
+   "key": "cinderforge-tap-3",
+   "file": "suits/cinderforge-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-4",
+   "name": "Cinderforge tap 4",
+   "key": "cinderforge-tap-4",
+   "file": "suits/cinderforge-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-5",
+   "name": "Cinderforge tap 5",
+   "key": "cinderforge-tap-5",
+   "file": "suits/cinderforge-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-6",
+   "name": "Cinderforge tap 6",
+   "key": "cinderforge-tap-6",
+   "file": "suits/cinderforge-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-7",
+   "name": "Cinderforge tap 7",
+   "key": "cinderforge-tap-7",
+   "file": "suits/cinderforge-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-8",
+   "name": "Cinderforge tap 8",
+   "key": "cinderforge-tap-8",
+   "file": "suits/cinderforge-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-9",
+   "name": "Cinderforge tap 9",
+   "key": "cinderforge-tap-9",
+   "file": "suits/cinderforge-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-10",
+   "name": "Cinderforge tap 10",
+   "key": "cinderforge-tap-10",
+   "file": "suits/cinderforge-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-11",
+   "name": "Cinderforge tap 11",
+   "key": "cinderforge-tap-11",
+   "file": "suits/cinderforge-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-12",
+   "name": "Cinderforge tap 12",
+   "key": "cinderforge-tap-12",
+   "file": "suits/cinderforge-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-13",
+   "name": "Cinderforge tap 13",
+   "key": "cinderforge-tap-13",
+   "file": "suits/cinderforge-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-14",
+   "name": "Cinderforge tap 14",
+   "key": "cinderforge-tap-14",
+   "file": "suits/cinderforge-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-15",
+   "name": "Cinderforge tap 15",
+   "key": "cinderforge-tap-15",
+   "file": "suits/cinderforge-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-tap-16",
+   "name": "Cinderforge tap 16",
+   "key": "cinderforge-tap-16",
+   "file": "suits/cinderforge-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-1",
+   "name": "Cosmic tap 1",
+   "key": "cosmic-tap-1",
+   "file": "suits/cosmic-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-2",
+   "name": "Cosmic tap 2",
+   "key": "cosmic-tap-2",
+   "file": "suits/cosmic-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-3",
+   "name": "Cosmic tap 3",
+   "key": "cosmic-tap-3",
+   "file": "suits/cosmic-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-4",
+   "name": "Cosmic tap 4",
+   "key": "cosmic-tap-4",
+   "file": "suits/cosmic-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-5",
+   "name": "Cosmic tap 5",
+   "key": "cosmic-tap-5",
+   "file": "suits/cosmic-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-6",
+   "name": "Cosmic tap 6",
+   "key": "cosmic-tap-6",
+   "file": "suits/cosmic-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-7",
+   "name": "Cosmic tap 7",
+   "key": "cosmic-tap-7",
+   "file": "suits/cosmic-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-8",
+   "name": "Cosmic tap 8",
+   "key": "cosmic-tap-8",
+   "file": "suits/cosmic-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-9",
+   "name": "Cosmic tap 9",
+   "key": "cosmic-tap-9",
+   "file": "suits/cosmic-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-10",
+   "name": "Cosmic tap 10",
+   "key": "cosmic-tap-10",
+   "file": "suits/cosmic-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-11",
+   "name": "Cosmic tap 11",
+   "key": "cosmic-tap-11",
+   "file": "suits/cosmic-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-12",
+   "name": "Cosmic tap 12",
+   "key": "cosmic-tap-12",
+   "file": "suits/cosmic-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-13",
+   "name": "Cosmic tap 13",
+   "key": "cosmic-tap-13",
+   "file": "suits/cosmic-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-14",
+   "name": "Cosmic tap 14",
+   "key": "cosmic-tap-14",
+   "file": "suits/cosmic-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-15",
+   "name": "Cosmic tap 15",
+   "key": "cosmic-tap-15",
+   "file": "suits/cosmic-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-tap-16",
+   "name": "Cosmic tap 16",
+   "key": "cosmic-tap-16",
+   "file": "suits/cosmic-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-1",
+   "name": "Flight tap 1",
+   "key": "flight-tap-1",
+   "file": "suits/flight-tap-1.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-2",
+   "name": "Flight tap 2",
+   "key": "flight-tap-2",
+   "file": "suits/flight-tap-2.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-3",
+   "name": "Flight tap 3",
+   "key": "flight-tap-3",
+   "file": "suits/flight-tap-3.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-4",
+   "name": "Flight tap 4",
+   "key": "flight-tap-4",
+   "file": "suits/flight-tap-4.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-5",
+   "name": "Flight tap 5",
+   "key": "flight-tap-5",
+   "file": "suits/flight-tap-5.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-6",
+   "name": "Flight tap 6",
+   "key": "flight-tap-6",
+   "file": "suits/flight-tap-6.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-7",
+   "name": "Flight tap 7",
+   "key": "flight-tap-7",
+   "file": "suits/flight-tap-7.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-8",
+   "name": "Flight tap 8",
+   "key": "flight-tap-8",
+   "file": "suits/flight-tap-8.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-9",
+   "name": "Flight tap 9",
+   "key": "flight-tap-9",
+   "file": "suits/flight-tap-9.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-10",
+   "name": "Flight tap 10",
+   "key": "flight-tap-10",
+   "file": "suits/flight-tap-10.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-11",
+   "name": "Flight tap 11",
+   "key": "flight-tap-11",
+   "file": "suits/flight-tap-11.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-12",
+   "name": "Flight tap 12",
+   "key": "flight-tap-12",
+   "file": "suits/flight-tap-12.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-13",
+   "name": "Flight tap 13",
+   "key": "flight-tap-13",
+   "file": "suits/flight-tap-13.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-14",
+   "name": "Flight tap 14",
+   "key": "flight-tap-14",
+   "file": "suits/flight-tap-14.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-15",
+   "name": "Flight tap 15",
+   "key": "flight-tap-15",
+   "file": "suits/flight-tap-15.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-tap-16",
+   "name": "Flight tap 16",
+   "key": "flight-tap-16",
+   "file": "suits/flight-tap-16.png",
+   "dome": [
+    185,
+    82,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-1",
+   "name": "Groveguard tap 1",
+   "key": "groveguard-tap-1",
+   "file": "suits/groveguard-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-2",
+   "name": "Groveguard tap 2",
+   "key": "groveguard-tap-2",
+   "file": "suits/groveguard-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-3",
+   "name": "Groveguard tap 3",
+   "key": "groveguard-tap-3",
+   "file": "suits/groveguard-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-4",
+   "name": "Groveguard tap 4",
+   "key": "groveguard-tap-4",
+   "file": "suits/groveguard-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-5",
+   "name": "Groveguard tap 5",
+   "key": "groveguard-tap-5",
+   "file": "suits/groveguard-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-6",
+   "name": "Groveguard tap 6",
+   "key": "groveguard-tap-6",
+   "file": "suits/groveguard-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-7",
+   "name": "Groveguard tap 7",
+   "key": "groveguard-tap-7",
+   "file": "suits/groveguard-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-8",
+   "name": "Groveguard tap 8",
+   "key": "groveguard-tap-8",
+   "file": "suits/groveguard-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-9",
+   "name": "Groveguard tap 9",
+   "key": "groveguard-tap-9",
+   "file": "suits/groveguard-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-10",
+   "name": "Groveguard tap 10",
+   "key": "groveguard-tap-10",
+   "file": "suits/groveguard-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-11",
+   "name": "Groveguard tap 11",
+   "key": "groveguard-tap-11",
+   "file": "suits/groveguard-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-12",
+   "name": "Groveguard tap 12",
+   "key": "groveguard-tap-12",
+   "file": "suits/groveguard-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-13",
+   "name": "Groveguard tap 13",
+   "key": "groveguard-tap-13",
+   "file": "suits/groveguard-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-14",
+   "name": "Groveguard tap 14",
+   "key": "groveguard-tap-14",
+   "file": "suits/groveguard-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-15",
+   "name": "Groveguard tap 15",
+   "key": "groveguard-tap-15",
+   "file": "suits/groveguard-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-tap-16",
+   "name": "Groveguard tap 16",
+   "key": "groveguard-tap-16",
+   "file": "suits/groveguard-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-1",
+   "name": "Ivoryguard tap 1",
+   "key": "ivoryguard-tap-1",
+   "file": "suits/ivoryguard-tap-1.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-2",
+   "name": "Ivoryguard tap 2",
+   "key": "ivoryguard-tap-2",
+   "file": "suits/ivoryguard-tap-2.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-3",
+   "name": "Ivoryguard tap 3",
+   "key": "ivoryguard-tap-3",
+   "file": "suits/ivoryguard-tap-3.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-4",
+   "name": "Ivoryguard tap 4",
+   "key": "ivoryguard-tap-4",
+   "file": "suits/ivoryguard-tap-4.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-5",
+   "name": "Ivoryguard tap 5",
+   "key": "ivoryguard-tap-5",
+   "file": "suits/ivoryguard-tap-5.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-6",
+   "name": "Ivoryguard tap 6",
+   "key": "ivoryguard-tap-6",
+   "file": "suits/ivoryguard-tap-6.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-7",
+   "name": "Ivoryguard tap 7",
+   "key": "ivoryguard-tap-7",
+   "file": "suits/ivoryguard-tap-7.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-8",
+   "name": "Ivoryguard tap 8",
+   "key": "ivoryguard-tap-8",
+   "file": "suits/ivoryguard-tap-8.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-9",
+   "name": "Ivoryguard tap 9",
+   "key": "ivoryguard-tap-9",
+   "file": "suits/ivoryguard-tap-9.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-10",
+   "name": "Ivoryguard tap 10",
+   "key": "ivoryguard-tap-10",
+   "file": "suits/ivoryguard-tap-10.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-11",
+   "name": "Ivoryguard tap 11",
+   "key": "ivoryguard-tap-11",
+   "file": "suits/ivoryguard-tap-11.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-12",
+   "name": "Ivoryguard tap 12",
+   "key": "ivoryguard-tap-12",
+   "file": "suits/ivoryguard-tap-12.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-13",
+   "name": "Ivoryguard tap 13",
+   "key": "ivoryguard-tap-13",
+   "file": "suits/ivoryguard-tap-13.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-14",
+   "name": "Ivoryguard tap 14",
+   "key": "ivoryguard-tap-14",
+   "file": "suits/ivoryguard-tap-14.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-15",
+   "name": "Ivoryguard tap 15",
+   "key": "ivoryguard-tap-15",
+   "file": "suits/ivoryguard-tap-15.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "ivoryguard-tap-16",
+   "name": "Ivoryguard tap 16",
+   "key": "ivoryguard-tap-16",
+   "file": "suits/ivoryguard-tap-16.png",
+   "dome": [
+    183,
+    93,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-1",
+   "name": "Leviathan tap 1",
+   "key": "leviathan-tap-1",
+   "file": "suits/leviathan-tap-1.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-2",
+   "name": "Leviathan tap 2",
+   "key": "leviathan-tap-2",
+   "file": "suits/leviathan-tap-2.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-3",
+   "name": "Leviathan tap 3",
+   "key": "leviathan-tap-3",
+   "file": "suits/leviathan-tap-3.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-4",
+   "name": "Leviathan tap 4",
+   "key": "leviathan-tap-4",
+   "file": "suits/leviathan-tap-4.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-5",
+   "name": "Leviathan tap 5",
+   "key": "leviathan-tap-5",
+   "file": "suits/leviathan-tap-5.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-6",
+   "name": "Leviathan tap 6",
+   "key": "leviathan-tap-6",
+   "file": "suits/leviathan-tap-6.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-7",
+   "name": "Leviathan tap 7",
+   "key": "leviathan-tap-7",
+   "file": "suits/leviathan-tap-7.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-8",
+   "name": "Leviathan tap 8",
+   "key": "leviathan-tap-8",
+   "file": "suits/leviathan-tap-8.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-9",
+   "name": "Leviathan tap 9",
+   "key": "leviathan-tap-9",
+   "file": "suits/leviathan-tap-9.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-10",
+   "name": "Leviathan tap 10",
+   "key": "leviathan-tap-10",
+   "file": "suits/leviathan-tap-10.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-11",
+   "name": "Leviathan tap 11",
+   "key": "leviathan-tap-11",
+   "file": "suits/leviathan-tap-11.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-12",
+   "name": "Leviathan tap 12",
+   "key": "leviathan-tap-12",
+   "file": "suits/leviathan-tap-12.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-13",
+   "name": "Leviathan tap 13",
+   "key": "leviathan-tap-13",
+   "file": "suits/leviathan-tap-13.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-14",
+   "name": "Leviathan tap 14",
+   "key": "leviathan-tap-14",
+   "file": "suits/leviathan-tap-14.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-15",
+   "name": "Leviathan tap 15",
+   "key": "leviathan-tap-15",
+   "file": "suits/leviathan-tap-15.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "leviathan-tap-16",
+   "name": "Leviathan tap 16",
+   "key": "leviathan-tap-16",
+   "file": "suits/leviathan-tap-16.png",
+   "dome": [
+    207,
+    81,
+    57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-1",
+   "name": "Reactor tap 1",
+   "key": "reactor-tap-1",
+   "file": "suits/reactor-tap-1.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-2",
+   "name": "Reactor tap 2",
+   "key": "reactor-tap-2",
+   "file": "suits/reactor-tap-2.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-3",
+   "name": "Reactor tap 3",
+   "key": "reactor-tap-3",
+   "file": "suits/reactor-tap-3.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-4",
+   "name": "Reactor tap 4",
+   "key": "reactor-tap-4",
+   "file": "suits/reactor-tap-4.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-5",
+   "name": "Reactor tap 5",
+   "key": "reactor-tap-5",
+   "file": "suits/reactor-tap-5.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-6",
+   "name": "Reactor tap 6",
+   "key": "reactor-tap-6",
+   "file": "suits/reactor-tap-6.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-7",
+   "name": "Reactor tap 7",
+   "key": "reactor-tap-7",
+   "file": "suits/reactor-tap-7.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-8",
+   "name": "Reactor tap 8",
+   "key": "reactor-tap-8",
+   "file": "suits/reactor-tap-8.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-9",
+   "name": "Reactor tap 9",
+   "key": "reactor-tap-9",
+   "file": "suits/reactor-tap-9.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-10",
+   "name": "Reactor tap 10",
+   "key": "reactor-tap-10",
+   "file": "suits/reactor-tap-10.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-11",
+   "name": "Reactor tap 11",
+   "key": "reactor-tap-11",
+   "file": "suits/reactor-tap-11.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-12",
+   "name": "Reactor tap 12",
+   "key": "reactor-tap-12",
+   "file": "suits/reactor-tap-12.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-13",
+   "name": "Reactor tap 13",
+   "key": "reactor-tap-13",
+   "file": "suits/reactor-tap-13.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-14",
+   "name": "Reactor tap 14",
+   "key": "reactor-tap-14",
+   "file": "suits/reactor-tap-14.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-15",
+   "name": "Reactor tap 15",
+   "key": "reactor-tap-15",
+   "file": "suits/reactor-tap-15.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "reactor-tap-16",
+   "name": "Reactor tap 16",
+   "key": "reactor-tap-16",
+   "file": "suits/reactor-tap-16.png",
+   "dome": [
+    183,
+    91,
+    44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-1",
+   "name": "Sunforged tap 1",
+   "key": "sunforged-tap-1",
+   "file": "suits/sunforged-tap-1.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-2",
+   "name": "Sunforged tap 2",
+   "key": "sunforged-tap-2",
+   "file": "suits/sunforged-tap-2.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-3",
+   "name": "Sunforged tap 3",
+   "key": "sunforged-tap-3",
+   "file": "suits/sunforged-tap-3.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-4",
+   "name": "Sunforged tap 4",
+   "key": "sunforged-tap-4",
+   "file": "suits/sunforged-tap-4.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-5",
+   "name": "Sunforged tap 5",
+   "key": "sunforged-tap-5",
+   "file": "suits/sunforged-tap-5.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-6",
+   "name": "Sunforged tap 6",
+   "key": "sunforged-tap-6",
+   "file": "suits/sunforged-tap-6.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-7",
+   "name": "Sunforged tap 7",
+   "key": "sunforged-tap-7",
+   "file": "suits/sunforged-tap-7.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-8",
+   "name": "Sunforged tap 8",
+   "key": "sunforged-tap-8",
+   "file": "suits/sunforged-tap-8.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-9",
+   "name": "Sunforged tap 9",
+   "key": "sunforged-tap-9",
+   "file": "suits/sunforged-tap-9.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-10",
+   "name": "Sunforged tap 10",
+   "key": "sunforged-tap-10",
+   "file": "suits/sunforged-tap-10.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-11",
+   "name": "Sunforged tap 11",
+   "key": "sunforged-tap-11",
+   "file": "suits/sunforged-tap-11.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-12",
+   "name": "Sunforged tap 12",
+   "key": "sunforged-tap-12",
+   "file": "suits/sunforged-tap-12.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-13",
+   "name": "Sunforged tap 13",
+   "key": "sunforged-tap-13",
+   "file": "suits/sunforged-tap-13.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-14",
+   "name": "Sunforged tap 14",
+   "key": "sunforged-tap-14",
+   "file": "suits/sunforged-tap-14.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-15",
+   "name": "Sunforged tap 15",
+   "key": "sunforged-tap-15",
+   "file": "suits/sunforged-tap-15.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-tap-16",
+   "name": "Sunforged tap 16",
+   "key": "sunforged-tap-16",
+   "file": "suits/sunforged-tap-16.png",
+   "dome": [
+    183,
+    89,
+    42
+   ],
+   "ownHead": false,
    "bakedDome": false,
    "frame": true
   }
