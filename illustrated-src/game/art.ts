@@ -324,13 +324,21 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+// Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
+// heavy black tail-swirl that would flash on colored skies, so the owner
+// excluded it from the loop - desc-8 was renumbered into its slot. Banks
+// have never owed anyone 8/8 (Flight itself flies 3/5). "alien2" is the
+// owner's A/B twin (beta-only, see catalog.ts) flying the standard-spec
+// bank while "alien" flies the custom-posed one.
 const ASC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8, voidsuit: 8 }
+    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 8, alien2: 8 }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8, voidsuit: 8 }
+    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 7, alien2: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
   ...RIGGED_SUITS,
@@ -471,6 +479,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "stardust",
     "robo",
     "alien",
+    "alien2",
     "ghost",
     "bigbooty",
     "catsuit",

@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "160";
+export const ART_VER = "161";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -211,6 +211,10 @@ export const SUITS: Suit[] = [
   { id: "stardust", name: "Stardust", cost: 300, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
   { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
   { id: "alien", name: "Alien", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
+  // A/B twin for the owner's flight-bank test: same visitor, flown on the
+  // STANDARD sweep bank while "alien" flies the custom-posed one. Beta-only
+  // until one of them wins; delete the loser and this row with it.
+  { id: "alien2", beta: true, name: "Alien 2", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
   { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
   { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
@@ -796,7 +800,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // the cat eats no acorns, so no amount of them buys it: it is the
   // 300-star prize, the full Star Chart, and nothing less
   { title: "ACORN INTOLERANT", ids: ["catsuit"] },
-  { title: "UNRELEASED", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
+  { title: "UNRELEASED", ids: ["alien2", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

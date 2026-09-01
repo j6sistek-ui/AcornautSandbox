@@ -95,6 +95,7 @@ export const SUIT_LEAN = {
     // --- declared shape exceptions
     cyber: { up: 0.8, down: 0.3 },
     alien: { up: 0.8, down: 0.3 },
+    alien2: { up: 0.8, down: 0.3 }, // A/B twin flies the same hand as alien
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {

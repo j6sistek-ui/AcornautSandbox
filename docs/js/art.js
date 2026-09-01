@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=160";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=161";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -243,11 +243,19 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
 } : {};
 const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+// Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
+// heavy black tail-swirl that would flash on colored skies, so the owner
+// excluded it from the loop - desc-8 was renumbered into its slot. Banks
+// have never owed anyone 8/8 (Flight itself flies 3/5). "alien2" is the
+// owner's A/B twin (beta-only, see catalog.ts) flying the standard-spec
+// bank while "alien" flies the custom-posed one.
 const ASC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8, voidsuit: 8 }
+    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 8, alien2: 8 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8, voidsuit: 8 }
+    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+        voidsuit: 8, alien: 7, alien2: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,
@@ -395,6 +403,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "stardust",
         "robo",
         "alien",
+        "alien2",
         "ghost",
         "bigbooty",
         "catsuit",
