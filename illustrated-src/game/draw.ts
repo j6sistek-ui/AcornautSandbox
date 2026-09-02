@@ -3942,11 +3942,37 @@ function paintDome(
 // WHEN the pose starts rather than how fast it turns.
 let motionVySmooth = 0;
 let motionVyClock = -1;
+// THE CROSSING TAKES TIME (owner, 2 Sep 2026: "ghost goes from up to down
+// in a frame, no transition, need return to horizontal before dive"). At
+// 9/s a tap's -450 impulse crossed zero in about four frames, so the
+// neutral pose flashed by unseen. 5.5/s puts the level frame on screen
+// for ~150ms on the way through, in both directions.
+const POSE_SMOOTH = 5.5;
 function smoothMotionVy(t: number, vy: number) {
   const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
   motionVyClock = t;
-  motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
+  motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * POSE_SMOOTH);
   return motionVySmooth;
+}
+
+// THE POSE CURVE. Frame index used to be LINEAR in speed, so a mild dive
+// already sat three frames deep and every descent looked like a plunge -
+// "pitch at 0 ... is aggressive" on the whole swept roster. Raising |v|
+// to a power above one keeps gentle attitudes in the first frames and
+// saves the deep forward rotation for a genuinely hard dive: "less
+// linear and more hyperbolic". Applied to both ramps so a climb stays
+// symmetrical.
+export const POSE_CURVE = 1.7;
+// The two dials the pause sheet exposes for EVERY suit, so the owner can
+// judge them mid-run against the same field: DIVE DEPTH scales the dive
+// half of the range (1 = the art's full ramp), and POSE MODE "ascent"
+// flies only the ascent bank - a dive holds the level frame - to test
+// whether ascent frames plus horizontal are enough on their own.
+let poseDiveDepth = 1;
+let poseAscentOnly = false;
+export function setPoseDials(diveDepth: number, ascentOnly: boolean) {
+  poseDiveDepth = Math.max(0.25, Math.min(1, diveDepth || 1));
+  poseAscentOnly = !!ascentOnly;
 }
 
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
@@ -4292,9 +4318,15 @@ function paintIllustrated(
         const sv = smoothMotionVy(_t, motionVy);
         v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
       }
-      const bank = v < 0 ? ascFrames : descFrames;
-      const idxM = Math.max(0, Math.min(bank.length - 1,
-        Math.round(Math.abs(v) * (bank.length - 1) + cycle)));
+      // shape the attitude: dives scaled by the dial, both halves curved
+      if (v > 0) v *= poseDiveDepth;
+      v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
+      // ascent-only holds the level frame through a dive
+      const diving = v > 0 && !poseAscentOnly;
+      const bank = diving ? descFrames : ascFrames;
+      const idxM = diving || v < 0
+        ? Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)))
+        : 0;
       const frame = bank[idxM];
       const refM = (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
@@ -4303,7 +4335,7 @@ function paintIllustrated(
       // in canvas space, so it must be mapped through the SAME reference
       // box the frame itself is drawn with (asc[0]), not the frame's own.
       if (!wearsOwnHead(suit)) {
-        paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`,
+        paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`,
           helmet, x, y, size, art);
       }
     } else if (fullTap) {

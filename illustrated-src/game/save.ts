@@ -112,6 +112,10 @@ export type SaveData = {
   favorites?: string[];
   /** the loadout's animated case, shrunk so the shelves get the room */
   heroCompact?: boolean;
+  /** THE POSE DIALS (pause sheet, every suit): how deep a dive rotates
+   *  (1 = the art's full ramp) and whether only ascent frames fly */
+  diveDepth?: number;
+  poseMode?: "all" | "ascent";
   // Eclipse's motion mapping, cycled from the hangar or the pause sheet:
   // 0 = the original pose-per-velocity curve, 1 = the rate-driven remap,
   // 2 = HEADING, the body following the tangent of the flight arc.

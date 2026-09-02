@@ -168,14 +168,13 @@ export async function bootStandalone(root: HTMLElement) {
   const ALL_MODES: { id: "fly" | "deep" | "lost" | "arcade" | "tunnel" | "race" | "spill";
                      label: string; short: string; blurb: string }[] = [
     { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
+    // THE SPILL sits second (owner, 2 Sep 2026: "it's a serious mode")
+    { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive the waves. Mine Ore. Buy the next one." },
     { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
     { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
     { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
     { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
     { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
-    // THE SPILL graduated from the lab: a wave survival mode with a hull,
-    // its own currency and a Depot every fifth wave. Its record is waves.
-    { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive the waves. Mine Ore. Buy the next one." },
   ];
   const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
 
@@ -284,6 +283,31 @@ export async function bootStandalone(root: HTMLElement) {
       // Switching from the pause is the whole point: the three read completely
       // differently depending on what you were doing when you paused, and
       // going back to the hangar to change it loses the run you were judging.
+      // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
+      // mid-run and resume to judge the same field with the other setting.
+      {
+        const dials = (title: string, opts: [string, () => boolean, () => void][]) => {
+          sheet.append(el("p", "ac-sub", title));
+          const row = el("div", "ac-modes");
+          (row as HTMLElement).style.gridTemplateColumns = `repeat(${opts.length}, minmax(0,1fr))`;
+          for (const [name, on, hit] of opts) {
+            const mb = el("button", on() ? "ac-mode on" : "ac-mode", name);
+            mb.onclick = hit;
+            row.append(mb);
+          }
+          sheet.append(row);
+        };
+        const sv = () => engine.save;
+        dials("POSES", [
+          ["All frames", () => (sv().poseMode ?? "all") === "all", () => engine.setPoseMode("all")],
+          ["Ascent only", () => sv().poseMode === "ascent", () => engine.setPoseMode("ascent")],
+        ]);
+        dials("DIVE DEPTH", [
+          ["Full", () => (sv().diveDepth ?? 1) >= 0.99, () => engine.setDiveDepth(1)],
+          ["Softer", () => Math.abs((sv().diveDepth ?? 1) - 0.75) < 0.01, () => engine.setDiveDepth(0.75)],
+          ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
+        ]);
+      }
       if (engine.save.equippedSuit === "eclipse") {
         const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
         sheet.append(el("p", "ac-sub", "PILOT MOTION"));
@@ -1180,7 +1204,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
-    tile("t-modes", planet.c, "MODES", "7 ways to fly · Lab",
+    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly · Lab`,
       () => { modesOpen = true; render(); });
     box.append(tiles);
 
@@ -1930,6 +1954,19 @@ export async function bootStandalone(root: HTMLElement) {
       const favHelms = favShelf(HELMETS.filter(helmListed).map((h) => h.id),
         (id) => { const h = HELMETS.find((x) => x.id === id); return h ? helmCard(h) : null; });
       if (favHelms) grid.append(favHelms);
+      // THE SUIT'S OWN HELMET (owner, 2 Sep 2026: "the leviathan helmet is
+      // missing"). A suit-locked helmet was never listed anywhere: not on
+      // the shelves, because it only fits one suit, and so a pilot who
+      // bought the Regalia pack had no way to see - or put on - the
+      // helmet that came with Leviathan. While its suit is the one worn,
+      // it gets a shelf of its own at the top.
+      const ownHelm = HELMETS.find((h) => h.suitOnly === s.equippedSuit && helmetRevealed(s, h.id));
+      if (ownHelm && !locked) {
+        grid.append(el("p", "ac-shelfhead", `${suit.name.toUpperCase()} HELMET`));
+        const row = el("div", "ac-shelfrow");
+        row.append(helmCard(ownHelm));
+        grid.append(row);
+      }
       for (const sec of HELMET_SHELF) {
         const items = sec.ids
           .map((id) => HELMETS.find((h) => h.id === id))

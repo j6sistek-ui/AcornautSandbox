@@ -2,7 +2,7 @@ import { suitLean, SUIT_LEAN } from "./control-constants";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { drawHud, drawWorld } from "./draw";
+import { drawHud, drawWorld, setPoseDials } from "./draw";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -161,6 +161,9 @@ export type Engine = {
   isFavorite: (id: string) => boolean;
   /** shrink or restore the loadout's animated case */
   setHeroCompact: (on: boolean) => void;
+  /** the pause sheet's pose dials, for every suit */
+  setDiveDepth: (d: number) => void;
+  setPoseMode: (m: "all" | "ascent") => void;
   /** VOLT's hangar experiment: swap between its two painted jump banks */
   setEclipseMotionMode: (mode: number) => void;
   dismissDead: () => void;
@@ -463,6 +466,18 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
+    setDiveDepth(d) {
+      save.diveDepth = d;
+      writeSave(save);
+      setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
+      notify();
+    },
+    setPoseMode(m) {
+      save.poseMode = m;
+      writeSave(save);
+      setPoseDials(save.diveDepth ?? 1, m === "ascent");
+      notify();
+    },
     setEclipseMotionMode(mode) {
       save.eclipseMotionMode = ((mode % 3) + 3) % 3;
       writeSave(save);
@@ -632,10 +647,21 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return "buy";
   }
 
-  // stepping out of a suit takes its matched helmet off with it
+  // stepping out of a suit takes its matched helmet off with it - and
+  // stepping INTO one puts its matched helmet on. The second half was
+  // missing (owner, 2 Sep 2026: "the leviathan helmet is missing"): a
+  // suit-locked helmet is on no shelf, so the drop here was the only code
+  // that ever touched it, and a pilot who bought the Regalia pack flew
+  // Leviathan in a Clear dome with no way to change that. Only a Clear
+  // dome or another suit's orphan is replaced; a helmet the pilot chose
+  // on purpose stays.
   function dropOrphanedHelmet() {
     const h = HELMETS.find((x) => x.id === save.equipped);
     if (h?.suitOnly && h.suitOnly !== save.equippedSuit) save.equipped = "clear";
+    if (save.equipped === "clear") {
+      const own = HELMETS.find((x) => x.suitOnly === save.equippedSuit && helmetRevealed(save, x.id));
+      if (own) save.equipped = own.id;
+    }
   }
 
   function transactTrail(id: string) {
@@ -1319,6 +1345,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // once here, so a reload lands in the state the pilot left
   setSfxMuted(!!save.sfxOff);
   document.body.classList.toggle("ac-nomotion", !!save.motionOff);
+  setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
 
   engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
     .then((bank) => {
