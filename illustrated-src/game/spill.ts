@@ -92,9 +92,13 @@ export const SPILL = {
   modRamp: 3,
   /** the free hint every first-time rule gets, in seconds */
   hintTime: 6.5,
-  /** how far the field may tilt under DRIFT, radians, and how fast it wanders */
+  /** how far the field may tilt under DRIFT, radians, and how fast it
+   *  wanders. The authored DRIFT wave is the lesson and leans only this
+   *  share of the way; the endless waves lean fully. The rule the flip
+   *  taught: a first meeting must be survivable before it is understood */
   driftMax: 0.38,
   driftRate: 0.22,
+  driftTeach: 0.6,
 };
 
 export type SpillMod = "none" | "surge" | "lowg" | "heavy" | "cross" | "blackout" | "swarm" | "drift";
@@ -1175,7 +1179,8 @@ function stepSpillBody(s: SpillState, dt: number) {
       s.tiltT = 4 + rand(s) * 3;
       s.tiltTarget = (rand(s) * 2 - 1) * SPILL.driftMax;
     }
-    const want = s.tiltTarget * ramp(s);
+    const lim = SPILL.driftMax * (s.wave <= SPILL_AUTHORED_WAVES ? SPILL.driftTeach : 1);
+    const want = Math.max(-lim, Math.min(lim, s.tiltTarget)) * ramp(s);
     const step = SPILL.driftRate * dt;
     s.tilt += Math.max(-step, Math.min(step, want - s.tilt));
   } else if (s.tilt !== 0) {

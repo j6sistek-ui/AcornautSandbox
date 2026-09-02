@@ -134,7 +134,7 @@ is on screen. Every rule phases in over its wave's first three seconds
 | 13 | 40s | 10 | 1.59× | **BLACKOUT** — the field dims to rims and warnings |
 | 15 | 40s | 11 | 1.68× | **Depot** |
 | 16 | 40s | 12+2 | 1.72× | **SWARM** — spinners only, cap +2, wider arcs |
-| 18 | 40s | 13 | 1.81× | **DRIFT** — the field tilts, up to 0.38 rad, wandering to a new lean every 4–7s at 0.22 rad/s; debris arrives at the tilt |
+| 18 | 40s | 13 | 1.81× | **DRIFT** — the field tilts, wandering to a new lean every 4–7s at 0.22 rad/s; debris arrives at the tilt. This wave is the lesson and leans to 60% of the 0.38 rad limit; endless DRIFT waves lean fully |
 | 20 | 40s | 14 | 1.90× | **Depot**, then endless |
 
 Endless: 40 seconds a wave, the cap creeps to 16, speed grows 2% a wave,

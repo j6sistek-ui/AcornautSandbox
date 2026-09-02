@@ -214,7 +214,21 @@ const dock = (seed) => {
     if (Math.abs(x.tilt) > 0.05) moved = true;
   });
   ok(moved, `the field tilts under DRIFT (peak ${maxTilt.toFixed(2)} rad)`);
-  ok(maxTilt <= S.SPILL.driftMax + 1e-6, `and never past its limit (${maxTilt.toFixed(3)} vs ${S.SPILL.driftMax})`);
+  const teach = S.SPILL.driftMax * S.SPILL.driftTeach;
+  ok(maxTilt <= teach + 1e-6, `and never past the lesson's limit (${maxTilt.toFixed(3)} vs ${teach.toFixed(3)})`);
+  // the lesson leans only part way even when the roll asks for the full lean
+  s.tiltT = 100; s.tiltTarget = S.SPILL.driftMax;
+  until(s, () => false, 5, (x) => { immune(x); hover(x); });
+  ok(Math.abs(s.tilt - teach) < 1e-3, `wave 18 stops at ${S.SPILL.driftTeach * 100}% of the tilt (${s.tilt.toFixed(3)})`);
+  // an endless DRIFT wave leans fully
+  let endless = 0;
+  for (let n = S.SPILL_AUTHORED_WAVES + 1; n < 60 && !endless; n++) if (S.spillWaveSpec(n, s.seed).mods.includes("drift")) endless = n;
+  ok(endless > 0, `the seed rolls DRIFT again past the ladder (wave ${endless})`);
+  until(s, (x) => x.wave >= endless && x.phase === "wave", 3000, immune);
+  ok(s.wave === endless && s.liveMods.includes("drift"), `reached it (${s.wave}: ${s.liveMods})`);
+  s.tiltT = 100; s.tiltTarget = S.SPILL.driftMax;
+  until(s, () => false, 6, (x) => { immune(x); hover(x); });
+  ok(Math.abs(s.tilt - S.SPILL.driftMax) < 1e-3, `and there the field leans all the way (${s.tilt.toFixed(3)})`);
   ok(maxStep <= S.SPILL.driftRate * DT + 1e-6, `the tilt is a lean, never a lurch (${(maxStep / DT).toFixed(3)} rad/s)`);
   // the angle the debris arrives at follows the tilt
   s.tilt = 0.3; s.rocks = [];
