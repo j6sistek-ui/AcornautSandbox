@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Acornaut LAB — Rig Editor</title>
-<meta name="description" content="A fitting bench for heads and helmets. Not part of the game." />
+<title>Acornaut LAB — Ship Bench</title>
+<meta name="description" content="A fitting bench for the Spill ship and its swappable parts. Not part of the game." />
 <meta name="theme-color" content="#0a0d16" />
 <meta name="robots" content="noindex" />
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=3" />
@@ -106,14 +106,13 @@
 </head>
 <body>
 <div id="app"></div>
-<div class="rg-back">LAB · <a href="../ship/">ship</a> · <a href="../../">back</a></div>
 <script>
   // the lab sits two folders below the site root, so the art lives up there
   window.__ACORNAUT_ART__ = "../../art";
 </script>
 <script type="module">
-  import { bootRig } from "./js/rig.js";
-  bootRig(document.getElementById("app"));
+  import { bootShip } from "./js/ship.js";
+  bootShip(document.getElementById("app"));
 </script>
 </body>
 </html>

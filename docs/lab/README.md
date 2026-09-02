@@ -19,3 +19,10 @@ Two experiments have LEFT this folder for the game itself: **Wormhole Run**
 
 Built by `node illustrated-src/build-lab.mjs`, deliberately separate from
 the game's build so a prototype cannot break something close to shipping.
+
+**The Ship Bench** (`docs/lab/ship/`, source `illustrated-src/lab/ship.ts`).
+A fitting bench for the Spill ship's swappable parts under
+`docs/art/spill-ship/`: pick a hull, pick an axis and level, then drag,
+scale and turn the part until it sits. Exports one transform per part
+(offset, scale, rotation in the sprites' 256px frame), with optional
+per-hull overrides, as JSON for the painter.
