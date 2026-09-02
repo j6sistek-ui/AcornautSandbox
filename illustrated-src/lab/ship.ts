@@ -9,7 +9,7 @@
 // The sprites live in docs/art/spill-ship/; manifest.json names them.
 // Not part of the game.
 
-type Xf = { dx: number; dy: number; scale: number; rot: number };
+type Xf = { dx: number; dy: number; scale: number; rot: number; behind?: boolean };
 type Manifest = { hulls: string[]; parts: Record<string, string[]>; order: string[] };
 type Sprite = { img: HTMLImageElement; cx: number; cy: number; box: [number, number, number, number] };
 
@@ -114,10 +114,15 @@ export async function bootShip(root: HTMLElement) {
   const onlyBtn = el("button", "rg-tog", "THIS HULL ONLY");
   onlyBtn.onclick = () => { S.onlyHull = !S.onlyHull; syncChrome(); paint(); };
   sub.append(onlyBtn);
+  // a part may sit UNDER the hull: a recessed nozzle, a canopy inside the
+  // rim, any call the fit needs. The order in the JSON follows this flag
+  const behindBtn = el("button", "rg-tog", "BEHIND HULL");
+  behindBtn.onclick = () => { const x = editing(); x.behind = !x.behind; save(); syncChrome(); paint(); };
+  sub.append(behindBtn);
   const boxBtn = el("button", "rg-tog on", "BOX");
   boxBtn.onclick = () => { S.showBox = !S.showBox; boxBtn.classList.toggle("on", S.showBox); paint(); };
   sub.append(boxBtn);
-  const hint = el("div", "rg-hint", "Drag the part to move it. Wheel or pinch to scale, hold ALT to turn. The pad nudges by the step; ± scale, ⟲ ⟳ turn. Numbers are in the 256px sprite frame, so the JSON is what the painter uses. ");
+  const hint = el("div", "rg-hint", "Drag the part to move it. Wheel or pinch to scale, hold ALT to turn. The pad nudges by the step; ± scale, ⟲ ⟳ turn. BEHIND HULL draws the part under the hull. Numbers are in the 256px sprite frame, so the JSON is what the painter uses. ");
   const rigLink = el("a", "", "rig editor"); rigLink.href = "../rig/"; rigLink.style.color = "#8b9bc4";
   const backLink = el("a", "", "back to the game"); backLink.href = "../../"; backLink.style.color = "#8b9bc4";
   hint.append(rigLink, " · ", backLink);
@@ -177,6 +182,7 @@ export async function bootShip(root: HTMLElement) {
     segBtns.forEach((b, i) => b.classList.toggle("on", man.order[i] === S.sel));
     lvlBtns.forEach((b, i) => b.classList.toggle("on", S.level[S.sel] === i));
     onlyBtn.classList.toggle("on", S.onlyHull);
+    const p = partOf(S.sel); behindBtn.classList.toggle("on", !!(p && xfFor(p).behind));
   }
 
   // ---- painting. The frame is the sprites' 256px box, zoomed to the stage
@@ -187,10 +193,10 @@ export async function bootShip(root: HTMLElement) {
   function drawShip(g: CanvasRenderingContext2D, size: number, hull: string, box: boolean) {
     const z = size / 256;
     g.save(); g.scale(z, z);
-    g.drawImage(sprites.get(hull)!.img, 0, 0);
-    for (const axis of man.order) {
+    const layer = (behind: boolean) => { for (const axis of man.order) {
       const p = partOf(axis); if (!p) continue;
       const sp = sprites.get(p)!; const x = xfFor(p, hull);
+      if (!!x.behind !== behind) continue;
       g.save();
       g.translate(sp.cx + x.dx, sp.cy + x.dy);
       g.rotate((x.rot * Math.PI) / 180);
@@ -201,7 +207,10 @@ export async function bootShip(root: HTMLElement) {
         g.strokeRect(sp.box[0] - sp.cx, sp.box[1] - sp.cy, sp.box[2] - sp.box[0], sp.box[3] - sp.box[1]);
       }
       g.restore();
-    }
+    } };
+    layer(true);
+    g.drawImage(sprites.get(hull)!.img, 0, 0);
+    layer(false);
     g.restore();
   }
   function paint() {
@@ -224,7 +233,7 @@ export async function bootShip(root: HTMLElement) {
       drawShip(ctx, fs, S.hull, false); ctx.restore();
     }
     const p = partOf(S.sel); const x = p ? xfFor(p) : ID;
-    const ov = p && S.over[S.hull]?.[p] ? " · override for this hull" : "";
+    const ov = (p && S.over[S.hull]?.[p] ? " · override for this hull" : "") + (x.behind ? " · behind hull" : "");
     stat.textContent = p ? `${p} on ${S.hull}${ov}   dx ${x.dx.toFixed(2)}  dy ${x.dy.toFixed(2)}  scale ${x.scale.toFixed(3)}  rot ${x.rot.toFixed(2)}°` : `${S.sel}: off`;
   }
 
@@ -278,7 +287,7 @@ export async function bootShip(root: HTMLElement) {
 
   // ---- export
   const report = () => JSON.stringify({ frame: "spill-ship 256px sprite frame; dx/dy in frame px, rot in degrees, scale about the part's own centre",
-    parts: Object.fromEntries(Object.entries(S.xf).map(([k, v]) => [k, { dx: v.dx, dy: v.dy, scale: v.scale, rot: v.rot }])),
+    parts: Object.fromEntries(Object.entries(S.xf).map(([k, v]) => [k, { dx: v.dx, dy: v.dy, scale: v.scale, rot: v.rot, behind: !!v.behind }])),
     overrides: S.over }, null, 2);
   function openSheet() {
     const json = report();
