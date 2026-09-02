@@ -1,14 +1,14 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=170";
-import { goalHud } from "./campaign.js?v=170";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=170";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=170";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=170";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=170";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=170";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=170";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=170";
-import { SPILL, SPILL_MOD_INFO, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=170";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=170";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
+import { goalHud } from "./campaign.js?v=171";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=171";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=171";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=171";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=171";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=171";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=171";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=171";
+import { SPILL, SPILL_MOD_INFO, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=171";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=171";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1524,15 +1524,163 @@ function drawSpillWarning(ctx, w, r) {
  *  the same, with a plume that answers the hand: a glow while held, a
  *  flare on a burst. Falls back to the painted pilot if the ship has not
  *  loaded, so the mode is never a blank */
+/** the ship the Spill flies: a hull per PLATING level and a part per level
+ *  of THRUSTERS (the tail), POWER-UPS (the cone) and the shield charges
+ *  (the canopy). Every sprite shares one 256px frame, and each part sits
+ *  where the owner fitted it in the lab's Ship Bench: transforms.json is
+ *  that fit, offset/scale/turn about the part's own centre, with per-hull
+ *  overrides. A missing bank falls back to Hyper Run's scout */
+const SPILL_SHIP_LEN = 58;
+const spillHoles = new WeakMap();
+/** where the hull's cockpit opening is, in the sprite's own pixels: the
+ *  dip in the top outline across the middle of the egg. Measured once */
+function spillHoleOf(hull) {
+    const hit = spillHoles.get(hull);
+    if (hit)
+        return hit;
+    const b = hull.box;
+    let hole = { cx: b.x + b.w * 0.6, cy: b.y + b.h * 0.3, rx: b.w * 0.12, ry: b.h * 0.14 };
+    try {
+        const c = document.createElement("canvas");
+        c.width = hull.naturalWidth || hull.width;
+        c.height = hull.naturalHeight || hull.height;
+        const g = c.getContext("2d", { willReadFrequently: true });
+        if (g) {
+            g.drawImage(hull, 0, 0);
+            const d = g.getImageData(0, 0, c.width, c.height).data;
+            const tops = [];
+            const x0 = Math.round(b.x + b.w * 0.3), x1 = Math.round(b.x + b.w * 0.88);
+            for (let x = x0; x <= x1; x++) {
+                let t = -1;
+                for (let y = b.y; y < b.y + b.h; y++)
+                    if (d[(y * c.width + x) * 4 + 3] > 40) {
+                        t = y;
+                        break;
+                    }
+                tops.push(t);
+            }
+            const valid = tops.filter((t) => t >= 0);
+            if (valid.length) {
+                const rim = Math.min(...valid);
+                // the first run of columns that drop well below the rim and then
+                // climb back out is the opening; the nose taper never climbs back
+                const deep = tops.map((t) => t >= 0 && t > rim + b.h * 0.12);
+                let k0 = deep.indexOf(true);
+                if (k0 > 0) {
+                    let k1 = k0;
+                    while (k1 + 1 < deep.length && deep[k1 + 1])
+                        k1++;
+                    if (k1 + 1 < deep.length && k1 - k0 > 4) {
+                        const floor = Math.max(...tops.slice(k0, k1 + 1));
+                        hole = { cx: x0 + (k0 + k1) / 2, cy: (rim + floor) / 2, rx: (k1 - k0) / 2, ry: (floor - rim) / 2 };
+                    }
+                }
+            }
+        }
+    }
+    catch { /* a tainted canvas keeps the estimate */ }
+    spillHoles.set(hull, hole);
+    return hole;
+}
+function spillShipParts(s) {
+    const lvl = (n) => Math.max(0, Math.min(3, Math.floor(n)));
+    return {
+        hull: `hull-${lvl(s.up.plating)}`,
+        thrust: s.up.thrusters > 0 ? `thrust-${lvl(s.up.thrusters)}` : null,
+        cone: s.up.pulse > 0 ? `cone-${lvl(s.up.pulse)}` : null,
+        // the canopy is the shield: a visor for one charge, sealed for two
+        cockpit: s.shield >= 2 ? "cockpit-3" : s.shield >= 1 ? "cockpit-1" : null,
+    };
+}
 function drawSpillShip(ctx, w, save, art, s, x) {
+    const parts = spillShipParts(s);
+    const hull = art.spillShip?.[parts.hull];
+    if (!hull) {
+        drawSpillScout(ctx, w, save, art, s, x);
+        return;
+    }
+    const fit = art.spillShipFit;
+    const xfOf = (name) => fit?.overrides?.[parts.hull]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+    const layers = [["thrust", parts.thrust], ["cone", parts.cone], ["cockpit", parts.cockpit]]
+        .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
+        .filter((l) => !!l && !!l.sp);
+    const z = SPILL_SHIP_LEN / hull.box.w;
+    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    ctx.save();
+    ctx.translate(x, s.pilot.y);
+    ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
+    ctx.scale(z, z);
+    // the hull's box centre is the collision point; everything else is
+    // painted in the sprites' shared frame around it
+    ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
+    // the plume, from the mouth of whatever is on the tail
+    const tail = layers.find((l) => l.name.startsWith("thrust"));
+    let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
+    if (tail) {
+        const cx = tail.sp.box.x + tail.sp.box.w / 2, cy = tail.sp.box.y + tail.sp.box.h / 2;
+        engineX = cx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
+        engineY = cy + tail.xf.dy;
+    }
+    const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
+    const length = ((9 + 14 * thrust) + pulse * (3 + 4 * thrust)) / z;
+    const half = (3 + 1.4 * thrust) / z;
+    const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
+    grad.addColorStop(0, "rgba(255,255,255,.96)");
+    grad.addColorStop(0.18, "rgba(97,221,255,.92)");
+    grad.addColorStop(0.58, "rgba(146,82,255,.66)");
+    grad.addColorStop(1, "rgba(83,38,180,0)");
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grad;
+    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowBlur = (5 + 5 * thrust) / z;
+    ctx.beginPath();
+    ctx.moveTo(engineX, engineY - half);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    const paint = (l) => {
+        const cx = l.sp.box.x + l.sp.box.w / 2, cy = l.sp.box.y + l.sp.box.h / 2;
+        ctx.save();
+        ctx.translate(cx + l.xf.dx, cy + l.xf.dy);
+        ctx.rotate((l.xf.rot * Math.PI) / 180);
+        ctx.scale(l.xf.scale, l.xf.scale);
+        ctx.drawImage(l.sp, -cx, -cy);
+        ctx.restore();
+    };
+    for (const l of layers)
+        if (l.xf.behind)
+            paint(l);
+    ctx.drawImage(hull, 0, 0);
+    // the pilot, in the opening, under whatever canopy the shield has bought
+    const hole = spillHoleOf(hull);
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+    // plus a little room over the rim so the helmet dome peeks out
+    ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
+    ctx.clip();
+    const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
+    glow.addColorStop(0, "rgba(71,112,166,.62)");
+    glow.addColorStop(1, "rgba(3,8,22,.96)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
+    drawPilot(ctx, w, save, art, hole.cx - 1.5 / z, 0.34 / z, hole.cy + hole.ry * 0.45, 0);
+    ctx.restore();
+    for (const l of layers)
+        if (!l.xf.behind)
+            paint(l);
+    ctx.restore();
+}
+/** the fallback: Hyper Run's scout, as the mode flew before it had a ship */
+function drawSpillScout(ctx, w, save, art, s, x) {
     const ship = art.hyperRun["scout-ship"];
     if (!ship) {
         drawPilot(ctx, w, save, art, x);
         return;
     }
-    // Hyper Run's hull at two thirds of its size, centred on the collision
-    // point rather than registered at the nose, with the equipped pilot in
-    // the cockpit exactly as the race paints it
     const scale = 58 / 88;
     const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
     const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
@@ -1542,7 +1690,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
-    // the plume: the same gradient Hyper Run flies, sized to this hull
     const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
     const length = (9 + 14 * thrust) + pulse * (3 + 4 * thrust);
     const half = 3 + 1.4 * thrust;
@@ -1564,7 +1711,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    // the cockpit: a glow behind the glass and the pilot inside it
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);

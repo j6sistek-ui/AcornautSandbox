@@ -12,9 +12,11 @@ reads it, so a new part is a file plus one line there.
 **Fit is done by hand, not by the cut.** `docs/lab/ship/` is a fitting
 bench: pick a hull, an axis and a level, drag, scale and turn the part,
 and export one transform per part (offset, scale, rotation in this 256px
-frame), with optional per-hull overrides. That JSON is what the painter
-will consume. The cuts below only have to be clean; they do not have to
-be perfectly registered.
+frame), with optional per-hull overrides. That JSON lives here as
+`transforms.json` and is what the Spill's painter (`drawSpillShip` in
+`game/draw.ts`) consumes; re-export from the bench and drop it in to
+refit. The cuts below only have to be clean; they do not have to be
+perfectly registered.
 
 ## The four axes
 
