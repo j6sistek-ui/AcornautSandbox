@@ -27,7 +27,7 @@
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and Gold Ore is what charges it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=172";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=173";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at

@@ -90,7 +90,7 @@ OFF_FAMILY_HELMET_SCALES = {
     "robo": 0.2011,
     "bigbooty": 0.1872,
     "iontrim": 0.1895,
-    "copper": 0.2255,
+    "copper": 0.2234,
     "frost": 0.2130,
     "voidsuit": 0.2250,
     "aurorasuit": 0.2171,
@@ -656,6 +656,218 @@ def verify_bank_frame_spread(qa: QA) -> None:
               + "\n      ".join(flags))
     else:
         qa.ok(f"bank frame spread: {banks} banks measured, none breaks from its own")
+
+
+def verify_repaired_tail_continuity(qa: QA) -> None:
+    """Hold the five owner-identified tail banks to their repaired baseline.
+
+    Gemmie, Cryostar and Verdant deliberately change colour with pose, so
+    they are intentionally absent. For the five repaired suits, sample only
+    warm, opaque pixels behind and outside the tracked head. That isolates
+    the tail well enough to catch the original brightness flash and the
+    frames whose plume collapsed or ballooned, without mistaking normal
+    foreshortening for a failure.
+
+    The helmet check is deliberately based on painted head area rather than
+    the DOME radius: a constant table value cannot prove that the drawing
+    under it stayed the same size.
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        qa.fail("tail continuity needs numpy")
+        return
+
+    draw = DRAW_SOURCE.read_text(encoding="utf8")
+    art = ART_SOURCE.read_text(encoding="utf8")
+    anchors = {
+        key: (float(x), float(y), float(radius))
+        for key, x, y, radius in re.findall(
+            r'"([a-z]+-(?:asc|desc)-\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*'
+            r'([-\d.]+)\s*,\s*([-\d.]+)',
+            draw,
+        )
+    }
+
+    def bank_counts(name: str) -> dict[str, int]:
+        match = re.search(name + r"[^{]*\{([^}]*)\}", art)
+        return {
+            suit: int(count)
+            for suit, count in re.findall(r"(\w+):\s*(\d+)", match.group(1))
+        } if match else {}
+
+    asc = bank_counts("ASC_BANKS")
+    desc = bank_counts("DESC_BANKS")
+    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper")
+    hue_limit = 0.004
+    saturation_limit = 0.035
+    value_limit = 0.055
+    tail_ratio_min = 0.72
+    tail_ratio_max = 1.25
+    head_spread_limit = 0.10
+    problems: list[str] = []
+    summaries: list[str] = []
+
+    for suit in repaired:
+        colours: list[tuple[float, float, float]] = []
+        head_sizes: list[float] = []
+        bank_areas: dict[str, list[tuple[str, int]]] = {"asc": [], "desc": []}
+        for kind, count in (("asc", asc.get(suit, 0)), ("desc", desc.get(suit, 0))):
+            if not count:
+                problems.append(f"{suit} lost its {kind} bank")
+                continue
+            for number in range(1, count + 1):
+                key = f"{suit}-{kind}-{number}"
+                anchor = anchors.get(key)
+                path = DOCS_ART / "suits" / f"{key}.png"
+                if anchor is None or not path.exists():
+                    problems.append(f"{key} is missing art or its helmet anchor")
+                    continue
+                with Image.open(path) as image:
+                    rgba = np.asarray(image.convert("RGBA"), dtype=np.float32)
+                rgb = rgba[:, :, :3] / 255.0
+                high = rgb.max(axis=2)
+                low = rgb.min(axis=2)
+                chroma = high - low
+                saturation = np.divide(
+                    chroma, high, out=np.zeros_like(chroma), where=high > 0,
+                )
+                hue = np.zeros_like(high)
+                coloured = chroma > 1e-6
+                red = coloured & (high == rgb[:, :, 0])
+                green = coloured & (high == rgb[:, :, 1])
+                blue = coloured & (high == rgb[:, :, 2])
+                hue[red] = ((rgb[:, :, 1][red] - rgb[:, :, 2][red]) / chroma[red]) % 6
+                hue[green] = (rgb[:, :, 2][green] - rgb[:, :, 0][green]) / chroma[green] + 2
+                hue[blue] = (rgb[:, :, 0][blue] - rgb[:, :, 1][blue]) / chroma[blue] + 4
+                hue /= 6
+
+                cx, cy, radius = anchor
+                yy, xx = np.ogrid[:rgba.shape[0], :rgba.shape[1]]
+                distance2 = (xx - cx) ** 2 + (yy - cy) ** 2
+                tail = (
+                    (rgba[:, :, 3] >= 32)
+                    & (hue < 0.16)
+                    & (saturation > 0.35)
+                    & (high > 0.08)
+                    & (xx < cx - 0.65 * radius)
+                    & (distance2 > (1.05 * radius) ** 2)
+                )
+                area = int(tail.sum())
+                if area < 256:
+                    problems.append(f"{key} has too little sampled tail ({area}px)")
+                    continue
+                bank_areas[kind].append((key, area))
+                colours.append((
+                    float(np.median(hue[tail])),
+                    float(np.median(saturation[tail])),
+                    float(np.median(high[tail])),
+                ))
+                head_area = int(((rgba[:, :, 3] >= 16) & (distance2 <= radius ** 2)).sum())
+                head_sizes.append(math.sqrt(head_area / math.pi))
+
+        if colours:
+            h_span = max(c[0] for c in colours) - min(c[0] for c in colours)
+            s_span = max(c[1] for c in colours) - min(c[1] for c in colours)
+            v_span = max(c[2] for c in colours) - min(c[2] for c in colours)
+            if h_span > hue_limit or s_span > saturation_limit or v_span > value_limit:
+                problems.append(
+                    f"{suit} tail colour drifts H/S/V "
+                    f"{h_span:.3f}/{s_span:.3f}/{v_span:.3f}"
+                )
+        else:
+            h_span = s_span = v_span = 0.0
+
+        for kind, areas in bank_areas.items():
+            if not areas:
+                continue
+            median = float(np.median([area for _, area in areas]))
+            for key, area in areas:
+                ratio = area / median
+                if ratio < tail_ratio_min or ratio > tail_ratio_max:
+                    problems.append(
+                        f"{key} tail volume is {ratio:.2f}x its {kind} median "
+                        f"({tail_ratio_min:.2f}-{tail_ratio_max:.2f} allowed)"
+                    )
+
+        head_spread = 0.0
+        if len(head_sizes) > 1:
+            head_spread = (max(head_sizes) - min(head_sizes)) / (sum(head_sizes) / len(head_sizes))
+            if head_spread > head_spread_limit:
+                problems.append(
+                    f"{suit} painted head scale moves {head_spread * 100:.1f}% "
+                    f"under one helmet radius ({head_spread_limit * 100:.0f}% allowed)"
+                )
+        summaries.append(
+            f"{suit} colour {h_span:.3f}/{s_span:.3f}/{v_span:.3f}, "
+            f"head {head_spread * 100:.1f}%"
+        )
+
+    if problems:
+        qa.fail("repaired tail continuity: " + "; ".join(problems))
+    else:
+        qa.ok("repaired tail continuity held: " + "; ".join(summaries))
+
+
+def verify_repaired_suit_material_continuity(qa: QA) -> None:
+    """Keep Ion and Verdant's outfit material stable through their banks.
+
+    This deliberately does not constrain hue: Verdant's hue progression is
+    part of its design. Saturation and value are the properties that made the
+    painted suit look like a different material from one pose to the next.
+    """
+    import colorsys
+    import statistics
+
+    specs = {
+        "iontrim": ((0.48, 0.72), 0.025, 0.035),
+        "verdant": ((0.23, 0.46), 0.025, 0.035),
+    }
+    problems: list[str] = []
+    summaries: list[str] = []
+    for suit, (hue_range, saturation_limit, value_limit) in specs.items():
+        samples: list[tuple[float, float]] = []
+        paths = sorted(DOCS_ART.glob(f"suits/{suit}-asc-*.png"))
+        paths += sorted(DOCS_ART.glob(f"suits/{suit}-desc-*.png"))
+        for path in paths:
+            with Image.open(path) as image:
+                pixels = image.convert("RGBA").getdata()
+                material = []
+                for red, green, blue, alpha in pixels:
+                    if alpha < 32:
+                        continue
+                    hue, saturation, value = colorsys.rgb_to_hsv(
+                        red / 255, green / 255, blue / 255,
+                    )
+                    if (
+                        hue_range[0] <= hue <= hue_range[1]
+                        and saturation > 0.28
+                        and 0.06 < value < 0.85
+                    ):
+                        material.append((saturation, value))
+            if len(material) < 256:
+                problems.append(f"{path.stem} lost its sampled suit material")
+                continue
+            samples.append((
+                statistics.median(pixel[0] for pixel in material),
+                statistics.median(pixel[1] for pixel in material),
+            ))
+        if not samples:
+            continue
+        saturation_span = max(x[0] for x in samples) - min(x[0] for x in samples)
+        value_span = max(x[1] for x in samples) - min(x[1] for x in samples)
+        if saturation_span > saturation_limit or value_span > value_limit:
+            problems.append(
+                f"{suit} suit material drifts S/V "
+                f"{saturation_span:.3f}/{value_span:.3f}"
+            )
+        summaries.append(
+            f"{suit} S/V {saturation_span:.3f}/{value_span:.3f}"
+        )
+    if problems:
+        qa.fail("repaired suit material continuity: " + "; ".join(problems))
+    else:
+        qa.ok("repaired suit material continuity held: " + "; ".join(summaries))
 
 
 def run_edge_audit(qa: QA) -> None:
@@ -1818,6 +2030,8 @@ def main() -> int:
     verify_run_lifelines(qa)
     verify_baked_domes(qa)
     verify_bank_frame_spread(qa)
+    verify_repaired_tail_continuity(qa)
+    verify_repaired_suit_material_continuity(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()
