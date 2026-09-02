@@ -4590,11 +4590,11 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     if (!eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
     paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, 
-    // HEADING, for every suit (owner: "eclipse uses heading"). The three
-    // mappings were an Eclipse experiment that had shipped with heading as
-    // the default for the whole roster; the switch is gone, the answer
-    // stays. Heading is the one that visits the whole bank at a hover.
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, 2, w.speed, lean);
+    // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
+    // is only heading for eclipse. everything else stays as it was"). The
+    // switch that cycled Eclipse's three mappings is gone; Eclipse flies
+    // heading, every other suit flies the shipped pose-per-velocity curve.
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, suit.id === "eclipse" ? 2 : 0, w.speed, lean);
     ctx.restore();
 }
 const PAL_ANIM_FPS = 12;

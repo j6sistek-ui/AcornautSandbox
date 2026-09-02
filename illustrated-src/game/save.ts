@@ -135,7 +135,8 @@ export type SaveData = {
   heroCompact?: boolean;
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
-  // and eclipseMotionMode (every suit flies heading; it was the default).
+  // and eclipseMotionMode (Eclipse flies heading; every other suit flies
+  // the shipped pose-per-velocity curve).
   /** Beta comparison; production always uses the cinematic presentation. */
   vanguardMotionMode?: VanguardMotionMode;
   /** Experimental records are isolated from chapter stars and rewards. */

@@ -4725,11 +4725,11 @@ function drawPilot(
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    // HEADING, for every suit (owner: "eclipse uses heading"). The three
-    // mappings were an Eclipse experiment that had shipped with heading as
-    // the default for the whole roster; the switch is gone, the answer
-    // stays. Heading is the one that visits the whole bank at a hover.
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, 2, w.speed,
+    // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
+    // is only heading for eclipse. everything else stays as it was"). The
+    // switch that cycled Eclipse's three mappings is gone; Eclipse flies
+    // heading, every other suit flies the shipped pose-per-velocity curve.
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, suit.id === "eclipse" ? 2 : 0, w.speed,
     lean);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
