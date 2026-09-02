@@ -620,12 +620,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function toggleMod(which: "shield" | "battery") {
     if (which === "shield") {
       if (!startShieldUnlocked(save)) return "locked";
-      if (save.startShield) {
-        save.startShield = false;
-        writeSave(save);
-        notify();
-        return "off";
-      }
+      // Armed is armed: the charge is spent by the next run, not by a
+      // second tap. A toggle here let a pilot switch it off for nothing
+      // and pay again to switch it back on.
+      if (save.startShield) return "armed";
       if (save.acorns < MOD_SHIELD_COST) return "poor";
       save.acorns -= MOD_SHIELD_COST;
       save.startShield = true;
