@@ -14,8 +14,13 @@ three-pip hull, per-run **Ore** and a **Depot** every fifth wave around
 that core. The second pass (2026-09-02), from the owner's first play
 session, changed what is flown and how:
 
-- **the ship.** The pilot flies Hyper Run's scout ship, sized to the
-  squirrel's window, not the squirrel. Its plume is the hand's state.
+- **the ship.** The pilot flies the Spill's own layered ship
+  (`docs/art/spill-ship/`), sized to the squirrel's window, not the
+  squirrel. Its plume is the hand's state, and its parts are the Depot's
+  meters: Plating picks the hull, Thrusters the tail, Power-ups the nose
+  cone, and the shield charges the canopy (one charge a visor, two a
+  sealed dome). Before the kit arrived it flew Hyper Run's scout, which
+  is still the fallback when the kit fails to load.
 - **the hand.** Hold to rise, release to fall. A swipe up or down is an
   instant burst. Nothing tap-taps. (The first hand shipped at normal
   flight's snap and the owner could not hold a line with it; the third
@@ -61,11 +66,19 @@ level-8 missions are "clear wave N".
 The shape is Hyper Run's: the authority is a module the sim steps, and the
 world's squirrel is a mirror of its pilot so the trail, the particles and
 the shake all ride the shared paths. The ship is painted by the Spill's
-own `drawSpillShip` from `art.hyperRun["scout-ship"]` through
-`hyperRunShipLayout`, at two thirds of the race's size and centred on the
-collision point, with the equipped pilot in the cockpit exactly as the
-race paints it; the lunge moves it horizontally, so `pilotX(w)` replaced
-the fixed lane wherever the trail reads it.
+own `drawSpillShip` from the `art.spillShip` kit: the hull for the
+Plating level, then the thruster, cone and canopy parts placed with the
+transforms the owner exported from the Ship Bench
+(`docs/art/spill-ship/transforms.json`, loaded as `art.spillShipFit`;
+per-hull overrides win over the part's default). Parts marked *behind*
+in that file paint under the hull. The hull's box is 58px long and
+centred on the collision point; the cockpit opening is measured once
+from the hull's top outline (the first dip that climbs back out) and the
+equipped pilot is clipped into it, helmet peeking over the rim, under
+whatever canopy the shield has bought. `hull-2-blue` and `cockpit-2` are
+in the kit but not yet drawn by the game. The lunge moves the ship
+horizontally, so `pilotX(w)` replaced the fixed lane wherever the trail
+reads it.
 
 ## The loop
 

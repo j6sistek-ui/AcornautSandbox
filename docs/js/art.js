@@ -1,4 +1,10 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=170";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=171";
+export const SPILL_SHIP_IDS = [
+    "hull-0", "hull-1", "hull-2", "hull-3",
+    "thrust-1", "thrust-2", "thrust-3",
+    "cone-1", "cone-2", "cone-3",
+    "cockpit-1", "cockpit-2", "cockpit-3",
+];
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -118,6 +124,7 @@ export function emptyArt() {
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
         frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+        spillShip: {}, spillShipFit: null,
     };
 }
 // Painted skies load ON DEMAND — a run only ever needs the handful of
@@ -482,7 +489,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore, spillShip, spillShipFit] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -524,6 +531,13 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // decides, not because the answer can currently be no.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
         optional(`${base}/pickups/ore.png?v=${ART_VER}`),
+        // the Spill's ship: 13 small files. A missing one is not fatal - the
+        // painter falls back to the scout ship - so nothing here is required
+        named(SPILL_SHIP_IDS, "spill-ship"),
+        fetch(`${base}/spill-ship/transforms.json?v=${ART_VER}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => (d && d.parts ? { parts: d.parts, overrides: d.overrides || {} } : null))
+            .catch(() => null),
     ]);
     const bank = {
         ready: true,
@@ -556,6 +570,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         suitAsc,
         suitDesc,
         hyperRun,
+        spillShip,
+        spillShipFit,
     };
     // FLIGHT is the game's face — its banks always ride the boot load — and
     // the suit the save is wearing must be flyable the moment PLAY is hit.
