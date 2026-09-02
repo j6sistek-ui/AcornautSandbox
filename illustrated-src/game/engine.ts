@@ -65,7 +65,7 @@ import {
 import { raceViewport } from "./race-viewport";
 import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, type SpillBuyable, type SpillCue } from "./spill";
 
-export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "mods";
+export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
 export type Engine = {
   canvas: HTMLCanvasElement;

@@ -1,5 +1,5 @@
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
-import { modsUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
+import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
@@ -741,6 +741,11 @@ function modsLive(save: SaveData, w: World) {
 function driftModOf(save: SaveData, w: World) {
   if (!modsLive(save, w)) return 1;
   if (save.steadyGates) return 0;
+  // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
+  // strobes, it turns into steady gates"). The pal does what the Steady
+  // Gates mod did, the way Wisp took over Rough Air - the pal is the one
+  // you can see doing it, so the mod card is gone from the loadout.
+  if (save.equippedPal === "nightglider" && !save.noPalFx) return 0;
   return 1;
 }
 
@@ -4045,7 +4050,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       snd = "gold";
     } else if (a.kind === "shield") {
       if (pal !== "nutsack" && pal !== "tinbot") {
-        const cap = save.battery ? 3 : 1;
+        // SHIELD BATTERY IS A STAR RUNG, NOT A PURCHASE (owner, 2 Sep 2026:
+        // "always active, not a toggle"): earn the stars and you carry
+        // three charges from then on. save.battery is left in place for
+        // old saves and no longer read.
+        const cap = batteryUnlocked(save) ? 3 : 1;
         w.shieldCharges = Math.min(cap, w.shieldCharges + 1);
       }
       spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");

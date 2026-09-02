@@ -1,4 +1,4 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
 import { goalHud } from "./campaign.js?v=171";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=171";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=171";
@@ -2173,14 +2173,10 @@ export function drawWorld(ctx, w, save, art) {
     // to FULL black. Drawn after the world and before the pal, so the
     // companion and the pilot stay lit and the pilot is never flying blind
     // about where they themselves are.
-    if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
-        const t = w.lampT;
-        const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
-        if (a > 0) {
-            ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
-            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
-        }
-    }
+    // Nightglider's blackout is retired (owner, 2 Sep 2026: "no longer
+    // strobes, it turns into steady gates"); the pal's effect now lives in
+    // sim.ts where the gates decide whether to drift. The lamp clock it
+    // read is left alone - nothing else was on it, and it costs nothing.
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
@@ -4391,6 +4387,63 @@ function previewRot(p, beat, kick, pull) {
         r += (Math.max(-0.34, Math.min(0.6, vy / 900)) - r) * k;
     }
     return r;
+}
+/** THE SHIP IN THE CASE (owner, 2 Sep 2026): the loadout's SHIP tab
+ *  paints the scout ship the way the Spill flies it - plume, cockpit glow,
+ *  the equipped pilot in the glass - on the same lit stage every other tab
+ *  uses. `thrust` is the tier being previewed (0 stock .. 3), and only the
+ *  plume answers to it for now: this is a mock of an upgrade, not one. */
+export function paintShipPreview(ctx, art, save, cx, cy, scale, t, thrust) {
+    const ship = art?.hyperRun?.["scout-ship"];
+    if (!art || !ship)
+        return;
+    const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
+    const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
+    const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
+    const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
+    const helmRaw = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
+    const helmet = helmRaw.suitOnly && helmRaw.suitOnly !== suit.id ? HELMETS[0] : helmRaw;
+    const lvl = Math.max(0, Math.min(3, thrust));
+    ctx.save();
+    ctx.translate(cx, cy + Math.sin(t * 1.7) * 3);
+    ctx.rotate(-0.04);
+    // the plume grows with the tier and idles with a slow pulse
+    const pulse = 0.5 + 0.5 * Math.sin(t * (9 + 5 * lvl));
+    const length = (12 + 12 * lvl) + pulse * (4 + 3 * lvl);
+    const half = (3.2 + 1.1 * lvl) * scale;
+    const engineX = layout.engineX;
+    const tail = engineX - length;
+    const grad = ctx.createLinearGradient(engineX, 0, tail, 0);
+    grad.addColorStop(0, "rgba(255,255,255,.96)");
+    grad.addColorStop(0.18, lvl >= 3 ? "rgba(255,214,106,.95)" : "rgba(97,221,255,.92)");
+    grad.addColorStop(0.58, lvl >= 2 ? "rgba(255,120,60,.66)" : "rgba(146,82,255,.66)");
+    grad.addColorStop(1, "rgba(83,38,180,0)");
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grad;
+    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowBlur = 6 + 4 * lvl;
+    ctx.beginPath();
+    ctx.moveTo(engineX, -half);
+    ctx.quadraticCurveTo(engineX - length * 0.48, -half * 0.64, tail, 0);
+    ctx.quadraticCurveTo(engineX - length * 0.48, half * 0.64, engineX, half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    // cockpit: glow behind the glass, the pilot inside it
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const glow = ctx.createRadialGradient(layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1, layout.cockpitX, layout.cockpitY, 15 * scale);
+    glow.addColorStop(0, "rgba(71,112,166,.62)");
+    glow.addColorStop(1, "rgba(3,8,22,.96)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
+    paintFlightPreview(ctx, art, suit, helmet, layout.cockpitX - 2 * scale, layout.cockpitY + 2 * scale, 30 * scale, t);
+    ctx.restore();
+    drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
+    ctx.restore();
 }
 export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
 // THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap

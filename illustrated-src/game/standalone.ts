@@ -1,5 +1,5 @@
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview} from "./draw";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
@@ -1017,6 +1017,9 @@ export async function bootStandalone(root: HTMLElement) {
   // you open to dial something in, not a mode the game sits in.
   let leanEdit = false;
   let hyperRunOpen = false;
+  /** the SHIP tab's previewed thruster tier (0 stock .. 3). Session only:
+   *  the tab is under construction and nothing here is bought or kept. */
+  let shipTier = 0;
 
   function nextStarReward(stars: number) {
     // "stage" rows opened a chapter, and chapters are gone - the chart is
@@ -1857,13 +1860,30 @@ export async function bootStandalone(root: HTMLElement) {
       fold.title = "Double-tap the case, or tap here";
       fold.onclick = (e) => { e.stopPropagation(); engine.setHeroCompact(!engine.save.heroCompact); };
       stage.append(fold);
-      plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
-      plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
-      plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palWorn?.name ?? "No pal"}`));
+      if (engine.shopTab === "ship") {
+        const TIER = ["STOCK", "THRUSTER I", "THRUSTER II", "THRUSTER III"];
+        plate.append(el("span", "ac-caseeyebrow", "SCOUT SHIP \u00b7 PREVIEW"));
+        plate.append(el("b", "", `Scout Ship \u00b7 ${TIER[shipTier]}`));
+        plate.append(el("span", "ac-casesub", `${wornSuit.name} in the cockpit \u00b7 not active in any mode yet`));
+      } else {
+        plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
+        plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
+        plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palWorn?.name ?? "No pal"}`));
+      }
+      // THE NEXT-RUN SHIELD LIVES ON THE PLATE (owner, 2 Sep 2026: "find a
+      // home elsewhere in the loadout, maybe a small button on the
+      // animator"). One small control under the name: armed, it is the
+      // blue tag it always was; not armed and unlocked, it is the button
+      // that arms it for MOD_SHIELD_COST acorns.
       if (s.startShield) {
         const tags = el("div", "ac-rigtags");
-        tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD"));
+        tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD \u00b7 NEXT RUN"));
         plate.append(tags);
+      } else if (startShieldUnlocked(s)) {
+        const arm = el("button", "ac-platebtn");
+        arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
+        arm.onclick = (e) => { e.stopPropagation(); tx(arm, () => engine.toggleMod("shield"), MOD_SHIELD_COST); };
+        plate.append(arm);
       }
       stage.append(plate);
       box.append(stage);
@@ -1879,9 +1899,13 @@ export async function bootStandalone(root: HTMLElement) {
           ctx.clearRect(0, 0, CASE_W, CASE_H);
           // the old pair of branches here tested noPalFx and then did the
           // same thing either way, so the switch never switched anything
-          if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-          paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt,
-            engine.suitLeanOf(wornSuit.id), leanEdit);
+          if (engine.shopTab === "ship") {
+            paintShipPreview(ctx, engine.art, s, CASE_W / 2 - 10, 118, 1.35, tt, shipTier);
+          } else {
+            if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
+            paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt,
+              engine.suitLeanOf(wornSuit.id), leanEdit);
+          }
           requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
@@ -1891,7 +1915,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     const tabs = el("div", "ac-cats");
-    for (const t of ["suits", "helmets", "trails", "pals", "mods"] as const) {
+    for (const t of ["suits", "helmets", "trails", "pals", "ship"] as const) {
       const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
       if ((s.guide === "hangar" && t === "suits" && engine.shopTab !== "suits") ||
           (s.guide === "helmet" && t === "helmets" && engine.shopTab !== "helmets")) {
@@ -2110,94 +2134,46 @@ export async function bootStandalone(root: HTMLElement) {
       // Pals carry a sentence, not a two-word tag, so their shelf runs two
       // wide where everything else runs four.
       grid.classList.add("ac-palgrid");
+      // PAL EFFECTS OFF lives with the pals (owner, 2 Sep 2026). It is the
+      // switch that makes every card below cosmetic, so it sits above them
+      // rather than on a tab of its own.
+      const fx = el("button", "ac-card ac-modcard ac-palfx" + (s.noPalFx ? " on" : ""));
+      const ftxt = el("div", "ac-modtxt");
+      ftxt.append(el("p", "ac-modname", "Pal Effects Off"),
+        el("p", "ac-sub", "Fly with any companion for the look alone - none of its effect."));
+      const fsw = el("span", s.noPalFx ? "ac-switch on" : "ac-switch");
+      fsw.append(el("i", "ac-knob"));
+      fx.append(ftxt, fsw);
+      fx.onclick = () => engine.setMod("noPalFx");
+      grid.append(fx);
       for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) grid.append(palCardOf(p));
-    } else {
-      // Mods are BOUGHT, like everything else on this screen, so they get
-      // the same card with the same price on it. They used to be two bare
-      // switches parked in the Profile, which read as free settings — the
-      // start shield in particular is charged for every single arming.
-      const mod = (
-        id: string,
-        name: string,
-        blurb: string,
-        cost: number,
-        state: string | null,
-        pic: HTMLElement,
-        hit: () => void,
-      ) => {
-        const b = el("button", state ? "ac-card ac-modcard on" : "ac-card ac-modcard");
-        b.append(pic);
+    } else if (engine.shopTab === "ship") {
+      // THE SHIP TAB, UNDER CONSTRUCTION (owner, 2 Sep 2026). The mods that
+      // lived here are gone or moved: Pal Effects Off sits with the pals,
+      // the next-run shield arms from the case plate, Shield Battery is a
+      // star rung that is simply always on, Nightglider does what Steady
+      // Gates did, and Thrill Seeker is hidden for now. What is here is a
+      // MOCK of the idea "start the run with a thruster tier" - tap a tier
+      // and the case shows it, nothing is charged and nothing is kept -
+      // so the owner can decide how it meets the modes before it is real.
+      scroll.append(el("p", "ac-shipnote",
+        "UNDER CONSTRUCTION \u00b7 PREVIEW ONLY \u00b7 NOTHING IS BOUGHT OR ACTIVE"));
+      const tiers: [number, string, string, number][] = [
+        [0, "Stock", "The scout ship as the Spill flies it.", 0],
+        [1, "Thruster I", "Sharper bursts. Start the run with it.", 50],
+        [2, "Thruster II", "Twin lunge. Two lunges before the recharge.", 100],
+        [3, "Thruster III", "Afterburner. Longer, harder bursts.", 250],
+      ];
+      for (const [lvl, name, blurb, cost] of tiers) {
+        const b = el("button", lvl === shipTier ? "ac-card ac-modcard ac-shipcard on" : "ac-card ac-modcard ac-shipcard");
         const txt = el("div", "ac-modtxt");
-        txt.append(el("p", "ac-modname", name), el("p", "ac-sub", blurb));
-        // An owned mod is a SWITCH, not a price: the card flips it and the
-        // slider shows the state at a glance. Prices and star locks keep
-        // their text chip.
-        if (state === "ON" || state === "OFF" || state === "ARMED") {
-          const sw = el("span", state === "OFF" ? "ac-switch" : "ac-switch on");
-          sw.append(el("i", "ac-knob"));
-          b.append(txt, sw);
-        } else {
-          b.append(txt, el("span", "ac-modprice", state ?? `${cost}`));
-        }
-        b.onclick = () => hit();
+        txt.append(el("p", "ac-shiptier", lvl ? `TIER ${"I".repeat(lvl)}` : "BASELINE"),
+          el("p", "ac-modname", name), el("p", "ac-sub", blurb));
+        b.append(txt, el("span", "ac-modprice", cost ? `${cost}` : "\u2014"));
+        b.append(el("span", "ac-shipoff", cost ? "NOT ACTIVE" : "DEFAULT"));
+        b.onclick = () => { shipTier = lvl; render(); };
         grid.append(b);
-        return b;
-      };
-      // PAL EFFECTS OFF LEADS. It is the only mod that costs nothing and is
-      // never gated, so it is the one every pilot can actually use - burying
-      // it under two star-gated shield utilities put the free thing third.
-      // The flight mods come with it; the shield utilities follow.
-      // Flight mods change how a run FLIES rather than what you survive, so
-      // they say ON / OFF rather than OWNED: buying one does not force you
-      // to fly with it. They stay locked until LV 30 — a pilot should have
-      // flown the game as designed before rewriting how it moves.
-      const modsOpen = modsUnlocked(s);
-      if (!modsOpen) {
-        scroll.append(el("p", "ac-sub ac-modlock",
-          `Flight mods unlock at \u2605 ${STAR_UNLOCKS.flightMods}. They change how the game moves — fly it as built first.`));
       }
-      for (const m of MODS) {
-        const owned = m.always || s.purchased.includes(m.id);
-        const on = !!s[m.save];
-        // an always-on mod ignores the star gate the others sit behind: it
-        // takes something away rather than granting it, so there is nothing
-        // to earn first
-        const open = m.always || modsOpen;
-        const b = mod(m.id, m.name, m.desc, m.always ? 0 : m.cost,
-            !open ? `\u2605 ${STAR_UNLOCKS.flightMods}` : on ? "ON" : owned ? "OFF" : null,
-            modIcon(m.id, 56),
-            () => { if (open) tx(b, () => engine.setMod(m.id), m.always ? undefined : m.cost); });
-        if (!open) b.classList.add("ac-cardoff");
-      }
-
-      const shieldNut = () => {
-        const { c, ctx } = miniCanvas(56, 56);
-        if (ctx && engine.art?.shieldnut) drawSpriteOn(ctx, engine.art.shieldnut, 28, 28, 52);
-        return c;
-      };
-      // These two sit behind star gates exactly like the flight mods below,
-      // but only the MODS loop was dimming its locked cards. So on a fresh
-      // save Start Shield rendered as the brightest, most interactive-looking
-      // control on the screen and returned "locked" without moving a pixel,
-      // and Battery showed its price in the gold reserved for currency to a
-      // pilot holding zero acorns. A card that cannot be used has to look
-      // like one.
-      const shieldOpen = startShieldUnlocked(s);
-      const batteryOpen = batteryUnlocked(s);
-      const shieldCard = mod("shield", "Start Shield",
-          "Begin the next run already shielded. Charged each time you arm it.",
-          MOD_SHIELD_COST,
-          !shieldOpen ? `\u2605 ${STAR_UNLOCKS.startShield}` : s.startShield ? "ARMED" : "OFF",
-          shieldNut(),
-          () => { if (shieldOpen) tx(shieldCard, () => engine.toggleMod("shield"), MOD_SHIELD_COST); });
-      if (!shieldOpen) shieldCard.classList.add("ac-cardoff");
-      const batteryCard = mod("battery", "Shield Battery",
-          "Stack up to three shield charges instead of one. Bought once.",
-          MOD_BATTERY_COST,
-          !batteryOpen ? `\u2605 ${STAR_UNLOCKS.battery}` : s.battery ? "OWNED" : null,
-          batteryIcon(56),
-          () => { if (batteryOpen) tx(batteryCard, () => engine.toggleMod("battery"), MOD_BATTERY_COST); });
-      if (!batteryOpen) batteryCard.classList.add("ac-cardoff");
     }
     scroll.append(grid);
     // Premium left these shelves, so something has to say where it went -

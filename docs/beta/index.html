@@ -1369,6 +1369,20 @@
       background: rgba(10,16,32,.55); color: #7d869f; font-size: 13px; line-height: 1; cursor: pointer; }
     .ac-favbtn.on { color: #ffd76a; background: rgba(255,215,106,.14); }
     .ac-favhead { color: #ffd76a; }
+    /* the next-run shield, armed from the case plate */
+    .ac-platebtn { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+      padding: 6px 11px; border-radius: 999px; background: rgba(77,155,255,.14);
+      border: 1px solid rgba(127,184,255,.45); color: #cfe6ff;
+      font: 800 9.5px/1 Figtree, sans-serif; letter-spacing: .12em; }
+    /* PALS: the effects switch spans the two-wide pal grid */
+    .ac-palfx { grid-column: 1 / -1; }
+    /* SHIP: the tab under construction - cards you can try, nothing you can buy */
+    .ac-shipnote { margin: 4px 12px 8px; padding: 9px 12px; border-radius: 12px;
+      border: 1px dashed rgba(255,215,106,.45); background: rgba(255,215,106,.06);
+      color: #ffd76a; font: 800 9.5px/1.4 Figtree, sans-serif; letter-spacing: .12em; text-align: center; }
+    .ac-shipcard.on { border-color: #7fb8ff; }
+    .ac-shiptier { font: 800 8.5px/1 Figtree, sans-serif; letter-spacing: .16em; color: #7d869f; }
+    .ac-shipoff { color: #7d869f; font-size: 9px; letter-spacing: .1em; }
     /* SHORT LISTS, NOT PARAGRAPHS: the briefing's aims and Help's modes */
     .ac-brieflist, .ac-helplist { margin: 0; padding: 0 0 0 16px; display: flex; flex-direction: column; gap: 5px; }
     .ac-brieflist li { font-size: 12.5px; line-height: 1.35; color: #e9e4d6; }

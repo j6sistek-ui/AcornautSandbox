@@ -306,7 +306,7 @@ export const PALS: Pal[] = [
   { id: "wisp", name: "Wisp", tag: "GATE DRIFT", desc: "More gate movement", art: "wisp" },
   { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Every bounce repaints the sky a new vibrant colour.", art: "prismwing" },
   { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll speed drifts, +50% to -70%, and never at a steady rate.", art: "clockling" },
-  { id: "nightglider", name: "Nightglider", tag: "BLACKOUT", desc: "Total dark. Every tap is a flashbulb that shows the way.", art: "nightglider" },
+  { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "The gates stop drifting. A still sky to thread.", art: "nightglider" },
 ];
 
 export type Env = {

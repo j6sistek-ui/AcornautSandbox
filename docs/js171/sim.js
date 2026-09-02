@@ -1,5 +1,5 @@
 import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=171";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=171";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=171";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=171";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=171";
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=171";
@@ -277,6 +277,12 @@ function driftModOf(save, w) {
     if (!modsLive(save, w))
         return 1;
     if (save.steadyGates)
+        return 0;
+    // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
+    // strobes, it turns into steady gates"). The pal does what the Steady
+    // Gates mod did, the way Wisp took over Rough Air - the pal is the one
+    // you can see doing it, so the mod card is gone from the loadout.
+    if (save.equippedPal === "nightglider" && !save.noPalFx)
         return 0;
     return 1;
 }
@@ -3625,7 +3631,11 @@ export function updateWorld(w, save, dt) {
         }
         else if (a.kind === "shield") {
             if (pal !== "nutsack" && pal !== "tinbot") {
-                const cap = save.battery ? 3 : 1;
+                // SHIELD BATTERY IS A STAR RUNG, NOT A PURCHASE (owner, 2 Sep 2026:
+                // "always active, not a toggle"): earn the stars and you carry
+                // three charges from then on. save.battery is left in place for
+                // old saves and no longer read.
+                const cap = batteryUnlocked(save) ? 3 : 1;
                 w.shieldCharges = Math.min(cap, w.shieldCharges + 1);
             }
             spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");
