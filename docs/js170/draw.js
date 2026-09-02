@@ -1530,10 +1530,14 @@ function drawSpillShip(ctx, w, save, art, s, x) {
         drawPilot(ctx, w, save, art, x);
         return;
     }
-    const size = 58;
+    // Hyper Run's hull at two thirds of its size, centred on the collision
+    // point rather than registered at the nose, with the equipped pilot in
+    // the cockpit exactly as the race paints it
+    const scale = 58 / 88;
     const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
-    const fit = size / Math.max(1, Math.max(box.w, box.h));
-    const engineX = -box.w * fit / 2 + 2;
+    const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
+    const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
+    const engineX = layout.engineX;
     const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
     ctx.save();
     ctx.translate(x, s.pilot.y);
@@ -1560,7 +1564,19 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    drawSprite(ctx, ship, 0, 0, size, "box", "light");
+    // the cockpit: a glow behind the glass and the pilot inside it
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const cockpitGlow = ctx.createRadialGradient(layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1, layout.cockpitX, layout.cockpitY, 15 * scale);
+    cockpitGlow.addColorStop(0, "rgba(71,112,166,.62)");
+    cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
+    ctx.fillStyle = cockpitGlow;
+    ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
+    drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+    ctx.restore();
+    drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
     ctx.restore();
 }
 function drawSpillWorld(ctx, w, save, art) {
@@ -1699,7 +1715,9 @@ function drawSpillWorld(ctx, w, save, art) {
 /** a two-line teaching panel: the rule's name, then what to do about it.
  *  It sits a quarter of the way down, or under the status stack if the
  *  screen is too short for both */
-function drawSpillHint(ctx, w, text, alpha, below = 0) {
+/** the lesson panel sits low, under the flight path, its bottom edge at
+ *  `bottom` - the owner flew wave 1 with the controls card in the lane */
+function drawSpillHint(ctx, w, text, alpha, bottom) {
     const cut = text.indexOf(": ");
     const title = cut > 0 ? text.slice(0, cut) : "";
     let body = cut > 0 ? text.slice(cut + 2) : text;
@@ -1723,7 +1741,7 @@ function drawSpillHint(ctx, w, text, alpha, below = 0) {
     if (body)
         lines.push(body);
     const bh = 30 + (title ? 18 : 0) + lines.length * 16;
-    const cy = Math.max(w.H * 0.24, below + 8 + bh / 2);
+    const cy = bottom - bh / 2;
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.fillStyle = "rgba(12,18,36,0.82)";
@@ -1898,7 +1916,7 @@ function drawSpillHud(ctx, w, art) {
     }
     // the free lesson, while it runs
     if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), hudY - 10);
+        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
     }
     if (s.phase === "ready") {
         const compact = W < 520;
@@ -1976,7 +1994,7 @@ function drawSpillHud(ctx, w, art) {
         ctx.globalAlpha = 1;
         ctx.fillStyle = "rgba(215,230,247,.7)";
         ctx.font = "700 11px Figtree, system-ui";
-        ctx.fillText("AUTOPILOT · CONTROL ON GO", W / 2, H * 0.34 + 146);
+        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · PRESS TO TAKE THE STICK", W / 2, H * 0.34 + 146);
         ctx.restore();
     }
     if (s.phase === "wave" && s.phaseT < 0.6) {
