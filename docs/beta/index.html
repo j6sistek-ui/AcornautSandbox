@@ -1381,6 +1381,12 @@
       border: 1px dashed rgba(255,215,106,.45); background: rgba(255,215,106,.06);
       color: #ffd76a; font: 800 9.5px/1.4 Figtree, sans-serif; letter-spacing: .12em; text-align: center; }
     .ac-shipcard.on { border-color: #7fb8ff; }
+    /* a SHIP row reads left to right: four fixed-width tier cards in the
+       same scrolling shelf row every other tab uses */
+    .ac-shelfrow .ac-shipcard { flex: 0 0 168px; width: 168px; flex-direction: column;
+      align-items: flex-start; text-align: left; gap: 6px; }
+    .ac-shelfrow .ac-shipcard .ac-modtxt { width: 100%; }
+    .ac-shelfrow .ac-shipcard .ac-modprice { align-self: flex-end; }
     .ac-shiptier { font: 800 8.5px/1 Figtree, sans-serif; letter-spacing: .16em; color: #7d869f; }
     .ac-shipoff { color: #7d869f; font-size: 9px; letter-spacing: .1em; }
     /* SHORT LISTS, NOT PARAGRAPHS: the briefing's aims and Help's modes */

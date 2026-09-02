@@ -1,5 +1,5 @@
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
@@ -1017,9 +1017,10 @@ export async function bootStandalone(root: HTMLElement) {
   // you open to dial something in, not a mode the game sits in.
   let leanEdit = false;
   let hyperRunOpen = false;
-  /** the SHIP tab's previewed thruster tier (0 stock .. 3). Session only:
-   *  the tab is under construction and nothing here is bought or kept. */
-  let shipTier = 0;
+  /** the SHIP tab's previewed tier on each of the Depot's four axes (0
+   *  stock .. 3). Session only: the tab is under construction and nothing
+   *  here is bought or kept. */
+  const shipPick: ShipPick = { plating: 0, thrusters: 0, pulse: 0, shield: 0 };
 
   function nextStarReward(stars: number) {
     // "stage" rows opened a chapter, and chapters are gone - the chart is
@@ -1863,10 +1864,11 @@ export async function bootStandalone(root: HTMLElement) {
       fold.onclick = (e) => { e.stopPropagation(); engine.setHeroCompact(!engine.save.heroCompact); };
       stage.append(fold);
       if (engine.shopTab === "ship") {
-        const TIER = ["STOCK", "THRUSTER I", "THRUSTER II", "THRUSTER III"];
-        plate.append(el("span", "ac-caseeyebrow", "SCOUT SHIP \u00b7 PREVIEW"));
-        plate.append(el("b", "", `Scout Ship \u00b7 ${TIER[shipTier]}`));
-        plate.append(el("span", "ac-casesub", `${wornSuit.name} in the cockpit \u00b7 not active in any mode yet`));
+        const roman = (n: number) => (n ? "I".repeat(n) : "\u2013");
+        plate.append(el("span", "ac-caseeyebrow", "THE SPILL'S SHIP \u00b7 PREVIEW"));
+        plate.append(el("b", "", `Plating ${roman(shipPick.plating)} \u00b7 Thrusters ${roman(shipPick.thrusters)}`));
+        plate.append(el("span", "ac-casesub",
+          `Power-ups ${roman(shipPick.pulse)} \u00b7 Shield ${roman(shipPick.shield)} \u00b7 ${wornSuit.name} aboard \u00b7 not active yet`));
       } else {
         plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
         plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
@@ -1902,7 +1904,7 @@ export async function bootStandalone(root: HTMLElement) {
           // the old pair of branches here tested noPalFx and then did the
           // same thing either way, so the switch never switched anything
           if (engine.shopTab === "ship") {
-            paintShipPreview(ctx, engine.art, s, CASE_W / 2 - 10, 118, 1.35, tt, shipTier);
+            paintShipPreview(ctx, engine.art, s, CASE_W / 2 - 10, 118, 1.35, tt, shipPick);
           } else {
             if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
             paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt,
@@ -2160,21 +2162,39 @@ export async function bootStandalone(root: HTMLElement) {
       // so the owner can decide how it meets the modes before it is real.
       scroll.append(el("p", "ac-shipnote",
         "UNDER CONSTRUCTION \u00b7 PREVIEW ONLY \u00b7 NOTHING IS BOUGHT OR ACTIVE"));
-      const tiers: [number, string, string, number][] = [
-        [0, "Stock", "The scout ship as the Spill flies it.", 0],
-        [1, "Thruster I", "Sharper bursts. Start the run with it.", 50],
-        [2, "Thruster II", "Twin lunge. Two lunges before the recharge.", 100],
-        [3, "Thruster III", "Afterburner. Longer, harder bursts.", 250],
+      // FOUR ROWS, ONE PER AXIS, LEFT TO RIGHT (owner, 2 Sep 2026: "each
+      // category to go left to right, 4 categories"). The names, tier
+      // effects and Ore prices are the Depot's own (SPILL_SHOP), so this
+      // tab can never drift from the mode it previews. Shield is sold by
+      // the charge in the mode, so its tiers read as charges carried.
+      grid.classList.add("ac-shelfcol");
+      const AXES: { key: keyof ShipPick; part: keyof typeof SPILL_SHOP; blurb: string }[] = [
+        { key: "thrusters", part: "thrusters", blurb: "The tail." },
+        { key: "pulse", part: "pulse", blurb: "The pulse cone." },
+        { key: "shield", part: "shield", blurb: "The canopy." },
+        { key: "plating", part: "plating", blurb: "The hull." },
       ];
-      for (const [lvl, name, blurb, cost] of tiers) {
-        const b = el("button", lvl === shipTier ? "ac-card ac-modcard ac-shipcard on" : "ac-card ac-modcard ac-shipcard");
-        const txt = el("div", "ac-modtxt");
-        txt.append(el("p", "ac-shiptier", lvl ? `TIER ${"I".repeat(lvl)}` : "BASELINE"),
-          el("p", "ac-modname", name), el("p", "ac-sub", blurb));
-        b.append(txt, el("span", "ac-modprice", cost ? `${cost}` : "\u2014"));
-        b.append(el("span", "ac-shipoff", cost ? "NOT ACTIVE" : "DEFAULT"));
-        b.onclick = () => { shipTier = lvl; render(); };
-        grid.append(b);
+      for (const ax of AXES) {
+        const shop = SPILL_SHOP[ax.part];
+        grid.append(el("p", "ac-shelfhead", `${shop.name.toUpperCase()} \u00b7 ${ax.blurb}`));
+        const row = el("div", "ac-shelfrow");
+        for (let lvl = 0; lvl <= 3; lvl++) {
+          const b = el("button", lvl === shipPick[ax.key] ? "ac-card ac-modcard ac-shipcard on" : "ac-card ac-modcard ac-shipcard");
+          const txt = el("div", "ac-modtxt");
+          const isShield = ax.part === "shield";
+          const tierName = lvl === 0 ? "Stock" : isShield ? `${lvl} charge${lvl > 1 ? "s" : ""}` : `${shop.name} ${"I".repeat(lvl)}`;
+          const effect = lvl === 0 ? "As the run starts."
+            : isShield ? `${lvl} shield charge${lvl > 1 ? "s" : ""} carried in. Each eats one hit.`
+            : shop.levels[lvl - 1];
+          const price = lvl === 0 ? 0 : isShield ? shop.prices[0] * lvl : shop.prices[lvl - 1];
+          txt.append(el("p", "ac-shiptier", lvl ? `TIER ${"I".repeat(lvl)}` : "BASELINE"),
+            el("p", "ac-modname", tierName), el("p", "ac-sub", effect));
+          b.append(txt, el("span", "ac-modprice", price ? `${price} ORE` : "\u2014"));
+          b.append(el("span", "ac-shipoff", price ? "NOT ACTIVE" : "DEFAULT"));
+          b.onclick = () => { shipPick[ax.key] = lvl; render(); };
+          row.append(b);
+        }
+        grid.append(row);
       }
     }
     scroll.append(grid);

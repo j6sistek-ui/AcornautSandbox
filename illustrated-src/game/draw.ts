@@ -4778,6 +4778,7 @@ function previewRot(p: number, beat: number, kick: number, pull: number) {
  *  3) and picks the thrust-N part; nothing else moves, because this is a
  *  mock of an upgrade, not one. Falls back to the old scout sprite when
  *  the kit has not loaded. */
+export type ShipPick = { plating: number; thrusters: number; pulse: number; shield: number };
 export function paintShipPreview(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
@@ -4786,19 +4787,29 @@ export function paintShipPreview(
   cy: number,
   scale: number,
   t: number,
-  thrust: number,
+  pick: ShipPick,
 ) {
   if (!art) return;
   const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
   const helmRaw = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
   const helmet = helmRaw.suitOnly && helmRaw.suitOnly !== suit.id ? HELMETS[0] : helmRaw;
-  const lvl = Math.max(0, Math.min(3, Math.floor(thrust)));
-  const hull = art.spillShip?.["hull-0"];
+  // THE FOUR AXES the Spill's Depot sells, each the kit's own part: Plating
+  // is the hull, Thrusters the tail, Power-ups the pulse cone, Shield the
+  // canopy. In the mode one charge is cockpit-1 and two is cockpit-3 (see
+  // spillShipParts); the preview shows the kit's three canopies as cut.
+  const L = (n: number) => Math.max(0, Math.min(3, Math.floor(n || 0)));
+  const lvl = L(pick.thrusters);
+  const hullName = `hull-${L(pick.plating)}`;
+  const hull = art.spillShip?.[hullName];
   const bob = Math.sin(t * 1.7) * 3;
   if (hull) {
     const fit = art.spillShipFit;
-    const xfOf = (name: string) => fit?.overrides?.["hull-0"]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
-    const names = [lvl > 0 ? `thrust-${lvl}` : null, "cockpit-1"];
+    const xfOf = (name: string) => fit?.overrides?.[hullName]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+    const names = [
+      lvl > 0 ? `thrust-${lvl}` : null,
+      L(pick.pulse) > 0 ? `cone-${L(pick.pulse)}` : null,
+      L(pick.shield) > 0 ? `cockpit-${L(pick.shield)}` : null,
+    ];
     const layers = names
       .map((name) => name && art.spillShip[name] ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
       .filter((l): l is { name: string; sp: Sprite; xf: SpillShipXf } => !!l);
