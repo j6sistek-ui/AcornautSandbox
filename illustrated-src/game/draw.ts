@@ -1716,10 +1716,14 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
     drawPilot(ctx, w, save, art, x);
     return;
   }
-  const size = 58;
+  // Hyper Run's hull at two thirds of its size, centred on the collision
+  // point rather than registered at the nose, with the equipped pilot in
+  // the cockpit exactly as the race paints it
+  const scale = 58 / 88;
   const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
-  const fit = size / Math.max(1, Math.max(box.w, box.h));
-  const engineX = -box.w * fit / 2 + 2;
+  const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
+  const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
+  const engineX = layout.engineX;
   const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
   ctx.save();
   ctx.translate(x, s.pilot.y);
@@ -1746,7 +1750,22 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.closePath();
   ctx.fill();
   ctx.restore();
-  drawSprite(ctx, ship, 0, 0, size, "box", "light");
+  // the cockpit: a glow behind the glass and the pilot inside it
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
+  ctx.clip();
+  const cockpitGlow = ctx.createRadialGradient(
+    layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1,
+    layout.cockpitX, layout.cockpitY, 15 * scale,
+  );
+  cockpitGlow.addColorStop(0, "rgba(71,112,166,.62)");
+  cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
+  ctx.fillStyle = cockpitGlow;
+  ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
+  drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+  ctx.restore();
+  drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
   ctx.restore();
 }
 

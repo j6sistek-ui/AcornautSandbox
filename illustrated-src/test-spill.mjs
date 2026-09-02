@@ -108,8 +108,16 @@ const dock = (seed) => {
   ok(S.spillHold(s, true) === true && s.held, "a press puts the hand on the thrust");
   ok(S.spillHold(s, true) === false, "holding on is not a second press");
   until(s, () => false, 0.25, (x) => { x.rocks = []; });
-  ok(s.pilot.vy < -300 && s.pilot.y < y0 - 20, `a quarter second of hold is a climb (vy ${s.pilot.vy.toFixed(0)}, dy ${(s.pilot.y - y0).toFixed(0)})`);
-  ok(s.pilot.vy >= -S.SPILL.riseCap - 1e-6, `the climb is capped (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.riseCap})`);
+  // a quarter second is a nudge: a line can be held by feathering the thumb
+  ok(s.pilot.vy < -120 && s.pilot.vy > -260 && s.pilot.y < y0 - 10 && s.pilot.y > y0 - 40,
+    `a quarter second of hold is a nudge, not a launch (vy ${s.pilot.vy.toFixed(0)}, dy ${(s.pilot.y - y0).toFixed(0)})`);
+  until(s, () => false, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
+  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `a long hold is a climb at the cap (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.riseCap})`);
+  // THRUSTERS never touch the hold
+  s.up.thrusters = 3;
+  until(s, () => false, 0.5, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
+  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `THRUSTERS III holds the same line (${s.pilot.vy.toFixed(0)})`);
+  s.up.thrusters = 0;
   S.spillHold(s, false);
   ok(!s.held, "a release takes the hand off");
   until(s, (x) => x.pilot.vy > 0, 1, (x) => { x.rocks = []; });
@@ -125,6 +133,22 @@ const dock = (seed) => {
   ok(s.cues.includes("burst"), "and is reported");
   ok(S.spillBurst(s, 1) === true && s.pilot.vy >= S.SPILL.burstDown, `a swipe down dives (vy ${s.pilot.vy})`);
   ok(S.stepSpill(s, DT).filter((c) => c === "burst").length === 2, "both bursts reach the frame's cues");
+  // a burst carries past the cap and decays, it is not clipped to it
+  ok(s.pilot.vy > S.SPILL.fallCap, `the dive keeps its momentum past the fall cap (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.fallCap})`);
+  const v1 = s.pilot.vy;
+  S.stepSpill(s, DT);
+  ok(s.pilot.vy < v1, "and only decays");
+  hover(s);
+  S.spillBurst(s, -1);
+  S.spillHold(s, true);
+  S.stepSpill(s, DT);
+  ok(s.pilot.vy > -S.SPILL.burstUp && s.pilot.vy < -S.SPILL.riseCap, `a hold under a burst up cannot build past it, only ride it down (${s.pilot.vy.toFixed(0)})`);
+  until(s, (x) => x.pilot.vy >= -S.SPILL.riseCap, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
+  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `and the burst settles to the held climb (${s.pilot.vy.toFixed(0)})`);
+  S.spillHold(s, false);
+  s.up.thrusters = 1; hover(s);
+  S.spillBurst(s, -1);
+  ok(s.pilot.vy < -S.SPILL.burstUp, `THRUSTERS sharpen the burst (${s.pilot.vy.toFixed(0)})`);
 }
 {
   // a press or a burst outside flight does nothing, and never launches twice
@@ -491,6 +515,7 @@ const dock = (seed) => {
   ok(sim.flap(w, sv) === "none", "a tap in the count is nothing");
   for (let i = 0; i < 60 * 4; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
   ok(w.spill.phase === "wave", `the sim steps the Spill through the count (${w.spill.phase})`);
+  w.spill.pilot.y = w.H * 0.5; w.spill.pilot.vy = 0;
   ok(sim.flap(w, sv) === "flap" && w.spill.held, "a tap puts the hand on the thrust");
   ok(sim.flap(w, sv) === "none", "holding is not a second tap");
   for (let i = 0; i < 30; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }

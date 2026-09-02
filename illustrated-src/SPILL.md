@@ -16,9 +16,11 @@ session, changed what is flown and how:
 
 - **the ship.** The pilot flies Hyper Run's scout ship, sized to the
   squirrel's window, not the squirrel. Its plume is the hand's state.
-- **the hand.** Hold to rise, release to fall, at normal flight's snap
-  rather than the race's lean. A swipe up or down is an instant burst.
-  Nothing tap-taps.
+- **the hand.** Hold to rise, release to fall. A swipe up or down is an
+  instant burst. Nothing tap-taps. (The first hand shipped at normal
+  flight's snap and the owner could not hold a line with it; the third
+  pass below made it a gentle net acceleration under the field's own,
+  softer gravity, with the bursts kept as they were.)
 - **no PULSE button.** The Depot's POWER-UPS meter unlocks the PULSE, and
   from then it fires *itself* at an impact when the meter is full. The
   second level fires a second pulse five seconds after the first.
@@ -59,9 +61,11 @@ level-8 missions are "clear wave N".
 The shape is Hyper Run's: the authority is a module the sim steps, and the
 world's squirrel is a mirror of its pilot so the trail, the particles and
 the shake all ride the shared paths. The ship is painted by the Spill's
-own `drawSpillShip` from `art.hyperRun["scout-ship"]`; the lunge moves it
-horizontally, so `pilotX(w)` replaced the fixed lane wherever the trail
-reads it.
+own `drawSpillShip` from `art.hyperRun["scout-ship"]` through
+`hyperRunShipLayout`, at two thirds of the race's size and centred on the
+collision point, with the equipped pilot in the cockpit exactly as the
+race paints it; the lunge moves it horizontally, so `pilotX(w)` replaced
+the fixed lane wherever the trail reads it.
 
 ## The loop
 
@@ -99,16 +103,21 @@ and a clear is never taken back.
 
 | | |
 |---|---|
-| **Hold** (finger down) / Space / ↑ | thrust: the ship climbs, at once, capped |
-| **Release** | gravity has the ship, capped |
+| **Hold** (finger down) / Space / ↑ | thrust: a net 720 px/s² against the field's gravity, capped at 330 px/s. A quarter second is a nudge; a full second is a climb |
+| **Release** | the field's gravity (600 px/s², half of flight's) has the ship, capped at 390 px/s |
 | **Swipe up** / W | burst up: an instant kick skyward |
 | **Swipe down** / ↓ | burst down: the dive |
 | **Swipe right** / → / D / the LUNGE button | lunge forward, then drift back |
 
-The hold is a fixed net acceleration against gravity (`holdAccel`), so a
-press reaches full climb in a fifth of a second and a release starts the
-fall the same frame. THRUSTERS raise the caps and the burst speed. There is
-no PULSE button: see below. The press on the ready card is the launch; a
+The hold is a fixed net acceleration against gravity (`holdAccel`) and
+gravity is the field's own (`SPILL.gravity`), so a line is held by
+feathering the thumb: a quarter second of hold moves the ship about
+twenty pixels. A burst starts past the caps and bleeds back to them
+(`burstDecay`); the caps stop the hand from building speed, never a
+swipe from carrying, so a hold under a burst up rides it rather than
+adding to it. THRUSTERS sharpen the bursts and never touch the hold: the
+owner asked for a hand that gets steadier with upgrades, not twitchier.
+There is no PULSE button: see below. The press on the ready card is the launch; a
 press during the count, the dock, the Depot or the respawn freeze is
 nothing, and never a queued input.
 
@@ -170,7 +179,7 @@ FULL. Prices climb with the level, never with the wave.
 | Meter | I | II | III |
 |---|---|---|---|
 | **Plating** 60 · 110 · 180 | four pips (the new pip arrives filled) | five | six |
-| **Thrusters** 50 · 100 · 170 | sharper hold and bursts (+15%) | two lunge charges | Afterburner: a lunge shatters the shards it touches |
+| **Thrusters** 50 · 100 · 170 | sharper bursts (+15%) | two lunge charges | Afterburner: a lunge shatters the shards it touches |
 | **Power-ups** 60 · 110 · 170 | PULSE unlocked: fires on impact when charged | double wave: a second pulse 5s later | wide pulse, and shattered debris drops Ore |
 | **Shield** 35, flat | a charge that eats one hit; two carried | | |
 
@@ -201,8 +210,10 @@ ledger, the same way it does for a Wormhole mission.
 - the ladder climbs monotonically, teaches its rules in order, ends on
   DRIFT, never flips gravity, rolls the same endless wave for the same
   seed, and never stacks two gravity rules;
-- the hand: a quarter second of hold is a capped climb, a release is a
-  capped fall, bursts are instant, nothing answers outside flight;
+- the hand: a quarter second of hold is a nudge and a second a capped
+  climb, THRUSTERS III holds the same line, a release is a capped fall,
+  bursts are instant, carry past the caps and only decay, THRUSTERS
+  sharpen them, nothing answers outside flight;
 - the count ticks 3·2·1, the GO lands on its end, the autopilot flies the
   ship home meanwhile, nothing spawns before the GO, control is back on it;
 - debris never overlaps debris, over three seeded runs to wave 7, with
@@ -250,6 +261,11 @@ ledger, the same way it does for a Wormhole mission.
   too immediate, too hard, and the chip beside the pause button was not
   enough of a warning. It is gone; DRIFT is its replacement, and every
   rule now ramps.
+- v2's hand (2200 px/s² net up against flight's 1300 down, caps 460/520)
+  was "very very hard to hold a line": every hold hit the cap in a fifth
+  of a second and THRUSTERS made it worse. Now 720 up against the
+  field's own 600 down, caps 330/390, and the upgrade never touches it.
+  The swipes were "perfect" and were kept: 480 either way, past the caps.
 - v1's PULSE button was unreachable while the thumb was flying the ship.
   Gone; the pulse fires itself.
 - v1's rolled shelves auto-bought under a thumb still tapping from the

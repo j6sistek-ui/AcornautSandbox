@@ -46,15 +46,22 @@ export const SPILL = {
   lungeSpeed: 320,
   lungeTime: 0.15,
   lungeCooldown: 0.55,
-  /** the hand. Holding pushes the ship UP against gravity at this net
-   *  acceleration, so a press reaches full climb in a fifth of a second -
-   *  normal flight's snap, not the race's slow lean. A burst is an instant
-   *  velocity, the way a tap and a dive are in every other mode */
-  holdAccel: 2200,
-  riseCap: 460,
-  fallCap: 520,
-  burstUp: 560,
-  burstDown: 520,
+  /** the hand. The field has its own gravity, gentler than flight's 1300,
+   *  and holding beats it by a fixed net acceleration: a quarter second of
+   *  hold is a nudge of a few pixels, a full second a climb. The first
+   *  hand (2200 net, 1300 down) reached its cap in a fifth of a second and
+   *  the owner could not hold a line with it. Both directions are capped.
+   *  A burst is an instant velocity past the caps, the way a tap and a
+   *  dive are in every other mode; the caps only stop the hand from
+   *  building past them, never a burst from carrying */
+  gravity: 600,
+  holdAccel: 720,
+  riseCap: 330,
+  fallCap: 390,
+  burstUp: 480,
+  burstDown: 480,
+  /** how fast a burst's speed past the cap bleeds back to the cap */
+  burstDecay: 600,
   /** how long the floor may be ridden before it kills. A bounce is one or
    *  two frames; camping is continuous. The hull glows from 0.1s */
   floorGrace: 0.25,
@@ -254,7 +261,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   thrusters: {
     name: "Thrusters",
     prices: [50, 100, 170],
-    levels: ["Sharper hold and bursts", "Two lunge charges", "Afterburner: a lunge shatters shards"],
+    levels: ["Sharper bursts", "Two lunge charges", "Afterburner: a lunge shatters shards"],
   },
   pulse: {
     name: "Power-ups",
@@ -278,7 +285,8 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   },
 };
 
-/** how hard the ship answers the hand at each THRUSTERS level */
+/** how hard a burst kicks at each THRUSTERS level. The hold is never
+ *  scaled: the owner asked for a hand that gets steadier, not twitchier */
 const THRUST_MUL = [1, 1.15, 1.3, 1.45] as const;
 
 // ------------------------------------------------------------- the state
@@ -525,7 +533,7 @@ function ramp(s: SpillState) {
 
 function gravityOf(s: SpillState) {
   const g = spillMod(s, "lowg") ? 0.7 : spillMod(s, "heavy") ? 1.35 : 1;
-  return PHYS.gravity * (1 + (g - 1) * ramp(s));
+  return SPILL.gravity * (1 + (g - 1) * ramp(s));
 }
 
 function thrustMul(s: SpillState) {
@@ -1227,14 +1235,17 @@ function stepSpillBody(s: SpillState, dt: number) {
   // the crosswind is a steady push toward the wall; the lunge is the counter
   if (spillMod(s, "cross") && s.knock <= 0 && s.lunge <= 0) s.pilot.x -= 40 * lane(s) * ramp(s) * dt;
 
-  // THE HAND. Held, the thrust beats gravity by a fixed net acceleration
-  // so a press answers at once; released, gravity has the ship. Both are
-  // capped so a long hold is a climb, not a launch
+  // THE HAND. Held, the thrust beats gravity by a fixed net acceleration;
+  // released, gravity has the ship. Both are capped, but a burst that
+  // started past a cap keeps its momentum and only decays: the cap stops
+  // the hand from building speed, never a swipe from carrying. THRUSTERS
+  // never touch the hold - a steadier hand is not a faster one
   const g = gravityOf(s);
-  const mul = thrustMul(s);
-  if (s.held) s.pilot.vy -= (g + SPILL.holdAccel * mul) * dt;
+  const prev = s.pilot.vy;
+  if (s.held) s.pilot.vy -= (g + SPILL.holdAccel) * dt;
   s.pilot.vy += g * dt;
-  s.pilot.vy = Math.max(-SPILL.riseCap * mul, Math.min(SPILL.fallCap, s.pilot.vy));
+  if (s.pilot.vy < -SPILL.riseCap) s.pilot.vy = Math.max(s.pilot.vy, Math.min(-SPILL.riseCap, prev + SPILL.burstDecay * dt));
+  if (s.pilot.vy > SPILL.fallCap) s.pilot.vy = Math.min(s.pilot.vy, Math.max(SPILL.fallCap, prev - SPILL.burstDecay * dt));
   s.pilot.y += s.pilot.vy * dt;
   s.pilot.x += s.pilot.vx * dt;
 
