@@ -1877,7 +1877,7 @@ export async function bootStandalone(root) {
                     // the old pair of branches here tested noPalFx and then did the
                     // same thing either way, so the switch never switched anything
                     if (engine.shopTab === "ship") {
-                        paintShipPreview(ctx, engine.art, s, CASE_W / 2 - 10, 118, 1.35, tt, shipPick);
+                        paintShipPreview(ctx, engine.art, s, CASE_W / 2, 122, 4.0, tt, shipPick);
                     }
                     else {
                         if (palWorn)

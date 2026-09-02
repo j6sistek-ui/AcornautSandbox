@@ -4244,6 +4244,11 @@ lean = SUIT_LEAN_DEFAULT) {
                 ? Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)))
                 : 0;
             const frame = bank[idxM];
+            // A WINDOW FOR THE EVALUATION HARNESS: which frame the game is
+            // painting right now, and the shaped velocity it chose it from.
+            // Read-only, one object write per frame, never read by the game.
+            window.__acornautPose =
+                { suit: suit.id, bank: diving ? "desc" : "asc", idx: idxM + 1, v };
             const refM = ascFrames[0].box ?? ref;
             drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
             // the helmet rides the HEAD, which these frames move with the
@@ -4609,16 +4614,27 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
         ctx.drawImage(hull, 0, 0);
         // the pilot in the opening, the way the Spill seats it
         const hole = spillHoleOf(hull);
+        // the cabin glow stays INSIDE the opening. The mode fills its glow
+        // through the same clip the pilot gets - the ellipse plus a slot over
+        // the rim for the dome - and at 58px the slot's dark corners vanish
+        // into the hull. At case size they read as a square window painted
+        // on the plating, so here the glow is clipped to the ellipse alone
+        // and only the pilot gets the headroom.
+        const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
+        glow.addColorStop(0, "rgba(71,112,166,.62)");
+        glow.addColorStop(1, "rgba(3,8,22,.96)");
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.fillStyle = glow;
+        ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
+        ctx.restore();
         ctx.save();
         ctx.beginPath();
         ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
         ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
         ctx.clip();
-        const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
-        glow.addColorStop(0, "rgba(71,112,166,.62)");
-        glow.addColorStop(1, "rgba(3,8,22,.96)");
-        ctx.fillStyle = glow;
-        ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
         paintFlightPreview(ctx, art, suit, helmet, hole.cx - 1.5, hole.cy + hole.ry * 0.45, hole.rx * 2.1, t);
         ctx.restore();
         for (const l of layers)
@@ -4699,8 +4715,37 @@ sweep = false) {
     // which is what makes this loop with no seam and no fade.
     const KICK = 210; // the sim's own tap velocity
     const PULL = (2 * KICK) / BEAT;
-    const vy = -KICK + PULL * p;
-    const rise = -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
+    // A PAINTED MOTION BANK IS SWEPT, NOT TAPPED (owner, 2 Sep 2026: "seraph
+    // animation frozen... again. gemmie is twitching sizes bad. ghost still
+    // has a flash frame"). Driven by the tap sawtooth below, a bank suit only
+    // ever reached the first three climb frames and the first six dive
+    // frames, and hard-cut from the deepest dive back to the shallow climb
+    // on every beat - a different frame for one paint, then the reset.
+    // Seraph's first three frames of either ramp are the same glide, so on
+    // that arc it never visibly moved. In the case the pilot now rolls
+    // through the WHOLE bank both ways - full climb to full dive and back on
+    // a continuous arc - so every frame the artist painted is on show, in
+    // order, with no seam. The normalisation and pose curve below are
+    // inverted here so the swept attitude lands on the frame index exactly;
+    // the 1.15 covers the smoother's lag at this period. Tap-bank suits keep
+    // the beat, because their tap IS the showcase.
+    const SWEEP = 3.6; // climb -> dive -> climb
+    const swept = !sweep
+        && (art.suitAsc?.[suit.id]?.length ?? 0) > 0
+        && (art.suitDesc?.[suit.id]?.length ?? 0) > 0
+        && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
+    const sph = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP * Math.PI * 2;
+    // a TRIANGLE, not a cosine: equal time on every frame, rather than a
+    // long dwell on the two end poses and a rush through the middle. The
+    // 1.2 is what the smoother's lag costs at this slope; the clamp in the
+    // normalisation catches the excess, which reads as a short hold at each
+    // end of the roll.
+    const att = (1 - 2 * Math.abs(sph / Math.PI - 1)) * 1.2; // -1 full climb .. +1 full dive
+    const sweptVy = Math.sign(att) * Math.pow(Math.min(1, Math.abs(att)), 1 / POSE_CURVE) * (att < 0 ? 470 : 620) * (Math.abs(att) > 1 ? Math.abs(att) : 1);
+    const vy = swept ? sweptVy : -KICK + PULL * p;
+    const rise = swept
+        ? -70 * Math.sin(sph) // a gentle bob on the same arc
+        : -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
     // ROTATION IS SMOOTHED, because the arc's VELOCITY is a sawtooth: vy runs
     // -210 up to +210 across a beat and then snaps back to -210 at the next
     // tap. Position loops seamlessly - rise is zero at both ends - but a
@@ -4710,7 +4755,9 @@ sweep = false) {
     const rot = sweep
         // the sim's own clamps: -0.55 at full climb, +0.95 at full dive
         ? -0.55 + (0.95 + 0.55) * (0.5 - 0.5 * Math.cos((t / 2.6) * Math.PI * 2))
-        : previewRot(p, BEAT, KICK, PULL);
+        // the swept arc is continuous, so its lean needs no smoothing
+        : swept ? Math.max(-0.34, Math.min(0.6, vy / 900))
+            : previewRot(p, BEAT, KICK, PULL);
     ctx.save();
     ctx.translate(cx, cy + rise * (size / 52) * 0.055);
     ctx.scale(size / 52, size / 52);
