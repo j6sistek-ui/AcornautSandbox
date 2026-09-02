@@ -123,35 +123,35 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
   none: { name: "", short: "", teach: "" },
   surge: {
     name: "SURGE", short: "surge",
-    teach: "SURGE: the field doubles for six seconds. Hold a lane, don't chase.",
+    teach: "SURGE: double debris for 6s · hold your lane",
   },
   lowg: {
     name: "LOW-G", short: "low gravity",
-    teach: "LOW-G: gravity is lighter. Ease off the hold. Burst down to drop.",
+    teach: "LOW-G: lighter · hold less · swipe down to drop",
   },
   heavy: {
     name: "HEAVY", short: "heavy gravity",
-    teach: "HEAVY: gravity is stronger. Hold longer. Burst up to recover.",
+    teach: "HEAVY: heavier · hold longer · swipe up to recover",
   },
   cross: {
     name: "CROSSWIND", short: "crosswind",
-    teach: "CROSSWIND: you are pushed toward the wall. Lunge to hold your lane.",
+    teach: "CROSSWIND: pushed to the wall · lunge to hold",
   },
   blackout: {
     name: "BLACKOUT", short: "blackout",
-    teach: "BLACKOUT: the field goes dark. Read the rims and the hulk warnings.",
+    teach: "BLACKOUT: lights out · watch the rims",
   },
   swarm: {
     name: "SWARM", short: "swarm",
-    teach: "SWARM: more spinners, wider arcs. Watch the weave, not the piece.",
+    teach: "SWARM: more spinners · read the weave",
   },
   drift: {
     name: "DRIFT", short: "drift",
-    teach: "DRIFT: the whole field tilts and wanders. The debris comes at the angle you see.",
+    teach: "DRIFT: the field tilts · debris follows the angle",
   },
 };
 
-export const SPILL_CONTROL_HINT = "HOLD to rise · RELEASE to fall · SWIPE UP or DOWN to burst · SWIPE RIGHT to lunge";
+export const SPILL_CONTROL_HINT = "CONTROLS: hold ▲ rise · release ▼ fall · swipe ▶ lunge";
 
 // ------------------------------------------------------------ the ladder
 
@@ -420,6 +420,10 @@ export type SpillState = {
   banner: string;
   bannerT: number;
   hint: string;
+  /** whether wave lessons and the controls card are shown at all - the
+   *  HELP switch in settings; the rules still apply, they are just not
+   *  narrated */
+  hints: boolean;
   hintT: number;
   taught: string[];
   shake: number;
@@ -438,7 +442,7 @@ function rand(s: SpillState) {
   return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
 }
 
-export function createSpill(W: number, H: number, seed: number, target = 0): SpillState {
+export function createSpill(W: number, H: number, seed: number, target = 0, hints = true): SpillState {
   return {
     seed: seed >>> 0,
     rng: seed >>> 0,
@@ -505,6 +509,7 @@ export function createSpill(W: number, H: number, seed: number, target = 0): Spi
     banner: "",
     bannerT: 0,
     hint: "",
+    hints,
     hintT: 0,
     taught: [],
     shake: 0,
@@ -873,10 +878,10 @@ function beginCountdown(s: SpillState, n: number) {
   if (fresh) {
     s.taught.push(fresh);
     s.hint = SPILL_MOD_INFO[fresh].teach;
-    s.hintT = SPILL.countdown + SPILL.hintTime;
+    s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
   } else if (n === 1) {
     s.hint = SPILL_CONTROL_HINT;
-    s.hintT = SPILL.countdown + SPILL.hintTime;
+    s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
   }
   cue(s, "wave");
 }

@@ -649,7 +649,7 @@ export async function bootRig(root: HTMLElement) {
     },
   );
   const suitSel = mkSel(
-    tables.suits.map((s) => ({ v: s.id, t: s.name })),
+    tables.suits.filter((s) => !s.frame).map((s) => ({ v: s.id, t: s.name })),
     S.suit,
     (v) => {
       S.suit = v;
@@ -828,9 +828,17 @@ export async function bootRig(root: HTMLElement) {
     // helmet, but because it is the one place every frame of a bank sits
     // side by side for review; their tiles draw the art and the own-head
     // label, nothing to drag.
+    // ONE SUIT AT A TIME (owner, 2 Sep 2026: "load one suit, then pick
+    // helmet, toggle apply-to-all or just that one, move it, next
+    // helmet"). Every frame of every bank in one grid was 528 tiles and
+    // unreadable; the suit selector now picks whose frames are shown, and
+    // the helmet selector walks the helmets over them. SUIT HEAD writes
+    // the frame's own anchor (every helmet follows); THIS PAIR writes an
+    // override for this helmet on this frame only.
     if (S.mode === "frames")
       return tables.suits
-        .filter((s) => s.frame && (s.ownHead || wears(s, helmOf(S.helm))))
+        .filter((s) => s.frame && s.id.startsWith(S.suit + "-")
+          && (s.ownHead || wears(s, helmOf(S.helm))))
         .map((s) => [s, helmOf(S.helm)] as [SuitRow, HelmRow]);
     const out: [SuitRow, HelmRow][] = [];
     for (const s of wearable) for (const h of tables.helmets) if (wears(s, h)) out.push([s, h]);
@@ -841,7 +849,7 @@ export async function bootRig(root: HTMLElement) {
     (modeSel as HTMLSelectElement).value = S.mode;
     (suitSel as HTMLSelectElement).value = S.suit;
     (helmSel as HTMLSelectElement).value = S.helm;
-    suitSel.style.display = S.mode === "helm" || S.mode === "frames" ? "none" : "";
+    suitSel.style.display = S.mode === "helm" ? "none" : "";
     helmSel.style.display = S.mode === "suit" ? "none" : "";
     stage.innerHTML = "";
     tiles = [];

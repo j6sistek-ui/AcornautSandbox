@@ -119,6 +119,17 @@
       border-radius: 999px; padding: 7px 15px; font: 700 10px/1 Figtree, system-ui, sans-serif;
       letter-spacing: .18em; opacity: 0; transition: opacity .4s ease .7s; }
     .ac-film.ready .ac-filmskip { opacity: 1; }
+    /* MENU ANIMATION OFF. One switch, one class on <body>, every menu
+       animation and transition stops - including the ones behind the
+       pulse, the fade and the moving dust badge. Canvas motion is the
+       game and is not touched. */
+    body.ac-nomotion *, body.ac-nomotion *::before, body.ac-nomotion *::after {
+      animation: none !important; transition: none !important; }
+    /* the settings list: a label with a quiet second line, the switch on the right */
+    .ac-setrow { gap: 12px; }
+    .ac-settxt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .ac-settxt b { font-weight: 800; }
+    .ac-setsub { font-size: 10.5px; font-weight: 600; color: #7d869f; letter-spacing: .02em; }
 
     /* --- 3 · HOME --- */
     .ac-home { position: relative; height: 100%; display: flex; flex-direction: column; background: #05020e; overflow: hidden; }
@@ -1341,6 +1352,50 @@
        breathing room and does not need the shop's lead-in gap */
     .ac-hangarcase { margin: 0 12px 10px; }
     .ac-hangarcase .ac-caseeyebrow { color: #7cebc2; }
+    /* THE FOLDED CASE: double-tap (or the chevron) shrinks the vitrine to a
+       strip so a long shelf is not read from under the pilot */
+    .ac-casefold { position: absolute; top: 8px; left: 10px; z-index: 5; width: 26px; height: 26px;
+      border-radius: 999px; background: rgba(10,16,32,.55); border: 1px solid rgba(150,166,200,.3);
+      color: #cdd6ea; font-size: 12px; line-height: 1; padding: 0; }
+    .ac-casecompact .ac-casepane { padding: 2px 0 0; }
+    .ac-casecompact .ac-casecanvas { width: 160px !important; height: 110px !important; }
+    .ac-casecompact .ac-casebeam, .ac-casecompact .ac-casefloor, .ac-casecompact .ac-casecorner { display: none; }
+    .ac-casecompact .ac-caseplate { padding: 5px 14px 7px; }
+    .ac-casecompact .ac-caseplate b { font-size: 14px; }
+    .ac-casecompact .ac-casesub { display: none; }
+    /* THE FAVOURITE STAR on a card, and the shelf it lights */
+    .ac-favbtn { position: absolute; top: 4px; right: 5px; z-index: 3; width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center; border-radius: 999px;
+      background: rgba(10,16,32,.55); color: #7d869f; font-size: 13px; line-height: 1; cursor: pointer; }
+    .ac-favbtn.on { color: #ffd76a; background: rgba(255,215,106,.14); }
+    .ac-favhead { color: #ffd76a; }
+    /* the next-run shield, armed from the case plate */
+    .ac-platebtn { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+      padding: 6px 11px; border-radius: 999px; background: rgba(77,155,255,.14);
+      border: 1px solid rgba(127,184,255,.45); color: #cfe6ff;
+      font: 800 9.5px/1 Figtree, sans-serif; letter-spacing: .12em; }
+    /* PALS: the effects switch spans the two-wide pal grid */
+    .ac-palfx { grid-column: 1 / -1; }
+    /* SHIP: the tab under construction - cards you can try, nothing you can buy */
+    .ac-shipnote { margin: 4px 12px 8px; padding: 9px 12px; border-radius: 12px;
+      border: 1px dashed rgba(255,215,106,.45); background: rgba(255,215,106,.06);
+      color: #ffd76a; font: 800 9.5px/1.4 Figtree, sans-serif; letter-spacing: .12em; text-align: center; }
+    .ac-shipcard.on { border-color: #7fb8ff; }
+    /* a SHIP row reads left to right: four fixed-width tier cards in the
+       same scrolling shelf row every other tab uses */
+    .ac-shelfrow .ac-shipcard { flex: 0 0 168px; width: 168px; flex-direction: column;
+      align-items: flex-start; text-align: left; gap: 6px; }
+    .ac-shelfrow .ac-shipcard .ac-modtxt { width: 100%; }
+    .ac-shelfrow .ac-shipcard .ac-modprice { align-self: flex-end; }
+    .ac-shiptier { font: 800 8.5px/1 Figtree, sans-serif; letter-spacing: .16em; color: #7d869f; }
+    .ac-shipoff { color: #7d869f; font-size: 9px; letter-spacing: .1em; }
+    /* SHORT LISTS, NOT PARAGRAPHS: the briefing's aims and Help's modes */
+    .ac-brieflist, .ac-helplist { margin: 0; padding: 0 0 0 16px; display: flex; flex-direction: column; gap: 5px; }
+    .ac-brieflist li { font-size: 12.5px; line-height: 1.35; color: #e9e4d6; }
+    .ac-helplist { padding-left: 0; list-style: none; }
+    .ac-helplist li { display: grid; grid-template-columns: 96px 1fr; gap: 8px; align-items: baseline;
+      font-size: 12px; line-height: 1.35; color: #cdd5ea; }
+    .ac-helplist b { font-size: 10.5px; letter-spacing: .12em; color: #ffd76a; }
     .ac-shopcase { --case-glow: #c4a0ff; --case-lite: #8a5ae4; --case-deep: #160f34;
       position: relative; margin: 6px 0 12px; border-radius: 20px; overflow: hidden;
       border: 1.5px solid color-mix(in srgb, var(--case-glow) 55%, transparent);
@@ -1621,7 +1676,7 @@
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js171/standalone.js")
+    import("../js172/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

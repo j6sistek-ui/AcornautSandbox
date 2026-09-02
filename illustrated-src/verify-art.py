@@ -597,6 +597,67 @@ def verify_base_helmet_scale(qa: QA) -> None:
     )
 
 
+def verify_bank_frame_spread(qa: QA) -> None:
+    """Flag frames whose SIZE breaks from their own bank.
+
+    A painted ramp is one character in eight attitudes; a frame that is
+    much wider or much heavier than its neighbours reads as a pop in play
+    - a tail that balloons for one pose, a body drawn at a different
+    scale. The four dive banks that lost their desc-1 were exactly this
+    (60-98% heavier than the rest of the bank). This does not fail the
+    build: which frames are wrong is the owner's call, so it prints the
+    list and passes. asc-1 and desc-1 are measured but never flagged: the
+    neutral pose is wide on purpose and shared by design.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        qa.ok("bank frame spread: PIL unavailable, skipped")
+        return
+    art = (ROOT / "illustrated-src/game/art.ts").read_text(encoding="utf8")
+
+    def counts(name: str) -> dict[str, int]:
+        m = re.search(name + r"[^{]*\{([^}]*)\}", art)
+        return {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", m.group(1))} if m else {}
+
+    asc, desc = counts("ASC_BANKS"), counts("DESC_BANKS")
+    flags: list[str] = []
+    banks = 0
+    for suit in sorted(asc):
+        for kind, n in (("asc", asc.get(suit, 0)), ("desc", desc.get(suit, 0))):
+            rows = []
+            for i in range(1, n + 1):
+                path = DOCS_ART / "suits" / f"{suit}-{kind}-{i}.png"
+                if not path.exists():
+                    continue
+                with Image.open(path) as im:
+                    a = im.convert("RGBA").getchannel("A")
+                    box = a.point(lambda v: 255 if v >= 16 else 0).getbbox()
+                    if not box:
+                        continue
+                    w, h = box[2] - box[0], box[3] - box[1]
+                    px = sum(1 for v in a.getdata() if v >= 16)
+                rows.append((i, max(w, h), w, px))
+            if len(rows) < 4:
+                continue
+            banks += 1
+            body = [r for r in rows if r[0] != 1]
+            med_dim = sorted(r[1] for r in body)[len(body) // 2]
+            med_w = sorted(r[2] for r in body)[len(body) // 2]
+            med_px = sorted(r[3] for r in body)[len(body) // 2]
+            for i, dim, w, px in body:
+                d = (dim - med_dim) / med_dim * 100
+                dw = (w - med_w) / med_w * 100
+                dp = (px - med_px) / med_px * 100
+                if abs(d) > 12 or abs(dw) > 18 or abs(dp) > 35:
+                    flags.append(f"{suit}-{kind}-{i}: size {d:+.0f}%, width {dw:+.0f}%, pixels {dp:+.0f}%")
+    if flags:
+        qa.ok(f"bank frame spread: {banks} banks, {len(flags)} frame(s) flagged for the owner:\n      "
+              + "\n      ".join(flags))
+    else:
+        qa.ok(f"bank frame spread: {banks} banks measured, none breaks from its own")
+
+
 def run_edge_audit(qa: QA) -> None:
     result = subprocess.run(
         [sys.executable, str(EDGE_AUDIT), "audit", str(DOCS_ART)],
@@ -1756,6 +1817,7 @@ def main() -> int:
     verify_motion_release(qa)
     verify_run_lifelines(qa)
     verify_baked_domes(qa)
+    verify_bank_frame_spread(qa)
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()
