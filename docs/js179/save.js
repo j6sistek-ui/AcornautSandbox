@@ -47,7 +47,6 @@ export function defaultSave() {
         guide: "pending",
         allStars: false,
         musicOff: false,
-        eclipseMotionMode: 2,
         raceRecords: {},
         raceGates: [],
     };
