@@ -301,3 +301,49 @@ ledger, the same way it does for a Wormhole mission.
   the meters are fixed on purpose until the ship's feel is settled.
 - A persistent Ore bank, a Star Dust tie-in and an endless-wave
   leaderboard are still later decisions.
+- Start Shield in the loadout is a purchase, not a switch: armed stays
+  armed until a run spends it (the switch let a pilot flip it off for
+  nothing and pay again to flip it back).
+
+## The owner's log (2026-09-02) — ideas, not direction
+
+Logged after the ship kit merged (#171). Still tuning the feel and the
+core mechanics; none of this is firm.
+
+- **Depot: unlimited time, and a save.** Saving voids the leaderboard for
+  that run.
+- **A formal dock entrance.** Fly into the Depot instead of the phase-in.
+  Reference: `docs/art/spill-ship/concepts/dock-pixel.jpg` and
+  `dock-painted.jpg` (a stone gate with a swirling purple portal on a
+  floating slab). Not to be tied in yet.
+- **Magnetic collection.** A power-up that pulls Ore in. Either the top
+  tier of an axis, or a pre-bought one-run mod paid in Star Dust; if it is
+  a premium currency it is safety-gated on a minimum run of ten waves.
+- **Mode experience.** Runs earn something persistent: more runs, or a
+  higher base ship to start from.
+- **Ranked mode.** One hit and you are dead, one upgrade per Depot, no
+  other upgrades, starts at Depot 20 with no phase-in. Ranks earn custom
+  season rewards. Very long-term.
+- **Less repetitive over time, still a growing challenge.** Challenge
+  rounds every ten waves, unique events.
+
+Proposals to weigh against those (mine, same status):
+
+- **A named event every fifth wave, on a rotation the seed picks.** A
+  comet shower (fast, straight, telegraphed), a gold vein (Ore doubles,
+  rocks triple), a dead zone (no DRIFT, the hand is all you have), a
+  gravity flip (banked, since it killed on sight — only after the pilot
+  has cleared ten waves, and with a full warning bar). Each one changes
+  what the hand does for thirty seconds and then goes away.
+- **A boss rock at every tenth Depot.** One huge tumbler that takes three
+  PULSE hits and sheds Ore each time. Beating it is the challenge round;
+  the Depot after it is the reward.
+- **Contracts at the Depot.** Pick one of three small bets for the next
+  five waves: "graze twelve rocks", "spend nothing", "take no hits". Pay
+  out in Ore; the bet is what makes wave 23 feel different from wave 18.
+- **A run modifier draft at the start.** Three cards, take one: more Ore
+  but a smaller hull, faster field but a stronger PULSE. Ranked would
+  skip this. Cheap to build on the existing modifier hooks.
+- **The Star Dust magnet as a run-scoped consumable.** Fits the "safety
+  gated" note: it only appears in the Depot from wave 10 on and never
+  affects the leaderboard.

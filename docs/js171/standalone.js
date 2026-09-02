@@ -1624,6 +1624,7 @@ export async function bootStandalone(root) {
         missing: () => "That item is not in this build.",
         unknown: () => "That item is not in this build.",
         owned: () => "Already yours.",
+        armed: () => "Already armed — your next run spends it.",
     };
     function announce(msg) {
         if (!denyEl)
@@ -1934,10 +1935,10 @@ export async function bootStandalone(root) {
                 b.append(pic);
                 const txt = el("div", "ac-modtxt");
                 txt.append(el("p", "ac-modname", name), el("p", "ac-sub", blurb));
-                // An owned mod is a SWITCH, not a price: the card flips it and the
-                // slider shows the state at a glance. Prices and star locks keep
-                // their text chip.
-                if (state === "ON" || state === "OFF" || state === "ARMED") {
+                // An owned flight mod is a SWITCH, not a price: the card flips it
+                // and the slider shows the state at a glance. Prices, star locks
+                // and a spent-on-next-run charge (ARMED) keep their text chip.
+                if (state === "ON" || state === "OFF") {
                     const sw = el("span", state === "OFF" ? "ac-switch" : "ac-switch on");
                     sw.append(el("i", "ac-knob"));
                     b.append(txt, sw);
@@ -1988,7 +1989,7 @@ export async function bootStandalone(root) {
             // like one.
             const shieldOpen = startShieldUnlocked(s);
             const batteryOpen = batteryUnlocked(s);
-            const shieldCard = mod("shield", "Start Shield", "Begin the next run already shielded. Charged each time you arm it.", MOD_SHIELD_COST, !shieldOpen ? `\u2605 ${STAR_UNLOCKS.startShield}` : s.startShield ? "ARMED" : "OFF", shieldNut(), () => { if (shieldOpen)
+            const shieldCard = mod("shield", "Start Shield", "Begin the next run already shielded. One charge, spent by that run.", MOD_SHIELD_COST, !shieldOpen ? `\u2605 ${STAR_UNLOCKS.startShield}` : s.startShield ? "ARMED" : null, shieldNut(), () => { if (shieldOpen)
                 tx(shieldCard, () => engine.toggleMod("shield"), MOD_SHIELD_COST); });
             if (!shieldOpen)
                 shieldCard.classList.add("ac-cardoff");
