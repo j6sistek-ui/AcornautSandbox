@@ -1026,9 +1026,15 @@ CUSTOM_FLIGHT_SUITS = {
     "frost",      # frost's anchors came from the pale-fur tracker variant.
     "ghost",      # the owner's custom spectral rebuild, 1 Sep 2026: new
                   # character, bank-only (wisp tail has no neck to cut),
-                  # pale-fur tracker anchors. One delivery still outstanding:
-                  # LEVIATHAN flies its generated tap ramp until its painted
-                  # bank arrives.
+                  # pale-fur tracker anchors.
+    "leviathan",  # owner-delivered 2 Sep 2026: the remaster, and the LAST
+                  # delivery of the sweep - every suit on the roster that
+                  # was going to get a painted ascent/descent ramp now has
+                  # one. Its anchors needed a third head tracker (the cream
+                  # muzzle; see draw.ts) because it is neither orange-furred
+                  # nor pale. Still rigged, unlike the other custom
+                  # characters: the neck cut took cleanly at a 13.3% tail
+                  # share on the new master.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

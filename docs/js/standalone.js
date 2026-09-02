@@ -1,11 +1,11 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=169";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=169";
-import { drawSprite as drawSpriteOn } from "./art.js?v=169";
-import { createEngine } from "./engine.js?v=169";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=169";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=169";
-import { formatRaceTicks } from "./race.js?v=169";
-import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=169";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=170";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=170";
+import { drawSprite as drawSpriteOn } from "./art.js?v=170";
+import { createEngine } from "./engine.js?v=170";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=170";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=170";
+import { formatRaceTicks } from "./race.js?v=170";
+import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=170";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -152,7 +152,18 @@ export async function bootStandalone(root) {
     // above TAKE FLIGHT went stale. One rule now: the sheet selects, TAKE
     // FLIGHT starts, and the only other launch in the game is a Star Chart
     // level starting itself.
-    const MODES = [
+    // WORMHOLE RUN IS NOT A MODE OF ITS OWN RIGHT NOW (owner, 2 Sep 2026).
+    // The corridor already earns its keep as the WORMHOLE TRANSITION: fly
+    // into a wormhole in Lost in Space and you fly the corridor, which is
+    // the best thing it does and the place it is actually met. A row on the
+    // sheet only offered a second, colder way in.
+    //
+    // HIDDEN, NOT DELETED, and deliberately so: the "tunnel" flight id, its
+    // sim, its controls, its cues, its acceptance harness and the Star Chart
+    // missions that fly it are all untouched and still reachable. Only the
+    // row is gone, so bringing it back is this one flag and nothing else.
+    const WORMHOLE_RUN_ON_SHEET = false;
+    const ALL_MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
         { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
@@ -163,6 +174,7 @@ export async function bootStandalone(root) {
         // its own currency and a Depot every fifth wave. Its record is waves.
         { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive the waves. Mine Ore. Buy the next one." },
     ];
+    const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
     /** Start whatever is selected. Hyper Run opens its briefing first - it
      *  teaches two controls the other modes do not use, and that briefing is
      *  the same one the debris field opens. */

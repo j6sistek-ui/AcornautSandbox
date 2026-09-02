@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=166";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=170";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "166";
+export const ART_VER = "170";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-01 21:17 UTC";
+export const BUILD_TIME = "2026-09-02 00:56 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -148,9 +148,9 @@ export const SUITS = [
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
     { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
-    { id: "aurorasuit", name: "Aurora", cost: 280, fur: "#cf8a3c", furDark: "#9c5f1d", belly: "#f4ddb4", suit: "#0f5c4c", suitLite: "#2fae8f", suitDark: "#073a2f", trim: "#5dffd0", glow: "#5dffd0", dust: "#a8ffe8" },
+    { id: "aurorasuit", beta: true, name: "Aurora", cost: 280, fur: "#cf8a3c", furDark: "#9c5f1d", belly: "#f4ddb4", suit: "#0f5c4c", suitLite: "#2fae8f", suitDark: "#073a2f", trim: "#5dffd0", glow: "#5dffd0", dust: "#a8ffe8" },
     { id: "ember", name: "Ember", cost: 90, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
-    { id: "stardust", name: "Stardust", cost: 300, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
+    { id: "stardust", beta: true, name: "Stardust", cost: 300, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
     { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
     { id: "alien", name: "Alien", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
     // The A/B is DECIDED: the standard bank won and flies "alien" above.
@@ -628,7 +628,11 @@ export const DAILY_STREAK_LEN = 7;
 // catalog simply does not render, which is how the Unreleased shelf stays
 // beta-only without carrying its own flag.
 export const SUIT_SHELF = [
-    { title: "STANDARD", ids: ["flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit", "ember", "stardust", "ghost"] },
+    // Aurora and Stardust are DEMOTED to the beta shelf (owner, 1 Sep 2026):
+    // "underwhelming and not working well due to visual drifts". Their
+    // helmets stay earned as rewards; the shelf shows a placeholder card in
+    // their place until replacements arrive.
+    { title: "STANDARD", ids: ["flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"] },
     { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
     // premium suits the pilot owns; each one not yet bought shows as a door
     // to the shop instead of a locked card that answers nothing
@@ -636,7 +640,7 @@ export const SUIT_SHELF = [
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     { title: "ACORN INTOLERANT", ids: ["catsuit"] },
-    { title: "UNRELEASED", ids: ["alien2", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
+    { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:
