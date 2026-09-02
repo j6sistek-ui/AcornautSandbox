@@ -96,6 +96,22 @@ export type SaveData = {
   allStars: boolean;
   /** the Profile's music switch — absent (old saves) means music ON */
   musicOff?: boolean;
+  /** THE SETTINGS SWITCHES (owner, 2 Sep 2026). Every one is optional and
+   *  absent means ON, so an old save changes nothing:
+   *  - sfxOff: silences the sound effects, independent of the score
+   *  - helpOff: no coach lines, no wave lessons, no pre-flight briefing
+   *  - motionOff: menus stop animating (transitions and pulses)
+   *  - introOff: the launch film is skipped */
+  sfxOff?: boolean;
+  helpOff?: boolean;
+  motionOff?: boolean;
+  introOff?: boolean;
+  /** LOADOUT FAVOURITES: suit, helmet and trail ids the pilot starred.
+   *  They surface in a FAVOURITES shelf at the top of each tab, a shelf
+   *  that does not exist until the first star. */
+  favorites?: string[];
+  /** the loadout's animated case, shrunk so the shelves get the room */
+  heroCompact?: boolean;
   // Eclipse's motion mapping, cycled from the hangar or the pause sheet:
   // 0 = the original pose-per-velocity curve, 1 = the rate-driven remap,
   // 2 = HEADING, the body following the tangent of the flight arc.
@@ -242,6 +258,9 @@ export function loadSave(): SaveData {
   delete (s as Record<string, unknown>).experimentalRaceRecords;
   // saves written before the Spill was a mode
   if (typeof s.spillBest !== "number" || !isFinite(s.spillBest)) s.spillBest = 0;
+  // favourites are ids only; anything else in the array is a hand-edit
+  if (!Array.isArray(s.favorites)) s.favorites = [];
+  s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
   if (!Array.isArray(s.raceGates)) s.raceGates = [];
   // only ever the three real gate ids, de-duplicated - a hand-edited save
   // cannot invent a fourth and unlock the chart with it

@@ -1,14 +1,14 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=170";
-import { goalHud } from "./campaign.js?v=170";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=170";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=170";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=170";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=170";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=170";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=170";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=170";
-import { SPILL, SPILL_MOD_INFO, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=170";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=170";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
+import { goalHud } from "./campaign.js?v=171";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=171";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=171";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=171";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=171";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=171";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=171";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=171";
+import { SPILL, SPILL_MOD_INFO, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=171";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=171";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1921,19 +1921,21 @@ function drawSpillHud(ctx, w, art) {
     if (s.phase === "ready") {
         const compact = W < 520;
         // a phone gets the same briefing in shorter lines, never a clipped one
-        const lines = compact ? [
-            "SURVIVE THE WAVE · MINE ORE",
-            "HOLD: RISE · RELEASE: FALL",
-            "SWIPE UP / DOWN: BURST · SWIPE RIGHT: LUNGE",
-            "GOLD ORE ARMS THE PULSE · DO NOT RIDE THE FLOOR",
-            "PRESS TO LAUNCH",
-        ] : [
-            "SURVIVE THE WAVE · MINE ORE · UPGRADE THE SHIP AT THE DEPOT",
-            "HOLD: RISE · RELEASE: FALL · SWIPE UP / DOWN: BURST",
-            "SWIPE RIGHT: LUNGE · GOLD ORE ARMS THE PULSE",
-            "DO NOT RIDE THE FLOOR · THREE HULL HITS AND THE RUN IS OVER",
+        // FOUR LINES, NOT A BRIEFING (owner, 2 Sep 2026: "no need for a half
+        // page of text"). The loop is the whole story - survive, collect,
+        // Depot, upgrade - and the ore line wears the ore itself.
+        // The ore line is kept SHORT on purpose: the ore sprite flanks it, and
+        // on a phone a long line pushed the sprites off the panel's edge.
+        const lines = [
+            "SURVIVE THE WAVES",
+            "COLLECT ORE",
+            compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
+                : "EVERY 5 WAVES: DEPOT · SPEND ORE · UPGRADE THE SHIP",
+            compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
+                : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
             "PRESS TO LAUNCH",
         ];
+        const oreLine = 1;
         const lineHeight = compact ? 20 : 21;
         const panelWidth = Math.min(W - 24, compact ? 430 : 560);
         const panelHeight = lines.length * lineHeight + 28;
@@ -1951,6 +1953,13 @@ function drawSpillHud(ctx, w, art) {
             ctx.globalAlpha = isLaunch ? 0.75 + 0.25 * Math.sin(w.time * 4) : 1;
             ctx.font = isLaunch ? "900 15px Figtree, system-ui" : i === 0 ? "900 13px Figtree, system-ui" : "800 12px Figtree, system-ui";
             ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+            // the ore, drawn as the thing it is, riding the line that names it
+            if (i === oreLine && art?.ore) {
+                const tw = ctx.measureText(line).width;
+                const y = panelTop + 21 + i * lineHeight - 5;
+                drawSprite(ctx, art.ore, W / 2 - tw / 2 - 14, y, 20);
+                drawSprite(ctx, art.ore, W / 2 + tw / 2 + 14, y, 20);
+            }
         });
         ctx.globalAlpha = 1;
         const titleY = Math.max(H * 0.3, hudY + 24);

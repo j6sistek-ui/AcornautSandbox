@@ -1,11 +1,11 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=170";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=170";
-import { drawSprite as drawSpriteOn } from "./art.js?v=170";
-import { createEngine } from "./engine.js?v=170";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=170";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=170";
-import { formatRaceTicks } from "./race.js?v=170";
-import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=170";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=171";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=171";
+import { drawSprite as drawSpriteOn } from "./art.js?v=171";
+import { createEngine } from "./engine.js?v=171";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=171";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=171";
+import { formatRaceTicks } from "./race.js?v=171";
+import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=171";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -181,6 +181,16 @@ export async function bootStandalone(root) {
     function launchSelected() {
         const m = MODES[selectedMode] ?? MODES[0];
         if (m.id === "race") {
+            // HELP OFF: the briefing is a lesson, and the switch says no lessons.
+            // Launch straight from the sheet; the briefing stays one tap away on
+            // the chart for anyone who wants to re-read it.
+            if (engine.save.helpOff) {
+                modesOpen = false;
+                if (!launchHyperRun((id) => engine.flyLevel(id)))
+                    hyperRunOpen = true;
+                render();
+                return;
+            }
             modesOpen = false;
             hyperRunOpen = true;
             render();
@@ -697,7 +707,47 @@ export async function bootStandalone(root) {
     // it belongs to no tab and must not light one up.
     // The coach: one line of guidance, pinned above the tab bar, that only
     // exists while the post-tutorial path is live. It never blocks a tap.
+    /** THE SETTINGS, as one list both surfaces share. The live page keeps
+     *  them on the Profile and the beta under the hub's gear with Help; the
+     *  rows are the same rows, built once, so a switch added here exists in
+     *  both places or neither. Each row is the whole button, and each knob
+     *  redraws itself in place rather than re-rendering the screen - a
+     *  toggle must not scroll the sheet back to the top. */
+    function settingsRows() {
+        const rows = el("div", "ac-rows");
+        const row = (label, sub, isOn, flip) => {
+            const r = el("button", "ac-row ac-rowbtn ac-setrow");
+            const t = el("span", "ac-settxt");
+            t.append(el("b", "", label), el("small", "ac-setsub", sub));
+            const sw = el("span", isOn() ? "ac-switch on" : "ac-switch");
+            sw.append(el("i", "ac-knob"));
+            r.setAttribute("role", "switch");
+            r.setAttribute("aria-checked", String(isOn()));
+            r.append(t, sw);
+            r.onclick = () => {
+                flip();
+                sw.className = isOn() ? "ac-switch on" : "ac-switch";
+                r.setAttribute("aria-checked", String(isOn()));
+            };
+            rows.append(r);
+        };
+        const sv = () => engine.save;
+        row("Music", "The score under menus and flight", () => !sv().musicOff, () => engine.setMusicOff(!sv().musicOff));
+        row("Sound effects", "Thrusters, pickups, hits", () => !sv().sfxOff, () => engine.setSfxOff(!sv().sfxOff));
+        row("Help prompts", "Coach tips, wave lessons, pre-flight briefing", () => !sv().helpOff, () => engine.setHelpOff(!sv().helpOff));
+        row("Menu animation", "Pulses, fades and moving badges", () => !sv().motionOff, () => engine.setMotionOff(!sv().motionOff));
+        row("Intro video", "The launch film after TAP TO START", () => !sv().introOff, () => engine.setIntroOff(!sv().introOff));
+        return rows;
+    }
     function coach(text, inline = false) {
+        // HELP OFF means no coach at all. Callers may still tag the element
+        // (find-me arrow, pointing-down state); a hidden node takes that
+        // harmlessly, so no call site has to know the switch exists.
+        if (engine.save.helpOff) {
+            const quiet = el("i");
+            quiet.hidden = true;
+            return quiet;
+        }
         // The coach floats over the screen by default, which is right on the
         // hangar and the level sheet - there is nothing under it that matters.
         // On the hub it was landing directly on the STAR CHART bar it points at,
@@ -751,7 +801,10 @@ export async function bootStandalone(root) {
         box.append(el("p", "ac-fine ac-splash-fine", `${BUILD} · ${GAME_VERSION}`));
         box.onclick = () => {
             engine.open("title");
-            playFilm();
+            // INTRO VIDEO OFF skips the film outright; the title is already
+            // painted underneath, so there is nothing to dissolve from
+            if (!engine.save.introOff)
+                playFilm();
         };
         return box;
     }
@@ -1331,7 +1384,7 @@ export async function bootStandalone(root) {
         sheet.append(el("p", "ac-sub", `Hull ${sp.hull}/${sp.maxHull}`
             + `${sp.shield ? ` · ${sp.shield} shield${sp.shield > 1 ? "s" : ""}` : ""}`
             + `${sp.coreArmed ? " · core armed" : ""}`
-            + " · the field returns when the clock runs out."));
+            + " · spend Ore, then fly"));
         // one row per meter. The description is the NEXT level's, because that
         // is what the price buys; a full meter says so instead
         const row = (what, filled, total, sub) => {
@@ -1511,6 +1564,41 @@ export async function bootStandalone(root) {
         ctx.stroke();
         return c;
     }
+    /** THE STAR. A small toggle riding the corner of a suit, helmet or trail
+     *  card (owner, 2 Sep 2026). The card is a <button>, so this is a span
+     *  with the button's role rather than a nested button, and it swallows
+     *  the press so starring never equips. The FAVOURITES shelf it feeds
+     *  only exists while at least one star is lit. */
+    function favStar(id) {
+        const on = engine.isFavorite(id);
+        const star = el("span", on ? "ac-favbtn on" : "ac-favbtn", on ? "\u2605" : "\u2606");
+        star.setAttribute("role", "button");
+        star.setAttribute("aria-pressed", String(on));
+        star.setAttribute("aria-label", on ? "Remove from favourites" : "Add to favourites");
+        star.tabIndex = 0;
+        const flip = (e) => { e.stopPropagation(); e.preventDefault(); engine.toggleFavorite(id); };
+        star.addEventListener("pointerdown", (e) => e.stopPropagation());
+        star.addEventListener("click", flip);
+        star.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ")
+            flip(e); });
+        return star;
+    }
+    /** the FAVOURITES shelf head plus its row, or nothing when no star is lit */
+    function favShelf(ids, card) {
+        const picked = ids.filter((id) => engine.isFavorite(id));
+        if (!picked.length)
+            return null;
+        const frag = document.createDocumentFragment();
+        frag.append(el("p", "ac-shelfhead ac-favhead", "\u2605 FAVOURITES"));
+        const row = el("div", "ac-shelfrow");
+        for (const id of picked) {
+            const c = card(id);
+            if (c)
+                row.append(c);
+        }
+        frag.append(row);
+        return frag;
+    }
     function helmCardOf(helmet, px = 56) {
         // the dedicated helmet render IS the card — no shrunken squirrel
         const spr = engine.art?.helms?.[helmet.id];
@@ -1675,6 +1763,25 @@ export async function bootStandalone(root) {
             const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
             const CASE_W = 344, CASE_H = 236;
             const stage = el("div", "ac-shopcase ac-hangarcase");
+            // A CASE YOU CAN SHRINK (owner, 2 Sep 2026). Browsing a long shelf
+            // under a 236px vitrine means scrolling past the pilot every time;
+            // a double tap on the case folds it to a strip and the shelves take
+            // the room. The state lives in the save so it holds between visits,
+            // and the little chevron on the plate says the gesture exists -
+            // nothing else on the screen is double-tapped.
+            if (s.heroCompact)
+                stage.classList.add("ac-casecompact");
+            let lastTap = 0;
+            stage.addEventListener("pointerup", (e) => {
+                const now = performance.now();
+                if (now - lastTap < 320) {
+                    engine.setHeroCompact(!engine.save.heroCompact);
+                    lastTap = 0;
+                }
+                else
+                    lastTap = now;
+                e.preventDefault();
+            });
             stage.style.setProperty("--case-glow", wornSuit.glow ?? wornSuit.trim ?? "#c4a0ff");
             stage.style.setProperty("--case-lite", wornSuit.suitLite ?? "#8a5ae4");
             stage.style.setProperty("--case-deep", wornSuit.suitDark ?? "#160f34");
@@ -1691,6 +1798,11 @@ export async function bootStandalone(root) {
                 pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
             stage.append(pane);
             const plate = el("div", "ac-caseplate");
+            const fold = el("button", "ac-casefold", s.heroCompact ? "\u25BE" : "\u25B4");
+            fold.setAttribute("aria-label", s.heroCompact ? "Expand the preview" : "Shrink the preview");
+            fold.title = "Double-tap the case, or tap here";
+            fold.onclick = (e) => { e.stopPropagation(); engine.setHeroCompact(!engine.save.heroCompact); };
+            stage.append(fold);
             plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
             plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
             plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palWorn?.name ?? "No pal"}`));
@@ -1760,44 +1872,51 @@ export async function bootStandalone(root) {
             grid.classList.add("ac-shelfcol");
             if (s.shelfGrid)
                 grid.classList.add("ac-asgrid");
+            const helmCard = (h) => {
+                const premium = isIap(h.id);
+                const open = helmetRevealed(s, h.id);
+                const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
+                const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
+                // A bare integer told the pilot nothing: "70" next to "OWNED"
+                // reads as a score, and a free helmet rendered the word "0".
+                // State stays in the text node; a real price becomes its own
+                // element so it can wear the acorn it is denominated in.
+                const claim = !premium && open && !owned && h.cost <= 0;
+                const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
+                    : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
+                        : owned ? "OWNED" : "";
+                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+                if (claim)
+                    b.append(collectTag());
+                if (!premium && open && !owned && h.cost > 0)
+                    b.append(costTag(h.cost));
+                if (premium)
+                    markPremium(b, h.glow);
+                if (locked || !open)
+                    b.classList.add("ac-cardoff");
+                if (s.guide === "helmet" && h.id === GUIDE_HELM)
+                    b.classList.add("ac-pulse", "ac-guidetarget");
+                b.onclick = () => { if (!locked && open && (!premium || owned))
+                    tx(b, () => engine.buyHelmet(h.id), h.cost); };
+                if (open && (!premium || owned))
+                    b.append(favStar(h.id));
+                return b;
+            };
+            const helmListed = (h) => !h.suitOnly && (!isIap(h.id) || iapOwned(s, h.id));
+            const favHelms = favShelf(HELMETS.filter(helmListed).map((h) => h.id), (id) => { const h = HELMETS.find((x) => x.id === id); return h ? helmCard(h) : null; });
+            if (favHelms)
+                grid.append(favHelms);
             for (const sec of HELMET_SHELF) {
                 const items = sec.ids
                     .map((id) => HELMETS.find((h) => h.id === id))
-                    .filter((h) => !!h && !h.suitOnly)
-                    .filter((h) => !isIap(h.id) || iapOwned(s, h.id))
+                    .filter((h) => !!h && helmListed(h))
                     .sort((a, bq) => helmRank(a) - helmRank(bq));
                 if (!items.length)
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
                 const row = el("div", "ac-shelfrow");
-                for (const h of items) {
-                    const premium = isIap(h.id);
-                    const open = helmetRevealed(s, h.id);
-                    const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
-                    const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
-                    // A bare integer told the pilot nothing: "70" next to "OWNED"
-                    // reads as a score, and a free helmet rendered the word "0".
-                    // State stays in the text node; a real price becomes its own
-                    // element so it can wear the acorn it is denominated in.
-                    const claim = !premium && open && !owned && h.cost <= 0;
-                    const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
-                        : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
-                            : owned ? "OWNED" : "";
-                    b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
-                    if (claim)
-                        b.append(collectTag());
-                    if (!premium && open && !owned && h.cost > 0)
-                        b.append(costTag(h.cost));
-                    if (premium)
-                        markPremium(b, h.glow);
-                    if (locked || !open)
-                        b.classList.add("ac-cardoff");
-                    if (s.guide === "helmet" && h.id === GUIDE_HELM)
-                        b.classList.add("ac-pulse", "ac-guidetarget");
-                    b.onclick = () => { if (!locked && open && (!premium || owned))
-                        tx(b, () => engine.buyHelmet(h.id), h.cost); };
-                    row.append(b);
-                }
+                for (const h of items)
+                    row.append(helmCard(h));
                 grid.append(row);
             }
         }
@@ -1831,8 +1950,13 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
                     tx(b, () => engine.buySuit(u.id), u.cost); };
+                if (open && (!premium || owned))
+                    b.append(favStar(u.id));
                 return b;
             };
+            const favSuits = favShelf(SUITS.filter((u) => !isIap(u.id) || iapOwned(s, u.id)).map((u) => u.id), (id) => { const u = SUITS.find((x) => x.id === id); return u ? suitCard(u) : null; });
+            if (favSuits)
+                grid.append(favSuits);
             for (const sec of SUIT_SHELF) {
                 const items = sec.ids
                     .map((id) => SUITS.find((x) => x.id === id))
@@ -1892,7 +2016,7 @@ export async function bootStandalone(root) {
             }
         }
         else if (engine.shopTab === "trails") {
-            for (const t of TRAILS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) {
+            const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);
                 const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
@@ -1913,7 +2037,24 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-cardoff");
                 b.onclick = () => { if (open)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
-                grid.append(b);
+                if (open)
+                    b.append(favStar(t.id));
+                return b;
+            };
+            const listed = TRAILS.filter((x) => !isIap(x.id) || iapOwned(s, x.id));
+            const favTrails = favShelf(listed.map((t) => t.id), (id) => { const t = TRAILS.find((x) => x.id === id); return t ? trailCard(t) : null; });
+            if (favTrails) {
+                grid.classList.add("ac-shelfcol");
+                grid.append(favTrails);
+                grid.append(el("p", "ac-shelfhead", "ALL TRAILS"));
+                const row = el("div", "ac-shelfrow");
+                for (const t of listed)
+                    row.append(trailCard(t));
+                grid.append(row);
+            }
+            else {
+                for (const t of listed)
+                    grid.append(trailCard(t));
             }
         }
         else if (engine.shopTab === "pals") {
@@ -2783,7 +2924,14 @@ export async function bootStandalone(root) {
         if (raceBriefing) {
             const briefing = el("div", "ac-racebrief");
             const objective = el("section", "ac-racebriefblock ac-raceobjective");
-            objective.append(el("h3", "", "OBJECTIVE"), el("p", "", "Thread blue gates to build speed and charge the wormhole. Take shortcuts and reach the finish as fast as possible. Acorns are an optional collection record and do not change your time."));
+            const aims = el("ul", "ac-brieflist");
+            for (const line of [
+                "Thread blue gates to build speed and charge the wormhole.",
+                "Shortcuts save time. Finish fast.",
+                "Acorns are an optional collection record and do not change your time.",
+            ])
+                aims.append(el("li", "", line));
+            objective.append(el("h3", "", "OBJECTIVE"), aims);
             const controlRow = (input, action) => {
                 const row = el("div", "ac-racecontrol");
                 row.append(el("b", "", input), el("span", "", action));
@@ -4249,18 +4397,7 @@ export async function bootStandalone(root) {
         // they sit with Help; the live page keeps Music here for now.
         if (!BETA_FEATURES) {
             scroll.append(el("p", "ac-kicker ac-secthead", "Settings"));
-            const settings = el("div", "ac-rows");
-            const musicRow = el("button", "ac-row ac-rowbtn");
-            musicRow.append(el("span", "", "Music"));
-            const musicSw = el("span", s.musicOff ? "ac-switch" : "ac-switch on");
-            musicSw.append(el("i", "ac-knob"));
-            musicRow.append(musicSw);
-            musicRow.onclick = () => {
-                engine.setMusicOff(!engine.save.musicOff);
-                musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
-            };
-            settings.append(musicRow);
-            scroll.append(settings);
+            scroll.append(settingsRows());
         }
         scroll.append(el("p", "ac-kicker ac-secthead", "Community"));
         const social = el("div", "ac-rows");
@@ -4384,18 +4521,7 @@ export async function bootStandalone(root) {
         // BETA: music moved here from the Profile — settings and help share
         // the hub's gear button. The live page keeps Help as the briefing.
         if (BETA_FEATURES) {
-            const settings = el("div", "ac-rows");
-            const musicRow = el("button", "ac-row ac-rowbtn");
-            musicRow.append(el("span", "", "Music"));
-            const musicSw = el("span", engine.save.musicOff ? "ac-switch" : "ac-switch on");
-            musicSw.append(el("i", "ac-knob"));
-            musicRow.append(musicSw);
-            musicRow.onclick = () => {
-                engine.setMusicOff(!engine.save.musicOff);
-                musicSw.className = engine.save.musicOff ? "ac-switch" : "ac-switch on";
-            };
-            settings.append(musicRow);
-            scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settings);
+            scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
             scroll.append(el("p", "ac-kicker ac-secthead", "How to fly"));
         }
         // the two controls, as two SEPARATE cards — tap and swipe must never
@@ -4432,7 +4558,7 @@ export async function bootStandalone(root) {
         };
         const spr = (bank) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[bank]?.[0] ?? null, px / 2, px / 2, px * 0.92);
         const one = (pick) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[pick] ?? null, px / 2, px / 2, px * 0.92);
-        item(pic(spr("acorn")), "ACORN", "Earned by flying \u2014 spend it in the hangar.");
+        item(pic(spr("acorn")), "ACORN", "Fly to earn. Spend in the Loadout.");
         // TWO currencies, and the difference is the whole point: one is flown
         // for, one is bought. Saying so here is cheaper than letting a pilot
         // work it out from a price they cannot pay.
@@ -4455,10 +4581,11 @@ export async function bootStandalone(root) {
             ctx.closePath();
             ctx.fill();
             ctx.restore();
-        }), "STAR DUST", "Premium currency \u2014 buys packs. Claim 5 free every day, plus 25 on a seven-day streak.");
-        item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration} seconds.`);
-        item(pic(one("shieldnut")), "SHIELD ACORN", "Absorbs one debris hit. Rare \u2014 grab it.");
-        item(pic(spr("golden")), "GOLDEN ACORN", "Invulnerable to debris \u2014 planets still bounce. In Wormhole Run it is the FLOW ACORN: fills Flow and guarantees at least \u00d72 score for 8 seconds.");
+        }), "STAR DUST", "Premium currency. 5 free every day, +25 on day 7.");
+        item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
+        item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
+        item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
+        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "ORE", "The Spill's currency. Spend it at the Depot.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
@@ -4468,7 +4595,7 @@ export async function bootStandalone(root) {
             ctx.beginPath();
             ctx.arc(px / 2, px / 2, px * 0.46, 0, Math.PI * 2);
             ctx.fill();
-        }), "BLACK HOLE", "Warps flight for 15s \u2014 reversed or tilted.");
+        }), "BLACK HOLE", "15s of warped flight: reversed or tilted.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#042a24");
@@ -4478,19 +4605,30 @@ export async function bootStandalone(root) {
             ctx.beginPath();
             ctx.arc(px / 2, px / 2, px * 0.46, 0, Math.PI * 2);
             ctx.fill();
-        }), "WORMHOLE", "Lost in Space & Arcade: mirrors your heading.");
+        }), "WORMHOLE", "Pulls you into a corridor. Hold to rise, release to fall.");
         // The mode blurbs left the beta's help: every mode describes itself on
         // the MODES sheet now. The live Briefing keeps them — it is still the
         // only place the live page explains the modes.
         if (!BETA_FEATURES) {
-            scroll.append(el("p", "ac-sub ac-mid", "DEEP SPACE: space shifts every 10s."));
-            scroll.append(el("p", "ac-sub ac-mid", "ARCADE: the original game, in its own hand. Double power-ups, wormhole reversals, and its own soundtrack."));
-            scroll.append(el("p", "ac-sub ac-mid", "FREE FLIGHT: catch the 8-bit acorn to slip into the arcade for a stretch — catch another to come home."));
-            scroll.append(el("p", "ac-sub ac-mid", "LOST IN SPACE: drift, tilt, wormholes."));
-            scroll.append(el("p", "ac-sub ac-mid", BETA_FEATURES
-                ? "WORMHOLE RUN: hold to rise and release to fall; swipes are ignored. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."
-                : "WORMHOLE RUN: tap-only; swipes are ignored. Tap to rise, then gravity pulls you down. Follow changing currents, build Flow, collect Freeze Acorns, and dodge lethal debris. Pals appear cosmetically, while their abilities and flight mods stay off so every score uses the same physics."));
-            scroll.append(el("p", "ac-gold ac-mid", "OTHER MODES \u2014 BRING A PAL: each adds a fun modifier."));
+            // ONE LINE PER MODE, the way the Modes sheet says it. The Wormhole
+            // Run paragraph is gone with its row: the corridor is described
+            // under WORMHOLE above, where it is actually met.
+            scroll.append(el("p", "ac-kicker ac-secthead", "Modes"));
+            const modes = el("ul", "ac-helplist");
+            for (const [name, line] of [
+                ["NORMAL", "Gates and power-ups."],
+                ["DEEP SPACE", "Space shifts every 10s."],
+                ["LOST IN SPACE", "Drift, tilt, wormholes."],
+                ["ARCADE", "The 8-bit original. Double power-ups."],
+                ["HYPER RUN", "Thread gates. Finish fast."],
+                ["THE SPILL", "Survive waves. Collect Ore. Every 5 waves: Depot. Upgrade the ship."],
+            ]) {
+                const li = el("li", "");
+                li.append(el("b", "", name), el("span", "", line));
+                modes.append(li);
+            }
+            scroll.append(modes);
+            scroll.append(el("p", "ac-gold ac-mid", "Bring a pal \u2014 each adds a modifier."));
         }
         box.append(scroll);
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");

@@ -1489,7 +1489,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // rolls a fresh one every run.
   w.spill = flight === "spill"
     ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0,
-        level ? level.gates : 0)
+        level ? level.gates : 0, !save.helpOff)
     : null;
   w.spillCues = [];
   w.speed = PHYS.baseSpeed;

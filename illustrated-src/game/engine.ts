@@ -1,6 +1,6 @@
 import { suitLean, SUIT_LEAN } from "./control-constants";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
-import { sfx, unlockAudio, music } from "./audio";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
 import {
@@ -151,6 +151,16 @@ export type Engine = {
   setMod: (id: string) => string;
   /** the Profile's music switch: silences both score tracks, persisted */
   setMusicOff: (off: boolean) => void;
+  /** the four settings switches, each persisted; see SaveData */
+  setSfxOff: (off: boolean) => void;
+  setHelpOff: (off: boolean) => void;
+  setMotionOff: (off: boolean) => void;
+  setIntroOff: (off: boolean) => void;
+  /** star or unstar a suit, helmet or trail for the FAVOURITES shelf */
+  toggleFavorite: (id: string) => boolean;
+  isFavorite: (id: string) => boolean;
+  /** shrink or restore the loadout's animated case */
+  setHeroCompact: (on: boolean) => void;
   /** VOLT's hangar experiment: swap between its two painted jump banks */
   setEclipseMotionMode: (mode: number) => void;
   dismissDead: () => void;
@@ -414,6 +424,43 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       save.musicOff = off;
       writeSave(save);
       music.setMuted(off);
+      notify();
+    },
+    setSfxOff(off) {
+      save.sfxOff = off;
+      writeSave(save);
+      setSfxMuted(off);
+      notify();
+    },
+    setHelpOff(off) {
+      save.helpOff = off;
+      writeSave(save);
+      notify();
+    },
+    setMotionOff(off) {
+      save.motionOff = off;
+      writeSave(save);
+      // the class is what the stylesheet reads; the save is what survives
+      document.body.classList.toggle("ac-nomotion", off);
+      notify();
+    },
+    setIntroOff(off) {
+      save.introOff = off;
+      writeSave(save);
+      notify();
+    },
+    toggleFavorite(id) {
+      const list = save.favorites ?? [];
+      const on = !list.includes(id);
+      save.favorites = on ? [...list, id] : list.filter((x) => x !== id);
+      writeSave(save);
+      notify();
+      return on;
+    },
+    isFavorite: (id) => (save.favorites ?? []).includes(id),
+    setHeroCompact(on) {
+      save.heroCompact = !!on;
+      writeSave(save);
       notify();
     },
     setEclipseMotionMode(mode) {
@@ -1267,6 +1314,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // as the engine comes up - not on the walk to a storefront. claimDaily is
   // a no-op for a day already taken, so a reload never pays twice.
   claimDaily();
+
+  // the switches that are not read from the save on the fly are applied
+  // once here, so a reload lands in the state the pilot left
+  setSfxMuted(!!save.sfxOff);
+  document.body.classList.toggle("ac-nomotion", !!save.motionOff);
 
   engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
     .then((bank) => {

@@ -2097,19 +2097,21 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   if (s.phase === "ready") {
     const compact = W < 520;
     // a phone gets the same briefing in shorter lines, never a clipped one
-    const lines = compact ? [
-      "SURVIVE THE WAVE · MINE ORE",
-      "HOLD: RISE · RELEASE: FALL",
-      "SWIPE UP / DOWN: BURST · SWIPE RIGHT: LUNGE",
-      "GOLD ORE ARMS THE PULSE · DO NOT RIDE THE FLOOR",
-      "PRESS TO LAUNCH",
-    ] : [
-      "SURVIVE THE WAVE · MINE ORE · UPGRADE THE SHIP AT THE DEPOT",
-      "HOLD: RISE · RELEASE: FALL · SWIPE UP / DOWN: BURST",
-      "SWIPE RIGHT: LUNGE · GOLD ORE ARMS THE PULSE",
-      "DO NOT RIDE THE FLOOR · THREE HULL HITS AND THE RUN IS OVER",
+    // FOUR LINES, NOT A BRIEFING (owner, 2 Sep 2026: "no need for a half
+    // page of text"). The loop is the whole story - survive, collect,
+    // Depot, upgrade - and the ore line wears the ore itself.
+    // The ore line is kept SHORT on purpose: the ore sprite flanks it, and
+    // on a phone a long line pushed the sprites off the panel's edge.
+    const lines = [
+      "SURVIVE THE WAVES",
+      "COLLECT ORE",
+      compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
+              : "EVERY 5 WAVES: DEPOT · SPEND ORE · UPGRADE THE SHIP",
+      compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
+              : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
       "PRESS TO LAUNCH",
     ];
+    const oreLine = 1;
     const lineHeight = compact ? 20 : 21;
     const panelWidth = Math.min(W - 24, compact ? 430 : 560);
     const panelHeight = lines.length * lineHeight + 28;
@@ -2127,6 +2129,13 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       ctx.globalAlpha = isLaunch ? 0.75 + 0.25 * Math.sin(w.time * 4) : 1;
       ctx.font = isLaunch ? "900 15px Figtree, system-ui" : i === 0 ? "900 13px Figtree, system-ui" : "800 12px Figtree, system-ui";
       ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+      // the ore, drawn as the thing it is, riding the line that names it
+      if (i === oreLine && art?.ore) {
+        const tw = ctx.measureText(line).width;
+        const y = panelTop + 21 + i * lineHeight - 5;
+        drawSprite(ctx, art.ore, W / 2 - tw / 2 - 14, y, 20);
+        drawSprite(ctx, art.ore, W / 2 + tw / 2 + 14, y, 20);
+      }
     });
     ctx.globalAlpha = 1;
     const titleY = Math.max(H * 0.3, hudY + 24);

@@ -1,5 +1,5 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=170";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=170";
+import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=171";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=171";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -155,6 +155,10 @@ export function loadSave() {
     // saves written before the Spill was a mode
     if (typeof s.spillBest !== "number" || !isFinite(s.spillBest))
         s.spillBest = 0;
+    // favourites are ids only; anything else in the array is a hand-edit
+    if (!Array.isArray(s.favorites))
+        s.favorites = [];
+    s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
     if (!Array.isArray(s.raceGates))
         s.raceGates = [];
     // only ever the three real gate ids, de-duplicated - a hand-edited save
