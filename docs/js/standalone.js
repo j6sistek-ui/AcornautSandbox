@@ -1,11 +1,11 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=168";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=168";
-import { drawSprite as drawSpriteOn } from "./art.js?v=168";
-import { createEngine } from "./engine.js?v=168";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=168";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=168";
-import { formatRaceTicks } from "./race.js?v=168";
-import { SPILL, spillExtendPrice, spillItem, spillRerollPrice } from "./spill.js?v=168";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=169";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview } from "./draw.js?v=169";
+import { drawSprite as drawSpriteOn } from "./art.js?v=169";
+import { createEngine } from "./engine.js?v=169";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=169";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=169";
+import { formatRaceTicks } from "./race.js?v=169";
+import { SPILL, spillExtendPrice, spillItem, spillRerollPrice } from "./spill.js?v=169";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -13,6 +13,52 @@ function el(tag, cls = "", text) {
     if (text)
         n.textContent = text;
     return n;
+}
+/** HOLD, DON'T TAP. A run ends on a tap, and the very next reflex tap
+ *  landed on CONTINUE and spent the acorns before the pilot had read the
+ *  screen - the owner watched himself buy a continue he never chose. A
+ *  deliberate hold cannot be reached by reflex: the button fills while it
+ *  is held down and only pays out when the fill completes, and letting go
+ *  early costs nothing. Guard the SPEND, not the screen: a timed lockout
+ *  would punish a pilot who did read it and wants straight back in.
+ *
+ *  Keyboard activation fires at once. A click with `detail === 0` came
+ *  from Enter or Space, which is already a deliberate act on a device
+ *  that has no reflex tap to guard against - and pointer presses never
+ *  reach that path, because the pointerdown below cancels the click the
+ *  browser would otherwise synthesise. */
+function holdToFire(b, ms, fire) {
+    let timer = 0;
+    let fired = false;
+    const stop = () => {
+        if (timer) {
+            clearTimeout(timer);
+            timer = 0;
+        }
+        b.classList.remove("ac-holding");
+    };
+    b.style.setProperty("--ac-hold", `${ms}ms`);
+    b.addEventListener("pointerdown", (e) => {
+        if (fired || timer)
+            return;
+        e.preventDefault(); // no synthesised click, so the pointer path is hold-only
+        b.classList.add("ac-holding");
+        timer = window.setTimeout(() => {
+            timer = 0;
+            fired = true;
+            b.classList.remove("ac-holding");
+            fire();
+        }, ms);
+    });
+    for (const ev of ["pointerup", "pointerleave", "pointercancel"]) {
+        b.addEventListener(ev, stop);
+    }
+    b.addEventListener("click", (e) => {
+        if (e.detail === 0 && !fired) {
+            fired = true;
+            fire();
+        }
+    });
 }
 /** One testable launch seam shared by the Hyper Run briefing CTA and its
  * fixed-step acceptance harness. Hyper Run ships on both pages now, so
@@ -362,8 +408,8 @@ export async function bootStandalone(root) {
                     const cost = engine.continueCost();
                     const funds = engine.save.acorns ?? 0;
                     if (funds >= cost) {
-                        const cont = el("button", "ac-primary ac-continue", `CONTINUE — ${cost} ACORNS`);
-                        cont.onclick = () => engine.continueRun();
+                        const cont = el("button", "ac-primary ac-continue ac-holdbtn", `HOLD TO CONTINUE — ${cost} ACORNS`);
+                        holdToFire(cont, 550, () => engine.continueRun());
                         sheet.append(cont);
                     }
                     else {
@@ -909,7 +955,7 @@ export async function bootStandalone(root) {
         // THE ONLY PROMPT THE DAILY GETS. An unclaimed day lights the shop
         // button from behind rather than nagging with a banner; walking in is
         // what claims it, so the glow is both the ask and the whole interaction.
-        if (!engine.dailyState().claimedToday)
+        if (engine.dailyUnseen())
             shopBtn.classList.add("ac-dailyready");
         shopBtn.onclick = () => engine.open("shop");
         // NEXT TO THE SHOP, in the rail, wearing painted art like the gift

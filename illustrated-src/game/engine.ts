@@ -110,6 +110,7 @@ export type Engine = {
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
   claimDaily: () => "ok" | "claimed";
+  dailyUnseen: () => boolean;
   /** Hand over a claim that has just been paid, ONCE. The shop claims on
    *  arrival, inside open(), where the UI cannot see it happen - so the
    *  payment is parked here and the next render collects it. Reading it
@@ -271,12 +272,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         // settleDust is idempotent, so calling it on every screen change is
         // free when nothing is owed.
         settleDust();
-        // THE DAILY CLAIMS ITSELF. Asking a pilot to tap CLAIM after they
-        // already walked to the shop is a toll booth, not a reward - the
-        // walk IS the action being rewarded. Arriving pays; the tracker
-        // still shows the streak, and the shop button carries the glow that
-        // does the asking.
-        if (s === "shop") claimDaily();
+        // THE DAILY IS PAID FOR SHOWING UP, AND SHOWING UP IS OPENING THE
+        // GAME (owner, 2 Sep 2026: "just count log in, not store tap").
+        // It used to land on arrival at the shop, which quietly made the
+        // reward conditional on wanting to spend - a pilot who only ever
+        // flew never collected a day of it. The claim moved to boot; the
+        // shop keeps the receipt and the streak tracker it always drew.
         // THE GUIDE OPENS THE TAB IT IS TALKING ABOUT. The hub said "put on
         // your new Ion suit" and the Loadout opened on HELMETS, with only a
         // faint pulse on the SUITS pill to say so - so the instruction and
@@ -401,6 +402,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       pendingDaily = null;
       return p;
     },
+    /** Is there a daily the pilot has been paid but not yet shown? Boot
+     *  banks the dust, so "unclaimed" no longer means anything to a badge;
+     *  what is still worth pointing at is the receipt nobody has seen. */
+    dailyUnseen: () => pendingDaily !== null,
     buyDust,
     buyBundle,
     buyShopItem,
@@ -1250,6 +1255,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // the roster's flight banks stream in one at a time afterwards. The pal
   // is named here for the same reason the suit is: it is the one the pilot
   // is looking at, so it is the one that must not arrive late.
+  // LOGGING IN IS THE ACTION THE DAILY REWARDS, so it is banked here, once,
+  // as the engine comes up - not on the walk to a storefront. claimDaily is
+  // a no-op for a day already taken, so a reload never pays twice.
+  claimDaily();
+
   engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
     .then((bank) => {
       art = bank;
