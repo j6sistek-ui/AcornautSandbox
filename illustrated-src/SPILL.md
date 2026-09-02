@@ -85,7 +85,10 @@ and Ore is what separates them.
 
 The clear is announced at the drain, the hand comes off the thrust, and
 the ship flies itself home for the count. The count is three seconds and
-the GO is the frame control returns; the HUD says so under the number.
+the GO is the frame the field returns. A press during the count takes the
+stick from the autopilot early (the HUD says "YOU HAVE THE STICK"), and a
+finger already down at the GO is a hand already on the thrust, so the
+ship rises on the GO and never drops into a waiting thumb.
 Every fifth wave docks first — the same autopilot, "DOCKING" for 1.2s —
 then the Depot opens with one pip restored.
 
@@ -118,16 +121,17 @@ swipe from carrying, so a hold under a burst up rides it rather than
 adding to it. THRUSTERS sharpen the bursts and never touch the hold: the
 owner asked for a hand that gets steadier with upgrades, not twitchier.
 There is no PULSE button: see below. The press on the ready card is the launch; a
-press during the count, the dock, the Depot or the respawn freeze is
-nothing, and never a queued input.
+new press during the count takes the stick; a press during the dock, the
+Depot or the respawn freeze is nothing, and never a queued input.
 
 ## The ladder
 
 Speed and crowding climb on separate curves so the field gets faster
 before it gets fuller. Every rule is taught alone the first time it
-appears: the count names it, a two-line hint sits in the field for six and
-a half seconds, and the spawn interval opens up by a third while the hint
-is on screen. Every rule phases in over its wave's first three seconds
+appears: the count names it, a two-line hint sits low under the flight
+path for five seconds (the wave-1 control hint also leaves after three
+inputs), and the spawn interval opens up by a third while the hint is on
+screen. Every rule phases in over its wave's first three seconds
 (the chip at the bottom left shows how far), so nothing snaps on the GO.
 
 | Wave | Timer | Cap | Speed | New |

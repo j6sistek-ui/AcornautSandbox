@@ -155,8 +155,48 @@ const dock = (seed) => {
   const s = S.createSpill(W, H, 4, 0);
   ok(S.spillBurst(s, -1) === false, "a burst on the ready card is refused");
   ok(S.spillLunge(s) === true && s.phase === "countdown", `a lunge on the ready card launches (${s.phase})`);
-  ok(S.spillHold(s, true) === false && !s.held, "a press during the count is not a hold");
-  ok(S.spillBurst(s, 1) === false && S.spillLunge(s) === false, "bursts and lunges wait for the GO");
+  ok(!s.manual, "the launching press does not take the stick");
+  ok(S.spillBurst(s, 1) === false && S.spillLunge(s) === false, "bursts and lunges wait for a hand on the stick");
+}
+{
+  // a press during the count takes the stick from the autopilot early
+  const s = S.createSpill(W, H, 41, 0);
+  S.spillHold(s, true); S.spillHold(s, false);
+  until(s, () => false, 1);
+  const y0 = s.pilot.y;
+  ok(S.spillHold(s, true) === true && s.manual && s.held, "a new press in the count takes the stick");
+  until(s, () => false, 0.6);
+  ok(s.phase === "countdown" && s.pilot.y < y0 - 30 && s.rocks.length === 0, `and the ship climbs the empty field before the GO (${(s.pilot.y - y0).toFixed(0)}px)`);
+  S.spillHold(s, false);
+  until(s, () => false, 1.2);
+  ok(s.phase === "countdown" && s.pilot.y <= s.H - 80 + 1e-6, `released, the ship cannot be parked in the killzone before the GO (${s.pilot.y.toFixed(0)} of ${s.H})`);
+  S.spillHold(s, true);
+  ok(S.spillBurst(s, 1) === true, "bursts answer a hand on the stick");
+  until(s, (x) => x.phase === "wave", 3);
+  ok(s.phase === "wave" && s.held && !s.manual, `the GO keeps the hand on the thrust (held ${s.held})`);
+}
+{
+  // a finger still down from the launch is a hand on the thrust at the GO:
+  // the ship rises on the GO, it never drops into a waiting thumb
+  const s = S.createSpill(W, H, 42, 0);
+  S.spillHold(s, true);
+  until(s, (x) => x.phase === "wave", 5);
+  ok(s.held && !s.manual, "the GO reads the finger");
+  until(s, () => false, 0.3, (x) => { x.rocks = []; });
+  ok(s.pilot.vy < -100, `and the ship is rising (${s.pilot.vy.toFixed(0)})`);
+  S.spillHold(s, false);
+  ok(!s.held && !s.pressed, "a release lets go");
+}
+{
+  // the control hint leaves after three inputs, or five seconds
+  const s = launch(43);
+  ok(s.hint === S.SPILL_CONTROL_HINT && s.hintT > 3, `wave 1 shows the controls (${s.hintT.toFixed(1)}s)`);
+  hover(s);
+  S.spillBurst(s, -1); S.spillBurst(s, 1);
+  ok(s.hintT > 3, "two inputs keep it");
+  S.spillHold(s, true);
+  ok(s.hintT <= 1, `the third sends it away (${s.hintT.toFixed(1)}s)`);
+  S.spillHold(s, false);
 }
 
 // --------------------------------------------------- the count and the GO
@@ -178,7 +218,9 @@ const dock = (seed) => {
   ok(JSON.stringify(counts) === "[2,1]", `the count ticks down (${JSON.stringify(counts)})`);
   ok(s.pilot.y < y - 100, `the autopilot flew the ship home during the count (${s.pilot.y.toFixed(0)} from ${y.toFixed(0)})`);
   ok(s.rocks.length === 0, "nothing spawns before the GO");
-  ok(S.spillHold(s, true) === true && s.held, "control is back on the GO");
+  ok(s.held, "the finger down since the launch is on the thrust at the GO");
+  S.spillHold(s, false);
+  ok(!s.held && S.spillHold(s, true) === true && s.held, "control is back on the GO");
 }
 
 // ------------------------------------------- debris never meets debris
@@ -512,8 +554,10 @@ const dock = (seed) => {
   ok(w.spill !== null && w.tut === null && w.flight === "spill", "a spill run carries its own state and no tutorial");
   ok(w.shieldCharges === 0, "the hangar's start shield stays in the hangar");
   ok(sim.flap(w, sv) === "flap" && w.spill.phase === "countdown", "the first tap launches the field");
-  ok(sim.flap(w, sv) === "none", "a tap in the count is nothing");
-  for (let i = 0; i < 60 * 4; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
+  sim.spillRelease(w);
+  ok(sim.flap(w, sv) === "flap" && w.spill.manual && w.spill.held, "a tap in the count takes the stick");
+  sim.spillRelease(w);
+  for (let i = 0; i < 60 * 4; i++) { w.spill.rocks = []; w.spill.floorT = 0; sim.updateWorld(w, sv, DT); }
   ok(w.spill.phase === "wave", `the sim steps the Spill through the count (${w.spill.phase})`);
   w.spill.pilot.y = w.H * 0.5; w.spill.pilot.vy = 0;
   ok(sim.flap(w, sv) === "flap" && w.spill.held, "a tap puts the hand on the thrust");

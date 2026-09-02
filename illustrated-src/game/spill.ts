@@ -97,8 +97,11 @@ export const SPILL = {
   respawnFreeze: 2,
   /** every rule phases in over this long, so nothing snaps on the first frame */
   modRamp: 3,
-  /** the free hint every first-time rule gets, in seconds */
-  hintTime: 6.5,
+  /** the free hint every first-time rule gets, in seconds. The control
+   *  hint also leaves after this many inputs: a hand that has adjusted
+   *  three times has read it */
+  hintTime: 5,
+  hintInputs: 3,
   /** how far the field may tilt under DRIFT, radians, and how fast it
    *  wanders. The authored DRIFT wave is the lesson and leans only this
    *  share of the way; the endless waves lean fully. The rule the flip
@@ -354,6 +357,12 @@ export type SpillState = {
   pilot: { x: number; y: number; vx: number; vy: number; rot: number };
   /** the hand is on the thrust */
   held: boolean;
+  /** the finger is down, whatever the phase. What GO reads */
+  pressed: boolean;
+  /** the count is being flown by hand: a press took the stick early */
+  manual: boolean;
+  /** inputs made while the control hint showed */
+  hintInputs: number;
   /** a burst flash, for the plume */
   burstT: number;
   lunge: number;
@@ -445,6 +454,9 @@ export function createSpill(W: number, H: number, seed: number, target = 0): Spi
     target: Math.max(0, Math.floor(target)),
     pilot: { x: W * SPILL.homeX, y: H * 0.45, vx: 0, vy: 0, rot: 0 },
     held: false,
+    pressed: false,
+    manual: false,
+    hintInputs: 0,
     burstT: 0,
     lunge: 0,
     lungeCharges: 1,
@@ -708,16 +720,38 @@ function flying(s: SpillState) {
   return s.phase === "wave" || s.phase === "drain";
 }
 
-/** the hand goes on or off the thrust. A press on the ready card launches.
+/** the hand has the ship: in flight, or through a count it took over */
+function handOn(s: SpillState) {
+  return flying(s) || (s.phase === "countdown" && s.manual);
+}
+
+/** the control hint leaves once the hand has plainly read it */
+function noteInput(s: SpillState) {
+  if (s.hint !== SPILL_CONTROL_HINT || s.hintT <= 1) return;
+  s.hintInputs += 1;
+  if (s.hintInputs >= SPILL.hintInputs) s.hintT = 1;
+}
+
+/** the hand goes on or off the thrust. A press on the ready card launches;
+ *  a press during the count takes the stick from the autopilot early, so
+ *  the ship is never dropped on the GO into a hand that was waiting.
  *  Returns whether the press did anything, so the sim can sound it */
 export function spillHold(s: SpillState, held: boolean) {
   if (held && s.phase === "ready") {
+    s.pressed = true;
     beginCountdown(s, 1);
     return true;
   }
+  const wasPressed = s.pressed;
+  s.pressed = held;
+  if (held && !wasPressed && s.phase === "countdown" && !s.manual) {
+    s.manual = true;
+    s.pilot.vy = 0;
+  }
   const was = s.held;
-  s.held = held && flying(s);
+  s.held = held && handOn(s);
   if (s.held && !was) {
+    noteInput(s);
     burst(s, s.pilot.x - 16, s.pilot.y + 4, 3, "thrust", 0.4);
     cue(s, "press");
     return true;
@@ -727,7 +761,8 @@ export function spillHold(s: SpillState, held: boolean) {
 
 /** a swipe: up is a kick skyward, down is the dive. Instant, like a tap */
 export function spillBurst(s: SpillState, dir: -1 | 1) {
-  if (!flying(s)) return false;
+  if (!handOn(s)) return false;
+  noteInput(s);
   const mul = thrustMul(s);
   if (dir < 0) s.pilot.vy = Math.min(s.pilot.vy, -SPILL.burstUp * mul);
   else s.pilot.vy = Math.max(s.pilot.vy, SPILL.burstDown * mul);
@@ -744,7 +779,8 @@ export function spillBurst(s: SpillState, dir: -1 | 1) {
  */
 export function spillLunge(s: SpillState) {
   if (s.phase === "ready") return spillHold(s, true);
-  if (!flying(s) || s.lungeCharges <= 0) return false;
+  if (!handOn(s) || s.lungeCharges <= 0) return false;
+  noteInput(s);
   s.lunge = SPILL.lungeTime;
   s.lungeCharges -= 1;
   if (s.cool <= 0) s.cool = SPILL.lungeCooldown;
@@ -800,6 +836,10 @@ export function spillPulse(s: SpillState) {
 function beginWave(s: SpillState) {
   s.phase = "wave";
   s.phaseT = 0;
+  // a finger already down is a hand already on the thrust: the GO hands
+  // over a ship that is rising, never one that drops into a waiting thumb
+  s.manual = false;
+  s.held = s.pressed;
   s.waveT = 0;
   s.modRamp = 0;
   s.surgeT = 0;
@@ -820,6 +860,7 @@ function beginCountdown(s: SpillState, n: number) {
   s.phase = "countdown";
   s.phaseT = 0;
   s.held = false;
+  s.manual = false;
   s.lunge = 0;
   s.knock = 0;
   s.pilot.vx = 0;
@@ -1048,6 +1089,22 @@ function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
 
 // ----------------------------------------------------------------- step
 
+/** THE HAND. Held, the thrust beats gravity by a fixed net acceleration;
+ *  released, gravity has the ship. Both are capped, but a burst that
+ *  started past a cap keeps its momentum and only decays: the cap stops
+ *  the hand from building speed, never a swipe from carrying. THRUSTERS
+ *  never touch the hold - a steadier hand is not a faster one */
+function handVertical(s: SpillState, dt: number) {
+  const g = gravityOf(s);
+  const prev = s.pilot.vy;
+  if (s.held) s.pilot.vy -= (g + SPILL.holdAccel) * dt;
+  s.pilot.vy += g * dt;
+  if (s.pilot.vy < -SPILL.riseCap) s.pilot.vy = Math.max(s.pilot.vy, Math.min(-SPILL.riseCap, prev + SPILL.burstDecay * dt));
+  if (s.pilot.vy > SPILL.fallCap) s.pilot.vy = Math.min(s.pilot.vy, Math.max(SPILL.fallCap, prev - SPILL.burstDecay * dt));
+  s.pilot.y += s.pilot.vy * dt;
+  s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
+}
+
 /** the ship flies itself: home lane, mid height, level. Used through the
  *  countdown and the dock so the hand can rest and know when it is needed */
 function autopilot(s: SpillState, dt: number) {
@@ -1096,7 +1153,15 @@ function stepSpillBody(s: SpillState, dt: number) {
 
   if (s.phase === "countdown") {
     s.phaseT += dt;
-    autopilot(s, dt);
+    if (s.manual) {
+      // the hand took the stick: it flies the empty field until the GO
+      handVertical(s, dt);
+      // the edges hold. The floor is not yet fatal, and cannot be parked
+      // on either: the GO must not open with the ship in the killzone
+      s.pilot.y = Math.max(22, Math.min(s.H - 80, s.pilot.y));
+      const home = s.W * SPILL.homeX;
+      s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * 3);
+    } else autopilot(s, dt);
     // the ore still drifts: a stream that was mid-screen is still there
     for (const n of s.nuts) { n.x += n.vx * dt; n.bob += dt * 4; }
     s.nuts = s.nuts.filter((n) => !n.got && n.x > -40);
@@ -1235,18 +1300,7 @@ function stepSpillBody(s: SpillState, dt: number) {
   // the crosswind is a steady push toward the wall; the lunge is the counter
   if (spillMod(s, "cross") && s.knock <= 0 && s.lunge <= 0) s.pilot.x -= 40 * lane(s) * ramp(s) * dt;
 
-  // THE HAND. Held, the thrust beats gravity by a fixed net acceleration;
-  // released, gravity has the ship. Both are capped, but a burst that
-  // started past a cap keeps its momentum and only decays: the cap stops
-  // the hand from building speed, never a swipe from carrying. THRUSTERS
-  // never touch the hold - a steadier hand is not a faster one
-  const g = gravityOf(s);
-  const prev = s.pilot.vy;
-  if (s.held) s.pilot.vy -= (g + SPILL.holdAccel) * dt;
-  s.pilot.vy += g * dt;
-  if (s.pilot.vy < -SPILL.riseCap) s.pilot.vy = Math.max(s.pilot.vy, Math.min(-SPILL.riseCap, prev + SPILL.burstDecay * dt));
-  if (s.pilot.vy > SPILL.fallCap) s.pilot.vy = Math.min(s.pilot.vy, Math.max(SPILL.fallCap, prev - SPILL.burstDecay * dt));
-  s.pilot.y += s.pilot.vy * dt;
+  handVertical(s, dt);
   s.pilot.x += s.pilot.vx * dt;
 
   const lo = s.W * SPILL.bandLeft;

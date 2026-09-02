@@ -1903,7 +1903,9 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
 /** a two-line teaching panel: the rule's name, then what to do about it.
  *  It sits a quarter of the way down, or under the status stack if the
  *  screen is too short for both */
-function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, alpha: number, below = 0) {
+/** the lesson panel sits low, under the flight path, its bottom edge at
+ *  `bottom` - the owner flew wave 1 with the controls card in the lane */
+function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, alpha: number, bottom: number) {
   const cut = text.indexOf(": ");
   const title = cut > 0 ? text.slice(0, cut) : "";
   let body = cut > 0 ? text.slice(cut + 2) : text;
@@ -1922,7 +1924,7 @@ function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, al
   }
   if (body) lines.push(body);
   const bh = 30 + (title ? 18 : 0) + lines.length * 16;
-  const cy = Math.max(w.H * 0.24, below + 8 + bh / 2);
+  const cy = bottom - bh / 2;
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.fillStyle = "rgba(12,18,36,0.82)";
@@ -2090,7 +2092,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   }
   // the free lesson, while it runs
   if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), hudY - 10);
+    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
   }
   if (s.phase === "ready") {
     const compact = W < 520;
@@ -2167,7 +2169,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(215,230,247,.7)";
     ctx.font = "700 11px Figtree, system-ui";
-    ctx.fillText("AUTOPILOT · CONTROL ON GO", W / 2, H * 0.34 + 146);
+    ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · PRESS TO TAKE THE STICK", W / 2, H * 0.34 + 146);
     ctx.restore();
   }
   if (s.phase === "wave" && s.phaseT < 0.6) {
