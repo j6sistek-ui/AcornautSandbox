@@ -5,7 +5,7 @@ import { createEngine } from "./engine";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
-import { SPILL, spillExtendPrice, spillItem, spillRerollPrice, type SpillState } from "./spill";
+import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice, type SpillBuyable, type SpillState, type SpillUpgrade } from "./spill";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -230,21 +230,19 @@ export async function bootStandalone(root: HTMLElement) {
       pause.onclick = () => engine.pause();
       bar.append(pause);
       overlay.append(bar);
-      // THE SPILL's two buttons ride the bottom corners: a LUNGE for anyone
-      // who misses the swipe, and the PULSE the meter pays for. When the
-      // Depot is open it takes the screen instead.
+      // THE SPILL's LUNGE button rides the bottom-right corner for anyone
+      // who misses the swipe. When the Depot is open it takes the screen.
       const sp = engine.world.spill;
       if (sp) {
         if (sp.phase === "depot") {
           overlay.append(drawDepot(sp));
           return;
         }
+        // one button, not two: PULSE fires itself now, at the impact
         const sbar = el("div", "ac-spillbar");
         const lunge = el("button", sp.lungeCharges > 0 ? "ac-lunge" : "ac-lunge spent", "LUNGE ▸▸");
         lunge.onclick = () => engine.spillLunge();
-        const pulse = el("button", sp.charge >= 1 ? "ac-pulse ready" : "ac-pulse", "PULSE");
-        pulse.onclick = () => engine.spillPulse();
-        sbar.append(lunge, pulse);
+        sbar.append(lunge);
         overlay.append(sbar);
       }
       return;
@@ -1332,20 +1330,22 @@ export async function bootStandalone(root: HTMLElement) {
     return gift;
   }
 
-  // THE DEPOT. Three shelves rolled from what the run has not bought yet,
-  // the Ore to spend on them, a reroll and an extension that both double in
-  // price, and the way back to the field. The clock is the Spill's own; the
-  // sheet repaints on every tick of it, so the number here is live.
+  // THE DEPOT. The ship has four meters and a purchase fills one: PLATING,
+  // SHIELD, THRUSTERS, POWER-UPS - plus a repair and a one-time core. What
+  // the run has and what it still needs is the meter, so the sheet never
+  // has to be read twice. The shelves are inert for a moment after they
+  // appear (the Spill's own arm timer) so a thumb still tapping from the
+  // wave cannot buy by accident, and the receipt names what was bought.
+  // The clock is the Spill's own; only its span repaints, in place.
   function drawDepot(sp: SpillState) {
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard ac-depotcard");
+    const arming = (sp.depot?.arm ?? 0) > 0;
+    if (arming) sheet.classList.add("arming");
     const kicker = el("p", "ac-kicker");
     const clock = el("span", "ac-depotclock", `${Math.ceil(sp.depot?.timer ?? 0)}s`);
     kicker.append(el("span", "", `THE SPILL · WAVE ${sp.wave} CLEARED · `), clock);
     sheet.append(kicker);
-    // THE CLOCK TICKS IN PLACE. Rebuilding the sheet every second would
-    // pull a shelf out from under a finger mid-tap; only this one span
-    // changes, on its own timer, until the sheet is gone.
     const tick = window.setInterval(() => {
       const live = engine.world.spill;
       if (!clock.isConnected || !live?.depot) { window.clearInterval(tick); return; }
@@ -1355,38 +1355,52 @@ export async function bootStandalone(root: HTMLElement) {
     const ore = el("div", "ac-depotore");
     ore.append(el("span", "", "ORE TO SPEND"), el("b", "", String(sp.ore)));
     sheet.append(ore);
-    const carried = [
-      `Hull ${sp.hull}/${sp.maxHull}`,
-      sp.shield ? `${sp.shield} shield${sp.shield > 1 ? "s" : ""}` : "",
-      sp.respawnArmed ? "Respawn Core armed" : "",
-    ].filter(Boolean).join(" · ");
-    sheet.append(el("p", "ac-sub", `${carried} · the field returns when the clock runs out.`));
-    (sp.depot?.offers ?? []).forEach((id, i) => {
-      if (!id) {
-        sheet.append(el("div", "ac-moderow ac-offer sold", "SOLD"));
-        return;
-      }
-      const item = spillItem(id);
-      const can = sp.ore >= item.price;
-      const b = el("button", can ? "ac-moderow ac-offer" : "ac-moderow ac-offer ac-cardoff");
+    sheet.append(el("p", "ac-sub", `Hull ${sp.hull}/${sp.maxHull}`
+      + `${sp.shield ? ` · ${sp.shield} shield${sp.shield > 1 ? "s" : ""}` : ""}`
+      + `${sp.coreArmed ? " · core armed" : ""}`
+      + " · the field returns when the clock runs out."));
+
+    // one row per meter. The description is the NEXT level's, because that
+    // is what the price buys; a full meter says so instead
+    const row = (what: SpillBuyable, filled: number, total: number, sub: string) => {
+      const shop = SPILL_SHOP[what];
+      const price = spillPrice(sp, what);
+      const can = price !== null && sp.ore >= price && !arming;
+      const b = el("button", `ac-moderow ac-offer ac-upg${price === null ? " full" : can ? "" : " ac-cardoff"}`);
+      if (price === null || arming) b.disabled = true;
       const t = el("span", "ac-moderowtxt");
-      const kind = item.consumable ? "CONSUMABLE" : item.once ? "ONE PER RUN" : `TIER ${item.tier}`;
-      t.append(el("i", "ac-offertier", `${item.track.toUpperCase()} · ${kind}`));
-      t.append(el("b", "", item.name), el("span", "", item.desc));
-      b.append(t, el("span", "ac-offerprice", `${item.price} ORE`));
-      b.onclick = () => { engine.spillBuy(i); };
+      t.append(el("b", "", shop.name));
+      const meter = el("span", "ac-upgmeter");
+      for (let i = 0; i < total; i++) meter.append(el("i", i < filled ? "on" : ""));
+      t.append(meter);
+      t.append(el("span", "", price === null ? sub : sub));
+      b.append(t, el("span", "ac-offerprice", price === null ? "FULL" : `${price} ORE`));
+      b.onclick = () => { engine.spillBuy(what); };
       sheet.append(b);
-    });
+    };
+    const next = (what: SpillUpgrade) =>
+      sp.up[what] >= SPILL_LEVELS ? `Level ${SPILL_LEVELS} · ${SPILL_SHOP[what].levels[SPILL_LEVELS - 1]}`
+        : `Next: ${SPILL_SHOP[what].levels[sp.up[what]]}`;
+    row("plating", sp.up.plating, SPILL_LEVELS, next("plating"));
+    row("shield", sp.shield, 2, sp.shield >= 2 ? "Two carried, the most the hull holds." : SPILL_SHOP.shield.levels[0]);
+    row("thrusters", sp.up.thrusters, SPILL_LEVELS, next("thrusters"));
+    row("pulse", sp.up.pulse, SPILL_LEVELS, next("pulse"));
+    if (sp.hull < sp.maxHull) row("repair", sp.hull, sp.maxHull, `Hull ${sp.hull}/${sp.maxHull} → full.`);
+    if (!sp.coreBought) row("core", 0, 1, SPILL_SHOP.core.levels[0]);
+
+    if (sp.depot?.bought.length) {
+      const names = sp.depot.bought.map((b) => SPILL_SHOP[b].name);
+      sheet.append(el("p", "ac-sub ac-depotreceipt", `Bought this stop: ${names.join(", ")}`));
+    }
     const act = el("div", "ac-depotact");
-    const reroll = el("button", "ac-ghost", `REROLL · ${spillRerollPrice(sp)} ORE`);
-    reroll.onclick = () => engine.spillReroll();
     const extend = el("button", "ac-ghost", `+${SPILL.extendSeconds}s · ${spillExtendPrice(sp)} ORE`);
+    extend.disabled = arming;
     extend.onclick = () => engine.spillExtend();
-    act.append(reroll, extend);
-    sheet.append(act);
     const go = el("button", "ac-primary", "BACK TO THE FIELD");
+    go.disabled = arming;
     go.onclick = () => engine.spillLeaveDepot();
-    sheet.append(go);
+    act.append(extend);
+    sheet.append(act, go);
     wrap.append(sheet);
     return wrap;
   }

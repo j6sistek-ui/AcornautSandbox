@@ -71,9 +71,32 @@ const stamped = join(pages, `js${ver}`);
 rmSync(stamped, { recursive: true, force: true });
 cpSync(join(pages, "js"), stamped, { recursive: true });
 
+// KEEP THE LAST FEW STAMPS. index.html is the one unversioned file we ship,
+// so a browser can hold a cached copy of it that names an OLDER js<VER>
+// folder. Deleting the previous stamp by hand on every release - which is
+// how this repo used to do it - turns every one of those cached pages into
+// a 404 and a blank screen. It happened on 2 Sep 2026, and the tell was
+// that a private window worked fine.
+//
+// Pruning belongs here rather than in a human's release checklist: a step
+// you have to remember is a step you eventually forget. Keep RETAIN stamps
+// (this one plus the previous few) and drop only what is older than that.
+const RETAIN = 4;
+const stamps = readdirSync(pages)
+  .filter((d) => /^js\d+$/.test(d))
+  .sort((a, b) => Number(b.slice(2)) - Number(a.slice(2)));
+for (const old of stamps.slice(RETAIN)) {
+  rmSync(join(pages, old), { recursive: true, force: true });
+  console.log(`  pruned stale stamp ${old}`);
+}
+
 const idx = join(pages, "index.html");
+// \d+, NOT \d*: with a star this also matched the UNVERSIONED "./js/..."
+// and rewrote it to the stamped path, which silently collapsed the
+// loader's fallback into a second copy of the same failing import - the
+// fallback looked present in the source and did nothing in the build.
 writeFileSync(idx, readFileSync(idx, "utf8")
-  .replace(/\.\/js\d*\/standalone\.js/g, `./js${ver}/standalone.js`));
+  .replace(/\.\/js\d+\/standalone\.js/g, `./js${ver}/standalone.js`));
 
 // The BETA page: the same document, one flag and one directory deeper.
 // Regenerated from the production page on every export so the two can never

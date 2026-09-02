@@ -4,7 +4,7 @@ import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=169";
 import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=169";
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=169";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=169";
-import { createSpill, resizeSpill, spillCleared, spillDive, spillFlap, stepSpill, } from "./spill.js?v=169";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=169";
 import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=169";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
@@ -2384,10 +2384,11 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
-    // THE SPILL flies its own pilot. A tap its phase refuses - the wave card,
-    // the Depot, the respawn freeze - is not a tap, so nothing below counts
-    // it or animates it.
-    if (w.spill && !spillFlap(w.spill))
+    // THE SPILL flies its own ship, and its tap is the hand going ON the
+    // thrust: it stays on until spillRelease. A press its phase refuses - the
+    // countdown, the Depot, the respawn freeze - or a press while already
+    // held is not a tap, so nothing below counts it or animates it.
+    if (w.spill && !spillHold(w.spill, true))
         return "none";
     w.run.taps += 1;
     if (w.lvl) {
@@ -2427,7 +2428,7 @@ export function dive(w, save) {
     // home on the way back and rings down, which reads as weight falling
     w.tailV -= TAIL.dive;
     if (w.spill) {
-        if (!spillDive(w.spill))
+        if (!spillBurst(w.spill, 1))
             return "none";
         spark(w, w.spill.pilot.x, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
         return "dive";
@@ -2959,6 +2960,20 @@ const SPILL_TONES = {
     lunge: ["#8fd6ff", "#cfefff"],
     graze: ["#9fe8ff"],
 };
+/** the hand comes OFF the thrust: pointer up, key up, focus lost */
+export function spillRelease(w) {
+    if (w.spill)
+        spillHold(w.spill, false);
+}
+/** a swipe up: the kick skyward. The swipe down is dive() */
+export function spillBurstUp(w) {
+    if (!w.spill || w.screen !== "play" || w.ready)
+        return false;
+    if (!spillBurst(w.spill, -1))
+        return false;
+    spark(w, w.spill.pilot.x, w.squirrel.y + 16, ["#c8d0e0", "#fff"], 10, "poof");
+    return true;
+}
 /** what the engine turns into sound and a re-render, once per frame */
 export function takeSpillCues(w) {
     const cues = w.spillCues;

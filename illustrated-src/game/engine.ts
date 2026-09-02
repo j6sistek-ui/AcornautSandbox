@@ -39,6 +39,8 @@ import {
   snapshot,
   takeRaceCueEffects,
   takeSpillCues,
+  spillBurstUp,
+  spillRelease,
   updateWorld,
   type FlightMode,
   type Screen,
@@ -61,7 +63,7 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
-import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, spillPulse, spillReroll, type SpillCue } from "./spill";
+import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, type SpillBuyable, type SpillCue } from "./spill";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "mods";
 
@@ -133,12 +135,10 @@ export type Engine = {
   continueRun: () => boolean;
   /** what that continue costs right now (10, or 50 past gate 100) */
   continueCost: () => number;
-  /** THE SPILL's own controls: the two on-screen buttons and the Depot.
-   *  Tap and dive ride the shared pointer path like every other mode. */
+  /** THE SPILL's own controls: the LUNGE button and the Depot. The hold,
+   *  the release and the bursts ride the shared pointer path. */
   spillLunge: () => void;
-  spillPulse: () => void;
-  spillBuy: (slot: number) => string;
-  spillReroll: () => string;
+  spillBuy: (what: SpillBuyable) => string;
   spillExtend: () => string;
   spillLeaveDepot: () => void;
   open: (s: Screen) => void;
@@ -440,7 +440,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (!world.spill || world.screen !== "play") return;
       // on the ready card a lunge is a launch, and a launch has to go
       // through the tap path: that is what clears w.ready, and a run
-      // started around it would sit frozen on the wave card forever
+      // started around it would sit frozen on the countdown forever
       if (world.ready) {
         if (flap(world, save) === "flap") sfx.flap();
         notify();
@@ -448,20 +448,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       if (spillLunge(world.spill)) { sfx.near(); notify(); }
     },
-    spillPulse() {
-      if (!world.spill || world.screen !== "play") return;
-      if (spillPulse(world.spill)) { sfx.shift(); notify(); }
-    },
-    spillBuy(slot) {
+    spillBuy(what) {
       if (!world.spill || world.screen !== "play") return "closed";
-      const r = spillBuy(world.spill, slot);
-      if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
-      notify();
-      return r;
-    },
-    spillReroll() {
-      if (!world.spill || world.screen !== "play") return "closed";
-      const r = spillReroll(world.spill);
+      const r = spillBuy(world.spill, what);
       if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
       notify();
       return r;
@@ -975,13 +964,24 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         swipe = null;
         return;
       }
-      // THE SPILL's third control: a swipe RIGHT is the lunge. Read before
-      // the dive so a diagonal goes to whichever axis it mostly travelled.
-      if (world.spill && p.x - swipe.x0 >= 40 && p.x - swipe.x0 > Math.abs(p.y - swipe.y0)) {
-        swipe.fired = true;
-        if (spillLunge(world.spill)) sfx.near();
-        notify();
-        return;
+      // THE SPILL's swipes: RIGHT is the lunge, UP is the kick skyward, and
+      // DOWN falls through to the dive below. Each is read against the
+      // other axis so a diagonal goes to whichever way it mostly travelled.
+      if (world.spill) {
+        const dx = p.x - swipe.x0;
+        const dy = p.y - swipe.y0;
+        if (dx >= 40 && dx > Math.abs(dy)) {
+          swipe.fired = true;
+          if (spillLunge(world.spill)) sfx.near();
+          notify();
+          return;
+        }
+        if (dy <= -34 && -dy > Math.abs(dx)) {
+          swipe.fired = true;
+          if (spillBurstUp(world)) sfx.flap();
+          notify();
+          return;
+        }
       }
       if (p.y - swipe.y0 >= 34) {
         swipe.fired = true;
@@ -999,6 +999,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     if (world.race) return;
+    // the Spill's hand comes off the thrust with the finger
+    if (world.spill) spillRelease(world);
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
@@ -1074,19 +1076,22 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ev === "dive") sfx.dive();
       notify();
     }
-    // the Spill's two extra keys: right for the lunge, P for the PULSE
+    // the Spill's extra keys: right (or D) for the lunge, W for the kick
+    // skyward. Space is the hold and ArrowDown the dive, as everywhere
     if (world.spill && world.screen === "play" && !e.repeat) {
       if (e.code === "ArrowRight" || e.code === "KeyD") {
         e.preventDefault();
         engine.spillLunge();
-      } else if (e.code === "KeyP" || e.code === "ShiftLeft" || e.code === "ShiftRight") {
+      } else if (e.code === "KeyW") {
         e.preventDefault();
-        engine.spillPulse();
+        if (spillBurstUp(world)) sfx.flap();
+        notify();
       }
     }
   });
   window.addEventListener("keyup", (e) => {
     if (e.code === "Space" || e.code === "ArrowUp") {
+      if (world.spill) spillRelease(world);
       if (raceResizeKeyboardReleasePending === "keyboard-rise") {
         raceResizeKeyboardReleasePending = null;
         return;
@@ -1111,6 +1116,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     cancelRaceControls();
+    spillRelease(world);
     swipe = null;
   });
   document.addEventListener("visibilitychange", () => {
@@ -1120,6 +1126,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
       cancelRaceControls();
+      spillRelease(world);
       swipe = null;
     }
   });
@@ -1172,13 +1179,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     let shouldNotify = false;
     // a graze is deliberately not a re-render: the play overlay is only the
     // two buttons and pause, and "charged" already relights PULSE
-    const NOTIFY: SpillCue[] = ["hit", "hull", "charged", "pulse", "wave", "depot", "depot-close",
-      "buy", "deny", "respawn", "recharge", "mission"];
+    const NOTIFY: SpillCue[] = ["hit", "hull", "charged", "pulse", "wave", "go", "dock", "depot", "armed",
+      "depot-close", "buy", "deny", "respawn", "recharge", "mission"];
+    // press and burst sound on the pointer path already
     const SOUND: Partial<Record<SpillCue, keyof typeof sfx>> = {
       hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
-      graze: "near", pulse: "shift", wave: "section", clear: "milestone", milestone: "milestone",
-      depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning", warn: "warning",
-      mission: "milestone",
+      graze: "near", pulse: "shift", count: "ui", go: "section", clear: "milestone", milestone: "milestone",
+      dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
+      warn: "warning", mission: "milestone",
     };
     for (const c of new Set(cues)) {
       const snd = SOUND[c];

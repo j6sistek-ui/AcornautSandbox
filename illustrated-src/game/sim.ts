@@ -14,9 +14,9 @@ import { raceViewport, raceViewportY } from "./race-viewport";
 import {
   createSpill,
   resizeSpill,
+  spillBurst,
   spillCleared,
-  spillDive,
-  spillFlap,
+  spillHold,
   stepSpill,
   type SpillCue,
   type SpillState,
@@ -2851,10 +2851,11 @@ export function flap(w: World, save: SaveData) {
     return "none";
   }
   if (w.ready) w.ready = false;
-  // THE SPILL flies its own pilot. A tap its phase refuses - the wave card,
-  // the Depot, the respawn freeze - is not a tap, so nothing below counts
-  // it or animates it.
-  if (w.spill && !spillFlap(w.spill)) return "none";
+  // THE SPILL flies its own ship, and its tap is the hand going ON the
+  // thrust: it stays on until spillRelease. A press its phase refuses - the
+  // countdown, the Depot, the respawn freeze - or a press while already
+  // held is not a tap, so nothing below counts it or animates it.
+  if (w.spill && !spillHold(w.spill, true)) return "none";
   w.run.taps += 1;
   if (w.lvl) {
     w.lvl.stats.taps += 1;
@@ -2891,7 +2892,7 @@ export function dive(w: World, save: SaveData) {
   // home on the way back and rings down, which reads as weight falling
   w.tailV -= TAIL.dive;
   if (w.spill) {
-    if (!spillDive(w.spill)) return "none";
+    if (!spillBurst(w.spill, 1)) return "none";
     spark(w, w.spill.pilot.x, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
     return "dive";
   }
@@ -3416,6 +3417,19 @@ const SPILL_TONES: Record<string, string[]> = {
   lunge: ["#8fd6ff", "#cfefff"],
   graze: ["#9fe8ff"],
 };
+
+/** the hand comes OFF the thrust: pointer up, key up, focus lost */
+export function spillRelease(w: World) {
+  if (w.spill) spillHold(w.spill, false);
+}
+
+/** a swipe up: the kick skyward. The swipe down is dive() */
+export function spillBurstUp(w: World) {
+  if (!w.spill || w.screen !== "play" || w.ready) return false;
+  if (!spillBurst(w.spill, -1)) return false;
+  spark(w, w.spill.pilot.x, w.squirrel.y + 16, ["#c8d0e0", "#fff"], 10, "poof");
+  return true;
+}
 
 /** what the engine turns into sound and a re-render, once per frame */
 export function takeSpillCues(w: World): SpillCue[] {
