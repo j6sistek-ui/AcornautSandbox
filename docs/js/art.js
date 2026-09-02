@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=169";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=170";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -239,7 +239,8 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // deliveries #1-#4 of the flight-bank sweep. Iontrim's retirement also
     // deleted its TAP_FRAME_SKIP stopgap in draw.ts: the skip dies with the
     // bank it patched.
-    leviathan: 16,
+    // leviathan's generated tap bank is retired with its remaster: the suit
+    // flies a painted 8/8 ramp now - the final delivery of the sweep.
     // These eight stay here only because the SUITS do - they are beta-gated in
     // catalog.ts, so production never loads them. Promote the pair together.
     ...(IS_BETA ? {
@@ -255,6 +256,18 @@ const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
 // have never owed anyone 8/8 (Flight itself flies 3/5). "alien2" is the
 // owner's A/B twin (beta-only, see catalog.ts) flying the standard-spec
 // bank while "alien" flies the custom-posed one.
+//
+// CRYOSTAR, VERDANT, GEMMIE and SAMMIE descend on SEVEN for the same kind
+// of reason (owner, 2 Sep 2026: "drop the broken frames"). Every delivery
+// ships desc-1 as a byte-identical copy of asc-1 - the wide neutral pose,
+// shared so the climb/dive crossing at zero velocity is seamless. On most
+// suits that costs nothing, because the master is the same size as the
+// rest of the bank. On these four it is not: measured against their own
+// dive frames, desc-1 runs 12-27% wider and 60-98% heavier, so every pass
+// back through level flight ballooned the pilot mid-dive. That is the
+// "large frame in rotation" the owner could see but not name. Dropped and
+// renumbered; the crossing now lands on a true first-dive pose. The other
+// eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
         // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
@@ -264,14 +277,14 @@ const ASC_BANKS = TAP_ANIM_ENABLED
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8 }
+        sammie: 8, frost: 8, ghost: 8, leviathan: 8 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8 }
+        cryostar: 7, verdant: 7, gemmie: 7,
+        sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
         ...RIGGED_SUITS,

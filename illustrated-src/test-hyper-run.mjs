@@ -74,12 +74,22 @@ try {
   // from "this literal appears in drawModeSheet" to "this mode exists, in
   // order, and the sheet renders MODES".
   const modesTable = standaloneSource.slice(
-    standaloneSource.indexOf("const MODES:"),
+    standaloneSource.indexOf("const ALL_MODES:"),
     standaloneSource.indexOf("function launchSelected"),
   );
   assert(modesTable.includes('id: "race"') && modesTable.includes('label: "HYPER RUN"')
     && modesTable.includes('id: "tunnel"') && modesTable.includes('label: "WORMHOLE RUN"'),
   "Hyper Run entry is missing from the formatted Modes rows");
+  // WORMHOLE RUN IS HIDDEN, NOT DELETED (owner, 2 Sep 2026): the corridor
+  // ships as the wormhole transition inside Lost in Space, so it has no row
+  // of its own for now. Both halves of that are worth holding: the row must
+  // still be DEFINED - deleting it would take the mode id, its sim and the
+  // Star Chart missions that fly it down with it - and it must be FILTERED
+  // off the sheet while the flag says so.
+  assert(/const WORMHOLE_RUN_ON_SHEET = (true|false);/.test(standaloneSource),
+  "the Wormhole Run sheet flag is gone: the row is meant to be hidden behind one switch");
+  assert(modesTable.includes('m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET'),
+  "the Modes sheet no longer filters Wormhole Run by its flag");
   // NOTHING in the sheet may launch: picking a mode picks it, TAKE FLIGHT
   // starts it, and a Star Chart level starts itself. This is what stopped
   // Wormhole Run flying on contact while its neighbours only toggled.
