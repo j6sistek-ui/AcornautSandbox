@@ -1,11 +1,11 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=169";
-import { modsUnlocked, writeSave, grantTutorialKit } from "./save.js?v=169";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=169";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=169";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=169";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=169";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=169";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=169";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=173";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=173";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=173";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=173";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=173";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=173";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=173";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=173";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -277,6 +277,12 @@ function driftModOf(save, w) {
     if (!modsLive(save, w))
         return 1;
     if (save.steadyGates)
+        return 0;
+    // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
+    // strobes, it turns into steady gates"). The pal does what the Steady
+    // Gates mod did, the way Wisp took over Rough Air - the pal is the one
+    // you can see doing it, so the mod card is gone from the loadout.
+    if (save.equippedPal === "nightglider" && !save.noPalFx)
         return 0;
     return 1;
 }
@@ -1014,7 +1020,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // so mission 3-8 is the same ladder for every pilot. The endless mode
     // rolls a fresh one every run.
     w.spill = flight === "spill"
-        ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0)
+        ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0, !save.helpOff)
         : null;
     w.spillCues = [];
     w.speed = PHYS.baseSpeed;
@@ -3625,7 +3631,11 @@ export function updateWorld(w, save, dt) {
         }
         else if (a.kind === "shield") {
             if (pal !== "nutsack" && pal !== "tinbot") {
-                const cap = save.battery ? 3 : 1;
+                // SHIELD BATTERY IS A STAR RUNG, NOT A PURCHASE (owner, 2 Sep 2026:
+                // "always active, not a toggle"): earn the stars and you carry
+                // three charges from then on. save.battery is left in place for
+                // old saves and no longer read.
+                const cap = batteryUnlocked(save) ? 3 : 1;
                 w.shieldCharges = Math.min(cap, w.shieldCharges + 1);
             }
             spark(w, a.x, ay, ["#7ad8ff", "#5dff9e"], 12, "shield");

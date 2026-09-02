@@ -263,7 +263,18 @@ function tone(o) {
     osc.start(t);
     osc.stop(t + o.dur + 0.05);
 }
+// THE SOUND EFFECTS SWITCH. Every effect below passes through guard(), so
+// this is the one place the switch has to be honoured - a muted pilot
+// pays nothing for a flap but the function call. The score is a separate
+// switch (music.setMuted): a pilot who wants the tune without the thrust,
+// or the reverse, gets exactly that.
+let sfxMuted = false;
+export function setSfxMuted(m) {
+    sfxMuted = m;
+}
 function guard(fn) {
+    if (sfxMuted)
+        return;
     try {
         fn();
     }

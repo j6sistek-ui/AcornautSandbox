@@ -27,7 +27,7 @@
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and Gold Ore is what charges it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=169";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=173";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -115,34 +115,34 @@ export const SPILL_MOD_INFO = {
     none: { name: "", short: "", teach: "" },
     surge: {
         name: "SURGE", short: "surge",
-        teach: "SURGE: the field doubles for six seconds. Hold a lane, don't chase.",
+        teach: "SURGE: double debris for 6s · hold your lane",
     },
     lowg: {
         name: "LOW-G", short: "low gravity",
-        teach: "LOW-G: gravity is lighter. Ease off the hold. Burst down to drop.",
+        teach: "LOW-G: lighter · hold less · swipe down to drop",
     },
     heavy: {
         name: "HEAVY", short: "heavy gravity",
-        teach: "HEAVY: gravity is stronger. Hold longer. Burst up to recover.",
+        teach: "HEAVY: heavier · hold longer · swipe up to recover",
     },
     cross: {
         name: "CROSSWIND", short: "crosswind",
-        teach: "CROSSWIND: you are pushed toward the wall. Lunge to hold your lane.",
+        teach: "CROSSWIND: pushed to the wall · lunge to hold",
     },
     blackout: {
         name: "BLACKOUT", short: "blackout",
-        teach: "BLACKOUT: the field goes dark. Read the rims and the hulk warnings.",
+        teach: "BLACKOUT: lights out · watch the rims",
     },
     swarm: {
         name: "SWARM", short: "swarm",
-        teach: "SWARM: more spinners, wider arcs. Watch the weave, not the piece.",
+        teach: "SWARM: more spinners · read the weave",
     },
     drift: {
         name: "DRIFT", short: "drift",
-        teach: "DRIFT: the whole field tilts and wanders. The debris comes at the angle you see.",
+        teach: "DRIFT: the field tilts · debris follows the angle",
     },
 };
-export const SPILL_CONTROL_HINT = "HOLD to rise · RELEASE to fall · SWIPE UP or DOWN to burst · SWIPE RIGHT to lunge";
+export const SPILL_CONTROL_HINT = "CONTROLS: hold ▲ rise · release ▼ fall · swipe ▶ lunge";
 /** Twenty authored waves. Every rule is taught alone the first time it
  *  appears; after wave 20 the game rolls them. Speed and crowding climb on
  *  separate curves so the field gets faster before it gets fuller.
@@ -257,7 +257,7 @@ function rand(s) {
     x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
     return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
 }
-export function createSpill(W, H, seed, target = 0) {
+export function createSpill(W, H, seed, target = 0, hints = true) {
     return {
         seed: seed >>> 0,
         rng: seed >>> 0,
@@ -324,6 +324,7 @@ export function createSpill(W, H, seed, target = 0) {
         banner: "",
         bannerT: 0,
         hint: "",
+        hints,
         hintT: 0,
         taught: [],
         shake: 0,
@@ -679,11 +680,11 @@ function beginCountdown(s, n) {
     if (fresh) {
         s.taught.push(fresh);
         s.hint = SPILL_MOD_INFO[fresh].teach;
-        s.hintT = SPILL.countdown + SPILL.hintTime;
+        s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
     }
     else if (n === 1) {
         s.hint = SPILL_CONTROL_HINT;
-        s.hintT = SPILL.countdown + SPILL.hintTime;
+        s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
     }
     cue(s, "wave");
 }

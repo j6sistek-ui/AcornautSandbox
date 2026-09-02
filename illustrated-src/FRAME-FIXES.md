@@ -5,6 +5,39 @@ twitching sizes bad. ghost still has a flash frame that inverts itself and
 looks glitchy. cryostar still has a fat frame." Video moments given: ghost at
 7.77s, verdant 19.34s, gemmie 32.79s, sammie 34.41s ("sammie's big one").
 
+Owner's follow-up (2 Sep 2026) narrows the tail-colour repair to **Sammie,
+Ion, Void, Ember and Copper**. Gemmie, Cryostar and Verdant change hue by
+design; do not palette-normalize those three. Their geometry notes below
+remain historical owner-review observations, not part of the tail repair.
+
+## Tail continuity repair (v173)
+
+The five named banks were repaired without changing their attitudes or
+timing. Their warm-tail colour was brought to each suit's own bank median,
+the painted character/head scale was normalized around the measured `DOME`
+centre, and only the plume side of frames with a collapsed or ballooned tail
+was enlarged or reduced with a continuous root-weighted warp. The static
+suit render remains byte-identical to its repaired `asc-1` frame.
+
+Sammie's oversized neutral was given one additional uniform reduction, so it
+no longer inflates between `asc-1` and `asc-2`. After overlay review, the one
+non-breathing helmet radius for Sammie is 35px and Copper is 44px; all five
+continue to use their existing per-frame centres and pose rotations. The QA
+gate samples only these five banks. It deliberately excludes the three
+owner-approved hue-changing designs.
+
+Ion and Verdant also had a separate material-continuity problem in their
+painted suits. Ion's navy panels and Verdant's green panels changed
+brightness/saturation markedly between poses, making the costume itself
+appear to change even when the silhouette was sound. Their suit-colour
+pixels now hold one saturation/value baseline across each bank. Verdant's
+pose-dependent hue variation is intentionally preserved.
+
+Helmet fitting remains universal: every interchangeable helmet is seated
+through the same per-frame `DOME` socket for a standard suit. Alien, Cat,
+Big Booty, Robo, Cyber, Flight and Eclipse are owner-approved custom rigs;
+their art and helmet sockets are unchanged by this repair.
+
 This is the per-character audit behind that brief, with the exact file for
 each bad frame so the redraws can be scoped without guessing. Every number
 below was measured off the shipped PNGs (`docs/art/suits/<suit>-<ramp>-<n>.png`,
