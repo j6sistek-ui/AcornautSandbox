@@ -2,7 +2,7 @@ import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAI
 import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite, type SpillShipXf } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
@@ -1710,15 +1710,156 @@ function drawSpillWarning(ctx: CanvasRenderingContext2D, w: World, r: SpillRock)
  *  the same, with a plume that answers the hand: a glow while held, a
  *  flare on a burst. Falls back to the painted pilot if the ship has not
  *  loaded, so the mode is never a blank */
+/** the ship the Spill flies: a hull per PLATING level and a part per level
+ *  of THRUSTERS (the tail), POWER-UPS (the cone) and the shield charges
+ *  (the canopy). Every sprite shares one 256px frame, and each part sits
+ *  where the owner fitted it in the lab's Ship Bench: transforms.json is
+ *  that fit, offset/scale/turn about the part's own centre, with per-hull
+ *  overrides. A missing bank falls back to Hyper Run's scout */
+const SPILL_SHIP_LEN = 58;
+type SpillHole = { cx: number; cy: number; rx: number; ry: number };
+const spillHoles = new WeakMap<Sprite, SpillHole>();
+
+/** where the hull's cockpit opening is, in the sprite's own pixels: the
+ *  dip in the top outline across the middle of the egg. Measured once */
+function spillHoleOf(hull: Sprite): SpillHole {
+  const hit = spillHoles.get(hull);
+  if (hit) return hit;
+  const b = hull.box;
+  let hole: SpillHole = { cx: b.x + b.w * 0.6, cy: b.y + b.h * 0.3, rx: b.w * 0.12, ry: b.h * 0.14 };
+  try {
+    const c = document.createElement("canvas");
+    c.width = hull.naturalWidth || hull.width; c.height = hull.naturalHeight || hull.height;
+    const g = c.getContext("2d", { willReadFrequently: true });
+    if (g) {
+      g.drawImage(hull, 0, 0);
+      const d = g.getImageData(0, 0, c.width, c.height).data;
+      const tops: number[] = [];
+      const x0 = Math.round(b.x + b.w * 0.3), x1 = Math.round(b.x + b.w * 0.88);
+      for (let x = x0; x <= x1; x++) {
+        let t = -1;
+        for (let y = b.y; y < b.y + b.h; y++) if (d[(y * c.width + x) * 4 + 3] > 40) { t = y; break; }
+        tops.push(t);
+      }
+      const valid = tops.filter((t) => t >= 0);
+      if (valid.length) {
+        const rim = Math.min(...valid);
+        // the first run of columns that drop well below the rim and then
+        // climb back out is the opening; the nose taper never climbs back
+        const deep = tops.map((t) => t >= 0 && t > rim + b.h * 0.12);
+        let k0 = deep.indexOf(true);
+        if (k0 > 0) {
+          let k1 = k0;
+          while (k1 + 1 < deep.length && deep[k1 + 1]) k1++;
+          if (k1 + 1 < deep.length && k1 - k0 > 4) {
+            const floor = Math.max(...tops.slice(k0, k1 + 1));
+            hole = { cx: x0 + (k0 + k1) / 2, cy: (rim + floor) / 2, rx: (k1 - k0) / 2, ry: (floor - rim) / 2 };
+          }
+        }
+      }
+    }
+  } catch { /* a tainted canvas keeps the estimate */ }
+  spillHoles.set(hull, hole);
+  return hole;
+}
+
+function spillShipParts(s: SpillState) {
+  const lvl = (n: number) => Math.max(0, Math.min(3, Math.floor(n)));
+  return {
+    hull: `hull-${lvl(s.up.plating)}`,
+    thrust: s.up.thrusters > 0 ? `thrust-${lvl(s.up.thrusters)}` : null,
+    cone: s.up.pulse > 0 ? `cone-${lvl(s.up.pulse)}` : null,
+    // the canopy is the shield: a visor for one charge, sealed for two
+    cockpit: s.shield >= 2 ? "cockpit-3" : s.shield >= 1 ? "cockpit-1" : null,
+  };
+}
+
 function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number) {
+  const parts = spillShipParts(s);
+  const hull = art.spillShip?.[parts.hull];
+  if (!hull) { drawSpillScout(ctx, w, save, art, s, x); return; }
+  const fit = art.spillShipFit;
+  const xfOf = (name: string) => fit?.overrides?.[parts.hull]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+  const layers = ([["thrust", parts.thrust], ["cone", parts.cone], ["cockpit", parts.cockpit]] as const)
+    .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
+    .filter((l): l is { name: string; sp: Sprite; xf: { dx: number; dy: number; scale: number; rot: number; behind?: boolean } } => !!l && !!l.sp);
+  const z = SPILL_SHIP_LEN / hull.box.w;
+  const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+
+  ctx.save();
+  ctx.translate(x, s.pilot.y);
+  ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
+  ctx.scale(z, z);
+  // the hull's box centre is the collision point; everything else is
+  // painted in the sprites' shared frame around it
+  ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
+
+  // the plume, from the mouth of whatever is on the tail
+  const tail = layers.find((l) => l.name.startsWith("thrust"));
+  let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
+  if (tail) {
+    const cx = tail.sp.box.x + tail.sp.box.w / 2, cy = tail.sp.box.y + tail.sp.box.h / 2;
+    engineX = cx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
+    engineY = cy + tail.xf.dy;
+  }
+  const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
+  const length = ((9 + 14 * thrust) + pulse * (3 + 4 * thrust)) / z;
+  const half = (3 + 1.4 * thrust) / z;
+  const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
+  grad.addColorStop(0, "rgba(255,255,255,.96)");
+  grad.addColorStop(0.18, "rgba(97,221,255,.92)");
+  grad.addColorStop(0.58, "rgba(146,82,255,.66)");
+  grad.addColorStop(1, "rgba(83,38,180,0)");
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = grad;
+  ctx.shadowColor = "rgba(111,92,255,.82)";
+  ctx.shadowBlur = (5 + 5 * thrust) / z;
+  ctx.beginPath();
+  ctx.moveTo(engineX, engineY - half);
+  ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
+  ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  const paint = (l: typeof layers[number]) => {
+    const cx = l.sp.box.x + l.sp.box.w / 2, cy = l.sp.box.y + l.sp.box.h / 2;
+    ctx.save();
+    ctx.translate(cx + l.xf.dx, cy + l.xf.dy);
+    ctx.rotate((l.xf.rot * Math.PI) / 180);
+    ctx.scale(l.xf.scale, l.xf.scale);
+    ctx.drawImage(l.sp, -cx, -cy);
+    ctx.restore();
+  };
+  for (const l of layers) if (l.xf.behind) paint(l);
+  ctx.drawImage(hull, 0, 0);
+  // the pilot, in the opening, under whatever canopy the shield has bought
+  const hole = spillHoleOf(hull);
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+  // plus a little room over the rim so the helmet dome peeks out
+  ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
+  ctx.clip();
+  const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
+  glow.addColorStop(0, "rgba(71,112,166,.62)");
+  glow.addColorStop(1, "rgba(3,8,22,.96)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
+  drawPilot(ctx, w, save, art, hole.cx - 1.5 / z, 0.34 / z, hole.cy + hole.ry * 0.45, 0);
+  ctx.restore();
+  for (const l of layers) if (!l.xf.behind) paint(l);
+  ctx.restore();
+}
+
+/** the fallback: Hyper Run's scout, as the mode flew before it had a ship */
+function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number) {
   const ship = art.hyperRun["scout-ship"];
   if (!ship) {
     drawPilot(ctx, w, save, art, x);
     return;
   }
-  // Hyper Run's hull at two thirds of its size, centred on the collision
-  // point rather than registered at the nose, with the equipped pilot in
-  // the cockpit exactly as the race paints it
   const scale = 58 / 88;
   const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
   const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
@@ -1728,7 +1869,6 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.save();
   ctx.translate(x, s.pilot.y);
   ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
-  // the plume: the same gradient Hyper Run flies, sized to this hull
   const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
   const length = (9 + 14 * thrust) + pulse * (3 + 4 * thrust);
   const half = 3 + 1.4 * thrust;
@@ -1750,7 +1890,6 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.closePath();
   ctx.fill();
   ctx.restore();
-  // the cockpit: a glow behind the glass and the pilot inside it
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
@@ -4632,10 +4771,13 @@ function previewRot(p: number, beat: number, kick: number, pull: number) {
 }
 
 /** THE SHIP IN THE CASE (owner, 2 Sep 2026): the loadout's SHIP tab
- *  paints the scout ship the way the Spill flies it - plume, cockpit glow,
- *  the equipped pilot in the glass - on the same lit stage every other tab
- *  uses. `thrust` is the tier being previewed (0 stock .. 3), and only the
- *  plume answers to it for now: this is a mock of an upgrade, not one. */
+ *  paints the Spill's ship on the same lit stage every other tab uses -
+ *  the LAYERED KIT the owner cut and fitted on the Ship Bench (#170-#171):
+ *  hull-0, the previewed thruster, the one-charge canopy, the equipped
+ *  pilot in the opening. `thrust` is the tier being previewed (0 stock ..
+ *  3) and picks the thrust-N part; nothing else moves, because this is a
+ *  mock of an upgrade, not one. Falls back to the old scout sprite when
+ *  the kit has not loaded. */
 export function paintShipPreview(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
@@ -4646,56 +4788,92 @@ export function paintShipPreview(
   t: number,
   thrust: number,
 ) {
-  const ship = art?.hyperRun?.["scout-ship"];
-  if (!art || !ship) return;
-  const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
-  const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
-  const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
+  if (!art) return;
   const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
   const helmRaw = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
   const helmet = helmRaw.suitOnly && helmRaw.suitOnly !== suit.id ? HELMETS[0] : helmRaw;
-  const lvl = Math.max(0, Math.min(3, thrust));
+  const lvl = Math.max(0, Math.min(3, Math.floor(thrust)));
+  const hull = art.spillShip?.["hull-0"];
+  const bob = Math.sin(t * 1.7) * 3;
+  if (hull) {
+    const fit = art.spillShipFit;
+    const xfOf = (name: string) => fit?.overrides?.["hull-0"]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+    const names = [lvl > 0 ? `thrust-${lvl}` : null, "cockpit-1"];
+    const layers = names
+      .map((name) => name && art.spillShip[name] ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
+      .filter((l): l is { name: string; sp: Sprite; xf: SpillShipXf } => !!l);
+    const z = (SPILL_SHIP_LEN * scale) / hull.box.w;
+    ctx.save();
+    ctx.translate(cx, cy + bob);
+    ctx.rotate(-0.04);
+    ctx.scale(z, z);
+    ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
+    // the plume, from the mouth of the previewed thruster (or the bare tail)
+    const tail = layers.find((l) => l.name.startsWith("thrust"));
+    let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
+    if (tail) {
+      const tcx = tail.sp.box.x + tail.sp.box.w / 2, tcy = tail.sp.box.y + tail.sp.box.h / 2;
+      engineX = tcx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
+      engineY = tcy + tail.xf.dy;
+    }
+    const pulse = 0.5 + 0.5 * Math.sin(t * (9 + 5 * lvl));
+    const length = ((12 + 12 * lvl) + pulse * (4 + 3 * lvl)) / z;
+    const half = (3.2 + 1.1 * lvl) / z;
+    const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
+    grad.addColorStop(0, "rgba(255,255,255,.96)");
+    grad.addColorStop(0.18, lvl >= 3 ? "rgba(255,214,106,.95)" : "rgba(97,221,255,.92)");
+    grad.addColorStop(0.58, lvl >= 2 ? "rgba(255,120,60,.66)" : "rgba(146,82,255,.66)");
+    grad.addColorStop(1, "rgba(83,38,180,0)");
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grad;
+    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowBlur = (6 + 4 * lvl) / z;
+    ctx.beginPath();
+    ctx.moveTo(engineX, engineY - half);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    const paint = (l: typeof layers[number]) => {
+      const lcx = l.sp.box.x + l.sp.box.w / 2, lcy = l.sp.box.y + l.sp.box.h / 2;
+      ctx.save();
+      ctx.translate(lcx + l.xf.dx, lcy + l.xf.dy);
+      ctx.rotate((l.xf.rot * Math.PI) / 180);
+      ctx.scale(l.xf.scale, l.xf.scale);
+      ctx.drawImage(l.sp, -lcx, -lcy);
+      ctx.restore();
+    };
+    for (const l of layers) if (l.xf.behind) paint(l);
+    ctx.drawImage(hull, 0, 0);
+    // the pilot in the opening, the way the Spill seats it
+    const hole = spillHoleOf(hull);
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+    ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
+    ctx.clip();
+    const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
+    glow.addColorStop(0, "rgba(71,112,166,.62)");
+    glow.addColorStop(1, "rgba(3,8,22,.96)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
+    paintFlightPreview(ctx, art, suit, helmet, hole.cx - 1.5, hole.cy + hole.ry * 0.45, hole.rx * 2.1, t);
+    ctx.restore();
+    for (const l of layers) if (!l.xf.behind) paint(l);
+    ctx.restore();
+    return;
+  }
+  // the kit is not home yet: the old scout, so the case is never empty
+  const ship = art.hyperRun?.["scout-ship"];
+  if (!ship) return;
+  const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
+  const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
+  const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
   ctx.save();
-  ctx.translate(cx, cy + Math.sin(t * 1.7) * 3);
+  ctx.translate(cx, cy + bob);
   ctx.rotate(-0.04);
-  // the plume grows with the tier and idles with a slow pulse
-  const pulse = 0.5 + 0.5 * Math.sin(t * (9 + 5 * lvl));
-  const length = (12 + 12 * lvl) + pulse * (4 + 3 * lvl);
-  const half = (3.2 + 1.1 * lvl) * scale;
-  const engineX = layout.engineX;
-  const tail = engineX - length;
-  const grad = ctx.createLinearGradient(engineX, 0, tail, 0);
-  grad.addColorStop(0, "rgba(255,255,255,.96)");
-  grad.addColorStop(0.18, lvl >= 3 ? "rgba(255,214,106,.95)" : "rgba(97,221,255,.92)");
-  grad.addColorStop(0.58, lvl >= 2 ? "rgba(255,120,60,.66)" : "rgba(146,82,255,.66)");
-  grad.addColorStop(1, "rgba(83,38,180,0)");
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  ctx.fillStyle = grad;
-  ctx.shadowColor = "rgba(111,92,255,.82)";
-  ctx.shadowBlur = 6 + 4 * lvl;
-  ctx.beginPath();
-  ctx.moveTo(engineX, -half);
-  ctx.quadraticCurveTo(engineX - length * 0.48, -half * 0.64, tail, 0);
-  ctx.quadraticCurveTo(engineX - length * 0.48, half * 0.64, engineX, half);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-  // cockpit: glow behind the glass, the pilot inside it
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
-  ctx.clip();
-  const glow = ctx.createRadialGradient(
-    layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1,
-    layout.cockpitX, layout.cockpitY, 15 * scale,
-  );
-  glow.addColorStop(0, "rgba(71,112,166,.62)");
-  glow.addColorStop(1, "rgba(3,8,22,.96)");
-  ctx.fillStyle = glow;
-  ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-  paintFlightPreview(ctx, art, suit, helmet, layout.cockpitX - 2 * scale, layout.cockpitY + 2 * scale, 30 * scale, t);
-  ctx.restore();
   drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
   ctx.restore();
 }

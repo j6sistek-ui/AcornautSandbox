@@ -33,11 +33,12 @@ function tsc(entry, outDir) {
 
 tsc("illustrated-src/lab/rig.ts", join(root, "docs/lab/rig/js"));
 tsc("illustrated-src/lab/skytest.ts", join(root, "docs/lab/skytest/js"));
+tsc("illustrated-src/lab/ship.ts", join(root, "docs/lab/ship/js"));
 
 // The rig editor opens on the shipping numbers, read straight out of
 // draw.ts at build time.
 const t = writeTables(root, join(root, "docs/lab/rig"));
 console.log(
-  "built lab: docs/lab/rig/js, docs/lab/skytest/js " +
+  "built lab: docs/lab/rig/js, docs/lab/skytest/js, docs/lab/ship/js " +
     `(${t.suits.length} heads, ${t.helmets.length} helmets, art v${t.artVer})`,
 );

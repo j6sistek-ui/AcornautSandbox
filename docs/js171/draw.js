@@ -1,4 +1,4 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=171";
 import { goalHud } from "./campaign.js?v=171";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=171";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=171";
@@ -1524,15 +1524,163 @@ function drawSpillWarning(ctx, w, r) {
  *  the same, with a plume that answers the hand: a glow while held, a
  *  flare on a burst. Falls back to the painted pilot if the ship has not
  *  loaded, so the mode is never a blank */
+/** the ship the Spill flies: a hull per PLATING level and a part per level
+ *  of THRUSTERS (the tail), POWER-UPS (the cone) and the shield charges
+ *  (the canopy). Every sprite shares one 256px frame, and each part sits
+ *  where the owner fitted it in the lab's Ship Bench: transforms.json is
+ *  that fit, offset/scale/turn about the part's own centre, with per-hull
+ *  overrides. A missing bank falls back to Hyper Run's scout */
+const SPILL_SHIP_LEN = 58;
+const spillHoles = new WeakMap();
+/** where the hull's cockpit opening is, in the sprite's own pixels: the
+ *  dip in the top outline across the middle of the egg. Measured once */
+function spillHoleOf(hull) {
+    const hit = spillHoles.get(hull);
+    if (hit)
+        return hit;
+    const b = hull.box;
+    let hole = { cx: b.x + b.w * 0.6, cy: b.y + b.h * 0.3, rx: b.w * 0.12, ry: b.h * 0.14 };
+    try {
+        const c = document.createElement("canvas");
+        c.width = hull.naturalWidth || hull.width;
+        c.height = hull.naturalHeight || hull.height;
+        const g = c.getContext("2d", { willReadFrequently: true });
+        if (g) {
+            g.drawImage(hull, 0, 0);
+            const d = g.getImageData(0, 0, c.width, c.height).data;
+            const tops = [];
+            const x0 = Math.round(b.x + b.w * 0.3), x1 = Math.round(b.x + b.w * 0.88);
+            for (let x = x0; x <= x1; x++) {
+                let t = -1;
+                for (let y = b.y; y < b.y + b.h; y++)
+                    if (d[(y * c.width + x) * 4 + 3] > 40) {
+                        t = y;
+                        break;
+                    }
+                tops.push(t);
+            }
+            const valid = tops.filter((t) => t >= 0);
+            if (valid.length) {
+                const rim = Math.min(...valid);
+                // the first run of columns that drop well below the rim and then
+                // climb back out is the opening; the nose taper never climbs back
+                const deep = tops.map((t) => t >= 0 && t > rim + b.h * 0.12);
+                let k0 = deep.indexOf(true);
+                if (k0 > 0) {
+                    let k1 = k0;
+                    while (k1 + 1 < deep.length && deep[k1 + 1])
+                        k1++;
+                    if (k1 + 1 < deep.length && k1 - k0 > 4) {
+                        const floor = Math.max(...tops.slice(k0, k1 + 1));
+                        hole = { cx: x0 + (k0 + k1) / 2, cy: (rim + floor) / 2, rx: (k1 - k0) / 2, ry: (floor - rim) / 2 };
+                    }
+                }
+            }
+        }
+    }
+    catch { /* a tainted canvas keeps the estimate */ }
+    spillHoles.set(hull, hole);
+    return hole;
+}
+function spillShipParts(s) {
+    const lvl = (n) => Math.max(0, Math.min(3, Math.floor(n)));
+    return {
+        hull: `hull-${lvl(s.up.plating)}`,
+        thrust: s.up.thrusters > 0 ? `thrust-${lvl(s.up.thrusters)}` : null,
+        cone: s.up.pulse > 0 ? `cone-${lvl(s.up.pulse)}` : null,
+        // the canopy is the shield: a visor for one charge, sealed for two
+        cockpit: s.shield >= 2 ? "cockpit-3" : s.shield >= 1 ? "cockpit-1" : null,
+    };
+}
 function drawSpillShip(ctx, w, save, art, s, x) {
+    const parts = spillShipParts(s);
+    const hull = art.spillShip?.[parts.hull];
+    if (!hull) {
+        drawSpillScout(ctx, w, save, art, s, x);
+        return;
+    }
+    const fit = art.spillShipFit;
+    const xfOf = (name) => fit?.overrides?.[parts.hull]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+    const layers = [["thrust", parts.thrust], ["cone", parts.cone], ["cockpit", parts.cockpit]]
+        .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
+        .filter((l) => !!l && !!l.sp);
+    const z = SPILL_SHIP_LEN / hull.box.w;
+    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    ctx.save();
+    ctx.translate(x, s.pilot.y);
+    ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
+    ctx.scale(z, z);
+    // the hull's box centre is the collision point; everything else is
+    // painted in the sprites' shared frame around it
+    ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
+    // the plume, from the mouth of whatever is on the tail
+    const tail = layers.find((l) => l.name.startsWith("thrust"));
+    let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
+    if (tail) {
+        const cx = tail.sp.box.x + tail.sp.box.w / 2, cy = tail.sp.box.y + tail.sp.box.h / 2;
+        engineX = cx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
+        engineY = cy + tail.xf.dy;
+    }
+    const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
+    const length = ((9 + 14 * thrust) + pulse * (3 + 4 * thrust)) / z;
+    const half = (3 + 1.4 * thrust) / z;
+    const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
+    grad.addColorStop(0, "rgba(255,255,255,.96)");
+    grad.addColorStop(0.18, "rgba(97,221,255,.92)");
+    grad.addColorStop(0.58, "rgba(146,82,255,.66)");
+    grad.addColorStop(1, "rgba(83,38,180,0)");
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grad;
+    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowBlur = (5 + 5 * thrust) / z;
+    ctx.beginPath();
+    ctx.moveTo(engineX, engineY - half);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    const paint = (l) => {
+        const cx = l.sp.box.x + l.sp.box.w / 2, cy = l.sp.box.y + l.sp.box.h / 2;
+        ctx.save();
+        ctx.translate(cx + l.xf.dx, cy + l.xf.dy);
+        ctx.rotate((l.xf.rot * Math.PI) / 180);
+        ctx.scale(l.xf.scale, l.xf.scale);
+        ctx.drawImage(l.sp, -cx, -cy);
+        ctx.restore();
+    };
+    for (const l of layers)
+        if (l.xf.behind)
+            paint(l);
+    ctx.drawImage(hull, 0, 0);
+    // the pilot, in the opening, under whatever canopy the shield has bought
+    const hole = spillHoleOf(hull);
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+    // plus a little room over the rim so the helmet dome peeks out
+    ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
+    ctx.clip();
+    const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
+    glow.addColorStop(0, "rgba(71,112,166,.62)");
+    glow.addColorStop(1, "rgba(3,8,22,.96)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
+    drawPilot(ctx, w, save, art, hole.cx - 1.5 / z, 0.34 / z, hole.cy + hole.ry * 0.45, 0);
+    ctx.restore();
+    for (const l of layers)
+        if (!l.xf.behind)
+            paint(l);
+    ctx.restore();
+}
+/** the fallback: Hyper Run's scout, as the mode flew before it had a ship */
+function drawSpillScout(ctx, w, save, art, s, x) {
     const ship = art.hyperRun["scout-ship"];
     if (!ship) {
         drawPilot(ctx, w, save, art, x);
         return;
     }
-    // Hyper Run's hull at two thirds of its size, centred on the collision
-    // point rather than registered at the nose, with the equipped pilot in
-    // the cockpit exactly as the race paints it
     const scale = 58 / 88;
     const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
     const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
@@ -1542,7 +1690,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
-    // the plume: the same gradient Hyper Run flies, sized to this hull
     const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
     const length = (9 + 14 * thrust) + pulse * (3 + 4 * thrust);
     const half = 3 + 1.4 * thrust;
@@ -1564,7 +1711,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    // the cockpit: a glow behind the glass and the pilot inside it
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
@@ -1921,21 +2067,19 @@ function drawSpillHud(ctx, w, art) {
     if (s.phase === "ready") {
         const compact = W < 520;
         // a phone gets the same briefing in shorter lines, never a clipped one
-        // FOUR LINES, NOT A BRIEFING (owner, 2 Sep 2026: "no need for a half
-        // page of text"). The loop is the whole story - survive, collect,
-        // Depot, upgrade - and the ore line wears the ore itself.
-        // The ore line is kept SHORT on purpose: the ore sprite flanks it, and
-        // on a phone a long line pushed the sprites off the panel's edge.
-        const lines = [
-            "SURVIVE THE WAVES",
-            "COLLECT ORE",
-            compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
-                : "EVERY 5 WAVES: DEPOT · SPEND ORE · UPGRADE THE SHIP",
-            compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
-                : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
+        const lines = compact ? [
+            "SURVIVE THE WAVE · MINE ORE",
+            "HOLD: RISE · RELEASE: FALL",
+            "SWIPE UP / DOWN: BURST · SWIPE RIGHT: LUNGE",
+            "GOLD ORE ARMS THE PULSE · DO NOT RIDE THE FLOOR",
+            "PRESS TO LAUNCH",
+        ] : [
+            "SURVIVE THE WAVE · MINE ORE · UPGRADE THE SHIP AT THE DEPOT",
+            "HOLD: RISE · RELEASE: FALL · SWIPE UP / DOWN: BURST",
+            "SWIPE RIGHT: LUNGE · GOLD ORE ARMS THE PULSE",
+            "DO NOT RIDE THE FLOOR · THREE HULL HITS AND THE RUN IS OVER",
             "PRESS TO LAUNCH",
         ];
-        const oreLine = 1;
         const lineHeight = compact ? 20 : 21;
         const panelWidth = Math.min(W - 24, compact ? 430 : 560);
         const panelHeight = lines.length * lineHeight + 28;
@@ -1953,13 +2097,6 @@ function drawSpillHud(ctx, w, art) {
             ctx.globalAlpha = isLaunch ? 0.75 + 0.25 * Math.sin(w.time * 4) : 1;
             ctx.font = isLaunch ? "900 15px Figtree, system-ui" : i === 0 ? "900 13px Figtree, system-ui" : "800 12px Figtree, system-ui";
             ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
-            // the ore, drawn as the thing it is, riding the line that names it
-            if (i === oreLine && art?.ore) {
-                const tw = ctx.measureText(line).width;
-                const y = panelTop + 21 + i * lineHeight - 5;
-                drawSprite(ctx, art.ore, W / 2 - tw / 2 - 14, y, 20);
-                drawSprite(ctx, art.ore, W / 2 + tw / 2 + 14, y, 20);
-            }
         });
         ctx.globalAlpha = 1;
         const titleY = Math.max(H * 0.3, hudY + 24);
@@ -2173,10 +2310,14 @@ export function drawWorld(ctx, w, save, art) {
     // to FULL black. Drawn after the world and before the pal, so the
     // companion and the pilot stay lit and the pilot is never flying blind
     // about where they themselves are.
-    // Nightglider's blackout is retired (owner, 2 Sep 2026: "no longer
-    // strobes, it turns into steady gates"); the pal's effect now lives in
-    // sim.ts where the gates decide whether to drift. The lamp clock it
-    // read is left alone - nothing else was on it, and it costs nothing.
+    if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
+        const t = w.lampT;
+        const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
+        if (a > 0) {
+            ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
+            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
+        }
+    }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
@@ -3724,36 +3865,11 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
 // WHEN the pose starts rather than how fast it turns.
 let motionVySmooth = 0;
 let motionVyClock = -1;
-// THE CROSSING TAKES TIME (owner, 2 Sep 2026: "ghost goes from up to down
-// in a frame, no transition, need return to horizontal before dive"). At
-// 9/s a tap's -450 impulse crossed zero in about four frames, so the
-// neutral pose flashed by unseen. 5.5/s puts the level frame on screen
-// for ~150ms on the way through, in both directions.
-const POSE_SMOOTH = 5.5;
 function smoothMotionVy(t, vy) {
     const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
     motionVyClock = t;
-    motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * POSE_SMOOTH);
+    motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
     return motionVySmooth;
-}
-// THE POSE CURVE. Frame index used to be LINEAR in speed, so a mild dive
-// already sat three frames deep and every descent looked like a plunge -
-// "pitch at 0 ... is aggressive" on the whole swept roster. Raising |v|
-// to a power above one keeps gentle attitudes in the first frames and
-// saves the deep forward rotation for a genuinely hard dive: "less
-// linear and more hyperbolic". Applied to both ramps so a climb stays
-// symmetrical.
-export const POSE_CURVE = 1.7;
-// The two dials the pause sheet exposes for EVERY suit, so the owner can
-// judge them mid-run against the same field: DIVE DEPTH scales the dive
-// half of the range (1 = the art's full ramp), and POSE MODE "ascent"
-// flies only the ascent bank - a dive holds the level frame - to test
-// whether ascent frames plus horizontal are enough on their own.
-let poseDiveDepth = 1;
-let poseAscentOnly = false;
-export function setPoseDials(diveDepth, ascentOnly) {
-    poseDiveDepth = Math.max(0.25, Math.min(1, diveDepth || 1));
-    poseAscentOnly = !!ascentOnly;
 }
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
@@ -4087,16 +4203,8 @@ lean = SUIT_LEAN_DEFAULT) {
                 const sv = smoothMotionVy(_t, motionVy);
                 v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
             }
-            // shape the attitude: dives scaled by the dial, both halves curved
-            if (v > 0)
-                v *= poseDiveDepth;
-            v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
-            // ascent-only holds the level frame through a dive
-            const diving = v > 0 && !poseAscentOnly;
-            const bank = diving ? descFrames : ascFrames;
-            const idxM = diving || v < 0
-                ? Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)))
-                : 0;
+            const bank = v < 0 ? ascFrames : descFrames;
+            const idxM = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)));
             const frame = bank[idxM];
             const refM = ascFrames[0].box ?? ref;
             drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
@@ -4105,7 +4213,7 @@ lean = SUIT_LEAN_DEFAULT) {
             // in canvas space, so it must be mapped through the SAME reference
             // box the frame itself is drawn with (asc[0]), not the frame's own.
             if (!wearsOwnHead(suit)) {
-                paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`, helmet, x, y, size, art);
+                paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`, helmet, x, y, size, art);
             }
         }
         else if (fullTap) {
@@ -4387,63 +4495,6 @@ function previewRot(p, beat, kick, pull) {
         r += (Math.max(-0.34, Math.min(0.6, vy / 900)) - r) * k;
     }
     return r;
-}
-/** THE SHIP IN THE CASE (owner, 2 Sep 2026): the loadout's SHIP tab
- *  paints the scout ship the way the Spill flies it - plume, cockpit glow,
- *  the equipped pilot in the glass - on the same lit stage every other tab
- *  uses. `thrust` is the tier being previewed (0 stock .. 3), and only the
- *  plume answers to it for now: this is a mock of an upgrade, not one. */
-export function paintShipPreview(ctx, art, save, cx, cy, scale, t, thrust) {
-    const ship = art?.hyperRun?.["scout-ship"];
-    if (!art || !ship)
-        return;
-    const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
-    const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
-    const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
-    const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
-    const helmRaw = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-    const helmet = helmRaw.suitOnly && helmRaw.suitOnly !== suit.id ? HELMETS[0] : helmRaw;
-    const lvl = Math.max(0, Math.min(3, thrust));
-    ctx.save();
-    ctx.translate(cx, cy + Math.sin(t * 1.7) * 3);
-    ctx.rotate(-0.04);
-    // the plume grows with the tier and idles with a slow pulse
-    const pulse = 0.5 + 0.5 * Math.sin(t * (9 + 5 * lvl));
-    const length = (12 + 12 * lvl) + pulse * (4 + 3 * lvl);
-    const half = (3.2 + 1.1 * lvl) * scale;
-    const engineX = layout.engineX;
-    const tail = engineX - length;
-    const grad = ctx.createLinearGradient(engineX, 0, tail, 0);
-    grad.addColorStop(0, "rgba(255,255,255,.96)");
-    grad.addColorStop(0.18, lvl >= 3 ? "rgba(255,214,106,.95)" : "rgba(97,221,255,.92)");
-    grad.addColorStop(0.58, lvl >= 2 ? "rgba(255,120,60,.66)" : "rgba(146,82,255,.66)");
-    grad.addColorStop(1, "rgba(83,38,180,0)");
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    ctx.fillStyle = grad;
-    ctx.shadowColor = "rgba(111,92,255,.82)";
-    ctx.shadowBlur = 6 + 4 * lvl;
-    ctx.beginPath();
-    ctx.moveTo(engineX, -half);
-    ctx.quadraticCurveTo(engineX - length * 0.48, -half * 0.64, tail, 0);
-    ctx.quadraticCurveTo(engineX - length * 0.48, half * 0.64, engineX, half);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    // cockpit: glow behind the glass, the pilot inside it
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
-    ctx.clip();
-    const glow = ctx.createRadialGradient(layout.cockpitX + 2 * scale, layout.cockpitY - 3 * scale, 1, layout.cockpitX, layout.cockpitY, 15 * scale);
-    glow.addColorStop(0, "rgba(71,112,166,.62)");
-    glow.addColorStop(1, "rgba(3,8,22,.96)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-    paintFlightPreview(ctx, art, suit, helmet, layout.cockpitX - 2 * scale, layout.cockpitY + 2 * scale, 30 * scale, t);
-    ctx.restore();
-    drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
-    ctx.restore();
 }
 export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
 // THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap

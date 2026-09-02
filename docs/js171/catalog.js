@@ -32,7 +32,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-02 06:15 UTC";
+export const BUILD_TIME = "2026-09-02 04:53 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -232,7 +232,7 @@ export const PALS = [
     { id: "wisp", name: "Wisp", tag: "GATE DRIFT", desc: "More gate movement", art: "wisp" },
     { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Every bounce repaints the sky a new vibrant colour.", art: "prismwing" },
     { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll speed drifts, +50% to -70%, and never at a steady rate.", art: "clockling" },
-    { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "The gates stop drifting. A still sky to thread.", art: "nightglider" },
+    { id: "nightglider", name: "Nightglider", tag: "BLACKOUT", desc: "Total dark. Every tap is a flashbulb that shows the way.", art: "nightglider" },
 ];
 export const SKY_RGB = {
     indigo: [0.11, 0.14, 0.34],

@@ -1,14 +1,14 @@
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=171";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=171";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=171";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=171";
-import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=171";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=171";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=171";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=171";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=171";
-import { raceViewport } from "./race-viewport.js?v=171";
-import { spillBuy, spillExtend, spillLeaveDepot, spillLunge } from "./spill.js?v=171";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=172";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=172";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=172";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=172";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=172";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=172";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=172";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=172";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=172";
+import { raceViewport } from "./race-viewport.js?v=172";
+import { spillBuy, spillExtend, spillLeaveDepot, spillLunge } from "./spill.js?v=172";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -582,12 +582,11 @@ export async function createEngine(canvas) {
         if (which === "shield") {
             if (!startShieldUnlocked(save))
                 return "locked";
-            if (save.startShield) {
-                save.startShield = false;
-                writeSave(save);
-                notify();
-                return "off";
-            }
+            // Armed is armed: the charge is spent by the next run, not by a
+            // second tap. A toggle here let a pilot switch it off for nothing
+            // and pay again to switch it back on.
+            if (save.startShield)
+                return "armed";
             if (save.acorns < MOD_SHIELD_COST)
                 return "poor";
             save.acorns -= MOD_SHIELD_COST;
@@ -1308,4 +1307,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=171";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=172";

@@ -155,10 +155,6 @@ export function loadSave() {
     // saves written before the Spill was a mode
     if (typeof s.spillBest !== "number" || !isFinite(s.spillBest))
         s.spillBest = 0;
-    // favourites are ids only; anything else in the array is a hand-edit
-    if (!Array.isArray(s.favorites))
-        s.favorites = [];
-    s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
     if (!Array.isArray(s.raceGates))
         s.raceGates = [];
     // only ever the three real gate ids, de-duplicated - a hand-edited save

@@ -1395,6 +1395,7 @@ export async function bootStandalone(root: HTMLElement) {
       sheet.append(b);
     };
     door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
+    door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
     if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
     const back = el("button", "ac-primary ac-modeback", "BACK");
     back.onclick = () => { modesOpen = false; render(); };
@@ -1778,6 +1779,7 @@ export async function bootStandalone(root: HTMLElement) {
     missing: () => "That item is not in this build.",
     unknown: () => "That item is not in this build.",
     owned: () => "Already yours.",
+    armed: () => "Already armed — your next run spends it.",
   };
   function announce(msg: string) {
     if (!denyEl) return;
@@ -4609,9 +4611,11 @@ export async function bootStandalone(root: HTMLElement) {
       const labRoot = "./lab/";
       const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
       rig.onclick = () => { window.location.href = labRoot + "rig/"; };
+      const ship = el("button", "ac-ghost ac-lab", "SHIP BENCH");
+      ship.onclick = () => { window.location.href = labRoot + "ship/"; };
       const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
       worm.onclick = () => engine.fly("tunnel");
-      scroll.append(rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+      scroll.append(rig, ship, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
     }
     // Starting over is a real feature, not a debug door: progression can
     // be flown from zero, in either build, without touching the browser.

@@ -1,14 +1,14 @@
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=168";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=168";
-import { sfx, unlockAudio, music } from "./audio.js?v=168";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=168";
-import { drawHud, drawWorld } from "./draw.js?v=168";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=168";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=168";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=168";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=168";
-import { raceViewport } from "./race-viewport.js?v=168";
-import { spillBuy, spillExtend, spillLeaveDepot, spillLunge } from "./spill.js?v=168";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=172";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=172";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=172";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=172";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=172";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=172";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=172";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=172";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=172";
+import { raceViewport } from "./race-viewport.js?v=172";
+import { spillBuy, spillExtend, spillLeaveDepot, spillLunge } from "./spill.js?v=172";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -125,13 +125,12 @@ export async function createEngine(canvas) {
                 // settleDust is idempotent, so calling it on every screen change is
                 // free when nothing is owed.
                 settleDust();
-                // THE DAILY CLAIMS ITSELF. Asking a pilot to tap CLAIM after they
-                // already walked to the shop is a toll booth, not a reward - the
-                // walk IS the action being rewarded. Arriving pays; the tracker
-                // still shows the streak, and the shop button carries the glow that
-                // does the asking.
-                if (s === "shop")
-                    claimDaily();
+                // THE DAILY IS PAID FOR SHOWING UP, AND SHOWING UP IS OPENING THE
+                // GAME (owner, 2 Sep 2026: "just count log in, not store tap").
+                // It used to land on arrival at the shop, which quietly made the
+                // reward conditional on wanting to spend - a pilot who only ever
+                // flew never collected a day of it. The claim moved to boot; the
+                // shop keeps the receipt and the streak tracker it always drew.
                 // THE GUIDE OPENS THE TAB IT IS TALKING ABOUT. The hub said "put on
                 // your new Ion suit" and the Loadout opened on HELMETS, with only a
                 // faint pulse on the SUITS pill to say so - so the instruction and
@@ -267,6 +266,10 @@ export async function createEngine(canvas) {
             pendingDaily = null;
             return p;
         },
+        /** Is there a daily the pilot has been paid but not yet shown? Boot
+         *  banks the dust, so "unclaimed" no longer means anything to a badge;
+         *  what is still worth pointing at is the receipt nobody has seen. */
+        dailyUnseen: () => pendingDaily !== null,
         buyDust,
         buyBundle,
         buyShopItem,
@@ -275,6 +278,55 @@ export async function createEngine(canvas) {
             save.musicOff = off;
             writeSave(save);
             music.setMuted(off);
+            notify();
+        },
+        setSfxOff(off) {
+            save.sfxOff = off;
+            writeSave(save);
+            setSfxMuted(off);
+            notify();
+        },
+        setHelpOff(off) {
+            save.helpOff = off;
+            writeSave(save);
+            notify();
+        },
+        setMotionOff(off) {
+            save.motionOff = off;
+            writeSave(save);
+            // the class is what the stylesheet reads; the save is what survives
+            document.body.classList.toggle("ac-nomotion", off);
+            notify();
+        },
+        setIntroOff(off) {
+            save.introOff = off;
+            writeSave(save);
+            notify();
+        },
+        toggleFavorite(id) {
+            const list = save.favorites ?? [];
+            const on = !list.includes(id);
+            save.favorites = on ? [...list, id] : list.filter((x) => x !== id);
+            writeSave(save);
+            notify();
+            return on;
+        },
+        isFavorite: (id) => (save.favorites ?? []).includes(id),
+        setHeroCompact(on) {
+            save.heroCompact = !!on;
+            writeSave(save);
+            notify();
+        },
+        setDiveDepth(d) {
+            save.diveDepth = d;
+            writeSave(save);
+            setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
+            notify();
+        },
+        setPoseMode(m) {
+            save.poseMode = m;
+            writeSave(save);
+            setPoseDials(save.diveDepth ?? 1, m === "ascent");
             notify();
         },
         setEclipseMotionMode(mode) {
@@ -478,11 +530,23 @@ export async function createEngine(canvas) {
         notify();
         return "buy";
     }
-    // stepping out of a suit takes its matched helmet off with it
+    // stepping out of a suit takes its matched helmet off with it - and
+    // stepping INTO one puts its matched helmet on. The second half was
+    // missing (owner, 2 Sep 2026: "the leviathan helmet is missing"): a
+    // suit-locked helmet is on no shelf, so the drop here was the only code
+    // that ever touched it, and a pilot who bought the Regalia pack flew
+    // Leviathan in a Clear dome with no way to change that. Only a Clear
+    // dome or another suit's orphan is replaced; a helmet the pilot chose
+    // on purpose stays.
     function dropOrphanedHelmet() {
         const h = HELMETS.find((x) => x.id === save.equipped);
         if (h?.suitOnly && h.suitOnly !== save.equippedSuit)
             save.equipped = "clear";
+        if (save.equipped === "clear") {
+            const own = HELMETS.find((x) => x.suitOnly === save.equippedSuit && helmetRevealed(save, x.id));
+            if (own)
+                save.equipped = own.id;
+        }
     }
     function transactTrail(id) {
         const item = TRAILS.find((h) => h.id === id);
@@ -518,12 +582,11 @@ export async function createEngine(canvas) {
         if (which === "shield") {
             if (!startShieldUnlocked(save))
                 return "locked";
-            if (save.startShield) {
-                save.startShield = false;
-                writeSave(save);
-                notify();
-                return "off";
-            }
+            // Armed is armed: the charge is spent by the next run, not by a
+            // second tap. A toggle here let a pilot switch it off for nothing
+            // and pay again to switch it back on.
+            if (save.startShield)
+                return "armed";
             if (save.acorns < MOD_SHIELD_COST)
                 return "poor";
             save.acorns -= MOD_SHIELD_COST;
@@ -1224,6 +1287,15 @@ export async function createEngine(canvas) {
     // the roster's flight banks stream in one at a time afterwards. The pal
     // is named here for the same reason the suit is: it is the one the pilot
     // is looking at, so it is the one that must not arrive late.
+    // LOGGING IN IS THE ACTION THE DAILY REWARDS, so it is banked here, once,
+    // as the engine comes up - not on the walk to a storefront. claimDaily is
+    // a no-op for a day already taken, so a reload never pays twice.
+    claimDaily();
+    // the switches that are not read from the save on the fly are applied
+    // once here, so a reload lands in the state the pilot left
+    setSfxMuted(!!save.sfxOff);
+    document.body.classList.toggle("ac-nomotion", !!save.motionOff);
+    setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
     engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
         .then((bank) => {
         art = bank;
@@ -1235,4 +1307,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=168";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=172";

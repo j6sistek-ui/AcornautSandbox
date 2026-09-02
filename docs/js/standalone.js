@@ -1,11 +1,11 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=171";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=171";
-import { drawSprite as drawSpriteOn } from "./art.js?v=171";
-import { createEngine } from "./engine.js?v=171";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=171";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=171";
-import { formatRaceTicks } from "./race.js?v=171";
-import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=171";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=172";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=172";
+import { drawSprite as drawSpriteOn } from "./art.js?v=172";
+import { createEngine } from "./engine.js?v=172";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=172";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=172";
+import { formatRaceTicks } from "./race.js?v=172";
+import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=172";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1344,6 +1344,7 @@ export async function bootStandalone(root) {
             sheet.append(b);
         };
         door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
+        door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
         if (IS_BETA)
             door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
         const back = el("button", "ac-primary ac-modeback", "BACK");
@@ -1738,6 +1739,7 @@ export async function bootStandalone(root) {
         missing: () => "That item is not in this build.",
         unknown: () => "That item is not in this build.",
         owned: () => "Already yours.",
+        armed: () => "Already armed — your next run spends it.",
     };
     function announce(msg) {
         if (!denyEl)
@@ -4668,9 +4670,11 @@ export async function bootStandalone(root) {
             const labRoot = "./lab/";
             const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
             rig.onclick = () => { window.location.href = labRoot + "rig/"; };
+            const ship = el("button", "ac-ghost ac-lab", "SHIP BENCH");
+            ship.onclick = () => { window.location.href = labRoot + "ship/"; };
             const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
             worm.onclick = () => engine.fly("tunnel");
-            scroll.append(rig, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
+            scroll.append(rig, ship, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
         }
         // Starting over is a real feature, not a debug door: progression can
         // be flown from zero, in either build, without touching the browser.

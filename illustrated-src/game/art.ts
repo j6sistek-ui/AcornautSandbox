@@ -63,7 +63,22 @@ export type ArtBank = {
   suitDesc: Record<string, Sprite[]>;
   /** Hyper Run layers are decoded with the launch bank, never mid-race. */
   hyperRun: Record<string, Sprite>;
+  /** THE SPILL's ship: one hull per plating level and one part per level
+   *  of the other three meters, all cut in one 256px frame. The fit - one
+   *  offset/scale/turn per part, with per-hull overrides - is set by hand
+   *  in the lab's Ship Bench and read from transforms.json beside the art */
+  spillShip: Record<string, Sprite>;
+  spillShipFit: SpillShipFit | null;
 };
+
+export type SpillShipXf = { dx: number; dy: number; scale: number; rot: number; behind?: boolean };
+export type SpillShipFit = { parts: Record<string, SpillShipXf>; overrides: Record<string, Record<string, SpillShipXf>> };
+export const SPILL_SHIP_IDS = [
+  "hull-0", "hull-1", "hull-2", "hull-3",
+  "thrust-1", "thrust-2", "thrust-3",
+  "cone-1", "cone-2", "cone-3",
+  "cockpit-1", "cockpit-2", "cockpit-3",
+];
 
 declare global {
   interface Window {
@@ -190,6 +205,7 @@ export function emptyArt(): ArtBank {
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+    spillShip: {}, spillShipFit: null,
   };
 }
 
@@ -568,7 +584,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
 
 
 
-  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore] =
+  const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore, spillShip, spillShipFit] =
     await Promise.all([
       many(`${base}/squirrel/idle-`, 4),
       many(`${base}/squirrel/flap-`, 4),
@@ -611,6 +627,13 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
       // decides, not because the answer can currently be no.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
       optional(`${base}/pickups/ore.png?v=${ART_VER}`),
+      // the Spill's ship: 13 small files. A missing one is not fatal - the
+      // painter falls back to the scout ship - so nothing here is required
+      named(SPILL_SHIP_IDS, "spill-ship"),
+      fetch(`${base}/spill-ship/transforms.json?v=${ART_VER}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => (d && d.parts ? { parts: d.parts, overrides: d.overrides || {} } as SpillShipFit : null))
+        .catch(() => null),
     ]);
   const bank: ArtBank = {
     ready: true,
@@ -643,6 +666,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     suitAsc,
     suitDesc,
     hyperRun,
+    spillShip,
+    spillShipFit,
   };
   // FLIGHT is the game's face — its banks always ride the boot load — and
   // the suit the save is wearing must be flyable the moment PLAY is hit.

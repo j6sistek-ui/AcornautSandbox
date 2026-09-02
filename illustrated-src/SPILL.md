@@ -14,8 +14,13 @@ three-pip hull, per-run **Ore** and a **Depot** every fifth wave around
 that core. The second pass (2026-09-02), from the owner's first play
 session, changed what is flown and how:
 
-- **the ship.** The pilot flies Hyper Run's scout ship, sized to the
-  squirrel's window, not the squirrel. Its plume is the hand's state.
+- **the ship.** The pilot flies the Spill's own layered ship
+  (`docs/art/spill-ship/`), sized to the squirrel's window, not the
+  squirrel. Its plume is the hand's state, and its parts are the Depot's
+  meters: Plating picks the hull, Thrusters the tail, Power-ups the nose
+  cone, and the shield charges the canopy (one charge a visor, two a
+  sealed dome). Before the kit arrived it flew Hyper Run's scout, which
+  is still the fallback when the kit fails to load.
 - **the hand.** Hold to rise, release to fall. A swipe up or down is an
   instant burst. Nothing tap-taps. (The first hand shipped at normal
   flight's snap and the owner could not hold a line with it; the third
@@ -61,11 +66,19 @@ level-8 missions are "clear wave N".
 The shape is Hyper Run's: the authority is a module the sim steps, and the
 world's squirrel is a mirror of its pilot so the trail, the particles and
 the shake all ride the shared paths. The ship is painted by the Spill's
-own `drawSpillShip` from `art.hyperRun["scout-ship"]` through
-`hyperRunShipLayout`, at two thirds of the race's size and centred on the
-collision point, with the equipped pilot in the cockpit exactly as the
-race paints it; the lunge moves it horizontally, so `pilotX(w)` replaced
-the fixed lane wherever the trail reads it.
+own `drawSpillShip` from the `art.spillShip` kit: the hull for the
+Plating level, then the thruster, cone and canopy parts placed with the
+transforms the owner exported from the Ship Bench
+(`docs/art/spill-ship/transforms.json`, loaded as `art.spillShipFit`;
+per-hull overrides win over the part's default). Parts marked *behind*
+in that file paint under the hull. The hull's box is 58px long and
+centred on the collision point; the cockpit opening is measured once
+from the hull's top outline (the first dip that climbs back out) and the
+equipped pilot is clipped into it, helmet peeking over the rim, under
+whatever canopy the shield has bought. `hull-2-blue` and `cockpit-2` are
+in the kit but not yet drawn by the game. The lunge moves the ship
+horizontally, so `pilotX(w)` replaced the fixed lane wherever the trail
+reads it.
 
 ## The loop
 
@@ -288,3 +301,49 @@ ledger, the same way it does for a Wormhole mission.
   the meters are fixed on purpose until the ship's feel is settled.
 - A persistent Ore bank, a Star Dust tie-in and an endless-wave
   leaderboard are still later decisions.
+- Start Shield in the loadout is a purchase, not a switch: armed stays
+  armed until a run spends it (the switch let a pilot flip it off for
+  nothing and pay again to flip it back).
+
+## The owner's log (2026-09-02) — ideas, not direction
+
+Logged after the ship kit merged (#171). Still tuning the feel and the
+core mechanics; none of this is firm.
+
+- **Depot: unlimited time, and a save.** Saving voids the leaderboard for
+  that run.
+- **A formal dock entrance.** Fly into the Depot instead of the phase-in.
+  Reference: `docs/art/spill-ship/concepts/dock-pixel.jpg` and
+  `dock-painted.jpg` (a stone gate with a swirling purple portal on a
+  floating slab). Not to be tied in yet.
+- **Magnetic collection.** A power-up that pulls Ore in. Either the top
+  tier of an axis, or a pre-bought one-run mod paid in Star Dust; if it is
+  a premium currency it is safety-gated on a minimum run of ten waves.
+- **Mode experience.** Runs earn something persistent: more runs, or a
+  higher base ship to start from.
+- **Ranked mode.** One hit and you are dead, one upgrade per Depot, no
+  other upgrades, starts at Depot 20 with no phase-in. Ranks earn custom
+  season rewards. Very long-term.
+- **Less repetitive over time, still a growing challenge.** Challenge
+  rounds every ten waves, unique events.
+
+Proposals to weigh against those (mine, same status):
+
+- **A named event every fifth wave, on a rotation the seed picks.** A
+  comet shower (fast, straight, telegraphed), a gold vein (Ore doubles,
+  rocks triple), a dead zone (no DRIFT, the hand is all you have), a
+  gravity flip (banked, since it killed on sight — only after the pilot
+  has cleared ten waves, and with a full warning bar). Each one changes
+  what the hand does for thirty seconds and then goes away.
+- **A boss rock at every tenth Depot.** One huge tumbler that takes three
+  PULSE hits and sheds Ore each time. Beating it is the challenge round;
+  the Depot after it is the reward.
+- **Contracts at the Depot.** Pick one of three small bets for the next
+  five waves: "graze twelve rocks", "spend nothing", "take no hits". Pay
+  out in Ore; the bet is what makes wave 23 feel different from wave 18.
+- **A run modifier draft at the start.** Three cards, take one: more Ore
+  but a smaller hull, faster field but a stronger PULSE. Ranked would
+  skip this. Cheap to build on the existing modifier hooks.
+- **The Star Dust magnet as a run-scoped consumable.** Fits the "safety
+  gated" note: it only appears in the Depot from wave 10 on and never
+  affects the leaderboard.
