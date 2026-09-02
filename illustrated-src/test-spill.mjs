@@ -4,12 +4,14 @@
  *  spill.ts owns the rules and knows nothing about a canvas, so every rule
  *  worth arguing about is asserted here against the built module: the wave
  *  ladder climbs and teaches in order, debris never overlaps debris, the
- *  hull takes three hits and never two from one piece, the floor kills
- *  after a quarter second and not before, the Depot rolls three shelves
- *  with a patch in front and honours the tree, a mission ends on the wave
- *  it names, and the sim seam banks the best wave without ever touching the
- *  acorn wallet. Last, a dodging bot flies wave 1 - a smoke test for "is
- *  this survivable at all", not a tuning instrument.
+ *  hand holds to rise and releases to fall, DRIFT tilts the field slowly
+ *  and never further than it says, the count hands control back on the GO
+ *  and never before, the Depot docks, arms, sells fixed meters at flat
+ *  prices, an unlocked PULSE fires itself at an impact and again five
+ *  seconds later, a mission ends on the wave it names, and the sim seam
+ *  banks the best wave without ever touching the acorn wallet. Last, a
+ *  dodging bot flies wave 1 - a smoke test for "is this survivable at
+ *  all", not a tuning instrument.
  */
 globalThis.window = { location: { href: "http://local/" }, devicePixelRatio: 1,
   addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }),
@@ -42,19 +44,30 @@ function until(s, pred, seconds, each) {
   return false;
 }
 const immune = (s) => { s.iframes = 9; s.floorT = 0; };
-/** hold the pilot mid-air with no rocks about, so a wait is only a wait */
+/** hold the ship mid-air with no rocks about, so a wait is only a wait */
 const hover = (s) => { s.rocks = []; s.pilot.y = s.H * 0.45; s.pilot.vy = 0; };
+/** press on the ready card, then wait out the count */
 const launch = (seed, target = 0) => {
   const s = S.createSpill(W, H, seed, target);
-  S.spillFlap(s);                                   // the ready card
-  ok(s.phase === "card", `the first tap opens the wave card, got ${s.phase}`);
+  ok(S.spillHold(s, true) === true, "the first press launches");
+  ok(s.phase === "countdown", `the first press opens the count, got ${s.phase}`);
   ok(S.stepSpill(s, DT).includes("wave"), "the launch's wave cue reaches the first frame");
   until(s, (x) => x.phase === "wave", 5);
+  S.spillHold(s, false);
   return s;
 };
 const rockAt = (s, x, y, r = 20) => {
   s.rocks.push({ x, y, vx: -10, vy: 0, r, kind: "tumbler", sprite: 0, spin: 0, rot: 0,
     arc: 0, arcPhase: 0, warn: 0, grazed: true, dead: false });
+};
+/** a funded, armed Depot at the first dock */
+const dock = (seed) => {
+  const s = launch(seed);
+  const reached = until(s, (x) => x.phase === "depot", 400, immune);
+  ok(reached, `seed ${seed} reaches the Depot (${s.phase} at wave ${s.wave})`);
+  until(s, (x) => x.depot.arm <= 0, 2);
+  s.ore = 1000;
+  return s;
 };
 
 // ------------------------------------------------------------ the ladder
@@ -70,29 +83,92 @@ const rockAt = (s, x, y, r = 20) => {
       ok(w.interval <= prev.interval, `spawns never slow down (wave ${n})`);
     }
     for (const m of w.mods) if (!(m in firstSeen)) firstSeen[m] = n;
-    const gravity = w.mods.filter((m) => m === "lowg" || m === "heavy" || m === "flip");
+    const gravity = w.mods.filter((m) => m === "lowg" || m === "heavy");
     ok(gravity.length <= 1, `wave ${n} carries at most one gravity rule, got ${gravity.join("+")}`);
+    ok(!w.mods.includes("flip"), `gravity never flips (wave ${n})`);
     if (n <= S.SPILL_AUTHORED_WAVES) ok(w.mods.length <= 1, `an authored wave teaches one rule (wave ${n})`);
     prev = w;
   }
-  const order = ["surge", "lowg", "heavy", "cross", "blackout", "swarm", "flip"];
+  const order = ["surge", "lowg", "heavy", "cross", "blackout", "swarm", "drift"];
   const seen = order.map((m) => firstSeen[m]);
   ok(seen.every((n, i) => i === 0 || n > seen[i - 1]), `rules are taught in order: ${JSON.stringify(firstSeen)}`);
-  ok(firstSeen.surge === 3 && firstSeen.lowg === 6 && firstSeen.flip === 18, `the taught waves match the ladder: ${JSON.stringify(firstSeen)}`);
+  ok(firstSeen.surge === 3 && firstSeen.lowg === 6 && firstSeen.drift === 18, `the taught waves match the ladder: ${JSON.stringify(firstSeen)}`);
   const a = S.spillWaveSpec(27, 99), b = S.spillWaveSpec(27, 99);
   ok(JSON.stringify(a) === JSON.stringify(b), "an endless wave is the same for the same seed");
   ok(S.spillWaveSpec(26, 99).mods.length === 2, "two rules roll from wave 26");
 }
 
+// ------------------------------------------------------------- the hand
+{
+  // hold to rise, release to fall; both answer within a few frames
+  const s = launch(2);
+  hover(s);
+  ok(!s.held, "the hand starts off the thrust");
+  const y0 = s.pilot.y;
+  ok(S.spillHold(s, true) === true && s.held, "a press puts the hand on the thrust");
+  ok(S.spillHold(s, true) === false, "holding on is not a second press");
+  until(s, () => false, 0.25, (x) => { x.rocks = []; });
+  ok(s.pilot.vy < -300 && s.pilot.y < y0 - 20, `a quarter second of hold is a climb (vy ${s.pilot.vy.toFixed(0)}, dy ${(s.pilot.y - y0).toFixed(0)})`);
+  ok(s.pilot.vy >= -S.SPILL.riseCap - 1e-6, `the climb is capped (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.riseCap})`);
+  S.spillHold(s, false);
+  ok(!s.held, "a release takes the hand off");
+  until(s, (x) => x.pilot.vy > 0, 1, (x) => { x.rocks = []; });
+  ok(s.pilot.vy > 0, "released, gravity has the ship");
+  until(s, () => false, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.3; });
+  ok(s.pilot.vy <= S.SPILL.fallCap + 1e-6, `the fall is capped (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.fallCap})`);
+}
+{
+  // bursts are instant, like a tap and a dive in every other mode
+  const s = launch(3);
+  hover(s);
+  ok(S.spillBurst(s, -1) === true && s.pilot.vy <= -S.SPILL.burstUp, `a swipe up kicks skyward (vy ${s.pilot.vy})`);
+  ok(s.cues.includes("burst"), "and is reported");
+  ok(S.spillBurst(s, 1) === true && s.pilot.vy >= S.SPILL.burstDown, `a swipe down dives (vy ${s.pilot.vy})`);
+  ok(S.stepSpill(s, DT).filter((c) => c === "burst").length === 2, "both bursts reach the frame's cues");
+}
+{
+  // a press or a burst outside flight does nothing, and never launches twice
+  const s = S.createSpill(W, H, 4, 0);
+  ok(S.spillBurst(s, -1) === false, "a burst on the ready card is refused");
+  ok(S.spillLunge(s) === true && s.phase === "countdown", `a lunge on the ready card launches (${s.phase})`);
+  ok(S.spillHold(s, true) === false && !s.held, "a press during the count is not a hold");
+  ok(S.spillBurst(s, 1) === false && S.spillLunge(s) === false, "bursts and lunges wait for the GO");
+}
+
+// --------------------------------------------------- the count and the GO
+{
+  const s = S.createSpill(W, H, 5, 0);
+  S.spillHold(s, true);
+  ok(S.spillCount(s) === 3, `the count opens at three (${S.spillCount(s)})`);
+  const y = s.pilot.y = s.H * 0.9;
+  const counts = [];
+  let goAt = -1, t = 0;
+  while (s.phase === "countdown" && t < 5) {
+    const c = S.stepSpill(s, DT);
+    t += DT;
+    if (c.includes("count")) counts.push(S.spillCount(s));
+    if (c.includes("go")) goAt = t;
+  }
+  ok(s.phase === "wave", `the count ends in the wave (${s.phase})`);
+  ok(Math.abs(goAt - S.SPILL.countdown) < 0.05, `the GO lands on the count's end (${goAt.toFixed(2)}s)`);
+  ok(JSON.stringify(counts) === "[2,1]", `the count ticks down (${JSON.stringify(counts)})`);
+  ok(s.pilot.y < y - 100, `the autopilot flew the ship home during the count (${s.pilot.y.toFixed(0)} from ${y.toFixed(0)})`);
+  ok(s.rocks.length === 0, "nothing spawns before the GO");
+  ok(S.spillHold(s, true) === true && s.held, "control is back on the GO");
+}
+
 // ------------------------------------------- debris never meets debris
 {
-  // to wave 7: spinners weave from wave 4 and hulks wait out a warning
+  // to wave 7: spinners weave from wave 1 and hulks wait out a warning
   // from wave 4, and both used to be predicted wrong
-  let overlaps = 0, samples = 0, rocksSeen = 0, spinners = 0, hulks = 0;
+  let overlaps = 0, samples = 0, rocksSeen = 0, spinners = 0, hulks = 0, wave1Spinners = 0;
   for (const seed of [3, 11, 42]) {
     const s = launch(seed);
     until(s, (x) => x.wave >= 7, 400, (x) => {
-      for (const r of x.rocks) { if (r.kind === "spinner") spinners++; if (r.kind === "hulk") hulks++; }
+      for (const r of x.rocks) {
+        if (r.kind === "spinner") { spinners++; if (x.wave === 1) wave1Spinners++; }
+        if (r.kind === "hulk") hulks++;
+      }
       immune(x);
       const live = x.rocks.filter((r) => !r.dead && r.warn <= 0 && r.x < x.W + 60 && r.x > -60);
       rocksSeen = Math.max(rocksSeen, live.length);
@@ -105,6 +181,7 @@ const rockAt = (s, x, y, r = 20) => {
   }
   ok(rocksSeen >= 3, `the field actually fills (peak ${rocksSeen} live pieces)`);
   ok(spinners > 0 && hulks > 0, `spinners and hulks were both in the field (${spinners}, ${hulks} rock-frames)`);
+  ok(wave1Spinners > 0, "spinners weave from wave 1");
   ok(overlaps === 0, `debris never overlaps debris: ${overlaps} of ${samples} pair samples overlapped`);
 }
 {
@@ -118,6 +195,32 @@ const rockAt = (s, x, y, r = 20) => {
   for (let i = 0; i < 120; i++) { s.pilot.y = s.H * 0.2; s.pilot.vy = 0; S.stepSpill(s, DT); }
   ok(Math.abs(r.x - predicted.x) < 2 && Math.abs(r.y - predicted.y) < 3,
     `a spinner behind a warning lands where the check said (${r.x.toFixed(1)},${r.y.toFixed(1)} vs ${predicted.x.toFixed(1)},${predicted.y.toFixed(1)})`);
+}
+
+// ----------------------------------------------------------------- DRIFT
+{
+  const s = launch(18);
+  // walk the run to wave 18 without flying it
+  until(s, (x) => x.wave >= 18 && x.phase === "wave", 900, immune);
+  ok(s.wave === 18 && s.liveMods.includes("drift"), `wave 18 flies DRIFT (${s.wave}: ${s.liveMods})`);
+  ok(Math.abs(s.tilt) < 1e-6, "the wave opens level");
+  let maxTilt = 0, maxStep = 0, prev = s.tilt, moved = false;
+  until(s, () => false, 20, (x) => {
+    immune(x);
+    hover(x);
+    maxStep = Math.max(maxStep, Math.abs(x.tilt - prev));
+    prev = x.tilt;
+    maxTilt = Math.max(maxTilt, Math.abs(x.tilt));
+    if (Math.abs(x.tilt) > 0.05) moved = true;
+  });
+  ok(moved, `the field tilts under DRIFT (peak ${maxTilt.toFixed(2)} rad)`);
+  ok(maxTilt <= S.SPILL.driftMax + 1e-6, `and never past its limit (${maxTilt.toFixed(3)} vs ${S.SPILL.driftMax})`);
+  ok(maxStep <= S.SPILL.driftRate * DT + 1e-6, `the tilt is a lean, never a lurch (${(maxStep / DT).toFixed(3)} rad/s)`);
+  // the angle the debris arrives at follows the tilt
+  s.tilt = 0.3; s.rocks = [];
+  let tilted = 0, n = 0;
+  until(s, () => false, 8, (x) => { immune(x); x.tilt = 0.3; for (const r of x.rocks) if (!r.grazed) { n++; if (r.vy > 0) tilted++; r.grazed = true; } });
+  ok(n > 0 && tilted / n > 0.75, `debris flies the tilted field (${tilted}/${n} pieces angled with the tilt)`);
 }
 
 // ----------------------------------------------------------------- hull
@@ -144,24 +247,19 @@ const rockAt = (s, x, y, r = 20) => {
   const deadCues = S.stepSpill(s, DT);
   ok(s.phase === "over" && s.cause === "STRUCK", `the third hit ends the run (${s.phase} ${s.cause})`);
   ok(deadCues.includes("dead"), "and says so");
+  ok(!s.held, "the dead hand is off the thrust");
 }
 {
-  // a shield eats the piece; a Gilded Shield pays Gold for it
+  // a shield eats the piece; shields come from the Depot, never the field
   const s = launch(6);
   s.rocks = [];
   s.shield = 1;
   rockAt(s, s.pilot.x, s.pilot.y);
-  S.stepSpill(s, DT);
+  ok(S.stepSpill(s, DT).includes("shield"), "the shield's break is reported");
   ok(s.shield === 0 && s.hull === 3, `a shield absorbs the hit (shield ${s.shield}, hull ${s.hull})`);
-  s.owned.gilded = 1; s.owned.reactive = 1; s.owned.shield = 1;
-  s.shield = 1; s.rocks = [];
-  rockAt(s, s.pilot.x, s.pilot.y);
-  S.stepSpill(s, DT);
-  ok(s.gold > 2.5, `a Gilded break hands over Gold (${s.gold.toFixed(2)}s)`);
-  s.rocks = [];
-  rockAt(s, s.pilot.x, s.pilot.y);
-  S.stepSpill(s, DT);
-  ok(s.hull === 3, "under Gold a piece shatters instead of hitting");
+  let drifts = 0;
+  until(s, (x) => x.wave >= 4, 200, (x) => { immune(x); for (const n of x.nuts) if (n.kind === "shield") drifts++; });
+  ok(drifts === 0, `no shield ever drifts past in the field (${drifts})`);
 }
 {
   // the floor: brushing is free, riding kills, and the timer forgives
@@ -179,11 +277,11 @@ const rockAt = (s, x, y, r = 20) => {
   // the Respawn Core: one extra life, hull restored, three seconds of Gold
   const s = launch(9);
   s.rocks = [];
-  s.owned.respawn = 1; s.respawnArmed = true;
+  s.coreBought = true; s.coreArmed = true;
   s.hull = 1;
   rockAt(s, s.pilot.x, s.pilot.y);
   S.stepSpill(s, DT);
-  ok(s.phase === "respawn" && !s.respawnArmed, `the core catches the last hit (${s.phase})`);
+  ok(s.phase === "respawn" && !s.coreArmed, `the core catches the last hit (${s.phase})`);
   until(s, (x) => x.phase !== "respawn", 4);
   ok(s.phase === "wave" || s.phase === "drain", `and hands the pilot back (${s.phase})`);
   ok(s.hull === s.maxHull && s.gold > 2, `whole and golden (hull ${s.hull}, gold ${s.gold.toFixed(1)})`);
@@ -193,122 +291,165 @@ const rockAt = (s, x, y, r = 20) => {
   ok(s.phase === "over", "the core fires once");
 }
 
+// ---------------------------------------------------------------- PULSE
+{
+  // Gold Ore charges the meter, half each; grazes are points only
+  const s = launch(10);
+  hover(s);
+  s.rocks.push({ x: s.pilot.x + 5, y: s.pilot.y + 50, vx: -400, vy: 0, r: 16, kind: "shard", sprite: 0, spin: 0, rot: 0,
+    arc: 0, arcPhase: 0, warn: 0, grazed: false, dead: false });
+  const c = S.stepSpill(s, DT);
+  ok(c.includes("graze") && s.grazes === 1, "a near miss is a graze");
+  ok(s.charge === 0, `a graze does not charge the PULSE (${s.charge})`);
+  const gold = (x) => x.nuts.push({ x: x.pilot.x, y: x.pilot.y, vx: 0, vy: 0, got: false, bob: 0, kind: "gold" });
+  s.rocks = []; s.ore = 0;
+  gold(s);
+  ok(S.stepSpill(s, DT).includes("gold"), "gold ore is reported");
+  ok(s.charge === 0.5 && s.ore === 5, `one gold is half a meter and five Ore (charge ${s.charge}, ore ${s.ore})`);
+  gold(s);
+  ok(S.stepSpill(s, DT).includes("charged"), "the second fills the meter, audibly");
+  ok(s.charge === 1, "and it stays full");
+}
+{
+  // locked, a full meter does nothing at an impact; unlocked, it fires itself
+  const s = launch(11);
+  hover(s);
+  s.charge = 1;
+  rockAt(s, s.pilot.x, s.pilot.y);
+  S.stepSpill(s, DT);
+  ok(s.hull === 2 && s.charge === 1, `without POWER-UPS a full meter is only a meter (hull ${s.hull}, charge ${s.charge})`);
+  ok(S.spillPulse(s) === false, "and the hand cannot fire it");
+  s.up.pulse = 1; s.iframes = 0; s.rocks = [];
+  rockAt(s, s.pilot.x, s.pilot.y);
+  rockAt(s, s.pilot.x + 150, s.pilot.y - 100);
+  rockAt(s, s.pilot.x + 400, s.pilot.y);
+  const c = S.stepSpill(s, DT);
+  ok(c.includes("pulse") && !c.includes("hit"), `the impact fires the PULSE instead of costing a pip (${c})`);
+  ok(s.hull === 2 && s.charge === 0, `the hull is untouched and the meter spent (hull ${s.hull}, charge ${s.charge})`);
+  ok(s.shattered >= 2 && s.rocks.filter((r) => !r.dead).length === 1, `everything in reach shatters, the far piece flies on (${s.shattered} shattered)`);
+  ok(s.pulseQueue === 0, "one level, one pulse");
+  // POWER-UPS II: a second pulse five seconds later
+  s.up.pulse = 2; s.charge = 1; s.rocks = []; s.iframes = 0;
+  rockAt(s, s.pilot.x, s.pilot.y);
+  S.stepSpill(s, DT);
+  ok(Math.abs(s.pulseQueue - S.SPILL.doublePulseDelay) < 1e-6, `the second pulse is queued (${s.pulseQueue}s)`);
+  let secondAt = -1, t = 0;
+  while (t < 7 && secondAt < 0) { hover(s); if (t > 4.5) rockAt(s, s.pilot.x + 100, s.pilot.y); const cc = S.stepSpill(s, DT); t += DT; if (cc.includes("pulse")) secondAt = t; }
+  ok(Math.abs(secondAt - S.SPILL.doublePulseDelay) < 0.05, `and fires on its own five seconds on (${secondAt.toFixed(2)}s)`);
+  ok(s.rocks.filter((r) => !r.dead).length === 0, "clearing what had gathered");
+}
+
 // ---------------------------------------------------- waves and the Depot
 {
   const s = launch(13);
   ok(S.spillCleared(s) === 0, "nothing is cleared while wave 1 is flown");
-  const cleared1 = until(s, (x) => x.phase === "tally", 60, immune);
-  ok(cleared1 && S.spillCleared(s) === 1, `draining the field clears the wave (${s.phase}, cleared ${S.spillCleared(s)})`);
-  ok(s.lastCues.includes("clear"), "the clear is announced");
-  until(s, (x) => x.phase === "card", 5, immune);
+  const cleared1 = until(s, (x) => x.phase === "countdown", 60, immune);
+  ok(cleared1 && S.spillCleared(s) === 1, `draining the field clears the wave and counts the next (${s.phase}, cleared ${S.spillCleared(s)})`);
+  ok(s.lastCues.includes("clear") && s.lastCues.includes("wave"), "the clear and the next wave are announced");
   ok(s.wave === 2, `the next wave follows (wave ${s.wave})`);
-  const depot = until(s, (x) => x.phase === "depot", 400, immune);
-  ok(depot && s.wave === 5, `the fifth wave opens the Depot (${s.phase} at wave ${s.wave})`);
-  ok(S.spillCleared(s) === 5, "five waves stand cleared at the first Depot");
-  const d = s.depot;
-  ok(d && d.offers.length === 3 && d.offers.every(Boolean), `three shelves are stocked: ${JSON.stringify(d?.offers)}`);
-  ok(Math.abs(d.timer - 30) < 0.1, `the first visit is thirty seconds (${d.timer.toFixed(1)})`);
+  ok(!s.held, "the hand comes off at the clear");
+  const docking = until(s, (x) => x.phase === "docking", 400, immune);
+  ok(docking && s.wave === 5, `the fifth wave docks (${s.phase} at wave ${s.wave})`);
+  ok(s.lastCues.includes("dock") && s.rocks.length === 0, "the dock is announced over an empty field");
+  ok(S.spillCleared(s) === 5, "five waves stand cleared at the first dock");
+  ok(S.spillBuy(s, "shield") === "closed", "nothing sells while docking");
+  s.hull = 2;
+  const t0 = s.phaseT;
+  until(s, (x) => x.phase === "depot", 3);
+  ok(s.phase === "depot", `docking opens the Depot (${s.phase})`);
+  ok(s.phaseT - t0 < 0.05 && Math.abs(s.depot.timer - 30) < 0.1, `after ${S.SPILL.dockTime}s, with thirty seconds on the clock (${s.depot.timer.toFixed(1)})`);
+  ok(s.hull === 3, "docking restores a pip");
   ok(JSON.stringify(S.SPILL.depotTime) === "[30,30,15]", "two long visits, then half");
-  ok(s.rocks.length === 0, "the field is empty in the Depot");
-  const front = S.spillItem(d.offers[0]);
-  ok(front.track === "hull", `the first shelf is the hull track (${front.id})`);
-  // a battered pilot is always offered the patch in front
-  s.hull = 1; s.ore = 1000;
-  S.spillReroll(s);
-  ok(s.depot.offers[0] === "patch", `with a pip missing the front shelf is the patch (${s.depot.offers[0]})`);
-  ok(s.ore === 980, `the first reroll costs 20 (ore ${s.ore})`);
-  ok(S.spillRerollPrice(s) === 40, `and the next costs 40 (${S.spillRerollPrice(s)})`);
-  ok(S.spillBuy(s, 0) === "ok" && s.hull === 2 && s.ore === 940, `buying the patch restores a pip and charges 40 (hull ${s.hull}, ore ${s.ore})`);
-  ok(s.depot.offers[0] === null, "a bought shelf is empty");
-  S.spillReroll(s);
-  ok(s.depot.offers[0] === null && s.depot.offers[1] && s.depot.offers[2], "a reroll restocks only what is unsold");
-  ok(s.ore === 900, `the second reroll charged 40 (ore ${s.ore})`);
-  const t0 = s.depot.timer;
-  ok(S.spillExtend(s) === "ok" && s.depot.timer - t0 > 14.9 && s.ore === 875, `an extension buys 15s for 25 (ore ${s.ore})`);
+  // the shelves are inert for a moment, against a thumb still tapping
+  s.ore = 1000;
+  ok(s.depot.arm > 0 && S.spillBuy(s, "shield") === "arming", "a tap as the shelves appear buys nothing");
+  ok(S.spillExtend(s) === "arming" && S.spillLeaveDepot(s) === false, "nor extends, nor leaves");
+  ok(s.ore === 1000, "and costs nothing");
+  ok(until(s, (x) => x.depot.arm <= 0, 2) && s.lastCues.includes("armed"), "the shelves arm, audibly");
+  // the meters: plating fills a pip that arrives full
+  ok(S.spillPrice(s, "plating") === 60, `plating I is 60 (${S.spillPrice(s, "plating")})`);
+  ok(S.spillBuy(s, "plating") === "ok" && s.up.plating === 1 && s.maxHull === 4 && s.hull === 4 && s.ore === 940,
+    `PLATING I adds a filled pip (hull ${s.hull}/${s.maxHull}, ore ${s.ore})`);
+  ok(S.spillPrice(s, "plating") === 110, "the next level costs more");
+  ok(s.depot.bought.includes("plating"), "the receipt lists the purchase");
+  ok(S.spillBuy(s, "plating") === "ok" && S.spillBuy(s, "plating") === "ok", "the meter fills to three");
+  ok(S.spillPrice(s, "plating") === null && S.spillBuy(s, "plating") === "maxed", "and no further");
+  ok(s.maxHull === 6 && s.hull === 6, `six pips at PLATING III (${s.hull}/${s.maxHull})`);
+  // the flat shelf: shield stays cheap, repair, one core
+  ok(S.spillPrice(s, "shield") === 35 && S.spillBuy(s, "shield") === "ok" && s.shield === 1, "a shield is 35");
+  ok(S.spillPrice(s, "shield") === 35 && S.spillBuy(s, "shield") === "ok" && s.shield === 2, "and still 35 for the second");
+  ok(S.spillPrice(s, "shield") === null, "two is the stack");
+  ok(S.spillPrice(s, "repair") === null, "a whole hull has nothing to repair");
+  s.hull = 2;
+  ok(S.spillPrice(s, "repair") === 30 && S.spillBuy(s, "repair") === "ok" && s.hull === 6, "repair fills every pip for 30");
+  ok(S.spillBuy(s, "core") === "ok" && s.coreArmed && s.coreBought, "the core arms");
+  ok(S.spillBuy(s, "core") === "maxed", "and is sold once a run");
+  ok(S.spillBuy(s, "thrusters") === "ok" && s.up.thrusters === 1, "THRUSTERS I");
+  ok(S.spillBuy(s, "thrusters") === "ok" && s.lungeCharges === 2, "THRUSTERS II carries two lunges");
+  ok(S.spillBuy(s, "pulse") === "ok" && s.up.pulse === 1, "POWER-UPS I unlocks the PULSE");
+  const timer = s.depot.timer;
+  ok(S.spillExtend(s) === "ok" && s.depot.timer - timer > 14.9, "an extension buys 15s for 25");
   ok(S.spillExtendPrice(s) === 50, "and doubles");
   s.ore = 0;
-  ok(S.spillBuy(s, 1) === "poor" && s.cues.includes("deny"), "a short purse is refused, audibly");
+  ok(S.spillBuy(s, "pulse") === "poor" && s.cues.includes("deny"), "a short purse is refused, audibly");
   ok(S.stepSpill(s, DT).includes("deny"), "and the refusal reaches the next frame's cues");
-  ok(S.spillLeaveDepot(s) && s.phase === "card" && s.wave === 6 && s.depot === null, `leaving opens wave 6 (${s.phase} ${s.wave})`);
+  ok(S.spillLeaveDepot(s) && s.phase === "countdown" && s.wave === 6 && s.depot === null, `leaving counts wave 6 (${s.phase} ${s.wave})`);
   ok(s.liveMods.includes("lowg"), `wave 6 flies LOW-G (${s.liveMods})`);
   ok(s.hintT > 0 && s.hint.startsWith("LOW-G"), "and teaches it, once");
   ok(s.taught.includes("lowg"), "the lesson is remembered");
 }
 {
-  // a clear is never taken back: a crash in the tally keeps the wave
-  const s = launch(31);
-  until(s, (x) => x.phase === "tally", 60, immune);
-  ok(S.spillCleared(s) === 1, "wave 1 stands cleared at the tally");
-  until(s, (x) => x.phase === "over", 3, (x) => { x.rocks = []; x.pilot.y = x.H; x.pilot.vy = 0; });
-  ok(s.phase === "over" && s.cause === "GROUNDED", `riding the floor in the tally is still fatal (${s.phase})`);
-  ok(S.spillCleared(s) === 1, `and the clear survives it (cleared ${S.spillCleared(s)})`);
+  // prices are the ship's, not the wave's: the second Depot charges what the first did
+  const s = dock(19);
+  ok(S.spillPrice(s, "shield") === 35 && S.spillPrice(s, "plating") === 60, "the first stop's prices");
+  until(s, (x) => x.phase === "depot" && x.depotVisits === 2, 500, immune);
+  ok(s.depotVisits === 2 && s.wave === 10, `the second stop is wave 10 (visit ${s.depotVisits}, wave ${s.wave})`);
+  ok(S.spillPrice(s, "shield") === 35 && S.spillPrice(s, "plating") === 60, "cost the same at wave 10");
+  ok(Math.abs(s.depot.timer - 30) < 0.1, "the second visit is still thirty seconds");
+  until(s, (x) => x.phase === "depot" && x.depotVisits === 3, 500, immune);
+  ok(Math.abs(s.depot.timer - 15) < 0.1, `the third is fifteen (${s.depot.timer.toFixed(1)})`);
 }
 {
-  // a Respawn Core fired in the tally returns to the tally, so the wave
-  // is neither drained nor tallied twice
+  // a rule phases in: the gravity change is nothing on the first frame
+  const s = launch(20);
+  until(s, (x) => x.wave >= 8 && x.phase === "wave", 500, immune);
+  ok(s.liveMods.includes("heavy"), `wave 8 is HEAVY (${s.liveMods})`);
+  ok(S.spillRamp(s) < 0.05, `and opens at nothing (${S.spillRamp(s).toFixed(2)})`);
+  until(s, () => false, 3.1, immune);
+  ok(S.spillRamp(s) === 1, `three seconds in it is whole (${S.spillRamp(s)})`);
+}
+{
+  // a clear is never taken back: a crash at the drain keeps the wave
+  const s = launch(31);
+  until(s, (x) => x.phase === "drain", 60, immune);
+  ok(s.phase === "drain", "the field drains after its window");
+  ok(S.spillCleared(s) === 0, "the wave is not yet cleared at the drain");
+  s.cleared = 1;
+  until(s, (x) => x.phase === "over", 3, (x) => { x.rocks = [{ x: x.W - 10, y: 10, vx: -1, vy: 0, r: 10, kind: "shard", sprite: 0, spin: 0, rot: 0, arc: 0, arcPhase: 0, warn: 0, grazed: true, dead: false }]; x.pilot.y = x.H; x.pilot.vy = 0; });
+  ok(s.phase === "over" && s.cause === "GROUNDED", `riding the floor in the drain is still fatal (${s.phase})`);
+  ok(S.spillCleared(s) === 1, `and a clear survives it (cleared ${S.spillCleared(s)})`);
+}
+{
+  // a Respawn Core fired in the drain returns to the drain, so the wave
+  // is neither restarted nor cleared twice
   const s = launch(32);
-  until(s, (x) => x.phase === "tally", 60, immune);
-  s.owned.respawn = 1; s.respawnArmed = true;
-  until(s, (x) => x.phase === "respawn", 3, (x) => { x.rocks = []; x.pilot.y = x.H; x.pilot.vy = 0; });
-  ok(s.phase === "respawn", "the core catches a grounding in the tally");
+  until(s, (x) => x.phase === "drain", 60, immune);
+  s.coreBought = true; s.coreArmed = true;
+  until(s, (x) => x.phase === "respawn", 3, (x) => { x.rocks = [{ x: x.W - 10, y: 10, vx: -1, vy: 0, r: 10, kind: "shard", sprite: 0, spin: 0, rot: 0, arc: 0, arcPhase: 0, warn: 0, grazed: true, dead: false }]; x.pilot.y = x.H; x.pilot.vy = 0; });
+  ok(s.phase === "respawn", "the core catches a grounding in the drain");
   let clears = 0, guard = 0;
-  while (s.phase !== "card" && guard++ < 60 * 10) { hover(s); const c = S.stepSpill(s, DT); if (c.includes("clear")) clears++; }
-  ok(s.phase === "card" && s.wave === 2, `the run goes on to wave 2 (${s.phase} ${s.wave})`);
-  ok(clears === 0, `wave 1 is not cleared a second time (${clears} extra clears)`);
+  while (s.phase !== "countdown" && guard++ < 60 * 10) { hover(s); const c = S.stepSpill(s, DT); if (c.includes("clear")) clears++; }
+  ok(s.phase === "countdown" && s.wave === 2, `the run goes on to wave 2 (${s.phase} ${s.wave})`);
+  ok(clears === 1, `wave 1 is cleared exactly once (${clears})`);
   ok(S.spillCleared(s) === 1, "and the record says one");
 }
 {
-  // a lunge on the ready card is a launch
-  const s = S.createSpill(W, H, 33, 0);
-  ok(S.spillLunge(s) === true && s.phase === "card", `the lunge launches (${s.phase})`);
-}
-{
   // the Depot clock closes the shop on its own
-  const s = launch(14);
-  until(s, (x) => x.phase === "depot", 400, immune);
+  const s = dock(14);
   s.depot.timer = 0.5;
   until(s, (x) => x.phase !== "depot", 2);
-  ok(s.phase === "card" && s.wave === 6, `the clock running out sends the pilot back (${s.phase} ${s.wave})`);
-}
-{
-  // the tree: a shelf never offers a rung whose left neighbour is unowned,
-  // and never the rare tier before the third Depot
-  const s = launch(15);
-  until(s, (x) => x.phase === "depot", 400, immune);
-  // the reroll price doubles every time, so each roll here is a fresh visit
-  const reroll = (x) => { x.ore = 1e6; x.depot.rerolls = 0; ok(S.spillReroll(x) === "ok", "a funded reroll rolls"); };
-  const offered = new Set();
-  for (let i = 0; i < 150; i++) { reroll(s); for (const id of s.depot.offers) if (id) offered.add(id); }
-  ok(offered.size >= 6, `the shelves vary (${offered.size} distinct offers)`);
-  for (const id of offered) {
-    const item = S.spillItem(id);
-    ok(!item.requires || s.owned[item.requires], `${id} needs ${item.requires} first`);
-    ok(item.tier !== 3, `${id} is rare and wave ${s.wave} is too early for it`);
-  }
-  // own the whole first tier and the second opens
-  for (const id of ["shield", "patch", "fuel", "fastcharge", "magnet"]) s.owned[id] = 1;
-  s.hull = s.maxHull; s.shield = 2;
-  const second = new Set();
-  for (let i = 0; i < 150; i++) { reroll(s); for (const id of s.depot.offers) if (id) second.add(id); }
-  for (const id of second) {
-    const item = S.spillItem(id);
-    ok(item.consumable || item.once || !s.owned[id], `${id} is owned and must not be shelved again`);
-  }
-  ok(["reactive", "plating", "twinlunge", "widepulse", "richvein"].some((id) => second.has(id)),
-    `tier two appears once tier one is owned: ${[...second].join(",")}`);
-  ok(!second.has("shield"), "a full shield stack is never offered a third");
-}
-{
-  // Stabiliser cancels the next gravity rule; Overshield and Primed land at the card
-  const s = launch(16);
-  until(s, (x) => x.phase === "depot", 400, immune);
-  s.ore = 1000;
-  s.owned.stabiliser = 0; s.stabiliseNext = true; s.overshieldNext = 1; s.primedNext = true;
-  S.spillLeaveDepot(s);
-  ok(!s.liveMods.includes("lowg"), `the Stabiliser cancels LOW-G on wave 6 (${s.liveMods})`);
-  ok(s.cardNote.startsWith("STABILISED"), `and the wave card says so (${s.cardNote})`);
-  ok(s.shield >= 1, "the Overshield is up for the wave");
-  ok(s.charge === 1, "the Primed Pulse fills the meter");
+  ok(s.phase === "countdown" && s.wave === 6, `the clock running out sends the pilot back (${s.phase} ${s.wave})`);
+  ok(s.lastCues.includes("depot-close"), "and says so");
 }
 
 // ------------------------------------------------------------- a mission
@@ -332,17 +473,20 @@ const rockAt = (s, x, y, r = 20) => {
   sim.resetRun(w, sv, "spill", false);
   ok(w.spill !== null && w.tut === null && w.flight === "spill", "a spill run carries its own state and no tutorial");
   ok(w.shieldCharges === 0, "the hangar's start shield stays in the hangar");
-  ok(sim.flap(w, sv) === "flap" && w.spill.phase === "card", "the first tap launches the field");
-  // four seconds of flight, tapping to stay off the floor, nothing to hit
-  for (let i = 0; i < 60 * 4; i++) {
-    w.spill.rocks = [];
-    if (i % 24 === 0 && w.spill.phase === "wave") sim.flap(w, sv);
-    sim.updateWorld(w, sv, DT);
-  }
-  ok(w.spill.phase === "wave", `the sim steps the Spill (${w.spill.phase})`);
+  ok(sim.flap(w, sv) === "flap" && w.spill.phase === "countdown", "the first tap launches the field");
+  ok(sim.flap(w, sv) === "none", "a tap in the count is nothing");
+  for (let i = 0; i < 60 * 4; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
+  ok(w.spill.phase === "wave", `the sim steps the Spill through the count (${w.spill.phase})`);
+  ok(sim.flap(w, sv) === "flap" && w.spill.held, "a tap puts the hand on the thrust");
+  ok(sim.flap(w, sv) === "none", "holding is not a second tap");
+  for (let i = 0; i < 30; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
+  ok(w.spill.pilot.vy < 0, "and the ship climbs");
+  sim.spillRelease(w);
+  ok(!w.spill.held, "the release takes it off");
   ok(Math.abs(w.squirrel.y - w.spill.pilot.y) < 1e-6, "the world's squirrel mirrors the Spill's pilot");
   ok(sim.pilotX(w) === w.spill.pilot.x, "and the pilot's X follows the lunge lane");
-  ok(sim.dive(w, sv) === "dive", "a dive routes to the Spill");
+  ok(sim.dive(w, sv) === "dive" && w.spill.pilot.vy >= S.SPILL.burstDown, "a dive is the burst down");
+  ok(sim.spillBurstUp(w) === true && w.spill.pilot.vy <= -S.SPILL.burstUp, "a swipe up is the burst up");
   // die: three pips gone, on the fourth wave
   w.spill.hull = 1; w.spill.iframes = 0; w.spill.rocks = []; w.spill.floorT = 0;
   w.spill.pilot.y = w.H * 0.45; w.spill.pilot.vy = 0;
@@ -391,12 +535,13 @@ const rockAt = (s, x, y, r = 20) => {
 
 // ------------------------------------------------------------- the bot
 //
-// A dodger, not a player: it looks 220px ahead, picks the widest gap in
-// the lane it is flying, and taps or dives toward it. If this cannot clear
-// wave 1 the ladder is broken, whatever the tuning says.
+// A dodger, not a player: it looks 300px ahead, picks the widest gap in
+// the lane it is flying, and holds or releases toward it, bursting when
+// the gap is far. If this cannot clear wave 1 the ladder is broken,
+// whatever the tuning says.
 function bot(s) {
   const p = s.pilot;
-  if (s.phase !== "wave" && s.phase !== "drain" && s.phase !== "tally") return;
+  if (s.phase !== "wave" && s.phase !== "drain") return;
   const ahead = s.rocks.filter((r) => !r.dead && r.warn <= 0 && r.x > p.x - 20 && r.x < p.x + 300);
   let target = s.H * 0.45;
   if (ahead.length) {
@@ -417,9 +562,10 @@ function bot(s) {
   }
   // never idle near the floor: below three quarters the answer is always up
   if (p.y > s.H - 140) target = Math.min(target, s.H * 0.55);
-  if (p.y > target + 14 && p.vy > -60) S.spillFlap(s);
-  else if (p.y < target - 90 && p.vy < 150) S.spillDive(s);
-  if (s.charge >= 1 && ahead.some((r) => Math.hypot(r.x - p.x, r.y - p.y) < 110)) S.spillPulse(s);
+  const dy = target - p.y;
+  S.spillHold(s, dy < -8);
+  if (dy < -120 && p.vy > -200) S.spillBurst(s, -1);
+  else if (dy > 120 && p.vy < 150) S.spillBurst(s, 1);
 }
 {
   const seeds = [1, 2, 3, 4, 5, 6];

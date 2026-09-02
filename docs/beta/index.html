@@ -1038,6 +1038,15 @@
       border: 1px solid rgba(255,215,106,.45); border-radius: 999px; white-space: nowrap; }
     .ac-offer.ac-cardoff .ac-offerprice { color: #ff9a8c; border-color: rgba(255,154,140,.4); }
     .ac-offer.sold { justify-content: center; color: #6f7a99; font: 800 11px/1 Figtree, sans-serif; letter-spacing: .16em; }
+    /* the ship's meters: one segment per level, lit as it fills */
+    .ac-moderowtxt .ac-upgmeter { display: flex; gap: 3px; margin: 4px 0 3px; }
+    .ac-upgmeter i { display: block; width: 18px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.14); }
+    .ac-upgmeter i.on { background: #5fd48a; box-shadow: 0 0 6px rgba(95,212,138,.5); }
+    .ac-upg.full .ac-offerprice { color: #8df0b4; border-color: rgba(141,240,180,.45); }
+    .ac-upg.full { opacity: .75; }
+    /* inert for a moment after docking: a thumb still tapping buys nothing */
+    .ac-depotcard.arming .ac-offer, .ac-depotcard.arming .ac-depotact, .ac-depotcard.arming .ac-primary { opacity: .35; pointer-events: none; }
+    .ac-depotreceipt { color: #d9b8ff; }
     .ac-depotact { display: flex; gap: 8px; }
     .ac-depotact .ac-ghost { flex: 1; font-size: 12px; padding: 12px 8px; letter-spacing: .06em; white-space: nowrap; }
 
