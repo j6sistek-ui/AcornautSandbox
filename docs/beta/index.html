@@ -924,6 +924,15 @@
     .ac-continue { background: linear-gradient(180deg, #ffd76a, #d4a12e);
       color: #241a04; border-color: #ffe9a8; }
     .ac-continue-short { opacity: .75; margin: 2px 0 6px; }
+    /* HOLD, DON'T TAP. The fill is the promise being kept: it grows for
+       exactly as long as the hold the script is counting, so letting go
+       early visibly costs nothing. Painted in the button's own ::after so
+       no extra element rides in the sheet. */
+    .ac-holdbtn { position: relative; overflow: hidden; }
+    .ac-holdbtn::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 0; background: rgba(255, 255, 255, .34); pointer-events: none; }
+    .ac-holdbtn.ac-holding::after { animation: acHoldFill var(--ac-hold, 550ms) linear forwards; }
+    @keyframes acHoldFill { from { width: 0; } to { width: 100%; } }
     .ac-restart { border-color: rgba(255,215,106,.55); color: #ffd76a; }
     .ac-pulse { animation: acPulse 1.15s ease-in-out infinite; border-color: #ffd76a !important; }
     @keyframes acPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 106, .55); }
@@ -1600,8 +1609,21 @@
     window.__ACORNAUT_ART__ = "../art";
   </script>
   <script type="module">
-    import { bootStandalone } from "../js168/standalone.js";
-    bootStandalone(document.getElementById("app"));
+    // A CACHED index.html MUST NOT BE A DEAD PAGE. This file is the one
+    // unversioned thing we ship, so a browser can be holding a copy of it
+    // from an earlier release - and that copy names a js<VER> folder the
+    // next release used to delete. On 2 Sep 2026 that is exactly how the
+    // game stopped loading: cached HTML asking for a retired folder, 404,
+    // blank screen. The tell was that a private window worked, because it
+    // had no cached HTML.
+    //
+    // Two things stop it recurring. Releases now keep the last few
+    // versioned folders (see export-sandbox.mjs), and this import falls
+    // back to ./js, which is always the current build and is never
+    // deleted. A stale page then loads today's code instead of nothing.
+    import("../js169/standalone.js")
+      .catch(() => import("../js/standalone.js"))
+      .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
 </body>
 </html>

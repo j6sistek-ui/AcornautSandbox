@@ -1,4 +1,4 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=169";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=166";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -282,8 +282,8 @@ const IS_BETA = typeof window !== "undefined" &&
 // identically on both pages, and reverting is deleting this block —
 // the live chart underneath is the fallback, untouched.
 //
-// Tunnel targets are SECONDS; spill targets are WAVES. Both climb with
-// the chapter. Tune freely — the level spreadsheet mirrors this.
+// Tunnel targets are SECTIONS; spill targets are SECONDS. Both climb
+// with the chapter. Tune freely — the level spreadsheet mirrors this.
 if (IS_BETA) {
     for (const l of LEVELS) {
         if (l.stage < 2)
@@ -299,16 +299,12 @@ if (IS_BETA) {
             l.fx = { env: l.fx.env }; // missions run their own physics
         }
         else if (l.n === 8) {
-            // A Spill mission is a wave ladder with a top rung: clear wave N and
-            // the level is done. Chapter 3's mission ends AT wave 5, before the
-            // Depot opens; from chapter 4 on the shop is inside the mission, so
-            // spending well is part of the test rather than a bonus.
             l.base = "spill";
-            l.gates = 2 + l.stage; // WAVES cleared: 4..12
+            l.gates = 20 + l.stage * 5; // 30..70 seconds
             l.goals = [
                 { kind: "finish" },
-                { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined
-                { kind: "noHit" },
+                { kind: "score", n: 200 + l.stage * 100 },
+                { kind: "score", n: 500 + l.stage * 250 },
             ];
             l.fx = { env: l.fx.env };
         }
@@ -344,7 +340,7 @@ export const hyperRunById = (id) => id === HYPER_RUN_MISSION.id ? HYPER_RUN_MISS
 export function goalText(g, def) {
     switch (g.kind) {
         case "finish": return def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
-            : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
+            : def.base === "spill" ? `Survive ${def.gates} seconds in the Spill`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
         case "acorns": return `Collect ${g.n} acorns`;
@@ -355,8 +351,6 @@ export function goalText(g, def) {
         case "maxTaps": return `At most ${g.n} taps`;
         case "flow": return `Reach Flow \u00d7${g.n}`;
         case "score": return `Score ${g.n} points`;
-        case "ore": return `Mine ${g.n} Ore`;
-        case "noHit": return "Take no hull damage";
         case "time": {
             const seconds = Math.floor(g.ticks / 60);
             return `Finish in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")} or faster`;
@@ -381,7 +375,7 @@ export function fxText(fx) {
         out.push("SWAYING GATES");
     return out;
 }
-export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, ore: 0, hits: 0, finishTicks: 0 });
+export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, finishTicks: 0 });
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def) {
     let n = 0;
@@ -410,8 +404,6 @@ export function goalHud(g, s, gatesDone, def) {
     switch (g.kind) {
         case "finish": {
             const n = Math.min(gatesDone, def.gates);
-            if (def.base === "spill")
-                return { text: `WAVE ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
             return { text: `PORTAL ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
         }
         case "acorns":
@@ -430,10 +422,6 @@ export function goalHud(g, s, gatesDone, def) {
             return { text: `FLOW ×${s.flow}/${g.n}`, state: s.flow >= g.n ? "done" : "live" };
         case "score":
             return { text: `SCORE ${Math.min(s.score, g.n)}/${g.n}`, state: s.score >= g.n ? "done" : "live" };
-        case "ore":
-            return { text: `ORE ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
-        case "noHit":
-            return { text: "NO HITS", state: s.hits > 0 ? "lost" : "done" };
         case "time": {
             const sec = Math.ceil(g.ticks / 60);
             return { text: `UNDER ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`,
@@ -453,8 +441,6 @@ export function goalMet(g, s) {
         case "maxTaps": return s.taps <= g.n;
         case "flow": return s.flow >= g.n;
         case "score": return s.score >= g.n;
-        case "ore": return s.ore >= g.n;
-        case "noHit": return s.hits === 0;
         case "time": return s.finishTicks > 0 && s.finishTicks <= g.ticks;
     }
 }

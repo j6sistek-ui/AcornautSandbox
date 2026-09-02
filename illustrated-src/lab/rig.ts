@@ -151,6 +151,10 @@ function punch(rec: Loaded, id: string, g: Glass, opaque = false) {
 
 type Mode = "one" | "suit" | "helm" | "frames" | "all";
 type Target = "helm" | "suit" | "pair";
+/** Does a SIZE or ROT press move the one tile you picked, or everything
+ *  the current view is filtered down to? A recalibration pass is mostly
+ *  the second: sixteen frames of one bank all sit a touch too big. */
+type Scope = "one" | "view";
 
 const S = {
   tables: null as Tables | null,
@@ -163,6 +167,8 @@ const S = {
   rings: true,
   ghost: false,
   active: "" as string,             // "suitId|helmId" of the tile being edited
+  scope: "one" as Scope,            // what SIZE and ROT reach
+  locks: {} as Record<string, true>,
 };
 
 // One snapshot per GESTURE (drag, pad press, wheel burst, pinch), so an
@@ -195,6 +201,22 @@ const pairKey = (s: string, h: string) => `${s}|${h}`;
 const suitOf = (id: string) => S.tables!.suits.find((s) => s.id === id)!;
 const helmOf = (id: string) => S.tables!.helmets.find((h) => h.id === id)!;
 
+// WHAT A LOCK PROTECTS IS THE NUMBER, NOT THE TILE. A suit's head is one
+// number shown under thirty helmets; locking the tile you happen to be
+// looking at would leave the same number wide open on the other
+// twenty-nine, which is exactly the accident being guarded against - a
+// stray drag on the everything page, or a bulk press aimed at the rest of
+// the view. So the key names the record the current target writes to, and
+// the lock holds wherever that record is reachable.
+function lockKey(s: SuitRow, h: HelmRow) {
+  return S.target === "suit"
+    ? "suit:" + s.key
+    : S.target === "pair"
+    ? "pair:" + pairKey(s.id, h.id)
+    : "helm:" + h.id;
+}
+const isLocked = (s: SuitRow, h: HelmRow) => !!S.locks[lockKey(s, h)];
+
 function effective(s: SuitRow, h: HelmRow) {
   const ov = S.over[pairKey(s.id, h.id)];
   const a: Tri = ov
@@ -215,6 +237,7 @@ function saveLocal() {
         suits: Object.fromEntries(S.tables.suits.map((s) => [s.key, s.dome])),
         helmets: Object.fromEntries(S.tables.helmets.map((h) => [h.id, h.glass])),
         over: S.over,
+        locks: S.locks,
       }),
     );
   } catch {
@@ -233,12 +256,16 @@ function restoreLocal() {
   if (!raw) return;
   try {
     const d = JSON.parse(raw);
-    for (const s of S.tables.suits) if (d.suits?.[s.key]) s.dome = d.suits[s.key].slice(0, 3);
+    // slice(0, 4), not 3: a frame's fourth number is its pose rotation, and
+    // truncating here quietly threw away every rotation dialled in the last
+    // session the moment the page reloaded.
+    for (const s of S.tables.suits) if (d.suits?.[s.key]) s.dome = d.suits[s.key].slice(0, 4);
     for (const h of S.tables.helmets) {
       const g = d.helmets?.[h.id];
       if (g) h.glass = [g[0], g[1], g[2], g[3] || 0];
     }
     S.over = d.over || {};
+    S.locks = d.locks || {};
   } catch {
     /* a corrupt draft is not worth a broken page */
   }
@@ -690,6 +717,19 @@ export async function bootRig(root: HTMLElement) {
     mkPad("←", -1, 0), el("span", "rg-pc"), mkPad("→", 1, 0),
     el("span", ""), mkPad("↓", 0, 1), el("span", ""),
   );
+  // THE SCOPE SWITCH SITS ON TOP OF THE DIALS IT GOVERNS, so there is no
+  // guessing what a press is about to reach.
+  const scopeB = {} as Record<Scope, HTMLButtonElement>;
+  const scopeWrap = el("div", "rg-scope");
+  for (const [v, t] of [["one", "SELECTED"], ["view", "ALL IN VIEW"]] as [Scope, string][]) {
+    const b = el("button", "rg-sc", t);
+    b.onclick = () => {
+      S.scope = v;
+      syncScope();
+    };
+    scopeB[v] = b;
+    scopeWrap.append(b);
+  }
   const dials = el("div", "rg-dials");
   const mkDial = (name: string, minus: () => void, plus: () => void) => {
     const w = el("div", "rg-dial");
@@ -701,8 +741,9 @@ export async function bootRig(root: HTMLElement) {
     return w;
   };
   dials.append(
-    mkDial("SIZE", () => withActive((s, h) => resize(1 / 1.02, s, h)), () => withActive((s, h) => resize(1.02, s, h))),
-    mkDial("ROT", () => withActive((s, h) => spin(-2, s, h)), () => withActive((s, h) => spin(2, s, h))),
+    scopeWrap,
+    mkDial("SIZE", () => withScope((s, h) => resize(1 / 1.02, s, h)), () => withScope((s, h) => resize(1.02, s, h))),
+    mkDial("ROT", () => withScope((s, h) => spin(-2, s, h)), () => withScope((s, h) => spin(2, s, h))),
   );
   const acts = el("div", "rg-acts");
   const undoB = el("button", "rg-act", "UNDO");
@@ -719,9 +760,22 @@ export async function bootRig(root: HTMLElement) {
     if (n) flash(`folded ${n} overrides into ${h.name}`);
     build();
   };
+  const lockB = el("button", "rg-act rg-lock", "LOCK");
+  lockB.onclick = () => {
+    const t = activeTile();
+    if (!t) return;
+    const k = lockKey(t.s, t.h);
+    const what = S.target === "suit" ? `${t.s.name}'s head`
+      : S.target === "pair" ? `${t.s.name} × ${t.h.name}`
+      : `${t.h.name}'s glass`;
+    if (S.locks[k]) { delete S.locks[k]; flash(`unlocked ${what}`); }
+    else { S.locks[k] = true; flash(`locked ${what}`); }
+    saveLocal();
+    paintAll();
+  };
   const copyB = el("button", "rg-act rg-go", "COPY");
   copyB.onclick = () => showReport();
-  acts.append(undoB, resetB, foldB, copyB);
+  acts.append(undoB, resetB, lockB, foldB, copyB);
   foot.append(pad, dials, acts);
 
   const stat = el("div", "rg-stat");
@@ -817,6 +871,7 @@ export async function bootRig(root: HTMLElement) {
       S.active = list.length ? pairKey(list[0][0].id, list[0][1].id) : "";
     }
     syncTarget();
+    syncScope();
     paintAll();
   }
 
@@ -825,6 +880,7 @@ export async function bootRig(root: HTMLElement) {
       paintTile(t.cv, t.s, t.h, t.size);
       t.wrap.classList.toggle("on", pairKey(t.s.id, t.h.id) === S.active);
       t.wrap.classList.toggle("ov", !!S.over[pairKey(t.s.id, t.h.id)]);
+      t.wrap.classList.toggle("lk", isLocked(t.s, t.h));
       t.touchSync?.();
     }
     const s = suitOf(activeSuit());
@@ -835,6 +891,10 @@ export async function bootRig(root: HTMLElement) {
       `${h.name} glass [${round(h.glass[0], 1)}, ${round(h.glass[1], 1)}, ${round(h.glass[2], 1)}` +
       (h.glass[3] ? `, ${round(h.glass[3], 1)}°` : "") + "]" +
       (nOver ? `   ·   ${nOver} override${nOver > 1 ? "s" : ""}` : "");
+    const at = activeTile();
+    const held = at ? isLocked(at.s, at.h) : false;
+    lockB.textContent = held ? "UNLOCK" : "LOCK";
+    lockB.classList.toggle("on", held);
     const fh = foldable(h);
     foldB.style.display = fh ? "" : "none";
     if (fh) foldB.textContent = `FOLD ${fh.length}`;
@@ -844,14 +904,47 @@ export async function bootRig(root: HTMLElement) {
   const activeSuit = () => (S.active ? S.active.split("|")[0] : S.suit);
   const activeHelm = () => (S.active ? S.active.split("|")[1] : S.helm);
 
+  function syncScope() {
+    for (const k of ["one", "view"] as Scope[]) scopeB[k].classList.toggle("on", S.scope === k);
+  }
+
+  const activeTile = () =>
+    tiles.find((x) => pairKey(x.s.id, x.h.id) === S.active) || tiles[0];
+
   function withActive(fn: (s: SuitRow, h: HelmRow, scale: number) => void) {
-    const t = tiles.find((x) => pairKey(x.s.id, x.h.id) === S.active) || tiles[0];
+    const t = activeTile();
     if (!t) return;
+    if (isLocked(t.s, t.h)) { flash("locked — unlock to edit"); return; }
     const body = bank.get(t.s.file);
     if (!body) return;
     const scale = (t.size * 0.82) / Math.max(1, Math.max(body.box.w, body.box.h));
     fn(t.s, t.h, scale);
     paintAll();
+  }
+
+  /** SIZE and ROT answer to the scope switch. ONE WRITE PER NUMBER is the
+   *  whole trick: in the one-suit view all thirty tiles share a single suit
+   *  row, so a naive loop would scale that one head once per helmet on the
+   *  roster - thirty compounding multiplies from a single tap. Dedupe by
+   *  the record each write lands on, skip what is locked, and say how many
+   *  of each actually moved. */
+  function withScope(fn: (s: SuitRow, h: HelmRow) => void) {
+    if (S.scope === "one") { withActive(fn); return; }
+    const seen = new Set<string>();
+    let moved = 0;
+    let held = 0;
+    for (const t of tiles) {
+      // an own-head tile wears no helmet, so a glass edit would write nothing
+      if (S.target !== "suit" && t.s.ownHead) continue;
+      const k = lockKey(t.s, t.h);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      if (S.locks[k]) { held++; continue; }
+      fn(t.s, t.h);
+      moved++;
+    }
+    paintAll();
+    flash(`${moved} in view${held ? `, ${held} locked` : ""}`);
   }
 
   // ---- pointer: drag to move, wheel/pinch to size
@@ -876,7 +969,8 @@ export async function bootRig(root: HTMLElement) {
     // Now only the ACTIVE tile owns the gesture; every other tile lets the
     // page scroll straight through it (pan-y), and its first tap selects.
     const syncTouch = () => {
-      t.cv.style.touchAction = pairKey(t.s.id, t.h.id) === S.active ? "none" : "pan-y";
+      t.cv.style.touchAction =
+        pairKey(t.s.id, t.h.id) === S.active && !isLocked(t.s, t.h) ? "none" : "pan-y";
     };
     t.touchSync = syncTouch;
     syncTouch();
@@ -892,6 +986,13 @@ export async function bootRig(root: HTMLElement) {
       if (!wasActive) {
         // first tap only selects — the browser keeps the gesture, so a
         // swipe that began on an unselected tile scrolls the grid
+        paintAll();
+        return;
+      }
+      // A LOCKED NUMBER STILL SELECTS, so you can read it, copy it and
+      // unlock it — it just refuses to move.
+      if (isLocked(t.s, t.h)) {
+        flash("locked — unlock to edit");
         paintAll();
         return;
       }

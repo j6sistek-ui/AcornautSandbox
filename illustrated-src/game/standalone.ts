@@ -18,6 +18,46 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return n;
 }
 
+/** HOLD, DON'T TAP. A run ends on a tap, and the very next reflex tap
+ *  landed on CONTINUE and spent the acorns before the pilot had read the
+ *  screen - the owner watched himself buy a continue he never chose. A
+ *  deliberate hold cannot be reached by reflex: the button fills while it
+ *  is held down and only pays out when the fill completes, and letting go
+ *  early costs nothing. Guard the SPEND, not the screen: a timed lockout
+ *  would punish a pilot who did read it and wants straight back in.
+ *
+ *  Keyboard activation fires at once. A click with `detail === 0` came
+ *  from Enter or Space, which is already a deliberate act on a device
+ *  that has no reflex tap to guard against - and pointer presses never
+ *  reach that path, because the pointerdown below cancels the click the
+ *  browser would otherwise synthesise. */
+function holdToFire(b: HTMLButtonElement, ms: number, fire: () => void) {
+  let timer = 0;
+  let fired = false;
+  const stop = () => {
+    if (timer) { clearTimeout(timer); timer = 0; }
+    b.classList.remove("ac-holding");
+  };
+  b.style.setProperty("--ac-hold", `${ms}ms`);
+  b.addEventListener("pointerdown", (e) => {
+    if (fired || timer) return;
+    e.preventDefault(); // no synthesised click, so the pointer path is hold-only
+    b.classList.add("ac-holding");
+    timer = window.setTimeout(() => {
+      timer = 0;
+      fired = true;
+      b.classList.remove("ac-holding");
+      fire();
+    }, ms);
+  });
+  for (const ev of ["pointerup", "pointerleave", "pointercancel"]) {
+    b.addEventListener(ev, stop);
+  }
+  b.addEventListener("click", (e) => {
+    if (e.detail === 0 && !fired) { fired = true; fire(); }
+  });
+}
+
 /** One testable launch seam shared by the Hyper Run briefing CTA and its
  * fixed-step acceptance harness. Hyper Run ships on both pages now, so
  * this is no longer gated - the Modes entry always offers it. */
@@ -366,8 +406,9 @@ export async function bootStandalone(root: HTMLElement) {
           const cost = engine.continueCost();
           const funds = engine.save.acorns ?? 0;
           if (funds >= cost) {
-            const cont = el("button", "ac-primary ac-continue", `CONTINUE — ${cost} ACORNS`);
-            cont.onclick = () => engine.continueRun();
+            const cont = el("button", "ac-primary ac-continue ac-holdbtn",
+              `HOLD TO CONTINUE — ${cost} ACORNS`);
+            holdToFire(cont, 550, () => engine.continueRun());
             sheet.append(cont);
           } else {
             sheet.append(el("p", "ac-sub ac-continue-short",
@@ -941,7 +982,7 @@ export async function bootStandalone(root: HTMLElement) {
     // THE ONLY PROMPT THE DAILY GETS. An unclaimed day lights the shop
     // button from behind rather than nagging with a banner; walking in is
     // what claims it, so the glow is both the ask and the whole interaction.
-    if (!engine.dailyState().claimedToday) shopBtn.classList.add("ac-dailyready");
+    if (engine.dailyUnseen()) shopBtn.classList.add("ac-dailyready");
     shopBtn.onclick = () => engine.open("shop");
     // NEXT TO THE SHOP, in the rail, wearing painted art like the gift
     // beside it - this rail speaks in renders, and the dock that speaks in

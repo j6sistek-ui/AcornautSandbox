@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=169";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=167";
 export function artBase() {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return raw.replace(/\/$/, "");
@@ -115,7 +115,7 @@ export function emptyArt() {
         ready: false,
         squirrelIdle: [], squirrelFlap: [], acorn: [], golden: [], shield: [],
         planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
-        suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
+        suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null,
         frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
         suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
     };
@@ -469,7 +469,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         }));
         return out;
     }
-    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun, ore] = await Promise.all([
+    const [squirrelIdle, squirrelFlap, acorn, golden, shield, planets, debris, sky, pals, palAnim, suits, helms, arcadeAcorn, frozen, shieldnut, frozenAnim, shieldAnim, wormAnim, holeAnim, holeEnter, suitTail, suitBody, suitTap, suitTapTail, suitBounce, suitAsc, suitDesc, hyperRun] = await Promise.all([
         many(`${base}/squirrel/idle-`, 4),
         many(`${base}/squirrel/flap-`, 4),
         many(`${base}/acorn/`, 16),
@@ -510,7 +510,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // conditional stays because the constant is the one place that
         // decides, not because the answer can currently be no.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
-        optional(`${base}/pickups/ore.png?v=${ART_VER}`),
     ]);
     const bank = {
         ready: true,
@@ -529,7 +528,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         arcadeAcorn: arcadeAcorn ? asSprite(arcadeAcorn) : null,
         frozen: frozen ? asSprite(frozen) : null,
         shieldnut: shieldnut ? asSprite(shieldnut) : null,
-        ore: ore ? asSprite(ore) : null,
         frozenAnim,
         shieldAnim,
         wormAnim,
