@@ -51,6 +51,13 @@
 .sw img{width:100%; height:100%; object-fit:contain}
 .sw:hover{transform:translateY(-3px)}
 .sw[aria-pressed="true"]{border-color:var(--accent); background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 22%,transparent),rgba(8,6,18,.9))}
+.sw.upcoming{border-style:dashed; border-color:color-mix(in srgb,var(--violet) 55%,var(--line-soft))}
+.sw-tag{position:absolute; left:6px; right:6px; bottom:5px; text-align:center;
+  font-family:Figtree,sans-serif; font-style:normal; font-weight:800; font-size:.58rem;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--violet-lite);
+  background:rgba(8,6,18,.82); border:1px solid color-mix(in srgb,var(--violet) 45%,transparent);
+  border-radius:999px; padding:2px 0; pointer-events:none}
+.sw.upcoming img{opacity:.92}
 @media (prefers-reduced-motion:reduce){
   .rail{-webkit-mask-image:none; mask-image:none; overflow-x:auto; flex-wrap:wrap}
   .rail-in{flex-wrap:wrap; animation:none}

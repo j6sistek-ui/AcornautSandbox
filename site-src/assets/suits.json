@@ -2,151 +2,187 @@
  {
   "id": "flight",
   "name": "Flight",
-  "glow": "#c9b6ff"
+  "glow": "#c9b6ff",
+  "beta": false
  },
  {
   "id": "iontrim",
   "name": "Ion",
-  "glow": "#4ad8ff"
+  "glow": "#4ad8ff",
+  "beta": false
  },
  {
   "id": "copper",
   "name": "Copper",
-  "glow": "#ff8a2a"
+  "glow": "#ff8a2a",
+  "beta": false
  },
  {
   "id": "frost",
   "name": "Frost",
-  "glow": "#9fe4ff"
+  "glow": "#9fe4ff",
+  "beta": false
  },
  {
   "id": "voidsuit",
   "name": "Void",
-  "glow": "#b45cff"
+  "glow": "#b45cff",
+  "beta": false
  },
  {
   "id": "aurorasuit",
   "name": "Aurora",
-  "glow": "#5dffd0"
+  "glow": "#5dffd0",
+  "beta": true
  },
  {
   "id": "ember",
   "name": "Ember",
-  "glow": "#ff5a1e"
+  "glow": "#ff5a1e",
+  "beta": false
  },
  {
   "id": "stardust",
   "name": "Stardust",
-  "glow": "#8fb8ff"
+  "glow": "#8fb8ff",
+  "beta": true
  },
  {
   "id": "robo",
   "name": "Robo",
-  "glow": "#35e0ff"
+  "glow": "#35e0ff",
+  "beta": false
  },
  {
   "id": "alien",
   "name": "Alien",
-  "glow": "#7dff4d"
+  "glow": "#7dff4d",
+  "beta": false
+ },
+ {
+  "id": "alien2",
+  "name": "Alien 1",
+  "glow": "#7dff4d",
+  "beta": true
  },
  {
   "id": "ghost",
   "name": "Ghost",
-  "glow": "#9fd8ff"
+  "glow": "#9fd8ff",
+  "beta": false
  },
  {
   "id": "bigbooty",
   "name": "Big Booty",
-  "glow": "#ffb84d"
+  "glow": "#ffb84d",
+  "beta": false
  },
  {
   "id": "catsuit",
   "name": "Cat",
-  "glow": "#c9b6ff"
+  "glow": "#c9b6ff",
+  "beta": false
  },
  {
   "id": "gemmie",
   "name": "Gemmie",
-  "glow": "#ffb8f0"
+  "glow": "#ffb8f0",
+  "beta": false
  },
  {
   "id": "sammie",
   "name": "Sammie",
-  "glow": "#c9b6ff"
+  "glow": "#c9b6ff",
+  "beta": false
  },
  {
   "id": "seraph",
   "name": "Seraph",
-  "glow": "#ffe9a8"
+  "glow": "#ffe9a8",
+  "beta": false
  },
  {
   "id": "leviathan",
   "name": "Leviathan",
-  "glow": "#4fe8dd"
+  "glow": "#4fe8dd",
+  "beta": false
  },
  {
   "id": "verdant",
   "name": "Verdant",
-  "glow": "#38ff9a"
+  "glow": "#38ff9a",
+  "beta": false
  },
  {
   "id": "cryostar",
   "name": "Cryostar",
-  "glow": "#54d8ff"
+  "glow": "#54d8ff",
+  "beta": false
  },
  {
   "id": "eclipse",
   "name": "Eclipse",
-  "glow": "#b552ff"
+  "glow": "#b552ff",
+  "beta": false
  },
  {
   "id": "volt",
   "name": "Volt",
-  "glow": "#54ff2e"
+  "glow": "#54ff2e",
+  "beta": false
  },
  {
   "id": "cinderforge",
   "name": "Cinderforge",
-  "glow": "#ff3b22"
+  "glow": "#ff3b22",
+  "beta": true
  },
  {
   "id": "groveguard",
   "name": "Groveguard",
-  "glow": "#65dca1"
+  "glow": "#65dca1",
+  "beta": true
  },
  {
   "id": "cosmic",
   "name": "Cosmic",
-  "glow": "#d687ff"
+  "glow": "#d687ff",
+  "beta": true
  },
  {
   "id": "sunforged",
   "name": "Sunforged",
-  "glow": "#ffad2b"
+  "glow": "#ffad2b",
+  "beta": true
  },
  {
   "id": "abyssal",
   "name": "Abyssal",
-  "glow": "#39dcff"
+  "glow": "#39dcff",
+  "beta": true
  },
  {
   "id": "amethyst",
   "name": "Amethyst",
-  "glow": "#c86dff"
+  "glow": "#c86dff",
+  "beta": true
  },
  {
   "id": "ivoryguard",
   "name": "Ivoryguard",
-  "glow": "#fff0b8"
+  "glow": "#fff0b8",
+  "beta": true
  },
  {
   "id": "reactor",
   "name": "Reactor",
-  "glow": "#65ff32"
+  "glow": "#65ff32",
+  "beta": true
  },
  {
   "id": "cyber",
   "name": "Cyber",
-  "glow": "#7030df"
+  "glow": "#7030df",
+  "beta": false
  }
 ]

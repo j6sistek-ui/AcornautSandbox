@@ -27,7 +27,7 @@
     <div class="hd rise">
       <p class="kicker">The Fitting Room</p>
       <h2>Thirty suits. Not one of them is a recolour.</h2>
-      <p class="lede">Every suit is its own painting, with a helmet built to match, a trail that burns in its own colour, and pals that fly alongside you. In the game you build the look in a lit display case and the squirrel wears your picks live while you decide. Pick one below &mdash; the case is the same one.</p>
+      <p class="lede">Every suit is its own painting, with a helmet built to match, a trail that burns in its own colour, and pals that fly alongside you. Twenty ship in the live game today; the ones marked <b>Soon</b> are upcoming on the beta shelf &mdash; still painted, not live yet. In the game you build the look in a lit display case and the squirrel wears your picks live while you decide. Pick one below &mdash; the case is the same one.</p>
     </div>
 
     <div class="case-grid">
@@ -52,7 +52,7 @@
     <div class="wall rise">
       <div class="rail" id="railA"><div class="rail-in" id="railAin"></div></div>
       <div class="rail rev" id="railB"><div class="rail-in" id="railBin"></div></div>
-      <p class="tiny" style="margin-top:16px;text-align:center">30 suits &middot; 31 helmets &middot; 18 trails &middot; 15 pals &mdash; every one of them painted, not tinted.</p>
+      <p class="tiny" style="margin-top:16px;text-align:center">30 suits on the wall (20 live &middot; 10 upcoming) &middot; 31 helmets &middot; 18 trails &middot; 15 pals &mdash; every one of them painted, not tinted.</p>
     </div>
   </div>
 </section>

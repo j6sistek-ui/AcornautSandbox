@@ -41,7 +41,7 @@
     <div class="hd rise">
       <p class="kicker">The whole control scheme</p>
       <h2>Tap. That is the entire input.</h2>
-      <p class="lede">No buttons to learn and no tutorial to sit through. Planets don&rsquo;t kill you &mdash; you bounce off them, and the run keeps count. Only the floor is fatal. Thirty suits, a hundred missions and six rule-sets all hang off that one motion, and the strip below runs the game&rsquo;s own gravity, its own bounce, and Eclipse&rsquo;s own flight frames.</p>
+      <p class="lede">No buttons to learn and no tutorial to sit through. Planets don&rsquo;t kill you &mdash; you bounce off them, and the run keeps count. Only the floor is fatal. Thirty suits (twenty fly live today; the rest are painted and labelled upcoming on beta), a hundred missions and six rule-sets all hang off that one motion, and the strip below runs the game&rsquo;s own gravity, its own bounce, and Eclipse&rsquo;s own flight frames.</p>
     </div>
 
     <div class="toy rise" id="toy" role="button" tabindex="0" aria-label="Playable demo: tap or press space to flap">
