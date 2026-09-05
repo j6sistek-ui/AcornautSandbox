@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=178";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=182";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "178";
+export const ART_VER = "182";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -34,7 +34,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-05 19:36 UTC";
+export const BUILD_TIME = "2026-09-05 22:36 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -146,6 +146,7 @@ export function helmetWornBy(equippedHelmet, equippedSuit) {
 }
 export const SUITS = [
     { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
+    { id: "vanguard", name: "Vanguard", cost: 0, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -191,8 +192,17 @@ if (!IS_BETA) {
             SUITS.splice(i, 1);
     }
 }
+export function trailWornBy(equippedTrail, equippedSuit) {
+    if (equippedSuit === "vanguard")
+        return "vanguardwake";
+    return equippedTrail === "vanguardwake" ? "sparks" : equippedTrail;
+}
+export function canWearTrail(id, suit) {
+    return suit === "vanguard" ? id === "vanguardwake" : id !== "vanguardwake";
+}
 export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
+    { id: "vanguardwake", name: "Vanguard Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -640,6 +650,7 @@ export const SUIT_SHELF = [
     // premium suits the pilot owns; each one not yet bought shows as a door
     // to the shop instead of a locked card that answers nothing
     { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan"], shop: true },
+    { title: "FLAGSHIP · 500 STARS", ids: ["vanguard"] },
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     { title: "ACORN INTOLERANT", ids: ["catsuit"] },

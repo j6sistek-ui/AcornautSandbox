@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=178";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=178";
-import { IS_BETA } from "./catalog.js?v=178";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=178";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=182";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=182";
+import { IS_BETA } from "./catalog.js?v=182";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=182";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -302,7 +302,7 @@ export function goalText(g, def) {
         case "bounces": return `Bounce off planets ${g.n} times`;
         case "depots": return `Visit ${g.n} Depot${g.n === 1 ? "" : "s"}`;
         case "repairs": return `Buy ${g.n} hull repair at a Depot`;
-        case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Mine ${def.spillFinish.n} Ore` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
+        case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Collect ${def.spillFinish.n} Acorn Coins` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
             : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
@@ -314,7 +314,7 @@ export function goalText(g, def) {
         case "maxTaps": return `At most ${g.n} taps`;
         case "flow": return `Reach Flow \u00d7${g.n}`;
         case "score": return `Score ${g.n} points`;
-        case "ore": return `Mine ${g.n} Ore`;
+        case "ore": return `Collect ${g.n} Acorn Coins`;
         case "noHit": return "Take no hull damage";
         case "time": {
             const seconds = Math.floor(g.ticks / 60);
@@ -381,7 +381,7 @@ export function goalHud(g, s, gatesDone, def) {
         case "finish": {
             if (def.spillFinish) {
                 const { kind, n } = def.spillFinish, value = kind === "ore" ? s.ore : s.depots;
-                return { text: `${kind === "ore" ? "ORE" : "DEPOT"} ${Math.min(value, n)}/${n}`, state: value >= n ? "done" : "live" };
+                return { text: `${kind === "ore" ? "COINS" : "DEPOT"} ${Math.min(value, n)}/${n}`, state: value >= n ? "done" : "live" };
             }
             const n = Math.min(gatesDone, def.gates);
             if (def.base === "spill")
@@ -405,7 +405,7 @@ export function goalHud(g, s, gatesDone, def) {
         case "score":
             return { text: `SCORE ${Math.min(s.score, g.n)}/${g.n}`, state: s.score >= g.n ? "done" : "live" };
         case "ore":
-            return { text: `ORE ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
+            return { text: `COINS ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
         case "noHit":
             return { text: "NO HITS", state: s.hits > 0 ? "lost" : "done" };
         case "time": {
@@ -577,6 +577,8 @@ export const STAR_REWARDS = [
     { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
     { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
+    { stars: 500, kind: "suit", id: "vanguard", name: "Vanguard", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
+    { stars: 500, kind: "trail", id: "vanguardwake", name: "Vanguard Wake", desc: "Twin gold and cyan filaments. Worn only by Vanguard." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title

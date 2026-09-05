@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=178";
-import { CHART_LEVELS } from "./campaign.js?v=178";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=178";
-import { restoreSpill } from "./spill.js?v=178";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=178";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=182";
+import { CHART_LEVELS } from "./campaign.js?v=182";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=182";
+import { restoreSpill } from "./spill.js?v=182";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=182";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=178";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=182";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -48,6 +48,7 @@ export function defaultSave() {
         allStars: false,
         musicOff: false,
         eclipseMotionMode: 2,
+        vanguardMotionMode: "cinematic",
         raceRecords: {},
         raceGates: [],
     };
@@ -128,6 +129,8 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
+    if (s.vanguardMotionMode !== "flow")
+        s.vanguardMotionMode = "cinematic";
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -316,6 +319,8 @@ export function helmetRevealed(s, id) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s, id) {
+    if (id === "vanguardwake")
+        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.trails[id] === undefined)
@@ -364,4 +369,8 @@ export function startShieldUnlocked(s) {
 }
 export function batteryUnlocked(s) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
+}
+/** The beta A/B preference cannot opt production into an experiment. */
+export function vanguardModeOf(s) {
+    return IS_BETA && s.vanguardMotionMode === "flow" ? "flow" : "cinematic";
 }

@@ -29,6 +29,7 @@ import {
   GUIDE_HELM,} from "./catalog";
 
 export type SaveData = {
+  pinnedRewards?: string[];
   campaignProgress?: CampaignProgress;
   betaSampleCreditImported?: boolean;
   spillAppearance?: SpillAppearance;
