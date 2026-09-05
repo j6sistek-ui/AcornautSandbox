@@ -18,7 +18,7 @@ for(const k of ['window','document','localStorage','navigator','HTMLElement','HT
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;
 globalThis.Image=class {set src(v){queueMicrotask(()=>this.onerror?.());}};
 globalThis.fetch=async()=>({ok:false,json:async()=>({})});
-const ctx=new Proxy({measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)})},{get:(o,k)=>k in o?o[k]:()=>{}});
+const ctx=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4),width:w,height:h}),measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)})},{get:(o,k)=>k in o?o[k]:()=>{}});
 win.HTMLCanvasElement.prototype.getContext=()=>ctx;
 win.HTMLElement.prototype.getBoundingClientRect=function(){
   const sc=this.closest('.ac-sheet-scroll');
@@ -70,20 +70,87 @@ assert(app.textContent.includes('Your previous trail returns'));
 assert(['buy','equip'].includes(e.buySuit('flight')));tick();
 assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'ion');
 assert.equal(e.buyTrail('vanguardwake'),'locked');assert(button('Vanguard Wake').disabled);
-// Real simulation: fixed wake and existing controls, then real contact.
-e.buySuit('vanguard');const w=Sim.makeWorld(390,760);Sim.resetRun(w,e.save,'fly',false);w.ready=false;
+// The beta selector is available in both hangar and pause; production
+// ignores even an imported experimental preference.
+e.buySuit('vanguard');e.setShopTab('suits');tick();
+if(mode==='beta') {
+  assert(app.querySelector('.ac-vanguard-motion'));
+  button('Continuous').click();assert.equal(e.save.vanguardMotionMode,'flow');
+  assert.equal(S.loadSave().vanguardMotionMode,'flow');
+  assert.equal(button('Continuous').getAttribute('aria-pressed'),'true');
+  e.fly('fly');Sim.flap(e.world,e.save);
+  for(let i=0;i<12;i++)Sim.updateWorld(e.world,e.save,1/60);
+  assert(e.world.vanguard.beat>1);e.pause();tick();
+  assert(app.querySelector('.ac-vanguard-motion'));
+  const atPause=JSON.stringify(e.world.squirrel), beat=e.world.vanguard.beat;
+  button('Cinematic').click();
+  assert.equal(e.world.vanguard.beat,beat);assert.equal(JSON.stringify(e.world.squirrel),atPause);
+  e.resume();assert.equal(e.world.screen,'play');
+} else {
+  assert(!app.querySelector('.ac-vanguard-motion'));
+  e.setVanguardMotionMode('flow');assert.equal(e.save.vanguardMotionMode,'cinematic');
+  assert.equal(S.vanguardModeOf({...e.save,vanguardMotionMode:'flow'}),'cinematic');
+}
+// Real simulation controls and contacts, independent of the old clocks.
+const w=Sim.makeWorld(390,760);Sim.resetRun(w,e.save,'fly',false);w.ready=false;
 assert.equal(Sim.flap(w,e.save),'flap');assert(w.squirrel.vy<0);
 assert(w.particles.some(p=>p.kind==='vanguardwake'));assert.equal(e.save.equippedTrail,'ion');
-Sim.dive(w,e.save);assert(w.squirrel.vy>0);assert(VG.vanguardFrame(w.tapAnimT,-1,w.squirrel.vy)>=16);
+Sim.dive(w,e.save);assert(w.squirrel.vy>0);assert(w.vanguard.diving);
 w.planets=[{x:w.W*Cat.PHYS.squirrelX+1,gapY:w.squirrel.y+50-110-62,gap:220,r:62,topKind:0,botKind:0,scored:false,drift:0,driftAmp:0,blockers:[]}];
 w.pickups=[];w.lastSpawnX=100000;w.squirrel.vy=360;
 let event;for(let i=0;i<5&&event!=='bounce';i++)event=Sim.updateWorld(w,e.save,1/120);
-assert.equal(event,'bounce');assert(VG.vanguardFrame(w.tapAnimT,w.bounceAnimT,w.squirrel.vy)>=24);
-// Rapid taps rewind the existing visual clock without changing controls.
-w.bounceAnimT=-1;w.tapAnimT=.3;w.tapAnimDir=1;Sim.flap(w,e.save);
-assert.equal(w.tapAnimDir,-1);assert(w.squirrel.vy<0);
-const seen=new Set();for(let i=0;i<16;i++)seen.add(VG.vanguardFrame((i+.5)/16*.72,-1,-100));assert.equal(seen.size,16);
-assert.equal(new Set(VG.VANGUARD_DIVE_ORDER).size,8);
+assert.equal(event,'bounce');assert.equal(w.vanguard.contacts.length,1);
+const dust=w.vanguard.contacts[0];Sim.flap(w,e.save);
+assert.equal(w.vanguard.contacts[0],dust,'next-frame tap cannot erase landing dust');
+assert(!w.vanguard.diving);assert(w.squirrel.vy<0);
+w.planets=[];w.squirrel.y=380;w.squirrel.vy=0;
+for(let i=0;i<26;i++)Sim.updateWorld(w,e.save,1/60);
+assert.equal(w.bounceAnimT,-1);assert.equal(w.vanguard.contacts.length,1,'plume survives legacy contact window');
+// Passing an actual gate arms one lunge without changing the displayed pose.
+w.vanguard.lungeArmed=false;
+w.planets=[{x:-20,gapY:380,gap:220,r:62,topKind:0,botKind:0,scored:false,drift:0,driftAmp:0,blockers:[]}];
+Sim.updateWorld(w,e.save,1/60);assert(w.vanguard.lungeArmed);assert.equal(w.score,1);
+// Pause/ready/reset never run, replay or retain an old contact animation.
+Sim.pausePlay(w);const paused=JSON.stringify(w.vanguard);Sim.updateWorld(w,e.save,.2);
+assert.equal(JSON.stringify(w.vanguard),paused);assert.equal(Sim.flap(w,e.save),'none');
+Sim.resumePlay(w);Sim.resetRun(w,e.save,'fly',false);
+assert.deepEqual(w.vanguard,VG.createVanguardMotion(S.vanguardModeOf(e.save)));
+Sim.updateWorld(w,e.save,.1);assert.equal(w.vanguard.time,0);
+// Even a doubled world pace must not double the flagship's visual clock.
+for(const pace of [1,2]) {
+  const paced=Sim.makeWorld(390,5000),sv={...e.save};
+  Sim.resetRun(paced,sv,'fly',false,{...C.CHART_LEVELS[0],fx:{...C.CHART_LEVELS[0].fx,pace}});
+  paced.planets=[];paced.pickups=[];paced.lastSpawnX=100000;
+  Sim.flap(paced,sv);for(let i=0;i<30;i++)Sim.updateWorld(paced,sv,1/60);
+  assert(Math.abs(paced.vanguard.time-.5)<1e-8);
+}
+// Exercise 100/180/300ms tapping through updateWorld, with enough vertical
+// space to let the actual forces fly and no artificial position reset.
+for(const interval of [.1,.18,.3]) for(const style of ['cinematic','flow']) {
+  const sv={...e.save,vanguardMotionMode:style};
+  const live=Sim.makeWorld(390,5000);Sim.resetRun(live,sv,'fly',false);
+  live.planets=[];live.pickups=[];live.lastSpawnX=100000;
+  let nextTap=0, beforeBeat=0;const poses=new Set();
+  for(let i=0;i<240;i++) {
+    if(i/60+1e-8>=nextTap) {
+      const before=[live.vanguard.beat,live.vanguard.frame,live.vanguard.mix];
+      Sim.flap(live,sv);
+      if(i>0) assert.deepEqual([live.vanguard.beat,live.vanguard.frame,live.vanguard.mix],before,'repeat tap must not rewind frame or dissolve');
+      nextTap+=interval;
+    }
+    Sim.updateWorld(live,sv,1/60);poses.add(live.vanguard.frame);
+    if(i<64)assert(live.vanguard.beat>=beforeBeat,'first lunge must progress forward');
+    beforeBeat=live.vanguard.beat;
+  }
+  assert.equal(live.screen,'play');assert(poses.size>=10,'rapid input must reveal more than a twitch');
+  if(mode==='production'||style==='cinematic')assert(live.vanguard.holding,'follow-up taps sustain the climbed body pose');
+  assert(live.vanguard.thrust>.2);
+}
+// Old suit clocks are preserved, including their repeat-tap rewind.
+const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};
+Sim.resetRun(legacy,flight,'fly',false);Sim.flap(legacy,flight);legacy.tapAnimT=.3;
+Sim.flap(legacy,flight);assert.equal(legacy.tapAnimDir,-1);
+assert.deepEqual(legacy.vanguard,VG.createVanguardMotion(S.vanguardModeOf(flight)));
 S.writeSave(e.save);assert(S.loadSave().unlockedSuits.includes('vanguard'));
-console.log(`Vanguard ${mode}: fresh beta access / production 499→500 gate, entitlements, trail UI/actions, real tap/dive/contact, replay stars passed`);
+console.log(`Vanguard ${mode}: fresh beta access / production 499→500 gate, entitlements, trail UI/actions, beta A/B and persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
 e.destroy?.();await win.happyDOM.abort();process.exit(0);

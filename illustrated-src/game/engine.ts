@@ -1,3 +1,4 @@
+import type { VanguardMotionMode } from "./vanguard";
 import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
@@ -183,6 +184,7 @@ export type Engine = {
   setPoseMode: (m: "all" | "ascent") => void;
   /** VOLT's hangar experiment: swap between its two painted jump banks */
   setEclipseMotionMode: (mode: number) => void;
+  setVanguardMotionMode: (mode: VanguardMotionMode) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -517,6 +519,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     setEclipseMotionMode(mode) {
       save.eclipseMotionMode = ((mode % 3) + 3) % 3;
+      writeSave(save);
+      notify();
+    },
+    setVanguardMotionMode(mode) {
+      if (!IS_BETA || (mode !== "cinematic" && mode !== "flow")) return;
+      save.vanguardMotionMode = mode;
+      world.vanguard.mode = mode;
       writeSave(save);
       notify();
     },

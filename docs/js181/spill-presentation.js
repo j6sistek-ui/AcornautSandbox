@@ -1,5 +1,5 @@
-import { SPILL, SPILL_SHOP, createSpill } from "./spill.js?v=177";
-import { SPILL_SPECIALTIES, SPILL_UTILITIES } from "./spill-content.js?v=177";
+import { SPILL, SPILL_SHOP, createSpill } from "./spill.js?v=181";
+import { SPILL_SPECIALTIES, SPILL_UTILITIES } from "./spill-content.js?v=181";
 /** Font-independent equipment marks shared by the hull, HUD and workshop. */
 export const SPILL_MODULE_MARKS = {
     magnet: [[[5, 4], [5, 13], [7, 18], [12, 21], [17, 18], [19, 13], [19, 4]], [[5, 9], [8, 9]], [[16, 9], [19, 9]]],
@@ -42,4 +42,9 @@ export function spillDockView(W, H, imageW, imageH, elapsed) {
     const x = Math.max(W - width, Math.min(0, W * (0.86 - progress * 0.28) - width * 0.65));
     const y = Math.max(H - height, Math.min(0, H * 0.62 - height * 0.62));
     return { x, y, width, height, progress, opacity: smooth(elapsed / 1.1) };
+}
+/** The marshal stands on the illustrated platform and travels with its camera. */
+export function spillDockBear(view, elapsed, reducedMotion = false) {
+    return { x: view.x + view.width * .686, y: view.y + view.height * .65, height: view.height * .075,
+        frame: reducedMotion ? 0 : Math.max(0, Math.min(35, Math.floor(elapsed / SPILL.dockTime * 36))) };
 }

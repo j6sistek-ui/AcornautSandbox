@@ -226,13 +226,36 @@ torso registration. `art-src/vanguard/registration.json` records every source
 measurement. There are no split pieces, stretched tails or synthetic frames.
 The gold helmet is intentionally part of this matching set (`ownHead`).
 
-The custom painter runs before the default bank selector. Contact takes
-priority, then descent, then the tap clock. Repeated taps retain the existing
-rewind behavior. Vanguard alone skips the generic body rotation/scale pop
-and squash. The authored poses carry the motion. Existing suits retain
-their exact paths. Its 32 MiB decoded bank is equip-only, excluded from the
-background prefetch sweep. A failed/partial load retains the exact first-pose
-still and may retry on a later equip. Marketing/preview uses the same painter.
+The owner's follow-up after merging #186 replaces Vanguard's tap rewind with
+a separate cinematic clock. `World.vanguard` consumes accepted taps, swipes,
+planet contacts and scored gates; it never feeds physics or scoring. Ordinary
+suits retain their exact existing paths and clocks.
+
+- **Cinematic** is the default. A first tap starts a readable lunge. Repeat
+  taps finish the current gesture, then sustain its climbed pose with smooth
+  backpack exhaust. The body settles before a shallow gravity descent.
+- **Continuous** is a beta comparison: the 1.76-second flight cycle keeps
+  advancing through repeated taps, with no restart or rewind.
+- Only an accepted downward swipe reaches the deep dive poses. A subsequent
+  tap recovers through the existing attitudes without snapping to frame one.
+- A contact arms the next lunge and emits a .95-second surface dust plume.
+  It does not force the old eight-pose squat/rebound through the .38-second
+  contact clock. Dust survives a tap on the very next tick. Gate passes also
+  arm a lunge; an unfinished lunge always finishes before another can start.
+- Pose travel follows the measured helmet registration. One complete crisp
+  drawing is painted at a time, without crossfaded faces or squash/stretch.
+  A small eased pitch supports the lunge. Deep attitudes remain drawn poses.
+
+Beta exposes **Vanguard Motion: Cinematic / Continuous** in Hangar → Suits
+and in Pause while this character is flying. The choice persists in beta;
+production always selects Cinematic. The switch changes no run state beyond
+presentation. Generic lean/pose dials are hidden for this custom backend.
+
+The 32 MiB decoded bank remains equip-only, excluded from the background
+prefetch sweep. No raster assets were added or changed for this revision.
+A failed/partial load retains the exact first-pose still and may retry on a
+later equip. Hangar previews use the same event controller, with rapid taps,
+a swipe and a contact immediately followed by a tap.
 
 Run `node illustrated-src/test-vanguard.mjs` and
 `node illustrated-src/test-vanguard-render.mjs` after the normal export.

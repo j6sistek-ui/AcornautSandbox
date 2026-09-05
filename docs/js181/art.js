@@ -1,4 +1,6 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=177";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=181";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=181";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=181";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -30,12 +32,14 @@ export function loadSpillScene(bank) {
     if (existing)
         return existing;
     bank.spillScene = {};
-    const promise = Promise.all(["depot", "panorama"].map(async (name) => {
-        try {
-            bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
-        }
-        catch { /* the procedural field stays playable */ }
-    })).then(() => { });
+    const promise = Promise.all([...["depot", "panorama"].map(async (name) => {
+            try {
+                bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
+            }
+            catch { /* the procedural field stays playable */ }
+        }), loadImg(artUrl("spill-scene/depot-bear.jpg"))
+            .then(sheet => { bank.spillScene.bear = prepareDepotBear(sheet); })
+            .catch(() => { })]).then(() => { });
     spillSceneLoads.set(bank, promise);
     return promise;
 }
@@ -310,6 +314,7 @@ const DESC_BANKS = TAP_ANIM_ENABLED
         sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
+        "vanguard",
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
         ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -324,6 +329,15 @@ export function loadSuitBank(bank, id) {
     const base = artBase();
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
+        if (id === "vanguard") {
+            const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+            // Never publish a partial bank: filtering failed images must not shift poses.
+            if (frames.length === VANGUARD_FRAMES)
+                bank.vanguard = frames;
+            else
+                suitBankLoads.delete(id); // allow a later equip to retry
+            return;
+        }
         const rigged = RIGGED_SUITS.includes(id);
         const [tail, body] = await Promise.all([
             rigged ? layer("-tail") : Promise.resolve(null),
@@ -391,6 +405,9 @@ export function prefetchArtBanks(bank) {
         chain = chain.then(() => loadPalBank(bank, id)).then(breathe);
     }
     for (const id of LAZY_SUIT_IDS) {
+        // Flagship is 32 MiB decoded: load only on equip/explicit preview.
+        if (id === "vanguard")
+            continue;
         if (suitBankLoads.has(id))
             continue;
         chain = chain.then(() => loadSuitBank(bank, id)).then(breathe);
@@ -400,6 +417,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
+        ...(IS_BETA ? ["switchback"] : []),
         "bee",
         "buddy",
         "ufo",
@@ -445,6 +463,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         ] : []),
     ];
     const suitIds = [
+        "vanguard",
         "flight",
         "iontrim",
         "copper",
