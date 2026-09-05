@@ -1,4 +1,5 @@
 import { spillAppearance } from "./spill-appearance";
+import { trailWornBy, canWearTrail } from "./catalog";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
 import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
@@ -1060,7 +1061,7 @@ export async function bootStandalone(root: HTMLElement) {
     // icon is never the only way in.
     const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-    const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+    const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
     const strip = el("button", "ac-loadstrip");
     const port = el("div", "ac-loadport");
     port.append(portraitOf(helm, suit, 38));
@@ -2054,7 +2055,7 @@ export async function bootStandalone(root: HTMLElement) {
     const previewShip = spillPreviewState(shipPick);
     const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-    const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+    const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
     const pal = PALS.find((p) => p.id === s.equippedPal);
     const box = el("div", "ac-menu");
     box.append(BETA_FEATURES
@@ -2346,10 +2347,12 @@ export async function bootStandalone(root: HTMLElement) {
         }
       }
     } else if (engine.shopTab === "trails") {
+      if (s.equippedSuit === "vanguard") grid.append(el("p", "ac-sub", "Vanguard carries its own wake. Your previous trail returns when you change suits."));
       const trailCard = (t: (typeof TRAILS)[number]) => {
         const premium = isIap(t.id);
         const open = trailUnlocked(s, t.id);
-        const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
+        const compatible = canWearTrail(t.id, s.equippedSuit);
+        const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
         const { c, ctx } = miniCanvas(64, 56);
         c.setAttribute("role", "img");
         c.setAttribute("aria-label", `${t.name} trail preview`);
@@ -2362,8 +2365,10 @@ export async function bootStandalone(root: HTMLElement) {
             : premium ? "PREMIUM"
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) markPremium(b, t.colors[0]);
-        if (!open) b.classList.add("ac-cardoff");
-        b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
+        if (!open || !compatible) b.classList.add("ac-cardoff");
+        b.disabled = !compatible;
+        if (!compatible) b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "Vanguard only" : "Change suit to wear"));
+        b.onclick = () => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); };
         if (open) b.append(favStar(t.id));
         return b;
       };
@@ -2955,7 +2960,7 @@ export async function bootStandalone(root: HTMLElement) {
     // apart just enough that neighbours never overlap. The rail scrolls
     // with the road, so climbing the map walks the reward ladder too.
     const miles = [
-      ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+      ...STAR_REWARDS.filter((r) => r.kind !== "stage" && r.stars <= levels.length * 3).map(r => ({ ...r, planned: false })),
       ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
     ]
       .sort((a, b) => a.stars - b.stars);
@@ -4289,7 +4294,7 @@ export async function bootStandalone(root: HTMLElement) {
       const g = got.find((x) => `${x.kind}:${x.id}` === revealPick);
       const worn = kind === "suit" ? s.equippedSuit === itemId
         : kind === "helm" ? s.equipped === itemId
-        : kind === "trail" ? s.equippedTrail === itemId
+        : kind === "trail" ? trailWornBy(s.equippedTrail, s.equippedSuit) === itemId
         : s.equippedPal === itemId;
       const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
       if (worn) { act.textContent = `${g?.name ?? ""} EQUIPPED`; act.disabled = true; }

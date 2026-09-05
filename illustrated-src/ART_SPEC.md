@@ -188,3 +188,14 @@ is measured against it:
 ```
 
 Change it and every other suit's measurement moves with it.
+
+
+### Vanguard flagship exception (owner request, 5 September 2026)
+
+Vanguard intentionally incorporates the loading-art gold helmet, so it is a
+whole-character `ownHead` set. The owner authorized a higher art budget:
+512px shipping poses (32 unique drawings), source sheets and the 1254px
+master retained in `art-src/vanguard`. Other suits remain on their existing
+256px contract. `export-vanguard.mjs` keys the deliberately green backing
+and registers by measured head size, never individual silhouette bounds.
+No ship or tutorial substitution is included.

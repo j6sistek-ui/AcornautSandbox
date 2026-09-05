@@ -19,6 +19,7 @@ import math
 from pathlib import Path
 import re
 import subprocess
+import json
 import sys
 from typing import Iterable
 
@@ -217,16 +218,19 @@ def verify_sprite_dimensions(
         if not is_strict_256(rel):
             continue
         checked += 1
-        if size != (256, 256):
+        # Owner-authorized flagship: four times the sprite pixel budget.
+        flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
+        expected = (512, 512) if flagship else (256, 256)
+        if size != expected:
             wrong_size.append(f"{rel} is {size[0]}x{size[1]}")
         if "A" not in bands:
             missing_alpha.append(rel)
     if wrong_size:
-        qa.fail("runtime sprites must be 256x256: " + clipped(wrong_size))
+        qa.fail("runtime sprites must match their declared dimensions: " + clipped(wrong_size))
     if missing_alpha:
         qa.fail("runtime sprites must retain alpha: " + clipped(missing_alpha))
     if not wrong_size and not missing_alpha:
-        qa.ok(f"validated 256x256 RGBA contract for {checked} runtime sprites")
+        qa.ok(f"validated runtime dimensions/alpha contract for {checked} runtime sprites")
 
 
 def array_body(source: str, name: str) -> str:
@@ -1264,6 +1268,8 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
+    "vanguard",   # owner grant, 5 Sep 2026: dedicated 32-pose backend
+
     "flight",     # the default, and the reference the rest are measured against
     "eclipse",    # owner-supplied, and the only granted suit on this tier today
     "cyber",      # declared shape exception, 25 Aug 2026
@@ -2000,6 +2006,30 @@ def verify_run_lifelines(qa: QA) -> None:
         qa.ok("objectives pinned, mission restart gated, acorn continue wired at both prices")
 
 
+def verify_vanguard(qa: QA) -> None:
+    """Check the separately authorized flagship bank, including its fallback."""
+    files = [DOCS_ART / f"suits/vanguard/frame-{i}.png" for i in range(1, 33)]
+    if any(not p.exists() for p in files):
+        qa.fail("Vanguard is missing declared poses")
+        return
+    problems = []
+    if len({sha256(p) for p in files}) != 32:
+        problems.append("drawn poses must be distinct")
+    for p in files:
+        with Image.open(p) as im:
+            if im.size != (512, 512) or "A" not in im.getbands():
+                problems.append(p.name + " has wrong canvas/alpha")
+            elif im.getchannel("A").getbbox() in (None, (0, 0, 512, 512)):
+                problems.append(p.name + " has missing/clipped transparency")
+    registration = json.loads((ROOT / "art-src/vanguard/registration.json").read_text())
+    if len(registration) != 32 or any(x["registeredHead"][2] != 60 for x in registration):
+        problems.append("registration must hold head size across all 32 drawings")
+    if sha256(DOCS_ART / "suits/vanguard.png") != sha256(files[0]):
+        problems.append("loading fallback must be the exact first pose")
+    if problems: qa.fail("Vanguard: " + "; ".join(problems))
+    else: qa.ok("Vanguard: 32 unique 512px RGBA poses, measured registration, exact fallback")
+
+
 def main() -> int:
     print("Acornaut illustrated art QA")
     qa = QA()
@@ -2019,6 +2049,7 @@ def main() -> int:
     verify_dev_instruments(qa)
     verify_pause_has_an_exit(qa)
     verify_one_tree(qa)
+    verify_vanguard(qa)
     verify_motion_banks(qa)
     verify_suit_lean(qa)
     verify_one_wormhole_control(qa)

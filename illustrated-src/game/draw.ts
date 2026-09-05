@@ -1,3 +1,4 @@
+import { paintVanguard, paintVanguardShield, paintVanguardWake } from "./vanguard";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -2612,7 +2613,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     ctx.arc(W * PHYS.squirrelX, w.squirrel.y, 30, 0, Math.PI * 2);
     ctx.stroke();
   }
-  if (w.shieldCharges > 0) {
+  if (w.shieldCharges > 0 && save.equippedSuit !== "vanguard") {
     ctx.strokeStyle = "rgba(122,216,255,0.45)";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -3065,7 +3066,10 @@ function drawParticle(ctx: CanvasRenderingContext2D, p: Particle) {
   const t = Math.max(0, p.life / p.max);
   ctx.globalAlpha = t;
   const kind = p.kind || "spark";
-  if (kind === "ion") {
+  if (kind === "vanguardwake") {
+    ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.6,p.r*t);ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+8*t,p.y);ctx.stroke();
+  } else if (kind === "ion") {
     ctx.strokeStyle = t > 0.5 ? "#c8f4ff" : "#3ac0f0";
     ctx.lineWidth = Math.max(0.8, p.r * t);
     ctx.lineCap = "round";
@@ -4397,6 +4401,10 @@ function paintIllustrated(
   // the rigged painting: the old crossfade walks through eight paintings
   // whose outfits disagree (shoes on some frames, bare feet on others),
   // and the rig path moves one consistent body like every other suit.
+  if (suit.id === "vanguard") {
+    paintVanguard(ctx, art, x, y, size, tapAnimT, bounceAnimT, motionVy);
+    return;
+  }
   const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
     ? (art?.suits?.[suit.id] ?? null)
     : null;
@@ -4672,7 +4680,8 @@ function drawPilot(
   const spr = frames[idx] ?? null;
   const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
-  const articulatedTap = !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
+  const flagship = suit.id === "vanguard";
+  const articulatedTap = flagship || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
   const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
@@ -4705,17 +4714,18 @@ function drawPilot(
     bank = w.tapAnimFromRot * 0.8 * fromLean * (1 - eased) + bank * eased;
   }
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
-  ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
+  if (!flagship) ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
   const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
   // fresh planet bounce: a squash-and-stretch pulse sells the impact
   const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
-  if (!eclipseImpact && sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
+  if (!flagship && !eclipseImpact && sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed,
     lean);
+  if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
 
@@ -4897,6 +4907,14 @@ export function paintFlightPreview(
   sweep = false,
 ) {
   if (!art) return;
+  if (suit.id === "vanguard") {
+    const phase = ((t % 3.2) + 3.2) % 3.2;
+    const tap = phase < .72 ? phase : -1;
+    const bounce = phase >= 2.4 && phase < 2.78 ? phase - 2.4 : -1;
+    const vy = phase >= 1 && phase < 2.4 ? Math.sin((phase - 1) / 1.4 * Math.PI) * 620 : -150;
+    paintVanguard(ctx, art, cx, cy, size, tap, bounce, vy);
+    return;
+  }
   // FLIGHT, NOT A POSE. The pass before this showed one tap every five
   // seconds and then held still for the other four - which read as a frozen
   // suit sitting next to a pal that never stops, and looked nothing like
@@ -5031,7 +5049,8 @@ export function paintTrailPreview(
   cy: number,
   t = 0,
 ) {
-  drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
+  if (trail.id === "vanguardwake") paintVanguardWake(ctx, cx, cy, t);
+  else drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 
 /** The vortex that eats the screen while a black hole or wormhole
