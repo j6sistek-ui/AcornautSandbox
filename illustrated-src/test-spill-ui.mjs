@@ -31,6 +31,28 @@ ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.eq
 button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
 engine.fly('spill');assert(app.querySelector('.ac-spillprep'));const select=app.querySelector('select[aria-label="Starting utility"]');select.value='magnet';select.dispatchEvent(new win.Event('change'));assert.deepEqual(engine.world.spill.utilities,['magnet']);button('LAUNCH EXPEDITION').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0},'planned tiers never become free upgrades');
+// Button holds survive HUD rebuilds, multi-touch actions and mixed gesture/keyboard release.
+const thrust=app.querySelector('.ac-throttle'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
+function touch(target,type,id,primary=true){target.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:100,clientY:300,bubbles:true,cancelable:true}));}
+touch(engine.canvas,'pointerdown',10);touch(thrust,'pointerdown',11,false);touch(engine.canvas,'pointerup',10);
+assert(engine.world.spill.held,'a released gesture cannot cancel the button hold');tick(3);assert.equal(app.querySelector('.ac-throttle'),thrust,'HUD update retains the captured button');
+app.querySelector('.ac-dive').click();assert(engine.world.spill.pilot.vy>0);assert(engine.world.spill.held,'Dive does not release a held throttle');
+touch(win,'pointerup',12,false);assert(engine.world.spill.held,'another finger cannot release throttle');touch(win,'pointerup',11);assert(!engine.world.spill.held);
+touch(thrust,'pointerdown',13);win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space'}));touch(win,'pointerup',13);assert(engine.world.spill.held);win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space'}));assert(!engine.world.spill.held);
+touch(thrust,'pointerdown',14);engine.pause();assert(!engine.world.spill.held&&controls.hidden);engine.resume();assert(!engine.world.spill.held);
+win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert(!engine.world.spill.held,'a stale held-key repeat cannot restart throttle after pause');
+touch(thrust,'pointerdown',15);touch(win,'pointerup',14);assert(engine.world.spill.held,'stale release after pause cannot cancel a fresh hold');touch(win,'pointercancel',15);assert(!engine.world.spill.held);
+thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true}));assert(engine.world.spill.held);thrust.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space',bubbles:true,cancelable:true}));assert(!engine.world.spill.held);
+const charges=engine.world.spill.lungeCharges;app.querySelector('.ac-lunge').click();assert.equal(engine.world.spill.lungeCharges,charges-1);assert(app.querySelector('.ac-lunge').disabled);assert(app.querySelector('.ac-lunge').textContent.includes('RECHARGING'));
+// Pause preferences persist. Hiding text changes no simulation state or hazard warnings.
+engine.pause();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();assert.equal(Save.loadSave().spillButtonsOff,true);
+const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
+engine.resume();assert(controls.hidden);engine.spillThrottle(true);assert(!engine.world.spill.held,'hidden controls cannot acquire thrust');
+const Draw=await import(`${root}/docs/js/draw.js`);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
+flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
+Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
+engine.pause();app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();engine.resume();assert(!controls.hidden);labels.length=0;Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(labels.includes('TEST INSTRUCTION'));
+ctx.fillText=()=>{};flight.lunge=0;flight.lungeCharges=1;flight.cool=0;flight.pilot.y=flight.H*.45;flight.pilot.vy=0;
 // A swipe remains valid after a long hold; another pointer cannot release it.
 const canvas=engine.canvas;function pointer(type,id,x,y){canvas.dispatchEvent(new win.PointerEvent(type,{pointerId:id,clientX:x,clientY:y,pointerType:'touch',isPrimary:true,bubbles:true}));}
 pointer('pointerdown',1,100,300);now+=800;pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'long-hold swipe lunges');pointer('pointerup',2,155,300);assert(engine.world.spill.held);pointer('pointerup',1,155,300);assert(!engine.world.spill.held);
@@ -51,4 +73,4 @@ const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstP
 control('plating').click();const hull=end.maxHull,bank=end.ore;button('SAVE & QUIT').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
 button('CONTINUE TO WAVE 21').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
 const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));button('BACK TO THE FIELD').click();assert.equal(later.wave,21);assert.equal(engine.world.screen,'play');assert.equal(engine.save.spillRecords.expeditions,2);assert.equal(engine.save.spillRecords.runs,0);
-engine.stop();await win.happyDOM.close();console.log('spill UI: Loadout starter unlocks/persistence, isolated build planning, hardpoint inspection/purchases, modules/refits/contracts, focus/scroll retention, preflight, pointer ownership, interruption pause, save/resume and endless continuation pass');
+engine.stop();await win.happyDOM.close();console.log('spill UI: button/gesture/keyboard ownership, pause preferences, prompt filtering, unchanged hazard warnings/pacing, Loadout planning, Depot purchases/refits/contracts, save/resume and endless continuation pass');

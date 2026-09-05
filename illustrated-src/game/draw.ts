@@ -23,7 +23,7 @@ import {
   type SpillState,
 } from "./spill";
 import { SPILL_EVENTS, spillSector, spillMastery } from "./spill-content";
-import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
 import {
   RACE_ACORNS,
   RACE_BASE_SPEED,
@@ -1996,13 +1996,24 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   spillBackdrop(ctx, w, s, art);
   const dock = art.spillScene?.depot;
   if (dock && (s.phase === "docking" || s.phase === "depot")) {
-    const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight,
-      s.phase === "depot" ? SPILL.dockTime : s.phaseT);
+    const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT;
+    const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
     ctx.save(); ctx.globalAlpha = view.opacity;
     ctx.drawImage(dock, view.x, view.y, view.width, view.height);
     const shade = ctx.createLinearGradient(0, 0, 0, H);
     shade.addColorStop(0, "rgba(3,7,20,.38)"); shade.addColorStop(0.5, "rgba(3,7,20,0)"); shade.addColorStop(1, "rgba(3,7,20,.3)");
-    ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H); ctx.restore();
+    ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H);
+    const marshal = spillDockBear(view, arrival, !!save.motionOff);
+    const bear = art.spillScene?.bear?.[marshal.frame];
+    if (bear) {
+      ctx.fillStyle = "rgba(6,5,16,.45)"; ctx.beginPath();
+      ctx.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(marshal.x, marshal.y);
+      const scale = marshal.height / bear.image.height;
+      ctx.scale(-scale, scale); // face the incoming ship
+      ctx.drawImage(bear.image, -bear.footX, -bear.footY); ctx.restore();
+    }
+    ctx.restore();
   }
 
   const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
@@ -2192,7 +2203,7 @@ function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, al
   ctx.restore();
 }
 
-function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
+function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, hidePrompts = false) {
   const s = w.spill!;
   const { W, H } = w;
   ctx.textAlign = "center";
@@ -2339,7 +2350,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
   }
   // the free lesson, while it runs
-  if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
+  if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
     drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
   }
   if (s.phase === "ready" && s.target) {
@@ -5129,10 +5140,10 @@ export function hyperRunReadyLines(viewWidth: number): readonly string[] {
   ];
 }
 
-export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null) {
+export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
   const { W } = w;
   if (w.spill) {
-    drawSpillHud(ctx, w, art);
+    drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
     return;
   }
   if (w.race) {

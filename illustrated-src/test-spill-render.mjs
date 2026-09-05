@@ -7,6 +7,15 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const output=pr
 async function sprite(path){const img=await loadImage(`${root}/docs/art/${path}.png`);const c=createCanvas(img.width,img.height),g=c.getContext('2d');g.drawImage(img,0,0);const d=g.getImageData(0,0,img.width,img.height).data;let x=img.width,y=img.height,r=0,b=0;for(let j=0;j<img.height;j++)for(let i=0;i<img.width;i++)if(d[(j*img.width+i)*4+3]>12){x=Math.min(x,i);y=Math.min(y,j);r=Math.max(r,i);b=Math.max(b,j);}img.box={x,y,w:r-x+1,h:b-y+1};img.core=Math.max(img.box.w,img.box.h);img.coreX=x+img.box.w/2;img.coreY=y+img.box.h/2;return img;}
 const bank=Art.emptyArt();bank.ready=true;for(const id of Art.SPILL_SHIP_IDS)bank.spillShip[id]=await sprite(`spill-ship/${id}`);bank.spillShipFit=JSON.parse(readFileSync(`${root}/docs/art/spill-ship/transforms.json`));bank.suits.flight=await sprite('suits/flight');bank.helms.clear=await sprite('helms/clear');bank.squirrelIdle=[await sprite('squirrel/idle-1')];bank.ore=await sprite('pickups/ore');bank.golden=[await sprite('golden/1')];bank.spillScene={depot:await loadImage(`${root}/docs/art/spill-scene/depot.png`),panorama:await loadImage(`${root}/docs/art/spill-scene/panorama.png`)};for(let i=1;i<=27;i++)try{bank.debris.push(await sprite(`debris/${i}`));}catch{}
 const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';
+const {prepareDepotBear}=await import(`${root}/docs/js/spill-depot-bear.js`);
+bank.spillScene.bear=prepareDepotBear(await loadImage(`${root}/docs/art/spill-scene/depot-bear.jpg`));assert.equal(bank.spillScene.bear.length,36);
+const marshals=createCanvas(6*256,6*240),mg=marshals.getContext('2d');mg.fillStyle='#121929';mg.fillRect(0,0,marshals.width,marshals.height);
+for(const [i,f] of bank.spillScene.bear.entries()){
+ const data=f.image.getContext('2d').getImageData(0,0,f.image.width,f.image.height).data;
+ assert.equal(data[3],0,'sheet corner is transparent');assert(f.footY>f.image.height*.8&&f.footY<f.image.height,'feet stay in the frame');
+ mg.drawImage(f.image,(i%6)*256+128-f.footX,Math.floor(i/6)*240+225-f.footY);
+}
+writeFileSync(join(output,'spill-bear-qa.png'),marshals.toBuffer('image/png'));
 const sheet=createCanvas(1200,4*170),g=sheet.getContext('2d');g.fillStyle='#090e21';g.fillRect(0,0,1200,680);let errors=[];let count=0;
 for(let p=0;p<4;p++)for(let t=0;t<4;t++)for(let u=0;u<4;u++)for(let c=0;c<3;c++){const cv=createCanvas(256,130);try{Draw.paintShipPreview(cv.getContext('2d'),bank,save,120,65,2.8,0,{plating:p,thrusters:t,pulse:u,shield:c});count++;}catch(e){errors.push(String(e));}}
 for(let p=0;p<4;p++)for(let c=0;c<3;c++){const x=c*400+200,y=p*170+100;Draw.paintShipPreview(g,bank,save,x,y,4,0,{plating:p,thrusters:p,pulse:p,shield:c,utilities:p?['magnet','scanner']:[],specialties:p>=2?{plating:'brace',thrusters:'precision',pulse:'efficient'}:{}});g.fillStyle='#fff';g.font='16px sans-serif';g.fillText(`Tier ${p} · canopy ${c}`,x-75,y-70);}
@@ -21,4 +30,4 @@ for(const [index,time] of [0,.8,2.4,3.8,4.8].entries()){
  arrivalCtx.drawImage(canvas,index*390,0);arrivalCtx.fillStyle='#fff';arrivalCtx.font='16px sans-serif';arrivalCtx.fillText(`${time}s`,index*390+14,740);
 }
 writeFileSync(join(output,'spill-arrival-qa.png'),arrival.toBuffer('image/png'));
-assert.equal(count,192);assert.deepEqual(errors,[]);console.log(JSON.stringify({configurations:count,arrivalFrames:5,errors,output}));
+assert.equal(count,192);assert.deepEqual(errors,[]);console.log(JSON.stringify({configurations:count,arrivalFrames:5,bearFrames:36,errors,output}));

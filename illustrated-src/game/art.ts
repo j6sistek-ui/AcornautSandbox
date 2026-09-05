@@ -1,4 +1,5 @@
 import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
+import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -69,7 +70,7 @@ export type ArtBank = {
    *  in the lab's Ship Bench and read from transforms.json beside the art */
   spillShip: Record<string, Sprite>;
   spillShipFit: SpillShipFit | null;
-  spillScene?: Record<string, HTMLImageElement>;
+  spillScene?: { depot?: HTMLImageElement; panorama?: HTMLImageElement; bear?: DepotBearFrame[] };
 };
 
 export type SpillShipXf = { dx: number; dy: number; scale: number; rot: number; behind?: boolean };
@@ -114,9 +115,11 @@ export function loadSpillScene(bank: ArtBank): Promise<void> {
   const existing = spillSceneLoads.get(bank);
   if (existing) return existing;
   bank.spillScene = {};
-  const promise = Promise.all(["depot", "panorama"].map(async name => {
+  const promise = Promise.all([...["depot", "panorama"].map(async name => {
     try { bank.spillScene![name] = await loadImg(artUrl(`spill-scene/${name}.png`)); } catch { /* the procedural field stays playable */ }
-  })).then(() => {});
+  }), loadImg(artUrl("spill-scene/depot-bear.jpg"))
+    .then(sheet => { bank.spillScene!.bear = prepareDepotBear(sheet); })
+    .catch(() => { /* the landing scene remains usable without its marshal */ })]).then(() => {});
   spillSceneLoads.set(bank, promise); return promise;
 }
 
