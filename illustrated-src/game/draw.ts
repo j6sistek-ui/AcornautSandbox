@@ -11,7 +11,7 @@ import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   SPILL,
   SPILL_MOD_INFO,
-  createSpill, spillHas, spillChargeCap, spillContractProgress, spillEventGap,
+  spillHas, spillChargeCap, spillContractProgress, spillEventGap,
   spillCount,
   spillMod,
   spillRamp,
@@ -19,7 +19,8 @@ import {
   type SpillRock,
   type SpillState,
 } from "./spill";
-import { SPILL_EVENTS, SPILL_UTILITIES, spillSector, spillMastery } from "./spill-content";
+import { SPILL_EVENTS, spillSector, spillMastery } from "./spill-content";
+import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
 import {
   RACE_ACORNS,
   RACE_BASE_SPEED,
@@ -1788,6 +1789,17 @@ function spillShipParts(s: SpillState) {
   };
 }
 
+function paintSpillModule(ctx: CanvasRenderingContext2D, id: keyof typeof SPILL_MODULE_MARKS, x: number, y: number, size: number) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(size / 24, size / 24);
+  ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.beginPath();
+  for (const points of SPILL_MODULE_MARKS[id]) {
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (const [px, py] of points.slice(1)) ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.restore();
+}
+
 function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number) {
   const parts = spillShipParts(s);
   const hull = art.spillShip?.[parts.hull];
@@ -1868,8 +1880,15 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.restore();
   for (const l of layers) if (!l.xf.behind) paint(l);
   // The earned signal is cosmetic; remaining protection stays on the HUD.
-  ctx.fillStyle = s.signal;
-  for (let i = 0; i < s.utilities.length; i++) ctx.fillRect(105 + i * 12, 133, 7, 4);
+  for (let i = 0; i < s.utilities.length; i++) {
+    const id = s.utilities[i], x = 106 + i * 19;
+    ctx.fillStyle = "#122438"; ctx.fillRect(x - 2, 126, 16, 15);
+    ctx.strokeStyle = "#c5ac7a"; ctx.lineWidth = 1.2; ctx.strokeRect(x - 2, 126, 16, 15);
+    ctx.strokeStyle = "#a4e9ea"; paintSpillModule(ctx, id, x, 127, 12);
+  }
+  ctx.fillStyle = "#f5cb7a";
+  for (let i = 0; i < 3; i++) if (s.specialties[(["plating", "thrusters", "pulse"] as const)[i]])
+    ctx.fillRect(151 + i * 7, 133, 4, 3);
 
   ctx.restore();
 }
@@ -1940,9 +1959,13 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   spillBackdrop(ctx, w, s, art);
   const dock = art.spillScene?.depot;
   if (dock && (s.phase === "docking" || s.phase === "depot")) {
-    ctx.save(); ctx.globalAlpha = Math.min(0.8, s.phaseT / 0.8);
-    const h = W * dock.naturalHeight / dock.naturalWidth;
-    ctx.drawImage(dock, 0, (H - h) / 2, W, h); ctx.restore();
+    const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight,
+      s.phase === "depot" ? SPILL.dockTime : s.phaseT);
+    ctx.save(); ctx.globalAlpha = view.opacity;
+    ctx.drawImage(dock, view.x, view.y, view.width, view.height);
+    const shade = ctx.createLinearGradient(0, 0, 0, H);
+    shade.addColorStop(0, "rgba(3,7,20,.38)"); shade.addColorStop(0.5, "rgba(3,7,20,0)"); shade.addColorStop(1, "rgba(3,7,20,.3)");
+    ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
 
   const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
@@ -2192,7 +2215,8 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   }
   ctx.fillStyle = "rgba(221,211,246,.7)"; ctx.font = "700 9px Figtree, system-ui";
   ctx.fillText(`SCORE ${Math.floor(s.score)}`, 14, 58);
-  if (s.utilities.length) ctx.fillText(s.utilities.map(id => SPILL_UTILITIES[id].icon).join("  "), 14, 74);
+  ctx.strokeStyle = "#a4e9ea";
+  s.utilities.forEach((id, i) => paintSpillModule(ctx, id, 14 + i * 22, 61, 16));
   // the hull, top-right, clear of the pause button that sits in the corner
   for (let i = 0; i < s.maxHull; i++) {
     const x = W - 66 - i * Math.min(16, (W / 2 - 90) / 5);
@@ -2380,11 +2404,13 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   }
   if (s.phase === "docking") {
     ctx.textAlign = "center";
-    ctx.fillStyle = "#c99bff";
-    ctx.font = "900 26px Figtree, system-ui";
-    ctx.globalAlpha = 0.7 + 0.3 * Math.sin(w.time * 6);
-    ctx.fillText("DOCKING", W / 2, H * 0.36);
-    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#f5d59b";
+    ctx.font = "800 12px Figtree, system-ui";
+    ctx.fillText("SALVAGE DEPOT", W / 2, H * 0.24);
+    ctx.fillStyle = "#f1e9ff"; ctx.font = `800 ${W < 380 ? 21 : 26}px Figtree, system-ui`;
+    ctx.fillText(s.phaseT < 1.3 ? "DEPOT IN SIGHT" : s.phaseT < 3.8 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
+    ctx.fillStyle = "rgba(209,222,246,.78)"; ctx.font = "600 11px Figtree, system-ui";
+    ctx.fillText("AUTOPILOT ENGAGED", W / 2, H * 0.24 + 58);
   }
   if (s.phase === "respawn") {
     ctx.textAlign = "center";
@@ -4824,23 +4850,16 @@ function previewRot(p: number, beat: number, kick: number, pull: number) {
   return r;
 }
 
-/** THE SHIP IN THE CASE (owner, 2 Sep 2026): the loadout's SHIP tab
- *  paints the Spill's ship on the same lit stage every other tab uses -
- *  the LAYERED KIT the owner cut and fitted on the Ship Bench (#170-#171):
- *  hull-0, the previewed thruster, the one-charge canopy, the equipped
- *  pilot in the opening. `thrust` is the tier being previewed (0 stock ..
- *  3) and picks the thrust-N part; nothing else moves, because this is a
- *  mock of an upgrade, not one. Falls back to the old scout sprite when
- *  the kit has not loaded. */
-export type ShipPick = { plating: number; thrusters: number; pulse: number; shield: number };
+/** The same fitted ship in flight, the Depot and the Loadout: hull,
+ * engines, pulse cone, canopy, pilot and installed module indicators.
+ * Preview state is isolated from purchases and the live run. */
+export type ShipPick = SpillBuild;
 export function paintShipPreview(
   ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined, save: SaveData,
   cx: number, cy: number, scale: number, t: number, pick: ShipPick,
 ) {
   if (!art) return;
-  const s = createSpill(390, 760, 0);
-  s.up = { plating: Math.max(0, Math.min(3, pick.plating)), thrusters: Math.max(0, Math.min(3, pick.thrusters)), pulse: Math.max(0, Math.min(3, pick.pulse)) };
-  s.shield = s.canopyLevel = Math.max(0, Math.min(2, pick.shield));
+  const s = spillPreviewState(pick);
   s.pilot.y = 0; s.held = true;
   s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
   const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 } as World;

@@ -8,7 +8,7 @@ waves that change how the next sector plays.
 ## The loop
 
 Launch → three-second countdown → survive a wave → drain the field → collect
-12 completion Ore. Every fifth clear docks for 1.2 seconds, restores one hull
+12 completion Ore. Every fifth clear docks for 4.8 seconds, restores one hull
 pip, then opens the Depot. Its shelves arm after 0.8 seconds to reject a
 lingering flight tap. **Every Depot is untimed.** It stays open until the pilot
 leaves or saves and quits. The ordinary mode has no finish action.
@@ -46,6 +46,19 @@ a hull hit grants 1.2 seconds. A Core returns a full hull after a two-second
 freeze, with three seconds of Gold protection.
 
 ## Depot builds
+
+The Depot is a ship workbench: four connected hardpoints inspect plating,
+thrusters, pulse and shields. Each shows its fitted level or remaining charges.
+The selected system explains its next tier and exposes one purchase action;
+Tier II opens its two free specialization choices. Two module slots remain
+beside the ship, with utilities and contracts on separate tabs. Hull repair,
+Respawn Core, Ore and departure remain part of the same hub.
+
+The Ships Loadout uses the same painter and rules. Its launch section equips
+an earned starter and mastery signal for the next endless run. Its separate
+build preview shows every tier, specialization and utility, quotes cumulative
+Ore costs and can inspect a suspended build. Planning spends nothing and
+cannot change the suspended run; tiers still have to be purchased at a Depot.
 
 The original four tracks and their flat, tier-based prices remain:
 
@@ -113,6 +126,12 @@ leaves the procedural scene and fallback ship usable. Earned signal colors
 appear in the plume and utility lights. The HUD shows Ore, salvage score,
 combo, hull, shields, Pulse/echo and an active contract.
 
+Arrival uses a viewport-covering camera that advances into the station over
+4.8 seconds, with approach and docking beats. The Depot keeps that final
+camera and fades its workbench into place; station art never shrinks into a
+menu banner. Utility marks use shared vector paths on the hull, HUD and
+workbench, and fitted specializations add gold system indicators.
+
 ## Records and suspension
 
 Spendable Ore and purchased upgrades belong to a run. Persistent records keep
@@ -136,6 +155,7 @@ Ore never enters the app's acorn wallet.
 |---|---|
 | `game/spill.ts` | Pure rules, spawning, damage, checkpoints |
 | `game/spill-content.ts` | Utilities, specializations, contracts, sectors and mastery |
+| `game/spill-presentation.ts` | Shared preview builds, Ore quotes, module marks and arrival camera |
 | `game/sim.ts` | World mirror, standard mission loadout and completion seam |
 | `game/engine.ts` | Inputs, fixed stepping, interruption pause, banking and resume |
 | `game/save.ts` | Record migration, sanitization and idempotent bank ledger |
@@ -150,12 +170,13 @@ and beta, preserving the last four cache stamps.
 - `node illustrated-src/test-spill.mjs`: ladder, controls, damage, waves,
   untimed Depots, missions and six-seed opening-wave bot smoke test.
 - `node illustrated-src/test-spill-progression.mjs`: build behavior, contracts,
-  48 event sweeps across 320/390/1280 widths, checkpoint validation and banking.
+  48 event sweeps across 320/390/1280 widths, checkpoint validation, banking,
+  arrival coverage/continuity and preview costs checked against actual purchases.
 - `node illustrated-src/test-spill-ui.mjs`: menu/input integration in happy-dom,
   including missing-art fallback. Set `ACORNAUT_HAPPY_DOM` to its module entry
   if it is not installed in local module resolution.
 - `node illustrated-src/test-spill-render.mjs`: actual canvas painter across
-  all 192 equipment combinations and three viewport widths. Requires
+  all 192 equipment combinations, three viewport widths and five arrival frames. Requires
   `@napi-rs/canvas`; `ACORNAUT_CANVAS` may point at its package directory and
   `ACORNAUT_QA_OUTPUT` selects the contact-sheet output folder.
 

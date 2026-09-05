@@ -10,6 +10,7 @@ const C = await import('../docs/js/spill-content.js');
 const Save = await import('../docs/js/save.js');
 const Sim = await import('../docs/js/sim.js');
 const Camp = await import('../docs/js/campaign.js');
+const P = await import('../docs/js/spill-presentation.js');
 const dt=1/60;
 function flight(wave=1,W=390,H=760) { const s=S.createSpill(W,H,71); s.phase='wave';s.wave=wave;s.spec=S.spillWaveSpec(wave,s.seed);s.event=C.spillEventFor(wave,s.seed);s.liveMods=s.spec.mods.slice();s.nextRock=s.nextNut=s.nextSpecial=1000; return s; }
 function dock(wave=5) {const s=flight(wave);s.phase='depot';s.cleared=wave;s.depot={arm:0,bought:[]};s.depotVisits=wave/5;s.ore=2000;return s;}
@@ -20,6 +21,28 @@ function impact(s){s.iframes=0;s.rocks=[rock(s)];return S.stepSpill(s,dt);}
 function boundary(s){s.iframes=0;s.floorT=0;for(let i=0;i<30;i++){s.rocks=[];s.pilot.y=s.H;s.pilot.vy=0;S.stepSpill(s,dt);if(s.pilot.vy<0||s.phase==='respawn'||s.phase==='over')return;}}
 function clear(s,wave){s.wave=wave;s.phase='drain';s.rocks=[];S.stepSpill(s,dt);}
 function pickup(s,kind='gold',y=s.pilot.y){s.nuts=[{x:s.pilot.x,y,vx:0,vy:0,got:false,bob:0,kind}];S.stepSpill(s,dt);}
+// The station always covers the screen and keeps its final camera through the Depot handoff.
+for(const [W,H] of [[320,760],[390,844],[1280,720],[844,390]]){
+ let previous=0;
+ for(let t=0;t<=S.SPILL.dockTime+.1;t+=.05){
+  const v=P.spillDockView(W,H,1536,1024,t);
+  assert(v.x<=0&&v.y<=0&&v.x+v.width>=W-.001&&v.y+v.height>=H-.001,'no rectangular scene edges');
+  assert(v.width>=previous,'arrival moves into the bay');previous=v.width;
+ }
+ assert.deepEqual(P.spillDockView(W,H,1536,1024,S.SPILL.dockTime),P.spillDockView(W,H,1536,1024,S.SPILL.dockTime+1));
+ const s=flight(5,W,H);s.hull=1;clear(s,5);step(s,3);assert.equal(s.phase,'docking','arrival leaves time to read the scene');
+ assert.equal(S.spillBuy(s,'shield'),'closed');step(s,S.SPILL.dockTime-3+.1);assert.equal(s.phase,'depot');assert.equal(s.hull,2);
+ step(s,1);assert.equal(s.hull,2,'the extended arrival heals only once');assert(Math.abs(s.pilot.x-W*.55)<3&&Math.abs(s.pilot.y-H*.6)<3);
+}
+// A planned build quotes the real cumulative purchases, with one earned starter free.
+{
+ const s=dock(),before=s.ore;
+ for(const part of ['plating','thrusters','pulse'])for(let n=0;n<3;n++)assert.equal(S.spillBuy(s,part),'ok');
+ S.spillBuy(s,'shield');S.spillBuy(s,'shield');S.spillUtility(s,'magnet');S.spillUtility(s,'scanner');S.spillSpecialize(s,'brace');
+ const build=P.spillBuildFromState(s);assert.equal(P.spillBuildOre(build),before-s.ore);assert.equal(P.spillBuildOre(build,'magnet'),before-s.ore-C.SPILL_UTILITIES.magnet.price);
+ const preview=P.spillPreviewState(build);assert.deepEqual(preview.up,s.up);assert.deepEqual(preview.utilities,s.utilities);assert.deepEqual(preview.specialties,s.specialties);
+ build.utilities.pop();assert.equal(s.utilities.length,2,'preview build does not alias the live ship');
+}
 // Every protection applies to boundary contact, in the same order as debris.
 {
  const s=flight();s.up.plating=3;s.maxHull=s.hull=6;s.shield=s.canopyLevel=2;s.up.pulse=2;s.charge=1;
@@ -88,10 +111,10 @@ for(const W of [320,390,1280])for(const event of ['cargo','vein','lanes','rig'])
  for(const mutate of [x=>x.version=99,x=>x.state.hull=NaN,x=>x.state.hull=-1,x=>x.state.shield=.5,x=>x.state.wave=6,x=>x.state.utilities=['fake'],x=>x.state.contract.reward=999,x=>x.state.up.plating=99,x=>x.state.banked.ore=9999]){const bad=structuredClone(cp);mutate(bad);assert.equal(S.restoreSpill(bad,390,760),null);}
  s.phase='wave';assert.equal(S.spillCheckpoint(s),null);s.phase='depot';s.target=10;assert.equal(S.spillCheckpoint(s),null);
  const end=flight(20);end.up={plating:2,thrusters:2,pulse:1};end.maxHull=end.hull=5;end.ore=400;end.utilities=['magnet'];end.ownedUtilities=['magnet'];
- clear(end,20);assert.equal(end.phase,'docking');assert.equal(end.cause,'');assert(end.expeditionDone);step(end,2.1);
+ clear(end,20);assert.equal(end.phase,'docking');assert.equal(end.cause,'');assert(end.expeditionDone);step(end,S.SPILL.dockTime+S.SPILL.depotArm+.1);
  Save.bankSpill(save,end);const milestone=structuredClone(save.spillRecords);Save.bankSpill(save,end);assert.deepEqual(save.spillRecords,milestone);assert.equal(milestone.expeditions,1);assert.equal(milestone.runs,0,'wave 20 is not an ended run');
  const earned=end.ore;assert(S.spillLeaveDepot(end));assert.equal(end.wave,21);assert.equal(end.phase,'countdown');assert.deepEqual(end.up,{plating:2,thrusters:2,pulse:1});assert.deepEqual(end.utilities,['magnet']);assert.equal(end.ore,earned);
- clear(end,25);step(end,2.1);assert.equal(end.phase,'depot');assert(S.spillLeaveDepot(end));assert.equal(end.wave,26);assert.equal(end.cause,'');
+ clear(end,25);step(end,S.SPILL.dockTime+S.SPILL.depotArm+.1);assert.equal(end.phase,'depot');assert(S.spillLeaveDepot(end));assert.equal(end.wave,26);assert.equal(end.cause,'');
  Save.bankSpill(save,end,true);const final=structuredClone(save.spillRecords);Save.bankSpill(save,end,true);assert.deepEqual(save.spillRecords,final);assert.equal(final.expeditions,1);assert.equal(final.runs,1);
  const legacy=structuredClone(cp);delete legacy.state.firstPass;legacy.state.finished=false;assert(S.restoreSpill(legacy,390,760),'existing Depot saves remain resumable');
 }

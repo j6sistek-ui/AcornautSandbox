@@ -1,14 +1,16 @@
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=171";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks } from "./art.js?v=171";
-import { sfx, unlockAudio, music } from "./audio.js?v=171";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=171";
-import { drawHud, drawWorld } from "./draw.js?v=171";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=171";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=171";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=171";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=171";
-import { raceViewport } from "./race-viewport.js?v=171";
-import { spillBuy, spillExtend, spillLeaveDepot, spillLunge } from "./spill.js?v=171";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=175";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=175";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=175";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=175";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=175";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=175";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=175";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=175";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=175";
+import { raceViewport } from "./race-viewport.js?v=175";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=175";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=175";
+import { bankSpill } from "./save.js?v=175";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -67,6 +69,13 @@ export async function createEngine(canvas) {
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
+            if (mode === "spill") {
+                raceAccumulator = 0;
+                last = performance.now();
+                save.spillSuspended = null;
+                writeSave(save);
+                void loadSpillScene(engine.art).then(notify);
+            }
             resetInputTracking();
             notify();
         },
@@ -109,6 +118,8 @@ export async function createEngine(canvas) {
             // ordinal, so mission 3-4 is the same test for every pilot, forever.
             // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? 7000 + def.ord : undefined);
+            if (def.base === "spill")
+                void loadSpillScene(engine.art).then(notify);
             resetInputTracking();
             raceAccumulator = 0;
             guideStep("level");
@@ -280,6 +291,55 @@ export async function createEngine(canvas) {
             music.setMuted(off);
             notify();
         },
+        setSfxOff(off) {
+            save.sfxOff = off;
+            writeSave(save);
+            setSfxMuted(off);
+            notify();
+        },
+        setHelpOff(off) {
+            save.helpOff = off;
+            writeSave(save);
+            notify();
+        },
+        setMotionOff(off) {
+            save.motionOff = off;
+            writeSave(save);
+            // the class is what the stylesheet reads; the save is what survives
+            document.body.classList.toggle("ac-nomotion", off);
+            notify();
+        },
+        setIntroOff(off) {
+            save.introOff = off;
+            writeSave(save);
+            notify();
+        },
+        toggleFavorite(id) {
+            const list = save.favorites ?? [];
+            const on = !list.includes(id);
+            save.favorites = on ? [...list, id] : list.filter((x) => x !== id);
+            writeSave(save);
+            notify();
+            return on;
+        },
+        isFavorite: (id) => (save.favorites ?? []).includes(id),
+        setHeroCompact(on) {
+            save.heroCompact = !!on;
+            writeSave(save);
+            notify();
+        },
+        setDiveDepth(d) {
+            save.diveDepth = d;
+            writeSave(save);
+            setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
+            notify();
+        },
+        setPoseMode(m) {
+            save.poseMode = m;
+            writeSave(save);
+            setPoseDials(save.diveDepth ?? 1, m === "ascent");
+            notify();
+        },
         setEclipseMotionMode(mode) {
             save.eclipseMotionMode = ((mode % 3) + 3) % 3;
             writeSave(save);
@@ -327,17 +387,8 @@ export async function createEngine(canvas) {
                 sfx.ui();
             else if (r === "poor")
                 sfx.warning();
-            notify();
-            return r;
-        },
-        spillExtend() {
-            if (!world.spill || world.screen !== "play")
-                return "closed";
-            const r = spillExtend(world.spill);
             if (r === "ok")
-                sfx.ui();
-            else if (r === "poor")
-                sfx.warning();
+                checkpointSpill();
             notify();
             return r;
         },
@@ -345,9 +396,101 @@ export async function createEngine(canvas) {
             if (!world.spill || world.screen !== "play")
                 return;
             if (spillLeaveDepot(world.spill)) {
+                if (!world.spill.target) {
+                    save.spillSuspended = null;
+                    writeSave(save);
+                }
                 sfx.section();
                 notify();
             }
+        },
+        spillUtility(id) {
+            if (!world.spill || world.screen !== "play")
+                return "closed";
+            const result = spillUtility(world.spill, id);
+            if (result === "ok") {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else
+                sfx.warning();
+            notify();
+            return result;
+        },
+        spillSpecialize(id) {
+            const ok = world.screen === "play" && world.spill && spillSpecialize(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+                notify();
+            }
+            return !!ok;
+        },
+        spillContract(id) {
+            const ok = world.screen === "play" && world.spill && spillTakeContract(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+                notify();
+            }
+            return !!ok;
+        },
+        spillSuspend() {
+            if (world.screen !== "play" || !world.spill || !spillCheckpoint(world.spill))
+                return false;
+            checkpointSpill();
+            spillRelease(world);
+            world.spill = null;
+            world.screen = "title";
+            resetInputTracking();
+            notify();
+            return true;
+        },
+        spillResume() {
+            const restored = restoreSpill(save.spillSuspended, world.W, world.H);
+            if (!restored)
+                return false;
+            unlockAudio();
+            resetRun(world, save, "spill", false);
+            world.spill = restored;
+            void loadSpillScene(engine.art).then(notify);
+            world.ready = false;
+            world.squirrel.y = restored.pilot.y;
+            world.squirrel.vy = 0;
+            world.score = restored.cleared;
+            save.spillSuspended = spillCheckpoint(restored);
+            writeSave(save);
+            resetInputTracking();
+            raceAccumulator = 0;
+            last = performance.now();
+            notify();
+            return true;
+        },
+        spillStarter(id) {
+            const preparing = world.screen === "play" && world.spill?.phase === "ready" && !world.spill.target;
+            if (world.screen !== "hangar" && !preparing)
+                return;
+            if (id && (!SPILL_UTILITIES[id] || save.spillBest < SPILL_UTILITIES[id].unlock))
+                return;
+            save.spillStarter = id;
+            if (preparing) {
+                world.spill.utilities = id ? [id] : [];
+                world.spill.ownedUtilities = id ? [id] : [];
+            }
+            writeSave(save);
+            notify();
+        },
+        spillSignal(on) {
+            const fitting = world.screen === "play" && world.spill && ["ready", "depot"].includes(world.spill.phase);
+            if ((world.screen !== "hangar" && !fitting) || save.spillBest < 5)
+                return;
+            save.spillSignal = on;
+            if (fitting) {
+                world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff";
+                checkpointSpill();
+            }
+            writeSave(save);
+            notify();
         },
         dismissDead() {
             world.screen = "title";
@@ -368,11 +511,12 @@ export async function createEngine(canvas) {
         },
         pause() {
             cancelRaceControls();
+            spillRelease(world);
             swipe = null;
             // A race pause discards the incomplete presentation-frame remainder.
             // Resume starts from the next whole 60 Hz authority step, so focus loss
             // can never leak hidden-tab wall time into the time trial.
-            if (world.race)
+            if (world.race || world.spill)
                 raceAccumulator = 0;
             pausePlay(world);
             notify();
@@ -481,11 +625,23 @@ export async function createEngine(canvas) {
         notify();
         return "buy";
     }
-    // stepping out of a suit takes its matched helmet off with it
+    // stepping out of a suit takes its matched helmet off with it - and
+    // stepping INTO one puts its matched helmet on. The second half was
+    // missing (owner, 2 Sep 2026: "the leviathan helmet is missing"): a
+    // suit-locked helmet is on no shelf, so the drop here was the only code
+    // that ever touched it, and a pilot who bought the Regalia pack flew
+    // Leviathan in a Clear dome with no way to change that. Only a Clear
+    // dome or another suit's orphan is replaced; a helmet the pilot chose
+    // on purpose stays.
     function dropOrphanedHelmet() {
         const h = HELMETS.find((x) => x.id === save.equipped);
         if (h?.suitOnly && h.suitOnly !== save.equippedSuit)
             save.equipped = "clear";
+        if (save.equipped === "clear") {
+            const own = HELMETS.find((x) => x.suitOnly === save.equippedSuit && helmetRevealed(save, x.id));
+            if (own)
+                save.equipped = own.id;
+        }
     }
     function transactTrail(id) {
         const item = TRAILS.find((h) => h.id === id);
@@ -784,6 +940,13 @@ export async function createEngine(canvas) {
                 catch { /* capture is best-effort */ }
             }
         }
+        const spillResize = sizeChanged && world.spill !== null && world.screen === "play" && !world.ready;
+        if (spillResize) {
+            spillRelease(world);
+            resetInputTracking();
+            raceAccumulator = 0;
+            pausePlay(world);
+        }
         canvas.width = Math.floor(W * dpr);
         canvas.height = Math.floor(H * dpr);
         canvas.style.width = `${W}px`;
@@ -792,7 +955,7 @@ export async function createEngine(canvas) {
         resizeWorld(world, W, H);
         if (!world.stars.length)
             initStars(world);
-        if (ownedRaceResize)
+        if (ownedRaceResize || spillResize)
             notify();
     }
     let swipe = null;
@@ -844,7 +1007,13 @@ export async function createEngine(canvas) {
             notify();
             return;
         }
-        swipe = { x0: p.x, y0: p.y, t0: performance.now(), fired: false };
+        swipe = { owner: e.pointerId, x0: p.x, y0: p.y, t0: performance.now(), fired: false };
+        if (world.spill) {
+            try {
+                canvas.setPointerCapture(e.pointerId);
+            }
+            catch { /* browser cancelled the pointer */ }
+        }
         // A tap is a tap everywhere, the corridor included. Hold-to-rise and
         // slide-and-hold were flown against it and retired - see the note in
         // updateTunnel - so nothing intercepts this any more.
@@ -872,10 +1041,10 @@ export async function createEngine(canvas) {
             }
             return;
         }
-        if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
+        if (!swipe || swipe.owner !== e.pointerId || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
             return;
         const p = pos(e);
-        if (performance.now() - swipe.t0 > 320) {
+        if (!world.spill && performance.now() - swipe.t0 > 320) {
             swipe = null;
             return;
         }
@@ -919,12 +1088,16 @@ export async function createEngine(canvas) {
         if (world.race)
             return;
         // the Spill's hand comes off the thrust with the finger
-        if (world.spill)
+        if (world.spill) {
+            if (swipe?.owner !== e.pointerId)
+                return;
             spillRelease(world);
+        }
         swipe = null;
     };
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
+    canvas.addEventListener("lostpointercapture", end);
     // A held thrust is a long-press to the browser: without these, phones
     // answer it with text selection and the copy bubble over the whole HUD.
     canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
@@ -1047,7 +1220,7 @@ export async function createEngine(canvas) {
         }
     });
     window.addEventListener("blur", () => {
-        if (world.race && world.screen === "play") {
+        if ((world.race || world.spill) && world.screen === "play") {
             engine.pause();
             return;
         }
@@ -1057,7 +1230,7 @@ export async function createEngine(canvas) {
     });
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
-            if (world.race && world.screen === "play") {
+            if ((world.race || world.spill) && world.screen === "play") {
                 engine.pause();
                 return;
             }
@@ -1125,6 +1298,15 @@ export async function createEngine(canvas) {
     function dispatchSpillCues(cues) {
         if (!cues.length)
             return;
+        const spill = world.spill;
+        if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
+            bankSpill(save, spill, true);
+            if (!spill.target)
+                save.spillSuspended = null;
+            writeSave(save);
+        }
+        else if (cues.includes("depot"))
+            checkpointSpill();
         // one sound per SOUND per frame, not per cue: a hit and the shatter it
         // causes share the hull thud, a Depot-wave clear and its milestone share
         // the fanfare, and neither should play twice
@@ -1133,21 +1315,18 @@ export async function createEngine(canvas) {
         // a graze is deliberately not a re-render: the play overlay is only the
         // two buttons and pause, and "charged" already relights PULSE
         const NOTIFY = ["hit", "hull", "charged", "pulse", "wave", "go", "dock", "depot", "armed",
-            "depot-close", "buy", "deny", "respawn", "recharge", "mission"];
+            "depot-close", "buy", "deny", "respawn", "recharge", "mission", "contract", "dead"];
         // press and burst sound on the pointer path already
         const SOUND = {
             hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
             graze: "near", pulse: "shift", count: "ui", go: "section", clear: "milestone", milestone: "milestone",
             dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
-            warn: "warning", mission: "milestone",
+            warn: "warning", event: "warning", contract: "milestone", mission: "milestone",
         };
         for (const c of new Set(cues)) {
             const snd = SOUND[c];
             if (snd)
                 sounds.add(snd);
-            // the Depot clock repaints itself in place; a full re-render every
-            // second would pull a shelf out from under a finger, so "tick" is
-            // deliberately not on the list
             if (NOTIFY.includes(c))
                 shouldNotify = true;
         }
@@ -1156,18 +1335,34 @@ export async function createEngine(canvas) {
         if (shouldNotify)
             notify();
     }
+    function checkpointSpill() {
+        const spill = world.spill;
+        if (!spill || spill.phase !== "depot")
+            return;
+        if (!spill.target && spill.wave === 20 && save.spillBest < 20)
+            spill.firstPass = true;
+        bankSpill(save, spill);
+        if (!spill.target)
+            save.spillSuspended = spillCheckpoint(spill);
+        writeSave(save);
+    }
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
         last = now;
-        if (world.race) {
+        if (world.race || world.spill) {
             raceAccumulator += frameDt;
             while (raceAccumulator + 1e-12 >= 1 / 60) {
                 // Race cues are drained after every authority step, not once per
                 // render frame. This preserves simultaneous pass/debris feedback and
                 // prevents high-refresh rendering from replaying audio side effects.
-                updateWorld(world, save, 1 / 60);
-                dispatchRaceCues(takeRaceCueEffects(world));
+                const ev = updateWorld(world, save, 1 / 60);
+                if (world.race)
+                    dispatchRaceCues(takeRaceCueEffects(world));
+                else {
+                    dispatchWorldEvent(ev);
+                    dispatchSpillCues(takeSpillCues(world));
+                }
                 raceAccumulator -= 1 / 60;
                 if (world.screen === "lvldone")
                     break;
@@ -1230,10 +1425,17 @@ export async function createEngine(canvas) {
     // as the engine comes up - not on the walk to a storefront. claimDaily is
     // a no-op for a day already taken, so a reload never pays twice.
     claimDaily();
+    // the switches that are not read from the save on the fly are applied
+    // once here, so a reload lands in the state the pilot left
+    setSfxMuted(!!save.sfxOff);
+    document.body.classList.toggle("ac-nomotion", !!save.motionOff);
+    setPoseDials(save.diveDepth ?? 1, save.poseMode === "ascent");
     engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
         .then((bank) => {
         art = bank;
         engine.art = bank;
+        if (world.spill)
+            void loadSpillScene(bank).then(notify);
         notify();
         prefetchArtBanks(bank);
     })
@@ -1241,4 +1443,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=171";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=175";

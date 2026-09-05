@@ -84,7 +84,7 @@ export const SPILL = {
   /** seconds of Gold the Respawn Core hands over on re-entry */
   goldSeconds: 3,
   /** Untimed stops. Docking and the input arm still prevent accidental buys. */
-  dockTime: 1.2,
+  dockTime: 4.8,
   depotArm: 0.8,
   /** the counted-down intermission: autopilot, then GO. Control comes back
    *  on the GO and never before, so it can be predicted */
@@ -267,7 +267,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
     levels: ["Sharper bursts", "Two lunge charges", "Afterburner: a lunge shatters shards"],
   },
   pulse: {
-    name: "Power-ups",
+    name: "Pulse",
     prices: [60, 110, 170],
     levels: ["PULSE unlocked: fires on impact when charged", "Echo charge: ready after 5s, saved for the next threat", "Wide pulse, and shattered debris drops Ore"],
   },
@@ -1037,7 +1037,7 @@ function beginDocking(s: SpillState) {
   s.pilot.vx = 0;
   s.rocks = [];
   s.nuts = [];
-  say(s, "DOCKING", SPILL.dockTime);
+  s.banner = ""; s.bannerT = 0;
   cue(s, "dock");
 }
 
@@ -1260,11 +1260,14 @@ function handVertical(s: SpillState, dt: number) {
 /** the ship flies itself: home lane, mid height, level. Used through the
  *  countdown and the dock so the hand can rest and know when it is needed */
 function autopilot(s: SpillState, dt: number) {
-  const home = s.W * SPILL.homeX;
+  const docking = s.phase === "docking" || s.phase === "depot";
+  const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / SPILL.dockTime) : 0;
+  const approach = p * p * (3 - 2 * p);
+  const home = s.W * (SPILL.homeX + (0.55 - SPILL.homeX) * approach);
   s.pilot.vy = 0;
   s.pilot.vx = 0;
   s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * 3);
-  s.pilot.y += (s.H * 0.45 - s.pilot.y) * Math.min(1, dt * 3);
+  s.pilot.y += (s.H * (0.45 + 0.15 * approach) - s.pilot.y) * Math.min(1, dt * 3);
   s.pilot.rot *= Math.max(0, 1 - dt * 5);
 }
 

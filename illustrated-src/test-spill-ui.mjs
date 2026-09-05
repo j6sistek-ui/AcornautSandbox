@@ -16,19 +16,39 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=awai
 const {bootStandalone}=await import(`${root}/docs/js/standalone.js`);const app=win.document.createElement('main');win.document.body.append(app);await bootStandalone(app);const engine=win.__sandbox;assert(engine);
 function tick(n=1){for(let i=0;i<n;i++){now+=1000/60;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));}}
 function button(text){const b=[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));assert(b,`missing button ${text}: ${app.textContent.slice(0,2400)}`);return b;}
+function control(id){const b=app.querySelector(`[data-spill-control="${id}"]`);assert(b,`missing Depot control ${id}`);return b;}
+function ship(kind,id){const b=app.querySelector(`[data-ship-${kind}="${id}"]`);assert(b,`missing ship ${kind} ${id}`);return b;}
 function fixture(wave=5){engine.save.spillStarter=null;engine.fly('spill');const s=engine.world.spill;s.phase='depot';s.wave=s.cleared=wave;s.depot={arm:0,bought:[]};s.ore=2000;s.oreMined=70;s.depotVisits=wave/5;s.expeditionDone=wave>=20;engine.world.ready=false;s.cues=['depot'];tick();return s;}
+// The Loadout equips earned starters, while the build planner cannot spend or alter a run.
+engine.save.spillBest=4;engine.open('hangar');engine.setShopTab('ship');
+assert.equal(app.querySelectorAll('[data-ship-tier]').length,15);assert(!app.textContent.includes('UNDER CONSTRUCTION'));assert(!app.textContent.includes('not active yet'));
+assert(ship('starter','magnet').disabled);engine.spillStarter('magnet');assert.equal(engine.save.spillStarter,null);
+engine.save.spillBest=20;engine.setShopTab('ship');ship('starter','magnet').click();assert.equal(Save.loadSave().spillStarter,'magnet');
+app.querySelector('.ac-shipsignal').click();assert.equal(Save.loadSave().spillSignal,true);
+const savedLaunch=JSON.stringify(engine.save);assert(ship('spec','brace').disabled);ship('tier','plating-2').click();ship('spec','brace').click();
+ship('tier','thrusters-3').click();ship('tier','pulse-2').click();ship('spec','efficient').click();ship('utility','scanner').click();assert(ship('utility','brake').disabled);
+ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.equal(JSON.stringify(engine.save),savedLaunch,'planning changes no save fields');
+button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
 engine.fly('spill');assert(app.querySelector('.ac-spillprep'));const select=app.querySelector('select[aria-label="Starting utility"]');select.value='magnet';select.dispatchEvent(new win.Event('change'));assert.deepEqual(engine.world.spill.utilities,['magnet']);button('LAUNCH EXPEDITION').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
+assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0},'planned tiers never become free upgrades');
 // A swipe remains valid after a long hold; another pointer cannot release it.
 const canvas=engine.canvas;function pointer(type,id,x,y){canvas.dispatchEvent(new win.PointerEvent(type,{pointerId:id,clientX:x,clientY:y,pointerType:'touch',isPrimary:true,bubbles:true}));}
 pointer('pointerdown',1,100,300);now+=800;pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'long-hold swipe lunges');pointer('pointerup',2,155,300);assert(engine.world.spill.held);pointer('pointerup',1,155,300);assert(!engine.world.spill.held);
 pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();
-const s=fixture();const initial=s.ore;button('Plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);
-button('Plating').click();assert(button('Impact Bracing'));button('Impact Bracing').click();assert.equal(s.specialties.plating,'brace');
-const card=app.querySelector('.ac-depotcard');card.scrollTop=820;button('Salvage Magnet').click();assert.equal(app.querySelector('.ac-depotcard').scrollTop,820);button('Field Scanner').click();assert(button('Emergency Brake').disabled);button('Salvage Magnet').click();assert(!button('Emergency Brake').disabled);button('Emergency Brake').click();button('Clean Passage').click();assert(s.contract);
-const records=structuredClone(engine.save.spillRecords),ore=s.ore;button('SAVE & QUIT').click();assert.equal(engine.world.screen,'title');assert(engine.save.spillSuspended);assert(engine.spillResume());tick(50);assert.equal(engine.world.spill.ore,ore);assert.deepEqual(engine.save.spillRecords,records);assert(app.querySelector('[role="dialog"]'));button('BACK TO THE FIELD').click();assert.equal(engine.world.spill.wave,6);assert.equal(engine.save.spillSuspended,null);
+const s=fixture();const initial=s.ore;assert.equal(app.querySelectorAll('.ac-hardpoint').length,4);assert.equal(app.querySelectorAll('.ac-depotslots button').length,2);
+control('inspect-pulse').click();assert.equal(s.ore,initial,'inspecting a system is not a purchase');control('inspect-plating').click();
+control('plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);
+control('plating').click();assert(button('Impact Bracing'));control('brace').click();assert.equal(s.specialties.plating,'brace');
+control('inspect-shield').click();control('shield').click();assert.equal(s.canopyLevel,1);assert.equal(s.shield,1);
+control('tab-utilities').click();const card=app.querySelector('.ac-depotcard');card.scrollTop=820;control('magnet').focus();control('magnet').click();
+assert.equal(app.querySelector('.ac-depotcard').scrollTop,820);assert.equal(document.activeElement.dataset.spillControl,'magnet');control('scanner').click();assert(control('brake').disabled);control('magnet').click();assert(!control('brake').disabled);control('brake').click();
+control('tab-contracts').click();button('Clean Passage').click();assert(s.contract);
+const records=structuredClone(engine.save.spillRecords),ore=s.ore;button('SAVE & QUIT').click();assert.equal(engine.world.screen,'title');assert(engine.save.spillSuspended);
+engine.open('hangar');engine.setShopTab('ship');const savedCheckpoint=JSON.stringify(engine.save.spillSuspended);button('VIEW SAVED BUILD').click();assert.equal(ship('tier','plating-2').getAttribute('aria-pressed'),'true');ship('tier','plating-0').click();assert.equal(JSON.stringify(engine.save.spillSuspended),savedCheckpoint,'inspecting a saved build does not edit its checkpoint');
+assert(engine.spillResume());tick(50);assert.equal(engine.world.spill.ore,ore);assert.deepEqual(engine.save.spillRecords,records);assert(app.querySelector('[role="dialog"]'));button('BACK TO THE FIELD').click();assert.equal(engine.world.spill.wave,6);assert.equal(engine.save.spillSuspended,null);
 engine.save.spillBest=19;
 const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstPass);assert(app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));assert.equal(engine.save.spillRecords.expeditions,1);assert.equal(engine.save.spillRecords.runs,0);
-button('Plating').click();const hull=end.maxHull,bank=end.ore;button('SAVE & QUIT').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
+control('plating').click();const hull=end.maxHull,bank=end.ore;button('SAVE & QUIT').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
 button('CONTINUE TO WAVE 21').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
 const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));button('BACK TO THE FIELD').click();assert.equal(later.wave,21);assert.equal(engine.world.screen,'play');assert.equal(engine.save.spillRecords.expeditions,2);assert.equal(engine.save.spillRecords.runs,0);
-engine.stop();await win.happyDOM.close();console.log('spill UI: preflight, long-hold swipe, pointer ownership, interruption pause, Depot purchases/refits/contracts, scroll retention, save/resume and first-pass celebration and endless continuation pass');
+engine.stop();await win.happyDOM.close();console.log('spill UI: Loadout starter unlocks/persistence, isolated build planning, hardpoint inspection/purchases, modules/refits/contracts, focus/scroll retention, preflight, pointer ownership, interruption pause, save/resume and endless continuation pass');

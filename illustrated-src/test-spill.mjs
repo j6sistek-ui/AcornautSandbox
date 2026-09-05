@@ -440,7 +440,7 @@ const dock = (seed) => {
   ok(S.spillBuy(s, "shield") === "closed", "nothing sells while docking");
   s.hull = 2;
   const t0 = s.phaseT;
-  until(s, (x) => x.phase === "depot", 3);
+  until(s, (x) => x.phase === "depot", S.SPILL.dockTime + 0.1);
   ok(s.phase === "depot", `docking opens the Depot (${s.phase})`);
   ok(s.phaseT - t0 < 0.05 && !("timer" in s.depot), "docking opens an untimed Depot");
   ok(s.hull === 3, "docking restores a pip");
