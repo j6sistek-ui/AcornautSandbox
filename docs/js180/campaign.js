@@ -1,4 +1,7 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=175";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=180";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=180";
+import { IS_BETA } from "./catalog.js?v=180";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=180";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -186,14 +189,13 @@ export const STAGES = [
     {
         num: 9,
         name: "THE BLACKOUT",
-        tagline: "You see for half a second after each tap. Remember the rest.",
+        tagline: "Steady shadows reveal a moving path.",
         env: 6, // MONOCHROME VOID
         base: "fly",
         unlock: 180,
         tune: (i) => ({
             gates: 8 + i, // 8 .. 17
             fx: {
-                strobe: true,
                 gapScale: lerp(1.12, 1.02, i / 9), // mercy, tapering
                 pace: 0.95,
                 driftScale: i >= 5 ? 1.2 : 1, // late levels sway in the dark
@@ -207,7 +209,7 @@ export const STAGES = [
                     : { kind: "maxTaps", n: Math.round(g * 3.2) }, // taps ARE sight here
         ],
         names: [
-            "Lights Out", "Afterimage", "Count the Beats", "Flashbulb", "Dead Reckoning",
+            "Lights Out", "Afterimage", "Count the Beats", "Quiet Current", "Dead Reckoning",
             "Echo Location", "Blink", "Photograph", "Total Recall", "Eyes Shut",
         ],
     },
@@ -234,7 +236,7 @@ export const STAGES = [
             return {
                 gates: 30,
                 base: "fly",
-                fx: { strobe: true, fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
+                fx: { fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
             };
         },
         goals: (i, g) => [
@@ -250,63 +252,25 @@ export const STAGES = [
     },
 ];
 // ------------------------------------------------------------------ levels
-export const LEVELS = STAGES.flatMap((st) => Array.from({ length: 10 }, (_, i) => {
-    const t = st.tune(i);
-    const gates = t.gates;
-    const [g2, g3] = st.goals(i, gates);
-    return {
-        id: `${st.num}-${i + 1}`,
-        stage: st.num,
-        n: i + 1,
-        ord: (st.num - 1) * 10 + i + 1,
-        name: st.names[i],
-        base: t.base ?? st.base,
-        gates,
-        // the very first mission on the chart carries it; nothing else does
-        fx: { env: st.env, ...t.fx, ...((st.num - 1) * 10 + i + 1 === 1 ? { noFail: true } : {}) },
-        goals: [{ kind: "finish" }, g2, g3],
-    };
-}));
-// ---------------------------------------------------- the BETA divergence
-//
-// Read here rather than imported from catalog.ts: build-roadmap.mjs
-// compiles this file ALONE, and in node there is no window — so the
-// roadmap always documents the LIVE chart, which is the point.
-const IS_BETA = typeof window !== "undefined" &&
-    window.__ACORNAUT_BETA__ === true;
-//
-// Spill missions give the survival build loop a place in the main chart.
-// Existing level IDs and star masks remain stable across both pages.
-// Tunnel targets are seconds; Spill targets are waves.
-for (const l of LEVELS) {
-    if (l.stage < 2)
-        continue;
-    if (IS_BETA && l.n === 4) {
-        l.base = "tunnel";
-        l.gates = 20 + l.stage * 5; // SECONDS survived: 30..70
-        l.goals = [
-            { kind: "finish" },
-            { kind: "acorns", n: 4 + l.stage * 2 }, // 8..24 acorns
-            { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
-        ];
-        l.fx = { env: l.fx.env }; // missions run their own physics
-    }
-    else if (l.n === 8) {
-        // A Spill mission is a wave ladder with a top rung: clear wave N and
-        // the level is done. Chapter 3's mission ends AT wave 5, before the
-        // Depot opens; from chapter 4 on the shop is inside the mission, so
-        // spending well is part of the test rather than a bonus.
-        l.base = "spill";
-        l.gates = l.stage === 10 ? 20 : 2 + l.stage; // Short lessons; final Star Map victory at wave 20
-        l.goals = [
-            { kind: "finish" },
-            { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined
-            { kind: "noHit" },
-        ];
-        l.fx = { env: l.fx.env };
-    }
-}
-export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;
+/** Immutable authored definitions. Beta variants share a route position, but
+ * have their own progress identity. Production never loads preview progress. */
+export const LEGACY_LEVELS = MISSION_ROWS.slice(0, 100).map(row => {
+    const variant = IS_BETA ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+    return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
+        goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) };
+});
+export const ALL_LEVELS = (IS_BETA ? BETA_MISSION_ROWS : MISSION_ROWS).map(row => ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) }));
+export const LEVELS = IS_BETA ? ALL_LEVELS : LEGACY_LEVELS;
+export const CHART_LEVELS = LEVELS;
+export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
+export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
+export const levelById = (id) => CHART_LEVELS.find(l => l.id === id) ?? null;
+export const nextLevel = (id, order = CHART_LEVELS) => {
+    const i = order.findIndex(l => l.id === id);
+    return i >= 0 ? order[i + 1] ?? null : null;
+};
+export const levelAt = (ord, order = CHART_LEVELS) => order[ord - 1] ?? null;
+export const missionProgressId = (def) => def.variantId ?? def.id;
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
 export const HYPER_RUN_MAX_ACORNS = RACE_MAX_ACORNS;
@@ -335,7 +299,10 @@ export const hyperRunById = (id) => id === HYPER_RUN_MISSION.id ? HYPER_RUN_MISS
 // ------------------------------------------------------------------ prose
 export function goalText(g, def) {
     switch (g.kind) {
-        case "finish": return def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
+        case "bounces": return `Bounce off planets ${g.n} times`;
+        case "depots": return `Visit ${g.n} Depot${g.n === 1 ? "" : "s"}`;
+        case "repairs": return `Buy ${g.n} hull repair at a Depot`;
+        case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Collect ${def.spillFinish.n} Acorn Coins` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
             : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
@@ -347,7 +314,7 @@ export function goalText(g, def) {
         case "maxTaps": return `At most ${g.n} taps`;
         case "flow": return `Reach Flow \u00d7${g.n}`;
         case "score": return `Score ${g.n} points`;
-        case "ore": return `Mine ${g.n} Ore`;
+        case "ore": return `Collect ${g.n} Acorn Coins`;
         case "noHit": return "Take no hull damage";
         case "time": {
             const seconds = Math.floor(g.ticks / 60);
@@ -357,8 +324,16 @@ export function goalText(g, def) {
 }
 export function fxText(fx) {
     const out = [];
-    if (fx.strobe)
-        out.push("BLACKOUT — lit only after a tap");
+    if (fx.pal)
+        out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · TAP REVERSE" : fx.pal.toUpperCase()}`);
+    if (fx.upsideDown)
+        out.push("UPSIDE DOWN");
+    if (fx.bounceScale)
+        out.push("SPRINGY PLANETS");
+    if (fx.sticky)
+        out.push("STICKY PLANETS · TAP TO RELEASE");
+    if (fx.tapFreeze)
+        out.push("TAP TO TOGGLE SLOW");
     if (fx.fog)
         out.push(fx.fog >= 0.7 ? "HEAVY FOG" : "FOG");
     if (fx.pace && fx.pace > 1.02)
@@ -373,7 +348,7 @@ export function fxText(fx) {
         out.push("SWAYING GATES");
     return out;
 }
-export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, ore: 0, hits: 0, finishTicks: 0 });
+export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, ore: 0, hits: 0, depots: 0, repairs: 0, finishTicks: 0 });
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def) {
     let n = 0;
@@ -400,7 +375,14 @@ export function goldGatesFor(def) {
 }
 export function goalHud(g, s, gatesDone, def) {
     switch (g.kind) {
+        case "bounces": return { text: `BOUNCES ${Math.min(s.bounces, g.n)}/${g.n}`, state: s.bounces >= g.n ? "done" : "live" };
+        case "depots": return { text: `DEPOTS ${Math.min(s.depots, g.n)}/${g.n}`, state: s.depots >= g.n ? "done" : "live" };
+        case "repairs": return { text: `REPAIRS ${Math.min(s.repairs, g.n)}/${g.n}`, state: s.repairs >= g.n ? "done" : "live" };
         case "finish": {
+            if (def.spillFinish) {
+                const { kind, n } = def.spillFinish, value = kind === "ore" ? s.ore : s.depots;
+                return { text: `${kind === "ore" ? "COINS" : "DEPOT"} ${Math.min(value, n)}/${n}`, state: value >= n ? "done" : "live" };
+            }
             const n = Math.min(gatesDone, def.gates);
             if (def.base === "spill")
                 return { text: `WAVE ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
@@ -423,7 +405,7 @@ export function goalHud(g, s, gatesDone, def) {
         case "score":
             return { text: `SCORE ${Math.min(s.score, g.n)}/${g.n}`, state: s.score >= g.n ? "done" : "live" };
         case "ore":
-            return { text: `ORE ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
+            return { text: `COINS ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
         case "noHit":
             return { text: "NO HITS", state: s.hits > 0 ? "lost" : "done" };
         case "time": {
@@ -437,6 +419,9 @@ export function goalHud(g, s, gatesDone, def) {
 export function goalMet(g, s) {
     switch (g.kind) {
         case "finish": return true;
+        case "bounces": return s.bounces >= g.n;
+        case "depots": return s.depots >= g.n;
+        case "repairs": return s.repairs >= g.n;
         case "acorns": return s.acorns >= g.n;
         case "gold": return s.gold >= g.n;
         case "noBounce": return s.bounces === 0;
@@ -512,33 +497,23 @@ export function gateClearedBy(cleared, finished, finishTicks) {
         return null;
     return finishTicks <= g.ticks ? g : null;
 }
-export function levelUnlocked(def, stars, 
-/** kept in the signature, and deliberately unused: the star TOTAL was
- *  what opened a chapter, and chapters are gone. Removing it would mean
- *  editing five call sites whose next argument is also an array-ish
- *  thing, which is a good way to pass gatesCleared as total by mistake. */
-_total, gatesCleared) {
-    if (IS_BETA)
-        return true;
-    if (gateBefore(def.ord, gatesCleared))
+export function levelUnlocked(def, stars, _total, gatesCleared, order = CHART_LEVELS, beta = IS_BETA) {
+    const index = order.findIndex(l => l.id === def.id);
+    if (index < 0 || def.implemented === false)
         return false;
-    if (def.ord <= 1)
+    if (beta)
         return true;
-    // ONE WAY, IN ORDER. The chart used to be ten chapters, and a chapter
-    // opened on a star TOTAL - so the first level of each one was reachable
-    // the moment you could afford it, whether or not you had flown the
-    // ninety-nine before it. That made 61 and 81 playable out of nowhere and
-    // put two paths through a chart that only has one. Levels are 1-100 now
-    // and the only key to a level is the level before it.
-    //
-    // n is the position WITHIN the old stage, so at a boundary the previous
-    // level is the last of the stage below rather than "n - 1".
-    const prev = def.n > 1 ? `${def.stage}-${def.n - 1}` : `${def.stage - 1}-10`;
-    return ((stars[prev] || 0) & 1) === 1;
+    if (gateBefore(index + 1, gatesCleared))
+        return false;
+    return index === 0 || ((stars[order[index - 1].id] || 0) & 1) === 1;
 }
-// The ladder XP used to be. Stage openings are listed so the chart can
-// show the whole road on one screen; the stage thresholds here MUST match
-// STAGES[n].unlock (build-roadmap.mjs checks).
+/** Arrival is part of a barrier attempt, independently of access to the mode. */
+export function reachedGate(stars, cleared) {
+    const gate = nextGate(cleared);
+    return gate && ((stars[levelAt(gate.after)?.id ?? ""] || 0) & 1) ? gate : null;
+}
+// Original reward ladder. Retired stage rows remain compatibility data;
+// the UI and roadmap omit them because route passage no longer uses them.
 export const STAR_REWARDS = [
     { stars: 3, kind: "pal", id: "bee", name: "Astrolobee", desc: "Powerup/Acorns Disabled" },
     { stars: 5, kind: "trail", id: "ion", name: "Ion Stream", desc: "A trail of charged sky." },
@@ -600,8 +575,8 @@ export const STAR_REWARDS = [
     { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
     { stars: 270, kind: "dust", amount: 120, name: "120 Star Dust", desc: "Almost the whole chart." },
     { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
-    { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
-    { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned by every star there is." },
+    { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
+    { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title

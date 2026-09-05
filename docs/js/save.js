@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=179";
-import { CHART_LEVELS } from "./campaign.js?v=179";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=179";
-import { restoreSpill } from "./spill.js?v=179";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=179";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=180";
+import { CHART_LEVELS } from "./campaign.js?v=180";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=180";
+import { restoreSpill } from "./spill.js?v=180";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=180";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=179";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=180";
 export function defaultSave() {
     return {
         highScore: 0,

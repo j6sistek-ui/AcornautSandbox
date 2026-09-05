@@ -51,7 +51,7 @@ export type Goal =
   // mission-base goals (beta): Wormhole Flow multiplier, Spill score
   | { kind: "flow"; n: number }
   | { kind: "score"; n: number }
-  // Spill missions: Ore mined over the run, and a run flown without a hit
+  // Spill missions: Acorn Coins mined over the run, and a run flown without a hit
   | { kind: "ore"; n: number }
   | { kind: "noHit" }
   | { kind: "time"; ticks: number };
@@ -406,7 +406,7 @@ export function goalText(g: Goal, def: LevelDef): string {
     case "bounces": return `Bounce off planets ${g.n} times`;
     case "depots": return `Visit ${g.n} Depot${g.n === 1 ? "" : "s"}`;
     case "repairs": return `Buy ${g.n} hull repair at a Depot`;
-    case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Mine ${def.spillFinish.n} Ore` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
+    case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Collect ${def.spillFinish.n} Acorn Coins` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
       : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
       : def.base === "race" ? "Finish the course"
       : `Reach the portal — ${def.gates} gates`;
@@ -418,7 +418,7 @@ export function goalText(g: Goal, def: LevelDef): string {
     case "maxTaps": return `At most ${g.n} taps`;
     case "flow": return `Reach Flow \u00d7${g.n}`;
     case "score": return `Score ${g.n} points`;
-    case "ore": return `Mine ${g.n} Ore`;
+    case "ore": return `Collect ${g.n} Acorn Coins`;
     case "noHit": return "Take no hull damage";
     case "time": {
       const seconds = Math.floor(g.ticks / 60);
@@ -456,7 +456,7 @@ export type RunStats = {
   flow: number;
   /** Spill missions: the run's score */
   score: number;
-  /** Spill missions: Ore mined over the run, spent or not, and hull hits taken */
+  /** Spill missions: Acorn Coins mined over the run, spent or not, and hull hits taken */
   ore: number;
   hits: number;
   depots: number;
@@ -515,7 +515,7 @@ export function goalHud(g: Goal, s: RunStats, gatesDone: number, def: LevelDef):
     case "finish": {
       if (def.spillFinish) {
         const {kind,n}=def.spillFinish, value=kind === "ore" ? s.ore : s.depots;
-        return {text: `${kind === "ore" ? "ORE" : "DEPOT"} ${Math.min(value,n)}/${n}`, state: value >= n ? "done" : "live"};
+        return {text: `${kind === "ore" ? "COINS" : "DEPOT"} ${Math.min(value,n)}/${n}`, state: value >= n ? "done" : "live"};
       }
       const n = Math.min(gatesDone, def.gates);
       if (def.base === "spill") return { text: `WAVE ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
@@ -538,7 +538,7 @@ export function goalHud(g: Goal, s: RunStats, gatesDone: number, def: LevelDef):
     case "score":
       return { text: `SCORE ${Math.min(s.score, g.n)}/${g.n}`, state: s.score >= g.n ? "done" : "live" };
     case "ore":
-      return { text: `ORE ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
+      return { text: `COINS ${Math.min(s.ore, g.n)}/${g.n}`, state: s.ore >= g.n ? "done" : "live" };
     case "noHit":
       return { text: "NO HITS", state: s.hits > 0 ? "lost" : "done" };
     case "time": {

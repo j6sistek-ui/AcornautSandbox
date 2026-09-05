@@ -28,7 +28,7 @@ export type ArtBank = {
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
   shieldnut: Sprite | null;
-  /** THE SPILL's Ore: the mode's own pickup, a crystal the field spills.
+  /** THE SPILL's run-only Acorn Coin. The ore property preserves save/API compatibility.
    *  One painting; it bobs rather than cycles */
   ore: Sprite | null;
   /** the animated pickup cycles — frozen and shield now MOVE like the
@@ -643,7 +643,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
       // conditional stays because the constant is the one place that
       // decides, not because the answer can currently be no.
       named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
-      optional(`${base}/pickups/ore.png?v=${ART_VER}`),
+      optional(`${base}/pickups/acorn-coin.svg?v=${ART_VER}`),
       // the Spill's ship: 13 small files. A missing one is not fatal - the
       // painter falls back to the scout ship - so nothing here is required
       named(SPILL_SHIP_IDS, "spill-ship"),

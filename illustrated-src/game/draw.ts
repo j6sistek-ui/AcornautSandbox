@@ -1,3 +1,4 @@
+import { spillDockDuration } from "./spill";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -1996,7 +1997,7 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   spillBackdrop(ctx, w, s, art);
   const dock = art.spillScene?.depot;
   if (dock && (s.phase === "docking" || s.phase === "depot")) {
-    const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT;
+    const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT * SPILL.dockTime / spillDockDuration(s);
     const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
     ctx.save(); ctx.globalAlpha = view.opacity;
     ctx.drawImage(dock, view.x, view.y, view.width, view.height);
@@ -2047,7 +2048,12 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
       ctx.fill();
     }
     if (n.kind === "ore") drawSprite(ctx, art.ore ?? frameOf(art.acorn, w.time, 10), n.x, y, 28);
-    else if (n.kind === "gold") drawSprite(ctx, frameOf(art.golden, w.time, 10) ?? art.ore, n.x, y, 34);
+    else if (n.kind === "gold") {
+      drawSprite(ctx, art.ore ?? frameOf(art.golden, w.time, 10), n.x, y, 34);
+      ctx.strokeStyle = "#c3f5ff"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(n.x,y,20,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(n.x+13,y-22); ctx.lineTo(n.x+8,y-15); ctx.lineTo(n.x+14,y-15); ctx.lineTo(n.x+10,y-8); ctx.stroke();
+    }
     else {
       // a hull fragment: a green plate with a cross, the pip it restores
       ctx.save();
@@ -2211,14 +2217,14 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   // it against the rung it has to reach
   ctx.fillStyle = "#fff";
   ctx.font = "800 36px Figtree, system-ui";
-  ctx.fillText(s.target ? `${s.wave}/${s.target}` : String(s.wave), W / 2, 46);
+  ctx.fillText(s.welcome ? "DEPOT" : s.target ? `${s.wave}/${s.target}` : String(s.wave), W / 2, 46);
   ctx.font = "700 11px Figtree, system-ui";
   ctx.fillStyle = "rgba(255,224,128,0.9)";
   const names = s.liveMods.map((m) => SPILL_MOD_INFO[m].name).filter(Boolean).join(" + ");
   const sub = s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
     : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
       : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
-        : s.phase === "docking" ? `WAVE ${s.wave} CLEARED`
+        : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
           : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
             : s.phase === "respawn" ? "RESPAWN CORE" : "THE SPILL";
   ctx.fillText(sub, W / 2, 64);
@@ -2243,7 +2249,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       ctx.fillText("PULSE · UNLOCK AT THE DEPOT", W / 2, 82);
     }
   }
-  // Ore, top-left, where the acorns sit in every other mode
+  // Acorn Coins, top-left, where the acorns sit in every other mode
   if (art?.ore) drawSprite(ctx, art.ore, 22, 24, 24);
   else {
     ctx.fillStyle = "#c99bff";
@@ -2265,24 +2271,14 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   ctx.fillText(`SCORE ${Math.floor(s.score)}`, 14, 58);
   ctx.strokeStyle = "#a4e9ea";
   s.utilities.forEach((id, i) => paintSpillModule(ctx, id, 14 + i * 22, 61, 16));
-  // the hull, top-right, clear of the pause button that sits in the corner
-  for (let i = 0; i < s.maxHull; i++) {
-    const x = W - 66 - i * Math.min(16, (W / 2 - 90) / 5);
-    const lit = i < s.hull;
-    const lost = !lit && i === s.hull && s.hitFlash > 0;
-    ctx.fillStyle = lit ? "#5fd48a" : lost ? `rgba(255,90,70,${s.hitFlash.toFixed(2)})` : "rgba(255,255,255,.14)";
-    round(ctx, x - 5, 21, 10, 7, 3);
-    ctx.fill();
-  }
-  for (let i = 0; i < s.shield; i++) {
-    ctx.fillStyle = "rgba(122,216,255,0.9)";
-    ctx.beginPath();
-    ctx.arc(W - 70 - i * 16, 40, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.7)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
+  // Current protection stays readable beside the pause control.
+  const healthW = Math.min(72, W * .2), healthX = W - 58 - healthW;
+  ctx.fillStyle = "rgba(255,255,255,.18)"; round(ctx, healthX, 20, healthW, 9, 4); ctx.fill();
+  const health = Math.max(0, Math.min(1, s.hull / s.maxHull));
+  if (health > 0) { ctx.fillStyle = health <= .34 ? "#ff9978" : "#70e3a0"; round(ctx, healthX, 20, healthW * health, 9, 4); ctx.fill(); }
+  ctx.textAlign = "right"; ctx.font = "800 10px Figtree, system-ui";
+  ctx.fillStyle = "#b3f1d2"; ctx.fillText("HEALTH", W - 58, 15);
+  ctx.fillStyle = "#a3e6ff"; ctx.fillText(`SHIELDS ${s.shield}`, W - 58, 44);
   // status lines stack under the meter
   let hudY = 100;
   const hudLine = (text: string, color: string) => {
@@ -2363,9 +2359,9 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     // on a phone a long line pushed the sprites off the panel's edge.
     const lines = [
       "SURVIVE THE WAVES",
-      "COLLECT ORE",
+      "COLLECT COINS",
       compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
-              : "EVERY 5 WAVES: DEPOT · SPEND ORE · UPGRADE THE SHIP",
+              : "EVERY 5 WAVES: DEPOT · SPEND COINS · UPGRADE THE SHIP",
       compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
               : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
       "PRESS TO LAUNCH",
@@ -2456,7 +2452,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.font = "800 12px Figtree, system-ui";
     ctx.fillText("SALVAGE DEPOT", W / 2, H * 0.24);
     ctx.fillStyle = "#f1e9ff"; ctx.font = `800 ${W < 380 ? 21 : 26}px Figtree, system-ui`;
-    ctx.fillText(s.phaseT < 1.3 ? "DEPOT IN SIGHT" : s.phaseT < 3.8 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
+    ctx.fillText(s.phaseT / spillDockDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
     ctx.fillStyle = "rgba(209,222,246,.78)"; ctx.font = "600 11px Figtree, system-ui";
     ctx.fillText("AUTOPILOT ENGAGED", W / 2, H * 0.24 + 58);
   }
@@ -4865,12 +4861,19 @@ function previewRot(p: number, beat: number, kick: number, pull: number) {
  * engines, pulse cone, canopy, pilot and installed module indicators.
  * Preview state is isolated from purchases and the live run. */
 export type ShipPick = SpillBuild;
+const shipPreviewStates = new Map<string, SpillState>();
 export function paintShipPreview(
   ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined, save: SaveData,
   cx: number, cy: number, scale: number, t: number, pick: ShipPick,
 ) {
   if (!art) return;
-  const s = spillPreviewState(pick);
+  const key = JSON.stringify(pick);
+  let s = shipPreviewStates.get(key);
+  if (!s) {
+    s = spillPreviewState(pick);
+    if (shipPreviewStates.size >= 16) shipPreviewStates.delete(shipPreviewStates.keys().next().value!);
+    shipPreviewStates.set(key, s);
+  }
   s.pilot.y = 0; s.held = true;
   s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
   const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 } as World;

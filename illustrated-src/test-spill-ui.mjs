@@ -9,7 +9,8 @@ for(const k of ['window','document','localStorage','navigator','HTMLElement','HT
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++frameID,fn);return frameID;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=globalThis.requestAnimationFrame;win.cancelAnimationFrame=globalThis.cancelAnimationFrame;
 globalThis.Image=class {set src(v){queueMicrotask(()=>this.onerror?.());}};
 globalThis.fetch=async()=>({ok:false,json:async()=>({})});
-const ctx=new Proxy({canvas:null,measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)})},{get:(o,k)=>k in o?o[k]:()=>{}});
+let clears=0;
+const ctx=new Proxy({canvas:null,clearRect(){clears++;},measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)})},{get:(o,k)=>k in o?o[k]:()=>{}});
 win.HTMLCanvasElement.prototype.getContext=function(){return ctx;};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=await import(`${root}/docs/js/save.js`),S=await import(`${root}/docs/js/spill.js`);const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';save.introOff=true;save.musicOff=true;save.sfxOff=true;save.spillBest=20;Save.writeSave(save);
@@ -29,8 +30,11 @@ const savedLaunch=JSON.stringify(engine.save);assert(ship('spec','brace').disabl
 ship('tier','thrusters-3').click();ship('tier','pulse-2').click();ship('spec','efficient').click();ship('utility','scanner').click();assert(ship('utility','brake').disabled);
 ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.equal(JSON.stringify(engine.save),savedLaunch,'planning changes no save fields');
 button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
-engine.fly('spill');assert(app.querySelector('.ac-spillprep'));const select=app.querySelector('select[aria-label="Starting utility"]');select.value='magnet';select.dispatchEvent(new win.Event('change'));assert.deepEqual(engine.world.spill.utilities,['magnet']);button('LAUNCH EXPEDITION').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
-assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0},'planned tiers never become free upgrades');
+engine.fly('spill');assert(app.querySelector('.ac-spillprep'));const select=app.querySelector('select[aria-label="Starting utility"]');select.value='magnet';select.dispatchEvent(new win.Event('change'));assert.deepEqual(engine.world.spill.utilities,['magnet']);button('LAUNCH EXPEDITION').click();assert.equal(engine.world.spill.phase,'docking');tick(200);
+assert.equal(engine.world.spill.depotVisits,0);assert(button('CHOOSE AN UPGRADE TO LAUNCH').disabled);
+control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
+button('LAUNCH WAVE 1').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
+assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
 // Button holds survive HUD rebuilds, multi-touch actions and mixed gesture/keyboard release.
 const thrust=app.querySelector('.ac-throttle'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
 function touch(target,type,id,primary=true){target.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:100,clientY:300,bubbles:true,cancelable:true}));}
@@ -73,4 +77,24 @@ const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstP
 control('plating').click();const hull=end.maxHull,bank=end.ore;button('SAVE & QUIT').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
 button('CONTINUE TO WAVE 21').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
 const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));button('BACK TO THE FIELD').click();assert.equal(later.wave,21);assert.equal(engine.world.screen,'play');assert.equal(engine.save.spillRecords.expeditions,2);assert.equal(engine.save.spillRecords.runs,0);
+// High-refresh displays keep 60 simulation steps and approximately 60 paints.
+Object.defineProperty(win,"devicePixelRatio",{value:3,configurable:true});
+for(const hz of [120,90,144]) {
+ engine.fly('spill');assert.equal(app.querySelector('.ac-canvas').width,width*2,'Spill caps DPR at 2');engine.world.ready=false;engine.world.spill.phase='wave';engine.world.spill.nextRock=1000;
+ engine.world.spill.nextNut=1000;engine.world.spill.nextSpecial=1000;
+ const startT=engine.world.spill.t,startClears=clears;
+ for(let i=0;i<hz;i++){now+=1000/hz;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));}
+ assert(Math.abs(engine.world.spill.t-startT-1)<1e-6,`${hz} Hz preserves one second of simulation`);
+ assert(clears-startClears>=59&&clears-startClears<=61,`${hz} Hz paints ${clears-startClears} frames, expected 60`);
+}
+// Pinning changes only the home list, never equipment, credit, or purchases.
+engine.open('hangar');engine.setShopTab('suits');
+const pin=app.querySelector('[data-reward-pin^="suit:"]');assert(pin);const key=pin.dataset.rewardPin;
+const equipped=engine.save.equippedSuit,wallet=engine.save.acorns;
+pin.click();assert(engine.save.pinnedRewards.includes(key));assert.equal(engine.save.equippedSuit,equipped);assert.equal(engine.save.acorns,wallet);
+assert(Save.loadSave().pinnedRewards.includes(key));
+engine.open('title');assert(app.querySelector('.ac-pinnedreward'));assert(app.querySelector('.ac-pinnedopen progress'));
+app.querySelector('.ac-pinnedopen').click();assert.equal(engine.world.screen,'hangar');
+engine.open('title');app.querySelector('[data-reward-pin]').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+assert(!engine.save.pinnedRewards.includes(key));assert(!app.querySelector('.ac-pinnedreward'));
 engine.stop();await win.happyDOM.close();console.log('spill UI: button/gesture/keyboard ownership, pause preferences, prompt filtering, unchanged hazard warnings/pacing, Loadout planning, Depot purchases/refits/contracts, save/resume and endless continuation pass');

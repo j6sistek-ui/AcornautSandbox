@@ -1,4 +1,5 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=175";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=180";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=180";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -30,12 +31,14 @@ export function loadSpillScene(bank) {
     if (existing)
         return existing;
     bank.spillScene = {};
-    const promise = Promise.all(["depot", "panorama"].map(async (name) => {
-        try {
-            bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
-        }
-        catch { /* the procedural field stays playable */ }
-    })).then(() => { });
+    const promise = Promise.all([...["depot", "panorama"].map(async (name) => {
+            try {
+                bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
+            }
+            catch { /* the procedural field stays playable */ }
+        }), loadImg(artUrl("spill-scene/depot-bear.jpg"))
+            .then(sheet => { bank.spillScene.bear = prepareDepotBear(sheet); })
+            .catch(() => { })]).then(() => { });
     spillSceneLoads.set(bank, promise);
     return promise;
 }
@@ -400,6 +403,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
+        ...(IS_BETA ? ["switchback"] : []),
         "bee",
         "buddy",
         "ufo",
@@ -546,7 +550,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // conditional stays because the constant is the one place that
         // decides, not because the answer can currently be no.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
-        optional(`${base}/pickups/ore.png?v=${ART_VER}`),
+        optional(`${base}/pickups/acorn-coin.svg?v=${ART_VER}`),
         // the Spill's ship: 13 small files. A missing one is not fatal - the
         // painter falls back to the scout ship - so nothing here is required
         named(SPILL_SHIP_IDS, "spill-ship"),

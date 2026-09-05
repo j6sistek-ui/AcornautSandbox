@@ -21,7 +21,9 @@ globalThis.document = { createElement: () => ({ getContext: () => null, style: {
   addEventListener() {}, documentElement: { style: {} } };
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
 
-const S = await import("../docs/js/spill.js");
+const Spill = await import("../docs/js/spill.js");
+// Stock-flight rule fixtures bypass the opening Depot; test-spill-welcome covers that flow.
+const S = {...Spill, createSpill: (W,H,seed,target=0,hints=true) => Spill.createSpill(W,H,seed,target,hints,false)};
 const sim = await import("../docs/js/sim.js");
 const save = await import("../docs/js/save.js");
 const camp = await import("../docs/js/campaign.js");
@@ -557,6 +559,7 @@ const dock = (seed) => {
   sv.tutorialDone = true; sv.guide = "done";
   const wallet = sv.acorns;
   sim.resetRun(w, sv, "spill", false);
+  w.spill.openingEnabled = false;
   ok(w.spill !== null && w.tut === null && w.flight === "spill", "a spill run carries its own state and no tutorial");
   ok(w.shieldCharges === 0, "the hangar's start shield stays in the hangar");
   ok(sim.flap(w, sv) === "flap" && w.spill.phase === "countdown", "the first tap launches the field");
@@ -607,6 +610,7 @@ const dock = (seed) => {
   const sv = save.loadSave();
   sv.tutorialDone = true; sv.guide = "done";
   sim.resetRun(w, sv, "spill", false, def);
+  w.spill.openingEnabled = false; // isolate mission completion from welcome UI
   ok(w.spill && w.spill.target === 4 && w.spill.seed === 5000 + def.ord, "a mission flies a fixed ladder to its rung");
   sim.flap(w, sv);
   let guard = 0;

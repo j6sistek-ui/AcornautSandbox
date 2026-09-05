@@ -248,6 +248,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
+      resize();
       if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art).then(notify); }
       resetInputTracking();
       notify();
@@ -296,6 +297,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // A Spill mission does the same with its wave ladder (see resetRun).
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? def.seed ?? undefined : undefined);
+      resize();
       if (def.base === "spill") void loadSpillScene(engine.art).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
@@ -595,7 +597,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     spillResume() {
       const restored = restoreSpill(save.spillSuspended, world.W, world.H);
       if (!restored) return false;
-      unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored;
+      unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored; resize();
       void loadSpillScene(engine.art).then(notify);
       world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
       world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
@@ -1003,7 +1005,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const parent = canvas.parentElement;
     if (!parent) return;
     const rect = parent.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : renderCap);
+    const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
     // widescreen everywhere: the play area may take the whole window,
     // capped only at desktop-panorama width
     const W = Math.min(rect.width, 1600);
@@ -1389,6 +1391,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!spill.target) save.spillSuspended = spillCheckpoint(spill);
     writeSave(save);
   }
+  let nextSpillPaint = 0;
   function loop(now: number) {
     const frameDt = Math.min(0.25, (now - last) / 1000);
     noteFrameCost(now - last);
@@ -1421,6 +1424,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         : world.race && inRun ? "voyage"
           : inRun ? "flight"
             : "menu");
+    // Keep authority/input at 60 Hz without painting duplicate frames on 120 Hz phones.
+    if (world.spill && now + 0.5 < nextSpillPaint) {
+      if (running) raf = requestAnimationFrame(loop);
+      return;
+    }
+    if (world.spill) {
+      // Carry the deadline across frames so 90/144 Hz displays do not fall to 45/48 fps.
+      if (nextSpillPaint < now - 100) nextSpillPaint = now;
+      do { nextSpillPaint += 1000 / 60; } while (nextSpillPaint <= now + 0.5);
+    } else nextSpillPaint = 0;
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {

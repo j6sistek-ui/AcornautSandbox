@@ -1,5 +1,5 @@
-import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=176";
-import { ENVS, IS_BETA } from "./catalog.js?v=176";
+import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=180";
+import { ENVS, IS_BETA } from "./catalog.js?v=180";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" ? `legacy:dust:${r.stars}` : `legacy:${r.kind}:${r.id ?? r.name}:${r.stars}`;
 const clampMask = (n) => typeof n === "number" && Number.isFinite(n) ? n & 7 : 0;
@@ -40,27 +40,23 @@ function carryCompatibilityWrites(save, p) {
 /** The two historical ID collisions cannot be dated from an unversioned save.
  * Credit and route passage survive; current checklists need successful replays. */
 export function ambiguousLegacy(def) {
-    return def.stage >= 2 && def.stage <= 10 && (def.n === 8 || (IS_BETA && def.n === 4));
+    return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || (IS_BETA && def.n === 4));
 }
 /** Beta can inherit a versioned production save on first visit. The same
  * route position can then contain a different mission, so transfer passage
  * and credit without copying flight checkmarks into Wormhole objectives. */
 function carryPageVariants(save, p) {
     for (const def of LEVELS) {
-        if (def.stage < 2 || def.n !== 4)
-            continue;
         const id = missionProgressId(def);
-        const otherId = def.variantId ? def.id : `beta-tunnel-${def.id}`;
-        const source = p.missions[otherId];
-        if (!source)
-            continue;
-        const entry = p.missions[id] ?? (p.missions[id] = {
-            objectives: {}, creditFloor: 0, passed: false,
-            legacyMask: clampMask(save.stars?.[def.id]),
-            legacyUnverified: true,
-        });
-        entry.creditFloor = Math.max(entry.creditFloor, Math.min(3, source.creditFloor));
-        entry.passed || (entry.passed = source.passed);
+        const previous = def.previousIds ?? (def.stage >= 2 && def.n === 4 ? [def.variantId ? def.id : `beta-tunnel-${def.id}`] : []);
+        for (const otherId of previous) {
+            const source = p.missions[otherId];
+            if (!source || otherId === id)
+                continue;
+            const entry = p.missions[id] ?? (p.missions[id] = { objectives: {}, creditFloor: 0, passed: false, legacyUnverified: true });
+            entry.creditFloor = Math.max(entry.creditFloor, Math.min(3, source.creditFloor));
+            entry.passed || (entry.passed = source.passed);
+        }
     }
 }
 export function migrateCampaign(save, existing = true, legacyPageUnknown = false) {
@@ -123,7 +119,7 @@ export function routeMasks(save, order = LEVELS) {
 export function settleMissionCredit(save, def, mask) {
     const p = migrateCampaign(save);
     const key = missionProgressId(def);
-    const entry = p.missions[key] ?? (p.missions[key] = { objectives: {}, creditFloor: 0, passed: false });
+    const entry = p.missions[key] ?? (p.missions[key] = { objectives: {}, creditFloor: 0, passed: false, legacyUnverified: !!def.previousIds });
     const before = missionCredit(save, def);
     objectiveIds(def).forEach((id, i) => { if (mask & (1 << i))
         entry.objectives[id] = true; });
@@ -149,4 +145,26 @@ export function recordZoneVisit(save, env) {
     const p = save.campaignProgress;
     if (p && !p.zoneVisits.includes(id))
         p.zoneVisits.push(id);
+}
+/** Retire the separate review page without discarding its earned credit.
+ * Keep beta's wallet/receipts; ordinary reward settlement handles eligibility.
+ * The original sample slot is retained verbatim as an archive. */
+export function importSampleCredit(save, sample) {
+    const target = migrateCampaign(save), source = migrateCampaign(sample);
+    for (const [id, from] of Object.entries(source.missions)) {
+        const to = target.missions[id] ?? (target.missions[id] = { objectives: {}, creditFloor: 0, passed: false });
+        Object.assign(to.objectives, from.objectives);
+        to.creditFloor = Math.max(to.creditFloor, from.creditFloor);
+        to.passed || (to.passed = from.passed);
+        to.legacyUnverified || (to.legacyUnverified = from.legacyUnverified);
+    }
+    target.legacyEntitlementFloor = Math.max(target.legacyEntitlementFloor, source.legacyEntitlementFloor);
+    target.barriers = [...new Set([...target.barriers, ...source.barriers])];
+    target.zoneVisits = [...new Set([...target.zoneVisits, ...source.zoneVisits])];
+    save.raceGates = [...new Set([...(save.raceGates ?? []), ...(sample.raceGates ?? [])])];
+    for (const key of ["unlocked", "unlockedPals", "unlockedSuits", "unlockedTrails", "purchased", "zonesSeen"]) {
+        if (Array.isArray(sample[key]))
+            save[key] = [...new Set([...(save[key] ?? []), ...sample[key]])];
+    }
+    carryPageVariants(save, target);
 }

@@ -1,19 +1,21 @@
-import { spillAppearance } from "./spill-appearance.js?v=176";
-import { addChartScenery } from "./star-map-view.js?v=176";
-import { mapDebrisIndex } from "./zone-visuals.js?v=176";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=176";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=176";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=176";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=176";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=176";
-import { drawSprite as drawSpriteOn } from "./art.js?v=176";
-import { createEngine } from "./engine.js?v=176";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=176";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=176";
-import { formatRaceTicks } from "./race.js?v=176";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=176";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=176";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=176";
+import { writeSave } from "./save.js?v=180";
+import { spillAppearance } from "./spill-appearance.js?v=180";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=180";
+import { addChartScenery } from "./star-map-view.js?v=180";
+import { mapDebrisIndex } from "./zone-visuals.js?v=180";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=180";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=180";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=180";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=180";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=180";
+import { drawSprite as drawSpriteOn } from "./art.js?v=180";
+import { createEngine } from "./engine.js?v=180";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=180";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=180";
+import { formatRaceTicks } from "./race.js?v=180";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=180";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=180";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=180";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -87,11 +89,16 @@ export async function bootStandalone(root) {
     const canvas = document.createElement("canvas");
     canvas.className = "ac-canvas";
     const overlay = el("div", "ac-overlay");
+    // Held controls must survive HUD/menu re-renders without losing pointer capture.
+    const spillControls = el("div", "ac-spillbar ac-spillcontrols");
+    spillControls.hidden = true;
+    spillControls.setAttribute("role", "group");
+    spillControls.setAttribute("aria-label", "Spill flight controls");
     // The launch film lives on the STAGE, not in the overlay: render() clears
     // the overlay wholesale on every notify, and a film mounted inside it
     // would restart from frame one each time the engine so much as ticked.
     const filmHost = el("div", "ac-filmhost");
-    stage.append(canvas, overlay, filmHost);
+    stage.append(canvas, overlay, spillControls, filmHost);
     root.append(stage);
     // Screen 1 of the cold open. The acorn IS the progress bar: a drained
     // shell with the full-colour acorn revealed from the base up as the art
@@ -230,9 +237,107 @@ export async function bootStandalone(root) {
         });
     };
     let disposeChart = () => { };
+    let throttleOwner = null;
+    const throttle = el("button", "ac-throttle");
+    const diveButton = el("button", "ac-dive");
+    const lungeButton = el("button", "ac-lunge");
+    throttle.append(el("b", "", "▲ THROTTLE"), el("span", "", "HOLD TO RISE"));
+    diveButton.append(el("b", "", "▼ DIVE"), el("span", "", "TAP TO DESCEND"));
+    const lungeStatus = el("span");
+    lungeButton.append(el("b", "", "▶ LUNGE"), el("span", "", "FORWARD DASH"), lungeStatus);
+    throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
+    diveButton.setAttribute("aria-label", "Dive: downward burst");
+    for (const b of [throttle, diveButton, lungeButton]) {
+        b.addEventListener("keydown", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
+            e.stopPropagation(); });
+        b.addEventListener("keyup", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
+            e.stopPropagation(); });
+        b.addEventListener("contextmenu", e => e.preventDefault());
+    }
+    const releaseThrottle = () => {
+        const owner = throttleOwner;
+        throttleOwner = null;
+        engine.spillThrottle(false);
+        throttle.classList.remove("held");
+        throttle.setAttribute("aria-pressed", "false");
+        if (typeof owner === "number")
+            try {
+                throttle.releasePointerCapture(owner);
+            }
+            catch { /* already cancelled */ }
+    };
+    throttle.onpointerdown = e => {
+        if (throttleOwner !== null || (e.pointerType === "mouse" && e.button !== 0))
+            return;
+        e.preventDefault();
+        throttleOwner = e.pointerId;
+        try {
+            throttle.setPointerCapture(e.pointerId);
+        }
+        catch { /* release also watched on window */ }
+        engine.spillThrottle(true);
+        updateSpillControls();
+    };
+    const endThrottle = (e) => { if (throttleOwner === e.pointerId)
+        releaseThrottle(); };
+    throttle.addEventListener("lostpointercapture", endThrottle);
+    window.addEventListener("pointerup", endThrottle);
+    window.addEventListener("pointercancel", endThrottle);
+    throttle.onkeydown = e => {
+        if (!["Space", "Enter"].includes(e.code))
+            return;
+        e.preventDefault();
+        if (e.repeat || throttleOwner !== null)
+            return;
+        throttleOwner = e.code;
+        engine.spillThrottle(true);
+        updateSpillControls();
+    };
+    throttle.onkeyup = e => { if (throttleOwner === e.code) {
+        e.preventDefault();
+        releaseThrottle();
+    } };
+    throttle.onblur = () => { if (typeof throttleOwner === "string")
+        releaseThrottle(); };
+    // Click-only assistive input can toggle the same throttle; keyboard/pointer holds suppress their native click.
+    throttle.onclick = e => {
+        if (e.detail === 0) {
+            if (throttleOwner !== null)
+                releaseThrottle();
+            else {
+                throttleOwner = "assistive";
+                engine.spillThrottle(true);
+                updateSpillControls();
+            }
+        }
+    };
+    diveButton.onclick = () => engine.spillDive();
+    lungeButton.onclick = () => engine.spillLunge();
+    spillControls.append(throttle, diveButton, lungeButton);
+    function updateSpillControls() {
+        const sp = engine.world.spill;
+        const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
+            && ["countdown", "wave", "drain"].includes(sp.phase);
+        spillControls.hidden = !visible;
+        if (!visible) {
+            if (throttleOwner !== null)
+                releaseThrottle();
+            return;
+        }
+        const manual = sp.phase !== "countdown" || sp.manual;
+        diveButton.disabled = !manual;
+        lungeButton.disabled = !manual || sp.lungeCharges <= 0;
+        lungeButton.classList.toggle("spent", lungeButton.disabled);
+        const cap = sp.up.thrusters >= 2 ? 2 : 1;
+        lungeStatus.textContent = sp.lungeCharges ? `${sp.lungeCharges}/${cap} READY` : "RECHARGING";
+        lungeButton.setAttribute("aria-label", `Lunge: forward dash, ${sp.lungeCharges} of ${cap} charges ready`);
+        throttle.classList.toggle("held", throttleOwner !== null && sp.held);
+        throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
+    }
     const render = () => {
         disposeChart();
         disposeChart = () => { };
+        updateSpillControls();
         const snap = engine.snap();
         const prevScroll = overlay.querySelector(".ac-sheet-scroll");
         if (prevScroll)
@@ -291,20 +396,38 @@ export async function bootStandalone(root) {
                 }
                 if (sp.phase === "docking")
                     return;
-                // PULSE fires automatically.
-                const sbar = el("div", "ac-spillbar");
-                const lunge = el("button", sp.lungeCharges > 0 ? "ac-lunge" : "ac-lunge spent", "LUNGE ▸▸");
-                lunge.onclick = () => engine.spillLunge();
-                sbar.append(lunge);
-                overlay.append(sbar);
+                // The persistent button layer handles flight; Pulse fires automatically.
             }
             return;
         }
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
-                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} ORE`
+                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
                     : `Score ${engine.world.score}`));
+            if (engine.world.spill) {
+                const settings = el("section", "ac-spillsettings");
+                settings.append(el("h3", "", "Flight controls"));
+                const option = (label, detail, on, hit) => {
+                    const b = el("button", "ac-spillsetting");
+                    b.setAttribute("role", "switch");
+                    b.setAttribute("aria-label", label);
+                    b.setAttribute("aria-checked", String(on));
+                    b.addEventListener("keydown", e => e.stopPropagation());
+                    b.addEventListener("keyup", e => e.stopPropagation());
+                    const text = el("span");
+                    text.append(el("b", "", label), el("small", "", detail));
+                    b.append(text, el("strong", "", on ? "ON" : "OFF"));
+                    b.onclick = hit;
+                    settings.append(b);
+                    return b;
+                };
+                option("On-screen buttons", "Throttle, Dive and Lunge. Gestures also work.", !engine.save.spillButtonsOff, () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
+                const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.", !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
+                prompts.disabled = !!engine.save.helpOff;
+                settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
+                sheet.append(settings);
+            }
             // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
             // drawn, so the row is there when Eclipse is the pilot and nowhere else.
             // Switching from the pause is the whole point: the three read completely
@@ -385,7 +508,7 @@ export async function bootStandalone(root) {
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
             if (spill) {
                 // THE SPILL's receipt: waves as the headline, then what the run
-                // mined and took. Ore stays here - it never reaches the wallet.
+                // mined and took. Acorn Coins stays here - it never reaches the wallet.
                 const big = el("div", "ac-crashscore");
                 big.append(el("b", "", String(snap.dead.score)), el("span", "", snap.dead.score === 1 ? "WAVE CLEARED" : "WAVES CLEARED"));
                 sheet.append(big);
@@ -398,7 +521,7 @@ export async function bootStandalone(root) {
                     rows.append(r);
                 };
                 row("Salvage score", Math.floor(spill.score), true);
-                row("Ore mined", spill.oreMined, true);
+                row("Acorn Coins mined", spill.oreMined, true);
                 row("Contracts completed", spill.contractsDone);
                 row("Hull hits", spill.hits);
                 row("Grazes", spill.grazes);
@@ -955,6 +1078,7 @@ export async function bootStandalone(root) {
         title.append(el("h1", "ac-home-title", "ACORNAUT"));
         title.append(el("p", "ac-home-kicker", "Fly the gaps \u00b7 Grab the acorns"));
         box.append(title, el("div", "ac-home-gap"));
+        box.append(pinnedHome());
         const controls = el("div", "ac-controls");
         // The loadout strip is the second door into the Hangar, so the tab
         // icon is never the only way in.
@@ -1103,6 +1227,7 @@ export async function bootStandalone(root) {
         mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
         mark.append(el("p", "ac-hub-kicker", "Fly the gaps · Grab the acorns"));
         box.append(mark, el("div", "ac-hub-space"));
+        box.append(pinnedHome());
         const tiles = el("div", "ac-hub-tiles");
         const tile = (cls, pic, label, sub, hit, dot, pulse) => {
             const b = el("button", `ac-hubtile ${cls}`);
@@ -1264,7 +1389,7 @@ export async function bootStandalone(root) {
                 drawSpriteOn(ctx, bank?.arcadeAcorn ?? null, px / 2, px / 2, px * 0.8);
             else if (kind === "race")
                 drawSpriteOn(ctx, bank?.hyperRun?.["scout-ship"] ?? bank?.squirrelIdle?.[0] ?? null, px / 2, px / 2, px * 0.94);
-            // the Spill's face is its Ore: the thing the mode is about
+            // the Spill's face is its Acorn Coins: the thing the mode is about
             else if (kind === "spill")
                 drawSpriteOn(ctx, bank?.ore ?? bank?.debris?.[3] ?? null, px / 2, px / 2, px * 0.9);
             else if (kind === "tumble") {
@@ -1436,7 +1561,12 @@ export async function bootStandalone(root) {
         const save = engine.save;
         const mastery = spillMastery(save.spillBest);
         const panel = el("div", "ac-spillprep");
-        panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"), el("p", "ac-sub", "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."), el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
+        panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"));
+        if (!save.spillPromptsOff && !save.helpOff)
+            panel.append(el("p", "ac-sub", save.spillButtonsOff
+                ? "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."
+                : "Hold Throttle to rise; release to fall. Tap Dive to descend or Lunge to dash forward. Change buttons and tips in Pause."));
+        panel.append(el("p", "ac-sub", "Land at the Depot and choose one free system upgrade. Then survive endlessly, returning every five waves; wave 20 marks your first-pass victory."));
         const label = el("label", "ac-spillselect", "Starting utility");
         const select = el("select");
         select.setAttribute("aria-label", "Starting utility");
@@ -1496,19 +1626,27 @@ export async function bootStandalone(root) {
             sheet.classList.add("arming");
         const head = el("div", "ac-depothead");
         const title = el("div");
-        title.append(el("p", "ac-kicker", `BAY ${Math.ceil(sp.wave / 5)} · WAVE ${sp.wave} CLEARED`), el("h2", "ac-lvlname", sp.firstPass ? "First pass complete" : "Salvage Depot"));
+        title.append(el("p", "ac-kicker", sp.welcome ? "WELCOME ABOARD · PRE-FLIGHT" : `BAY ${Math.ceil(sp.wave / 5)} · WAVE ${sp.wave} CLEARED`), el("h2", "ac-lvlname", sp.welcome ? "Your first upgrade is free" : sp.firstPass ? "First pass complete" : "Salvage Depot"));
         const ore = el("div", "ac-depotore");
-        ore.append(el("span", "", "ORE"), el("b", "", String(sp.ore)));
+        ore.append(el("img", "ac-depotcoin"), el("span", "", "ACORN COINS"), el("b", "", String(sp.ore)));
+        ore.querySelector("img").src = `${artRootUrl()}/pickups/acorn-coin.svg?v=${ART_VER}`;
         head.append(title, ore);
         sheet.append(head);
         if (sp.firstPass)
             sheet.append(el("p", "ac-gold", "Wave 20 cleared. Your first-pass victory is recorded. Keep your build and fly on—the Spill is endless."));
         const status = el("div", "ac-depotstatus");
-        status.append(el("span", "", `HULL ${sp.hull}/${sp.maxHull}`), el("span", "", `SHIELDS ${sp.shield}/2`), el("span", "", sp.coreArmed ? "CORE ARMED" : "BAY SECURE · UNTIMED"));
+        const health = el("progress", "ac-depothealth");
+        health.max = sp.maxHull;
+        health.value = sp.hull;
+        health.setAttribute("aria-label", `Health: ${sp.hull} of ${sp.maxHull}`);
+        const healthLabel = el("label", "", "HEALTH ");
+        healthLabel.append(health);
+        status.append(healthLabel, el("span", "", `SHIELDS ${sp.shield}`), el("span", "", sp.coreArmed ? "CORE ARMED" : "BAY SECURE · UNTIMED"));
         sheet.append(status);
         const tabs = el("div", "ac-depottabs");
         for (const [id, label] of [["ship", "UPGRADE SHIP"], ["utilities", `UTILITIES ${sp.utilities.length}/2`], ["contracts", "CONTRACTS"]]) {
             const b = el("button", depotTab === id ? "on" : "", label);
+            b.disabled = !!sp.welcome && id !== "ship";
             b.dataset.spillControl = `tab-${id}`;
             b.setAttribute("aria-pressed", String(depotTab === id));
             b.onclick = () => { depotTab = id; render(); };
@@ -1517,6 +1655,7 @@ export async function bootStandalone(root) {
         sheet.append(tabs);
         const workspace = el("div", "ac-depotworkspace");
         const bay = el("div", "ac-depotbay");
+        bay.append(el("p", "ac-depotguide", sp.welcome ? sp.freeUpgrade ? "CHOOSE YOUR FREE UPGRADE" : "UPGRADE FITTED · READY TO LAUNCH" : "SELECT A SYSTEM TO UPGRADE"));
         const stage = el("div", "ac-depotship");
         const preview = miniCanvas(344, 220);
         preview.c.setAttribute("role", "img");
@@ -1546,7 +1685,7 @@ export async function bootStandalone(root) {
                 meter.append(el("i", i < level ? "on" : ""));
             const reading = el("span", "ac-hardpointreading");
             reading.append(meter, el("span", "", part === "shield" ? `${level}/2` : `LV.${level}`));
-            b.append(reading);
+            b.append(reading, el("span", "ac-hardpointaction", depotTab === "ship" && depotPart === part ? "SELECTED" : "SELECT"));
             b.onclick = () => { depotTab = "ship"; depotPart = part; render(); };
             stage.append(b);
         }
@@ -1558,6 +1697,7 @@ export async function bootStandalone(root) {
             if (u)
                 slot.append(spillModuleIcon(id));
             slot.append(el("span", "", u ? u.name : `＋ UTILITY SLOT ${i + 1}`));
+            slot.disabled = !!sp.welcome;
             slot.onclick = () => { depotTab = "utilities"; render(); };
             slots.append(slot);
         }
@@ -1565,10 +1705,18 @@ export async function bootStandalone(root) {
         workspace.append(bay);
         if (preview.ctx) {
             const ctx = preview.ctx;
+            const previewBuild = spillBuildFromState(sp);
+            let paintedAt = -Infinity;
             const tick = () => {
                 if (!preview.c.isConnected)
                     return;
-                const t = performance.now() / 1000;
+                const now = performance.now();
+                if (now - paintedAt < 1000 / 30 - 1) {
+                    requestAnimationFrame(tick);
+                    return;
+                }
+                paintedAt = now;
+                const t = engine.save.motionOff ? 0 : now / 1000;
                 ctx.clearRect(0, 0, 344, 220);
                 const flash = Math.max(0, 1 - (performance.now() - depotUpgradeAt) / 1100);
                 if (flash > 0) {
@@ -1578,18 +1726,19 @@ export async function bootStandalone(root) {
                     ctx.fillStyle = g;
                     ctx.fillRect(0, 40, 344, 150);
                 }
-                paintShipPreview(ctx, engine.art, engine.save, 190, 113, 3.05, t, spillBuildFromState(sp));
+                paintShipPreview(ctx, engine.art, engine.save, 190, 113, 3.05, t, previewBuild);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
         }
         const consolePanel = el("div", "ac-depotconsole");
+        consolePanel.dataset.system = depotTab === "ship" ? depotPart : depotTab;
         const buyButton = (what, label) => {
             const price = spillPrice(sp, what);
             const b = el("button", "ac-depotbuy");
             b.dataset.spillControl = what;
-            b.disabled = arming || price === null || price > sp.ore;
-            b.append(el("b", "", label), el("span", "", price === null ? "COMPLETE" : `${price} ORE`));
+            b.disabled = arming || price === null || price > sp.ore || (!!sp.welcome && (!sp.freeUpgrade || what === "repair" || what === "core"));
+            b.append(el("b", "", label), el("span", "", price === null ? "COMPLETE" : price === 0 ? "FREE · FIRST UPGRADE" : `${price} COINS`));
             b.onclick = () => { depotUpgradeAt = performance.now(); engine.spillBuy(what); };
             return b;
         };
@@ -1600,6 +1749,9 @@ export async function bootStandalone(root) {
             const effect = part === "shield" ? "Absorb a hit, then recover briefly. The canopy stays fitted after its charge is used."
                 : tier < max ? shop.levels[tier] : shop.levels[max - 1];
             consolePanel.append(el("p", "ac-sub", effect), buyButton(part, tier >= max ? "FULLY FITTED" : part === "shield" ? "CHARGE SHIELD" : `UPGRADE TO TIER ${tier + 1}`));
+            const price = spillPrice(sp, part);
+            if (!sp.welcome && price !== null && price > sp.ore)
+                consolePanel.append(el("p", "ac-depotneed", `Collect ${price - sp.ore} more Acorn Coins to fit this upgrade.`));
             if (part !== "shield" && tier >= 2) {
                 const specs = el("div", "ac-depotspecs");
                 for (const [id, spec] of Object.entries(SPILL_SPECIALTIES).filter(([, spec]) => spec.axis === part)) {
@@ -1624,7 +1776,7 @@ export async function bootStandalone(root) {
                 const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
                 b.dataset.spillControl = id;
                 b.disabled = arming || (!fitted && (sp.utilities.length >= 2 || (!owned && sp.ore < u.price)));
-                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "FITTED · UNFIT" : owned ? "FIT · OWNED" : `FIT · ${u.price} ORE`));
+                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "FITTED · UNFIT" : owned ? "FIT · OWNED" : `FIT · ${u.price} COINS`));
                 b.onclick = () => { depotUpgradeAt = performance.now(); engine.spillUtility(id); };
                 utilities.append(b);
             }
@@ -1645,7 +1797,7 @@ export async function bootStandalone(root) {
                     const b = el("button", "ac-spilloption");
                     b.disabled = arming;
                     b.dataset.spillControl = `contract-${offer.kind}`;
-                    b.append(el("b", "", `${offer.name} · +${offer.reward} ORE`), el("span", "", offer.desc));
+                    b.append(el("b", "", `${offer.name} · +${offer.reward} COINS`), el("span", "", offer.desc));
                     b.onclick = () => engine.spillContract(offer.kind);
                     consolePanel.append(b);
                 }
@@ -1654,7 +1806,8 @@ export async function bootStandalone(root) {
         sheet.append(workspace);
         const services = el("div", "ac-depotservices");
         services.append(buyButton("repair", sp.hull < sp.maxHull ? "REPAIR HULL" : "HULL RESTORED"), buyButton("core", sp.coreBought ? sp.coreArmed ? "CORE ARMED" : "CORE SPENT" : "RESPAWN CORE"));
-        sheet.append(services);
+        if (!sp.welcome)
+            sheet.append(services);
         if (sp.contractMessage)
             sheet.append(el("p", "ac-gold", sp.contractMessage));
         if (sp.depot?.bought.length)
@@ -1666,8 +1819,8 @@ export async function bootStandalone(root) {
             suspend.onclick = () => engine.spillSuspend();
             footer.append(suspend);
         }
-        const go = el("button", "ac-primary", sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
-        go.disabled = arming;
+        const go = el("button", "ac-primary", sp.welcome ? sp.freeUpgrade ? "CHOOSE AN UPGRADE TO LAUNCH" : "LAUNCH WAVE 1" : sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
+        go.disabled = arming || !!(sp.welcome && sp.freeUpgrade);
         go.onclick = () => engine.spillLeaveDepot();
         footer.append(go);
         sheet.append(footer);
@@ -1812,6 +1965,79 @@ export async function bootStandalone(root) {
      *  with the button's role rather than a nested button, and it swallows
      *  the press so starring never equips. The FAVOURITES shelf it feeds
      *  only exists while at least one star is lit. */
+    const rewardKey = (r) => `${r.kind}:${r.id ?? r.name}`;
+    let pinCatalog;
+    function pinCandidates() { return pinCatalog ?? (pinCatalog = buildPinCandidates()); }
+    function buildPinCandidates() {
+        const rewards = STAR_REWARDS.filter(r => r.kind !== "stage").map(r => ({ ...r, cost: 0 }));
+        for (const [kind, list] of [["suit", SUITS], ["helmet", HELMETS], ["trail", TRAILS], ["pal", PALS]]) {
+            for (const item of list)
+                if (!isIap(item.id) && !rewards.some(r => r.kind === kind && r.id === item.id))
+                    rewards.push({ kind, id: item.id, name: item.name, stars: 0, cost: "cost" in item ? item.cost : 0, desc: "" });
+        }
+        return rewards;
+    }
+    function pinnedKeys() {
+        const raw = engine.save.pinnedRewards;
+        return Array.isArray(raw) ? [...new Set(raw.filter(k => typeof k === "string"))].filter(k => pinCandidates().some(r => rewardKey(r) === k)) : [];
+    }
+    function pinReward(kind, id, name) {
+        const key = rewardKey({ kind, id, name });
+        if (!pinCandidates().some(r => rewardKey(r) === key))
+            return el("span");
+        const on = pinnedKeys().includes(key);
+        const pin = el("span", `ac-rewardpin${on ? " on" : ""}`, on ? "PINNED ✓" : "PIN TO HOME");
+        pin.setAttribute("role", "button");
+        pin.tabIndex = 0;
+        pin.dataset.rewardPin = key;
+        pin.setAttribute("aria-pressed", String(on));
+        pin.setAttribute("aria-label", `${on ? "Unpin" : "Pin"} ${name ?? pinCandidates().find(r => rewardKey(r) === key)?.name} ${on ? "from" : "to"} home`);
+        const flip = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const keys = pinnedKeys();
+            engine.save.pinnedRewards = keys.includes(key) ? keys.filter(k => k !== key) : [...keys, key];
+            writeSave(engine.save);
+            render();
+        };
+        pin.addEventListener("pointerdown", e => e.stopPropagation());
+        pin.addEventListener("click", flip);
+        pin.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ")
+            flip(e); });
+        return pin;
+    }
+    function pinnedHome() {
+        const rail = el("section", "ac-pinnedhome");
+        rail.setAttribute("aria-label", "Pinned rewards");
+        const save = engine.save;
+        for (const key of pinnedKeys()) {
+            const r = pinCandidates().find(r => rewardKey(r) === key);
+            const card = el("div", "ac-pinnedreward");
+            const open = el("button", "ac-pinnedopen");
+            const earned = r.stars > 0 ? starsOf(save) >= r.stars : r.kind === "suit" ? save.unlockedSuits.includes(r.id)
+                : r.kind === "helmet" ? save.unlocked.includes(r.id) : r.kind === "trail" ? trailUnlocked(save, r.id) : palUnlocked(save, r.id);
+            const current = r.stars > 0 ? starsOf(save) : save.acorns, target = r.stars || r.cost;
+            open.append(rewardArtPicture(r, 32), el("b", "", r.name), el("span", "", earned ? "UNLOCKED · VIEW" : `${Math.min(current, target)} / ${target} ${r.stars ? "stars" : "acorns"}`));
+            const meter = el("progress");
+            meter.max = Math.max(1, target);
+            meter.value = earned ? meter.max : Math.min(current, target);
+            meter.setAttribute("aria-label", `${r.name} unlock progress`);
+            open.append(meter);
+            open.onclick = () => {
+                const tab = { suit: "suits", helmet: "helmets", trail: "trails", pal: "pals" }[r.kind];
+                if (tab) {
+                    engine.setShopTab(tab);
+                    engine.open("hangar");
+                }
+                else
+                    engine.open("log");
+            };
+            card.append(open, pinReward(r.kind, r.id, r.name));
+            rail.append(card);
+        }
+        rail.hidden = !rail.childElementCount;
+        return rail;
+    }
     function favStar(id) {
         const on = engine.isFavorite(id);
         const star = el("span", on ? "ac-favbtn on" : "ac-favbtn", on ? "\u2605" : "\u2606");
@@ -2169,6 +2395,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!locked && open && (!premium || owned))
                     tx(b, () => engine.buyHelmet(h.id), h.cost); };
+                b.append(pinReward("helmet", h.id, h.name));
                 if (open && (!premium || owned))
                     b.append(favStar(h.id));
                 return b;
@@ -2234,6 +2461,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
                     tx(b, () => engine.buySuit(u.id), u.cost); };
+                b.append(pinReward("suit", u.id, u.name));
                 if (open && (!premium || owned))
                     b.append(favStar(u.id));
                 return b;
@@ -2321,6 +2549,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-cardoff");
                 b.onclick = () => { if (open)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
+                b.append(pinReward("trail", t.id, t.name));
                 if (open)
                     b.append(favStar(t.id));
                 return b;
@@ -2356,8 +2585,11 @@ export async function bootStandalone(root) {
             fx.append(ftxt, fsw);
             fx.onclick = () => engine.setMod("noPalFx");
             grid.append(fx);
-            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id)))
-                grid.append(palCardOf(p));
+            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) {
+                const card = palCardOf(p);
+                card.append(pinReward("pal", p.id, p.name));
+                grid.append(card);
+            }
         }
         else if (engine.shopTab === "ship") {
             grid.classList.add("ac-shelfcol", "ac-shipworkshop");
@@ -2381,7 +2613,7 @@ export async function bootStandalone(root) {
             }
             const mastery = spillMastery(s.spillBest);
             const launch = el("section", "ac-shiplaunch");
-            launch.append(el("p", "ac-kicker", "NEXT ENDLESS RUN"), el("h3", "", mastery.current.title), el("p", "ac-sub", "Launch with a stock hull and one earned utility. Build the rest with Ore at the Depot. Star Map missions use their standard ship."));
+            launch.append(el("p", "ac-kicker", "NEXT ENDLESS RUN"), el("h3", "", mastery.current.title), el("p", "ac-sub", "Land with a stock hull, choose one free system upgrade, and bring one earned utility on endless runs. Acorn Coins fund later upgrades; they are separate from your permanent acorns."));
             const starters = el("div", "ac-spilloptions");
             const stock = el("button", `ac-spilloption${!s.spillStarter ? " selected" : ""}`, "Stock ship · no utility");
             stock.dataset.shipStarter = "stock";
@@ -2418,7 +2650,7 @@ export async function bootStandalone(root) {
                 inspect.onclick = () => { shipPlan = spillBuildFromState(docked); render(); };
                 actions.append(inspect);
             }
-            plan.append(actions, el("p", "ac-shipreadout", `${previewShip.maxHull} HULL · ${previewShip.up.thrusters >= 2 ? 2 : 1} LUNGE CHARGE${previewShip.up.thrusters >= 2 ? "S" : ""} · ${previewShip.utilities.length}/2 UTILITIES`), el("p", "ac-sub", `Build from stock: ${spillBuildOre(shipPick, s.spillStarter)} Ore · tier costs include preceding upgrades`));
+            plan.append(actions, el("p", "ac-shipreadout", `${previewShip.maxHull} HULL · ${previewShip.up.thrusters >= 2 ? 2 : 1} LUNGE CHARGE${previewShip.up.thrusters >= 2 ? "S" : ""} · ${previewShip.utilities.length}/2 UTILITIES`), el("p", "ac-sub", `Build from stock: ${spillBuildOre(shipPick, s.spillStarter)} Acorn Coins · tier costs include preceding upgrades`));
             grid.append(plan);
             for (const axis of ["plating", "thrusters", "pulse", "shield"]) {
                 const shop = SPILL_SHOP[axis], isShield = axis === "shield";
@@ -2443,7 +2675,7 @@ export async function bootStandalone(root) {
                         : isShield ? "A charge absorbs a hit. The fitted canopy remains after use." : shop.levels[tier - 1];
                     txt.append(el("p", "ac-shiptier", tier ? `TIER ${tier}` : "BASELINE"), el("p", "ac-modname", name), el("p", "ac-sub", effect));
                     const price = !tier ? 0 : isShield ? shop.prices[0] * tier : shop.prices[tier - 1];
-                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} ORE FOR ${tier}` : `${price} ORE · STEP ${tier}`));
+                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} COINS FOR ${tier}` : `${price} COINS · STEP ${tier}`));
                     b.onclick = () => { shipPlan = pick; render(); };
                     row.append(b);
                 }
@@ -2469,11 +2701,11 @@ export async function bootStandalone(root) {
                 const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
                 b.dataset.shipUtility = id;
                 b.disabled = !fitted && previewShip.utilities.length >= 2;
-                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} ORE AT DEPOT`));
+                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} COINS AT DEPOT`));
                 b.onclick = () => { shipPlan = { ...shipPick, utilities: fitted ? previewShip.utilities.filter(x => x !== id) : [...previewShip.utilities, id] }; render(); };
                 modules.append(b);
             }
-            grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Full repair 30 Ore · Respawn Core 150 Ore, one extra life per run."));
+            grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Full repair 30 Acorn Coins · Respawn Core 150 Acorn Coins, one extra life per run."));
         }
         scroll.append(grid);
         // Premium left these shelves, so something has to say where it went -
@@ -2793,6 +3025,11 @@ export async function bootStandalone(root) {
      *  the call site and painted nothing here. The parameter now admits what
      *  it is actually given. */
     function rewardArt(item, px = 52) {
+        const wrap = el("div", "ac-rewardwithpin");
+        wrap.append(rewardArtPicture(item, px), pinReward(item.kind, item.id, item.name));
+        return wrap;
+    }
+    function rewardArtPicture(item, px = 52) {
         if (item.kind === "suit" && item.id) {
             const suit = SUITS.find((u) => u.id === item.id);
             if (suit)
@@ -2896,7 +3133,7 @@ export async function bootStandalone(root) {
         const roadW = W - railW;
         const railX = roadW + Math.round(railW / 2);
         const step = 92;
-        const H = 70 + (levels.length - 1) * step + 84;
+        const H = (STAR_MAP_PREVIEW ? 180 : 70) + (levels.length - 1) * step + 84;
         const xs = [0.19, 0.5, 0.81, 0.5];
         const pos = levels.map((_, i) => ({
             x: Math.round(xs[i % 4] * roadW),
@@ -2941,10 +3178,12 @@ export async function bootStandalone(root) {
         // the mission whose three-star ceiling first covers its price, pushed
         // apart just enough that neighbours never overlap. The rail scrolls
         // with the road, so climbing the map walks the reward ladder too.
-        const miles = STAR_REWARDS.filter((r) => r.kind !== "stage")
-            .slice()
+        const miles = [
+            ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+            ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
+        ]
             .sort((a, b) => a.stars - b.stars);
-        const gap = 88;
+        const gap = 112;
         let prevY = H + gap;
         const mileY = miles.map((r) => {
             const li = Math.min(levels.length - 1, Math.max(0, Math.ceil(r.stars / 3) - 1));
@@ -2963,7 +3202,7 @@ export async function bootStandalone(root) {
         railLine.setAttribute("stroke-linecap", "round");
         railLine.setAttribute("stroke-dasharray", "0.1 12");
         svg.append(railLine);
-        const lastEarned = miles.reduce((acc, r, i) => (total >= r.stars ? i : acc), -1);
+        const lastEarned = miles.reduce((acc, r, i) => (!r.planned && total >= r.stars ? i : acc), -1);
         if (lastEarned >= 0) {
             const gold = document.createElementNS(SVG, "line");
             gold.setAttribute("x1", `${railX}`);
@@ -2978,12 +3217,18 @@ export async function bootStandalone(root) {
             svg.append(gold);
         }
         miles.forEach((r, i) => {
-            const mark = el("div", total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+            const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
             mark.style.left = `${railX}px`;
             mark.style.top = `${mileY[i]}px`;
-            mark.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
+            mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
             mark.append(el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
             mark.append(el("span", "ac-rmarkname", r.name));
+            if (r.planned) {
+                mark.dataset.plannedReward = r.id;
+                mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
+                mark.append(el("span", "ac-concept-label", "CONCEPT"));
+                mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+            }
             map.append(mark);
         });
         levels.forEach((lvl, i) => {
@@ -3005,7 +3250,7 @@ export async function bootStandalone(root) {
             disc.style.width = disc.style.height = `${px}px`;
             node.dataset.level = lvl.id;
             node.dataset.order = String(lvl.ord);
-            node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false || (STAR_MAP_PREVIEW && !lvl.sample) ? ", outside this sample" : ", locked" : ""}`);
+            node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false ? ", unavailable" : ", locked" : ""}`);
             node.setAttribute("aria-disabled", String(!can));
             if (isCur) {
                 const rider = document.createElement("img");
@@ -3102,6 +3347,64 @@ export async function bootStandalone(root) {
     }
     let chartStage = 0; // which stage panel is open; sticky per visit
     let chartLevel = null; // level detail overlay
+    let rewardPreviewAt = null;
+    function proposedRewardArt(item, px) {
+        if (item.kind === "spill-pal")
+            return rewardArt({ kind: "pal", id: "tinbot" }, px);
+        if (!item.kind.startsWith("spill-"))
+            return rewardArt(item, px);
+        const { c, ctx } = miniCanvas(px, px);
+        const save = { ...engine.save, spillAppearance: {
+                finish: item.id === "rust-runner" ? "rust-runner" : "stock",
+                trail: item.id === "rust-wake" ? "rust-wake" : "stock",
+            } };
+        if (ctx)
+            paintShipPreview(ctx, engine.art, save, px * .57, px * .5, px / 80, 0, { plating: 1, thrusters: 1, pulse: 1, shield: 1 });
+        return c;
+    }
+    function drawRewardPreview() {
+        const wrap = el("div", "ac-lvlsheet");
+        const sheet = el("section", "ac-lvlcard ac-reward-preview");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-modal", "true");
+        sheet.setAttribute("aria-label", "Proposed Star Map rewards");
+        sheet.append(el("p", "ac-kicker", "320–780 STARS · PROPOSED"), el("h2", "", "Reward preview"), el("p", "ac-sub", "Concepts for the expanded road. These rewards are not earnable yet. Your existing rewards stay yours."));
+        const close = () => { rewardPreviewAt = null; render(); overlay.querySelector("[data-reward-preview]")?.focus({ preventScroll: true }); };
+        const back = el("button", "ac-ghost", "Back to chart");
+        back.onclick = close;
+        sheet.append(back);
+        const grid = el("div", "ac-reward-concepts");
+        for (const reward of PLANNED_STAR_REWARDS) {
+            const card = el("article", "ac-reward-concept");
+            card.dataset.rewardConcept = reward.id;
+            const proof = reward.id === "rust-runner" || reward.id === "rust-wake";
+            const placeholder = reward.kind.startsWith("spill-") && !proof;
+            card.append(proposedRewardArt(reward, 96), el("p", "ac-kicker", `★ ${reward.stars} · PROPOSED`), el("h3", "", reward.name), el("p", "ac-sub", reward.description), el("small", "ac-concept-label", placeholder ? "PLACEHOLDER ART" : proof ? "APPEARANCE SAMPLE" : "PROPOSED REWARD"));
+            grid.append(card);
+        }
+        sheet.append(grid);
+        wrap.append(sheet);
+        wrap.onclick = event => { if (event.target === wrap)
+            close(); };
+        wrap.onkeydown = event => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                close();
+            }
+            else if (event.key === "Tab") {
+                event.preventDefault();
+                back.focus();
+            }
+        };
+        requestAnimationFrame(() => {
+            if (!sheet.isConnected)
+                return;
+            back.focus({ preventScroll: true });
+            if (rewardPreviewAt !== "all")
+                [...grid.children].find(c => c.dataset.rewardConcept === rewardPreviewAt)?.scrollIntoView({ block: "nearest" });
+        });
+        return wrap;
+    }
     function drawLog() {
         const sv = engine.save;
         const stars = routeMasks(sv, CHART_LEVELS);
@@ -3110,7 +3413,7 @@ export async function bootStandalone(root) {
         box.classList.add("ac-chartscene", "ac-zone-chart");
         const totalPill = el("div", "ac-pill ac-pill-gold");
         totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-        box.append(header(STAR_MAP_PREVIEW ? "30 missions · separate preview progress" : "The road ahead", "Star Chart", totalPill));
+        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : "The road ahead", "Star Chart", totalPill));
         const nav = el("div", "ac-chart-nav");
         nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
         const goTo = (id) => {
@@ -3144,21 +3447,17 @@ export async function bootStandalone(root) {
         find.append(query, findButton);
         nav.append(find, found);
         box.append(nav);
-        if (IS_BETA && !STAR_MAP_PREVIEW) {
-            const preview = el("a", "ac-ghost", "Explore the Star Map sample");
-            preview.href = `${window.location.pathname}?star-map=sample`;
-            nav.append(preview);
-        }
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
+            const rewards = el("button", "ac-ghost", "Reward preview");
+            rewards.dataset.rewardPreview = "true";
+            rewards.onclick = () => { rewardPreviewAt = "all"; render(); };
+            samples.append(rewards);
             for (const [ord, name] of [[1, "Deep Space"], [101, "Rust Belt"], [241, "Blackout Zone"]]) {
                 const b = el("button", "ac-ghost", name);
                 b.onclick = () => goTo(levelAt(ord)?.id);
                 samples.append(b);
             }
-            const leave = el("a", "ac-ghost", "Return to beta");
-            leave.href = window.location.pathname;
-            samples.append(leave);
             box.append(samples);
         }
         const scroll = el("div", "ac-sheet-scroll");
@@ -3253,6 +3552,8 @@ export async function bootStandalone(root) {
             if (def)
                 box.append(drawLevelSheet(def, verifiedMask(sv, def)));
         }
+        if (STAR_MAP_PREVIEW && rewardPreviewAt)
+            box.append(drawRewardPreview());
         // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
         // hyperRunOpen was only ever read by the hub - so tapping a field set a
         // flag nothing on the chart looked at, and the one route to Hyper Run
@@ -3279,6 +3580,10 @@ export async function bootStandalone(root) {
             ? "HYPER RUN · TIME TRIAL"
             : `LEVEL ${def.ord} \u00b7 ${place}`));
         sheet.append(el("h2", "ac-lvlname", def.name));
+        if (def.challenge)
+            sheet.append(el("p", "ac-sub", def.challenge));
+        if (def.durationTarget)
+            sheet.append(el("p", "ac-sub", `First-pass target: ${def.durationTarget[0]}–${def.durationTarget[1]} seconds of play${def.base === "spill" ? "; Depot time is unlimited" : ""}.`));
         const mode = def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
             def.base === "deep" ? "DEEP SPACE RULES" :
                 def.base === "lost" ? "LOST IN SPACE RULES" :
@@ -4960,7 +5265,7 @@ export async function bootStandalone(root) {
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
-        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "ORE", "The Spill's currency. Spend it at the Depot.");
+        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "COINS", "The Spill's currency. Spend it at the Depot.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
