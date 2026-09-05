@@ -1,13 +1,19 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=175";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=175";
-import { drawSprite as drawSpriteOn } from "./art.js?v=175";
-import { createEngine } from "./engine.js?v=175";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=175";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=175";
-import { formatRaceTicks } from "./race.js?v=175";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=175";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=175";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=175";
+import { spillAppearance } from "./spill-appearance.js?v=176";
+import { addChartScenery } from "./star-map-view.js?v=176";
+import { mapDebrisIndex } from "./zone-visuals.js?v=176";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=176";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=176";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=176";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=176";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=176";
+import { drawSprite as drawSpriteOn } from "./art.js?v=176";
+import { createEngine } from "./engine.js?v=176";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=176";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=176";
+import { formatRaceTicks } from "./race.js?v=176";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=176";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=176";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=176";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -223,7 +229,10 @@ export async function bootStandalone(root) {
                 r.scrollLeft = keptRowScroll[i];
         });
     };
+    let disposeChart = () => { };
     const render = () => {
+        disposeChart();
+        disposeChart = () => { };
         const snap = engine.snap();
         const prevScroll = overlay.querySelector(".ac-sheet-scroll");
         if (prevScroll)
@@ -560,7 +569,7 @@ export async function bootStandalone(root) {
                     sc.scrollTop = keptScroll;
                 }
                 else {
-                    const cur = sc.querySelector(".ac-mapnode.cur");
+                    const cur = sc.querySelector("[data-blocking-barrier], .ac-mapnode.cur");
                     if (cur)
                         cur.scrollIntoView({ block: "center" });
                 }
@@ -1021,9 +1030,9 @@ export async function bootStandalone(root) {
     let depotUpgradeAt = -10000;
     function nextStarReward(stars) {
         // "stage" rows opened a chapter, and chapters are gone - the chart is
-        // one linear road now. They still sit in STAR_REWARDS because the
-        // roadmap builder checks their thresholds against STAGES, but they
-        // grant nothing, so the hub must not advertise one as the next unlock.
+        // one linear road now. They remain in the compatibility table,
+        // but grant nothing, so the hub must
+        // not advertise one as the next unlock.
         // The rail already filters them; this had not caught up.
         return STAR_REWARDS.find((r) => r.stars > stars && r.kind !== "stage") ?? null;
     }
@@ -1191,7 +1200,7 @@ export async function bootStandalone(root) {
         // in the mode sheet changes on its own
         tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly · Lab`, () => { modesOpen = true; render(); });
         box.append(tiles);
-        // the Star Chart bar: campaign stars over the 300 total, plus what the
+        // the Star Chart bar: campaign stars over this route's total, plus what the
         // next handful buys — a second door into the chart
         const stars = starsOf(s);
         const nxt = nextStarReward(stars);
@@ -1201,8 +1210,8 @@ export async function bootStandalone(root) {
         btxt.append(el("b", "", nxt ? `STAR CHART · NEXT UNLOCK ★ ${nxt.stars}` : "STAR CHART · COMPLETE"));
         const track = el("span", "ac-hub-track");
         const fill = el("i", "");
-        fill.style.width = `${Math.min(100, (stars / 300) * 100)}%`;
-        track.append(fill, el("em", "", `${stars} / 300`));
+        fill.style.width = `${Math.min(100, (stars / CHART_MAX_STARS) * 100)}%`;
+        track.append(fill, el("em", "", `${stars} / ${CHART_MAX_STARS}`));
         btxt.append(track);
         bar.append(btxt);
         bar.onclick = () => engine.open("log");
@@ -2352,6 +2361,24 @@ export async function bootStandalone(root) {
         }
         else if (engine.shopTab === "ship") {
             grid.classList.add("ac-shelfcol", "ac-shipworkshop");
+            if (STAR_MAP_PREVIEW) {
+                const look = el("section", "ac-shiplaunch");
+                look.append(el("p", "ac-kicker", "STAR MAP · APPEARANCE SAMPLE"), el("h3", "", "Rust Belt salvage kit"), el("p", "ac-sub", "Cosmetic finishes for the Spill ship. Your hull, modules and run remain the same."));
+                const appearance = spillAppearance(s);
+                for (const [kind, id, label] of [["finish", "rust-runner", "Rust Runner hull"], ["trail", "rust-wake", "Rust Wake exhaust"]]) {
+                    const b = el("button", "ac-ghost", `${appearance[kind] === id ? "✓ " : ""}${label}`);
+                    b.setAttribute("aria-pressed", String(appearance[kind] === id));
+                    b.onclick = () => engine.setSpillAppearance(kind, appearance[kind] === id ? "stock" : id);
+                    look.append(b);
+                }
+                const concept = el("div", "ac-sub");
+                const pal = miniCanvas(64, 64);
+                if (pal.ctx)
+                    paintPalPreview(pal.ctx, engine.art, "tinbot", 32, 32, 52);
+                concept.append(pal.c, el("b", "", "Rivet · placeholder concept"), el("p", "", "Tinbot artwork stands in for a future Spill-only cosmetic companion. No companion ability or equip option is added by this sample."));
+                look.append(concept);
+                grid.append(look);
+            }
             const mastery = spillMastery(s.spillBest);
             const launch = el("section", "ac-shiplaunch");
             launch.append(el("p", "ac-kicker", "NEXT ENDLESS RUN"), el("h3", "", mastery.current.title), el("p", "ac-sub", "Launch with a stock hull and one earned utility. Build the rest with Ore at the Depot. Star Map missions use their standard ship."));
@@ -2855,14 +2882,14 @@ export async function bootStandalone(root) {
         }, 0);
     }
     // ------------------------------------------------------------ the road
-    // ONE road, bottom-up: a hundred numbered levels climbing from the
+    // ONE road, bottom-up: numbered missions climbing from the
     // first flight at the very bottom of the scroll to the last at the top.
     // No chapters, no tabs, no level names — a planet, a number, and up to
     // three stars each. Star rewards ride a milestone rail down the right
     // edge, level with the mission whose three-star ceiling first covers
     // their price, greyed until banked.
     function fullChart(stars, total) {
-        const levels = LEVELS;
+        const levels = CHART_LEVELS;
         const gatesDone = engine.save.raceGates || [];
         const W = Math.min(460, Math.max(292, window.innerWidth - 32));
         const railW = 78; // the milestone rail owns the right edge
@@ -2960,10 +2987,10 @@ export async function bootStandalone(root) {
             map.append(mark);
         });
         levels.forEach((lvl, i) => {
-            const mask = stars[lvl.id] || 0;
+            const mask = (1 << missionCredit(engine.save, lvl)) - 1;
             const can = levelUnlocked(lvl, stars, total, gatesDone);
             const isCur = i === current;
-            const done = (mask & 1) === 1;
+            const done = ((stars[lvl.id] || 0) & 1) === 1;
             const node = el("button", "ac-mapnode" + (isCur ? " cur" : done ? " done" : can ? " todo" : " locked"));
             node.style.left = `${pos[i].x}px`;
             node.style.top = `${pos[i].y}px`;
@@ -2974,13 +3001,12 @@ export async function bootStandalone(root) {
             if (mask)
                 node.append(starPips(mask, "sm"));
             const px = isCur ? 84 : 62;
-            const { c, ctx } = miniCanvas(px, px);
-            const bank = engine.art?.planets ?? [];
-            if (ctx && bank.length) {
-                drawSpriteOn(ctx, bank[(i * 7) % bank.length] ?? null, px / 2, px / 2, px * 0.94);
-            }
             const disc = el("span", "ac-mapdisc");
-            disc.append(c);
+            disc.style.width = disc.style.height = `${px}px`;
+            node.dataset.level = lvl.id;
+            node.dataset.order = String(lvl.ord);
+            node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false || (STAR_MAP_PREVIEW && !lvl.sample) ? ", outside this sample" : ", locked" : ""}`);
+            node.setAttribute("aria-disabled", String(!can));
             if (isCur) {
                 const rider = document.createElement("img");
                 rider.src = `${artRootUrl()}/squirrel/idle-1.png?v=${ART_VER}`;
@@ -3019,7 +3045,7 @@ export async function bootStandalone(root) {
             // beat 2:30, clear the gate and unlock the mode without ever having
             // played a level. It blocks the road at 33, so it opens when you
             // arrive at 33 - which means having finished it.
-            const arrived = ((stars[`${Math.ceil(g.after / 10)}-${((g.after - 1) % 10) + 1}`] || 0) & 1) === 1;
+            const arrived = ((stars[levelAt(g.after)?.id ?? ""] || 0) & 1) === 1;
             const blocking = !done && arrived
                 && !RACE_GATES.some((o) => o.after < g.after && !gatesDone.includes(o.after));
             const band = el("div", `ac-debris${done ? " done" : blocking ? " blocking" : " locked"}`);
@@ -3028,7 +3054,7 @@ export async function bootStandalone(root) {
             // one sprite, repeated along the line at varying size and tilt so it
             // reads as rubble rather than as a row of identical stamps
             const bank = engine.art?.debris ?? [];
-            const spriteIdx = bank.length ? (gi * 9 + 3) % bank.length : 0;
+            const spriteIdx = mapDebrisIndex(levels[i].fx.env ?? 0, gi);
             const COUNT = 9;
             for (let k = 0; k < COUNT; k++) {
                 const px = 16 + ((k * 7 + gi * 5) % 3) * 5; // 16 / 21 / 26
@@ -3061,8 +3087,15 @@ export async function bootStandalone(root) {
             if (!done && !blocking && !arrived) {
                 tag.setAttribute("aria-label", `Debris field after level ${g.after}. Reach level ${g.after} to attempt it.`);
             }
+            if (blocking)
+                tag.dataset.blockingBarrier = "true";
             map.append(tag);
         }
+        const end = el("p", "ac-chart-end", current < 0 && levels.every(l => stars[l.id] & 1)
+            ? "CURRENT CHART COMPLETE · MORE SKY AHEAD" : "THE ROAD CONTINUES");
+        end.style.top = "0px";
+        map.append(end);
+        disposeChart = addChartScenery(map, levels, pos, step, engine.art);
         const wrap = el("div", "ac-chartmapwrap");
         wrap.append(map);
         return wrap;
@@ -3071,21 +3104,63 @@ export async function bootStandalone(root) {
     let chartLevel = null; // level detail overlay
     function drawLog() {
         const sv = engine.save;
-        const stars = sv.stars || {};
+        const stars = routeMasks(sv, CHART_LEVELS);
         const total = starsOf(sv);
         const box = el("div", "ac-menu");
-        // the chart flies over deep space: one nebula render behind the whole
-        // screen, center-cropped by cover so the same image serves portrait
-        // and landscape alike
-        if (BETA_FEATURES) {
-            box.classList.add("ac-chartscene");
-            const art = el("div", "ac-chart-art");
-            art.style.backgroundImage = `url("${artRootUrl()}/chart-bg.jpg?v=${ART_VER}")`;
-            box.append(art, el("div", "ac-chart-scrim"));
-        }
+        box.classList.add("ac-chartscene", "ac-zone-chart");
         const totalPill = el("div", "ac-pill ac-pill-gold");
-        totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / 300`));
-        box.append(header("The road ahead", "Star Chart", totalPill));
+        totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
+        box.append(header(STAR_MAP_PREVIEW ? "30 missions · separate preview progress" : "The road ahead", "Star Chart", totalPill));
+        const nav = el("div", "ac-chart-nav");
+        nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
+        const goTo = (id) => {
+            const target = id ? [...box.querySelectorAll(".ac-mapnode")].find(n => n.dataset.level === id)
+                : box.querySelector("[data-blocking-barrier], .ac-mapnode.cur");
+            target?.scrollIntoView({ block: "center", behavior: engine.save.motionOff ? "auto" : "smooth" });
+            target?.focus({ preventScroll: true });
+        };
+        const pilot = el("button", "ac-ghost", "Return to pilot");
+        pilot.onclick = () => goTo();
+        nav.append(pilot);
+        const find = el("form", "ac-chart-find");
+        const query = el("input");
+        query.placeholder = "Level or name";
+        query.setAttribute("aria-label", "Find a level by number, mission or zone name");
+        const findButton = el("button", "ac-ghost", "Find");
+        findButton.type = "submit";
+        const found = el("span", "ac-chart-found");
+        found.setAttribute("role", "status");
+        find.onsubmit = event => {
+            event.preventDefault();
+            const q = query.value.trim().toLowerCase();
+            const match = q && CHART_LEVELS.find(l => String(l.ord) === q || l.name.toLowerCase().includes(q) || ENVS[l.fx.env ?? 0].name.toLowerCase().includes(q));
+            if (match) {
+                goTo(match.id);
+                found.textContent = `Level ${match.ord} · ${match.name}`;
+            }
+            else
+                found.textContent = "No matching level";
+        };
+        find.append(query, findButton);
+        nav.append(find, found);
+        box.append(nav);
+        if (IS_BETA && !STAR_MAP_PREVIEW) {
+            const preview = el("a", "ac-ghost", "Explore the Star Map sample");
+            preview.href = `${window.location.pathname}?star-map=sample`;
+            nav.append(preview);
+        }
+        if (STAR_MAP_PREVIEW) {
+            const samples = el("div", "ac-chart-samples");
+            for (const [ord, name] of [[1, "Deep Space"], [101, "Rust Belt"], [241, "Blackout Zone"]]) {
+                const b = el("button", "ac-ghost", name);
+                b.onclick = () => goTo(levelAt(ord)?.id);
+                samples.append(b);
+            }
+            const leave = el("a", "ac-ghost", "Return to beta");
+            leave.href = window.location.pathname;
+            samples.append(leave);
+            box.append(samples);
+        }
         const scroll = el("div", "ac-sheet-scroll");
         // default the open panel to the furthest unlocked stage
         if (!chartStage) {
@@ -3150,7 +3225,7 @@ export async function bootStandalone(root) {
                     {
                         const grid = el("div", "ac-lvlgrid");
                         for (const lvl of LEVELS.filter((l) => l.stage === st.num)) {
-                            const mask = stars[lvl.id] || 0;
+                            const mask = (1 << missionCredit(engine.save, lvl)) - 1;
                             const can = levelUnlocked(lvl, stars, total, engine.save.raceGates);
                             const b = el("button", can ? "ac-lvlbtn" : "ac-lvlbtn locked");
                             b.append(el("span", "ac-lvlnum", String(lvl.n)));
@@ -3174,9 +3249,9 @@ export async function bootStandalone(root) {
             box.append(tabbar("log"));
         // level detail: goals, modifiers, and the FLY button
         if (chartLevel) {
-            const def = LEVELS.find((l) => l.id === chartLevel);
+            const def = CHART_LEVELS.find((l) => l.id === chartLevel);
             if (def)
-                box.append(drawLevelSheet(def, stars[def.id] || 0));
+                box.append(drawLevelSheet(def, verifiedMask(sv, def)));
         }
         // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
         // hyperRunOpen was only ever read by the hub - so tapping a field set a
@@ -3195,42 +3270,29 @@ export async function bootStandalone(root) {
         const raceBriefing = def.standalone && def.base === "race";
         if (raceBriefing)
             sheet.classList.add("ac-racecard");
-        // BETA: a level is a number and its three stars — no name, no place,
-        // no modifier tags. The live page keeps the full briefing.
-        // This read HYPER_RUN_ENABLED, using it as a stand-in for IS_BETA back
-        // when the two were the same value. Promoting Hyper Run to live would
-        // therefore have stripped every live level briefing down to "Level 12"
-        // as a side effect. It now asks the question it actually means.
-        const plain = IS_BETA && !def.standalone;
-        if (plain) {
-            const gnum = LEVELS.findIndex((l) => l.id === def.id) + 1;
-            sheet.append(el("p", "ac-kicker", "STAR CHART"));
-            sheet.append(el("h2", "ac-lvlname", `Level ${gnum || def.id}`));
-        }
-        else {
-            const place = def.base === "race" ? "HYPER RUN"
-                : def.base === "tunnel" ? "WORMHOLE RUN"
-                    : def.base === "spill" ? "THE SPILL"
-                        : ENVS[def.fx.env ?? 0]?.name ?? "";
-            sheet.append(el("p", "ac-kicker", def.standalone
-                ? "HYPER RUN · TIME TRIAL"
-                : `LEVEL ${def.id} \u00b7 ${place}`));
-            sheet.append(el("h2", "ac-lvlname", def.name));
-            const mode = def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
-                def.base === "deep" ? "DEEP SPACE RULES" :
-                    def.base === "lost" ? "LOST IN SPACE RULES" :
-                        def.base === "arcade" ? "ARCADE TIMELINE" :
-                            def.base === "tunnel" ? "WORMHOLE MISSION" :
-                                def.base === "spill" ? "SPILL MISSION" : "";
-            const fxs = fxText(def.fx);
-            if (mode || fxs.length) {
-                const tags = el("div", "ac-lvltags");
-                if (mode)
-                    tags.append(el("span", "ac-lvltag mode", mode));
-                for (const t of fxs)
-                    tags.append(el("span", "ac-lvltag", t));
-                sheet.append(tags);
-            }
+        // Names and zone clues follow the same continuous road on both pages.
+        const place = def.base === "race" ? "HYPER RUN"
+            : def.base === "tunnel" ? "WORMHOLE RUN"
+                : def.base === "spill" ? "THE SPILL"
+                    : ENVS[def.fx.env ?? 0]?.name ?? "";
+        sheet.append(el("p", "ac-kicker", def.standalone
+            ? "HYPER RUN · TIME TRIAL"
+            : `LEVEL ${def.ord} \u00b7 ${place}`));
+        sheet.append(el("h2", "ac-lvlname", def.name));
+        const mode = def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
+            def.base === "deep" ? "DEEP SPACE RULES" :
+                def.base === "lost" ? "LOST IN SPACE RULES" :
+                    def.base === "arcade" ? "ARCADE TIMELINE" :
+                        def.base === "tunnel" ? "WORMHOLE MISSION" :
+                            def.base === "spill" ? "SPILL MISSION" : "";
+        const fxs = fxText(def.fx);
+        if (mode || fxs.length) {
+            const tags = el("div", "ac-lvltags");
+            if (mode)
+                tags.append(el("span", "ac-lvltag mode", mode));
+            for (const t of fxs)
+                tags.append(el("span", "ac-lvltag", t));
+            sheet.append(tags);
         }
         if (raceBriefing) {
             const briefing = el("div", "ac-racebrief");
@@ -3257,6 +3319,9 @@ export async function bootStandalone(root) {
             briefing.append(objective, controls);
             sheet.append(briefing);
         }
+        if (!def.standalone && missionCredit(engine.save, def) > countBits(mask)) {
+            sheet.append(el("p", "ac-sub", `${missionCredit(engine.save, def)} earned stars retained. Earlier mission credit is preserved; the checklist below records these objectives.`));
+        }
         const goals = el("div", "ac-lvlgoals");
         def.goals.forEach((g, i) => {
             const row = el("div", (mask >> i) & 1 ? "ac-goal on" : "ac-goal");
@@ -3269,15 +3334,15 @@ export async function bootStandalone(root) {
             // A gate turns this from a time trial into the way past a blocked
             // road, so the briefing has to say WHICH field and WHAT time before
             // the pilot commits to a run rather than after.
-            const g = nextGate(engine.save.raceGates);
+            const g = reachedGate(routeMasks(engine.save), engine.save.raceGates);
             if (g && !IS_BETA) {
                 const note = el("p", "ac-sub ac-gatenote");
-                note.append(el("b", "", `DEBRIS FIELD AFTER LEVEL ${g.after}`), el("span", "", ` \u00b7 finish under ${g.label} to clear it`));
+                note.append(el("b", "", `DEBRIS FIELD AFTER LEVEL ${g.after}`), el("span", "", ` \u00b7 finish in ${g.label} or faster to clear it`));
                 sheet.append(note);
             }
             sheet.append(el("p", "ac-sub", "OWN RECORD \u00b7 CAMPAIGN STARS UNCHANGED"));
         }
-        const fly = el("button", "ac-primary", plain ? "TAKE FLIGHT" : def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
+        const fly = el("button", "ac-primary", def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
         fly.onclick = () => {
             chartLevel = null;
             hyperRunOpen = false;
@@ -3333,7 +3398,7 @@ export async function bootStandalone(root) {
                 sheet.append(won);
             }
             else if (!IS_BETA) {
-                const g = nextGate(engine.save.raceGates);
+                const g = reachedGate(routeMasks(engine.save), engine.save.raceGates);
                 if (g)
                     sheet.append(el("p", "ac-sub", `Debris field after level ${g.after} still holds \u2014 needs ${g.label}.`));
             }
@@ -3362,7 +3427,7 @@ export async function bootStandalone(root) {
             return sheet;
         }
         const sheet = el("div", "ac-sheet ac-center");
-        sheet.append(el("p", "ac-kicker", `LEVEL ${last.def.id} \u00b7 ${last.def.name}`));
+        sheet.append(el("p", "ac-kicker", `LEVEL ${last.def.ord} \u00b7 ${last.def.name}`));
         sheet.append(el("h2", "", last.finished ? "LEVEL COMPLETE" : "LOST"));
         // THE END OF THE WALK. Mission 1 is the last step the guide takes, and
         // finishing it is the moment a new pilot stops being walked anywhere -
@@ -3394,16 +3459,15 @@ export async function bootStandalone(root) {
             sheet.append(el("p", "ac-gold", `+${last.gained} STAR${last.gained > 1 ? "S" : ""} \u00b7 ${last.totalAfter} TOTAL`));
         // anything the new total just paid for gets its moment
         for (const r of STAR_REWARDS) {
-            if (r.stars > last.totalBefore && r.stars <= last.totalAfter) {
+            if (r.kind !== "stage" && r.stars > last.totalBefore && r.stars <= last.totalAfter) {
                 sheet.append(el("p", "ac-gold", `UNLOCKED \u2014 ${r.name}`));
             }
         }
         // the next level, if the finish just opened it
-        const next = LEVELS.find((l) => l.stage === last.def.stage && l.n === last.def.n + 1)
-            ?? LEVELS.find((l) => l.stage === last.def.stage + 1 && l.n === 1);
-        const stars = engine.save.stars || {};
+        const next = nextLevel(last.def.id);
+        const stars = routeMasks(engine.save, CHART_LEVELS);
         if (last.finished && next && levelUnlocked(next, stars, last.totalAfter, engine.save.raceGates)) {
-            const go = el("button", "ac-primary", `NEXT \u2014 ${next.id} ${next.name.toUpperCase()}`);
+            const go = el("button", "ac-primary", `NEXT \u2014 ${next.ord} ${next.name.toUpperCase()}`);
             go.onclick = () => engine.flyLevel(next.id);
             sheet.append(go);
         }

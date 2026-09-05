@@ -1,4 +1,7 @@
-import { STAR_UNLOCKS, totalStars,
+import type { SpillAppearance } from "./spill-appearance";
+import { migrateCampaign, earnedCampaignStars, type CampaignProgress } from "./campaign-progress";
+import { CHART_LEVELS } from "./campaign";
+import { STAR_UNLOCKS,
   RACE_GATES,
 } from "./campaign";
 import { restoreSpill, type SpillCheckpoint, type SpillState } from "./spill";
@@ -25,6 +28,8 @@ import {
   GUIDE_HELM,} from "./catalog";
 
 export type SaveData = {
+  campaignProgress?: CampaignProgress;
+  spillAppearance?: SpillAppearance;
   highScore: number;
   deepBest: number;
   lostBest: number;
@@ -215,7 +220,8 @@ function readRaw(key: string): Record<string, unknown> | null {
 }
 
 export function loadSave(): SaveData {
-  const parsed = readRaw(SAVE_KEY) ?? LEGACY_KEYS.map(readRaw).find(Boolean) ?? null;
+  const source = [SAVE_KEY, ...LEGACY_KEYS].map(key => ({ key, value: readRaw(key) })).find(x => x.value);
+  const parsed = source?.value ?? null;
   const s: SaveData = { ...defaultSave(), ...(parsed as Partial<SaveData>) };
   if (!s.unlocked?.includes("clear")) s.unlocked = ["clear", ...(s.unlocked || [])];
   if (!s.unlockedSuits?.includes("flight")) s.unlockedSuits = ["flight", ...(s.unlockedSuits || [])];
@@ -278,12 +284,8 @@ export function loadSave(): SaveData {
   // game — never walk a veteran to the hangar
   if (typeof s.guide !== "string") s.guide = s.tutorialDone ? "done" : "pending";
   if (typeof s.allStars !== "boolean") s.allStars = false;
-  // Hyper Run's records used to live under experimentalRaceRecords, keyed
-  // by "prototype-chapter-1". Both names were prototype-era and the owner
-  // confirmed the only records were their own testing, so the old key is
-  // dropped rather than migrated - left in place it would sit in every
-  // save forever, describing a mission id that no longer exists.
-  delete (s as Record<string, unknown>).experimentalRaceRecords;
+  // Retain unknown and retired fields, including experimentalRaceRecords.
+  // They do not certify a current mission or grant a new barrier clear.
   // saves written before the Spill was a mode
   if (typeof s.spillBest !== "number" || !isFinite(s.spillBest)) s.spillBest = 0;
   s.spillBest = Math.max(0, Math.floor(s.spillBest));
@@ -323,6 +325,15 @@ export function loadSave(): SaveData {
     s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0);   // every pack, at sticker price
     s.betaDustGrant = true;
   }
+  if (parsed && !parsed.campaignProgress) {
+    // Save the exact source before any migrated write. A failed backup leaves
+    // the original save untouched; normal load still works in restricted storage.
+    try {
+      const key = SAVE_KEY + ":before-campaign-v1";
+      if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(parsed));
+    } catch { /* writeSave will still surface a real persistence failure */ }
+  }
+  migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
   return s;
 }
 
@@ -374,11 +385,8 @@ export function pilotTitleOf(s: SaveData) {
 }
 
 export function starsOf(s: SaveData) {
-  // Briella's code: every star gate in the game asks this one function,
-  // so believing here is believing everywhere. Real level progress and
-  // its pips stay exactly as earned.
-  if (s.allStars) return 300;
-  return totalStars(s.stars || {});
+  const p = migrateCampaign(s);
+  return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
 }
 
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
@@ -412,7 +420,7 @@ export function suitRevealed(s: SaveData, id: string) {
   // anyone who BOUGHT a suit keeps it, even one that has since moved off
   // the premium list - the cat did exactly that when it became the
   // 300-star prize
-  if ((s.purchased || []).includes(id)) return true;
+  if ((s.purchased || []).includes(id) || s.unlockedSuits.includes(id)) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id]) return true;
   // a suit with a star gate is LOCKED below it - the no-gate fallback is

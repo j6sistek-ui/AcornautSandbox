@@ -1,3 +1,7 @@
+import { STAR_MAP_PREVIEW } from "./catalog";
+import { spillAppearance, type SpillAppearance } from "./spill-appearance";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
+import { reachedGate } from "./campaign";
 import { suitLean, SUIT_LEAN } from "./control-constants";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
@@ -150,6 +154,7 @@ export type Engine = {
   spillResume: () => boolean;
   spillStarter: (id: SpillUtility | null) => void;
   spillSignal: (on: boolean) => void;
+  setSpillAppearance: (kind: keyof SpillAppearance, id: string) => boolean;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
   buySuit: (id: string) => string;
@@ -266,19 +271,27 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       return "denied";
     },
+    setSpillAppearance(kind, id) {
+      if (!STAR_MAP_PREVIEW || !["finish", "trail"].includes(kind)) return false;
+      if (id !== "stock" && id !== (kind === "finish" ? "rust-runner" : "rust-wake")) return false;
+      save.spillAppearance = { ...spillAppearance(save), [kind]: id };
+      writeSave(save); notify(); return true;
+    },
     flyLevel(id) {
       const def = levelById(id) ?? (HYPER_RUN_ENABLED ? hyperRunById(id) : null);
       if (!def) return false;
-      // starsOf, not the raw tally: Briella's code opens chapters here too
-      if (!def.standalone && !levelUnlocked(def, save.stars || {}, starsOf(save), save.raceGates)) return false;
+      if (def.base === "race" && !IS_BETA && !save.raceGates.includes(33)
+        && !reachedGate(routeMasks(save), save.raceGates)) return false;
+      // Actual mission passage opens the road; reward eligibility cannot skip it.
+      if (!def.standalone && !levelUnlocked(def, routeMasks(save), starsOf(save), save.raceGates)) return false;
       unlockAudio();
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless.
       // A Wormhole mission flies a FIXED corridor: the seed is the level's
-      // ordinal, so mission 3-4 is the same test for every pilot, forever.
+      // stored identity seed, so reordering cannot change its corridor.
       // A Spill mission does the same with its wave ladder (see resetRun).
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
-        def.base === "tunnel" ? 7000 + def.ord : undefined);
+        def.base === "tunnel" ? def.seed ?? undefined : undefined);
       if (def.base === "spill") void loadSpillScene(engine.art).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
@@ -789,10 +802,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
    *  backlog rather than losing it. */
   function settleDust() {
     const have = starsOf(save);
+    const ledger = migrateCampaign(save);
     let owed = 0, high = save.dustPaidTo;
     for (const r of STAR_REWARDS) {
       if (r.kind !== "dust" || !r.amount) continue;
-      if (r.stars <= have && r.stars > save.dustPaidTo) { owed += r.amount; high = Math.max(high, r.stars); }
+      if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) { owed += r.amount; high = Math.max(high, r.stars); ledger.paidRewards.push(rewardId(r)); }
     }
     if (owed <= 0) return 0;
     save.starDust += owed;

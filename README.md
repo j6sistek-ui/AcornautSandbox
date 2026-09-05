@@ -83,10 +83,21 @@ Design notes for the rig editor: `illustrated-src/lab/README.md`.
 - `illustrated-src/OPEN_ISSUES.md` — what is known broken, what was fixed and
   why, and the check that catches each class of fault.
 - `PARITY.md` — what is matched against the original canvas game.
-- `ROADMAP.md` — the Star Chart campaign: all 100 levels, generated from
-  `campaign.ts` so it cannot drift.
+- `ROADMAP.md` — the Star Chart campaign: the published route and isolated expansion sample, generated from
+  `campaign.ts` so it cannot drift. The approved 260-entry manifest is in
+  `illustrated-src/design/star-map-260.json`.
 
 ## License
 
 Proprietary — **all rights reserved**. The code, art, characters and name
 are not licensed for reuse or redistribution. See [LICENSE](LICENSE).
+
+## Star Map expansion sample
+
+The beta Star Chart has an **Explore the Star Map sample** link. It opens
+`?star-map=sample` with an isolated save: 30 playable missions across Deep
+Space (1–10), Rust Belt (101–110) and Blackout Zone (241–250), along a draft
+260-position road. The published campaign remains 100 missions / 300 stars
+until final activation is accepted. Original levels now use their zone’s
+background and planet family on the continuous map. See
+`illustrated-src/design/STAR_MAP_SAMPLE.md` for migration and review steps.

@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=172";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=176";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "172";
+export const ART_VER = "176";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -9,6 +9,9 @@ export const ART_VER = "172";
 // can never leak into the production one.
 export const IS_BETA = typeof window !== "undefined" &&
     window.__ACORNAUT_BETA__ === true;
+/** The sample is a beta-only review surface with no inherited save. */
+export const STAR_MAP_PREVIEW = IS_BETA && typeof window !== "undefined"
+    && new URLSearchParams(window.location?.search ?? "").get("star-map") === "sample";
 // WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
 // until the beta set was promoted, and conflating them is dangerous: the save
 // key is derived from IS_BETA, so turning the beta features on for production
@@ -32,13 +35,13 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-02 07:56 UTC";
+export const BUILD_TIME = "2026-09-05 06:15 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
-export const SAVE_KEY = IS_BETA ? "acornaut_illust_beta" : "acornaut_illust_v1";
-export const LEGACY_KEYS = IS_BETA
+export const SAVE_KEY = STAR_MAP_PREVIEW ? "acornaut_star_map_sample_v1" : IS_BETA ? "acornaut_illust_beta" : "acornaut_illust_v1";
+export const LEGACY_KEYS = STAR_MAP_PREVIEW ? [] : IS_BETA
     ? ["acornaut_illust_v1", "acornaut_beta", "acornaut_v2"]
     : ["acornaut_beta", "acornaut_v2"];
 export const TUT_ARM = 1.25;
