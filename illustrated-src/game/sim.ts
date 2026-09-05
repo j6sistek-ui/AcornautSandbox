@@ -1,3 +1,4 @@
+import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
@@ -2463,9 +2464,14 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   const sx = pilotX(w) - 34;
   const sy = w.squirrel.y + 8;
   if (scale < 1 && Math.random() > scale) return;
-  const trail = save.equippedTrail;
+  const trail = trailWornBy(save.equippedTrail, save.equippedSuit);
   const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
-  if (trail === "ion") {
+  if (trail === "vanguardwake") {
+    for (const lane of [-1, 1]) w.particles.push({
+      x: sx, y: sy + lane * 3, vx: -150, vy: lane * 7,
+      life: .34, max: .34, r: 1.1, color: colors[lane < 0 ? 0 : 1], kind: "vanguardwake",
+    });
+  } else if (trail === "ion") {
     for (let i = 0; i < 8; i++) {
       w.particles.push({
         x: sx,

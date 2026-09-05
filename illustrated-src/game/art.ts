@@ -1,3 +1,4 @@
+import { VANGUARD_FRAMES } from "./vanguard";
 import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 
@@ -24,6 +25,7 @@ export type ArtBank = {
   palAnim: Record<string, Sprite[]>;
   helms: Record<string, Sprite>;
   suits: Record<string, Sprite>;
+  vanguard?: Sprite[];
   sky: HTMLImageElement | null;
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
@@ -405,6 +407,7 @@ const DESC_BANKS: Record<string, number> =
         sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
+  "vanguard",
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
   ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -420,6 +423,13 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
   const layer = (suffix: string) =>
     loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
   const p = (async () => {
+    if (id === "vanguard") {
+      const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+      // Never publish a partial bank: filtering failed images must not shift poses.
+      if (frames.length === VANGUARD_FRAMES) bank.vanguard = frames;
+      else suitBankLoads.delete(id); // allow a later equip to retry
+      return;
+    }
     const rigged = RIGGED_SUITS.includes(id);
     const [tail, body] = await Promise.all([
       rigged ? layer("-tail") : Promise.resolve(null),
@@ -479,6 +489,8 @@ export function prefetchArtBanks(bank: ArtBank) {
     chain = chain.then(() => loadPalBank(bank, id)).then(breathe);
   }
   for (const id of LAZY_SUIT_IDS) {
+    // Flagship is 32 MiB decoded: load only on equip/explicit preview.
+    if (id === "vanguard") continue;
     if (suitBankLoads.has(id)) continue;
     chain = chain.then(() => loadSuitBank(bank, id)).then(breathe);
   }
@@ -534,6 +546,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     ] : []),
   ];
   const suitIds = [
+    "vanguard",
     "flight",
     "iontrim",
     "copper",

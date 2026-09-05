@@ -1,0 +1,514 @@
+[
+  {
+    "file": "frame-1.png",
+    "source": "tap-a.png",
+    "cell": 0,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-2.png",
+    "source": "tap-a.png",
+    "cell": 1,
+    "head": [
+      462,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-3.png",
+    "source": "tap-a.png",
+    "cell": 2,
+    "head": [
+      470,
+      245,
+      89
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6741573033707865
+  },
+  {
+    "file": "frame-4.png",
+    "source": "tap-a.png",
+    "cell": 3,
+    "head": [
+      468,
+      247,
+      90
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6666666666666666
+  },
+  {
+    "file": "frame-5.png",
+    "source": "tap-b.png",
+    "cell": 0,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-6.png",
+    "source": "tap-b.png",
+    "cell": 1,
+    "head": [
+      466,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-7.png",
+    "source": "tap-b.png",
+    "cell": 2,
+    "head": [
+      470,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-8.png",
+    "source": "tap-b.png",
+    "cell": 3,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-9.png",
+    "source": "tap-c.png",
+    "cell": 0,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-10.png",
+    "source": "tap-c.png",
+    "cell": 1,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-11.png",
+    "source": "tap-c.png",
+    "cell": 2,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-12.png",
+    "source": "tap-c.png",
+    "cell": 3,
+    "head": [
+      466,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-13.png",
+    "source": "tap-d.png",
+    "cell": 0,
+    "head": [
+      468,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-14.png",
+    "source": "tap-d.png",
+    "cell": 1,
+    "head": [
+      466,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-15.png",
+    "source": "tap-d.png",
+    "cell": 2,
+    "head": [
+      466,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-16.png",
+    "source": "tap-d.png",
+    "cell": 3,
+    "head": [
+      466,
+      248,
+      91
+    ],
+    "registeredHead": [
+      350,
+      200,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-17.png",
+    "source": "dive-a.png",
+    "cell": 0,
+    "head": [
+      474,
+      256,
+      91
+    ],
+    "registeredHead": [
+      379.6074178033063,
+      233.7458648074791,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-18.png",
+    "source": "dive-a.png",
+    "cell": 1,
+    "head": [
+      482,
+      282,
+      91
+    ],
+    "registeredHead": [
+      385.596637997725,
+      260.7614912687482,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-19.png",
+    "source": "dive-a.png",
+    "cell": 2,
+    "head": [
+      494,
+      322,
+      85
+    ],
+    "registeredHead": [
+      382.3881375866412,
+      297.4348187808672,
+      60
+    ],
+    "scale": 0.7058823529411765
+  },
+  {
+    "file": "frame-20.png",
+    "source": "dive-a.png",
+    "cell": 3,
+    "head": [
+      506,
+      371,
+      84
+    ],
+    "registeredHead": [
+      371.79869280115054,
+      323,
+      60
+    ],
+    "scale": 0.7142857142857143
+  },
+  {
+    "file": "frame-21.png",
+    "source": "dive-b.png",
+    "cell": 0,
+    "head": [
+      522,
+      348,
+      87
+    ],
+    "registeredHead": [
+      369.89309819258114,
+      326.17144200871974,
+      60
+    ],
+    "scale": 0.6896551724137931
+  },
+  {
+    "file": "frame-22.png",
+    "source": "dive-b.png",
+    "cell": 1,
+    "head": [
+      513,
+      396,
+      86
+    ],
+    "registeredHead": [
+      361.2007109706117,
+      338.1354866267732,
+      60
+    ],
+    "scale": 0.6976744186046512
+  },
+  {
+    "file": "frame-23.png",
+    "source": "dive-b.png",
+    "cell": 2,
+    "head": [
+      510,
+      417,
+      83
+    ],
+    "registeredHead": [
+      350.927844274039,
+      348.7733515006038,
+      60
+    ],
+    "scale": 0.7228915662650602
+  },
+  {
+    "file": "frame-24.png",
+    "source": "dive-b.png",
+    "cell": 3,
+    "head": [
+      506,
+      479,
+      82
+    ],
+    "registeredHead": [
+      336.17144200871974,
+      359.8930981925812,
+      60
+    ],
+    "scale": 0.7317073170731707
+  },
+  {
+    "file": "frame-25.png",
+    "source": "bounce-a.png",
+    "cell": 0,
+    "head": [
+      442,
+      223,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-26.png",
+    "source": "bounce-a.png",
+    "cell": 1,
+    "head": [
+      452,
+      254,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-27.png",
+    "source": "bounce-a.png",
+    "cell": 2,
+    "head": [
+      466,
+      283,
+      88
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6818181818181818
+  },
+  {
+    "file": "frame-28.png",
+    "source": "bounce-a.png",
+    "cell": 3,
+    "head": [
+      457,
+      237,
+      90
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6666666666666666
+  },
+  {
+    "file": "frame-29.png",
+    "source": "bounce-b.png",
+    "cell": 0,
+    "head": [
+      442,
+      221,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-30.png",
+    "source": "bounce-b.png",
+    "cell": 1,
+    "head": [
+      456,
+      222,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-31.png",
+    "source": "bounce-b.png",
+    "cell": 2,
+    "head": [
+      466,
+      247,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  },
+  {
+    "file": "frame-32.png",
+    "source": "bounce-b.png",
+    "cell": 3,
+    "head": [
+      466,
+      247,
+      91
+    ],
+    "registeredHead": [
+      330,
+      190,
+      60
+    ],
+    "scale": 0.6593406593406593
+  }
+]

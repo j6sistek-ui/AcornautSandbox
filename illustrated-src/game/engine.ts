@@ -1,4 +1,4 @@
-import { STAR_MAP_PREVIEW } from "./catalog";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
@@ -760,7 +760,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // Trails are never bought with acorns any more — a rung on the Star
     // Chart's ladder opens each one, premium ones come with the pack, and
     // an open trail simply equips.
-    if (!trailUnlocked(save, id)) return "locked";
+    if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id)) return "locked";
+    // Fixed wake is presentation, not a replacement for the previous trail.
+    if (id === "vanguardwake") return "equip";
     save.equippedTrail = id;
     if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
     writeSave(save);

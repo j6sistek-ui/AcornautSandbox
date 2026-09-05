@@ -211,3 +211,29 @@ python3 illustrated-src/measure-art.py --poses <id>-asc-1..3 <id>-desc-1..5
   arithmetic, which does not favour them at eight frames a suit.
 - **A unique path because a model was liked.** Robo and Cyber earn theirs on
   shape. Anything else meets the standard or it is not ready.
+
+
+## Vanguard flagship — owner grant, 5 September 2026
+
+The owner explicitly requested a new flagship squirrel with custom tap/dive
+flight, bounce, shield and a fixed trail, with extra frame/storage budget.
+Vanguard is a separate whole-character animation backend in `game/vanguard.ts`.
+It does not replace Flight or touch any existing suit's banks or controls.
+
+32 genuinely drawn source poses: 16 tap, 8 dive, 8 contact/rebound. All export
+to 512px RGBA, with a measured 60px integrated helmet radius and a shared
+torso registration. `art-src/vanguard/registration.json` records every source
+measurement. There are no split pieces, stretched tails or synthetic frames.
+The gold helmet is intentionally part of this matching set (`ownHead`).
+
+The custom painter runs before the default bank selector. Contact takes
+priority, then descent, then the tap clock. Repeated taps retain the existing
+rewind behavior. Vanguard alone skips the generic body rotation/scale pop
+and squash. The authored poses carry the motion. Existing suits retain
+their exact paths. Its 32 MiB decoded bank is equip-only, excluded from the
+background prefetch sweep. A failed/partial load retains the exact first-pose
+still and may retry on a later equip. Marketing/preview uses the same painter.
+
+Run `node illustrated-src/test-vanguard.mjs` and
+`node illustrated-src/test-vanguard-render.mjs` after the normal export.
+Human review of rapid-tap/dive/contact transitions remains the quality gate.

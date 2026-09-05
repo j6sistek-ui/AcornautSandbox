@@ -99,6 +99,7 @@ export const WORM_EXIT_GRACE = 6;
 export type SuitLean = { up: number; down: number };
 export const SUIT_LEAN_DEFAULT: SuitLean = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN: Record<string, SuitLean> = {
+  vanguard:    { up: 0, down: 0 }, // drawn attitudes; no extra body tipping
   // the standard, and the reference every other suit is read against
   flight:      { up: 0.8, down: 0.3 },
 

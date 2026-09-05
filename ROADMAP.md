@@ -178,6 +178,8 @@ These thresholds and prices remain unchanged; reveal eligibility and purchased o
 | 285 | **150 Star Dust** — The last stretch. |
 | 300 | **STARLORD** — The original 300-star honor. |
 | 300 | **Cat Suit** — Eats no acorns. Earned at 300 stars. |
+| 500 | **Vanguard** — The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars. |
+| 500 | **Vanguard Wake** — Twin gold and cyan filaments. Worn only by Vanguard. |
 
 ## Full beta playtest
 
