@@ -1775,6 +1775,15 @@
 .ac-chart-samples a, .ac-chart-nav a { text-align: center; text-decoration: none; }
 .ac-chart-end { position: absolute; width: 100%; text-align: center; color: #9c9bab; font: 9px/1.4 system-ui; letter-spacing: .13em; }
 @media (prefers-reduced-motion: reduce) { .ac-zone-chart * { scroll-behavior: auto !important; } }
+.ac-palmark.planned { background: none; border: 0; padding: 0; color: #d2c6e3; cursor: pointer; min-height: 44px; }
+.ac-palmark.planned:focus-visible { outline: 2px solid #f3d38c; outline-offset: 5px; border-radius: 12px; }
+.ac-concept-label { color: #b9a8cb; font: 700 8px/1.5 system-ui; letter-spacing: .08em; }
+.ac-reward-preview { width: min(740px, 92vw); max-height: 86vh; overflow: auto; text-align: left; }
+.ac-reward-concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding-top: 12px; }
+.ac-reward-concept { padding: 14px; border: 1px solid #78618855; border-radius: 16px;
+  background: radial-gradient(ellipse at 50% 5%, #59426155, transparent 70%), #101729; text-align: center; }
+.ac-reward-concept h3 { color: #f1d6a7; margin: 8px 0; font: 700 17px/1.3 system-ui; }
+.ac-reward-concept .ac-sub { font-size: 12px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -1801,7 +1810,7 @@
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js176/standalone.js")
+    import("./js177/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

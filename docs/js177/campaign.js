@@ -1,4 +1,6 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=173";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=177";
+import { IS_BETA, STAR_MAP_PREVIEW } from "./catalog.js?v=177";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=177";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -186,14 +188,13 @@ export const STAGES = [
     {
         num: 9,
         name: "THE BLACKOUT",
-        tagline: "You see for half a second after each tap. Remember the rest.",
+        tagline: "Steady shadows reveal a moving path.",
         env: 6, // MONOCHROME VOID
         base: "fly",
         unlock: 180,
         tune: (i) => ({
             gates: 8 + i, // 8 .. 17
             fx: {
-                strobe: true,
                 gapScale: lerp(1.12, 1.02, i / 9), // mercy, tapering
                 pace: 0.95,
                 driftScale: i >= 5 ? 1.2 : 1, // late levels sway in the dark
@@ -207,7 +208,7 @@ export const STAGES = [
                     : { kind: "maxTaps", n: Math.round(g * 3.2) }, // taps ARE sight here
         ],
         names: [
-            "Lights Out", "Afterimage", "Count the Beats", "Flashbulb", "Dead Reckoning",
+            "Lights Out", "Afterimage", "Count the Beats", "Quiet Current", "Dead Reckoning",
             "Echo Location", "Blink", "Photograph", "Total Recall", "Eyes Shut",
         ],
     },
@@ -234,7 +235,7 @@ export const STAGES = [
             return {
                 gates: 30,
                 base: "fly",
-                fx: { strobe: true, fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
+                fx: { fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
             };
         },
         goals: (i, g) => [
@@ -250,71 +251,26 @@ export const STAGES = [
     },
 ];
 // ------------------------------------------------------------------ levels
-export const LEVELS = STAGES.flatMap((st) => Array.from({ length: 10 }, (_, i) => {
-    const t = st.tune(i);
-    const gates = t.gates;
-    const [g2, g3] = st.goals(i, gates);
-    return {
-        id: `${st.num}-${i + 1}`,
-        stage: st.num,
-        n: i + 1,
-        ord: (st.num - 1) * 10 + i + 1,
-        name: st.names[i],
-        base: t.base ?? st.base,
-        gates,
-        // the very first mission on the chart carries it; nothing else does
-        fx: { env: st.env, ...t.fx, ...((st.num - 1) * 10 + i + 1 === 1 ? { noFail: true } : {}) },
-        goals: [{ kind: "finish" }, g2, g3],
-    };
-}));
-// ---------------------------------------------------- the BETA divergence
-//
-// Read here rather than imported from catalog.ts: build-roadmap.mjs
-// compiles this file ALONE, and in node there is no window — so the
-// roadmap always documents the LIVE chart, which is the point.
-const IS_BETA = typeof window !== "undefined" &&
-    window.__ACORNAUT_BETA__ === true;
-//
-// BETA ONLY — the first deliberate fork between the two pages. On the
-// beta, every chapter from 2 on gives two of its levels to the test
-// modes: level N-4 becomes a WORMHOLE RUN mission, level N-8 a SPILL
-// mission. Level ids and star masks are unchanged, so one save reads
-// identically on both pages, and reverting is deleting this block —
-// the live chart underneath is the fallback, untouched.
-//
-// Tunnel targets are SECONDS; spill targets are WAVES. Both climb with
-// the chapter. Tune freely — the level spreadsheet mirrors this.
-if (IS_BETA) {
-    for (const l of LEVELS) {
-        if (l.stage < 2)
-            continue;
-        if (l.n === 4) {
-            l.base = "tunnel";
-            l.gates = 20 + l.stage * 5; // SECONDS survived: 30..70
-            l.goals = [
-                { kind: "finish" },
-                { kind: "acorns", n: 4 + l.stage * 2 }, // 8..24 acorns
-                { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
-            ];
-            l.fx = { env: l.fx.env }; // missions run their own physics
-        }
-        else if (l.n === 8) {
-            // A Spill mission is a wave ladder with a top rung: clear wave N and
-            // the level is done. Chapter 3's mission ends AT wave 5, before the
-            // Depot opens; from chapter 4 on the shop is inside the mission, so
-            // spending well is part of the test rather than a bonus.
-            l.base = "spill";
-            l.gates = 2 + l.stage; // WAVES cleared: 4..12
-            l.goals = [
-                { kind: "finish" },
-                { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined
-                { kind: "noHit" },
-            ];
-            l.fx = { env: l.fx.env };
-        }
-    }
-}
-export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;
+/** Immutable authored definitions. Beta variants share a route position, but
+ * have their own progress identity. Production never loads preview progress. */
+export const ALL_LEVELS = MISSION_ROWS.map(row => {
+    const variant = IS_BETA ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+    return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
+        goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) };
+});
+// Deliberate release boundary for this sample PR, not a completion rule.
+// Full activation changes this selection only after the remaining content is reviewed.
+export const LEVELS = ALL_LEVELS.slice(0, 100);
+export const CHART_LEVELS = STAR_MAP_PREVIEW ? ALL_LEVELS : LEVELS;
+export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
+export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
+export const levelById = (id) => CHART_LEVELS.find(l => l.id === id) ?? null;
+export const nextLevel = (id, order = CHART_LEVELS) => {
+    const i = order.findIndex(l => l.id === id);
+    return i >= 0 ? order[i + 1] ?? null : null;
+};
+export const levelAt = (ord, order = CHART_LEVELS) => order[ord - 1] ?? null;
+export const missionProgressId = (def) => def.variantId ?? def.id;
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
 export const HYPER_RUN_MAX_ACORNS = RACE_MAX_ACORNS;
@@ -365,8 +321,6 @@ export function goalText(g, def) {
 }
 export function fxText(fx) {
     const out = [];
-    if (fx.strobe)
-        out.push("BLACKOUT — lit only after a tap");
     if (fx.fog)
         out.push(fx.fog >= 0.7 ? "HEAVY FOG" : "FOG");
     if (fx.pace && fx.pace > 1.02)
@@ -520,33 +474,25 @@ export function gateClearedBy(cleared, finished, finishTicks) {
         return null;
     return finishTicks <= g.ticks ? g : null;
 }
-export function levelUnlocked(def, stars, 
-/** kept in the signature, and deliberately unused: the star TOTAL was
- *  what opened a chapter, and chapters are gone. Removing it would mean
- *  editing five call sites whose next argument is also an array-ish
- *  thing, which is a good way to pass gatesCleared as total by mistake. */
-_total, gatesCleared) {
-    if (IS_BETA)
-        return true;
-    if (gateBefore(def.ord, gatesCleared))
+export function levelUnlocked(def, stars, _total, gatesCleared, order = CHART_LEVELS, beta = IS_BETA) {
+    const index = order.findIndex(l => l.id === def.id);
+    if (index < 0 || def.implemented === false)
         return false;
-    if (def.ord <= 1)
+    if (STAR_MAP_PREVIEW && order === CHART_LEVELS && !def.sample)
+        return false;
+    if (beta)
         return true;
-    // ONE WAY, IN ORDER. The chart used to be ten chapters, and a chapter
-    // opened on a star TOTAL - so the first level of each one was reachable
-    // the moment you could afford it, whether or not you had flown the
-    // ninety-nine before it. That made 61 and 81 playable out of nowhere and
-    // put two paths through a chart that only has one. Levels are 1-100 now
-    // and the only key to a level is the level before it.
-    //
-    // n is the position WITHIN the old stage, so at a boundary the previous
-    // level is the last of the stage below rather than "n - 1".
-    const prev = def.n > 1 ? `${def.stage}-${def.n - 1}` : `${def.stage - 1}-10`;
-    return ((stars[prev] || 0) & 1) === 1;
+    if (gateBefore(index + 1, gatesCleared))
+        return false;
+    return index === 0 || ((stars[order[index - 1].id] || 0) & 1) === 1;
 }
-// The ladder XP used to be. Stage openings are listed so the chart can
-// show the whole road on one screen; the stage thresholds here MUST match
-// STAGES[n].unlock (build-roadmap.mjs checks).
+/** Arrival is part of a barrier attempt, independently of access to the mode. */
+export function reachedGate(stars, cleared) {
+    const gate = nextGate(cleared);
+    return gate && ((stars[levelAt(gate.after)?.id ?? ""] || 0) & 1) ? gate : null;
+}
+// Original reward ladder. Retired stage rows remain compatibility data;
+// the UI and roadmap omit them because route passage no longer uses them.
 export const STAR_REWARDS = [
     { stars: 3, kind: "pal", id: "bee", name: "Astrolobee", desc: "Powerup/Acorns Disabled" },
     { stars: 5, kind: "trail", id: "ion", name: "Ion Stream", desc: "A trail of charged sky." },
@@ -608,8 +554,8 @@ export const STAR_REWARDS = [
     { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
     { stars: 270, kind: "dust", amount: 120, name: "120 Star Dust", desc: "Almost the whole chart." },
     { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
-    { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
-    { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned by every star there is." },
+    { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
+    { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title

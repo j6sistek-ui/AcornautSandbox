@@ -211,3 +211,7 @@ targets, remaster the remaining zone paintings in bounded groups, complete
 the remaining mission/reward content, then review full 260-route activation.
 No merge, deployment, barrier relocation or full-route release is performed
 by this work.
+
+## Follow-up after PR #180
+
+[Zone diversity and reward preview](ZONE_DIVERSITY.md) adds five paintings and a sample-only gallery for all 25 proposed rewards from 320 to 780 stars. This supersedes the initial preview visibility limitation; proposed rewards remain ungrantable.

@@ -29,6 +29,8 @@ globalThis.window={__ACORNAUT_BETA__:true,__ACORNAUT_ART__:join(root,'docs/art')
 globalThis.document={createElement:()=>createCanvas(1,1),addEventListener(){},documentElement:{style:{}}};
 globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 const A=await import('../docs/js/art.js'),D=await import('../docs/js/draw.js'),S=await import('../docs/js/save.js'),Sim=await import('../docs/js/sim.js'),C=await import('../docs/js/campaign.js'),V=await import('../docs/js/zone-visuals.js');
+const reviewOrders=process.env.ACORNAUT_ZONE_REVIEW?.split(',').map(Number)??[1,101,241];
+const reviewEnvs=reviewOrders.map(ord=>C.ALL_LEVELS[ord-1].fx.env);
 async function sprite(path){
   const image=await loadImage(join(root,`docs/art/${path}.png`)),c=createCanvas(image.width,image.height),g=c.getContext('2d');g.drawImage(image,0,0);
   const data=g.getImageData(0,0,image.width,image.height).data;let x=image.width,y=image.height,r=0,b=0;
@@ -42,12 +44,12 @@ art.squirrelIdle=[await sprite('squirrel/idle-1')];art.squirrelFlap=art.squirrel
 art.suits.flight=await sprite('suits/flight');art.helms.clear=await sprite('helms/clear');art.acorn=[await sprite('acorn/1')];art.golden=[await sprite('golden/1')];
 for(const id of A.SPILL_SHIP_IDS)art.spillShip[id]=await sprite(`spill-ship/${id}`);
 art.spillShipFit=JSON.parse(readFileSync(join(root,'docs/art/spill-ship/transforms.json')));
-for(const env of [0,22,20])V.zonePainting(env);
+for(const env of reviewEnvs)V.zonePainting(env);
 await Promise.all(pending);
-for(const env of [0,22,20])assert(V.zonePainting(env),'painted zone must load');
+for(const env of reviewEnvs)assert(V.zonePainting(env),'painted zone must load');
 const save=S.defaultSave();save.tutorialDone=true;save.guide='done';
-const sheet=createCanvas(3*390,810),g=sheet.getContext('2d');
-for(const [i,ord] of [1,101,241].entries()){
+const sheet=createCanvas(reviewOrders.length*390,810),g=sheet.getContext('2d');
+for(const [i,ord] of reviewOrders.entries()){
   const def=C.ALL_LEVELS[ord-1],w=Sim.makeWorld(390,760),c=createCanvas(390,760),ctx=c.getContext('2d');
   Sim.resetRun(w,save,def.base,false,def);w.ready=false;
   for(let f=0;f<45;f++){if(w.squirrel.y>w.H*.45&&w.squirrel.vy>0)Sim.flap(w,save);Sim.updateWorld(w,save,1/60);}
@@ -61,7 +63,7 @@ for(const [i,ord] of [1,101,241].entries()){
 }
 writeFileSync(join(output,'star-map-flight-sample.png'),sheet.toBuffer('image/png'));
 // Cover-crop and readability review at narrow-phone and landscape widths.
-for(const [W,H] of [[320,760],[1280,720]])for(const ord of [1,101,241]){
+for(const [W,H] of [[320,760],[1280,720]])for(const ord of reviewOrders){
   const def=C.ALL_LEVELS[ord-1],w=Sim.makeWorld(W,H),c=createCanvas(W,H),ctx=c.getContext('2d');
   Sim.resetRun(w,save,def.base,false,def);w.ready=false;
   for(let f=0;f<45;f++){if(w.squirrel.y>w.H*.45&&w.squirrel.vy>0)Sim.flap(w,save);Sim.updateWorld(w,save,1/60);}
@@ -85,4 +87,4 @@ for(const finish of ['stock','rust-runner']){
 }
 writeFileSync(join(output,'spill-rust-sample.png'),looks.toBuffer('image/png'));
 assert.equal(configurations,384);
-console.log(JSON.stringify({paintedZones:3,flightFrames:9,shipConfigurations:configurations,output}));
+console.log(JSON.stringify({paintedZones:reviewOrders.length,flightFrames:reviewOrders.length*3,shipConfigurations:configurations,output}));

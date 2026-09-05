@@ -18,7 +18,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
 // Painted zone masters are copied by the same production/beta export.
 mkdirSync(join(pages, "art/zone-scenes"), { recursive: true });
-for (const id of ["deep-space", "rust-belt", "blackout-zone"]) {
+for (const id of ["deep-space", "rust-belt", "blackout-zone", "crystal-belt", "hypervivid", "neon-bazaar", "prism-storm", "event-horizon"]) {
   cpSync(join(root, `art-src/zone-scenes/${id}.png`), join(pages, `art/zone-scenes/${id}.png`));
 }
 const catalog = readFileSync(join(root, "illustrated-src/game/catalog.ts"), "utf8");

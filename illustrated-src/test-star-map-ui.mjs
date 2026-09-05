@@ -8,6 +8,11 @@ if(!mode){for(const page of ['production','beta','sample'])execFileSync(process.
 const {Window}=await import(process.env.ACORNAUT_HAPPY_DOM||'happy-dom');
 const win=new Window({url:`http://local/${mode==='production'?'':'beta/'}${mode==='sample'?'?star-map=sample':''}`});
 win.__ACORNAUT_BETA__=mode!=='production';
+// happy-dom rejects valid multi-layer gradient/url background values. Record
+// assignments for wiring checks; this harness does not validate browser CSS.
+const backgrounds=new WeakMap();
+const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'backgroundImage');
+Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}});
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;
@@ -32,6 +37,15 @@ const tick=()=>{now+=1000/60;const batch=[...frames.values()];frames.clear();bat
 const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
 chart();assert.equal(app.querySelectorAll('.ac-mapnode').length,mode==='sample'?260:100);
+assert.equal(app.querySelectorAll('.ac-palmark.planned').length,mode==='sample'?25:0);
+assert.equal(app.querySelectorAll('.ac-palmark.planned.earned').length,0);
+if(mode==='sample'){
+  const before=JSON.stringify(e.save);button('Reward preview').click();tick();
+  assert.equal(app.querySelectorAll('[data-reward-concept]').length,25);
+  assert(app.textContent.includes('not earnable yet'));assert(app.textContent.includes('PLACEHOLDER ART'));
+  button('Back to chart').click();tick();assert.equal(JSON.stringify(e.save),before);
+  assert.equal(app.querySelectorAll('[data-reward-concept]').length,0);
+}
 assert.equal(app.querySelectorAll('.ac-zone-scene').length,mode==='sample'?26:10);
 assert.equal(app.querySelectorAll('.ac-debristag').length,3);
 assert(app.querySelectorAll('.ac-mapdisc canvas').length<=48);
@@ -65,7 +79,7 @@ if(mode==='production'){
 } else {
   button('Rust Belt').click();tick();
   assert(app.querySelector('[data-order="101"] .ac-mapdisc canvas'));
-  assert(app.querySelector('[data-zone="rust-belt"]').style.backgroundImage.includes('rust-belt.png'));
+  assert(backgrounds.get(app.querySelector('[data-zone="rust-belt"]').style)?.includes('rust-belt.png'));
   app.querySelector('[data-order="101"]').click();assert(app.textContent.includes('Mooring Line'));
   assert(e.flyLevel(C.ALL_LEVELS[100].id));assert.equal(e.world.lvl.def.id,C.ALL_LEVELS[100].id);
   assert(!e.flyLevel(C.ALL_LEVELS[110].id));
