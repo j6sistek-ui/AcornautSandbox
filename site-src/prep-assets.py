@@ -64,7 +64,8 @@ def suit_ids():
         glow = re.search(r'glow:\s*"([^"]+)"', b)
         out.append({"id": sid.group(1),
                     "name": name.group(1) if name else sid.group(1),
-                    "glow": glow.group(1) if glow else "#c9b6ff"})
+                    "glow": glow.group(1) if glow else "#c9b6ff",
+                    "beta": "beta: true" in b})
     return out
 
 

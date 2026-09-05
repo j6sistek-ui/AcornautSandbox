@@ -146,6 +146,7 @@ def main():
     for s in json.load(open(os.path.join(ASSETS, "suits.json"), encoding="utf-8")):
         if os.path.exists(os.path.join(ASSETS, "s-%s.webp" % s["id"])):
             suits.append({"id": s["id"], "name": s["name"], "glow": s["glow"] or "#c9b6ff",
+                          "beta": bool(s.get("beta")),
                           "src": em.asset("s-%s.webp" % s["id"])})
     asc = [em.asset("asc-%d.webp" % i) for i in range(1, 9)]
     desc = [em.asset("desc-%d.webp" % i) for i in range(1, 9)]

@@ -14,8 +14,7 @@
       <div class="rise">
         <p class="kicker">The Star Chart</p>
         <h2>A hundred missions on one climbing road.</h2>
-        <p class="lede" style="margin-top:20px">Numbered 1 to 100, three stars each. The rewards hang on a rail beside the road, so before you go for a star you already know exactly what it buys. Nothing on this chart sits behind a question mark.</p>
-        <p class="goldline"><span class="num">100 missions</span> <s>&middot;</s> <span class="num">300 stars</span></p>
+        <p class="lede" style="margin-top:20px">Numbered 1 to 100, three stars each. The rewards hang on a rail beside the road, so before you go for a star you already know exactly what it buys.</p>
       </div>
     </div>
   </div>
@@ -27,7 +26,7 @@
     <div class="hd rise">
       <p class="kicker">The Fitting Room</p>
       <h2>Thirty suits. Not one of them is a recolour.</h2>
-      <p class="lede">Every suit is its own painting, with a helmet built to match, a trail that burns in its own colour, and pals that fly alongside you. In the game you build the look in a lit display case and the squirrel wears your picks live while you decide. Pick one below &mdash; the case is the same one.</p>
+      <p class="lede">Twenty ship in the live game today; the ones marked <b>Soon</b> are upcoming on the beta shelf. Pick one below &mdash; helmet, trail, and pal are built to match.</p>
     </div>
 
     <div class="case-grid">
@@ -52,7 +51,7 @@
     <div class="wall rise">
       <div class="rail" id="railA"><div class="rail-in" id="railAin"></div></div>
       <div class="rail rev" id="railB"><div class="rail-in" id="railBin"></div></div>
-      <p class="tiny" style="margin-top:16px;text-align:center">30 suits &middot; 31 helmets &middot; 18 trails &middot; 15 pals &mdash; every one of them painted, not tinted.</p>
+      <p class="tiny" style="margin-top:16px;text-align:center">30 on the wall &middot; 20 live &middot; 10 upcoming</p>
     </div>
   </div>
 </section>
@@ -74,10 +73,6 @@
         <p>No. No sign-in, no email, no download. Your progress lives in the browser you play it in.</p>
       </div>
       <div>
-        <h3>Is it a real app?</h3>
-        <p>It runs in the browser today, and it installs to a phone home screen if you want it there. There is no App Store listing yet &mdash; an iOS release is where this is heading.</p>
-      </div>
-      <div>
         <h3>Who made it?</h3>
         <p>One person. Every suit, planet and animation frame in it was painted for this game and nothing else.</p>
       </div>
@@ -92,7 +87,7 @@
     <p class="kicker" style="justify-content:center">One more thing</p>
     <h2>You have now read more about this game than it takes to play it.</h2>
     <a class="btn" href="https://acornaut.app" target="_blank" rel="noopener" style="margin-top:14px">Play Acornaut</a>
-    <p class="note" style="text-align:center">Free. No account. Add it to your home screen and it runs like an app from there.</p>
+    <p class="note" style="text-align:center">Free. No account.</p>
   </div>
 </section>
 

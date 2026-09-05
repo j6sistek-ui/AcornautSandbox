@@ -84,14 +84,28 @@ function pick(s, btn){
   caseEl.style.setProperty("--accent", s.glow);
   caseImg.src = s.src; caseImg.alt = s.name + " suit";
   caseName.textContent = s.name;
+  var sub = caseName.nextElementSibling;
+  if(sub) sub.innerHTML = s.beta
+    ? "Upcoming &middot; on beta"
+    : "Suit &middot; matching helmet &middot; trail";
   [].forEach.call(document.querySelectorAll(".sw"), function(b){ b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
 }
 function swatch(s){
   var b = document.createElement("button");
-  b.className = "sw"; b.type = "button"; b.setAttribute("aria-pressed","false");
-  b.title = s.name; b.setAttribute("aria-label","Show the " + s.name + " suit in the case");
+  b.className = "sw" + (s.beta ? " upcoming" : ""); b.type = "button"; b.setAttribute("aria-pressed","false");
+  b.title = s.beta ? (s.name + " (upcoming)") : s.name;
+  b.setAttribute("aria-label", s.beta
+    ? ("Show the upcoming " + s.name + " suit in the case")
+    : ("Show the " + s.name + " suit in the case"));
+  if(s.beta) b.setAttribute("data-upcoming", "true");
   var i = document.createElement("img"); i.src = s.src; i.alt = ""; i.loading = "lazy";
   b.appendChild(i);
+  if(s.beta){
+    var tag = document.createElement("i");
+    tag.className = "sw-tag";
+    tag.textContent = "Soon";
+    b.appendChild(tag);
+  }
   b.addEventListener("click", function(){ pick(s, b); });
   return b;
 }
@@ -104,7 +118,11 @@ if(SUITS.length){
     B.forEach(function(s){ railB.appendChild(swatch(s)); });
   }
   var first = SUITS.filter(function(s){ return s.id === "seraph"; })[0] || SUITS[0];
-  pick(first, railA.querySelector('.sw[title="' + first.name + '"]'));
+  var firstBtn = null;
+  [].forEach.call(document.querySelectorAll(".sw"), function(b){
+    if(!firstBtn && b.title.indexOf(first.name) === 0) firstBtn = b;
+  });
+  pick(first, firstBtn);
   if(!RM){
     railA.style.animationDuration = (A.length*2.4)+"s";
     railB.style.animationDuration = (B.length*2.7)+"s";
