@@ -1,6 +1,6 @@
 # Spill welcome / coins / reward pins — owner review
 
-Leave this PR unmerged. The owner is still collecting playtest notes.
+The owner authorized merging PR #185 on 5 September 2026. Integration build 182 includes the Vanguard flagship and cinematic timing changes from #186/#187; their production/beta regression checks also pass. Further playtest notes remain welcome.
 
 - The opening launch lands at the Depot in 2.4 seconds. Pick one free first-tier system: plating, shield, thrusters or Pulse. Launch is disabled until a choice is fitted. Utilities, contracts and extra purchases remain for later Depots. Endless runs can still bring their earned starter utility.
 - The opening visit counts as zero cleared waves and zero mission Depot visits. It supports save/quit before or after the free choice without renewing it. Existing later-Depot saves retain their build and economy. Both mission and endless starts use this opening; later Depots remain untimed and keep their established entrance.

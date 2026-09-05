@@ -1,5 +1,6 @@
 import { writeSave } from "./save";
 import { spillAppearance } from "./spill-appearance";
+import { trailWornBy, canWearTrail } from "./catalog";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
 import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
@@ -10,7 +11,7 @@ import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
+import { vanguardModeOf, batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector, type SpillSpecialty, type SpillUtility } from "./spill-content";
@@ -295,6 +296,25 @@ export async function bootStandalone(root: HTMLElement) {
     throttle.classList.toggle("held", throttleOwner !== null && sp.held);
     throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
   }
+  function vanguardMotionPicker() {
+    const panel = el("div", "ac-vanguard-motion");
+    panel.append(el("p", "ac-sub", "VANGUARD MOTION"));
+    const row = el("div", "ac-modes");
+    row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+    row.setAttribute("role", "group"); row.setAttribute("aria-label", "Vanguard motion");
+    for (const [mode,label] of [["cinematic","Cinematic"],["flow","Continuous"]] as const) {
+      const on = vanguardModeOf(engine.save) === mode;
+      const b = el("button", on ? "ac-mode on" : "ac-mode", label);
+      b.setAttribute("aria-pressed", String(on));
+      b.onclick = () => engine.setVanguardMotionMode(mode);
+      row.append(b);
+    }
+    panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
+      ? "Lunge, thruster assist, then a gentle glide. Swipe down for a full dive."
+      : "A slow, flowing flight cycle. Extra taps keep it moving. Swipe down for a full dive."));
+    return panel;
+  }
+
   const render = () => {
     disposeChart(); disposeChart = () => {};
     updateSpillControls();
@@ -387,7 +407,7 @@ export async function bootStandalone(root: HTMLElement) {
       // going back to the hangar to change it loses the run you were judging.
       // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
       // mid-run and resume to judge the same field with the other setting.
-      {
+      if (engine.save.equippedSuit !== "vanguard") {
         const dials = (title: string, opts: [string, () => boolean, () => void][]) => {
           sheet.append(el("p", "ac-sub", title));
           const row = el("div", "ac-modes");
@@ -410,6 +430,7 @@ export async function bootStandalone(root: HTMLElement) {
           ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
         ]);
       }
+      if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race) sheet.append(vanguardMotionPicker());
       if (engine.save.equippedSuit === "eclipse") {
         const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
         sheet.append(el("p", "ac-sub", "PILOT MOTION"));
@@ -1062,7 +1083,7 @@ export async function bootStandalone(root: HTMLElement) {
     // icon is never the only way in.
     const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-    const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+    const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
     const strip = el("button", "ac-loadstrip");
     const port = el("div", "ac-loadport");
     port.append(portraitOf(helm, suit, 38));
@@ -2124,7 +2145,7 @@ export async function bootStandalone(root: HTMLElement) {
     const previewShip = spillPreviewState(shipPick);
     const helm = helmetWornBy(s.equipped, s.equippedSuit);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-    const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+    const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
     const pal = PALS.find((p) => p.id === s.equippedPal);
     const box = el("div", "ac-menu");
     box.append(BETA_FEATURES
@@ -2224,14 +2245,14 @@ export async function bootStandalone(root: HTMLElement) {
           } else {
             if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
             paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt,
-              engine.suitLeanOf(wornSuit.id), leanEdit);
+              engine.suitLeanOf(wornSuit.id), leanEdit, vanguardModeOf(s));
           }
           requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
       }
 
-      if (IS_BETA) box.append(leanTuner(wornSuit, render));
+      if (IS_BETA && wornSuit.id !== "vanguard") box.append(leanTuner(wornSuit, render));
     }
 
     const tabs = el("div", "ac-cats");
@@ -2417,11 +2438,14 @@ export async function bootStandalone(root: HTMLElement) {
           grid.append(alt);
         }
       }
+      if (IS_BETA && s.equippedSuit === "vanguard") grid.append(vanguardMotionPicker());
     } else if (engine.shopTab === "trails") {
+      if (s.equippedSuit === "vanguard") grid.append(el("p", "ac-sub", "Vanguard carries its own wake. Your previous trail returns when you change suits."));
       const trailCard = (t: (typeof TRAILS)[number]) => {
         const premium = isIap(t.id);
         const open = trailUnlocked(s, t.id);
-        const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
+        const compatible = canWearTrail(t.id, s.equippedSuit);
+        const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
         const { c, ctx } = miniCanvas(64, 56);
         c.setAttribute("role", "img");
         c.setAttribute("aria-label", `${t.name} trail preview`);
@@ -2434,8 +2458,10 @@ export async function bootStandalone(root: HTMLElement) {
             : premium ? "PREMIUM"
             : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
         if (premium) markPremium(b, t.colors[0]);
-        if (!open) b.classList.add("ac-cardoff");
-        b.onclick = () => { if (open) tx(b, () => engine.buyTrail(t.id), t.cost); };
+        if (!open || !compatible) b.classList.add("ac-cardoff");
+        b.disabled = !compatible;
+        if (!compatible) b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "Vanguard only" : "Change suit to wear"));
+        b.onclick = () => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); };
         b.append(pinReward("trail", t.id, t.name));
         if (open) b.append(favStar(t.id));
         return b;
@@ -3033,7 +3059,7 @@ export async function bootStandalone(root: HTMLElement) {
     // apart just enough that neighbours never overlap. The rail scrolls
     // with the road, so climbing the map walks the reward ladder too.
     const miles = [
-      ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+      ...STAR_REWARDS.filter((r) => r.kind !== "stage" && r.stars <= levels.length * 3).map(r => ({ ...r, planned: false })),
       ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
     ]
       .sort((a, b) => a.stars - b.stars);
@@ -3824,7 +3850,7 @@ export async function bootStandalone(root: HTMLElement) {
         const t = (performance.now() - t0) / 1000;
         ctx.clearRect(0, 0, CASE_W, CASE_H);
         if (palDef) paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
-        paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t);
+        paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, vanguardModeOf(engine.save));
         requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -4367,7 +4393,7 @@ export async function bootStandalone(root: HTMLElement) {
       const g = got.find((x) => `${x.kind}:${x.id}` === revealPick);
       const worn = kind === "suit" ? s.equippedSuit === itemId
         : kind === "helm" ? s.equipped === itemId
-        : kind === "trail" ? s.equippedTrail === itemId
+        : kind === "trail" ? trailWornBy(s.equippedTrail, s.equippedSuit) === itemId
         : s.equippedPal === itemId;
       const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
       if (worn) { act.textContent = `${g?.name ?? ""} EQUIPPED`; act.disabled = true; }
@@ -4588,7 +4614,7 @@ export async function bootStandalone(root: HTMLElement) {
         const t = (performance.now() - t0) / 1000;
         ctx.clearRect(0, 0, 300, 190);
         if (palDef) paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
-        paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t);
+        paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, vanguardModeOf(engine.save));
         requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);

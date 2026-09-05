@@ -1,4 +1,5 @@
-import { STAR_MAP_PREVIEW } from "./catalog";
+import type { VanguardMotionMode } from "./vanguard";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
@@ -183,6 +184,7 @@ export type Engine = {
   setPoseMode: (m: "all" | "ascent") => void;
   /** VOLT's hangar experiment: swap between its two painted jump banks */
   setEclipseMotionMode: (mode: number) => void;
+  setVanguardMotionMode: (mode: VanguardMotionMode) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -522,6 +524,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
+    setVanguardMotionMode(mode) {
+      if (!IS_BETA || (mode !== "cinematic" && mode !== "flow")) return;
+      save.vanguardMotionMode = mode;
+      world.vanguard.mode = mode;
+      writeSave(save);
+      notify();
+    },
     restartLevel() {
       const id = world.lvl?.def.id;
       if (!id) return false;
@@ -762,7 +771,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // Trails are never bought with acorns any more — a rung on the Star
     // Chart's ladder opens each one, premium ones come with the pack, and
     // an open trail simply equips.
-    if (!trailUnlocked(save, id)) return "locked";
+    if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id)) return "locked";
+    // Fixed wake is presentation, not a replacement for the previous trail.
+    if (id === "vanguardwake") return "equip";
     save.equippedTrail = id;
     if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
     writeSave(save);

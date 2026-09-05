@@ -1,3 +1,4 @@
+import type { VanguardMotionMode } from "./vanguard";
 import type { SpillAppearance } from "./spill-appearance";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS } from "./campaign";
@@ -148,6 +149,8 @@ export type SaveData = {
   // still from the shoulders down - which is why they read as lifeless
   // however carefully their magnitudes were damped.
   eclipseMotionMode?: number;
+  /** Beta comparison; production always uses the cinematic presentation. */
+  vanguardMotionMode?: VanguardMotionMode;
   /** Experimental records are isolated from chapter stars and rewards. */
   raceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
   /** debris fields cleared, stored by the level they sit after (33/66/99) */
@@ -197,6 +200,7 @@ export function defaultSave(): SaveData {
     allStars: false,
     musicOff: false,
     eclipseMotionMode: 2,
+    vanguardMotionMode: "cinematic",
     raceRecords: {},
     raceGates: [],
   };
@@ -256,6 +260,7 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
+  if (s.vanguardMotionMode !== "flow") s.vanguardMotionMode = "cinematic";
   // an old save has no lean table, and a corrupted one must not be able to
   // tip every suit sideways - anything that is not two finite numbers in
   // range is dropped rather than trusted
@@ -428,6 +433,7 @@ export function helmetRevealed(s: SaveData, id: string) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s: SaveData, id: string) {
+  if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.trails[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
@@ -477,4 +483,9 @@ export function startShieldUnlocked(s: SaveData) {
 
 export function batteryUnlocked(s: SaveData) {
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
+}
+
+/** The beta A/B preference cannot opt production into an experiment. */
+export function vanguardModeOf(s: SaveData): VanguardMotionMode {
+  return IS_BETA && s.vanguardMotionMode === "flow" ? "flow" : "cinematic";
 }

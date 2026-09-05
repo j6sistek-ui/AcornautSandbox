@@ -1,8 +1,10 @@
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
+import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
-import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
+import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
@@ -327,6 +329,8 @@ export type World = {
   flapBoost: number;
   /** elapsed rendering time for the one-shot articulated tap burst; -1 idle */
   tapAnimT: number;
+  /** Vanguard-only visual clock and contact plumes. No gameplay authority. */
+  vanguard: VanguardMotion;
   /** queued slow-recovery time from taps received before the burst settles */
   /** playback direction: 1 forward; -1 after a repeat tap, rewinding to
    *  the start before playing through to the end again */
@@ -518,6 +522,7 @@ export function makeWorld(W: number, H: number): World {
     invulnLeft: 0,
     flapBoost: 0,
     tapAnimT: -1,
+    vanguard: createVanguardMotion(),
     tapAnimDir: 1,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
@@ -1529,6 +1534,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.invulnLeft = 0;
   w.flapBoost = 0;
   w.tapAnimT = -1;
+  w.vanguard = createVanguardMotion(vanguardModeOf(save));
   w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -2463,9 +2469,14 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   const sx = pilotX(w) - 34;
   const sy = w.squirrel.y + 8;
   if (scale < 1 && Math.random() > scale) return;
-  const trail = save.equippedTrail;
+  const trail = trailWornBy(save.equippedTrail, save.equippedSuit);
   const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
-  if (trail === "ion") {
+  if (trail === "vanguardwake") {
+    for (const lane of [-1, 1]) w.particles.push({
+      x: sx, y: sy + lane * 3, vx: -150, vy: lane * 7,
+      life: .34, max: .34, r: 1.1, color: colors[lane < 0 ? 0 : 1], kind: "vanguardwake",
+    });
+  } else if (trail === "ion") {
     for (let i = 0; i < 8; i++) {
       w.particles.push({
         x: sx,
@@ -2789,6 +2800,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.tapAnimFromRot = w.squirrel.rot;
       w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
       w.tapAnimDir = 1;
+      if (save.equippedSuit === "vanguard") vanguardTap(w.vanguard);
       break;
     case "doDive":
       t.hold = false;
@@ -2796,6 +2808,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.bounceUp = false;
       w.squirrel.vy = PHYS.dive;
       w.squirrel.rot = 0.5;
+      if (save.equippedSuit === "vanguard") vanguardDive(w.vanguard);
       break;
     case "learnTap":
     case "learnTap2":
@@ -2911,7 +2924,10 @@ export function flap(w: World, save: SaveData) {
       w.tapAnimDir = -1;
     }
   }
-  if (!w.spill) w.squirrel.vy = flapOf(save, w);
+  if (!w.spill) {
+    w.squirrel.vy = flapOf(save, w);
+    if (save.equippedSuit === "vanguard") vanguardTap(w.vanguard);
+  }
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
   w.tailV += TAIL.flap;
@@ -2936,6 +2952,7 @@ export function dive(w: World, save: SaveData) {
     tutGesture(w, save, "swipe");
     return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
   }
+  if (save.equippedSuit === "vanguard") vanguardDive(w.vanguard);
   if (w.bounceUp && w.hitCooldown > 0) {
     w.bounceUp = false;
     w.squirrel.vy = PHYS.bounceCancel;
@@ -3053,6 +3070,10 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
     // Contact throws the plume opposite the rebound. This is additive to the
     // existing spring, so the authored impact settles naturally afterward.
     w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
+  }
+  if (save.equippedSuit === "vanguard") {
+    vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy,
+      Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
   }
   // PRISMWING. Contact repaints the SKY, and only the sky: a new hue every
   // bounce, stepped at least 60 degrees off the last so no two in a row
@@ -3779,6 +3800,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
+  if (save.equippedSuit === "vanguard" && !w.ready && !w.tut?.hold && !w.spill) {
+    w.vanguard.mode = vanguardModeOf(save);
+    stepVanguard(w.vanguard, dt, w.squirrel.vy);
+  }
+
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
 
@@ -3877,6 +3903,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   const reversing = IS_BETA && !w.tut && w.flight === "fly" && palId(save, w) === "switchback";
   w.scrollReversing = reversing;
   const move = w.speed * w.driftFactor * simDt * (reversing ? w.scrollDirection : 1);
+  if (save.equippedSuit === "vanguard") for (const p of w.vanguard.contacts) p.x -= move;
   if (reversing) { w.scrollTravel += move; w.distance = Math.max(w.distance, w.scrollTravel); }
   else w.distance += Math.abs(move);
   for (const p of w.planets) {
@@ -3944,6 +3971,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     if (!p.scored && p.x + p.r < sx - 12) {
       p.scored = true;
       w.score += 1;
+      if (save.equippedSuit === "vanguard") vanguardGate(w.vanguard);
       if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
         w.tut.gates += 1;
         // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the

@@ -316,6 +316,8 @@ export function helmetRevealed(s, id) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s, id) {
+    if (id === "vanguardwake")
+        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.trails[id] === undefined)

@@ -1,4 +1,4 @@
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=180";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=180";
 import { spillAppearance } from "./spill-appearance.js?v=180";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=180";
 import { reachedGate } from "./campaign.js?v=180";
@@ -74,7 +74,6 @@ export async function createEngine(canvas) {
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
-            resize();
             if (mode === "spill") {
                 raceAccumulator = 0;
                 last = performance.now();
@@ -137,7 +136,6 @@ export async function createEngine(canvas) {
             // stored identity seed, so reordering cannot change its corridor.
             // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? def.seed ?? undefined : undefined);
-            resize();
             if (def.base === "spill")
                 void loadSpillScene(engine.art).then(notify);
             resetInputTracking();
@@ -503,7 +501,6 @@ export async function createEngine(canvas) {
             unlockAudio();
             resetRun(world, save, "spill", false);
             world.spill = restored;
-            resize();
             void loadSpillScene(engine.art).then(notify);
             world.ready = false;
             world.squirrel.y = restored.pilot.y;
@@ -702,8 +699,11 @@ export async function createEngine(canvas) {
         // Trails are never bought with acorns any more — a rung on the Star
         // Chart's ladder opens each one, premium ones come with the pack, and
         // an open trail simply equips.
-        if (!trailUnlocked(save, id))
+        if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id))
             return "locked";
+        // Fixed wake is presentation, not a replacement for the previous trail.
+        if (id === "vanguardwake")
+            return "equip";
         save.equippedTrail = id;
         if (!save.unlockedTrails.includes(id))
             save.unlockedTrails.push(id);
@@ -966,7 +966,7 @@ export async function createEngine(canvas) {
         if (!parent)
             return;
         const rect = parent.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
+        const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : renderCap);
         // widescreen everywhere: the play area may take the whole window,
         // capped only at desktop-panorama width
         const W = Math.min(rect.width, 1600);
@@ -1413,7 +1413,6 @@ export async function createEngine(canvas) {
             save.spillSuspended = spillCheckpoint(spill);
         writeSave(save);
     }
-    let nextSpillPaint = 0;
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
@@ -1452,22 +1451,6 @@ export async function createEngine(canvas) {
             : world.race && inRun ? "voyage"
                 : inRun ? "flight"
                     : "menu");
-        // Keep authority/input at 60 Hz without painting duplicate frames on 120 Hz phones.
-        if (world.spill && now + 0.5 < nextSpillPaint) {
-            if (running)
-                raf = requestAnimationFrame(loop);
-            return;
-        }
-        if (world.spill) {
-            // Carry the deadline across frames so 90/144 Hz displays do not fall to 45/48 fps.
-            if (nextSpillPaint < now - 100)
-                nextSpillPaint = now;
-            do {
-                nextSpillPaint += 1000 / 60;
-            } while (nextSpillPaint <= now + 0.5);
-        }
-        else
-            nextSpillPaint = 0;
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
