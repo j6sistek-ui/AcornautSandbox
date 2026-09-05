@@ -31,22 +31,22 @@ win.HTMLElement.prototype.scrollIntoView=function(){const sc=this.closest('.ac-s
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 const S=await import('../docs/js/save.js'),P=await import('../docs/js/campaign-progress.js'),C=await import('../docs/js/campaign.js'),Sim=await import('../docs/js/sim.js'),Cat=await import('../docs/js/catalog.js'),V=await import('../docs/js/zone-visuals.js');
 const save=S.defaultSave();Object.assign(save,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});S.writeSave(save);
-if(mode==='sample')localStorage.setItem('acornaut_illust_beta',JSON.stringify({sentinel:'do not change'}));
+localStorage.setItem('acornaut_star_map_sample_v1',JSON.stringify({sentinel:'archived sample'}));
 const {bootStandalone}=await import('../docs/js/standalone.js');const app=document.createElement('main');document.body.append(app);await bootStandalone(app);const e=win.__sandbox;assert(e);
 const tick=()=>{now+=1000/60;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));};
 const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
-chart();assert.equal(app.querySelectorAll('.ac-mapnode').length,mode==='sample'?260:100);
-assert.equal(app.querySelectorAll('.ac-palmark.planned').length,mode==='sample'?25:0);
+chart();assert.equal(app.querySelectorAll('.ac-mapnode').length,mode==='production'?100:260);
+assert.equal(app.querySelectorAll('.ac-palmark.planned').length,mode==='production'?0:25);
 assert.equal(app.querySelectorAll('.ac-palmark.planned.earned').length,0);
-if(mode==='sample'){
+if(mode!=='production'){
   const before=JSON.stringify(e.save);button('Reward preview').click();tick();
   assert.equal(app.querySelectorAll('[data-reward-concept]').length,25);
   assert(app.textContent.includes('not earnable yet'));assert(app.textContent.includes('PLACEHOLDER ART'));
   button('Back to chart').click();tick();assert.equal(JSON.stringify(e.save),before);
   assert.equal(app.querySelectorAll('[data-reward-concept]').length,0);
 }
-assert.equal(app.querySelectorAll('.ac-zone-scene').length,mode==='sample'?26:10);
+assert.equal(app.querySelectorAll('.ac-zone-scene').length,mode==='production'?10:26);
 assert.equal(app.querySelectorAll('.ac-debristag').length,3);
 assert(app.querySelectorAll('.ac-mapdisc canvas').length<=48);
 for(const c of app.querySelectorAll('.ac-mapdisc canvas')){
@@ -54,6 +54,7 @@ for(const c of app.querySelectorAll('.ac-mapdisc canvas')){
   assert.equal(Number(c.dataset.planet),V.mapPlanetIndex(def));
 }
 if(mode==='production'){
+  assert(!Cat.PALS.some(p=>p.id==='switchback'));
   assert(!e.flyLevel(C.HYPER_RUN_MISSION.id),'production rejects Hyper Run before arrival/access');
   assert(!e.flyLevel('2-1'),'star totals cannot skip the road');
   // Actual engine launches and sim settlement, one star at a time, through all 100.
@@ -72,22 +73,26 @@ if(mode==='production'){
   chart();assert.equal(app.querySelectorAll('.ac-mapnode.done').length,100);
   assert.equal(app.querySelectorAll('.ac-debristag.done').length,3);
   const dust=e.save.starDust,receipts=JSON.stringify(e.save.campaignProgress.paidRewards);e.settleDust();assert.equal(e.save.starDust,dust);assert.equal(JSON.stringify(e.save.campaignProgress.paidRewards),receipts);
-} else if(mode==='beta'){
-  assert(C.LEVELS.every(l=>C.levelUnlocked(l,{},0,[])));
-  assert(app.querySelector('a[href$="?star-map=sample"]'));
-  assert(!e.flyLevel(C.ALL_LEVELS[100].id));
 } else {
+  assert(!app.querySelector('a[href$="?star-map=sample"]'));
+  assert(Cat.PALS.some(p=>p.id==='switchback'));
   button('Rust Belt').click();tick();
   assert(app.querySelector('[data-order="101"] .ac-mapdisc canvas'));
   assert(backgrounds.get(app.querySelector('[data-zone="rust-belt"]').style)?.includes('rust-belt.png'));
   app.querySelector('[data-order="101"]').click();assert(app.textContent.includes('Mooring Line'));
   assert(e.flyLevel(C.ALL_LEVELS[100].id));assert.equal(e.world.lvl.def.id,C.ALL_LEVELS[100].id);
-  assert(!e.flyLevel(C.ALL_LEVELS[110].id));
+  assert(e.flyLevel(C.ALL_LEVELS[110].id));
+  for (const def of [...C.LEVELS].reverse()) {
+    assert(e.flyLevel(def.id), `beta must launch ${def.ord} without progression`);
+    assert.equal(e.world.lvl.def.variantId,def.variantId);
+    if (def.base === 'spill') assert.equal(e.world.spill.target,def.spillFinish ? Number.MAX_SAFE_INTEGER : def.gates);
+  }
+
   e.open('hangar');e.setShopTab('ship');assert(button('Rust Runner hull'));button('Rust Runner hull').click();button('Rust Wake exhaust').click();
   assert.equal(S.loadSave().spillAppearance.finish,'rust-runner');assert.equal(S.loadSave().spillAppearance.trail,'rust-wake');
   assert(app.textContent.includes('Rivet · placeholder concept'));
   e.fly('spill');const before=JSON.stringify(e.world.spill);assert(e.setSpillAppearance('finish','stock'));assert.equal(JSON.stringify(e.world.spill),before,'cosmetic selection cannot mutate simulation');
-  assert.equal(localStorage.getItem('acornaut_illust_beta'),JSON.stringify({sentinel:'do not change'}));
+  assert.equal(localStorage.getItem('acornaut_star_map_sample_v1'),JSON.stringify({sentinel:'archived sample'}));
   chart();
   const input=app.querySelector('.ac-chart-find input');input.value='Blackout Zone';app.querySelector('.ac-chart-find').dispatchEvent(new win.Event('submit',{cancelable:true}));tick();
   assert(app.querySelector('[data-order="241"] .ac-mapdisc canvas'));

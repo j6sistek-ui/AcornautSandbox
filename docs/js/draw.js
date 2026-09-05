@@ -1,24 +1,29 @@
-import { spillAppearance } from "./spill-appearance.js?v=177";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=177";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=177";
-import { goalHud } from "./campaign.js?v=177";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=177";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=177";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=177";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=177";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=177";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=177";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=177";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=177";
-import { spillMastery } from "./spill-content.js?v=177";
-import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=177";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=177";
+import { runPal } from "./sim.js?v=178";
+import { spillAppearance } from "./spill-appearance.js?v=178";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=178";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=178";
+import { goalHud } from "./campaign.js?v=178";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=178";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=178";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=178";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=178";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=178";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=178";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=178";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=178";
+import { spillMastery } from "./spill-content.js?v=178";
+import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=178";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=178";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
+    if (w.lvl?.def.fx.upsideDown) {
+        ctx.translate(w.W, w.H);
+        ctx.rotate(Math.PI);
+    }
     const lost = w.flight === "lost";
     const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
     if (wp <= 0)
@@ -2206,7 +2211,7 @@ function drawSpillHud(ctx, w, art) {
         hudLine(spillContractProgress(s), "#cdb3ff");
     // a mission's three objectives ride the top of the run, live
     if (w.lvl && w.lvl.def.base === "spill") {
-        const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
+        const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits, depots: s.depotVisits, repairs: s.repairs ?? 0 };
         const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl.def));
         ctx.font = "800 9.5px Figtree, system-ui";
         const padX = 7, gapX = 6, ph = 17, py = hudY - 10;
@@ -2496,7 +2501,7 @@ export function drawWorld(ctx, w, save, art) {
     // Nightglider keeps its existing steady-gates effect in the simulation.
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
-        : save.equippedPal;
+        : runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2791,7 +2796,7 @@ function drawTunnelWorld(ctx, w, save, art) {
         ctx.fillStyle = frost;
         ctx.fillRect(0, 0, W, H);
     }
-    const pal = save.equippedPal;
+    const pal = runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2846,7 +2851,7 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
-        : save.equippedPal;
+        : runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         // live draws its pals at unit SCALE, not at a pixel size
@@ -5172,6 +5177,17 @@ export function drawHud(ctx, w, art) {
         hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
+    const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
+        : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+            : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
+    if (experiment && !w.ready) {
+        ctx.save();
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#e9d2a4";
+        ctx.fillText(experiment, W / 2, w.H * .18);
+        ctx.restore();
+    }
     if (w.recoveryMsg) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#fff";

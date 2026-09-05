@@ -361,6 +361,11 @@ export type World = {
   hitCooldown: number;
   trailT: number;
   bounceUp: boolean;
+  scrollDirection: number;
+  scrollReversing?: boolean;
+  scrollTravel: number;
+  tapFrozen: boolean;
+  stuck: boolean;
   /** TurClock: the live scroll multiplier, and the wandering clock driving it */
   clockMul: number;
   clockPhase: number;
@@ -527,7 +532,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false,
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false,
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
@@ -716,7 +721,11 @@ export function envIndexFor(w: World, score: number) {
   return w.envOrder[Math.min(step, ENVS.length - 1)];
 }
 
+export function runPal(save: SaveData, w: World) {
+  return w.lvl?.def.fx.pal ?? save.equippedPal;
+}
 function palId(save: SaveData, w: World) {
+  if (w.lvl?.def.fx.pal) return w.lvl.def.fx.pal;
   if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")) return "buddy";
   // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
   // one question, so answering "none" here turns all of them off at once
@@ -725,7 +734,7 @@ function palId(save: SaveData, w: World) {
   // save.equippedPal directly - because the point of the switch is to keep
   // the companion you like without the effect you do not.
   if (save.noPalFx) return "none";
-  return save.equippedPal;
+  return save.equippedPal === "switchback" && (!IS_BETA || !!w.lvl) ? "none" : save.equippedPal;
 }
 
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
@@ -743,6 +752,7 @@ function modsLive(save: SaveData, w: World) {
 
 /** How hard the gates sway in Normal: 0 with Steady Gates, 1 otherwise. */
 function driftModOf(save: SaveData, w: World) {
+  if (w.lvl?.def.fx.pal === "nightglider") return 0;
   if (!modsLive(save, w)) return 1;
   if (save.steadyGates) return 0;
   // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
@@ -1500,7 +1510,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // rolls a fresh one every run.
   w.spill = flight === "spill"
     ? createSpill(w.W, w.H, level ? level.seed! : (Math.random() * 0x100000000) >>> 0,
-        level ? level.gates : 0, !save.helpOff)
+        level ? level.spillFinish ? Number.MAX_SAFE_INTEGER : level.gates : 0, !save.helpOff)
     : null;
   w.spillCues = [];
   if (w.spill) {
@@ -1510,6 +1520,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     }
     w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
   }
+  w.scrollReversing = false; w.scrollDirection = -1; w.scrollTravel = 0; w.tapFrozen = false; w.stuck = false;
   w.speed = PHYS.baseSpeed;
   w.distance = 0;
   w.lastSpawnX = w.W * 0.55;
@@ -2874,6 +2885,11 @@ export function flap(w: World, save: SaveData) {
   // countdown, the Depot, the respawn freeze - or a press while already
   // held is not a tap, so nothing below counts it or animates it.
   if (w.spill && !spillHold(w.spill, true)) return "none";
+  if (IS_BETA && !w.tut && w.flight === "fly") {
+    if (palId(save, w) === "switchback") w.scrollDirection *= -1;
+    if (w.lvl?.def.fx.tapFreeze) w.tapFrozen = !w.tapFrozen;
+    if (w.stuck) { w.stuck = false; w.hitCooldown = .75; }
+  }
   w.run.taps += 1;
   if (w.lvl) {
     w.lvl.stats.taps += 1;
@@ -3028,7 +3044,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   dy /= dist;
   const incomingVy = w.squirrel.vy;
   const jelly = palId(save, w) === "voidjelly" ? 0.55 : 1;
-  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly;
+  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (w.lvl?.def.fx.bounceScale ?? 1);
   w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
   if (BOUNCE_ANIM_ENABLED) {
     w.bounceAnimT = 0;
@@ -3051,6 +3067,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   w.hitCooldown = 0.55;
   w.shake = 0.18;
   if (w.lvl) w.lvl.stats.bounces += 1;
+  if (IS_BETA && w.lvl?.def.fx.sticky) { w.stuck = true; w.squirrel.vy = 0; }
   spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
 }
 
@@ -3228,6 +3245,8 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
     w.lvl.stats.score = Math.floor(w.spill.score);
     w.lvl.stats.ore = w.spill.oreMined;
     w.lvl.stats.hits = w.spill.hits;
+    w.lvl.stats.depots = w.spill.depotVisits;
+    w.lvl.stats.repairs = w.spill.repairs ?? 0;
   }
   const lvl = w.lvl!;
   const def = lvl.def;
@@ -3487,9 +3506,13 @@ function updateSpill(w: World, save: SaveData, dt: number): string | null {
     w.lvl.stats.score = Math.floor(s.score);
     w.lvl.stats.ore = s.oreMined;
     w.lvl.stats.hits = s.hits;
+    w.lvl.stats.depots = s.depotVisits;
+    w.lvl.stats.repairs = s.repairs ?? 0;
   }
   w.spillCues.push(...cues);
-  if (cues.includes("mission") && w.lvl) {
+  const objective = w.lvl?.def.spillFinish;
+  const objectiveDone = !!objective && s.hull > 0 && s.phase !== "over" && (objective.kind === "ore" ? s.oreMined : s.depotVisits) >= objective.n;
+  if ((cues.includes("mission") || objectiveDone) && w.lvl) {
     settleLevel(w, save, true);
     return "finish";
   }
@@ -3781,9 +3804,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     if (w.warpLeft === 0) exitWarp(w);
   }
 
-  if (frozen || w.warpT > 0) return null;
+  if (frozen || w.warpT > 0 || w.stuck) return null;
 
-  let slow = w.powerLeft > 0 ? PHYS.slowFactor : 1;
+  let slow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
   if (w.shieldSlow > 0) {
     w.shieldSlow = Math.max(0, w.shieldSlow - dt);
     slow *= 0.55;
@@ -3851,8 +3874,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
 
-  const move = w.speed * w.driftFactor * simDt;
-  w.distance += Math.abs(move);
+  const reversing = IS_BETA && !w.tut && w.flight === "fly" && palId(save, w) === "switchback";
+  w.scrollReversing = reversing;
+  const move = w.speed * w.driftFactor * simDt * (reversing ? w.scrollDirection : 1);
+  if (reversing) { w.scrollTravel += move; w.distance = Math.max(w.distance, w.scrollTravel); }
+  else w.distance += Math.abs(move);
   for (const p of w.planets) {
     p.x -= move;
     // how FAST the gate sways. Free Flight breathes at about half the
@@ -3890,8 +3916,10 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       r: 64,
     });
   }
-  w.planets = w.planets.filter((p) => p.x > -90);
-  w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
+  // Keep the finite mission corridor for backtracking. Endless experiments
+  // retain a bounded recent corridor; scoring flags never reset on reversal.
+  w.planets = w.planets.filter((p) => reversing ? !!w.lvl || p.x > -w.W * 12 : p.x > -90);
+  w.pickups = w.pickups.filter((a) => (reversing ? !!w.lvl || a.x > -w.W * 12 : a.x > -50) && !a.got);
   // A missed exit is not a life sentence. If the closing hole scrolled past
   // uncaught, arm the next gate to carry another one — the stretch ends by
   // being flown out of, so there always has to be a door on screen to aim at.

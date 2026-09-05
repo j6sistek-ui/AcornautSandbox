@@ -1,5 +1,8 @@
 # Zone diversity and reward preview follow-up
 
+Historical review notes. The [full beta playtest](BETA_260.md) now supersedes the separate sample page and its access limit.
+
+
 Based on main `651efd1`, after PR #180 was merged. The owner identified repeated
 backgrounds around 50–60, 90–100, 212–220 and 220–230, and similarity between
 the end of Blackout and Event Horizon.

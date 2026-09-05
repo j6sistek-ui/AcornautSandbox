@@ -1,5 +1,5 @@
 import type { SpillAppearance } from "./spill-appearance";
-import { migrateCampaign, earnedCampaignStars, type CampaignProgress } from "./campaign-progress";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS } from "./campaign";
 import { STAR_UNLOCKS,
   RACE_GATES,
@@ -29,6 +29,7 @@ import {
 
 export type SaveData = {
   campaignProgress?: CampaignProgress;
+  betaSampleCreditImported?: boolean;
   spillAppearance?: SpillAppearance;
   highScore: number;
   deepBest: number;
@@ -334,6 +335,18 @@ export function loadSave(): SaveData {
     } catch { /* writeSave will still surface a real persistence failure */ }
   }
   migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+  if (IS_BETA && !s.betaSampleCreditImported) {
+    try {
+      const raw = localStorage.getItem("acornaut_star_map_sample_v1");
+      const archived = raw ? JSON.parse(raw) : null;
+      if (archived && typeof archived === "object" && (archived.stars || archived.campaignProgress?.version === 1)) {
+        if (parsed && !localStorage.getItem(SAVE_KEY + ":before-beta-260"))
+          localStorage.setItem(SAVE_KEY + ":before-beta-260", JSON.stringify(parsed));
+        importSampleCredit(s, { ...defaultSave(), ...archived });
+      }
+      s.betaSampleCreditImported = true;
+    } catch { /* Preserve both source slots if storage is unavailable. */ }
+  }
   return s;
 }
 
