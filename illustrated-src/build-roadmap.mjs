@@ -38,7 +38,7 @@ try {
   md += '- Beta retains nine separate Wormhole variants with seeds 7014–7094. Unversioned old goal bits on changed mission IDs retain star credit and passage, without marking newer objectives complete. Only successful replays verify current goals.\n';
   md += '- Earned and purchased entitlements survive. Stable Dust receipts prevent double payments; allStars retains its legacy 300-star entitlement floor and never completes a route.\n';
   md += '- New flight seeds are literal immutable values using flight-seeded-v1. Gameplay RNG is separate from visual randomness. Old random flight missions stay random. Display order cannot create a new seed.\n';
-  md += '- Rust Runner and Rust Wake are cosmetic proofs in the isolated sample’s Ships Loadout. Rivet is a labeled placeholder. The reward extension above 300 is data-only until final activation.\n';
+  md += '- Rust Runner and Rust Wake are cosmetic proofs in the isolated sample’s Ships Loadout. Rivet is a labeled placeholder. The sample’s Reward preview gallery and CONCEPT rail markers show all 25 proposed rewards from 320–780 stars; they cannot be claimed or equipped. Final activation remains pending.\n';
   writeFileSync(join(root,'ROADMAP.md'),md);
   console.log(`ROADMAP: ${LEVELS.length} published missions, ${rewards.length} existing rewards, ${ALL_LEVELS.filter(l=>l.sample).length} sample missions.`);
 } finally { rmSync(tmp,{recursive:true,force:true}); }

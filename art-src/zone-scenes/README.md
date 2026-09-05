@@ -44,3 +44,7 @@ The sample's Rust Runner hull and Rust Wake plume are canvas treatments of
 the existing modular Spill ship. They introduce no new ship sprite, module,
 particle behavior, collision geometry or companion mechanic. Rivet is a
 labeled Tinbot-art placeholder in the sample UI.
+
+## Diversity follow-up
+
+Five further 2172 × 724 original PNG masters distinguish Crystal Belt, Hypervivid, Neon Bazaar, Prism Storm and Event Horizon. See [the visual review](../../illustrated-src/design/ZONE_DIVERSITY.md) and its exact generation prompts. Export retains the masters unchanged.

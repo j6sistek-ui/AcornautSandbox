@@ -1,4 +1,5 @@
 import { spillAppearance } from "./spill-appearance";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
 import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress";
@@ -2817,7 +2818,7 @@ export async function bootStandalone(root: HTMLElement) {
     const roadW = W - railW;
     const railX = roadW + Math.round(railW / 2);
     const step = 92;
-    const H = 70 + (levels.length - 1) * step + 84;
+    const H = (STAR_MAP_PREVIEW ? 180 : 70) + (levels.length - 1) * step + 84;
     const xs = [0.19, 0.5, 0.81, 0.5];
     const pos = levels.map((_, i) => ({
       x: Math.round(xs[i % 4] * roadW),
@@ -2863,8 +2864,10 @@ export async function bootStandalone(root: HTMLElement) {
     // the mission whose three-star ceiling first covers its price, pushed
     // apart just enough that neighbours never overlap. The rail scrolls
     // with the road, so climbing the map walks the reward ladder too.
-    const miles = STAR_REWARDS.filter((r) => r.kind !== "stage")
-      .slice()
+    const miles = [
+      ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+      ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
+    ]
       .sort((a, b) => a.stars - b.stars);
     const gap = 88;
     let prevY = H + gap;
@@ -2886,7 +2889,7 @@ export async function bootStandalone(root: HTMLElement) {
     railLine.setAttribute("stroke-linecap", "round");
     railLine.setAttribute("stroke-dasharray", "0.1 12");
     svg.append(railLine);
-    const lastEarned = miles.reduce((acc, r, i) => (total >= r.stars ? i : acc), -1);
+    const lastEarned = miles.reduce((acc, r, i) => (!r.planned && total >= r.stars ? i : acc), -1);
     if (lastEarned >= 0) {
       const gold = document.createElementNS(SVG, "line");
       gold.setAttribute("x1", `${railX}`);
@@ -2901,12 +2904,18 @@ export async function bootStandalone(root: HTMLElement) {
       svg.append(gold);
     }
     miles.forEach((r, i) => {
-      const mark = el("div", total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+      const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
       mark.style.left = `${railX}px`;
       mark.style.top = `${mileY[i]}px`;
-      mark.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
+      mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
       mark.append(el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
       mark.append(el("span", "ac-rmarkname", r.name));
+      if (r.planned) {
+        mark.dataset.plannedReward = r.id;
+        mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
+        mark.append(el("span", "ac-concept-label", "CONCEPT"));
+        mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+      }
       map.append(mark);
     });
 
@@ -3024,6 +3033,53 @@ export async function bootStandalone(root: HTMLElement) {
 
   let chartStage = 0;           // which stage panel is open; sticky per visit
   let chartLevel: string | null = null;   // level detail overlay
+  let rewardPreviewAt: string | null = null;
+
+  function proposedRewardArt(item: { kind: string; id?: string; name?: string }, px: number) {
+    if (item.kind === "spill-pal") return rewardArt({ kind: "pal", id: "tinbot" }, px);
+    if (!item.kind.startsWith("spill-")) return rewardArt(item, px);
+    const { c, ctx } = miniCanvas(px, px);
+    const save = { ...engine.save, spillAppearance: {
+      finish: item.id === "rust-runner" ? "rust-runner" as const : "stock" as const,
+      trail: item.id === "rust-wake" ? "rust-wake" as const : "stock" as const,
+    } };
+    if (ctx) paintShipPreview(ctx, engine.art, save, px * .57, px * .5, px / 80, 0,
+      { plating: 1, thrusters: 1, pulse: 1, shield: 1 });
+    return c;
+  }
+
+  function drawRewardPreview() {
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("section", "ac-lvlcard ac-reward-preview");
+    sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true");
+    sheet.setAttribute("aria-label", "Proposed Star Map rewards");
+    sheet.append(el("p", "ac-kicker", "320–780 STARS · PROPOSED"), el("h2", "", "Reward preview"),
+      el("p", "ac-sub", "Concepts for the expanded road. These rewards are not earnable yet. Your existing rewards stay yours."));
+    const close = () => { rewardPreviewAt = null; render(); overlay.querySelector<HTMLButtonElement>("[data-reward-preview]")?.focus({ preventScroll: true }); };
+    const back = el("button", "ac-ghost", "Back to chart"); back.onclick = close; sheet.append(back);
+    const grid = el("div", "ac-reward-concepts");
+    for (const reward of PLANNED_STAR_REWARDS) {
+      const card = el("article", "ac-reward-concept"); card.dataset.rewardConcept = reward.id;
+      const proof = reward.id === "rust-runner" || reward.id === "rust-wake";
+      const placeholder = reward.kind.startsWith("spill-") && !proof;
+      card.append(proposedRewardArt(reward, 96), el("p", "ac-kicker", `★ ${reward.stars} · PROPOSED`),
+        el("h3", "", reward.name), el("p", "ac-sub", reward.description),
+        el("small", "ac-concept-label", placeholder ? "PLACEHOLDER ART" : proof ? "APPEARANCE SAMPLE" : "PROPOSED REWARD"));
+      grid.append(card);
+    }
+    sheet.append(grid); wrap.append(sheet);
+    wrap.onclick = event => { if (event.target === wrap) close(); };
+    wrap.onkeydown = event => {
+      if (event.key === "Escape") { event.preventDefault(); close(); }
+      else if (event.key === "Tab") { event.preventDefault(); back.focus(); }
+    };
+    requestAnimationFrame(() => {
+      if (!sheet.isConnected) return;
+      back.focus({ preventScroll: true });
+      if (rewardPreviewAt !== "all") [...grid.children].find(c => (c as HTMLElement).dataset.rewardConcept === rewardPreviewAt)?.scrollIntoView({ block: "nearest" });
+    });
+    return wrap;
+  }
 
   function drawLog() {
     const sv = engine.save;
@@ -3061,6 +3117,8 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (STAR_MAP_PREVIEW) {
       const samples = el("div", "ac-chart-samples");
+      const rewards = el("button", "ac-ghost", "Reward preview"); rewards.dataset.rewardPreview = "true";
+      rewards.onclick = () => { rewardPreviewAt = "all"; render(); }; samples.append(rewards);
       for (const [ord, name] of [[1,"Deep Space"],[101,"Rust Belt"],[241,"Blackout Zone"]] as const) {
         const b = el("button", "ac-ghost", name); b.onclick = () => goTo(levelAt(ord)?.id); samples.append(b);
       }
@@ -3154,6 +3212,7 @@ export async function bootStandalone(root: HTMLElement) {
       const def = CHART_LEVELS.find((l) => l.id === chartLevel);
       if (def) box.append(drawLevelSheet(def, verifiedMask(sv, def)));
     }
+    if (STAR_MAP_PREVIEW && rewardPreviewAt) box.append(drawRewardPreview());
     // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
     // hyperRunOpen was only ever read by the hub - so tapping a field set a
     // flag nothing on the chart looked at, and the one route to Hyper Run

@@ -1,19 +1,20 @@
-import { spillAppearance } from "./spill-appearance.js?v=176";
-import { addChartScenery } from "./star-map-view.js?v=176";
-import { mapDebrisIndex } from "./zone-visuals.js?v=176";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=176";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=176";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=176";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=176";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=176";
-import { drawSprite as drawSpriteOn } from "./art.js?v=176";
-import { createEngine } from "./engine.js?v=176";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=176";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=176";
-import { formatRaceTicks } from "./race.js?v=176";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=176";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=176";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=176";
+import { spillAppearance } from "./spill-appearance.js?v=177";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=177";
+import { addChartScenery } from "./star-map-view.js?v=177";
+import { mapDebrisIndex } from "./zone-visuals.js?v=177";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=177";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=177";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=177";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=177";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=177";
+import { drawSprite as drawSpriteOn } from "./art.js?v=177";
+import { createEngine } from "./engine.js?v=177";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=177";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=177";
+import { formatRaceTicks } from "./race.js?v=177";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=177";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=177";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=177";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2896,7 +2897,7 @@ export async function bootStandalone(root) {
         const roadW = W - railW;
         const railX = roadW + Math.round(railW / 2);
         const step = 92;
-        const H = 70 + (levels.length - 1) * step + 84;
+        const H = (STAR_MAP_PREVIEW ? 180 : 70) + (levels.length - 1) * step + 84;
         const xs = [0.19, 0.5, 0.81, 0.5];
         const pos = levels.map((_, i) => ({
             x: Math.round(xs[i % 4] * roadW),
@@ -2941,8 +2942,10 @@ export async function bootStandalone(root) {
         // the mission whose three-star ceiling first covers its price, pushed
         // apart just enough that neighbours never overlap. The rail scrolls
         // with the road, so climbing the map walks the reward ladder too.
-        const miles = STAR_REWARDS.filter((r) => r.kind !== "stage")
-            .slice()
+        const miles = [
+            ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+            ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
+        ]
             .sort((a, b) => a.stars - b.stars);
         const gap = 88;
         let prevY = H + gap;
@@ -2963,7 +2966,7 @@ export async function bootStandalone(root) {
         railLine.setAttribute("stroke-linecap", "round");
         railLine.setAttribute("stroke-dasharray", "0.1 12");
         svg.append(railLine);
-        const lastEarned = miles.reduce((acc, r, i) => (total >= r.stars ? i : acc), -1);
+        const lastEarned = miles.reduce((acc, r, i) => (!r.planned && total >= r.stars ? i : acc), -1);
         if (lastEarned >= 0) {
             const gold = document.createElementNS(SVG, "line");
             gold.setAttribute("x1", `${railX}`);
@@ -2978,12 +2981,18 @@ export async function bootStandalone(root) {
             svg.append(gold);
         }
         miles.forEach((r, i) => {
-            const mark = el("div", total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+            const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
             mark.style.left = `${railX}px`;
             mark.style.top = `${mileY[i]}px`;
-            mark.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
+            mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
             mark.append(el("span", "ac-palmarkstar", `\u2605 ${r.stars}`));
             mark.append(el("span", "ac-rmarkname", r.name));
+            if (r.planned) {
+                mark.dataset.plannedReward = r.id;
+                mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
+                mark.append(el("span", "ac-concept-label", "CONCEPT"));
+                mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+            }
             map.append(mark);
         });
         levels.forEach((lvl, i) => {
@@ -3102,6 +3111,64 @@ export async function bootStandalone(root) {
     }
     let chartStage = 0; // which stage panel is open; sticky per visit
     let chartLevel = null; // level detail overlay
+    let rewardPreviewAt = null;
+    function proposedRewardArt(item, px) {
+        if (item.kind === "spill-pal")
+            return rewardArt({ kind: "pal", id: "tinbot" }, px);
+        if (!item.kind.startsWith("spill-"))
+            return rewardArt(item, px);
+        const { c, ctx } = miniCanvas(px, px);
+        const save = { ...engine.save, spillAppearance: {
+                finish: item.id === "rust-runner" ? "rust-runner" : "stock",
+                trail: item.id === "rust-wake" ? "rust-wake" : "stock",
+            } };
+        if (ctx)
+            paintShipPreview(ctx, engine.art, save, px * .57, px * .5, px / 80, 0, { plating: 1, thrusters: 1, pulse: 1, shield: 1 });
+        return c;
+    }
+    function drawRewardPreview() {
+        const wrap = el("div", "ac-lvlsheet");
+        const sheet = el("section", "ac-lvlcard ac-reward-preview");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-modal", "true");
+        sheet.setAttribute("aria-label", "Proposed Star Map rewards");
+        sheet.append(el("p", "ac-kicker", "320–780 STARS · PROPOSED"), el("h2", "", "Reward preview"), el("p", "ac-sub", "Concepts for the expanded road. These rewards are not earnable yet. Your existing rewards stay yours."));
+        const close = () => { rewardPreviewAt = null; render(); overlay.querySelector("[data-reward-preview]")?.focus({ preventScroll: true }); };
+        const back = el("button", "ac-ghost", "Back to chart");
+        back.onclick = close;
+        sheet.append(back);
+        const grid = el("div", "ac-reward-concepts");
+        for (const reward of PLANNED_STAR_REWARDS) {
+            const card = el("article", "ac-reward-concept");
+            card.dataset.rewardConcept = reward.id;
+            const proof = reward.id === "rust-runner" || reward.id === "rust-wake";
+            const placeholder = reward.kind.startsWith("spill-") && !proof;
+            card.append(proposedRewardArt(reward, 96), el("p", "ac-kicker", `★ ${reward.stars} · PROPOSED`), el("h3", "", reward.name), el("p", "ac-sub", reward.description), el("small", "ac-concept-label", placeholder ? "PLACEHOLDER ART" : proof ? "APPEARANCE SAMPLE" : "PROPOSED REWARD"));
+            grid.append(card);
+        }
+        sheet.append(grid);
+        wrap.append(sheet);
+        wrap.onclick = event => { if (event.target === wrap)
+            close(); };
+        wrap.onkeydown = event => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                close();
+            }
+            else if (event.key === "Tab") {
+                event.preventDefault();
+                back.focus();
+            }
+        };
+        requestAnimationFrame(() => {
+            if (!sheet.isConnected)
+                return;
+            back.focus({ preventScroll: true });
+            if (rewardPreviewAt !== "all")
+                [...grid.children].find(c => c.dataset.rewardConcept === rewardPreviewAt)?.scrollIntoView({ block: "nearest" });
+        });
+        return wrap;
+    }
     function drawLog() {
         const sv = engine.save;
         const stars = routeMasks(sv, CHART_LEVELS);
@@ -3151,6 +3218,10 @@ export async function bootStandalone(root) {
         }
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
+            const rewards = el("button", "ac-ghost", "Reward preview");
+            rewards.dataset.rewardPreview = "true";
+            rewards.onclick = () => { rewardPreviewAt = "all"; render(); };
+            samples.append(rewards);
             for (const [ord, name] of [[1, "Deep Space"], [101, "Rust Belt"], [241, "Blackout Zone"]]) {
                 const b = el("button", "ac-ghost", name);
                 b.onclick = () => goTo(levelAt(ord)?.id);
@@ -3253,6 +3324,8 @@ export async function bootStandalone(root) {
             if (def)
                 box.append(drawLevelSheet(def, verifiedMask(sv, def)));
         }
+        if (STAR_MAP_PREVIEW && rewardPreviewAt)
+            box.append(drawRewardPreview());
         // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
         // hyperRunOpen was only ever read by the hub - so tapping a field set a
         // flag nothing on the chart looked at, and the one route to Hyper Run

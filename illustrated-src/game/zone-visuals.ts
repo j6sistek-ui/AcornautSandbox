@@ -47,8 +47,8 @@ export const ZONE_VISUALS = [
     "env": 4,
     "from": 51,
     "to": 60,
-    "pan": 0.5,
-    "painted": "skies/neon.jpg"
+    "pan": 0.27,
+    "painted": "zone-scenes/crystal-belt.png"
   },
   {
     "id": "crimson-storm",
@@ -79,8 +79,8 @@ export const ZONE_VISUALS = [
     "env": 13,
     "from": 91,
     "to": 100,
-    "pan": 0.5,
-    "painted": "skies/neon.jpg"
+    "pan": 0.6,
+    "painted": "zone-scenes/hypervivid.png"
   },
   {
     "id": "rust-belt",
@@ -175,16 +175,16 @@ export const ZONE_VISUALS = [
     "env": 14,
     "from": 211,
     "to": 220,
-    "pan": 0.5,
-    "painted": "skies/neon.jpg"
+    "pan": 0.28,
+    "painted": "zone-scenes/neon-bazaar.png"
   },
   {
     "id": "prism-storm",
     "env": 24,
     "from": 221,
     "to": 230,
-    "pan": 0.5,
-    "painted": "skies/neon.jpg"
+    "pan": 0.8,
+    "painted": "zone-scenes/prism-storm.png"
   },
   {
     "id": "ghost-nebula",
@@ -207,8 +207,8 @@ export const ZONE_VISUALS = [
     "env": 25,
     "from": 251,
     "to": 260,
-    "pan": 0.5,
-    "painted": "skies/vortex.jpg"
+    "pan": 0.83,
+    "painted": "zone-scenes/event-horizon.png"
   }
 ] as const;
 export const zoneVisual = (env: number) => ZONE_VISUALS.find(z => z.env === env) ?? ZONE_VISUALS[0];
@@ -241,4 +241,4 @@ export function zonePainting(env: number): HTMLImageElement | null {
   } else { images.delete(path); images.set(path, img); }
   return img.complete && img.naturalWidth > 0 ? img : null;
 }
-export const hasZoneRemaster = (env: number) => [0, 22, 20].includes(env);
+export const hasZoneRemaster = (env: number) => zoneVisual(env).painted.startsWith("zone-scenes/");
