@@ -236,6 +236,11 @@ export function loadSave(): SaveData {
   if (!s.unlockedSuits?.includes("flight")) s.unlockedSuits = ["flight", ...(s.unlockedSuits || [])];
   if (!s.unlockedTrails?.includes("sparks")) s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
   if (!s.unlockedPals?.includes("none")) s.unlockedPals = ["none", ...(s.unlockedPals || [])];
+  // Grandfather recorded ownership from the earlier beta companion. The
+  // new premium gate must not confiscate a pal already in the hangar.
+  if (s.unlockedPals.includes("switchback") && !(s.purchased || []).includes("switchback")) {
+    s.purchased = [...(s.purchased || []), "switchback"];
+  }
   if (!HELMETS.some((h) => h.id === s.equipped)) s.equipped = "clear";
   // A save can arrive wearing things this build does not grant — the open
   // beta hands premium out, production does not, and the two share a

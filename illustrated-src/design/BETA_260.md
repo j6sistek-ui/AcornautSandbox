@@ -27,7 +27,7 @@ Spill estimates exclude time spent at an untimed Depot. They are not timers.
 | 1 | Short introduction with open gaps; mission 1 stays unchanged |
 | 2 | Authored pal flight (magnet, soft bounce, low gravity, long slow or steady gates) |
 | 3 | Shorter, faster crossing with a generous tap budget |
-| 4 | A springy, sticky, upside-down, tap-slow, reversal or stronger-sway experiment |
+| 4 | A springy, sticky, upside-down, tap-slow, cosmetic companion or stronger-sway experiment |
 | 5 | A longer endurance flight at a comfortable pace |
 | 6 | Lost in Space with extra room around the tilting gates |
 | 7 | Existing Deep Space shifts with open gaps and no added fog |
@@ -88,28 +88,21 @@ Spill missions retain their targets, goals and seeds.
   stay upright. Inputs retain their world direction.
 - **34:** every tap toggles the existing freeze-acorn slow factor on/off;
   collected freeze power-ups keep their own duration.
-- **44:** Switchback's reversal flight. The launch heads forward; every next
-  tap reverses actual world scrolling. Previously scored gates stay scored,
-  and revisiting the corridor does not increase the distance difficulty.
+- **44, 104, 164, 224:** Fly with Switchback on the normal forward route.
+  Its direction-changing effect was retired after owner playtesting. Finish,
+  acorn and gold objectives, identities, seeds and retained star credit stay
+  unchanged; these missions lend the companion without granting ownership.
 
-**Switchback** is a new beta-only pal, available in Loadout. It also works in
-endless normal flight. Other modes show it cosmetically without reversal.
-Authored mission pals override the equipped companion for that run only;
-loadout choices and the Pal Effects Off setting are not changed. A mission's
-listed pal remains part of its challenge even when loadout effects are off.
-Switchback from the loadout cannot silently alter unrelated campaign missions.
+**Switchback** is now a premium cosmetic pal in both builds. The existing
+store rotation sells it as a 90-Star-Dust companion offer or individual pal.
+Recorded earlier ownership is retained. Fresh saves use the store gate,
+including beta, which already provides store-testing dust.
 
-The reversal experiment retains the finite mission corridor. Endless flight
-retains a bounded recent corridor (12 viewport widths); backtracking beyond it
-enters empty space until the pilot taps forward again. That limitation is
-intentional for this first test; a bidirectionally generated endless world is
-not implemented. HUD labels expose direction, sticky contact and tap-slow state.
-
-The original transparent pal sprite is `art-src/pals/switchback.png`, copied
-unchanged to `docs/art/solo/switchback.png`. It was made with the built-in
-image-generation tool using TinTin and TurClock as style references. The exact
-prompt is in [switchback-prompt.txt](switchback-prompt.txt). It has a still
-sprite and the game's existing companion bob; no new animation bank.
+The owner's 16-frame sheet lives in `art-src/pals/switchback/owner-sheet.jpeg`.
+`export-switchback.mjs` packs its cells at one common scale/offset into 256px
+RGBA frames; the first is the fallback. Runtime uses that registered canvas
+rather than fitting each fin silhouette independently. Original design
+provenance remains in [switchback-prompt.txt](switchback-prompt.txt).
 
 ## Identity and migration mapping
 
@@ -140,13 +133,13 @@ Hyper Run mode after the first clear. No barrier relocation is included.
 The regression suite checks all 260 beta launches and completion seams,
 production's 100-mission engine progression, both old and revised contracts,
 credit transfer and replay unions, first-mission recovery, mission seeds,
-barrier timing/access, actual sticky collisions/release, reversal without
+barrier timing/access, actual sticky collisions/release, cosmetic Switchback without
 repeat scoring, stronger rebounds, tap slow, Ore/Depot completion and repair
 purchase counters. Existing Spill progression/UI and HUD suites remain gates.
 
 Native canvas checks use the game's actual painters and sprites, including
 the inverted playfield and Switchback; they are not browser screenshots.
-Browser CSS, phone input, performance, reversal feel, and all duration/difficulty
+Browser CSS, phone input, performance, and all duration/difficulty
 estimates still require human playtesting. This PR does not merge or deploy.
 
 ![Native-canvas view of levels 4, 14, 24, 34 and 44](review/beta-experiments.png)

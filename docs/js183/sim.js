@@ -1,15 +1,17 @@
-import { missionRandom } from "./mission-rng.js?v=179";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=179";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=179";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=179";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=179";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=179";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=179";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=179";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=179";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=179";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=179";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=179";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=183";
+import { trailWornBy } from "./catalog.js?v=183";
+import { missionRandom } from "./mission-rng.js?v=183";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=183";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=183";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=183";
+import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=183";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=183";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=183";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=183";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=183";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=183";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=183";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=183";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -61,6 +63,7 @@ export function makeWorld(W, H) {
         invulnLeft: 0,
         flapBoost: 0,
         tapAnimT: -1,
+        vanguard: createVanguardMotion(),
         tapAnimDir: 1,
         tapAnimFromRot: 0,
         bounceAnimT: -1,
@@ -256,7 +259,7 @@ export function runPal(save, w) {
 }
 function palId(save, w) {
     if (w.lvl?.def.fx.pal)
-        return w.lvl.def.fx.pal;
+        return w.lvl.def.fx.pal === "switchback" ? "none" : w.lvl.def.fx.pal;
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
         return "buddy";
     // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
@@ -267,7 +270,7 @@ function palId(save, w) {
     // the companion you like without the effect you do not.
     if (save.noPalFx)
         return "none";
-    return save.equippedPal === "switchback" && (!IS_BETA || !!w.lvl) ? "none" : save.equippedPal;
+    return save.equippedPal === "switchback" ? "none" : save.equippedPal;
 }
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
 // designed, and a pilot who armed Thrill Seeker and then replayed it would
@@ -1057,6 +1060,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.invulnLeft = 0;
     w.flapBoost = 0;
     w.tapAnimT = -1;
+    w.vanguard = createVanguardMotion(vanguardModeOf(save));
     w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
@@ -1978,9 +1982,16 @@ export function spawnTrail(w, save, scale = 1) {
     const sy = w.squirrel.y + 8;
     if (scale < 1 && Math.random() > scale)
         return;
-    const trail = save.equippedTrail;
+    const trail = trailWornBy(save.equippedTrail, save.equippedSuit);
     const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
-    if (trail === "ion") {
+    if (trail === "vanguardwake") {
+        for (const lane of [-1, 1])
+            w.particles.push({
+                x: sx, y: sy + lane * 3, vx: -150, vy: lane * 7,
+                life: .34, max: .34, r: 1.1, color: colors[lane < 0 ? 0 : 1], kind: "vanguardwake",
+            });
+    }
+    else if (trail === "ion") {
         for (let i = 0; i < 8; i++) {
             w.particles.push({
                 x: sx,
@@ -2322,6 +2333,8 @@ function tutGesture(w, save, kind) {
             w.tapAnimFromRot = w.squirrel.rot;
             w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
             w.tapAnimDir = 1;
+            if (save.equippedSuit === "vanguard")
+                vanguardTap(w.vanguard);
             break;
         case "doDive":
             t.hold = false;
@@ -2329,6 +2342,8 @@ function tutGesture(w, save, kind) {
             w.bounceUp = false;
             w.squirrel.vy = PHYS.dive;
             w.squirrel.rot = 0.5;
+            if (save.equippedSuit === "vanguard")
+                vanguardDive(w.vanguard);
             break;
         case "learnTap":
         case "learnTap2":
@@ -2423,8 +2438,6 @@ export function flap(w, save) {
     if (w.spill && !spillHold(w.spill, true))
         return "none";
     if (IS_BETA && !w.tut && w.flight === "fly") {
-        if (palId(save, w) === "switchback")
-            w.scrollDirection *= -1;
         if (w.lvl?.def.fx.tapFreeze)
             w.tapFrozen = !w.tapFrozen;
         if (w.stuck) {
@@ -2454,8 +2467,11 @@ export function flap(w, save) {
             w.tapAnimDir = -1;
         }
     }
-    if (!w.spill)
+    if (!w.spill) {
         w.squirrel.vy = flapOf(save, w);
+        if (save.equippedSuit === "vanguard")
+            vanguardTap(w.vanguard);
+    }
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back
     w.tailV += TAIL.flap;
@@ -2481,6 +2497,8 @@ export function dive(w, save) {
         tutGesture(w, save, "swipe");
         return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
     }
+    if (save.equippedSuit === "vanguard")
+        vanguardDive(w.vanguard);
     if (w.bounceUp && w.hitCooldown > 0) {
         w.bounceUp = false;
         w.squirrel.vy = PHYS.bounceCancel;
@@ -2599,6 +2617,9 @@ function bounceOff(w, save, px, py) {
         // Contact throws the plume opposite the rebound. This is additive to the
         // existing spring, so the authored impact settles naturally afterward.
         w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
+    }
+    if (save.equippedSuit === "vanguard") {
+        vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy, Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
     }
     // PRISMWING. Contact repaints the SKY, and only the sky: a new hue every
     // bounce, stepped at least 60 degrees off the last so no two in a row
@@ -3344,6 +3365,10 @@ export function updateWorld(w, save, dt) {
             w.bounceAnimStrength = 0;
         }
     }
+    if (save.equippedSuit === "vanguard" && !w.ready && !w.tut?.hold && !w.spill) {
+        w.vanguard.mode = vanguardModeOf(save);
+        stepVanguard(w.vanguard, dt, w.squirrel.vy);
+    }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
         w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
@@ -3451,15 +3476,13 @@ export function updateWorld(w, save, dt) {
     w.squirrel.vy += gravOf(save, w) * simDt;
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
-    const reversing = IS_BETA && !w.tut && w.flight === "fly" && palId(save, w) === "switchback";
-    w.scrollReversing = reversing;
-    const move = w.speed * w.driftFactor * simDt * (reversing ? w.scrollDirection : 1);
-    if (reversing) {
-        w.scrollTravel += move;
-        w.distance = Math.max(w.distance, w.scrollTravel);
-    }
-    else
-        w.distance += Math.abs(move);
+    // Switchback is cosmetic. Retired direction fields stay neutral.
+    w.scrollReversing = false;
+    const move = w.speed * w.driftFactor * simDt;
+    if (save.equippedSuit === "vanguard")
+        for (const p of w.vanguard.contacts)
+            p.x -= move;
+    w.distance += Math.abs(move);
     for (const p of w.planets) {
         p.x -= move;
         // how FAST the gate sways. Free Flight breathes at about half the
@@ -3499,10 +3522,8 @@ export function updateWorld(w, save, dt) {
             r: 64,
         });
     }
-    // Keep the finite mission corridor for backtracking. Endless experiments
-    // retain a bounded recent corridor; scoring flags never reset on reversal.
-    w.planets = w.planets.filter((p) => reversing ? !!w.lvl || p.x > -w.W * 12 : p.x > -90);
-    w.pickups = w.pickups.filter((a) => (reversing ? !!w.lvl || a.x > -w.W * 12 : a.x > -50) && !a.got);
+    w.planets = w.planets.filter((p) => p.x > -90);
+    w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
     // A missed exit is not a life sentence. If the closing hole scrolled past
     // uncaught, arm the next gate to carry another one — the stretch ends by
     // being flown out of, so there always has to be a door on screen to aim at.
@@ -3527,6 +3548,8 @@ export function updateWorld(w, save, dt) {
         if (!p.scored && p.x + p.r < sx - 12) {
             p.scored = true;
             w.score += 1;
+            if (save.equippedSuit === "vanguard")
+                vanguardGate(w.vanguard);
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
                 w.tut.gates += 1;
                 // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the

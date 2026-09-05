@@ -1,5 +1,6 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=179";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=179";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=183";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=183";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=183";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -313,6 +314,7 @@ const DESC_BANKS = TAP_ANIM_ENABLED
         sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
+        "vanguard",
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
         ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -327,6 +329,15 @@ export function loadSuitBank(bank, id) {
     const base = artBase();
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
+        if (id === "vanguard") {
+            const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+            // Never publish a partial bank: filtering failed images must not shift poses.
+            if (frames.length === VANGUARD_FRAMES)
+                bank.vanguard = frames;
+            else
+                suitBankLoads.delete(id); // allow a later equip to retry
+            return;
+        }
         const rigged = RIGGED_SUITS.includes(id);
         const [tail, body] = await Promise.all([
             rigged ? layer("-tail") : Promise.resolve(null),
@@ -372,7 +383,14 @@ export function loadPalBank(bank, id) {
     const count = PAL_ANIM[id];
     const p = count
         ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
-            if (frames.length)
+            if (id === "switchback") {
+                // Never compress a partial bank into the wrong animation order.
+                if (frames.length === count)
+                    bank.palAnim[id] = frames;
+                else
+                    palBankLoads.delete(id);
+            }
+            else if (frames.length)
                 bank.palAnim[id] = frames;
         })
         : Promise.resolve();
@@ -394,6 +412,9 @@ export function prefetchArtBanks(bank) {
         chain = chain.then(() => loadPalBank(bank, id)).then(breathe);
     }
     for (const id of LAZY_SUIT_IDS) {
+        // Flagship is 32 MiB decoded: load only on equip/explicit preview.
+        if (id === "vanguard")
+            continue;
         if (suitBankLoads.has(id))
             continue;
         chain = chain.then(() => loadSuitBank(bank, id)).then(breathe);
@@ -403,7 +424,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
-        ...(IS_BETA ? ["switchback"] : []),
+        "switchback",
         "bee",
         "buddy",
         "ufo",
@@ -449,6 +470,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         ] : []),
     ];
     const suitIds = [
+        "vanguard",
         "flight",
         "iontrim",
         "copper",
@@ -550,7 +572,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // conditional stays because the constant is the one place that
         // decides, not because the answer can currently be no.
         named(HYPER_RUN_ENABLED ? hyperRunIds : [], "hyper-run"),
-        optional(`${base}/pickups/ore.png?v=${ART_VER}`),
+        optional(`${base}/pickups/acorn-coin.svg?v=${ART_VER}`),
         // the Spill's ship: 13 small files. A missing one is not fatal - the
         // painter falls back to the scout ship - so nothing here is required
         named(SPILL_SHIP_IDS, "spill-ship"),

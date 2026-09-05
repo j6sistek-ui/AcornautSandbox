@@ -98,7 +98,7 @@ Beta's Star Chart loads **260 missions / 780 stars**, all unlocked for testing.
 No proposal tab or sample URL is needed. The original 100-mission production
 campaign stays unchanged. Each zone mixes flight challenges, Lost in Space,
 Deep Space shifts, Arcade and Spill. Level 258 is the first beta Spill mission
-requiring wave 20. Switchback is a new beta pal for tap-reversal experiments.
+requiring wave 20. Switchback is an animated premium companion with no gameplay effect, available through the store.
 
 See `illustrated-src/design/BETA_260.md` for the current first-pass design,
 playtest suggestions and migration mapping. `ROADMAP.md` lists both routes

@@ -82,10 +82,11 @@ Owner review on the actual phone remains the motion/performance quality gate.
   remains the neutral still, poses stay opaque, and A/B physics match per tick.
 - Existing Star Map simulation/UI suites: production progression, all 260 beta
   completion seams, three unchanged barriers, migration/seed/replay contracts.
-- Full art audit: Vanguard and all other checks pass except the unchanged
+- At the Vanguard PR review, the full art audit passed except the then-existing
   main-branch Switchback size mismatch (1254px asset vs 256px validator).
   Baseline confirmed with main's validator and matching asset Git SHA
-  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. No gate was weakened to hide it.
+  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. The subsequent Switchback sprite-sheet
+  integration fixes that asset to 256px; all 30 art QA groups now pass.
 
 ## Decisions still open
 

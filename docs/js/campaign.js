@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=182";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=182";
-import { IS_BETA } from "./catalog.js?v=182";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=182";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=183";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=183";
+import { IS_BETA } from "./catalog.js?v=183";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=183";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -325,7 +325,7 @@ export function goalText(g, def) {
 export function fxText(fx) {
     const out = [];
     if (fx.pal)
-        out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · TAP REVERSE" : fx.pal.toUpperCase()}`);
+        out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · COSMETIC" : fx.pal.toUpperCase()}`);
     if (fx.upsideDown)
         out.push("UPSIDE DOWN");
     if (fx.bounceScale)

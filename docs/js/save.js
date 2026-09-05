@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=182";
-import { CHART_LEVELS } from "./campaign.js?v=182";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=182";
-import { restoreSpill } from "./spill.js?v=182";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=182";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=183";
+import { CHART_LEVELS } from "./campaign.js?v=183";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=183";
+import { restoreSpill } from "./spill.js?v=183";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=183";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=182";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=183";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -93,6 +93,11 @@ export function loadSave() {
         s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
     if (!s.unlockedPals?.includes("none"))
         s.unlockedPals = ["none", ...(s.unlockedPals || [])];
+    // Grandfather recorded ownership from the earlier beta companion. The
+    // new premium gate must not confiscate a pal already in the hangar.
+    if (s.unlockedPals.includes("switchback") && !(s.purchased || []).includes("switchback")) {
+        s.purchased = [...(s.purchased || []), "switchback"];
+    }
     if (!HELMETS.some((h) => h.id === s.equipped))
         s.equipped = "clear";
     // A save can arrive wearing things this build does not grant — the open

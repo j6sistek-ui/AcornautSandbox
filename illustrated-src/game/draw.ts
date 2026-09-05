@@ -4760,7 +4760,11 @@ function paintPal(
           : id === "prismwing" ? 1.08
             : 1
     );
-    drawSprite(ctx, spr, x, y, fit);
+    if (id === "switchback") {
+      // The owner's frames share one registered canvas. Fitting each fin
+      // silhouette independently would make the acorn breathe and wander.
+      ctx.drawImage(spr, x-fit*128/208, y-fit*128/208, fit*256/208, fit*256/208);
+    } else drawSprite(ctx, spr, x, y, fit);
     return;
   }
   if (id !== "none") {

@@ -1,20 +1,20 @@
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=179";
-import { spillAppearance } from "./spill-appearance.js?v=179";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=179";
-import { reachedGate } from "./campaign.js?v=179";
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=179";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=179";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=179";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=179";
-import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=179";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=179";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=179";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=179";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=179";
-import { raceViewport } from "./race-viewport.js?v=179";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=179";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=179";
-import { bankSpill } from "./save.js?v=179";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=183";
+import { spillAppearance } from "./spill-appearance.js?v=183";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=183";
+import { reachedGate } from "./campaign.js?v=183";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=183";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=183";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=183";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=183";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=183";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=183";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=183";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=183";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=183";
+import { raceViewport } from "./race-viewport.js?v=183";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=183";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=183";
+import { bankSpill } from "./save.js?v=183";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -74,6 +74,7 @@ export async function createEngine(canvas) {
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
+            resize();
             if (mode === "spill") {
                 raceAccumulator = 0;
                 last = performance.now();
@@ -136,6 +137,7 @@ export async function createEngine(canvas) {
             // stored identity seed, so reordering cannot change its corridor.
             // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? def.seed ?? undefined : undefined);
+            resize();
             if (def.base === "spill")
                 void loadSpillScene(engine.art).then(notify);
             resetInputTracking();
@@ -375,6 +377,14 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
+        setVanguardMotionMode(mode) {
+            if (!IS_BETA || (mode !== "cinematic" && mode !== "flow"))
+                return;
+            save.vanguardMotionMode = mode;
+            world.vanguard.mode = mode;
+            writeSave(save);
+            notify();
+        },
         restartLevel() {
             const id = world.lvl?.def.id;
             if (!id)
@@ -501,6 +511,7 @@ export async function createEngine(canvas) {
             unlockAudio();
             resetRun(world, save, "spill", false);
             world.spill = restored;
+            resize();
             void loadSpillScene(engine.art).then(notify);
             world.ready = false;
             world.squirrel.y = restored.pilot.y;
@@ -699,8 +710,11 @@ export async function createEngine(canvas) {
         // Trails are never bought with acorns any more — a rung on the Star
         // Chart's ladder opens each one, premium ones come with the pack, and
         // an open trail simply equips.
-        if (!trailUnlocked(save, id))
+        if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id))
             return "locked";
+        // Fixed wake is presentation, not a replacement for the previous trail.
+        if (id === "vanguardwake")
+            return "equip";
         save.equippedTrail = id;
         if (!save.unlockedTrails.includes(id))
             save.unlockedTrails.push(id);
@@ -963,7 +977,7 @@ export async function createEngine(canvas) {
         if (!parent)
             return;
         const rect = parent.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, world.race ? 2 : renderCap);
+        const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
         // widescreen everywhere: the play area may take the whole window,
         // capped only at desktop-panorama width
         const W = Math.min(rect.width, 1600);
@@ -1410,6 +1424,7 @@ export async function createEngine(canvas) {
             save.spillSuspended = spillCheckpoint(spill);
         writeSave(save);
     }
+    let nextSpillPaint = 0;
     function loop(now) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
@@ -1448,6 +1463,22 @@ export async function createEngine(canvas) {
             : world.race && inRun ? "voyage"
                 : inRun ? "flight"
                     : "menu");
+        // Keep authority/input at 60 Hz without painting duplicate frames on 120 Hz phones.
+        if (world.spill && now + 0.5 < nextSpillPaint) {
+            if (running)
+                raf = requestAnimationFrame(loop);
+            return;
+        }
+        if (world.spill) {
+            // Carry the deadline across frames so 90/144 Hz displays do not fall to 45/48 fps.
+            if (nextSpillPaint < now - 100)
+                nextSpillPaint = now;
+            do {
+                nextSpillPaint += 1000 / 60;
+            } while (nextSpillPaint <= now + 0.5);
+        }
+        else
+            nextSpillPaint = 0;
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
@@ -1507,4 +1538,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=179";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=183";

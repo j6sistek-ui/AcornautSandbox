@@ -1,21 +1,21 @@
-import { spillDockDuration } from "./spill.js?v=182";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=182";
-import { runPal } from "./sim.js?v=182";
-import { spillAppearance } from "./spill-appearance.js?v=182";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=182";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=182";
-import { goalHud } from "./campaign.js?v=182";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=182";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=182";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=182";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=182";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=182";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=182";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=182";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=182";
-import { spillMastery } from "./spill-content.js?v=182";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=182";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=182";
+import { spillDockDuration } from "./spill.js?v=183";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=183";
+import { runPal } from "./sim.js?v=183";
+import { spillAppearance } from "./spill-appearance.js?v=183";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=183";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=183";
+import { goalHud } from "./campaign.js?v=183";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=183";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=183";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=183";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=183";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=183";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=183";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=183";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=183";
+import { spillMastery } from "./spill-content.js?v=183";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=183";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=183";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4644,7 +4644,13 @@ function paintPal(ctx, art, id, x, y, size, time = 0) {
             : id === "clockling" ? 1.12
                 : id === "prismwing" ? 1.08
                     : 1);
-        drawSprite(ctx, spr, x, y, fit);
+        if (id === "switchback") {
+            // The owner's frames share one registered canvas. Fitting each fin
+            // silhouette independently would make the acorn breathe and wander.
+            ctx.drawImage(spr, x - fit * 128 / 208, y - fit * 128 / 208, fit * 256 / 208, fit * 256 / 208);
+        }
+        else
+            drawSprite(ctx, spr, x, y, fit);
         return;
     }
     if (id !== "none") {
