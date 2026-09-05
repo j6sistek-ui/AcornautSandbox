@@ -86,11 +86,15 @@ export async function bootStandalone(root: HTMLElement) {
   const canvas = document.createElement("canvas");
   canvas.className = "ac-canvas";
   const overlay = el("div", "ac-overlay");
+  // Held controls must survive HUD/menu re-renders without losing pointer capture.
+  const spillControls = el("div", "ac-spillbar ac-spillcontrols");
+  spillControls.hidden = true;
+  spillControls.setAttribute("role", "group"); spillControls.setAttribute("aria-label", "Spill flight controls");
   // The launch film lives on the STAGE, not in the overlay: render() clears
   // the overlay wholesale on every notify, and a film mounted inside it
   // would restart from frame one each time the engine so much as ticked.
   const filmHost = el("div", "ac-filmhost");
-  stage.append(canvas, overlay, filmHost);
+  stage.append(canvas, overlay, spillControls, filmHost);
   root.append(stage);
 
   // Screen 1 of the cold open. The acorn IS the progress bar: a drained
@@ -227,8 +231,72 @@ export async function bootStandalone(root: HTMLElement) {
     });
   };
   let disposeChart = () => {};
+  let throttleOwner: number | string | null = null;
+  const throttle = el("button", "ac-throttle");
+  const diveButton = el("button", "ac-dive");
+  const lungeButton = el("button", "ac-lunge");
+  throttle.append(el("b", "", "▲ THROTTLE"), el("span", "", "HOLD TO RISE"));
+  diveButton.append(el("b", "", "▼ DIVE"), el("span", "", "TAP TO DESCEND"));
+  const lungeStatus = el("span");
+  lungeButton.append(el("b", "", "▶ LUNGE"), el("span", "", "FORWARD DASH"), lungeStatus);
+  throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
+  diveButton.setAttribute("aria-label", "Dive: downward burst");
+  for (const b of [throttle, diveButton, lungeButton]) {
+    b.addEventListener("keydown", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter") e.stopPropagation(); });
+    b.addEventListener("keyup", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter") e.stopPropagation(); });
+    b.addEventListener("contextmenu", e => e.preventDefault());
+  }
+  const releaseThrottle = () => {
+    const owner = throttleOwner; throttleOwner = null;
+    engine.spillThrottle(false);
+    throttle.classList.remove("held"); throttle.setAttribute("aria-pressed", "false");
+    if (typeof owner === "number") try { throttle.releasePointerCapture(owner); } catch { /* already cancelled */ }
+  };
+  throttle.onpointerdown = e => {
+    if (throttleOwner !== null || (e.pointerType === "mouse" && e.button !== 0)) return;
+    e.preventDefault(); throttleOwner = e.pointerId;
+    try { throttle.setPointerCapture(e.pointerId); } catch { /* release also watched on window */ }
+    engine.spillThrottle(true); updateSpillControls();
+  };
+  const endThrottle = (e: PointerEvent) => { if (throttleOwner === e.pointerId) releaseThrottle(); };
+  throttle.addEventListener("lostpointercapture", endThrottle);
+  window.addEventListener("pointerup", endThrottle);
+  window.addEventListener("pointercancel", endThrottle);
+  throttle.onkeydown = e => {
+    if (!["Space", "Enter"].includes(e.code)) return;
+    e.preventDefault();
+    if (e.repeat || throttleOwner !== null) return;
+    throttleOwner = e.code; engine.spillThrottle(true); updateSpillControls();
+  };
+  throttle.onkeyup = e => { if (throttleOwner === e.code) { e.preventDefault(); releaseThrottle(); } };
+  throttle.onblur = () => { if (typeof throttleOwner === "string") releaseThrottle(); };
+  // Click-only assistive input can toggle the same throttle; keyboard/pointer holds suppress their native click.
+  throttle.onclick = e => { if (e.detail === 0) {
+    if (throttleOwner !== null) releaseThrottle();
+    else { throttleOwner = "assistive"; engine.spillThrottle(true); updateSpillControls(); }
+  } };
+  diveButton.onclick = () => engine.spillDive();
+  lungeButton.onclick = () => engine.spillLunge();
+  spillControls.append(throttle, diveButton, lungeButton);
+  function updateSpillControls() {
+    const sp = engine.world.spill;
+    const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
+      && ["countdown", "wave", "drain"].includes(sp.phase);
+    spillControls.hidden = !visible;
+    if (!visible) { if (throttleOwner !== null) releaseThrottle(); return; }
+    const manual = sp.phase !== "countdown" || sp.manual;
+    diveButton.disabled = !manual;
+    lungeButton.disabled = !manual || sp.lungeCharges <= 0;
+    lungeButton.classList.toggle("spent", lungeButton.disabled);
+    const cap = sp.up.thrusters >= 2 ? 2 : 1;
+    lungeStatus.textContent = sp.lungeCharges ? `${sp.lungeCharges}/${cap} READY` : "RECHARGING";
+    lungeButton.setAttribute("aria-label", `Lunge: forward dash, ${sp.lungeCharges} of ${cap} charges ready`);
+    throttle.classList.toggle("held", throttleOwner !== null && sp.held);
+    throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
+  }
   const render = () => {
     disposeChart(); disposeChart = () => {};
+    updateSpillControls();
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
     if (prevScroll) keptScroll = prevScroll.scrollTop;
@@ -280,12 +348,7 @@ export async function bootStandalone(root: HTMLElement) {
         }
         if (sp.phase === "ready" && !sp.target) { overlay.append(drawSpillPrep()); return; }
         if (sp.phase === "docking") return;
-        // PULSE fires automatically.
-        const sbar = el("div", "ac-spillbar");
-        const lunge = el("button", sp.lungeCharges > 0 ? "ac-lunge" : "ac-lunge spent", "LUNGE ▸▸");
-        lunge.onclick = () => engine.spillLunge();
-        sbar.append(lunge);
-        overlay.append(sbar);
+        // The persistent button layer handles flight; Pulse fires automatically.
       }
       return;
     }
@@ -297,6 +360,25 @@ export async function bootStandalone(root: HTMLElement) {
           : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} ORE`
           : `Score ${engine.world.score}`),
       );
+      if (engine.world.spill) {
+        const settings = el("section", "ac-spillsettings");
+        settings.append(el("h3", "", "Flight controls"));
+        const option = (label: string, detail: string, on: boolean, hit: () => void) => {
+          const b = el("button", "ac-spillsetting");
+          b.setAttribute("role", "switch"); b.setAttribute("aria-label", label); b.setAttribute("aria-checked", String(on));
+          b.addEventListener("keydown", e => e.stopPropagation());
+          b.addEventListener("keyup", e => e.stopPropagation());
+          const text = el("span"); text.append(el("b", "", label), el("small", "", detail));
+          b.append(text, el("strong", "", on ? "ON" : "OFF")); b.onclick = hit; settings.append(b); return b;
+        };
+        option("On-screen buttons", "Throttle, Dive and Lunge. Gestures also work.", !engine.save.spillButtonsOff,
+          () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
+        const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.",
+          !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
+        prompts.disabled = !!engine.save.helpOff;
+        settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
+        sheet.append(settings);
+      }
       // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
       // drawn, so the row is there when Eclipse is the pilot and nowhere else.
       // Switching from the pause is the whole point: the three read completely
@@ -1479,9 +1561,11 @@ export async function bootStandalone(root: HTMLElement) {
     const save = engine.save;
     const mastery = spillMastery(save.spillBest);
     const panel = el("div", "ac-spillprep");
-    panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"),
-      el("p", "ac-sub", "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."),
-      el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
+    panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"));
+    if (!save.spillPromptsOff && !save.helpOff) panel.append(el("p", "ac-sub", save.spillButtonsOff
+      ? "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."
+      : "Hold Throttle to rise; release to fall. Tap Dive to descend or Lunge to dash forward. Change buttons and tips in Pause."));
+    panel.append(el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
     const label = el("label", "ac-spillselect", "Starting utility");
     const select = el("select"); select.setAttribute("aria-label", "Starting utility");
     const none = el("option", "", "Stock ship"); none.value = ""; select.append(none);
@@ -1541,6 +1625,8 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.append(tabs);
     const workspace = el("div", "ac-depotworkspace");
     const bay = el("div", "ac-depotbay");
+    bay.append(el("p", "ac-depotguide", "SELECT A SYSTEM TO UPGRADE"),
+      el("p", "ac-depotguidehint", "Choose a ship marker, then confirm its upgrade."));
     const stage = el("div", "ac-depotship");
     const preview = miniCanvas(344, 220);
     preview.c.setAttribute("role", "img"); preview.c.setAttribute("aria-label", "Your Spill ship with fitted upgrades and utilities");
@@ -1562,7 +1648,8 @@ export async function bootStandalone(root: HTMLElement) {
       for (let i = 0; i < total; i++) meter.append(el("i", i < level ? "on" : ""));
       const reading = el("span", "ac-hardpointreading");
       reading.append(meter, el("span", "", part === "shield" ? `${level}/2` : `LV.${level}`));
-      b.append(reading); b.onclick = () => { depotTab = "ship"; depotPart = part; render(); }; stage.append(b);
+      b.append(reading, el("span", "ac-hardpointaction", depotTab === "ship" && depotPart === part ? "SELECTED" : "SELECT"));
+      b.onclick = () => { depotTab = "ship"; depotPart = part; render(); }; stage.append(b);
     }
     bay.append(stage);
     const slots = el("div", "ac-depotslots");
@@ -1591,6 +1678,7 @@ export async function bootStandalone(root: HTMLElement) {
       }; requestAnimationFrame(tick);
     }
     const consolePanel = el("div", "ac-depotconsole");
+    consolePanel.dataset.system = depotTab === "ship" ? depotPart : depotTab;
     const buyButton = (what: SpillBuyable, label: string) => {
       const price = spillPrice(sp, what);
       const b = el("button", "ac-depotbuy"); b.dataset.spillControl = what;
@@ -1606,6 +1694,8 @@ export async function bootStandalone(root: HTMLElement) {
       const effect = part === "shield" ? "Absorb a hit, then recover briefly. The canopy stays fitted after its charge is used."
         : tier < max ? shop.levels[tier] : shop.levels[max - 1];
       consolePanel.append(el("p", "ac-sub", effect), buyButton(part, tier >= max ? "FULLY FITTED" : part === "shield" ? "CHARGE SHIELD" : `UPGRADE TO TIER ${tier + 1}`));
+      const price = spillPrice(sp, part);
+      if (price !== null && price > sp.ore) consolePanel.append(el("p", "ac-depotneed", `Collect ${price - sp.ore} more Ore to fit this upgrade.`));
       if (part !== "shield" && tier >= 2) {
         const specs = el("div", "ac-depotspecs");
         for (const [id, spec] of Object.entries(SPILL_SPECIALTIES).filter(([, spec]) => spec.axis === part)) {

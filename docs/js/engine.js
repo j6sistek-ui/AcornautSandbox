@@ -1,20 +1,20 @@
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=177";
-import { spillAppearance } from "./spill-appearance.js?v=177";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=177";
-import { reachedGate } from "./campaign.js?v=177";
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=177";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=177";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=177";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=177";
-import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=177";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=177";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=177";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=177";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=177";
-import { raceViewport } from "./race-viewport.js?v=177";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=177";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=177";
-import { bankSpill } from "./save.js?v=177";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=178";
+import { spillAppearance } from "./spill-appearance.js?v=178";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=178";
+import { reachedGate } from "./campaign.js?v=178";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=178";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=178";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=178";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=178";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=178";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=178";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=178";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=178";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=178";
+import { raceViewport } from "./race-viewport.js?v=178";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=178";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=178";
+import { bankSpill } from "./save.js?v=178";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -32,6 +32,7 @@ export async function createEngine(canvas) {
     let raceAccumulator = 0;
     let raceGesture = createRaceGestureState();
     let raceResizeKeyboardReleasePending = null;
+    const spillThrustSources = new Set();
     const listeners = new Set();
     const notify = () => listeners.forEach((fn) => fn());
     // The Spill used to live on a lab page and post its mission result back
@@ -319,6 +320,18 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
+        setSpillButtonsOff(off) {
+            save.spillButtonsOff = off;
+            if (off)
+                releaseSpillThrust("button");
+            writeSave(save);
+            notify();
+        },
+        setSpillPromptsOff(off) {
+            save.spillPromptsOff = off;
+            writeSave(save);
+            notify();
+        },
         setMotionOff(off) {
             save.motionOff = off;
             writeSave(save);
@@ -378,6 +391,24 @@ export async function createEngine(canvas) {
             if (ok)
                 notify();
             return ok;
+        },
+        spillThrottle(held) {
+            if (!held) {
+                releaseSpillThrust("button");
+                return;
+            }
+            if (!world.spill || world.screen !== "play" || save.spillButtonsOff)
+                return;
+            spillThrustSources.add("button");
+            if (flap(world, save) === "flap")
+                sfx.flap();
+        },
+        spillDive() {
+            if (!world.spill || world.screen !== "play")
+                return;
+            if (dive(world, save) === "dive")
+                sfx.dive();
+            notify();
         },
         spillLunge() {
             if (!world.spill || world.screen !== "play")
@@ -529,6 +560,7 @@ export async function createEngine(canvas) {
         pause() {
             cancelRaceControls();
             spillRelease(world);
+            spillThrustSources.clear();
             swipe = null;
             // A race pause discards the incomplete presentation-frame remainder.
             // Resume starts from the next whole 60 Hz authority step, so focus loss
@@ -989,9 +1021,16 @@ export async function createEngine(canvas) {
         return accepted;
     }
     function resetInputTracking() {
+        spillThrustSources.clear();
+        spillRelease(world);
         raceGesture = createRaceGestureState();
         raceResizeKeyboardReleasePending = null;
         swipe = null;
+    }
+    function releaseSpillThrust(source) {
+        spillThrustSources.delete(source);
+        if (!spillThrustSources.size)
+            spillRelease(world);
     }
     function cancelRaceControls(owner) {
         return applyRaceGesture(cancelRaceGesture(raceGesture, owner));
@@ -1027,6 +1066,8 @@ export async function createEngine(canvas) {
             return;
         }
         swipe = { owner: e.pointerId, x0: p.x, y0: p.y, t0: performance.now(), fired: false };
+        if (world.spill)
+            spillThrustSources.add("pointer");
         if (world.spill) {
             try {
                 canvas.setPointerCapture(e.pointerId);
@@ -1110,7 +1151,7 @@ export async function createEngine(canvas) {
         if (world.spill) {
             if (swipe?.owner !== e.pointerId)
                 return;
-            spillRelease(world);
+            releaseSpillThrust("pointer");
         }
         swipe = null;
     };
@@ -1155,6 +1196,8 @@ export async function createEngine(canvas) {
             // press until the physical key has first been released.
             if (raceResizeKeyboardReleasePending)
                 return;
+            if (world.spill && e.repeat && !spillThrustSources.has(e.code))
+                return;
             if (world.screen === "splash")
                 engine.open("title");
             else if (world.screen === "title")
@@ -1173,6 +1216,8 @@ export async function createEngine(canvas) {
                             : pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
                 }
                 else {
+                    if (world.spill)
+                        spillThrustSources.add(e.code);
                     const ev = flap(world, save);
                     if (ev === "flap")
                         sfx.flap();
@@ -1219,7 +1264,7 @@ export async function createEngine(canvas) {
     window.addEventListener("keyup", (e) => {
         if (e.code === "Space" || e.code === "ArrowUp") {
             if (world.spill)
-                spillRelease(world);
+                releaseSpillThrust(e.code);
             if (raceResizeKeyboardReleasePending === "keyboard-rise") {
                 raceResizeKeyboardReleasePending = null;
                 return;
@@ -1408,7 +1453,7 @@ export async function createEngine(canvas) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
                 drawWorld(ctx, world, save, art);
                 if (world.screen !== "pause")
-                    drawHud(ctx, world, art);
+                    drawHud(ctx, world, art, save);
             }
             else if (art.sky) {
                 ctx.drawImage(art.sky, 0, 0, world.W, world.H);
@@ -1462,4 +1507,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=177";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=178";

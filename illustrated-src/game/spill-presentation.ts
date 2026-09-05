@@ -55,3 +55,9 @@ export function spillDockView(W: number, H: number, imageW: number, imageH: numb
   const y = Math.max(H - height, Math.min(0, H * 0.62 - height * 0.62));
   return { x, y, width, height, progress, opacity: smooth(elapsed / 1.1) };
 }
+
+/** The marshal stands on the illustrated platform and travels with its camera. */
+export function spillDockBear(view: ReturnType<typeof spillDockView>, elapsed: number, reducedMotion = false) {
+  return { x: view.x + view.width * .686, y: view.y + view.height * .65, height: view.height * .075,
+    frame: reducedMotion ? 0 : Math.max(0, Math.min(35, Math.floor(elapsed / SPILL.dockTime * 36))) };
+}

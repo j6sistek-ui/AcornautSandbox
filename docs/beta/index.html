@@ -1028,12 +1028,8 @@
       min-height: 44px; min-width: 60px; }
     .ac-playbar { align-items: center; }
     .ac-iconbtn { width: 40px; height: 40px; border-radius: 12px; background: rgba(20,27,48,.8); color: #f3efe4; border: 1px solid #2a3454; font-weight: 800; }
-    /* THE SPILL. Two buttons stack in the bottom-RIGHT corner: a lunge for
-       anyone who misses the swipe, and the PULSE the graze meter pays for.
-       The right half of the field is the one place the pilot can never be
-       (the band stops at the halfway line), so nothing here can cover the
-       sprite or the floor's red warning glow; the column stays transparent
-       to taps between the buttons. */
+    /* Spill controls sit beyond the pilot's flight band. Empty space between
+       buttons passes gestures through to the field; Pulse fires automatically. */
     .ac-overlay > .ac-spillbar { position: absolute; right: 16px; bottom: calc(14px + env(safe-area-inset-bottom));
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
     .ac-spillbar button { pointer-events: auto; min-width: 88px; min-height: 44px; padding: 10px 16px; border-radius: 999px;
@@ -1742,6 +1738,51 @@
       .ac-depotbay { position: sticky; top: 0; } .ac-depotwrap .ac-depotcard { padding-inline: 22px; } }
     @media(max-height:570px) { body .ac-depotwrap .ac-depotcard { max-height: 98%; } }
     @media(prefers-reduced-motion:reduce) { .ac-depotenter .ac-depotcard { animation: none; } }
+    /* Spill controls stay mounted through HUD updates so a held thumb keeps ownership. */
+    .ac-stage > .ac-spillcontrols { position: absolute; right: max(12px,env(safe-area-inset-right)); bottom: max(12px,env(safe-area-inset-bottom));
+      z-index: 3; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .ac-spillcontrols[hidden] { display: none; }
+    .ac-spillcontrols button { pointer-events: auto; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      min-height: 54px; width: 112px; padding: 9px 10px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: linear-gradient(150deg,#24344ee8,#111b32e8); box-shadow: inset 0 1px #ffffff18,0 3px 0 #050a17a8; letter-spacing: .04em; }
+    .ac-spillcontrols button b { font: 800 11px Figtree,sans-serif; }
+    .ac-spillcontrols button span { font: 800 8px Figtree,sans-serif; letter-spacing: .05em; }
+    .ac-spillcontrols .ac-throttle { color: #ade9ca; border-color: #8adcb866; }
+    .ac-spillcontrols .ac-throttle.held { background: linear-gradient(150deg,#356b59,#1a3f3c); box-shadow: 0 0 18px #93d7b333; border-color: #b3f2d2; }
+    .ac-spillcontrols .ac-dive { color: #eac0a3; border-color: #dba78166; }
+    .ac-spillcontrols .ac-lunge { color: #a2ddf5; border-color: #8abfdb66; }
+    .ac-spillcontrols button:disabled { opacity: .5; }
+    .ac-spillcontrols button:focus-visible, .ac-spillsetting:focus-visible, .ac-hardpoint:focus-visible { outline: 2px solid #ffe1a0; outline-offset: 3px; }
+    .ac-spillsettings { display: flex; flex-direction: column; width: 100%; max-width: 520px; gap: 10px; text-align: left;
+      padding: 14px; border: 1px solid #9bc9ce44; border-radius: 16px; background: linear-gradient(135deg,#233249,#17182f); }
+    .ac-spillsettings h3 { margin: 0; font: 700 20px Fraunces,serif; color: #f5dfb8; }
+    .ac-spillsettings p { margin: 0; }
+    .ac-spillsetting { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; min-height: 60px;
+      border: 1px solid #ffffff22; border-radius: 11px; color: #e9e6f3; background: #0e172ccc; text-align: left; cursor: pointer; }
+    .ac-spillsetting > span { display: flex; flex-direction: column; gap: 5px; }
+    .ac-spillsetting b { font: 800 13px Figtree,sans-serif; }
+    .ac-spillsetting small { font: 500 11px/1.4 Figtree,sans-serif; color: #b3c3d8; }
+    .ac-spillsetting strong { font: 900 10px Figtree,sans-serif; border-radius: 7px; padding: 7px; background: #384053; color: #c0c9d8; }
+    .ac-spillsetting[aria-checked="true"] strong { color: #b7f0d1; background: #254e44; }
+    .ac-spillsetting:disabled { opacity: .6; }
+    .ac-depotguide { margin: 0 0 4px; color: #f4d499; font: 900 10px Figtree,sans-serif; letter-spacing: .09em; text-align: center; }
+    .ac-depotguidehint { margin: 0 0 10px; color: #b4c7da; font: 500 11px Figtree,sans-serif; text-align: center; }
+    .ac-depotbay { padding: 10px 7px; border: 1px solid #7ea4bd38; border-radius: 15px;
+      background: radial-gradient(ellipse at 50% 45%,#477da326,transparent 65%),linear-gradient(150deg,#34405955,#10172755);
+      box-shadow: inset 0 1px #ffffff13,0 7px 18px #03091c22; }
+    .ac-hardpoint { min-height: 58px; padding: 5px; gap: 4px; box-shadow: inset 0 1px #ffffff15,0 3px 0 #070f20; }
+    .ac-hardpointaction { font: 800 8px Figtree,sans-serif; letter-spacing: .1em; opacity: .8; }
+    .ac-depotconsole { --system-color: #b9dcce; --system-rgb: 110,186,160; border-left: 3px solid var(--system-color);
+      background: radial-gradient(ellipse at top left,rgba(var(--system-rgb),.22),transparent 80%),linear-gradient(150deg,#29354c,#11182c);
+      box-shadow: inset 0 1px #ffffff18,0 6px 20px #00000024; }
+    .ac-depotconsole[data-system="plating"] { --system-color: #e8b29c; --system-rgb: 211,150,120; }
+    .ac-depotconsole[data-system="shield"] { --system-color: #87d9f2; --system-rgb: 90,171,217; }
+    .ac-depotconsole[data-system="thrusters"] { --system-color: #f2cc82; --system-rgb: 216,170,89; }
+    .ac-depotconsole[data-system="pulse"] { --system-color: #c6acff; --system-rgb: 166,130,223; }
+    .ac-depotconsole[data-system="contracts"] { --system-color: #eccb93; --system-rgb: 174,131,68; }
+    .ac-depotconsole h3 { color: var(--system-color); }
+    .ac-depotneed { color: #f0c1a1; font: 700 11px/1.4 Figtree,sans-serif; }
+    @media(max-height:570px) { .ac-spillcontrols button { min-height: 46px; padding: 6px 8px; } .ac-stage > .ac-spillcontrols { gap: 6px; } }
   </style>
 <style id="ac-star-map-css">/* Continuous zone scenery; generated into both page shells by export-sandbox. */
 .ac-zone-chart { background: #090e1b; }
@@ -1811,7 +1852,7 @@
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js177/standalone.js")
+    import("../js178/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

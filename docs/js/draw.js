@@ -1,18 +1,18 @@
-import { spillAppearance } from "./spill-appearance.js?v=177";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=177";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=177";
-import { goalHud } from "./campaign.js?v=177";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=177";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=177";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=177";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=177";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=177";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=177";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=177";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=177";
-import { spillMastery } from "./spill-content.js?v=177";
-import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=177";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=177";
+import { spillAppearance } from "./spill-appearance.js?v=178";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=178";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=178";
+import { goalHud } from "./campaign.js?v=178";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=178";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=178";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=178";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=178";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=178";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=178";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=178";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=178";
+import { spillMastery } from "./spill-content.js?v=178";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=178";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=178";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1875,7 +1875,8 @@ function drawSpillWorld(ctx, w, save, art) {
     spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
     if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, s.phase === "depot" ? SPILL.dockTime : s.phaseT);
+        const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT;
+        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
         ctx.save();
         ctx.globalAlpha = view.opacity;
         ctx.drawImage(dock, view.x, view.y, view.width, view.height);
@@ -1885,6 +1886,20 @@ function drawSpillWorld(ctx, w, save, art) {
         shade.addColorStop(1, "rgba(3,7,20,.3)");
         ctx.fillStyle = shade;
         ctx.fillRect(0, 0, W, H);
+        const marshal = spillDockBear(view, arrival, !!save.motionOff);
+        const bear = art.spillScene?.bear?.[marshal.frame];
+        if (bear) {
+            ctx.fillStyle = "rgba(6,5,16,.45)";
+            ctx.beginPath();
+            ctx.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.save();
+            ctx.translate(marshal.x, marshal.y);
+            const scale = marshal.height / bear.image.height;
+            ctx.scale(-scale, scale); // face the incoming ship
+            ctx.drawImage(bear.image, -bear.footX, -bear.footY);
+            ctx.restore();
+        }
         ctx.restore();
     }
     const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
@@ -2094,7 +2109,7 @@ function drawSpillHint(ctx, w, text, alpha, bottom) {
     }
     ctx.restore();
 }
-function drawSpillHud(ctx, w, art) {
+function drawSpillHud(ctx, w, art, hidePrompts = false) {
     const s = w.spill;
     const { W, H } = w;
     ctx.textAlign = "center";
@@ -2252,7 +2267,7 @@ function drawSpillHud(ctx, w, art) {
         ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
     }
     // the free lesson, while it runs
-    if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
+    if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
         drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
     }
     if (s.phase === "ready" && s.target) {
@@ -4944,10 +4959,10 @@ export function hyperRunReadyLines(viewWidth) {
         "PRESS + HOLD TO LAUNCH",
     ];
 }
-export function drawHud(ctx, w, art) {
+export function drawHud(ctx, w, art, save) {
     const { W } = w;
     if (w.spill) {
-        drawSpillHud(ctx, w, art);
+        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
         return;
     }
     if (w.race) {

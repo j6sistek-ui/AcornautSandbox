@@ -119,6 +119,9 @@ export type SaveData = {
    *  - introOff: the launch film is skipped */
   sfxOff?: boolean;
   helpOff?: boolean;
+  /** Spill-only comfort controls. Old saves show buttons and instructions. */
+  spillButtonsOff?: boolean;
+  spillPromptsOff?: boolean;
   motionOff?: boolean;
   introOff?: boolean;
   /** LOADOUT FAVOURITES: suit, helmet and trail ids the pilot starred.

@@ -1,12 +1,15 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=174";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=174";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=174";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=174";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=174";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=174";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=174";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=174";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=174";
+import { missionRandom } from "./mission-rng.js?v=178";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=178";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=178";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=178";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=178";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=178";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=178";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=178";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=178";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=178";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=178";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=178";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -320,8 +323,8 @@ function gapSpacing(w) {
 // 85%–115% spread because its rotation gives tight pairs room to read.
 function nextGapSpacing(w) {
     return w.flight === "lost"
-        ? gapSpacing(w) * (0.85 + Math.random() * 0.3)
-        : gapSpacing(w) * (1 + Math.random() * 0.15);
+        ? gapSpacing(w) * (0.85 + (w.missionRng ?? Math.random)() * 0.3)
+        : gapSpacing(w) * (1 + (w.missionRng ?? Math.random)() * 0.15);
 }
 function overdriveT(score) {
     if (score < PHYS.overdriveGate)
@@ -429,12 +432,12 @@ function sealBlockers(w, env, gapY, gap) {
     // can never swing its cut end into view. See sealReach.
     const edge = -sealReach(w);
     const put = (y, n) => {
-        const rr = (19 + Math.random() * 7) * DEBRIS_SIZE;
+        const rr = (19 + (w.missionRng ?? Math.random)() * 7) * DEBRIS_SIZE;
         blockers.push({
             y,
             r: rr,
             kind: pickKind(w),
-            xOff: ((n % 2) * 2 - 1) * (2 + Math.random() * 5),
+            xOff: ((n % 2) * 2 - 1) * (2 + (w.missionRng ?? Math.random)() * 5),
             // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
             // own clock - up to its own RADIUS either way, at its own speed, from
             // its own phase - so a stack reads as debris hanging in space rather
@@ -444,14 +447,14 @@ function sealBlockers(w, env, gapY, gap) {
             //
             // It was a full width either way at first, which spread the column too
             // far to still read as one seal. Halved.
-            amp: Math.random() * rr,
+            amp: (w.missionRng ?? Math.random)() * rr,
             // The SPREAD was right and the SPEED was not: at full rate the column
             // read as arcade jitter rather than anything hanging in space. Only
             // the clock is scaled here - amplitude, phase and the per-rock variety
             // are all untouched, so the stack keeps exactly the diversity it had
             // and simply takes four times as long to get anywhere.
-            rate: (0.45 + Math.random() * 0.9) * DEBRIS_DRIFT_RATE,
-            phase: Math.random() * Math.PI * 2,
+            rate: (0.45 + (w.missionRng ?? Math.random)() * 0.9) * DEBRIS_DRIFT_RATE,
+            phase: (w.missionRng ?? Math.random)() * Math.PI * 2,
             debris: pickDebris(env),
         });
     };
@@ -782,7 +785,7 @@ function spawnPair(w, save, x) {
     const d = difficulty(w);
     let gap = d.gap * (w.lvl?.def.fx.gapScale ?? 1);
     const margin = 72;
-    let gapY = margin + gap / 2 + Math.random() * (w.H - 2 * margin - gap);
+    let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
     const dx = Math.max(80, x - w.lastSpawnX);
     // Reachability, on the live game's tuned model. The two budgets are NOT
     // symmetric and must not be swapped: climbing is the slow direction
@@ -839,7 +842,7 @@ function spawnPair(w, save, x) {
         topKind: pairKind,
         botKind: pairKind,
         scored: false,
-        drift: Math.random() * Math.PI * 2,
+        drift: (w.missionRng ?? Math.random)() * Math.PI * 2,
         driftAmp,
         blockers,
     });
@@ -867,13 +870,13 @@ function spawnPair(w, save, x) {
     let slotUsed = false;
     if (w.lvl) {
         w.lvl.spawnOrd += 1;
-        if (w.lvl.def.fx.acornEvery && noPick) {
-            const off = (Math.random() - 0.5) * gap * 0.35;
-            w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
+        if (w.lvl.def.fx.acornEvery) {
+            const off = ((w.missionRng ?? Math.random)() - 0.5) * gap * 0.35;
+            w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "acorn" });
             slotUsed = true;
         }
         if (w.lvl.goldGates.includes(w.lvl.spawnOrd)) {
-            w.pickups.push({ x: x + 52, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "gold" });
+            w.pickups.push({ x: x + 66, y: gapY + ((w.missionRng ?? Math.random)() - 0.5) * gap * 0.2, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "gold" });
             slotUsed = true;
         }
     }
@@ -905,7 +908,7 @@ function spawnPair(w, save, x) {
                 // else, AND fading out entirely by gate 200
                 ["shield", noShield ? 0 : 0.03 * norm * shieldFalloff(w)],
             ];
-            let roll = Math.random();
+            let roll = (w.missionRng ?? Math.random)();
             for (const [kind, chance] of odds) {
                 if (roll >= chance) {
                     roll -= chance;
@@ -913,15 +916,15 @@ function spawnPair(w, save, x) {
                 }
                 const spread = kind === "slow" ? 0.22 : kind === "gold" ? 0.2 : 0.18;
                 const at = kind === "slow" ? 36 : kind === "gold" ? 52 : 20;
-                w.pickups.push({ x: x + at, y: gapY + (Math.random() - 0.5) * gap * spread,
-                    got: false, bob: Math.random() * 6, kind });
+                w.pickups.push({ x: x + at, y: gapY + ((w.missionRng ?? Math.random)() - 0.5) * gap * spread,
+                    got: false, bob: (w.missionRng ?? Math.random)() * 6, kind });
                 slotUsed = true;
                 break;
             }
         }
-        if (!slotUsed && (w.tut || Math.random() < acornOdds)) {
-            const off = w.tut?.stage === "gates7" ? (Math.random() < 0.5 ? -1 : 1) * gap * 0.32 : (Math.random() - 0.5) * gap * 0.35;
-            w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: Math.random() * 6, kind: "acorn" });
+        if (!slotUsed && (w.tut || (w.missionRng ?? Math.random)() < acornOdds)) {
+            const off = w.tut?.stage === "gates7" ? ((w.missionRng ?? Math.random)() < 0.5 ? -1 : 1) * gap * 0.32 : ((w.missionRng ?? Math.random)() - 0.5) * gap * 0.35;
+            w.pickups.push({ x: x + 8, y: gapY + off, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "acorn" });
             slotUsed = true;
         }
         // Deep Space runs its own shift on a timer, so a black hole there does
@@ -939,8 +942,8 @@ function spawnPair(w, save, x) {
         // was written to stop. warpT covers the entry swirl on the way in.
         const warping = w.warpGateEnd >= 0 || w.warpLeft > 0 || w.warpT > 0;
         const holeRate = holeChance(w);
-        if (!w.tut && !noHoles && !warping && holeRate > 0 && Math.random() < holeRate) {
-            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10 });
+        if (!w.tut && !noHoles && !warping && !(w.lvl && slotUsed) && holeRate > 0 && (w.missionRng ?? Math.random)() < holeRate) {
+            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "hole", r: gap * 0.5 + 10 });
         }
         // The way home. Once the fifteen gates are behind you the next gate
         // carries the exit, dead centre in the mouth so it cannot be missed by
@@ -952,7 +955,7 @@ function spawnPair(w, save, x) {
         // of every Deep Space and Arcade warp, which end on their own clock.
         if (w.warpGateEnd >= 0 && !w.warpExitSpawned && w.score >= w.warpGateEnd) {
             w.warpExitSpawned = true;
-            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
+            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "hole", r: gap * 0.5 + 10, exit: true });
         }
         // The door to the other game. It rides in Free Flight only — the
         // one place you can leave the illustrated game and slip into the
@@ -961,8 +964,8 @@ function spawnPair(w, save, x) {
         // way across, not a hazard. It stays shut until gate 100: crossing
         // timelines is a late-run reward, not something you meet on your
         // second gate before you have seen this game properly.
-        if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && Math.random() < 0.05) {
-            w.pickups.push({ x: x + 44, y: gapY + (Math.random() - 0.5) * gap * 0.2, got: false, bob: Math.random() * 6, kind: "retro" });
+        if (!w.tut && w.flight === "fly" && w.score >= RETRO_GATE && (w.missionRng ?? Math.random)() < 0.05) {
+            w.pickups.push({ x: x + 44, y: gapY + ((w.missionRng ?? Math.random)() - 0.5) * gap * 0.2, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "retro" });
         }
         // Wormholes are DOORS now, not reorientations: catching one flies the
         // pilot down a real corridor for fifteen seconds and puts them back
@@ -980,7 +983,7 @@ function spawnPair(w, save, x) {
         // Space, a corridor, and out again at twenty-one.
         if (!w.tut && !noHoles && !warping && wormChance(w) > 0 && w.gatesSpawned >= w.wormNextGate) {
             w.wormNextGate = w.gatesSpawned + WORM_EVERY_GATES;
-            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: Math.random() * 6, kind: "worm", r: gap * 0.5 + 10 });
+            w.pickups.push({ x: x + 64, y: gapY, got: false, bob: (w.missionRng ?? Math.random)() * 6, kind: "worm", r: gap * 0.5 + 10 });
         }
     }
     w.lastSpawnX = x;
@@ -989,12 +992,14 @@ function spawnPair(w, save, x) {
 }
 export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.flight = flight;
+    w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
     // up FIRST because everything below (env order, spawn fx) reads it.
     // guarded on typeof: the tunnel test suite used to pass its SEED in this
     // slot, and a bare truthy check made a number impersonate a level
     w.lvl = level && typeof level === "object"
-        ? { def: level, stats: emptyStats(), portal: false, strobeT: 9,
+        ? { def: level, stats: emptyStats(), portal: false,
+            barrierAfter: level.base === "race" ? reachedGate(routeMasks(save), save.raceGates)?.after : undefined,
             goldGates: goldGatesFor(level), spawnOrd: 0 }
         : null;
     // every run starts in this game; the arcade acorn is the only way out
@@ -1017,11 +1022,11 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.race = w.lvl?.def.base === "race" ? createRaceState() : null;
     w.raceCues = [];
     w.raceCueEffects = [];
-    // A Spill mission flies a FIXED field: the seed is the level's ordinal,
-    // so mission 3-8 is the same ladder for every pilot. The endless mode
+    // Spill missions retain their explicit legacy seeds across reorderings.
+    // The endless mode
     // rolls a fresh one every run.
     w.spill = flight === "spill"
-        ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0, !save.helpOff)
+        ? createSpill(w.W, w.H, level ? level.seed : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0, !save.helpOff)
         : null;
     w.spillCues = [];
     if (w.spill) {
@@ -1077,9 +1082,9 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.prevMirror = false;
     w.deepTimer = 0;
     w.warpKind = null;
-    w.driftPhase = Math.random() * 100;
+    w.driftPhase = (w.missionRng ?? Math.random)() * 100;
     w.driftFactor = 1;
-    w.tiltPhase = Math.random() * 100;
+    w.tiltPhase = (w.missionRng ?? Math.random)() * 100;
     w.recoveryMsg = "";
     w.envA = 0;
     w.envB = 0;
@@ -1441,7 +1446,7 @@ function initTunnel(w, forcedSeed, leadNodes = 0) {
         flow: 0, flowBest: 0, flowGrace: 0, chain: 0, bestChain: 0,
         sectionsCleared: 0, time: 0, nearMisses: 0,
         nextHazardAt: 1800, nextPickupAt: 720,
-        seed: Math.max(1, Math.floor(forcedSeed ?? (Math.random() * 1000000 + 1))),
+        seed: Math.max(1, Math.floor(forcedSeed ?? ((w.missionRng ?? Math.random)() * 1000000 + 1))),
         leadNodes: 0,
         buildSection: -1, buildPattern: "launch", buildRegion: 0,
         patternPos: 0, patternLength: 0,
@@ -2408,7 +2413,6 @@ export function flap(w, save) {
     w.run.taps += 1;
     if (w.lvl) {
         w.lvl.stats.taps += 1;
-        w.lvl.strobeT = 0; // THE BLACKOUT: a tap is a flashbulb
     }
     w.lampT = 0; // NIGHTGLIDER's lamp is lit the same way
     // A repeated tap while the burst is still playing keeps the current body
@@ -2648,7 +2652,7 @@ function lostTiltAt(p) {
     return LOST_TILT_MAX * (0.6 * Math.sin(p * 0.35) + 0.4 * Math.sin(p * 0.13 + 1.3));
 }
 function pickWarpVariant(w) {
-    const variant = Math.floor(Math.random() * 5);
+    const variant = Math.floor((w.missionRng ?? Math.random)() * 5);
     w.warpMirror = variant < 3;
     const TILT = WARP_TILT_MAX;
     w.warpTilt = variant === 0 ? 0 : variant === 1 || variant === 3 ? TILT : -TILT;
@@ -2676,7 +2680,7 @@ function startSwirl(w, kind) {
     // no warp. Catching one then had no effect for fifteen seconds. Give
     // it a tilt so a wormhole always reorients something.
     if (kind !== "timeline" && w.flight !== "lost" && !warpVisible(w.warpTilt, w.warpMirror)) {
-        w.warpTilt = WARP_TILT_MAX * (Math.random() < 0.5 ? 1 : -1);
+        w.warpTilt = WARP_TILT_MAX * ((w.missionRng ?? Math.random)() < 0.5 ? 1 : -1);
     }
     w.warpKind = kind;
     w.warpT = 1;
@@ -2785,13 +2789,19 @@ export function settleLevel(w, save, finished) {
         // actually standing at - the first uncleared one - and only that one.
         // Beating 1:42 at the very first field does not silently bank all
         // three: each field is its own trip back.
-        const gate = gateClearedBy(save.raceGates, finished, finishTicks);
+        const candidate = reachedGate(routeMasks(save), save.raceGates);
+        const gate = candidate && candidate.after === lvl.barrierAfter
+            ? gateClearedBy(save.raceGates, finished, finishTicks) : null;
         let clearedGate = null;
         if (gate) {
             save.raceGates = [...new Set([...(save.raceGates || []), gate.after])];
+            const progress = migrateCampaign(save);
+            const id = barrierId(gate.after);
+            if (!progress.barriers.includes(id))
+                progress.barriers.push(id);
             clearedGate = { after: gate.after, label: gate.label };
         }
-        const total = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
+        const total = earnedCampaignStars(save, CHART_LEVELS);
         writeSave(save);
         w.lastLevel = {
             def,
@@ -2818,12 +2828,9 @@ export function settleLevel(w, save, finished) {
         w.deadTimer = 0;
         return;
     }
-    const before = save.stars?.[def.id] || 0;
-    const totalBefore = Object.values(save.stars || {}).reduce((n, m) => n + countBits(m), 0);
-    if (!save.stars)
-        save.stars = {};
-    save.stars[def.id] = before | mask;
-    const totalAfter = Object.values(save.stars).reduce((n, m) => n + countBits(m), 0);
+    const totalBefore = earnedCampaignStars(save, CHART_LEVELS);
+    const credit = settleMissionCredit(save, def, mask);
+    const totalAfter = earnedCampaignStars(save, CHART_LEVELS);
     // the run still banks like any other: acorns are real, XP keeps the
     // pilot's title alive, lifetime tallies grow
     save.acorns += w.runAcorns;
@@ -2837,8 +2844,8 @@ export function settleLevel(w, save, finished) {
         def,
         finished,
         met,
-        newMask: before | mask,
-        gained: countBits((before | mask) & ~before),
+        newMask: credit.verified,
+        gained: credit.gained,
         totalBefore,
         totalAfter,
         stats: { ...lvl.stats },
@@ -3378,9 +3385,9 @@ export function updateWorld(w, save, dt) {
         w.hitCooldown = Math.max(0, w.hitCooldown - simDt);
     if (w.envMsgT > 0)
         w.envMsgT = Math.max(0, w.envMsgT - dt);
-    if (w.lvl)
-        w.lvl.strobeT += dt;
     w.lampT += dt;
+    if (!w.ready && !w.race && !w.spill && w.flight !== "tunnel")
+        recordZoneVisit(save, w.envB);
     if (w.spill)
         return updateSpill(w, save, dt);
     if (w.flight === "tunnel" && w.tunnel)
@@ -3397,7 +3404,7 @@ export function updateWorld(w, save, dt) {
         w.clockPhase += simDt * w.clockRate;
         if (w.clockPhase >= Math.PI * 2) {
             w.clockPhase -= Math.PI * 2;
-            w.clockRate = 0.22 + Math.random() * 0.66; // ~9s to ~29s per swell
+            w.clockRate = 0.22 + (w.missionRng ?? Math.random)() * 0.66; // ~9s to ~29s per swell
         }
         const target = 0.9 + 0.6 * Math.sin(w.clockPhase); // 0.30 .. 1.50
         w.clockMul += (target - w.clockMul) * Math.min(1, simDt * 1.6);
@@ -3468,9 +3475,8 @@ export function updateWorld(w, save, dt) {
         w.envBlend = 0;
         w.envMsgT = 2.2;
         // the Profile screen counts zones the pilot has actually reached
-        const zone = ENVS[targetEnv]?.name;
-        if (zone && !save.zonesSeen.includes(zone))
-            save.zonesSeen.push(zone);
+        if (!w.ready)
+            recordZoneVisit(save, targetEnv);
     }
     if (w.envBlend < 1)
         w.envBlend = Math.min(1, w.envBlend + dt * 0.55);

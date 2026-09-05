@@ -33,6 +33,14 @@ remain stable. Missions use the standard starting ship and a fixed seed.
 - A swipe still works after a long hold. Only the owning pointer releases it;
   cancellation, lost capture, blur, visibility loss and resize clear the hand.
 - Space / Up hold thrust; Down dives; W bursts upward; Right / D lunges.
+- Optional on-screen Throttle (hold), Dive (downward burst) and Lunge
+  (forward dash) use those same rules. The button layer survives HUD updates,
+  tracks the holding finger and supports a second finger for Dive or Lunge.
+  Gesture, keyboard and button holds release independently; pause cancels all.
+- The Spill pause menu saves separate switches for buttons and instructional
+  prompts. Hiding prompts affects presentation only: warning banners, event
+  corridors, HUD information and wave pacing remain active. Global Help off
+  also hides lessons. The settings apply immediately and after save/resume.
 - Simulation advances in 60 Hz steps independently of display refresh rate.
 - DRIFT changes debris velocity, while pilot, warnings and floor stay in the
   same screen coordinates used by collision detection.
@@ -132,6 +140,14 @@ camera and fades its workbench into place; station art never shrinks into a
 menu banner. Utility marks use shared vector paths on the hull, HUD and
 workbench, and fitted specializations add gold system indicators.
 
+The supplied `depot-bear.jpg` contains 36 frames in a 6 × 6 grid. It is kept
+intact and decoded once into transparent frames by `game/spill-depot-bear.ts`.
+Background removal preserves the light suit; feet provide a stable frame
+anchor. The bear faces the approaching ship on the platform, moving with the
+station camera and signaling across the arrival. It holds its final pose at
+the Depot. Reduced motion uses a still pose; a failed bear load does not
+block the scene or the run.
+
 ## Records and suspension
 
 Spendable Ore and purchased upgrades belong to a run. Persistent records keep
@@ -156,6 +172,7 @@ Ore never enters the app's acorn wallet.
 | `game/spill.ts` | Pure rules, spawning, damage, checkpoints |
 | `game/spill-content.ts` | Utilities, specializations, contracts, sectors and mastery |
 | `game/spill-presentation.ts` | Shared preview builds, Ore quotes, module marks and arrival camera |
+| `game/spill-depot-bear.ts` | Supplied marshal sheet decoding and foot anchors |
 | `game/sim.ts` | World mirror, standard mission loadout and completion seam |
 | `game/engine.ts` | Inputs, fixed stepping, interruption pause, banking and resume |
 | `game/save.ts` | Record migration, sanitization and idempotent bank ledger |
