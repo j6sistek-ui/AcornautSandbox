@@ -1,6 +1,7 @@
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=177";
-import { IS_BETA, STAR_MAP_PREVIEW } from "./catalog.js?v=177";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=177";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=178";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=178";
+import { IS_BETA } from "./catalog.js?v=178";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=178";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -253,15 +254,14 @@ export const STAGES = [
 // ------------------------------------------------------------------ levels
 /** Immutable authored definitions. Beta variants share a route position, but
  * have their own progress identity. Production never loads preview progress. */
-export const ALL_LEVELS = MISSION_ROWS.map(row => {
+export const LEGACY_LEVELS = MISSION_ROWS.slice(0, 100).map(row => {
     const variant = IS_BETA ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
     return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
         goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) };
 });
-// Deliberate release boundary for this sample PR, not a completion rule.
-// Full activation changes this selection only after the remaining content is reviewed.
-export const LEVELS = ALL_LEVELS.slice(0, 100);
-export const CHART_LEVELS = STAR_MAP_PREVIEW ? ALL_LEVELS : LEVELS;
+export const ALL_LEVELS = (IS_BETA ? BETA_MISSION_ROWS : MISSION_ROWS).map(row => ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) }));
+export const LEVELS = IS_BETA ? ALL_LEVELS : LEGACY_LEVELS;
+export const CHART_LEVELS = LEVELS;
 export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
 export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
 export const levelById = (id) => CHART_LEVELS.find(l => l.id === id) ?? null;
@@ -299,7 +299,10 @@ export const hyperRunById = (id) => id === HYPER_RUN_MISSION.id ? HYPER_RUN_MISS
 // ------------------------------------------------------------------ prose
 export function goalText(g, def) {
     switch (g.kind) {
-        case "finish": return def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
+        case "bounces": return `Bounce off planets ${g.n} times`;
+        case "depots": return `Visit ${g.n} Depot${g.n === 1 ? "" : "s"}`;
+        case "repairs": return `Buy ${g.n} hull repair at a Depot`;
+        case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Mine ${def.spillFinish.n} Ore` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
             : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
@@ -321,6 +324,16 @@ export function goalText(g, def) {
 }
 export function fxText(fx) {
     const out = [];
+    if (fx.pal)
+        out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · TAP REVERSE" : fx.pal.toUpperCase()}`);
+    if (fx.upsideDown)
+        out.push("UPSIDE DOWN");
+    if (fx.bounceScale)
+        out.push("SPRINGY PLANETS");
+    if (fx.sticky)
+        out.push("STICKY PLANETS · TAP TO RELEASE");
+    if (fx.tapFreeze)
+        out.push("TAP TO TOGGLE SLOW");
     if (fx.fog)
         out.push(fx.fog >= 0.7 ? "HEAVY FOG" : "FOG");
     if (fx.pace && fx.pace > 1.02)
@@ -335,7 +348,7 @@ export function fxText(fx) {
         out.push("SWAYING GATES");
     return out;
 }
-export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, ore: 0, hits: 0, finishTicks: 0 });
+export const emptyStats = () => ({ acorns: 0, gold: 0, bounces: 0, shieldsSpent: 0, taps: 0, flow: 1, score: 0, ore: 0, hits: 0, depots: 0, repairs: 0, finishTicks: 0 });
 /** how many golden acorns this level's goals ask for (0 = none) */
 export function goldNeeded(def) {
     let n = 0;
@@ -362,7 +375,14 @@ export function goldGatesFor(def) {
 }
 export function goalHud(g, s, gatesDone, def) {
     switch (g.kind) {
+        case "bounces": return { text: `BOUNCES ${Math.min(s.bounces, g.n)}/${g.n}`, state: s.bounces >= g.n ? "done" : "live" };
+        case "depots": return { text: `DEPOTS ${Math.min(s.depots, g.n)}/${g.n}`, state: s.depots >= g.n ? "done" : "live" };
+        case "repairs": return { text: `REPAIRS ${Math.min(s.repairs, g.n)}/${g.n}`, state: s.repairs >= g.n ? "done" : "live" };
         case "finish": {
+            if (def.spillFinish) {
+                const { kind, n } = def.spillFinish, value = kind === "ore" ? s.ore : s.depots;
+                return { text: `${kind === "ore" ? "ORE" : "DEPOT"} ${Math.min(value, n)}/${n}`, state: value >= n ? "done" : "live" };
+            }
             const n = Math.min(gatesDone, def.gates);
             if (def.base === "spill")
                 return { text: `WAVE ${n}/${def.gates}`, state: n >= def.gates ? "done" : "live" };
@@ -399,6 +419,9 @@ export function goalHud(g, s, gatesDone, def) {
 export function goalMet(g, s) {
     switch (g.kind) {
         case "finish": return true;
+        case "bounces": return s.bounces >= g.n;
+        case "depots": return s.depots >= g.n;
+        case "repairs": return s.repairs >= g.n;
         case "acorns": return s.acorns >= g.n;
         case "gold": return s.gold >= g.n;
         case "noBounce": return s.bounces === 0;
@@ -477,8 +500,6 @@ export function gateClearedBy(cleared, finished, finishTicks) {
 export function levelUnlocked(def, stars, _total, gatesCleared, order = CHART_LEVELS, beta = IS_BETA) {
     const index = order.findIndex(l => l.id === def.id);
     if (index < 0 || def.implemented === false)
-        return false;
-    if (STAR_MAP_PREVIEW && order === CHART_LEVELS && !def.sample)
         return false;
     if (beta)
         return true;

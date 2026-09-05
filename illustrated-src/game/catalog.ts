@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "177";
+export const ART_VER = "178";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -13,9 +13,8 @@ export const IS_BETA =
   typeof window !== "undefined" &&
   (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
 
-/** The sample is a beta-only review surface with no inherited save. */
-export const STAR_MAP_PREVIEW = IS_BETA && typeof window !== "undefined"
-  && new URLSearchParams(window.location?.search ?? "").get("star-map") === "sample";
+/** Beta itself is the 260-mission playtest. Retained name for cosmetic previews. */
+export const STAR_MAP_PREVIEW = IS_BETA;
 
 // WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
 // until the beta set was promoted, and conflating them is dangerous: the save
@@ -47,8 +46,8 @@ export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}$
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
-export const SAVE_KEY = STAR_MAP_PREVIEW ? "acornaut_star_map_sample_v1" : IS_BETA ? "acornaut_illust_beta" : "acornaut_illust_v1";
-export const LEGACY_KEYS = STAR_MAP_PREVIEW ? [] : IS_BETA
+export const SAVE_KEY = IS_BETA ? "acornaut_illust_beta" : "acornaut_illust_v1";
+export const LEGACY_KEYS = IS_BETA
   ? ["acornaut_illust_v1", "acornaut_beta", "acornaut_v2"]
   : ["acornaut_beta", "acornaut_v2"];
 export const TUT_ARM = 1.25;
@@ -296,6 +295,7 @@ export const PAL_ANIM: Record<string, number> = {
 };
 
 export const PALS: Pal[] = [
+  ...(IS_BETA ? [{ id: "switchback", name: "Switchback", tag: "TAP REVERSE · BETA", desc: "Each tap reverses scrolling in normal flight. Revisit the corridor, then tap to head forward. Experimental; no effect in other modes.", art: "switchback" }] : []),
   { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
   { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
   { id: "buddy", name: "Acorn", tag: "MAGNET", desc: "Magnet Effect", art: "buddy" },

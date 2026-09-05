@@ -1,4 +1,4 @@
-// Generate the published road and the separately isolated sample from runtime data.
+// Generate production and the full default beta route from their actual contracts.
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -11,13 +11,14 @@ const compiler = process.env.ACORNAUT_TSC;
 try {
   execFileSync(compiler ? process.execPath : 'npx', compiler ? [compiler,...args] : ['--yes','--package','typescript@5.9.2','tsc',...args], {cwd:root,stdio:'inherit'});
   const { LEVELS, ALL_LEVELS, STAR_REWARDS, RACE_GATES, goalText, fxText } = await import(pathToFileURL(join(tmp,'campaign.js')).href);
+  const { BETA_MISSION_ROWS } = await import(pathToFileURL(join(tmp,'beta-campaign-manifest.js')).href);
   const { ENVS } = await import(pathToFileURL(join(tmp,'catalog.js')).href);
   const plan = JSON.parse(readFileSync(join(root,'illustrated-src/design/star-map-260.json'),'utf8'));
   const rewards = STAR_REWARDS.filter(r => r.kind !== 'stage');
   if (new Set(ALL_LEVELS.map(l=>l.id)).size !== ALL_LEVELS.length) throw new Error('Duplicate mission identity');
   if (JSON.stringify(RACE_GATES.map(g=>[g.after,g.ticks])) !== '[[33,9000],[66,7200],[99,6120]]') throw new Error('Barrier contract changed');
   let md = `# Star Chart roadmap\n\nGenerated from the runtime campaign by illustrated-src/build-roadmap.mjs.\n\n`;
-  md += `The published campaign has **${LEVELS.length} missions and ${LEVELS.length*3} stars**. The approved expansion manifest contains ${ALL_LEVELS.length} missions across ${plan.zoneOrder.length} zone identities. Its final activation is held for review.\n\n`;
+  md += `The published campaign has **${LEVELS.length} missions and ${LEVELS.length*3} stars**. The approved expansion manifest contains ${ALL_LEVELS.length} missions across ${plan.zoneOrder.length} zone identities. Beta now loads all 260 missions by default with every mission unlocked. Production activation remains held for review.\n\n`;
   md += `The road climbs continuously. Finish the preceding mission to open the next, then clear each of the three mandatory Hyper Run barriers. Star totals unlock rewards, **not chapters**. Successful replays retain independent objectives. The first mission has eight real gates and unlimited crash recovery.\n\n`;
   md += '| Barrier after | Required Hyper Run finish | Stars |\n|---:|---|---:|\n';
   for (const g of RACE_GATES) md += `| ${g.after} | ${g.label} or faster (≤ ${g.ticks} ticks) | 0 |\n`;
@@ -27,18 +28,18 @@ try {
   for (const l of LEVELS) md += row(l);
   md += '\n## Existing reward entitlements\n\nThese thresholds and prices remain unchanged; reveal eligibility and purchased ownership are separate. Stage rows are retired compatibility data and are not functional rewards.\n\n| Stars | Reward |\n|---:|---|\n';
   for (const r of rewards) md += `| ${r.stars} | **${r.name}** — ${r.desc} |\n`;
-  md += '\n## Isolated beta sample\n\nOpen the Star Chart in beta and select **Explore the Star Map sample**. The URL parameter `?star-map=sample` selects its own save with no production/beta import. The full road shows 260 positions, but only Deep Space 1–10, Rust Belt 101–110 and Blackout Zone 241–250 can be launched. The remaining positions are labeled outside the sample. Normal production and beta keep their published counts and rewards.\n\n';
+  md += '\n## Full beta playtest\n\nOpen `/beta/` → Star Chart. All 260 missions are playable immediately; no proposal page or sample toggle. Every zone uses six flight missions, one Lost in Space, one black-hole/Deep Space, one Arcade and one Spill mission. This is a first-pass mix for playtesting.\n\n';
   md += '| # | Stable ID | Mission | Zone | Mode | ★1 | ★2 | ★3 | Modifiers | Seed |\n|---:|---|---|---|---|---|---|---|---|---|\n';
-  for (const l of ALL_LEVELS.filter(l=>l.sample)) md += row(l);
+  for (const l of BETA_MISSION_ROWS) md += row(l);
   md += '\n## Expansion and preservation contract\n\n';
-  md += '- The full 260-entry specification, duration targets, neighbor distinctions, explicit old-to-new mappings and reward extension are in `illustrated-src/design/star-map-260.json`.\n';
+  md += '- The original direction remains in `illustrated-src/design/star-map-260.json`; the current beta’s explicit missions, challenges, duration estimates, predecessor IDs and stable seeds are in `illustrated-src/game/beta-campaign-manifest.ts`. See `illustrated-src/design/BETA_260.md` for the revision and migration policy.\n';
   md += '- Map planet and decorative debris families follow each mission’s zone, including the original 100. Gradual painted scenery overlaps retain a single ascending road; no chapter panels or ten-level cutoffs. Deep Space, Rust Belt and Blackout Zone have new painted plates plus procedural stars.\n';
-  md += '- Blackout flashing is removed. Existing steady fog, pace, gap width and sway provide variety. New missions do not create new gameplay mechanics.\n';
-  md += '- Ordinary Spill remains endless with untimed Depots and a once-per-save first-pass milestone at wave 20. The nine existing Spill missions keep their explicit 4/5/6/7/8/9/10/11/20-wave targets, Ore/no-hit objectives and seeds 5018–5098. No zone-based Spill generator exists.\n';
-  md += '- Beta retains nine separate Wormhole variants with seeds 7014–7094. Unversioned old goal bits on changed mission IDs retain star credit and passage, without marking newer objectives complete. Only successful replays verify current goals.\n';
+  md += '- Blackout flashing is removed. Existing steady fog, pace, gap width and sway provide variety. Beta additionally tests the owner’s requested springy/sticky planets, upside-down flight, tap-to-slow, and Switchback’s tap reversal.\n';
+  md += '- Ordinary Spill remains endless with untimed Depots and a once-per-save first-pass milestone at wave 20. Production’s nine existing Spill missions keep their explicit 4/5/6/7/8/9/10/11/20-wave targets, Ore/no-hit objectives and seeds 5018–5098. No zone-based Spill generator exists.\n';
+  md += '- Historic beta Wormhole variants and seeds 7014–7094 remain archived; revised beta contracts preserve their credit without certifying new goals. Unversioned old goal bits on changed mission IDs retain star credit and passage, without marking newer objectives complete. Only successful replays verify current goals.\n';
   md += '- Earned and purchased entitlements survive. Stable Dust receipts prevent double payments; allStars retains its legacy 300-star entitlement floor and never completes a route.\n';
   md += '- New flight seeds are literal immutable values using flight-seeded-v1. Gameplay RNG is separate from visual randomness. Old random flight missions stay random. Display order cannot create a new seed.\n';
-  md += '- Rust Runner and Rust Wake are cosmetic proofs in the isolated sample’s Ships Loadout. Rivet is a labeled placeholder. The sample’s Reward preview gallery and CONCEPT rail markers show all 25 proposed rewards from 320–780 stars; they cannot be claimed or equipped. Final activation remains pending.\n';
+  md += '- Rust Runner and Rust Wake are cosmetic proofs in beta’s Ships Loadout. Rivet is a labeled placeholder. Beta’s Reward preview gallery and CONCEPT rail markers show all 25 proposed rewards from 320–780 stars; they cannot be claimed or equipped. Final activation remains pending.\n';
   writeFileSync(join(root,'ROADMAP.md'),md);
-  console.log(`ROADMAP: ${LEVELS.length} published missions, ${rewards.length} existing rewards, ${ALL_LEVELS.filter(l=>l.sample).length} sample missions.`);
+  console.log(`ROADMAP: ${LEVELS.length} published missions, ${rewards.length} existing rewards, ${BETA_MISSION_ROWS.length} unlocked beta missions.`);
 } finally { rmSync(tmp,{recursive:true,force:true}); }

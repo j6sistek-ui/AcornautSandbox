@@ -2938,7 +2938,7 @@ export async function bootStandalone(root: HTMLElement) {
       disc.style.width = disc.style.height = `${px}px`;
       node.dataset.level = lvl.id;
       node.dataset.order = String(lvl.ord);
-      node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false || (STAR_MAP_PREVIEW && !lvl.sample) ? ", outside this sample" : ", locked" : ""}`);
+      node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false ? ", unavailable" : ", locked" : ""}`);
       node.setAttribute("aria-disabled", String(!can));
       if (isCur) {
         const rider = document.createElement("img");
@@ -3090,7 +3090,7 @@ export async function bootStandalone(root: HTMLElement) {
     box.classList.add("ac-chartscene", "ac-zone-chart");
     const totalPill = el("div", "ac-pill ac-pill-gold");
     totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-    box.append(header(STAR_MAP_PREVIEW ? "30 missions · separate preview progress" : "The road ahead", "Star Chart", totalPill));
+    box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : "The road ahead", "Star Chart", totalPill));
     const nav = el("div", "ac-chart-nav");
     nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
     const goTo = (id?: string) => {
@@ -3111,10 +3111,6 @@ export async function bootStandalone(root: HTMLElement) {
       else found.textContent = "No matching level";
     };
     find.append(query, findButton); nav.append(find, found); box.append(nav);
-    if (IS_BETA && !STAR_MAP_PREVIEW) {
-      const preview = el("a", "ac-ghost", "Explore the Star Map sample");
-      preview.href = `${window.location.pathname}?star-map=sample`; nav.append(preview);
-    }
     if (STAR_MAP_PREVIEW) {
       const samples = el("div", "ac-chart-samples");
       const rewards = el("button", "ac-ghost", "Reward preview"); rewards.dataset.rewardPreview = "true";
@@ -3122,7 +3118,7 @@ export async function bootStandalone(root: HTMLElement) {
       for (const [ord, name] of [[1,"Deep Space"],[101,"Rust Belt"],[241,"Blackout Zone"]] as const) {
         const b = el("button", "ac-ghost", name); b.onclick = () => goTo(levelAt(ord)?.id); samples.append(b);
       }
-      const leave = el("a", "ac-ghost", "Return to beta"); leave.href = window.location.pathname; samples.append(leave); box.append(samples);
+      box.append(samples);
     }
 
     const scroll = el("div", "ac-sheet-scroll");
@@ -3239,6 +3235,8 @@ export async function bootStandalone(root: HTMLElement) {
       ? "HYPER RUN · TIME TRIAL"
       : `LEVEL ${def.ord} \u00b7 ${place}`));
     sheet.append(el("h2", "ac-lvlname", def.name));
+    if (def.challenge) sheet.append(el("p", "ac-sub", def.challenge));
+    if (def.durationTarget) sheet.append(el("p", "ac-sub", `First-pass target: ${def.durationTarget[0]}–${def.durationTarget[1]} seconds of play${def.base === "spill" ? "; Depot time is unlimited" : ""}.`));
     const mode =
       def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
       def.base === "deep" ? "DEEP SPACE RULES" :

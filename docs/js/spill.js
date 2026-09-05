@@ -27,8 +27,8 @@
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and Gold Ore is what charges it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=177";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=177";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=178";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=178";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -326,7 +326,7 @@ export function createSpill(W, H, seed, target = 0, hints = true) {
         tiltTarget: 0,
         tiltT: 0,
         depot: null,
-        depotVisits: 0,
+        depotVisits: 0, repairs: 0,
         respawnReturn: "wave",
         respawnPhaseT: 0,
         banner: "",
@@ -966,6 +966,7 @@ export function spillBuy(s, what) {
             s.shieldFlash = 0.6;
             break;
         case "repair":
+            s.repairs = (s.repairs ?? 0) + 1;
             s.hull = s.maxHull;
             break;
         case "core":

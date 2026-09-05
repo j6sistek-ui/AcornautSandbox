@@ -1,20 +1,20 @@
-import { spillAppearance } from "./spill-appearance.js?v=177";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=177";
-import { addChartScenery } from "./star-map-view.js?v=177";
-import { mapDebrisIndex } from "./zone-visuals.js?v=177";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=177";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=177";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=177";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=177";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=177";
-import { drawSprite as drawSpriteOn } from "./art.js?v=177";
-import { createEngine } from "./engine.js?v=177";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=177";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=177";
-import { formatRaceTicks } from "./race.js?v=177";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=177";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=177";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=177";
+import { spillAppearance } from "./spill-appearance.js?v=178";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=178";
+import { addChartScenery } from "./star-map-view.js?v=178";
+import { mapDebrisIndex } from "./zone-visuals.js?v=178";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=178";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=178";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=178";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=178";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=178";
+import { drawSprite as drawSpriteOn } from "./art.js?v=178";
+import { createEngine } from "./engine.js?v=178";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=178";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=178";
+import { formatRaceTicks } from "./race.js?v=178";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=178";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=178";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=178";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -3014,7 +3014,7 @@ export async function bootStandalone(root) {
             disc.style.width = disc.style.height = `${px}px`;
             node.dataset.level = lvl.id;
             node.dataset.order = String(lvl.ord);
-            node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false || (STAR_MAP_PREVIEW && !lvl.sample) ? ", outside this sample" : ", locked" : ""}`);
+            node.setAttribute("aria-label", `Level ${lvl.ord}: ${lvl.name}, ${ENVS[lvl.fx.env ?? 0].name}, ${missionCredit(engine.save, lvl)} stars${!can ? lvl.implemented === false ? ", unavailable" : ", locked" : ""}`);
             node.setAttribute("aria-disabled", String(!can));
             if (isCur) {
                 const rider = document.createElement("img");
@@ -3177,7 +3177,7 @@ export async function bootStandalone(root) {
         box.classList.add("ac-chartscene", "ac-zone-chart");
         const totalPill = el("div", "ac-pill ac-pill-gold");
         totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-        box.append(header(STAR_MAP_PREVIEW ? "30 missions · separate preview progress" : "The road ahead", "Star Chart", totalPill));
+        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : "The road ahead", "Star Chart", totalPill));
         const nav = el("div", "ac-chart-nav");
         nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
         const goTo = (id) => {
@@ -3211,11 +3211,6 @@ export async function bootStandalone(root) {
         find.append(query, findButton);
         nav.append(find, found);
         box.append(nav);
-        if (IS_BETA && !STAR_MAP_PREVIEW) {
-            const preview = el("a", "ac-ghost", "Explore the Star Map sample");
-            preview.href = `${window.location.pathname}?star-map=sample`;
-            nav.append(preview);
-        }
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
             const rewards = el("button", "ac-ghost", "Reward preview");
@@ -3227,9 +3222,6 @@ export async function bootStandalone(root) {
                 b.onclick = () => goTo(levelAt(ord)?.id);
                 samples.append(b);
             }
-            const leave = el("a", "ac-ghost", "Return to beta");
-            leave.href = window.location.pathname;
-            samples.append(leave);
             box.append(samples);
         }
         const scroll = el("div", "ac-sheet-scroll");
@@ -3352,6 +3344,10 @@ export async function bootStandalone(root) {
             ? "HYPER RUN · TIME TRIAL"
             : `LEVEL ${def.ord} \u00b7 ${place}`));
         sheet.append(el("h2", "ac-lvlname", def.name));
+        if (def.challenge)
+            sheet.append(el("p", "ac-sub", def.challenge));
+        if (def.durationTarget)
+            sheet.append(el("p", "ac-sub", `First-pass target: ${def.durationTarget[0]}–${def.durationTarget[1]} seconds of play${def.base === "spill" ? "; Depot time is unlimited" : ""}.`));
         const mode = def.base === "race" ? "DETERMINISTIC TIME TRIAL" :
             def.base === "deep" ? "DEEP SPACE RULES" :
                 def.base === "lost" ? "LOST IN SPACE RULES" :

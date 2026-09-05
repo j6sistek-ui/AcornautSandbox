@@ -1,10 +1,10 @@
-import { migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=177";
-import { CHART_LEVELS } from "./campaign.js?v=177";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=177";
-import { restoreSpill } from "./spill.js?v=177";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=177";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=178";
+import { CHART_LEVELS } from "./campaign.js?v=178";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=178";
+import { restoreSpill } from "./spill.js?v=178";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=178";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=177";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=178";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -230,6 +230,19 @@ export function loadSave() {
         catch { /* writeSave will still surface a real persistence failure */ }
     }
     migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+    if (IS_BETA && !s.betaSampleCreditImported) {
+        try {
+            const raw = localStorage.getItem("acornaut_star_map_sample_v1");
+            const archived = raw ? JSON.parse(raw) : null;
+            if (archived && typeof archived === "object" && (archived.stars || archived.campaignProgress?.version === 1)) {
+                if (parsed && !localStorage.getItem(SAVE_KEY + ":before-beta-260"))
+                    localStorage.setItem(SAVE_KEY + ":before-beta-260", JSON.stringify(parsed));
+                importSampleCredit(s, { ...defaultSave(), ...archived });
+            }
+            s.betaSampleCreditImported = true;
+        }
+        catch { /* Preserve both source slots if storage is unavailable. */ }
+    }
     return s;
 }
 /** The one place a pilot name is made safe. Control characters and line
