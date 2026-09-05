@@ -1,4 +1,4 @@
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=172";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=176";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -22,6 +22,22 @@ function loadImg(src) {
         img.onerror = () => reject(new Error(src));
         img.src = url;
     });
+}
+const spillSceneLoads = new WeakMap();
+/** Mode art loads only when this mode is opened, without holding its launch. */
+export function loadSpillScene(bank) {
+    const existing = spillSceneLoads.get(bank);
+    if (existing)
+        return existing;
+    bank.spillScene = {};
+    const promise = Promise.all(["depot", "panorama"].map(async (name) => {
+        try {
+            bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
+        }
+        catch { /* the procedural field stays playable */ }
+    })).then(() => { });
+    spillSceneLoads.set(bank, promise);
+    return promise;
 }
 function measureSprite(img) {
     const w = img.naturalWidth || img.width;

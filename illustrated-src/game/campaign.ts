@@ -1,3 +1,5 @@
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest";
+import { IS_BETA, STAR_MAP_PREVIEW } from "./catalog";
 import {
   RACE_MAX_ACORNS,
   RACE_RINGS,
@@ -5,42 +7,10 @@ import {
   RACE_TWO_STAR_TICKS,
 } from "./race";
 
-// THE STAR CHART — a finish line for a game that never had one.
-//
-// Endless mode is untouched; this is a second way to fly the same
-// simulation. A LEVEL is a run with a finish line: survive the level's
-// gate count and a PORTAL spawns — fly into it and the run is complete.
-// Each level offers THREE STARS:
-//
-//   star 1  reach the portal            (always — the finish line itself)
-//   star 2  a collection goal           (acorns, golden acorns)
-//   star 3  a discipline goal           (no bounces, no shield, few taps)
-//
-// Stars are independent and KEPT ACROSS RUNS — a level can be starred one
-// goal at a time, which is what makes a 2-star level an invitation instead
-// of a wall. Total stars are the progression currency: they open stages
-// and earn the rewards that XP used to hand out for mileage. XP still
-// exists and still names the pilot's title; it just is not the gate any
-// more. Earning by DOING SOMETHING beats earning by being present.
-//
-// A STAGE is ten levels under one sky with one idea. The ideas come from
-// the game that already exists — its environments, its three flight modes,
-// its drift and warp machinery — plus a small set of level-only modifiers
-// (fx) the simulation honours ONLY when a level is running:
-//
-//   pace       the world clock, 0.9 gentle to 1.25 furnace
-//   gapScale   gate mouth, 1.1 forgiving to 0.92 tight
-//   driftScale how far gates sway;  driftRate how fast
-//   fog        the sky closes in — a sight circle around the pilot
-//   strobe     THE BLACKOUT: the world is only lit for the half-second
-//              after a tap. Fly the gap you remember, not the one you see.
-//   acornEvery guarantees an acorn per gate so collection goals are
-//              always fair, never hostage to the spawn dice
-//
-// Tuning lives in ONE table per stage (STAGES) and one goal script
-// (goalsFor), so difficulty can be re-curved without touching a level by
-// hand. The generated result is deliberately data, not code: the whole
-// 100 is printed into ROADMAP.md by build-roadmap.mjs for review.
+// Independent stars accumulate across successful replays. Finishing the
+// preceding mission advances the continuous road; total stars buy rewards.
+// STAGES remains a legacy authoring/reward compatibility table. The explicit
+// versioned manifest is authoritative for mission identities, goals and seeds.
 
 // Spill missions ship on the chart; tunnel missions remain a beta trial.
 export type FlightBase = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill" | "race";
@@ -52,7 +22,6 @@ export type LevelFx = {
   driftScale?: number; // multiplies how far gates sway
   driftRate?: number;  // multiplies how fast gates sway
   fog?: number;        // 0 none .. 1 blind: sight circle around the pilot
-  strobe?: boolean;    // world lit only briefly after each tap
   acornEvery?: boolean;// guarantee an acorn on every gate
   /** THE FIRST MISSION CANNOT BE FAILED. Owner's call: level one is flown
    *  for real and earns its star, but a crash is a free reset rather than a
@@ -82,7 +51,7 @@ export type LevelDef = {
   id: string;          // "3-7"
   stage: number;       // 1-based
   n: number;           // 1-based within the stage
-  ord: number;         // 1..100
+  ord: number;         // display coordinate only
   name: string;
   base: FlightBase;
   gates: number;       // the finish line
@@ -91,6 +60,14 @@ export type LevelDef = {
   /** Experimental cards are Log-only and never enter LEVELS/progression. */
   standalone?: boolean;
   raceEventId?: string;
+  zoneId?: string;
+  variantId?: string;
+  seed?: number | null;
+  seedVersion?: string;
+  contractId?: string;
+  objectiveIds?: string[];
+  sample?: boolean;
+  implemented?: boolean;
 };
 
 export type StageDef = {
@@ -296,14 +273,13 @@ export const STAGES: StageDef[] = [
   {
     num: 9,
     name: "THE BLACKOUT",
-    tagline: "You see for half a second after each tap. Remember the rest.",
+    tagline: "Steady shadows reveal a moving path.",
     env: 6, // MONOCHROME VOID
     base: "fly",
     unlock: 180,
     tune: (i) => ({
       gates: 8 + i,                                       // 8 .. 17
       fx: {
-        strobe: true,
         gapScale: lerp(1.12, 1.02, i / 9),   // mercy, tapering
         pace: 0.95,
         driftScale: i >= 5 ? 1.2 : 1,        // late levels sway in the dark
@@ -317,7 +293,7 @@ export const STAGES: StageDef[] = [
         : { kind: "maxTaps", n: Math.round(g * 3.2) },   // taps ARE sight here
     ],
     names: [
-      "Lights Out", "Afterimage", "Count the Beats", "Flashbulb", "Dead Reckoning",
+      "Lights Out", "Afterimage", "Count the Beats", "Quiet Current", "Dead Reckoning",
       "Echo Location", "Blink", "Photograph", "Total Recall", "Eyes Shut",
     ],
   },
@@ -341,7 +317,7 @@ export const STAGES: StageDef[] = [
       return {
         gates: 30,
         base: "fly" as FlightBase,
-        fx: { strobe: true, fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
+        fx: { fog: 0.4, driftScale: 1.5, pace: 1.1, acornEvery: true },
       };
     },
     goals: (i, g) => [
@@ -359,66 +335,27 @@ export const STAGES: StageDef[] = [
 
 // ------------------------------------------------------------------ levels
 
-export const LEVELS: LevelDef[] = STAGES.flatMap((st) =>
-  Array.from({ length: 10 }, (_, i) => {
-    const t = st.tune(i);
-    const gates = t.gates;
-    const [g2, g3] = st.goals(i, gates);
-    return {
-      id: `${st.num}-${i + 1}`,
-      stage: st.num,
-      n: i + 1,
-      ord: (st.num - 1) * 10 + i + 1,
-      name: st.names[i],
-      base: t.base ?? st.base,
-      gates,
-      // the very first mission on the chart carries it; nothing else does
-      fx: { env: st.env, ...t.fx, ...((st.num - 1) * 10 + i + 1 === 1 ? { noFail: true } : {}) },
-      goals: [{ kind: "finish" }, g2, g3] as [Goal, Goal, Goal],
-    };
-  }),
-);
-
-// ---------------------------------------------------- the BETA divergence
-//
-// Read here rather than imported from catalog.ts: build-roadmap.mjs
-// compiles this file ALONE, and in node there is no window — so the
-// roadmap always documents the LIVE chart, which is the point.
-const IS_BETA =
-  typeof window !== "undefined" &&
-  (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
-//
-// Spill missions give the survival build loop a place in the main chart.
-// Existing level IDs and star masks remain stable across both pages.
-// Tunnel targets are seconds; Spill targets are waves.
-for (const l of LEVELS) {
-    if (l.stage < 2) continue;
-    if (IS_BETA && l.n === 4) {
-      l.base = "tunnel";
-      l.gates = 20 + l.stage * 5;                 // SECONDS survived: 30..70
-      l.goals = [
-        { kind: "finish" },
-        { kind: "acorns", n: 4 + l.stage * 2 },   // 8..24 acorns
-        { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
-      ];
-      l.fx = { env: l.fx.env };                   // missions run their own physics
-    } else if (l.n === 8) {
-      // A Spill mission is a wave ladder with a top rung: clear wave N and
-      // the level is done. Chapter 3's mission ends AT wave 5, before the
-      // Depot opens; from chapter 4 on the shop is inside the mission, so
-      // spending well is part of the test rather than a bonus.
-      l.base = "spill";
-      l.gates = l.stage === 10 ? 20 : 2 + l.stage; // Short lessons; final Star Map victory at wave 20
-      l.goals = [
-        { kind: "finish" },
-        { kind: "ore", n: 25 + l.stage * 8 },     // 41..105 Ore mined
-        { kind: "noHit" },
-      ];
-      l.fx = { env: l.fx.env };
-    }
-}
-
-export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null;
+/** Immutable authored definitions. Beta variants share a route position, but
+ * have their own progress identity. Production never loads preview progress. */
+export const ALL_LEVELS: LevelDef[] = MISSION_ROWS.map(row => {
+  const variant = IS_BETA ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+  return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
+    goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) as [Goal, Goal, Goal] };
+});
+// Deliberate release boundary for this sample PR, not a completion rule.
+// Full activation changes this selection only after the remaining content is reviewed.
+export const LEVELS = ALL_LEVELS.slice(0, 100);
+export const CHART_LEVELS = STAR_MAP_PREVIEW ? ALL_LEVELS : LEVELS;
+export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
+export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
+export const levelById = (id: string) => CHART_LEVELS.find(l => l.id === id) ?? null;
+export const nextLevel = (id: string, order: readonly LevelDef[] = CHART_LEVELS) => {
+  const i = order.findIndex(l => l.id === id);
+  return i >= 0 ? order[i + 1] ?? null : null;
+};
+export const levelAt = (ord: number, order: readonly LevelDef[] = CHART_LEVELS) =>
+  order[ord - 1] ?? null;
+export const missionProgressId = (def: LevelDef) => def.variantId ?? def.id;
 
 /** Beta proof-of-concept. It deliberately does not live in LEVELS, so it
  * cannot change chapter counts, unlock order, star totals, or rewards. */
@@ -476,7 +413,6 @@ export function goalText(g: Goal, def: LevelDef): string {
 
 export function fxText(fx: LevelFx): string[] {
   const out: string[] = [];
-  if (fx.strobe) out.push("BLACKOUT — lit only after a tap");
   if (fx.fog) out.push(fx.fog >= 0.7 ? "HEAVY FOG" : "FOG");
   if (fx.pace && fx.pace > 1.02) out.push(fx.pace >= 1.15 ? "FAST FORWARD" : "BRISK");
   if (fx.pace && fx.pace < 0.98) out.push("GENTLE PACE");
@@ -671,29 +607,22 @@ export function gateClearedBy(
 }
 
 export function levelUnlocked(
-  def: LevelDef,
-  stars: Record<string, number>,
-  /** kept in the signature, and deliberately unused: the star TOTAL was
-   *  what opened a chapter, and chapters are gone. Removing it would mean
-   *  editing five call sites whose next argument is also an array-ish
-   *  thing, which is a good way to pass gatesCleared as total by mistake. */
-  _total: number,
-  gatesCleared?: number[],
+  def: LevelDef, stars: Record<string, number>, _total: number,
+  gatesCleared?: number[], order: readonly LevelDef[] = CHART_LEVELS,
+  beta = IS_BETA,
 ) {
-  if (IS_BETA) return true;
-  if (gateBefore(def.ord, gatesCleared)) return false;
-  if (def.ord <= 1) return true;
-  // ONE WAY, IN ORDER. The chart used to be ten chapters, and a chapter
-  // opened on a star TOTAL - so the first level of each one was reachable
-  // the moment you could afford it, whether or not you had flown the
-  // ninety-nine before it. That made 61 and 81 playable out of nowhere and
-  // put two paths through a chart that only has one. Levels are 1-100 now
-  // and the only key to a level is the level before it.
-  //
-  // n is the position WITHIN the old stage, so at a boundary the previous
-  // level is the last of the stage below rather than "n - 1".
-  const prev = def.n > 1 ? `${def.stage}-${def.n - 1}` : `${def.stage - 1}-10`;
-  return ((stars[prev] || 0) & 1) === 1;
+  const index = order.findIndex(l => l.id === def.id);
+  if (index < 0 || def.implemented === false) return false;
+  if (STAR_MAP_PREVIEW && order === CHART_LEVELS && !def.sample) return false;
+  if (beta) return true;
+  if (gateBefore(index + 1, gatesCleared)) return false;
+  return index === 0 || ((stars[order[index - 1].id] || 0) & 1) === 1;
+}
+
+/** Arrival is part of a barrier attempt, independently of access to the mode. */
+export function reachedGate(stars: Record<string, number>, cleared?: number[]) {
+  const gate = nextGate(cleared);
+  return gate && ((stars[levelAt(gate.after)?.id ?? ""] || 0) & 1) ? gate : null;
 }
 
 // --------------------------------------------------------------- rewards
@@ -708,9 +637,8 @@ export type StarReward = {
   amount?: number;
 };
 
-// The ladder XP used to be. Stage openings are listed so the chart can
-// show the whole road on one screen; the stage thresholds here MUST match
-// STAGES[n].unlock (build-roadmap.mjs checks).
+// Original reward ladder. Retired stage rows remain compatibility data;
+// the UI and roadmap omit them because route passage no longer uses them.
 export const STAR_REWARDS: StarReward[] = [
   { stars: 3, kind: "pal", id: "bee", name: "Astrolobee", desc: "Powerup/Acorns Disabled" },
   { stars: 5, kind: "trail", id: "ion", name: "Ion Stream", desc: "A trail of charged sky." },
@@ -772,8 +700,8 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 250, kind: "title", name: "GATECRASHER", desc: "A title for the pilots who earn it." },
   { stars: 270, kind: "dust", amount: 120, name: "120 Star Dust", desc: "Almost the whole chart." },
   { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
-  { stars: 300, kind: "title", name: "STARLORD", desc: "Every star in the chart." },
-  { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned by every star there is." },
+  { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
+  { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
 ];
 
 /** the pilot's TITLE comes from stars now, not XP — same ladder the

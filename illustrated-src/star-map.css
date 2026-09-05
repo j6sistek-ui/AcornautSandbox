@@ -1,0 +1,32 @@
+/* Continuous zone scenery; generated into both page shells by export-sandbox. */
+.ac-zone-chart { background: #090e1b; }
+.ac-zone-chart .ac-sheet-scroll { isolation: isolate; overflow-x: hidden; }
+.ac-zone-chart .ac-chartmap { isolation: isolate; }
+.ac-zone-scene { position: absolute; left: 50%; width: max(100%, 100vw); transform: translateX(-50%);
+  z-index: -2; pointer-events: none; background-size: cover; background-position: var(--zone-pan) 50%;
+  background-color: rgba(var(--zone-wash), .18);
+  mask-image: linear-gradient(transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, #000 15%, #000 85%, transparent); }
+.ac-zone-stars { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(5,9,20,.16), transparent); }
+.ac-zone-stars i { position: absolute; border-radius: 50%; background: #edf0ff; box-shadow: 0 0 3px #ccd9ff; }
+.ac-zone-debris { position: absolute; width: 28px; opacity: .26; filter: blur(.3px); }
+.ac-zone-name { position: absolute; left: 4px; pointer-events: none; font: 700 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .14em; color: #d5cbbd; opacity: .82; text-shadow: 0 2px 7px #000; }
+.ac-zone-chart .ac-mapnode { min-width: 62px; min-height: 62px; }
+.ac-zone-chart .ac-mapnode.locked { pointer-events: auto; }
+.ac-zone-chart .ac-mapnode.locked .ac-mapdisc canvas { filter: brightness(.8) drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+.ac-zone-chart .ac-mapnode:focus-visible, .ac-chart-nav button:focus-visible, .ac-chart-nav input:focus-visible {
+  outline: 2px solid #f3d38c; outline-offset: 5px; border-radius: 16px; }
+.ac-chart-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 8px 16px 10px;
+  position: relative; z-index: 4; background: linear-gradient(#101729, #0d1424); border-bottom: 1px solid #ffffff12; }
+.ac-current-zone { flex: 1; min-width: 110px; color: #d1bfdd; font: 700 10px/1.4 system-ui; letter-spacing: .09em; }
+.ac-chart-nav .ac-ghost, .ac-chart-samples .ac-ghost { width: auto; margin: 0; padding: 8px 12px; min-height: 44px; font-size: 11px; }
+.ac-chart-find { display: flex; width: 100%; gap: 6px; }
+.ac-chart-find input { min-width: 0; flex: 1; border: 1px solid #45405b; border-radius: 9px; color: #eee4d2;
+  background: #080e1c; padding: 9px 12px; font: 14px/1.2 system-ui; }
+.ac-chart-found { color: #c9b894; font: 11px/1.4 system-ui; }
+.ac-chart-found:empty { display: none; }
+.ac-chart-samples { display: flex; flex-wrap: wrap; padding: 6px 16px; gap: 5px; background: #13192b; }
+.ac-chart-samples a, .ac-chart-nav a { text-align: center; text-decoration: none; }
+.ac-chart-end { position: absolute; width: 100%; text-align: center; color: #9c9bab; font: 9px/1.4 system-ui; letter-spacing: .13em; }
+@media (prefers-reduced-motion: reduce) { .ac-zone-chart * { scroll-behavior: auto !important; } }

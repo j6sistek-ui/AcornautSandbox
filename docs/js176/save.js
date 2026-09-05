@@ -1,5 +1,10 @@
-import { STAR_UNLOCKS, totalStars, RACE_GATES, } from "./campaign.js?v=172";
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=172";
+import { migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=176";
+import { CHART_LEVELS } from "./campaign.js?v=176";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=176";
+import { restoreSpill } from "./spill.js?v=176";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=176";
+export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=176";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -8,6 +13,7 @@ export function defaultSave() {
         arcadeBest: 0,
         tunnelBest: 0,
         spillBest: 0,
+        spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
         acorns: 0,
         xp: 0,
@@ -46,6 +52,25 @@ export function defaultSave() {
         raceGates: [],
     };
 }
+/** Bank only new progress. This ledger is part of a suspended expedition,
+ *  so loading or docking repeatedly never duplicates mastery or rewards. */
+export function bankSpill(save, s, end = false) {
+    const records = save.spillRecords ?? (save.spillRecords = freshSpillRecords());
+    save.spillBest = Math.max(save.spillBest || 0, s.cleared);
+    records.bestScore = Math.max(records.bestScore, Math.floor(s.score));
+    for (const [field, value] of [["ore", s.oreMined], ["contracts", s.contractsDone], ["waves", s.cleared]]) {
+        records[field] += Math.max(0, value - s.banked[field]);
+        s.banked[field] = value;
+    }
+    if (s.expeditionDone && !s.banked.expedition) {
+        records.expeditions++;
+        s.banked.expedition = true;
+    }
+    if (end && !s.banked.run) {
+        records.runs++;
+        s.banked.run = true;
+    }
+}
 function readRaw(key) {
     try {
         const raw = localStorage.getItem(key);
@@ -56,7 +81,8 @@ function readRaw(key) {
     }
 }
 export function loadSave() {
-    const parsed = readRaw(SAVE_KEY) ?? LEGACY_KEYS.map(readRaw).find(Boolean) ?? null;
+    const source = [SAVE_KEY, ...LEGACY_KEYS].map(key => ({ key, value: readRaw(key) })).find(x => x.value);
+    const parsed = source?.value ?? null;
     const s = { ...defaultSave(), ...parsed };
     if (!s.unlocked?.includes("clear"))
         s.unlocked = ["clear", ...(s.unlocked || [])];
@@ -146,15 +172,24 @@ export function loadSave() {
         s.guide = s.tutorialDone ? "done" : "pending";
     if (typeof s.allStars !== "boolean")
         s.allStars = false;
-    // Hyper Run's records used to live under experimentalRaceRecords, keyed
-    // by "prototype-chapter-1". Both names were prototype-era and the owner
-    // confirmed the only records were their own testing, so the old key is
-    // dropped rather than migrated - left in place it would sit in every
-    // save forever, describing a mission id that no longer exists.
-    delete s.experimentalRaceRecords;
+    // Retain unknown and retired fields, including experimentalRaceRecords.
+    // They do not certify a current mission or grant a new barrier clear.
     // saves written before the Spill was a mode
     if (typeof s.spillBest !== "number" || !isFinite(s.spillBest))
         s.spillBest = 0;
+    s.spillBest = Math.max(0, Math.floor(s.spillBest));
+    const records = freshSpillRecords();
+    for (const key of Object.keys(records)) {
+        const n = s.spillRecords?.[key];
+        if (typeof n === "number" && Number.isFinite(n) && n >= 0)
+            records[key] = Math.floor(n);
+    }
+    s.spillRecords = records;
+    if (!restoreSpill(s.spillSuspended, 390, 760))
+        s.spillSuspended = null;
+    if (!SPILL_UTILITY_IDS.includes(s.spillStarter))
+        s.spillStarter = null;
+    s.spillSignal = s.spillSignal === true;
     // favourites are ids only; anything else in the array is a hand-edit
     if (!Array.isArray(s.favorites))
         s.favorites = [];
@@ -184,6 +219,17 @@ export function loadSave() {
         s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0); // every pack, at sticker price
         s.betaDustGrant = true;
     }
+    if (parsed && !parsed.campaignProgress) {
+        // Save the exact source before any migrated write. A failed backup leaves
+        // the original save untouched; normal load still works in restricted storage.
+        try {
+            const key = SAVE_KEY + ":before-campaign-v1";
+            if (!localStorage.getItem(key))
+                localStorage.setItem(key, JSON.stringify(parsed));
+        }
+        catch { /* writeSave will still surface a real persistence failure */ }
+    }
+    migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
     return s;
 }
 /** The one place a pilot name is made safe. Control characters and line
@@ -230,12 +276,8 @@ export function pilotTitleOf(s) {
     return titleForLevel(pilotLevelOf(s));
 }
 export function starsOf(s) {
-    // Briella's code: every star gate in the game asks this one function,
-    // so believing here is believing everywhere. Real level progress and
-    // its pips stay exactly as earned.
-    if (s.allStars)
-        return 300;
-    return totalStars(s.stars || {});
+    const p = migrateCampaign(s);
+    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
 }
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
 // The old XP thresholds are retired for good with the production split:
@@ -271,7 +313,7 @@ export function suitRevealed(s, id) {
     // anyone who BOUGHT a suit keeps it, even one that has since moved off
     // the premium list - the cat did exactly that when it became the
     // 300-star prize
-    if ((s.purchased || []).includes(id))
+    if ((s.purchased || []).includes(id) || s.unlockedSuits.includes(id))
         return true;
     if (isIap(id))
         return iapOwned(s, id);

@@ -16,6 +16,11 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// Painted zone masters are copied by the same production/beta export.
+mkdirSync(join(pages, "art/zone-scenes"), { recursive: true });
+for (const id of ["deep-space", "rust-belt", "blackout-zone"]) {
+  cpSync(join(root, `art-src/zone-scenes/${id}.png`), join(pages, `art/zone-scenes/${id}.png`));
+}
 const catalog = readFileSync(join(root, "illustrated-src/game/catalog.ts"), "utf8");
 const ver = (catalog.match(/ART_VER = "([^"]+)"/) || [])[1] || "0";
 
@@ -95,6 +100,13 @@ const idx = join(pages, "index.html");
 // and rewrote it to the stamped path, which silently collapsed the
 // loader's fallback into a second copy of the same failing import - the
 // fallback looked present in the source and did nothing in the build.
+const zoneCss = readFileSync(join(root, "illustrated-src/star-map.css"), "utf8");
+const zoneStyle = `<style id="ac-star-map-css">${zoneCss}</style>`;
+let shell = readFileSync(idx, "utf8");
+shell = shell.includes('<style id="ac-star-map-css">')
+  ? shell.replace(/<style id="ac-star-map-css">[\s\S]*?<\/style>/, zoneStyle)
+  : shell.replace("</head>", `${zoneStyle}\n</head>`);
+writeFileSync(idx, shell);
 writeFileSync(idx, readFileSync(idx, "utf8")
   .replace(/\.\/js\d+\/standalone\.js/g, `./js${ver}/standalone.js`));
 

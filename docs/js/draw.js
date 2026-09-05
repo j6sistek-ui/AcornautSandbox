@@ -1,16 +1,18 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=175";
-import { goalHud } from "./campaign.js?v=175";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=175";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=175";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=175";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=175";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=175";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=175";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=175";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=175";
-import { spillMastery } from "./spill-content.js?v=175";
-import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=175";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=175";
+import { spillAppearance } from "./spill-appearance.js?v=176";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=176";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=176";
+import { goalHud } from "./campaign.js?v=176";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=176";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=176";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=176";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=176";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=176";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=176";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=176";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=176";
+import { spillMastery } from "./spill-content.js?v=176";
+import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=176";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=176";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -80,7 +82,7 @@ function drawBackdrop(ctx, w, art) {
     const { W, H } = w;
     // Each environment flies under its own sky; shifts crossfade. In the
     // BETA the ten normal-mode environments render PROCEDURALLY from their
-    // recipes (sky-gen.ts) — the painted file is never even fetched — while
+    // recipes (sky-gen.ts) as the base layer, while
     // Deep and Lost's dark plates have no recipe and stay painted.
     // Deep and Lost fly under ONE wide painting in the beta, whatever the
     // orientation: landscape sees the full 16:9, portrait sees a window that
@@ -135,6 +137,25 @@ function drawBackdrop(ctx, w, art) {
         g.addColorStop(1, "#10182c");
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
+    }
+    // The remaster is a painted depth layer over the existing procedural
+    // plate. Prismwing can still color the procedural layer and its wash;
+    // painted scenery, suits and planets never receive a hue filter.
+    const sceneA = hasZoneRemaster(w.envA) ? zonePainting(w.envA) : null;
+    const sceneB = hasZoneRemaster(w.envB) ? zonePainting(w.envB) : null;
+    const drawScene = (image, env, alpha) => {
+        if (!image || alpha <= 0)
+            return;
+        ctx.save();
+        ctx.globalAlpha = alpha * .78;
+        coverDraw(ctx, image, W, H, zoneVisual(env).pan);
+        ctx.restore();
+    };
+    if (w.envA === w.envB)
+        drawScene(sceneA, w.envA, 1);
+    else {
+        drawScene(sceneA, w.envA, 1 - w.envBlend);
+        drawScene(sceneB, w.envB, w.envBlend);
     }
     const env = ENVS[w.envB];
     const envA = ENVS[w.envA];
@@ -1637,7 +1658,37 @@ function paintSpillModule(ctx, id, x, y, size) {
     ctx.stroke();
     ctx.restore();
 }
+const rustHullCache = new WeakMap();
+/** Appearance proof on the existing hull only. The source footprint, pilot
+ * window and every separately fitted module keep their registered geometry. */
+function rustHull(hull) {
+    const old = rustHullCache.get(hull);
+    if (old)
+        return old;
+    const c = document.createElement("canvas");
+    c.width = hull.width;
+    c.height = hull.height;
+    const g = c.getContext("2d");
+    if (!g)
+        return hull;
+    g.drawImage(hull, 0, 0);
+    g.globalCompositeOperation = "source-atop";
+    g.fillStyle = "rgba(181,93,44,.34)";
+    g.fillRect(0, 0, c.width, c.height);
+    const b = hull.box, y = b.y + b.h * .76;
+    g.fillStyle = "rgba(241,211,161,.7)";
+    g.fillRect(b.x + b.w * .2, y, b.w * .58, 3);
+    for (let i = 0; i < 6; i++) {
+        g.beginPath();
+        g.arc(b.x + b.w * (.24 + i * .095), y + 7, 1.7, 0, Math.PI * 2);
+        g.fill();
+    }
+    rustHullCache.set(hull, c);
+    return c;
+}
 function drawSpillShip(ctx, w, save, art, s, x) {
+    const appearance = spillAppearance(save);
+    const rustWake = appearance.trail === "rust-wake";
     const parts = spillShipParts(s);
     const hull = art.spillShip?.[parts.hull];
     if (!hull) {
@@ -1671,14 +1722,14 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     const half = (3 + 1.4 * thrust) / z;
     const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
     grad.addColorStop(0, "rgba(255,255,255,.96)");
-    grad.addColorStop(0.18, "rgba(97,221,255,.92)");
-    const signal = hexRgb(s.signal);
+    grad.addColorStop(0.18, rustWake ? "rgba(255,210,135,.92)" : "rgba(97,221,255,.92)");
+    const signal = hexRgb(rustWake ? "#c77740" : s.signal);
     grad.addColorStop(0.58, `rgba(${signal.r},${signal.g},${signal.b},.66)`);
     grad.addColorStop(1, "rgba(83,38,180,0)");
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
     ctx.fillStyle = grad;
-    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
     ctx.shadowBlur = (5 + 5 * thrust) / z;
     ctx.beginPath();
     ctx.moveTo(engineX, engineY - half);
@@ -1707,7 +1758,7 @@ function drawSpillShip(ctx, w, save, art, s, x) {
         ctx.rect(57, 0, 199, 256);
         ctx.clip();
     }
-    ctx.drawImage(hull, 0, 0);
+    ctx.drawImage(appearance.finish === "rust-runner" ? rustHull(hull) : hull, 0, 0);
     ctx.restore();
     const hole = SPILL_COCKPITS[parts.hull] ?? SPILL_COCKPITS["hull-0"];
     ctx.save();
@@ -2441,32 +2492,8 @@ export function drawWorld(ctx, w, save, art) {
             ctx.fillStyle = g;
             ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
         }
-        if (fx.strobe && !w.ready) {
-            // THE BLACKOUT: a tap is a flashbulb. Light for a beat, a fast
-            // fade, then darkness the memory has to fly through. The world
-            // stays faintly embered (0.94, not 1.0) so the screen never reads
-            // as broken — just unlit.
-            const t = w.lvl.strobeT;
-            // FULL black, not 0.94: the owner flew this and could still read the
-            // planets through it, which turns "fly by memory" into "fly by
-            // squinting". A blackout that leaks is not a blackout.
-            const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
-            if (a > 0) {
-                ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
-                ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
-            }
-        }
     }
-    // NIGHTGLIDER. The story-mode strobe stops at 0.94 so a level never reads
-    // as broken; the owner's note was that planets stayed visible through it,
-    // and for this pal that is the whole point of the item - so this one goes
-    // to FULL black. Drawn after the world and before the pal, so the
-    // companion and the pilot stay lit and the pilot is never flying blind
-    // about where they themselves are.
-    // Nightglider's blackout is retired (owner, 2 Sep 2026: "no longer
-    // strobes, it turns into steady gates"); the pal's effect now lives in
-    // sim.ts where the gates decide whether to drift. The lamp clock it
-    // read is left alone - nothing else was on it, and it costs nothing.
+    // Nightglider keeps its existing steady-gates effect in the simulation.
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
@@ -2815,21 +2842,6 @@ function drawRetroWorld(ctx, w, save, art) {
             g.addColorStop(1, `rgba(4,6,14,${(0.55 + 0.43 * fx.fog).toFixed(3)})`);
             ctx.fillStyle = g;
             ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
-        }
-        if (fx.strobe && !w.ready) {
-            // THE BLACKOUT: a tap is a flashbulb. Light for a beat, a fast
-            // fade, then darkness the memory has to fly through. The world
-            // stays faintly embered (0.94, not 1.0) so the screen never reads
-            // as broken — just unlit.
-            const t = w.lvl.strobeT;
-            // FULL black, not 0.94: the owner flew this and could still read the
-            // planets through it, which turns "fly by memory" into "fly by
-            // squinting". A blackout that leaks is not a blackout.
-            const a = t < 0.12 ? 0 : Math.min(1, (t - 0.12) / 0.38);
-            if (a > 0) {
-                ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
-                ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
-            }
         }
     }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
@@ -5031,7 +5043,7 @@ export function drawHud(ctx, w, art) {
         }
         ctx.font = "700 11px Figtree, system-ui";
         ctx.fillStyle = "rgba(255,224,128,0.9)";
-        ctx.fillText(w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.id} · ${w.lvl.def.name}`, W / 2, 64);
+        ctx.fillText(w.lvl.portal ? "FLY TO THE PORTAL" : `LEVEL ${w.lvl.def.ord} · ${w.lvl.def.name}`, W / 2, 64);
         // THE THREE OBJECTIVES RIDE THE TOP OF THE RUN. Owner's call: pinned,
         // with counters, green while complete or holding, red the moment one is
         // lost - the touch on "touch no planet", the 28th tap against a cap of
