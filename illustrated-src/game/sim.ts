@@ -21,6 +21,7 @@ import {
   type SpillCue,
   type SpillState,
 } from "./spill";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content";
 import {
   WORMHOLE_MAX_VY,
   WORMHOLE_FLAP,
@@ -1497,6 +1498,13 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
         level ? level.gates : 0, !save.helpOff)
     : null;
   w.spillCues = [];
+  if (w.spill) {
+    const starter = save.spillStarter;
+    if (!level && starter && SPILL_UTILITIES[starter] && save.spillBest >= SPILL_UTILITIES[starter].unlock) {
+      w.spill.utilities = [starter]; w.spill.ownedUtilities = [starter];
+    }
+    w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+  }
   w.speed = PHYS.baseSpeed;
   w.distance = 0;
   w.lastSpawnX = w.W * 0.55;
@@ -3478,7 +3486,7 @@ function updateSpill(w: World, save: SaveData, dt: number): string | null {
     settleLevel(w, save, true);
     return "finish";
   }
-  if (cues.includes("dead")) return die(w, save);
+  if (cues.includes("dead") || cues.includes("expedition")) return die(w, save);
   return null;
 }
 

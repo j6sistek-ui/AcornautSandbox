@@ -11,6 +11,7 @@ import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   SPILL,
   SPILL_MOD_INFO,
+  createSpill, spillHas, spillChargeCap, spillContractProgress, spillEventGap,
   spillCount,
   spillMod,
   spillRamp,
@@ -18,6 +19,7 @@ import {
   type SpillRock,
   type SpillState,
 } from "./spill";
+import { SPILL_EVENTS, SPILL_UTILITIES, spillSector, spillMastery } from "./spill-content";
 import {
   RACE_ACORNS,
   RACE_BASE_SPEED,
@@ -1506,7 +1508,7 @@ function drawHyperRunPilot(
   cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
   ctx.fillStyle = cockpitGlow;
   ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-  drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+  paintSpillHead(ctx, art, save, { cx: layout.cockpitX, cy: layout.cockpitY, rx: 12 * scale, ry: 11 * scale });
   ctx.restore();
 
   drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", halo);
@@ -1622,7 +1624,7 @@ function tunnelControlLabel(_w: World) {
 
 const wrap = (v: number, m: number) => ((v % m) + m) % m;
 
-function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState) {
+function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState, art: ArtBank) {
   const { W, H } = w;
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, "#05060f");
@@ -1630,6 +1632,14 @@ function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState) {
   g.addColorStop(1, "#05070f");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
+  const panorama = art.spillScene?.panorama;
+  if (panorama) {
+    const ih = panorama.naturalHeight, iw = panorama.naturalWidth;
+    const sw = Math.min(iw, ih * W / H);
+    const sector = Math.min(3, Math.floor((s.wave - 1) / 5));
+    const sx = (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025);
+    ctx.save(); ctx.globalAlpha = 0.38; ctx.drawImage(panorama, Math.max(0, sx), 0, sw, ih, 0, 0, W, H); ctx.restore();
+  }
   const drift = s.t * 6;
   const pool = (cx: number, cy: number, rx: number, ry: number, col: string) => {
     const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
@@ -1675,6 +1685,14 @@ function drawSpillRock(ctx: CanvasRenderingContext2D, art: ArtBank, r: SpillRock
     ctx.fill();
   }
   ctx.restore();
+  if (r.kind === "spinner") {
+    ctx.strokeStyle = "rgba(150,213,240,.55)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r + 4, r.rot, r.rot + 1.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r + 4, r.rot + Math.PI, r.rot + Math.PI + 1.9); ctx.stroke();
+  } else if (r.kind === "shard") {
+    ctx.strokeStyle = "rgba(231,210,174,.45)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(r.x + r.r, r.y); ctx.lineTo(r.x + r.r + 18, r.y - r.vy * 0.02); ctx.stroke();
+  }
   if (r.kind === "hulk") {
     // a hulk gets a rim so it reads as the thing you must not be near
     ctx.strokeStyle = "rgba(255,150,90,0.5)";
@@ -1718,49 +1736,45 @@ function drawSpillWarning(ctx: CanvasRenderingContext2D, w: World, r: SpillRock)
  *  overrides. A missing bank falls back to Hyper Run's scout */
 const SPILL_SHIP_LEN = 58;
 type SpillHole = { cx: number; cy: number; rx: number; ry: number };
-const spillHoles = new WeakMap<Sprite, SpillHole>();
+// Explicit source-frame anchors; the pilot uses an enlarged head window.
+// Alpha-outline guessing made a notch in the plating dictate face size.
+const SPILL_COCKPITS: Record<string, SpillHole> = {
+  "hull-0": { cx: 150, cy: 85, rx: 30, ry: 27 },
+  "hull-1": { cx: 150, cy: 85, rx: 30, ry: 27 },
+  "hull-2": { cx: 151, cy: 85, rx: 30, ry: 27 },
+  "hull-3": { cx: 150, cy: 85, rx: 30, ry: 27 },
+};
+const spillCanopyFrames = new WeakMap<Sprite, HTMLCanvasElement>();
+function spillCanopyFrame(sp: Sprite) {
+  let frame = spillCanopyFrames.get(sp);
+  if (frame) return frame;
+  frame = document.createElement("canvas"); frame.width = sp.naturalWidth || sp.width; frame.height = sp.naturalHeight || sp.height;
+  const g = frame.getContext("2d");
+  if (!g) return sp;
+  g.drawImage(sp, 0, 0);
+  // The original canopy paintings have an opaque glass interior. Preserve
+  // their painted rim while opening its window, just as punchedHelm does.
+  g.globalCompositeOperation = "destination-out";
+  g.beginPath(); g.ellipse(138, 88, 26.5, 19.5, 0.24, 0, Math.PI * 2); g.fill();
+  spillCanopyFrames.set(sp, frame); return frame;
+}
 
-/** where the hull's cockpit opening is, in the sprite's own pixels: the
- *  dip in the top outline across the middle of the egg. Measured once */
-function spillHoleOf(hull: Sprite): SpillHole {
-  const hit = spillHoles.get(hull);
-  if (hit) return hit;
-  const b = hull.box;
-  let hole: SpillHole = { cx: b.x + b.w * 0.6, cy: b.y + b.h * 0.3, rx: b.w * 0.12, ry: b.h * 0.14 };
-  try {
-    const c = document.createElement("canvas");
-    c.width = hull.naturalWidth || hull.width; c.height = hull.naturalHeight || hull.height;
-    const g = c.getContext("2d", { willReadFrequently: true });
-    if (g) {
-      g.drawImage(hull, 0, 0);
-      const d = g.getImageData(0, 0, c.width, c.height).data;
-      const tops: number[] = [];
-      const x0 = Math.round(b.x + b.w * 0.3), x1 = Math.round(b.x + b.w * 0.88);
-      for (let x = x0; x <= x1; x++) {
-        let t = -1;
-        for (let y = b.y; y < b.y + b.h; y++) if (d[(y * c.width + x) * 4 + 3] > 40) { t = y; break; }
-        tops.push(t);
-      }
-      const valid = tops.filter((t) => t >= 0);
-      if (valid.length) {
-        const rim = Math.min(...valid);
-        // the first run of columns that drop well below the rim and then
-        // climb back out is the opening; the nose taper never climbs back
-        const deep = tops.map((t) => t >= 0 && t > rim + b.h * 0.12);
-        let k0 = deep.indexOf(true);
-        if (k0 > 0) {
-          let k1 = k0;
-          while (k1 + 1 < deep.length && deep[k1 + 1]) k1++;
-          if (k1 + 1 < deep.length && k1 - k0 > 4) {
-            const floor = Math.max(...tops.slice(k0, k1 + 1));
-            hole = { cx: x0 + (k0 + k1) / 2, cy: (rim + floor) / 2, rx: (k1 - k0) / 2, ry: (floor - rim) / 2 };
-          }
-        }
-      }
-    }
-  } catch { /* a tainted canvas keeps the estimate */ }
-  spillHoles.set(hull, hole);
-  return hole;
+function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveData, hole: SpillHole) {
+  const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
+  const body = art.suits[suit.id] ?? art.squirrelIdle[0];
+  if (!body) return;
+  const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
+  const anchor = DOME[key] ?? DOME["suit:flight"];
+  const helmet = helmetWornBy(save.equipped, suit.id);
+  const b = body.box;
+  const scale = hole.rx * 0.94 / anchor[2];
+  const x = hole.cx - (anchor[0] - b.x - b.w / 2) * scale;
+  const y = hole.cy - (anchor[1] - b.y - b.h / 2) * scale;
+  ctx.save(); ctx.beginPath();
+  ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2); ctx.clip();
+  ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
+  paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
+  ctx.restore();
 }
 
 function spillShipParts(s: SpillState) {
@@ -1770,7 +1784,7 @@ function spillShipParts(s: SpillState) {
     thrust: s.up.thrusters > 0 ? `thrust-${lvl(s.up.thrusters)}` : null,
     cone: s.up.pulse > 0 ? `cone-${lvl(s.up.pulse)}` : null,
     // the canopy is the shield: a visor for one charge, sealed for two
-    cockpit: s.shield >= 2 ? "cockpit-3" : s.shield >= 1 ? "cockpit-1" : null,
+    cockpit: s.canopyLevel >= 2 ? "cockpit-3" : s.canopyLevel >= 1 ? "cockpit-1" : null,
   };
 }
 
@@ -1808,7 +1822,8 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
   grad.addColorStop(0, "rgba(255,255,255,.96)");
   grad.addColorStop(0.18, "rgba(97,221,255,.92)");
-  grad.addColorStop(0.58, "rgba(146,82,255,.66)");
+  const signal = hexRgb(s.signal);
+  grad.addColorStop(0.58, `rgba(${signal.r},${signal.g},${signal.b},.66)`);
   grad.addColorStop(1, "rgba(83,38,180,0)");
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
@@ -1829,27 +1844,33 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
     ctx.translate(cx + l.xf.dx, cy + l.xf.dy);
     ctx.rotate((l.xf.rot * Math.PI) / 180);
     ctx.scale(l.xf.scale, l.xf.scale);
-    ctx.drawImage(l.sp, -cx, -cy);
+    ctx.drawImage(l.name.startsWith("cockpit") ? spillCanopyFrame(l.sp) : l.sp, -cx, -cy);
     ctx.restore();
   };
   for (const l of layers) if (l.xf.behind) paint(l);
-  ctx.drawImage(hull, 0, 0);
-  // the pilot, in the opening, under whatever canopy the shield has bought
-  const hole = spillHoleOf(hull);
+  // Stock nozzles are baked into the old hull art. Clip that source area
+  // when an upgrade is fitted; otherwise two different engines show at once.
   ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
-  // plus a little room over the rim so the helmet dome peeks out
-  ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
-  ctx.clip();
-  const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
-  glow.addColorStop(0, "rgba(71,112,166,.62)");
-  glow.addColorStop(1, "rgba(3,8,22,.96)");
-  ctx.fillStyle = glow;
-  ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
-  drawPilot(ctx, w, save, art, hole.cx - 1.5 / z, 0.34 / z, hole.cy + hole.ry * 0.45, 0);
+  if (parts.thrust) { ctx.beginPath(); ctx.rect(57, 0, 199, 256); ctx.clip(); }
+  ctx.drawImage(hull, 0, 0); ctx.restore();
+  const hole = SPILL_COCKPITS[parts.hull] ?? SPILL_COCKPITS["hull-0"];
+  ctx.save(); ctx.beginPath(); ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+  ctx.fillStyle = "#10243d"; ctx.fill();
+  ctx.strokeStyle = "#b49a71"; ctx.lineWidth = 3; ctx.stroke();
+  paintSpillHead(ctx, art, save, hole);
+  // Glass is a restrained tint and edge glint, never an opaque disk.
+  if (parts.cockpit) {
+    ctx.beginPath(); ctx.ellipse(hole.cx, hole.cy, hole.rx - 2, hole.ry - 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(115,203,240,.08)"; ctx.fill();
+    ctx.strokeStyle = "rgba(207,242,255,.65)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(hole.cx, hole.cy, hole.rx - 2, hole.ry - 2, 0, Math.PI * 1.12, Math.PI * 1.65); ctx.stroke();
+  }
   ctx.restore();
   for (const l of layers) if (!l.xf.behind) paint(l);
+  // The earned signal is cosmetic; remaining protection stays on the HUD.
+  ctx.fillStyle = s.signal;
+  for (let i = 0; i < s.utilities.length; i++) ctx.fillRect(105 + i * 12, 133, 7, 4);
+
   ctx.restore();
 }
 
@@ -1857,7 +1878,12 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
 function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number) {
   const ship = art.hyperRun["scout-ship"];
   if (!ship) {
-    drawPilot(ctx, w, save, art, x);
+    // A slow or failed asset request must leave a visible, usable ship.
+    ctx.save(); ctx.translate(x, s.pilot.y);
+    ctx.fillStyle = "#b99b73"; ctx.beginPath(); ctx.ellipse(0, 3, 27, 12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#152c46"; ctx.beginPath(); ctx.arc(7, -6, 10, 0, Math.PI * 2); ctx.fill();
+    paintSpillHead(ctx, art, save, { cx: 7, cy: -6, rx: 10, ry: 10 });
+    ctx.strokeStyle = "#a8ddeb"; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
     return;
   }
   const scale = 58 / 88;
@@ -1902,7 +1928,7 @@ function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
   ctx.fillStyle = cockpitGlow;
   ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-  drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+  paintSpillHead(ctx, art, save, { cx: layout.cockpitX, cy: layout.cockpitY, rx: 12 * scale, ry: 11 * scale });
   ctx.restore();
   drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
   ctx.restore();
@@ -1911,17 +1937,28 @@ function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
 function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const s = w.spill!;
   const { W, H } = w;
-  spillBackdrop(ctx, w, s);
+  spillBackdrop(ctx, w, s, art);
+  const dock = art.spillScene?.depot;
+  if (dock && (s.phase === "docking" || s.phase === "depot")) {
+    ctx.save(); ctx.globalAlpha = Math.min(0.8, s.phaseT / 0.8);
+    const h = W * dock.naturalHeight / dock.naturalWidth;
+    ctx.drawImage(dock, 0, (H - h) / 2, W, h); ctx.restore();
+  }
+
   const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
 
-  // DRIFT tilts the whole field about its centre - the debris, the ore
-  // and the ship together - so what the pilot sees is what the rules fly.
-  // The backdrop stays level: it is the sky, and the field is what drifts
+  // DRIFT is already in the debris velocity. Keep the ship, warnings,
+  // pickups and boundary in the same screen coordinates as collision.
   ctx.save();
-  if (s.tilt !== 0) {
-    ctx.translate(W / 2, H / 2);
-    ctx.rotate(s.tilt * 0.55);
-    ctx.translate(-W / 2, -H / 2);
+
+  if (s.eventWarn > 0) {
+    const gap = spillEventGap(s), y0 = s.eventSafeY - gap / 2, y1 = s.eventSafeY + gap / 2;
+    ctx.fillStyle = `rgba(255,156,93,${0.07 + Math.sin(w.time * 8) * 0.025})`;
+    ctx.fillRect(W * 0.48, 0, W * 0.52, y0); ctx.fillRect(W * 0.48, y1, W * 0.52, H - y1);
+    ctx.strokeStyle = "rgba(138,228,183,.8)"; ctx.lineWidth = 2; ctx.setLineDash([8, 7]);
+    ctx.beginPath(); ctx.moveTo(W * 0.5, y0); ctx.lineTo(W, y0); ctx.moveTo(W * 0.5, y1); ctx.lineTo(W, y1); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = "800 10px Figtree,system-ui"; ctx.textAlign = "right"; ctx.fillStyle = "#a3efc2";
+    ctx.fillText("OPEN CORRIDOR", W - 14, s.eventSafeY + 4);
   }
 
   for (const n of s.nuts) {
@@ -1959,6 +1996,7 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
     if (r.dead) continue;
     if (r.warn > 0) drawSpillWarning(ctx, w, r);
     else drawSpillRock(ctx, art, r);
+    if (spillHas(s, "scanner") && r.warn <= 0 && r.x > W - 65) drawSpillWarning(ctx, w, r);
   }
 
   if (blackout) {
@@ -1967,6 +2005,11 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
     ctx.fillStyle = `rgba(0,0,0,${(0.62 * spillRamp(s)).toFixed(3)})`;
     ctx.fillRect(-W, -H, W * 3, H * 3);
     for (const r of s.rocks) if (!r.dead && r.warn > 0) drawSpillWarning(ctx, w, r);
+    for (const r of s.rocks) if (!r.dead && r.warn <= 0) {
+      ctx.strokeStyle = spillHas(s, "scanner") ? "rgba(166,230,255,.92)" : "rgba(168,188,206,.4)";
+      ctx.lineWidth = spillHas(s, "scanner") ? 2 : 1;
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r + 1, 0, Math.PI * 2); ctx.stroke();
+    }
   }
 
   for (const p of w.particles) drawParticle(ctx, p);
@@ -2012,9 +2055,9 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   } else if (w.screen === "dead") {
     drawSpillShip(ctx, w, save, art, s, s.pilot.x);
   }
-  ctx.restore();   // the tilt
+  ctx.restore();   // gameplay coordinates
 
-  // the floor announces itself before it kills - drawn level, because the
+  // the floor announces sustained contact before damage - drawn level, because the
   // floor is the screen's edge, not the field's
   if (s.floorT > SPILL.floorWarn && s.phase !== "over") {
     const f = Math.min(1, (s.floorT - SPILL.floorWarn) / (SPILL.floorGrace - SPILL.floorWarn));
@@ -2026,7 +2069,7 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   }
 
   if (s.pulseFlash > 0) {
-    const reach = s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR;
+    const reach = (s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR) * Math.max(0.8, W / 390);
     const g = ctx.createRadialGradient(s.pilot.x, s.pilot.y, 0, s.pilot.x, s.pilot.y, reach);
     g.addColorStop(0, `rgba(255,225,180,${0.5 * s.pulseFlash})`);
     g.addColorStop(1, "rgba(255,150,60,0)");
@@ -2105,7 +2148,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
       : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
         : s.phase === "docking" ? `WAVE ${s.wave} CLEARED`
-          : s.phase === "depot" ? `DEPOT · ${Math.ceil(s.depot?.timer ?? 0)}s`
+          : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
             : s.phase === "respawn" ? "RESPAWN CORE" : "THE SPILL";
   ctx.fillText(sub, W / 2, 64);
   // the PULSE meter. Locked, it is dim and says so; unlocked and full it
@@ -2116,13 +2159,13 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   ctx.fillStyle = "rgba(255,255,255,.15)";
   ctx.fillRect(barX, 69, barW, 3);
   ctx.fillStyle = !unlocked ? "rgba(200,190,255,.45)" : s.charge >= 1 ? "#ffe680" : "#8fd6ff";
-  ctx.fillRect(barX, 69, barW * Math.min(1, s.charge), 3);
+  ctx.fillRect(barX, 69, barW * Math.min(1, s.charge / spillChargeCap(s)), 3);
   if (s.phase !== "depot" && s.phase !== "docking") {
     ctx.font = "800 9px Figtree, system-ui";
     if (unlocked && s.charge >= 1) {
       ctx.fillStyle = "#ffe680";
       ctx.globalAlpha = 0.7 + 0.3 * Math.sin(w.time * 8);
-      ctx.fillText("PULSE ARMED", W / 2, 82);
+      ctx.fillText(`PULSE ARMED${spillChargeCap(s) > 1 ? ` · ${Math.floor(s.charge)}/2` : ""}`, W / 2, 82);
       ctx.globalAlpha = 1;
     } else if (!unlocked && s.charge > 0) {
       ctx.fillStyle = "rgba(200,190,255,.6)";
@@ -2147,13 +2190,16 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.font = "800 12px Figtree, system-ui";
     ctx.fillText(`×${s.combo}`, 38, 44);
   }
+  ctx.fillStyle = "rgba(221,211,246,.7)"; ctx.font = "700 9px Figtree, system-ui";
+  ctx.fillText(`SCORE ${Math.floor(s.score)}`, 14, 58);
+  if (s.utilities.length) ctx.fillText(s.utilities.map(id => SPILL_UTILITIES[id].icon).join("  "), 14, 74);
   // the hull, top-right, clear of the pause button that sits in the corner
   for (let i = 0; i < s.maxHull; i++) {
-    const x = W - 70 - i * 18;
+    const x = W - 66 - i * Math.min(16, (W / 2 - 90) / 5);
     const lit = i < s.hull;
     const lost = !lit && i === s.hull && s.hitFlash > 0;
     ctx.fillStyle = lit ? "#5fd48a" : lost ? `rgba(255,90,70,${s.hitFlash.toFixed(2)})` : "rgba(255,255,255,.14)";
-    round(ctx, x - 8, 21, 16, 7, 3);
+    round(ctx, x - 5, 21, 10, 7, 3);
     ctx.fill();
   }
   for (let i = 0; i < s.shield; i++) {
@@ -2181,7 +2227,9 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   }
   if (s.gold > 0) hudLine(`GOLD  ${Math.ceil(s.gold)}s`, "#ffd060");
   if (s.surgeT > 0) hudLine(`SURGE  ${Math.ceil(s.surgeT)}s`, "#ff9a4c");
-  if (s.pulseQueue > 0) hudLine(`SECOND PULSE  ${Math.ceil(s.pulseQueue)}s`, "#ffe680");
+  if (s.pulseQueue > 0) hudLine(`ECHO READY IN ${Math.ceil(s.pulseQueue)}s`, "#ffe680");
+  else if (s.echoReady) hudLine("ECHO ARMED", "#ffe680");
+  if (s.contract) hudLine(spillContractProgress(s), "#cdb3ff");
   // a mission's three objectives ride the top of the run, live
   if (w.lvl && w.lvl.def.base === "spill") {
     const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
@@ -2233,7 +2281,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
     drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
   }
-  if (s.phase === "ready") {
+  if (s.phase === "ready" && s.target) {
     const compact = W < 520;
     // a phone gets the same briefing in shorter lines, never a clipped one
     // FOUR LINES, NOT A BRIEFING (owner, 2 Sep 2026: "no need for a half
@@ -4786,124 +4834,18 @@ function previewRot(p: number, beat: number, kick: number, pull: number) {
  *  the kit has not loaded. */
 export type ShipPick = { plating: number; thrusters: number; pulse: number; shield: number };
 export function paintShipPreview(
-  ctx: CanvasRenderingContext2D,
-  art: ArtBank | null | undefined,
-  save: SaveData,
-  cx: number,
-  cy: number,
-  scale: number,
-  t: number,
-  pick: ShipPick,
+  ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined, save: SaveData,
+  cx: number, cy: number, scale: number, t: number, pick: ShipPick,
 ) {
   if (!art) return;
-  const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
-  const helmRaw = HELMETS.find((h) => h.id === save.equipped) ?? HELMETS[0];
-  const helmet = helmRaw.suitOnly && helmRaw.suitOnly !== suit.id ? HELMETS[0] : helmRaw;
-  // THE FOUR AXES the Spill's Depot sells, each the kit's own part: Plating
-  // is the hull, Thrusters the tail, Power-ups the pulse cone, Shield the
-  // canopy. In the mode one charge is cockpit-1 and two is cockpit-3 (see
-  // spillShipParts); the preview shows the kit's three canopies as cut.
-  const L = (n: number) => Math.max(0, Math.min(3, Math.floor(n || 0)));
-  const lvl = L(pick.thrusters);
-  const hullName = `hull-${L(pick.plating)}`;
-  const hull = art.spillShip?.[hullName];
-  const bob = Math.sin(t * 1.7) * 3;
-  if (hull) {
-    const fit = art.spillShipFit;
-    const xfOf = (name: string) => fit?.overrides?.[hullName]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
-    const names = [
-      lvl > 0 ? `thrust-${lvl}` : null,
-      L(pick.pulse) > 0 ? `cone-${L(pick.pulse)}` : null,
-      L(pick.shield) > 0 ? `cockpit-${L(pick.shield)}` : null,
-    ];
-    const layers = names
-      .map((name) => name && art.spillShip[name] ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
-      .filter((l): l is { name: string; sp: Sprite; xf: SpillShipXf } => !!l);
-    const z = (SPILL_SHIP_LEN * scale) / hull.box.w;
-    ctx.save();
-    ctx.translate(cx, cy + bob);
-    ctx.rotate(-0.04);
-    ctx.scale(z, z);
-    ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
-    // the plume, from the mouth of the previewed thruster (or the bare tail)
-    const tail = layers.find((l) => l.name.startsWith("thrust"));
-    let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
-    if (tail) {
-      const tcx = tail.sp.box.x + tail.sp.box.w / 2, tcy = tail.sp.box.y + tail.sp.box.h / 2;
-      engineX = tcx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
-      engineY = tcy + tail.xf.dy;
-    }
-    const pulse = 0.5 + 0.5 * Math.sin(t * (9 + 5 * lvl));
-    const length = ((12 + 12 * lvl) + pulse * (4 + 3 * lvl)) / z;
-    const half = (3.2 + 1.1 * lvl) / z;
-    const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
-    grad.addColorStop(0, "rgba(255,255,255,.96)");
-    grad.addColorStop(0.18, lvl >= 3 ? "rgba(255,214,106,.95)" : "rgba(97,221,255,.92)");
-    grad.addColorStop(0.58, lvl >= 2 ? "rgba(255,120,60,.66)" : "rgba(146,82,255,.66)");
-    grad.addColorStop(1, "rgba(83,38,180,0)");
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    ctx.fillStyle = grad;
-    ctx.shadowColor = "rgba(111,92,255,.82)";
-    ctx.shadowBlur = (6 + 4 * lvl) / z;
-    ctx.beginPath();
-    ctx.moveTo(engineX, engineY - half);
-    ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
-    ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    const paint = (l: typeof layers[number]) => {
-      const lcx = l.sp.box.x + l.sp.box.w / 2, lcy = l.sp.box.y + l.sp.box.h / 2;
-      ctx.save();
-      ctx.translate(lcx + l.xf.dx, lcy + l.xf.dy);
-      ctx.rotate((l.xf.rot * Math.PI) / 180);
-      ctx.scale(l.xf.scale, l.xf.scale);
-      ctx.drawImage(l.sp, -lcx, -lcy);
-      ctx.restore();
-    };
-    for (const l of layers) if (l.xf.behind) paint(l);
-    ctx.drawImage(hull, 0, 0);
-    // the pilot in the opening, the way the Spill seats it
-    const hole = spillHoleOf(hull);
-    // the cabin glow stays INSIDE the opening. The mode fills its glow
-    // through the same clip the pilot gets - the ellipse plus a slot over
-    // the rim for the dome - and at 58px the slot's dark corners vanish
-    // into the hull. At case size they read as a square window painted
-    // on the plating, so here the glow is clipped to the ellipse alone
-    // and only the pilot gets the headroom.
-    const glow = ctx.createRadialGradient(hole.cx + hole.rx * 0.15, hole.cy - hole.ry * 0.25, 1, hole.cx, hole.cy, hole.rx * 1.15);
-    glow.addColorStop(0, "rgba(71,112,166,.62)");
-    glow.addColorStop(1, "rgba(3,8,22,.96)");
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.fillStyle = glow;
-    ctx.fillRect(hole.cx - hole.rx * 1.3, hole.cy - hole.ry * 1.3, hole.rx * 2.6, hole.ry * 2.6);
-    ctx.restore();
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
-    ctx.rect(hole.cx - hole.rx * 0.7, hole.cy - hole.ry * 1.9, hole.rx * 1.4, hole.ry * 0.95);
-    ctx.clip();
-    paintFlightPreview(ctx, art, suit, helmet, hole.cx - 1.5, hole.cy + hole.ry * 0.45, hole.rx * 2.1, t);
-    ctx.restore();
-    for (const l of layers) if (!l.xf.behind) paint(l);
-    ctx.restore();
-    return;
-  }
-  // the kit is not home yet: the old scout, so the case is never empty
-  const ship = art.hyperRun?.["scout-ship"];
-  if (!ship) return;
-  const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
-  const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
-  const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
-  ctx.save();
-  ctx.translate(cx, cy + bob);
-  ctx.rotate(-0.04);
-  drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
-  ctx.restore();
+  const s = createSpill(390, 760, 0);
+  s.up = { plating: Math.max(0, Math.min(3, pick.plating)), thrusters: Math.max(0, Math.min(3, pick.thrusters)), pulse: Math.max(0, Math.min(3, pick.pulse)) };
+  s.shield = s.canopyLevel = Math.max(0, Math.min(2, pick.shield));
+  s.pilot.y = 0; s.held = true;
+  s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+  const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 } as World;
+  ctx.save(); ctx.translate(cx, cy + Math.sin(t * 1.7) * 2); ctx.scale(scale, scale);
+  drawSpillShip(ctx, w, save, art, s, 0); ctx.restore();
 }
 
 export function paintFlightPreview(

@@ -1,349 +1,159 @@
-# THE SPILL — wave survival
+# The Spill — survival expeditions
 
-An acorn mining rig let go one system over. What reached us is a front of
-rock, cargo and shrapnel travelling one way: at you. No gates, no planets.
-Survive the wave. The next one is harder.
-
-The Spill is the seventh way to fly. It started as a lab prototype (a
-self-contained page under `docs/lab/spill/`, retired with the promotion)
-and kept the prototype's core: the forward-only **lunge**, the spawn-time
-path rejection that keeps debris from ever colliding with debris, the
-telegraphed hulk, and the floor that kills after a quarter second. The
-first shipped pass (2026-09-01) put a ladder of authored waves, a
-three-pip hull, per-run **Ore** and a **Depot** every fifth wave around
-that core. The second pass (2026-09-02), from the owner's first play
-session, changed what is flown and how:
-
-- **the ship.** The pilot flies the Spill's own layered ship
-  (`docs/art/spill-ship/`), sized to the squirrel's window, not the
-  squirrel. Its plume is the hand's state, and its parts are the Depot's
-  meters: Plating picks the hull, Thrusters the tail, Power-ups the nose
-  cone, and the shield charges the canopy (one charge a visor, two a
-  sealed dome). Before the kit arrived it flew Hyper Run's scout, which
-  is still the fallback when the kit fails to load.
-- **the hand.** Hold to rise, release to fall. A swipe up or down is an
-  instant burst. Nothing tap-taps. (The first hand shipped at normal
-  flight's snap and the owner could not hold a line with it; the third
-  pass below made it a gentle net acceleration under the field's own,
-  softer gravity, with the bursts kept as they were.)
-- **no PULSE button.** The Depot's POWER-UPS meter unlocks the PULSE, and
-  from then it fires *itself* at an impact when the meter is full. The
-  second level fires a second pulse five seconds after the first.
-- **Gold Ore charges the meter**, half each. Near misses are points only.
-- **no gravity flip.** The last taught rule is DRIFT: the whole field
-  tilts, slowly and continuously, and the debris arrives at that angle.
-- **the ship is what you upgrade**: four fixed meters (Plating, Shield,
-  Thrusters, Power-ups) at prices that climb with the level and never
-  with the wave. No rolled shelves, no reroll.
-- **shields come from the Depot only**, flat 35 Ore, every stop. None
-  drift past in the field.
-- **the intermission is predictable.** A cleared wave counts 3–2–1 with
-  the ship on autopilot, and control returns on the GO and never before.
-  Every fifth wave docks first (1.2s of autopilot) and the Depot's shelves
-  stay inert for 0.8s after they appear, so a thumb still tapping from the
-  wave buys nothing. What was bought this stop is listed on the sheet.
-- spinners weave from wave 1.
-
-Owner's calls that still stand: Ore is per-run, never persistent; waves
-1–20 are authored and then endless, with every rule taught in the wave
-where it first appears; the Depot clock is thirty seconds for the first
-two visits and fifteen after, extendable for Ore; the beta Star Chart's
-level-8 missions are "clear wave N".
-
-## Where it lives
-
-| | |
-|---|---|
-| `game/spill.ts` | the rules. No canvas, no DOM, no save. Fed a dt and semantic inputs; answers with state and cues |
-| `game/sim.ts` | the seam: `World.spill`, `resetRun("spill")`, `updateSpill` mirrors the pilot into `w.squirrel`, turns bursts into particles, banks `spillBest` through `die()`, settles a mission through `settleLevel()`. `flap()` is the hand going ON, `spillRelease()` the hand coming OFF, `dive()` the burst down, `spillBurstUp()` the burst up |
-| `game/draw.ts` | `drawSpillWorld` (its own deep space, the tilted field, the scout ship) and `drawSpillHud` (wave, clock, pips, the PULSE meter, the countdown, the rule chip) |
-| `game/engine.ts` | `fly("spill")`; pointer down/up as hold/release; swipe up, swipe down and swipe right; `dispatchSpillCues` for sound; the four `spill*` engine methods the LUNGE button and the Depot call |
-| `game/standalone.ts` | the MODES row, the records entry, the LUNGE button, the Depot sheet with its meters, the crash receipt |
-| `game/campaign.ts` | the beta level-8 missions, the `ore` and `noHit` goals |
-| `game/save.ts` | `spillBest` — the highest wave cleared. The only thing the mode ever writes |
-| `test-spill.mjs` | the rules, asserted against the built module |
-
-The shape is Hyper Run's: the authority is a module the sim steps, and the
-world's squirrel is a mirror of its pilot so the trail, the particles and
-the shake all ride the shared paths. The ship is painted by the Spill's
-own `drawSpillShip` from the `art.spillShip` kit: the hull for the
-Plating level, then the thruster, cone and canopy parts placed with the
-transforms the owner exported from the Ship Bench
-(`docs/art/spill-ship/transforms.json`, loaded as `art.spillShipFit`;
-per-hull overrides win over the part's default). Parts marked *behind*
-in that file paint under the hull. The hull's box is 58px long and
-centred on the collision point; the cockpit opening is measured once
-from the hull's top outline (the first dip that climbs back out) and the
-equipped pilot is clipped into it, helmet peeking over the rim, under
-whatever canopy the shield has bought. `hull-2-blue` and `cockpit-2` are
-in the kit but not yet drawn by the game. The lunge moves the ship
-horizontally, so `pilotX(w)` replaced the fixed lane wherever the trail
-reads it.
+The Spill is the app's build-focused survival mode: hold a line through a
+broken acorn mining rig, collect Ore, and build a ship at a Depot every five
+waves. Its identity is readable flight under pressure, with decisions between
+waves that change how the next sector plays.
 
 ## The loop
 
-```
-ready ─press─▶ COUNT 3·2·1 (autopilot) ─GO─▶ WAVE n (20..40s) ─▶ FIELD DRAINS ─┐
-                    ▲                                                          │
-                    │        n % 5 = 0 ─▶ DOCKING (1.2s) ─▶ DEPOT (30s, 30s, 15s; shelves arm after 0.8s)
-                    │                                              │           │
-                    └──────────────────────────────────────────────┴───────────┘
-```
+Launch → three-second countdown → survive a wave → drain the field → collect
+12 completion Ore. Every fifth clear docks for 1.2 seconds, restores one hull
+pip, then opens the Depot. Its shelves arm after 0.8 seconds to reject a
+lingering flight tap. **Every Depot is untimed.** It stays open until the pilot
+leaves, saves and quits, or finishes an eligible expedition.
 
-A wave is a timed spawning window. When the timer runs out spawning stops
-and the wave ends the moment the last live piece has left the screen (or
-six seconds later, whichever is first — a slow hulk cannot hold the count
-hostage). No kill quota: a cautious pilot and a greedy one both clear it,
-and Ore is what separates them.
+Waves 1–20 retain the authored modifier ladder. Wave 20 completes the rig;
+the pilot can finish successfully at the Depot or continue into endless waves.
+After wave 20 the seed chooses modifier combinations; speed caps at 2.05×.
+Wave completion depends on surviving the spawning window and drain, with no
+kill quota or required weapon. The drain lasts at most six seconds.
 
-The clear is announced at the drain, the hand comes off the thrust, and
-the ship flies itself home for the count. The count is three seconds and
-the GO is the frame the field returns. A press during the count takes the
-stick from the autopilot early (the HUD says "YOU HAVE THE STICK"), and a
-finger already down at the GO is a hand already on the thrust, so the
-ship rises on the GO and never drops into a waiting thumb.
-Every fifth wave docks first — the same autopilot, "DOCKING" for 1.2s —
-then the Depot opens with one pip restored.
+A mission ends automatically at its target wave. Chapter 2–10 level-8 missions
+now use the Spill in production as well as beta; IDs and earned star masks
+remain stable. Missions use the standard starting ship and a fixed seed.
 
-A hull hit inside a wave costs one pip, shoves the ship toward the wall,
-pops it away from the ground and buys 1.2 seconds of invulnerability, so a
-single piece can never take two pips. The piece that hit is shattered. At
-zero pips the run is over — unless a **Respawn Core** was bought, in which
-case the field freezes for two seconds and the ship re-enters whole and
-golden, to the phase it left, once.
+## Controls and damage
 
-The record is **waves cleared**: a wave counts once its field has drained,
-and a clear is never taken back.
+- Hold to rise, release to fall. Swipe up/down for a burst; right for a lunge.
+- A swipe still works after a long hold. Only the owning pointer releases it;
+  cancellation, lost capture, blur, visibility loss and resize clear the hand.
+- Space / Up hold thrust; Down dives; W bursts upward; Right / D lunges.
+- Simulation advances in 60 Hz steps independently of display refresh rate.
+- DRIFT changes debris velocity, while pilot, warnings and floor stay in the
+  same screen coordinates used by collision detection.
 
-## Controls
+A short floor brush is free. Sustained contact beyond 0.25 seconds uses the
+same protection sequence as debris: active invulnerability/Gold → armed echo
+or charged Pulse → shield → one hull pip → Respawn Core at zero hull.
+Boundary recovery moves the pilot clear and kicks it upward. It never bypasses
+extra hull or shields. A shield or Pulse impact grants 0.65 seconds of recovery;
+a hull hit grants 1.2 seconds. A Core returns a full hull after a two-second
+freeze, with three seconds of Gold protection.
 
-| | |
-|---|---|
-| **Hold** (finger down) / Space / ↑ | thrust: a net 720 px/s² against the field's gravity, capped at 330 px/s. A quarter second is a nudge; a full second is a climb |
-| **Release** | the field's gravity (600 px/s², half of flight's) has the ship, capped at 390 px/s |
-| **Swipe up** / W | burst up: an instant kick skyward |
-| **Swipe down** / ↓ | burst down: the dive |
-| **Swipe right** / → / D / the LUNGE button | lunge forward, then drift back |
+## Depot builds
 
-The hold is a fixed net acceleration against gravity (`holdAccel`) and
-gravity is the field's own (`SPILL.gravity`), so a line is held by
-feathering the thumb: a quarter second of hold moves the ship about
-twenty pixels. A burst starts past the caps and bleeds back to them
-(`burstDecay`); the caps stop the hand from building speed, never a
-swipe from carrying, so a hold under a burst up rides it rather than
-adding to it. THRUSTERS sharpen the bursts and never touch the hold: the
-owner asked for a hand that gets steadier with upgrades, not twitchier.
-There is no PULSE button: see below. The press on the ready card is the launch; a
-new press during the count takes the stick; a press during the dock, the
-Depot or the respawn freeze is nothing, and never a queued input.
+The original four tracks and their flat, tier-based prices remain:
 
-## The ladder
-
-Speed and crowding climb on separate curves so the field gets faster
-before it gets fuller. Every rule is taught alone the first time it
-appears: the count names it, a two-line hint sits low under the flight
-path for five seconds (the wave-1 control hint also leaves after three
-inputs), and the spawn interval opens up by a third while the hint is on
-screen. Every rule phases in over its wave's first three seconds
-(the chip at the bottom left shows how far), so nothing snaps on the GO.
-
-| Wave | Timer | Cap | Speed | New |
-|---:|---:|---:|---:|---|
-| 1–2 | 20–22s | 4–5 | 1.05–1.09× | shards, tumblers and spinners |
-| 3 | 24s | 5 | 1.14× | **SURGE** — six seconds of doubled spawns at the eight-second mark |
-| 4 | 26s | 6 | 1.18× | the first hulk |
-| 5 | 28s | 6 | 1.23× | **Depot** |
-| 6 | 30s | 7 | 1.27× | **LOW-G** — gravity 0.7× |
-| 8 | 34s | 8 | 1.36× | **HEAVY** — gravity 1.35× |
-| 10 | 38s | 9 | 1.45× | **Depot**; two hulks may share the screen from here |
-| 11 | 40s | 9 | 1.50× | **CROSSWIND** — a steady push toward the wall |
-| 13 | 40s | 10 | 1.59× | **BLACKOUT** — the field dims to rims and warnings |
-| 15 | 40s | 11 | 1.68× | **Depot** |
-| 16 | 40s | 12+2 | 1.72× | **SWARM** — spinners only, cap +2, wider arcs |
-| 18 | 40s | 13 | 1.81× | **DRIFT** — the field tilts, wandering to a new lean every 4–7s at 0.22 rad/s; debris arrives at the tilt. This wave is the lesson and leans to 60% of the 0.38 rad limit; endless DRIFT waves lean fully |
-| 20 | 40s | 14 | 1.90× | **Depot**, then endless |
-
-Endless: 40 seconds a wave, the cap creeps to 16, speed grows 2% a wave,
-one rule rolled per wave from the seed (two from wave 26, never two gravity
-rules). The full table is `LADDER` in `spill.ts`; `spillWaveSpec(n, seed)`
-is the one function that reads it.
-
-Debris speed scales with the width of the canvas (`lane()`), so a desktop
-panorama is more room to read, not more seconds to react.
-
-## PULSE
-
-The meter under the wave number. Gold Ore fills half of it; nothing else
-fills it. Locked, a full meter is only a meter and the HUD says UNLOCK AT
-THE DEPOT. With POWER-UPS I the ship fires the pulse *itself* at the next
-impact: the piece and everything within 240px shatter and the hull is
-never touched. With II a second pulse fires five seconds later on its
-own (the HUD counts it). With III the reach is 320px and shattered debris
-drops Ore. There is no button to miss.
-
-## Ore and the Depot
-
-Ore spills in arcs, one Ore an acorn. Every 10–18 seconds something drifts
-past alone, slower than the field: Gold Ore (pays five, charges half a
-meter) or a hull fragment (a third of drifts, and only while a pip is
-missing). Ore also builds a combo that pays score, not Ore — the currency
-stays flat so the Depot's prices mean the same thing on every run.
-
-The Depot is the ship's four meters plus a flat shelf. Each meter row
-shows its pips, the next level's effect and its price; a full meter says
-FULL. Prices climb with the level, never with the wave.
-
-| Meter | I | II | III |
+| Track | Tier I | Tier II | Tier III |
 |---|---|---|---|
-| **Plating** 60 · 110 · 180 | four pips (the new pip arrives filled) | five | six |
-| **Thrusters** 50 · 100 · 170 | sharper bursts (+15%) | two lunge charges | Afterburner: a lunge shatters the shards it touches |
-| **Power-ups** 60 · 110 · 170 | PULSE unlocked: fires on impact when charged | double wave: a second pulse 5s later | wide pulse, and shattered debris drops Ore |
-| **Shield** 35, flat | a charge that eats one hit; two carried | | |
+| Plating | 60 Ore: four hull | 110: five hull | 180: six hull |
+| Thrusters | 50: stronger bursts | 100: two lunges | 170: shard-clearing Afterburner |
+| Power-ups | 60: automatic impact Pulse | 110: banked echo after five seconds | 170: wide Pulse; shattered debris drops Ore |
+| Shield | 35 per charge | Two carried | Canopy hardware stays fitted after spending charges |
 
-Flat shelf: **Repair** (30, every pip back; shown only while a pip is
-missing), **Respawn Core** (150, one per run), **+15s** (25, doubling each
-use in a visit). The clock closes the shop on its own.
+Repair costs 30 Ore and fills missing hull. The 150 Ore Respawn Core is sold
+once per run. Gold charges half a Pulse, even before the Pulse is unlocked.
+The tier-II echo waits for a threat instead of firing into empty space.
 
-Ore never reaches the acorn wallet or the shop. A Spill crash goes through
-`die()` like every crash - the lifetime run tally and the retired XP figure
-tick, `spillBest` is banked, and the wallet is untouched because
-`runAcorns` is always zero here. `reviveRun` refuses a Spill crash because
-the Spill sells its own extra life.
+Tier II unlocks a free specialization choice at any Depot:
 
-## Missions
+| Track | Choice A | Choice B |
+|---|---|---|
+| Plating | Impact Bracing: half knockback, +0.4s recovery | Salvage Armor: every 30 mined Ore repairs a pip, at most twice per wave |
+| Thrusters | Precision Jets: lunges brake vertical motion; tier-I burst strength | Wide Sweep: broader shard clearing, available at tier II |
+| Power-ups | Efficient Coil: Gold charges 65% | Salvage Coil: shattered debris drops Ore at tier II, double at III |
 
-On the beta chart, level 8 of every chapter from 2 is a Spill mission:
-clear wave `2 + chapter` (4 through 12), mine `25 + 8 × chapter` Ore, take
-no hull damage. A mission flies a fixed ladder — the seed is the level's
-ordinal — so mission 3-8 is the same test for every pilot. The finish is
-the drain of the named wave; the mission ends on that win, not on the
-crash that was coming eventually. `settleLevel` grades off the Spill's own
-ledger, the same way it does for a Wormhole mission.
+Two utility slots create additional build choices. Purchased modules belong
+to the current run; unfit and refit owned modules for free at a Depot.
 
-## What the test proves
+| Utility | Price | Effect | Free starting utility unlock |
+|---|---:|---|---:|
+| Salvage Magnet | 40 | Pull nearby Ore/Gold, not hull patches | Clear wave 5 |
+| Field Scanner | 35 | Earlier event warning; bright Blackout outlines | Clear wave 10 |
+| Emergency Brake | 35 | Automatic floor recovery every 12s; lunge braking | Clear wave 10 |
+| Reserve Capacitor | 45 | Store two Pulse charges | Clear wave 20 |
 
-`node illustrated-src/test-spill.mjs`, against the built `docs/js`:
+The Depot forecasts the next five waves and their modifiers/events. It offers
+one optional contract for that block: mine Ore, keep a clean hull, or shatter
+eight shards. Contract completion awards Ore and 500 score; a missed contract
+never ends a run. Purchases and completion stipends do not count as mined Ore.
 
-- the ladder climbs monotonically, teaches its rules in order, ends on
-  DRIFT, never flips gravity, rolls the same endless wave for the same
-  seed, and never stacks two gravity rules;
-- the hand: a quarter second of hold is a nudge and a second a capped
-  climb, THRUSTERS III holds the same line, a release is a capped fall,
-  bursts are instant, carry past the caps and only decay, THRUSTERS
-  sharpen them, nothing answers outside flight;
-- the count ticks 3·2·1, the GO lands on its end, the autopilot flies the
-  ship home meanwhile, nothing spawns before the GO, control is back on it;
-- debris never overlaps debris, over three seeded runs to wave 7, with
-  spinners from wave 1 and hulks behind their warning;
-- DRIFT opens level, tilts, never past its limit, never faster than its
-  rate, and the debris flies the tilt;
-- the hull takes three hits and never two from one piece; a shield eats a
-  hit and none ever drifts past; the floor forgives a brush and kills a
-  ride; the Respawn Core fires once and returns to the phase it left;
-- Gold charges half a meter and a graze none; a locked full meter does
-  nothing at an impact; unlocked, the impact fires the pulse instead of
-  costing a pip; level II queues and fires the second pulse at five
-  seconds;
-- the fifth wave docks, the Depot opens after 1.2s with a pip restored and
-  thirty seconds on the clock, the shelves refuse a tap while arming and
-  arm audibly, each meter fills to three at its listed prices and no
-  further, the shield is 35 every time, repair and the core behave, the
-  extension doubles, a short purse is refused, the second and third stops
-  cost the same as the first and run 30s then 15s, the clock closes the
-  shop, a rule phases in over three seconds;
-- a mission ends at its wave, and through the sim it settles the level with
-  its stars;
-- the seam: a tap launches, a tap in the count is nothing, a tap holds and
-  a release lets go, dive and swipe-up are the bursts, the best wave is
-  banked, the wallet is never touched, the acorn continue is refused;
-- a dodging bot clears wave 1 on at least four of six seeds (all six, as
-  of this writing). A smoke test for "is this survivable at all", not a
-  tuning instrument.
+## Wave direction and readability
 
-## Tuning notes, so the next pass does not repeat them
+Four five-wave sectors progress through outer wreckage, cargo, reactor debris
+and the rig core. Each wave eases in, builds pressure, crests, and releases.
+Milestone waves add cargo ruptures, Gold veins, alternating convoy lanes or rig
+sweeps. Events warn before release, provide an open corridor and place salvage
+along it; stock ships can survive them. Ambient debris that conflicts with a
+newly announced route dissipates without giving shatter rewards.
 
-- The first lab build was unsurvivable: an autopilot managed nine seconds.
-  Intensity reached full in 75s while scaling density *and* speed, which
-  multiply. Eased ramp, rare and late hulks capped at one (two from wave
-  10), a hard ceiling on concurrent pieces.
-- Debris does not bounce off the top and bottom of the screen: a piece you
-  had already read could come back from a direction nothing telegraphed.
-- The lunge was far too strong at 900px/s. Now 320.
-- Four debris paintings (8, 12, 14, 22) are invisible against deep space.
-  Out of the pool.
-- The floor's quarter second: a bounce off the bottom while recovering
-  from a dive is one or two frames; camping is continuous. The bottom
-  glows from 0.1s so the rule is visible before it is fatal.
-- v1's FLIP (gravity inverted on a wave) was the owner's first complaint:
-  too immediate, too hard, and the chip beside the pause button was not
-  enough of a warning. It is gone; DRIFT is its replacement, and every
-  rule now ramps.
-- v2's hand (2200 px/s² net up against flight's 1300 down, caps 460/520)
-  was "very very hard to hold a line": every hold hit the cap in a fifth
-  of a second and THRUSTERS made it worse. Now 720 up against the
-  field's own 600 down, caps 330/390, and the upgrade never touches it.
-  The swipes were "perfect" and were kept: 480 either way, past the caps.
-- v1's PULSE button was unreachable while the thumb was flying the ship.
-  Gone; the pulse fires itself.
-- v1's rolled shelves auto-bought under a thumb still tapping from the
-  wave and the "SOLD" label said nothing about what. The Depot now docks,
-  arms, and lists the receipt.
+Spawn admission checks debris paths against each other and reserves a slowly
+moving escape corridor at the home lane. The director enforces actor budgets
+for event and ambient debris together. Screen-width scaling and a minimum
+read time prevent endless speed from turning into unseen hits. Spinners,
+shards and hulks have distinct motion cues. Blackout retains basic hazard
+outlines; the Scanner improves them rather than making visibility mandatory.
 
-## Known gaps
+## Art and presentation
 
-- The pal does not fly the field. Its effects are all gate-world effects
-  and the Spill has none of them.
-- The Spill's own deep space is procedural — three star layers and drifting
-  nebula pools — so it borrows none of the painted skies. Deliberate.
-- Sound is the game's existing cue set mapped onto the field. Nothing
-  bespoke yet.
-- Custom modifiers (the owner's "find a home later") have no shelf yet;
-  the meters are fixed on purpose until the ship's feel is settled.
-- A persistent Ore bank, a Star Dust tie-in and an endless-wave
-  leaderboard are still later decisions.
-- Start Shield in the loadout is a purchase, not a switch: armed stays
-  armed until a run spends it (the switch let a pilot flip it off for
-  nothing and pay again to flip it back).
+`docs/art/spill-ship/` remains the fitted modular kit. Its canopy interiors
+are opened by cached canvas masks, and explicit cockpit anchors render just
+the equipped pilot's head and helmet at a readable scale. Upgraded thrusters
+hide the baked-in stock nozzle. Gameplay, Depot and Loadout use one painter.
+The ship remains 58 logical pixels long; its collision radius is unchanged.
 
-## The owner's log (2026-09-02) — ideas, not direction
+`docs/art/spill-scene/depot.png` and `panorama.png` add the illustrated dock
+and four sector views. They load when the mode opens; a failed image request
+leaves the procedural scene and fallback ship usable. Earned signal colors
+appear in the plume and utility lights. The HUD shows Ore, salvage score,
+combo, hull, shields, Pulse/echo and an active contract.
 
-Logged after the ship kit merged (#171). Still tuning the feel and the
-core mechanics; none of this is firm.
+## Records and suspension
 
-- **Depot: unlimited time, and a save.** Saving voids the leaderboard for
-  that run.
-- **A formal dock entrance.** Fly into the Depot instead of the phase-in.
-  Reference: `docs/art/spill-ship/concepts/dock-pixel.jpg` and
-  `dock-painted.jpg` (a stone gate with a swirling purple portal on a
-  floating slab). Not to be tied in yet.
-- **Magnetic collection.** A power-up that pulls Ore in. Either the top
-  tier of an axis, or a pre-bought one-run mod paid in Star Dust; if it is
-  a premium currency it is safety-gated on a minimum run of ten waves.
-- **Mode experience.** Runs earn something persistent: more runs, or a
-  higher base ship to start from.
-- **Ranked mode.** One hit and you are dead, one upgrade per Depot, no
-  other upgrades, starts at Depot 20 with no phase-in. Ranks earn custom
-  season rewards. Very long-term.
-- **Less repetitive over time, still a growing challenge.** Challenge
-  rounds every ten waves, unique events.
+Spendable Ore and purchased upgrades belong to a run. Persistent records keep
+best cleared wave, best salvage score, total mined Ore, cleared waves,
+contracts, completed expeditions and runs. Mastery titles/signals arrive at
+waves 5, 10, 20 and 30. One earned utility may be selected before a normal run;
+mission starting conditions remain fixed.
 
-Proposals to weigh against those (mine, same status):
+Ordinary runs autosave a versioned checkpoint at the Depot and after each
+purchase/refit/contract. Save & Quit returns to the title. Resume restores the
+ship, Ore, contract and RNG, and keeps the checkpoint until departure. The
+checkpoint's bank ledger makes repeated dock/resume operations idempotent.
+A malformed checkpoint is discarded. Mid-wave suspension is not supported;
+leaving a Depot clears its checkpoint, so a later crash cannot rewind a wave.
+Ore never enters the app's acorn wallet.
 
-- **A named event every fifth wave, on a rotation the seed picks.** A
-  comet shower (fast, straight, telegraphed), a gold vein (Ore doubles,
-  rocks triple), a dead zone (no DRIFT, the hand is all you have), a
-  gravity flip (banked, since it killed on sight — only after the pilot
-  has cleared ten waves, and with a full warning bar). Each one changes
-  what the hand does for thirty seconds and then goes away.
-- **A boss rock at every tenth Depot.** One huge tumbler that takes three
-  PULSE hits and sheds Ore each time. Beating it is the challenge round;
-  the Depot after it is the reward.
-- **Contracts at the Depot.** Pick one of three small bets for the next
-  five waves: "graze twelve rocks", "spend nothing", "take no hits". Pay
-  out in Ore; the bet is what makes wave 23 feel different from wave 18.
-- **A run modifier draft at the start.** Three cards, take one: more Ore
-  but a smaller hull, faster field but a stronger PULSE. Ranked would
-  skip this. Cheap to build on the existing modifier hooks.
-- **The Star Dust magnet as a run-scoped consumable.** Fits the "safety
-  gated" note: it only appears in the Depot from wave 10 on and never
-  affects the leaderboard.
+## Ownership and verification
+
+| File | Responsibility |
+|---|---|
+| `game/spill.ts` | Pure rules, spawning, damage, checkpoints |
+| `game/spill-content.ts` | Utilities, specializations, contracts, sectors and mastery |
+| `game/sim.ts` | World mirror, standard mission loadout and completion seam |
+| `game/engine.ts` | Inputs, fixed stepping, interruption pause, banking and resume |
+| `game/save.ts` | Record migration, sanitization and idempotent bank ledger |
+| `game/draw.ts`, `game/art.ts` | Shared ship painter, HUD and lazy scene art |
+| `game/standalone.ts` | Preflight, Depot, results and resume UI |
+| `game/campaign.ts` | Production Spill missions |
+
+Build with TypeScript 5.9.2 using `node illustrated-src/export-sandbox.mjs`.
+`ACORNAUT_TSC` can point at its `lib/tsc.js`. The export builds both production
+and beta, preserving the last four cache stamps.
+
+- `node illustrated-src/test-spill.mjs`: ladder, controls, damage, waves,
+  untimed Depots, missions and six-seed opening-wave bot smoke test.
+- `node illustrated-src/test-spill-progression.mjs`: build behavior, contracts,
+  48 event sweeps across 320/390/1280 widths, checkpoint validation and banking.
+- `node illustrated-src/test-spill-ui.mjs`: menu/input integration in happy-dom,
+  including missing-art fallback. Set `ACORNAUT_HAPPY_DOM` to its module entry
+  if it is not installed in local module resolution.
+- `node illustrated-src/test-spill-render.mjs`: actual canvas painter across
+  all 192 equipment combinations and three viewport widths. Requires
+  `@napi-rs/canvas`; `ACORNAUT_CANVAS` may point at its package directory and
+  `ACORNAUT_QA_OUTPUT` selects the contact-sheet output folder.
+
+DOM tests do not certify browser layout or real-device touch feel. Validate
+those on the review build before release; bot survivability is a smoke test,
+not a claim that the entire economy is perfectly balanced.

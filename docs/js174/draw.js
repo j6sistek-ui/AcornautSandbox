@@ -1,14 +1,15 @@
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=170";
-import { goalHud } from "./campaign.js?v=170";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=170";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=170";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=170";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=170";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=170";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=170";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=170";
-import { SPILL, SPILL_MOD_INFO, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=170";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=170";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=174";
+import { goalHud } from "./campaign.js?v=174";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=174";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=174";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=174";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=174";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=174";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=174";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=174";
+import { SPILL, SPILL_MOD_INFO, createSpill, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=174";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=174";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=174";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1340,7 +1341,7 @@ function drawHyperRunPilot(ctx, w, save, art, authorityX, scale) {
     cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
     ctx.fillStyle = cockpitGlow;
     ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-    drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+    paintSpillHead(ctx, art, save, { cx: layout.cockpitX, cy: layout.cockpitY, rx: 12 * scale, ry: 11 * scale });
     ctx.restore();
     drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", halo);
     ctx.restore();
@@ -1438,7 +1439,7 @@ function tunnelControlLabel(_w) {
 // use, so a rock separates from the void. The pilot flies the scout ship,
 // sized to the squirrel's window so the field is the same field.
 const wrap = (v, m) => ((v % m) + m) % m;
-function spillBackdrop(ctx, w, s) {
+function spillBackdrop(ctx, w, s, art) {
     const { W, H } = w;
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, "#05060f");
@@ -1446,6 +1447,17 @@ function spillBackdrop(ctx, w, s) {
     g.addColorStop(1, "#05070f");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
+    const panorama = art.spillScene?.panorama;
+    if (panorama) {
+        const ih = panorama.naturalHeight, iw = panorama.naturalWidth;
+        const sw = Math.min(iw, ih * W / H);
+        const sector = Math.min(3, Math.floor((s.wave - 1) / 5));
+        const sx = (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025);
+        ctx.save();
+        ctx.globalAlpha = 0.38;
+        ctx.drawImage(panorama, Math.max(0, sx), 0, sw, ih, 0, 0, W, H);
+        ctx.restore();
+    }
     const drift = s.t * 6;
     const pool = (cx, cy, rx, ry, col) => {
         const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
@@ -1491,6 +1503,24 @@ function drawSpillRock(ctx, art, r) {
         ctx.fill();
     }
     ctx.restore();
+    if (r.kind === "spinner") {
+        ctx.strokeStyle = "rgba(150,213,240,.55)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r + 4, r.rot, r.rot + 1.9);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r + 4, r.rot + Math.PI, r.rot + Math.PI + 1.9);
+        ctx.stroke();
+    }
+    else if (r.kind === "shard") {
+        ctx.strokeStyle = "rgba(231,210,174,.45)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(r.x + r.r, r.y);
+        ctx.lineTo(r.x + r.r + 18, r.y - r.vy * 0.02);
+        ctx.stroke();
+    }
     if (r.kind === "hulk") {
         // a hulk gets a rim so it reads as the thing you must not be near
         ctx.strokeStyle = "rgba(255,150,90,0.5)";
@@ -1524,15 +1554,198 @@ function drawSpillWarning(ctx, w, r) {
  *  the same, with a plume that answers the hand: a glow while held, a
  *  flare on a burst. Falls back to the painted pilot if the ship has not
  *  loaded, so the mode is never a blank */
+/** the ship the Spill flies: a hull per PLATING level and a part per level
+ *  of THRUSTERS (the tail), POWER-UPS (the cone) and the shield charges
+ *  (the canopy). Every sprite shares one 256px frame, and each part sits
+ *  where the owner fitted it in the lab's Ship Bench: transforms.json is
+ *  that fit, offset/scale/turn about the part's own centre, with per-hull
+ *  overrides. A missing bank falls back to Hyper Run's scout */
+const SPILL_SHIP_LEN = 58;
+// Explicit source-frame anchors; the pilot uses an enlarged head window.
+// Alpha-outline guessing made a notch in the plating dictate face size.
+const SPILL_COCKPITS = {
+    "hull-0": { cx: 150, cy: 85, rx: 30, ry: 27 },
+    "hull-1": { cx: 150, cy: 85, rx: 30, ry: 27 },
+    "hull-2": { cx: 151, cy: 85, rx: 30, ry: 27 },
+    "hull-3": { cx: 150, cy: 85, rx: 30, ry: 27 },
+};
+const spillCanopyFrames = new WeakMap();
+function spillCanopyFrame(sp) {
+    let frame = spillCanopyFrames.get(sp);
+    if (frame)
+        return frame;
+    frame = document.createElement("canvas");
+    frame.width = sp.naturalWidth || sp.width;
+    frame.height = sp.naturalHeight || sp.height;
+    const g = frame.getContext("2d");
+    if (!g)
+        return sp;
+    g.drawImage(sp, 0, 0);
+    // The original canopy paintings have an opaque glass interior. Preserve
+    // their painted rim while opening its window, just as punchedHelm does.
+    g.globalCompositeOperation = "destination-out";
+    g.beginPath();
+    g.ellipse(138, 88, 26.5, 19.5, 0.24, 0, Math.PI * 2);
+    g.fill();
+    spillCanopyFrames.set(sp, frame);
+    return frame;
+}
+function paintSpillHead(ctx, art, save, hole) {
+    const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
+    const body = art.suits[suit.id] ?? art.squirrelIdle[0];
+    if (!body)
+        return;
+    const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
+    const anchor = DOME[key] ?? DOME["suit:flight"];
+    const helmet = helmetWornBy(save.equipped, suit.id);
+    const b = body.box;
+    const scale = hole.rx * 0.94 / anchor[2];
+    const x = hole.cx - (anchor[0] - b.x - b.w / 2) * scale;
+    const y = hole.cy - (anchor[1] - b.y - b.h / 2) * scale;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
+    paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
+    ctx.restore();
+}
+function spillShipParts(s) {
+    const lvl = (n) => Math.max(0, Math.min(3, Math.floor(n)));
+    return {
+        hull: `hull-${lvl(s.up.plating)}`,
+        thrust: s.up.thrusters > 0 ? `thrust-${lvl(s.up.thrusters)}` : null,
+        cone: s.up.pulse > 0 ? `cone-${lvl(s.up.pulse)}` : null,
+        // the canopy is the shield: a visor for one charge, sealed for two
+        cockpit: s.canopyLevel >= 2 ? "cockpit-3" : s.canopyLevel >= 1 ? "cockpit-1" : null,
+    };
+}
 function drawSpillShip(ctx, w, save, art, s, x) {
-    const ship = art.hyperRun["scout-ship"];
-    if (!ship) {
-        drawPilot(ctx, w, save, art, x);
+    const parts = spillShipParts(s);
+    const hull = art.spillShip?.[parts.hull];
+    if (!hull) {
+        drawSpillScout(ctx, w, save, art, s, x);
         return;
     }
-    // Hyper Run's hull at two thirds of its size, centred on the collision
-    // point rather than registered at the nose, with the equipped pilot in
-    // the cockpit exactly as the race paints it
+    const fit = art.spillShipFit;
+    const xfOf = (name) => fit?.overrides?.[parts.hull]?.[name] ?? fit?.parts?.[name] ?? { dx: 0, dy: 0, scale: 1, rot: 0 };
+    const layers = [["thrust", parts.thrust], ["cone", parts.cone], ["cockpit", parts.cockpit]]
+        .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
+        .filter((l) => !!l && !!l.sp);
+    const z = SPILL_SHIP_LEN / hull.box.w;
+    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    ctx.save();
+    ctx.translate(x, s.pilot.y);
+    ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
+    ctx.scale(z, z);
+    // the hull's box centre is the collision point; everything else is
+    // painted in the sprites' shared frame around it
+    ctx.translate(-(hull.box.x + hull.box.w / 2), -(hull.box.y + hull.box.h / 2));
+    // the plume, from the mouth of whatever is on the tail
+    const tail = layers.find((l) => l.name.startsWith("thrust"));
+    let engineX = hull.box.x + 3, engineY = hull.box.y + hull.box.h * 0.45;
+    if (tail) {
+        const cx = tail.sp.box.x + tail.sp.box.w / 2, cy = tail.sp.box.y + tail.sp.box.h / 2;
+        engineX = cx + tail.xf.dx - (tail.sp.box.w / 2) * tail.xf.scale + 2;
+        engineY = cy + tail.xf.dy;
+    }
+    const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
+    const length = ((9 + 14 * thrust) + pulse * (3 + 4 * thrust)) / z;
+    const half = (3 + 1.4 * thrust) / z;
+    const grad = ctx.createLinearGradient(engineX, engineY, engineX - length, engineY);
+    grad.addColorStop(0, "rgba(255,255,255,.96)");
+    grad.addColorStop(0.18, "rgba(97,221,255,.92)");
+    const signal = hexRgb(s.signal);
+    grad.addColorStop(0.58, `rgba(${signal.r},${signal.g},${signal.b},.66)`);
+    grad.addColorStop(1, "rgba(83,38,180,0)");
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grad;
+    ctx.shadowColor = "rgba(111,92,255,.82)";
+    ctx.shadowBlur = (5 + 5 * thrust) / z;
+    ctx.beginPath();
+    ctx.moveTo(engineX, engineY - half);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY - half * 0.64, engineX - length, engineY);
+    ctx.quadraticCurveTo(engineX - length * 0.48, engineY + half * 0.64, engineX, engineY + half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    const paint = (l) => {
+        const cx = l.sp.box.x + l.sp.box.w / 2, cy = l.sp.box.y + l.sp.box.h / 2;
+        ctx.save();
+        ctx.translate(cx + l.xf.dx, cy + l.xf.dy);
+        ctx.rotate((l.xf.rot * Math.PI) / 180);
+        ctx.scale(l.xf.scale, l.xf.scale);
+        ctx.drawImage(l.name.startsWith("cockpit") ? spillCanopyFrame(l.sp) : l.sp, -cx, -cy);
+        ctx.restore();
+    };
+    for (const l of layers)
+        if (l.xf.behind)
+            paint(l);
+    // Stock nozzles are baked into the old hull art. Clip that source area
+    // when an upgrade is fitted; otherwise two different engines show at once.
+    ctx.save();
+    if (parts.thrust) {
+        ctx.beginPath();
+        ctx.rect(57, 0, 199, 256);
+        ctx.clip();
+    }
+    ctx.drawImage(hull, 0, 0);
+    ctx.restore();
+    const hole = SPILL_COCKPITS[parts.hull] ?? SPILL_COCKPITS["hull-0"];
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#10243d";
+    ctx.fill();
+    ctx.strokeStyle = "#b49a71";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    paintSpillHead(ctx, art, save, hole);
+    // Glass is a restrained tint and edge glint, never an opaque disk.
+    if (parts.cockpit) {
+        ctx.beginPath();
+        ctx.ellipse(hole.cx, hole.cy, hole.rx - 2, hole.ry - 2, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(115,203,240,.08)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(207,242,255,.65)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(hole.cx, hole.cy, hole.rx - 2, hole.ry - 2, 0, Math.PI * 1.12, Math.PI * 1.65);
+        ctx.stroke();
+    }
+    ctx.restore();
+    for (const l of layers)
+        if (!l.xf.behind)
+            paint(l);
+    // The earned signal is cosmetic; remaining protection stays on the HUD.
+    ctx.fillStyle = s.signal;
+    for (let i = 0; i < s.utilities.length; i++)
+        ctx.fillRect(105 + i * 12, 133, 7, 4);
+    ctx.restore();
+}
+/** the fallback: Hyper Run's scout, as the mode flew before it had a ship */
+function drawSpillScout(ctx, w, save, art, s, x) {
+    const ship = art.hyperRun["scout-ship"];
+    if (!ship) {
+        // A slow or failed asset request must leave a visible, usable ship.
+        ctx.save();
+        ctx.translate(x, s.pilot.y);
+        ctx.fillStyle = "#b99b73";
+        ctx.beginPath();
+        ctx.ellipse(0, 3, 27, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#152c46";
+        ctx.beginPath();
+        ctx.arc(7, -6, 10, 0, Math.PI * 2);
+        ctx.fill();
+        paintSpillHead(ctx, art, save, { cx: 7, cy: -6, rx: 10, ry: 10 });
+        ctx.strokeStyle = "#a8ddeb";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+        return;
+    }
     const scale = 58 / 88;
     const box = ship.box ?? { x: 0, y: 0, w: ship.width, h: ship.height };
     const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
@@ -1542,7 +1755,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
-    // the plume: the same gradient Hyper Run flies, sized to this hull
     const pulse = 0.5 + 0.5 * Math.sin(w.time * (17 + 9 * thrust));
     const length = (9 + 14 * thrust) + pulse * (3 + 4 * thrust);
     const half = 3 + 1.4 * thrust;
@@ -1564,7 +1776,6 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    // the cockpit: a glow behind the glass and the pilot inside it
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(layout.cockpitX, layout.cockpitY, 13.2 * scale, 12.4 * scale, 0, 0, Math.PI * 2);
@@ -1574,7 +1785,7 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     cockpitGlow.addColorStop(1, "rgba(3,8,22,.96)");
     ctx.fillStyle = cockpitGlow;
     ctx.fillRect(layout.cockpitX - 16 * scale, layout.cockpitY - 15 * scale, 32 * scale, 30 * scale);
-    drawPilot(ctx, w, save, art, layout.cockpitX - 2.5 * scale, 0.52 * scale, layout.cockpitY + 1.5 * scale, 0);
+    paintSpillHead(ctx, art, save, { cx: layout.cockpitX, cy: layout.cockpitY, rx: 12 * scale, ry: 11 * scale });
     ctx.restore();
     drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
     ctx.restore();
@@ -1582,16 +1793,38 @@ function drawSpillShip(ctx, w, save, art, s, x) {
 function drawSpillWorld(ctx, w, save, art) {
     const s = w.spill;
     const { W, H } = w;
-    spillBackdrop(ctx, w, s);
+    spillBackdrop(ctx, w, s, art);
+    const dock = art.spillScene?.depot;
+    if (dock && (s.phase === "docking" || s.phase === "depot")) {
+        ctx.save();
+        ctx.globalAlpha = Math.min(0.8, s.phaseT / 0.8);
+        const h = W * dock.naturalHeight / dock.naturalWidth;
+        ctx.drawImage(dock, 0, (H - h) / 2, W, h);
+        ctx.restore();
+    }
     const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
-    // DRIFT tilts the whole field about its centre - the debris, the ore
-    // and the ship together - so what the pilot sees is what the rules fly.
-    // The backdrop stays level: it is the sky, and the field is what drifts
+    // DRIFT is already in the debris velocity. Keep the ship, warnings,
+    // pickups and boundary in the same screen coordinates as collision.
     ctx.save();
-    if (s.tilt !== 0) {
-        ctx.translate(W / 2, H / 2);
-        ctx.rotate(s.tilt * 0.55);
-        ctx.translate(-W / 2, -H / 2);
+    if (s.eventWarn > 0) {
+        const gap = spillEventGap(s), y0 = s.eventSafeY - gap / 2, y1 = s.eventSafeY + gap / 2;
+        ctx.fillStyle = `rgba(255,156,93,${0.07 + Math.sin(w.time * 8) * 0.025})`;
+        ctx.fillRect(W * 0.48, 0, W * 0.52, y0);
+        ctx.fillRect(W * 0.48, y1, W * 0.52, H - y1);
+        ctx.strokeStyle = "rgba(138,228,183,.8)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 7]);
+        ctx.beginPath();
+        ctx.moveTo(W * 0.5, y0);
+        ctx.lineTo(W, y0);
+        ctx.moveTo(W * 0.5, y1);
+        ctx.lineTo(W, y1);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font = "800 10px Figtree,system-ui";
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#a3efc2";
+        ctx.fillText("OPEN CORRIDOR", W - 14, s.eventSafeY + 4);
     }
     for (const n of s.nuts) {
         if (n.got)
@@ -1633,6 +1866,8 @@ function drawSpillWorld(ctx, w, save, art) {
             drawSpillWarning(ctx, w, r);
         else
             drawSpillRock(ctx, art, r);
+        if (spillHas(s, "scanner") && r.warn <= 0 && r.x > W - 65)
+            drawSpillWarning(ctx, w, r);
     }
     if (blackout) {
         // THE BLACKOUT dims the field to rims and warnings, phased in with
@@ -1642,6 +1877,14 @@ function drawSpillWorld(ctx, w, save, art) {
         for (const r of s.rocks)
             if (!r.dead && r.warn > 0)
                 drawSpillWarning(ctx, w, r);
+        for (const r of s.rocks)
+            if (!r.dead && r.warn <= 0) {
+                ctx.strokeStyle = spillHas(s, "scanner") ? "rgba(166,230,255,.92)" : "rgba(168,188,206,.4)";
+                ctx.lineWidth = spillHas(s, "scanner") ? 2 : 1;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.r + 1, 0, Math.PI * 2);
+                ctx.stroke();
+            }
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
@@ -1688,8 +1931,8 @@ function drawSpillWorld(ctx, w, save, art) {
     else if (w.screen === "dead") {
         drawSpillShip(ctx, w, save, art, s, s.pilot.x);
     }
-    ctx.restore(); // the tilt
-    // the floor announces itself before it kills - drawn level, because the
+    ctx.restore(); // gameplay coordinates
+    // the floor announces sustained contact before damage - drawn level, because the
     // floor is the screen's edge, not the field's
     if (s.floorT > SPILL.floorWarn && s.phase !== "over") {
         const f = Math.min(1, (s.floorT - SPILL.floorWarn) / (SPILL.floorGrace - SPILL.floorWarn));
@@ -1700,7 +1943,7 @@ function drawSpillWorld(ctx, w, save, art) {
         ctx.fillRect(0, H - 90, W, 90);
     }
     if (s.pulseFlash > 0) {
-        const reach = s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR;
+        const reach = (s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR) * Math.max(0.8, W / 390);
         const g = ctx.createRadialGradient(s.pilot.x, s.pilot.y, 0, s.pilot.x, s.pilot.y, reach);
         g.addColorStop(0, `rgba(255,225,180,${0.5 * s.pulseFlash})`);
         g.addColorStop(1, "rgba(255,150,60,0)");
@@ -1782,7 +2025,7 @@ function drawSpillHud(ctx, w, art) {
         : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
             : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
                 : s.phase === "docking" ? `WAVE ${s.wave} CLEARED`
-                    : s.phase === "depot" ? `DEPOT · ${Math.ceil(s.depot?.timer ?? 0)}s`
+                    : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
                         : s.phase === "respawn" ? "RESPAWN CORE" : "THE SPILL";
     ctx.fillText(sub, W / 2, 64);
     // the PULSE meter. Locked, it is dim and says so; unlocked and full it
@@ -1793,13 +2036,13 @@ function drawSpillHud(ctx, w, art) {
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(barX, 69, barW, 3);
     ctx.fillStyle = !unlocked ? "rgba(200,190,255,.45)" : s.charge >= 1 ? "#ffe680" : "#8fd6ff";
-    ctx.fillRect(barX, 69, barW * Math.min(1, s.charge), 3);
+    ctx.fillRect(barX, 69, barW * Math.min(1, s.charge / spillChargeCap(s)), 3);
     if (s.phase !== "depot" && s.phase !== "docking") {
         ctx.font = "800 9px Figtree, system-ui";
         if (unlocked && s.charge >= 1) {
             ctx.fillStyle = "#ffe680";
             ctx.globalAlpha = 0.7 + 0.3 * Math.sin(w.time * 8);
-            ctx.fillText("PULSE ARMED", W / 2, 82);
+            ctx.fillText(`PULSE ARMED${spillChargeCap(s) > 1 ? ` · ${Math.floor(s.charge)}/2` : ""}`, W / 2, 82);
             ctx.globalAlpha = 1;
         }
         else if (!unlocked && s.charge > 0) {
@@ -1829,13 +2072,18 @@ function drawSpillHud(ctx, w, art) {
         ctx.font = "800 12px Figtree, system-ui";
         ctx.fillText(`×${s.combo}`, 38, 44);
     }
+    ctx.fillStyle = "rgba(221,211,246,.7)";
+    ctx.font = "700 9px Figtree, system-ui";
+    ctx.fillText(`SCORE ${Math.floor(s.score)}`, 14, 58);
+    if (s.utilities.length)
+        ctx.fillText(s.utilities.map(id => SPILL_UTILITIES[id].icon).join("  "), 14, 74);
     // the hull, top-right, clear of the pause button that sits in the corner
     for (let i = 0; i < s.maxHull; i++) {
-        const x = W - 70 - i * 18;
+        const x = W - 66 - i * Math.min(16, (W / 2 - 90) / 5);
         const lit = i < s.hull;
         const lost = !lit && i === s.hull && s.hitFlash > 0;
         ctx.fillStyle = lit ? "#5fd48a" : lost ? `rgba(255,90,70,${s.hitFlash.toFixed(2)})` : "rgba(255,255,255,.14)";
-        round(ctx, x - 8, 21, 16, 7, 3);
+        round(ctx, x - 5, 21, 10, 7, 3);
         ctx.fill();
     }
     for (let i = 0; i < s.shield; i++) {
@@ -1866,7 +2114,11 @@ function drawSpillHud(ctx, w, art) {
     if (s.surgeT > 0)
         hudLine(`SURGE  ${Math.ceil(s.surgeT)}s`, "#ff9a4c");
     if (s.pulseQueue > 0)
-        hudLine(`SECOND PULSE  ${Math.ceil(s.pulseQueue)}s`, "#ffe680");
+        hudLine(`ECHO READY IN ${Math.ceil(s.pulseQueue)}s`, "#ffe680");
+    else if (s.echoReady)
+        hudLine("ECHO ARMED", "#ffe680");
+    if (s.contract)
+        hudLine(spillContractProgress(s), "#cdb3ff");
     // a mission's three objectives ride the top of the run, live
     if (w.lvl && w.lvl.def.base === "spill") {
         const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
@@ -1918,22 +2170,24 @@ function drawSpillHud(ctx, w, art) {
     if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
         drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
     }
-    if (s.phase === "ready") {
+    if (s.phase === "ready" && s.target) {
         const compact = W < 520;
         // a phone gets the same briefing in shorter lines, never a clipped one
-        const lines = compact ? [
-            "SURVIVE THE WAVE · MINE ORE",
-            "HOLD: RISE · RELEASE: FALL",
-            "SWIPE UP / DOWN: BURST · SWIPE RIGHT: LUNGE",
-            "GOLD ORE ARMS THE PULSE · DO NOT RIDE THE FLOOR",
-            "PRESS TO LAUNCH",
-        ] : [
-            "SURVIVE THE WAVE · MINE ORE · UPGRADE THE SHIP AT THE DEPOT",
-            "HOLD: RISE · RELEASE: FALL · SWIPE UP / DOWN: BURST",
-            "SWIPE RIGHT: LUNGE · GOLD ORE ARMS THE PULSE",
-            "DO NOT RIDE THE FLOOR · THREE HULL HITS AND THE RUN IS OVER",
+        // FOUR LINES, NOT A BRIEFING (owner, 2 Sep 2026: "no need for a half
+        // page of text"). The loop is the whole story - survive, collect,
+        // Depot, upgrade - and the ore line wears the ore itself.
+        // The ore line is kept SHORT on purpose: the ore sprite flanks it, and
+        // on a phone a long line pushed the sprites off the panel's edge.
+        const lines = [
+            "SURVIVE THE WAVES",
+            "COLLECT ORE",
+            compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
+                : "EVERY 5 WAVES: DEPOT · SPEND ORE · UPGRADE THE SHIP",
+            compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
+                : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
             "PRESS TO LAUNCH",
         ];
+        const oreLine = 1;
         const lineHeight = compact ? 20 : 21;
         const panelWidth = Math.min(W - 24, compact ? 430 : 560);
         const panelHeight = lines.length * lineHeight + 28;
@@ -1951,6 +2205,13 @@ function drawSpillHud(ctx, w, art) {
             ctx.globalAlpha = isLaunch ? 0.75 + 0.25 * Math.sin(w.time * 4) : 1;
             ctx.font = isLaunch ? "900 15px Figtree, system-ui" : i === 0 ? "900 13px Figtree, system-ui" : "800 12px Figtree, system-ui";
             ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+            // the ore, drawn as the thing it is, riding the line that names it
+            if (i === oreLine && art?.ore) {
+                const tw = ctx.measureText(line).width;
+                const y = panelTop + 21 + i * lineHeight - 5;
+                drawSprite(ctx, art.ore, W / 2 - tw / 2 - 14, y, 20);
+                drawSprite(ctx, art.ore, W / 2 + tw / 2 + 14, y, 20);
+            }
         });
         ctx.globalAlpha = 1;
         const titleY = Math.max(H * 0.3, hudY + 24);
@@ -2164,14 +2425,10 @@ export function drawWorld(ctx, w, save, art) {
     // to FULL black. Drawn after the world and before the pal, so the
     // companion and the pilot stay lit and the pilot is never flying blind
     // about where they themselves are.
-    if (save.equippedPal === "nightglider" && !save.noPalFx && !w.ready && !w.lvl && w.screen === "play") {
-        const t = w.lampT;
-        const a = t < 0.12 ? 0 : Math.min(1, ((t - 0.12) / 0.28));
-        if (a > 0) {
-            ctx.fillStyle = `rgba(0,0,0,${a.toFixed(3)})`;
-            ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
-        }
-    }
+    // Nightglider's blackout is retired (owner, 2 Sep 2026: "no longer
+    // strobes, it turns into steady gates"); the pal's effect now lives in
+    // sim.ts where the gates decide whether to drift. The lamp clock it
+    // read is left alone - nothing else was on it, and it costs nothing.
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
         : save.equippedPal;
@@ -3024,7 +3281,7 @@ const DOME = {
     "eclipse-tap-16": [198, 88, 53],
     "suit:flight": [185, 82, 44],
     "suit:iontrim": [184, 100, 36],
-    "suit:copper": [181, 99, 46],
+    "suit:copper": [181, 99, 44],
     "suit:frost": [175, 112, 36],
     "suit:voidsuit": [182, 105, 45],
     "suit:aurorasuit": [163, 97, 38],
@@ -3043,7 +3300,7 @@ const DOME = {
     "suit:catsuit": [212, 86, 50],
     "suit:gemmie": [183, 102, 40],
     "suit:phoenix": [207, 92, 41],
-    "suit:sammie": [186, 102, 38],
+    "suit:sammie": [186, 102, 35],
     "suit:seraph": [205, 129, 35],
     "suit:leviathan": [177, 110, 30], // re-measured on the promoted asc-1 master
     "suit:verdant": [186, 92, 40],
@@ -3126,24 +3383,24 @@ const DOME = {
     "iontrim-desc-8": [177, 165, 36, 40],
     // COPPER's velocity bank - Grok delivery #3. Same fur-blob tracker as
     // Ion, with a +5/-8 nudge measured off the overlay sheet (Copper's jaw
-    // fur drags the raw centroid low-left of the skull). Radius sized to
-    // Copper's own head - the biggest of the swept suits so far.
-    "copper-asc-1": [181, 99, 46],
-    "copper-asc-2": [182, 98, 46],
-    "copper-asc-3": [180, 100, 46],
-    "copper-asc-4": [174, 91, 46, -25],
-    "copper-asc-5": [182, 96, 46],
-    "copper-asc-6": [182, 98, 46],
-    "copper-asc-7": [177, 86, 46, -30],
-    "copper-asc-8": [176, 87, 46, -40],
-    "copper-desc-1": [181, 99, 46],
-    "copper-desc-2": [193, 111, 46],
-    "copper-desc-3": [195, 136, 46, 25],
-    "copper-desc-4": [194, 150, 46, 30],
-    "copper-desc-5": [194, 143, 46, 30],
-    "copper-desc-6": [187, 154, 46, 35],
-    "copper-desc-7": [190, 149, 46, 35],
-    "copper-desc-8": [185, 156, 46, 40],
+    // fur drags the raw centroid low-left of the skull). The repaired bank
+    // holds one head scale; r=44 is the overlay-reviewed fit on that scale.
+    "copper-asc-1": [181, 99, 44],
+    "copper-asc-2": [182, 98, 44],
+    "copper-asc-3": [180, 100, 44],
+    "copper-asc-4": [174, 91, 44, -25],
+    "copper-asc-5": [182, 96, 44],
+    "copper-asc-6": [182, 98, 44],
+    "copper-asc-7": [177, 86, 44, -30],
+    "copper-asc-8": [176, 87, 44, -40],
+    "copper-desc-1": [181, 99, 44],
+    "copper-desc-2": [193, 111, 44],
+    "copper-desc-3": [195, 136, 44, 25],
+    "copper-desc-4": [194, 150, 44, 30],
+    "copper-desc-5": [194, 143, 44, 30],
+    "copper-desc-6": [187, 154, 44, 35],
+    "copper-desc-7": [190, 149, 44, 35],
+    "copper-desc-8": [185, 156, 44, 40],
     // VOIDSUIT's velocity bank - Grok delivery #4. Same tracker, with a
     // +4/+6 nudge measured off the overlay sheet (Void's fluffy crown fur
     // pulls the top-weighted centroid high-left of the face).
@@ -3262,25 +3519,26 @@ const DOME = {
     "gemmie-desc-5": [179, 152, 40, 30],
     "gemmie-desc-6": [175, 159, 40, 35],
     "gemmie-desc-7": [167, 153, 40, 35],
-    // SAMMIE and FROST - Grok deliveries #12-#13. Frost's head is ICE-BLUE,
-    // invisible to the orange fur-blob tracker, so its anchors came from a
-    // pale-fur variant (high value, low saturation) - overlay-verified like
-    // every other bank.
-    "sammie-asc-1": [186, 102, 38],
-    "sammie-asc-2": [182, 101, 38],
-    "sammie-asc-3": [181, 99, 38, -10],
-    "sammie-asc-4": [179, 88, 38, -25],
-    "sammie-asc-5": [180, 93, 38, -15],
-    "sammie-asc-6": [177, 87, 38, -25],
-    "sammie-asc-7": [184, 89, 38, -15],
-    "sammie-asc-8": [181, 84, 38, -30],
-    "sammie-desc-1": [177, 135, 38, 20],
-    "sammie-desc-2": [180, 136, 38, 25],
-    "sammie-desc-3": [178, 138, 38, 25],
-    "sammie-desc-4": [189, 140, 38, 20],
-    "sammie-desc-5": [178, 144, 38, 25],
-    "sammie-desc-6": [171, 149, 38, 30],
-    "sammie-desc-7": [171, 156, 38, 35],
+    // SAMMIE and FROST - Grok deliveries #12-#13. Sammie's neutral frame
+    // was normalized with the bank, then its one helmet radius was refitted
+    // at r=35. Frost's head is ICE-BLUE, invisible to the orange fur-blob
+    // tracker, so its anchors came from a pale-fur variant (high value, low
+    // saturation) - overlay-verified like every other bank.
+    "sammie-asc-1": [186, 102, 35],
+    "sammie-asc-2": [182, 101, 35],
+    "sammie-asc-3": [181, 99, 35, -10],
+    "sammie-asc-4": [179, 88, 35, -25],
+    "sammie-asc-5": [180, 93, 35, -15],
+    "sammie-asc-6": [177, 87, 35, -25],
+    "sammie-asc-7": [184, 89, 35, -15],
+    "sammie-asc-8": [181, 84, 35, -30],
+    "sammie-desc-1": [177, 135, 35, 20],
+    "sammie-desc-2": [180, 136, 35, 25],
+    "sammie-desc-3": [178, 138, 35, 25],
+    "sammie-desc-4": [189, 140, 35, 20],
+    "sammie-desc-5": [178, 144, 35, 25],
+    "sammie-desc-6": [171, 149, 35, 30],
+    "sammie-desc-7": [171, 156, 35, 35],
     "frost-asc-1": [175, 112, 36],
     "frost-asc-2": [176, 107, 36],
     "frost-asc-3": [175, 102, 36, -10],
@@ -3465,15 +3723,15 @@ const TAIL_PIVOT = {
     aurorasuit: [100, 137],
     bigbooty: [92, 129],
     catsuit: [74, 149],
-    copper: [105, 142],
+    copper: [108, 142],
     ember: [108, 135],
     flight: [102, 130],
     frost: [107, 139],
     gemmie: [101, 147],
-    iontrim: [104, 141],
+    iontrim: [102, 141],
     leviathan: [75, 138],
     robo: [101, 140],
-    sammie: [100, 145],
+    sammie: [111, 139],
     stardust: [102, 139],
     voidsuit: [105, 147],
     verdant: [102, 142],
@@ -3719,11 +3977,36 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
 // WHEN the pose starts rather than how fast it turns.
 let motionVySmooth = 0;
 let motionVyClock = -1;
+// THE CROSSING TAKES TIME (owner, 2 Sep 2026: "ghost goes from up to down
+// in a frame, no transition, need return to horizontal before dive"). At
+// 9/s a tap's -450 impulse crossed zero in about four frames, so the
+// neutral pose flashed by unseen. 5.5/s puts the level frame on screen
+// for ~150ms on the way through, in both directions.
+const POSE_SMOOTH = 5.5;
 function smoothMotionVy(t, vy) {
     const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
     motionVyClock = t;
-    motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * 9);
+    motionVySmooth += (vy - motionVySmooth) * Math.min(1, dt * POSE_SMOOTH);
     return motionVySmooth;
+}
+// THE POSE CURVE. Frame index used to be LINEAR in speed, so a mild dive
+// already sat three frames deep and every descent looked like a plunge -
+// "pitch at 0 ... is aggressive" on the whole swept roster. Raising |v|
+// to a power above one keeps gentle attitudes in the first frames and
+// saves the deep forward rotation for a genuinely hard dive: "less
+// linear and more hyperbolic". Applied to both ramps so a climb stays
+// symmetrical.
+export const POSE_CURVE = 1.7;
+// The two dials the pause sheet exposes for EVERY suit, so the owner can
+// judge them mid-run against the same field: DIVE DEPTH scales the dive
+// half of the range (1 = the art's full ramp), and POSE MODE "ascent"
+// flies only the ascent bank - a dive holds the level frame - to test
+// whether ascent frames plus horizontal are enough on their own.
+let poseDiveDepth = 1;
+let poseAscentOnly = false;
+export function setPoseDials(diveDepth, ascentOnly) {
+    poseDiveDepth = Math.max(0.25, Math.min(1, diveDepth || 1));
+    poseAscentOnly = !!ascentOnly;
 }
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
@@ -4057,9 +4340,22 @@ lean = SUIT_LEAN_DEFAULT) {
                 const sv = smoothMotionVy(_t, motionVy);
                 v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
             }
-            const bank = v < 0 ? ascFrames : descFrames;
-            const idxM = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)));
+            // shape the attitude: dives scaled by the dial, both halves curved
+            if (v > 0)
+                v *= poseDiveDepth;
+            v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
+            // ascent-only holds the level frame through a dive
+            const diving = v > 0 && !poseAscentOnly;
+            const bank = diving ? descFrames : ascFrames;
+            const idxM = diving || v < 0
+                ? Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)))
+                : 0;
             const frame = bank[idxM];
+            // A WINDOW FOR THE EVALUATION HARNESS: which frame the game is
+            // painting right now, and the shaped velocity it chose it from.
+            // Read-only, one object write per frame, never read by the game.
+            window.__acornautPose =
+                { suit: suit.id, bank: diving ? "desc" : "asc", idx: idxM + 1, v };
             const refM = ascFrames[0].box ?? ref;
             drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
             // the helmet rides the HEAD, which these frames move with the
@@ -4067,7 +4363,7 @@ lean = SUIT_LEAN_DEFAULT) {
             // in canvas space, so it must be mapped through the SAME reference
             // box the frame itself is drawn with (asc[0]), not the frame's own.
             if (!wearsOwnHead(suit)) {
-                paintDome(ctx, ascFrames[0], `${suit.id}-${v < 0 ? "asc" : "desc"}-${idxM + 1}`, helmet, x, y, size, art);
+                paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`, helmet, x, y, size, art);
             }
         }
         else if (fullTap) {
@@ -4350,6 +4646,22 @@ function previewRot(p, beat, kick, pull) {
     }
     return r;
 }
+export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
+    if (!art)
+        return;
+    const s = createSpill(390, 760, 0);
+    s.up = { plating: Math.max(0, Math.min(3, pick.plating)), thrusters: Math.max(0, Math.min(3, pick.thrusters)), pulse: Math.max(0, Math.min(3, pick.pulse)) };
+    s.shield = s.canopyLevel = Math.max(0, Math.min(2, pick.shield));
+    s.pilot.y = 0;
+    s.held = true;
+    s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+    const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 };
+    ctx.save();
+    ctx.translate(cx, cy + Math.sin(t * 1.7) * 2);
+    ctx.scale(scale, scale);
+    drawSpillShip(ctx, w, save, art, s, 0);
+    ctx.restore();
+}
 export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
 // THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap
 // arc that never reaches the attitudes a real dive does, so dialling a
@@ -4409,8 +4721,37 @@ sweep = false) {
     // which is what makes this loop with no seam and no fade.
     const KICK = 210; // the sim's own tap velocity
     const PULL = (2 * KICK) / BEAT;
-    const vy = -KICK + PULL * p;
-    const rise = -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
+    // A PAINTED MOTION BANK IS SWEPT, NOT TAPPED (owner, 2 Sep 2026: "seraph
+    // animation frozen... again. gemmie is twitching sizes bad. ghost still
+    // has a flash frame"). Driven by the tap sawtooth below, a bank suit only
+    // ever reached the first three climb frames and the first six dive
+    // frames, and hard-cut from the deepest dive back to the shallow climb
+    // on every beat - a different frame for one paint, then the reset.
+    // Seraph's first three frames of either ramp are the same glide, so on
+    // that arc it never visibly moved. In the case the pilot now rolls
+    // through the WHOLE bank both ways - full climb to full dive and back on
+    // a continuous arc - so every frame the artist painted is on show, in
+    // order, with no seam. The normalisation and pose curve below are
+    // inverted here so the swept attitude lands on the frame index exactly;
+    // the 1.15 covers the smoother's lag at this period. Tap-bank suits keep
+    // the beat, because their tap IS the showcase.
+    const SWEEP = 3.6; // climb -> dive -> climb
+    const swept = !sweep
+        && (art.suitAsc?.[suit.id]?.length ?? 0) > 0
+        && (art.suitDesc?.[suit.id]?.length ?? 0) > 0
+        && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
+    const sph = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP * Math.PI * 2;
+    // a TRIANGLE, not a cosine: equal time on every frame, rather than a
+    // long dwell on the two end poses and a rush through the middle. The
+    // 1.2 is what the smoother's lag costs at this slope; the clamp in the
+    // normalisation catches the excess, which reads as a short hold at each
+    // end of the roll.
+    const att = (1 - 2 * Math.abs(sph / Math.PI - 1)) * 1.2; // -1 full climb .. +1 full dive
+    const sweptVy = Math.sign(att) * Math.pow(Math.min(1, Math.abs(att)), 1 / POSE_CURVE) * (att < 0 ? 470 : 620) * (Math.abs(att) > 1 ? Math.abs(att) : 1);
+    const vy = swept ? sweptVy : -KICK + PULL * p;
+    const rise = swept
+        ? -70 * Math.sin(sph) // a gentle bob on the same arc
+        : -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
     // ROTATION IS SMOOTHED, because the arc's VELOCITY is a sawtooth: vy runs
     // -210 up to +210 across a beat and then snaps back to -210 at the next
     // tap. Position loops seamlessly - rise is zero at both ends - but a
@@ -4420,7 +4761,9 @@ sweep = false) {
     const rot = sweep
         // the sim's own clamps: -0.55 at full climb, +0.95 at full dive
         ? -0.55 + (0.95 + 0.55) * (0.5 - 0.5 * Math.cos((t / 2.6) * Math.PI * 2))
-        : previewRot(p, BEAT, KICK, PULL);
+        // the swept arc is continuous, so its lean needs no smoothing
+        : swept ? Math.max(-0.34, Math.min(0.6, vy / 900))
+            : previewRot(p, BEAT, KICK, PULL);
     ctx.save();
     ctx.translate(cx, cy + rise * (size / 52) * 0.055);
     ctx.scale(size / 52, size / 52);

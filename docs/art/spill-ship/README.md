@@ -45,13 +45,22 @@ the blue-steel hull the silver one replaced, kept as an alternate.
 - **thrust-1, thrust-2**: cut from their renders at the collar seam,
   everything left of the egg's leftmost outline point.
 
-## Known gaps
+## Runtime rendering
 
-- A thruster smaller than a hull's stock nozzle shows that nozzle behind
-  it. The silver hull's ornate bell is the visible case. The fix is a bare
-  hull plus a level-0 nozzle overlay; deferred until the fit is settled.
-- The tinted canopies read as a dark opening at 58px. If shield level must
-  read in flight, the canopy wants a bright highlight, or code over the
-  cockpit region.
-- Nothing loads these yet. Loadout skins or mid-run upgrades is still
-  open; the layer contract and the bench's JSON serve either.
+The production renderer loads this kit. Depot, Loadout and gameplay all use
+`drawSpillShip`; previews cannot silently fit a different ship.
+
+- Plating chooses `hull-0..3`; Thrusters and Power-ups choose their matching parts.
+- The maximum shield stack purchased owns the canopy hardware for this run.
+  Spending a shield charge changes the HUD and impact flash, not the ship fit.
+  One charge fits `cockpit-1`, two fit `cockpit-3`; `cockpit-2` is an unused alternate.
+- Explicit cockpit anchors in `draw.ts` place an enlarged head and equipped
+  helmet. The full suit is cropped at the head rather than shrunk into the opening.
+- Canopy paintings contain opaque glass. A cached canvas opens the glass
+  interior and preserves its rim; a light tint and glint finish the window.
+- Upgraded thrusters mask the baked-in stock nozzle, preventing duplicate engines.
+- Missing kit art falls back to the scout, then a small procedural ship. These
+  paths also render safely in the Depot preview if image loading fails.
+
+`test-spill-render.mjs` paints all 192 hull/thruster/power-up/canopy combinations.
+Scene artwork lives in the separate `../spill-scene/` directory.

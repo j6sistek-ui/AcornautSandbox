@@ -7,16 +7,16 @@
  *  hand holds to rise and releases to fall, DRIFT tilts the field slowly
  *  and never further than it says, the count hands control back on the GO
  *  and never before, the Depot docks, arms, sells fixed meters at flat
- *  prices, an unlocked PULSE fires itself at an impact and again five
- *  seconds later, a mission ends on the wave it names, and the sim seam
+ *  prices, an unlocked PULSE fires itself at an impact and banks an echo
+ *  five seconds later, a mission ends on the wave it names, and the sim seam
  *  banks the best wave without ever touching the acorn wallet. Last, a
  *  dodging bot flies wave 1 - a smoke test for "is this survivable at
  *  all", not a tuning instrument.
  */
 globalThis.window = { location: { href: "http://local/" }, devicePixelRatio: 1,
   addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }),
-  // the beta chart is where the Spill missions live
-  __ACORNAUT_BETA__: true };
+  // Spill missions are part of the production chart.
+  __ACORNAUT_BETA__: false };
 globalThis.document = { createElement: () => ({ getContext: () => null, style: {} }),
   addEventListener() {}, documentElement: { style: {} } };
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
@@ -44,6 +44,7 @@ function until(s, pred, seconds, each) {
   return false;
 }
 const immune = (s) => { s.iframes = 9; s.floorT = 0; };
+const advance = (s) => { immune(s); if (s.phase === "depot" && s.depot.arm <= 0) S.spillLeaveDepot(s); };
 /** hold the ship mid-air with no rocks about, so a wait is only a wait */
 const hover = (s) => { s.rocks = []; s.pilot.y = s.H * 0.45; s.pilot.vy = 0; };
 /** press on the ready card, then wait out the count */
@@ -79,7 +80,7 @@ const dock = (seed) => {
     ok(w.dur > 0 && w.cap > 0 && w.interval > 0, `wave ${n} has a duration, a cap and an interval`);
     if (prev) {
       ok(w.cap >= prev.cap, `the cap never drops (wave ${n})`);
-      ok(w.speed > prev.speed, `speed climbs every wave (wave ${n})`);
+      ok(w.speed >= prev.speed && w.speed <= 2.05, `speed climbs to a readable cap (wave ${n})`);
       ok(w.interval <= prev.interval, `spawns never slow down (wave ${n})`);
     }
     for (const m of w.mods) if (!(m in firstSeen)) firstSeen[m] = n;
@@ -267,7 +268,7 @@ const dock = (seed) => {
 {
   const s = launch(18);
   // walk the run to wave 18 without flying it
-  until(s, (x) => x.wave >= 18 && x.phase === "wave", 900, immune);
+  until(s, (x) => x.wave >= 18 && x.phase === "wave", 900, advance);
   ok(s.wave === 18 && s.liveMods.includes("drift"), `wave 18 flies DRIFT (${s.wave}: ${s.liveMods})`);
   ok(Math.abs(s.tilt) < 1e-6, "the wave opens level");
   let maxTilt = 0, maxStep = 0, prev = s.tilt, moved = false;
@@ -290,7 +291,7 @@ const dock = (seed) => {
   let endless = 0;
   for (let n = S.SPILL_AUTHORED_WAVES + 1; n < 60 && !endless; n++) if (S.spillWaveSpec(n, s.seed).mods.includes("drift")) endless = n;
   ok(endless > 0, `the seed rolls DRIFT again past the ladder (wave ${endless})`);
-  until(s, (x) => x.wave >= endless && x.phase === "wave", 3000, immune);
+  until(s, (x) => x.wave >= endless && x.phase === "wave", 3000, advance);
   ok(s.wave === endless && s.liveMods.includes("drift"), `reached it (${s.wave}: ${s.liveMods})`);
   s.tiltT = 100; s.tiltTarget = S.SPILL.driftMax;
   until(s, () => false, 6, (x) => { immune(x); hover(x); });
@@ -342,7 +343,7 @@ const dock = (seed) => {
   ok(drifts === 0, `no shield ever drifts past in the field (${drifts})`);
 }
 {
-  // the floor: brushing is free, riding kills, and the timer forgives
+  // the floor: brushing is free, sustained contact costs one pip and recovers
   const s = launch(8);
   s.rocks = [];
   const ride = (seconds) => until(s, (x) => x.phase === "over", seconds,
@@ -350,7 +351,8 @@ const dock = (seed) => {
   ok(!ride(0.15), "a tenth of a second on the floor is a bounce, not a death");
   until(s, () => false, 0.5, (x) => { x.rocks = []; x.pilot.y = x.H * 0.4; x.pilot.vy = 0; });
   ok(s.floorT === 0, "clearing the floor forgives the timer");
-  ok(ride(0.6), "riding the floor is fatal");
+  ok(!ride(0.6) && s.hull === 2, "sustained contact costs one hull pip, with recovery");
+  ok(ride(4), "exhausting every hull pip ends the run");
   ok(s.cause === "GROUNDED", `and it says why (${s.cause})`);
 }
 {
@@ -413,10 +415,13 @@ const dock = (seed) => {
   rockAt(s, s.pilot.x, s.pilot.y);
   S.stepSpill(s, DT);
   ok(Math.abs(s.pulseQueue - S.SPILL.doublePulseDelay) < 1e-6, `the second pulse is queued (${s.pulseQueue}s)`);
-  let secondAt = -1, t = 0;
-  while (t < 7 && secondAt < 0) { hover(s); if (t > 4.5) rockAt(s, s.pilot.x + 100, s.pilot.y); const cc = S.stepSpill(s, DT); t += DT; if (cc.includes("pulse")) secondAt = t; }
-  ok(Math.abs(secondAt - S.SPILL.doublePulseDelay) < 0.05, `and fires on its own five seconds on (${secondAt.toFixed(2)}s)`);
-  ok(s.rocks.filter((r) => !r.dead).length === 0, "clearing what had gathered");
+  until(s, x => x.echoReady, 6, hover);
+  ok(s.echoReady && s.pulseQueue === 0, "the echo arms after five seconds");
+  until(s, () => false, 2, hover);
+  ok(s.echoReady && !s.lastCues.includes("pulse"), "an empty field does not waste the echo");
+  rockAt(s, s.pilot.x, s.pilot.y);
+  const echo = S.stepSpill(s, DT);
+  ok(echo.includes("pulse") && !s.echoReady && s.charge === 0 && s.hull === 2, "the echo absorbs the next impact without spending charge");
 }
 
 // ---------------------------------------------------- waves and the Depot
@@ -437,13 +442,13 @@ const dock = (seed) => {
   const t0 = s.phaseT;
   until(s, (x) => x.phase === "depot", 3);
   ok(s.phase === "depot", `docking opens the Depot (${s.phase})`);
-  ok(s.phaseT - t0 < 0.05 && Math.abs(s.depot.timer - 30) < 0.1, `after ${S.SPILL.dockTime}s, with thirty seconds on the clock (${s.depot.timer.toFixed(1)})`);
+  ok(s.phaseT - t0 < 0.05 && !("timer" in s.depot), "docking opens an untimed Depot");
   ok(s.hull === 3, "docking restores a pip");
-  ok(JSON.stringify(S.SPILL.depotTime) === "[30,30,15]", "two long visits, then half");
+  ok(s.stipend === 5 * S.SPILL.clearOre, "five clears fund at least the first plating upgrade");
   // the shelves are inert for a moment, against a thumb still tapping
   s.ore = 1000;
   ok(s.depot.arm > 0 && S.spillBuy(s, "shield") === "arming", "a tap as the shelves appear buys nothing");
-  ok(S.spillExtend(s) === "arming" && S.spillLeaveDepot(s) === false, "nor extends, nor leaves");
+  ok(S.spillLeaveDepot(s) === false, "nor leaves during the input arm");
   ok(s.ore === 1000, "and costs nothing");
   ok(until(s, (x) => x.depot.arm <= 0, 2) && s.lastCues.includes("armed"), "the shelves arm, audibly");
   // the meters: plating fills a pip that arrives full
@@ -467,9 +472,6 @@ const dock = (seed) => {
   ok(S.spillBuy(s, "thrusters") === "ok" && s.up.thrusters === 1, "THRUSTERS I");
   ok(S.spillBuy(s, "thrusters") === "ok" && s.lungeCharges === 2, "THRUSTERS II carries two lunges");
   ok(S.spillBuy(s, "pulse") === "ok" && s.up.pulse === 1, "POWER-UPS I unlocks the PULSE");
-  const timer = s.depot.timer;
-  ok(S.spillExtend(s) === "ok" && s.depot.timer - timer > 14.9, "an extension buys 15s for 25");
-  ok(S.spillExtendPrice(s) === 50, "and doubles");
   s.ore = 0;
   ok(S.spillBuy(s, "pulse") === "poor" && s.cues.includes("deny"), "a short purse is refused, audibly");
   ok(S.stepSpill(s, DT).includes("deny"), "and the refusal reaches the next frame's cues");
@@ -482,17 +484,20 @@ const dock = (seed) => {
   // prices are the ship's, not the wave's: the second Depot charges what the first did
   const s = dock(19);
   ok(S.spillPrice(s, "shield") === 35 && S.spillPrice(s, "plating") === 60, "the first stop's prices");
-  until(s, (x) => x.phase === "depot" && x.depotVisits === 2, 500, immune);
+  S.spillLeaveDepot(s);
+  until(s, (x) => x.phase === "depot" && x.depotVisits === 2, 500, advance);
   ok(s.depotVisits === 2 && s.wave === 10, `the second stop is wave 10 (visit ${s.depotVisits}, wave ${s.wave})`);
   ok(S.spillPrice(s, "shield") === 35 && S.spillPrice(s, "plating") === 60, "cost the same at wave 10");
-  ok(Math.abs(s.depot.timer - 30) < 0.1, "the second visit is still thirty seconds");
-  until(s, (x) => x.phase === "depot" && x.depotVisits === 3, 500, immune);
-  ok(Math.abs(s.depot.timer - 15) < 0.1, `the third is fifteen (${s.depot.timer.toFixed(1)})`);
+  ok(!("timer" in s.depot), "the second visit is untimed");
+  until(s, x => x.depot.arm <= 0, 2);
+  S.spillLeaveDepot(s);
+  until(s, (x) => x.phase === "depot" && x.depotVisits === 3, 500, advance);
+  ok(s.wave === 15 && !("timer" in s.depot), "the third visit remains untimed");
 }
 {
   // a rule phases in: the gravity change is nothing on the first frame
   const s = launch(20);
-  until(s, (x) => x.wave >= 8 && x.phase === "wave", 500, immune);
+  until(s, (x) => x.wave >= 8 && x.phase === "wave", 500, advance);
   ok(s.liveMods.includes("heavy"), `wave 8 is HEAVY (${s.liveMods})`);
   ok(S.spillRamp(s) < 0.05, `and opens at nothing (${S.spillRamp(s).toFixed(2)})`);
   until(s, () => false, 3.1, immune);
@@ -504,7 +509,7 @@ const dock = (seed) => {
   until(s, (x) => x.phase === "drain", 60, immune);
   ok(s.phase === "drain", "the field drains after its window");
   ok(S.spillCleared(s) === 0, "the wave is not yet cleared at the drain");
-  s.cleared = 1;
+  s.cleared = 1; s.hull = 1; s.iframes = 0;
   until(s, (x) => x.phase === "over", 3, (x) => { x.rocks = [{ x: x.W - 10, y: 10, vx: -1, vy: 0, r: 10, kind: "shard", sprite: 0, spin: 0, rot: 0, arc: 0, arcPhase: 0, warn: 0, grazed: true, dead: false }]; x.pilot.y = x.H; x.pilot.vy = 0; });
   ok(s.phase === "over" && s.cause === "GROUNDED", `riding the floor in the drain is still fatal (${s.phase})`);
   ok(S.spillCleared(s) === 1, `and a clear survives it (cleared ${S.spillCleared(s)})`);
@@ -514,7 +519,7 @@ const dock = (seed) => {
   // is neither restarted nor cleared twice
   const s = launch(32);
   until(s, (x) => x.phase === "drain", 60, immune);
-  s.coreBought = true; s.coreArmed = true;
+  s.coreBought = true; s.coreArmed = true; s.hull = 1; s.iframes = 0;
   until(s, (x) => x.phase === "respawn", 3, (x) => { x.rocks = [{ x: x.W - 10, y: 10, vx: -1, vy: 0, r: 10, kind: "shard", sprite: 0, spin: 0, rot: 0, arc: 0, arcPhase: 0, warn: 0, grazed: true, dead: false }]; x.pilot.y = x.H; x.pilot.vy = 0; });
   ok(s.phase === "respawn", "the core catches a grounding in the drain");
   let clears = 0, guard = 0;
@@ -524,12 +529,13 @@ const dock = (seed) => {
   ok(S.spillCleared(s) === 1, "and the record says one");
 }
 {
-  // the Depot clock closes the shop on its own
+  // Long pauses never close or charge the Depot. Only an explicit leave does.
   const s = dock(14);
-  s.depot.timer = 0.5;
-  until(s, (x) => x.phase !== "depot", 2);
-  ok(s.phase === "countdown" && s.wave === 6, `the clock running out sends the pilot back (${s.phase} ${s.wave})`);
-  ok(s.lastCues.includes("depot-close"), "and says so");
+  const ore = s.ore;
+  until(s, () => false, 3600);
+  ok(s.phase === "depot" && s.wave === 5 && s.ore === ore, "one hour in the Depot costs nothing and never launches");
+  ok(S.spillLeaveDepot(s) && s.phase === "countdown", "the pilot chooses when to leave");
+  ok(S.stepSpill(s, DT).includes("depot-close"), "and leaving is announced");
 }
 
 // ------------------------------------------------------------- a mission

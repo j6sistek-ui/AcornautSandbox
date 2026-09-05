@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+// Player-facing survival, build, contract and save guarantees. Run after export-sandbox.
+import assert from 'node:assert/strict';
+const memory = new Map();
+globalThis.window = { location: { href: 'http://local/' }, devicePixelRatio: 1, addEventListener() {}, matchMedia: () => ({ matches:false, addEventListener() {} }) };
+globalThis.document = { createElement: () => ({ getContext: () => null, style: {} }), addEventListener() {}, documentElement: { style: {} } };
+globalThis.localStorage = { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) };
+const S = await import('../docs/js/spill.js');
+const C = await import('../docs/js/spill-content.js');
+const Save = await import('../docs/js/save.js');
+const Sim = await import('../docs/js/sim.js');
+const Camp = await import('../docs/js/campaign.js');
+const dt=1/60;
+function flight(wave=1,W=390,H=760) { const s=S.createSpill(W,H,71); s.phase='wave';s.wave=wave;s.spec=S.spillWaveSpec(wave,s.seed);s.event=C.spillEventFor(wave,s.seed);s.liveMods=s.spec.mods.slice();s.nextRock=s.nextNut=s.nextSpecial=1000; return s; }
+function dock(wave=5) {const s=flight(wave);s.phase='depot';s.cleared=wave;s.depot={arm:0,bought:[]};s.depotVisits=wave/5;s.ore=2000;return s;}
+function step(s,seconds,each=()=>{}) {for(let i=0;i<Math.ceil(seconds/dt);i++){each(s);S.stepSpill(s,dt);}}
+function hover(s){s.pilot.y=s.H*.45;s.pilot.vy=0;s.rocks=[];}
+function rock(s,x=s.pilot.x,y=s.pilot.y,kind='tumbler',r=20){return {x,y,vx:0,vy:0,r,kind,sprite:0,spin:0,rot:0,arc:0,arcPhase:0,warn:0,grazed:true,dead:false};}
+function impact(s){s.iframes=0;s.rocks=[rock(s)];return S.stepSpill(s,dt);}
+function boundary(s){s.iframes=0;s.floorT=0;for(let i=0;i<30;i++){s.rocks=[];s.pilot.y=s.H;s.pilot.vy=0;S.stepSpill(s,dt);if(s.pilot.vy<0||s.phase==='respawn'||s.phase==='over')return;}}
+function clear(s,wave){s.wave=wave;s.phase='drain';s.rocks=[];S.stepSpill(s,dt);}
+function pickup(s,kind='gold',y=s.pilot.y){s.nuts=[{x:s.pilot.x,y,vx:0,vy:0,got:false,bob:0,kind}];S.stepSpill(s,dt);}
+// Every protection applies to boundary contact, in the same order as debris.
+{
+ const s=flight();s.up.plating=3;s.maxHull=s.hull=6;s.shield=s.canopyLevel=2;s.up.pulse=2;s.charge=1;
+ boundary(s);assert.equal(s.hull,6);assert.equal(s.shield,2);assert.equal(s.charge,0);assert(s.pilot.y<s.H-22&&s.pilot.vy<0);assert(s.pulseQueue>0);
+ boundary(s);assert.equal(s.shield,1);assert.equal(s.hull,6);
+ boundary(s);assert.equal(s.shield,0);assert.equal(s.hull,6);
+ boundary(s);assert.equal(s.hull,5);assert.equal(s.hits,1);assert.equal(s.phase,'wave');
+ s.gold=3;boundary(s);assert.equal(s.hull,5);
+ s.gold=0;s.hull=1;s.coreBought=s.coreArmed=true;boundary(s);assert.equal(s.phase,'respawn');
+ step(s,2.1);assert.equal(s.hull,6);assert(s.gold>0);
+}
+{
+ const s=flight();s.shield=s.canopyLevel=2;s.rocks=[rock(s,s.pilot.x-30),rock(s,s.pilot.x+30)];
+ assert(S.spillPathClear({...s,rocks:[s.rocks[0]]},s.rocks[1]));S.stepSpill(s,dt);
+ assert.equal(s.shield,1,'two legal simultaneous rocks cost only one shield');assert.equal(s.hull,3);assert(s.iframes>0);
+}
+// Two slots, run ownership, free refits, and real utility behavior.
+{
+ const s=dock();assert.equal(S.spillUtility(s,'magnet'),'ok');assert.equal(S.spillUtility(s,'scanner'),'ok');const ore=s.ore;
+ assert.equal(S.spillUtility(s,'brake'),'full');assert.equal(s.ore,ore);
+ S.spillUtility(s,'magnet');assert.equal(S.spillUtility(s,'magnet'),'ok');assert.equal(s.ore,ore);
+ S.spillUtility(s,'scanner');s.ore=0;assert.equal(S.spillUtility(s,'brake'),'poor');assert(!s.ownedUtilities.includes('brake'));
+ const stock=flight(),mag=flight();mag.utilities=['magnet'];stock.nuts=[{x:stock.pilot.x+70,y:stock.pilot.y,vx:-30,vy:0,got:false,bob:0,kind:'ore'}];mag.nuts=structuredClone(stock.nuts);
+ step(stock,.3,x=>{x.pilot.y=x.H*.45;x.pilot.vy=0;});step(mag,.3,x=>{x.pilot.y=x.H*.45;x.pilot.vy=0;});assert.equal(stock.oreMined,0);assert.equal(mag.oreMined,1);
+ const brake=flight();brake.utilities=['brake'];brake.pilot.y=brake.H-60;brake.pilot.vy=350;S.stepSpill(brake,dt);assert.equal(brake.hull,3);assert(brake.pilot.vy<0&&brake.brakeCool>11);
+ const cap=flight();cap.up.pulse=1;cap.utilities=['capacitor'];for(let i=0;i<4;i++){hover(cap);pickup(cap);}assert.equal(cap.charge,2);impact(cap);assert.equal(cap.charge,1);impact(cap);assert.equal(cap.charge,0);assert.equal(cap.hull,3);
+}
+{
+ const s=dock();assert(!S.spillSpecialize(s,'brace'));S.spillBuy(s,'plating');S.spillBuy(s,'plating');assert(S.spillSpecialize(s,'brace'));
+ const ore=s.ore;assert(S.spillSpecialize(s,'salvage'));assert.equal(s.ore,ore);s.phase='wave';s.hull=2;s.repairOre=29;pickup(s,'ore');assert.equal(s.hull,3);
+ s.repairsThisWave=2;s.repairOre=29;pickup(s,'ore');assert.equal(s.hull,3,'salvage armor cannot exceed its wave cap');
+ const efficient=flight();efficient.specialties.pulse='efficient';pickup(efficient);assert.equal(efficient.charge,.65);
+ const jets=flight();jets.up.thrusters=2;jets.specialties.thrusters='precision';jets.pilot.vy=300;S.spillLunge(jets);assert.equal(jets.pilot.vy,75);
+ const sweep=flight();sweep.up.thrusters=2;sweep.specialties.thrusters='sweep';sweep.rocks=[rock(sweep,sweep.pilot.x+35,sweep.pilot.y,'shard',12)];S.spillLunge(sweep);S.stepSpill(sweep,dt);assert.equal(sweep.shards,1);
+}
+// Contracts count earned progress, not purchases/stipends, and settle once.
+for(const kind of ['salvage','clean','shards'])for(const wins of [false,true]){
+ const s=dock();assert(S.spillTakeContract(s,kind));assert(!S.spillTakeContract(s,kind));const c={...s.contract},ore=s.ore;
+ if(kind==='salvage'){s.ore+=c.target;if(wins)s.oreMined+=c.target;}
+ if(kind==='clean'&&!wins)s.hits++;
+ if(kind==='shards'&&wins)s.shards+=c.target;
+ clear(s,10);assert.equal(s.contractsDone,wins?1:0);assert.equal(s.contract,null);
+ assert.equal(s.ore,ore+(kind==='salvage'?c.target:0)+S.SPILL.clearOre+(wins?c.reward:0));
+ step(s,5);assert.equal(s.contractsDone,wins?1:0);
+}
+// Events preserve a stock route across phone and desktop sizes, with caps.
+let eventSweeps=0;
+for(const W of [320,390,1280])for(const event of ['cargo','vein','lanes','rig']){
+ const s=flight(20,W);s.event=event;s.nextRock=0;s.nextNut=0;s.nextSpecial=1000;s.eventNext=0;
+ step(s,35,x=>{x.pilot.y=S.spillEscapeY(x);x.pilot.vy=0;x.floorT=0;
+   const cap=x.spec.cap+(x.liveMods.includes('swarm')?2:0)+(x.surgeT>0?2:0);assert(x.rocks.length<=cap,'event respects actor budget');});
+ assert.equal(s.hits,0,`${event} has a stock escape route at ${W}px`);assert(s.eventPass>=3);eventSweeps+=s.eventPass;
+}
+{
+ const stock=flight(5),scanner=flight(5);scanner.utilities=['scanner'];stock.eventNext=scanner.eventNext=0;S.stepSpill(stock,dt);S.stepSpill(scanner,dt);assert(scanner.eventWarn>stock.eventWarn);
+ assert.equal(S.spillWaveSpec(10000).speed,2.05);
+}
+// Checkpoint preserves the build, contracts and RNG; bank ledger prevents replay payouts.
+{
+ const s=dock();s.oreMined=83;s.contractsDone=2;S.spillUtility(s,'magnet');S.spillBuy(s,'plating');S.spillTakeContract(s,'salvage');
+ const save=Save.defaultSave();const wallet=save.acorns;Save.bankSpill(save,s);const before=structuredClone(save.spillRecords);
+ const cp=S.spillCheckpoint(s);const resumed=S.restoreSpill(JSON.parse(JSON.stringify(cp)),1280,720);assert(resumed);
+ assert.deepEqual(resumed.up,s.up);assert.deepEqual(resumed.contract,s.contract);assert.deepEqual(resumed.utilities,s.utilities);assert.equal(resumed.rng,s.rng);assert.equal(resumed.ore,s.ore);assert.equal(resumed.W,1280);
+ Save.bankSpill(save,resumed);assert.deepEqual(save.spillRecords,before);assert.equal(save.acorns,wallet);
+ save.spillSuspended=cp;Save.writeSave(save);assert(Save.loadSave().spillSuspended);
+ for(const mutate of [x=>x.version=99,x=>x.state.hull=NaN,x=>x.state.hull=-1,x=>x.state.shield=.5,x=>x.state.wave=6,x=>x.state.utilities=['fake'],x=>x.state.contract.reward=999,x=>x.state.up.plating=99,x=>x.state.banked.ore=9999]){const bad=structuredClone(cp);mutate(bad);assert.equal(S.restoreSpill(bad,390,760),null);}
+ s.phase='wave';assert.equal(S.spillCheckpoint(s),null);s.phase='depot';s.target=10;assert.equal(S.spillCheckpoint(s),null);
+ const end=dock(20);end.expeditionDone=true;assert(S.spillFinish(end));assert.equal(end.cause,'EXPEDITION COMPLETE');Save.bankSpill(save,end,true);const final=structuredClone(save.spillRecords);Save.bankSpill(save,end,true);assert.deepEqual(save.spillRecords,final);assert.equal(final.expeditions,1);assert.equal(final.runs,1);
+}
+{
+ const save=Save.defaultSave();assert.equal(save.spillSuspended,null);assert.equal(C.spillMastery(5).current.title,'Salvager');assert.equal(C.spillMastery(20).current.title,'Spillbreaker');
+ const w=Sim.makeWorld(390,760);save.spillBest=5;save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,['magnet']);
+ save.spillStarter='capacitor';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,[]);
+ save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false,Camp.levelById('4-8'));assert.deepEqual(w.spill.utilities,[],'missions start with a standard ship');
+ assert.equal(Camp.LEVELS.filter(l=>l.base==='spill').length,9);assert.equal(Camp.LEVELS.filter(l=>l.base==='tunnel').length,0);
+}
+console.log(`spill progression: protection, utilities, contracts, ${eventSweeps} event sweeps, checkpoint banking, mastery and production missions pass`);

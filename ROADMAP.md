@@ -3,13 +3,13 @@
 *Generated from `illustrated-src/game/campaign.ts` by `build-roadmap.mjs`.
 Do not edit by hand — change the campaign and rebuild.*
 
-One hundred levels in ten chapters. Every level is an ordinary run wearing a
-finish line: pass its gate count and a golden portal spawns in clear sky —
-fly into it and the level is complete. Three stars per level:
+One hundred levels in ten chapters. Flight missions end at a golden portal
+after their gate count. Level 8 of chapters 2–10 is a Spill mission: survive
+the stated number of waves, with an untimed Depot every fifth wave. Three stars per level:
 
-- **★1** reach the portal (the finish itself)
-- **★2** a collection goal — acorns or golden acorns
-- **★3** a discipline goal — no bounces, no shields, a tap budget
+- **★1** finish the route or clear the required waves
+- **★2** a collection goal — acorns, golden acorns, or Ore
+- **★3** a discipline goal — no bounces, no shields, a tap budget, or no hull hits
 
 Stars are independent and **kept across runs**: a level can be starred one
 goal at a time. **Total stars** open chapters and buy the reward ladder —
@@ -118,7 +118,7 @@ for everyone.
 | 15 | **Slow Waltz** | Normal | 16 | SWAYING GATES | Collect 6 acorns | Catch a golden acorn |
 | 16 | **Rooted Deep** | Normal | 17 | SWAYING GATES | Collect 6 acorns | Spend no shield |
 | 17 | **Wide Sway** | Normal | 18 | HEAVY SWAY | Collect 7 acorns | Touch no planet |
-| 18 | **Nursery Rhyme** | Normal | 19 | HEAVY SWAY | Collect 7 acorns | Catch 2 golden acorns |
+| 18 | **Nursery Rhyme** | The Spill | 4 | — | Mine 41 Ore | Take no hull damage |
 | 19 | **Full Bloom** | Normal | 20 | HEAVY SWAY | Collect 8 acorns | Spend no shield |
 | 20 | **Seedfall** | Normal | 21 | HEAVY SWAY | Collect 8 acorns | Touch no planet |
 
@@ -135,7 +135,7 @@ for everyone.
 | 25 | **Glacier Line** | Normal | 18 | NARROW GATES, SWAYING GATES | Collect 8 acorns | At most 47 taps |
 | 26 | **White Static** | Normal | 19 | NARROW GATES, SWAYING GATES | Catch 2 golden acorns | Flawless — no bounces, no shields spent |
 | 27 | **Cold Snap** | Normal | 20 | NARROW GATES, SWAYING GATES | Collect 9 acorns | Touch no planet |
-| 28 | **Icicle Alley** | Normal | 21 | NARROW GATES, SWAYING GATES | Catch 2 golden acorns | At most 55 taps |
+| 28 | **Icicle Alley** | The Spill | 5 | — | Mine 49 Ore | Take no hull damage |
 | 29 | **Pressure Ridge** | Normal | 22 | NARROW GATES, SWAYING GATES | Collect 10 acorns | Flawless — no bounces, no shields spent |
 | 30 | **Moonfall** | Normal | 23 | NARROW GATES, SWAYING GATES | Catch 2 golden acorns | Touch no planet |
 
@@ -152,7 +152,7 @@ for everyone.
 | 35 | **Coronal Run** | Normal | 19 | BRISK | Collect 9 acorns | Touch no planet |
 | 36 | **Afterburner** | Normal | 20 | FAST FORWARD | Collect 9 acorns | Spend no shield |
 | 37 | **Melting Point** | Normal | 21 | FAST FORWARD | Collect 10 acorns | Catch 2 golden acorns |
-| 38 | **Solar Wind** | Normal | 22 | FAST FORWARD | Collect 10 acorns | Touch no planet |
+| 38 | **Solar Wind** | The Spill | 6 | — | Mine 57 Ore | Take no hull damage |
 | 39 | **White Heat** | Normal | 23 | FAST FORWARD | Collect 11 acorns | Spend no shield |
 | 40 | **Out of the Fire** | Normal | 24 | FAST FORWARD | Collect 11 acorns | Catch 2 golden acorns |
 
@@ -169,7 +169,7 @@ for everyone.
 | 45 | **Night Current** | Normal | 19 | FOG | Collect 8 acorns | Touch no planet |
 | 46 | **Closing Iris** | Normal | 20 | FOG | Collect 8 acorns | At most 48 taps |
 | 47 | **Blue Hour** | Normal | 21 | FOG | Collect 9 acorns | Spend no shield |
-| 48 | **Half Blind** | Normal | 22 | FOG | Collect 9 acorns | Touch no planet |
+| 48 | **Half Blind** | The Spill | 7 | — | Mine 65 Ore | Take no hull damage |
 | 49 | **Abyssal** | Normal | 23 | HEAVY FOG | Collect 10 acorns | At most 55 taps |
 | 50 | **Midnight Proper** | Normal | 24 | HEAVY FOG | Collect 10 acorns | Spend no shield |
 
@@ -186,7 +186,7 @@ for everyone.
 | 55 | **Inclusion** | Deep Space | 16 | — | Collect 7 acorns | Catch 2 golden acorns |
 | 56 | **Cleave Line** | Deep Space | 17 | — | Collect 7 acorns | Flawless — no bounces, no shields spent |
 | 57 | **Scatter** | Deep Space | 18 | — | Collect 8 acorns | Touch no planet |
-| 58 | **Fracture Zone** | Deep Space | 19 | — | Collect 8 acorns | Catch 2 golden acorns |
+| 58 | **Fracture Zone** | The Spill | 8 | — | Mine 73 Ore | Take no hull damage |
 | 59 | **Core Sample** | Deep Space | 20 | — | Collect 9 acorns | Flawless — no bounces, no shields spent |
 | 60 | **The Jewel** | Deep Space | 21 | — | Collect 9 acorns | Touch no planet |
 
@@ -203,7 +203,7 @@ for everyone.
 | 65 | **Eye Wall** | Normal | 20 | BRISK, HEAVY SWAY | Collect 10 acorns | Flawless — no bounces, no shields spent |
 | 66 | **Downdraft** | Normal | 21 | BRISK, HEAVY SWAY | Collect 10 acorns | Touch no planet |
 | 67 | **Shear** | Normal | 22 | BRISK, HEAVY SWAY | Collect 11 acorns | Spend no shield |
-| 68 | **Thunderhead** | Normal | 23 | BRISK, HEAVY SWAY | Collect 11 acorns | Flawless — no bounces, no shields spent |
+| 68 | **Thunderhead** | The Spill | 9 | — | Mine 81 Ore | Take no hull damage |
 | 69 | **Landfall** | Normal | 24 | BRISK, HEAVY SWAY | Collect 12 acorns | Touch no planet |
 | 70 | **Stormbreaker** | Normal | 25 | BRISK, HEAVY SWAY | Collect 12 acorns | Spend no shield |
 
@@ -220,7 +220,7 @@ for everyone.
 | 75 | **Compass Spin** | Lost in Space | 16 | — | Collect 7 acorns | Catch 2 golden acorns |
 | 76 | **Wrong Horizon** | Lost in Space | 17 | — | Collect 7 acorns | Spend no shield |
 | 77 | **Tumbled** | Lost in Space | 18 | — | Collect 8 acorns | Touch no planet |
-| 78 | **Sideways Rain** | Lost in Space | 19 | — | Collect 8 acorns | Catch 2 golden acorns |
+| 78 | **Sideways Rain** | The Spill | 10 | — | Mine 89 Ore | Take no hull damage |
 | 79 | **The Long Way** | Lost in Space | 20 | — | Collect 9 acorns | Spend no shield |
 | 80 | **Found** | Lost in Space | 21 | — | Collect 9 acorns | Touch no planet |
 
@@ -237,7 +237,7 @@ for everyone.
 | 85 | **Dead Reckoning** | Normal | 12 | BLACKOUT — lit only after a tap, GENTLE PACE | Collect 5 acorns | At most 38 taps |
 | 86 | **Echo Location** | Normal | 13 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 5 acorns | Flawless — no bounces, no shields spent |
 | 87 | **Blink** | Normal | 14 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 6 acorns | Touch no planet |
-| 88 | **Photograph** | Normal | 15 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 6 acorns | At most 48 taps |
+| 88 | **Photograph** | The Spill | 11 | — | Mine 97 Ore | Take no hull damage |
 | 89 | **Total Recall** | Normal | 16 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 7 acorns | Flawless — no bounces, no shields spent |
 | 90 | **Eyes Shut** | Normal | 17 | BLACKOUT — lit only after a tap, GENTLE PACE, SWAYING GATES | Collect 7 acorns | Touch no planet |
 
@@ -254,7 +254,7 @@ for everyone.
 | 95 | **Half Light** | Deep Space | 24 | FOG | Collect 12 acorns | Spend no shield |
 | 96 | **Triple Shift** | Deep Space | 25 | FOG | Collect 13 acorns | Touch no planet |
 | 97 | **Tilted Crown** | Lost in Space | 28 | HEAVY SWAY | Collect 14 acorns | Flawless — no bounces, no shields spent |
-| 98 | **Mirrorfall** | Lost in Space | 29 | HEAVY SWAY | Collect 15 acorns | Spend no shield |
+| 98 | **Mirrorfall** | The Spill | 12 | — | Mine 105 Ore | Take no hull damage |
 | 99 | **Last Reach** | Lost in Space | 30 | HEAVY SWAY | Collect 16 acorns | Touch no planet |
 | 100 | **THE HORIZON** | Normal | 30 | BLACKOUT — lit only after a tap, FOG, BRISK, HEAVY SWAY | Collect 17 acorns | Flawless — no bounces, no shields spent |
 

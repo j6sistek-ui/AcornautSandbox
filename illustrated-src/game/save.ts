@@ -1,6 +1,11 @@
 import { STAR_UNLOCKS, totalStars,
   RACE_GATES,
 } from "./campaign";
+import { restoreSpill, type SpillCheckpoint, type SpillState } from "./spill";
+import { SPILL_UTILITY_IDS, type SpillUtility } from "./spill-content";
+
+export type SpillRecords = { bestScore: number; ore: number; contracts: number; waves: number; expeditions: number; runs: number };
+export const freshSpillRecords = (): SpillRecords => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
 import {
   BETA_UNLOCK_GATES,
   HELMETS,
@@ -28,6 +33,10 @@ export type SaveData = {
    *  spent inside the run and gone with it, so the mode's economy cannot
    *  reach the wallet or the shop */
   spillBest: number;
+  spillRecords?: SpillRecords;
+  spillSuspended?: SpillCheckpoint | null;
+  spillStarter?: SpillUtility | null;
+  spillSignal?: boolean;
   purchased: string[];
   acorns: number;
   xp: number;
@@ -142,6 +151,7 @@ export function defaultSave(): SaveData {
     arcadeBest: 0,
     tunnelBest: 0,
     spillBest: 0,
+    spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
     purchased: [],
     acorns: 0,
     xp: 0,
@@ -179,6 +189,19 @@ export function defaultSave(): SaveData {
     raceRecords: {},
     raceGates: [],
   };
+}
+
+/** Bank only new progress. This ledger is part of a suspended expedition,
+ *  so loading or docking repeatedly never duplicates mastery or rewards. */
+export function bankSpill(save: SaveData, s: SpillState, end = false) {
+  const records = save.spillRecords ?? (save.spillRecords = freshSpillRecords());
+  save.spillBest = Math.max(save.spillBest || 0, s.cleared);
+  records.bestScore = Math.max(records.bestScore, Math.floor(s.score));
+  for (const [field, value] of [["ore", s.oreMined], ["contracts", s.contractsDone], ["waves", s.cleared]] as const) {
+    records[field] += Math.max(0, value - s.banked[field]); s.banked[field] = value;
+  }
+  if (s.expeditionDone && !s.banked.expedition) { records.expeditions++; s.banked.expedition = true; }
+  if (end && !s.banked.run) { records.runs++; s.banked.run = true; }
 }
 
 function readRaw(key: string): Record<string, unknown> | null {
@@ -262,6 +285,16 @@ export function loadSave(): SaveData {
   delete (s as Record<string, unknown>).experimentalRaceRecords;
   // saves written before the Spill was a mode
   if (typeof s.spillBest !== "number" || !isFinite(s.spillBest)) s.spillBest = 0;
+  s.spillBest = Math.max(0, Math.floor(s.spillBest));
+  const records = freshSpillRecords();
+  for (const key of Object.keys(records) as (keyof SpillRecords)[]) {
+    const n = s.spillRecords?.[key];
+    if (typeof n === "number" && Number.isFinite(n) && n >= 0) records[key] = Math.floor(n);
+  }
+  s.spillRecords = records;
+  if (!restoreSpill(s.spillSuspended, 390, 760)) s.spillSuspended = null;
+  if (!SPILL_UTILITY_IDS.includes(s.spillStarter)) s.spillStarter = null;
+  s.spillSignal = s.spillSignal === true;
   // favourites are ids only; anything else in the array is a hand-edit
   if (!Array.isArray(s.favorites)) s.favorites = [];
   s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
