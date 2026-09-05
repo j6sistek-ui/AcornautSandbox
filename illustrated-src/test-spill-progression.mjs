@@ -87,13 +87,21 @@ for(const W of [320,390,1280])for(const event of ['cargo','vein','lanes','rig'])
  save.spillSuspended=cp;Save.writeSave(save);assert(Save.loadSave().spillSuspended);
  for(const mutate of [x=>x.version=99,x=>x.state.hull=NaN,x=>x.state.hull=-1,x=>x.state.shield=.5,x=>x.state.wave=6,x=>x.state.utilities=['fake'],x=>x.state.contract.reward=999,x=>x.state.up.plating=99,x=>x.state.banked.ore=9999]){const bad=structuredClone(cp);mutate(bad);assert.equal(S.restoreSpill(bad,390,760),null);}
  s.phase='wave';assert.equal(S.spillCheckpoint(s),null);s.phase='depot';s.target=10;assert.equal(S.spillCheckpoint(s),null);
- const end=dock(20);end.expeditionDone=true;assert(S.spillFinish(end));assert.equal(end.cause,'EXPEDITION COMPLETE');Save.bankSpill(save,end,true);const final=structuredClone(save.spillRecords);Save.bankSpill(save,end,true);assert.deepEqual(save.spillRecords,final);assert.equal(final.expeditions,1);assert.equal(final.runs,1);
+ const end=flight(20);end.up={plating:2,thrusters:2,pulse:1};end.maxHull=end.hull=5;end.ore=400;end.utilities=['magnet'];end.ownedUtilities=['magnet'];
+ clear(end,20);assert.equal(end.phase,'docking');assert.equal(end.cause,'');assert(end.expeditionDone);step(end,2.1);
+ Save.bankSpill(save,end);const milestone=structuredClone(save.spillRecords);Save.bankSpill(save,end);assert.deepEqual(save.spillRecords,milestone);assert.equal(milestone.expeditions,1);assert.equal(milestone.runs,0,'wave 20 is not an ended run');
+ const earned=end.ore;assert(S.spillLeaveDepot(end));assert.equal(end.wave,21);assert.equal(end.phase,'countdown');assert.deepEqual(end.up,{plating:2,thrusters:2,pulse:1});assert.deepEqual(end.utilities,['magnet']);assert.equal(end.ore,earned);
+ clear(end,25);step(end,2.1);assert.equal(end.phase,'depot');assert(S.spillLeaveDepot(end));assert.equal(end.wave,26);assert.equal(end.cause,'');
+ Save.bankSpill(save,end,true);const final=structuredClone(save.spillRecords);Save.bankSpill(save,end,true);assert.deepEqual(save.spillRecords,final);assert.equal(final.expeditions,1);assert.equal(final.runs,1);
+ const legacy=structuredClone(cp);delete legacy.state.firstPass;legacy.state.finished=false;assert(S.restoreSpill(legacy,390,760),'existing Depot saves remain resumable');
 }
 {
  const save=Save.defaultSave();assert.equal(save.spillSuspended,null);assert.equal(C.spillMastery(5).current.title,'Salvager');assert.equal(C.spillMastery(20).current.title,'Spillbreaker');
  const w=Sim.makeWorld(390,760);save.spillBest=5;save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,['magnet']);
  save.spillStarter='capacitor';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,[]);
  save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false,Camp.levelById('4-8'));assert.deepEqual(w.spill.utilities,[],'missions start with a standard ship');
+ const finalMission=Camp.levelById('10-8');assert.equal(finalMission.gates,20);
+ Sim.resetRun(w,save,'spill',false,finalMission);w.ready=false;w.spill.wave=20;w.spill.phase='drain';w.spill.rocks=[];const result=Sim.updateWorld(w,save,dt);assert.equal(result,'finish');assert.equal(w.screen,'lvldone');assert(w.lastLevel.finished);assert(save.stars['10-8']&1,'wave 20 still earns the Star Map victory');
  assert.equal(Camp.LEVELS.filter(l=>l.base==='spill').length,9);assert.equal(Camp.LEVELS.filter(l=>l.base==='tunnel').length,0);
 }
-console.log(`spill progression: protection, utilities, contracts, ${eventSweeps} event sweeps, checkpoint banking, mastery and production missions pass`);
+console.log(`spill progression: protection, utilities, contracts, ${eventSweeps} event sweeps, checkpoint banking, endless continuation, mastery and Star Map victories pass`);

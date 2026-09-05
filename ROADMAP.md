@@ -254,7 +254,7 @@ for everyone.
 | 95 | **Half Light** | Deep Space | 24 | FOG | Collect 12 acorns | Spend no shield |
 | 96 | **Triple Shift** | Deep Space | 25 | FOG | Collect 13 acorns | Touch no planet |
 | 97 | **Tilted Crown** | Lost in Space | 28 | HEAVY SWAY | Collect 14 acorns | Flawless — no bounces, no shields spent |
-| 98 | **Mirrorfall** | The Spill | 12 | — | Mine 105 Ore | Take no hull damage |
+| 98 | **Mirrorfall** | The Spill | 20 | — | Mine 105 Ore | Take no hull damage |
 | 99 | **Last Reach** | Lost in Space | 30 | HEAVY SWAY | Collect 16 acorns | Touch no planet |
 | 100 | **THE HORIZON** | Normal | 30 | BLACKOUT — lit only after a tap, FOG, BRISK, HEAVY SWAY | Collect 17 acorns | Flawless — no bounces, no shields spent |
 

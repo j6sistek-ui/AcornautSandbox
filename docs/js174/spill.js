@@ -301,7 +301,7 @@ export function createSpill(W, H, seed, target = 0, hints = true) {
         repairOre: 0, repairsThisWave: 0, shards: 0,
         contract: null, contractsDone: 0, contractMessage: "", stipend: 0,
         event: "none", eventWarn: 0, eventSafeY: H * 0.5, eventNext: 5, eventPass: 0,
-        expeditionDone: false, finished: false,
+        expeditionDone: false, firstPass: false,
         banked: { ore: 0, contracts: 0, waves: 0, expedition: false, run: false },
         signal: "#c99bff",
         combo: 0,
@@ -911,19 +911,8 @@ function settleContract(s) {
     s.contract = null;
     cue(s, "contract");
 }
-export function spillFinish(s) {
-    if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || s.cleared < 20 || s.target > 0)
-        return false;
-    s.phase = "over";
-    s.finished = true;
-    s.cause = "EXPEDITION COMPLETE";
-    s.depot = null;
-    s.phaseT = 0;
-    s.deadFor = 0;
-    cue(s, "expedition");
-    return true;
-}
 function closeDepot(s) {
+    s.firstPass = false;
     s.depot = null;
     cue(s, "depot-close");
     beginCountdown(s, s.wave + 1);
@@ -1533,7 +1522,7 @@ export function spillSignature(s) {
 /** Only a docked, ordinary expedition may be suspended. The checkpoint
  *  carries its RNG and bank ledger, so resuming cannot reroll or repay it. */
 export function spillCheckpoint(s) {
-    if (s.phase !== "depot" || !s.depot || s.target || s.finished)
+    if (s.phase !== "depot" || !s.depot || s.target)
         return null;
     const state = JSON.parse(JSON.stringify(s));
     state.rocks = [];
@@ -1593,13 +1582,15 @@ export function restoreSpill(raw, W, H) {
     s.ownedUtilities = value.ownedUtilities.slice();
     if (s.charge < 0 || s.charge > spillChargeCap(s))
         return null;
-    for (const key of ["coreArmed", "coreBought", "echoReady", "expeditionDone", "finished", "hints"]) {
+    for (const key of ["coreArmed", "coreBought", "echoReady", "expeditionDone", "hints"]) {
         if (typeof value[key] !== "boolean")
             return null;
         s[key] = value[key];
     }
-    if (s.finished || (s.coreArmed && !s.coreBought))
+    if (s.coreArmed && !s.coreBought)
         return null;
+    // Version-1 checkpoints predating the milestone card have no firstPass.
+    s.firstPass = value.firstPass === true && s.wave === 20;
     if (!Array.isArray(value.taught) || value.taught.some(m => !SPILL_MODS.includes(m)))
         return null;
     s.taught = value.taught.slice();

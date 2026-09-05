@@ -593,7 +593,7 @@ const dock = (seed) => {
   // the beta chart: level 8 of every chapter from 2 is a wave mission
   const spills = camp.LEVELS.filter((l) => l.base === "spill");
   ok(spills.length === 9 && spills.every((l) => l.n === 8 && l.stage >= 2), `nine level-8 missions (${spills.length})`);
-  ok(spills.every((l) => l.gates === 2 + l.stage), "each names the wave to clear");
+  ok(spills.every((l) => l.gates === (l.stage === 10 ? 20 : 2 + l.stage)), "each names the wave to clear");
   const def = camp.levelById("2-8");
   ok(camp.goalText(def.goals[0], def) === "Clear 4 waves of the Spill", `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
   ok(def.goals[1].kind === "ore" && def.goals[2].kind === "noHit", "the stars are Ore and a clean hull");

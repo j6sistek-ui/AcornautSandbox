@@ -355,7 +355,7 @@ export async function bootStandalone(root: HTMLElement) {
       const sheet = el("div", "ac-sheet ac-center ac-result");
       const spill = snap.flight === "spill" ? engine.world.spill : null;
       sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID"
-        : spill ? (spill.finished ? "EXPEDITION COMPLETE" : spill.cause === "GROUNDED" ? "HULL LOST AT BOUNDARY" : "LOST TO THE FIELD")
+        : spill ? (spill.cause === "GROUNDED" ? "HULL LOST AT BOUNDARY" : "LOST TO THE FIELD")
         : "CRASHED"));
       if (!(BETA_FEATURES && snap.flight !== "tunnel") && !spill) {
         sheet.append(el("p", "", `Score ${snap.dead.score}`));
@@ -1468,7 +1468,7 @@ export async function bootStandalone(root: HTMLElement) {
     const panel = el("div", "ac-spillprep");
     panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"),
       el("p", "ac-sub", "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."),
-      el("p", "ac-sub", "Survive five waves, then upgrade at an untimed Depot."));
+      el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
     const label = el("label", "ac-spillselect", "Starting utility");
     const select = el("select"); select.setAttribute("aria-label", "Starting utility");
     const none = el("option", "", "Stock ship"); none.value = ""; select.append(none);
@@ -1495,7 +1495,8 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-label", "The Spill Depot");
     const arming = (sp.depot?.arm ?? 0) > 0;
     if (arming) sheet.classList.add("arming");
-    sheet.append(el("p", "ac-kicker", `WAVE ${sp.wave} CLEARED · TAKE YOUR TIME`), el("h2", "ac-lvlname", sp.wave === 20 ? "Rig cleared. What’s next?" : "Salvage Depot"));
+    sheet.append(el("p", "ac-kicker", `WAVE ${sp.wave} CLEARED · TAKE YOUR TIME`), el("h2", "ac-lvlname", sp.firstPass ? "First pass complete" : "Salvage Depot"));
+    if (sp.firstPass) sheet.append(el("p", "ac-gold", "Wave 20 cleared. Your first-pass victory is recorded. Keep your build and fly on—the Spill is endless."));
     const stage = el("div", "ac-depotstage");
     stage.style.backgroundImage = `linear-gradient(90deg,rgba(6,10,25,.5),transparent),url("${artUrl("spill-scene/depot.png")}")`;
     const preview = miniCanvas(290, 130); preview.c.setAttribute("aria-label", "Your upgraded ship");
@@ -1560,11 +1561,8 @@ export async function bootStandalone(root: HTMLElement) {
     const act = el("div", "ac-depotact");
     if (!sp.target) {
       const suspend = el("button", "ac-ghost", "SAVE & QUIT"); suspend.disabled = arming; suspend.onclick = () => engine.spillSuspend(); act.append(suspend);
-      if (sp.cleared >= 20) {
-        const finish = el("button", "ac-ghost", "FINISH EXPEDITION"); finish.disabled = arming; finish.onclick = () => engine.spillFinish(); act.append(finish);
-      }
     }
-    const go = el("button", "ac-primary", sp.cleared >= 20 ? "CONTINUE INTO ENDLESS" : "BACK TO THE FIELD");
+    const go = el("button", "ac-primary", sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
     go.disabled = arming; go.onclick = () => engine.spillLeaveDepot();
     const footer = el("div", "ac-depotfooter"); footer.append(act, go); sheet.append(footer);
     wrap.append(sheet); return wrap;
@@ -4674,7 +4672,7 @@ export async function bootStandalone(root: HTMLElement) {
         ["LOST IN SPACE", "Drift, tilt, wormholes."],
         ["ARCADE", "The 8-bit original. Double power-ups."],
         ["HYPER RUN", "Thread gates. Finish fast."],
-        ["THE SPILL", "Survive five-wave sectors. Build at untimed Depots, take contracts, and clear the rig at wave 20."],
+        ["THE SPILL", "Survive endless waves. Build at untimed Depots and take contracts. Wave 20 records your first-pass victory; the run continues."],
       ]) {
         const li = el("li", "");
         li.append(el("b", "", name), el("span", "", line));

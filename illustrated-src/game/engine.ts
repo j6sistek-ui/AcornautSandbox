@@ -63,7 +63,7 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillFinish,
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, spillMastery, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
 import { bankSpill } from "./save";
@@ -148,7 +148,6 @@ export type Engine = {
   spillContract: (id: SpillContractKind) => boolean;
   spillSuspend: () => boolean;
   spillResume: () => boolean;
-  spillFinish: () => boolean;
   spillStarter: (id: SpillUtility | null) => void;
   spillSignal: (on: boolean) => void;
   open: (s: Screen) => void;
@@ -564,10 +563,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
       world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
       resetInputTracking(); raceAccumulator = 0; last = performance.now(); notify(); return true;
-    },
-    spillFinish() {
-      if (!world.spill || world.screen !== "play") return false;
-      const ok = spillFinish(world.spill); if (ok) { save.spillSuspended = null; writeSave(save); notify(); } return ok;
     },
     spillStarter(id) {
       if (!world.spill || world.spill.phase !== "ready" || world.spill.target) return;
@@ -1304,7 +1299,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function dispatchSpillCues(cues: SpillCue[]) {
     if (!cues.length) return;
     const spill = world.spill;
-    if (spill && cues.some(c => ["dead", "mission", "expedition"].includes(c))) {
+    if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
       bankSpill(save, spill, true);
       if (!spill.target) save.spillSuspended = null;
       writeSave(save);
@@ -1317,13 +1312,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // a graze is deliberately not a re-render: the play overlay is only the
     // two buttons and pause, and "charged" already relights PULSE
     const NOTIFY: SpillCue[] = ["hit", "hull", "charged", "pulse", "wave", "go", "dock", "depot", "armed",
-      "depot-close", "buy", "deny", "respawn", "recharge", "mission", "contract", "expedition", "dead"];
+      "depot-close", "buy", "deny", "respawn", "recharge", "mission", "contract", "dead"];
     // press and burst sound on the pointer path already
     const SOUND: Partial<Record<SpillCue, keyof typeof sfx>> = {
       hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
       graze: "near", pulse: "shift", count: "ui", go: "section", clear: "milestone", milestone: "milestone",
       dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
-      warn: "warning", event: "warning", contract: "milestone", expedition: "milestone", mission: "milestone",
+      warn: "warning", event: "warning", contract: "milestone", mission: "milestone",
     };
     for (const c of new Set(cues)) {
       const snd = SOUND[c];
@@ -1336,6 +1331,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function checkpointSpill() {
     const spill = world.spill;
     if (!spill || spill.phase !== "depot") return;
+    if (!spill.target && spill.wave === 20 && save.spillBest < 20) spill.firstPass = true;
     bankSpill(save, spill);
     if (!spill.target) save.spillSuspended = spillCheckpoint(spill);
     writeSave(save);

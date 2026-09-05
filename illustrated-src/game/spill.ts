@@ -325,7 +325,7 @@ export type SpillBurst = { x: number; y: number; n: number; power: number; tone:
 export type SpillCue =
   | "press" | "burst" | "lunge" | "hit" | "shatter" | "ore" | "gold" | "shield" | "hull" | "graze"
   | "pulse" | "wave" | "go" | "count" | "clear" | "dock" | "depot" | "armed" | "depot-close" | "buy" | "deny"
-  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event" | "expedition";
+  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event";
 
 export type SpillDepot = {
   /** the shelves are inert until this runs out */
@@ -402,8 +402,10 @@ export type SpillState = {
   eventSafeY: number;
   eventNext: number;
   eventPass: number;
+  /** Legacy ledger name: this run has cleared the wave-20 milestone. */
   expeditionDone: boolean;
-  finished: boolean;
+  /** First-ever wave-20 clear, shown at its Depot without ending the run. */
+  firstPass: boolean;
   banked: { ore: number; contracts: number; waves: number; expedition: boolean; run: boolean };
   signal: string;
   combo: number;
@@ -448,7 +450,7 @@ export type SpillState = {
   taught: string[];
   shake: number;
   deadFor: number;
-  cause: "" | "STRUCK" | "GROUNDED" | "MISSION COMPLETE" | "EXPEDITION COMPLETE";
+  cause: "" | "STRUCK" | "GROUNDED" | "MISSION COMPLETE";
   cues: SpillCue[];
 };
 
@@ -507,7 +509,7 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     repairOre: 0, repairsThisWave: 0, shards: 0,
     contract: null, contractsDone: 0, contractMessage: "", stipend: 0,
     event: "none", eventWarn: 0, eventSafeY: H * 0.5, eventNext: 5, eventPass: 0,
-    expeditionDone: false, finished: false,
+    expeditionDone: false, firstPass: false,
     banked: { ore: 0, contracts: 0, waves: 0, expedition: false, run: false },
     signal: "#c99bff",
     combo: 0,
@@ -1096,13 +1098,8 @@ function settleContract(s: SpillState) {
   s.contract = null; cue(s, "contract");
 }
 
-export function spillFinish(s: SpillState) {
-  if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || s.cleared < 20 || s.target > 0) return false;
-  s.phase = "over"; s.finished = true; s.cause = "EXPEDITION COMPLETE"; s.depot = null;
-  s.phaseT = 0; s.deadFor = 0; cue(s, "expedition"); return true;
-}
-
 function closeDepot(s: SpillState) {
+  s.firstPass = false;
   s.depot = null;
   cue(s, "depot-close");
   beginCountdown(s, s.wave + 1);
@@ -1651,7 +1648,7 @@ export type SpillCheckpoint = { version: 1; state: SpillState };
 /** Only a docked, ordinary expedition may be suspended. The checkpoint
  *  carries its RNG and bank ledger, so resuming cannot reroll or repay it. */
 export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
-  if (s.phase !== "depot" || !s.depot || s.target || s.finished) return null;
+  if (s.phase !== "depot" || !s.depot || s.target) return null;
   const state: SpillState = JSON.parse(JSON.stringify(s));
   state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
   state.held = false; state.pressed = false; state.manual = false;
@@ -1692,11 +1689,13 @@ export function restoreSpill(raw: unknown, W: number, H: number): SpillState | n
   if (!utilityList(value.utilities) || value.utilities.length > 2 || !utilityList(value.ownedUtilities) || value.utilities.some(id => !value.ownedUtilities.includes(id))) return null;
   s.utilities = value.utilities.slice(); s.ownedUtilities = value.ownedUtilities.slice();
   if (s.charge < 0 || s.charge > spillChargeCap(s)) return null;
-  for (const key of ["coreArmed", "coreBought", "echoReady", "expeditionDone", "finished", "hints"] as const) {
+  for (const key of ["coreArmed", "coreBought", "echoReady", "expeditionDone", "hints"] as const) {
     if (typeof value[key] !== "boolean") return null;
     s[key] = value[key];
   }
-  if (s.finished || (s.coreArmed && !s.coreBought)) return null;
+  if (s.coreArmed && !s.coreBought) return null;
+  // Version-1 checkpoints predating the milestone card have no firstPass.
+  s.firstPass = value.firstPass === true && s.wave === 20;
   if (!Array.isArray(value.taught) || value.taught.some(m => !SPILL_MODS.includes(m as SpillMod))) return null;
   s.taught = value.taught.slice();
   for (const key of ["ore", "contracts", "waves"] as const) {

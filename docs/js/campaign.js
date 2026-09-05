@@ -297,7 +297,7 @@ for (const l of LEVELS) {
         // Depot opens; from chapter 4 on the shop is inside the mission, so
         // spending well is part of the test rather than a bonus.
         l.base = "spill";
-        l.gates = 2 + l.stage; // WAVES cleared: 4..12
+        l.gates = l.stage === 10 ? 20 : 2 + l.stage; // Short lessons; final Star Map victory at wave 20
         l.goals = [
             { kind: "finish" },
             { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined

@@ -3031,7 +3031,7 @@ function updateSpill(w, save, dt) {
         settleLevel(w, save, true);
         return "finish";
     }
-    if (cues.includes("dead") || cues.includes("expedition"))
+    if (cues.includes("dead"))
         return die(w, save);
     return null;
 }

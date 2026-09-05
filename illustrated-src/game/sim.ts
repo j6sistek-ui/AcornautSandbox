@@ -3486,7 +3486,7 @@ function updateSpill(w: World, save: SaveData, dt: number): string | null {
     settleLevel(w, save, true);
     return "finish";
   }
-  if (cues.includes("dead") || cues.includes("expedition")) return die(w, save);
+  if (cues.includes("dead")) return die(w, save);
   return null;
 }
 

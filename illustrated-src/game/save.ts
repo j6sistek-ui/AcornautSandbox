@@ -4,6 +4,7 @@ import { STAR_UNLOCKS, totalStars,
 import { restoreSpill, type SpillCheckpoint, type SpillState } from "./spill";
 import { SPILL_UTILITY_IDS, type SpillUtility } from "./spill-content";
 
+// `expeditions` counts wave-20 clears, not endings; retain the saved key.
 export type SpillRecords = { bestScore: number; ore: number; contracts: number; waves: number; expeditions: number; runs: number };
 export const freshSpillRecords = (): SpillRecords => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
 import {

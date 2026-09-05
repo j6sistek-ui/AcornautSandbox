@@ -11,15 +11,19 @@ Launch → three-second countdown → survive a wave → drain the field → col
 12 completion Ore. Every fifth clear docks for 1.2 seconds, restores one hull
 pip, then opens the Depot. Its shelves arm after 0.8 seconds to reject a
 lingering flight tap. **Every Depot is untimed.** It stays open until the pilot
-leaves, saves and quits, or finishes an eligible expedition.
+leaves or saves and quits. The ordinary mode has no finish action.
 
-Waves 1–20 retain the authored modifier ladder. Wave 20 completes the rig;
-the pilot can finish successfully at the Depot or continue into endless waves.
+The ordinary mode is endless from the start. Waves 1–20 retain the authored
+modifier ladder. The first-ever wave-20 clear celebrates a first-pass victory
+at the untimed Depot; continuing preserves the ship, Ore and contract and
+launches wave 21. Subsequent wave-20 clears use the ordinary Depot.
 After wave 20 the seed chooses modifier combinations; speed caps at 2.05×.
 Wave completion depends on surviving the spawning window and drain, with no
 kill quota or required weapon. The drain lasts at most six seconds.
 
-A mission ends automatically at its target wave. Chapter 2–10 level-8 missions
+A Star Map mission ends automatically at its target wave; the final Spill
+mission, 10-8, wins at wave 20. Earlier missions keep their shorter lesson
+targets. Chapter 2–10 level-8 missions
 now use the Spill in production as well as beta; IDs and earned star masks
 remain stable. Missions use the standard starting ship and a fixed seed.
 
@@ -113,7 +117,8 @@ combo, hull, shields, Pulse/echo and an active contract.
 
 Spendable Ore and purchased upgrades belong to a run. Persistent records keep
 best cleared wave, best salvage score, total mined Ore, cleared waves,
-contracts, completed expeditions and runs. Mastery titles/signals arrive at
+contracts, wave-20 clears and runs. The legacy `expeditions` key counts those
+wave-20 milestones without ending an ordinary run. Mastery titles/signals arrive at
 waves 5, 10, 20 and 30. One earned utility may be selected before a normal run;
 mission starting conditions remain fixed.
 
