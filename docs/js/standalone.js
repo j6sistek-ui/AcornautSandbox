@@ -1,22 +1,22 @@
-import { writeSave } from "./save.js?v=182";
-import { spillAppearance } from "./spill-appearance.js?v=182";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=182";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=182";
-import { addChartScenery } from "./star-map-view.js?v=182";
-import { mapDebrisIndex } from "./zone-visuals.js?v=182";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=182";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=182";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=182";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=182";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=182";
-import { drawSprite as drawSpriteOn } from "./art.js?v=182";
-import { createEngine } from "./engine.js?v=182";
-import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=182";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=182";
-import { formatRaceTicks } from "./race.js?v=182";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=182";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=182";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=182";
+import { writeSave } from "./save.js?v=183";
+import { spillAppearance } from "./spill-appearance.js?v=183";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=183";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=183";
+import { addChartScenery } from "./star-map-view.js?v=183";
+import { mapDebrisIndex } from "./zone-visuals.js?v=183";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=183";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=183";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=183";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=183";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=183";
+import { drawSprite as drawSpriteOn } from "./art.js?v=183";
+import { createEngine } from "./engine.js?v=183";
+import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=183";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=183";
+import { formatRaceTicks } from "./race.js?v=183";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=183";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=183";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=183";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -448,50 +448,8 @@ export async function bootStandalone(root) {
                 settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
                 sheet.append(settings);
             }
-            // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
-            // drawn, so the row is there when Eclipse is the pilot and nowhere else.
-            // Switching from the pause is the whole point: the three read completely
-            // differently depending on what you were doing when you paused, and
-            // going back to the hangar to change it loses the run you were judging.
-            // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
-            // mid-run and resume to judge the same field with the other setting.
-            if (engine.save.equippedSuit !== "vanguard") {
-                const dials = (title, opts) => {
-                    sheet.append(el("p", "ac-sub", title));
-                    const row = el("div", "ac-modes");
-                    row.style.gridTemplateColumns = `repeat(${opts.length}, minmax(0,1fr))`;
-                    for (const [name, on, hit] of opts) {
-                        const mb = el("button", on() ? "ac-mode on" : "ac-mode", name);
-                        mb.onclick = hit;
-                        row.append(mb);
-                    }
-                    sheet.append(row);
-                };
-                const sv = () => engine.save;
-                dials("POSES", [
-                    ["All frames", () => (sv().poseMode ?? "all") === "all", () => engine.setPoseMode("all")],
-                    ["Ascent only", () => sv().poseMode === "ascent", () => engine.setPoseMode("ascent")],
-                ]);
-                dials("DIVE DEPTH", [
-                    ["Full", () => (sv().diveDepth ?? 1) >= 0.99, () => engine.setDiveDepth(1)],
-                    ["Softer", () => Math.abs((sv().diveDepth ?? 1) - 0.75) < 0.01, () => engine.setDiveDepth(0.75)],
-                    ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
-                ]);
-            }
             if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race)
                 sheet.append(vanguardMotionPicker());
-            if (engine.save.equippedSuit === "eclipse") {
-                const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
-                sheet.append(el("p", "ac-sub", "PILOT MOTION"));
-                const row = el("div", "ac-modes");
-                row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
-                ["Shipped", "Rate", "Heading"].forEach((name, i) => {
-                    const mb = el("button", i === mode ? "ac-mode on" : "ac-mode", name);
-                    mb.onclick = () => engine.setEclipseMotionMode(i);
-                    row.append(mb);
-                });
-                sheet.append(row);
-            }
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
             // - so it spilled off BOTH ends and took RESUME with it. You could read
@@ -2528,25 +2486,6 @@ export async function bootStandalone(root) {
                     row.append(suitCard(u));
                 }
                 grid.append(row);
-                // ECLIPSE's experiment rides under its own shelf: while Eclipse is
-                // the selected pilot, the section that lists it grows the switch
-                // between its three pose mappings so they can be flown back to back.
-                if (sec.ids.includes("eclipse") && s.equippedSuit === "eclipse") {
-                    const MOTION_MODES = [
-                        ["Motion: Shipped", "Pose maps straight from vertical speed."],
-                        ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
-                        ["Motion: Heading", "Body follows the tangent of the flight arc."],
-                    ];
-                    const mode = ((s.eclipseMotionMode ?? 2) % 3 + 3) % 3;
-                    const alt = el("button", "ac-card ac-modcard on");
-                    const txt = el("div", "ac-modtxt");
-                    txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]), el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
-                    const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
-                    sw.append(el("i", "ac-knob"));
-                    alt.append(txt, sw);
-                    alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
-                    grid.append(alt);
-                }
             }
             if (IS_BETA && s.equippedSuit === "vanguard")
                 grid.append(vanguardMotionPicker());

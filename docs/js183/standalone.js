@@ -1,20 +1,22 @@
-import { spillAppearance } from "./spill-appearance.js?v=179";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=179";
-import { addChartScenery } from "./star-map-view.js?v=179";
-import { mapDebrisIndex } from "./zone-visuals.js?v=179";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=179";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=179";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=179";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=179";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=179";
-import { drawSprite as drawSpriteOn } from "./art.js?v=179";
-import { createEngine } from "./engine.js?v=179";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=179";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=179";
-import { formatRaceTicks } from "./race.js?v=179";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=179";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=179";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=179";
+import { writeSave } from "./save.js?v=183";
+import { spillAppearance } from "./spill-appearance.js?v=183";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=183";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=183";
+import { addChartScenery } from "./star-map-view.js?v=183";
+import { mapDebrisIndex } from "./zone-visuals.js?v=183";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=183";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=183";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=183";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=183";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=183";
+import { drawSprite as drawSpriteOn } from "./art.js?v=183";
+import { createEngine } from "./engine.js?v=183";
+import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=183";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=183";
+import { formatRaceTicks } from "./race.js?v=183";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=183";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=183";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=183";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -333,6 +335,25 @@ export async function bootStandalone(root) {
         throttle.classList.toggle("held", throttleOwner !== null && sp.held);
         throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
     }
+    function vanguardMotionPicker() {
+        const panel = el("div", "ac-vanguard-motion");
+        panel.append(el("p", "ac-sub", "VANGUARD MOTION"));
+        const row = el("div", "ac-modes");
+        row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+        row.setAttribute("role", "group");
+        row.setAttribute("aria-label", "Vanguard motion");
+        for (const [mode, label] of [["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
+            const on = vanguardModeOf(engine.save) === mode;
+            const b = el("button", on ? "ac-mode on" : "ac-mode", label);
+            b.setAttribute("aria-pressed", String(on));
+            b.onclick = () => engine.setVanguardMotionMode(mode);
+            row.append(b);
+        }
+        panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
+            ? "Lunge, thruster assist, then a gentle glide. Swipe down for a full dive."
+            : "A slow, flowing flight cycle. Extra taps keep it moving. Swipe down for a full dive."));
+        return panel;
+    }
     const render = () => {
         disposeChart();
         disposeChart = () => { };
@@ -402,7 +423,7 @@ export async function bootStandalone(root) {
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
-                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} ORE`
+                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
                     : `Score ${engine.world.score}`));
             if (engine.world.spill) {
                 const settings = el("section", "ac-spillsettings");
@@ -427,48 +448,8 @@ export async function bootStandalone(root) {
                 settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
                 sheet.append(settings);
             }
-            // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
-            // drawn, so the row is there when Eclipse is the pilot and nowhere else.
-            // Switching from the pause is the whole point: the three read completely
-            // differently depending on what you were doing when you paused, and
-            // going back to the hangar to change it loses the run you were judging.
-            // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
-            // mid-run and resume to judge the same field with the other setting.
-            {
-                const dials = (title, opts) => {
-                    sheet.append(el("p", "ac-sub", title));
-                    const row = el("div", "ac-modes");
-                    row.style.gridTemplateColumns = `repeat(${opts.length}, minmax(0,1fr))`;
-                    for (const [name, on, hit] of opts) {
-                        const mb = el("button", on() ? "ac-mode on" : "ac-mode", name);
-                        mb.onclick = hit;
-                        row.append(mb);
-                    }
-                    sheet.append(row);
-                };
-                const sv = () => engine.save;
-                dials("POSES", [
-                    ["All frames", () => (sv().poseMode ?? "all") === "all", () => engine.setPoseMode("all")],
-                    ["Ascent only", () => sv().poseMode === "ascent", () => engine.setPoseMode("ascent")],
-                ]);
-                dials("DIVE DEPTH", [
-                    ["Full", () => (sv().diveDepth ?? 1) >= 0.99, () => engine.setDiveDepth(1)],
-                    ["Softer", () => Math.abs((sv().diveDepth ?? 1) - 0.75) < 0.01, () => engine.setDiveDepth(0.75)],
-                    ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
-                ]);
-            }
-            if (engine.save.equippedSuit === "eclipse") {
-                const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
-                sheet.append(el("p", "ac-sub", "PILOT MOTION"));
-                const row = el("div", "ac-modes");
-                row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
-                ["Shipped", "Rate", "Heading"].forEach((name, i) => {
-                    const mb = el("button", i === mode ? "ac-mode on" : "ac-mode", name);
-                    mb.onclick = () => engine.setEclipseMotionMode(i);
-                    row.append(mb);
-                });
-                sheet.append(row);
-            }
+            if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race)
+                sheet.append(vanguardMotionPicker());
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
             // - so it spilled off BOTH ends and took RESUME with it. You could read
@@ -507,7 +488,7 @@ export async function bootStandalone(root) {
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
             if (spill) {
                 // THE SPILL's receipt: waves as the headline, then what the run
-                // mined and took. Ore stays here - it never reaches the wallet.
+                // mined and took. Acorn Coins stays here - it never reaches the wallet.
                 const big = el("div", "ac-crashscore");
                 big.append(el("b", "", String(snap.dead.score)), el("span", "", snap.dead.score === 1 ? "WAVE CLEARED" : "WAVES CLEARED"));
                 sheet.append(big);
@@ -520,7 +501,7 @@ export async function bootStandalone(root) {
                     rows.append(r);
                 };
                 row("Salvage score", Math.floor(spill.score), true);
-                row("Ore mined", spill.oreMined, true);
+                row("Acorn Coins mined", spill.oreMined, true);
                 row("Contracts completed", spill.contractsDone);
                 row("Hull hits", spill.hits);
                 row("Grazes", spill.grazes);
@@ -1077,12 +1058,13 @@ export async function bootStandalone(root) {
         title.append(el("h1", "ac-home-title", "ACORNAUT"));
         title.append(el("p", "ac-home-kicker", "Fly the gaps \u00b7 Grab the acorns"));
         box.append(title, el("div", "ac-home-gap"));
+        box.append(pinnedHome());
         const controls = el("div", "ac-controls");
         // The loadout strip is the second door into the Hangar, so the tab
         // icon is never the only way in.
         const helm = helmetWornBy(s.equipped, s.equippedSuit);
         const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-        const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+        const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
         const strip = el("button", "ac-loadstrip");
         const port = el("div", "ac-loadport");
         port.append(portraitOf(helm, suit, 38));
@@ -1225,6 +1207,7 @@ export async function bootStandalone(root) {
         mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
         mark.append(el("p", "ac-hub-kicker", "Fly the gaps · Grab the acorns"));
         box.append(mark, el("div", "ac-hub-space"));
+        box.append(pinnedHome());
         const tiles = el("div", "ac-hub-tiles");
         const tile = (cls, pic, label, sub, hit, dot, pulse) => {
             const b = el("button", `ac-hubtile ${cls}`);
@@ -1386,7 +1369,7 @@ export async function bootStandalone(root) {
                 drawSpriteOn(ctx, bank?.arcadeAcorn ?? null, px / 2, px / 2, px * 0.8);
             else if (kind === "race")
                 drawSpriteOn(ctx, bank?.hyperRun?.["scout-ship"] ?? bank?.squirrelIdle?.[0] ?? null, px / 2, px / 2, px * 0.94);
-            // the Spill's face is its Ore: the thing the mode is about
+            // the Spill's face is its Acorn Coins: the thing the mode is about
             else if (kind === "spill")
                 drawSpriteOn(ctx, bank?.ore ?? bank?.debris?.[3] ?? null, px / 2, px / 2, px * 0.9);
             else if (kind === "tumble") {
@@ -1563,7 +1546,7 @@ export async function bootStandalone(root) {
             panel.append(el("p", "ac-sub", save.spillButtonsOff
                 ? "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."
                 : "Hold Throttle to rise; release to fall. Tap Dive to descend or Lunge to dash forward. Change buttons and tips in Pause."));
-        panel.append(el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
+        panel.append(el("p", "ac-sub", "Land at the Depot and choose one free system upgrade. Then survive endlessly, returning every five waves; wave 20 marks your first-pass victory."));
         const label = el("label", "ac-spillselect", "Starting utility");
         const select = el("select");
         select.setAttribute("aria-label", "Starting utility");
@@ -1623,19 +1606,27 @@ export async function bootStandalone(root) {
             sheet.classList.add("arming");
         const head = el("div", "ac-depothead");
         const title = el("div");
-        title.append(el("p", "ac-kicker", `BAY ${Math.ceil(sp.wave / 5)} · WAVE ${sp.wave} CLEARED`), el("h2", "ac-lvlname", sp.firstPass ? "First pass complete" : "Salvage Depot"));
+        title.append(el("p", "ac-kicker", sp.welcome ? "WELCOME ABOARD · PRE-FLIGHT" : `BAY ${Math.ceil(sp.wave / 5)} · WAVE ${sp.wave} CLEARED`), el("h2", "ac-lvlname", sp.welcome ? "Your first upgrade is free" : sp.firstPass ? "First pass complete" : "Salvage Depot"));
         const ore = el("div", "ac-depotore");
-        ore.append(el("span", "", "ORE"), el("b", "", String(sp.ore)));
+        ore.append(el("img", "ac-depotcoin"), el("span", "", "ACORN COINS"), el("b", "", String(sp.ore)));
+        ore.querySelector("img").src = `${artRootUrl()}/pickups/acorn-coin.svg?v=${ART_VER}`;
         head.append(title, ore);
         sheet.append(head);
         if (sp.firstPass)
             sheet.append(el("p", "ac-gold", "Wave 20 cleared. Your first-pass victory is recorded. Keep your build and fly on—the Spill is endless."));
         const status = el("div", "ac-depotstatus");
-        status.append(el("span", "", `HULL ${sp.hull}/${sp.maxHull}`), el("span", "", `SHIELDS ${sp.shield}/2`), el("span", "", sp.coreArmed ? "CORE ARMED" : "BAY SECURE · UNTIMED"));
+        const health = el("progress", "ac-depothealth");
+        health.max = sp.maxHull;
+        health.value = sp.hull;
+        health.setAttribute("aria-label", `Health: ${sp.hull} of ${sp.maxHull}`);
+        const healthLabel = el("label", "", "HEALTH ");
+        healthLabel.append(health);
+        status.append(healthLabel, el("span", "", `SHIELDS ${sp.shield}`), el("span", "", sp.coreArmed ? "CORE ARMED" : "BAY SECURE · UNTIMED"));
         sheet.append(status);
         const tabs = el("div", "ac-depottabs");
         for (const [id, label] of [["ship", "UPGRADE SHIP"], ["utilities", `UTILITIES ${sp.utilities.length}/2`], ["contracts", "CONTRACTS"]]) {
             const b = el("button", depotTab === id ? "on" : "", label);
+            b.disabled = !!sp.welcome && id !== "ship";
             b.dataset.spillControl = `tab-${id}`;
             b.setAttribute("aria-pressed", String(depotTab === id));
             b.onclick = () => { depotTab = id; render(); };
@@ -1644,7 +1635,7 @@ export async function bootStandalone(root) {
         sheet.append(tabs);
         const workspace = el("div", "ac-depotworkspace");
         const bay = el("div", "ac-depotbay");
-        bay.append(el("p", "ac-depotguide", "SELECT A SYSTEM TO UPGRADE"), el("p", "ac-depotguidehint", "Choose a ship marker, then confirm its upgrade."));
+        bay.append(el("p", "ac-depotguide", sp.welcome ? sp.freeUpgrade ? "CHOOSE YOUR FREE UPGRADE" : "UPGRADE FITTED · READY TO LAUNCH" : "SELECT A SYSTEM TO UPGRADE"));
         const stage = el("div", "ac-depotship");
         const preview = miniCanvas(344, 220);
         preview.c.setAttribute("role", "img");
@@ -1686,6 +1677,7 @@ export async function bootStandalone(root) {
             if (u)
                 slot.append(spillModuleIcon(id));
             slot.append(el("span", "", u ? u.name : `＋ UTILITY SLOT ${i + 1}`));
+            slot.disabled = !!sp.welcome;
             slot.onclick = () => { depotTab = "utilities"; render(); };
             slots.append(slot);
         }
@@ -1693,10 +1685,18 @@ export async function bootStandalone(root) {
         workspace.append(bay);
         if (preview.ctx) {
             const ctx = preview.ctx;
+            const previewBuild = spillBuildFromState(sp);
+            let paintedAt = -Infinity;
             const tick = () => {
                 if (!preview.c.isConnected)
                     return;
-                const t = performance.now() / 1000;
+                const now = performance.now();
+                if (now - paintedAt < 1000 / 30 - 1) {
+                    requestAnimationFrame(tick);
+                    return;
+                }
+                paintedAt = now;
+                const t = engine.save.motionOff ? 0 : now / 1000;
                 ctx.clearRect(0, 0, 344, 220);
                 const flash = Math.max(0, 1 - (performance.now() - depotUpgradeAt) / 1100);
                 if (flash > 0) {
@@ -1706,7 +1706,7 @@ export async function bootStandalone(root) {
                     ctx.fillStyle = g;
                     ctx.fillRect(0, 40, 344, 150);
                 }
-                paintShipPreview(ctx, engine.art, engine.save, 190, 113, 3.05, t, spillBuildFromState(sp));
+                paintShipPreview(ctx, engine.art, engine.save, 190, 113, 3.05, t, previewBuild);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -1717,8 +1717,8 @@ export async function bootStandalone(root) {
             const price = spillPrice(sp, what);
             const b = el("button", "ac-depotbuy");
             b.dataset.spillControl = what;
-            b.disabled = arming || price === null || price > sp.ore;
-            b.append(el("b", "", label), el("span", "", price === null ? "COMPLETE" : `${price} ORE`));
+            b.disabled = arming || price === null || price > sp.ore || (!!sp.welcome && (!sp.freeUpgrade || what === "repair" || what === "core"));
+            b.append(el("b", "", label), el("span", "", price === null ? "COMPLETE" : price === 0 ? "FREE · FIRST UPGRADE" : `${price} COINS`));
             b.onclick = () => { depotUpgradeAt = performance.now(); engine.spillBuy(what); };
             return b;
         };
@@ -1730,8 +1730,8 @@ export async function bootStandalone(root) {
                 : tier < max ? shop.levels[tier] : shop.levels[max - 1];
             consolePanel.append(el("p", "ac-sub", effect), buyButton(part, tier >= max ? "FULLY FITTED" : part === "shield" ? "CHARGE SHIELD" : `UPGRADE TO TIER ${tier + 1}`));
             const price = spillPrice(sp, part);
-            if (price !== null && price > sp.ore)
-                consolePanel.append(el("p", "ac-depotneed", `Collect ${price - sp.ore} more Ore to fit this upgrade.`));
+            if (!sp.welcome && price !== null && price > sp.ore)
+                consolePanel.append(el("p", "ac-depotneed", `Collect ${price - sp.ore} more Acorn Coins to fit this upgrade.`));
             if (part !== "shield" && tier >= 2) {
                 const specs = el("div", "ac-depotspecs");
                 for (const [id, spec] of Object.entries(SPILL_SPECIALTIES).filter(([, spec]) => spec.axis === part)) {
@@ -1756,7 +1756,7 @@ export async function bootStandalone(root) {
                 const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
                 b.dataset.spillControl = id;
                 b.disabled = arming || (!fitted && (sp.utilities.length >= 2 || (!owned && sp.ore < u.price)));
-                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "FITTED · UNFIT" : owned ? "FIT · OWNED" : `FIT · ${u.price} ORE`));
+                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "FITTED · UNFIT" : owned ? "FIT · OWNED" : `FIT · ${u.price} COINS`));
                 b.onclick = () => { depotUpgradeAt = performance.now(); engine.spillUtility(id); };
                 utilities.append(b);
             }
@@ -1777,7 +1777,7 @@ export async function bootStandalone(root) {
                     const b = el("button", "ac-spilloption");
                     b.disabled = arming;
                     b.dataset.spillControl = `contract-${offer.kind}`;
-                    b.append(el("b", "", `${offer.name} · +${offer.reward} ORE`), el("span", "", offer.desc));
+                    b.append(el("b", "", `${offer.name} · +${offer.reward} COINS`), el("span", "", offer.desc));
                     b.onclick = () => engine.spillContract(offer.kind);
                     consolePanel.append(b);
                 }
@@ -1786,7 +1786,8 @@ export async function bootStandalone(root) {
         sheet.append(workspace);
         const services = el("div", "ac-depotservices");
         services.append(buyButton("repair", sp.hull < sp.maxHull ? "REPAIR HULL" : "HULL RESTORED"), buyButton("core", sp.coreBought ? sp.coreArmed ? "CORE ARMED" : "CORE SPENT" : "RESPAWN CORE"));
-        sheet.append(services);
+        if (!sp.welcome)
+            sheet.append(services);
         if (sp.contractMessage)
             sheet.append(el("p", "ac-gold", sp.contractMessage));
         if (sp.depot?.bought.length)
@@ -1798,8 +1799,8 @@ export async function bootStandalone(root) {
             suspend.onclick = () => engine.spillSuspend();
             footer.append(suspend);
         }
-        const go = el("button", "ac-primary", sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
-        go.disabled = arming;
+        const go = el("button", "ac-primary", sp.welcome ? sp.freeUpgrade ? "CHOOSE AN UPGRADE TO LAUNCH" : "LAUNCH WAVE 1" : sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
+        go.disabled = arming || !!(sp.welcome && sp.freeUpgrade);
         go.onclick = () => engine.spillLeaveDepot();
         footer.append(go);
         sheet.append(footer);
@@ -1944,6 +1945,79 @@ export async function bootStandalone(root) {
      *  with the button's role rather than a nested button, and it swallows
      *  the press so starring never equips. The FAVOURITES shelf it feeds
      *  only exists while at least one star is lit. */
+    const rewardKey = (r) => `${r.kind}:${r.id ?? r.name}`;
+    let pinCatalog;
+    function pinCandidates() { return pinCatalog ?? (pinCatalog = buildPinCandidates()); }
+    function buildPinCandidates() {
+        const rewards = STAR_REWARDS.filter(r => r.kind !== "stage").map(r => ({ ...r, cost: 0 }));
+        for (const [kind, list] of [["suit", SUITS], ["helmet", HELMETS], ["trail", TRAILS], ["pal", PALS]]) {
+            for (const item of list)
+                if (!isIap(item.id) && !rewards.some(r => r.kind === kind && r.id === item.id))
+                    rewards.push({ kind, id: item.id, name: item.name, stars: 0, cost: "cost" in item ? item.cost : 0, desc: "" });
+        }
+        return rewards;
+    }
+    function pinnedKeys() {
+        const raw = engine.save.pinnedRewards;
+        return Array.isArray(raw) ? [...new Set(raw.filter(k => typeof k === "string"))].filter(k => pinCandidates().some(r => rewardKey(r) === k)) : [];
+    }
+    function pinReward(kind, id, name) {
+        const key = rewardKey({ kind, id, name });
+        if (!pinCandidates().some(r => rewardKey(r) === key))
+            return el("span");
+        const on = pinnedKeys().includes(key);
+        const pin = el("span", `ac-rewardpin${on ? " on" : ""}`, on ? "PINNED ✓" : "PIN TO HOME");
+        pin.setAttribute("role", "button");
+        pin.tabIndex = 0;
+        pin.dataset.rewardPin = key;
+        pin.setAttribute("aria-pressed", String(on));
+        pin.setAttribute("aria-label", `${on ? "Unpin" : "Pin"} ${name ?? pinCandidates().find(r => rewardKey(r) === key)?.name} ${on ? "from" : "to"} home`);
+        const flip = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const keys = pinnedKeys();
+            engine.save.pinnedRewards = keys.includes(key) ? keys.filter(k => k !== key) : [...keys, key];
+            writeSave(engine.save);
+            render();
+        };
+        pin.addEventListener("pointerdown", e => e.stopPropagation());
+        pin.addEventListener("click", flip);
+        pin.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ")
+            flip(e); });
+        return pin;
+    }
+    function pinnedHome() {
+        const rail = el("section", "ac-pinnedhome");
+        rail.setAttribute("aria-label", "Pinned rewards");
+        const save = engine.save;
+        for (const key of pinnedKeys()) {
+            const r = pinCandidates().find(r => rewardKey(r) === key);
+            const card = el("div", "ac-pinnedreward");
+            const open = el("button", "ac-pinnedopen");
+            const earned = r.stars > 0 ? starsOf(save) >= r.stars : r.kind === "suit" ? save.unlockedSuits.includes(r.id)
+                : r.kind === "helmet" ? save.unlocked.includes(r.id) : r.kind === "trail" ? trailUnlocked(save, r.id) : palUnlocked(save, r.id);
+            const current = r.stars > 0 ? starsOf(save) : save.acorns, target = r.stars || r.cost;
+            open.append(rewardArtPicture(r, 32), el("b", "", r.name), el("span", "", earned ? "UNLOCKED · VIEW" : `${Math.min(current, target)} / ${target} ${r.stars ? "stars" : "acorns"}`));
+            const meter = el("progress");
+            meter.max = Math.max(1, target);
+            meter.value = earned ? meter.max : Math.min(current, target);
+            meter.setAttribute("aria-label", `${r.name} unlock progress`);
+            open.append(meter);
+            open.onclick = () => {
+                const tab = { suit: "suits", helmet: "helmets", trail: "trails", pal: "pals" }[r.kind];
+                if (tab) {
+                    engine.setShopTab(tab);
+                    engine.open("hangar");
+                }
+                else
+                    engine.open("log");
+            };
+            card.append(open, pinReward(r.kind, r.id, r.name));
+            rail.append(card);
+        }
+        rail.hidden = !rail.childElementCount;
+        return rail;
+    }
     function favStar(id) {
         const on = engine.isFavorite(id);
         const star = el("span", on ? "ac-favbtn on" : "ac-favbtn", on ? "\u2605" : "\u2606");
@@ -2122,7 +2196,7 @@ export async function bootStandalone(root) {
         const previewShip = spillPreviewState(shipPick);
         const helm = helmetWornBy(s.equipped, s.equippedSuit);
         const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
-        const trail = TRAILS.find((t) => t.id === s.equippedTrail) ?? TRAILS[0];
+        const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
         const pal = PALS.find((p) => p.id === s.equippedPal);
         const box = el("div", "ac-menu");
         box.append(BETA_FEATURES
@@ -2231,13 +2305,13 @@ export async function bootStandalone(root) {
                     else {
                         if (palWorn)
                             paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit);
+                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit, vanguardModeOf(s));
                     }
                     requestAnimationFrame(tick);
                 };
                 requestAnimationFrame(tick);
             }
-            if (IS_BETA)
+            if (IS_BETA && wornSuit.id !== "vanguard")
                 box.append(leanTuner(wornSuit, render));
         }
         const tabs = el("div", "ac-cats");
@@ -2301,6 +2375,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!locked && open && (!premium || owned))
                     tx(b, () => engine.buyHelmet(h.id), h.cost); };
+                b.append(pinReward("helmet", h.id, h.name));
                 if (open && (!premium || owned))
                     b.append(favStar(h.id));
                 return b;
@@ -2366,6 +2441,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
                     tx(b, () => engine.buySuit(u.id), u.cost); };
+                b.append(pinReward("suit", u.id, u.name));
                 if (open && (!premium || owned))
                     b.append(favStar(u.id));
                 return b;
@@ -2410,32 +2486,18 @@ export async function bootStandalone(root) {
                     row.append(suitCard(u));
                 }
                 grid.append(row);
-                // ECLIPSE's experiment rides under its own shelf: while Eclipse is
-                // the selected pilot, the section that lists it grows the switch
-                // between its three pose mappings so they can be flown back to back.
-                if (sec.ids.includes("eclipse") && s.equippedSuit === "eclipse") {
-                    const MOTION_MODES = [
-                        ["Motion: Shipped", "Pose maps straight from vertical speed."],
-                        ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
-                        ["Motion: Heading", "Body follows the tangent of the flight arc."],
-                    ];
-                    const mode = ((s.eclipseMotionMode ?? 2) % 3 + 3) % 3;
-                    const alt = el("button", "ac-card ac-modcard on");
-                    const txt = el("div", "ac-modtxt");
-                    txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]), el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
-                    const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
-                    sw.append(el("i", "ac-knob"));
-                    alt.append(txt, sw);
-                    alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
-                    grid.append(alt);
-                }
             }
+            if (IS_BETA && s.equippedSuit === "vanguard")
+                grid.append(vanguardMotionPicker());
         }
         else if (engine.shopTab === "trails") {
+            if (s.equippedSuit === "vanguard")
+                grid.append(el("p", "ac-sub", "Vanguard carries its own wake. Your previous trail returns when you change suits."));
             const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);
-                const b = el("button", s.equippedTrail === t.id ? "ac-card on" : "ac-card");
+                const compatible = canWearTrail(t.id, s.equippedSuit);
+                const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
                 const { c, ctx } = miniCanvas(64, 56);
                 c.setAttribute("role", "img");
                 c.setAttribute("aria-label", `${t.name} trail preview`);
@@ -2449,10 +2511,14 @@ export async function bootStandalone(root) {
                         : `\u2605 ${STAR_UNLOCKS.trails[t.id]}`}`));
                 if (premium)
                     markPremium(b, t.colors[0]);
-                if (!open)
+                if (!open || !compatible)
                     b.classList.add("ac-cardoff");
-                b.onclick = () => { if (open)
+                b.disabled = !compatible;
+                if (!compatible)
+                    b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "Vanguard only" : "Change suit to wear"));
+                b.onclick = () => { if (open && compatible)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
+                b.append(pinReward("trail", t.id, t.name));
                 if (open)
                     b.append(favStar(t.id));
                 return b;
@@ -2488,8 +2554,11 @@ export async function bootStandalone(root) {
             fx.append(ftxt, fsw);
             fx.onclick = () => engine.setMod("noPalFx");
             grid.append(fx);
-            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id)))
-                grid.append(palCardOf(p));
+            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) {
+                const card = palCardOf(p);
+                card.append(pinReward("pal", p.id, p.name));
+                grid.append(card);
+            }
         }
         else if (engine.shopTab === "ship") {
             grid.classList.add("ac-shelfcol", "ac-shipworkshop");
@@ -2513,7 +2582,7 @@ export async function bootStandalone(root) {
             }
             const mastery = spillMastery(s.spillBest);
             const launch = el("section", "ac-shiplaunch");
-            launch.append(el("p", "ac-kicker", "NEXT ENDLESS RUN"), el("h3", "", mastery.current.title), el("p", "ac-sub", "Launch with a stock hull and one earned utility. Build the rest with Ore at the Depot. Star Map missions use their standard ship."));
+            launch.append(el("p", "ac-kicker", "NEXT ENDLESS RUN"), el("h3", "", mastery.current.title), el("p", "ac-sub", "Land with a stock hull, choose one free system upgrade, and bring one earned utility on endless runs. Acorn Coins fund later upgrades; they are separate from your permanent acorns."));
             const starters = el("div", "ac-spilloptions");
             const stock = el("button", `ac-spilloption${!s.spillStarter ? " selected" : ""}`, "Stock ship · no utility");
             stock.dataset.shipStarter = "stock";
@@ -2550,7 +2619,7 @@ export async function bootStandalone(root) {
                 inspect.onclick = () => { shipPlan = spillBuildFromState(docked); render(); };
                 actions.append(inspect);
             }
-            plan.append(actions, el("p", "ac-shipreadout", `${previewShip.maxHull} HULL · ${previewShip.up.thrusters >= 2 ? 2 : 1} LUNGE CHARGE${previewShip.up.thrusters >= 2 ? "S" : ""} · ${previewShip.utilities.length}/2 UTILITIES`), el("p", "ac-sub", `Build from stock: ${spillBuildOre(shipPick, s.spillStarter)} Ore · tier costs include preceding upgrades`));
+            plan.append(actions, el("p", "ac-shipreadout", `${previewShip.maxHull} HULL · ${previewShip.up.thrusters >= 2 ? 2 : 1} LUNGE CHARGE${previewShip.up.thrusters >= 2 ? "S" : ""} · ${previewShip.utilities.length}/2 UTILITIES`), el("p", "ac-sub", `Build from stock: ${spillBuildOre(shipPick, s.spillStarter)} Acorn Coins · tier costs include preceding upgrades`));
             grid.append(plan);
             for (const axis of ["plating", "thrusters", "pulse", "shield"]) {
                 const shop = SPILL_SHOP[axis], isShield = axis === "shield";
@@ -2575,7 +2644,7 @@ export async function bootStandalone(root) {
                         : isShield ? "A charge absorbs a hit. The fitted canopy remains after use." : shop.levels[tier - 1];
                     txt.append(el("p", "ac-shiptier", tier ? `TIER ${tier}` : "BASELINE"), el("p", "ac-modname", name), el("p", "ac-sub", effect));
                     const price = !tier ? 0 : isShield ? shop.prices[0] * tier : shop.prices[tier - 1];
-                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} ORE FOR ${tier}` : `${price} ORE · STEP ${tier}`));
+                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} COINS FOR ${tier}` : `${price} COINS · STEP ${tier}`));
                     b.onclick = () => { shipPlan = pick; render(); };
                     row.append(b);
                 }
@@ -2601,11 +2670,11 @@ export async function bootStandalone(root) {
                 const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
                 b.dataset.shipUtility = id;
                 b.disabled = !fitted && previewShip.utilities.length >= 2;
-                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} ORE AT DEPOT`));
+                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} COINS AT DEPOT`));
                 b.onclick = () => { shipPlan = { ...shipPick, utilities: fitted ? previewShip.utilities.filter(x => x !== id) : [...previewShip.utilities, id] }; render(); };
                 modules.append(b);
             }
-            grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Full repair 30 Ore · Respawn Core 150 Ore, one extra life per run."));
+            grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Full repair 30 Acorn Coins · Respawn Core 150 Acorn Coins, one extra life per run."));
         }
         scroll.append(grid);
         // Premium left these shelves, so something has to say where it went -
@@ -2925,6 +2994,11 @@ export async function bootStandalone(root) {
      *  the call site and painted nothing here. The parameter now admits what
      *  it is actually given. */
     function rewardArt(item, px = 52) {
+        const wrap = el("div", "ac-rewardwithpin");
+        wrap.append(rewardArtPicture(item, px), pinReward(item.kind, item.id, item.name));
+        return wrap;
+    }
+    function rewardArtPicture(item, px = 52) {
         if (item.kind === "suit" && item.id) {
             const suit = SUITS.find((u) => u.id === item.id);
             if (suit)
@@ -3074,11 +3148,11 @@ export async function bootStandalone(root) {
         // apart just enough that neighbours never overlap. The rail scrolls
         // with the road, so climbing the map walks the reward ladder too.
         const miles = [
-            ...STAR_REWARDS.filter((r) => r.kind !== "stage").map(r => ({ ...r, planned: false })),
+            ...STAR_REWARDS.filter((r) => r.kind !== "stage" && r.stars <= levels.length * 3).map(r => ({ ...r, planned: false })),
             ...(STAR_MAP_PREVIEW ? PLANNED_STAR_REWARDS.map(r => ({ ...r, planned: true })) : []),
         ]
             .sort((a, b) => a.stars - b.stars);
-        const gap = 88;
+        const gap = 112;
         let prevY = H + gap;
         const mileY = miles.map((r) => {
             const li = Math.min(levels.length - 1, Math.max(0, Math.ceil(r.stars / 3) - 1));
@@ -3884,7 +3958,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, CASE_W, CASE_H);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
-                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t);
+                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, vanguardModeOf(engine.save));
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -4474,7 +4548,7 @@ export async function bootStandalone(root) {
             const g = got.find((x) => `${x.kind}:${x.id}` === revealPick);
             const worn = kind === "suit" ? s.equippedSuit === itemId
                 : kind === "helm" ? s.equipped === itemId
-                    : kind === "trail" ? s.equippedTrail === itemId
+                    : kind === "trail" ? trailWornBy(s.equippedTrail, s.equippedSuit) === itemId
                         : s.equippedPal === itemId;
             const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
             if (worn) {
@@ -4709,7 +4783,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, 300, 190);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
-                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t);
+                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, vanguardModeOf(engine.save));
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -5160,7 +5234,7 @@ export async function bootStandalone(root) {
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
-        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "ORE", "The Spill's currency. Spend it at the Depot.");
+        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "COINS", "The Spill's currency. Spend it at the Depot.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
