@@ -83,7 +83,7 @@ Design notes for the rig editor: `illustrated-src/lab/README.md`.
 - `illustrated-src/OPEN_ISSUES.md` — what is known broken, what was fixed and
   why, and the check that catches each class of fault.
 - `PARITY.md` — what is matched against the original canvas game.
-- `ROADMAP.md` — the Star Chart campaign: the published route and isolated expansion sample, generated from
+- `ROADMAP.md` — the Star Chart campaign: the production and full beta routes, generated from
   `campaign.ts` so it cannot drift. The approved 260-entry manifest is in
   `illustrated-src/design/star-map-260.json`.
 
@@ -92,12 +92,14 @@ Design notes for the rig editor: `illustrated-src/lab/README.md`.
 Proprietary — **all rights reserved**. The code, art, characters and name
 are not licensed for reuse or redistribution. See [LICENSE](LICENSE).
 
-## Star Map expansion sample
+## Full beta Star Map
 
-The beta Star Chart has an **Explore the Star Map sample** link. It opens
-`?star-map=sample` with an isolated save: 30 playable missions across Deep
-Space (1–10), Rust Belt (101–110) and Blackout Zone (241–250), along a draft
-260-position road. The published campaign remains 100 missions / 300 stars
-until final activation is accepted. Original levels now use their zone’s
-background and planet family on the continuous map. See
-`illustrated-src/design/STAR_MAP_SAMPLE.md` for migration and review steps.
+Beta's Star Chart loads **260 missions / 780 stars**, all unlocked for testing.
+No proposal tab or sample URL is needed. The original 100-mission production
+campaign stays unchanged. Each zone mixes flight challenges, Lost in Space,
+Deep Space shifts, Arcade and Spill. Level 258 is the first beta Spill mission
+requiring wave 20. Switchback is a new beta pal for tap-reversal experiments.
+
+See `illustrated-src/design/BETA_260.md` for the current first-pass design,
+playtest suggestions and migration mapping. `ROADMAP.md` lists both routes
+from their actual definitions. Future rewards remain labeled concepts.

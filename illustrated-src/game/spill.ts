@@ -435,6 +435,7 @@ export type SpillState = {
   tiltT: number;
   depot: SpillDepot | null;
   depotVisits: number;
+  repairs: number;
   /** where a Respawn Core puts the ship back: the phase and its clock at
    *  the moment of the last hit */
   respawnReturn: SpillPhase;
@@ -534,7 +535,7 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     tiltTarget: 0,
     tiltT: 0,
     depot: null,
-    depotVisits: 0,
+    depotVisits: 0, repairs: 0,
     respawnReturn: "wave",
     respawnPhaseT: 0,
     banner: "",
@@ -1146,6 +1147,7 @@ export function spillBuy(s: SpillState, what: SpillBuyable): "ok" | "poor" | "ma
       s.shieldFlash = 0.6;
       break;
     case "repair":
+      s.repairs = (s.repairs ?? 0) + 1;
       s.hull = s.maxHull;
       break;
     case "core":

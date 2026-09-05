@@ -326,7 +326,7 @@ export function createSpill(W, H, seed, target = 0, hints = true) {
         tiltTarget: 0,
         tiltT: 0,
         depot: null,
-        depotVisits: 0,
+        depotVisits: 0, repairs: 0,
         respawnReturn: "wave",
         respawnPhaseT: 0,
         banner: "",
@@ -966,6 +966,7 @@ export function spillBuy(s, what) {
             s.shieldFlash = 0.6;
             break;
         case "repair":
+            s.repairs = (s.repairs ?? 0) + 1;
             s.hull = s.maxHull;
             break;
         case "core":

@@ -1,5 +1,8 @@
 # Star Map expansion: first review sample
 
+Historical review notes. The [full beta playtest](BETA_260.md) now supersedes the separate sample page and its access limit.
+
+
 This branch implements the approved first step: align the original road with
 its zone artwork, establish the 260-mission manifest, and make a bounded
 30-mission sample playable. It is based on main

@@ -47,17 +47,20 @@ art.spillShipFit=JSON.parse(readFileSync(join(root,'docs/art/spill-ship/transfor
 for(const env of reviewEnvs)V.zonePainting(env);
 await Promise.all(pending);
 for(const env of reviewEnvs)assert(V.zonePainting(env),'painted zone must load');
+for(const id of ['buddy','voidjelly','pocketmoon','cometsprite','nightglider','switchback'])art.pals[id]=await sprite(`solo/${id}`);
 const save=S.defaultSave();save.tutorialDone=true;save.guide='done';
 const sheet=createCanvas(reviewOrders.length*390,810),g=sheet.getContext('2d');
 for(const [i,ord] of reviewOrders.entries()){
   const def=C.ALL_LEVELS[ord-1],w=Sim.makeWorld(390,760),c=createCanvas(390,760),ctx=c.getContext('2d');
   Sim.resetRun(w,save,def.base,false,def);w.ready=false;
   for(let f=0;f<45;f++){if(w.squirrel.y>w.H*.45&&w.squirrel.vy>0)Sim.flap(w,save);Sim.updateWorld(w,save,1/60);}
+  const rotations=[];const rotate=ctx.rotate.bind(ctx);ctx.rotate=a=>{rotations.push(a);rotate(a);};
   const drawn=[];const original=ctx.drawImage.bind(ctx);
   ctx.drawImage=(image,...args)=>{if(image.sourceFile)drawn.push(image.sourceFile);return original(image,...args);};
   D.drawWorld(ctx,w,save,art);await Promise.all(pending);
   D.drawWorld(ctx,w,save,art);D.drawHud(ctx,w,art);
-  assert(drawn.some(path=>path.includes(`zone-scenes/${def.zoneId}.png`)), `Missing remaster in actual painter: ${JSON.stringify(drawn)}`);
+  if (V.hasZoneRemaster(def.fx.env) && def.base !== 'arcade' && def.base !== 'spill') assert(drawn.some(path=>path.includes(`zone-scenes/${def.zoneId}.png`)), `Missing remaster in actual painter: ${JSON.stringify(drawn)}`);
+  if(def.fx.upsideDown)assert(rotations.some(a=>a===Math.PI));
   g.drawImage(c,i*390,40);g.fillStyle='#090e1b';g.fillRect(i*390,0,390,40);g.fillStyle='#e9d2a4';g.font='17px sans-serif';g.fillText(`${def.zoneId} · level ${ord}`,i*390+16,27);
   writeFileSync(join(output,`${def.zoneId}-flight.png`),c.toBuffer('image/png'));
 }
@@ -69,7 +72,7 @@ for(const [W,H] of [[320,760],[1280,720]])for(const ord of reviewOrders){
   for(let f=0;f<45;f++){if(w.squirrel.y>w.H*.45&&w.squirrel.vy>0)Sim.flap(w,save);Sim.updateWorld(w,save,1/60);}
   let painted=false;const original=ctx.drawImage.bind(ctx);
   ctx.drawImage=(image,...args)=>{painted ||= !!image.sourceFile?.includes(`zone-scenes/${def.zoneId}.png`);return original(image,...args);};
-  D.drawWorld(ctx,w,save,art);D.drawHud(ctx,w,art);assert(painted);
+  D.drawWorld(ctx,w,save,art);D.drawHud(ctx,w,art);if(V.hasZoneRemaster(def.fx.env) && def.base !== 'arcade' && def.base !== 'spill')assert(painted);
   writeFileSync(join(output,`${def.zoneId}-flight-${W}.png`),c.toBuffer('image/png'));
 }
 const looks=createCanvas(1000,560),lg=looks.getContext('2d');lg.fillStyle='#0b1323';lg.fillRect(0,0,1000,560);

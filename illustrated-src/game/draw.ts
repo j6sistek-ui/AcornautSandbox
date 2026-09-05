@@ -1,3 +1,4 @@
+import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
@@ -60,6 +61,7 @@ function frameOf<T>(list: T[], t: number, speed = 6) {
 }
 
 function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
+  if (w.lvl?.def.fx.upsideDown) { ctx.translate(w.W,w.H); ctx.rotate(Math.PI); }
   const lost = w.flight === "lost";
   const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return;
@@ -2302,7 +2304,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   if (s.contract) hudLine(spillContractProgress(s), "#cdb3ff");
   // a mission's three objectives ride the top of the run, live
   if (w.lvl && w.lvl.def.base === "spill") {
-    const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
+    const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits, depots: s.depotVisits, repairs: s.repairs ?? 0 };
     const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl!.def));
     ctx.font = "800 9.5px Figtree, system-ui";
     const padX = 7, gapX = 6, ph = 17, py = hudY - 10;
@@ -2591,7 +2593,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   const pal =
     w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
       ? "buddy"
-      : save.equippedPal;
+      : runPal(save, w);
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
     paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2873,7 +2875,7 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
     ctx.fillStyle = frost;
     ctx.fillRect(0, 0, W, H);
   }
-  const pal = save.equippedPal;
+  const pal = runPal(save, w);
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
     paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2936,7 +2938,7 @@ function drawRetroWorld(
   const pal =
     w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
       ? "buddy"
-      : save.equippedPal;
+      : runPal(save, w);
   if (pal && pal !== "none") {
     const bob = Math.sin(w.time * 2.6) * 2;
     // live draws its pals at unit SCALE, not at a pixel size
@@ -5362,6 +5364,13 @@ if (w.lvl) {
   if (w.invulnLeft > 0) hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
   if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
     hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
+  const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
+    : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+    : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
+  if (experiment && !w.ready) {
+    ctx.save(); ctx.font="bold 12px sans-serif"; ctx.textAlign="center";
+    ctx.fillStyle="#e9d2a4"; ctx.fillText(experiment,W/2,w.H*.18); ctx.restore();
+  }
   if (w.recoveryMsg) {
     ctx.textAlign = "center";
     ctx.fillStyle = "#fff";

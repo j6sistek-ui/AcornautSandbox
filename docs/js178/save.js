@@ -1,4 +1,4 @@
-import { migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=178";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=178";
 import { CHART_LEVELS } from "./campaign.js?v=178";
 import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=178";
 import { restoreSpill } from "./spill.js?v=178";
@@ -230,6 +230,19 @@ export function loadSave() {
         catch { /* writeSave will still surface a real persistence failure */ }
     }
     migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+    if (IS_BETA && !s.betaSampleCreditImported) {
+        try {
+            const raw = localStorage.getItem("acornaut_star_map_sample_v1");
+            const archived = raw ? JSON.parse(raw) : null;
+            if (archived && typeof archived === "object" && (archived.stars || archived.campaignProgress?.version === 1)) {
+                if (parsed && !localStorage.getItem(SAVE_KEY + ":before-beta-260"))
+                    localStorage.setItem(SAVE_KEY + ":before-beta-260", JSON.stringify(parsed));
+                importSampleCredit(s, { ...defaultSave(), ...archived });
+            }
+            s.betaSampleCreditImported = true;
+        }
+        catch { /* Preserve both source slots if storage is unavailable. */ }
+    }
     return s;
 }
 /** The one place a pilot name is made safe. Control characters and line

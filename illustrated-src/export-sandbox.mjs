@@ -21,6 +21,8 @@ mkdirSync(join(pages, "art/zone-scenes"), { recursive: true });
 for (const id of ["deep-space", "rust-belt", "blackout-zone", "crystal-belt", "hypervivid", "neon-bazaar", "prism-storm", "event-horizon"]) {
   cpSync(join(root, `art-src/zone-scenes/${id}.png`), join(pages, `art/zone-scenes/${id}.png`));
 }
+mkdirSync(join(pages, "art/solo"), { recursive: true });
+cpSync(join(root, "art-src/pals/switchback.png"), join(pages, "art/solo/switchback.png"));
 const catalog = readFileSync(join(root, "illustrated-src/game/catalog.ts"), "utf8");
 const ver = (catalog.match(/ART_VER = "([^"]+)"/) || [])[1] || "0";
 
