@@ -3800,9 +3800,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  if (save.equippedSuit === "vanguard" && !w.ready && !w.tut?.hold && !w.spill) {
+  if (save.equippedSuit === "vanguard" && !w.tut?.hold && !w.spill) {
     w.vanguard.mode = vanguardModeOf(save);
-    stepVanguard(w.vanguard, dt, w.squirrel.vy);
+    stepVanguard(w.vanguard, dt, w.ready ? 0 : w.squirrel.vy);
   }
 
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
