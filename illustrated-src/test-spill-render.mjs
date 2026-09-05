@@ -9,7 +9,16 @@ const bank=Art.emptyArt();bank.ready=true;for(const id of Art.SPILL_SHIP_IDS)ban
 const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';
 const sheet=createCanvas(1200,4*170),g=sheet.getContext('2d');g.fillStyle='#090e21';g.fillRect(0,0,1200,680);let errors=[];let count=0;
 for(let p=0;p<4;p++)for(let t=0;t<4;t++)for(let u=0;u<4;u++)for(let c=0;c<3;c++){const cv=createCanvas(256,130);try{Draw.paintShipPreview(cv.getContext('2d'),bank,save,120,65,2.8,0,{plating:p,thrusters:t,pulse:u,shield:c});count++;}catch(e){errors.push(String(e));}}
-for(let p=0;p<4;p++)for(let c=0;c<3;c++){const x=c*400+200,y=p*170+100;Draw.paintShipPreview(g,bank,save,x,y,4,0,{plating:p,thrusters:p,pulse:p,shield:c});g.fillStyle='#fff';g.font='16px sans-serif';g.fillText(`Tier ${p} · canopy ${c}`,x-75,y-70);}
+for(let p=0;p<4;p++)for(let c=0;c<3;c++){const x=c*400+200,y=p*170+100;Draw.paintShipPreview(g,bank,save,x,y,4,0,{plating:p,thrusters:p,pulse:p,shield:c,utilities:p?['magnet','scanner']:[],specialties:p>=2?{plating:'brace',thrusters:'precision',pulse:'efficient'}:{}});g.fillStyle='#fff';g.font='16px sans-serif';g.fillText(`Tier ${p} · canopy ${c}`,x-75,y-70);}
 writeFileSync(join(output,'spill-ships-qa.png'),sheet.toBuffer('image/png'));
 for(const width of [320,390,1280]){const canvas=createCanvas(width,760),ctx=canvas.getContext('2d'),world=Sim.makeWorld(width,760);Sim.resetRun(world,save,'spill',false);const s=world.spill;s.phase='wave';world.ready=false;s.up={plating:3,thrusters:3,pulse:3};s.hull=s.maxHull=6;s.shield=s.canopyLevel=2;s.utilities=['magnet','scanner'];s.ownedUtilities=s.utilities.slice();s.wave=20;s.phaseT=5;s.waveT=5;s.event='rig';s.eventWarn=1.6;s.eventSafeY=430;s.charge=2;s.echoReady=true;s.contract={kind:'clean',startWave:16,endWave:20,target:0,reward:50,startOre:0,startHits:0,startShards:0};s.banner='RIG BREAKUP · SWEEP 2';s.bannerT=1;Draw.drawWorld(ctx,world,save,bank);Draw.drawHud(ctx,world,bank);writeFileSync(join(output,`spill-flight-${width}.png`),canvas.toBuffer('image/png'));}
-assert.equal(count,192);assert.deepEqual(errors,[]);console.log(JSON.stringify({configurations:count,errors,output}));
+const arrival=createCanvas(5*390,760),arrivalCtx=arrival.getContext('2d');
+for(const [index,time] of [0,.8,2.4,3.8,4.8].entries()){
+ const canvas=createCanvas(390,760),ctx=canvas.getContext('2d'),world=Sim.makeWorld(390,760);Sim.resetRun(world,save,'spill',false);
+ const s=world.spill;s.wave=s.cleared=5;s.phase='docking';s.hints=false;s.hintT=0;world.ready=false;
+ for(let t=0;t<time;t+=1/60)S.stepSpill(s,Math.min(1/60,time-t));
+ world.time=time;world.squirrel.y=s.pilot.y;Draw.drawWorld(ctx,world,save,bank);Draw.drawHud(ctx,world,bank);
+ arrivalCtx.drawImage(canvas,index*390,0);arrivalCtx.fillStyle='#fff';arrivalCtx.font='16px sans-serif';arrivalCtx.fillText(`${time}s`,index*390+14,740);
+}
+writeFileSync(join(output,'spill-arrival-qa.png'),arrival.toBuffer('image/png'));
+assert.equal(count,192);assert.deepEqual(errors,[]);console.log(JSON.stringify({configurations:count,arrivalFrames:5,errors,output}));

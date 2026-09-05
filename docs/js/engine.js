@@ -1,16 +1,16 @@
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=174";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=174";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=174";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=174";
-import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=174";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=174";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=174";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=174";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=174";
-import { raceViewport } from "./race-viewport.js?v=174";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=174";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=174";
-import { bankSpill } from "./save.js?v=174";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=175";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=175";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=175";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=175";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=175";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=175";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=175";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=175";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=175";
+import { raceViewport } from "./race-viewport.js?v=175";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=175";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=175";
+import { bankSpill } from "./save.js?v=175";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -467,22 +467,28 @@ export async function createEngine(canvas) {
             return true;
         },
         spillStarter(id) {
-            if (!world.spill || world.spill.phase !== "ready" || world.spill.target)
+            const preparing = world.screen === "play" && world.spill?.phase === "ready" && !world.spill.target;
+            if (world.screen !== "hangar" && !preparing)
                 return;
             if (id && (!SPILL_UTILITIES[id] || save.spillBest < SPILL_UTILITIES[id].unlock))
                 return;
             save.spillStarter = id;
-            world.spill.utilities = id ? [id] : [];
-            world.spill.ownedUtilities = id ? [id] : [];
+            if (preparing) {
+                world.spill.utilities = id ? [id] : [];
+                world.spill.ownedUtilities = id ? [id] : [];
+            }
             writeSave(save);
             notify();
         },
         spillSignal(on) {
-            if (!world.spill || !["ready", "depot"].includes(world.spill.phase) || save.spillBest < 5)
+            const fitting = world.screen === "play" && world.spill && ["ready", "depot"].includes(world.spill.phase);
+            if ((world.screen !== "hangar" && !fitting) || save.spillBest < 5)
                 return;
             save.spillSignal = on;
-            world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff";
-            checkpointSpill();
+            if (fitting) {
+                world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff";
+                checkpointSpill();
+            }
             writeSave(save);
             notify();
         },
@@ -1437,4 +1443,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=174";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=175";

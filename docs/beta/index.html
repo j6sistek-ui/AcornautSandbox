@@ -1043,7 +1043,7 @@
     .ac-spillbar .ac-lunge.spent { opacity: .45; }
     .ac-spillbar .ac-pulse.ready { color: #06121e; background: linear-gradient(180deg, #9fe6ff, #6fb8ff);
       border-color: #cfefff; box-shadow: 0 0 22px rgba(120,200,255,.55); }
-    /* the Depot: three shelves, the Ore balance, and the way on */
+    /* The Depot's scroll container, balance and input arming. */
     .ac-depotcard { gap: 8px; max-height: 94vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
       width: min(720px, 100%); margin-inline: auto; overscroll-behavior: contain; }
     .ac-depotcard > * { flex: none; }
@@ -1393,7 +1393,7 @@
       font: 800 9.5px/1 Figtree, sans-serif; letter-spacing: .12em; }
     /* PALS: the effects switch spans the two-wide pal grid */
     .ac-palfx { grid-column: 1 / -1; }
-    /* SHIP: the tab under construction - cards you can try, nothing you can buy */
+    /* Ships: visual build preview cards. Launch equipment lives above them. */
     .ac-shipnote { margin: 4px 12px 8px; padding: 9px 12px; border-radius: 12px;
       border: 1px dashed rgba(255,215,106,.45); background: rgba(255,215,106,.06);
       color: #ffd76a; font: 800 9.5px/1.4 Figtree, sans-serif; letter-spacing: .12em; text-align: center; }
@@ -1666,6 +1666,82 @@
       .ac-hangarcase .ac-casecanvas { width: 236px !important; height: 162px !important; }
       .ac-hangarcase .ac-caseplate b { font-size: 14px; }
     }
+
+    /* The Spill workshop: the ship and its hardpoints own the bay. */
+    body .ac-depotwrap { background: linear-gradient(180deg,rgba(3,6,18,.06),rgba(3,6,18,.38)); }
+    body .ac-depotwrap .ac-depotcard { width: min(940px,100%); max-height: 92%; gap: 10px; padding: 16px 14px 0;
+      background: linear-gradient(145deg,rgba(18,22,43,.94),rgba(13,12,30,.95)); border: 1px solid #b4a0d855;
+      border-bottom: 0; box-shadow: 0 -16px 80px #03061766; }
+    .ac-depothead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .ac-depothead .ac-lvlname { font: 700 26px/1.1 Fraunces,serif; margin: 4px 0 0; }
+    .ac-depothead .ac-kicker { margin: 0; font-size: 9px; color: #bbabc9; }
+    .ac-depotore { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; color: #e6c389; }
+    .ac-depotore b { color: #ffe3a6; }
+    .ac-depotstatus { display: flex; justify-content: space-between; gap: 6px; font: 800 10px/1.4 Figtree,sans-serif; color: #a5d8cf; }
+    .ac-depottabs { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 5px; }
+    .ac-depottabs button { min-height: 42px; border: 1px solid #b6a3d42e; border-radius: 9px; background: #0c1127; color: #a8b5d0;
+      font: 800 10px Figtree,sans-serif; letter-spacing: .04em; cursor: pointer; }
+    .ac-depottabs button.on { background: #282442; color: #ffe4ad; border-color: #d7b77c88; box-shadow: inset 0 -2px #d7b77c; }
+    .ac-depotworkspace { display: grid; grid-template-columns: minmax(0,1fr); gap: 12px; }
+    .ac-depotbay { min-width: 0; }
+    .ac-depotship { position: relative; width: min(430px,100%); margin: auto; isolation: isolate;
+      background: radial-gradient(ellipse at 53% 55%,#47759145,transparent 65%); }
+    .ac-depotship:before { content: ''; position: absolute; inset: 25% 18%; border: 1px solid #78cfde25; border-radius: 50%; transform: rotate(-14deg); pointer-events: none; }
+    .ac-depotship:after { content: ''; position: absolute; inset: 68% 17% 16%; border: 1px solid #dab87a44; border-radius: 50%;
+      background: radial-gradient(ellipse,#899fa329,transparent 70%); box-shadow: 0 8px 0 #14192b,0 9px 0 #dab87a22; z-index: -1; pointer-events: none; }
+    .ac-depotship canvas { display: block; width: 100%!important; height: auto!important; position: relative; z-index: 1; }
+    .ac-depotlinks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    .ac-depotlinks path { fill: none; stroke: #6b819c77; stroke-width: 1; }
+    .ac-depotlinks path.on { stroke: #f5ce86; stroke-width: 1.5; }
+    .ac-hardpoint { position: absolute; width: 92px; min-height: 45px; border: 1px solid #7c94b266; border-radius: 9px;
+      background: #111b2e; color: #bacbdd; z-index: 3; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; }
+    .ac-hardpoint b { font: 800 11px Figtree,sans-serif; }
+    .ac-hardpoint.plating { top: 2%; left: 0; --system-color: #e8b29c; } .ac-hardpoint.shield { top: 2%; right: 0; --system-color: #87d9f2; }
+    .ac-hardpoint.thrusters { bottom: 2%; left: 0; --system-color: #f2cc82; } .ac-hardpoint.pulse { bottom: 2%; right: 0; --system-color: #c6acff; }
+    .ac-hardpoint.on { color: var(--system-color); border-color: var(--system-color); background: #30283a; box-shadow: 0 0 18px #d5a76022; }
+    .ac-hardpointreading { display: flex; align-items: center; gap: 7px; font: 800 9px Figtree,sans-serif; color: var(--system-color); }
+    .ac-hardpointmeter { display: flex; gap: 4px; } .ac-hardpointmeter i { width: 14px; height: 4px; border-radius: 3px; background: #ffffff1c; }
+    .ac-hardpointmeter i.on { background: var(--system-color); box-shadow: 0 0 8px #8ee6c044; }
+    .ac-depotslots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ac-depotslots button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 6px; border: 1px dashed #7f91aa66; border-radius: 8px; background: #0b1123; color: #95a7bd; font: 700 10px Figtree,sans-serif; cursor: pointer; }
+    .ac-depotslots button.fitted { border-style: solid; color: #ade8d5; border-color: #78bba388; }
+    .ac-depotconsole { padding: 14px; display: flex; flex-direction: column; gap: 9px; min-width: 0;
+      background: linear-gradient(135deg,#28304799,#101626cc); border: 1px solid #9fafd033; border-radius: 14px; }
+    .ac-depotconsole h3, .ac-shipworkshop h3 { font: 700 22px/1.1 Fraunces,serif; margin: 0; color: #f9e7c8; }
+    .ac-depotconsole p { margin: 0; } .ac-depotconsole .ac-kicker { font-size: 9px; color: #dabd87; }
+    .ac-depotbuy { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 45px; padding: 11px;
+      border: 1px solid #d8ba79aa; border-radius: 9px; background: linear-gradient(110deg,#dcbf88,#b7d4c7); color: #142134;
+      font: 800 11px/1.3 Figtree,sans-serif; cursor: pointer; }
+    .ac-depotbuy span { white-space: nowrap; } .ac-depotbuy:disabled { background: #1d2738; border-color: #70819855; color: #91a0b8; cursor: default; }
+    .ac-depotspecs { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .ac-depotspecs .ac-spilloption { padding: 9px; font-size: 11px; } .ac-depotspecs .ac-spilloption b { font-size: 11px; }
+    .ac-depotservices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ac-depotservices .ac-depotbuy { font-size: 10px; background: #20273a; color: #d3ddec; border-color: #7887a144; }
+    .ac-depotservices .ac-depotbuy:disabled { opacity: .5; }
+    .ac-depotfooter { flex-direction: row; align-items: stretch; padding-top: 10px; background: #111528; gap: 8px; }
+    .ac-depotfooter > .ac-primary { flex: 1; width: auto; font-size: 12px; }
+    .ac-depotfooter > .ac-ghost { flex: 0 0 auto; min-height: 48px; font-size: 10px; padding: 10px; }
+    .ac-moduleglyph { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; font: 700 24px sans-serif; font-style: normal;
+      color: #ace9dd; background: linear-gradient(140deg,#407b7844,#7363a444); border: 1px solid #83dbbc44; }
+    svg.ac-moduleglyph { padding: 6px; flex: 0 0 auto; box-sizing: content-box; }
+    .ac-moduleglyph polyline { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .ac-depotslots svg.ac-moduleglyph { width: 19px; height: 19px; padding: 3px; border-radius: 6px; }
+    .ac-depotenter .ac-depotcard { animation: ac-bay-arrival .65s ease-out both; }
+    @keyframes ac-bay-arrival { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .ac-shipworkshop { gap: 12px; }
+    .ac-shiplaunch, .ac-shipplanhead { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid #8194b438; border-radius: 14px; background: #131c30; }
+    .ac-shiplaunch p, .ac-shipplanhead p { margin: 0; }
+    .ac-shipactions { display: flex; flex-wrap: wrap; gap: 7px; } .ac-shipactions button { min-height: 44px; font-size: 10px; padding: 9px; }
+    .ac-shipsignal { min-height: 44px; font-size: 12px; } .ac-shipsignal.on { color: #ffe09b; border-color: #dcb987; }
+    .ac-shipreadout { color: #a9e5cd; font: 800 10px/1.5 Figtree,sans-serif; }
+    .ac-shipworkshop .ac-shelfrow { display: flex; overflow-x: auto; }
+    .ac-shipworkshop .ac-shelfrow > .ac-shipcard { flex: 0 0 174px; min-width: 174px; }
+    .ac-shipcard canvas { max-width: 100%; height: auto!important; border-radius: 8px; background: radial-gradient(ellipse,#38536c55,transparent); }
+    .ac-shipspecs { margin-bottom: 8px; }
+    @media(min-width:720px) { .ac-depotworkspace { grid-template-columns: minmax(300px,1.1fr) minmax(280px,1fr); align-items: start; }
+      .ac-depotbay { position: sticky; top: 0; } .ac-depotwrap .ac-depotcard { padding-inline: 22px; } }
+    @media(max-height:570px) { body .ac-depotwrap .ac-depotcard { max-height: 98%; } }
+    @media(prefers-reduced-motion:reduce) { .ac-depotenter .ac-depotcard { animation: none; } }
   </style>
 </head>
 <body>
@@ -1693,7 +1769,7 @@
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js174/standalone.js")
+    import("../js175/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

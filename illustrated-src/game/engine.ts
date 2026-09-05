@@ -565,15 +565,19 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       resetInputTracking(); raceAccumulator = 0; last = performance.now(); notify(); return true;
     },
     spillStarter(id) {
-      if (!world.spill || world.spill.phase !== "ready" || world.spill.target) return;
+      const preparing = world.screen === "play" && world.spill?.phase === "ready" && !world.spill.target;
+      if (world.screen !== "hangar" && !preparing) return;
       if (id && (!SPILL_UTILITIES[id] || save.spillBest < SPILL_UTILITIES[id].unlock)) return;
-      save.spillStarter = id; world.spill.utilities = id ? [id] : []; world.spill.ownedUtilities = id ? [id] : [];
+      save.spillStarter = id;
+      if (preparing) { world.spill.utilities = id ? [id] : []; world.spill.ownedUtilities = id ? [id] : []; }
       writeSave(save); notify();
     },
     spillSignal(on) {
-      if (!world.spill || !["ready", "depot"].includes(world.spill.phase) || save.spillBest < 5) return;
-      save.spillSignal = on; world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff";
-      checkpointSpill(); writeSave(save); notify();
+      const fitting = world.screen === "play" && world.spill && ["ready", "depot"].includes(world.spill.phase);
+      if ((world.screen !== "hangar" && !fitting) || save.spillBest < 5) return;
+      save.spillSignal = on;
+      if (fitting) { world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff"; checkpointSpill(); }
+      writeSave(save); notify();
     },
     dismissDead() {
       world.screen = "title";
