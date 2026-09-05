@@ -1,4 +1,4 @@
-import { paintVanguard, paintVanguardShield, paintVanguardWake } from "./vanguard";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview, type VanguardMotionMode } from "./vanguard";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -4402,7 +4402,7 @@ function paintIllustrated(
   // whose outfits disagree (shoes on some frames, bare feet on others),
   // and the rig path moves one consistent body like every other suit.
   if (suit.id === "vanguard") {
-    paintVanguard(ctx, art, x, y, size, tapAnimT, bounceAnimT, motionVy);
+    paintVanguard(ctx, art, x, y, size);
     return;
   }
   const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
@@ -4681,6 +4681,7 @@ function drawPilot(
   const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
+  if (flagship) paintVanguardContacts(ctx, w.vanguard);
   const articulatedTap = flagship || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
   const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
   ctx.save();
@@ -4720,7 +4721,8 @@ function drawPilot(
   // fresh planet bounce: a squash-and-stretch pulse sells the impact
   const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
   if (!flagship && !eclipseImpact && sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-  paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
+  if (flagship) paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
+  else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed,
@@ -4905,14 +4907,14 @@ export function paintFlightPreview(
   // clamps the sim actually uses - so the number being changed is judged at
   // the extremes where it matters.
   sweep = false,
+  vanguardMode: VanguardMotionMode = "cinematic",
 ) {
   if (!art) return;
   if (suit.id === "vanguard") {
-    const phase = ((t % 3.2) + 3.2) % 3.2;
-    const tap = phase < .72 ? phase : -1;
-    const bounce = phase >= 2.4 && phase < 2.78 ? phase - 2.4 : -1;
-    const vy = phase >= 1 && phase < 2.4 ? Math.sin((phase - 1) / 1.4 * Math.PI) * 620 : -150;
-    paintVanguard(ctx, art, cx, cy, size, tap, bounce, vy);
+    const state = vanguardPreview(ctx, t, vanguardMode);
+    ctx.save(); ctx.translate(cx,cy); ctx.scale(size/52,size/52);
+    paintVanguardContacts(ctx,state); ctx.restore();
+    paintVanguard(ctx, art, cx, cy, size, state);
     return;
   }
   // FLIGHT, NOT A POSE. The pass before this showed one tap every five

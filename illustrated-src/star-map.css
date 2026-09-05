@@ -39,3 +39,7 @@
   background: radial-gradient(ellipse at 50% 5%, #59426155, transparent 70%), #101729; text-align: center; }
 .ac-reward-concept h3 { color: #f1d6a7; margin: 8px 0; font: 700 17px/1.3 system-ui; }
 .ac-reward-concept .ac-sub { font-size: 12px; line-height: 1.5; }
+
+/* Beta flagship comparison, shared by the hangar and pause sheet. */
+.ac-vanguard-motion{grid-column:1/-1;width:100%;box-sizing:border-box;margin:8px 0;padding:12px;border:1px solid rgba(218,183,118,.28);border-radius:16px;background:rgba(14,24,42,.65)}
+.ac-vanguard-motion .ac-modes{margin:8px 0}

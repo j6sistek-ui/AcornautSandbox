@@ -1,21 +1,21 @@
-import { spillAppearance } from "./spill-appearance.js?v=180";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=180";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=180";
-import { addChartScenery } from "./star-map-view.js?v=180";
-import { mapDebrisIndex } from "./zone-visuals.js?v=180";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=180";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=180";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=180";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=180";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=180";
-import { drawSprite as drawSpriteOn } from "./art.js?v=180";
-import { createEngine } from "./engine.js?v=180";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=180";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=180";
-import { formatRaceTicks } from "./race.js?v=180";
-import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=180";
-import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=180";
-import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=180";
+import { spillAppearance } from "./spill-appearance.js?v=181";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=181";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=181";
+import { addChartScenery } from "./star-map-view.js?v=181";
+import { mapDebrisIndex } from "./zone-visuals.js?v=181";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=181";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=181";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=181";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=181";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=181";
+import { drawSprite as drawSpriteOn } from "./art.js?v=181";
+import { createEngine } from "./engine.js?v=181";
+import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=181";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=181";
+import { formatRaceTicks } from "./race.js?v=181";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=181";
+import { SPILL_MODULE_MARKS, spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=181";
+import { SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, restoreSpill, SPILL_MOD_INFO } from "./spill.js?v=181";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -334,6 +334,25 @@ export async function bootStandalone(root) {
         throttle.classList.toggle("held", throttleOwner !== null && sp.held);
         throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
     }
+    function vanguardMotionPicker() {
+        const panel = el("div", "ac-vanguard-motion");
+        panel.append(el("p", "ac-sub", "VANGUARD MOTION"));
+        const row = el("div", "ac-modes");
+        row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+        row.setAttribute("role", "group");
+        row.setAttribute("aria-label", "Vanguard motion");
+        for (const [mode, label] of [["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
+            const on = vanguardModeOf(engine.save) === mode;
+            const b = el("button", on ? "ac-mode on" : "ac-mode", label);
+            b.setAttribute("aria-pressed", String(on));
+            b.onclick = () => engine.setVanguardMotionMode(mode);
+            row.append(b);
+        }
+        panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
+            ? "Lunge, thruster assist, then a gentle glide. Swipe down for a full dive."
+            : "A slow, flowing flight cycle. Extra taps keep it moving. Swipe down for a full dive."));
+        return panel;
+    }
     const render = () => {
         disposeChart();
         disposeChart = () => { };
@@ -435,7 +454,7 @@ export async function bootStandalone(root) {
             // going back to the hangar to change it loses the run you were judging.
             // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
             // mid-run and resume to judge the same field with the other setting.
-            {
+            if (engine.save.equippedSuit !== "vanguard") {
                 const dials = (title, opts) => {
                     sheet.append(el("p", "ac-sub", title));
                     const row = el("div", "ac-modes");
@@ -458,6 +477,8 @@ export async function bootStandalone(root) {
                     ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
                 ]);
             }
+            if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race)
+                sheet.append(vanguardMotionPicker());
             if (engine.save.equippedSuit === "eclipse") {
                 const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
                 sheet.append(el("p", "ac-sub", "PILOT MOTION"));
@@ -2232,13 +2253,13 @@ export async function bootStandalone(root) {
                     else {
                         if (palWorn)
                             paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit);
+                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit, vanguardModeOf(s));
                     }
                     requestAnimationFrame(tick);
                 };
                 requestAnimationFrame(tick);
             }
-            if (IS_BETA)
+            if (IS_BETA && wornSuit.id !== "vanguard")
                 box.append(leanTuner(wornSuit, render));
         }
         const tabs = el("div", "ac-cats");
@@ -2431,6 +2452,8 @@ export async function bootStandalone(root) {
                     grid.append(alt);
                 }
             }
+            if (IS_BETA && s.equippedSuit === "vanguard")
+                grid.append(vanguardMotionPicker());
         }
         else if (engine.shopTab === "trails") {
             if (s.equippedSuit === "vanguard")
@@ -3891,7 +3914,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, CASE_W, CASE_H);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
-                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t);
+                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, vanguardModeOf(engine.save));
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -4716,7 +4739,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, 300, 190);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
-                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t);
+                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, vanguardModeOf(engine.save));
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);

@@ -1,24 +1,30 @@
-import { spillAppearance } from "./spill-appearance.js?v=177";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=177";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=177";
-import { goalHud } from "./campaign.js?v=177";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=177";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=177";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=177";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=177";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=177";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=177";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=177";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=177";
-import { spillMastery } from "./spill-content.js?v=177";
-import { SPILL_MODULE_MARKS, spillDockView, spillPreviewState } from "./spill-presentation.js?v=177";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=177";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=181";
+import { runPal } from "./sim.js?v=181";
+import { spillAppearance } from "./spill-appearance.js?v=181";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=181";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=181";
+import { goalHud } from "./campaign.js?v=181";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=181";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=181";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=181";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=181";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=181";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=181";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=181";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=181";
+import { spillMastery } from "./spill-content.js?v=181";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=181";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=181";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
+    if (w.lvl?.def.fx.upsideDown) {
+        ctx.translate(w.W, w.H);
+        ctx.rotate(Math.PI);
+    }
     const lost = w.flight === "lost";
     const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
     if (wp <= 0)
@@ -1875,7 +1881,8 @@ function drawSpillWorld(ctx, w, save, art) {
     spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
     if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, s.phase === "depot" ? SPILL.dockTime : s.phaseT);
+        const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT;
+        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
         ctx.save();
         ctx.globalAlpha = view.opacity;
         ctx.drawImage(dock, view.x, view.y, view.width, view.height);
@@ -1885,6 +1892,20 @@ function drawSpillWorld(ctx, w, save, art) {
         shade.addColorStop(1, "rgba(3,7,20,.3)");
         ctx.fillStyle = shade;
         ctx.fillRect(0, 0, W, H);
+        const marshal = spillDockBear(view, arrival, !!save.motionOff);
+        const bear = art.spillScene?.bear?.[marshal.frame];
+        if (bear) {
+            ctx.fillStyle = "rgba(6,5,16,.45)";
+            ctx.beginPath();
+            ctx.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.save();
+            ctx.translate(marshal.x, marshal.y);
+            const scale = marshal.height / bear.image.height;
+            ctx.scale(-scale, scale); // face the incoming ship
+            ctx.drawImage(bear.image, -bear.footX, -bear.footY);
+            ctx.restore();
+        }
         ctx.restore();
     }
     const blackout = spillMod(s, "blackout") && (s.phase === "wave" || s.phase === "drain");
@@ -2094,7 +2115,7 @@ function drawSpillHint(ctx, w, text, alpha, bottom) {
     }
     ctx.restore();
 }
-function drawSpillHud(ctx, w, art) {
+function drawSpillHud(ctx, w, art, hidePrompts = false) {
     const s = w.spill;
     const { W, H } = w;
     ctx.textAlign = "center";
@@ -2206,7 +2227,7 @@ function drawSpillHud(ctx, w, art) {
         hudLine(spillContractProgress(s), "#cdb3ff");
     // a mission's three objectives ride the top of the run, live
     if (w.lvl && w.lvl.def.base === "spill") {
-        const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits };
+        const live = { ...w.lvl.stats, ore: s.oreMined, hits: s.hits, depots: s.depotVisits, repairs: s.repairs ?? 0 };
         const pills = w.lvl.def.goals.map((g) => goalHud(g, live, w.score, w.lvl.def));
         ctx.font = "800 9.5px Figtree, system-ui";
         const padX = 7, gapX = 6, ph = 17, py = hudY - 10;
@@ -2252,7 +2273,7 @@ function drawSpillHud(ctx, w, art) {
         ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
     }
     // the free lesson, while it runs
-    if (s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
+    if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
         drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
     }
     if (s.phase === "ready" && s.target) {
@@ -2496,7 +2517,7 @@ export function drawWorld(ctx, w, save, art) {
     // Nightglider keeps its existing steady-gates effect in the simulation.
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
-        : save.equippedPal;
+        : runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2513,7 +2534,7 @@ export function drawWorld(ctx, w, save, art) {
         ctx.arc(W * PHYS.squirrelX, w.squirrel.y, 30, 0, Math.PI * 2);
         ctx.stroke();
     }
-    if (w.shieldCharges > 0) {
+    if (w.shieldCharges > 0 && save.equippedSuit !== "vanguard") {
         ctx.strokeStyle = "rgba(122,216,255,0.45)";
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -2791,7 +2812,7 @@ function drawTunnelWorld(ctx, w, save, art) {
         ctx.fillStyle = frost;
         ctx.fillRect(0, 0, W, H);
     }
-    const pal = save.equippedPal;
+    const pal = runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
@@ -2846,7 +2867,7 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
         ? "buddy"
-        : save.equippedPal;
+        : runPal(save, w);
     if (pal && pal !== "none") {
         const bob = Math.sin(w.time * 2.6) * 2;
         // live draws its pals at unit SCALE, not at a pixel size
@@ -2965,7 +2986,16 @@ function drawParticle(ctx, p) {
     const t = Math.max(0, p.life / p.max);
     ctx.globalAlpha = t;
     const kind = p.kind || "spark";
-    if (kind === "ion") {
+    if (kind === "vanguardwake") {
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = Math.max(.6, p.r * t);
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + 8 * t, p.y);
+        ctx.stroke();
+    }
+    else if (kind === "ion") {
         ctx.strokeStyle = t > 0.5 ? "#c8f4ff" : "#3ac0f0";
         ctx.lineWidth = Math.max(0.8, p.r * t);
         ctx.lineCap = "round";
@@ -4233,6 +4263,10 @@ lean = SUIT_LEAN_DEFAULT) {
     // the rigged painting: the old crossfade walks through eight paintings
     // whose outfits disagree (shoes on some frames, bare feet on others),
     // and the rig path moves one consistent body like every other suit.
+    if (suit.id === "vanguard") {
+        paintVanguard(ctx, art, x, y, size);
+        return;
+    }
     const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
         ? (art?.suits?.[suit.id] ?? null)
         : null;
@@ -4524,7 +4558,10 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const spr = frames[idx] ?? null;
     const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
-    const articulatedTap = !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
+    const flagship = suit.id === "vanguard";
+    if (flagship)
+        paintVanguardContacts(ctx, w.vanguard);
+    const articulatedTap = flagship || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
     const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
     ctx.save();
     ctx.translate(x, y);
@@ -4557,14 +4594,20 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         bank = w.tapAnimFromRot * 0.8 * fromLean * (1 - eased) + bank * eased;
     }
     const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
-    ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
+    if (!flagship)
+        ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
     const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
     // fresh planet bounce: a squash-and-stretch pulse sells the impact
     const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
-    if (!eclipseImpact && sq > 0)
+    if (!flagship && !eclipseImpact && sq > 0)
         ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
-    paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed, lean);
+    if (flagship)
+        paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
+    else
+        paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed, lean);
+    if (flagship && w.shieldCharges > 0)
+        paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
 }
 const PAL_ANIM_FPS = 12;
@@ -4717,9 +4760,19 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean
 // mode the pilot rolls slowly between FULL CLIMB and FULL DIVE - the
 // clamps the sim actually uses - so the number being changed is judged at
 // the extremes where it matters.
-sweep = false) {
+sweep = false, vanguardMode = "cinematic") {
     if (!art)
         return;
+    if (suit.id === "vanguard") {
+        const state = vanguardPreview(ctx, t, vanguardMode);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(size / 52, size / 52);
+        paintVanguardContacts(ctx, state);
+        ctx.restore();
+        paintVanguard(ctx, art, cx, cy, size, state);
+        return;
+    }
     // FLIGHT, NOT A POSE. The pass before this showed one tap every five
     // seconds and then held still for the other four - which read as a frozen
     // suit sitting next to a pal that never stops, and looked nothing like
@@ -4832,7 +4885,10 @@ export function paintPalPreview(ctx, art, id, cx, cy, size) {
     paintPal(ctx, art, id, cx, cy, size, performance.now() / 1000);
 }
 export function paintTrailPreview(ctx, trail, cx, cy, t = 0) {
-    drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
+    if (trail.id === "vanguardwake")
+        paintVanguardWake(ctx, cx, cy, t);
+    else
+        drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 /** The vortex that eats the screen while a black hole or wormhole
  *  takes hold — spiral arms winding in, a dark core, a colour bloom.
@@ -4944,10 +5000,10 @@ export function hyperRunReadyLines(viewWidth) {
         "PRESS + HOLD TO LAUNCH",
     ];
 }
-export function drawHud(ctx, w, art) {
+export function drawHud(ctx, w, art, save) {
     const { W } = w;
     if (w.spill) {
-        drawSpillHud(ctx, w, art);
+        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
         return;
     }
     if (w.race) {
@@ -5172,6 +5228,17 @@ export function drawHud(ctx, w, art) {
         hudLine(`GOLD  ${Math.ceil(w.invulnLeft)}s`, "#ffd060");
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
+    const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
+        : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+            : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
+    if (experiment && !w.ready) {
+        ctx.save();
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#e9d2a4";
+        ctx.fillText(experiment, W / 2, w.H * .18);
+        ctx.restore();
+    }
     if (w.recoveryMsg) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#fff";
