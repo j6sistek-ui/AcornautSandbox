@@ -38,20 +38,20 @@ const envName = (() => {
   return (i) => names[i] ?? `ENV ${i}`;
 })();
 
-const MODE = { fly: "Normal", deep: "Deep Space", lost: "Lost in Space", arcade: "Arcade" };
+const MODE = { fly: "Normal", deep: "Deep Space", lost: "Lost in Space", arcade: "Arcade", spill: "The Spill", tunnel: "Wormhole Run", race: "Hyper Run" };
 
 let md = `# The Star Chart — campaign roadmap
 
 *Generated from \`illustrated-src/game/campaign.ts\` by \`build-roadmap.mjs\`.
 Do not edit by hand — change the campaign and rebuild.*
 
-One hundred levels in ten chapters. Every level is an ordinary run wearing a
-finish line: pass its gate count and a golden portal spawns in clear sky —
-fly into it and the level is complete. Three stars per level:
+One hundred levels in ten chapters. Flight missions end at a golden portal
+after their gate count. Level 8 of chapters 2–10 is a Spill mission: survive
+the stated number of waves, with an untimed Depot every fifth wave. Three stars per level:
 
-- **★1** reach the portal (the finish itself)
-- **★2** a collection goal — acorns or golden acorns
-- **★3** a discipline goal — no bounces, no shields, a tap budget
+- **★1** finish the route or clear the required waves
+- **★2** a collection goal — acorns, golden acorns, or Ore
+- **★3** a discipline goal — no bounces, no shields, a tap budget, or no hull hits
 
 Stars are independent and **kept across runs**: a level can be starred one
 goal at a time. **Total stars** open chapters and buy the reward ladder —

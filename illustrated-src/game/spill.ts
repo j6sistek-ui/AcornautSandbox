@@ -29,6 +29,8 @@
 // own at the next impact, and Gold Ore is what charges it.
 
 import { DEBRIS_COUNT, PHYS } from "./catalog";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor,
+  type SpillContract, type SpillContractKind, type SpillEvent, type SpillSpecialty, type SpillUtility } from "./spill-content";
 
 // ---------------------------------------------------------------- tuning
 
@@ -62,32 +64,28 @@ export const SPILL = {
   burstDown: 480,
   /** how fast a burst's speed past the cap bleeds back to the cap */
   burstDecay: 600,
-  /** how long the floor may be ridden before it kills. A bounce is one or
-   *  two frames; camping is continuous. The hull glows from 0.1s */
+  /** A brush is free. Sustained contact goes through ordinary protection
+   *  and kicks the ship clear; the boundary never bypasses the hull. */
   floorGrace: 0.25,
   floorWarn: 0.1,
   shipR: PHYS.squirrelR,
   grazeR: 46,
   pulseR: 240,
   pulseWideR: 320,
-  /** a second pulse, five seconds after the first, once POWER-UPS II is in */
+  /** POWER-UPS II arms an impact-triggered echo five seconds after a pulse. */
   doublePulseDelay: 5,
   /** the hull: three hits, then the run is over. A hit buys 1.2s of
    *  invulnerability so one piece can never take two pips */
   hull: 3,
   iframes: 1.2,
+  shieldRecovery: 0.65,
   knockTime: 0.14,
   knockSpeed: -220,
   /** seconds of Gold the Respawn Core hands over on re-entry */
   goldSeconds: 3,
-  /** the Depot clock: two long visits to learn the shelf, then half.
-   *  Docking takes a second first, and the shelves stay inert for a
-   *  moment after they appear - both against a thumb that is still tapping */
-  depotTime: [30, 30, 15] as readonly number[],
+  /** Untimed stops. Docking and the input arm still prevent accidental buys. */
   dockTime: 1.2,
   depotArm: 0.8,
-  extendBase: 25,
-  extendSeconds: 15,
   /** the counted-down intermission: autopilot, then GO. Control comes back
    *  on the GO and never before, so it can be predicted */
   countdown: 3,
@@ -97,6 +95,8 @@ export const SPILL = {
   respawnFreeze: 2,
   /** every rule phases in over this long, so nothing snaps on the first frame */
   modRamp: 3,
+  clearOre: 12,
+  minReadTime: 0.65,
   /** the free hint every first-time rule gets, in seconds. The control
    *  hint also leaves after this many inputs: a hand that has adjusted
    *  three times has read it */
@@ -237,7 +237,7 @@ export function spillWaveSpec(n: number, seed = 0): SpillWaveSpec {
     n,
     dur: 40,
     cap: Math.min(16, 14 + Math.floor((beyond - 1) / 3)),
-    speed: 1.9 * Math.pow(1.02, beyond),
+    speed: Math.min(2.05, 1.9 * Math.pow(1.02, beyond)),
     mods,
     hulks: 2,
     interval: intervalFor(n),
@@ -269,7 +269,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   pulse: {
     name: "Power-ups",
     prices: [60, 110, 170],
-    levels: ["PULSE unlocked: fires on impact when charged", "Double wave: a second pulse 5s later", "Wide pulse, and shattered debris drops Ore"],
+    levels: ["PULSE unlocked: fires on impact when charged", "Echo charge: ready after 5s, saved for the next threat", "Wide pulse, and shattered debris drops Ore"],
   },
   shield: {
     name: "Shield",
@@ -325,13 +325,11 @@ export type SpillBurst = { x: number; y: number; n: number; power: number; tone:
 export type SpillCue =
   | "press" | "burst" | "lunge" | "hit" | "shatter" | "ore" | "gold" | "shield" | "hull" | "graze"
   | "pulse" | "wave" | "go" | "count" | "clear" | "dock" | "depot" | "armed" | "depot-close" | "buy" | "deny"
-  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "tick" | "charged";
+  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event";
 
 export type SpillDepot = {
-  timer: number;
   /** the shelves are inert until this runs out */
   arm: number;
-  extends: number;
   /** what this visit sold, for the receipt */
   bought: SpillBuyable[];
 };
@@ -375,6 +373,7 @@ export type SpillState = {
   iframes: number;
   hitFlash: number;
   shield: number;
+  canopyLevel: number;
   shieldFlash: number;
   gold: number;
   rocks: SpillRock[];
@@ -386,6 +385,29 @@ export type SpillState = {
   pulseFlash: number;
   /** a second pulse waiting its five seconds */
   pulseQueue: number;
+  echoReady: boolean;
+  utilities: SpillUtility[];
+  ownedUtilities: SpillUtility[];
+  specialties: Partial<Record<SpillUpgrade, SpillSpecialty>>;
+  brakeCool: number;
+  repairOre: number;
+  repairsThisWave: number;
+  shards: number;
+  contract: SpillContract | null;
+  contractsDone: number;
+  contractMessage: string;
+  stipend: number;
+  event: SpillEvent;
+  eventWarn: number;
+  eventSafeY: number;
+  eventNext: number;
+  eventPass: number;
+  /** Legacy ledger name: this run has cleared the wave-20 milestone. */
+  expeditionDone: boolean;
+  /** First-ever wave-20 clear, shown at its Depot without ending the run. */
+  firstPass: boolean;
+  banked: { ore: number; contracts: number; waves: number; expedition: boolean; run: boolean };
+  signal: string;
   combo: number;
   comboT: number;
   ore: number;
@@ -472,6 +494,7 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     iframes: 0,
     hitFlash: 0,
     shield: 0,
+    canopyLevel: 0,
     shieldFlash: 0,
     gold: 0,
     rocks: [],
@@ -481,6 +504,14 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     chargeReady: false,
     pulseFlash: 0,
     pulseQueue: 0,
+    echoReady: false,
+    utilities: [], ownedUtilities: [], specialties: {}, brakeCool: 0,
+    repairOre: 0, repairsThisWave: 0, shards: 0,
+    contract: null, contractsDone: 0, contractMessage: "", stipend: 0,
+    event: "none", eventWarn: 0, eventSafeY: H * 0.5, eventNext: 5, eventPass: 0,
+    expeditionDone: false, firstPass: false,
+    banked: { ore: 0, contracts: 0, waves: 0, expedition: false, run: false },
+    signal: "#c99bff",
     combo: 0,
     comboT: 0,
     ore: 0,
@@ -525,8 +556,9 @@ export function resizeSpill(s: SpillState, W: number, H: number) {
   if (!(W > 0 && H > 0) || (W === s.W && H === s.H)) return;
   const sx = W / s.W;
   const sy = H / s.H;
-  for (const r of s.rocks) { r.x *= sx; r.y *= sy; }
-  for (const n of s.nuts) { n.x *= sx; n.y *= sy; }
+  for (const r of s.rocks) { r.x *= sx; r.y *= sy; r.vx *= sx; r.vy *= sy; r.arc *= sy; }
+  for (const n of s.nuts) { n.x *= sx; n.y *= sy; n.vx *= sx; n.vy *= sy; }
+  s.eventSafeY *= sy;
   s.pilot.x *= sx;
   s.pilot.y = Math.max(22, Math.min(H - 22, s.pilot.y * sy));
   s.W = W;
@@ -540,7 +572,7 @@ export const spillMod = (s: SpillState, m: SpillMod) => s.liveMods.includes(m);
 /** debris crosses the screen in the same time whatever the width, so a
  *  desktop panorama is more room to read, not more seconds to react */
 function lane(s: SpillState) {
-  return Math.max(1, Math.min(2.6, s.W / 390));
+  return Math.max(0.8, s.W / 390);
 }
 
 /** a rule's strength: 0 on the wave's first frame, 1 three seconds in */
@@ -554,6 +586,7 @@ function gravityOf(s: SpillState) {
 }
 
 function thrustMul(s: SpillState) {
+  if (s.specialties.thrusters === "precision") return THRUST_MUL[1];
   return THRUST_MUL[Math.min(THRUST_MUL.length - 1, s.up.thrusters)];
 }
 
@@ -562,7 +595,27 @@ function maxLunges(s: SpillState) {
 }
 
 function pulseRadius(s: SpillState) {
-  return s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR;
+  return (s.up.pulse >= 3 ? SPILL.pulseWideR : SPILL.pulseR) * lane(s);
+}
+
+export function spillHas(s: SpillState, utility: SpillUtility) { return s.utilities.includes(utility); }
+export function spillChargeCap(s: SpillState) { return spillHas(s, "capacitor") ? 2 : 1; }
+
+/** A moving escape corridor through the home lane. Its maximum vertical
+ *  speed is below 25px/s; every stock ship can follow it. Ore outside this
+ *  route is the reason to take risks. Event sweeps reserve their marked gap. */
+export function spillEscapeY(s: SpillState, ahead = 0) {
+  if (s.event !== "none" && s.eventPass > 0) return s.eventSafeY;
+  return s.H * 0.48 + Math.sin((s.t + ahead) * 0.22 + (s.seed % 19)) * Math.min(90, s.H * 0.12);
+}
+
+function escapeClear(s: SpillState, r: SpillRock) {
+  for (let k = 0; k <= 45; k++) {
+    const p = spillRockAt(s, r, k / 10);
+    if (Math.abs(p.x - s.W * SPILL.homeX) > r.r + SPILL.shipR + 20) continue;
+    if (Math.abs(p.y - spillEscapeY(s, k / 10)) < r.r + SPILL.shipR + 22) return false;
+  }
+  return true;
 }
 
 function say(s: SpillState, text: string, t: number) {
@@ -648,9 +701,10 @@ function spawnRock(s: SpillState) {
         : roll < 0.7 ? "tumbler"
           : "spinner";
 
-  const speed =
+  let speed =
     (kind === "hulk" ? 145 : kind === "shard" ? 290 : 205) * spec.speed * (surging(s) ? 1.12 : 1) * lane(s);
   const r = kind === "hulk" ? 36 + rand(s) * 14 : kind === "shard" ? 11 + rand(s) * 6 : 18 + rand(s) * 10;
+  speed = Math.min(speed, Math.max(180, (s.W * (1 - SPILL.homeX) - r - 20) / SPILL.minReadTime));
 
   // an angle, but bounded: a piece must still cross the screen rather than
   // clip a corner, or it reads as unfair rather than as chaotic. Under
@@ -674,7 +728,7 @@ function spawnRock(s: SpillState) {
     grazed: false,
     dead: false,
   };
-  if (!spillPathClear(s, cand)) return false;
+  if (!spillPathClear(s, cand) || !escapeClear(s, cand)) return false;
   s.rocks.push(cand);
   if (kind === "hulk") cue(s, "warn");
   return true;
@@ -717,6 +771,51 @@ function spawnSpecial(s: SpillState) {
     bob: rand(s) * Math.PI * 2,
     kind,
   });
+}
+
+/** Event hazards are warned before their release, with a stock-ship-sized
+ *  opening chosen close enough to the current pilot to reach comfortably.
+ *  The machine is scenery; surviving its sweeps needs no purchased weapon. */
+export function spillEventGap(s: SpillState) { return Math.max(130, s.H * (s.event === "lanes" ? 0.19 : 0.23)); }
+
+function stepEvent(s: SpillState, dt: number) {
+  if (s.event === "none") return;
+  if (s.eventWarn > 0) {
+    s.eventWarn = Math.max(0, s.eventWarn - dt);
+    if (s.eventWarn === 0) {
+      const gap = spillEventGap(s);
+      const r = s.event === "cargo" ? 30 : s.event === "vein" ? 14 : 22;
+      const cap = s.spec.cap + (spillMod(s, "swarm") ? 2 : 0) + (surging(s) ? 2 : 0);
+      const spacing = s.event === "cargo" ? 140 : s.event === "vein" ? 160 : 100;
+      for (let y = 50; y < s.H - 40; y += spacing) {
+        if (s.rocks.filter(rock => !rock.dead).length >= cap) break;
+        if (Math.abs(y - s.eventSafeY) < gap / 2 + r) continue;
+        const rock: SpillRock = { x: s.W + 50 + (s.event === "lanes" ? (Math.floor(y / spacing) % 2) * 60 : 0), y, vx: -Math.min(250 * lane(s), (s.W * (1 - SPILL.homeX) - 60) / 0.85), vy: 0,
+          r, kind: s.event === "rig" || s.event === "cargo" ? "tumbler" : "shard", sprite: readableSprite(s), spin: 0.35, rot: 0,
+          arc: 0, arcPhase: 0, warn: 0, grazed: false, dead: false };
+        if (spillPathClear(s, rock) && escapeClear(s, rock)) s.rocks.push(rock);
+      }
+      // The clear opening pays for following the warning. Riskier streams
+      // continue elsewhere, but the event never requires a utility to win.
+      for (let i = 0; i < 5; i++) s.nuts.push({ x: s.W + 90 + i * 38, y: s.eventSafeY,
+        vx: -180 * lane(s), vy: 0, got: false, bob: i, kind: s.event === "vein" && i % 2 === 0 ? "gold" : "ore" });
+      cue(s, "surge");
+    }
+  }
+  if (s.waveT >= s.eventNext && s.waveT < s.spec.dur - 3) {
+    s.eventNext += s.event === "rig" ? 9 : 10;
+    s.eventPass++;
+    const desired = s.pilot.y + (s.event === "rig" ? (s.eventPass % 2 ? -60 : 60) : (rand(s) - 0.5) * 160);
+    s.eventSafeY = Math.max(Math.min(110, s.H * 0.3), Math.min(s.H - Math.min(110, s.H * 0.3), desired));
+    // The rig clears its announced route before releasing the sweep.
+    // Retire conflicting ambient debris without awarding shatter rewards.
+    for (const rock of s.rocks) {
+      if (!rock.dead && !escapeClear(s, rock)) { rock.dead = true; burst(s, rock.x, rock.y, 4, "graze", 0.3); }
+    }
+    s.eventWarn = spillHas(s, "scanner") ? 2.1 : 1.6;
+    say(s, `${SPILL_EVENTS[s.event].name} · SWEEP ${s.eventPass}`, 1.6);
+    cue(s, "event");
+  }
 }
 
 // ---------------------------------------------------------------- input
@@ -788,6 +887,7 @@ export function spillLunge(s: SpillState) {
   noteInput(s);
   s.lunge = SPILL.lungeTime;
   s.lungeCharges -= 1;
+  if (spillHas(s, "brake") || s.specialties.thrusters === "precision") s.pilot.vy *= 0.25;
   if (s.cool <= 0) s.cool = SPILL.lungeCooldown;
   burst(s, s.pilot.x - 14, s.pilot.y, 8, "lunge", 0.5);
   cue(s, "lunge");
@@ -798,15 +898,17 @@ function shatter(s: SpillState, r: SpillRock, power = 1.2) {
   if (r.dead) return;
   r.dead = true;
   s.shattered += 1;
+  if (r.kind === "shard") s.shards += 1;
   s.score += 4;
   burst(s, r.x, r.y, 16, "shatter", power);
-  if (s.up.pulse >= 3) {
-    s.nuts.push({ x: r.x, y: r.y, vx: -60 * lane(s), vy: 0, got: false, bob: rand(s) * 6, kind: "ore" });
+  if (s.up.pulse >= 3 || s.specialties.pulse === "yield") {
+    const count = s.up.pulse >= 3 && s.specialties.pulse === "yield" ? 2 : 1;
+    for (let i = 0; i < count; i++) s.nuts.push({ x: r.x + i * 12, y: r.y, vx: -60 * lane(s), vy: 0, got: false, bob: rand(s) * 6, kind: "ore" });
   }
 }
 
 /** everything close enough is shattered. Fired by the ship on impact once
- *  POWER-UPS I is in; by the queue five seconds later with II */
+ *  POWER-UPS I is in; II banks an echo for a later impact */
 function firePulse(s: SpillState) {
   s.pulseFlash = 0.45;
   s.shake = 0.5;
@@ -830,7 +932,7 @@ function firePulse(s: SpillState) {
  *  this is the hand-fired form, kept for tests and a keyboard */
 export function spillPulse(s: SpillState) {
   if (!flying(s) || s.up.pulse < 1 || s.charge < 1) return false;
-  s.charge = 0;
+  s.charge -= 1;
   firePulse(s);
   if (s.up.pulse >= 2) s.pulseQueue = SPILL.doublePulseDelay;
   return true;
@@ -852,6 +954,10 @@ function beginWave(s: SpillState) {
   s.nextRock = 0.9;
   s.nextNut = 2.5;
   s.nextSpecial = 8 + rand(s) * 6;
+  s.repairsThisWave = 0;
+  s.eventWarn = 0;
+  s.eventNext = 5;
+  s.eventPass = 0;
   cue(s, "go");
 }
 
@@ -860,6 +966,7 @@ function beginWave(s: SpillState) {
 function beginCountdown(s: SpillState, n: number) {
   s.wave = n;
   s.spec = spillWaveSpec(n, s.seed);
+  s.event = spillEventFor(n, s.seed);
   s.liveMods = s.spec.mods.slice();
   s.modRamp = 0;
   s.phase = "countdown";
@@ -883,6 +990,10 @@ function beginCountdown(s: SpillState, n: number) {
     s.hint = SPILL_CONTROL_HINT;
     s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
   }
+  if (s.event !== "none" && s.hints) {
+    s.hint = SPILL_EVENTS[s.event].hint;
+    s.hintT = SPILL.countdown + SPILL.hintTime;
+  }
   cue(s, "wave");
 }
 
@@ -897,6 +1008,10 @@ function endWave(s: SpillState) {
   // on a win here, not on the crash that was coming eventually
   s.cleared = s.wave;
   s.score += 50 * s.wave;
+  s.ore += SPILL.clearOre;
+  s.stipend += SPILL.clearOre;
+  settleContract(s);
+  if (s.wave === 20) s.expeditionDone = true;
   s.held = false;
   cue(s, "clear");
   if (s.wave % SPILL_DEPOT_EVERY === 0) cue(s, "milestone");
@@ -912,11 +1027,6 @@ function endWave(s: SpillState) {
 }
 
 // ---------------------------------------------------------------- depot
-
-function depotTime(s: SpillState) {
-  const t = SPILL.depotTime;
-  return t[Math.min(t.length - 1, s.depotVisits)];
-}
 
 function beginDocking(s: SpillState) {
   s.phase = "docking";
@@ -937,19 +1047,62 @@ function openDepot(s: SpillState) {
   s.pilot.vy = 0;
   // docking restores one pip; the rest is the Depot's business
   s.hull = Math.min(s.maxHull, s.hull + 1);
-  s.depot = { timer: depotTime(s), arm: SPILL.depotArm, extends: 0, bought: [] };
+  s.depot = { arm: SPILL.depotArm, bought: [] };
   s.depotVisits += 1;
   cue(s, "depot");
 }
 
+/** Purchases own the module for this run; fitting it uses one of two slots.
+ *  Swapping owned parts at a Depot is free, without selling or duplicating Ore. */
+export function spillUtility(s: SpillState, id: SpillUtility): "ok" | "poor" | "full" | "closed" {
+  if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !SPILL_UTILITIES[id]) return "closed";
+  const i = s.utilities.indexOf(id);
+  if (i >= 0) { s.utilities.splice(i, 1); s.charge = Math.min(s.charge, spillChargeCap(s)); cue(s, "buy"); return "ok"; }
+  if (s.utilities.length >= 2) return "full";
+  if (!s.ownedUtilities.includes(id)) {
+    if (s.ore < SPILL_UTILITIES[id].price) return "poor";
+    s.ore -= SPILL_UTILITIES[id].price;
+    s.ownedUtilities.push(id);
+  }
+  s.utilities.push(id); cue(s, "buy"); return "ok";
+}
+
+export function spillSpecialize(s: SpillState, id: SpillSpecialty): boolean {
+  const spec = SPILL_SPECIALTIES[id];
+  if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !spec || s.up[spec.axis] < 2) return false;
+  s.specialties[spec.axis] = id; cue(s, "buy"); return true;
+}
+
+export function spillTakeContract(s: SpillState, kind: SpillContractKind): boolean {
+  if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || s.contract) return false;
+  const offer = spillContractOffers(s.wave).find(o => o.kind === kind);
+  if (!offer) return false;
+  s.contract = { kind, target: offer.target, reward: offer.reward, startWave: s.wave + 1, endWave: s.wave + 5,
+    startOre: s.oreMined, startHits: s.hits, startShards: s.shards };
+  s.contractMessage = ""; cue(s, "buy"); return true;
+}
+
+export function spillContractProgress(s: SpillState) {
+  const c = s.contract;
+  if (!c) return "No contract";
+  if (c.kind === "clean") return s.hits === c.startHits ? `CLEAN PASSAGE · through wave ${c.endWave}` : "CLEAN PASSAGE · missed";
+  return `${c.kind === "salvage" ? "MINE" : "SHATTER"} ${Math.min(c.target, c.kind === "salvage" ? s.oreMined - c.startOre : s.shards - c.startShards)}/${c.target} · by wave ${c.endWave}`;
+}
+
+function settleContract(s: SpillState) {
+  const c = s.contract;
+  if (!c || s.wave < c.endWave) return;
+  const won = c.kind === "clean" ? s.hits === c.startHits : c.kind === "salvage" ? s.oreMined - c.startOre >= c.target : s.shards - c.startShards >= c.target;
+  if (won) { s.ore += c.reward; s.contractsDone++; s.score += 500; }
+  s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} ORE` : "CONTRACT MISSED · choose another";
+  s.contract = null; cue(s, "contract");
+}
+
 function closeDepot(s: SpillState) {
+  s.firstPass = false;
   s.depot = null;
   cue(s, "depot-close");
   beginCountdown(s, s.wave + 1);
-}
-
-export function spillExtendPrice(s: SpillState) {
-  return s.depot ? SPILL.extendBase * Math.pow(2, s.depot.extends) : 0;
 }
 
 /** the next level's price for a meter, or null when it is full */
@@ -989,6 +1142,7 @@ export function spillBuy(s: SpillState, what: SpillBuyable): "ok" | "poor" | "ma
       break;
     case "shield":
       s.shield = Math.min(2, s.shield + 1);
+      s.canopyLevel = Math.max(s.canopyLevel, s.shield);
       s.shieldFlash = 0.6;
       break;
     case "repair":
@@ -1004,19 +1158,6 @@ export function spillBuy(s: SpillState, what: SpillBuyable): "ok" | "poor" | "ma
   return "ok";
 }
 
-export function spillExtend(s: SpillState): "ok" | "poor" | "arming" | "closed" {
-  const d = s.depot;
-  if (!d || s.phase !== "depot") return "closed";
-  if (d.arm > 0) return "arming";
-  const price = spillExtendPrice(s);
-  if (s.ore < price) { cue(s, "deny"); return "poor"; }
-  s.ore -= price;
-  d.extends += 1;
-  d.timer += SPILL.extendSeconds;
-  cue(s, "buy");
-  return "ok";
-}
-
 export function spillLeaveDepot(s: SpillState) {
   if (!s.depot || s.phase !== "depot") return false;
   if (s.depot.arm > 0) return false;
@@ -1026,14 +1167,19 @@ export function spillLeaveDepot(s: SpillState) {
 
 // ----------------------------------------------------------------- hits
 
-function takeHit(s: SpillState, r: SpillRock) {
+function takeHit(s: SpillState, r: SpillRock | null) {
+  if (s.iframes > 0 || s.gold > 0) return;
+  // A boundary has no debris to shatter, but protection applies equally.
+  const breakRock = (power = 1.2) => { if (r) shatter(s, r, power); };
   // an unlocked, charged PULSE fires itself at the impact: the piece and
   // everything near it shatter and the hull is never touched
-  if (s.up.pulse >= 1 && s.charge >= 1) {
-    s.charge = 0;
+  if (s.up.pulse >= 1 && (s.charge >= 1 || s.echoReady)) {
+    const echo = s.echoReady;
+    if (echo) s.echoReady = false; else s.charge -= 1;
     firePulse(s);
-    shatter(s, r, 1.2);
-    if (s.up.pulse >= 2) s.pulseQueue = SPILL.doublePulseDelay;
+    breakRock();
+    s.iframes = SPILL.shieldRecovery;
+    if (!echo && s.up.pulse >= 2 && s.pulseQueue <= 0) s.pulseQueue = SPILL.doublePulseDelay;
     return;
   }
   if (s.shield > 0) {
@@ -1041,28 +1187,29 @@ function takeHit(s: SpillState, r: SpillRock) {
     s.shield -= 1;
     s.shieldFlash = 0.5;
     s.shake = 0.6;
-    shatter(s, r, 1.2);
+    breakRock();
+    s.iframes = SPILL.shieldRecovery;
     say(s, "SHIELD HELD", 1.1);
     cue(s, "shield");
     return;
   }
   s.hull -= 1;
   s.hits += 1;
-  s.iframes = SPILL.iframes;
+  s.iframes = SPILL.iframes + (s.specialties.plating === "brace" ? 0.4 : 0);
   s.hitFlash = 0.5;
   s.shake = 0.7;
-  s.knock = SPILL.knockTime;
+  s.knock = SPILL.knockTime * (s.specialties.plating === "brace" ? 0.5 : 1);
   s.pilot.vy = -180;
   s.combo = 0;
   s.comboT = 0;
-  shatter(s, r, 1.4);
+  breakRock(1.4);
   burst(s, s.pilot.x, s.pilot.y, 14, "hit", 1.1);
   cue(s, "hit");
   if (s.hull > 0) {
     say(s, s.hull === 1 ? "HULL CRITICAL" : "HULL HIT", 1.2);
     return;
   }
-  lose(s, "STRUCK");
+  lose(s, r ? "STRUCK" : "GROUNDED");
 }
 
 function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
@@ -1192,10 +1339,6 @@ function stepSpillBody(s: SpillState, dt: number) {
       d.arm = Math.max(0, d.arm - dt);
       if (d.arm === 0) cue(s, "armed");
     }
-    const was = Math.ceil(d.timer);
-    d.timer = Math.max(0, d.timer - dt);
-    if (Math.ceil(d.timer) !== was) cue(s, "tick");
-    if (d.timer <= 0) closeDepot(s);
     return;
   }
 
@@ -1269,9 +1412,10 @@ function stepSpillBody(s: SpillState, dt: number) {
   // ---- the ship
   if (s.iframes > 0) s.iframes = Math.max(0, s.iframes - dt);
   if (s.gold > 0) s.gold = Math.max(0, s.gold - dt);
+  if (s.brakeCool > 0) s.brakeCool = Math.max(0, s.brakeCool - dt);
   if (s.pulseQueue > 0) {
     s.pulseQueue = Math.max(0, s.pulseQueue - dt);
-    if (s.pulseQueue === 0) firePulse(s);
+    if (s.pulseQueue === 0) { s.echoReady = true; cue(s, "charged"); }
   }
   if (s.cool > 0) {
     s.cool = Math.max(0, s.cool - dt);
@@ -1286,12 +1430,12 @@ function stepSpillBody(s: SpillState, dt: number) {
   } else if (s.lunge > 0) {
     s.lunge = Math.max(0, s.lunge - dt);
     s.pilot.vx = SPILL.lungeSpeed;
-    if (s.up.thrusters >= 3) {
+    if (s.up.thrusters >= 3 || s.specialties.thrusters === "sweep") {
       for (const r of s.rocks) {
         if (r.dead || r.warn > 0 || r.kind !== "shard") continue;
         const dx = r.x - s.pilot.x;
         const dy = r.y - s.pilot.y;
-        const reach = r.r + SPILL.shipR + 6;
+        const reach = r.r + SPILL.shipR + (s.specialties.thrusters === "sweep" ? 28 : 6);
         if (dx * dx + dy * dy < reach * reach) shatter(s, r, 0.9);
       }
     }
@@ -1314,9 +1458,14 @@ function stepSpillBody(s: SpillState, dt: number) {
   if (s.pilot.x > hi) { s.pilot.x = hi; s.pilot.vx = 0; }
   s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
 
-  // The floor is not a wall: brushing it is free, riding it kills
+  // The lower boundary is a hazard, not an execution. Recovery moves the
+  // ship out of it even when an active protection window absorbs the hit.
   const top = 22;
   const bottom = s.H - 22;
+  if (spillHas(s, "brake") && s.brakeCool <= 0 && s.pilot.y > bottom - 55 && s.pilot.vy > 100) {
+    s.pilot.vy = -220; s.pilot.y = Math.min(s.pilot.y, bottom - 30);
+    s.brakeCool = 12; s.floorT = 0; say(s, "EMERGENCY BRAKE", 1.2); cue(s, "burst");
+  }
   const grounded = s.pilot.y > bottom;
   if (s.pilot.y < top) { s.pilot.y = top; s.pilot.vy = Math.max(0, s.pilot.vy); }
   if (s.pilot.y > bottom) { s.pilot.y = bottom; s.pilot.vy = Math.min(0, s.pilot.vy); }
@@ -1324,8 +1473,11 @@ function stepSpillBody(s: SpillState, dt: number) {
     s.floorT += dt;
     if (s.floorT > SPILL.floorGrace) {
       s.floorT = 0;
-      lose(s, "GROUNDED");
-      return;
+      takeHit(s, null);
+      if (!flying(s)) return;
+      s.pilot.y = bottom - 28;
+      s.pilot.vy = -260;
+      if (s.hull > 0) say(s, "BOUNDARY · PULL UP", 1.2);
     }
   } else if (s.floorT > 0) {
     s.floorT = Math.max(0, s.floorT - dt * 2.5);
@@ -1333,13 +1485,16 @@ function stepSpillBody(s: SpillState, dt: number) {
 
   // ---- the spawn director
   if (s.phase === "wave") {
+    stepEvent(s, dt);
     s.nextRock -= dt;
     const cap = s.spec.cap + (spillMod(s, "swarm") ? 2 : 0) + (surging(s) ? 2 : 0);
     if (s.nextRock <= 0 && s.rocks.filter((r) => !r.dead).length < cap) {
       const base = s.spec.interval;
       // a wave that is teaching something opens easier than its number
       const teaching = s.hintT > 0 && s.wave > 1 ? 1.35 : 1;
-      s.nextRock = Math.max(0.1, (surging(s) ? base * 0.45 : base) * teaching * (0.65 + rand(s) * 0.7));
+      const act = s.waveT / s.spec.dur;
+      const pacing = act < 0.2 ? 1.35 : act < 0.5 ? 1 : act < 0.78 ? 0.8 : 1.4;
+      s.nextRock = Math.max(0.1, (surging(s) ? base * 0.45 : base) * teaching * pacing * (0.65 + rand(s) * 0.7));
       for (let k = 0; k < 6; k++) if (spawnRock(s)) break;
     }
     s.nextNut -= dt;
@@ -1402,6 +1557,13 @@ function stepSpillBody(s: SpillState, dt: number) {
   }
   for (const n of s.nuts) {
     if (n.got) continue;
+    if (spillHas(s, "magnet") && n.kind !== "hull") {
+      const dx = s.pilot.x - n.x, dy = s.pilot.y - n.y, distance = Math.hypot(dx, dy);
+      if (distance > 1 && distance < 100 * Math.sqrt(lane(s))) {
+        const pull = Math.min(distance, 420 * dt);
+        n.x += dx / distance * pull; n.y += dy / distance * pull;
+      }
+    }
     n.x += n.vx * dt;
     n.y += n.vy * dt;
     n.bob += dt * 4;
@@ -1418,11 +1580,16 @@ function stepSpillBody(s: SpillState, dt: number) {
         const worth = n.kind === "gold" ? 5 : 1;
         s.ore += worth;
         s.oreMined += worth;
+        s.repairOre += worth;
+        if (s.specialties.plating === "salvage" && s.repairOre >= 30 && s.repairsThisWave < 2 && s.hull < s.maxHull) {
+          s.repairOre -= 30; s.repairsThisWave++; s.hull++; cue(s, "hull"); say(s, "SALVAGE ARMOR · +1 HULL", 1.2);
+        }
+        s.repairOre = Math.min(30, s.repairOre);
         s.combo = Math.min(9, s.combo + 1);
         s.comboT = 2.6;
         s.score += 25 * s.combo * (n.kind === "gold" ? 2 : 1);
         if (n.kind === "gold") {
-          s.charge = Math.min(1, s.charge + 0.5);
+          s.charge = Math.min(spillChargeCap(s), s.charge + (s.specialties.pulse === "efficient" ? 0.65 : 0.5));
           say(s, s.up.pulse >= 1 ? (s.charge >= 1 ? "PULSE ARMED" : "GOLD ORE · CHARGING") : "GOLD ORE", 1);
           cue(s, "gold");
         } else cue(s, "ore");
@@ -1474,4 +1641,85 @@ export function spillSignature(s: SpillState) {
     shattered: s.shattered,
     up: { ...s.up },
   };
+}
+
+export type SpillCheckpoint = { version: 1; state: SpillState };
+
+/** Only a docked, ordinary expedition may be suspended. The checkpoint
+ *  carries its RNG and bank ledger, so resuming cannot reroll or repay it. */
+export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
+  if (s.phase !== "depot" || !s.depot || s.target) return null;
+  const state: SpillState = JSON.parse(JSON.stringify(s));
+  state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
+  state.held = false; state.pressed = false; state.manual = false;
+  state.pilot.vx = 0; state.pilot.vy = 0;
+  state.depot!.arm = SPILL.depotArm;
+  return { version: 1, state };
+}
+
+export function restoreSpill(raw: unknown, W: number, H: number): SpillState | null {
+  if (!raw || typeof raw !== "object" || (raw as SpillCheckpoint).version !== 1) return null;
+  const value = (raw as SpillCheckpoint).state;
+  if (!value || typeof value !== "object" || value.phase !== "depot" || !value.depot || value.target !== 0) return null;
+  const s = createSpill(W, H, 0);
+  // Copy only the known schema. Every numeric field must be finite. A
+  // malformed save is ignored, never allowed to crash the launch screen.
+  for (const key of Object.keys(s) as (keyof SpillState)[]) {
+    if (typeof s[key] === "number") {
+      const n = value[key];
+      if (typeof n !== "number" || !Number.isFinite(n) || Math.abs(n) > 1e12) return null;
+      (s as any)[key] = n;
+    }
+  }
+  if (!Number.isInteger(s.wave) || s.wave < 5 || s.wave % 5 || s.cleared !== s.wave || s.W <= 0 || s.H <= 0 || s.ore < 0) return null;
+  if (!value.up || !value.banked || !value.specialties) return null;
+  for (const axis of ["plating", "thrusters", "pulse"] as const) {
+    const n = value.up[axis];
+    if (!Number.isInteger(n) || n < 0 || n > SPILL_LEVELS) return null;
+    s.up[axis] = n;
+    const spec = value.specialties[axis];
+    if (spec && (!SPILL_SPECIALTIES[spec] || SPILL_SPECIALTIES[spec].axis !== axis || n < 2)) return null;
+    if (spec) s.specialties[axis] = spec;
+  }
+  for (const key of ["hull", "shield", "canopyLevel", "oreMined", "ore", "hits", "shards", "contractsDone", "depotVisits"] as const) {
+    if (!Number.isInteger(s[key]) || s[key] < 0) return null;
+  }
+  if (s.maxHull !== SPILL.hull + s.up.plating || s.hull < 1 || s.hull > s.maxHull || s.shield < 0 || s.shield > 2 || s.canopyLevel < s.shield || s.canopyLevel > 2) return null;
+  const utilityList = (v: unknown): v is SpillUtility[] => Array.isArray(v) && v.length <= 4 && new Set(v).size === v.length && v.every(id => SPILL_UTILITY_IDS.includes(id));
+  if (!utilityList(value.utilities) || value.utilities.length > 2 || !utilityList(value.ownedUtilities) || value.utilities.some(id => !value.ownedUtilities.includes(id))) return null;
+  s.utilities = value.utilities.slice(); s.ownedUtilities = value.ownedUtilities.slice();
+  if (s.charge < 0 || s.charge > spillChargeCap(s)) return null;
+  for (const key of ["coreArmed", "coreBought", "echoReady", "expeditionDone", "hints"] as const) {
+    if (typeof value[key] !== "boolean") return null;
+    s[key] = value[key];
+  }
+  if (s.coreArmed && !s.coreBought) return null;
+  // Version-1 checkpoints predating the milestone card have no firstPass.
+  s.firstPass = value.firstPass === true && s.wave === 20;
+  if (!Array.isArray(value.taught) || value.taught.some(m => !SPILL_MODS.includes(m as SpillMod))) return null;
+  s.taught = value.taught.slice();
+  for (const key of ["ore", "contracts", "waves"] as const) {
+    const n = value.banked[key];
+    if (!Number.isFinite(n) || n < 0) return null;
+    s.banked[key] = n;
+  }
+  if (s.banked.ore > s.oreMined || s.banked.contracts > s.contractsDone || s.banked.waves > s.cleared) return null;
+  s.banked.expedition = value.banked.expedition === true;
+  s.banked.run = value.banked.run === true;
+  const c = value.contract;
+  if (c) {
+    const offer = spillContractOffers(s.wave).find(o => o.kind === c.kind);
+    if (!offer || c.target !== offer.target || c.reward !== offer.reward || c.startWave !== s.wave + 1 || c.endWave !== s.wave + 5
+      || c.startOre !== s.oreMined || c.startHits !== s.hits || c.startShards !== s.shards) return null;
+    s.contract = { ...c };
+  }
+  s.contractMessage = typeof value.contractMessage === "string" ? value.contractMessage.slice(0, 100) : "";
+  s.signal = typeof value.signal === "string" && /^#[a-f0-9]{6}$/i.test(value.signal) ? value.signal : "#c99bff";
+  s.phase = "depot"; s.depot = { arm: SPILL.depotArm, bought: [] };
+  s.spec = spillWaveSpec(s.wave, s.seed); s.event = spillEventFor(s.wave, s.seed);
+  s.liveMods = s.spec.mods.slice();
+  s.pilot = { x: s.W * SPILL.homeX, y: s.H * 0.45, vx: 0, vy: 0, rot: 0 };
+  s.phaseT = 0; s.floorT = 0; s.eventWarn = 0;
+  resizeSpill(s, W, H);
+  return s;
 }

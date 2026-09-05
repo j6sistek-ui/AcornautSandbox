@@ -1,11 +1,12 @@
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=173";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=173";
-import { drawSprite as drawSpriteOn } from "./art.js?v=173";
-import { createEngine } from "./engine.js?v=173";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=173";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=173";
-import { formatRaceTicks } from "./race.js?v=173";
-import { SPILL, SPILL_LEVELS, SPILL_SHOP, spillExtendPrice, spillPrice } from "./spill.js?v=173";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=174";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=174";
+import { artUrl, drawSprite as drawSpriteOn } from "./art.js?v=174";
+import { createEngine } from "./engine.js?v=174";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=174";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES, nextGate } from "./campaign.js?v=174";
+import { formatRaceTicks } from "./race.js?v=174";
+import { SPILL_EVENTS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillContractOffers, spillEventFor, spillMastery, spillSector } from "./spill-content.js?v=174";
+import { SPILL_LEVELS, SPILL_SHOP, spillPrice, spillContractProgress, spillWaveSpec, SPILL_MOD_INFO } from "./spill.js?v=174";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -166,7 +167,7 @@ export async function bootStandalone(root) {
     const ALL_MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
         // THE SPILL sits second (owner, 2 Sep 2026: "it's a serious mode")
-        { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive the waves. Mine Ore. Buy the next one." },
+        { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive five-wave sectors. Build at untimed Depots." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
         { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
         { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
@@ -193,6 +194,11 @@ export async function bootStandalone(root) {
             modesOpen = false;
             hyperRunOpen = true;
             render();
+            return;
+        }
+        if (m.id === "spill" && engine.save.spillSuspended) {
+            modesOpen = false;
+            engine.spillResume();
             return;
         }
         engine.fly(m.id);
@@ -222,6 +228,8 @@ export async function bootStandalone(root) {
         if (prevScroll)
             keptScroll = prevScroll.scrollTop;
         keepShelves();
+        const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
+        const depotFocus = document.activeElement?.dataset.spillControl;
         overlay.innerHTML = "";
         if (snap.screen === "play") {
             const bar = el("div", "ac-playbar");
@@ -260,9 +268,18 @@ export async function bootStandalone(root) {
             if (sp) {
                 if (sp.phase === "depot") {
                     overlay.append(drawDepot(sp));
+                    const depot = overlay.querySelector(".ac-depotcard");
+                    if (depot)
+                        depot.scrollTop = depotScroll;
+                    if (depotFocus)
+                        overlay.querySelector(`[data-spill-control="${depotFocus}"]`)?.focus({ preventScroll: true });
                     return;
                 }
-                // one button, not two: PULSE fires itself now, at the impact
+                if (sp.phase === "ready" && !sp.target) {
+                    overlay.append(drawSpillPrep());
+                    return;
+                }
+                // PULSE fires automatically.
                 const sbar = el("div", "ac-spillbar");
                 const lunge = el("button", sp.lungeCharges > 0 ? "ac-lunge" : "ac-lunge spent", "LUNGE ▸▸");
                 lunge.onclick = () => engine.spillLunge();
@@ -347,7 +364,7 @@ export async function bootStandalone(root) {
             const sheet = el("div", "ac-sheet ac-center ac-result");
             const spill = snap.flight === "spill" ? engine.world.spill : null;
             sheet.append(el("h2", "", snap.flight === "tunnel" ? "LOST TO THE VOID"
-                : spill ? (spill.cause === "GROUNDED" ? "GROUNDED" : "LOST TO THE FIELD")
+                : spill ? (spill.cause === "GROUNDED" ? "HULL LOST AT BOUNDARY" : "LOST TO THE FIELD")
                     : "CRASHED"));
             if (!(BETA_FEATURES && snap.flight !== "tunnel") && !spill) {
                 sheet.append(el("p", "", `Score ${snap.dead.score}`));
@@ -361,19 +378,24 @@ export async function bootStandalone(root) {
                 big.append(el("b", "", String(snap.dead.score)), el("span", "", snap.dead.score === 1 ? "WAVE CLEARED" : "WAVES CLEARED"));
                 sheet.append(big);
                 if (spill.cause === "GROUNDED")
-                    sheet.append(el("p", "ac-sub", "You cannot ride the floor."));
+                    sheet.append(el("p", "ac-sub", "The last hull pip was lost at the lower boundary."));
                 const rows = el("div", "ac-rows ac-crashrows");
                 const row = (label, v, gold = false) => {
                     const r = el("div", "ac-row");
                     r.append(el("span", "", label), el("span", gold ? "ac-rowgold" : "ac-rowdim", String(v)));
                     rows.append(r);
                 };
+                row("Salvage score", Math.floor(spill.score), true);
                 row("Ore mined", spill.oreMined, true);
+                row("Contracts completed", spill.contractsDone);
                 row("Hull hits", spill.hits);
                 row("Grazes", spill.grazes);
                 row("Debris shattered", spill.shattered);
                 row("Best wave", engine.save.spillBest ?? 0, true);
+                row("Best salvage score", engine.save.spillRecords?.bestScore ?? 0);
                 sheet.append(rows);
+                const mastery = spillMastery(engine.save.spillBest);
+                sheet.append(el("p", "ac-sub", `BUILD · Plating ${spill.up.plating} · Thrusters ${spill.up.thrusters} · Pulse ${spill.up.pulse}`), el("p", "ac-sub", spill.utilities.map(id => SPILL_UTILITIES[id].name).join(" + ") || "Stock utilities"), el("p", "ac-gold", mastery.current.title), el("p", "ac-sub", mastery.next ? `Next: clear wave ${mastery.next.at} for ${mastery.next.title} and a new ship signal.` : "Every ship signal earned. Push your personal record."));
                 // Graduation lands on whichever crash comes first after the
                 // tutorial, this one included: the gift is shown where it is given
                 if (engine.save.guide === "reward")
@@ -941,7 +963,7 @@ export async function bootStandalone(root) {
         // that starts a run well clear of the tab bar, so reaching for a tab
         // can never fire a flight.
         const launch = el("button", "ac-launch");
-        launch.append(icon(I_LAUNCH, 22), el("span", "", "TAKE FLIGHT"));
+        launch.append(icon(I_LAUNCH, 22), el("span", "", MODES[selectedMode].id === "spill" && s.spillSuspended ? "RESUME EXPEDITION" : "TAKE FLIGHT"));
         launch.onclick = () => launchSelected();
         controls.append(launch);
         // All modes visible at once. A mode the save has not earned stays on
@@ -1123,7 +1145,9 @@ export async function bootStandalone(root) {
         const lic = el("span", "ac-hubic");
         lic.append(hubIcon("rocket", false));
         const ltxt = el("span", "ac-hub-launchtxt");
-        ltxt.append(el("b", "", "FREE FLIGHT"), el("span", "ac-hubsub", "Begin your flight"));
+        const spillSelected = MODES[selectedMode].id === "spill";
+        const suspended = spillSelected ? s.spillSuspended : null;
+        ltxt.append(el("b", "", suspended ? "RESUME EXPEDITION" : spillSelected ? "THE SPILL" : "FREE FLIGHT"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Salvage. Survive. Build." : "Begin your flight"));
         // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
         // and were previously invisible from here - you had to remember. One
         // line, named plainly, so nobody launches wondering why the gates are
@@ -1138,7 +1162,7 @@ export async function bootStandalone(root) {
             // hangar card says and it is the one a pilot has actually read.
             if (palOn && palOn.id !== "none" && !s.noPalFx)
                 on.push(`${palOn.name}: ${palOn.desc}`);
-            if (on.length) {
+            if (on.length && !spillSelected) {
                 // prefixed, because an unlabelled green line beneath a launch button
                 // reads as a slogan rather than as the state of the run
                 const line = el("span", "ac-hub-active");
@@ -1249,6 +1273,11 @@ export async function bootStandalone(root) {
         const wrap = el("div", "ac-lvlsheet");
         const sheet = el("div", "ac-lvlcard ac-modecard");
         sheet.append(el("p", "ac-kicker", "FREE FLIGHT"), el("h2", "ac-lvlname", "Modes"));
+        if (s.spillSuspended) {
+            const resume = el("button", "ac-primary", `RESUME SPILL · DEPOT ${s.spillSuspended.state.wave}`);
+            resume.onclick = () => { modesOpen = false; engine.spillResume(); };
+            sheet.append(resume);
+        }
         const bests = {
             fly: s.highScore, deep: s.deepBest, lost: s.lostBest, arcade: s.arcadeBest ?? 0,
             spill: s.spillBest ?? 0,
@@ -1387,76 +1416,152 @@ export async function bootStandalone(root) {
     // has to be read twice. The shelves are inert for a moment after they
     // appear (the Spill's own arm timer) so a thumb still tapping from the
     // wave cannot buy by accident, and the receipt names what was bought.
-    // The clock is the Spill's own; only its span repaints, in place.
+    // Stops are untimed; only the docking arm briefly disables the shelves.
+    function drawSpillPrep() {
+        const sp = engine.world.spill;
+        const save = engine.save;
+        const mastery = spillMastery(save.spillBest);
+        const panel = el("div", "ac-spillprep");
+        panel.append(el("p", "ac-kicker", "SALVAGE · SURVIVE · BUILD"), el("h2", "", "The Spill"), el("p", "ac-sub", "Hold to rise. Release to fall. Swipe up or down to burst, right to lunge."), el("p", "ac-sub", "Endless survival. Upgrade at an untimed Depot every five waves; wave 20 marks your first-pass victory."));
+        const label = el("label", "ac-spillselect", "Starting utility");
+        const select = el("select");
+        select.setAttribute("aria-label", "Starting utility");
+        const none = el("option", "", "Stock ship");
+        none.value = "";
+        select.append(none);
+        for (const id of SPILL_UTILITY_IDS) {
+            const u = SPILL_UTILITIES[id];
+            const option = el("option", "", `${u.name}${save.spillBest < u.unlock ? ` · clear wave ${u.unlock}` : " · earned"}`);
+            option.value = id;
+            option.disabled = save.spillBest < u.unlock;
+            select.append(option);
+        }
+        select.value = sp.utilities[0] ?? "";
+        select.onchange = () => engine.spillStarter((select.value || null));
+        label.append(select);
+        panel.append(label);
+        panel.append(el("p", "ac-sub", `${mastery.current.title} · best wave ${save.spillBest}`
+            + (mastery.next ? ` · next milestone ${mastery.next.at}` : " · all signals earned")));
+        if (save.spillBest >= 5) {
+            const signal = el("button", "ac-ghost", `${save.spillSignal ? "✓ " : ""}${mastery.current.finish}`);
+            signal.onclick = () => engine.spillSignal(!save.spillSignal);
+            panel.append(signal);
+        }
+        const launch = el("button", "ac-primary", "LAUNCH EXPEDITION");
+        launch.onclick = () => engine.spillLunge();
+        panel.append(launch);
+        return panel;
+    }
     function drawDepot(sp) {
-        const wrap = el("div", "ac-lvlsheet");
+        const wrap = el("div", "ac-lvlsheet ac-depotwrap");
         const sheet = el("div", "ac-lvlcard ac-depotcard");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-label", "The Spill Depot");
         const arming = (sp.depot?.arm ?? 0) > 0;
         if (arming)
             sheet.classList.add("arming");
-        const kicker = el("p", "ac-kicker");
-        const clock = el("span", "ac-depotclock", `${Math.ceil(sp.depot?.timer ?? 0)}s`);
-        kicker.append(el("span", "", `THE SPILL · WAVE ${sp.wave} CLEARED · `), clock);
-        sheet.append(kicker);
-        const tick = window.setInterval(() => {
-            const live = engine.world.spill;
-            if (!clock.isConnected || !live?.depot) {
-                window.clearInterval(tick);
-                return;
-            }
-            clock.textContent = `${Math.ceil(live.depot.timer)}s`;
-        }, 250);
-        sheet.append(el("h2", "ac-lvlname", "Depot"));
+        sheet.append(el("p", "ac-kicker", `WAVE ${sp.wave} CLEARED · TAKE YOUR TIME`), el("h2", "ac-lvlname", sp.firstPass ? "First pass complete" : "Salvage Depot"));
+        if (sp.firstPass)
+            sheet.append(el("p", "ac-gold", "Wave 20 cleared. Your first-pass victory is recorded. Keep your build and fly on—the Spill is endless."));
+        const stage = el("div", "ac-depotstage");
+        stage.style.backgroundImage = `linear-gradient(90deg,rgba(6,10,25,.5),transparent),url("${artUrl("spill-scene/depot.png")}")`;
+        const preview = miniCanvas(290, 130);
+        preview.c.setAttribute("aria-label", "Your upgraded ship");
+        if (preview.ctx)
+            paintShipPreview(preview.ctx, engine.art, engine.save, 120, 65, 2.8, sp.t, { plating: sp.up.plating, thrusters: sp.up.thrusters, pulse: sp.up.pulse, shield: sp.canopyLevel });
+        stage.append(preview.c);
+        sheet.append(stage);
         const ore = el("div", "ac-depotore");
         ore.append(el("span", "", "ORE TO SPEND"), el("b", "", String(sp.ore)));
         sheet.append(ore);
-        sheet.append(el("p", "ac-sub", `Hull ${sp.hull}/${sp.maxHull}`
-            + `${sp.shield ? ` · ${sp.shield} shield${sp.shield > 1 ? "s" : ""}` : ""}`
-            + `${sp.coreArmed ? " · core armed" : ""}`
-            + " · spend Ore, then fly"));
-        // one row per meter. The description is the NEXT level's, because that
-        // is what the price buys; a full meter says so instead
+        sheet.append(el("p", "ac-sub", `Hull ${sp.hull}/${sp.maxHull} · shields ${sp.shield}/2${sp.coreArmed ? " · core armed" : ""} · one pip restored on docking`));
+        if (sp.contractMessage)
+            sheet.append(el("p", "ac-gold", sp.contractMessage));
+        const nextWaves = Array.from({ length: 5 }, (_, i) => sp.wave + i + 1);
+        const forecast = nextWaves.map(n => {
+            const event = SPILL_EVENTS[spillEventFor(n, sp.seed)].name;
+            const mods = spillWaveSpec(n, sp.seed).mods.map(m => SPILL_MOD_INFO[m].name);
+            return `${n} ${[...mods, event].filter(Boolean).join(" + ") || "salvage"}`;
+        }).join(" · ");
+        sheet.append(el("p", "ac-depotforecast", `${spillSector(sp.wave + 1).name} · next waves ${forecast}`));
         const row = (what, filled, total, sub) => {
             const shop = SPILL_SHOP[what];
             const price = spillPrice(sp, what);
-            const can = price !== null && sp.ore >= price && !arming;
-            const b = el("button", `ac-moderow ac-offer ac-upg${price === null ? " full" : can ? "" : " ac-cardoff"}`);
-            if (price === null || arming)
-                b.disabled = true;
+            const b = el("button", `ac-moderow ac-offer ac-upg${price === null ? " full" : price > sp.ore ? " ac-cardoff" : ""}`);
+            b.dataset.spillControl = what;
+            b.disabled = price === null || arming || price > sp.ore;
             const t = el("span", "ac-moderowtxt");
             t.append(el("b", "", shop.name));
             const meter = el("span", "ac-upgmeter");
             for (let i = 0; i < total; i++)
                 meter.append(el("i", i < filled ? "on" : ""));
-            t.append(meter);
-            t.append(el("span", "", price === null ? sub : sub));
+            t.append(meter, el("span", "", sub));
             b.append(t, el("span", "ac-offerprice", price === null ? "FULL" : `${price} ORE`));
-            b.onclick = () => { engine.spillBuy(what); };
+            b.onclick = () => engine.spillBuy(what);
             sheet.append(b);
         };
-        const next = (what) => sp.up[what] >= SPILL_LEVELS ? `Level ${SPILL_LEVELS} · ${SPILL_SHOP[what].levels[SPILL_LEVELS - 1]}`
-            : `Next: ${SPILL_SHOP[what].levels[sp.up[what]]}`;
+        const next = (what) => sp.up[what] >= SPILL_LEVELS ? SPILL_SHOP[what].levels[SPILL_LEVELS - 1] : `Next: ${SPILL_SHOP[what].levels[sp.up[what]]}`;
         row("plating", sp.up.plating, SPILL_LEVELS, next("plating"));
-        row("shield", sp.shield, 2, sp.shield >= 2 ? "Two carried, the most the hull holds." : SPILL_SHOP.shield.levels[0]);
+        row("shield", sp.shield, 2, "Absorbs a hit, with a short recovery window. The canopy stays fitted.");
         row("thrusters", sp.up.thrusters, SPILL_LEVELS, next("thrusters"));
         row("pulse", sp.up.pulse, SPILL_LEVELS, next("pulse"));
         if (sp.hull < sp.maxHull)
-            row("repair", sp.hull, sp.maxHull, `Hull ${sp.hull}/${sp.maxHull} → full.`);
+            row("repair", sp.hull, sp.maxHull, "Restore every missing hull pip.");
         if (!sp.coreBought)
             row("core", 0, 1, SPILL_SHOP.core.levels[0]);
-        if (sp.depot?.bought.length) {
-            const names = sp.depot.bought.map((b) => SPILL_SHOP[b].name);
-            sheet.append(el("p", "ac-sub ac-depotreceipt", `Bought this stop: ${names.join(", ")}`));
+        const specs = Object.entries(SPILL_SPECIALTIES).filter(([, v]) => sp.up[v.axis] >= 2);
+        if (specs.length) {
+            sheet.append(el("p", "ac-shelfhead", "SPECIALIZATIONS · FREE TO REFIT"));
+            for (const [id, spec] of specs) {
+                const selected = sp.specialties[spec.axis] === id;
+                const b = el("button", `ac-spilloption${selected ? " selected" : ""}`);
+                b.dataset.spillControl = id;
+                b.disabled = arming;
+                b.append(el("b", "", `${selected ? "✓ " : ""}${spec.name}`), el("span", "", spec.desc));
+                b.onclick = () => engine.spillSpecialize(id);
+                sheet.append(b);
+            }
         }
+        else
+            sheet.append(el("p", "ac-sub", "Tier II unlocks a free specialization for that track."));
+        sheet.append(el("p", "ac-shelfhead", `UTILITIES · ${sp.utilities.length}/2 FITTED`), el("p", "ac-sub", "Buy once this run. Unfit a module to swap; owned modules refit for free."));
+        const utilities = el("div", "ac-spilloptions");
+        for (const id of SPILL_UTILITY_IDS) {
+            const u = SPILL_UTILITIES[id], fitted = sp.utilities.includes(id), owned = sp.ownedUtilities.includes(id);
+            const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
+            b.dataset.spillControl = id;
+            b.disabled = arming || (!fitted && (sp.utilities.length >= 2 || (!owned && sp.ore < u.price)));
+            b.append(el("b", "", `${u.icon} ${u.name}`), el("span", "", u.desc), el("strong", "", fitted ? "FITTED · UNFIT" : owned ? "FIT · OWNED" : `FIT · ${u.price} ORE`));
+            b.onclick = () => engine.spillUtility(id);
+            utilities.append(b);
+        }
+        sheet.append(utilities, el("p", "ac-shelfhead", "NEXT BLOCK · OPTIONAL CONTRACT"));
+        if (sp.contract)
+            sheet.append(el("p", "ac-gold", spillContractProgress(sp)));
+        else
+            for (const offer of spillContractOffers(sp.wave)) {
+                const b = el("button", "ac-spilloption");
+                b.disabled = arming;
+                b.dataset.spillControl = `contract-${offer.kind}`;
+                b.append(el("b", "", `${offer.name} · +${offer.reward} ORE`), el("span", "", offer.desc));
+                b.onclick = () => engine.spillContract(offer.kind);
+                sheet.append(b);
+            }
+        if (sp.depot?.bought.length)
+            sheet.append(el("p", "ac-sub ac-depotreceipt", `Bought: ${sp.depot.bought.map(b => SPILL_SHOP[b].name).join(", ")}`));
         const act = el("div", "ac-depotact");
-        const extend = el("button", "ac-ghost", `+${SPILL.extendSeconds}s · ${spillExtendPrice(sp)} ORE`);
-        extend.disabled = arming;
-        extend.onclick = () => engine.spillExtend();
-        const go = el("button", "ac-primary", "BACK TO THE FIELD");
+        if (!sp.target) {
+            const suspend = el("button", "ac-ghost", "SAVE & QUIT");
+            suspend.disabled = arming;
+            suspend.onclick = () => engine.spillSuspend();
+            act.append(suspend);
+        }
+        const go = el("button", "ac-primary", sp.firstPass ? "CONTINUE TO WAVE 21" : "BACK TO THE FIELD");
         go.disabled = arming;
         go.onclick = () => engine.spillLeaveDepot();
-        act.append(extend);
-        sheet.append(act, go);
+        const footer = el("div", "ac-depotfooter");
+        footer.append(act, go);
+        sheet.append(footer);
         wrap.append(sheet);
         return wrap;
     }
@@ -2168,7 +2273,7 @@ export async function bootStandalone(root) {
                 const shop = SPILL_SHOP[ax.part];
                 grid.append(el("p", "ac-shelfhead", `${shop.name.toUpperCase()} \u00b7 ${ax.blurb}`));
                 const row = el("div", "ac-shelfrow");
-                for (let lvl = 0; lvl <= 3; lvl++) {
+                for (let lvl = 0; lvl <= (ax.part === "shield" ? 2 : 3); lvl++) {
                     const b = el("button", lvl === shipPick[ax.key] ? "ac-card ac-modcard ac-shipcard on" : "ac-card ac-modcard ac-shipcard");
                     const txt = el("div", "ac-modtxt");
                     const isShield = ax.part === "shield";
@@ -4670,7 +4775,7 @@ export async function bootStandalone(root) {
                 ["LOST IN SPACE", "Drift, tilt, wormholes."],
                 ["ARCADE", "The 8-bit original. Double power-ups."],
                 ["HYPER RUN", "Thread gates. Finish fast."],
-                ["THE SPILL", "Survive waves. Collect Ore. Every 5 waves: Depot. Upgrade the ship."],
+                ["THE SPILL", "Survive endless waves. Build at untimed Depots and take contracts. Wave 20 records your first-pass victory; the run continues."],
             ]) {
                 const li = el("li", "");
                 li.append(el("b", "", name), el("span", "", line));

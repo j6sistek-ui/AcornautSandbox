@@ -1047,7 +1047,6 @@
     .ac-depotcard { gap: 8px; max-height: 94vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
       width: min(720px, 100%); margin-inline: auto; overscroll-behavior: contain; }
     .ac-depotcard > * { flex: none; }
-    .ac-depotclock { color: #ffd76a; font-variant-numeric: tabular-nums; }
     .ac-depotore { display: flex; justify-content: space-between; align-items: baseline;
       font: 800 11px/1 Figtree, sans-serif; letter-spacing: .14em; color: #c99bff; }
     .ac-depotore b { font-family: Fraunces, Georgia, serif; font-size: 26px; letter-spacing: 0; color: #d9b8ff; }
@@ -1069,6 +1068,24 @@
     .ac-depotreceipt { color: #d9b8ff; }
     .ac-depotact { display: flex; gap: 8px; }
     .ac-depotact .ac-ghost { flex: 1; font-size: 12px; padding: 12px 8px; letter-spacing: .06em; white-space: nowrap; }
+    .ac-depotwrap { background: rgba(3,6,18,.68); }
+    .ac-depotcard { text-align: left; padding-bottom: 0; }
+    .ac-depotcard .ac-lvlname { margin-bottom: 2px; }
+    .ac-depotstage { height: 140px; border-radius: 14px; background-size: cover; background-position: right 50%; overflow: hidden; border: 1px solid #ffffff1c; }
+    .ac-depotstage canvas { max-width: 100%; }
+    .ac-depotforecast { padding: 12px; background: #151d32; border-left: 3px solid #d5ab71; border-radius: 6px; font: 600 11px/1.6 Figtree,sans-serif; color: #ead8b8; }
+    .ac-spilloptions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ac-spilloption { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; min-height: 60px; padding: 12px; border: 1px solid #ffffff24; border-radius: 10px; background: #131d30; color: #e4ebff; text-align: left; font: 600 12px/1.4 Figtree,sans-serif; cursor: pointer; }
+    .ac-spilloption b { font-size: 13px; } .ac-spilloption span { color: #acbad0; } .ac-spilloption strong { color: #f4ce80; font-size: 11px; }
+    .ac-spilloption.selected { border-color: #88d6ad; background: #163029; } .ac-spilloption:disabled { cursor: default; opacity: .5; }
+    .ac-depotfooter { position: sticky; bottom: 0; margin-top: 8px; padding: 12px 0 max(12px,env(safe-area-inset-bottom)); background: #101526; display: flex; flex-direction: column; gap: 8px; z-index: 1; }
+    .ac-depotfooter > .ac-primary { width: 100%; min-height: 48px; }
+    .ac-spillprep { position: absolute; bottom: max(18px,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(450px,calc(100% - 28px)); max-height: 70%; overflow: auto; pointer-events: auto; padding: 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; background: rgba(10,17,34,.96); border: 1px solid #b8a1ff50; border-radius: 18px; box-shadow: 0 12px 60px #0008; }
+    .ac-spillprep h2 { margin: 0; font: 700 28px Fraunces,serif; }
+    .ac-spillprep p { margin: 0; }
+    .ac-spillselect { display: flex; flex-direction: column; gap: 6px; font: 700 12px Figtree,sans-serif; color: #d0dcf1; }
+    .ac-spillselect select { color: #e7e8ff; background: #20263c; border: 1px solid #ffffff30; border-radius: 9px; padding: 10px; min-height: 44px; font: 600 14px Figtree,sans-serif; }
+    @media(max-width:380px) { .ac-spilloptions { grid-template-columns: 1fr; } .ac-depotact { flex-wrap: wrap; } }
 
     /* ================= THE HUB (v85) =================
        The home is a hub of saturated tiles over the purple key art.
@@ -1675,7 +1692,7 @@
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js173/standalone.js")
+    import("./js174/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

@@ -42,8 +42,7 @@ import {
 // hand. The generated result is deliberately data, not code: the whole
 // 100 is printed into ROADMAP.md by build-roadmap.mjs for review.
 
-// "tunnel" and "spill" are MISSION bases the BETA grafts onto the chart —
-// the live page never generates them (see the IS_BETA block under LEVELS).
+// Spill missions ship on the chart; tunnel missions remain a beta trial.
 export type FlightBase = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill" | "race";
 
 export type LevelFx = {
@@ -389,19 +388,12 @@ const IS_BETA =
   typeof window !== "undefined" &&
   (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
 //
-// BETA ONLY — the first deliberate fork between the two pages. On the
-// beta, every chapter from 2 on gives two of its levels to the test
-// modes: level N-4 becomes a WORMHOLE RUN mission, level N-8 a SPILL
-// mission. Level ids and star masks are unchanged, so one save reads
-// identically on both pages, and reverting is deleting this block —
-// the live chart underneath is the fallback, untouched.
-//
-// Tunnel targets are SECONDS; spill targets are WAVES. Both climb with
-// the chapter. Tune freely — the level spreadsheet mirrors this.
-if (IS_BETA) {
-  for (const l of LEVELS) {
+// Spill missions give the survival build loop a place in the main chart.
+// Existing level IDs and star masks remain stable across both pages.
+// Tunnel targets are seconds; Spill targets are waves.
+for (const l of LEVELS) {
     if (l.stage < 2) continue;
-    if (l.n === 4) {
+    if (IS_BETA && l.n === 4) {
       l.base = "tunnel";
       l.gates = 20 + l.stage * 5;                 // SECONDS survived: 30..70
       l.goals = [
@@ -416,7 +408,7 @@ if (IS_BETA) {
       // Depot opens; from chapter 4 on the shop is inside the mission, so
       // spending well is part of the test rather than a bonus.
       l.base = "spill";
-      l.gates = 2 + l.stage;                      // WAVES cleared: 4..12
+      l.gates = l.stage === 10 ? 20 : 2 + l.stage; // Short lessons; final Star Map victory at wave 20
       l.goals = [
         { kind: "finish" },
         { kind: "ore", n: 25 + l.stage * 8 },     // 41..105 Ore mined
@@ -424,7 +416,6 @@ if (IS_BETA) {
       ];
       l.fx = { env: l.fx.env };
     }
-  }
 }
 
 export const levelById = (id: string) => LEVELS.find((l) => l.id === id) ?? null;

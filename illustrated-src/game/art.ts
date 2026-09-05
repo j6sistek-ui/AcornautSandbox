@@ -69,6 +69,7 @@ export type ArtBank = {
    *  in the lab's Ship Bench and read from transforms.json beside the art */
   spillShip: Record<string, Sprite>;
   spillShipFit: SpillShipFit | null;
+  spillScene?: Record<string, HTMLImageElement>;
 };
 
 export type SpillShipXf = { dx: number; dy: number; scale: number; rot: number; behind?: boolean };
@@ -105,6 +106,18 @@ function loadImg(src: string) {
     img.onerror = () => reject(new Error(src));
     img.src = url;
   });
+}
+
+const spillSceneLoads = new WeakMap<ArtBank, Promise<void>>();
+/** Mode art loads only when this mode is opened, without holding its launch. */
+export function loadSpillScene(bank: ArtBank): Promise<void> {
+  const existing = spillSceneLoads.get(bank);
+  if (existing) return existing;
+  bank.spillScene = {};
+  const promise = Promise.all(["depot", "panorama"].map(async name => {
+    try { bank.spillScene![name] = await loadImg(artUrl(`spill-scene/${name}.png`)); } catch { /* the procedural field stays playable */ }
+  })).then(() => {});
+  spillSceneLoads.set(bank, promise); return promise;
 }
 
 function measureSprite(img: HTMLImageElement): { box: Box; core: number; coreX: number; coreY: number } {

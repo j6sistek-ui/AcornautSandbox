@@ -1,11 +1,12 @@
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=173";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=173";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=173";
-import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=173";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=173";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=173";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=173";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=173";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=174";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=174";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=174";
+import { countBits, emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=174";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=174";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=174";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=174";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=174";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=174";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -1023,6 +1024,14 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         ? createSpill(w.W, w.H, level ? 5000 + level.ord : (Math.random() * 0x100000000) >>> 0, level ? level.gates : 0, !save.helpOff)
         : null;
     w.spillCues = [];
+    if (w.spill) {
+        const starter = save.spillStarter;
+        if (!level && starter && SPILL_UTILITIES[starter] && save.spillBest >= SPILL_UTILITIES[starter].unlock) {
+            w.spill.utilities = [starter];
+            w.spill.ownedUtilities = [starter];
+        }
+        w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+    }
     w.speed = PHYS.baseSpeed;
     w.distance = 0;
     w.lastSpawnX = w.W * 0.55;

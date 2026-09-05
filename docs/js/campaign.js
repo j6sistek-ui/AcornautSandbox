@@ -1,4 +1,4 @@
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=173";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=174";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -275,43 +275,35 @@ export const LEVELS = STAGES.flatMap((st) => Array.from({ length: 10 }, (_, i) =
 const IS_BETA = typeof window !== "undefined" &&
     window.__ACORNAUT_BETA__ === true;
 //
-// BETA ONLY — the first deliberate fork between the two pages. On the
-// beta, every chapter from 2 on gives two of its levels to the test
-// modes: level N-4 becomes a WORMHOLE RUN mission, level N-8 a SPILL
-// mission. Level ids and star masks are unchanged, so one save reads
-// identically on both pages, and reverting is deleting this block —
-// the live chart underneath is the fallback, untouched.
-//
-// Tunnel targets are SECONDS; spill targets are WAVES. Both climb with
-// the chapter. Tune freely — the level spreadsheet mirrors this.
-if (IS_BETA) {
-    for (const l of LEVELS) {
-        if (l.stage < 2)
-            continue;
-        if (l.n === 4) {
-            l.base = "tunnel";
-            l.gates = 20 + l.stage * 5; // SECONDS survived: 30..70
-            l.goals = [
-                { kind: "finish" },
-                { kind: "acorns", n: 4 + l.stage * 2 }, // 8..24 acorns
-                { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
-            ];
-            l.fx = { env: l.fx.env }; // missions run their own physics
-        }
-        else if (l.n === 8) {
-            // A Spill mission is a wave ladder with a top rung: clear wave N and
-            // the level is done. Chapter 3's mission ends AT wave 5, before the
-            // Depot opens; from chapter 4 on the shop is inside the mission, so
-            // spending well is part of the test rather than a bonus.
-            l.base = "spill";
-            l.gates = 2 + l.stage; // WAVES cleared: 4..12
-            l.goals = [
-                { kind: "finish" },
-                { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined
-                { kind: "noHit" },
-            ];
-            l.fx = { env: l.fx.env };
-        }
+// Spill missions give the survival build loop a place in the main chart.
+// Existing level IDs and star masks remain stable across both pages.
+// Tunnel targets are seconds; Spill targets are waves.
+for (const l of LEVELS) {
+    if (l.stage < 2)
+        continue;
+    if (IS_BETA && l.n === 4) {
+        l.base = "tunnel";
+        l.gates = 20 + l.stage * 5; // SECONDS survived: 30..70
+        l.goals = [
+            { kind: "finish" },
+            { kind: "acorns", n: 4 + l.stage * 2 }, // 8..24 acorns
+            { kind: "flow", n: l.stage >= 7 ? 4 : l.stage >= 4 ? 3 : 2 },
+        ];
+        l.fx = { env: l.fx.env }; // missions run their own physics
+    }
+    else if (l.n === 8) {
+        // A Spill mission is a wave ladder with a top rung: clear wave N and
+        // the level is done. Chapter 3's mission ends AT wave 5, before the
+        // Depot opens; from chapter 4 on the shop is inside the mission, so
+        // spending well is part of the test rather than a bonus.
+        l.base = "spill";
+        l.gates = l.stage === 10 ? 20 : 2 + l.stage; // Short lessons; final Star Map victory at wave 20
+        l.goals = [
+            { kind: "finish" },
+            { kind: "ore", n: 25 + l.stage * 8 }, // 41..105 Ore mined
+            { kind: "noHit" },
+        ];
+        l.fx = { env: l.fx.env };
     }
 }
 export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? null;

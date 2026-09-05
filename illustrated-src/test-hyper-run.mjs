@@ -1459,12 +1459,12 @@ try {
   const pauseEnd = engineSource.indexOf("    resume() {", pauseStart);
   const pauseContract = engineSource.slice(pauseStart, pauseEnd);
   assert(pauseStart >= 0 && pauseEnd > pauseStart
-    && pauseContract.includes("if (world.race) raceAccumulator = 0;")
+    && pauseContract.includes("if (world.race || world.spill) raceAccumulator = 0;")
     && pauseContract.includes("pausePlay(world);"),
   "engine pause no longer discards the race accumulator before pausing authority");
-  assert(/window\.addEventListener\("blur", \(\) => \{\s*if \(world\.race && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
+  assert(/window\.addEventListener\("blur", \(\) => \{\s*if \(\(world\.race \|\| world\.spill\) && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
     "engine blur no longer routes an active race through pause");
-  assert(/document\.addEventListener\("visibilitychange", \(\) => \{\s*if \(document\.hidden\) \{\s*if \(world\.race && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
+  assert(/document\.addEventListener\("visibilitychange", \(\) => \{\s*if \(document\.hidden\) \{\s*if \(\(world\.race \|\| world\.spill\) && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
     "engine visibility loss no longer routes an active race through pause");
   assert(engineSource.includes("dispatchRaceCues(takeRaceCueEffects(world));")
     && engineSource.includes("for (const effect of planRaceCueEffects(cues))")

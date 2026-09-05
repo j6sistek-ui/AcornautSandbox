@@ -1,5 +1,5 @@
 import { suitLean, SUIT_LEAN } from "./control-constants";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, prefetchArtBanks, type ArtBank } from "./art";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setPoseDials } from "./draw";
@@ -63,7 +63,10 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
-import { spillBuy, spillExtend, spillLeaveDepot, spillLunge, type SpillBuyable, type SpillCue } from "./spill";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
+  spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
+import { SPILL_UTILITIES, spillMastery, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
+import { bankSpill } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -139,8 +142,14 @@ export type Engine = {
    *  the release and the bursts ride the shared pointer path. */
   spillLunge: () => void;
   spillBuy: (what: SpillBuyable) => string;
-  spillExtend: () => string;
   spillLeaveDepot: () => void;
+  spillUtility: (id: SpillUtility) => string;
+  spillSpecialize: (id: SpillSpecialty) => boolean;
+  spillContract: (id: SpillContractKind) => boolean;
+  spillSuspend: () => boolean;
+  spillResume: () => boolean;
+  spillStarter: (id: SpillUtility | null) => void;
+  spillSignal: (on: boolean) => void;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
   buySuit: (id: string) => string;
@@ -230,6 +239,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
+      if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art).then(notify); }
       resetInputTracking();
       notify();
     },
@@ -269,6 +279,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // A Spill mission does the same with its wave ladder (see resetRun).
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? 7000 + def.ord : undefined);
+      if (def.base === "spill") void loadSpillScene(engine.art).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
       guideStep("level");
@@ -514,19 +525,55 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (!world.spill || world.screen !== "play") return "closed";
       const r = spillBuy(world.spill, what);
       if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
-      notify();
-      return r;
-    },
-    spillExtend() {
-      if (!world.spill || world.screen !== "play") return "closed";
-      const r = spillExtend(world.spill);
-      if (r === "ok") sfx.ui(); else if (r === "poor") sfx.warning();
+      if (r === "ok") checkpointSpill();
       notify();
       return r;
     },
     spillLeaveDepot() {
       if (!world.spill || world.screen !== "play") return;
-      if (spillLeaveDepot(world.spill)) { sfx.section(); notify(); }
+      if (spillLeaveDepot(world.spill)) {
+        if (!world.spill.target) { save.spillSuspended = null; writeSave(save); }
+        sfx.section(); notify();
+      }
+    },
+    spillUtility(id) {
+      if (!world.spill || world.screen !== "play") return "closed";
+      const result = spillUtility(world.spill, id);
+      if (result === "ok") { checkpointSpill(); sfx.ui(); } else sfx.warning();
+      notify(); return result;
+    },
+    spillSpecialize(id) {
+      const ok = world.screen === "play" && world.spill && spillSpecialize(world.spill, id);
+      if (ok) { checkpointSpill(); sfx.ui(); notify(); } return !!ok;
+    },
+    spillContract(id) {
+      const ok = world.screen === "play" && world.spill && spillTakeContract(world.spill, id);
+      if (ok) { checkpointSpill(); sfx.ui(); notify(); } return !!ok;
+    },
+    spillSuspend() {
+      if (world.screen !== "play" || !world.spill || !spillCheckpoint(world.spill)) return false;
+      checkpointSpill(); spillRelease(world); world.spill = null; world.screen = "title";
+      resetInputTracking(); notify(); return true;
+    },
+    spillResume() {
+      const restored = restoreSpill(save.spillSuspended, world.W, world.H);
+      if (!restored) return false;
+      unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored;
+      void loadSpillScene(engine.art).then(notify);
+      world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
+      world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
+      resetInputTracking(); raceAccumulator = 0; last = performance.now(); notify(); return true;
+    },
+    spillStarter(id) {
+      if (!world.spill || world.spill.phase !== "ready" || world.spill.target) return;
+      if (id && (!SPILL_UTILITIES[id] || save.spillBest < SPILL_UTILITIES[id].unlock)) return;
+      save.spillStarter = id; world.spill.utilities = id ? [id] : []; world.spill.ownedUtilities = id ? [id] : [];
+      writeSave(save); notify();
+    },
+    spillSignal(on) {
+      if (!world.spill || !["ready", "depot"].includes(world.spill.phase) || save.spillBest < 5) return;
+      save.spillSignal = on; world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff";
+      checkpointSpill(); writeSave(save); notify();
     },
     dismissDead() {
       world.screen = "title";
@@ -546,11 +593,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     pause() {
       cancelRaceControls();
+      spillRelease(world);
       swipe = null;
       // A race pause discards the incomplete presentation-frame remainder.
       // Resume starts from the next whole 60 Hz authority step, so focus loss
       // can never leak hidden-tab wall time into the time trial.
-      if (world.race) raceAccumulator = 0;
+      if (world.race || world.spill) raceAccumulator = 0;
       pausePlay(world);
       notify();
     },
@@ -937,6 +985,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         try { canvas.releasePointerCapture(owner); } catch { /* capture is best-effort */ }
       }
     }
+    const spillResize = sizeChanged && world.spill !== null && world.screen === "play" && !world.ready;
+    if (spillResize) { spillRelease(world); resetInputTracking(); raceAccumulator = 0; pausePlay(world); }
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
     canvas.style.width = `${W}px`;
@@ -944,10 +994,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     resizeWorld(world, W, H);
     if (!world.stars.length) initStars(world);
-    if (ownedRaceResize) notify();
+    if (ownedRaceResize || spillResize) notify();
   }
 
-  let swipe: { x0: number; y0: number; t0: number; fired: boolean } | null = null;
+  let swipe: { owner: number; x0: number; y0: number; t0: number; fired: boolean } | null = null;
 
   function applyRaceGesture(result: RaceGestureResult) {
     raceGesture = result.state;
@@ -997,7 +1047,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         notify();
         return;
       }
-      swipe = { x0: p.x, y0: p.y, t0: performance.now(), fired: false };
+      swipe = { owner: e.pointerId, x0: p.x, y0: p.y, t0: performance.now(), fired: false };
+      if (world.spill) { try { canvas.setPointerCapture(e.pointerId); } catch { /* browser cancelled the pointer */ } }
       // A tap is a tap everywhere, the corridor included. Hold-to-rise and
       // slide-and-hold were flown against it and retired - see the note in
       // updateTunnel - so nothing intercepts this any more.
@@ -1029,9 +1080,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
 
-      if (!swipe || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
+      if (!swipe || swipe.owner !== e.pointerId || swipe.fired || world.screen !== "play" || world.flight === "tunnel") return;
       const p = pos(e);
-      if (performance.now() - swipe.t0 > 320) {
+      if (!world.spill && performance.now() - swipe.t0 > 320) {
         swipe = null;
         return;
       }
@@ -1071,11 +1122,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
     if (world.race) return;
     // the Spill's hand comes off the thrust with the finger
-    if (world.spill) spillRelease(world);
+    if (world.spill) {
+      if (swipe?.owner !== e.pointerId) return;
+      spillRelease(world);
+    }
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
+  canvas.addEventListener("lostpointercapture", end);
   // A held thrust is a long-press to the browser: without these, phones
   // answer it with text selection and the copy bubble over the whole HUD.
   canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
@@ -1182,7 +1237,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
   });
   window.addEventListener("blur", () => {
-    if (world.race && world.screen === "play") {
+    if ((world.race || world.spill) && world.screen === "play") {
       engine.pause();
       return;
     }
@@ -1192,7 +1247,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-      if (world.race && world.screen === "play") {
+      if ((world.race || world.spill) && world.screen === "play") {
         engine.pause();
         return;
       }
@@ -1243,6 +1298,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // per kind per frame, so a PULSE through six rocks is one thud, not six.
   function dispatchSpillCues(cues: SpillCue[]) {
     if (!cues.length) return;
+    const spill = world.spill;
+    if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
+      bankSpill(save, spill, true);
+      if (!spill.target) save.spillSuspended = null;
+      writeSave(save);
+    } else if (cues.includes("depot")) checkpointSpill();
     // one sound per SOUND per frame, not per cue: a hit and the shatter it
     // causes share the hull thud, a Depot-wave clear and its milestone share
     // the fanfare, and neither should play twice
@@ -1251,37 +1312,43 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // a graze is deliberately not a re-render: the play overlay is only the
     // two buttons and pause, and "charged" already relights PULSE
     const NOTIFY: SpillCue[] = ["hit", "hull", "charged", "pulse", "wave", "go", "dock", "depot", "armed",
-      "depot-close", "buy", "deny", "respawn", "recharge", "mission"];
+      "depot-close", "buy", "deny", "respawn", "recharge", "mission", "contract", "dead"];
     // press and burst sound on the pointer path already
     const SOUND: Partial<Record<SpillCue, keyof typeof sfx>> = {
       hit: "bounce", shatter: "bounce", ore: "acorn", gold: "gold", shield: "shield", hull: "region",
       graze: "near", pulse: "shift", count: "ui", go: "section", clear: "milestone", milestone: "milestone",
       dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
-      warn: "warning", mission: "milestone",
+      warn: "warning", event: "warning", contract: "milestone", mission: "milestone",
     };
     for (const c of new Set(cues)) {
       const snd = SOUND[c];
       if (snd) sounds.add(snd);
-      // the Depot clock repaints itself in place; a full re-render every
-      // second would pull a shelf out from under a finger, so "tick" is
-      // deliberately not on the list
       if (NOTIFY.includes(c)) shouldNotify = true;
     }
     for (const snd of sounds) sfx[snd]();
     if (shouldNotify) notify();
   }
+  function checkpointSpill() {
+    const spill = world.spill;
+    if (!spill || spill.phase !== "depot") return;
+    if (!spill.target && spill.wave === 20 && save.spillBest < 20) spill.firstPass = true;
+    bankSpill(save, spill);
+    if (!spill.target) save.spillSuspended = spillCheckpoint(spill);
+    writeSave(save);
+  }
   function loop(now: number) {
     const frameDt = Math.min(0.25, (now - last) / 1000);
     noteFrameCost(now - last);
     last = now;
-    if (world.race) {
+    if (world.race || world.spill) {
       raceAccumulator += frameDt;
       while (raceAccumulator + 1e-12 >= 1 / 60) {
         // Race cues are drained after every authority step, not once per
         // render frame. This preserves simultaneous pass/debris feedback and
         // prevents high-refresh rendering from replaying audio side effects.
-        updateWorld(world, save, 1 / 60);
-        dispatchRaceCues(takeRaceCueEffects(world));
+        const ev = updateWorld(world, save, 1 / 60);
+        if (world.race) dispatchRaceCues(takeRaceCueEffects(world));
+        else { dispatchWorldEvent(ev); dispatchSpillCues(takeSpillCues(world)); }
         raceAccumulator -= 1 / 60;
         if (world.screen === "lvldone") break;
       }
@@ -1349,6 +1416,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     .then((bank) => {
       art = bank;
       engine.art = bank;
+      if (world.spill) void loadSpillScene(bank).then(notify);
       notify();
       prefetchArtBanks(bank);
     })
