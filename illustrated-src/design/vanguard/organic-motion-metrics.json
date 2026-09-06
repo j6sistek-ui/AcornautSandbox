@@ -1,0 +1,272 @@
+[
+  {
+    "label": "FIRST REVIEW",
+    "mode": "cruise",
+    "cadence": 0.1,
+    "metrics": {
+      "nearHand": {
+        "excursion": 0.31295479728230474,
+        "maxFrameStep": 0.31295479728230474
+      },
+      "farHand": {
+        "excursion": 0.6873366034516114,
+        "maxFrameStep": 0.6866861379348514
+      },
+      "nearFoot": {
+        "excursion": 0.30097580400708257,
+        "maxFrameStep": 0.02047603697448891
+      }
+    },
+    "handsCorrelation": 0.005393483132591113,
+    "handFootCorrelation": 0.008098736397327918,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "FIRST REVIEW",
+    "mode": "cruise",
+    "cadence": 0.18,
+    "metrics": {
+      "nearHand": {
+        "excursion": 0.32772467825354823,
+        "maxFrameStep": 0.3238119050820785
+      },
+      "farHand": {
+        "excursion": 0.6844393292865858,
+        "maxFrameStep": 0.6724682536375076
+      },
+      "nearFoot": {
+        "excursion": 0.3130562248795972,
+        "maxFrameStep": 0.029851741366176805
+      }
+    },
+    "handsCorrelation": 0.021829011580185496,
+    "handFootCorrelation": 0.11867473834821952,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "FIRST REVIEW",
+    "mode": "cruise",
+    "cadence": 0.3,
+    "metrics": {
+      "nearHand": {
+        "excursion": 0.3928074051063813,
+        "maxFrameStep": 0.31646264637625354
+      },
+      "farHand": {
+        "excursion": 0.6901760243410332,
+        "maxFrameStep": 0.6710178131222818
+      },
+      "nearFoot": {
+        "excursion": 0.3913749163420255,
+        "maxFrameStep": 0.05236931956655095
+      }
+    },
+    "handsCorrelation": 0.08700112292579565,
+    "handFootCorrelation": 0.40065001044690235,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "FLIGHT",
+    "mode": "cruise",
+    "cadence": 0.1,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4463723879213815,
+        "maxFrameStep": 0.2522176504842208
+      },
+      "farHand": {
+        "excursion": 3.189739620822141,
+        "maxFrameStep": 0.34974575765836
+      },
+      "nearFoot": {
+        "excursion": 1.7981415736166904,
+        "maxFrameStep": 0.08070174065086545
+      }
+    },
+    "handsCorrelation": 0.2809288947826655,
+    "handFootCorrelation": 0.6864269266015237,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "UPRIGHT",
+    "mode": "jetpack",
+    "cadence": 0.1,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4463723879213815,
+        "maxFrameStep": 0.2522176504842208
+      },
+      "farHand": {
+        "excursion": 3.189739620822141,
+        "maxFrameStep": 0.34974575765836
+      },
+      "nearFoot": {
+        "excursion": 1.7981415736166904,
+        "maxFrameStep": 0.08070174065086545
+      }
+    },
+    "handsCorrelation": 0.2809288947826655,
+    "handFootCorrelation": 0.6864269266015237,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "FLIGHT",
+    "mode": "cruise",
+    "cadence": 0.18,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4429799156996834,
+        "maxFrameStep": 0.26397490713331473
+      },
+      "farHand": {
+        "excursion": 3.1897576359950475,
+        "maxFrameStep": 0.3488287804352008
+      },
+      "nearFoot": {
+        "excursion": 1.819736277356164,
+        "maxFrameStep": 0.08302294909089271
+      }
+    },
+    "handsCorrelation": 0.28098332016715655,
+    "handFootCorrelation": 0.686888883309069,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "UPRIGHT",
+    "mode": "jetpack",
+    "cadence": 0.18,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4429799156996834,
+        "maxFrameStep": 0.26397490713331473
+      },
+      "farHand": {
+        "excursion": 3.1897576359950475,
+        "maxFrameStep": 0.3488287804352008
+      },
+      "nearFoot": {
+        "excursion": 1.819736277356164,
+        "maxFrameStep": 0.08302294909089271
+      }
+    },
+    "handsCorrelation": 0.28098332016715655,
+    "handFootCorrelation": 0.686888883309069,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "FLIGHT",
+    "mode": "cruise",
+    "cadence": 0.3,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4374628081675187,
+        "maxFrameStep": 0.2775540920865849
+      },
+      "farHand": {
+        "excursion": 3.187286818342457,
+        "maxFrameStep": 0.3562135273393233
+      },
+      "nearFoot": {
+        "excursion": 1.8939058415207,
+        "maxFrameStep": 0.09941697129193877
+      }
+    },
+    "handsCorrelation": 0.2840772124301899,
+    "handFootCorrelation": 0.689649532140482,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  },
+  {
+    "label": "UPRIGHT",
+    "mode": "jetpack",
+    "cadence": 0.3,
+    "metrics": {
+      "nearHand": {
+        "excursion": 2.4374628081675187,
+        "maxFrameStep": 0.2775540920865849
+      },
+      "farHand": {
+        "excursion": 3.187286818342457,
+        "maxFrameStep": 0.3562135273393233
+      },
+      "nearFoot": {
+        "excursion": 1.8939058415207,
+        "maxFrameStep": 0.09941697129193877
+      }
+    },
+    "handsCorrelation": 0.2840772124301899,
+    "handFootCorrelation": 0.689649532140482,
+    "nearHandVisualGoal": {
+      "pixels": 3,
+      "met": false
+    },
+    "regressionMinimum": {
+      "nearHand": 2.3,
+      "farHand": 3,
+      "nearFoot": 1.5
+    }
+  }
+]

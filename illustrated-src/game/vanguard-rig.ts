@@ -62,7 +62,7 @@ function makePatch(part: Patch['part'], rows: readonly Row[], columns: number,
       let influence=edge ? 0 : 1-smooth(innerRadius,outerRadius,d);
       // The near glove overlaps the torso in the flattened art. Keep the
       // chest/waist side of the cage still instead of dragging its seam.
-      if(part==='nearArm') influence*=1-smooth(252,273,x);
+      if(part==='nearArm') influence*=1-smooth(266,291,x);
       weights[i*4]=influence;
       weights[i*4+1]=smooth(-.08,.68,along(x,y,elbow,wrist));
       weights[i*4+2]=smooth(.62,1.14,along(x,y,elbow,wrist));
@@ -90,14 +90,14 @@ function makePatch(part: Patch['part'], rows: readonly Row[], columns: number,
 
 /** Source anchors were registered against frames 1, 9 and 16. Mesh boundaries
  * deliberately avoid the helmet, pack, chest emblem and swept-tail pixels.
- * The total bound is 114 small triangle draws plus one rigid image draw;
+ * The total bound is 128 small triangle draws plus one rigid image draw;
  * topology/weights are cached, and rendering allocates no canvases or pixels.
  */
 const PATCHES: readonly Patch[] = [
   makePatch('nearArm',[
     [225,244,291],[247,231,297],[271,217,301],
-    [295,202,295],[324,207,285],
-  ],5,[264,252],[232,270],[238,298],.38,.84,.15,[0,0],17,39),
+    [285,209,295],[300,184,288],[325,206,282],
+  ],5,[272,246],[232,270],[238,298],-.90,-.76,-.18,[0,0],21,48),
   makePatch('farArm',[
     [262,337,398],[282,338,459],[309,343,478],
     [340,368,477],[370,396,465],
@@ -107,7 +107,7 @@ const PATCHES: readonly Patch[] = [
     [405,110,233],[434,112,208],
   ],5,[239,328],[215,369],[151,390],.27,.63,.08,[.90,-.52],23,49),
   makePatch('farLeg',[
-    [290,184,201],[314,149,203],[341,134,191],
+    [290,184,198],[300,167,181],[314,149,194],[341,134,191],
     [367,144,170],
   ],4,[213,306],[166,336],[146,354],.22,.40,0,[.42,-.32],13,31),
 ];
@@ -145,29 +145,47 @@ function posePatch(p: Patch, angle: number, settle: number) {
     d[i*2]=x+(rx-x+p.tuck[0]*tuck)*weight;
     d[i*2+1]=y+(ry-y+p.tuck[1]*tuck)*weight;
   }
-  // A safety guard for arbitrary preview/debug inputs: never allow a cage
-  // cell to fold inside-out. Smooth controller inputs remain below this guard.
-  for(let pass=0;pass<4;pass++) {
-    let valid=true;
-    for(const t of p.triangles) {
-      const ax=d[t.a*2],ay=d[t.a*2+1];
-      const area=(d[t.b*2]-ax)*(d[t.c*2+1]-ay)
-        -(d[t.b*2+1]-ay)*(d[t.c*2]-ax);
-      if(area/t.det<.24) { valid=false;break; }
+  // Find a CONTINUOUS non-folding limit. The former .68-step retry produced
+  // a visible pop whenever one crowded cell crossed its area threshold.
+  // Triangle area is quadratic in the neutral-to-posed interpolation, so
+  // its first positive root gives the maximum safe motion without retries.
+  let amount=1;
+  for(const t of p.triangles) {
+    const a=t.a*2,b=t.b*2,c=t.c*2;
+    const ux=s[b]-s[a],uy=s[b+1]-s[a+1],vx=s[c]-s[a],vy=s[c+1]-s[a+1];
+    const dux=d[b]-d[a]-ux,duy=d[b+1]-d[a+1]-uy;
+    const dvx=d[c]-d[a]-vx,dvy=d[c+1]-d[a+1]-vy;
+    const A=(dux*dvy-duy*dvx)/t.det;
+    const B=(dux*vy-duy*vx+ux*dvy-uy*dvx)/t.det;
+    if(Math.abs(A)<1e-8) {
+      if(B<0)amount=Math.min(amount,-.76/B);
+    } else {
+      const discriminant=B*B-4*A*.76;
+      if(discriminant>=0) {
+        const root=Math.sqrt(discriminant);
+        const r1=(-B-root)/(2*A),r2=(-B+root)/(2*A);
+        if(r1>0)amount=Math.min(amount,r1);
+        if(r2>0)amount=Math.min(amount,r2);
+      }
     }
-    if(valid) break;
-    for(let i=0;i<d.length;i++) d[i]=s[i]+(d[i]-s[i])*.68;
   }
+  if(amount<1)for(let i=0;i<d.length;i++)d[i]=s[i]+(d[i]-s[i])*amount;
 }
 
 function expandedCorner(ctx: CanvasRenderingContext2D, first: boolean,
-  px:number,py:number,x:number,y:number,nx:number,ny:number,pad:number) {
+  px:number,py:number,x:number,y:number,nx:number,ny:number,pad:number,bevel=false) {
   const previousLength=Math.max(1,Math.hypot(x-px,y-py));
   const nextLength=Math.max(1,Math.hypot(nx-x,ny-y));
   // Source triangles use a consistent positive winding. Offset both edge
   // lines outward by the same perpendicular distance, then intersect them.
   const ax=(y-py)/previousLength,ay=(px-x)/previousLength;
   const bx=(ny-y)/nextLength,by=(x-nx)/nextLength;
+  if(bevel) {
+    // A bevel keeps both shifted edge lines parallel, even for thin cells.
+    // Capping an acute miter shortens those offsets and reopens a hairline.
+    if(first)ctx.moveTo(x+ax*pad,y+ay*pad);else ctx.lineTo(x+ax*pad,y+ay*pad);
+    ctx.lineTo(x+bx*pad,y+by*pad);return;
+  }
   const miter=pad/Math.max(.06,1+ax*bx+ay*by);
   const ox=x+(ax+bx)*miter,oy=y+(ay+by)*miter;
   if(first)ctx.moveTo(ox,oy);else ctx.lineTo(ox,oy);
@@ -189,9 +207,9 @@ function paintPatch(ctx: CanvasRenderingContext2D, frame: CanvasImageSource,
     // Slightly overdraw only shared interior seams. The enclosing fixed
     // patch clip contains the overdraw so the rigid art cannot be doubled.
     ctx.save();ctx.beginPath();
-    expandedCorner(ctx,true,x2,y2,x0,y0,x1,y1,overlap);
-    expandedCorner(ctx,false,x0,y0,x1,y1,x2,y2,overlap);
-    expandedCorner(ctx,false,x1,y1,x2,y2,x0,y0,overlap);
+    expandedCorner(ctx,true,x2,y2,x0,y0,x1,y1,overlap,true);
+    expandedCorner(ctx,false,x0,y0,x1,y1,x2,y2,overlap,true);
+    expandedCorner(ctx,false,x1,y1,x2,y2,x0,y0,overlap,true);
     ctx.closePath();ctx.clip();
     ctx.transform(m00,m10,m01,m11,x0-m00*ax-m01*ay,y0-m10*ax-m11*ay);
     ctx.drawImage(frame,0,0,512,512);ctx.restore();
@@ -227,7 +245,7 @@ function createTexture(size: number): RigTexture | undefined {
 function renderRig(ctx: CanvasRenderingContext2D,frame:CanvasImageSource,scale:number,
   nearArm:number,farArm:number,nearLeg:number,farLeg:number,settle:number) {
   ctx.save();ctx.translate(-280*scale,-280*scale);ctx.scale(scale,scale);
-  const overlap=Math.min(3,1.15/Math.max(.05,scale));
+  const overlap=Math.min(3,1.4/Math.max(.05,scale));
   // Draw the body/head/pack/tail exactly once, excluding only rigged patches.
   ctx.save();ctx.beginPath();ctx.rect(0,0,512,512);
   for(const p of PATCHES) boundary(ctx,p,overlap*1.5);
@@ -256,7 +274,7 @@ export function paintVanguardRig(ctx: CanvasRenderingContext2D,
   frame: CanvasImageSource, scale: number, pose: VanguardRigPose): void {
   if(!Number.isFinite(scale)||scale<=0) return;
   const nearArm=clamp(pose.nearArm,-.55,.55);
-  const farArm=clamp(pose.farArm,-.28,.55);
+  const farArm=clamp(pose.farArm,-.40,.70);
   const nearLeg=clamp(pose.nearLeg,-.40,.40);
   const farLeg=clamp(pose.farLeg,-.35,.35);
   const settle=clamp(pose.settle,-8,8);

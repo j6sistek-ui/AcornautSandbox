@@ -5,9 +5,14 @@ held his arms still, and read as Superman. The previous body was deliberately
 fixed in every tail drawing. Its +34° art correction plus +22° gravity heading
 could rotate the whole drawing about 56°, pointing the face and hands down.
 
-This revision keeps that drawn tail and adds two selectable flight styles.
+The first review improved posture but moved the paws less than one screen
+pixel during rapid taps, so the owner correctly saw mostly a tilt change.
+This revision adds broader, staggered arm and knee articulation to both new
+flight styles while keeping the original drawn tail.
 
 [Flight comparison](Vanguard-Flight-Comparison.mp4) · [Planet push-off](Vanguard-Planet-Push-Off.mp4)
+
+[First review vs organic limbs — fixed tilt and tail](Vanguard-Organic-Motion.mp4)
 
 ![Original, Flight and Upright](Vanguard-Flight-Comparison.png)
 
@@ -30,9 +35,12 @@ gravity). A whole-body jump cannot finish gracefully on every short input.
 
 - The 1.8-second tail clock never rewinds or pauses on taps. Existing 16
   registered tail drawings and their fixed helmet scale remain in use.
-- Body heading follows vertical velocity; arms and knees have independent
-  damped motion. Continuous low-amplitude movement avoids a frozen hovering
-  pose under sustained taps. No random noise or camera shake is added.
+- Body heading follows vertical velocity. Arms follow a slow 2.15-second
+  float with offset timing; knees settle on a separate 2.65-second cycle.
+  Shoulder, elbow and wrist influence carries the paws through loose arcs,
+  while the feet tuck and trail. Damped, speed-limited joints carry this
+  motion through rapid taps without restarting it. No random noise or camera
+  shake is added.
 - Accepted tap acceleration sets a short pressure envelope. Arresting a fall
   gives a stronger jetpack response than refreshing upward travel. Joints
   ease toward it rather than replaying a squat or snapping to a keyframe.
@@ -50,7 +58,10 @@ gravity). A whole-body jump cannot finish gracefully on every short input.
 The original masters and registered tail export remain in `art-src/vanguard`.
 This change adds no raster frames. `vanguard-rig.ts` articulates localized limb
 regions at draw time; the existing tail drawing and helmet remain rigid inside
-the character. Joint limits protect the suit silhouette. Two bounded cached surfaces per
+the character. The near hand has more chest-side room to articulate. A
+continuous triangle-area limit prevents mesh folding without abruptly
+shrinking the pose at a threshold. Joint limits protect the suit silhouette.
+Two bounded cached surfaces per
 active state (192px gameplay / 512px close-up) refresh limbs at up to 30Hz,
 with immediate tail-frame updates; outer body pitch stays at display cadence. The face is never
 scaled independently, and there is no crossfade between duplicate characters.
@@ -67,6 +78,24 @@ The primary clip uses ordinary short arcs and 100/180/300 ms tap bursts with
 no following camera or position resets. A separate, labeled tall chamber
 checks actual planet contact followed by a tap, with a following review camera.
 
+The six-second organic comparison holds body tilt, tail frame and exhaust
+fixed in display copies of live simulation states. The left side is commit
+`5c44e92` (the rejected first review); the right side uses the revised motion.
+Both receive the same accepted 100/180/300 ms tap groups and identical
+velocity inputs. The game-size copies use the same joints as the close-ups.
+This diagnostic view isolates articulation; the other clips show full motion.
+
+The raster test tracks each connected orange paw with tilt, tail and exhaust
+fixed. During sustained 100/180/300 ms taps, the near glove travels about
+2.45 gameplay pixels, the far glove 3.19, and the near foot 1.8–1.9. The
+near glove previously moved only 0.31–0.39 pixels. Its initial 3px visual
+goal remains unmet: pushing farther distorted the flattened suit boundary.
+The regression minimum is therefore 2.3px and 5× the baseline for that hand;
+the 3px diagnostic goal stays visible in the report. Larger near-arm gestures
+would benefit from separately painted arm and background layers. Far-hand
+and foot minima remain 3px and 1.5px. This is a deliberate silhouette limit,
+not a claim that the initial near-hand goal passed.
+
 Validation covers tick-for-tick gameplay equality, independent limb motion,
 non-restarting taps, bounded angular speed, contact recovery, 30/60/120 Hz
 controller consistency, ownership, saved selection, pause/resume, fallback art,
@@ -76,8 +105,8 @@ playtesting; these remain comparison options rather than a claim of final polish
 
 Measured native CPU cost includes the first draw after each 60Hz simulation
 step, so texture refreshes are counted. This is heavier than the original:
-roughly 4.8–5.2 ms median and 5.8–6.5 ms p95 for the new styles in this run,
-versus about 0.10 / 0.17 ms for Original. Cache hits are cheap; refreshes
+roughly 5.5–5.9 ms median and 6.5–6.9 ms p95 for the new styles in this run,
+versus about 0.10 / 0.15 ms for Original. Cache hits are cheap; refreshes
 account for the cost. These are isolated painter measurements at gameplay
 size and 3× pixel density, not device frame-rate claims. The original styles
 remain available for phone comparison. `review-summary.json` retains the data.
@@ -97,7 +126,9 @@ node illustrated-src/export-sandbox.mjs
 node illustrated-src/test-vanguard.mjs
 node illustrated-src/test-vanguard-inertia.mjs
 node illustrated-src/test-vanguard-rig.mjs
+node illustrated-src/test-vanguard-organic.mjs
 node illustrated-src/review-vanguard-flight.mjs
+node illustrated-src/review-vanguard-organic.mjs
 node illustrated-src/test-vanguard-depot.mjs
 ```
 

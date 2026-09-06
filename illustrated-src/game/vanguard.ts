@@ -88,7 +88,15 @@ function stepArticulated(s: VanguardMotion, dt: number, vy: number) {
     joint(s,'heading',target,h,17,1.15);
     // Smooth the base attitude too: changing the beta toggle preserves pose.
     joint(s,'pitch',(upright?-28:16)*DEG+s.heading-s.drive*(upright?2:1.4)*DEG,h,19,1.2);
-    const breath=Math.sin(s.time*2*Math.PI/2.3), drift=Math.sin(s.time*2*Math.PI/2.3+.9);
+    // Loose limbs keep a slow, asymmetric float even when short taps hold
+    // velocity near its ascent limit. This clock NEVER restarts on input.
+    // The delayed second arm and legs follow through instead of pumping in
+    // lockstep; the second harmonic softens the return into a longer settle.
+    const cycle=s.time*2*Math.PI/2.15;
+    const nearFloat=Math.sin(cycle)+.12*Math.sin(cycle*2-.65);
+    const farFloat=Math.sin(cycle-1.10)+.14*Math.sin(cycle*2-1.8);
+    const kneeFloat=Math.sin(s.time*2*Math.PI/2.65-1.3);
+    const trailingKnee=Math.sin(s.time*2*Math.PI/2.65-2.35);
     // Contact is its own damped compression/push-off, never a tap squat.
     const age=s.contactAge;
     const compress=s.contactPower*Math.exp(-Math.pow((age-.10)/.075,2));
@@ -97,11 +105,11 @@ function stepArticulated(s: VanguardMotion, dt: number, vy: number) {
     const bounce=(upright?1:.55);
     const feet=bounce*Math.max(0,-s.contactNormalY);
     const brace=bounce*(s.contactNormalY>0 ? -1 : 1);
-    joint(s,'nearArm',(.13+lift*.16-fall*.16+s.drive*.13+breath*.07+compress*.16*brace),h,13,1.3);
-    joint(s,'farArm',(.23+lift*.23-fall*.25+s.drive*.12+drift*.085+compress*.19*brace),h,12,1.3);
-    joint(s,'nearLeg',(-lift*.13+fall*.10-s.drive*.07+drift*.035+(compress*.27-push*.18+after*.04)*feet),h,12,1.2);
-    joint(s,'farLeg',(-lift*.09+fall*.08-s.drive*.055-breath*.035+(compress*.19-push*.13)*feet),h,11,1.2);
-    joint(s,'settle',(-s.drive*2.5+(compress*7-push*4)*feet),h,15,35);
+    joint(s,'nearArm',(.06+lift*.09-fall*.10+s.drive*.09+nearFloat*.36+compress*.16*brace),h,14,1.3);
+    joint(s,'farArm',(.13+lift*.06-fall*.07+s.drive*.085+farFloat*.40+compress*.19*brace),h,12,1.3);
+    joint(s,'nearLeg',(-lift*.09+fall*.10-s.drive*.06+kneeFloat*.23+(compress*.27-push*.18+after*.04)*feet),h,11,1.2);
+    joint(s,'farLeg',(-lift*.06+fall*.07-s.drive*.04+trailingKnee*.18+(compress*.19-push*.13)*feet),h,10,1.2);
+    joint(s,'settle',(-s.drive*2.5+Math.sin(cycle-.7)*2.8+(compress*7-push*4)*feet),h,13,35);
   }
   s.phase=(s.phase+dt/VANGUARD_CYCLE_SECONDS[s.mode])%1;
   s.frame=Math.floor(s.phase*VANGUARD_FRAMES);
