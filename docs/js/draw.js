@@ -1,22 +1,22 @@
-import { spillDockTravelDuration } from "./spill.js?v=188";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=188";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=188";
-import { runPal } from "./sim.js?v=188";
-import { spillAppearance } from "./spill-appearance.js?v=188";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=188";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=188";
-import { goalHud } from "./campaign.js?v=188";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=188";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=188";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=188";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=188";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=188";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=188";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=188";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=188";
-import { spillEngineColor } from "./spill-content.js?v=188";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=188";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=188";
+import { spillDockTravelDuration } from "./spill.js?v=189";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=189";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=189";
+import { runPal } from "./sim.js?v=189";
+import { spillAppearance } from "./spill-appearance.js?v=189";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=189";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=189";
+import { goalHud } from "./campaign.js?v=189";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=189";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=189";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=189";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=189";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=189";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=189";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=189";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=189";
+import { spillEngineColor } from "./spill-content.js?v=189";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=189";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=189";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1469,24 +1469,82 @@ function tunnelControlLabel(_w) {
 // use, so a rock separates from the void. The pilot flies the scout ship,
 // sized to the squirrel's window so the field is the same field.
 const wrap = (v, m) => ((v % m) + m) % m;
-function spillBackdrop(ctx, w, s, art) {
-    const { W, H } = w;
-    const g = ctx.createLinearGradient(0, 0, 0, H);
+let spillBackplateHost = null;
+export function setSpillBackplateHost(host) { spillBackplateHost = host; }
+let spillPlate = null;
+let spillPlateKey = "";
+let spillPlateSx0 = 0; // source x the plate's left edge was baked from
+let spillPlateW = 0; // the plate's width in CSS px
+function spillPlateFor(ctx, W, H, panorama, sxBase, sw, pad) {
+    const dpr = ctx.getTransform().a || 1;
+    const iw = panorama?.naturalWidth ?? 0, ih = panorama?.naturalHeight ?? 0;
+    const k = panorama ? W / sw : 1; // dest px per source px
+    const swP = panorama ? Math.min(iw, sw + (2 * pad) / k) : 0;
+    const sx0 = panorama ? Math.max(0, Math.min(iw - swP, sxBase - pad / k)) : 0;
+    const WP = panorama ? swP * k : W;
+    const pw = Math.max(1, Math.round(WP * dpr)), ph = Math.max(1, Math.round(H * dpr));
+    const key = `${pw}x${ph}|${panorama ? `${iw}x${ih}@${Math.round(sx0)}/${Math.round(swP)}` : "-"}`;
+    if (spillPlate && spillPlateKey === key)
+        return spillPlate;
+    const c = spillPlate ?? document.createElement("canvas");
+    c.width = pw;
+    c.height = ph; // also clears it
+    const g2 = c.getContext("2d");
+    if (!g2)
+        return null;
+    g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const g = g2.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, "#05060f");
     g.addColorStop(0.55, "#0a0d1e");
     g.addColorStop(1, "#05070f");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-    const panorama = art.spillScene?.panorama;
+    g2.fillStyle = g;
+    g2.fillRect(0, 0, WP, H);
+    if (panorama) {
+        g2.globalAlpha = 0.38;
+        g2.drawImage(panorama, sx0, 0, swP, ih, 0, 0, WP, H);
+        g2.globalAlpha = 1;
+    }
+    spillPlate = c;
+    spillPlateKey = key;
+    spillPlateSx0 = sx0;
+    spillPlateW = WP;
+    return c;
+}
+function spillBackdrop(ctx, w, s, art, covered = false) {
+    const { W, H } = w;
+    // parked at the Depot the scene covers the whole screen, opaque: the
+    // panorama, the pools and the stars under it would be painted for nothing
+    if (covered)
+        return;
+    const panorama = art.spillScene?.panorama ?? null;
+    let sx = 0, sw = 0, sxBase = 0;
     if (panorama) {
         const ih = panorama.naturalHeight, iw = panorama.naturalWidth;
-        const sw = Math.min(iw, ih * W / H);
+        sw = Math.min(iw, ih * W / H);
         const sector = Math.min(3, Math.floor((s.wave - 1) / 5));
-        const sx = (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025);
-        ctx.save();
-        ctx.globalAlpha = 0.38;
-        ctx.drawImage(panorama, Math.max(0, sx), 0, sw, ih, 0, 0, W, H);
-        ctx.restore();
+        sxBase = (iw - sw) * Math.min(1, sector / 3);
+        sx = Math.max(0, (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025));
+    }
+    // the sway is at most 2.5% of the panorama's slack; 12% of the screen
+    // either side covers it with room to spare
+    const pad = Math.ceil(W * 0.12);
+    const plate = spillPlateFor(ctx, W, H, panorama, sxBase, sw, pad);
+    if (plate) {
+        const k = panorama ? W / sw : 1;
+        // where the frame's window sits inside the baked plate, clamped so the
+        // plate always covers the whole screen
+        const off = panorama ? Math.max(W - spillPlateW, Math.min(0, (spillPlateSx0 - sx) * k)) : 0;
+        const hosted = spillBackplateHost ? spillBackplateHost(plate, off, spillPlateW, H) : false;
+        if (!hosted)
+            ctx.drawImage(plate, off, 0, spillPlateW, H);
+    }
+    else {
+        const g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, "#05060f");
+        g.addColorStop(0.55, "#0a0d1e");
+        g.addColorStop(1, "#05070f");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
     }
     const drift = s.t * 6;
     const pool = (cx, cy, rx, ry, col) => {
@@ -1881,15 +1939,63 @@ function drawSpillScout(ctx, w, save, art, s, x) {
     drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
     ctx.restore();
 }
+let spillDepotPlate = null;
+let spillDepotKey = "";
+function spillDepotPlateFor(ctx, W, H, dock, view, bear, marshal) {
+    const dpr = ctx.getTransform().a || 1;
+    const pw = Math.max(1, Math.round(W * dpr)), ph = Math.max(1, Math.round(H * dpr));
+    const key = `${pw}x${ph}|${view.x.toFixed(1)},${view.y.toFixed(1)},${view.width.toFixed(1)},${view.height.toFixed(1)}|${bear ? `${bear.image.width}x${bear.image.height}@${marshal.frame}` : "-"}`;
+    if (spillDepotPlate && spillDepotKey === key)
+        return spillDepotPlate;
+    const c = spillDepotPlate ?? document.createElement("canvas");
+    c.width = pw;
+    c.height = ph;
+    const g = c.getContext("2d");
+    if (!g)
+        return null;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.drawImage(dock, view.x, view.y, view.width, view.height);
+    const shade = g.createLinearGradient(0, 0, 0, H);
+    shade.addColorStop(0, "rgba(3,7,20,.38)");
+    shade.addColorStop(0.5, "rgba(3,7,20,0)");
+    shade.addColorStop(1, "rgba(3,7,20,.3)");
+    g.fillStyle = shade;
+    g.fillRect(0, 0, W, H);
+    if (bear) {
+        g.fillStyle = "rgba(6,5,16,.45)";
+        g.beginPath();
+        g.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2);
+        g.fill();
+        g.save();
+        g.translate(marshal.x, marshal.y);
+        const scale = marshal.height / bear.image.height;
+        g.scale(-scale, scale); // face the incoming ship
+        g.drawImage(bear.image, -bear.footX, -bear.footY);
+        g.restore();
+    }
+    spillDepotPlate = c;
+    spillDepotKey = key;
+    return c;
+}
 function drawSpillWorld(ctx, w, save, art) {
     const s = w.spill;
     const { W, H } = w;
-    spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
-    if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+    const parked = !!dock && s.phase === "depot";
+    spillBackdrop(ctx, w, s, art, parked);
+    if (dock && parked) {
+        const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, SPILL.dockTime, -1);
+        const marshal = spillDockBear(view, SPILL.dockTime, !!save.motionOff);
+        const bear = art.spillScene?.bear?.[marshal.frame];
+        const plate = spillDepotPlateFor(ctx, W, H, dock, view, bear, marshal);
+        const hosted = plate && spillBackplateHost ? spillBackplateHost(plate, 0, W, H) : false;
+        if (plate && !hosted)
+            ctx.drawImage(plate, 0, 0, W, H);
+    }
+    else if (dock && s.phase === "docking") {
+        const gagTime = s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
         const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
-        const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+        const arrival = Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
         const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
         ctx.save();
         ctx.globalAlpha = view.opacity;

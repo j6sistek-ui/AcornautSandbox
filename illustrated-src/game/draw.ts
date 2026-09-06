@@ -1646,21 +1646,97 @@ function tunnelControlLabel(_w: World) {
 
 const wrap = (v: number, m: number) => ((v % m) + m) % m;
 
-function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState, art: ArtBank) {
-  const { W, H } = w;
-  const g = ctx.createLinearGradient(0, 0, 0, H);
+// THE PLATE IS BAKED (owner, 5 Sep 2026: "the spill mode was being a bit
+// choppy laggy sometimes"). Profiled frame by frame, the one full-screen
+// draw of the 2172x724 panorama - scaled to the canvas, at 38% alpha, every
+// frame - was the whole difference between a 16ms and a 33ms Spill frame;
+// nothing else in the frame had changed since the mode ran smoothly. The
+// window onto the panorama barely moves: the sector steps every five waves
+// and the sway is 2.5% over a nine-minute period. So the gradient and the
+// panorama are composited ONCE, into a canvas the size of the screen in
+// device pixels with headroom either side for the sway, and each frame
+// blits that plate opaque and one-to-one, nudged by the sway. Re-baked only
+// when the sector or the screen size changes. Same picture, one cheap copy
+// instead of a scaled alpha composite of a two-megapixel source.
+// THE PLATE IS A LAYER, NOT A DRAW. Baking removes the resample and the
+// alpha, but a one-to-one blit of a screen-sized canvas is still a
+// full-screen copy every frame - and on a software-rasterised canvas that
+// alone is a frame's budget. So the host (the engine, which owns the DOM)
+// can take the plate and mount it BEHIND the game canvas as its own
+// element: the game canvas is cleared to transparent each frame, the
+// compositor lays the two together, and the field's frame never touches
+// the backdrop's pixels at all. The sway becomes a transform on the
+// layer. Without a host the plate is drawn into the frame as before.
+export type SpillBackplateHost = (plate: HTMLCanvasElement, offCss: number, wCss: number, hCss: number) => boolean;
+let spillBackplateHost: SpillBackplateHost | null = null;
+export function setSpillBackplateHost(host: SpillBackplateHost | null) { spillBackplateHost = host; }
+let spillPlate: HTMLCanvasElement | null = null;
+let spillPlateKey = "";
+let spillPlateSx0 = 0;      // source x the plate's left edge was baked from
+let spillPlateW = 0;        // the plate's width in CSS px
+function spillPlateFor(ctx: CanvasRenderingContext2D, W: number, H: number,
+  panorama: HTMLImageElement | null, sxBase: number, sw: number, pad: number) {
+  const dpr = ctx.getTransform().a || 1;
+  const iw = panorama?.naturalWidth ?? 0, ih = panorama?.naturalHeight ?? 0;
+  const k = panorama ? W / sw : 1;                 // dest px per source px
+  const swP = panorama ? Math.min(iw, sw + (2 * pad) / k) : 0;
+  const sx0 = panorama ? Math.max(0, Math.min(iw - swP, sxBase - pad / k)) : 0;
+  const WP = panorama ? swP * k : W;
+  const pw = Math.max(1, Math.round(WP * dpr)), ph = Math.max(1, Math.round(H * dpr));
+  const key = `${pw}x${ph}|${panorama ? `${iw}x${ih}@${Math.round(sx0)}/${Math.round(swP)}` : "-"}`;
+  if (spillPlate && spillPlateKey === key) return spillPlate;
+  const c = spillPlate ?? document.createElement("canvas");
+  c.width = pw; c.height = ph;                     // also clears it
+  const g2 = c.getContext("2d");
+  if (!g2) return null;
+  g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = g2.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, "#05060f");
   g.addColorStop(0.55, "#0a0d1e");
   g.addColorStop(1, "#05070f");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-  const panorama = art.spillScene?.panorama;
+  g2.fillStyle = g;
+  g2.fillRect(0, 0, WP, H);
+  if (panorama) {
+    g2.globalAlpha = 0.38;
+    g2.drawImage(panorama, sx0, 0, swP, ih, 0, 0, WP, H);
+    g2.globalAlpha = 1;
+  }
+  spillPlate = c; spillPlateKey = key; spillPlateSx0 = sx0; spillPlateW = WP;
+  return c;
+}
+
+function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState, art: ArtBank, covered = false) {
+  const { W, H } = w;
+  // parked at the Depot the scene covers the whole screen, opaque: the
+  // panorama, the pools and the stars under it would be painted for nothing
+  if (covered) return;
+  const panorama = art.spillScene?.panorama ?? null;
+  let sx = 0, sw = 0, sxBase = 0;
   if (panorama) {
     const ih = panorama.naturalHeight, iw = panorama.naturalWidth;
-    const sw = Math.min(iw, ih * W / H);
+    sw = Math.min(iw, ih * W / H);
     const sector = Math.min(3, Math.floor((s.wave - 1) / 5));
-    const sx = (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025);
-    ctx.save(); ctx.globalAlpha = 0.38; ctx.drawImage(panorama, Math.max(0, sx), 0, sw, ih, 0, 0, W, H); ctx.restore();
+    sxBase = (iw - sw) * Math.min(1, sector / 3);
+    sx = Math.max(0, (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025));
+  }
+  // the sway is at most 2.5% of the panorama's slack; 12% of the screen
+  // either side covers it with room to spare
+  const pad = Math.ceil(W * 0.12);
+  const plate = spillPlateFor(ctx, W, H, panorama, sxBase, sw, pad);
+  if (plate) {
+    const k = panorama ? W / sw : 1;
+    // where the frame's window sits inside the baked plate, clamped so the
+    // plate always covers the whole screen
+    const off = panorama ? Math.max(W - spillPlateW, Math.min(0, (spillPlateSx0 - sx) * k)) : 0;
+    const hosted = spillBackplateHost ? spillBackplateHost(plate, off, spillPlateW, H) : false;
+    if (!hosted) ctx.drawImage(plate, off, 0, spillPlateW, H);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#05060f");
+    g.addColorStop(0.55, "#0a0d1e");
+    g.addColorStop(1, "#05070f");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
   }
   const drift = s.t * 6;
   const pool = (cx: number, cy: number, rx: number, ry: number, col: string) => {
@@ -1995,15 +2071,64 @@ function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   ctx.restore();
 }
 
+// THE DEPOT IS A PLATE TOO (owner, 6 Sep 2026: "check new depot artwork
+// too"). Parked at the Depot nothing in the scene moves - the camera has
+// arrived, the marshal holds his last frame - yet every frame redrew the
+// 1536x1024 scene scaled across the screen, the shade over it and the bear,
+// under a DOM sheet the player is reading. Profiled: two in five frames
+// over budget. So once the ship is parked the scene, the shade and the
+// marshal are composited once into a screen-sized plate and handed to the
+// same layer behind the canvas the panorama uses. The approach itself -
+// the camera closing in, the fade, the Vanguard gag - still paints live,
+// because it moves.
+type DepotBearFrame = { image: HTMLCanvasElement | HTMLImageElement; footX: number; footY: number };
+let spillDepotPlate: HTMLCanvasElement | null = null;
+let spillDepotKey = "";
+function spillDepotPlateFor(ctx: CanvasRenderingContext2D, W: number, H: number, dock: HTMLImageElement,
+  view: { x: number; y: number; width: number; height: number }, bear: DepotBearFrame | undefined,
+  marshal: { x: number; y: number; height: number; frame: number }) {
+  const dpr = ctx.getTransform().a || 1;
+  const pw = Math.max(1, Math.round(W * dpr)), ph = Math.max(1, Math.round(H * dpr));
+  const key = `${pw}x${ph}|${view.x.toFixed(1)},${view.y.toFixed(1)},${view.width.toFixed(1)},${view.height.toFixed(1)}|${bear ? `${bear.image.width}x${bear.image.height}@${marshal.frame}` : "-"}`;
+  if (spillDepotPlate && spillDepotKey === key) return spillDepotPlate;
+  const c = spillDepotPlate ?? document.createElement("canvas");
+  c.width = pw; c.height = ph;
+  const g = c.getContext("2d");
+  if (!g) return null;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.drawImage(dock, view.x, view.y, view.width, view.height);
+  const shade = g.createLinearGradient(0, 0, 0, H);
+  shade.addColorStop(0, "rgba(3,7,20,.38)"); shade.addColorStop(0.5, "rgba(3,7,20,0)"); shade.addColorStop(1, "rgba(3,7,20,.3)");
+  g.fillStyle = shade; g.fillRect(0, 0, W, H);
+  if (bear) {
+    g.fillStyle = "rgba(6,5,16,.45)"; g.beginPath();
+    g.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2); g.fill();
+    g.save(); g.translate(marshal.x, marshal.y);
+    const scale = marshal.height / bear.image.height;
+    g.scale(-scale, scale); // face the incoming ship
+    g.drawImage(bear.image, -bear.footX, -bear.footY); g.restore();
+  }
+  spillDepotPlate = c; spillDepotKey = key;
+  return c;
+}
+
 function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank) {
   const s = w.spill!;
   const { W, H } = w;
-  spillBackdrop(ctx, w, s, art);
   const dock = art.spillScene?.depot;
-  if (dock && (s.phase === "docking" || s.phase === "depot")) {
-    const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+  const parked = !!dock && s.phase === "depot";
+  spillBackdrop(ctx, w, s, art, parked);
+  if (dock && parked) {
+    const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, SPILL.dockTime, -1);
+    const marshal = spillDockBear(view, SPILL.dockTime, !!save.motionOff);
+    const bear = art.spillScene?.bear?.[marshal.frame];
+    const plate = spillDepotPlateFor(ctx, W, H, dock, view, bear, marshal);
+    const hosted = plate && spillBackplateHost ? spillBackplateHost(plate, 0, W, H) : false;
+    if (plate && !hosted) ctx.drawImage(plate, 0, 0, W, H);
+  } else if (dock && s.phase === "docking") {
+    const gagTime = s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
     const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
-    const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+    const arrival = Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
     const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
     ctx.save(); ctx.globalAlpha = view.opacity;
     ctx.drawImage(dock, view.x, view.y, view.width, view.height);
