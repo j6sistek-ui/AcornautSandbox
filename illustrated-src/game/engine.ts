@@ -71,7 +71,7 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill } from "./save";
+import { bankSpill, suitPitchFor } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -173,7 +173,8 @@ export type Engine = {
   /** shrink or restore the loadout's animated case */
   setHeroCompact: (on: boolean) => void;
   /** AcorNut's pitch trim, in degrees; the dial until the number settles */
-  setAcornutPitch: (deg: number) => void;
+  /** the beta pitch dial: a suit's whole-animation forward lean, in degrees */
+  setSuitPitch: (suitId: string, deg: number) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -481,9 +482,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return on;
     },
     isFavorite: (id) => (save.favorites ?? []).includes(id),
-    setAcornutPitch(deg) {
-      save.acornutPitch = Math.max(-20, Math.min(45, Math.round(deg)));
-      setVanguardPitchTrim(save.acornutPitch);
+    setSuitPitch(suitId, deg) {
+      if (!save.suitPitch) save.suitPitch = {};
+      save.suitPitch[suitId] = Math.max(-20, Math.min(45, Math.round(deg)));
+      if (suitId === "vanguard") setVanguardPitchTrim(save.suitPitch[suitId]);
       writeSave(save);
       notify();
     },
@@ -1457,7 +1459,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // once here, so a reload lands in the state the pilot left
   setSfxMuted(!!save.sfxOff);
   document.body.classList.toggle("ac-nomotion", !!save.motionOff);
-  setVanguardPitchTrim(save.acornutPitch ?? 25);
+  setVanguardPitchTrim(suitPitchFor(save, "vanguard"));
 
   // the first flight is flown in AcorNut, so his bank rides the boot load
   // until the tutorial is done

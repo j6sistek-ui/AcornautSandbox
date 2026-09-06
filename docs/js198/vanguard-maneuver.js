@@ -1,4 +1,4 @@
-import { VANGUARD_PARTS } from './vanguard-parts.js?v=194';
+import { VANGUARD_PARTS } from './vanguard-parts.js?v=198';
 const pose = (body, head, heave, na, ne, fa, fe, nt, nk, ft, fk) => ({ body, head, heave,
     nearArm: na, nearElbow: ne, farArm: fa, farElbow: fe, nearThigh: nt, nearKnee: nk, farThigh: ft, farKnee: fk });
 // Each row is a pose, not another tilt of the same drawing. Keep separate
@@ -280,13 +280,13 @@ function paintExhaust(ctx, s) {
 }
 /** One stable head/torso, articulated complete limbs and a separately lagged
  * tail. All render costs are bounded:10 sprite draws plus32 tail triangles. */
-export function paintManeuver(ctx, atlas, x, y, size, s) {
+export function paintManeuver(ctx, atlas, x, y, size, s, trim = 0) {
     const p = s.pose, l = maneuverLandmarks(p), scale = size / 400;
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(scale, scale);
     ctx.translate(0, 60 + p.heave);
-    ctx.rotate(p.body * DEG);
+    ctx.rotate(p.body * DEG + trim);
     // The pack is in front of the tail. Its plume must emerge from the visible
     // nozzle, without being cut into a rectangular sliver by the furry layer.
     paintTail(ctx, atlas, s);

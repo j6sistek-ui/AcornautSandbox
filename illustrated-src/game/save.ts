@@ -27,6 +27,9 @@ import {
   GUIDE_SUIT,
   GUIDE_HELM,
   TUTORIAL_SUIT,
+  SUIT_PITCH_MIN,
+  SUIT_PITCH_MAX,
+  suitPitchDefault,
 } from "./catalog";
 
 export type SaveData = {
@@ -137,7 +140,9 @@ export type SaveData = {
   /** the loadout's animated case, shrunk so the shelves get the room */
   heroCompact?: boolean;
   /** AcorNut's forward lean in degrees, dialled on the phone until it settles */
-  acornutPitch?: number;
+  /** per-suit forward lean in whole degrees, set with the beta pitch dial;
+   *  absent = the catalog default (SUIT_PITCH_DEFAULTS) */
+  suitPitch?: Record<string, number>;
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
@@ -254,8 +259,20 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
-  if (typeof s.acornutPitch !== "number" || !isFinite(s.acornutPitch)) s.acornutPitch = 25;
-  s.acornutPitch = Math.max(-20, Math.min(45, Math.round(s.acornutPitch)));
+  // the pitch table: whole degrees in range, anything else dropped. The
+  // one-suit acornutPitch it replaces migrates unless it was the old 25
+  // default, which the retested 12 supersedes.
+  if (!s.suitPitch || typeof s.suitPitch !== "object") s.suitPitch = {};
+  {
+    const legacy = (s as unknown as { acornutPitch?: unknown }).acornutPitch;
+    if (typeof legacy === "number" && isFinite(legacy) && Math.round(legacy) !== 25 && !("vanguard" in s.suitPitch)) s.suitPitch.vanguard = legacy;
+    delete (s as unknown as { acornutPitch?: unknown }).acornutPitch;
+    for (const id of Object.keys(s.suitPitch)) {
+      const v = s.suitPitch[id];
+      if (typeof v !== "number" || !isFinite(v)) delete s.suitPitch[id];
+      else s.suitPitch[id] = Math.max(SUIT_PITCH_MIN, Math.min(SUIT_PITCH_MAX, Math.round(v)));
+    }
+  }
   // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
   // tutorial's borrowed flight. A beta grant or an old free unlock in the
   // list does not count; the star gate in suitRevealed does.
@@ -499,3 +516,9 @@ export function batteryUnlocked(s: SaveData) {
 }
 
 /** The beta A/B preference cannot opt production into an experiment. */
+
+/** the forward lean a suit flies at: the dialled number, else the catalog default */
+export function suitPitchFor(save: SaveData | null | undefined, id: string): number {
+  const v = save?.suitPitch?.[id];
+  return typeof v === "number" && isFinite(v) ? v : suitPitchDefault(id);
+}

@@ -79,7 +79,7 @@ const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi,x)
 // Whole-animation forward lean (degrees, positive = nose down/forward). The
 // maneuver rig and the frames fallback both rotate by it; the pause-sheet dial
 // adjusts it at runtime and the save remembers the choice.
-export const VANGUARD_PITCH_TRIM_DEFAULT = 25;
+export const VANGUARD_PITCH_TRIM_DEFAULT = 12;
 let pitchTrim = VANGUARD_PITCH_TRIM_DEFAULT*DEG;
 export function setVanguardPitchTrim(degrees: number) {
   if (!Number.isFinite(degrees)) degrees = VANGUARD_PITCH_TRIM_DEFAULT;
