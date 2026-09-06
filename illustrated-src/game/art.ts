@@ -599,6 +599,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     ...(IS_BETA ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
       "abyssal", "amethyst", "ivoryguard", "reactor",
+      "briellacat",
     ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);

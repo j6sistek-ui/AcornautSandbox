@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=195";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=195";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=195";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=195";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=199";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=199";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=199";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=199";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -341,14 +341,19 @@ export function loadSuitBank(bank, id) {
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
         if (id === "vanguard") {
-            // AcorNut flies his sixteen painted frames (owner, 6 Sep 2026: "it
-            // was the Flight one"); the maneuver-parts atlas is no longer loaded
-            const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+            const [frames, parts] = await Promise.all([
+                many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES),
+                loadImg(`${base}/suits/vanguard/maneuver-parts.png?v=${ART_VER}`).then(asSprite).catch(() => null),
+            ]);
             // Never publish a partial bank: filtering failed images must not shift poses.
             if (frames.length === VANGUARD_FRAMES)
                 bank.vanguard = frames;
             else
                 suitBankLoads.delete(id); // allow a later equip to retry
+            if (parts && parts.width === 1024 && parts.height === 768)
+                bank.vanguardParts = parts;
+            else
+                suitBankLoads.delete(id); // retain the old rig and allow a later retry
             return;
         }
         const rigged = RIGGED_SUITS.includes(id);
@@ -514,6 +519,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor",
+            "briellacat",
         ] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);

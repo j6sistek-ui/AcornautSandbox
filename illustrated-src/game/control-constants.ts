@@ -135,6 +135,8 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   bigbooty:    { up: 0.8, down: 0.3 },
   robo:        { up: 0.8, down: 0.3 },
   catsuit:     { up: 0.8, down: 0.3 },
+  // Briella's Cat flies its still until its sprite sheet lands
+  briellacat:  { up: 0.8, down: 0.3 },
 
   // --- declared shape exceptions
   cyber:       { up: 0.8, down: 0.3 },

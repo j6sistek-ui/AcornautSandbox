@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=195";
-import { CHART_LEVELS } from "./campaign.js?v=195";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=195";
-import { restoreSpill } from "./spill.js?v=195";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=195";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=199";
+import { CHART_LEVELS } from "./campaign.js?v=199";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=199";
+import { restoreSpill } from "./spill.js?v=199";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=199";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, } from "./catalog.js?v=195";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=199";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -132,6 +132,24 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
+    // the pitch table: whole degrees in range, anything else dropped. The
+    // one-suit acornutPitch it replaces migrates unless it was the old 25
+    // default, which the retested 12 supersedes.
+    if (!s.suitPitch || typeof s.suitPitch !== "object")
+        s.suitPitch = {};
+    {
+        const legacy = s.acornutPitch;
+        if (typeof legacy === "number" && isFinite(legacy) && Math.round(legacy) !== 25 && !("vanguard" in s.suitPitch))
+            s.suitPitch.vanguard = legacy;
+        delete s.acornutPitch;
+        for (const id of Object.keys(s.suitPitch)) {
+            const v = s.suitPitch[id];
+            if (typeof v !== "number" || !isFinite(v))
+                delete s.suitPitch[id];
+            else
+                s.suitPitch[id] = Math.max(SUIT_PITCH_MIN, Math.min(SUIT_PITCH_MAX, Math.round(v)));
+        }
+    }
     // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
     // tutorial's borrowed flight. A beta grant or an old free unlock in the
     // list does not count; the star gate in suitRevealed does.
@@ -392,3 +410,8 @@ export function batteryUnlocked(s) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
 }
 /** The beta A/B preference cannot opt production into an experiment. */
+/** the forward lean a suit flies at: the dialled number, else the catalog default */
+export function suitPitchFor(save, id) {
+    const v = save?.suitPitch?.[id];
+    return typeof v === "number" && isFinite(v) ? v : suitPitchDefault(id);
+}

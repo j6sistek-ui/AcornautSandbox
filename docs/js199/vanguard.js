@@ -1,5 +1,6 @@
-import { paintVanguardRig } from './vanguard-rig.js?v=195';
-import { PHYS } from './catalog.js?v=195';
+import { paintVanguardRig } from './vanguard-rig.js?v=199';
+import { PHYS } from './catalog.js?v=199';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=199';
 export const VANGUARD_FRAMES = 16;
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
@@ -7,20 +8,22 @@ export const VANGUARD_CONTACT_SECONDS = .95;
 // entire drawing horizontally; heading below follows flight, not taps.
 export const VANGUARD_ART_PITCH = 34 * Math.PI / 180;
 export function createVanguardMotion() {
-    return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16 * DEG,
+    return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16 * DEG + pitchTrim,
         time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
-        thrust: 0, burst: 0, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
-        drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1,
+        thrust: 0, burst: 0, boost: 0, boosting: false, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
+        drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1, maneuver: createManeuverMotion(false),
         rates: { heading: 0, pitch: 0, nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0, drive: 0 } };
 }
 export function vanguardGate(s) { s.freshThrust = true; }
 // deltaVy is the accepted upward impulse (old vy minus new vy).
 export function vanguardTap(s, deltaVy = 450) {
+    maneuverTap(s.maneuver, Math.max(0, deltaVy));
     // Actual accepted acceleration controls intensity. Repeated taps sustain
     // pressure; they cannot snap a joint or rewind the continuous tail.
     s.thrustPower = clamp(Math.max(0, deltaVy) / 650, .24, 1);
     s.thrustLeft = .26;
     s.burst = 1;
+    s.boosting = true;
     s.freshThrust = false;
     s.diving = false;
 }
@@ -28,6 +31,7 @@ export function vanguardDive(s) {
     s.diving = true;
     s.freshThrust = true;
     s.thrustLeft = 0;
+    s.boosting = false;
 }
 export function vanguardContact(s, x, y, nx, ny, strength) {
     s.contacts.push({ x, y, nx, ny, age: 0, strength });
@@ -38,10 +42,22 @@ export function vanguardContact(s, x, y, nx, ny, strength) {
     s.contactAge = 0;
     s.contactPower = clamp(strength, .35, 1);
     s.contactNormalY = clamp(ny, -1, 1);
+    maneuverContact(s.maneuver, ny, strength);
     // Surface dust outlives an immediate tap; the body follows the rebound vy.
 }
 const DEG = Math.PI / 180;
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+// Whole-animation forward lean (degrees, positive = nose down/forward). The
+// maneuver rig and the frames fallback both rotate by it; the pause-sheet dial
+// adjusts it at runtime and the save remembers the choice.
+export const VANGUARD_PITCH_TRIM_DEFAULT = 12;
+let pitchTrim = VANGUARD_PITCH_TRIM_DEFAULT * DEG;
+export function setVanguardPitchTrim(degrees) {
+    if (!Number.isFinite(degrees))
+        degrees = VANGUARD_PITCH_TRIM_DEFAULT;
+    pitchTrim = clamp(degrees, -20, 45) * DEG;
+}
+export function vanguardPitchTrim() { return pitchTrim; }
 // Critically damped second-order response with bounded angular speed. Unlike
 // a pose lerp, an accepted tap cannot reverse rotation in one video frame.
 function joint(s, key, target, dt, omega = 15, maxRate = 1.2) {
@@ -64,13 +80,21 @@ function stepArticulated(s, dt, vy) {
         s.contactAge += h;
         s.thrustLeft = Math.max(0, s.thrustLeft - h);
         s.burst = Math.max(0, s.burst - h / .42);
+        // The booster stays lit only while the tap's climb continues. The sim's
+        // vy crossing zero is the apex: cut it there, and it stays out until the
+        // next tap - a fall never relights it.
+        if (s.boosting && vy >= 0)
+            s.boosting = false;
+        s.boost += ((s.boosting ? 1 : 0) - s.boost) * (1 - Math.exp(-h / (s.boosting ? .045 : .07)));
+        if (!s.boosting && s.boost < .01)
+            s.boost = 0;
         const pressure = s.thrustPower * Math.min(1, s.thrustLeft / .18);
         s.thrust += (pressure - s.thrust) * (1 - Math.exp(-h / .065));
         joint(s, 'drive', pressure, h, 18, 3);
         const target = (direction < 0 ? direction * (upright ? 6 : 10) : direction * (s.diving ? (upright ? 25 : 18) : (upright ? 12 : 8))) * DEG;
         joint(s, 'heading', target, h, 17, 1.15);
         // Smooth the base attitude too: changing the beta toggle preserves pose.
-        joint(s, 'pitch', (upright ? -28 : 16) * DEG + s.heading - s.drive * (upright ? 2 : 1.4) * DEG, h, 19, 1.2);
+        joint(s, 'pitch', (upright ? -28 : 16) * DEG + pitchTrim + s.heading - s.drive * (upright ? 2 : 1.4) * DEG, h, 19, 1.2);
         // Loose limbs keep a slow, asymmetric float even when short taps hold
         // velocity near its ascent limit. This clock NEVER restarts on input.
         // The delayed second arm and legs follow through instead of pumping in
@@ -102,12 +126,19 @@ export function stepVanguard(s, dt, vy) {
         return;
     // The engine bounds ticks; guard isolated preview callers after suspension.
     dt = Math.min(dt, .25);
+    stepManeuver(s.maneuver, dt, vy, s.diving, false);
     stepArticulated(s, dt, vy);
     for (const p of s.contacts)
         p.age += dt;
     s.contacts = s.contacts.filter(p => p.age < VANGUARD_CONTACT_SECONDS);
 }
 export function paintVanguard(ctx, art, x, y, size, state) {
+    if (state && art?.vanguardParts) {
+        paintManeuver(ctx, art.vanguardParts, x, y, size, state.maneuver, pitchTrim);
+        if (state.boost > 0 || state.burst > 0)
+            paintManeuverBurst(ctx, x, y, size, state);
+        return;
+    }
     const bank = art?.vanguard?.length === VANGUARD_FRAMES ? art.vanguard : undefined;
     const frame = bank?.[state?.frame ?? 0] ?? art?.suits.vanguard;
     if (!frame)
@@ -115,7 +146,7 @@ export function paintVanguard(ctx, art, x, y, size, state) {
     const scale = size / 400;
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(state?.pitch ?? 16 * DEG);
+    ctx.rotate(state?.pitch ?? 16 * DEG + pitchTrim);
     if (state && state.thrust > .01)
         paintJetpackExhaust(ctx, scale, state);
     // One registered, fully opaque whole-character drawing. The face and legs
@@ -124,6 +155,8 @@ export function paintVanguard(ctx, art, x, y, size, state) {
         paintVanguardRig(ctx, frame, scale, state);
     else
         ctx.drawImage(frame, -280 * scale, -280 * scale, 512 * scale, 512 * scale);
+    if (state && state.boost > 0)
+        paintBoosterAt(ctx, scale, state, [[-60, -48, .8], [-44, -34, 1]], -.92, -.40);
     if (state && state.burst > 0)
         paintBurstAt(ctx, scale, state, [[-60, -48, .8], [-44, -34, 1]], -.92, -.40);
     ctx.restore();
@@ -183,6 +216,77 @@ function paintBurstAt(ctx, scale, s, nozzles, dx, dy) {
             ctx.arc(px, py, r, 0, Math.PI * 2);
             ctx.fill();
         }
+        ctx.restore();
+    }
+    ctx.restore();
+}
+// The maneuver rig's pack: the same transform paintManeuver uses, the
+// nozzles paintExhaust uses, the plume's own direction (down and back).
+function paintManeuverBurst(ctx, x, y, size, s) {
+    const p = s.maneuver.pose, scale = size / 400;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+    ctx.translate(0, 60 + p.heave);
+    ctx.rotate(p.body * DEG + pitchTrim);
+    if (s.boost > 0)
+        paintBoosterAt(ctx, 1, s, [[-84, 5, 1], [-66, -1, .72]], -.35, .94);
+    if (s.burst > 0)
+        paintBurstAt(ctx, 1, s, [[-84, 5, 1], [-66, -1, .72]], -.35, .94);
+    ctx.restore();
+}
+// THE BOOSTER FLAME. A steady jet held for the whole climb: a white-hot
+// core inside a cyan cone, an amber fringe, an outer glow, and a flicker
+// on the clock so a long climb never reads as a still decal. It is painted
+// over the rig at the pack's mouth, in the plume's own direction, so its
+// tip does not hide under the body. Fades in a frame or two on the tap and
+// snuffs over ~70ms at the apex, which is the moment the fall begins.
+function paintBoosterAt(ctx, scale, s, nozzles, dx, dy) {
+    const b = s.boost;
+    if (b <= 0)
+        return;
+    ctx.save();
+    ctx.scale(scale, scale);
+    const t = s.time;
+    const flick = 1 + .07 * Math.sin(t * 61) + .05 * Math.sin(t * 37 + 1.3);
+    const nx = -dy, ny = dx; // across the flame
+    for (const [x, y, m] of nozzles) {
+        const L = (54 + 118 * b) * m * flick; // flame length
+        const W = (15 + 9 * b) * m; // half-width at the mouth
+        ctx.save();
+        ctx.translate(x, y);
+        // outer glow
+        const g = ctx.createRadialGradient(dx * L * .3, dy * L * .3, 0, dx * L * .3, dy * L * .3, L * .75);
+        g.addColorStop(0, `rgba(120,230,255,${.28 * b})`);
+        g.addColorStop(1, 'rgba(120,230,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(dx * L * .3, dy * L * .3, L * .75, 0, Math.PI * 2);
+        ctx.fill();
+        // cyan cone with an amber fringe
+        const cone = (len, w, c0, c1, c2) => {
+            const lg = ctx.createLinearGradient(0, 0, dx * len, dy * len);
+            lg.addColorStop(0, c0);
+            lg.addColorStop(.45, c1);
+            lg.addColorStop(1, c2);
+            ctx.fillStyle = lg;
+            ctx.beginPath();
+            ctx.moveTo(nx * w, ny * w);
+            ctx.quadraticCurveTo(dx * len * .55 + nx * w * .8, dy * len * .55 + ny * w * .8, dx * len, dy * len);
+            ctx.quadraticCurveTo(dx * len * .55 - nx * w * .8, dy * len * .55 - ny * w * .8, -nx * w, -ny * w);
+            ctx.closePath();
+            ctx.fill();
+        };
+        cone(L, W, `rgba(232,172,81,${.55 * b})`, `rgba(91,232,255,${.75 * b})`, 'rgba(232,172,81,0)');
+        cone(L * .62, W * .55, `rgba(255,255,255,${.95 * b})`, `rgba(224,252,255,${.8 * b})`, 'rgba(180,245,255,0)');
+        // mouth
+        const mg = ctx.createRadialGradient(0, 0, 0, 0, 0, W * 1.3);
+        mg.addColorStop(0, `rgba(255,255,255,${.9 * b})`);
+        mg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = mg;
+        ctx.beginPath();
+        ctx.arc(0, 0, W * 1.3, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
     }
     ctx.restore();

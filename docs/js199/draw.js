@@ -1,22 +1,23 @@
-import { spillDockTravelDuration } from "./spill.js?v=195";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=195";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=195";
-import { runPal } from "./sim.js?v=195";
-import { spillAppearance } from "./spill-appearance.js?v=195";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=195";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=195";
-import { goalHud } from "./campaign.js?v=195";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=195";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=195";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=195";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=195";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=195";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=195";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=195";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=195";
-import { spillEngineColor } from "./spill-content.js?v=195";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=195";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=195";
+import { spillDockTravelDuration } from "./spill.js?v=199";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=199";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=199";
+import { runPal } from "./sim.js?v=199";
+import { spillAppearance } from "./spill-appearance.js?v=199";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=199";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=199";
+import { goalHud } from "./campaign.js?v=199";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=199";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=199";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=199";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=199";
+import { suitPitchFor } from "./save.js?v=199";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=199";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=199";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=199";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=199";
+import { spillEngineColor } from "./spill-content.js?v=199";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=199";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=199";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4756,8 +4757,10 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         bank = w.tapAnimFromRot * 0.8 * fromLean * (1 - eased) + bank * eased;
     }
     const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
+    // THE PITCH DIAL: the suit's whole-animation forward lean, on top of the
+    // velocity bank. AcorNut applies his inside paintVanguard instead.
     if (!flagship)
-        ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
+        ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12) + (suitPitchFor(save, suit.id) * Math.PI) / 180);
     const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
     // fresh planet bounce: a squash-and-stretch pulse sells the impact
@@ -4941,7 +4944,9 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean
 // mode the pilot rolls slowly between FULL CLIMB and FULL DIVE - the
 // clamps the sim actually uses - so the number being changed is judged at
 // the extremes where it matters.
-sweep = false) {
+sweep = false,
+// the suit's dialled forward lean, radians (see SUIT_PITCH_DEFAULTS)
+pitch = 0) {
     if (!art)
         return;
     if (suit.id === "vanguard") {
@@ -5065,7 +5070,7 @@ sweep = false) {
     const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
     // the same expression the real flight uses, so what the editor shows is
     // what the run does
-    ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12));
+    ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12) + pitch);
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
     paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose);

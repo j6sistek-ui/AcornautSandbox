@@ -1,5 +1,5 @@
 {
- "artVer": "198",
+ "artVer": "199",
  "suits": [
   {
    "id": "flight",
@@ -362,6 +362,20 @@
     44
    ],
    "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "briellacat",
+   "name": "Briella's Cat",
+   "key": "suit:briellacat",
+   "file": "suits/briellacat.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
    "bakedDome": false,
    "frame": false
   },

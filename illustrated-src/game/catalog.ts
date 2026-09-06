@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "198";
+export const ART_VER = "199";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -257,6 +257,10 @@ export const SUITS: Suit[] = [
   { id: "cinderforge", beta: true, name: "Cinderforge", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2a1114", suitLite: "#7e2f27", suitDark: "#12080a", trim: "#ff4b2f", glow: "#ff3b22", dust: "#ff9470" },
   { id: "groveguard", beta: true, name: "Groveguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2e5e2d", suitLite: "#719452", suitDark: "#18351c", trim: "#c6a75d", glow: "#65dca1", dust: "#bff0ac" },
   { id: "cosmic", beta: true, name: "Cosmic", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#6b4b91", suitLite: "#b978d3", suitDark: "#30214d", trim: "#e4b8ff", glow: "#d687ff", dust: "#f0cfff" },
+  // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
+  // its own head, no helmet. Ships the still for now; the flight sprite
+  // sheet follows and is wired as its bank when it lands. Beta until then.
+  { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", beta: true, name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", beta: true, name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
   { id: "amethyst", beta: true, name: "Amethyst", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#78529a", suitLite: "#c58ce1", suitDark: "#38214f", trim: "#e0ba65", glow: "#c86dff", dust: "#efc9ff" },
@@ -844,6 +848,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // the cat eats no acorns, so no amount of them buys it: it is the
   // 300-star prize, the full Star Chart, and nothing less
   { title: "ACORN INTOLERANT", ids: ["catsuit"] },
+  { title: "BRIELLA'S CAT", ids: ["briellacat"] },
   { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 
