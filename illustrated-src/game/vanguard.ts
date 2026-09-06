@@ -29,6 +29,12 @@ export type VanguardMotion = {
    *  gone in .42s - a flash at the pack and three puffs that carry off
    *  along the plume. Presentation only. */
   burst: number;
+  /** THE BOOSTER (owner: "jet booster effect up to the apex, as long as the
+   *  suit is rising from the tap"): lit by a tap, held while the pilot still
+   *  climbs, cut the instant the climb ends - the shut-off IS the apex, and
+   *  the fall starts from it. 0..1 flame intensity, presentation only. */
+  boost: number;
+  boosting: boolean;
   contacts: Contact[];
   // Independent inertial joints. Taps add energy, never restart a gesture.
   nearArm: number; farArm: number; nearLeg: number; farLeg: number; settle: number;
@@ -41,7 +47,7 @@ export type VanguardMotion = {
 export function createVanguardMotion(): VanguardMotion {
   return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16*DEG+pitchTrim,
     time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
-    thrust: 0, burst: 0, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
+    thrust: 0, burst: 0, boost: 0, boosting: false, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
     drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1, maneuver:createManeuverMotion(false),
     rates: { heading: 0, pitch: 0, nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0, drive: 0 } };
 }
@@ -54,10 +60,11 @@ export function vanguardTap(s: VanguardMotion, deltaVy = 450) {
   s.thrustPower = clamp(Math.max(0,deltaVy)/650, .24, 1);
   s.thrustLeft = .26;
   s.burst = 1;
+  s.boosting = true;
   s.freshThrust = false; s.diving = false;
 }
 export function vanguardDive(s: VanguardMotion) {
-  s.diving = true; s.freshThrust = true; s.thrustLeft = 0;
+  s.diving = true; s.freshThrust = true; s.thrustLeft = 0; s.boosting = false;
 }
 export function vanguardContact(s: VanguardMotion, x: number, y: number, nx: number, ny: number, strength: number) {
   s.contacts.push({ x, y, nx, ny, age: 0, strength });
@@ -99,6 +106,12 @@ function stepArticulated(s: VanguardMotion, dt: number, vy: number) {
     s.time += h; s.contactAge += h;
     s.thrustLeft = Math.max(0,s.thrustLeft-h);
     s.burst = Math.max(0, s.burst - h/.42);
+    // The booster stays lit only while the tap's climb continues. The sim's
+    // vy crossing zero is the apex: cut it there, and it stays out until the
+    // next tap - a fall never relights it.
+    if (s.boosting && vy >= 0) s.boosting = false;
+    s.boost += ((s.boosting ? 1 : 0) - s.boost) * (1 - Math.exp(-h/(s.boosting ? .045 : .07)));
+    if (!s.boosting && s.boost < .01) s.boost = 0;
     const pressure=s.thrustPower*Math.min(1,s.thrustLeft/.18);
     s.thrust += (pressure-s.thrust)*(1-Math.exp(-h/.065));
     joint(s,'drive',pressure,h,18,3);
@@ -146,7 +159,7 @@ export function paintVanguard(ctx: CanvasRenderingContext2D, art: ArtBank | null
   x: number, y: number, size: number, state?: VanguardMotion) {
   if(state&&art?.vanguardParts){
     paintManeuver(ctx,art.vanguardParts,x,y,size,state.maneuver,pitchTrim);
-    if (state.burst > 0) paintManeuverBurst(ctx,x,y,size,state);
+    if (state.boost > 0 || state.burst > 0) paintManeuverBurst(ctx,x,y,size,state);
     return;
   }
   const bank = art?.vanguard?.length === VANGUARD_FRAMES ? art.vanguard : undefined;
@@ -159,6 +172,7 @@ export function paintVanguard(ctx: CanvasRenderingContext2D, art: ArtBank | null
   // hold their scale; the drawn tail changes shape instead of being stretched.
   if (state) paintVanguardRig(ctx,frame,scale,state);
   else ctx.drawImage(frame,-280*scale,-280*scale,512*scale,512*scale);
+  if (state && state.boost > 0) paintBoosterAt(ctx,scale,state,[[-60,-48,.8],[-44,-34,1]],-.92,-.40);
   if (state && state.burst > 0) paintBurstAt(ctx,scale,state,[[-60,-48,.8],[-44,-34,1]],-.92,-.40);
   ctx.restore();
 }
@@ -208,7 +222,49 @@ function paintBurstAt(ctx: CanvasRenderingContext2D, scale: number, s: VanguardM
 function paintManeuverBurst(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, s: VanguardMotion) {
   const p=s.maneuver.pose, scale=size/400;
   ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale); ctx.translate(0,60+p.heave); ctx.rotate(p.body*DEG+pitchTrim);
-  paintBurstAt(ctx,1,s,[[-84,5,1],[-66,-1,.72]],-.35,.94);
+  if (s.boost > 0) paintBoosterAt(ctx,1,s,[[-84,5,1],[-66,-1,.72]],-.35,.94);
+  if (s.burst > 0) paintBurstAt(ctx,1,s,[[-84,5,1],[-66,-1,.72]],-.35,.94);
+  ctx.restore();
+}
+// THE BOOSTER FLAME. A steady jet held for the whole climb: a white-hot
+// core inside a cyan cone, an amber fringe, an outer glow, and a flicker
+// on the clock so a long climb never reads as a still decal. It is painted
+// over the rig at the pack's mouth, in the plume's own direction, so its
+// tip does not hide under the body. Fades in a frame or two on the tap and
+// snuffs over ~70ms at the apex, which is the moment the fall begins.
+function paintBoosterAt(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion,
+  nozzles: readonly (readonly [number, number, number])[], dx: number, dy: number) {
+  const b = s.boost; if (b <= 0) return;
+  ctx.save(); ctx.scale(scale,scale);
+  const t = s.time;
+  const flick = 1 + .07*Math.sin(t*61) + .05*Math.sin(t*37+1.3);
+  const nx = -dy, ny = dx;                       // across the flame
+  for (const [x,y,m] of nozzles) {
+    const L = (54 + 118*b) * m * flick;          // flame length
+    const W = (15 + 9*b) * m;                    // half-width at the mouth
+    ctx.save(); ctx.translate(x,y);
+    // outer glow
+    const g = ctx.createRadialGradient(dx*L*.3,dy*L*.3,0,dx*L*.3,dy*L*.3,L*.75);
+    g.addColorStop(0,`rgba(120,230,255,${.28*b})`); g.addColorStop(1,'rgba(120,230,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(dx*L*.3,dy*L*.3,L*.75,0,Math.PI*2); ctx.fill();
+    // cyan cone with an amber fringe
+    const cone = (len: number, w: number, c0: string, c1: string, c2: string) => {
+      const lg = ctx.createLinearGradient(0,0,dx*len,dy*len);
+      lg.addColorStop(0,c0); lg.addColorStop(.45,c1); lg.addColorStop(1,c2);
+      ctx.fillStyle = lg; ctx.beginPath();
+      ctx.moveTo(nx*w,ny*w);
+      ctx.quadraticCurveTo(dx*len*.55+nx*w*.8, dy*len*.55+ny*w*.8, dx*len, dy*len);
+      ctx.quadraticCurveTo(dx*len*.55-nx*w*.8, dy*len*.55-ny*w*.8, -nx*w, -ny*w);
+      ctx.closePath(); ctx.fill();
+    };
+    cone(L, W, `rgba(232,172,81,${.55*b})`, `rgba(91,232,255,${.75*b})`, 'rgba(232,172,81,0)');
+    cone(L*.62, W*.55, `rgba(255,255,255,${.95*b})`, `rgba(224,252,255,${.8*b})`, 'rgba(180,245,255,0)');
+    // mouth
+    const mg = ctx.createRadialGradient(0,0,0,0,0,W*1.3);
+    mg.addColorStop(0,`rgba(255,255,255,${.9*b})`); mg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=mg; ctx.beginPath(); ctx.arc(0,0,W*1.3,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
   ctx.restore();
 }
 function paintJetpackExhaust(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion) {
