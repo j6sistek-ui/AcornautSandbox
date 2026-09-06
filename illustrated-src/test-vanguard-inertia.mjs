@@ -7,7 +7,7 @@ import {
   vanguardContact, VANGUARD_FRAMES,
 } from '../docs/js/vanguard.js';
 
-const modes = ['cruise', 'jetpack'];
+const modes = ['cruise'];   // the trial modes are gone: Flight is the motion
 const joints = ['nearArm', 'farArm', 'nearLeg', 'farLeg'];
 const poseKeys = ['phase', 'frame', 'time', 'heading', 'pitch', ...joints, 'settle'];
 const radians = degrees => degrees * Math.PI / 180;
@@ -26,7 +26,7 @@ function checkFinite(state, label) {
 // Each normal tap reaches its apex in about 346ms. Test direction changes
 // inside that real short arc, rather than a leisurely preview-only ascent.
 for (const mode of modes) {
-  const state = createVanguardMotion(mode);
+  const state = createVanguardMotion();
   let vy = -450;
   vanguardTap(state, 450);
   let rise;
@@ -45,7 +45,7 @@ for (const mode of modes) {
 // Frequent inputs must add acceleration without restarting the tail or
 // snapping any displayed joint. Include descent→tap and swipe→tap recovery.
 for (const mode of modes) for (const interval of [.1, .2, .3]) {
-  const state = createVanguardMotion(mode);
+  const state = createVanguardMotion();
   const frames = new Set();
   let vy = 500;
   let nextTap = 0;
@@ -80,36 +80,20 @@ for (const mode of modes) for (const interval of [.1, .2, .3]) {
 // The response must distinguish a light refresh of upward motion from
 // arresting a real fall, even when their final velocity is the same.
 for (const mode of modes) {
-  const light = createVanguardMotion(mode);
-  const strong = createVanguardMotion(mode);
+  const light = createVanguardMotion();
+  const strong = createVanguardMotion();
   vanguardTap(light, 40); vanguardTap(strong, 800);
   travel(light, .15, -450); travel(strong, .15, -450);
   assert(strong.thrust > light.thrust * 1.5, `${mode}: exhaust responds to accepted acceleration strength`);
   assert(strong.drive > light.drive, `${mode}: body reaction responds to accepted acceleration strength`);
 }
 
-// The two additions must differ by more than playback speed. A live change
-// eases toward the other posture without resetting the shared tail clock.
-const flight = createVanguardMotion('cruise');
-const upright = createVanguardMotion('jetpack');
-travel(flight, 2, 0); travel(upright, 2, 0);
-assert(flight.pitch - upright.pitch > radians(35), 'Flight and Upright have clearly different neutral silhouettes');
-assert(flight.pitch - upright.pitch < radians(52), 'mode separation stays within the intended posture range');
-const beforeSwitch = pose(flight);
-flight.mode = 'jetpack';
-assert.deepEqual(pose(flight), beforeSwitch, 'live selection preserves the current displayed pose');
-for (let tick = 0; tick < 120; tick++) {
-  const previousPitch = flight.pitch;
-  stepVanguard(flight, 1 / 60, 0);
-  assert(Math.abs(flight.pitch - previousPitch) <= 1.5 / 60 + 1e-8, 'live mode transition has bounded angular speed');
-}
-assert(Math.abs(flight.pitch - upright.pitch) < radians(2), 'live switch reaches the selected neutral posture');
 
 // Isolate the contact contribution with an otherwise identical twin.
 // An immediate tap may change acceleration but cannot erase push-off.
 for (const mode of modes) {
-  const hit = createVanguardMotion(mode);
-  const clear = createVanguardMotion(mode);
+  const hit = createVanguardMotion();
+  const clear = createVanguardMotion();
   travel(hit, .5, 180); travel(clear, .5, 180);
   vanguardContact(hit, 42, 60, 0, -1, 1);
   const contact = hit.contacts[0];
@@ -140,35 +124,26 @@ for (const mode of modes) {
 }
 
 // An overhead impact braces the arms; it cannot pretend the feet landed.
-const floor = createVanguardMotion('jetpack');
-const roof = createVanguardMotion('jetpack');
-const untouched = createVanguardMotion('jetpack');
+const floor = createVanguardMotion();
+const roof = createVanguardMotion();
+const untouched = createVanguardMotion();
 vanguardContact(floor,0,0,0,-1,1); vanguardContact(roof,0,0,0,1,1);
 travel(floor,.2,-200); travel(roof,.2,-200); travel(untouched,.2,-200);
 assert(Math.abs(floor.settle-untouched.settle)>.1, 'floor contact compresses the feet');
 assert(Math.abs(roof.settle-untouched.settle)<1e-9, 'overhead contact does not compress the feet');
 assert(Math.abs(roof.nearArm-untouched.nearArm)>.005, 'overhead contact braces the arms');
-const slowing = createVanguardMotion('jetpack');
-const refreshing = createVanguardMotion('jetpack');
+const slowing = createVanguardMotion();
+const refreshing = createVanguardMotion();
 vanguardTap(slowing,-200); vanguardTap(refreshing,100);
 travel(slowing,.15,-450); travel(refreshing,.15,-450);
 assert(slowing.thrust<=refreshing.thrust, 'slowing an upward rebound gets only the minimum tap response');
 
-// Visiting an original comparison style must not preserve an old landing.
-const expired = createVanguardMotion('jetpack');
-vanguardContact(expired,0,0,0,-1,1);
-expired.mode='cinematic';travel(expired,2,0);
-assert(expired.contactAge>1, 'contact age continues in original modes');
-expired.mode='jetpack';
-const clean=createVanguardMotion('jetpack');clean.time=expired.time;clean.phase=expired.phase;
-travel(expired,.2,0);travel(clean,.2,0);
-assert(Math.abs(expired.settle-clean.settle)<1e-6, 'switching back does not replay an expired landing');
 
 // One input schedule at common frame boundaries. Sample the same analytic
 // gravity trajectory so differences describe presentation frame rate, not
 // a separate integration error in the gameplay simulation.
 function replay(mode, fps) {
-  const state = createVanguardMotion(mode);
+  const state = createVanguardMotion();
   const events = new Map([
     [0, 'tap'], [2, 'tap'], [4, 'tap'], [6, 'tap'], [12, 'swipe'],
     [15, 'tap'], [18, 'contact'], [19, 'tap'], [28, 'switch'],
@@ -190,7 +165,7 @@ function replay(mode, fps) {
       vanguardContact(state, 42, 60, 0, -1, 1);
       velocityAtEvent = -450; eventTime = time; vy = -450;
     } else if (event === 'switch') {
-      state.mode = mode === 'cruise' ? 'jetpack' : 'cruise';
+      /* the trial modes are gone; a switch is a no-op */
     }
     stepVanguard(state, 1 / fps, vy);
     if ((tick + 1) % (fps / 10) === 0) samples.push({ ...pose(state), thrust: state.thrust, drive: state.drive });

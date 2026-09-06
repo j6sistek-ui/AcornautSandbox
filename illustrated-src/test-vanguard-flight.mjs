@@ -49,8 +49,8 @@ const save=S.defaultSave();Object.assign(save,{equippedSuit:'vanguard',equippedT
 // A normal 390x760 field, no tracking camera and no position resets. The
 // steering bot taps at a lower height, allowing actual short arcs to fall.
 const Cat=await import('../docs/js/catalog.js');
-const runs=['cinematic','flow'].map(mode=>{
- const sv={...save,vanguardMotionMode:mode};const w=Sim.makeWorld(390,760);
+const runs=['cruise'].map(mode=>{   // the trial modes are gone: Flight is the motion
+ const sv={...save};const w=Sim.makeWorld(390,760);
  Sim.resetRun(w,sv,'fly',false);w.planets=[];w.pickups=[];w.lastSpawnX=100000;
  for(let i=0;i<8;i++)w.planets.push({x:350+i*320,gapY:380,gap:420,r:58,topKind:i%33,botKind:(i+4)%33,scored:false,drift:0,driftAmp:0,blockers:[]});
  return {sv,w,c:createCanvas(390,760),headings:[],tail:new Set()};
@@ -68,15 +68,14 @@ for(let tick=0;tick<600;tick++){
   assert.equal(r.w.screen,'play');assert(r.w.squirrel.y>60&&r.w.squirrel.y<650,'actual phone field stays in frame');
   r.headings.push(r.w.vanguard.heading);r.tail.add(r.w.vanguard.frame);
  }
- for(const key of ['squirrel','run','score','distance'])assert.deepEqual(runs[0].w[key],runs[1].w[key]);
- trace.push({tick,y:w0.squirrel.y,vy:w0.squirrel.vy,tap,swipe,cinematic:runs[0].w.vanguard.heading,continuous:runs[1].w.vanguard.heading});
+ trace.push({tick,y:w0.squirrel.y,vy:w0.squirrel.vy,tap,swipe,flight:runs[0].w.vanguard.heading});
  if(tick%2)continue;
  g.fillStyle='#071221';g.fillRect(0,0,1280,920);
  g.fillStyle='#f4d49f';g.font='24px sans-serif';g.fillText('VANGUARD · CONTINUOUS TAIL / DIRECTION-DRIVEN BODY',20,35);
  g.fillStyle='#a5b8cb';g.font='15px sans-serif';g.fillText('Actual simulation + painter · 390 × 760 field · normal gravity arcs · no camera follow or position resets',20,63);
- for(let i=0;i<2;i++){
+ for(let i=0;i<runs.length;i++){
   const r=runs[i],x=i*640;
-  g.fillStyle='#fff0d1';g.font='20px sans-serif';g.fillText(i?'CONTINUOUS · 1.15s sweep':'CINEMATIC · 1.8s sweep',x+20,99);
+  g.fillStyle='#fff0d1';g.font='20px sans-serif';g.fillText('FLIGHT · 1.8s sweep',x+20,99);
   const wc=r.c.getContext('2d');D.drawWorld(wc,r.w,r.sv,art);g.drawImage(r.c,x+20,118);
   g.save();g.translate(x+535,415);g.scale(3,3);VG.paintVanguard(g,art,0,0,52,r.w.vanguard);g.restore();
   g.fillStyle='#9edfea';g.font='14px sans-serif';

@@ -69,8 +69,8 @@ VG.paintVanguard(op,{suits:{vanguard:solid},vanguard:Array(VG.VANGUARD_FRAMES).f
 assert.deepEqual([...op.getImageData(256,256,1,1).data],[255,255,255,255]);
 // Body direction is independent of loop progress. Gravity stays shallow,
 // swipes may point down, and every attitude retains the continuous tail.
-for(const style of ['cinematic','flow']) {
- const state=VG.createVanguardMotion(style);
+for(const style of ['cruise']) {   // the trial modes are gone: Flight is the motion
+ const state=VG.createVanguardMotion();
  for(let i=0;i<180;i++)VG.stepVanguard(state,1/60,1500);
  assert(Math.abs(state.heading-22*Math.PI/180)<.001);
  VG.vanguardDive(state);for(let i=0;i<60;i++)VG.stepVanguard(state,1/60,650);
@@ -84,8 +84,8 @@ for(const style of ['cinematic','flow']) {
 // inputs, forces, gate scoring and contact use sim.ts. The test camera
 // follows the pilot; this is NOT a recording of the phone's camera/layout.
 const Cat=await import('../docs/js/catalog.js');
-const styles=['cinematic','flow'];const runs=styles.map(style=>{
- const sv={...save,vanguardMotionMode:style};const w=Sim.makeWorld(390,5000);
+const styles=['cruise'];const runs=styles.map(style=>{
+ const sv={...save};const w=Sim.makeWorld(390,5000);
  Sim.resetRun(w,sv,'fly',false);w.planets=[];w.pickups=[];w.lastSpawnX=100000;w.warpT=0;
  return {save:sv,w,canvas:createCanvas(390,760),contact:false};
 });
@@ -112,8 +112,7 @@ for(let tick=0;tick<408;tick++) {
   if(run===runs[0]&&(cue==='bounce'||taps.has(tick)||tick===174||tick===330))events.push({tick,time:t,event:cue==='bounce'?'bounce':tick===174?'swipe':tick===330?'gate':'tap'});
  }
  // Visual style cannot change any authoritative flight value or legacy clock.
- for(const key of ['squirrel','score','run','tapAnimT','tapAnimDir','bounceAnimT','distance'])assert.deepEqual(runs[0].w[key],runs[1].w[key],`${key} differs between modes at ${t}`);
- frameTrace.push({tick,y:runs[0].w.squirrel.y,vy:runs[0].w.squirrel.vy,...Object.fromEntries(runs.map(r=>[r.save.vanguardMotionMode,{frame:r.w.vanguard.frame,phase:r.w.vanguard.phase,thrust:r.w.vanguard.thrust,heading:r.w.vanguard.heading}]))});
+ frameTrace.push({tick,y:runs[0].w.squirrel.y,vy:runs[0].w.squirrel.vy,...Object.fromEntries(runs.map(r=>['flight',{frame:r.w.vanguard.frame,phase:r.w.vanguard.phase,thrust:r.w.vanguard.thrust,heading:r.w.vanguard.heading}]))});
  if(tick%2)continue;
  g.drawImage(bg,0,0,1280,800);g.fillStyle='rgba(5,10,24,.90)';g.fillRect(0,0,1280,800);
  g.font='16px "Vanguard Sans"';g.fillStyle='#d5b579';g.fillText('ACORNAUT · VANGUARD MOTION COMPARISON',30,32);

@@ -1,17 +1,17 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=192";
-import { trailWornBy } from "./catalog.js?v=192";
-import { missionRandom } from "./mission-rng.js?v=192";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=192";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=192";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=192";
-import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=192";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=192";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=192";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=192";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=192";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=192";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=192";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=192";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=193";
+import { trailWornBy } from "./catalog.js?v=193";
+import { missionRandom } from "./mission-rng.js?v=193";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=193";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=193";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=193";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=193";
+import { TUTORIAL_SUIT } from "./catalog.js?v=193";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=193";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=193";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=193";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=193";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=193";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=193";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -118,6 +118,7 @@ export function makeWorld(W, H) {
         palPos: { x: 0, y: 0, dart: 0 },
         shake: 0,
         pausedFrom: null,
+        tutSuit: false,
         tut: null,
         lastRun: null,
         lvl: null,
@@ -1000,6 +1001,12 @@ function spawnPair(w, save, x) {
     w.lastGapY = gapY;
     w.gatesSpawned += 1;
 }
+/** THE SUIT ON THE PILOT. The tutorial flies AcorNut whatever the save
+ *  wears; every other run wears the equipped suit. One place to ask, so the
+ *  painter, the trail, the shield and the motion hooks cannot disagree. */
+export function pilotSuitId(w, save) {
+    return w.tutSuit ? TUTORIAL_SUIT : save.equippedSuit;
+}
 export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
@@ -1060,7 +1067,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.invulnLeft = 0;
     w.flapBoost = 0;
     w.tapAnimT = -1;
-    w.vanguard = createVanguardMotion(vanguardModeOf(save));
+    w.vanguard = createVanguardMotion();
     w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
@@ -1138,6 +1145,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     else
         for (let i = 0; i < 3; i++)
             spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
+    w.tutSuit = tutorial && !w.race && !w.spill && flight !== "tunnel";
     w.tut = w.race || w.spill || flight === "tunnel" ? null : tutorial
         ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
             retries: 0, springs: 0, apexY: 0, launched: false, bounced: false,
@@ -1982,7 +1990,7 @@ export function spawnTrail(w, save, scale = 1) {
     const sy = w.squirrel.y + 8;
     if (scale < 1 && Math.random() > scale)
         return;
-    const trail = trailWornBy(save.equippedTrail, save.equippedSuit);
+    const trail = trailWornBy(save.equippedTrail, pilotSuitId(w, save));
     const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
     if (trail === "vanguardwake") {
         for (const lane of [-1, 1])
@@ -2334,7 +2342,7 @@ function tutGesture(w, save, kind) {
             w.tapAnimFromRot = w.squirrel.rot;
             w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
             w.tapAnimDir = 1;
-            if (save.equippedSuit === "vanguard")
+            if (pilotSuitId(w, save) === "vanguard")
                 vanguardTap(w.vanguard, tutorialImpulse);
             break;
         case "doDive":
@@ -2343,7 +2351,7 @@ function tutGesture(w, save, kind) {
             w.bounceUp = false;
             w.squirrel.vy = PHYS.dive;
             w.squirrel.rot = 0.5;
-            if (save.equippedSuit === "vanguard")
+            if (pilotSuitId(w, save) === "vanguard")
                 vanguardDive(w.vanguard);
             break;
         case "learnTap":
@@ -2472,7 +2480,7 @@ export function flap(w, save) {
     if (!w.spill) {
         const impulse = w.squirrel.vy - flapOf(save, w);
         w.squirrel.vy = flapOf(save, w);
-        if (save.equippedSuit === "vanguard")
+        if (pilotSuitId(w, save) === "vanguard")
             vanguardTap(w.vanguard, impulse);
     }
     w.flapBoost = 0.22;
@@ -2500,7 +2508,7 @@ export function dive(w, save) {
         tutGesture(w, save, "swipe");
         return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
     }
-    if (save.equippedSuit === "vanguard")
+    if (pilotSuitId(w, save) === "vanguard")
         vanguardDive(w.vanguard);
     if (w.bounceUp && w.hitCooldown > 0) {
         w.bounceUp = false;
@@ -2621,7 +2629,7 @@ function bounceOff(w, save, px, py) {
         // existing spring, so the authored impact settles naturally afterward.
         w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
     }
-    if (save.equippedSuit === "vanguard") {
+    if (pilotSuitId(w, save) === "vanguard") {
         vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy, Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
     }
     // PRISMWING. Contact repaints the SKY, and only the sky: a new hue every
@@ -2937,10 +2945,7 @@ function die(w, save) {
     // suit and helmet, free. The crash sheet announces it, the coach walks
     // the pilot through wearing it, and Mission 1 takes it from there.
     if (save.tutorialDone && save.guide === "pending") {
-        if (!save.unlockedSuits.includes(GUIDE_SUIT))
-            save.unlockedSuits.push(GUIDE_SUIT);
-        if (!save.unlocked.includes(GUIDE_HELM))
-            save.unlocked.push(GUIDE_HELM);
+        grantTutorialKit(save);
         save.guide = "reward";
         writeSave(save);
     }
@@ -3368,8 +3373,7 @@ export function updateWorld(w, save, dt) {
             w.bounceAnimStrength = 0;
         }
     }
-    if (save.equippedSuit === "vanguard" && !w.tut?.hold && !w.spill) {
-        w.vanguard.mode = vanguardModeOf(save);
+    if (pilotSuitId(w, save) === "vanguard" && !w.tut?.hold && !w.spill) {
         stepVanguard(w.vanguard, dt, w.ready ? 0 : w.squirrel.vy);
     }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
@@ -3482,7 +3486,7 @@ export function updateWorld(w, save, dt) {
     // Switchback is cosmetic. Retired direction fields stay neutral.
     w.scrollReversing = false;
     const move = w.speed * w.driftFactor * simDt;
-    if (save.equippedSuit === "vanguard")
+    if (pilotSuitId(w, save) === "vanguard")
         for (const p of w.vanguard.contacts)
             p.x -= move;
     w.distance += Math.abs(move);
@@ -3551,7 +3555,7 @@ export function updateWorld(w, save, dt) {
         if (!p.scored && p.x + p.r < sx - 12) {
             p.scored = true;
             w.score += 1;
-            if (save.equippedSuit === "vanguard")
+            if (pilotSuitId(w, save) === "vanguard")
                 vanguardGate(w.vanguard);
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
                 w.tut.gates += 1;

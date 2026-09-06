@@ -4,8 +4,8 @@ import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
-import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
+import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
+import { GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
   createRaceState,
@@ -457,6 +457,9 @@ export type World = {
       clearedGate?: { after: number; label: string } | null;
     };
   } | null;
+  /** the first flight is flown in the tutorial suit; set for the whole run,
+   *  crash sheet included, so the pilot is one character start to finish */
+  tutSuit: boolean;
   tut: {
     stage: TutStage;
     hold: boolean;
@@ -577,6 +580,7 @@ export function makeWorld(W: number, H: number): World {
     palPos: { x: 0, y: 0, dart: 0 },
     shake: 0,
     pausedFrom: null,
+    tutSuit: false,
     tut: null,
     lastRun: null,
     lvl: null,
@@ -1478,6 +1482,13 @@ function spawnPair(w: World, save: SaveData, x: number) {
   w.gatesSpawned += 1;
 }
 
+/** THE SUIT ON THE PILOT. The tutorial flies AcorNut whatever the save
+ *  wears; every other run wears the equipped suit. One place to ask, so the
+ *  painter, the trail, the shield and the motion hooks cannot disagree. */
+export function pilotSuitId(w: World, save: SaveData) {
+  return w.tutSuit ? TUTORIAL_SUIT : save.equippedSuit;
+}
+
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, level?: LevelDef, tunnelSeed?: number) {
   w.flight = flight;
   w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
@@ -1534,7 +1545,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.invulnLeft = 0;
   w.flapBoost = 0;
   w.tapAnimT = -1;
-  w.vanguard = createVanguardMotion(vanguardModeOf(save));
+  w.vanguard = createVanguardMotion();
   w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -1607,6 +1618,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     w.shieldCharges = 0;
   } else if (flight === "tunnel") initTunnel(w, tunnelSeed);
   else for (let i = 0; i < 3; i++) spawnPair(w, save, w.W + 90 + i * nextGapSpacing(w));
+  w.tutSuit = tutorial && !w.race && !w.spill && flight !== "tunnel";
   w.tut = w.race || w.spill || flight === "tunnel" ? null : tutorial
     ? { stage: "intro", hold: false, t: 0, gates: 0, gateBase: 0, nudge: "",
         retries: 0, springs: 0, apexY: 0, launched: false, bounced: false,
@@ -2469,7 +2481,7 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   const sx = pilotX(w) - 34;
   const sy = w.squirrel.y + 8;
   if (scale < 1 && Math.random() > scale) return;
-  const trail = trailWornBy(save.equippedTrail, save.equippedSuit);
+  const trail = trailWornBy(save.equippedTrail, pilotSuitId(w, save));
   const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
   if (trail === "vanguardwake") {
     for (const lane of [-1, 1]) w.particles.push({
@@ -2801,7 +2813,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.tapAnimFromRot = w.squirrel.rot;
       w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
       w.tapAnimDir = 1;
-      if (save.equippedSuit === "vanguard") vanguardTap(w.vanguard,tutorialImpulse);
+      if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,tutorialImpulse);
       break;
     case "doDive":
       t.hold = false;
@@ -2809,7 +2821,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.bounceUp = false;
       w.squirrel.vy = PHYS.dive;
       w.squirrel.rot = 0.5;
-      if (save.equippedSuit === "vanguard") vanguardDive(w.vanguard);
+      if (pilotSuitId(w, save) === "vanguard") vanguardDive(w.vanguard);
       break;
     case "learnTap":
     case "learnTap2":
@@ -2928,7 +2940,7 @@ export function flap(w: World, save: SaveData) {
   if (!w.spill) {
     const impulse = w.squirrel.vy-flapOf(save,w);
     w.squirrel.vy = flapOf(save, w);
-    if (save.equippedSuit === "vanguard") vanguardTap(w.vanguard,impulse);
+    if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,impulse);
   }
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
@@ -2954,7 +2966,7 @@ export function dive(w: World, save: SaveData) {
     tutGesture(w, save, "swipe");
     return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
   }
-  if (save.equippedSuit === "vanguard") vanguardDive(w.vanguard);
+  if (pilotSuitId(w, save) === "vanguard") vanguardDive(w.vanguard);
   if (w.bounceUp && w.hitCooldown > 0) {
     w.bounceUp = false;
     w.squirrel.vy = PHYS.bounceCancel;
@@ -3073,7 +3085,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
     // existing spring, so the authored impact settles naturally afterward.
     w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
   }
-  if (save.equippedSuit === "vanguard") {
+  if (pilotSuitId(w, save) === "vanguard") {
     vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy,
       Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
   }
@@ -3386,8 +3398,7 @@ function die(w: World, save: SaveData) {
   // suit and helmet, free. The crash sheet announces it, the coach walks
   // the pilot through wearing it, and Mission 1 takes it from there.
   if (save.tutorialDone && save.guide === "pending") {
-    if (!save.unlockedSuits.includes(GUIDE_SUIT)) save.unlockedSuits.push(GUIDE_SUIT);
-    if (!save.unlocked.includes(GUIDE_HELM)) save.unlocked.push(GUIDE_HELM);
+    grantTutorialKit(save);
     save.guide = "reward";
     writeSave(save);
   }
@@ -3802,8 +3813,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  if (save.equippedSuit === "vanguard" && !w.tut?.hold && !w.spill) {
-    w.vanguard.mode = vanguardModeOf(save);
+  if (pilotSuitId(w, save) === "vanguard" && !w.tut?.hold && !w.spill) {
     stepVanguard(w.vanguard, dt, w.ready ? 0 : w.squirrel.vy);
   }
 
@@ -3905,7 +3915,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   // Switchback is cosmetic. Retired direction fields stay neutral.
   w.scrollReversing = false;
   const move = w.speed * w.driftFactor * simDt;
-  if (save.equippedSuit === "vanguard") for (const p of w.vanguard.contacts) p.x -= move;
+  if (pilotSuitId(w, save) === "vanguard") for (const p of w.vanguard.contacts) p.x -= move;
   w.distance += Math.abs(move);
   for (const p of w.planets) {
     p.x -= move;
@@ -3970,7 +3980,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     if (!p.scored && p.x + p.r < sx - 12) {
       p.scored = true;
       w.score += 1;
-      if (save.equippedSuit === "vanguard") vanguardGate(w.vanguard);
+      if (pilotSuitId(w, save) === "vanguard") vanguardGate(w.vanguard);
       if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
         w.tut.gates += 1;
         // TOUCHING A PLANET IS A PASS. Owner's rule, and it follows from the

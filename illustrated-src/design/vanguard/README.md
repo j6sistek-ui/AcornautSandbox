@@ -1,5 +1,14 @@
 # Vanguard flight: articulated motion trials
 
+**Update, 6 Sep 2026 (owner).** The trials are over: **Flight is the motion.**
+The Cinematic, Continuous and Upright variants, the picker and the save field
+are gone; `vanguard.ts` carries one articulated cruise. A tap now fires a
+jetpack burst (flash at the pack, three puffs trailing back and up), painted
+over the rig. The suit is **AcorNut** in the game (id `vanguard` stays for
+saves and art paths). The first flight is flown in AcorNut; graduation locks
+him behind his 500 stars and seats the pilot in Flight. The rest of this
+document is the history of the trials.
+
 The owner reported that the tail worked but Vanguard dove forward too much,
 held his arms still, and read as Superman. The previous body was deliberately
 fixed in every tail drawing. Its +34° art correction plus +22° gravity heading

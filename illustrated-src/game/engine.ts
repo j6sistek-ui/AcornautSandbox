@@ -1,13 +1,11 @@
-import type { VanguardMotionMode } from "./vanguard";
 import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
-import { suitLean, SUIT_LEAN } from "./control-constants";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
 import {
   batteryUnlocked,
@@ -110,13 +108,6 @@ export type Engine = {
   /** the first flight is FLOWN, not skipped: leave the portal and walk
    *  straight into the guided Loadout that collects the reward */
   finishTutorial: () => void;
-  /** THE LEAN EDITOR. Working values live in the save so they survive the
-   *  reload it takes to fly a change; leanExport() hands back a block to
-   *  paste into SUIT_LEAN once a number is settled. */
-  setSuitLean: (id: string, up: number, down: number) => void;
-  resetSuitLean: (id: string) => void;
-  suitLeanOf: (id: string) => { up: number; down: number };
-  leanExport: () => string;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
   dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
@@ -180,7 +171,6 @@ export type Engine = {
   isFavorite: (id: string) => boolean;
   /** shrink or restore the loadout's animated case */
   setHeroCompact: (on: boolean) => void;
-  setVanguardMotionMode: (mode: VanguardMotionMode) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -425,45 +415,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
-    setSuitLean(id, up, down) {
-      // clamped to the same 0..2 the checker enforces on the shipped table,
-      // so the editor can never produce a value that would fail the build
-      const clamp = (n: number) => Math.max(0, Math.min(2, Math.round(n * 20) / 20));
-      save.suitLean = { ...(save.suitLean ?? {}), [id]: { up: clamp(up), down: clamp(down) } };
-      writeSave(save);
-      notify();
-    },
-    resetSuitLean(id) {
-      const next = { ...(save.suitLean ?? {}) };
-      delete next[id];
-      save.suitLean = next;
-      writeSave(save);
-      notify();
-    },
-    suitLeanOf(id) {
-      return save.suitLean?.[id] ?? suitLean(id);
-    },
-    leanExport() {
-      // Everything, not just what was edited: a settled table is pasted over
-      // SUIT_LEAN wholesale, and a partial block silently keeps whatever the
-      // old file had for the suits it omits.
-      // THE UNION, not just the suits this page ships.
-      //
-      // SUITS is build-dependent - the production page carries 22 of the 30,
-      // with eight beta-only suits absent - so exporting from live and
-      // pasting the result over SUIT_LEAN would DELETE those eight and fail
-      // verify_suit_lean on the next build. The table in the file is the
-      // whole roster whichever page you dialled from.
-      const ids = [...new Set([...SUITS.map((u) => u.id), ...Object.keys(SUIT_LEAN)])];
-      const rows = ids.map((id) => {
-        const l = save.suitLean?.[id] ?? suitLean(id);
-        const pad = " ".repeat(Math.max(0, 12 - id.length));
-        return `  ${id}:${pad}{ up: ${l.up}, down: ${l.down} },`;
-      });
-      const edited = ids.filter((id) => save.suitLean?.[id]);
-      return `// SUIT_LEAN - edited in the hangar${edited.length ? `: ${edited.join(", ")}` : " (nothing changed yet)"}\n`
-        + rows.join("\n") + "\n";
-    },
     settleDust,
     dailyState,
     claimDaily,
@@ -529,13 +480,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     isFavorite: (id) => (save.favorites ?? []).includes(id),
     setHeroCompact(on) {
       save.heroCompact = !!on;
-      writeSave(save);
-      notify();
-    },
-    setVanguardMotionMode(mode) {
-      if (!IS_BETA || !["cinematic", "flow", "cruise", "jetpack"].includes(mode)) return;
-      save.vanguardMotionMode = mode;
-      world.vanguard.mode = mode;
       writeSave(save);
       notify();
     },
@@ -1505,7 +1449,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   setSfxMuted(!!save.sfxOff);
   document.body.classList.toggle("ac-nomotion", !!save.motionOff);
 
-  engine.artReady = loadArt([save.equippedSuit], [save.equippedPal])
+  // the first flight is flown in AcorNut, so his bank rides the boot load
+  // until the tutorial is done
+  engine.artReady = loadArt(save.tutorialDone ? [save.equippedSuit] : [save.equippedSuit, TUTORIAL_SUIT], [save.equippedPal])
     .then((bank) => {
       art = bank;
       engine.art = bank;
