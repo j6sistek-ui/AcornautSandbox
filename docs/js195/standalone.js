@@ -1,23 +1,24 @@
-import { writeSave } from "./save.js?v=191";
-import { spillAppearance } from "./spill-appearance.js?v=191";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=191";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=191";
-import { addChartScenery } from "./star-map-view.js?v=191";
-import { mapDebrisIndex } from "./zone-visuals.js?v=191";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=191";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=191";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=191";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=191";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=191";
-import { drawSprite as drawSpriteOn } from "./art.js?v=191";
-import { createEngine } from "./engine.js?v=191";
-import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=191";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=191";
-import { formatRaceTicks } from "./race.js?v=191";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=191";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=191";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=191";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=191";
+import { writeSave } from "./save.js?v=195";
+import { spillAppearance } from "./spill-appearance.js?v=195";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=195";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=195";
+import { addChartScenery } from "./star-map-view.js?v=195";
+import { mapDebrisIndex } from "./zone-visuals.js?v=195";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=195";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=195";
+import { suitLean } from "./control-constants.js?v=195";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=195";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=195";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=195";
+import { drawSprite as drawSpriteOn } from "./art.js?v=195";
+import { createEngine } from "./engine.js?v=195";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=195";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=195";
+import { formatRaceTicks } from "./race.js?v=195";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=195";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=195";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=195";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=195";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -336,29 +337,6 @@ export async function bootStandalone(root) {
         throttle.classList.toggle("held", throttleOwner !== null && sp.held);
         throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
     }
-    function vanguardMotionPicker() {
-        const panel = el("div", "ac-vanguard-motion");
-        panel.append(el("p", "ac-sub", "VANGUARD MOTION"));
-        const row = el("div", "ac-modes");
-        row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
-        row.setAttribute("role", "group");
-        row.setAttribute("aria-label", "Vanguard motion");
-        for (const [mode, label] of [["cruise", "Flight"], ["jetpack", "Upright"], ["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
-            const on = vanguardModeOf(engine.save) === mode;
-            const b = el("button", on ? "ac-mode on" : "ac-mode", label);
-            b.setAttribute("aria-pressed", String(on));
-            b.onclick = () => engine.setVanguardMotionMode(mode);
-            row.append(b);
-        }
-        const descriptions = {
-            cruise: "Flight: relaxed arms, soft rise and fall, flowing tail and smooth thrust.",
-            jetpack: "Upright: tall jetpack stance, planet push-off and a gentle forward dive.",
-            cinematic: "Original Cinematic motion for comparison.",
-            flow: "Original Continuous motion for comparison.",
-        };
-        panel.append(row, el("p", "ac-sub", descriptions[vanguardModeOf(engine.save)]));
-        return panel;
-    }
     const render = () => {
         disposeChart();
         disposeChart = () => { };
@@ -468,8 +446,6 @@ export async function bootStandalone(root) {
                 settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
                 sheet.append(settings);
             }
-            if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race)
-                sheet.append(vanguardMotionPicker());
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
             // past 940px on a phone, and .ac-sheet is a fixed-height centred column
             // - so it spilled off BOTH ends and took RESUME with it. You could read
@@ -1144,7 +1120,6 @@ export async function bootStandalone(root) {
     // THE LEAN EDITOR, open or shut. Purely a view state - the values live in
     // the save - so it resets on reload, which is right: it is an instrument
     // you open to dial something in, not a mode the game sits in.
-    let leanEdit = false;
     let hyperRunOpen = false;
     // An inspected Depot build stays local. Only the starting utility and engine color are equipped.
     let shipPlan = null;
@@ -2047,14 +2022,12 @@ export async function bootStandalone(root) {
                     else {
                         if (palWorn)
                             paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, engine.suitLeanOf(wornSuit.id), leanEdit, vanguardModeOf(s));
+                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, suitLean(wornSuit.id));
                     }
                     requestAnimationFrame(tick);
                 };
                 requestAnimationFrame(tick);
             }
-            if (IS_BETA && wornSuit.id !== "vanguard")
-                box.append(leanTuner(wornSuit, render));
         }
         const tabs = el("div", "ac-cats");
         for (const t of ["suits", "helmets", "trails", "pals", "ship"]) {
@@ -2229,12 +2202,10 @@ export async function bootStandalone(root) {
                 }
                 grid.append(row);
             }
-            if (IS_BETA && s.equippedSuit === "vanguard")
-                grid.append(vanguardMotionPicker());
         }
         else if (engine.shopTab === "trails") {
             if (s.equippedSuit === "vanguard")
-                grid.append(el("p", "ac-sub", "Vanguard carries its own wake. Your previous trail returns when you change suits."));
+                grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
             const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);
@@ -2257,7 +2228,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-cardoff");
                 b.disabled = !compatible;
                 if (!compatible)
-                    b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "Vanguard only" : "Change suit to wear"));
+                    b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "AcorNut only" : "Change suit to wear"));
                 b.onclick = () => { if (open && compatible)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
                 b.append(pinReward("trail", t.id, t.name));
@@ -2500,97 +2471,6 @@ export async function bootStandalone(root) {
         if (!BETA_FEATURES)
             box.append(tabbar("hangar"));
         return box;
-    }
-    /** THE LEAN TUNER — beta only.
-     *
-     *  An instrument for FINDING a number, not a setting for players to keep.
-     *  The roster is calibrated in SUIT_LEAN now (0.80 climb, 0.30 dive, found
-     *  right here), and a live pilot has no reason to meet a panel of
-     *  multipliers under their suit - it reads as something they broke.
-     *
-     *  Built as a named function called from ONE gated line, so
-     *  verify_dev_instruments can hold it to the beta page the same way it
-     *  holds every other instrument. An inline `if (IS_BETA)` block would have
-     *  been invisible to that table and free to drift onto live.
-     */
-    function leanTuner(wornSuit, render) {
-        //
-        // How far this suit tips climbing and diving, changed here and seen
-        // in the case above at the attitudes that matter: opening it puts the
-        // preview into a slow sweep between FULL CLIMB and FULL DIVE, which
-        // are the two ends the ordinary tap arc never reaches.
-        //
-        // It lives in the LOADOUT, beside the suit it belongs to, and not in
-        // the pause menu - a dial you meet mid-flight and cannot leave is the
-        // exact thing that was removed on 25 Aug and is not coming back. This
-        // one is somewhere you go on purpose and can walk away from.
-        //
-        // The numbers are working values in the save so they survive the
-        // reload it takes to fly a change. COPY LEAN hands back the whole
-        // table to paste into SUIT_LEAN once one is settled.
-        const leanBox = el("div", "ac-leanbox");
-        const cur = engine.suitLeanOf(wornSuit.id);
-        const deg = (mult, rot) => (rot * 0.8 * mult * 180 / Math.PI).toFixed(0);
-        const head = el("button", "ac-leanhead");
-        head.append(el("b", "", "LEAN"), el("span", "ac-leanread", `climb ${deg(cur.up, -0.55)}\u00b0 \u00b7 dive ${deg(cur.down, 0.95)}\u00b0`), el("span", "ac-leancaret", leanEdit ? "\u2715" : "EDIT"));
-        head.onclick = () => { leanEdit = !leanEdit; render(); };
-        leanBox.append(head);
-        if (leanEdit) {
-            const row = (label, key, rot) => {
-                const r = el("div", "ac-leanrow");
-                const val = el("span", "ac-leanval", "");
-                const paint = () => {
-                    const l = engine.suitLeanOf(wornSuit.id);
-                    val.textContent = `${l[key].toFixed(2)}  (${deg(l[key], rot)}\u00b0)`;
-                };
-                const step = (d) => {
-                    const l = engine.suitLeanOf(wornSuit.id);
-                    engine.setSuitLean(wornSuit.id, key === "up" ? l.up + d : l.up, key === "down" ? l.down + d : l.down);
-                    paint();
-                };
-                const minus = el("button", "ac-leanstep", "\u2212");
-                minus.setAttribute("aria-label", `less ${label}`);
-                minus.onclick = () => step(-0.05);
-                const plus = el("button", "ac-leanstep", "+");
-                plus.setAttribute("aria-label", `more ${label}`);
-                plus.onclick = () => step(0.05);
-                paint();
-                r.append(el("span", "ac-leanlabel", label), minus, val, plus);
-                return r;
-            };
-            leanBox.append(row("CLIMB", "up", -0.55), row("DIVE", "down", 0.95));
-            const acts = el("div", "ac-leanacts");
-            const reset = el("button", "ac-ghost", "RESET");
-            reset.onclick = () => { engine.resetSuitLean(wornSuit.id); render(); };
-            const copy = el("button", "ac-ghost", "COPY LEAN");
-            copy.onclick = () => {
-                const text = engine.leanExport();
-                const done = () => {
-                    copy.textContent = "COPIED";
-                    window.setTimeout(() => { copy.textContent = "COPY LEAN"; }, 2000);
-                };
-                if (navigator.clipboard?.writeText) {
-                    navigator.clipboard.writeText(text).then(done, () => { copy.textContent = "TAP AGAIN"; });
-                }
-                else {
-                    const ta = document.createElement("textarea");
-                    ta.value = text;
-                    ta.style.cssText = "position:fixed;left:8px;right:8px;bottom:70px;height:140px;z-index:99";
-                    document.body.append(ta);
-                    ta.select();
-                    try {
-                        document.execCommand("copy");
-                        done();
-                    }
-                    catch { /* leave it to copy by hand */ }
-                    window.setTimeout(() => ta.remove(), 8000);
-                }
-            };
-            acts.append(reset, copy);
-            leanBox.append(acts);
-            leanBox.append(el("p", "ac-leannote", "The case sweeps full climb to full dive. 1.00 is what ships."));
-        }
-        return leanBox;
     }
     // Every rank earns its OWN emblem — a cadet chevron through the
     // acornaut crown — so the Flight Log reads as a ladder of insignia
@@ -3109,30 +2989,11 @@ export async function bootStandalone(root) {
             target?.scrollIntoView({ block: "center", behavior: engine.save.motionOff ? "auto" : "smooth" });
             target?.focus({ preventScroll: true });
         };
+        // no find box (owner, 6 Sep 2026: "no searching needed") - the road
+        // scrolls, and Return to pilot brings the current mission back
         const pilot = el("button", "ac-ghost", "Return to pilot");
         pilot.onclick = () => goTo();
         nav.append(pilot);
-        const find = el("form", "ac-chart-find");
-        const query = el("input");
-        query.placeholder = "Level or name";
-        query.setAttribute("aria-label", "Find a level by number, mission or zone name");
-        const findButton = el("button", "ac-ghost", "Find");
-        findButton.type = "submit";
-        const found = el("span", "ac-chart-found");
-        found.setAttribute("role", "status");
-        find.onsubmit = event => {
-            event.preventDefault();
-            const q = query.value.trim().toLowerCase();
-            const match = q && CHART_LEVELS.find(l => String(l.ord) === q || l.name.toLowerCase().includes(q) || ENVS[l.fx.env ?? 0].name.toLowerCase().includes(q));
-            if (match) {
-                goTo(match.id);
-                found.textContent = `Level ${match.ord} · ${match.name}`;
-            }
-            else
-                found.textContent = "No matching level";
-        };
-        find.append(query, findButton);
-        nav.append(find, found);
         box.append(nav);
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
@@ -3676,7 +3537,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, CASE_W, CASE_H);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
-                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, vanguardModeOf(engine.save));
+                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -4501,7 +4362,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, 300, 190);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
-                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, vanguardModeOf(engine.save));
+                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);

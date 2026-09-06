@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=191";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=191";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=191";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=191";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=195";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=195";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=195";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=195";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -341,6 +341,8 @@ export function loadSuitBank(bank, id) {
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
         if (id === "vanguard") {
+            // AcorNut flies his sixteen painted frames (owner, 6 Sep 2026: "it
+            // was the Flight one"); the maneuver-parts atlas is no longer loaded
             const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
             // Never publish a partial bank: filtering failed images must not shift poses.
             if (frames.length === VANGUARD_FRAMES)
