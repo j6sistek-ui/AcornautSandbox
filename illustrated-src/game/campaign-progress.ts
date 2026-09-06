@@ -1,5 +1,5 @@
 import { LEVELS, STAR_REWARDS, countBits, missionProgressId, type LevelDef } from "./campaign";
-import { ENVS, IS_BETA } from "./catalog";
+import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog";
 import type { SaveData } from "./save";
 
 export type MissionCredit = {
@@ -57,7 +57,7 @@ function carryCompatibilityWrites(save: SaveData, p: CampaignProgress) {
 /** The two historical ID collisions cannot be dated from an unversioned save.
  * Credit and route passage survive; current checklists need successful replays. */
 export function ambiguousLegacy(def: LevelDef) {
-  return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || (IS_BETA && def.n === 4));
+  return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || ((IS_BETA || STAR_MAP_LIVE) && def.n === 4));
 }
 
 /** Beta can inherit a versioned production save on first visit. The same

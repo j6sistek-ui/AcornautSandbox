@@ -3,7 +3,7 @@ import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
-import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
+import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
@@ -2898,7 +2898,8 @@ export function flap(w: World, save: SaveData) {
   // countdown, the Depot, the respawn freeze - or a press while already
   // held is not a tap, so nothing below counts it or animates it.
   if (w.spill && !spillHold(w.spill, true)) return "none";
-  if (IS_BETA && !w.tut && w.flight === "fly") {
+  // the road's contracts fly on both pages: these modifiers follow the mission, not the page
+  if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
     if (w.lvl?.def.fx.tapFreeze) w.tapFrozen = !w.tapFrozen;
     if (w.stuck) { w.stuck = false; w.hitCooldown = .75; }
   }
@@ -3087,7 +3088,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   w.hitCooldown = 0.55;
   w.shake = 0.18;
   if (w.lvl) w.lvl.stats.bounces += 1;
-  if (IS_BETA && w.lvl?.def.fx.sticky) { w.stuck = true; w.squirrel.vy = 0; }
+  if ((IS_BETA || STAR_MAP_LIVE) && w.lvl?.def.fx.sticky) { w.stuck = true; w.squirrel.vy = 0; }
   spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
 }
 

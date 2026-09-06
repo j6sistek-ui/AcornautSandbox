@@ -1,6 +1,6 @@
 import { BETA_MISSION_ROWS } from "./beta-campaign-manifest";
 import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest";
-import { IS_BETA, STAR_MAP_PREVIEW } from "./catalog";
+import { IS_BETA, STAR_MAP_LIVE, STAR_MAP_PREVIEW } from "./catalog";
 import {
   RACE_MAX_ACORNS,
   RACE_RINGS,
@@ -350,14 +350,17 @@ export const STAGES: StageDef[] = [
 
 /** Immutable authored definitions. Beta variants share a route position, but
  * have their own progress identity. Production never loads preview progress. */
+// the road's contracts: the beta's authored 260 on both pages now that the
+// road is live, the original production rows only if it is ever pulled back
+const ROAD = IS_BETA || STAR_MAP_LIVE;
 export const LEGACY_LEVELS: LevelDef[] = MISSION_ROWS.slice(0, 100).map(row => {
-  const variant = IS_BETA ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+  const variant = ROAD ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
   return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
     goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) as [Goal, Goal, Goal] };
 });
-export const ALL_LEVELS: LevelDef[] = (IS_BETA ? BETA_MISSION_ROWS : MISSION_ROWS).map(row =>
+export const ALL_LEVELS: LevelDef[] = (ROAD ? BETA_MISSION_ROWS : MISSION_ROWS).map(row =>
   ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) as [Goal, Goal, Goal] }));
-export const LEVELS = IS_BETA ? ALL_LEVELS : LEGACY_LEVELS;
+export const LEVELS = ROAD ? ALL_LEVELS : LEGACY_LEVELS;
 export const CHART_LEVELS = LEVELS;
 export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
 export const CHART_MAX_STARS = CHART_LEVELS.length * 3;

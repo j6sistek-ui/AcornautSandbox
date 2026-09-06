@@ -141,8 +141,8 @@ for(const W of [320,390,1280])for(const event of ['cargo','vein','lanes','rig'])
  const w=Sim.makeWorld(390,760);save.spillBest=5;save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,['magnet']);
  save.spillStarter='capacitor';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,[]);
  save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false,Camp.levelById('4-8'));assert.deepEqual(w.spill.utilities,[],'missions start with a standard ship');
- const finalMission=Camp.levelById('10-8');assert.equal(finalMission.gates,20);
- Sim.resetRun(w,save,'spill',false,finalMission);w.ready=false;w.spill.wave=20;w.spill.phase='drain';w.spill.rocks=[];const result=Sim.updateWorld(w,save,dt);assert.equal(result,'finish');assert.equal(w.screen,'lvldone');assert(w.lastLevel.finished);assert(save.stars['10-8']&1,'wave 20 still earns the Star Map victory');
- assert.equal(Camp.LEVELS.filter(l=>l.base==='spill').length,9);assert.equal(Camp.LEVELS.filter(l=>l.base==='tunnel').length,0);
+ const finalMission=Camp.levelById('10-8');assert(finalMission.gates>=1,'the zone-10 Spill mission names a wave');
+ Sim.resetRun(w,save,'spill',false,finalMission);w.ready=false;w.spill.wave=finalMission.gates;w.spill.phase='drain';w.spill.rocks=[];const result=Sim.updateWorld(w,save,dt);assert.equal(result,'finish');assert.equal(w.screen,'lvldone');assert(w.lastLevel.finished);assert(save.stars['10-8']&1,'clearing the named wave still earns the Star Map victory');
+ assert.equal(Camp.LEVELS.filter(l=>l.base==='spill').length,26,'the live road: a Spill mission in every zone');assert.equal(Camp.LEVELS.filter(l=>l.base==='tunnel').length,0);
 }
 console.log(`spill progression: protection, utilities, contracts, ${eventSweeps} event sweeps, checkpoint banking, endless continuation, mastery and Star Map victories pass`);

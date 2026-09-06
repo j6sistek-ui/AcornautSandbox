@@ -593,25 +593,27 @@ const dock = (seed) => {
   ok(sim.reviveRun(w, sv) === false && sv.acorns === 500, "the acorn continue is refused: the Spill sells its own");
 }
 {
-  // the beta chart: level 8 of every chapter from 2 is a wave mission
+  // THE LIVE ROAD: slot 8 of every zone is a Spill mission - a wave to
+  // clear, or an Ore / Depot finish - on both pages (STAR_MAP_LIVE)
   const spills = camp.LEVELS.filter((l) => l.base === "spill");
-  ok(spills.length === 9 && spills.every((l) => l.n === 8 && l.stage >= 2), `nine level-8 missions (${spills.length})`);
-  ok(spills.every((l) => l.gates === (l.stage === 10 ? 20 : 2 + l.stage)), "each names the wave to clear");
+  ok(spills.length === 26 && spills.every((l) => l.n === 8), `a Spill mission in every zone (${spills.length})`);
+  ok(spills.every((l) => l.spillFinish || l.gates >= 1), "each names the wave to clear or an Ore / Depot finish");
   const def = camp.levelById("2-8");
-  ok(camp.goalText(def.goals[0], def) === "Clear 4 waves of the Spill", `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
+  const rung = def.gates;
+  ok(camp.goalText(def.goals[0], def) === `Clear ${rung} waves of the Spill`, `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
   ok(def.goals[1].kind === "ore" && def.goals[2].kind === "noHit", "the stars are Ore and a clean hull");
   const st = camp.emptyStats();
   ok(camp.goalHud(def.goals[2], st, 0, def).state === "done", "no hits yet reads green");
   st.hits = 1;
   ok(camp.goalHud(def.goals[2], st, 0, def).state === "lost", "one hit turns it red");
-  ok(camp.goalHud(def.goals[0], st, 3, def).text === "WAVE 3/4", "the finish pill counts waves");
+  ok(camp.goalHud(def.goals[0], st, 1, def).text === `WAVE 1/${rung}`, "the finish pill counts waves");
   // flown through the sim: reaching the rung settles the level with its stars
   const w = sim.makeWorld(430, 900);
   const sv = save.loadSave();
   sv.tutorialDone = true; sv.guide = "done";
   sim.resetRun(w, sv, "spill", false, def);
   w.spill.openingEnabled = false; // isolate mission completion from welcome UI
-  ok(w.spill && w.spill.target === 4 && w.spill.seed === 5000 + def.ord, "a mission flies a fixed ladder to its rung");
+  ok(w.spill && w.spill.target === rung && w.spill.seed === 5000 + def.ord, "a mission flies a fixed ladder to its rung");
   sim.flap(w, sv);
   let guard = 0;
   while (w.screen === "play" && guard++ < 60 * 400) {
