@@ -1,6 +1,8 @@
 import type { ArtBank } from './art';
 import { paintVanguardRig } from './vanguard-rig';
 import { PHYS } from './catalog';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver';
+import type { ManeuverMotion } from './vanguard-maneuver';
 
 export const VANGUARD_FRAMES = 16;
 export type VanguardMotionMode = 'cinematic' | 'flow' | 'cruise' | 'jetpack';
@@ -23,6 +25,7 @@ export type VanguardMotion = {
   // Independent inertial joints. Taps add energy, never restart a gesture.
   nearArm: number; farArm: number; nearLeg: number; farLeg: number; settle: number;
   drive: number; contactAge: number; contactPower: number; contactNormalY: number;
+  maneuver: ManeuverMotion;
   rates: { heading: number; pitch: number; nearArm: number; farArm: number;
     nearLeg: number; farLeg: number; settle: number; drive: number };
 
@@ -31,12 +34,13 @@ export function createVanguardMotion(mode: VanguardMotionMode = 'cruise'): Vangu
   return { mode, phase: 0, frame: 0, heading: 0, pitch: mode === 'jetpack' ? -28*DEG : mode === 'cruise' ? 16*DEG : VANGUARD_ART_PITCH,
     time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
     thrust: 0, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
-    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1,
+    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1, maneuver:createManeuverMotion(mode==='jetpack'),
     rates: { heading: 0, pitch: 0, nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0, drive: 0 } };
 }
 export function vanguardGate(s: VanguardMotion) { s.freshThrust = true; }
 // deltaVy is the accepted upward impulse (old vy minus new vy).
 export function vanguardTap(s: VanguardMotion, deltaVy = 450) {
+  maneuverTap(s.maneuver,Math.max(0,deltaVy));
   if (articulatedVanguard(s.mode)) {
     // Actual accepted acceleration controls intensity. Repeated taps sustain
     // pressure; they cannot snap a joint or rewind the continuous tail.
@@ -58,6 +62,7 @@ export function vanguardContact(s: VanguardMotion, x: number, y: number, nx: num
   if (s.contacts.length > 3) s.contacts.shift();
   s.freshThrust = true; s.diving = false;
   s.contactAge = 0; s.contactPower = clamp(strength, .35, 1); s.contactNormalY = clamp(ny,-1,1);
+  maneuverContact(s.maneuver,ny,strength);
   // Surface dust outlives an immediate tap; the body follows the rebound vy.
 }
 const DEG = Math.PI/180;
@@ -118,6 +123,9 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
   if (!(dt>0) || !Number.isFinite(dt) || !Number.isFinite(vy)) return;
   // The engine bounds ticks; guard isolated preview callers after suspension.
   dt=Math.min(dt,.25);
+  // Keep the new rig warm even while an original comparison style is chosen.
+  // A live style switch therefore has no stale landing or tail recoil.
+  stepManeuver(s.maneuver,dt,vy,s.diving,s.mode==='jetpack');
   if (articulatedVanguard(s.mode)) {
     stepArticulated(s,dt,vy);
     for(const p of s.contacts) p.age+=dt;
@@ -142,6 +150,9 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
 
 export function paintVanguard(ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined,
   x: number, y: number, size: number, state?: VanguardMotion) {
+  if(state&&articulatedVanguard(state.mode)&&art?.vanguardParts){
+    paintManeuver(ctx,art.vanguardParts,x,y,size,state.maneuver);return;
+  }
   const bank = art?.vanguard?.length === VANGUARD_FRAMES ? art.vanguard : undefined;
   const frame = bank?.[state?.frame ?? 0] ?? art?.suits.vanguard;
   if (!frame) return;

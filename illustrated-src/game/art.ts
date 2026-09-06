@@ -27,6 +27,7 @@ export type ArtBank = {
   helms: Record<string, Sprite>;
   suits: Record<string, Sprite>;
   vanguard?: Sprite[];
+  vanguardParts?: Sprite;
   sky: HTMLImageElement | null;
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
@@ -436,10 +437,15 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
     loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
   const p = (async () => {
     if (id === "vanguard") {
-      const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+      const [frames,parts] = await Promise.all([
+        many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES),
+        loadImg(`${base}/suits/vanguard/maneuver-parts.png?v=${ART_VER}`).then(asSprite).catch(()=>null),
+      ]);
       // Never publish a partial bank: filtering failed images must not shift poses.
       if (frames.length === VANGUARD_FRAMES) bank.vanguard = frames;
       else suitBankLoads.delete(id); // allow a later equip to retry
+      if(parts&&parts.width===1024&&parts.height===768)bank.vanguardParts=parts;
+      else suitBankLoads.delete(id); // retain the old rig and allow a later retry
       return;
     }
     const rigged = RIGGED_SUITS.includes(id);

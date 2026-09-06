@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "gameplaySize": 52,
+  "travelMeasurements": [
+    {
+      "mode": "cruise",
+      "tapIntervalMs": 100,
+      "travelPx": {
+        "nearHand": 11.275558296825615,
+        "farHand": 9.36344331700901,
+        "nearFoot": 7.365015133186943,
+        "farFoot": 8.547384369853113
+      }
+    },
+    {
+      "mode": "cruise",
+      "tapIntervalMs": 180,
+      "travelPx": {
+        "nearHand": 10.463339055570756,
+        "farHand": 9.509020205081926,
+        "nearFoot": 6.610424908789994,
+        "farFoot": 8.120319320298236
+      }
+    },
+    {
+      "mode": "cruise",
+      "tapIntervalMs": 300,
+      "travelPx": {
+        "nearHand": 10.640478619388134,
+        "farHand": 9.50290484665656,
+        "nearFoot": 6.680126600900058,
+        "farFoot": 8.117617848025127
+      }
+    },
+    {
+      "mode": "jetpack",
+      "tapIntervalMs": 100,
+      "travelPx": {
+        "nearHand": 11.275045446993454,
+        "farHand": 9.134545903180472,
+        "nearFoot": 7.3650238012961635,
+        "farFoot": 9.15763141068668
+      }
+    },
+    {
+      "mode": "jetpack",
+      "tapIntervalMs": 180,
+      "travelPx": {
+        "nearHand": 10.462653892125825,
+        "farHand": 9.272054522706224,
+        "nearFoot": 6.858498427956513,
+        "farFoot": 8.678048240012886
+      }
+    },
+    {
+      "mode": "jetpack",
+      "tapIntervalMs": 300,
+      "travelPx": {
+        "nearHand": 10.640483903920545,
+        "farHand": 9.27561487570465,
+        "nearFoot": 7.105421652925299,
+        "farFoot": 8.608215453197927
+      }
+    }
+  ],
+  "minimumTailArea": 0.3739483845166604,
+  "maximumStepPx": 1.9088858627503966,
+  "maxFrameRateDifferencePx": 0,
+  "opaqueJointSamples": 1600,
+  "note": "Landmark movement with root/body tilt removed; real painter and alpha checks. Device pacing and artistic quality require visual review."
+}

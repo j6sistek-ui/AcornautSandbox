@@ -1,23 +1,23 @@
-import { writeSave } from "./save.js?v=188";
-import { spillAppearance } from "./spill-appearance.js?v=188";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=188";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=188";
-import { addChartScenery } from "./star-map-view.js?v=188";
-import { mapDebrisIndex } from "./zone-visuals.js?v=188";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=188";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=188";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=188";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=188";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=188";
-import { drawSprite as drawSpriteOn } from "./art.js?v=188";
-import { createEngine } from "./engine.js?v=188";
-import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=188";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=188";
-import { formatRaceTicks } from "./race.js?v=188";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=188";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=188";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=188";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=188";
+import { writeSave } from "./save.js?v=192";
+import { spillAppearance } from "./spill-appearance.js?v=192";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=192";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=192";
+import { addChartScenery } from "./star-map-view.js?v=192";
+import { mapDebrisIndex } from "./zone-visuals.js?v=192";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=192";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=192";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=192";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=192";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=192";
+import { drawSprite as drawSpriteOn } from "./art.js?v=192";
+import { createEngine } from "./engine.js?v=192";
+import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=192";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=192";
+import { formatRaceTicks } from "./race.js?v=192";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=192";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=192";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=192";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=192";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -343,16 +343,20 @@ export async function bootStandalone(root) {
         row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
         row.setAttribute("role", "group");
         row.setAttribute("aria-label", "Vanguard motion");
-        for (const [mode, label] of [["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
+        for (const [mode, label] of [["cruise", "Flight"], ["jetpack", "Upright"], ["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
             const on = vanguardModeOf(engine.save) === mode;
             const b = el("button", on ? "ac-mode on" : "ac-mode", label);
             b.setAttribute("aria-pressed", String(on));
             b.onclick = () => engine.setVanguardMotionMode(mode);
             row.append(b);
         }
-        panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
-            ? "Slow tail sweep; body follows your climb and fall. Swipe down for a deeper dive."
-            : "Quicker tail sweep and body response. Same flight controls; swipe down for a deeper dive."));
+        const descriptions = {
+            cruise: "Flight: forward reach, tucked climbs, open falls and a trailing tail.",
+            jetpack: "Upright: bent-knee hover, rising reach, falling brace and planet push-off.",
+            cinematic: "Original Cinematic motion for comparison.",
+            flow: "Original Continuous motion for comparison.",
+        };
+        panel.append(row, el("p", "ac-sub", descriptions[vanguardModeOf(engine.save)]));
         return panel;
     }
     const render = () => {
@@ -3096,7 +3100,7 @@ export async function bootStandalone(root) {
         box.classList.add("ac-chartscene", "ac-zone-chart");
         const totalPill = el("div", "ac-pill ac-pill-gold");
         totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : "The road ahead", "Star Chart", totalPill));
+        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : `${CHART_LEVELS.length} missions · the road ahead`, "Star Chart", totalPill));
         const nav = el("div", "ac-chart-nav");
         nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
         const goTo = (id) => {
