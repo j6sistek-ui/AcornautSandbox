@@ -109,6 +109,10 @@ Production/beta menu and engine checks, original inertia/fallback rendering,
 the Depot sequence, Spill/welcome simulation and all 30 shipping-art QA groups
 pass. The unrelated broad Spill UI harness already has a mocked
 `getTransform()` failure documented in the [previous review](FLIGHT-RIG-REVIEW.md).
+After merging main's Star Chart find-box removal, the Vanguard engine and
+maneuver checks pass again at build 193. The broader Star Map UI harness fails
+identically on untouched main and this branch: it expects 100 production cards
+although main now exposes 260. Its stale expectation is outside this change.
 
 ## Reproduce
 
@@ -129,5 +133,5 @@ python illustrated-src/verify-art.py
 The build accepts `ACORNAUT_TSC` pointing to `tsc.js`. Canvas scripts accept
 `ACORNAUT_CANVAS`; DOM checks accept `ACORNAUT_HAPPY_DOM`.
 Set the same `ACORNAUT_QA_OUTPUT` for both review scripts. Encode their frame
-directories at 30 fps; simulation runs at 60 Hz. Build 192 is exported normally;
+directories at 30 fps; simulation runs at 60 Hz. Build 193 is exported normally;
 generated `docs/js*` files must not be edited by hand.

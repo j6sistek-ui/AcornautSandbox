@@ -94,7 +94,8 @@ if(mode==='production'){
   e.fly('spill');const before=JSON.stringify(e.world.spill);assert(e.setSpillAppearance('finish','stock'));assert.equal(JSON.stringify(e.world.spill),before,'cosmetic selection cannot mutate simulation');
   assert.equal(localStorage.getItem('acornaut_star_map_sample_v1'),JSON.stringify({sentinel:'archived sample'}));
   chart();
-  const input=app.querySelector('.ac-chart-find input');input.value='Blackout Zone';app.querySelector('.ac-chart-find').dispatchEvent(new win.Event('submit',{cancelable:true}));tick();
+  // the find box is gone (owner: "no searching needed"); reach the far node the way the chart's own goTo does
+  const far=app.querySelector('[data-order="241"]');far.scrollIntoView({block:'center'});far.focus({preventScroll:true});tick();
   assert(app.querySelector('[data-order="241"] .ac-mapdisc canvas'));
   assert(app.querySelectorAll('.ac-mapdisc canvas').length<=48);
 }

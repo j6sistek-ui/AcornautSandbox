@@ -1,23 +1,23 @@
-import { writeSave } from "./save.js?v=192";
-import { spillAppearance } from "./spill-appearance.js?v=192";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=192";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=192";
-import { addChartScenery } from "./star-map-view.js?v=192";
-import { mapDebrisIndex } from "./zone-visuals.js?v=192";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=192";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=192";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=192";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=192";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=192";
-import { drawSprite as drawSpriteOn } from "./art.js?v=192";
-import { createEngine } from "./engine.js?v=192";
-import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=192";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=192";
-import { formatRaceTicks } from "./race.js?v=192";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=192";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=192";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=192";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=192";
+import { writeSave } from "./save.js?v=193";
+import { spillAppearance } from "./spill-appearance.js?v=193";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=193";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=193";
+import { addChartScenery } from "./star-map-view.js?v=193";
+import { mapDebrisIndex } from "./zone-visuals.js?v=193";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=193";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=193";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=193";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=193";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=193";
+import { drawSprite as drawSpriteOn } from "./art.js?v=193";
+import { createEngine } from "./engine.js?v=193";
+import { vanguardModeOf, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=193";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=193";
+import { formatRaceTicks } from "./race.js?v=193";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=193";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=193";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=193";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=193";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -3109,30 +3109,11 @@ export async function bootStandalone(root) {
             target?.scrollIntoView({ block: "center", behavior: engine.save.motionOff ? "auto" : "smooth" });
             target?.focus({ preventScroll: true });
         };
+        // no find box (owner, 6 Sep 2026: "no searching needed") - the road
+        // scrolls, and Return to pilot brings the current mission back
         const pilot = el("button", "ac-ghost", "Return to pilot");
         pilot.onclick = () => goTo();
         nav.append(pilot);
-        const find = el("form", "ac-chart-find");
-        const query = el("input");
-        query.placeholder = "Level or name";
-        query.setAttribute("aria-label", "Find a level by number, mission or zone name");
-        const findButton = el("button", "ac-ghost", "Find");
-        findButton.type = "submit";
-        const found = el("span", "ac-chart-found");
-        found.setAttribute("role", "status");
-        find.onsubmit = event => {
-            event.preventDefault();
-            const q = query.value.trim().toLowerCase();
-            const match = q && CHART_LEVELS.find(l => String(l.ord) === q || l.name.toLowerCase().includes(q) || ENVS[l.fx.env ?? 0].name.toLowerCase().includes(q));
-            if (match) {
-                goTo(match.id);
-                found.textContent = `Level ${match.ord} · ${match.name}`;
-            }
-            else
-                found.textContent = "No matching level";
-        };
-        find.append(query, findButton);
-        nav.append(find, found);
         box.append(nav);
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
