@@ -1,3 +1,4 @@
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=185";
 // THE SPILL — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -26,9 +27,9 @@
 // shelves are not rolled any more: the ship has four meters - PLATING,
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
-// own at the next impact, and Gold Ore is what charges it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=180";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=180";
+// own at the next impact, and charged coins are what charge it.
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=185";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=185";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -226,7 +227,7 @@ export const SPILL_SHOP = {
     pulse: {
         name: "Pulse",
         prices: [60, 110, 170],
-        levels: ["PULSE unlocked: fires on impact when charged", "Echo charge: ready after 5s, saved for the next threat", "Wide pulse, and shattered debris drops Ore"],
+        levels: ["PULSE unlocked: fires on impact when charged", "Echo charge: ready after 5s, saved for the next threat", "Wide pulse, and shattered debris drops Acorn Coins"],
     },
     shield: {
         name: "Shield",
@@ -256,13 +257,14 @@ function rand(s) {
     x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
     return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
 }
-export function createSpill(W, H, seed, target = 0, hints = true) {
+export function createSpill(W, H, seed, target = 0, hints = true, welcome = true) {
     return {
         seed: seed >>> 0,
         rng: seed >>> 0,
         W,
         H,
         phase: "ready",
+        welcome: false, freeUpgrade: false, openingEnabled: welcome,
         phaseT: 0,
         wave: 1,
         cleared: 0,
@@ -396,7 +398,7 @@ function pulseRadius(s) {
 export function spillHas(s, utility) { return s.utilities.includes(utility); }
 export function spillChargeCap(s) { return spillHas(s, "capacitor") ? 2 : 1; }
 /** A moving escape corridor through the home lane. Its maximum vertical
- *  speed is below 25px/s; every stock ship can follow it. Ore outside this
+ *  speed is below 25px/s; every stock ship can follow it. Acorn Coins outside this
  *  route is the reason to take risks. Event sweeps reserve their marked gap. */
 export function spillEscapeY(s, ahead = 0) {
     if (s.event !== "none" && s.eventPass > 0)
@@ -520,7 +522,7 @@ function spawnRock(s) {
         cue(s, "warn");
     return true;
 }
-/** Ore spills in arcs, so collecting a stream is a line you fly, not a dot */
+/** Acorn Coins spills in arcs, so collecting a stream is a line you fly, not a dot */
 function spawnStream(s) {
     const n = 4 + Math.floor(rand(s) * 5);
     const y0 = 70 + rand(s) * (s.H - 140);
@@ -540,7 +542,7 @@ function spawnStream(s) {
     }
 }
 /**
- * The things that drift past alone rather than in a stream. Gold Ore is
+ * The things that drift past alone rather than in a stream. Gold Acorn Coins is
  * what charges the PULSE - half a meter each - and pays five. A hull
  * fragment only shows up when there is a pip to restore. Shields are not
  * found in the field any more: the Depot sells them, cheaply, every stop.
@@ -631,7 +633,14 @@ function noteInput(s) {
 export function spillHold(s, held) {
     if (held && s.phase === "ready") {
         s.pressed = true;
-        beginCountdown(s, 1);
+        if (s.openingEnabled !== false) {
+            s.welcome = true;
+            s.freeUpgrade = true;
+            s.wave = 0;
+            beginDocking(s);
+        }
+        else
+            beginCountdown(s, 1);
         return true;
     }
     const wasPressed = s.pressed;
@@ -823,9 +832,14 @@ function endWave(s) {
     afterClear(s);
 }
 // ---------------------------------------------------------------- depot
+export function spillDockTravelDuration(s) { return s.welcome ? 2.4 : SPILL.dockTime; }
+export function spillDockDuration(s) {
+    return spillDockTravelDuration(s) + (s.depotGag ? VANGUARD_DEPOT_SECONDS : 0);
+}
 function beginDocking(s) {
     s.phase = "docking";
     s.phaseT = 0;
+    s.depotGag = undefined;
     s.held = false;
     s.lunge = 0;
     s.knock = 0;
@@ -843,13 +857,14 @@ function openDepot(s) {
     // docking restores one pip; the rest is the Depot's business
     s.hull = Math.min(s.maxHull, s.hull + 1);
     s.depot = { arm: SPILL.depotArm, bought: [] };
-    s.depotVisits += 1;
+    if (!s.welcome)
+        s.depotVisits += 1;
     cue(s, "depot");
 }
 /** Purchases own the module for this run; fitting it uses one of two slots.
- *  Swapping owned parts at a Depot is free, without selling or duplicating Ore. */
+ *  Swapping owned parts at a Depot is free, without selling or duplicating Acorn Coins. */
 export function spillUtility(s, id) {
-    if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !SPILL_UTILITIES[id])
+    if (s.welcome || s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !SPILL_UTILITIES[id])
         return "closed";
     const i = s.utilities.indexOf(id);
     if (i >= 0) {
@@ -872,14 +887,14 @@ export function spillUtility(s, id) {
 }
 export function spillSpecialize(s, id) {
     const spec = SPILL_SPECIALTIES[id];
-    if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !spec || s.up[spec.axis] < 2)
+    if (s.welcome || s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !spec || s.up[spec.axis] < 2)
         return false;
     s.specialties[spec.axis] = id;
     cue(s, "buy");
     return true;
 }
 export function spillTakeContract(s, kind) {
-    if (s.phase !== "depot" || !s.depot || s.depot.arm > 0 || s.contract)
+    if (s.welcome || s.phase !== "depot" || !s.depot || s.depot.arm > 0 || s.contract)
         return false;
     const offer = spillContractOffers(s.wave).find(o => o.kind === kind);
     if (!offer)
@@ -896,7 +911,7 @@ export function spillContractProgress(s) {
         return "No contract";
     if (c.kind === "clean")
         return s.hits === c.startHits ? `CLEAN PASSAGE · through wave ${c.endWave}` : "CLEAN PASSAGE · missed";
-    return `${c.kind === "salvage" ? "MINE" : "SHATTER"} ${Math.min(c.target, c.kind === "salvage" ? s.oreMined - c.startOre : s.shards - c.startShards)}/${c.target} · by wave ${c.endWave}`;
+    return `${c.kind === "salvage" ? "COLLECT" : "SHATTER"} ${Math.min(c.target, c.kind === "salvage" ? s.oreMined - c.startOre : s.shards - c.startShards)}/${c.target} · by wave ${c.endWave}`;
 }
 function settleContract(s) {
     const c = s.contract;
@@ -908,12 +923,14 @@ function settleContract(s) {
         s.contractsDone++;
         s.score += 500;
     }
-    s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} ORE` : "CONTRACT MISSED · choose another";
+    s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} COINS` : "CONTRACT MISSED · choose another";
     s.contract = null;
     cue(s, "contract");
 }
 function closeDepot(s) {
     s.firstPass = false;
+    s.welcome = false;
+    s.freeUpgrade = false;
     s.depot = null;
     cue(s, "depot-close");
     beginCountdown(s, s.wave + 1);
@@ -921,6 +938,8 @@ function closeDepot(s) {
 /** the next level's price for a meter, or null when it is full */
 export function spillPrice(s, what) {
     const shop = SPILL_SHOP[what];
+    if (s.welcome && s.freeUpgrade && ["plating", "shield", "thrusters", "pulse"].includes(what))
+        return 0;
     if (what === "plating" || what === "thrusters" || what === "pulse") {
         return s.up[what] >= SPILL_LEVELS ? null : shop.prices[s.up[what]];
     }
@@ -942,6 +961,8 @@ export function spillBuy(s, what) {
     const price = spillPrice(s, what);
     if (price === null)
         return "maxed";
+    if (s.welcome && (!s.freeUpgrade || !["plating", "shield", "thrusters", "pulse"].includes(what)))
+        return "closed";
     if (s.ore < price) {
         cue(s, "deny");
         return "poor";
@@ -974,6 +995,8 @@ export function spillBuy(s, what) {
             s.coreArmed = true;
             break;
     }
+    if (s.welcome)
+        s.freeUpgrade = false;
     d.bought.push(what);
     cue(s, "buy");
     return "ok";
@@ -981,7 +1004,7 @@ export function spillBuy(s, what) {
 export function spillLeaveDepot(s) {
     if (!s.depot || s.phase !== "depot")
         return false;
-    if (s.depot.arm > 0)
+    if (s.depot.arm > 0 || (s.welcome && s.freeUpgrade))
         return false;
     closeDepot(s);
     return true;
@@ -1086,7 +1109,7 @@ function handVertical(s, dt) {
  *  countdown and the dock so the hand can rest and know when it is needed */
 function autopilot(s, dt) {
     const docking = s.phase === "docking" || s.phase === "depot";
-    const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / SPILL.dockTime) : 0;
+    const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / spillDockTravelDuration(s)) : 0;
     const approach = p * p * (3 - 2 * p);
     const home = s.W * (SPILL.homeX + (0.55 - SPILL.homeX) * approach);
     s.pilot.vy = 0;
@@ -1168,7 +1191,9 @@ function stepSpillBody(s, dt) {
     if (s.phase === "docking") {
         s.phaseT += dt;
         autopilot(s, dt);
-        if (s.phaseT >= SPILL.dockTime)
+        if (s.depotGag === undefined && s.phaseT >= spillDockTravelDuration(s))
+            s.depotGag = s.depotGagReady === true;
+        if (s.phaseT >= spillDockDuration(s))
             openDepot(s);
         return;
     }
@@ -1416,7 +1441,7 @@ function stepSpillBody(s, dt) {
             continue;
         }
         // near miss: once per piece, once it is alongside or past. Points,
-        // not charge - the meter is the Gold Ore's to fill
+        // not charge - the meter is the charged coins fill it
         const graze = r.r + SPILL.grazeR;
         if (!r.grazed && r.x < s.pilot.x + r.r && d2 < graze * graze) {
             r.grazed = true;
@@ -1475,7 +1500,7 @@ function stepSpillBody(s, dt) {
                 s.score += 25 * s.combo * (n.kind === "gold" ? 2 : 1);
                 if (n.kind === "gold") {
                     s.charge = Math.min(spillChargeCap(s), s.charge + (s.specialties.pulse === "efficient" ? 0.65 : 0.5));
-                    say(s, s.up.pulse >= 1 ? (s.charge >= 1 ? "PULSE ARMED" : "GOLD ORE · CHARGING") : "GOLD ORE", 1);
+                    say(s, s.up.pulse >= 1 ? (s.charge >= 1 ? "PULSE ARMED" : "CHARGED COIN · CHARGING") : "CHARGED COIN", 1);
                     cue(s, "gold");
                 }
                 else
@@ -1530,6 +1555,8 @@ export function spillCheckpoint(s) {
     if (s.phase !== "depot" || !s.depot || s.target)
         return null;
     const state = JSON.parse(JSON.stringify(s));
+    delete state.depotGag;
+    delete state.depotGagReady;
     state.rocks = [];
     state.nuts = [];
     state.bursts = [];
@@ -1559,7 +1586,9 @@ export function restoreSpill(raw, W, H) {
             s[key] = n;
         }
     }
-    if (!Number.isInteger(s.wave) || s.wave < 5 || s.wave % 5 || s.cleared !== s.wave || s.W <= 0 || s.H <= 0 || s.ore < 0)
+    s.welcome = value.welcome === true && s.wave === 0;
+    s.freeUpgrade = s.welcome && value.freeUpgrade === true;
+    if (!Number.isInteger(s.wave) || (!s.welcome && s.wave < 5) || s.wave % 5 || s.cleared !== s.wave || s.W <= 0 || s.H <= 0 || s.ore < 0)
         return null;
     if (!value.up || !value.banked || !value.specialties)
         return null;
@@ -1579,6 +1608,9 @@ export function restoreSpill(raw, W, H) {
             return null;
     }
     if (s.maxHull !== SPILL.hull + s.up.plating || s.hull < 1 || s.hull > s.maxHull || s.shield < 0 || s.shield > 2 || s.canopyLevel < s.shield || s.canopyLevel > 2)
+        return null;
+    if (s.welcome && (s.cleared !== 0 || s.depotVisits !== 0 || s.oreMined !== 0
+        || s.up.plating + s.up.thrusters + s.up.pulse + s.shield !== (s.freeUpgrade ? 0 : 1)))
         return null;
     const utilityList = (v) => Array.isArray(v) && v.length <= 4 && new Set(v).size === v.length && v.every(id => SPILL_UTILITY_IDS.includes(id));
     if (!utilityList(value.utilities) || value.utilities.length > 2 || !utilityList(value.ownedUtilities) || value.utilities.some(id => !value.ownedUtilities.includes(id)))
@@ -1621,8 +1653,8 @@ export function restoreSpill(raw, W, H) {
     s.signal = typeof value.signal === "string" && /^#[a-f0-9]{6}$/i.test(value.signal) ? value.signal : "#c99bff";
     s.phase = "depot";
     s.depot = { arm: SPILL.depotArm, bought: [] };
-    s.spec = spillWaveSpec(s.wave, s.seed);
-    s.event = spillEventFor(s.wave, s.seed);
+    s.spec = spillWaveSpec(Math.max(1, s.wave), s.seed);
+    s.event = spillEventFor(Math.max(1, s.wave), s.seed);
     s.liveMods = s.spec.mods.slice();
     s.pilot = { x: s.W * SPILL.homeX, y: s.H * 0.45, vx: 0, vy: 0, rot: 0 };
     s.phaseT = 0;

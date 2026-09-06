@@ -1,3 +1,4 @@
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=185";
 // THE SPILL — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -27,8 +28,8 @@
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=184";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=184";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=185";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=185";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -831,10 +832,14 @@ function endWave(s) {
     afterClear(s);
 }
 // ---------------------------------------------------------------- depot
-export function spillDockDuration(s) { return s.welcome ? 2.4 : SPILL.dockTime; }
+export function spillDockTravelDuration(s) { return s.welcome ? 2.4 : SPILL.dockTime; }
+export function spillDockDuration(s) {
+    return spillDockTravelDuration(s) + (s.depotGag ? VANGUARD_DEPOT_SECONDS : 0);
+}
 function beginDocking(s) {
     s.phase = "docking";
     s.phaseT = 0;
+    s.depotGag = undefined;
     s.held = false;
     s.lunge = 0;
     s.knock = 0;
@@ -1104,7 +1109,7 @@ function handVertical(s, dt) {
  *  countdown and the dock so the hand can rest and know when it is needed */
 function autopilot(s, dt) {
     const docking = s.phase === "docking" || s.phase === "depot";
-    const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / spillDockDuration(s)) : 0;
+    const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / spillDockTravelDuration(s)) : 0;
     const approach = p * p * (3 - 2 * p);
     const home = s.W * (SPILL.homeX + (0.55 - SPILL.homeX) * approach);
     s.pilot.vy = 0;
@@ -1186,6 +1191,8 @@ function stepSpillBody(s, dt) {
     if (s.phase === "docking") {
         s.phaseT += dt;
         autopilot(s, dt);
+        if (s.depotGag === undefined && s.phaseT >= spillDockTravelDuration(s))
+            s.depotGag = s.depotGagReady === true;
         if (s.phaseT >= spillDockDuration(s))
             openDepot(s);
         return;
@@ -1548,6 +1555,8 @@ export function spillCheckpoint(s) {
     if (s.phase !== "depot" || !s.depot || s.target)
         return null;
     const state = JSON.parse(JSON.stringify(s));
+    delete state.depotGag;
+    delete state.depotGagReady;
     state.rocks = [];
     state.nuts = [];
     state.bursts = [];

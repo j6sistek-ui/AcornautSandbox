@@ -1,3 +1,4 @@
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
 // THE SPILL — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -344,6 +345,9 @@ export type SpillState = {
   welcome?: boolean;
   openingEnabled?: boolean;
   freeUpgrade?: boolean;
+  /** Transient art readiness; latched once at touchdown, never mid-gag. */
+  depotGagReady?: boolean;
+  depotGag?: boolean;
   phaseT: number;
   /** the wave being flown, or about to be */
   wave: number;
@@ -1035,11 +1039,15 @@ function endWave(s: SpillState) {
 
 // ---------------------------------------------------------------- depot
 
-export function spillDockDuration(s: SpillState) { return s.welcome ? 2.4 : SPILL.dockTime; }
+export function spillDockTravelDuration(s: SpillState) { return s.welcome ? 2.4 : SPILL.dockTime; }
+export function spillDockDuration(s: SpillState) {
+  return spillDockTravelDuration(s) + (s.depotGag ? VANGUARD_DEPOT_SECONDS : 0);
+}
 
 function beginDocking(s: SpillState) {
   s.phase = "docking";
   s.phaseT = 0;
+  s.depotGag = undefined;
   s.held = false;
   s.lunge = 0;
   s.knock = 0;
@@ -1276,7 +1284,7 @@ function handVertical(s: SpillState, dt: number) {
  *  countdown and the dock so the hand can rest and know when it is needed */
 function autopilot(s: SpillState, dt: number) {
   const docking = s.phase === "docking" || s.phase === "depot";
-  const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / spillDockDuration(s)) : 0;
+  const p = docking ? Math.min(1, s.phase === "depot" ? 1 : s.phaseT / spillDockTravelDuration(s)) : 0;
   const approach = p * p * (3 - 2 * p);
   const home = s.W * (SPILL.homeX + (0.55 - SPILL.homeX) * approach);
   s.pilot.vy = 0;
@@ -1345,6 +1353,8 @@ function stepSpillBody(s: SpillState, dt: number) {
   if (s.phase === "docking") {
     s.phaseT += dt;
     autopilot(s, dt);
+    if (s.depotGag === undefined && s.phaseT >= spillDockTravelDuration(s))
+      s.depotGag = s.depotGagReady === true;
     if (s.phaseT >= spillDockDuration(s)) openDepot(s);
     return;
   }
@@ -1668,6 +1678,7 @@ export type SpillCheckpoint = { version: 1; state: SpillState };
 export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
   if (s.phase !== "depot" || !s.depot || s.target) return null;
   const state: SpillState = JSON.parse(JSON.stringify(s));
+  delete state.depotGag; delete state.depotGagReady;
   state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
   state.held = false; state.pressed = false; state.manual = false;
   state.pilot.vx = 0; state.pilot.vy = 0;

@@ -47,12 +47,15 @@ const smooth = (t: number) => { const n = Math.max(0, Math.min(1, t)); return n 
 
 /** Cover the viewport throughout arrival. The camera moves INTO the bay;
  * no image edge, aspect-ratio change, or shrink into the workshop panel. */
-export function spillDockView(W: number, H: number, imageW: number, imageH: number, elapsed: number) {
+export function spillDockView(W: number, H: number, imageW: number, imageH: number, elapsed: number, gagElapsed = -1) {
   const progress = smooth(elapsed / SPILL.dockTime);
-  const scale = Math.max(W / imageW, H / imageH) * (1.02 + progress * 0.4);
+  const closeup = smooth(gagElapsed / .65);
+  const scale = Math.max(W / imageW, H / imageH) * (1.02 + progress * 0.4 + closeup);
   const width = imageW * scale, height = imageH * scale;
-  const x = Math.max(W - width, Math.min(0, W * (0.86 - progress * 0.28) - width * 0.65));
-  const y = Math.max(H - height, Math.min(0, H * 0.62 - height * 0.62));
+  const approachX = W * (0.86 - progress * 0.28) - width * 0.65;
+  const closeupX = W * .4 - width * .686;
+  const x = Math.max(W - width, Math.min(0, approachX + (closeupX - approachX) * closeup));
+  const y = Math.max(H - height, Math.min(0, H * (0.62 - closeup * .08) - height * 0.62));
   return { x, y, width, height, progress, opacity: smooth(elapsed / 1.1) };
 }
 
