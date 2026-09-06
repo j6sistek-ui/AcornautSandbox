@@ -81,10 +81,9 @@ for (let i=0;i<33;i++) art.planets.push(await sprite(`planets/${i}.png`));
 for (let i=0;i<27;i++) art.debris.push(await sprite(`debris/${i}.png`));
 const baseSave=S.defaultSave();
 Object.assign(baseSave,{equippedSuit:'vanguard',equippedTrail:'ion',tutorialDone:true,guide:'done'});
+// Flight is the motion (owner, 6 Sep 2026); the Original and Upright columns are history.
 const styles=[
-  {mode:'cinematic',title:'ORIGINAL',subtitle:'Current cinematic flight',color:'#c9c4b8'},
   {mode:'cruise',title:'FLIGHT',subtitle:'Asymmetric reach · maneuver banks',color:'#96e8f3'},
-  {mode:'jetpack',title:'UPRIGHT',subtitle:'Bent-knee hover · rise/fall · push-off',color:'#f2cc81'},
 ];
 const authoritativeKeys=[
   'squirrel','run','score','distance','screen','ready','tapAnimT','tapAnimDir','bounceAnimT',
@@ -159,7 +158,7 @@ function paintComparison(runs,tick,scene,cue,inputLabel) {
     const state=w.vanguard;
     text(g,w.squirrel.vy< -20?'RISING':w.squirrel.vy>20?'FALLING':'APEX',x+235,938,15,run.style.color,'700');
     text(g,`Vertical speed ${Math.round(w.squirrel.vy)}`,x+235,963,11);
-    const rig=VG.articulatedVanguard(state.mode);
+    const rig=true;
     text(g,`Body pitch ${Math.round(rig?state.maneuver.pose.body:state.pitch*180/Math.PI)}°`,x+235,985,11);
     text(g,`Thrust ${Math.round((rig?state.maneuver.pressure:state.thrust)*100)}%`,x+235,1007,11);
     text(g,rig?`Pose: ${state.maneuver.contactAge<.55?'land / push':state.maneuver.bank}`:`Tail ${state.frame+1} / ${VG.VANGUARD_FRAMES}`,x+235,1029,11);
@@ -174,7 +173,7 @@ function trackRun(r) {
   const started=performance.now();VG.paintVanguard(probe,art,0,0,52,r.w.vanguard);
   r.paints.push(performance.now()-started);probe.restore();
   const state=r.w.vanguard;
-  r.headings.push(VG.articulatedVanguard(state.mode)?state.maneuver.pose.body*Math.PI/180:state.pitch);
+  r.headings.push(true?state.maneuver.pose.body*Math.PI/180:state.pitch);
   r.poseBanks.add(state.maneuver.bank);
   if(state.maneuver.contactAge<.55)r.poseBanks.add('land');
   r.tailBaseAngles.push(state.maneuver.tailBase);r.tailTipAngles.push(state.maneuver.tailTip);
@@ -183,7 +182,7 @@ function trackRun(r) {
   r.minimumVy=Math.min(r.minimumVy,r.w.squirrel.vy);r.maximumVy=Math.max(r.maximumVy,r.w.squirrel.vy);
 }
 function runSummary(r) {
-  return {mode:r.style.mode,score:r.w.score,...(VG.articulatedVanguard(r.style.mode)?{
+  return {mode:r.style.mode,score:r.w.score,...(true?{
       poseBanks:[...r.poseBanks],tailBaseDegrees:[Math.min(...r.tailBaseAngles),Math.max(...r.tailBaseAngles)],
       tailTipDegrees:[Math.min(...r.tailTipAngles),Math.max(...r.tailTipAngles)],
     }:{tailFrames:[...r.tail].sort((a,b)=>a-b)}),
@@ -238,7 +237,7 @@ for (let tick=0;tick<600;tick++) {
   if (tick===404) writeFileSync(join(output,'Vanguard-Flight-Comparison.png'),buf);
 }
 for (const r of phoneRuns) {
-  if(VG.articulatedVanguard(r.style.mode)){
+  if(true){
     for(const bank of ['rise','apex','fall','dive','land'])assert(r.poseBanks.has(bank),`${r.style.mode}: real ${bank} bank`);
   }else assert.equal(r.tail.size,VG.VANGUARD_FRAMES,`${r.style.mode} uses every original tail pose`);
   assert(r.minimumVy<0&&r.maximumVy>0,'real upward and downward travel');

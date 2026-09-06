@@ -128,7 +128,7 @@ const runs = [];
 const baselineRuns = [];
 for (const cadence of [.1, .18, .3]) {
   if (baseline) baselineRuns.push(run(baseline, 'cruise', cadence, 'FIRST REVIEW'));
-  for (const mode of ['cruise', 'jetpack']) runs.push(run(VG, mode, cadence, mode === 'cruise' ? 'FLIGHT' : 'UPRIGHT'));
+  runs.push(run(VG, 'cruise', cadence, 'FLIGHT'));   // the trial modes are gone: Flight is the motion
 }
 
 // Show real-size sprites and an enlarged view with the exact same fixed pose.

@@ -1,4 +1,3 @@
-import type { VanguardMotionMode } from "./vanguard";
 import type { SpillAppearance } from "./spill-appearance";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS } from "./campaign";
@@ -26,7 +25,9 @@ import {
   BUNDLES,
   IS_BETA,
   GUIDE_SUIT,
-  GUIDE_HELM,} from "./catalog";
+  GUIDE_HELM,
+  TUTORIAL_SUIT,
+} from "./catalog";
 
 export type SaveData = {
   pinnedRewards?: string[];
@@ -139,8 +140,6 @@ export type SaveData = {
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
   // the shipped pose-per-velocity curve).
-  /** Beta comparison; production always uses the cinematic presentation. */
-  vanguardMotionMode?: VanguardMotionMode;
   /** Experimental records are isolated from chapter stars and rewards. */
   raceRecords?: Record<string, { bestFinishTicks: number; bestAcorns: number }>;
   /** debris fields cleared, stored by the level they sit after (33/66/99) */
@@ -189,7 +188,6 @@ export function defaultSave(): SaveData {
     guide: "pending",
     allStars: false,
     musicOff: false,
-    vanguardMotionMode: "cruise",
     raceRecords: {},
     raceGates: [],
   };
@@ -254,7 +252,14 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
-  if (!["cinematic", "flow", "cruise", "jetpack"].includes(s.vanguardMotionMode)) s.vanguardMotionMode = "cruise";
+  // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
+  // tutorial's borrowed flight. A beta grant or an old free unlock in the
+  // list does not count; the star gate in suitRevealed does.
+  s.unlockedSuits = (s.unlockedSuits ?? []).filter((id: string) => id !== TUTORIAL_SUIT);
+  if (s.equippedSuit === TUTORIAL_SUIT && !((s.purchased || []).includes(TUTORIAL_SUIT))) {
+    const total = Object.values(s.stars ?? {}).reduce((n: number, m: unknown) => n + (typeof m === "number" ? ((m & 1) + ((m >> 1) & 1) + ((m >> 2) & 1)) : 0), 0);
+    if (!(total >= (STAR_UNLOCKS.suits[TUTORIAL_SUIT] ?? 500))) s.equippedSuit = "flight";
+  }
   // an old save has no lean table, and a corrupted one must not be able to
   // tip every suit sideways - anything that is not two finite numbers in
   // range is dropped rather than trusted
@@ -382,6 +387,13 @@ export function cleanPilotName(raw: string) {
 export function grantTutorialKit(s: SaveData) {
   if (!s.unlockedSuits.includes(GUIDE_SUIT)) s.unlockedSuits.push(GUIDE_SUIT);
   if (!s.unlocked.includes(GUIDE_HELM)) s.unlocked.push(GUIDE_HELM);
+  // THE TUTORIAL SUIT GOES BACK (owner, 6 Sep 2026: "immediately after the
+  // tutorial is done, he is locked"). The first flight is flown in AcorNut;
+  // graduation locks him behind his 500 stars and seats the pilot in
+  // Flight, so the shelf shows a worn suit while the coach walks them to
+  // the Ion kit.
+  s.unlockedSuits = s.unlockedSuits.filter(id => id !== TUTORIAL_SUIT);
+  if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT)) s.equippedSuit = "flight";
 }
 
 export function writeSave(s: SaveData) {
@@ -483,6 +495,3 @@ export function batteryUnlocked(s: SaveData) {
 }
 
 /** The beta A/B preference cannot opt production into an experiment. */
-export function vanguardModeOf(s: SaveData): VanguardMotionMode {
-  return IS_BETA ? s.vanguardMotionMode ?? "cruise" : "cruise";
-}

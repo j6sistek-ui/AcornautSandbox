@@ -1,6 +1,6 @@
 import { spillDockTravelDuration } from "./spill";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview, type VanguardMotionMode } from "./vanguard";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -11,7 +11,7 @@ import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite, type SpillShipXf } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import type { SaveData } from "./save";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
 import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, type SuitLean } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
@@ -2765,7 +2765,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     ctx.arc(W * PHYS.squirrelX, w.squirrel.y, 30, 0, Math.PI * 2);
     ctx.stroke();
   }
-  if (w.shieldCharges > 0 && save.equippedSuit !== "vanguard") {
+  if (w.shieldCharges > 0 && pilotSuitId(w, save) !== "vanguard") {
     ctx.strokeStyle = "rgba(122,216,255,0.45)";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -3098,8 +3098,9 @@ function drawRetroWorld(
     drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
   }
 
-  const helm = helmetWornBy(save.equipped, save.equippedSuit);
-  const suit = SUITS.find((u) => u.id === save.equippedSuit) ?? SUITS[0];
+  const wornId = pilotSuitId(w, save);
+  const helm = helmetWornBy(save.equipped, wornId);
+  const suit = SUITS.find((u) => u.id === wornId) ?? SUITS[0];
   drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
     flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
     seed: 0,
@@ -4820,8 +4821,9 @@ function drawPilot(
 ) {
   const x = xOverride ?? w.W * PHYS.squirrelX;
   const y = yOverride ?? w.squirrel.y;
-  const suit = SUITS.find((s) => s.id === save.equippedSuit) ?? SUITS[0];
-  const helm = helmetWornBy(save.equipped, save.equippedSuit);
+  const wornId = pilotSuitId(w, save);
+  const suit = SUITS.find((s) => s.id === wornId) ?? SUITS[0];
+  const helm = helmetWornBy(save.equipped, wornId);
   // The repainted flap frames are one coherent character, so the tap
   // cycles them again — plus a soft nose-up kick and scale pop for punch.
   const flapping = w.flapBoost > 0;
@@ -5078,11 +5080,10 @@ export function paintFlightPreview(
   // clamps the sim actually uses - so the number being changed is judged at
   // the extremes where it matters.
   sweep = false,
-  vanguardMode: VanguardMotionMode = "cruise",
 ) {
   if (!art) return;
   if (suit.id === "vanguard") {
-    const state = vanguardPreview(ctx, t, vanguardMode);
+    const state = vanguardPreview(ctx, t);
     ctx.save(); ctx.translate(cx,cy); ctx.scale(size/52,size/52);
     paintVanguardContacts(ctx,state); ctx.restore();
     paintVanguard(ctx, art, cx, cy, size, state);

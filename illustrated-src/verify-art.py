@@ -1203,11 +1203,6 @@ DEV_INSTRUMENTS = {
                                    # live: the cycle is tuned by watching a
                                    # real shelf, and the real shelf is the
                                    # live one. Rolled up to one line unopened.
-    "leanTuner":         "beta",   # the per-suit lean dials. An instrument for
-                                   # FINDING a number - the roster is
-                                   # calibrated in SUIT_LEAN now - and a live
-                                   # pilot meeting a panel of multipliers
-                                   # under their suit reads it as damage.
 }
 
 

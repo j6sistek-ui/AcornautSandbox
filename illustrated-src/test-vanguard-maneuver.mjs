@@ -163,7 +163,7 @@ const areas={head:[],torso:[]};let seamSamples=0;
 for(const s of samples){
   ctx.clearRect(0,0,700,700);records.length=0;
   const display={...s,pose:{...s.pose,body:0,heave:0},pressure:0};
-  const state=V.createVanguardMotion('jetpack');state.maneuver=display;
+  const state=V.createVanguardMotion();state.maneuver=display;
   V.paintVanguard(ctx,art,350,290,400,state);
   assert.equal(records.length,42,'ten complete body pieces plus32 tail triangles');
   assert(records.every(r=>r.im===atlas),'new style draws its actual atlas');
@@ -177,11 +177,8 @@ for(const s of samples){
 }
 // Canvas stores transforms as floats; tolerate <0.001% area rounding only.
 for(const [part,a] of Object.entries(areas))assert((Math.max(...a)-Math.min(...a))/a[0]<1e-5,`${part} scale never pulses`);
-for(const mode of ['cinematic','flow']){
-  records.length=0;V.paintVanguard(ctx,art,350,350,52,V.createVanguardMotion(mode));
-  assert(records.every(r=>r.im===original),'original options retain original artwork');
-}
-records.length=0;V.paintVanguard(ctx,{suits:art.suits},350,350,52,V.createVanguardMotion('cruise'));
+// the original comparison styles are gone (owner, 6 Sep 2026): Flight is the motion
+records.length=0;V.paintVanguard(ctx,{suits:art.suits},350,350,52,V.createVanguardMotion());
 assert(records.some(r=>r.im!==atlas),'missing atlas renders the prior rig');
 
 // Network/decode failures and wrong atlas dimensions retain complete original

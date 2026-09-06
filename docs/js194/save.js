@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=190";
-import { CHART_LEVELS } from "./campaign.js?v=190";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=190";
-import { restoreSpill } from "./spill.js?v=190";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=190";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=194";
+import { CHART_LEVELS } from "./campaign.js?v=194";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=194";
+import { restoreSpill } from "./spill.js?v=194";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=194";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=190";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, } from "./catalog.js?v=194";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -47,7 +47,6 @@ export function defaultSave() {
         guide: "pending",
         allStars: false,
         musicOff: false,
-        vanguardMotionMode: "cinematic",
         raceRecords: {},
         raceGates: [],
     };
@@ -133,8 +132,15 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
-    if (s.vanguardMotionMode !== "flow")
-        s.vanguardMotionMode = "cinematic";
+    // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
+    // tutorial's borrowed flight. A beta grant or an old free unlock in the
+    // list does not count; the star gate in suitRevealed does.
+    s.unlockedSuits = (s.unlockedSuits ?? []).filter((id) => id !== TUTORIAL_SUIT);
+    if (s.equippedSuit === TUTORIAL_SUIT && !((s.purchased || []).includes(TUTORIAL_SUIT))) {
+        const total = Object.values(s.stars ?? {}).reduce((n, m) => n + (typeof m === "number" ? ((m & 1) + ((m >> 1) & 1) + ((m >> 2) & 1)) : 0), 0);
+        if (!(total >= (STAR_UNLOCKS.suits[TUTORIAL_SUIT] ?? 500)))
+            s.equippedSuit = "flight";
+    }
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -282,6 +288,14 @@ export function grantTutorialKit(s) {
         s.unlockedSuits.push(GUIDE_SUIT);
     if (!s.unlocked.includes(GUIDE_HELM))
         s.unlocked.push(GUIDE_HELM);
+    // THE TUTORIAL SUIT GOES BACK (owner, 6 Sep 2026: "immediately after the
+    // tutorial is done, he is locked"). The first flight is flown in AcorNut;
+    // graduation locks him behind his 500 stars and seats the pilot in
+    // Flight, so the shelf shows a worn suit while the coach walks them to
+    // the Ion kit.
+    s.unlockedSuits = s.unlockedSuits.filter(id => id !== TUTORIAL_SUIT);
+    if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT))
+        s.equippedSuit = "flight";
 }
 export function writeSave(s) {
     localStorage.setItem(SAVE_KEY, JSON.stringify(s));
@@ -378,6 +392,3 @@ export function batteryUnlocked(s) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
 }
 /** The beta A/B preference cannot opt production into an experiment. */
-export function vanguardModeOf(s) {
-    return IS_BETA && s.vanguardMotionMode === "flow" ? "flow" : "cinematic";
-}

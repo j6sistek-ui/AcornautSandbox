@@ -1,5 +1,5 @@
 {
- "artVer": "192",
+ "artVer": "194",
  "suits": [
   {
    "id": "flight",
@@ -17,7 +17,7 @@
   },
   {
    "id": "vanguard",
-   "name": "Vanguard",
+   "name": "AcorNut",
    "key": "suit:vanguard",
    "file": "suits/vanguard.png",
    "dome": [

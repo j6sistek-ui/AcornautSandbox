@@ -25,8 +25,8 @@ for(const frame of trace){
   g.fillStyle='#071320';g.fillRect(0,0,1200,760);
   text(g,'VANGUARD / LIMB MOTION',30,40,26,'#f3d4a1');
   text(g,'Production replay • display copies hold body, head, tail and exhaust fixed',30,70,16);
-  text(g,'FLIGHT',35,112,23,'#9de6ef');text(g,'UPRIGHT',635,112,23,'#f2cd89');
-  for(const [i,mode] of ['cruise','jetpack'].entries()){
+  text(g,'FLIGHT',35,112,23,'#9de6ef');
+  for(const [i,mode] of ['cruise'].entries()){   // Flight is the motion; Upright is gone
     const live=frame[mode],state=structuredClone(live),s=state.maneuver;
     s.pose.body=0;s.pose.head=0;s.pose.heave=0;
     s.tailBase=0;s.tailTip=8;s.tailBend=0;s.pressure=0;

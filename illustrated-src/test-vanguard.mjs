@@ -65,39 +65,20 @@ assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'vanguard
 assert.equal(e.buyTrail('ion'),'locked');assert.equal(e.save.equippedTrail,'ion');
 assert.equal(e.buyTrail('vanguardwake'),'equip');assert.equal(e.save.equippedTrail,'ion');
 e.open('hangar');e.setShopTab('trails');tick();
-assert(button('Ion Stream').disabled);assert(!button('Vanguard Wake').disabled);
+assert(button('Ion Stream').disabled);assert(!button('AcorNut Wake').disabled);
 assert(app.textContent.includes('Your previous trail returns'));
 assert(['buy','equip'].includes(e.buySuit('flight')));tick();
 assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'ion');
-assert.equal(e.buyTrail('vanguardwake'),'locked');assert(button('Vanguard Wake').disabled);
-// The beta selector is available in both hangar and pause; production
-// ignores even an imported experimental preference.
+assert.equal(e.buyTrail('vanguardwake'),'locked');assert(button('AcorNut Wake').disabled);
+// THE MOTION PICKER IS GONE (owner, 6 Sep 2026): Flight is the motion on
+// both pages, and nothing on the hangar or the pause sheet selects one.
 e.buySuit('vanguard');e.setShopTab('suits');tick();
-if(mode==='beta') {
-  assert(app.querySelector('.ac-vanguard-motion'));
-  // New choices persist through reload; originals stay available for comparison.
-  button('Upright').click();assert.equal(e.save.vanguardMotionMode,'jetpack');
-  assert.equal(S.loadSave().vanguardMotionMode,'jetpack');
-  assert.equal(button('Upright').getAttribute('aria-pressed'),'true');
-  app.querySelector('.ac-vanguard-motion button').click();
-  assert.equal(e.save.vanguardMotionMode,'cruise');
-  assert.equal(S.loadSave().vanguardMotionMode,'cruise');
-  button('Continuous').click();assert.equal(e.save.vanguardMotionMode,'flow');
-  assert.equal(S.loadSave().vanguardMotionMode,'flow');
-  assert.equal(button('Continuous').getAttribute('aria-pressed'),'true');
-  e.fly('fly');Sim.flap(e.world,e.save);
-  for(let i=0;i<12;i++)Sim.updateWorld(e.world,e.save,1/60);
-  assert(e.world.vanguard.phase>0);e.pause();tick();
-  assert(app.querySelector('.ac-vanguard-motion'));
-  const atPause=JSON.stringify(e.world.squirrel), beat=e.world.vanguard.phase;
-  button('Cinematic').click();
-  assert.equal(e.world.vanguard.phase,beat);assert.equal(JSON.stringify(e.world.squirrel),atPause);
-  e.resume();assert.equal(e.world.screen,'play');
-} else {
-  assert(!app.querySelector('.ac-vanguard-motion'));
-  e.setVanguardMotionMode('flow');assert.equal(e.save.vanguardMotionMode,'cruise');
-  assert.equal(S.vanguardModeOf({...e.save,vanguardMotionMode:'flow'}),'cruise');
-}
+assert(!app.querySelector('.ac-vanguard-motion'),'no motion picker in the hangar');
+e.fly('fly');Sim.flap(e.world,e.save);
+for(let i=0;i<12;i++)Sim.updateWorld(e.world,e.save,1/60);
+assert(e.world.vanguard.phase>0);e.pause();tick();
+assert(!app.querySelector('.ac-vanguard-motion'),'no motion picker on the pause sheet');
+e.resume();assert.equal(e.world.screen,'play');
 // Real simulation controls and contacts, independent of the old clocks.
 const w=Sim.makeWorld(390,760);Sim.resetRun(w,e.save,'fly',false);w.ready=false;
 assert.equal(Sim.flap(w,e.save),'flap');assert(w.squirrel.vy<0);
@@ -121,7 +102,7 @@ Sim.updateWorld(w,e.save,1/60);assert(w.vanguard.freshThrust);assert.equal(w.sco
 Sim.pausePlay(w);const paused=JSON.stringify(w.vanguard);Sim.updateWorld(w,e.save,.2);
 assert.equal(JSON.stringify(w.vanguard),paused);assert.equal(Sim.flap(w,e.save),'none');
 Sim.resumePlay(w);Sim.resetRun(w,e.save,'fly',false);
-assert.deepEqual(w.vanguard,VG.createVanguardMotion(S.vanguardModeOf(e.save)));
+assert.deepEqual(w.vanguard,VG.createVanguardMotion());
 const readyY=w.squirrel.y;Sim.updateWorld(w,e.save,.1);assert(Math.abs(w.vanguard.time-.1)<1e-9);assert.equal(w.squirrel.y,readyY);assert(w.vanguard.phase>0);
 // Even a doubled world pace must not double the flagship's visual clock.
 for(const pace of [1,2]) {
@@ -133,8 +114,8 @@ for(const pace of [1,2]) {
 }
 // Exercise 100/180/300ms tapping through updateWorld, with enough vertical
 // space to let the actual forces fly and no artificial position reset.
-for(const interval of [.1,.18,.3]) for(const style of ['cinematic','flow']) {
-  const sv={...e.save,vanguardMotionMode:style};
+for(const interval of [.1,.18,.3]) {
+  const sv={...e.save};
   const live=Sim.makeWorld(390,5000);Sim.resetRun(live,sv,'fly',false);
   live.planets=[];live.pickups=[];live.lastSpawnX=100000;
   let nextTap=0, beforeBeat=0;const poses=new Set();
@@ -155,8 +136,8 @@ for(const interval of [.1,.18,.3]) for(const style of ['cinematic','flow']) {
 }
 // Direction changes interrupt no tail cycle and wait for no animation beat.
 // A normal tap arc crosses the apex well inside the old 1.76s gesture.
-for(const style of ['cinematic','flow']) {
- const state=VG.createVanguardMotion(style);VG.vanguardTap(state);
+{
+ const state=VG.createVanguardMotion();VG.vanguardTap(state);
  for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,-220);
  assert(state.heading<-.2);
  for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,220);
@@ -177,7 +158,7 @@ for(const style of ['cinematic','flow']) {
 const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};
 Sim.resetRun(legacy,flight,'fly',false);Sim.flap(legacy,flight);legacy.tapAnimT=.3;
 Sim.flap(legacy,flight);assert.equal(legacy.tapAnimDir,-1);
-assert.deepEqual(legacy.vanguard,VG.createVanguardMotion(S.vanguardModeOf(flight)));
+assert.deepEqual(legacy.vanguard,VG.createVanguardMotion());
 S.writeSave(e.save);assert(S.loadSave().unlockedSuits.includes('vanguard'));
 console.log(`Vanguard ${mode}: fresh beta access / production 499→500 gate, entitlements, trail UI/actions, beta A/B and persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
 e.destroy?.();await win.happyDOM.abort();process.exit(0);
