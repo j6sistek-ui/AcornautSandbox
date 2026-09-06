@@ -11,7 +11,7 @@
   <div class="wrap">
     <div class="hero-copy">
       <p class="eyebrow">Free in your browser <s></s> No install <s></s> No account</p>
-      <h1>One tap.<br>Thirty suits.<br><em>A hundred missions.</em></h1>
+      <h1>One tap.<br>Thirty suits.<br><em>260 missions.</em></h1>
       <p class="lede hero-sub">You&rsquo;re a squirrel in a spacesuit, threading the gaps between hand-painted planets. Tap and he rises. Stop and gravity takes him back.</p>
       <div class="hero-cta">
         <a class="btn" href="https://acornaut.app" target="_blank" rel="noopener">Play Acornaut</a>
@@ -27,8 +27,8 @@
 <!-- ============ STATS ============ -->
 <section class="stats" style="padding-block:0">
   <div class="wrap">
-    <div class="stat"><b class="num">100</b><span>Missions</span></div>
-    <div class="stat"><b class="num">33</b><span>Painted planets</span></div>
+    <div class="stat"><b class="num">260</b><span>Missions</span></div>
+    <div class="stat"><b class="num">780</b><span>Stars</span></div>
     <div class="stat"><b class="num">30</b><span>Suits</span></div>
     <div class="stat"><b class="num">6</b><span>Ways to fly</span></div>
   </div>
@@ -91,8 +91,8 @@
     <div class="modes-grid">
       <div class="mlist">
         <div class="mode rise" style="--accent:#a276ff"><span class="dot"></span><div><h3>The Spill</h3><p><i>Salvage &middot; Survive &middot; Build</i><br>Survive five-wave sectors. Mine ore. Build at untimed Depots. First-pass at wave 20; then it keeps going.</p></div></div>
-        <div class="mode rise hole locked" style="--accent:#b45cff"><span class="dot"></span><div><h3>Deep Space</h3><p>Endless back-to-back black holes. No gates, no scenery, just the next mouth.</p></div><span class="tag">&#9733; 12 to unlock</span></div>
-        <div class="mode rise locked" style="--accent:#8fb8ff"><span class="dot"></span><div><h3>Lost in Space</h3><p>Space is in control here &mdash; the world tilts and mirrors while you fly.</p></div><span class="tag">&#9733; 45 to unlock</span></div>
+        <div class="mode rise hole" style="--accent:#b45cff"><span class="dot"></span><div><h3>Deep Space</h3><p>Endless back-to-back black holes. No gates, no scenery, just the next mouth.</p></div></div>
+        <div class="mode rise" style="--accent:#8fb8ff"><span class="dot"></span><div><h3>Lost in Space</h3><p>Space is in control here &mdash; the world tilts and mirrors while you fly.</p></div></div>
       </div>
       <figure class="shot rise" style="margin:0">
         <div class="phone"><img src="{{A:mk-modes.jpg}}" alt="The Acornaut mode picker, showing six flight modes with personal bests" loading="lazy"></div>
