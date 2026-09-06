@@ -25,7 +25,7 @@ import {
   type SpillRock,
   type SpillState,
 } from "./spill";
-import { SPILL_EVENTS, spillSector, spillMastery } from "./spill-content";
+import { SPILL_EVENTS, spillSector, spillEngineColor } from "./spill-content";
 import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
 import {
   RACE_ACORNS,
@@ -1881,7 +1881,7 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.globalCompositeOperation = "lighter";
   if (parked) ctx.globalAlpha = 0;
   ctx.fillStyle = grad;
-  ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
+  ctx.shadowColor = `rgba(${signal.r},${signal.g},${signal.b},.82)`;
   ctx.shadowBlur = (5 + 5 * thrust) / z;
   ctx.beginPath();
   ctx.moveTo(engineX, engineY - half);
@@ -1920,12 +1920,13 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   }
   ctx.restore();
   for (const l of layers) if (!l.xf.behind) paint(l);
-  // The earned signal is cosmetic; remaining protection stays on the HUD.
-  for (let i = 0; i < s.utilities.length; i++) {
-    const id = s.utilities[i], x = 106 + i * 19;
-    ctx.fillStyle = "#122438"; ctx.fillRect(x - 2, 126, 16, 15);
-    ctx.strokeStyle = "#c5ac7a"; ctx.lineWidth = 1.2; ctx.strokeRect(x - 2, 126, 16, 15);
-    ctx.strokeStyle = "#a4e9ea"; paintSpillModule(ctx, id, x, 127, 12);
+  // Fixed attachment mounts shared by flight and all ship previews.
+  const mounts = { magnet: [184, 134, 43, 48], scanner: [95, 45, 40, 48],
+    brake: [42, 112, 48, 46], capacitor: [115, 141, 45, 45] } as const;
+  for (const id of s.utilities) {
+    const [mx, my, mw, mh] = mounts[id], module = art.spillShip[id];
+    if (module) ctx.drawImage(module, mx, my, mw, mh);
+    else { ctx.strokeStyle = "#a4e9ea"; paintSpillModule(ctx, id, mx + 6, my + 6, 20); }
   }
   ctx.fillStyle = "#f5cb7a";
   for (let i = 0; i < 3; i++) if (s.specialties[(["plating", "thrusters", "pulse"] as const)[i]])
@@ -2321,7 +2322,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   };
   if (s.bannerT > 0 && s.phase !== "countdown") {
     ctx.globalAlpha = Math.min(1, s.bannerT * 1.6);
-    hudLine(s.banner, s.banner.startsWith("HULL") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
+    hudLine(s.banner, s.banner.startsWith("HEALTH") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
     ctx.globalAlpha = 1;
   }
   if (s.gold > 0) hudLine(`GOLD  ${Math.ceil(s.gold)}s`, "#ffd060");
@@ -2494,7 +2495,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.fillText("RESPAWN CORE", W / 2, H * 0.36);
     ctx.fillStyle = "rgba(215,230,247,.85)";
     ctx.font = "700 12px Figtree, system-ui";
-    ctx.fillText("hull restored · three seconds of Gold", W / 2, H * 0.36 + 22);
+    ctx.fillText("full health · 3 seconds of Gold protection", W / 2, H * 0.36 + 22);
   }
 }
 
@@ -4929,7 +4930,7 @@ export function paintShipPreview(
     shipPreviewStates.set(key, s);
   }
   s.pilot.y = 0; s.held = true;
-  s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+  s.signal = spillEngineColor(save).color;
   const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 } as World;
   ctx.save(); ctx.translate(cx, cy + Math.sin(t * 1.7) * 2); ctx.scale(scale, scale);
   drawSpillShip(ctx, w, save, art, s, 0); ctx.restore();

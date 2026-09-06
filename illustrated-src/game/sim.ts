@@ -26,7 +26,7 @@ import {
   type SpillCue,
   type SpillState,
 } from "./spill";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content";
 import {
   WORMHOLE_MAX_VY,
   WORMHOLE_FLAP,
@@ -1523,7 +1523,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     if (!level && starter && SPILL_UTILITIES[starter] && save.spillBest >= SPILL_UTILITIES[starter].unlock) {
       w.spill.utilities = [starter]; w.spill.ownedUtilities = [starter];
     }
-    w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+    w.spill.signal = spillEngineColor(save).color;
   }
   w.scrollReversing = false; w.scrollDirection = -1; w.scrollTravel = 0; w.tapFrozen = false; w.stuck = false;
   w.speed = PHYS.baseSpeed;

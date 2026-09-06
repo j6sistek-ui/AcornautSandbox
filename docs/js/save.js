@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=187";
-import { CHART_LEVELS } from "./campaign.js?v=187";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=187";
-import { restoreSpill } from "./spill.js?v=187";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=187";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=188";
+import { CHART_LEVELS } from "./campaign.js?v=188";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=188";
+import { restoreSpill } from "./spill.js?v=188";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=188";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=187";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=188";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -197,6 +197,9 @@ export function loadSave() {
     if (!SPILL_UTILITY_IDS.includes(s.spillStarter))
         s.spillStarter = null;
     s.spillSignal = s.spillSignal === true;
+    s.spillEngineColor = spillEngineColor(s).id;
+    s.spillSignal = s.spillEngineColor !== "stock";
+    s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
     // favourites are ids only; anything else in the array is a hand-edit
     if (!Array.isArray(s.favorites))
         s.favorites = [];

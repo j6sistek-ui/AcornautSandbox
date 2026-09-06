@@ -6,7 +6,7 @@ import { STAR_UNLOCKS,
   RACE_GATES,
 } from "./campaign";
 import { restoreSpill, type SpillCheckpoint, type SpillState } from "./spill";
-import { SPILL_UTILITY_IDS, type SpillUtility } from "./spill-content";
+import { SPILL_UTILITY_IDS, spillEngineColor, type SpillEngineColor, type SpillUtility } from "./spill-content";
 
 // `expeditions` counts wave-20 clears, not endings; retain the saved key.
 export type SpillRecords = { bestScore: number; ore: number; contracts: number; waves: number; expeditions: number; runs: number };
@@ -46,6 +46,8 @@ export type SaveData = {
   spillSuspended?: SpillCheckpoint | null;
   spillStarter?: SpillUtility | null;
   spillSignal?: boolean;
+  spillEngineColor?: SpillEngineColor;
+  spillDepotGuideSeen?: boolean;
   purchased: string[];
   acorns: number;
   xp: number;
@@ -300,6 +302,9 @@ export function loadSave(): SaveData {
   if (!restoreSpill(s.spillSuspended, 390, 760)) s.spillSuspended = null;
   if (!SPILL_UTILITY_IDS.includes(s.spillStarter)) s.spillStarter = null;
   s.spillSignal = s.spillSignal === true;
+  s.spillEngineColor = spillEngineColor(s).id;
+  s.spillSignal = s.spillEngineColor !== "stock";
+  s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
   // favourites are ids only; anything else in the array is a hand-edit
   if (!Array.isArray(s.favorites)) s.favorites = [];
   s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];

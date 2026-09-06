@@ -70,6 +70,24 @@ for(const [W,H] of [[320,760],[390,844],[1280,720],[844,390]]){
  const brake=flight();brake.utilities=['brake'];brake.pilot.y=brake.H-60;brake.pilot.vy=350;S.stepSpill(brake,dt);assert.equal(brake.hull,3);assert(brake.pilot.vy<0&&brake.brakeCool>11);
  const cap=flight();cap.up.pulse=1;cap.utilities=['capacitor'];for(let i=0;i<4;i++){hover(cap);pickup(cap);}assert.equal(cap.charge,2);impact(cap);assert.equal(cap.charge,1);impact(cap);assert.equal(cap.charge,0);assert.equal(cap.hull,3);
 }
+// Replacing a fitted utility is atomic: no charge or gear is lost on failure.
+{
+ const s=dock();s.up.pulse=1;S.spillUtility(s,'capacitor');S.spillUtility(s,'magnet');s.charge=2;s.ore=0;
+ const before=JSON.stringify(s);assert.equal(S.spillUtility(s,'brake','capacitor'),'poor');assert.equal(JSON.stringify(s),before);
+ assert.equal(S.spillUtility(s,'brake','scanner'),'closed');assert.equal(JSON.stringify(s),before);
+ s.ore=100;assert.equal(S.spillUtility(s,'brake','capacitor'),'ok');assert.deepEqual(s.utilities,['brake','magnet']);assert.equal(s.charge,1);assert.equal(s.ore,65);
+ assert(s.ownedUtilities.includes('capacitor'));assert.equal(S.spillUtility(s,'capacitor','brake'),'ok');assert.equal(s.ore,65);assert.deepEqual(s.utilities,['capacitor','magnet']);
+}
+// Old on/off engine saves migrate, and an explicit color survives new milestones.
+{
+ for(const [best,on,expected] of [[0,true,'stock'],[5,true,'copper'],[10,true,'cobalt'],[20,true,'corelight'],[30,true,'void'],[30,false,'stock']]){
+  const save=Save.defaultSave();save.spillBest=best;save.spillSignal=on;Save.writeSave(save);assert.equal(Save.loadSave().spillEngineColor,expected);
+ }
+ const save=Save.defaultSave();save.spillBest=30;save.spillEngineColor='copper';save.spillSignal=true;save.spillDepotGuideSeen=true;
+ Save.writeSave(save);const loaded=Save.loadSave();assert.equal(loaded.spillEngineColor,'copper');assert(loaded.spillDepotGuideSeen);
+ const w=Sim.makeWorld(390,760);Sim.resetRun(w,loaded,'spill',false);assert.equal(w.spill.signal,C.SPILL_ENGINE_COLORS[1].color);
+ save.spillBest=4;save.spillEngineColor='void';Save.writeSave(save);assert.equal(Save.loadSave().spillEngineColor,'stock');
+}
 {
  const s=dock();assert(!S.spillSpecialize(s,'brace'));S.spillBuy(s,'plating');S.spillBuy(s,'plating');assert(S.spillSpecialize(s,'brace'));
  const ore=s.ore;assert(S.spillSpecialize(s,'salvage'));assert.equal(s.ore,ore);s.phase='wave';s.hull=2;s.repairOre=29;pickup(s,'ore');assert.equal(s.hull,3);
