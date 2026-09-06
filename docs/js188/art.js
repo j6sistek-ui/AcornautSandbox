@@ -1,6 +1,6 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=184";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=184";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=184";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=188";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=188";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=188";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -26,12 +26,22 @@ function loadImg(src) {
     });
 }
 const spillSceneLoads = new WeakMap();
+const vanguardDepotLoads = new WeakMap();
 /** Mode art loads only when this mode is opened, without holding its launch. */
-export function loadSpillScene(bank) {
+export function loadSpillScene(bank, suit = "") {
+    bank.spillScene ?? (bank.spillScene = {});
+    let cameo = vanguardDepotLoads.get(bank) ?? Promise.resolve();
+    if (suit === "vanguard" && !vanguardDepotLoads.has(bank)) {
+        cameo = loadImg(artUrl("spill-scene/vanguard-depot.png")).then(sheet => {
+            if ((sheet.naturalWidth || sheet.width) !== 1280 || (sheet.naturalHeight || sheet.height) !== 1280)
+                throw new Error("Invalid Vanguard depot atlas");
+            bank.spillScene.vanguardDepot = sheet;
+        }).catch(() => { vanguardDepotLoads.delete(bank); /* normal arrival stays usable */ });
+        vanguardDepotLoads.set(bank, cameo);
+    }
     const existing = spillSceneLoads.get(bank);
     if (existing)
-        return existing;
-    bank.spillScene = {};
+        return Promise.all([existing, cameo]).then(() => { });
     const promise = Promise.all([...["depot", "panorama"].map(async (name) => {
             try {
                 bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
@@ -41,7 +51,7 @@ export function loadSpillScene(bank) {
             .then(sheet => { bank.spillScene.bear = prepareDepotBear(sheet); })
             .catch(() => { })]).then(() => { });
     spillSceneLoads.set(bank, promise);
-    return promise;
+    return Promise.all([promise, cameo]).then(() => { });
 }
 function measureSprite(img) {
     const w = img.naturalWidth || img.width;
@@ -383,7 +393,14 @@ export function loadPalBank(bank, id) {
     const count = PAL_ANIM[id];
     const p = count
         ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
-            if (frames.length)
+            if (id === "switchback") {
+                // Never compress a partial bank into the wrong animation order.
+                if (frames.length === count)
+                    bank.palAnim[id] = frames;
+                else
+                    palBankLoads.delete(id);
+            }
+            else if (frames.length)
                 bank.palAnim[id] = frames;
         })
         : Promise.resolve();
@@ -417,7 +434,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
-        ...(IS_BETA ? ["switchback"] : []),
+        "switchback",
         "bee",
         "buddy",
         "ufo",

@@ -8,7 +8,7 @@ import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchA
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
-import { drawHud, drawWorld } from "./draw";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -193,6 +193,35 @@ export type Engine = {
 };
 
 export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
+  // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
+  // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
+  // here it is mounted as an element BEHIND the game canvas, so the
+  // backdrop costs the frame nothing - the compositor stacks the two. The
+  // sway rides on a transform. Hidden the moment the run is not the Spill;
+  // every other mode paints its own opaque sky over the canvas anyway.
+  let backplate: HTMLCanvasElement | null = null;
+  let backplateShown = false;
+  let backplateW = 0, backplateH = 0, backplateTf = "";
+  setSpillBackplateHost((plate, off, w, h) => {
+    const parent = canvas.parentElement;
+    if (!parent) return false;
+    if (backplate !== plate) {
+      if (backplate) backplate.remove();
+      plate.className = "ac-backplate";
+      parent.insertBefore(plate, canvas);
+      backplate = plate;
+      backplateW = backplateH = 0; backplateTf = "";
+    }
+    const st = plate.style;
+    if (backplateW !== w || backplateH !== h) { st.width = `${w}px`; st.height = `${h}px`; backplateW = w; backplateH = h; }
+    const tf = `translate3d(${(Math.round(off * 10) / 10).toFixed(1)}px,0,0)`;
+    if (tf !== backplateTf) { st.transform = tf; backplateTf = tf; }
+    if (!backplateShown) { st.display = ""; backplateShown = true; }
+    return true;
+  });
+  const hideBackplate = () => {
+    if (backplateShown && backplate) { backplate.style.display = "none"; backplateShown = false; }
+  };
   const raw = canvas.getContext("2d");
   if (!raw) throw new Error("no 2d");
   const ctx = raw;
@@ -1430,6 +1459,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (nextSpillPaint < now - 100) nextSpillPaint = now;
       do { nextSpillPaint += 1000 / 60; } while (nextSpillPaint <= now + 0.5);
     } else nextSpillPaint = 0;
+    if (!world.spill || world.screen !== "play" && world.screen !== "pause" && world.screen !== "dead") hideBackplate();
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {

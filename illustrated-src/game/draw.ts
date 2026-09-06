@@ -1646,21 +1646,94 @@ function tunnelControlLabel(_w: World) {
 
 const wrap = (v: number, m: number) => ((v % m) + m) % m;
 
-function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState, art: ArtBank) {
-  const { W, H } = w;
-  const g = ctx.createLinearGradient(0, 0, 0, H);
+// THE PLATE IS BAKED (owner, 5 Sep 2026: "the spill mode was being a bit
+// choppy laggy sometimes"). Profiled frame by frame, the one full-screen
+// draw of the 2172x724 panorama - scaled to the canvas, at 38% alpha, every
+// frame - was the whole difference between a 16ms and a 33ms Spill frame;
+// nothing else in the frame had changed since the mode ran smoothly. The
+// window onto the panorama barely moves: the sector steps every five waves
+// and the sway is 2.5% over a nine-minute period. So the gradient and the
+// panorama are composited ONCE, into a canvas the size of the screen in
+// device pixels with headroom either side for the sway, and each frame
+// blits that plate opaque and one-to-one, nudged by the sway. Re-baked only
+// when the sector or the screen size changes. Same picture, one cheap copy
+// instead of a scaled alpha composite of a two-megapixel source.
+// THE PLATE IS A LAYER, NOT A DRAW. Baking removes the resample and the
+// alpha, but a one-to-one blit of a screen-sized canvas is still a
+// full-screen copy every frame - and on a software-rasterised canvas that
+// alone is a frame's budget. So the host (the engine, which owns the DOM)
+// can take the plate and mount it BEHIND the game canvas as its own
+// element: the game canvas is cleared to transparent each frame, the
+// compositor lays the two together, and the field's frame never touches
+// the backdrop's pixels at all. The sway becomes a transform on the
+// layer. Without a host the plate is drawn into the frame as before.
+export type SpillBackplateHost = (plate: HTMLCanvasElement, offCss: number, wCss: number, hCss: number) => boolean;
+let spillBackplateHost: SpillBackplateHost | null = null;
+export function setSpillBackplateHost(host: SpillBackplateHost | null) { spillBackplateHost = host; }
+let spillPlate: HTMLCanvasElement | null = null;
+let spillPlateKey = "";
+let spillPlateSx0 = 0;      // source x the plate's left edge was baked from
+let spillPlateW = 0;        // the plate's width in CSS px
+function spillPlateFor(ctx: CanvasRenderingContext2D, W: number, H: number,
+  panorama: HTMLImageElement | null, sxBase: number, sw: number, pad: number) {
+  const dpr = ctx.getTransform().a || 1;
+  const iw = panorama?.naturalWidth ?? 0, ih = panorama?.naturalHeight ?? 0;
+  const k = panorama ? W / sw : 1;                 // dest px per source px
+  const swP = panorama ? Math.min(iw, sw + (2 * pad) / k) : 0;
+  const sx0 = panorama ? Math.max(0, Math.min(iw - swP, sxBase - pad / k)) : 0;
+  const WP = panorama ? swP * k : W;
+  const pw = Math.max(1, Math.round(WP * dpr)), ph = Math.max(1, Math.round(H * dpr));
+  const key = `${pw}x${ph}|${panorama ? `${iw}x${ih}@${Math.round(sx0)}/${Math.round(swP)}` : "-"}`;
+  if (spillPlate && spillPlateKey === key) return spillPlate;
+  const c = spillPlate ?? document.createElement("canvas");
+  c.width = pw; c.height = ph;                     // also clears it
+  const g2 = c.getContext("2d");
+  if (!g2) return null;
+  g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = g2.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, "#05060f");
   g.addColorStop(0.55, "#0a0d1e");
   g.addColorStop(1, "#05070f");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-  const panorama = art.spillScene?.panorama;
+  g2.fillStyle = g;
+  g2.fillRect(0, 0, WP, H);
+  if (panorama) {
+    g2.globalAlpha = 0.38;
+    g2.drawImage(panorama, sx0, 0, swP, ih, 0, 0, WP, H);
+    g2.globalAlpha = 1;
+  }
+  spillPlate = c; spillPlateKey = key; spillPlateSx0 = sx0; spillPlateW = WP;
+  return c;
+}
+
+function spillBackdrop(ctx: CanvasRenderingContext2D, w: World, s: SpillState, art: ArtBank) {
+  const { W, H } = w;
+  const panorama = art.spillScene?.panorama ?? null;
+  let sx = 0, sw = 0, sxBase = 0;
   if (panorama) {
     const ih = panorama.naturalHeight, iw = panorama.naturalWidth;
-    const sw = Math.min(iw, ih * W / H);
+    sw = Math.min(iw, ih * W / H);
     const sector = Math.min(3, Math.floor((s.wave - 1) / 5));
-    const sx = (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025);
-    ctx.save(); ctx.globalAlpha = 0.38; ctx.drawImage(panorama, Math.max(0, sx), 0, sw, ih, 0, 0, W, H); ctx.restore();
+    sxBase = (iw - sw) * Math.min(1, sector / 3);
+    sx = Math.max(0, (iw - sw) * Math.min(1, sector / 3 + Math.sin(s.t * 0.012) * 0.025));
+  }
+  // the sway is at most 2.5% of the panorama's slack; 12% of the screen
+  // either side covers it with room to spare
+  const pad = Math.ceil(W * 0.12);
+  const plate = spillPlateFor(ctx, W, H, panorama, sxBase, sw, pad);
+  if (plate) {
+    const k = panorama ? W / sw : 1;
+    // where the frame's window sits inside the baked plate, clamped so the
+    // plate always covers the whole screen
+    const off = panorama ? Math.max(W - spillPlateW, Math.min(0, (spillPlateSx0 - sx) * k)) : 0;
+    const hosted = spillBackplateHost ? spillBackplateHost(plate, off, spillPlateW, H) : false;
+    if (!hosted) ctx.drawImage(plate, off, 0, spillPlateW, H);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#05060f");
+    g.addColorStop(0.55, "#0a0d1e");
+    g.addColorStop(1, "#05070f");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
   }
   const drift = s.t * 6;
   const pool = (cx: number, cy: number, rx: number, ry: number, col: string) => {

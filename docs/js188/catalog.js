@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=184";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=188";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "184";
+export const ART_VER = "188";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -34,7 +34,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-05 23:07 UTC";
+export const BUILD_TIME = "2026-09-06 01:02 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -225,13 +225,13 @@ export const TRAILS = [
 // resampling a 9-frame loop up to 16 only duplicates renders - and a pal
 // absent from this table simply keeps its still.
 export const PAL_ANIM = {
-    bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
+    switchback: 16, bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
     nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
     starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
 };
 export const PALS = [
-    ...(IS_BETA ? [{ id: "switchback", name: "Switchback", tag: "TAP REVERSE · BETA", desc: "Each tap reverses scrolling in normal flight. Revisit the corridor, then tap to head forward. Experimental; no effect in other modes.", art: "switchback" }] : []),
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
+    { id: "switchback", name: "Switchback", tag: "COMPANION", desc: "A golden acorn automaton, along for the flight. Cosmetic only; no gameplay effect.", art: "switchback" },
     { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
     { id: "buddy", name: "Acorn", tag: "MAGNET", desc: "Magnet Effect", art: "buddy" },
     { id: "voidjelly", name: "Jelly", tag: "SOFT BOUNCE", desc: "Bounce Softer", art: "voidjelly" },
@@ -398,6 +398,7 @@ export const TITLES = [
     [30, "ACORNAUT"],
 ];
 export const BUNDLES = [
+    { id: "bundle-switchback", name: "Switchback Companion", blurb: "Golden clockwork, teal fins, and good company. Cosmetic only.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {
         id: "bundle-aurora",
         name: "Aurora Pack",

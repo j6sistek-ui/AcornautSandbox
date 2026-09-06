@@ -1,6 +1,6 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=187";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=187";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=187";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=188";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=188";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=188";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
