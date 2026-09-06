@@ -1020,6 +1020,11 @@ def verify_ui_classes(qa: QA) -> None:
         wanted |= set(m.group(1).split())
     for m in re.finditer(r'classList\.(?:add|toggle|remove)\(\s*"([^"]*)"', ui):
         wanted |= set(m.group(1).split())
+    # className assignments too: the Spill's backplate is mounted by the
+    # engine with one, and its rule fell out of the page unnoticed once
+    engine = (ROOT / "illustrated-src/game/engine.ts").read_text(encoding="utf8")
+    for m in re.finditer(r'className\s*=\s*"([^"]*)"', ui + engine):
+        wanted |= set(m.group(1).split())
     wanted = {c for c in wanted if c.startswith("ac-")} - UNSTYLED_HOOKS
 
     problems: list[str] = []

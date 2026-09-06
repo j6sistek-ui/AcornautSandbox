@@ -372,6 +372,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (snap.screen === "pause") {
       const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
+      if (engine.save.equippedSuit === "vanguard" || engine.world.tutSuit) sheet.append(acornutPitchDial());
       sheet.append(
         el("h2", "", "PAUSED"),
         el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
@@ -857,6 +858,25 @@ export async function bootStandalone(root: HTMLElement) {
     return rows;
   }
 
+  // ACORNUT'S PITCH DIAL (owner, 6 Sep 2026: "rotate the entire animation
+  // forward about 25 degrees, or give me a dial"). On the pause sheet and
+  // under his card in the hangar while he is worn; -5 / +5 degrees a tap,
+  // the number shown. Lives in the save so it survives a reload. Goes the
+  // moment the owner calls a number.
+  function acornutPitchDial() {
+    const panel = el("div", "ac-acornut-pitch");
+    const deg = engine.save.acornutPitch ?? 25;
+    panel.append(el("p", "ac-sub", `ACORNUT PITCH · ${deg > 0 ? "+" : ""}${deg}° forward`));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
+    for (const [label, d] of [["−5°", -5], ["reset 25°", 0], ["+5°", 5]] as const) {
+      const b = el("button", "ac-mode", label);
+      b.onclick = () => engine.setAcornutPitch(d === 0 ? 25 : deg + d);
+      row.append(b);
+    }
+    panel.append(row);
+    return panel;
+  }
   function coach(text: string, inline = false) {
     // HELP OFF means no coach at all. Callers may still tag the element
     // (find-me arrow, pointing-down state); a hidden node takes that

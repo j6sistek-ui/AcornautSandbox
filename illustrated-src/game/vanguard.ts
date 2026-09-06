@@ -1,16 +1,15 @@
 import type { ArtBank } from './art';
 import { paintVanguardRig } from './vanguard-rig';
 import { PHYS } from './catalog';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver';
+import type { ManeuverMotion } from './vanguard-maneuver';
 
 export const VANGUARD_FRAMES = 16;
 // ONE MOTION (owner, 6 Sep 2026: "the Flight version is the version now,
-// remove the others" / "it was the Flight one, not upright"). The
-// Cinematic, Continuous and Upright trials are gone, and so is the
-// separated-parts maneuver rig that #197 slid under Flight the same hour -
-// on the phone it read as the upright puppet. AcorNut's flight is the
-// articulated cruise on the sixteen painted frames: fixed body, inertial
-// limbs, the drawn tail. The mode field stays on the state as a constant
-// because the rig keys its texture cache on it.
+// remove the others"). The Cinematic, Continuous and Upright trials are
+// gone; what shipped as Flight - the articulated cruise on the maneuver
+// rig - is AcorNut's flight. The mode field stays on the state as a
+// constant because the rig keys its texture cache on it.
 export type VanguardMotionMode = 'cruise';
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
@@ -34,20 +33,22 @@ export type VanguardMotion = {
   // Independent inertial joints. Taps add energy, never restart a gesture.
   nearArm: number; farArm: number; nearLeg: number; farLeg: number; settle: number;
   drive: number; contactAge: number; contactPower: number; contactNormalY: number;
+  maneuver: ManeuverMotion;
   rates: { heading: number; pitch: number; nearArm: number; farArm: number;
     nearLeg: number; farLeg: number; settle: number; drive: number };
 
 };
 export function createVanguardMotion(): VanguardMotion {
-  return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16*DEG,
+  return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16*DEG+pitchTrim,
     time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
     thrust: 0, burst: 0, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
-    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1,
+    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1, maneuver:createManeuverMotion(false),
     rates: { heading: 0, pitch: 0, nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0, drive: 0 } };
 }
 export function vanguardGate(s: VanguardMotion) { s.freshThrust = true; }
 // deltaVy is the accepted upward impulse (old vy minus new vy).
 export function vanguardTap(s: VanguardMotion, deltaVy = 450) {
+  maneuverTap(s.maneuver,Math.max(0,deltaVy));
   // Actual accepted acceleration controls intensity. Repeated taps sustain
   // pressure; they cannot snap a joint or rewind the continuous tail.
   s.thrustPower = clamp(Math.max(0,deltaVy)/650, .24, 1);
@@ -63,10 +64,21 @@ export function vanguardContact(s: VanguardMotion, x: number, y: number, nx: num
   if (s.contacts.length > 3) s.contacts.shift();
   s.freshThrust = true; s.diving = false;
   s.contactAge = 0; s.contactPower = clamp(strength, .35, 1); s.contactNormalY = clamp(ny,-1,1);
+  maneuverContact(s.maneuver,ny,strength);
   // Surface dust outlives an immediate tap; the body follows the rebound vy.
 }
 const DEG = Math.PI/180;
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi,x));
+// Whole-animation forward lean (degrees, positive = nose down/forward). The
+// maneuver rig and the frames fallback both rotate by it; the pause-sheet dial
+// adjusts it at runtime and the save remembers the choice.
+export const VANGUARD_PITCH_TRIM_DEFAULT = 25;
+let pitchTrim = VANGUARD_PITCH_TRIM_DEFAULT*DEG;
+export function setVanguardPitchTrim(degrees: number) {
+  if (!Number.isFinite(degrees)) degrees = VANGUARD_PITCH_TRIM_DEFAULT;
+  pitchTrim = clamp(degrees,-20,45)*DEG;
+}
+export function vanguardPitchTrim() { return pitchTrim; }
 // Critically damped second-order response with bounded angular speed. Unlike
 // a pose lerp, an accepted tap cannot reverse rotation in one video frame.
 function joint(s: VanguardMotion, key: keyof VanguardMotion['rates'], target: number,
@@ -93,7 +105,7 @@ function stepArticulated(s: VanguardMotion, dt: number, vy: number) {
     const target = (direction<0 ? direction*(upright?6:10) : direction*(s.diving?(upright?25:18):(upright?12:8)))*DEG;
     joint(s,'heading',target,h,17,1.15);
     // Smooth the base attitude too: changing the beta toggle preserves pose.
-    joint(s,'pitch',(upright?-28:16)*DEG+s.heading-s.drive*(upright?2:1.4)*DEG,h,19,1.2);
+    joint(s,'pitch',(upright?-28:16)*DEG+pitchTrim+s.heading-s.drive*(upright?2:1.4)*DEG,h,19,1.2);
     // Loose limbs keep a slow, asymmetric float even when short taps hold
     // velocity near its ascent limit. This clock NEVER restarts on input.
     // The delayed second arm and legs follow through instead of pumping in
@@ -124,6 +136,7 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
   if (!(dt>0) || !Number.isFinite(dt) || !Number.isFinite(vy)) return;
   // The engine bounds ticks; guard isolated preview callers after suspension.
   dt=Math.min(dt,.25);
+  stepManeuver(s.maneuver,dt,vy,s.diving,false);
   stepArticulated(s,dt,vy);
   for(const p of s.contacts) p.age+=dt;
   s.contacts=s.contacts.filter(p=>p.age<VANGUARD_CONTACT_SECONDS);
@@ -131,11 +144,16 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
 
 export function paintVanguard(ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined,
   x: number, y: number, size: number, state?: VanguardMotion) {
+  if(state&&art?.vanguardParts){
+    paintManeuver(ctx,art.vanguardParts,x,y,size,state.maneuver,pitchTrim);
+    if (state.burst > 0) paintManeuverBurst(ctx,x,y,size,state);
+    return;
+  }
   const bank = art?.vanguard?.length === VANGUARD_FRAMES ? art.vanguard : undefined;
   const frame = bank?.[state?.frame ?? 0] ?? art?.suits.vanguard;
   if (!frame) return;
   const scale = size / 400;
-  ctx.save(); ctx.translate(x,y); ctx.rotate(state?.pitch ?? 16*DEG);
+  ctx.save(); ctx.translate(x,y); ctx.rotate(state?.pitch ?? 16*DEG+pitchTrim);
   if (state && state.thrust > .01) paintJetpackExhaust(ctx,scale,state);
   // One registered, fully opaque whole-character drawing. The face and legs
   // hold their scale; the drawn tail changes shape instead of being stretched.
@@ -183,6 +201,14 @@ function paintBurstAt(ctx: CanvasRenderingContext2D, scale: number, s: VanguardM
     }
     ctx.restore();
   }
+  ctx.restore();
+}
+// The maneuver rig's pack: the same transform paintManeuver uses, the
+// nozzles paintExhaust uses, the plume's own direction (down and back).
+function paintManeuverBurst(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, s: VanguardMotion) {
+  const p=s.maneuver.pose, scale=size/400;
+  ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale); ctx.translate(0,60+p.heave); ctx.rotate(p.body*DEG+pitchTrim);
+  paintBurstAt(ctx,1,s,[[-84,5,1],[-66,-1,.72]],-.35,.94);
   ctx.restore();
 }
 function paintJetpackExhaust(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion) {

@@ -136,6 +136,8 @@ export type SaveData = {
   favorites?: string[];
   /** the loadout's animated case, shrunk so the shelves get the room */
   heroCompact?: boolean;
+  /** AcorNut's forward lean in degrees, dialled on the phone until it settles */
+  acornutPitch?: number;
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
@@ -252,6 +254,8 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
+  if (typeof s.acornutPitch !== "number" || !isFinite(s.acornutPitch)) s.acornutPitch = 25;
+  s.acornutPitch = Math.max(-20, Math.min(45, Math.round(s.acornutPitch)));
   // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
   // tutorial's borrowed flight. A beta grant or an old free unlock in the
   // list does not count; the star gate in suitRevealed does.

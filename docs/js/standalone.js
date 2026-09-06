@@ -1,24 +1,24 @@
-import { writeSave } from "./save.js?v=195";
-import { spillAppearance } from "./spill-appearance.js?v=195";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=195";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=195";
-import { addChartScenery } from "./star-map-view.js?v=195";
-import { mapDebrisIndex } from "./zone-visuals.js?v=195";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=195";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=195";
-import { suitLean } from "./control-constants.js?v=195";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=195";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=195";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=195";
-import { drawSprite as drawSpriteOn } from "./art.js?v=195";
-import { createEngine } from "./engine.js?v=195";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=195";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=195";
-import { formatRaceTicks } from "./race.js?v=195";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=195";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=195";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=195";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=195";
+import { writeSave } from "./save.js?v=196";
+import { spillAppearance } from "./spill-appearance.js?v=196";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=196";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=196";
+import { addChartScenery } from "./star-map-view.js?v=196";
+import { mapDebrisIndex } from "./zone-visuals.js?v=196";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=196";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=196";
+import { suitLean } from "./control-constants.js?v=196";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=196";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=196";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=196";
+import { drawSprite as drawSpriteOn } from "./art.js?v=196";
+import { createEngine } from "./engine.js?v=196";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=196";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=196";
+import { formatRaceTicks } from "./race.js?v=196";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=196";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=196";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=196";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=196";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -420,6 +420,8 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
+            if (engine.save.equippedSuit === "vanguard" || engine.world.tutSuit)
+                sheet.append(acornutPitchDial());
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
                 : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
                     : `Score ${engine.world.score}`));
@@ -895,6 +897,25 @@ export async function bootStandalone(root) {
         row("Menu animation", "Pulses, fades and moving badges", () => !sv().motionOff, () => engine.setMotionOff(!sv().motionOff));
         row("Intro video", "The launch film after TAP TO START", () => !sv().introOff, () => engine.setIntroOff(!sv().introOff));
         return rows;
+    }
+    // ACORNUT'S PITCH DIAL (owner, 6 Sep 2026: "rotate the entire animation
+    // forward about 25 degrees, or give me a dial"). On the pause sheet and
+    // under his card in the hangar while he is worn; -5 / +5 degrees a tap,
+    // the number shown. Lives in the save so it survives a reload. Goes the
+    // moment the owner calls a number.
+    function acornutPitchDial() {
+        const panel = el("div", "ac-acornut-pitch");
+        const deg = engine.save.acornutPitch ?? 25;
+        panel.append(el("p", "ac-sub", `ACORNUT PITCH · ${deg > 0 ? "+" : ""}${deg}° forward`));
+        const row = el("div", "ac-modes");
+        row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
+        for (const [label, d] of [["−5°", -5], ["reset 25°", 0], ["+5°", 5]]) {
+            const b = el("button", "ac-mode", label);
+            b.onclick = () => engine.setAcornutPitch(d === 0 ? 25 : deg + d);
+            row.append(b);
+        }
+        panel.append(row);
+        return panel;
     }
     function coach(text, inline = false) {
         // HELP OFF means no coach at all. Callers may still tag the element

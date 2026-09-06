@@ -7,6 +7,7 @@ import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
+import { setVanguardPitchTrim } from "./vanguard";
 import {
   batteryUnlocked,
   deepUnlocked,
@@ -171,6 +172,8 @@ export type Engine = {
   isFavorite: (id: string) => boolean;
   /** shrink or restore the loadout's animated case */
   setHeroCompact: (on: boolean) => void;
+  /** AcorNut's pitch trim, in degrees; the dial until the number settles */
+  setAcornutPitch: (deg: number) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -478,6 +481,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return on;
     },
     isFavorite: (id) => (save.favorites ?? []).includes(id),
+    setAcornutPitch(deg) {
+      save.acornutPitch = Math.max(-20, Math.min(45, Math.round(deg)));
+      setVanguardPitchTrim(save.acornutPitch);
+      writeSave(save);
+      notify();
+    },
     setHeroCompact(on) {
       save.heroCompact = !!on;
       writeSave(save);
@@ -1448,6 +1457,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // once here, so a reload lands in the state the pilot left
   setSfxMuted(!!save.sfxOff);
   document.body.classList.toggle("ac-nomotion", !!save.motionOff);
+  setVanguardPitchTrim(save.acornutPitch ?? 25);
 
   // the first flight is flown in AcorNut, so his bank rides the boot load
   // until the tutorial is done
