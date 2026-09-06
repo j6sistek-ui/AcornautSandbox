@@ -4,8 +4,10 @@
 import assert from 'node:assert/strict';
 import {
   createVanguardMotion, stepVanguard, vanguardTap, vanguardDive,
-  vanguardContact, VANGUARD_FRAMES,
+  vanguardContact, VANGUARD_FRAMES, VANGUARD_PITCH_TRIM_DEFAULT,
 } from '../docs/js/vanguard.js';
+// the owner's forward trim is a deliberate constant lean on the whole drawing
+const trim = VANGUARD_PITCH_TRIM_DEFAULT * Math.PI / 180;
 
 const modes = ['cruise'];   // the trial modes are gone: Flight is the motion
 const joints = ['nearArm', 'farArm', 'nearLeg', 'farLeg'];
@@ -39,7 +41,7 @@ for (const mode of modes) {
   assert(state.heading > radians(2), `${mode}: ordinary gravity becomes a descent`);
   assert(maxJointDifference(rise, state) > radians(2), `${mode}: limbs visibly change between rising and falling`);
   assert(Math.abs(state.heading) < radians(18), `${mode}: gravity does not produce the old diving posture`);
-  assert(Math.abs(state.pitch) < radians(36), `${mode}: drawing avoids the old 54-degree ordinary fall`);
+  assert(Math.abs(state.pitch - trim) < radians(36), `${mode}: beyond the trim, the drawing avoids the old 54-degree ordinary fall`);
 }
 
 // Frequent inputs must add acceleration without restarting the tail or

@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=192";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=192";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=192";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=192";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=196";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=196";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=196";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=196";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -341,12 +341,19 @@ export function loadSuitBank(bank, id) {
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
         if (id === "vanguard") {
-            const frames = await many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES);
+            const [frames, parts] = await Promise.all([
+                many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES),
+                loadImg(`${base}/suits/vanguard/maneuver-parts.png?v=${ART_VER}`).then(asSprite).catch(() => null),
+            ]);
             // Never publish a partial bank: filtering failed images must not shift poses.
             if (frames.length === VANGUARD_FRAMES)
                 bank.vanguard = frames;
             else
                 suitBankLoads.delete(id); // allow a later equip to retry
+            if (parts && parts.width === 1024 && parts.height === 768)
+                bank.vanguardParts = parts;
+            else
+                suitBankLoads.delete(id); // retain the old rig and allow a later retry
             return;
         }
         const rigged = RIGGED_SUITS.includes(id);

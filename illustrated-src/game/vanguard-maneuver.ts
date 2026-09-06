@@ -249,9 +249,9 @@ function paintExhaust(ctx:CanvasRenderingContext2D,s:ManeuverMotion){
 /** One stable head/torso, articulated complete limbs and a separately lagged
  * tail. All render costs are bounded:10 sprite draws plus32 tail triangles. */
 export function paintManeuver(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,
-  x:number,y:number,size:number,s:ManeuverMotion){
+  x:number,y:number,size:number,s:ManeuverMotion,trim=0){
   const p=s.pose,l=maneuverLandmarks(p),scale=size/400;
-  ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.translate(0,60+p.heave);ctx.rotate(p.body*DEG);
+  ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.translate(0,60+p.heave);ctx.rotate(p.body*DEG+trim);
   // The pack is in front of the tail. Its plume must emerge from the visible
   // nozzle, without being cut into a rectangular sliver by the furry layer.
   paintTail(ctx,atlas,s);paintExhaust(ctx,s);

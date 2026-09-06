@@ -1,17 +1,17 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=195";
-import { trailWornBy } from "./catalog.js?v=195";
-import { missionRandom } from "./mission-rng.js?v=195";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=195";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=195";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=195";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=195";
-import { TUTORIAL_SUIT } from "./catalog.js?v=195";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=195";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=195";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=195";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=195";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=195";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=195";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=196";
+import { trailWornBy } from "./catalog.js?v=196";
+import { missionRandom } from "./mission-rng.js?v=196";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=196";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=196";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=196";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=196";
+import { TUTORIAL_SUIT } from "./catalog.js?v=196";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=196";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=196";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=196";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=196";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=196";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=196";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
