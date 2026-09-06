@@ -1,0 +1,242 @@
+[
+  {
+    "frame": 0,
+    "sourceBounds": {
+      "left": 64,
+      "top": 13,
+      "right": 278,
+      "bottom": 295,
+      "area": 34947
+    },
+    "sourceHeadX": 228,
+    "dx": -10.319999999999993,
+    "dy": 17.75999999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 1,
+    "sourceBounds": {
+      "left": 352,
+      "top": 13,
+      "right": 566,
+      "bottom": 294,
+      "area": 33721
+    },
+    "sourceHeadX": 516,
+    "dx": -281.03999999999996,
+    "dy": 18.69999999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 2,
+    "sourceBounds": {
+      "left": 644,
+      "top": 15,
+      "right": 866,
+      "bottom": 295,
+      "area": 34295
+    },
+    "sourceHeadX": 808,
+    "dx": -555.52,
+    "dy": 17.75999999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 3,
+    "sourceBounds": {
+      "left": 977,
+      "top": 14,
+      "right": 1189,
+      "bottom": 294,
+      "area": 34202
+    },
+    "sourceHeadX": 1140,
+    "dx": -867.5999999999999,
+    "dy": 18.69999999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 4,
+    "sourceBounds": {
+      "left": 50,
+      "top": 320,
+      "right": 267,
+      "bottom": 612,
+      "area": 39139
+    },
+    "sourceHeadX": 216,
+    "dx": 0.960000000000008,
+    "dy": -280.2199999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 5,
+    "sourceBounds": {
+      "left": 349,
+      "top": 316,
+      "right": 563,
+      "bottom": 612,
+      "area": 39438
+    },
+    "sourceHeadX": 518,
+    "dx": -282.91999999999996,
+    "dy": -280.2199999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 6,
+    "sourceBounds": {
+      "left": 644,
+      "top": 321,
+      "right": 878,
+      "bottom": 612,
+      "area": 42129
+    },
+    "sourceHeadX": 809,
+    "dx": -556.4599999999999,
+    "dy": -280.2199999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 7,
+    "sourceBounds": {
+      "left": 951,
+      "top": 316,
+      "right": 1207,
+      "bottom": 612,
+      "area": 46000
+    },
+    "sourceHeadX": 1128,
+    "dx": -856.3199999999999,
+    "dy": -280.2199999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 8,
+    "sourceBounds": {
+      "left": 43,
+      "top": 637,
+      "right": 300,
+      "bottom": 918,
+      "area": 44264
+    },
+    "sourceHeadX": 210,
+    "dx": 6.600000000000023,
+    "dy": -567.8599999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 9,
+    "sourceBounds": {
+      "left": 351,
+      "top": 643,
+      "right": 603,
+      "bottom": 919,
+      "area": 43122
+    },
+    "sourceHeadX": 519,
+    "dx": -283.85999999999996,
+    "dy": -568.8,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 10,
+    "sourceBounds": {
+      "left": 653,
+      "top": 645,
+      "right": 898,
+      "bottom": 919,
+      "area": 42465
+    },
+    "sourceHeadX": 808,
+    "dx": -555.52,
+    "dy": -568.8,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 11,
+    "sourceBounds": {
+      "left": 961,
+      "top": 642,
+      "right": 1212,
+      "bottom": 919,
+      "area": 43426
+    },
+    "sourceHeadX": 1134,
+    "dx": -861.96,
+    "dy": -568.8,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 12,
+    "sourceBounds": {
+      "left": 58,
+      "top": 938,
+      "right": 274,
+      "bottom": 1229,
+      "area": 38915
+    },
+    "sourceHeadX": 216,
+    "dx": 0.960000000000008,
+    "dy": -860.2,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 13,
+    "sourceBounds": {
+      "left": 359,
+      "top": 942,
+      "right": 569,
+      "bottom": 1230,
+      "area": 37593
+    },
+    "sourceHeadX": 520,
+    "dx": -284.79999999999995,
+    "dy": -861.1399999999999,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 14,
+    "sourceBounds": {
+      "left": 667,
+      "top": 944,
+      "right": 876,
+      "bottom": 1229,
+      "area": 37898
+    },
+    "sourceHeadX": 835,
+    "dx": -580.9,
+    "dy": -860.2,
+    "scale": 0.94,
+    "footY": 296
+  },
+  {
+    "frame": 15,
+    "sourceBounds": {
+      "left": 970,
+      "top": 939,
+      "right": 1193,
+      "bottom": 1229,
+      "area": 39365
+    },
+    "sourceHeadX": 1134,
+    "dx": -861.96,
+    "dy": -860.2,
+    "scale": 0.94,
+    "footY": 296
+  }
+]

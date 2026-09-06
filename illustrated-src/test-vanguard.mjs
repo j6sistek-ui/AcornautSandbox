@@ -80,11 +80,11 @@ if(mode==='beta') {
   assert.equal(button('Continuous').getAttribute('aria-pressed'),'true');
   e.fly('fly');Sim.flap(e.world,e.save);
   for(let i=0;i<12;i++)Sim.updateWorld(e.world,e.save,1/60);
-  assert(e.world.vanguard.beat>1);e.pause();tick();
+  assert(e.world.vanguard.phase>0);e.pause();tick();
   assert(app.querySelector('.ac-vanguard-motion'));
-  const atPause=JSON.stringify(e.world.squirrel), beat=e.world.vanguard.beat;
+  const atPause=JSON.stringify(e.world.squirrel), beat=e.world.vanguard.phase;
   button('Cinematic').click();
-  assert.equal(e.world.vanguard.beat,beat);assert.equal(JSON.stringify(e.world.squirrel),atPause);
+  assert.equal(e.world.vanguard.phase,beat);assert.equal(JSON.stringify(e.world.squirrel),atPause);
   e.resume();assert.equal(e.world.screen,'play');
 } else {
   assert(!app.querySelector('.ac-vanguard-motion'));
@@ -106,16 +106,16 @@ assert(!w.vanguard.diving);assert(w.squirrel.vy<0);
 w.planets=[];w.squirrel.y=380;w.squirrel.vy=0;
 for(let i=0;i<26;i++)Sim.updateWorld(w,e.save,1/60);
 assert.equal(w.bounceAnimT,-1);assert.equal(w.vanguard.contacts.length,1,'plume survives legacy contact window');
-// Passing an actual gate arms one lunge without changing the displayed pose.
-w.vanguard.lungeArmed=false;
+// Passing an actual gate arms the softer first thruster pulse without changing the displayed pose.
+w.vanguard.freshThrust=false;
 w.planets=[{x:-20,gapY:380,gap:220,r:62,topKind:0,botKind:0,scored:false,drift:0,driftAmp:0,blockers:[]}];
-Sim.updateWorld(w,e.save,1/60);assert(w.vanguard.lungeArmed);assert.equal(w.score,1);
-// Pause/ready/reset never run, replay or retain an old contact animation.
+Sim.updateWorld(w,e.save,1/60);assert(w.vanguard.freshThrust);assert.equal(w.score,1);
+// Pause freezes animation; reset clears contacts; the ready screen idles its tail.
 Sim.pausePlay(w);const paused=JSON.stringify(w.vanguard);Sim.updateWorld(w,e.save,.2);
 assert.equal(JSON.stringify(w.vanguard),paused);assert.equal(Sim.flap(w,e.save),'none');
 Sim.resumePlay(w);Sim.resetRun(w,e.save,'fly',false);
 assert.deepEqual(w.vanguard,VG.createVanguardMotion(S.vanguardModeOf(e.save)));
-Sim.updateWorld(w,e.save,.1);assert.equal(w.vanguard.time,0);
+const readyY=w.squirrel.y;Sim.updateWorld(w,e.save,.1);assert.equal(w.vanguard.time,.1);assert.equal(w.squirrel.y,readyY);assert(w.vanguard.phase>0);
 // Even a doubled world pace must not double the flagship's visual clock.
 for(const pace of [1,2]) {
   const paced=Sim.makeWorld(390,5000),sv={...e.save};
@@ -133,18 +133,38 @@ for(const interval of [.1,.18,.3]) for(const style of ['cinematic','flow']) {
   let nextTap=0, beforeBeat=0;const poses=new Set();
   for(let i=0;i<240;i++) {
     if(i/60+1e-8>=nextTap) {
-      const before=[live.vanguard.beat,live.vanguard.frame,live.vanguard.mix];
+      const before=[live.vanguard.phase,live.vanguard.frame,live.vanguard.heading];
       Sim.flap(live,sv);
-      if(i>0) assert.deepEqual([live.vanguard.beat,live.vanguard.frame,live.vanguard.mix],before,'repeat tap must not rewind frame or dissolve');
+      if(i>0) assert.deepEqual([live.vanguard.phase,live.vanguard.frame,live.vanguard.heading],before,'repeat tap must not restart tail or set body heading');
       nextTap+=interval;
     }
     Sim.updateWorld(live,sv,1/60);poses.add(live.vanguard.frame);
-    if(i<64)assert(live.vanguard.beat>=beforeBeat,'first lunge must progress forward');
-    beforeBeat=live.vanguard.beat;
+    if(i>0)assert.notEqual(live.vanguard.phase,beforeBeat,'tail clock never holds');
+    beforeBeat=live.vanguard.phase;
   }
-  assert.equal(live.screen,'play');assert(poses.size>=10,'rapid input must reveal more than a twitch');
-  if(mode==='production'||style==='cinematic')assert(live.vanguard.holding,'follow-up taps sustain the climbed body pose');
+  assert.equal(live.screen,'play');assert(poses.size>=10,'rapid input must keep tail moving');
+  assert(poses.size===16,'every drawn tail phase must remain reachable under rapid taps');
   assert(live.vanguard.thrust>.2);
+}
+// Direction changes interrupt no tail cycle and wait for no animation beat.
+// A normal tap arc crosses the apex well inside the old 1.76s gesture.
+for(const style of ['cinematic','flow']) {
+ const state=VG.createVanguardMotion(style);VG.vanguardTap(state);
+ for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,-220);
+ assert(state.heading<-.2);
+ for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,220);
+ assert(state.heading>.2,'fall must read within .3s of reversing vertical travel');
+ const firstPhase=state.phase, seen=new Set();
+ for(let i=0;i<150;i++){VG.stepVanguard(state,1/60,0);seen.add(state.frame);}
+ assert.equal(seen.size,16,'no-input glide keeps the entire tail loop alive');
+ assert.notEqual(state.phase,firstPhase);assert(Math.abs(state.heading)<.001);
+ VG.vanguardDive(state);
+ for(let i=0;i<36;i++)VG.stepVanguard(state,1/60,650);
+ assert(state.heading>.95,'explicit swipe reaches a visibly deeper attitude');
+ const pose=[state.phase,state.frame,state.heading];VG.vanguardTap(state);
+ assert.deepEqual([state.phase,state.frame,state.heading],pose,'tap reacts without a body snap');
+ for(let i=0;i<24;i++)VG.stepVanguard(state,1/60,-310);
+ assert(state.heading<-.3,'climb recovers promptly through velocity, not a queued clip');
 }
 // Old suit clocks are preserved, including their repeat-tap rewind.
 const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};

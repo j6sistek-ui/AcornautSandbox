@@ -40,7 +40,7 @@ async function sprite(file){
 }
 const art=A.emptyArt();art.ready=true;
 art.suits.vanguard=await sprite('suits/vanguard.png');art.vanguard=[];
-for(let i=1;i<=32;i++)art.vanguard.push(await sprite(`suits/vanguard/frame-${i}.png`));
+for(let i=1;i<=VG.VANGUARD_FRAMES;i++)art.vanguard.push(await sprite(`suits/vanguard/frame-${i}.png`));
 art.squirrelIdle=[await sprite('squirrel/idle-1.png')];art.squirrelFlap=art.squirrelIdle;
 art.helms.clear=await sprite('helms/clear.png');
 for(let i=0;i<33;i++)art.planets.push(await sprite(`planets/${i}.png`));
@@ -49,7 +49,7 @@ const save=S.defaultSave();Object.assign(save,{equippedSuit:'vanguard',equippedT
 // The world chooses Vanguard's independent state, never the legacy clocks.
 const world=Sim.makeWorld(390,760);Sim.resetRun(world,save,'fly',false);world.ready=false;world.shieldCharges=1;
 Sim.flap(world,save);for(let i=0;i<28;i++)VG.stepVanguard(world.vanguard,1/60,-200);
-world.vanguard.mix=1;world.tapAnimT=0;world.bounceAnimT=.01;world.squirrel.vy=650;
+world.tapAnimT=0;world.bounceAnimT=.01;world.squirrel.vy=650;
 const c=createCanvas(390,760),ctx=c.getContext('2d'),drawn=[];const original=ctx.drawImage.bind(ctx);
 ctx.drawImage=(im,...args)=>{if(im.sourceFile)drawn.push([im.sourceFile,args]);return original(im,...args);};
 D.drawWorld(ctx,world,save,art);await Promise.all(pending);D.drawWorld(ctx,world,save,art);
@@ -64,20 +64,21 @@ assert(drawn.some(([file])=>file==='suits/vanguard.png'));
 // One crisp pose remains opaque throughout a registered pose transition.
 const solid=createCanvas(512,512),sg=solid.getContext('2d');sg.fillStyle='#ffffff';sg.fillRect(0,0,512,512);
 const opacity=createCanvas(512,512),op=opacity.getContext('2d');
-const blend=VG.createVanguardMotion();blend.frame=1;blend.mix=.5;
-VG.paintVanguard(op,{suits:{vanguard:solid},vanguard:Array(32).fill(solid)},280,280,400,blend);
+const blend=VG.createVanguardMotion();blend.frame=1;
+VG.paintVanguard(op,{suits:{vanguard:solid},vanguard:Array(VG.VANGUARD_FRAMES).fill(solid)},280,280,400,blend);
 assert.deepEqual([...op.getImageData(256,256,1,1).data],[255,255,255,255]);
-// Gravity cannot reach the deep dive, even at terminally high speed. A
-// swipe can, repeated swipes preserve its progress, and taps recover gently.
+// Body direction is independent of loop progress. Gravity stays shallow,
+// swipes may point down, and every attitude retains the continuous tail.
 for(const style of ['cinematic','flow']) {
  const state=VG.createVanguardMotion(style);
  for(let i=0;i<180;i++)VG.stepVanguard(state,1/60,1500);
- assert.equal(state.descent,3);assert.equal(state.frame,18);
- VG.vanguardDive(state);for(let i=0;i<60;i++){if(i===20)VG.vanguardDive(state);VG.stepVanguard(state,1/60,650);}
- assert.equal(state.descent,8);assert.equal(state.frame,23);
- const frame=state.frame;VG.vanguardTap(state);assert.equal(state.frame,frame);
- for(let i=0;i<140;i++)VG.stepVanguard(state,1/60,-200);
- assert.equal(state.descent,0);assert(!state.diving);
+ assert(Math.abs(state.heading-22*Math.PI/180)<.001);
+ VG.vanguardDive(state);for(let i=0;i<60;i++)VG.stepVanguard(state,1/60,650);
+ assert(state.heading>1);
+ const pose=[state.frame,state.phase,state.heading];VG.vanguardTap(state);
+ assert.deepEqual([state.frame,state.phase,state.heading],pose);
+ for(let i=0;i<60;i++)VG.stepVanguard(state,1/60,-200);
+ assert(state.heading<-.3);assert(!state.diving);
 }
 // A scripted flight chamber leaves vertical room for a full dive. All
 // inputs, forces, gate scoring and contact use sim.ts. The test camera
@@ -112,7 +113,7 @@ for(let tick=0;tick<408;tick++) {
  }
  // Visual style cannot change any authoritative flight value or legacy clock.
  for(const key of ['squirrel','score','run','tapAnimT','tapAnimDir','bounceAnimT','distance'])assert.deepEqual(runs[0].w[key],runs[1].w[key],`${key} differs between modes at ${t}`);
- frameTrace.push({tick,y:runs[0].w.squirrel.y,vy:runs[0].w.squirrel.vy,...Object.fromEntries(runs.map(r=>[r.save.vanguardMotionMode,{frame:r.w.vanguard.frame,beat:r.w.vanguard.beat,thrust:r.w.vanguard.thrust,descent:r.w.vanguard.descent}]))});
+ frameTrace.push({tick,y:runs[0].w.squirrel.y,vy:runs[0].w.squirrel.vy,...Object.fromEntries(runs.map(r=>[r.save.vanguardMotionMode,{frame:r.w.vanguard.frame,phase:r.w.vanguard.phase,thrust:r.w.vanguard.thrust,heading:r.w.vanguard.heading}]))});
  if(tick%2)continue;
  g.drawImage(bg,0,0,1280,800);g.fillStyle='rgba(5,10,24,.90)';g.fillRect(0,0,1280,800);
  g.font='16px "Vanguard Sans"';g.fillStyle='#d5b579';g.fillText('ACORNAUT · VANGUARD MOTION COMPARISON',30,32);
@@ -120,7 +121,7 @@ for(let tick=0;tick<408;tick++) {
  const cue=t<1.5?'RAPID TAPS · 180ms APART':t<2.9?'RELEASE · ARC AND GRAVITY':t<3.75?'SWIPE DOWN · FULL DIVE':t<5.5?'BOUNCE → TAP ONE TICK LATER':'GATE PASS → TAP → THRUST';
  for(let i=0;i<runs.length;i++) {
   const run=runs[i],x=i*640,{w}=run;
-  g.fillStyle='#fff0d1';g.font='28px "Vanguard Sans"';g.fillText(i===0?'CINEMATIC':'CONTINUOUS',x+30,111);
+  g.fillStyle='#fff0d1';g.font='28px "Vanguard Sans"';g.fillText(i===0?'CINEMATIC · 1.8s TAIL':'CONTINUOUS · 1.15s TAIL',x+30,111);
   const wc=run.canvas.getContext('2d');wc.clearRect(0,0,390,760);wc.save();wc.translate(0,380-w.squirrel.y);
   D.drawWorld(wc,w,run.save,art);wc.restore();
   g.drawImage(run.canvas,x+30,142,260,507);
