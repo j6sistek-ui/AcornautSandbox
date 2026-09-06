@@ -10,6 +10,14 @@ planets/debris and soft scenery overlaps remain. There are no ten-level panels.
 The old `?star-map=sample` URL now enters the same beta campaign and save.
 Production retains its 100 missions/300 stars and original progression.
 
+**Update, 6 Sep 2026 (owner: "merge star map and spill and any gaps to
+main").** The road is live: `STAR_MAP_LIVE` in `catalog.ts` makes production
+fly these same 260 contracts (780 stars, Spill missions on the road), but
+EARNED - sequential unlock, the three Hyper Run barriers, the reward ladder.
+Only the beta keeps every mission open, the sample cosmetics and the dust
+grant. Existing production saves migrate through the same versioned campaign
+progress the beta used to inherit them.
+
 ## Mission mix
 
 Each of the 26 zones has six normal-flight variations (five shorter missions

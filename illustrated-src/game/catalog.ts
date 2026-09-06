@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "189";
+export const ART_VER = "190";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -15,6 +15,16 @@ export const IS_BETA =
 
 /** Beta itself is the 260-mission playtest. Retained name for cosmetic previews. */
 export const STAR_MAP_PREVIEW = IS_BETA;
+
+// THE ROAD IS LIVE (owner, 6 Sep 2026: "merge star map and spill and any
+// gaps to main"). Production flies the same 260-mission road the beta
+// playtested - the authored contracts in beta-campaign-manifest.ts, Spill
+// missions on the road included - and EARNS it: sequential unlock, the
+// three Hyper Run barriers, the reward ladder. Only the beta keeps its
+// test conveniences (every mission open, the sample cosmetics, the dust
+// grant), which still follow IS_BETA. Separate from STAR_MAP_PREVIEW on
+// purpose: that flag carries the beta-only previews, this one the road.
+export const STAR_MAP_LIVE = true;
 
 // WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
 // until the beta set was promoted, and conflating them is dangerous: the save

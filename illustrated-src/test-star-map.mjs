@@ -18,7 +18,7 @@ const C=await import('../docs/js/campaign.js'), S=await import('../docs/js/save.
 const plan=JSON.parse(readFileSync(new URL('./design/star-map-260.json',import.meta.url)));
 const canonical=x=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x;
 const hash=x=>createHash('sha256').update(JSON.stringify(canonical(x))).digest('hex').slice(0,16);
-assert.equal(C.LEVELS.length,page==='production'?100:260); assert.equal(C.ALL_LEVELS.length,260);
+assert.equal(C.LEVELS.length,260); assert.equal(C.ALL_LEVELS.length,260); // the road is live on both pages (STAR_MAP_LIVE)
 assert.equal(new Set(C.ALL_LEVELS.map(l=>l.id)).size,260);
 assert.equal(new Set(C.ALL_LEVELS.flatMap(l=>l.objectiveIds)).size,780);
 assert.equal(C.LEGACY_LEVELS.length,100);
@@ -39,8 +39,11 @@ if(page!=='production'){
   assert.equal(C.CHART_LEVELS.length,260);
   assert.equal(C.CHART_LEVELS.filter(l=>C.levelUnlocked(l,{},0,[])).length,260);
 } else {
-  assert.equal(C.CHART_LEVELS.length,100);
-  assert.equal(C.levelById(plan.missions[100].id),null);
+  // production flies the whole road and EARNS it: mission 1 open, mission 2 shut until 1 is passed
+  assert.equal(C.CHART_LEVELS.length,260);
+  assert.notEqual(C.levelById(plan.missions[100].id),null);
+  assert(C.levelUnlocked(C.CHART_LEVELS[0],{},0,[])); assert(!C.levelUnlocked(C.CHART_LEVELS[1],{},0,[]));
+  assert.equal(C.CHART_LEVELS.filter(l=>C.levelUnlocked(l,{},0,[])).length,1);
 }
 // Exercise production predicates against the whole future route, without beta bypass.
 const future=C.ALL_LEVELS.map(l=>({...l,implemented:true}));let raw={},clears=[],stops=[];
@@ -54,7 +57,7 @@ assert.deepEqual(stops,[33,66,99]);assert(!C.levelUnlocked(future[60],{},780,[],
 const fresh=()=>S.defaultSave(), world=()=>Sim.makeWorld(390,760);
 // Existing IDs, mission targets and goals are exact, including all Spill assignments.
 for(const def of C.LEGACY_LEVELS){
-  const expected=page!=='production'&&def.base==='tunnel'?plan.betaLegacyVariants.find(l=>l.id===def.id):plan.missions.find(l=>l.id===def.id);
+  const expected=def.base==='tunnel'?plan.betaLegacyVariants.find(l=>l.id===def.id):plan.missions.find(l=>l.id===def.id);
   assert.equal(def.base,expected.base);assert.equal(def.gates,expected.gates??expected.target.value);assert.deepEqual(def.goals,expected.goals);
 }
 const w=world(),s=fresh();

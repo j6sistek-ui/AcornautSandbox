@@ -3096,7 +3096,7 @@ export async function bootStandalone(root) {
         box.classList.add("ac-chartscene", "ac-zone-chart");
         const totalPill = el("div", "ac-pill ac-pill-gold");
         totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : "The road ahead", "Star Chart", totalPill));
+        box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : `${CHART_LEVELS.length} missions · the road ahead`, "Star Chart", totalPill));
         const nav = el("div", "ac-chart-nav");
         nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
         const goTo = (id) => {

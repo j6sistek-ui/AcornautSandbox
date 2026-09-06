@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=189";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=190";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "189";
+export const ART_VER = "190";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -11,6 +11,15 @@ export const IS_BETA = typeof window !== "undefined" &&
     window.__ACORNAUT_BETA__ === true;
 /** Beta itself is the 260-mission playtest. Retained name for cosmetic previews. */
 export const STAR_MAP_PREVIEW = IS_BETA;
+// THE ROAD IS LIVE (owner, 6 Sep 2026: "merge star map and spill and any
+// gaps to main"). Production flies the same 260-mission road the beta
+// playtested - the authored contracts in beta-campaign-manifest.ts, Spill
+// missions on the road included - and EARNS it: sequential unlock, the
+// three Hyper Run barriers, the reward ladder. Only the beta keeps its
+// test conveniences (every mission open, the sample cosmetics, the dust
+// grant), which still follow IS_BETA. Separate from STAR_MAP_PREVIEW on
+// purpose: that flag carries the beta-only previews, this one the road.
+export const STAR_MAP_LIVE = true;
 // WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
 // until the beta set was promoted, and conflating them is dangerous: the save
 // key is derived from IS_BETA, so turning the beta features on for production
@@ -34,7 +43,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-06 02:50 UTC";
+export const BUILD_TIME = "2026-09-06 03:17 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
