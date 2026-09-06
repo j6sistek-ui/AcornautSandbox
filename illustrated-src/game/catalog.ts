@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "197";
+export const ART_VER = "198";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -82,6 +82,13 @@ export const GUIDE_SUIT = "iontrim";
 // borrows the flagship; graduation hands it back, seats the pilot in Flight
 // and the coach walks them to the Ion kit. He is earned at 500 stars.
 export const TUTORIAL_SUIT = "vanguard";
+// SUIT PITCH (owner, 6 Sep 2026): a whole-animation forward lean per suit,
+// in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
+// difference. Every other suit flies as drawn until the owner tunes it with
+// the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
+export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12 };
+export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
+export const suitPitchDefault = (id: string) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
 
 

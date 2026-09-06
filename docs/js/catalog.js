@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=197";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=198";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "197";
+export const ART_VER = "198";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -43,7 +43,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-06 23:16 UTC";
+export const BUILD_TIME = "2026-09-06 23:29 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -71,6 +71,13 @@ export const GUIDE_SUIT = "iontrim";
 // borrows the flagship; graduation hands it back, seats the pilot in Flight
 // and the coach walks them to the Ion kit. He is earned at 500 stars.
 export const TUTORIAL_SUIT = "vanguard";
+// SUIT PITCH (owner, 6 Sep 2026): a whole-animation forward lean per suit,
+// in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
+// difference. Every other suit flies as drawn until the owner tunes it with
+// the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12 };
+export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
+export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
 export const PHYS = {
     gravity: FLIGHT_GRAVITY,

@@ -10,7 +10,7 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite, type SpillShipXf } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
-import type { SaveData } from "./save";
+import { suitPitchFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
 import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, type SuitLean } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
@@ -4873,7 +4873,9 @@ function drawPilot(
     bank = w.tapAnimFromRot * 0.8 * fromLean * (1 - eased) + bank * eased;
   }
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
-  if (!flagship) ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12));
+  // THE PITCH DIAL: the suit's whole-animation forward lean, on top of the
+  // velocity bank. AcorNut applies his inside paintVanguard instead.
+  if (!flagship) ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12) + (suitPitchFor(save, suit.id) * Math.PI) / 180);
   const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
   // fresh planet bounce: a squash-and-stretch pulse sells the impact
@@ -5080,6 +5082,8 @@ export function paintFlightPreview(
   // clamps the sim actually uses - so the number being changed is judged at
   // the extremes where it matters.
   sweep = false,
+  // the suit's dialled forward lean, radians (see SUIT_PITCH_DEFAULTS)
+  pitch = 0,
 ) {
   if (!art) return;
   if (suit.id === "vanguard") {
@@ -5204,7 +5208,7 @@ export function paintFlightPreview(
   const articulated = !!art.suitBody?.[suit.id] && tapAnimT >= 0;
   // the same expression the real flight uses, so what the editor shows is
   // what the run does
-  ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12));
+  ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12) + pitch);
   const pop = 1 + (articulated ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
   paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art,
