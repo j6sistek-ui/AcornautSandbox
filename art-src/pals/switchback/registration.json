@@ -1,0 +1,17 @@
+{
+  "source": "owner-sheet.jpeg",
+  "cells": 16,
+  "cellSize": 384,
+  "canvas": 256,
+  "union": [
+    77,
+    96,
+    314,
+    286
+  ],
+  "scale": 0.8739495798319328,
+  "center": [
+    195.5,
+    191
+  ]
+}

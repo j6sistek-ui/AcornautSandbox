@@ -133,22 +133,10 @@ export type SaveData = {
   favorites?: string[];
   /** the loadout's animated case, shrunk so the shelves get the room */
   heroCompact?: boolean;
-  /** THE POSE DIALS (pause sheet, every suit): how deep a dive rotates
-   *  (1 = the art's full ramp) and whether only ascent frames fly */
-  diveDepth?: number;
-  poseMode?: "all" | "ascent";
-  // Eclipse's motion mapping, cycled from the hangar or the pause sheet:
-  // 0 = the original pose-per-velocity curve, 1 = the rate-driven remap,
-  // 2 = HEADING, the body following the tangent of the flight arc.
-  //
-  // Heading is the default because it is the one that reads right in the
-  // hand. It also turned out to be the only one that uses the whole bank:
-  // it visits thirteen distinct frames at a hover, including ascent frames
-  // 5-8, and those are precisely the frames where the arms and hands move.
-  // The other two settle into frames 1-3, where the character is nearly
-  // still from the shoulders down - which is why they read as lifeless
-  // however carefully their magnitudes were damped.
-  eclipseMotionMode?: number;
+  // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
+  // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
+  // and eclipseMotionMode (Eclipse flies heading; every other suit flies
+  // the shipped pose-per-velocity curve).
   /** Beta comparison; production always uses the cinematic presentation. */
   vanguardMotionMode?: VanguardMotionMode;
   /** Experimental records are isolated from chapter stars and rewards. */
@@ -199,7 +187,6 @@ export function defaultSave(): SaveData {
     guide: "pending",
     allStars: false,
     musicOff: false,
-    eclipseMotionMode: 2,
     vanguardMotionMode: "cinematic",
     raceRecords: {},
     raceGates: [],
@@ -236,6 +223,11 @@ export function loadSave(): SaveData {
   if (!s.unlockedSuits?.includes("flight")) s.unlockedSuits = ["flight", ...(s.unlockedSuits || [])];
   if (!s.unlockedTrails?.includes("sparks")) s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
   if (!s.unlockedPals?.includes("none")) s.unlockedPals = ["none", ...(s.unlockedPals || [])];
+  // Grandfather recorded ownership from the earlier beta companion. The
+  // new premium gate must not confiscate a pal already in the hangar.
+  if (s.unlockedPals.includes("switchback") && !(s.purchased || []).includes("switchback")) {
+    s.purchased = [...(s.purchased || []), "switchback"];
+  }
   if (!HELMETS.some((h) => h.id === s.equipped)) s.equipped = "clear";
   // A save can arrive wearing things this build does not grant — the open
   // beta hands premium out, production does not, and the two share a

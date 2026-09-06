@@ -35,7 +35,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 15 | 2-5 | Slow Waltz | NEBULA NURSERY | fly | Reach the portal — 16 gates | Collect 6 acorns | Catch a golden acorn | SWAYING GATES | Legacy random |
 | 16 | 2-6 | Rooted Deep | NEBULA NURSERY | fly | Reach the portal — 17 gates | Collect 6 acorns | Spend no shield | SWAYING GATES | Legacy random |
 | 17 | 2-7 | Wide Sway | NEBULA NURSERY | fly | Reach the portal — 18 gates | Collect 7 acorns | Touch no planet | HEAVY SWAY | Legacy random |
-| 18 | 2-8 | Nursery Rhyme | NEBULA NURSERY | spill | Clear 4 waves of the Spill | Mine 41 Ore | Take no hull damage | — | 5018 |
+| 18 | 2-8 | Nursery Rhyme | NEBULA NURSERY | spill | Clear 4 waves of the Spill | Collect 41 Acorn Coins | Take no hull damage | — | 5018 |
 | 19 | 2-9 | Full Bloom | NEBULA NURSERY | fly | Reach the portal — 20 gates | Collect 8 acorns | Spend no shield | HEAVY SWAY | Legacy random |
 | 20 | 2-10 | Seedfall | NEBULA NURSERY | fly | Reach the portal — 21 gates | Collect 8 acorns | Touch no planet | HEAVY SWAY | Legacy random |
 | 21 | 3-1 | Thin Ice | ICE MOON | fly | Reach the portal — 14 gates | Collect 6 acorns | Touch no planet | SWAYING GATES | Legacy random |
@@ -45,7 +45,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 25 | 3-5 | Glacier Line | ICE MOON | fly | Reach the portal — 18 gates | Collect 8 acorns | At most 47 taps | NARROW GATES, SWAYING GATES | Legacy random |
 | 26 | 3-6 | White Static | ICE MOON | fly | Reach the portal — 19 gates | Catch 2 golden acorns | Flawless — no bounces, no shields spent | NARROW GATES, SWAYING GATES | Legacy random |
 | 27 | 3-7 | Cold Snap | ICE MOON | fly | Reach the portal — 20 gates | Collect 9 acorns | Touch no planet | NARROW GATES, SWAYING GATES | Legacy random |
-| 28 | 3-8 | Icicle Alley | ICE MOON | spill | Clear 5 waves of the Spill | Mine 49 Ore | Take no hull damage | — | 5028 |
+| 28 | 3-8 | Icicle Alley | ICE MOON | spill | Clear 5 waves of the Spill | Collect 49 Acorn Coins | Take no hull damage | — | 5028 |
 | 29 | 3-9 | Pressure Ridge | ICE MOON | fly | Reach the portal — 22 gates | Collect 10 acorns | Flawless — no bounces, no shields spent | NARROW GATES, SWAYING GATES | Legacy random |
 | 30 | 3-10 | Moonfall | ICE MOON | fly | Reach the portal — 23 gates | Catch 2 golden acorns | Touch no planet | NARROW GATES, SWAYING GATES | Legacy random |
 | 31 | 4-1 | Kindling | SOLAR FURNACE | fly | Reach the portal — 15 gates | Collect 7 acorns | Catch 2 golden acorns | BRISK | Legacy random |
@@ -55,7 +55,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 35 | 4-5 | Coronal Run | SOLAR FURNACE | fly | Reach the portal — 19 gates | Collect 9 acorns | Touch no planet | BRISK | Legacy random |
 | 36 | 4-6 | Afterburner | SOLAR FURNACE | fly | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | FAST FORWARD | Legacy random |
 | 37 | 4-7 | Melting Point | SOLAR FURNACE | fly | Reach the portal — 21 gates | Collect 10 acorns | Catch 2 golden acorns | FAST FORWARD | Legacy random |
-| 38 | 4-8 | Solar Wind | SOLAR FURNACE | spill | Clear 6 waves of the Spill | Mine 57 Ore | Take no hull damage | — | 5038 |
+| 38 | 4-8 | Solar Wind | SOLAR FURNACE | spill | Clear 6 waves of the Spill | Collect 57 Acorn Coins | Take no hull damage | — | 5038 |
 | 39 | 4-9 | White Heat | SOLAR FURNACE | fly | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | FAST FORWARD | Legacy random |
 | 40 | 4-10 | Out of the Fire | SOLAR FURNACE | fly | Reach the portal — 24 gates | Collect 11 acorns | Catch 2 golden acorns | FAST FORWARD | Legacy random |
 | 41 | 5-1 | Dusk | SAPPHIRE ABYSS | fly | Reach the portal — 15 gates | Collect 6 acorns | Spend no shield | FOG | Legacy random |
@@ -65,7 +65,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 45 | 5-5 | Night Current | SAPPHIRE ABYSS | fly | Reach the portal — 19 gates | Collect 8 acorns | Touch no planet | FOG | Legacy random |
 | 46 | 5-6 | Closing Iris | SAPPHIRE ABYSS | fly | Reach the portal — 20 gates | Collect 8 acorns | At most 48 taps | FOG | Legacy random |
 | 47 | 5-7 | Blue Hour | SAPPHIRE ABYSS | fly | Reach the portal — 21 gates | Collect 9 acorns | Spend no shield | FOG | Legacy random |
-| 48 | 5-8 | Half Blind | SAPPHIRE ABYSS | spill | Clear 7 waves of the Spill | Mine 65 Ore | Take no hull damage | — | 5048 |
+| 48 | 5-8 | Half Blind | SAPPHIRE ABYSS | spill | Clear 7 waves of the Spill | Collect 65 Acorn Coins | Take no hull damage | — | 5048 |
 | 49 | 5-9 | Abyssal | SAPPHIRE ABYSS | fly | Reach the portal — 23 gates | Collect 10 acorns | At most 55 taps | HEAVY FOG | Legacy random |
 | 50 | 5-10 | Midnight Proper | SAPPHIRE ABYSS | fly | Reach the portal — 24 gates | Collect 10 acorns | Spend no shield | HEAVY FOG | Legacy random |
 | 51 | 6-1 | Facet One | CRYSTAL BELT | deep | Reach the portal — 12 gates | Collect 5 acorns | Touch no planet | — | Legacy random |
@@ -75,7 +75,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 55 | 6-5 | Inclusion | CRYSTAL BELT | deep | Reach the portal — 16 gates | Collect 7 acorns | Catch 2 golden acorns | — | Legacy random |
 | 56 | 6-6 | Cleave Line | CRYSTAL BELT | deep | Reach the portal — 17 gates | Collect 7 acorns | Flawless — no bounces, no shields spent | — | Legacy random |
 | 57 | 6-7 | Scatter | CRYSTAL BELT | deep | Reach the portal — 18 gates | Collect 8 acorns | Touch no planet | — | Legacy random |
-| 58 | 6-8 | Fracture Zone | CRYSTAL BELT | spill | Clear 8 waves of the Spill | Mine 73 Ore | Take no hull damage | — | 5058 |
+| 58 | 6-8 | Fracture Zone | CRYSTAL BELT | spill | Clear 8 waves of the Spill | Collect 73 Acorn Coins | Take no hull damage | — | 5058 |
 | 59 | 6-9 | Core Sample | CRYSTAL BELT | deep | Reach the portal — 20 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | — | Legacy random |
 | 60 | 6-10 | The Jewel | CRYSTAL BELT | deep | Reach the portal — 21 gates | Collect 9 acorns | Touch no planet | — | Legacy random |
 | 61 | 7-1 | Front Coming In | CRIMSON STORM | fly | Reach the portal — 16 gates | Collect 8 acorns | Spend no shield | BRISK, HEAVY SWAY | Legacy random |
@@ -85,7 +85,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 65 | 7-5 | Eye Wall | CRIMSON STORM | fly | Reach the portal — 20 gates | Collect 10 acorns | Flawless — no bounces, no shields spent | BRISK, HEAVY SWAY | Legacy random |
 | 66 | 7-6 | Downdraft | CRIMSON STORM | fly | Reach the portal — 21 gates | Collect 10 acorns | Touch no planet | BRISK, HEAVY SWAY | Legacy random |
 | 67 | 7-7 | Shear | CRIMSON STORM | fly | Reach the portal — 22 gates | Collect 11 acorns | Spend no shield | BRISK, HEAVY SWAY | Legacy random |
-| 68 | 7-8 | Thunderhead | CRIMSON STORM | spill | Clear 9 waves of the Spill | Mine 81 Ore | Take no hull damage | — | 5068 |
+| 68 | 7-8 | Thunderhead | CRIMSON STORM | spill | Clear 9 waves of the Spill | Collect 81 Acorn Coins | Take no hull damage | — | 5068 |
 | 69 | 7-9 | Landfall | CRIMSON STORM | fly | Reach the portal — 24 gates | Collect 12 acorns | Touch no planet | BRISK, HEAVY SWAY | Legacy random |
 | 70 | 7-10 | Stormbreaker | CRIMSON STORM | fly | Reach the portal — 25 gates | Collect 12 acorns | Spend no shield | BRISK, HEAVY SWAY | Legacy random |
 | 71 | 8-1 | Which Way Up | VIOLET REALM | lost | Reach the portal — 12 gates | Collect 5 acorns | Touch no planet | — | Legacy random |
@@ -95,7 +95,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 75 | 8-5 | Compass Spin | VIOLET REALM | lost | Reach the portal — 16 gates | Collect 7 acorns | Catch 2 golden acorns | — | Legacy random |
 | 76 | 8-6 | Wrong Horizon | VIOLET REALM | lost | Reach the portal — 17 gates | Collect 7 acorns | Spend no shield | — | Legacy random |
 | 77 | 8-7 | Tumbled | VIOLET REALM | lost | Reach the portal — 18 gates | Collect 8 acorns | Touch no planet | — | Legacy random |
-| 78 | 8-8 | Sideways Rain | VIOLET REALM | spill | Clear 10 waves of the Spill | Mine 89 Ore | Take no hull damage | — | 5078 |
+| 78 | 8-8 | Sideways Rain | VIOLET REALM | spill | Clear 10 waves of the Spill | Collect 89 Acorn Coins | Take no hull damage | — | 5078 |
 | 79 | 8-9 | The Long Way | VIOLET REALM | lost | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | — | Legacy random |
 | 80 | 8-10 | Found | VIOLET REALM | lost | Reach the portal — 21 gates | Collect 9 acorns | Touch no planet | — | Legacy random |
 | 81 | 9-1 | Lights Out | MONOCHROME VOID | fly | Reach the portal — 8 gates | Collect 3 acorns | Touch no planet | FOG, GENTLE PACE | Legacy random |
@@ -105,7 +105,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 85 | 9-5 | Dead Reckoning | MONOCHROME VOID | fly | Reach the portal — 12 gates | Collect 5 acorns | At most 38 taps | FOG, GENTLE PACE | Legacy random |
 | 86 | 9-6 | Echo Location | MONOCHROME VOID | fly | Reach the portal — 13 gates | Collect 5 acorns | Flawless — no bounces, no shields spent | FOG, GENTLE PACE, SWAYING GATES | Legacy random |
 | 87 | 9-7 | Quiet Current | MONOCHROME VOID | fly | Reach the portal — 14 gates | Collect 6 acorns | Touch no planet | FOG, GENTLE PACE, SWAYING GATES | Legacy random |
-| 88 | 9-8 | Photograph | MONOCHROME VOID | spill | Clear 11 waves of the Spill | Mine 97 Ore | Take no hull damage | — | 5088 |
+| 88 | 9-8 | Photograph | MONOCHROME VOID | spill | Clear 11 waves of the Spill | Collect 97 Acorn Coins | Take no hull damage | — | 5088 |
 | 89 | 9-9 | Total Recall | MONOCHROME VOID | fly | Reach the portal — 16 gates | Collect 7 acorns | Flawless — no bounces, no shields spent | FOG, GENTLE PACE, SWAYING GATES | Legacy random |
 | 90 | 9-10 | Open Circuit | MONOCHROME VOID | fly | Reach the portal — 17 gates | Collect 7 acorns | Touch no planet | FOG, GENTLE PACE, SWAYING GATES | Legacy random |
 | 91 | 10-1 | Old Timeline | HYPERVIVID | arcade | Reach the portal — 18 gates | Collect 8 acorns | Flawless — no bounces, no shields spent | — | Legacy random |
@@ -115,7 +115,7 @@ Production Hyper Run mode access starts with clear 33. A barrier attempt must be
 | 95 | 10-5 | Half Light | HYPERVIVID | deep | Reach the portal — 24 gates | Collect 12 acorns | Spend no shield | FOG | Legacy random |
 | 96 | 10-6 | Triple Shift | HYPERVIVID | deep | Reach the portal — 25 gates | Collect 13 acorns | Touch no planet | FOG | Legacy random |
 | 97 | 10-7 | Tilted Crown | HYPERVIVID | lost | Reach the portal — 28 gates | Collect 14 acorns | Flawless — no bounces, no shields spent | HEAVY SWAY | Legacy random |
-| 98 | 10-8 | Mirrorfall | HYPERVIVID | spill | Clear 20 waves of the Spill | Mine 105 Ore | Take no hull damage | — | 5098 |
+| 98 | 10-8 | Mirrorfall | HYPERVIVID | spill | Clear 20 waves of the Spill | Collect 105 Acorn Coins | Take no hull damage | — | 5098 |
 | 99 | 10-9 | Last Reach | HYPERVIVID | lost | Reach the portal — 30 gates | Collect 16 acorns | Touch no planet | HEAVY SWAY | Legacy random |
 | 100 | 10-10 | THE HORIZON | HYPERVIVID | fly | Reach the portal — 30 gates | Collect 17 acorns | Flawless — no bounces, no shields spent | FOG, BRISK, HEAVY SWAY | Legacy random |
 
@@ -194,7 +194,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 5 | 1-5 | Golden Hourglass | DEEP SPACE | fly | Reach the portal — 20 gates | Collect 10 acorns | Spend no shield | GENTLE PACE | 1969683428 |
 | 6 | 1-6 | Steady Hands | DEEP SPACE | lost | Reach the portal — 10 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE | 1238348497 |
 | 7 | 1-7 | Long Glide | DEEP SPACE | deep | Reach the portal — 11 gates | Collect 5 acorns | Spend no shield | GENTLE PACE | 1267788485 |
-| 8 | 1-8 | Feather Throttle | DEEP SPACE | spill | Clear 1 waves of the Spill | Mine 10 Ore | Take no hull damage | — | 3525926509 |
+| 8 | 1-8 | Feather Throttle | DEEP SPACE | spill | Clear 1 waves of the Spill | Collect 10 Acorn Coins | Take no hull damage | — | 3525926509 |
 | 9 | 1-9 | No Scratches | DEEP SPACE | arcade | Reach the portal — 11 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE | 1016903815 |
 | 10 | 1-10 | Graduation | DEEP SPACE | fly | Reach the portal — 17 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | — | 1879394953 |
 | 11 | 2-1 | Bloomfield | NEBULA NURSERY | fly | Reach the portal — 10 gates | Collect 5 acorns | Touch no planet | GENTLE PACE | 2734925979 |
@@ -204,7 +204,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 15 | 2-5 | Slow Waltz | NEBULA NURSERY | fly | Reach the portal — 20 gates | Collect 10 acorns | Spend no shield | GENTLE PACE | 3196602399 |
 | 16 | 2-6 | Rooted Deep | NEBULA NURSERY | lost | Reach the portal — 10 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE | 3722105228 |
 | 17 | 2-7 | Wide Sway | NEBULA NURSERY | deep | Reach the portal — 11 gates | Collect 5 acorns | Spend no shield | GENTLE PACE | 1836967006 |
-| 18 | 2-8 | Nursery Rhyme | NEBULA NURSERY | spill | Clear 2 waves of the Spill | Mine 10 Ore | Take no hull damage | — | 5018 |
+| 18 | 2-8 | Nursery Rhyme | NEBULA NURSERY | spill | Clear 2 waves of the Spill | Collect 10 Acorn Coins | Take no hull damage | — | 5018 |
 | 19 | 2-9 | Full Bloom | NEBULA NURSERY | arcade | Reach the portal — 11 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE | 2335982327 |
 | 20 | 2-10 | Seedfall | NEBULA NURSERY | fly | Reach the portal — 17 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | — | 3840717586 |
 | 21 | 3-1 | Thin Ice | ICE MOON | fly | Reach the portal — 10 gates | Collect 5 acorns | Touch no planet | GENTLE PACE, SWAYING GATES | 3650572262 |
@@ -214,7 +214,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 25 | 3-5 | Glacier Line | ICE MOON | fly | Reach the portal — 20 gates | Collect 10 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 2880320585 |
 | 26 | 3-6 | White Static | ICE MOON | lost | Reach the portal — 10 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 192675016 |
 | 27 | 3-7 | Cold Snap | ICE MOON | deep | Reach the portal — 11 gates | Collect 5 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1032678062 |
-| 28 | 3-8 | Icicle Alley | ICE MOON | spill | Mine 35 Ore | Score 100 points | Take no hull damage | — | 5028 |
+| 28 | 3-8 | Icicle Alley | ICE MOON | spill | Collect 35 Acorn Coins | Score 100 points | Take no hull damage | — | 5028 |
 | 29 | 3-9 | Pressure Ridge | ICE MOON | arcade | Reach the portal — 11 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 3869519552 |
 | 30 | 3-10 | Moonfall | ICE MOON | fly | Reach the portal — 17 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | SWAYING GATES | 4173895192 |
 | 31 | 4-1 | Kindling | SOLAR FURNACE | fly | Reach the portal — 10 gates | Collect 5 acorns | Touch no planet | GENTLE PACE, SWAYING GATES | 1941924489 |
@@ -224,17 +224,17 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 35 | 4-5 | Coronal Run | SOLAR FURNACE | fly | Reach the portal — 20 gates | Collect 10 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 2660875350 |
 | 36 | 4-6 | Afterburner | SOLAR FURNACE | lost | Reach the portal — 10 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 1929623515 |
 | 37 | 4-7 | Melting Point | SOLAR FURNACE | deep | Reach the portal — 11 gates | Collect 5 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 648436518 |
-| 38 | 4-8 | Solar Wind | SOLAR FURNACE | spill | Clear 3 waves of the Spill | Mine 10 Ore | Take no hull damage | — | 5038 |
+| 38 | 4-8 | Solar Wind | SOLAR FURNACE | spill | Clear 3 waves of the Spill | Collect 10 Acorn Coins | Take no hull damage | — | 5038 |
 | 39 | 4-9 | White Heat | SOLAR FURNACE | arcade | Reach the portal — 11 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 2444567460 |
 | 40 | 4-10 | Out of the Fire | SOLAR FURNACE | fly | Reach the portal — 17 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | SWAYING GATES | 3646586528 |
 | 41 | 5-1 | Dusk | SAPPHIRE ABYSS | fly | Reach the portal — 10 gates | Collect 5 acorns | Touch no planet | GENTLE PACE, SWAYING GATES | 3285002521 |
 | 42 | 5-2 | Lantern Out | SAPPHIRE ABYSS | fly | Reach the portal — 12 gates | Collect 5 acorns | Catch a golden acorn | PAL: NIGHTGLIDER, GENTLE PACE, SWAYING GATES | 162903180 |
 | 43 | 5-3 | Narrowed Eyes | SAPPHIRE ABYSS | fly | Reach the portal — 9 gates | Collect 5 acorns | At most 36 taps | BRISK, SWAYING GATES | 1039021316 |
-| 44 | 5-4 | Deep Water | SAPPHIRE ABYSS | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · TAP REVERSE, GENTLE PACE, SWAYING GATES | 836687085 |
+| 44 | 5-4 | Deep Water | SAPPHIRE ABYSS | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · COSMETIC, GENTLE PACE, SWAYING GATES | 836687085 |
 | 45 | 5-5 | Night Current | SAPPHIRE ABYSS | fly | Reach the portal — 20 gates | Collect 10 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 2591734022 |
 | 46 | 5-6 | Closing Iris | SAPPHIRE ABYSS | lost | Reach the portal — 10 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 2190289178 |
 | 47 | 5-7 | Blue Hour | SAPPHIRE ABYSS | deep | Reach the portal — 11 gates | Collect 5 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 4059510170 |
-| 48 | 5-8 | Half Blind | SAPPHIRE ABYSS | spill | Clear 3 waves of the Spill | Mine 10 Ore | Take no hull damage | — | 5048 |
+| 48 | 5-8 | Half Blind | SAPPHIRE ABYSS | spill | Clear 3 waves of the Spill | Collect 10 Acorn Coins | Take no hull damage | — | 5048 |
 | 49 | 5-9 | Abyssal | SAPPHIRE ABYSS | arcade | Reach the portal — 11 gates | Collect 5 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 3254834145 |
 | 50 | 5-10 | Midnight Proper | SAPPHIRE ABYSS | fly | Reach the portal — 17 gates | Collect 9 acorns | Flawless — no bounces, no shields spent | SWAYING GATES | 1284795711 |
 | 51 | 6-1 | Facet One | CRYSTAL BELT | fly | Reach the portal — 13 gates | Collect 6 acorns | Touch no planet | GENTLE PACE | 245402492 |
@@ -244,7 +244,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 55 | 6-5 | Inclusion | CRYSTAL BELT | fly | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | GENTLE PACE | 3121325583 |
 | 56 | 6-6 | Cleave Line | CRYSTAL BELT | lost | Reach the portal — 13 gates | Collect 6 acorns | Catch a golden acorn | GENTLE PACE | 1571061666 |
 | 57 | 6-7 | Scatter | CRYSTAL BELT | deep | Reach the portal — 14 gates | Collect 6 acorns | Spend no shield | GENTLE PACE | 3200909234 |
-| 58 | 6-8 | Fracture Zone | CRYSTAL BELT | spill | Mine 60 Ore | Score 200 points | Take no hull damage | — | 5058 |
+| 58 | 6-8 | Fracture Zone | CRYSTAL BELT | spill | Collect 60 Acorn Coins | Score 200 points | Take no hull damage | — | 5058 |
 | 59 | 6-9 | Core Sample | CRYSTAL BELT | arcade | Reach the portal — 14 gates | Collect 6 acorns | Catch a golden acorn | — | 3865796558 |
 | 60 | 6-10 | The Jewel | CRYSTAL BELT | fly | Reach the portal — 20 gates | Collect 11 acorns | Flawless — no bounces, no shields spent | BRISK | 3904277060 |
 | 61 | 7-1 | Front Coming In | CRIMSON STORM | fly | Reach the portal — 13 gates | Collect 6 acorns | Touch no planet | GENTLE PACE | 56511614 |
@@ -264,7 +264,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 75 | 8-5 | Compass Spin | VIOLET REALM | fly | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1218978217 |
 | 76 | 8-6 | Wrong Horizon | VIOLET REALM | lost | Reach the portal — 13 gates | Collect 6 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 1871974731 |
 | 77 | 8-7 | Tumbled | VIOLET REALM | deep | Reach the portal — 14 gates | Collect 6 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 184542763 |
-| 78 | 8-8 | Sideways Rain | VIOLET REALM | spill | Clear 4 waves of the Spill | Mine 30 Ore | Take no hull damage | — | 5078 |
+| 78 | 8-8 | Sideways Rain | VIOLET REALM | spill | Clear 4 waves of the Spill | Collect 30 Acorn Coins | Take no hull damage | — | 5078 |
 | 79 | 8-9 | The Long Way | VIOLET REALM | arcade | Reach the portal — 14 gates | Collect 6 acorns | Catch a golden acorn | SWAYING GATES | 4024073456 |
 | 80 | 8-10 | Found | VIOLET REALM | fly | Reach the portal — 20 gates | Collect 11 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 4252861051 |
 | 81 | 9-1 | Lights Out | MONOCHROME VOID | fly | Reach the portal — 13 gates | Collect 6 acorns | Touch no planet | GENTLE PACE, SWAYING GATES | 100374089 |
@@ -274,7 +274,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 85 | 9-5 | Dead Reckoning | MONOCHROME VOID | fly | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 2137290955 |
 | 86 | 9-6 | Echo Location | MONOCHROME VOID | lost | Reach the portal — 13 gates | Collect 6 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 315446162 |
 | 87 | 9-7 | Quiet Current | MONOCHROME VOID | deep | Reach the portal — 14 gates | Collect 6 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 3667522835 |
-| 88 | 9-8 | Photograph | MONOCHROME VOID | spill | Mine 80 Ore | Score 200 points | Take no hull damage | — | 5088 |
+| 88 | 9-8 | Photograph | MONOCHROME VOID | spill | Collect 80 Acorn Coins | Score 200 points | Take no hull damage | — | 5088 |
 | 89 | 9-9 | Total Recall | MONOCHROME VOID | arcade | Reach the portal — 14 gates | Collect 6 acorns | Catch a golden acorn | SWAYING GATES | 3461860146 |
 | 90 | 9-10 | Open Circuit | MONOCHROME VOID | fly | Reach the portal — 20 gates | Collect 11 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 2043950822 |
 | 91 | 10-1 | Old Timeline | HYPERVIVID | fly | Reach the portal — 13 gates | Collect 6 acorns | Touch no planet | GENTLE PACE, SWAYING GATES | 4283824350 |
@@ -284,13 +284,13 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 95 | 10-5 | Half Light | HYPERVIVID | fly | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1240037293 |
 | 96 | 10-6 | Triple Shift | HYPERVIVID | lost | Reach the portal — 13 gates | Collect 6 acorns | Catch a golden acorn | GENTLE PACE, SWAYING GATES | 4245830622 |
 | 97 | 10-7 | Tilted Crown | HYPERVIVID | deep | Reach the portal — 14 gates | Collect 6 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 4087907130 |
-| 98 | 10-8 | Mirrorfall | HYPERVIVID | spill | Clear 5 waves of the Spill | Mine 30 Ore | Take no hull damage | — | 5098 |
+| 98 | 10-8 | Mirrorfall | HYPERVIVID | spill | Clear 5 waves of the Spill | Collect 30 Acorn Coins | Take no hull damage | — | 5098 |
 | 99 | 10-9 | Last Reach | HYPERVIVID | arcade | Reach the portal — 14 gates | Collect 6 acorns | Catch a golden acorn | SWAYING GATES | 4008004341 |
 | 100 | 10-10 | THE HORIZON | HYPERVIVID | fly | Reach the portal — 20 gates | Collect 11 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 1531455980 |
 | 101 | sm-rust-belt-mooring-line | Mooring Line | RUST BELT | fly | Reach the portal — 16 gates | Collect 8 acorns | Touch no planet | — | 4005405773 |
 | 102 | sm-rust-belt-oxide-thread | Oxide Thread | RUST BELT | fly | Reach the portal — 18 gates | Collect 8 acorns | Catch a golden acorn | PAL: BUDDY | 3507768602 |
 | 103 | sm-rust-belt-copper-current | Copper Current | RUST BELT | fly | Reach the portal — 15 gates | Collect 8 acorns | At most 60 taps | BRISK | 2425639644 |
-| 104 | sm-rust-belt-scrap-sprint | Scrap Sprint | RUST BELT | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · TAP REVERSE, GENTLE PACE | 3192745796 |
+| 104 | sm-rust-belt-scrap-sprint | Scrap Sprint | RUST BELT | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · COSMETIC, GENTLE PACE | 3192745796 |
 | 105 | sm-rust-belt-quiet-berth | Quiet Berth | RUST BELT | fly | Reach the portal — 26 gates | Collect 13 acorns | Spend no shield | GENTLE PACE | 2135120543 |
 | 106 | sm-rust-belt-rivet-gap | Rivet Gap | RUST BELT | lost | Reach the portal — 16 gates | Collect 8 acorns | Catch a golden acorn | — | 2465722690 |
 | 107 | sm-rust-belt-drifting-hulls | Drifting Hulls | RUST BELT | deep | Reach the portal — 17 gates | Collect 8 acorns | Spend no shield | — | 3517825211 |
@@ -304,7 +304,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 115 | sm-bone-desert-bleached-orbit | Bleached Orbit | BONE DESERT | fly | Reach the portal — 26 gates | Collect 13 acorns | Spend no shield | GENTLE PACE | 964214647 |
 | 116 | sm-bone-desert-dry-gold | Dry Gold | BONE DESERT | lost | Reach the portal — 16 gates | Collect 8 acorns | Catch a golden acorn | — | 1683263793 |
 | 117 | sm-bone-desert-fossil-line | Fossil Line | BONE DESERT | deep | Reach the portal — 17 gates | Collect 8 acorns | Spend no shield | — | 1965271757 |
-| 118 | sm-bone-desert-dune-shelter | Dune Shelter | BONE DESERT | spill | Mine 100 Ore | Score 300 points | Visit 1 Depot | — | 676311051 |
+| 118 | sm-bone-desert-dune-shelter | Dune Shelter | BONE DESERT | spill | Collect 100 Acorn Coins | Score 300 points | Visit 1 Depot | — | 676311051 |
 | 119 | sm-bone-desert-ribbed-passage | Ribbed Passage | BONE DESERT | arcade | Reach the portal — 17 gates | Collect 8 acorns | Catch a golden acorn | — | 262446318 |
 | 120 | sm-bone-desert-desert-wake | Desert Wake | BONE DESERT | fly | Reach the portal — 23 gates | Collect 12 acorns | Flawless — no bounces, no shields spent | BRISK | 1835688326 |
 | 121 | sm-golden-hour-warm-welcome | Warm Welcome | GOLDEN HOUR | fly | Reach the portal — 16 gates | Collect 8 acorns | Touch no planet | SWAYING GATES | 676564741 |
@@ -314,7 +314,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 125 | sm-golden-hour-honeyed-drift | Honeyed Drift | GOLDEN HOUR | fly | Reach the portal — 26 gates | Collect 13 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1534642314 |
 | 126 | sm-golden-hour-gilt-edge | Gilt Edge | GOLDEN HOUR | lost | Reach the portal — 16 gates | Collect 8 acorns | Catch a golden acorn | SWAYING GATES | 3734233524 |
 | 127 | sm-golden-hour-last-warmth | Last Warmth | GOLDEN HOUR | deep | Reach the portal — 17 gates | Collect 8 acorns | Spend no shield | SWAYING GATES | 1049659260 |
-| 128 | sm-golden-hour-golden-signal | Golden Signal | GOLDEN HOUR | spill | Clear 6 waves of the Spill | Mine 50 Ore | Buy 1 hull repair at a Depot | — | 2475334674 |
+| 128 | sm-golden-hour-golden-signal | Golden Signal | GOLDEN HOUR | spill | Clear 6 waves of the Spill | Collect 50 Acorn Coins | Buy 1 hull repair at a Depot | — | 2475334674 |
 | 129 | sm-golden-hour-evening-current | Evening Current | GOLDEN HOUR | arcade | Reach the portal — 17 gates | Collect 8 acorns | Catch a golden acorn | SWAYING GATES | 2060349481 |
 | 130 | sm-golden-hour-afterglow | Afterglow | GOLDEN HOUR | fly | Reach the portal — 23 gates | Collect 12 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 254464239 |
 | 131 | sm-solar-corona-outer-halo | Outer Halo | SOLAR CORONA | fly | Reach the portal — 16 gates | Collect 8 acorns | Touch no planet | SWAYING GATES | 4075855064 |
@@ -324,7 +324,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 135 | sm-solar-corona-sheltered-arc | Sheltered Arc | SOLAR CORONA | fly | Reach the portal — 26 gates | Collect 13 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 2832018860 |
 | 136 | sm-solar-corona-halo-drift | Halo Drift | SOLAR CORONA | lost | Reach the portal — 16 gates | Collect 8 acorns | Catch a golden acorn | SWAYING GATES | 124087249 |
 | 137 | sm-solar-corona-hot-sway | Hot Sway | SOLAR CORONA | deep | Reach the portal — 17 gates | Collect 8 acorns | Spend no shield | SWAYING GATES | 4002066871 |
-| 138 | sm-solar-corona-narrow-corona | Narrow Corona | SOLAR CORONA | spill | Clear 6 waves of the Spill | Mine 50 Ore | Buy 1 hull repair at a Depot | — | 1116553570 |
+| 138 | sm-solar-corona-narrow-corona | Narrow Corona | SOLAR CORONA | spill | Clear 6 waves of the Spill | Collect 50 Acorn Coins | Buy 1 hull repair at a Depot | — | 1116553570 |
 | 139 | sm-solar-corona-solar-circuit | Solar Circuit | SOLAR CORONA | arcade | Reach the portal — 17 gates | Collect 8 acorns | Catch a golden acorn | SWAYING GATES | 2624714554 |
 | 140 | sm-solar-corona-clear-of-the-sun | Clear of the Sun | SOLAR CORONA | fly | Reach the portal — 23 gates | Collect 12 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 3060805052 |
 | 141 | sm-coral-shallows-coral-landing | Coral Landing | CORAL SHALLOWS | fly | Reach the portal — 16 gates | Collect 8 acorns | Touch no planet | SWAYING GATES | 2227333141 |
@@ -344,17 +344,17 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 155 | sm-emerald-expanse-canopy-veil | Canopy Veil | EMERALD EXPANSE | fly | Reach the portal — 29 gates | Collect 14 acorns | Spend no shield | GENTLE PACE | 1938120627 |
 | 156 | sm-emerald-expanse-verdant-bearing | Verdant Bearing | EMERALD EXPANSE | lost | Reach the portal — 19 gates | Collect 9 acorns | Catch a golden acorn | — | 661005798 |
 | 157 | sm-emerald-expanse-green-narrows | Green Narrows | EMERALD EXPANSE | deep | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | — | 613072512 |
-| 158 | sm-emerald-expanse-quiet-bough | Quiet Bough | EMERALD EXPANSE | spill | Mine 120 Ore | Score 400 points | Visit 1 Depot | — | 3024599462 |
+| 158 | sm-emerald-expanse-quiet-bough | Quiet Bough | EMERALD EXPANSE | spill | Collect 120 Acorn Coins | Score 400 points | Visit 1 Depot | — | 3024599462 |
 | 159 | sm-emerald-expanse-deep-roots | Deep Roots | EMERALD EXPANSE | arcade | Reach the portal — 20 gates | Collect 9 acorns | Catch a golden acorn | BRISK | 676908011 |
 | 160 | sm-emerald-expanse-open-expanse | Open Expanse | EMERALD EXPANSE | fly | Reach the portal — 26 gates | Collect 14 acorns | Flawless — no bounces, no shields spent | BRISK | 2079377163 |
 | 161 | sm-alien-jungle-jungle-approach | Jungle Approach | ALIEN JUNGLE | fly | Reach the portal — 19 gates | Collect 9 acorns | Touch no planet | — | 3064929013 |
 | 162 | sm-alien-jungle-crooked-branch | Crooked Branch | ALIEN JUNGLE | fly | Reach the portal — 21 gates | Collect 9 acorns | Catch a golden acorn | PAL: VOIDJELLY | 2957951613 |
 | 163 | sm-alien-jungle-fern-narrows | Fern Narrows | ALIEN JUNGLE | fly | Reach the portal — 18 gates | Collect 9 acorns | At most 72 taps | FAST FORWARD | 2869782948 |
-| 164 | sm-alien-jungle-wild-current | Wild Current | ALIEN JUNGLE | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · TAP REVERSE, GENTLE PACE | 2583524380 |
+| 164 | sm-alien-jungle-wild-current | Wild Current | ALIEN JUNGLE | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · COSMETIC, GENTLE PACE | 2583524380 |
 | 165 | sm-alien-jungle-jungle-echo | Jungle Echo | ALIEN JUNGLE | fly | Reach the portal — 29 gates | Collect 14 acorns | Spend no shield | GENTLE PACE | 675012532 |
 | 166 | sm-alien-jungle-clearing-rest | Clearing Rest | ALIEN JUNGLE | lost | Reach the portal — 19 gates | Collect 9 acorns | Catch a golden acorn | — | 1547756368 |
 | 167 | sm-alien-jungle-vine-thread | Vine Thread | ALIEN JUNGLE | deep | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | — | 3959229552 |
-| 168 | sm-alien-jungle-lost-canopy | Lost Canopy | ALIEN JUNGLE | spill | Clear 8 waves of the Spill | Mine 70 Ore | Buy 1 hull repair at a Depot | — | 1422427087 |
+| 168 | sm-alien-jungle-lost-canopy | Lost Canopy | ALIEN JUNGLE | spill | Clear 8 waves of the Spill | Collect 70 Acorn Coins | Buy 1 hull repair at a Depot | — | 1422427087 |
 | 169 | sm-alien-jungle-jungle-signal | Jungle Signal | ALIEN JUNGLE | arcade | Reach the portal — 20 gates | Collect 9 acorns | Catch a golden acorn | BRISK | 2374478069 |
 | 170 | sm-alien-jungle-out-of-the-canopy | Out of the Canopy | ALIEN JUNGLE | fly | Reach the portal — 26 gates | Collect 14 acorns | Flawless — no bounces, no shields spent | BRISK | 399718005 |
 | 171 | sm-acid-swamp-still-pool | Still Pool | ACID SWAMP | fly | Reach the portal — 19 gates | Collect 9 acorns | Touch no planet | SWAYING GATES | 1125076816 |
@@ -364,7 +364,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 175 | sm-acid-swamp-swamp-bearing | Swamp Bearing | ACID SWAMP | fly | Reach the portal — 29 gates | Collect 14 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1892026469 |
 | 176 | sm-acid-swamp-thin-bank | Thin Bank | ACID SWAMP | lost | Reach the portal — 19 gates | Collect 9 acorns | Catch a golden acorn | SWAYING GATES | 1592130385 |
 | 177 | sm-acid-swamp-quick-ripple | Quick Ripple | ACID SWAMP | deep | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | SWAYING GATES | 238310530 |
-| 178 | sm-acid-swamp-moss-shelter | Moss Shelter | ACID SWAMP | spill | Clear 10 waves of the Spill | Mine 70 Ore | Buy 1 hull repair at a Depot | — | 1905703992 |
+| 178 | sm-acid-swamp-moss-shelter | Moss Shelter | ACID SWAMP | spill | Clear 10 waves of the Spill | Collect 70 Acorn Coins | Buy 1 hull repair at a Depot | — | 1905703992 |
 | 179 | sm-acid-swamp-deep-pool | Deep Pool | ACID SWAMP | arcade | Reach the portal — 20 gates | Collect 9 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 850380877 |
 | 180 | sm-acid-swamp-firm-ground | Firm Ground | ACID SWAMP | fly | Reach the portal — 26 gates | Collect 14 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 4231851543 |
 | 181 | sm-aurora-crown-polar-approach | Polar Approach | AURORA CROWN | fly | Reach the portal — 19 gates | Collect 9 acorns | Touch no planet | SWAYING GATES | 3914045164 |
@@ -374,7 +374,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 185 | sm-aurora-crown-polar-quiet | Polar Quiet | AURORA CROWN | fly | Reach the portal — 29 gates | Collect 14 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 1651326421 |
 | 186 | sm-aurora-crown-crown-signal | Crown Signal | AURORA CROWN | lost | Reach the portal — 19 gates | Collect 9 acorns | Catch a golden acorn | SWAYING GATES | 1137963609 |
 | 187 | sm-aurora-crown-northern-fold | Northern Fold | AURORA CROWN | deep | Reach the portal — 20 gates | Collect 9 acorns | Spend no shield | SWAYING GATES | 3568082961 |
-| 188 | sm-aurora-crown-ice-ribbon | Ice Ribbon | AURORA CROWN | spill | Mine 140 Ore | Score 400 points | Visit 1 Depot | — | 444998361 |
+| 188 | sm-aurora-crown-ice-ribbon | Ice Ribbon | AURORA CROWN | spill | Collect 140 Acorn Coins | Score 400 points | Visit 1 Depot | — | 444998361 |
 | 189 | sm-aurora-crown-high-crown | High Crown | AURORA CROWN | arcade | Reach the portal — 20 gates | Collect 9 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 2145425434 |
 | 190 | sm-aurora-crown-aurora-wake | Aurora Wake | AURORA CROWN | fly | Reach the portal — 26 gates | Collect 14 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 3909745628 |
 | 191 | sm-pulsar-field-blue-bearing | Blue Bearing | PULSAR FIELD | fly | Reach the portal — 19 gates | Collect 9 acorns | Touch no planet | SWAYING GATES | 1370128502 |
@@ -394,7 +394,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 205 | sm-time-fracture-quiet-interval | Quiet Interval | TIME FRACTURE | fly | Reach the portal — 32 gates | Collect 16 acorns | Spend no shield | GENTLE PACE | 2769979351 |
 | 206 | sm-time-fracture-crooked-clock | Crooked Clock | TIME FRACTURE | lost | Reach the portal — 22 gates | Collect 11 acorns | Catch a golden acorn | BRISK | 2650089996 |
 | 207 | sm-time-fracture-fine-fracture | Fine Fracture | TIME FRACTURE | deep | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | BRISK | 1768689302 |
-| 208 | sm-time-fracture-echo-circuit | Echo Circuit | TIME FRACTURE | spill | Clear 12 waves of the Spill | Mine 90 Ore | Buy 1 hull repair at a Depot | — | 2579528539 |
+| 208 | sm-time-fracture-echo-circuit | Echo Circuit | TIME FRACTURE | spill | Clear 12 waves of the Spill | Collect 90 Acorn Coins | Buy 1 hull repair at a Depot | — | 2579528539 |
 | 209 | sm-time-fracture-last-fold | Last Fold | TIME FRACTURE | arcade | Reach the portal — 23 gates | Collect 11 acorns | Catch a golden acorn | BRISK | 390714597 |
 | 210 | sm-time-fracture-time-held | Time Held | TIME FRACTURE | fly | Reach the portal — 29 gates | Collect 15 acorns | Flawless — no bounces, no shields spent | BRISK | 331934434 |
 | 211 | sm-neon-bazaar-open-market | Open Market | NEON BAZAAR | fly | Reach the portal — 22 gates | Collect 11 acorns | Touch no planet | BRISK | 1295040062 |
@@ -404,17 +404,17 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 215 | sm-neon-bazaar-quiet-alley | Quiet Alley | NEON BAZAAR | fly | Reach the portal — 32 gates | Collect 16 acorns | Spend no shield | GENTLE PACE | 3440974030 |
 | 216 | sm-neon-bazaar-wrong-turn | Wrong Turn | NEON BAZAAR | lost | Reach the portal — 22 gates | Collect 11 acorns | Catch a golden acorn | BRISK | 818587582 |
 | 217 | sm-neon-bazaar-neon-thread | Neon Thread | NEON BAZAAR | deep | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | BRISK | 2786878599 |
-| 218 | sm-neon-bazaar-deep-market | Deep Market | NEON BAZAAR | spill | Clear 14 waves of the Spill | Mine 90 Ore | Buy 1 hull repair at a Depot | — | 1290670033 |
+| 218 | sm-neon-bazaar-deep-market | Deep Market | NEON BAZAAR | spill | Clear 14 waves of the Spill | Collect 90 Acorn Coins | Buy 1 hull repair at a Depot | — | 1290670033 |
 | 219 | sm-neon-bazaar-closing-rush | Closing Rush | NEON BAZAAR | arcade | Reach the portal — 23 gates | Collect 11 acorns | Catch a golden acorn | BRISK | 3718292978 |
 | 220 | sm-neon-bazaar-last-lantern | Last Lantern | NEON BAZAAR | fly | Reach the portal — 29 gates | Collect 15 acorns | Flawless — no bounces, no shields spent | BRISK | 826653860 |
 | 221 | sm-prism-storm-first-facet | First Facet | PRISM STORM | fly | Reach the portal — 22 gates | Collect 11 acorns | Touch no planet | BRISK, SWAYING GATES | 2428342596 |
 | 222 | sm-prism-storm-broad-refraction | Broad Refraction | PRISM STORM | fly | Reach the portal — 24 gates | Collect 11 acorns | Catch a golden acorn | PAL: POCKETMOON, BRISK, SWAYING GATES | 2103706991 |
 | 223 | sm-prism-storm-fine-facet | Fine Facet | PRISM STORM | fly | Reach the portal — 21 gates | Collect 11 acorns | At most 84 taps | FAST FORWARD, SWAYING GATES | 3710347482 |
-| 224 | sm-prism-storm-prism-signal | Prism Signal | PRISM STORM | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · TAP REVERSE, GENTLE PACE, SWAYING GATES | 1869815573 |
+| 224 | sm-prism-storm-prism-signal | Prism Signal | PRISM STORM | fly | Reach the portal — 10 gates | Collect 4 acorns | Catch a golden acorn | PAL: SWITCHBACK · COSMETIC, GENTLE PACE, SWAYING GATES | 1869815573 |
 | 225 | sm-prism-storm-clouded-quartz | Clouded Quartz | PRISM STORM | fly | Reach the portal — 32 gates | Collect 16 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 702962131 |
 | 226 | sm-prism-storm-twisted-facet | Twisted Facet | PRISM STORM | lost | Reach the portal — 22 gates | Collect 11 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 2157025358 |
 | 227 | sm-prism-storm-quick-refraction | Quick Refraction | PRISM STORM | deep | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | BRISK, SWAYING GATES | 493530334 |
-| 228 | sm-prism-storm-folded-light | Folded Light | PRISM STORM | spill | Clear 16 waves of the Spill | Mine 90 Ore | Buy 1 hull repair at a Depot | — | 2376997045 |
+| 228 | sm-prism-storm-folded-light | Folded Light | PRISM STORM | spill | Clear 16 waves of the Spill | Collect 90 Acorn Coins | Buy 1 hull repair at a Depot | — | 2376997045 |
 | 229 | sm-prism-storm-prism-edge | Prism Edge | PRISM STORM | arcade | Reach the portal — 23 gates | Collect 11 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 2929722929 |
 | 230 | sm-prism-storm-storm-cut | Storm Cut | PRISM STORM | fly | Reach the portal — 29 gates | Collect 15 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 182238611 |
 | 231 | sm-ghost-nebula-pale-approach | Pale Approach | GHOST NEBULA | fly | Reach the portal — 22 gates | Collect 11 acorns | Touch no planet | BRISK, SWAYING GATES | 4170599020 |
@@ -424,7 +424,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 235 | sm-ghost-nebula-pale-shelter | Pale Shelter | GHOST NEBULA | fly | Reach the portal — 32 gates | Collect 16 acorns | Spend no shield | GENTLE PACE, SWAYING GATES | 819724663 |
 | 236 | sm-ghost-nebula-lost-signal | Lost Signal | GHOST NEBULA | lost | Reach the portal — 22 gates | Collect 11 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 2660900066 |
 | 237 | sm-ghost-nebula-thin-presence | Thin Presence | GHOST NEBULA | deep | Reach the portal — 23 gates | Collect 11 acorns | Spend no shield | BRISK, SWAYING GATES | 2384666565 |
-| 238 | sm-ghost-nebula-deep-echo | Deep Echo | GHOST NEBULA | spill | Clear 18 waves of the Spill | Mine 90 Ore | Buy 1 hull repair at a Depot | — | 3693931158 |
+| 238 | sm-ghost-nebula-deep-echo | Deep Echo | GHOST NEBULA | spill | Clear 18 waves of the Spill | Collect 90 Acorn Coins | Buy 1 hull repair at a Depot | — | 3693931158 |
 | 239 | sm-ghost-nebula-visible-trace | Visible Trace | GHOST NEBULA | arcade | Reach the portal — 23 gates | Collect 11 acorns | Catch a golden acorn | BRISK, SWAYING GATES | 3628234917 |
 | 240 | sm-ghost-nebula-ghost-wake | Ghost Wake | GHOST NEBULA | fly | Reach the portal — 29 gates | Collect 15 acorns | Flawless — no bounces, no shields spent | BRISK, SWAYING GATES | 1089612024 |
 | 241 | sm-blackout-zone-steady-beacon | Steady Beacon | BLACKOUT ZONE | fly | Reach the portal — 22 gates | Collect 11 acorns | Touch no planet | BRISK, SWAYING GATES | 1656696568 |
@@ -444,7 +444,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 | 255 | sm-event-horizon-quiet-orbit | Quiet Orbit | EVENT HORIZON | fly | Reach the portal — 35 gates | Collect 17 acorns | Spend no shield | GENTLE PACE | 1219593019 |
 | 256 | sm-event-horizon-crooked-horizon | Crooked Horizon | EVENT HORIZON | lost | Reach the portal — 25 gates | Collect 12 acorns | Catch a golden acorn | BRISK | 3907367333 |
 | 257 | sm-event-horizon-event-current | Event Current | EVENT HORIZON | deep | Reach the portal — 26 gates | Collect 12 acorns | Spend no shield | BRISK | 2692717233 |
-| 258 | sm-event-horizon-inner-fold | Inner Fold | EVENT HORIZON | spill | Clear 20 waves of the Spill | Mine 110 Ore | Buy 1 hull repair at a Depot | — | 1588705261 |
+| 258 | sm-event-horizon-inner-fold | Inner Fold | EVENT HORIZON | spill | Clear 20 waves of the Spill | Collect 110 Acorn Coins | Buy 1 hull repair at a Depot | — | 1588705261 |
 | 259 | sm-event-horizon-near-the-horizon | Near the Horizon | EVENT HORIZON | arcade | Reach the portal — 26 gates | Collect 12 acorns | Catch a golden acorn | BRISK | 243118623 |
 | 260 | sm-event-horizon-the-road-beyond | The Road Beyond | EVENT HORIZON | fly | Reach the portal — 32 gates | Collect 17 acorns | Flawless — no bounces, no shields spent | FAST FORWARD | 2303435001 |
 
@@ -452,7 +452,7 @@ Open `/beta/` → Star Chart. All 260 missions are playable immediately; no prop
 
 - The original direction remains in `illustrated-src/design/star-map-260.json`; the current beta’s explicit missions, challenges, duration estimates, predecessor IDs and stable seeds are in `illustrated-src/game/beta-campaign-manifest.ts`. See `illustrated-src/design/BETA_260.md` for the revision and migration policy.
 - Map planet and decorative debris families follow each mission’s zone, including the original 100. Gradual painted scenery overlaps retain a single ascending road; no chapter panels or ten-level cutoffs. Deep Space, Rust Belt and Blackout Zone have new painted plates plus procedural stars.
-- Blackout flashing is removed. Existing steady fog, pace, gap width and sway provide variety. Beta additionally tests the owner’s requested springy/sticky planets, upside-down flight, tap-to-slow, and Switchback’s tap reversal.
+- Blackout flashing is removed. Existing steady fog, pace, gap width and sway provide variety. Beta additionally tests the owner’s requested springy/sticky planets, upside-down flight, and tap-to-slow. Switchback is now a cosmetic premium companion without an effect.
 - Ordinary Spill remains endless with untimed Depots and a once-per-save first-pass milestone at wave 20. Production’s nine existing Spill missions keep their explicit 4/5/6/7/8/9/10/11/20-wave targets, Ore/no-hit objectives and seeds 5018–5098. No zone-based Spill generator exists.
 - Historic beta Wormhole variants and seeds 7014–7094 remain archived; revised beta contracts preserve their credit without certifying new goals. Unversioned old goal bits on changed mission IDs retain star credit and passage, without marking newer objectives complete. Only successful replays verify current goals.
 - Earned and purchased entitlements survive. Stable Dust receipts prevent double payments; allStars retains its legacy 300-star entitlement floor and never completes a route.

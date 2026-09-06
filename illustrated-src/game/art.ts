@@ -479,7 +479,11 @@ export function loadPalBank(bank: ArtBank, id: string): Promise<void> {
   const count = PAL_ANIM[id];
   const p = count
     ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
-        if (frames.length) bank.palAnim[id] = frames;
+        if (id === "switchback") {
+          // Never compress a partial bank into the wrong animation order.
+          if (frames.length === count) bank.palAnim[id] = frames;
+          else palBankLoads.delete(id);
+        } else if (frames.length) bank.palAnim[id] = frames;
       })
     : Promise.resolve();
   palBankLoads.set(id, p);
@@ -511,7 +515,7 @@ export function prefetchArtBanks(bank: ArtBank) {
 export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = []): Promise<ArtBank> {
   const base = artBase();
   const palIds = [
-    ...(IS_BETA ? ["switchback"] : []),
+    "switchback",
     "bee",
     "buddy",
     "ufo",

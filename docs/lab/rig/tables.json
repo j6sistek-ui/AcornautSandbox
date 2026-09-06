@@ -1,5 +1,5 @@
 {
- "artVer": "173",
+ "artVer": "187",
  "suits": [
   {
    "id": "flight",
@@ -12,6 +12,20 @@
     44
    ],
    "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "vanguard",
+   "name": "Vanguard",
+   "key": "suit:vanguard",
+   "file": "suits/vanguard.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
    "bakedDome": false,
    "frame": false
   },

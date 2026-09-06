@@ -400,49 +400,7 @@ export async function bootStandalone(root: HTMLElement) {
         settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
         sheet.append(settings);
       }
-      // Mid-run A/B for the motion mappings. They only change how ECLIPSE is
-      // drawn, so the row is there when Eclipse is the pilot and nowhere else.
-      // Switching from the pause is the whole point: the three read completely
-      // differently depending on what you were doing when you paused, and
-      // going back to the hangar to change it loses the run you were judging.
-      // THE POSE DIALS, for every suit (owner, 2 Sep 2026): flip them
-      // mid-run and resume to judge the same field with the other setting.
-      if (engine.save.equippedSuit !== "vanguard") {
-        const dials = (title: string, opts: [string, () => boolean, () => void][]) => {
-          sheet.append(el("p", "ac-sub", title));
-          const row = el("div", "ac-modes");
-          (row as HTMLElement).style.gridTemplateColumns = `repeat(${opts.length}, minmax(0,1fr))`;
-          for (const [name, on, hit] of opts) {
-            const mb = el("button", on() ? "ac-mode on" : "ac-mode", name);
-            mb.onclick = hit;
-            row.append(mb);
-          }
-          sheet.append(row);
-        };
-        const sv = () => engine.save;
-        dials("POSES", [
-          ["All frames", () => (sv().poseMode ?? "all") === "all", () => engine.setPoseMode("all")],
-          ["Ascent only", () => sv().poseMode === "ascent", () => engine.setPoseMode("ascent")],
-        ]);
-        dials("DIVE DEPTH", [
-          ["Full", () => (sv().diveDepth ?? 1) >= 0.99, () => engine.setDiveDepth(1)],
-          ["Softer", () => Math.abs((sv().diveDepth ?? 1) - 0.75) < 0.01, () => engine.setDiveDepth(0.75)],
-          ["Shallow", () => Math.abs((sv().diveDepth ?? 1) - 0.5) < 0.01, () => engine.setDiveDepth(0.5)],
-        ]);
-      }
       if (IS_BETA && engine.save.equippedSuit === "vanguard" && !engine.world.spill && !engine.world.race) sheet.append(vanguardMotionPicker());
-      if (engine.save.equippedSuit === "eclipse") {
-        const mode = (((engine.save.eclipseMotionMode ?? 2) % 3) + 3) % 3;
-        sheet.append(el("p", "ac-sub", "PILOT MOTION"));
-        const row = el("div", "ac-modes");
-        (row as HTMLElement).style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
-        ["Shipped", "Rate", "Heading"].forEach((name, i) => {
-          const mb = el("button", i === mode ? "ac-mode on" : "ac-mode", name);
-          mb.onclick = () => engine.setEclipseMotionMode(i);
-          row.append(mb);
-        });
-        sheet.append(row);
-      }
       // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
       // past 940px on a phone, and .ac-sheet is a fixed-height centred column
       // - so it spilled off BOTH ends and took RESUME with it. You could read
@@ -2417,26 +2375,6 @@ export async function bootStandalone(root: HTMLElement) {
           row.append(suitCard(u));
         }
         grid.append(row);
-        // ECLIPSE's experiment rides under its own shelf: while Eclipse is
-        // the selected pilot, the section that lists it grows the switch
-        // between its three pose mappings so they can be flown back to back.
-        if (sec.ids.includes("eclipse") && s.equippedSuit === "eclipse") {
-          const MOTION_MODES = [
-            ["Motion: Shipped", "Pose maps straight from vertical speed."],
-            ["Motion: Rate", "Pose follows how hard you are climbing or falling."],
-            ["Motion: Heading", "Body follows the tangent of the flight arc."],
-          ];
-          const mode = ((s.eclipseMotionMode ?? 2) % 3 + 3) % 3;
-          const alt = el("button", "ac-card ac-modcard on");
-          const txt = el("div", "ac-modtxt");
-          txt.append(el("p", "ac-modname", MOTION_MODES[mode][0]),
-            el("p", "ac-sub", MOTION_MODES[mode][1] + " Tap to cycle."));
-          const sw = el("span", mode > 0 ? "ac-switch on" : "ac-switch");
-          sw.append(el("i", "ac-knob"));
-          alt.append(txt, sw);
-          alt.onclick = () => engine.setEclipseMotionMode(((engine.save.eclipseMotionMode ?? 2) + 1) % 3);
-          grid.append(alt);
-        }
       }
       if (IS_BETA && s.equippedSuit === "vanguard") grid.append(vanguardMotionPicker());
     } else if (engine.shopTab === "trails") {

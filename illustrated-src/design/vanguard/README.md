@@ -52,6 +52,50 @@ equip only. A partial load keeps the exact first-frame still and can retry;
 the fallback follows the same body heading while its tail remains still.
 Superseded runtime poses are removed; source masters remain available.
 
+Owner review on the actual phone remains the motion/performance quality gate.
+
+## Validation
+
+- TypeScript production/beta export.
+- `test-vanguard.mjs`: fresh-beta equip, production 499/500 eligibility,
+  retained ownership/wake, disabled incompatible trail buttons and engine
+  transactions, actual 100/180/300ms simulation tapping, contact then tap, scored gate,
+  pause/resume and run reset, beta switch and preference persistence,
+  production experiment guard, unscaled visual time, replay star retention.
+- `test-vanguard-render.mjs`: actual world painter selects the independent poses;
+  gravity stays shallow, repeated swipes reach full dive, partial-bank fallback
+  remains the neutral still, poses stay opaque, and A/B physics match per tick.
+- Existing Star Map simulation/UI suites: production progression, all 260 beta
+  completion seams, three unchanged barriers, migration/seed/replay contracts.
+- At the Vanguard PR review, the full art audit passed except the then-existing
+  main-branch Switchback size mismatch (1254px asset vs 256px validator).
+  Baseline confirmed with main's validator and matching asset Git SHA
+  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. The subsequent Switchback sprite-sheet
+  integration fixes that asset to 256px; all 30 art QA groups now pass.
+
+## Decisions still open
+
+- Tutorial use: no substitution or gift change. Existing Ion tutorial kit stays.
+- Ship: later, following this ivory/gold/graphite material language.
+- Optional suit-only pal concept: a small acorn-shaped maintenance drone with
+  matching gold shell and cyan lens. Appearance only; no new gameplay effect.
+  Not added to the roster in this PR.
+
+## Rebuild
+
+The existing raster bank is unchanged. Run the normal
+`node illustrated-src/export-sandbox.mjs`. Only run `export-vanguard.mjs`
+when intentionally rebuilding the measured source artwork. `ACORNAUT_CANVAS` may point to
+`@napi-rs/canvas`; `ACORNAUT_TSC` may point to TypeScript's `tsc.js`.
+Render review media with `node illustrated-src/test-vanguard-render.mjs`.
+The UI tests accept `ACORNAUT_HAPPY_DOM` for the installed happy-dom entry.
+
+Encode the rendered comparison with:
+
+```sh
+ffmpeg -framerate 30 -i /tmp/acornaut-vanguard-render/frames/%04d.png -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart illustrated-src/design/vanguard/vanguard-preview.mp4
+```
+
 ```bash
 node illustrated-src/export-vanguard.mjs
 node illustrated-src/export-sandbox.mjs

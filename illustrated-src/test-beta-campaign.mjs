@@ -32,17 +32,16 @@ for(const def of C.LEVELS.filter(l=>l.previousIds)){
 const palDef=C.LEVELS.find(l=>l.fx.pal==='pocketmoon');save.noPalFx=true;
 const palWorld=run(palDef);const equipped=save.equippedPal;
 Sim.flap(palWorld,save);assert.equal(Sim.runPal(save,palWorld),'pocketmoon');assert.equal(save.equippedPal,equipped);save.noPalFx=false;
-// Signed world movement, no double scoring when a passed gate is revisited,
-// no difficulty increase from flying back over the same distance.
-const reverseDef=C.LEVELS.find(l=>l.fx.pal==='switchback');const rev=run(reverseDef);
-Sim.flap(rev,save);assert.equal(rev.scrollDirection,1);
-let x=rev.planets[0].x;Sim.updateWorld(rev,save,1/60);assert(rev.planets[0].x<x);
-rev.planets[0].scored=true;const count=rev.score,travel=rev.distance;
-Sim.flap(rev,save);assert.equal(rev.scrollDirection,-1);x=rev.planets[0].x;
-Sim.updateWorld(rev,save,1/60);assert(rev.planets[0].x>x);assert.equal(rev.distance,travel);assert.equal(rev.score,count);
-rev.screen='pause';Sim.flap(rev,save);assert.equal(rev.scrollDirection,-1);rev.screen='play';
-Sim.flap(rev,save);assert.equal(rev.scrollDirection,1);
-Sim.resetRun(rev,save,'fly',false,reverseDef);assert.equal(rev.scrollDirection,-1);
+// Retired Switchback reversal: equipped and authored companions have no
+// effect. Every tap continues forward; scored gates remain one-time credit.
+for(const def of C.LEVELS.filter(l=>l.fx.pal==='switchback')) {
+ const w=run(def);assert.equal(Sim.runPal(save,w),'switchback');
+ for(let i=0;i<4;i++) {
+  Sim.flap(w,save);const x=w.planets[0].x;Sim.updateWorld(w,save,1/60);
+  assert(w.planets[0].x<x);assert.equal(w.scrollReversing,false);
+ }
+ w.planets[0].scored=true;const score=w.score;Sim.updateWorld(w,save,1/60);assert.equal(w.score,score);
+}
 // Slow toggles are independent of pickup duration and restore on reset.
 const frozen=run(C.LEVELS.find(l=>l.fx.tapFreeze));Sim.flap(frozen,save);assert(frozen.tapFrozen);
 const slowX=frozen.planets[0].x;Sim.updateWorld(frozen,save,1/60);const slowMove=slowX-frozen.planets[0].x;
@@ -96,4 +95,4 @@ storage.set('acornaut_illust_beta',JSON.stringify(imported));storage.set('acorna
 const importedSave=S.loadSave();assert.equal(P.missionCredit(importedSave,C.levelAt(2)),3);assert.equal(P.verifiedMask(importedSave,C.levelAt(2)),0);
 assert(importedSave.unlockedSuits.includes('catsuit'));assert.deepEqual(importedSave.raceGates,[33]);assert.equal(importedSave.starDust,87);
 S.writeSave(importedSave);assert.deepEqual(S.loadSave(),importedSave);assert.deepEqual(JSON.parse(storage.get('acornaut_star_map_sample_v1')),archive);
-console.log('beta campaign: 260 completion seams, 26 mode mixes, 259 migrations, reversal/no double score, sticky contact/release, spring bounce, tap slow, Spill objectives and repair receipts passed');
+console.log('beta campaign: 260 completion seams, 26 mode mixes, 259 migrations, cosmetic Switchback/no double score, sticky contact/release, spring bounce, tap slow, Spill objectives and repair receipts passed');
