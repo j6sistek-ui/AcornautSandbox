@@ -5078,7 +5078,7 @@ export function paintFlightPreview(
   // clamps the sim actually uses - so the number being changed is judged at
   // the extremes where it matters.
   sweep = false,
-  vanguardMode: VanguardMotionMode = "cinematic",
+  vanguardMode: VanguardMotionMode = "cruise",
 ) {
   if (!art) return;
   if (suit.id === "vanguard") {

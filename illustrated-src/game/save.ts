@@ -189,7 +189,7 @@ export function defaultSave(): SaveData {
     guide: "pending",
     allStars: false,
     musicOff: false,
-    vanguardMotionMode: "cinematic",
+    vanguardMotionMode: "cruise",
     raceRecords: {},
     raceGates: [],
   };
@@ -254,7 +254,7 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
-  if (s.vanguardMotionMode !== "flow") s.vanguardMotionMode = "cinematic";
+  if (!["cinematic", "flow", "cruise", "jetpack"].includes(s.vanguardMotionMode)) s.vanguardMotionMode = "cruise";
   // an old save has no lean table, and a corrupted one must not be able to
   // tip every suit sideways - anything that is not two finite numbers in
   // range is dropped rather than trusted
@@ -484,5 +484,5 @@ export function batteryUnlocked(s: SaveData) {
 
 /** The beta A/B preference cannot opt production into an experiment. */
 export function vanguardModeOf(s: SaveData): VanguardMotionMode {
-  return IS_BETA && s.vanguardMotionMode === "flow" ? "flow" : "cinematic";
+  return IS_BETA ? s.vanguardMotionMode ?? "cruise" : "cruise";
 }

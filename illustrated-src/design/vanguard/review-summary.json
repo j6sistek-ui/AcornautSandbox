@@ -1,0 +1,264 @@
+{
+  "provenance": "Native production canvas, actual simulation and art; no browser or physical-device performance claim.",
+  "passed": {
+    "ordinaryField": true,
+    "noPhonePositionReset": true,
+    "threeModePhysicsEqualityEveryTick": true,
+    "realRisingAndFalling": true,
+    "allTailFrames": true,
+    "gateScoring": true,
+    "realPlanetContact": true,
+    "tapRetainsContact": true
+  },
+  "phone": {
+    "frames": 300,
+    "width": 1260,
+    "height": 1080,
+    "fps": 30,
+    "runs": [
+      {
+        "mode": "cinematic",
+        "score": 5,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minHeadingDegrees": -27.65496590849138,
+        "maxHeadingDegrees": 21.414316870547268,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 0.256659000000127,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.009282999999413732,
+            "medianMs": 0.09779499999422114,
+            "p95Ms": 0.15135299999928975,
+            "maxMs": 2.171485999999277
+          }
+        }
+      },
+      {
+        "mode": "cruise",
+        "score": 5,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minHeadingDegrees": -9.849710270663836,
+        "maxHeadingDegrees": 7.919457700111925,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 7.258256000000074,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.02592900000308873,
+            "medianMs": 5.906856999998126,
+            "p95Ms": 6.8824749999985215,
+            "maxMs": 14.431267999999818
+          }
+        }
+      },
+      {
+        "mode": "jetpack",
+        "score": 5,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minHeadingDegrees": -5.8864542925183,
+        "maxHeadingDegrees": 11.882067218667984,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 6.412307999999939,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.018887999998696614,
+            "medianMs": 5.459471000000121,
+            "p95Ms": 6.541572000000087,
+            "maxMs": 17.54258200000004
+          }
+        }
+      }
+    ]
+  },
+  "contact": {
+    "frames": 90,
+    "width": 1260,
+    "height": 1080,
+    "fps": 30,
+    "runs": [
+      {
+        "mode": "cinematic",
+        "score": 1,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minHeadingDegrees": -27.10746547990662,
+        "maxHeadingDegrees": 47.55098104632577,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 0.06354300000384683,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.006508999998914078,
+            "medianMs": 0.04625799999485025,
+            "p95Ms": 0.1779129999995348,
+            "maxMs": 1.0119340000019292
+          }
+        }
+      },
+      {
+        "mode": "cruise",
+        "score": 1,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minHeadingDegrees": -9.166685847087496,
+        "maxHeadingDegrees": 8.42510952393557,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 5.908937000000151,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.027299999994284008,
+            "medianMs": 5.869629000000714,
+            "p95Ms": 6.975383000004513,
+            "maxMs": 11.988325999998779
+          }
+        }
+      },
+      {
+        "mode": "jetpack",
+        "score": 1,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minHeadingDegrees": -5.500011508252499,
+        "maxHeadingDegrees": 12.083348001299436,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 5.499050999998872,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.01991900000575697,
+            "medianMs": 5.467019000003347,
+            "p95Ms": 6.396997999996529,
+            "maxMs": 8.447896999998193
+          }
+        }
+      }
+    ]
+  },
+  "timingMethod": "performance.now around the FIRST paintVanguard call after every 60Hz simulation tick, at gameplay size52 and3× pixel density. Includes cache hits AND refreshes; excludes world, labels, dust and PNG encoding. First10 samples omitted from warmed statistics. Native CPU measurement, not iPhone timing."
+}

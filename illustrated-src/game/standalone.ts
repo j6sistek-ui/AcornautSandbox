@@ -303,16 +303,20 @@ export async function bootStandalone(root: HTMLElement) {
     const row = el("div", "ac-modes");
     row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
     row.setAttribute("role", "group"); row.setAttribute("aria-label", "Vanguard motion");
-    for (const [mode,label] of [["cinematic","Cinematic"],["flow","Continuous"]] as const) {
+    for (const [mode,label] of [["cruise","Flight"],["jetpack","Upright"],["cinematic","Cinematic"],["flow","Continuous"]] as const) {
       const on = vanguardModeOf(engine.save) === mode;
       const b = el("button", on ? "ac-mode on" : "ac-mode", label);
       b.setAttribute("aria-pressed", String(on));
       b.onclick = () => engine.setVanguardMotionMode(mode);
       row.append(b);
     }
-    panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
-      ? "Slow tail sweep; body follows your climb and fall. Swipe down for a deeper dive."
-      : "Quicker tail sweep and body response. Same flight controls; swipe down for a deeper dive."));
+    const descriptions = {
+      cruise: "Flight: relaxed arms, soft rise and fall, flowing tail and smooth thrust.",
+      jetpack: "Upright: tall jetpack stance, planet push-off and a gentle forward dive.",
+      cinematic: "Original Cinematic motion for comparison.",
+      flow: "Original Continuous motion for comparison.",
+    };
+    panel.append(row, el("p", "ac-sub", descriptions[vanguardModeOf(engine.save)]));
     return panel;
   }
 

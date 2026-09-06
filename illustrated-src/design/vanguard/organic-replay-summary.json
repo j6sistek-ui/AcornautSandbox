@@ -1,0 +1,320 @@
+{
+  "provenance": "Native production painter articulation proof. Not browser or physical-device capture, not ordinary gameplay framing.",
+  "baselineCommit": "5c44e92",
+  "baselineDirectory": "/tmp/vanguard-first-review-js",
+  "playback": {
+    "width": 960,
+    "height": 600,
+    "simulationHz": 60,
+    "videoFps": 30,
+    "seconds": 6,
+    "speed": 1
+  },
+  "displayOverrides": {
+    "pitchDegrees": 16,
+    "frame": 0,
+    "phase": 0,
+    "heading": 0,
+    "thrust": 0
+  },
+  "simulationFixture": {
+    "width": 390,
+    "height": 5000,
+    "emptyGates": true,
+    "noPositionResets": true
+  },
+  "physics": {
+    "gravity": 1300,
+    "flap": -450,
+    "dive": 380,
+    "bounceCancel": 210,
+    "squirrelX": 0.18,
+    "baseSpeed": 165,
+    "maxSpeed": 280,
+    "gapBase": 168,
+    "gapMin": 132,
+    "planetR": 42,
+    "powerDuration": 3.5,
+    "slowFactor": 0.42,
+    "goldDuration": 5,
+    "overdriveGate": 100,
+    "overdriveSpan": 50,
+    "magnetR": 200,
+    "squirrelR": 16
+  },
+  "bursts": [
+    {
+      "start": 0,
+      "interval": 0.1,
+      "count": 4
+    },
+    {
+      "start": 2,
+      "interval": 0.18,
+      "count": 4
+    },
+    {
+      "start": 4,
+      "interval": 0.3,
+      "count": 4
+    }
+  ],
+  "events": [
+    {
+      "tick": 0,
+      "time": 0,
+      "event": "tap",
+      "cadenceMilliseconds": 100
+    },
+    {
+      "tick": 6,
+      "time": 0.1,
+      "event": "tap",
+      "cadenceMilliseconds": 100
+    },
+    {
+      "tick": 12,
+      "time": 0.2,
+      "event": "tap",
+      "cadenceMilliseconds": 100
+    },
+    {
+      "tick": 18,
+      "time": 0.3,
+      "event": "tap",
+      "cadenceMilliseconds": 100
+    },
+    {
+      "tick": 120,
+      "time": 2,
+      "event": "tap",
+      "cadenceMilliseconds": 180
+    },
+    {
+      "tick": 131,
+      "time": 2.183333333333333,
+      "event": "tap",
+      "cadenceMilliseconds": 180
+    },
+    {
+      "tick": 142,
+      "time": 2.3666666666666667,
+      "event": "tap",
+      "cadenceMilliseconds": 180
+    },
+    {
+      "tick": 152,
+      "time": 2.533333333333333,
+      "event": "tap",
+      "cadenceMilliseconds": 180
+    },
+    {
+      "tick": 240,
+      "time": 4,
+      "event": "tap",
+      "cadenceMilliseconds": 300
+    },
+    {
+      "tick": 258,
+      "time": 4.3,
+      "event": "tap",
+      "cadenceMilliseconds": 300
+    },
+    {
+      "tick": 276,
+      "time": 4.6,
+      "event": "tap",
+      "cadenceMilliseconds": 300
+    },
+    {
+      "tick": 294,
+      "time": 4.9,
+      "event": "tap",
+      "cadenceMilliseconds": 300
+    }
+  ],
+  "assertedEqualEveryTick": [
+    "squirrel",
+    "run",
+    "score",
+    "distance",
+    "screen",
+    "ready",
+    "tapAnimT",
+    "tapAnimDir",
+    "bounceAnimT"
+  ],
+  "identicalVelocityInput": true,
+  "identicalAcceptedTapImpulses": true,
+  "stableDisplayObjects": true,
+  "runs": [
+    {
+      "id": "firstReview",
+      "jointSpans": {
+        "nearArm": 0.4543832560371001,
+        "farArm": 0.6512302266596134,
+        "nearLeg": 0.20614370629397027,
+        "farLeg": 0.23288894718525513,
+        "settle": 0.98600675333513
+      },
+      "acceptedInputs": [
+        {
+          "tick": 0,
+          "beforeVy": 0,
+          "afterVy": -450,
+          "impulse": 450
+        },
+        {
+          "tick": 6,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 12,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 18,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 120,
+          "beforeVy": 1760.000000000002,
+          "afterVy": -450,
+          "impulse": 2210.000000000002
+        },
+        {
+          "tick": 131,
+          "beforeVy": -211.66666666666654,
+          "afterVy": -450,
+          "impulse": 238.33333333333346
+        },
+        {
+          "tick": 142,
+          "beforeVy": -211.66666666666654,
+          "afterVy": -450,
+          "impulse": 238.33333333333346
+        },
+        {
+          "tick": 152,
+          "beforeVy": -233.3333333333332,
+          "afterVy": -450,
+          "impulse": 216.6666666666668
+        },
+        {
+          "tick": 240,
+          "beforeVy": 1456.6666666666677,
+          "afterVy": -450,
+          "impulse": 1906.6666666666677
+        },
+        {
+          "tick": 258,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        },
+        {
+          "tick": 276,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        },
+        {
+          "tick": 294,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        }
+      ]
+    },
+    {
+      "id": "organic",
+      "jointSpans": {
+        "nearArm": 0.8894728514598285,
+        "farArm": 0.8287339174693322,
+        "nearLeg": 0.6369710503273515,
+        "farLeg": 0.4680834551229718,
+        "settle": 5.898906933804959
+      },
+      "acceptedInputs": [
+        {
+          "tick": 0,
+          "beforeVy": 0,
+          "afterVy": -450,
+          "impulse": 450
+        },
+        {
+          "tick": 6,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 12,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 18,
+          "beforeVy": -319.9999999999999,
+          "afterVy": -450,
+          "impulse": 130.0000000000001
+        },
+        {
+          "tick": 120,
+          "beforeVy": 1760.000000000002,
+          "afterVy": -450,
+          "impulse": 2210.000000000002
+        },
+        {
+          "tick": 131,
+          "beforeVy": -211.66666666666654,
+          "afterVy": -450,
+          "impulse": 238.33333333333346
+        },
+        {
+          "tick": 142,
+          "beforeVy": -211.66666666666654,
+          "afterVy": -450,
+          "impulse": 238.33333333333346
+        },
+        {
+          "tick": 152,
+          "beforeVy": -233.3333333333332,
+          "afterVy": -450,
+          "impulse": 216.6666666666668
+        },
+        {
+          "tick": 240,
+          "beforeVy": 1456.6666666666677,
+          "afterVy": -450,
+          "impulse": 1906.6666666666677
+        },
+        {
+          "tick": 258,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        },
+        {
+          "tick": 276,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        },
+        {
+          "tick": 294,
+          "beforeVy": -59.999999999999886,
+          "afterVy": -450,
+          "impulse": 390.0000000000001
+        }
+      ]
+    }
+  ]
+}
