@@ -1510,8 +1510,12 @@ function spillPlateFor(ctx, W, H, panorama, sxBase, sw, pad) {
     spillPlateW = WP;
     return c;
 }
-function spillBackdrop(ctx, w, s, art) {
+function spillBackdrop(ctx, w, s, art, covered = false) {
     const { W, H } = w;
+    // parked at the Depot the scene covers the whole screen, opaque: the
+    // panorama, the pools and the stars under it would be painted for nothing
+    if (covered)
+        return;
     const panorama = art.spillScene?.panorama ?? null;
     let sx = 0, sw = 0, sxBase = 0;
     if (panorama) {
@@ -1934,15 +1938,63 @@ function drawSpillScout(ctx, w, save, art, s, x) {
     drawSprite(ctx, ship, layout.centerX, 0, layout.shipSize, "box", "light");
     ctx.restore();
 }
+let spillDepotPlate = null;
+let spillDepotKey = "";
+function spillDepotPlateFor(ctx, W, H, dock, view, bear, marshal) {
+    const dpr = ctx.getTransform().a || 1;
+    const pw = Math.max(1, Math.round(W * dpr)), ph = Math.max(1, Math.round(H * dpr));
+    const key = `${pw}x${ph}|${view.x.toFixed(1)},${view.y.toFixed(1)},${view.width.toFixed(1)},${view.height.toFixed(1)}|${bear ? `${bear.image.width}x${bear.image.height}@${marshal.frame}` : "-"}`;
+    if (spillDepotPlate && spillDepotKey === key)
+        return spillDepotPlate;
+    const c = spillDepotPlate ?? document.createElement("canvas");
+    c.width = pw;
+    c.height = ph;
+    const g = c.getContext("2d");
+    if (!g)
+        return null;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.drawImage(dock, view.x, view.y, view.width, view.height);
+    const shade = g.createLinearGradient(0, 0, 0, H);
+    shade.addColorStop(0, "rgba(3,7,20,.38)");
+    shade.addColorStop(0.5, "rgba(3,7,20,0)");
+    shade.addColorStop(1, "rgba(3,7,20,.3)");
+    g.fillStyle = shade;
+    g.fillRect(0, 0, W, H);
+    if (bear) {
+        g.fillStyle = "rgba(6,5,16,.45)";
+        g.beginPath();
+        g.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2);
+        g.fill();
+        g.save();
+        g.translate(marshal.x, marshal.y);
+        const scale = marshal.height / bear.image.height;
+        g.scale(-scale, scale); // face the incoming ship
+        g.drawImage(bear.image, -bear.footX, -bear.footY);
+        g.restore();
+    }
+    spillDepotPlate = c;
+    spillDepotKey = key;
+    return c;
+}
 function drawSpillWorld(ctx, w, save, art) {
     const s = w.spill;
     const { W, H } = w;
-    spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
-    if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+    const parked = !!dock && s.phase === "depot";
+    spillBackdrop(ctx, w, s, art, parked);
+    if (dock && parked) {
+        const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, SPILL.dockTime, -1);
+        const marshal = spillDockBear(view, SPILL.dockTime, !!save.motionOff);
+        const bear = art.spillScene?.bear?.[marshal.frame];
+        const plate = spillDepotPlateFor(ctx, W, H, dock, view, bear, marshal);
+        const hosted = plate && spillBackplateHost ? spillBackplateHost(plate, 0, W, H) : false;
+        if (plate && !hosted)
+            ctx.drawImage(plate, 0, 0, W, H);
+    }
+    else if (dock && s.phase === "docking") {
+        const gagTime = s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
         const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
-        const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+        const arrival = Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
         const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
         ctx.save();
         ctx.globalAlpha = view.opacity;
