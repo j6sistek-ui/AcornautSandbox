@@ -81,14 +81,14 @@ HEAD_META = """<meta charset="utf-8">
 <link rel="canonical" href="{site}/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Acornaut">
-<meta property="og:title" content="Acornaut — one tap, thirty suits, a hundred missions">
+<meta property="og:title" content="Acornaut — one tap, thirty suits, 260 missions">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{site}/">
 <meta property="og:image" content="{site}/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Acornaut — one tap, thirty suits, a hundred missions">
+<meta name="twitter:title" content="Acornaut — one tap, thirty suits, 260 missions">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{site}/assets/og.jpg">
 <meta name="theme-color" content="#080c18">

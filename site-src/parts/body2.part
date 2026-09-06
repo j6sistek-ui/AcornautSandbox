@@ -4,17 +4,17 @@
   <div class="wrap">
     <div class="road-grid">
       <figure class="shot rise" style="margin:0">
-        <div class="phone"><img src="{{A:mk-chart.jpg}}" alt="The Star Chart: a road of numbered planets climbing the screen, with a rail of rewards beside it" loading="lazy"></div>
+        <div class="phone"><img src="{{A:mk-chart.jpg}}" alt="The beta Star Chart: a climbing road of 260 missions with a reward rail beside it" loading="lazy"></div>
         <figcaption>The actual screen</figcaption>
       </figure>
       <figure class="shot rise" style="margin:0">
         <div class="phone"><video width="400" height="712" data-src="{{V:worlds.mp4}}" poster="{{A:worlds-poster.jpg}}" muted loop playsinline preload="none" aria-label="A flight past forest, molten and wormhole worlds"></video></div>
-        <figcaption>Ten stages, ten skies</figcaption>
+        <figcaption>26 stages on one road</figcaption>
       </figure>
       <div class="rise">
         <p class="kicker">The Star Chart</p>
-        <h2>A hundred missions on one climbing road.</h2>
-        <p class="lede" style="margin-top:20px">Numbered 1 to 100, three stars each. The rewards hang on a rail beside the road, so before you go for a star you already know exactly what it buys.</p>
+        <h2>260 missions on one climbing road.</h2>
+        <p class="lede" style="margin-top:20px">Numbered 1 to 260, three stars each &mdash; 780 in all. Beta opens the whole chart: <b>260 missions &middot; all unlocked in beta</b>. The reward rail rides beside the road, so you see what a star buys before you go for it. Spill missions on the road ask for waves, Ore, and Depots; the first wave-20 clear is level 258.</p>
       </div>
     </div>
   </div>
