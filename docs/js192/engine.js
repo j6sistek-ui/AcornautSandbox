@@ -1,22 +1,68 @@
-import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=188";
-import { spillAppearance } from "./spill-appearance.js?v=188";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=188";
-import { reachedGate } from "./campaign.js?v=188";
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=188";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=188";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=188";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=188";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=188";
-import { drawHud, drawWorld } from "./draw.js?v=188";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=188";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=188";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=188";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=188";
-import { raceViewport } from "./race-viewport.js?v=188";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=188";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=188";
-import { bankSpill } from "./save.js?v=188";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=192";
+import { spillAppearance } from "./spill-appearance.js?v=192";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=192";
+import { reachedGate } from "./campaign.js?v=192";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=192";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=192";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=192";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=192";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=192";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=192";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=192";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=192";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=192";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=192";
+import { raceViewport } from "./race-viewport.js?v=192";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=192";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=192";
+import { bankSpill } from "./save.js?v=192";
 export async function createEngine(canvas) {
+    // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
+    // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
+    // here it is mounted as an element BEHIND the game canvas, so the
+    // backdrop costs the frame nothing - the compositor stacks the two. The
+    // sway rides on a transform. Hidden the moment the run is not the Spill;
+    // every other mode paints its own opaque sky over the canvas anyway.
+    let backplate = null;
+    let backplateShown = false;
+    let backplateW = 0, backplateH = 0, backplateTf = "";
+    setSpillBackplateHost((plate, off, w, h) => {
+        const parent = canvas.parentElement;
+        if (!parent)
+            return false;
+        if (backplate !== plate) {
+            if (backplate)
+                backplate.remove();
+            plate.className = "ac-backplate";
+            parent.insertBefore(plate, canvas);
+            backplate = plate;
+            backplateW = backplateH = 0;
+            backplateTf = "";
+        }
+        const st = plate.style;
+        if (backplateW !== w || backplateH !== h) {
+            st.width = `${w}px`;
+            st.height = `${h}px`;
+            backplateW = w;
+            backplateH = h;
+        }
+        const tf = `translate3d(${(Math.round(off * 10) / 10).toFixed(1)}px,0,0)`;
+        if (tf !== backplateTf) {
+            st.transform = tf;
+            backplateTf = tf;
+        }
+        if (!backplateShown) {
+            st.display = "";
+            backplateShown = true;
+        }
+        return true;
+    });
+    const hideBackplate = () => {
+        if (backplateShown && backplate) {
+            backplate.style.display = "none";
+            backplateShown = false;
+        }
+    };
     const raw = canvas.getContext("2d");
     if (!raw)
         throw new Error("no 2d");
@@ -362,7 +408,7 @@ export async function createEngine(canvas) {
             notify();
         },
         setVanguardMotionMode(mode) {
-            if (!IS_BETA || (mode !== "cinematic" && mode !== "flow"))
+            if (!IS_BETA || !["cinematic", "flow", "cruise", "jetpack"].includes(mode))
                 return;
             save.vanguardMotionMode = mode;
             world.vanguard.mode = mode;
@@ -1473,6 +1519,8 @@ export async function createEngine(canvas) {
         }
         else
             nextSpillPaint = 0;
+        if (!world.spill || world.screen !== "play" && world.screen !== "pause" && world.screen !== "dead")
+            hideBackplate();
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
@@ -1531,4 +1579,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=188";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=192";
