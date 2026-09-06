@@ -3020,18 +3020,10 @@ export async function bootStandalone(root: HTMLElement) {
       target?.scrollIntoView({ block: "center", behavior: engine.save.motionOff ? "auto" : "smooth" });
       target?.focus({ preventScroll: true });
     };
+    // no find box (owner, 6 Sep 2026: "no searching needed") - the road
+    // scrolls, and Return to pilot brings the current mission back
     const pilot = el("button", "ac-ghost", "Return to pilot"); pilot.onclick = () => goTo(); nav.append(pilot);
-    const find = el("form", "ac-chart-find");
-    const query = el("input"); query.placeholder = "Level or name"; query.setAttribute("aria-label", "Find a level by number, mission or zone name");
-    const findButton = el("button", "ac-ghost", "Find"); findButton.type = "submit";
-    const found = el("span", "ac-chart-found"); found.setAttribute("role", "status");
-    find.onsubmit = event => {
-      event.preventDefault(); const q = query.value.trim().toLowerCase();
-      const match = q && CHART_LEVELS.find(l => String(l.ord) === q || l.name.toLowerCase().includes(q) || ENVS[l.fx.env ?? 0].name.toLowerCase().includes(q));
-      if (match) { goTo(match.id); found.textContent = `Level ${match.ord} · ${match.name}`; }
-      else found.textContent = "No matching level";
-    };
-    find.append(query, findButton); nav.append(find, found); box.append(nav);
+    box.append(nav);
     if (STAR_MAP_PREVIEW) {
       const samples = el("div", "ac-chart-samples");
       const rewards = el("button", "ac-ghost", "Reward preview"); rewards.dataset.rewardPreview = "true";
