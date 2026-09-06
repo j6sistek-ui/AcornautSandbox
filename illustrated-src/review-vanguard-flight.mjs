@@ -73,6 +73,7 @@ async function sprite(file) {
 }
 const art=A.emptyArt(); art.ready=true;
 art.suits.vanguard=await sprite('suits/vanguard.png'); art.vanguard=[];
+art.vanguardParts=await sprite('suits/vanguard/maneuver-parts.png');
 for (let i=1;i<=VG.VANGUARD_FRAMES;i++) art.vanguard.push(await sprite(`suits/vanguard/frame-${i}.png`));
 art.squirrelIdle=[await sprite('squirrel/idle-1.png')]; art.squirrelFlap=art.squirrelIdle;
 art.helms.clear=await sprite('helms/clear.png');
@@ -82,8 +83,8 @@ const baseSave=S.defaultSave();
 Object.assign(baseSave,{equippedSuit:'vanguard',equippedTrail:'ion',tutorialDone:true,guide:'done'});
 const styles=[
   {mode:'cinematic',title:'ORIGINAL',subtitle:'Current cinematic flight',color:'#c9c4b8'},
-  {mode:'cruise',title:'FLIGHT',subtitle:'Gentle bank · active arms',color:'#96e8f3'},
-  {mode:'jetpack',title:'UPRIGHT',subtitle:'Vertical pack · planet push-off',color:'#f2cc81'},
+  {mode:'cruise',title:'FLIGHT',subtitle:'Asymmetric reach · maneuver banks',color:'#96e8f3'},
+  {mode:'jetpack',title:'UPRIGHT',subtitle:'Bent-knee hover · rise/fall · push-off',color:'#f2cc81'},
 ];
 const authoritativeKeys=[
   'squirrel','run','score','distance','screen','ready','tapAnimT','tapAnimDir','bounceAnimT',
@@ -98,6 +99,7 @@ function makeRuns(height) {
     Sim.resetRun(w,save,'fly',false);
     w.planets=[]; w.pickups=[]; w.lastSpawnX=100000;
     return {style,save,w,canvas:createCanvas(390,760),tail:new Set(),headings:[],
+      poseBanks:new Set(),tailBaseAngles:[],tailTipAngles:[],
       probe:createCanvas(256,256),paints:[],contactCount:0,minY:Infinity,maxY:-Infinity,minimumVy:Infinity,maximumVy:-Infinity};
   });
 }
@@ -108,7 +110,7 @@ function equality(runs,tick,clip) {
 }
 function stateTrace(run) {
   return {...Object.fromEntries(traceKeys.map(k=>[k,run.w.vanguard[k]])),
-    rates:{...run.w.vanguard.rates},contacts:run.w.vanguard.contacts.map(p=>({...p}))};
+    rates:{...run.w.vanguard.rates},maneuver:structuredClone(run.w.vanguard.maneuver),contacts:run.w.vanguard.contacts.map(p=>({...p}))};
 }
 function text(g,value,x,y,size=14,color='#aabacf',weight='400') {
   g.font=`${weight} ${size}px "Vanguard Sans"`;g.fillStyle=color;g.fillText(value,x,y);
@@ -117,7 +119,7 @@ function stats(values) {
   const sorted=[...values].sort((a,b)=>a-b),p=f=>sorted[Math.min(sorted.length-1,Math.floor(sorted.length*f))];
   return {samples:sorted.length,minMs:sorted[0],medianMs:p(.5),p95Ms:p(.95),maxMs:sorted.at(-1)};
 }
-const film=createCanvas(1260,1080),g=film.getContext('2d');
+const film=createCanvas(1260,1220),g=film.getContext('2d');
 async function settleImages(runs) {
   // Paint before recording so lazy zone-background loading cannot turn the
   // first seconds into incomplete art. No simulation state is advanced.
@@ -125,7 +127,7 @@ async function settleImages(runs) {
   while (pending.length) await Promise.all(pending.splice(0));
 }
 function paintComparison(runs,tick,scene,cue,inputLabel) {
-  g.fillStyle='#07111f';g.fillRect(0,0,1260,1080);
+  g.fillStyle='#07111f';g.fillRect(0,0,1260,1220);
   text(g,'VANGUARD / FLIGHT STUDY',18,31,23,'#f4dbb2','700');
   text(g,scene==='phone'?'390 × 760 gameplay · fixed camera · actual simulation + painter':
     'CONTACT FIXTURE · 5000px chamber · FOLLOW CAMERA · actual collision + painter',18,55,13);
@@ -144,8 +146,8 @@ function paintComparison(runs,tick,scene,cue,inputLabel) {
     text(g,cue,x+34,842,12,run.style.color,'700');
     text(g,inputLabel,x+34,860,11,'#c5d4e2');
     text(g,'SAME LIVE POSE / 3×',x+20,903,11,'#97abc2');
-    g.save();g.beginPath();g.rect(x+4,910,222,164);g.clip();
-    g.translate(x+118,997);g.scale(3,3);
+    g.save();g.beginPath();g.rect(x+4,910,230,304);g.clip();
+    g.translate(x+145,1057);g.scale(3,3);
     if (scene==='contact') {
       // Convert actual world-space surface dust into the pilot close-up.
       VG.paintVanguardContacts(g,{...w.vanguard,contacts:w.vanguard.contacts.map(p=>({
@@ -157,9 +159,10 @@ function paintComparison(runs,tick,scene,cue,inputLabel) {
     const state=w.vanguard;
     text(g,w.squirrel.vy< -20?'RISING':w.squirrel.vy>20?'FALLING':'APEX',x+235,938,15,run.style.color,'700');
     text(g,`Vertical speed ${Math.round(w.squirrel.vy)}`,x+235,963,11);
-    text(g,`Body pitch ${Math.round(state.pitch*180/Math.PI)}°`,x+235,985,11);
-    text(g,`Thrust ${Math.round(state.thrust*100)}%`,x+235,1007,11);
-    text(g,`Tail ${state.frame+1} / ${VG.VANGUARD_FRAMES}`,x+235,1029,11);
+    const rig=VG.articulatedVanguard(state.mode);
+    text(g,`Body pitch ${Math.round(rig?state.maneuver.pose.body:state.pitch*180/Math.PI)}°`,x+235,985,11);
+    text(g,`Thrust ${Math.round((rig?state.maneuver.pressure:state.thrust)*100)}%`,x+235,1007,11);
+    text(g,rig?`Pose: ${state.maneuver.contactAge<.55?'land / push':state.maneuver.bank}`:`Tail ${state.frame+1} / ${VG.VANGUARD_FRAMES}`,x+235,1029,11);
     text(g,`Score ${w.score}`,x+235,1051,11);
   }
 }
@@ -170,15 +173,23 @@ function trackRun(r) {
   probe.save();probe.translate(128,128);probe.scale(3,3);
   const started=performance.now();VG.paintVanguard(probe,art,0,0,52,r.w.vanguard);
   r.paints.push(performance.now()-started);probe.restore();
-  r.headings.push(r.w.vanguard.heading);r.tail.add(r.w.vanguard.frame);
+  const state=r.w.vanguard;
+  r.headings.push(VG.articulatedVanguard(state.mode)?state.maneuver.pose.body*Math.PI/180:state.pitch);
+  r.poseBanks.add(state.maneuver.bank);
+  if(state.maneuver.contactAge<.55)r.poseBanks.add('land');
+  r.tailBaseAngles.push(state.maneuver.tailBase);r.tailTipAngles.push(state.maneuver.tailTip);
+  r.tail.add(r.w.vanguard.frame);
   r.minY=Math.min(r.minY,r.w.squirrel.y);r.maxY=Math.max(r.maxY,r.w.squirrel.y);
   r.minimumVy=Math.min(r.minimumVy,r.w.squirrel.vy);r.maximumVy=Math.max(r.maximumVy,r.w.squirrel.vy);
 }
 function runSummary(r) {
-  return {mode:r.style.mode,score:r.w.score,tailFrames:[...r.tail].sort((a,b)=>a-b),
+  return {mode:r.style.mode,score:r.w.score,...(VG.articulatedVanguard(r.style.mode)?{
+      poseBanks:[...r.poseBanks],tailBaseDegrees:[Math.min(...r.tailBaseAngles),Math.max(...r.tailBaseAngles)],
+      tailTipDegrees:[Math.min(...r.tailTipAngles),Math.max(...r.tailTipAngles)],
+    }:{tailFrames:[...r.tail].sort((a,b)=>a-b)}),
     minY:r.minY,maxY:r.maxY,minimumVy:r.minimumVy,maximumVy:r.maximumVy,
-    minHeadingDegrees:Math.min(...r.headings)*180/Math.PI,
-    maxHeadingDegrees:Math.max(...r.headings)*180/Math.PI,contacts:r.contactCount,
+    minBodyPitchDegrees:Math.min(...r.headings)*180/Math.PI,
+    maxBodyPitchDegrees:Math.max(...r.headings)*180/Math.PI,contacts:r.contactCount,
     paint:{firstSampleMs:r.paints[0],warmed:stats(r.paints.slice(10))}};
 }
 
@@ -227,7 +238,9 @@ for (let tick=0;tick<600;tick++) {
   if (tick===404) writeFileSync(join(output,'Vanguard-Flight-Comparison.png'),buf);
 }
 for (const r of phoneRuns) {
-  assert.equal(r.tail.size,VG.VANGUARD_FRAMES,`${r.style.mode} uses every tail pose`);
+  if(VG.articulatedVanguard(r.style.mode)){
+    for(const bank of ['rise','apex','fall','dive','land'])assert(r.poseBanks.has(bank),`${r.style.mode}: real ${bank} bank`);
+  }else assert.equal(r.tail.size,VG.VANGUARD_FRAMES,`${r.style.mode} uses every original tail pose`);
   assert(r.minimumVy<0&&r.maximumVy>0,'real upward and downward travel');
   assert(r.w.score>=5,`${r.style.mode} scores ordinary gates`);
 }
@@ -291,9 +304,9 @@ writeFileSync(join(output,'contact-trace.json'),JSON.stringify({
 writeFileSync(join(output,'review-summary.json'),JSON.stringify({
   provenance:'Native production canvas, actual simulation and art; no browser or physical-device performance claim.',
   passed:{ordinaryField:true,noPhonePositionReset:true,threeModePhysicsEqualityEveryTick:true,
-    realRisingAndFalling:true,allTailFrames:true,gateScoring:true,realPlanetContact:true,tapRetainsContact:true},
-  phone:{frames:300,width:1260,height:1080,fps:30,runs:phoneRuns.map(runSummary)},
-  contact:{frames:90,width:1260,height:1080,fps:30,runs:contactRuns.map(runSummary)},
+    realRisingAndFalling:true,continuousLegacyTail:true,newDirectionBanks:true,gateScoring:true,realPlanetContact:true,tapRetainsContact:true},
+  phone:{frames:300,width:1260,height:1220,fps:30,runs:phoneRuns.map(runSummary)},
+  contact:{frames:90,width:1260,height:1220,fps:30,runs:contactRuns.map(runSummary)},
   timingMethod:'performance.now around the FIRST paintVanguard call after every 60Hz simulation tick, at gameplay size52 and3× pixel density. Includes cache hits AND refreshes; excludes world, labels, dust and PNG encoding. First10 samples omitted from warmed statistics. Native CPU measurement, not iPhone timing.',
 },null,2));
 console.log(JSON.stringify({passed:true,output,phoneFrames:300,contactFrames:90,

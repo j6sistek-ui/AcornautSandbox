@@ -311,8 +311,8 @@ export async function bootStandalone(root: HTMLElement) {
       row.append(b);
     }
     const descriptions = {
-      cruise: "Flight: relaxed arms, soft rise and fall, flowing tail and smooth thrust.",
-      jetpack: "Upright: tall jetpack stance, planet push-off and a gentle forward dive.",
+      cruise: "Flight: forward reach, tucked climbs, open falls and a trailing tail.",
+      jetpack: "Upright: bent-knee hover, rising reach, falling brace and planet push-off.",
       cinematic: "Original Cinematic motion for comparison.",
       flow: "Original Continuous motion for comparison.",
     };
