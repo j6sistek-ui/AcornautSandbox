@@ -1,71 +1,56 @@
-# Vanguard flagship character
+# Vanguard flight revision
 
-Vanguard matches the squirrel from the existing menu/loading paintings:
-russet striped fur, ivory technical fabric, graphite joints, gold hardware,
-clear integrated visor and small cyan electronics. This is the character
-release; a custom Hyper Run/Spill ship remains a later task.
+The owner's phone recording showed that Cinematic held one pose during rapid
+taps, while Continuous mostly moved the legs. Ordinary descent waited behind
+a 1.76-second tap clip, so the body could remain nose-up while falling.
+Those were gaps in the earlier controller and in its test coverage.
 
-![Vanguard preview](vanguard-preview.png)
+[Normal phone-field comparison](phone-preview.mp4) · [Input/heading trace](phone-trace.json)
 
-[Cinematic / Continuous comparison](vanguard-preview.mp4) · [32-pose contact sheet](contact.png)
+![Normal field, actual game painter](phone-preview.png)
 
-## Try it
+## Current motion
 
-On this branch's beta build: Hangar → Suits → **FLAGSHIP · 500 STARS** →
-**Vanguard**. It opens at zero stars in beta, including a fresh save.
-Beta now has **Vanguard Motion → Cinematic / Continuous** under the suit
-shelves and in Pause while flying Vanguard. Switch in Pause to compare the
-same run, then resume. The preference survives a reload.
-Production retains the real 500-star requirement. Production currently has
-100 missions/300 earnable stars, so a new production player cannot earn it
-until that route expands. This PR does not activate production's 260 route.
+- A continuous **whole-character tail loop** replaces the jump/tuck bank.
+  Sixteen new drawings sweep the thick striped tail while arms, knees and
+  helmet remain steady. The tail keeps moving during climb, level flight,
+  descent, repeated taps and no-input glides. It also idles on the ready
+  screen; pause still freezes it.
+- The body follows vertical flight direction with eased heading: climb,
+  level at the apex, then shallow descent. It no longer waits for a tap clip
+  or a tail cycle to finish. There is no leg pump, squash or jump on input.
+- A tap produces a restrained thruster pulse. The body's small reaction
+  comes from easing toward the changed velocity, without a pose restart.
+  A swipe permits a deeper heading; gravity alone stays shallow. The entire
+  registered drawing tilts, preserving shape and continuing the tail motion.
+- Cinematic uses a 1.8-second tail sweep with a 130ms body response;
+  Continuous uses a quicker 1.15-second sweep with a 90ms response. Both
+  remain available in beta's Hangar and Pause. Switching changes only
+  presentation and preserves the current phase.
+- The existing surface dust survives a bounce followed immediately by a
+  tap. Shield, fixed wake, hitboxes, forces, scores and other suits are intact.
 
-## Delivered
+Vanguard stays unlocked on fresh beta saves. Production retains the 500-star
+requirement and existing ownership. This revision adds no ship, pet or mode.
 
-- 32 distinct whole-character drawings: 16 tap, 8 dive, 8 contact/rebound.
-  Frames ship at 512×512 RGBA, four times the existing standard sprite pixels.
-- One registered torso pivot and measured 60px integrated helmet radius.
-  Poses move anatomically; the painter does not stretch the tail/body or
-  stack the generic scale pulse over them. No other suit's frames change.
-- A separate cinematic controller lets the lunge finish despite rapid taps.
-  Follow-up taps add smooth backpack exhaust; the climbed body settles into
-  a shallow gravity descent. Only a swipe selects a full dive.
-- Beta's Continuous comparison cycles at 1.76 seconds without rewinding on
-  extra taps. Cinematic holds the climbed pose while taps sustain the arc.
-- Contacts use .95-second lunar dust, surviving the next tap. The contact
-  and gate events arm another lunge; unfinished motion has priority, so
-  neither event can snap the character back to its starting pose.
-- One crisp drawing at a time, with registered head travel and a small eased
-  pitch. No double-image dissolves, generic squash or rapid squat sequence.
-  Flight physics, collision behavior and other suits' clocks remain intact.
-- Fixed gold/cyan wake, suit-exclusive. Other trails cannot be selected while
-  Vanguard is worn. Switching suits restores the previous trail selection.
-- A cyan lens and rotating gold shield arcs, only while a real shield charge
-  exists. No added protection, powerup, modifier or active ability.
-- Additive 500-star suit and wake rewards. Existing rewards, paid ledgers,
-  mission contracts and the proposed Rig Runner title remain intact. The
-  fixed wake follows permanent suit ownership after save reconciliation.
+## Assets and reproducibility
 
-## Assets and performance
+The built-in imagegen tool produced `art-src/vanguard/tail-loop.png` from the
+original flagship frame, then corrected the backing and cell margins.
+`tail-prompts.json` preserves both exact prompts. The original master and
+32-pose source sheets remain archived in `art-src/vanguard`.
 
-`art-src/vanguard` retains the original 1254px master, transparent master,
-eight four-pose source sheets, prompts and measured registration. The dense
-initial sheet was rejected for crowded framing and is not shipped.
-`export-vanguard.mjs` performs chroma extraction and registration, not creative
-redrawing or interpolation. Runtime animation is approximately 5.4 MiB on
-disk and 32 MiB decoded. It loads on equip and is excluded from the background
-prefetch sweep. The first-pose still appears until the full bank is ready;
-partial failures cannot shift the sequence and a later equip can retry.
+`export-vanguard.mjs` extracts whole drawings and keys the green backing.
+`tail-heads.json` records scale/position measured by fitting the unchanged
+helmet/face to the first cell, rather than to moving tail bounds. The export
+fixes every helmet at (350,200), radius 60, on a 512px RGBA canvas. The drawn
+sweep determines frame order. The sequence follows a single down/up sweep, ordered by the painted tail mass.
+No tail pieces are cut out, stretched or rigged.
 
-The comparison clip runs scripted **real simulation inputs** side by side
-through both modes, then paints each world and enlarges the exact same live
-pose. A tall test chamber and following camera leave room to inspect a full
-dive; this is not a recording of the phone camera or browser layout. Its
-[recorded input and pose trace](input-trace.json) includes 180ms taps, gravity,
-a swipe, a real planet contact followed by a tap one tick later, and a gate
-pass. Every tick asserts identical physics, legacy clocks, scoring and run
-counters across both visual modes. Still world captures are
-[flight](actual-flight.png) and [contact](actual-bounce.png).
+The active bank is 16 frames (16 MiB decoded, down from 32 MiB). It loads on
+equip only. A partial load keeps the exact first-frame still and can retry;
+the fallback follows the same body heading while its tail remains still.
+Superseded runtime poses are removed; source masters remain available.
 
 Owner review on the actual phone remains the motion/performance quality gate.
 
@@ -82,10 +67,11 @@ Owner review on the actual phone remains the motion/performance quality gate.
   remains the neutral still, poses stay opaque, and A/B physics match per tick.
 - Existing Star Map simulation/UI suites: production progression, all 260 beta
   completion seams, three unchanged barriers, migration/seed/replay contracts.
-- Full art audit: Vanguard and all other checks pass except the unchanged
+- At the Vanguard PR review, the full art audit passed except the then-existing
   main-branch Switchback size mismatch (1254px asset vs 256px validator).
   Baseline confirmed with main's validator and matching asset Git SHA
-  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. No gate was weakened to hide it.
+  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. The subsequent Switchback sprite-sheet
+  integration fixes that asset to 256px; all 30 art QA groups now pass.
 
 ## Decisions still open
 
@@ -110,5 +96,38 @@ Encode the rendered comparison with:
 ffmpeg -framerate 30 -i /tmp/acornaut-vanguard-render/frames/%04d.png -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart illustrated-src/design/vanguard/vanguard-preview.mp4
 ```
 
-This revision starts from merged main `11a2968` (#186). Open #185 (Spill
-welcome/coins) and #182 (marketing) were inspected and remain separate.
+```bash
+node illustrated-src/export-vanguard.mjs
+node illustrated-src/export-sandbox.mjs
+node illustrated-src/test-vanguard.mjs
+node illustrated-src/test-vanguard-render.mjs
+node illustrated-src/test-vanguard-flight.mjs
+```
+
+The exporter and canvas tests use `ACORNAUT_CANVAS` when native canvas is not
+on the default module path. The UI test accepts `ACORNAUT_HAPPY_DOM`; the
+TypeScript exporter accepts `ACORNAUT_TSC`.
+
+## Evidence and limits
+
+`test-vanguard-flight.mjs` now flies a normal 390×760 field for ten seconds,
+with actual simulation controls, gravity arcs, a rapid-tap burst, a swipe,
+and gate scoring. There is no follow camera, artificial y reset or long
+falling chamber in this primary preview. Both visual modes assert identical
+physics each tick. Their tails visit all 16 poses and headings visibly cross
+between climb and descent during ordinary short arcs.
+
+The extended [contact/swipe chamber](vanguard-preview.mp4) remains supplemental
+coverage for a surface contact followed by a tap on the next tick. Its camera
+follows the pilot and leaves extra vertical room; it is labeled accordingly.
+The menu/engine tests also cover fresh-beta and production ownership, mode
+persistence, pause, ready idle, independent visual time, repeated taps,
+no-input tail movement and descent interrupted midway through a tail beat.
+
+Native-canvas renders verify the actual painter, not mobile Safari layout or
+real-device frame pacing. The owner's phone playtest remains the appearance
+and feel review. This change is submitted as a PR, without merge or deploy.
+
+Current-main art audit: Vanguard passes. The full audit retains the existing
+Switchback 1254px still mismatch; its separate fix is in open PR #188. No
+validator gate was relaxed for that failure.

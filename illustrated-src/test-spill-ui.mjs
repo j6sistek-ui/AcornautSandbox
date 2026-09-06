@@ -97,4 +97,26 @@ engine.open('title');assert(app.querySelector('.ac-pinnedreward'));assert(app.qu
 app.querySelector('.ac-pinnedopen').click();assert.equal(engine.world.screen,'hangar');
 engine.open('title');app.querySelector('[data-reward-pin]').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
 assert(!engine.save.pinnedRewards.includes(key));assert(!app.querySelector('.ac-pinnedreward'));
-engine.stop();await win.happyDOM.close();console.log('spill UI: button/gesture/keyboard ownership, pause preferences, prompt filtering, unchanged hazard warnings/pacing, Loadout planning, Depot purchases/refits/contracts, save/resume and endless continuation pass');
+// The actual engine admits the extra beat only after complete art readiness
+// and only for Vanguard. Its Depot overlay must remain closed throughout it.
+const scene={depot:{width:1536,height:1024,naturalWidth:1536,naturalHeight:1024},
+ bear:Array.from({length:36},()=>({image:{width:256,height:240},footX:128,footY:230})),
+ vanguardDepot:{width:1280,height:1280,naturalWidth:1280,naturalHeight:1280}};
+engine.art.spillShip['hull-0']={width:256,height:256,box:{x:20,y:90,w:210,h:70},core:210,coreX:125,coreY:125};
+for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight',false,true,false],['vanguard',true,true,false],['vanguard',false,false,false]]){
+ engine.save.equippedSuit=suit;engine.save.motionOff=motionOff;
+ engine.art.spillScene={...scene,vanguardDepot:ready?scene.vanguardDepot:undefined};
+ engine.fly('spill');button('LAUNCH EXPEDITION').click();const s=engine.world.spill;
+ tick(145);
+ if(plays){
+  assert.equal(s.phase,'docking');assert.equal(s.depotGag,true);
+  assert(!app.querySelector('[data-spill-control="inspect-plating"]'));
+  assert(app.querySelector('.ac-spillcontrols').hidden);
+  const time=s.phaseT;engine.pause();tick(60);assert.equal(s.phaseT,time);engine.resume();
+  tick(220);assert.equal(s.phase,'docking');assert(!app.querySelector('[data-spill-control="inspect-plating"]'));
+  tick(10);
+ }
+ assert.equal(s.phase,'depot');assert.equal(s.depotVisits,0);assert(s.freeUpgrade);
+ assert(app.querySelector('[data-spill-control="inspect-plating"]'));
+}
+engine.stop();await win.happyDOM.close();console.log('spill UI: controls, pause, purchases, save/resume, Vanguard-only post-landing playback, overlay lock and missing-art/reduced-motion fallback passed');

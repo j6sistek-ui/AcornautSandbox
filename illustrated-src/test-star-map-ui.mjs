@@ -54,7 +54,7 @@ for(const c of app.querySelectorAll('.ac-mapdisc canvas')){
   assert.equal(Number(c.dataset.planet),V.mapPlanetIndex(def));
 }
 if(mode==='production'){
-  assert(!Cat.PALS.some(p=>p.id==='switchback'));
+  assert(Cat.PALS.some(p=>p.id==='switchback'));assert(Cat.isIap('switchback'));
   assert(!e.flyLevel(C.HYPER_RUN_MISSION.id),'production rejects Hyper Run before arrival/access');
   assert(!e.flyLevel('2-1'),'star totals cannot skip the road');
   // Actual engine launches and sim settlement, one star at a time, through all 100.

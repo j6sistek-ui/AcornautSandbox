@@ -429,7 +429,7 @@ export function goalText(g: Goal, def: LevelDef): string {
 
 export function fxText(fx: LevelFx): string[] {
   const out: string[] = [];
-  if (fx.pal) out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · TAP REVERSE" : fx.pal.toUpperCase()}`);
+  if (fx.pal) out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · COSMETIC" : fx.pal.toUpperCase()}`);
   if (fx.upsideDown) out.push("UPSIDE DOWN");
   if (fx.bounceScale) out.push("SPRINGY PLANETS");
   if (fx.sticky) out.push("STICKY PLANETS · TAP TO RELEASE");

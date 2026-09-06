@@ -730,7 +730,7 @@ export function runPal(save: SaveData, w: World) {
   return w.lvl?.def.fx.pal ?? save.equippedPal;
 }
 function palId(save: SaveData, w: World) {
-  if (w.lvl?.def.fx.pal) return w.lvl.def.fx.pal;
+  if (w.lvl?.def.fx.pal) return w.lvl.def.fx.pal === "switchback" ? "none" : w.lvl.def.fx.pal;
   if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")) return "buddy";
   // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
   // one question, so answering "none" here turns all of them off at once
@@ -739,7 +739,7 @@ function palId(save: SaveData, w: World) {
   // save.equippedPal directly - because the point of the switch is to keep
   // the companion you like without the effect you do not.
   if (save.noPalFx) return "none";
-  return save.equippedPal === "switchback" && (!IS_BETA || !!w.lvl) ? "none" : save.equippedPal;
+  return save.equippedPal === "switchback" ? "none" : save.equippedPal;
 }
 
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
@@ -2899,7 +2899,6 @@ export function flap(w: World, save: SaveData) {
   // held is not a tap, so nothing below counts it or animates it.
   if (w.spill && !spillHold(w.spill, true)) return "none";
   if (IS_BETA && !w.tut && w.flight === "fly") {
-    if (palId(save, w) === "switchback") w.scrollDirection *= -1;
     if (w.lvl?.def.fx.tapFreeze) w.tapFrozen = !w.tapFrozen;
     if (w.stuck) { w.stuck = false; w.hitCooldown = .75; }
   }
@@ -3800,9 +3799,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
   }
 
-  if (save.equippedSuit === "vanguard" && !w.ready && !w.tut?.hold && !w.spill) {
+  if (save.equippedSuit === "vanguard" && !w.tut?.hold && !w.spill) {
     w.vanguard.mode = vanguardModeOf(save);
-    stepVanguard(w.vanguard, dt, w.squirrel.vy);
+    stepVanguard(w.vanguard, dt, w.ready ? 0 : w.squirrel.vy);
   }
 
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
@@ -3900,12 +3899,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
 
-  const reversing = IS_BETA && !w.tut && w.flight === "fly" && palId(save, w) === "switchback";
-  w.scrollReversing = reversing;
-  const move = w.speed * w.driftFactor * simDt * (reversing ? w.scrollDirection : 1);
+  // Switchback is cosmetic. Retired direction fields stay neutral.
+  w.scrollReversing = false;
+  const move = w.speed * w.driftFactor * simDt;
   if (save.equippedSuit === "vanguard") for (const p of w.vanguard.contacts) p.x -= move;
-  if (reversing) { w.scrollTravel += move; w.distance = Math.max(w.distance, w.scrollTravel); }
-  else w.distance += Math.abs(move);
+  w.distance += Math.abs(move);
   for (const p of w.planets) {
     p.x -= move;
     // how FAST the gate sways. Free Flight breathes at about half the
@@ -3943,10 +3941,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       r: 64,
     });
   }
-  // Keep the finite mission corridor for backtracking. Endless experiments
-  // retain a bounded recent corridor; scoring flags never reset on reversal.
-  w.planets = w.planets.filter((p) => reversing ? !!w.lvl || p.x > -w.W * 12 : p.x > -90);
-  w.pickups = w.pickups.filter((a) => (reversing ? !!w.lvl || a.x > -w.W * 12 : a.x > -50) && !a.got);
+  w.planets = w.planets.filter((p) => p.x > -90);
+  w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
   // A missed exit is not a life sentence. If the closing hole scrolled past
   // uncaught, arm the next gate to carry another one — the stretch ends by
   // being flown out of, so there always has to be a door on screen to aim at.

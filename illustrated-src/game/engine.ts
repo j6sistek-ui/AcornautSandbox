@@ -5,6 +5,7 @@ import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
 import { suitLean, SUIT_LEAN } from "./control-constants";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
+import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld } from "./draw";
@@ -246,7 +247,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
       resize();
-      if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art).then(notify); }
+      if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art, save.equippedSuit).then(notify); }
       resetInputTracking();
       notify();
     },
@@ -295,7 +296,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? def.seed ?? undefined : undefined);
       resize();
-      if (def.base === "spill") void loadSpillScene(engine.art).then(notify);
+      if (def.base === "spill") void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
       guideStep("level");
@@ -585,7 +586,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const restored = restoreSpill(save.spillSuspended, world.W, world.H);
       if (!restored) return false;
       unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored; resize();
-      void loadSpillScene(engine.art).then(notify);
+      void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
       world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
       resetInputTracking(); raceAccumulator = 0; last = performance.now(); notify(); return true;
@@ -1385,6 +1386,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const frameDt = Math.min(0.25, (now - last) / 1000);
     noteFrameCost(now - last);
     last = now;
+    if (world.spill) {
+      const scene = engine.art.spillScene;
+      world.spill.depotGagReady = vanguardDepotEligible(save.equippedSuit, !!save.motionOff,
+        !!scene?.depot && scene?.bear?.length === 36 && !!scene?.vanguardDepot && !!engine.art.spillShip[`hull-${world.spill.up.plating}`]);
+      if (save.motionOff && world.spill.depotGag) world.spill.depotGag = false;
+    }
     if (world.race || world.spill) {
       raceAccumulator += frameDt;
       while (raceAccumulator + 1e-12 >= 1 / 60) {
@@ -1470,7 +1477,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     .then((bank) => {
       art = bank;
       engine.art = bank;
-      if (world.spill) void loadSpillScene(bank).then(notify);
+      if (world.spill) void loadSpillScene(bank, save.equippedSuit).then(notify);
       notify();
       prefetchArtBanks(bank);
     })

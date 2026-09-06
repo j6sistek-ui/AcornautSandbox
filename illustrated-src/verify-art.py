@@ -1268,7 +1268,7 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
-    "vanguard",   # owner grant, 5 Sep 2026: dedicated 32-pose backend
+    "vanguard",   # owner grant, 5 Sep 2026: dedicated whole-character backend
 
     "flight",     # the default, and the reference the rest are measured against
     "eclipse",    # owner-supplied, and the only granted suit on this tier today
@@ -2008,12 +2008,12 @@ def verify_run_lifelines(qa: QA) -> None:
 
 def verify_vanguard(qa: QA) -> None:
     """Check the separately authorized flagship bank, including its fallback."""
-    files = [DOCS_ART / f"suits/vanguard/frame-{i}.png" for i in range(1, 33)]
+    files = [DOCS_ART / f"suits/vanguard/frame-{i}.png" for i in range(1, 17)]
     if any(not p.exists() for p in files):
         qa.fail("Vanguard is missing declared poses")
         return
     problems = []
-    if len({sha256(p) for p in files}) != 32:
+    if len({sha256(p) for p in files}) != 16:
         problems.append("drawn poses must be distinct")
     for p in files:
         with Image.open(p) as im:
@@ -2022,12 +2022,12 @@ def verify_vanguard(qa: QA) -> None:
             elif im.getchannel("A").getbbox() in (None, (0, 0, 512, 512)):
                 problems.append(p.name + " has missing/clipped transparency")
     registration = json.loads((ROOT / "art-src/vanguard/registration.json").read_text())
-    if len(registration) != 32 or any(x["registeredHead"][2] != 60 for x in registration):
-        problems.append("registration must hold head size across all 32 drawings")
+    if len(registration) != 16 or any(x["registeredHead"][2] != 60 for x in registration):
+        problems.append("registration must hold head size across all 16 drawings")
     if sha256(DOCS_ART / "suits/vanguard.png") != sha256(files[0]):
         problems.append("loading fallback must be the exact first pose")
     if problems: qa.fail("Vanguard: " + "; ".join(problems))
-    else: qa.ok("Vanguard: 32 unique 512px RGBA poses, measured registration, exact fallback")
+    else: qa.ok("Vanguard: 16 unique 512px RGBA poses, measured registration, exact fallback")
 
 
 def main() -> int:

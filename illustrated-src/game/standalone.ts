@@ -310,8 +310,8 @@ export async function bootStandalone(root: HTMLElement) {
       row.append(b);
     }
     panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
-      ? "Lunge, thruster assist, then a gentle glide. Swipe down for a full dive."
-      : "A slow, flowing flight cycle. Extra taps keep it moving. Swipe down for a full dive."));
+      ? "Slow tail sweep; body follows your climb and fall. Swipe down for a deeper dive."
+      : "Quicker tail sweep and body response. Same flight controls; swipe down for a deeper dive."));
     return panel;
   }
 

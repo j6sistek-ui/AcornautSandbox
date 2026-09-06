@@ -72,7 +72,8 @@ export type ArtBank = {
    *  in the lab's Ship Bench and read from transforms.json beside the art */
   spillShip: Record<string, Sprite>;
   spillShipFit: SpillShipFit | null;
-  spillScene?: { depot?: HTMLImageElement; panorama?: HTMLImageElement; bear?: DepotBearFrame[] };
+  spillScene?: { depot?: HTMLImageElement; panorama?: HTMLImageElement; bear?: DepotBearFrame[];
+    vanguardDepot?: HTMLImageElement };
 };
 
 export type SpillShipXf = { dx: number; dy: number; scale: number; rot: number; behind?: boolean };
@@ -112,17 +113,27 @@ function loadImg(src: string) {
 }
 
 const spillSceneLoads = new WeakMap<ArtBank, Promise<void>>();
+const vanguardDepotLoads = new WeakMap<ArtBank, Promise<void>>();
 /** Mode art loads only when this mode is opened, without holding its launch. */
-export function loadSpillScene(bank: ArtBank): Promise<void> {
+export function loadSpillScene(bank: ArtBank, suit = ""): Promise<void> {
+  bank.spillScene ??= {};
+  let cameo = vanguardDepotLoads.get(bank) ?? Promise.resolve();
+  if (suit === "vanguard" && !vanguardDepotLoads.has(bank)) {
+    cameo = loadImg(artUrl("spill-scene/vanguard-depot.png")).then(sheet => {
+      if ((sheet.naturalWidth || sheet.width) !== 1280 || (sheet.naturalHeight || sheet.height) !== 1280)
+        throw new Error("Invalid Vanguard depot atlas");
+      bank.spillScene!.vanguardDepot = sheet;
+    }).catch(() => { vanguardDepotLoads.delete(bank); /* normal arrival stays usable */ });
+    vanguardDepotLoads.set(bank, cameo);
+  }
   const existing = spillSceneLoads.get(bank);
-  if (existing) return existing;
-  bank.spillScene = {};
+  if (existing) return Promise.all([existing, cameo]).then(() => {});
   const promise = Promise.all([...["depot", "panorama"].map(async name => {
     try { bank.spillScene![name] = await loadImg(artUrl(`spill-scene/${name}.png`)); } catch { /* the procedural field stays playable */ }
   }), loadImg(artUrl("spill-scene/depot-bear.jpg"))
     .then(sheet => { bank.spillScene!.bear = prepareDepotBear(sheet); })
     .catch(() => { /* the landing scene remains usable without its marshal */ })]).then(() => {});
-  spillSceneLoads.set(bank, promise); return promise;
+  spillSceneLoads.set(bank, promise); return Promise.all([promise, cameo]).then(() => {});
 }
 
 function measureSprite(img: HTMLImageElement): { box: Box; core: number; coreX: number; coreY: number } {
@@ -468,7 +479,11 @@ export function loadPalBank(bank: ArtBank, id: string): Promise<void> {
   const count = PAL_ANIM[id];
   const p = count
     ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
-        if (frames.length) bank.palAnim[id] = frames;
+        if (id === "switchback") {
+          // Never compress a partial bank into the wrong animation order.
+          if (frames.length === count) bank.palAnim[id] = frames;
+          else palBankLoads.delete(id);
+        } else if (frames.length) bank.palAnim[id] = frames;
       })
     : Promise.resolve();
   palBankLoads.set(id, p);
@@ -500,7 +515,7 @@ export function prefetchArtBanks(bank: ArtBank) {
 export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = []): Promise<ArtBank> {
   const base = artBase();
   const palIds = [
-    ...(IS_BETA ? ["switchback"] : []),
+    "switchback",
     "bee",
     "buddy",
     "ufo",
