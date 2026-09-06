@@ -1,6 +1,7 @@
 import { VANGUARD_FRAMES } from "./vanguard";
 import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog";
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
+import { SPILL_UTILITY_IDS } from "./spill-content";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -612,11 +613,11 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     return out;
   }
 
-  async function named(ids: string[], folder: string, suffix = "", required = false) {
+  async function named(ids: string[], folder: string, suffix = "", required = false, extension = "png") {
     const out: Record<string, Sprite> = {};
     await Promise.all(
       ids.map(async (id) => {
-        const src = `${base}/${folder}/${id}${suffix}.png?v=${ART_VER}`;
+        const src = `${base}/${folder}/${id}${suffix}.${extension}?v=${ART_VER}`;
         try {
           out[id] = asSprite(await loadImg(src));
         } catch (err) {
@@ -674,7 +675,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
       optional(`${base}/pickups/acorn-coin.svg?v=${ART_VER}`),
       // the Spill's ship: 13 small files. A missing one is not fatal - the
       // painter falls back to the scout ship - so nothing here is required
-      named(SPILL_SHIP_IDS, "spill-ship"),
+      Promise.all([named(SPILL_SHIP_IDS, "spill-ship"), named(SPILL_UTILITY_IDS, "spill-ship/utilities", "", false, "webp")])
+        .then(([ship, utilities]) => ({ ...ship, ...utilities })),
       fetch(`${base}/spill-ship/transforms.json?v=${ART_VER}`)
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => (d && d.parts ? { parts: d.parts, overrides: d.overrides || {} } as SpillShipFit : null))

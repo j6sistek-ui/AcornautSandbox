@@ -71,7 +71,7 @@ import {
 import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
-import { SPILL_UTILITIES, spillMastery, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
 import { bankSpill } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
@@ -152,13 +152,13 @@ export type Engine = {
   setSpillPromptsOff: (off: boolean) => void;
   spillBuy: (what: SpillBuyable) => string;
   spillLeaveDepot: () => void;
-  spillUtility: (id: SpillUtility) => string;
+  spillUtility: (id: SpillUtility, replace?: SpillUtility) => string;
   spillSpecialize: (id: SpillSpecialty) => boolean;
   spillContract: (id: SpillContractKind) => boolean;
   spillSuspend: () => boolean;
   spillResume: () => boolean;
   spillStarter: (id: SpillUtility | null) => void;
-  spillSignal: (on: boolean) => void;
+  setSpillEngineColor: (id: SpillEngineColor) => boolean;
   setSpillAppearance: (kind: keyof SpillAppearance, id: string) => boolean;
   open: (s: Screen) => void;
   buyHelmet: (id: string) => string;
@@ -563,9 +563,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         sfx.section(); notify();
       }
     },
-    spillUtility(id) {
+    spillUtility(id, replace) {
       if (!world.spill || world.screen !== "play") return "closed";
-      const result = spillUtility(world.spill, id);
+      const result = spillUtility(world.spill, id, replace);
       if (result === "ok") { checkpointSpill(); sfx.ui(); } else sfx.warning();
       notify(); return result;
     },
@@ -585,7 +585,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     spillResume() {
       const restored = restoreSpill(save.spillSuspended, world.W, world.H);
       if (!restored) return false;
-      unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored; resize();
+      unlockAudio(); resetRun(world, save, "spill", false); world.spill = restored; restored.signal = spillEngineColor(save).color; resize();
       void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
       world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
@@ -599,12 +599,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (preparing) { world.spill.utilities = id ? [id] : []; world.spill.ownedUtilities = id ? [id] : []; }
       writeSave(save); notify();
     },
-    spillSignal(on) {
+    setSpillEngineColor(id) {
       const fitting = world.screen === "play" && world.spill && ["ready", "depot"].includes(world.spill.phase);
-      if ((world.screen !== "hangar" && !fitting) || save.spillBest < 5) return;
-      save.spillSignal = on;
-      if (fitting) { world.spill.signal = on ? spillMastery(save.spillBest).current.color : "#c99bff"; checkpointSpill(); }
-      writeSave(save); notify();
+      const color = SPILL_ENGINE_COLORS.find(c => c.id === id && save.spillBest >= c.at);
+      if ((world.screen !== "hangar" && !fitting) || !color) return false;
+      save.spillEngineColor = id;
+      save.spillSignal = id !== "stock";
+      if (fitting) { world.spill.signal = spillEngineColor(save).color; checkpointSpill(); }
+      writeSave(save); notify(); return true;
     },
     dismissDead() {
       world.screen = "title";

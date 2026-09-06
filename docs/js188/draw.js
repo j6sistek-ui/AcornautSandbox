@@ -1,21 +1,22 @@
-import { spillDockDuration } from "./spill.js?v=184";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=184";
-import { runPal } from "./sim.js?v=184";
-import { spillAppearance } from "./spill-appearance.js?v=184";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=184";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=184";
-import { goalHud } from "./campaign.js?v=184";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=184";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=184";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=184";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=184";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=184";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=184";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=184";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=184";
-import { spillMastery } from "./spill-content.js?v=184";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=184";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=184";
+import { spillDockTravelDuration } from "./spill.js?v=188";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=188";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=188";
+import { runPal } from "./sim.js?v=188";
+import { spillAppearance } from "./spill-appearance.js?v=188";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=188";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=188";
+import { goalHud } from "./campaign.js?v=188";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=188";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=188";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=188";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=188";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=188";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=188";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=188";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=188";
+import { spillEngineColor } from "./spill-content.js?v=188";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=188";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=188";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1693,7 +1694,7 @@ function rustHull(hull) {
     rustHullCache.set(hull, c);
     return c;
 }
-function drawSpillShip(ctx, w, save, art, s, x) {
+function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
     const appearance = spillAppearance(save);
     const rustWake = appearance.trail === "rust-wake";
     const parts = spillShipParts(s);
@@ -1735,8 +1736,10 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     grad.addColorStop(1, "rgba(83,38,180,0)");
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
+    if (parked)
+        ctx.globalAlpha = 0;
     ctx.fillStyle = grad;
-    ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
+    ctx.shadowColor = `rgba(${signal.r},${signal.g},${signal.b},.82)`;
     ctx.shadowBlur = (5 + 5 * thrust) / z;
     ctx.beginPath();
     ctx.moveTo(engineX, engineY - half);
@@ -1776,7 +1779,8 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.strokeStyle = "#b49a71";
     ctx.lineWidth = 3;
     ctx.stroke();
-    paintSpillHead(ctx, art, save, hole);
+    if (!parked)
+        paintSpillHead(ctx, art, save, hole);
     // Glass is a restrained tint and edge glint, never an opaque disk.
     if (parts.cockpit) {
         ctx.beginPath();
@@ -1793,16 +1797,17 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     for (const l of layers)
         if (!l.xf.behind)
             paint(l);
-    // The earned signal is cosmetic; remaining protection stays on the HUD.
-    for (let i = 0; i < s.utilities.length; i++) {
-        const id = s.utilities[i], x = 106 + i * 19;
-        ctx.fillStyle = "#122438";
-        ctx.fillRect(x - 2, 126, 16, 15);
-        ctx.strokeStyle = "#c5ac7a";
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(x - 2, 126, 16, 15);
-        ctx.strokeStyle = "#a4e9ea";
-        paintSpillModule(ctx, id, x, 127, 12);
+    // Fixed attachment mounts shared by flight and all ship previews.
+    const mounts = { magnet: [184, 134, 43, 48], scanner: [95, 45, 40, 48],
+        brake: [42, 112, 48, 46], capacitor: [115, 141, 45, 45] };
+    for (const id of s.utilities) {
+        const [mx, my, mw, mh] = mounts[id], module = art.spillShip[id];
+        if (module)
+            ctx.drawImage(module, mx, my, mw, mh);
+        else {
+            ctx.strokeStyle = "#a4e9ea";
+            paintSpillModule(ctx, id, mx + 6, my + 6, 20);
+        }
     }
     ctx.fillStyle = "#f5cb7a";
     for (let i = 0; i < 3; i++)
@@ -1882,8 +1887,10 @@ function drawSpillWorld(ctx, w, save, art) {
     spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
     if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT * SPILL.dockTime / spillDockDuration(s);
-        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
+        const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+        const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
+        const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+        const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
         ctx.save();
         ctx.globalAlpha = view.opacity;
         ctx.drawImage(dock, view.x, view.y, view.width, view.height);
@@ -1895,6 +1902,22 @@ function drawSpillWorld(ctx, w, save, art) {
         ctx.fillRect(0, 0, W, H);
         const marshal = spillDockBear(view, arrival, !!save.motionOff);
         const bear = art.spillScene?.bear?.[marshal.frame];
+        if (cameo) {
+            const pose = vanguardDepotPose(gagTime);
+            const actorX = view.x + view.width * (.664 + .054 * pose.walk + .027 * pose.enter);
+            const actorY = view.y + view.height * (.645 - .10 * pose.enter);
+            // He travels behind the marshal. The same painted trousers stay in
+            // both hands through the laugh, then disappear into the waist pocket.
+            paintVanguardDepot(ctx, art.spillScene.vanguardDepot, actorX, actorY, marshal.height * .9, gagTime);
+            if (pose.enter > 0) {
+                const px = view.x + view.width * .745, py = view.y + view.height * .582;
+                const glow = ctx.createRadialGradient(px, py, 0, px, py, marshal.height * .8);
+                glow.addColorStop(0, `rgba(200,178,255,${.18 * Math.sin(pose.enter * Math.PI)})`);
+                glow.addColorStop(1, "rgba(124,73,239,0)");
+                ctx.fillStyle = glow;
+                ctx.fillRect(px - marshal.height, py - marshal.height, marshal.height * 2, marshal.height * 2);
+            }
+        }
         if (bear) {
             ctx.fillStyle = "rgba(6,5,16,.45)";
             ctx.beginPath();
@@ -1906,6 +1929,20 @@ function drawSpillWorld(ctx, w, save, art) {
             ctx.scale(-scale, scale); // face the incoming ship
             ctx.drawImage(bear.image, -bear.footX, -bear.footY);
             ctx.restore();
+        }
+        if (cameo) {
+            // The hull stays parked in the same world position as the camera
+            // moves in; its cockpit is empty and its thruster is off.
+            const parkedX = view.x + view.width * .648, parkedY = view.y + view.height * .64;
+            const shipScale = view.height / (Math.max(W / (dock.naturalWidth || dock.width), H / (dock.naturalHeight || dock.height)) * (dock.naturalHeight || dock.height) * 1.42);
+            ctx.save();
+            ctx.translate(parkedX, parkedY);
+            ctx.scale(shipScale, shipScale);
+            ctx.translate(-s.pilot.x, -s.pilot.y);
+            drawSpillShip(ctx, w, save, art, s, s.pilot.x, true);
+            ctx.restore();
+            ctx.restore();
+            return;
         }
         ctx.restore();
     }
@@ -2224,7 +2261,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
     };
     if (s.bannerT > 0 && s.phase !== "countdown") {
         ctx.globalAlpha = Math.min(1, s.bannerT * 1.6);
-        hudLine(s.banner, s.banner.startsWith("HULL") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
+        hudLine(s.banner, s.banner.startsWith("HEALTH") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
         ctx.globalAlpha = 1;
     }
     if (s.gold > 0)
@@ -2386,14 +2423,14 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillText("GO", W / 2, H * 0.34 + 120);
         ctx.restore();
     }
-    if (s.phase === "docking") {
+    if (s.phase === "docking" && !s.depotGag) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#f5d59b";
         ctx.font = "800 12px Figtree, system-ui";
         ctx.fillText("SALVAGE DEPOT", W / 2, H * 0.24);
         ctx.fillStyle = "#f1e9ff";
         ctx.font = `800 ${W < 380 ? 21 : 26}px Figtree, system-ui`;
-        ctx.fillText(s.phaseT / spillDockDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
+        ctx.fillText(s.phaseT / spillDockTravelDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockTravelDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
         ctx.fillStyle = "rgba(209,222,246,.78)";
         ctx.font = "600 11px Figtree, system-ui";
         ctx.fillText("AUTOPILOT ENGAGED", W / 2, H * 0.24 + 58);
@@ -2405,7 +2442,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillText("RESPAWN CORE", W / 2, H * 0.36);
         ctx.fillStyle = "rgba(215,230,247,.85)";
         ctx.font = "700 12px Figtree, system-ui";
-        ctx.fillText("hull restored · three seconds of Gold", W / 2, H * 0.36 + 22);
+        ctx.fillText("full health · 3 seconds of Gold protection", W / 2, H * 0.36 + 22);
     }
 }
 export function drawWorld(ctx, w, save, art) {
@@ -4089,17 +4126,14 @@ function smoothMotionVy(t, vy) {
 // linear and more hyperbolic". Applied to both ramps so a climb stays
 // symmetrical.
 export const POSE_CURVE = 1.7;
-// The two dials the pause sheet exposes for EVERY suit, so the owner can
-// judge them mid-run against the same field: DIVE DEPTH scales the dive
-// half of the range (1 = the art's full ramp), and POSE MODE "ascent"
-// flies only the ascent bank - a dive holds the level frame - to test
-// whether ascent frames plus horizontal are enough on their own.
-let poseDiveDepth = 1;
-let poseAscentOnly = false;
-export function setPoseDials(diveDepth, ascentOnly) {
-    poseDiveDepth = Math.max(0.25, Math.min(1, diveDepth || 1));
-    poseAscentOnly = !!ascentOnly;
-}
+// THE DIVE IS SHALLOW, FOR EVERY SUIT (owner, 2 Sep 2026: "shallow is the
+// dive answer across the board", "full frames not ascent only"). The two
+// pause-sheet dials that let this be judged mid-run are gone; what they
+// settled on is fixed here. The dive half of the range is halved before
+// the pose curve, so a dive reaches the first THREE frames of its ramp
+// and no deeper (0.5^1.7 = 0.31 of an eight-frame ramp); every frame of
+// the climb flies. The loadout case sweeps exactly this reach.
+export const POSE_DIVE_DEPTH = 0.5;
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
 // The shipped mapping poses the body by INSTANTANEOUS vertical speed, and
@@ -4262,11 +4296,15 @@ function trackRateMotion(t, vy) {
     ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
     return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0, 
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0,
 // the lean in force for this suit. Passed rather than looked up because
 // paintIllustrated has no save: the caller already resolved it, and two
 // resolutions could disagree.
-lean = SUIT_LEAN_DEFAULT) {
+lean = SUIT_LEAN_DEFAULT,
+// the loadout case hands in the pose itself (-1 full climb .. +1 full
+// dive, already shaped), so its sweep lands on frames exactly, with no
+// smoother between; NaN means "derive it from the motion, as in play"
+poseOverride = NaN) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -4424,24 +4462,28 @@ lean = SUIT_LEAN_DEFAULT) {
             // two mappings, switched from the hangar so both can be flown back to back
             let v;
             let cycle = 0;
-            if (motionMode === 1) {
-                const r = trackRateMotion(_t, motionVy);
-                v = r.pose;
-                cycle = r.cycle;
-            }
-            else if (motionMode === 2) {
-                v = trackHeadingMotion(_t, motionVy, motionVx);
+            if (Number.isFinite(poseOverride)) {
+                v = Math.max(-1, Math.min(1, poseOverride));
             }
             else {
-                const sv = smoothMotionVy(_t, motionVy);
-                v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+                if (motionMode === 1) {
+                    const r = trackRateMotion(_t, motionVy);
+                    v = r.pose;
+                    cycle = r.cycle;
+                }
+                else if (motionMode === 2) {
+                    v = trackHeadingMotion(_t, motionVy, motionVx);
+                }
+                else {
+                    const sv = smoothMotionVy(_t, motionVy);
+                    v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+                }
+                // shape the attitude: the dive half shallowed, both halves curved
+                if (v > 0)
+                    v *= POSE_DIVE_DEPTH;
+                v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
             }
-            // shape the attitude: dives scaled by the dial, both halves curved
-            if (v > 0)
-                v *= poseDiveDepth;
-            v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
-            // ascent-only holds the level frame through a dive
-            const diving = v > 0 && !poseAscentOnly;
+            const diving = v > 0;
             const bank = diving ? descFrames : ascFrames;
             const idxM = diving || v < 0
                 ? Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1) + cycle)))
@@ -4617,7 +4659,12 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     if (flagship)
         paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
     else
-        paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, save.eclipseMotionMode ?? 2, w.speed, lean);
+        paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
+        // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
+        // is only heading for eclipse. everything else stays as it was"). The
+        // switch that cycled Eclipse's three mappings is gone; Eclipse flies
+        // heading, every other suit flies the shipped pose-per-velocity curve.
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, suit.id === "eclipse" ? 2 : 0, w.speed, lean);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
@@ -4644,7 +4691,13 @@ function paintPal(ctx, art, id, x, y, size, time = 0) {
             : id === "clockling" ? 1.12
                 : id === "prismwing" ? 1.08
                     : 1);
-        drawSprite(ctx, spr, x, y, fit);
+        if (id === "switchback") {
+            // The owner's frames share one registered canvas. Fitting each fin
+            // silhouette independently would make the acorn breathe and wander.
+            ctx.drawImage(spr, x - fit * 128 / 208, y - fit * 128 / 208, fit * 256 / 208, fit * 256 / 208);
+        }
+        else
+            drawSprite(ctx, spr, x, y, fit);
         return;
     }
     if (id !== "none") {
@@ -4765,7 +4818,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
     }
     s.pilot.y = 0;
     s.held = true;
-    s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+    s.signal = spillEngineColor(save).color;
     const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 };
     ctx.save();
     ctx.translate(cx, cy + Math.sin(t * 1.7) * 2);
@@ -4773,7 +4826,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
     drawSpillShip(ctx, w, save, art, s, 0);
     ctx.restore();
 }
-export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
+export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT,
 // THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap
 // arc that never reaches the attitudes a real dive does, so dialling a
 // lean against it would be tuning the wrong end of the range. In sweep
@@ -4850,41 +4903,50 @@ sweep = false, vanguardMode = "cinematic") {
     // on every beat - a different frame for one paint, then the reset.
     // Seraph's first three frames of either ramp are the same glide, so on
     // that arc it never visibly moved. In the case the pilot now rolls
-    // through the WHOLE bank both ways - full climb to full dive and back on
-    // a continuous arc - so every frame the artist painted is on show, in
-    // order, with no seam. The normalisation and pose curve below are
-    // inverted here so the swept attitude lands on the frame index exactly;
-    // the 1.15 covers the smoother's lag at this period. Tap-bank suits keep
-    // the beat, because their tap IS the showcase.
-    const SWEEP = 3.6; // climb -> dive -> climb
-    const swept = !sweep
-        && (art.suitAsc?.[suit.id]?.length ?? 0) > 0
-        && (art.suitDesc?.[suit.id]?.length ?? 0) > 0
-        && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
-    const sph = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP * Math.PI * 2;
-    // a TRIANGLE, not a cosine: equal time on every frame, rather than a
-    // long dwell on the two end poses and a rush through the middle. The
-    // 1.2 is what the smoother's lag costs at this slope; the clamp in the
-    // normalisation catches the excess, which reads as a short hold at each
-    // end of the roll.
-    const att = (1 - 2 * Math.abs(sph / Math.PI - 1)) * 1.2; // -1 full climb .. +1 full dive
-    const sweptVy = Math.sign(att) * Math.pow(Math.min(1, Math.abs(att)), 1 / POSE_CURVE) * (att < 0 ? 470 : 620) * (Math.abs(att) > 1 ? Math.abs(att) : 1);
-    const vy = swept ? sweptVy : -KICK + PULL * p;
-    const rise = swept
-        ? -70 * Math.sin(sph) // a gentle bob on the same arc
-        : -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
+    // through the frames PLAY REACHES, in order, both ways: the whole climb
+    // ramp, and the dive ramp as far as the shallow dive takes it - a
+    // triangle in frame-space, so every frame gets the same time and the
+    // turn at each end holds one step. The pose goes straight into the
+    // painter, no smoother in between, so it lands on the frame exactly.
+    // Tap-bank suits keep the beat, because their tap IS the showcase.
+    const ascN = art.suitAsc?.[suit.id]?.length ?? 0;
+    const descN = art.suitDesc?.[suit.id]?.length ?? 0;
+    const swept = !sweep && ascN > 0 && descN > 0 && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
+    let sweptPose = NaN;
+    let vy = -KICK + PULL * p;
+    let rise = -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
     // ROTATION IS SMOOTHED, because the arc's VELOCITY is a sawtooth: vy runs
     // -210 up to +210 across a beat and then snaps back to -210 at the next
     // tap. Position loops seamlessly - rise is zero at both ends - but a
     // rotation taken straight off vy jumps 27 degrees on every beat boundary.
     // In flight that is hidden by speed and by the pose changing on the same
     // frame; at half speed and 158px it reads as the pilot flinching.
-    const rot = sweep
+    let rot = sweep
         // the sim's own clamps: -0.55 at full climb, +0.95 at full dive
         ? -0.55 + (0.95 + 0.55) * (0.5 - 0.5 * Math.cos((t / 2.6) * Math.PI * 2))
-        // the swept arc is continuous, so its lean needs no smoothing
-        : swept ? Math.max(-0.34, Math.min(0.6, vy / 900))
-            : previewRot(p, BEAT, KICK, PULL);
+        : previewRot(p, BEAT, KICK, PULL);
+    if (swept) {
+        const STEP = 0.13; // seconds per frame
+        const up = ascN - 1; // asc-1 .. asc-N
+        const reach = Math.round(Math.pow(POSE_DIVE_DEPTH, POSE_CURVE) * (descN - 1));
+        const down = reach + 1; // asc-1 -> desc-1 .. desc-(reach+1)
+        const SWEEP = 2 * STEP * (up + down);
+        const x = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP;
+        const u = 1 - 2 * Math.abs(2 * x - 1); // -1 .. 1 .. -1, linear
+        // frame-space: negative steps climb, positive steps dive; the painter
+        // rounds |pose|*(N-1) to an index, so a half step either side of zero
+        // is the level frame, one full step like every other
+        sweptPose = u < 0
+            ? -(-u * up) / Math.max(1, up)
+            : u * down > 0.5 ? Math.max(1e-4, (u * down - 1) / Math.max(1, descN - 1)) : 0;
+        // the lean and the bob follow the same arc: the velocity that would
+        // have produced this attitude in play, the dive side at its shallow cap
+        vy = sweptPose < 0
+            ? -470 * Math.pow(-sweptPose, 1 / POSE_CURVE)
+            : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / POSE_DIVE_DEPTH;
+        rise = -70 * Math.sin(x * Math.PI * 2);
+        rot = Math.max(-0.34, Math.min(0.6, vy / 900));
+    }
     ctx.save();
     ctx.translate(cx, cy + rise * (size / 52) * 0.055);
     ctx.scale(size / 52, size / 52);
@@ -4898,7 +4960,7 @@ sweep = false, vanguardMode = "cinematic") {
     ctx.rotate(rot * 0.8 * (rot < 0 ? lean.up : lean.down) - (articulated ? 0 : kick * 0.12));
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
-    paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean);
+    paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose);
     ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {

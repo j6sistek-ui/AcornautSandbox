@@ -1,22 +1,22 @@
-import { spillDockTravelDuration } from "./spill.js?v=187";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=187";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=187";
-import { runPal } from "./sim.js?v=187";
-import { spillAppearance } from "./spill-appearance.js?v=187";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=187";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=187";
-import { goalHud } from "./campaign.js?v=187";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=187";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=187";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=187";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=187";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=187";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=187";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=187";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=187";
-import { spillMastery } from "./spill-content.js?v=187";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=187";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=187";
+import { spillDockTravelDuration } from "./spill.js?v=188";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=188";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=188";
+import { runPal } from "./sim.js?v=188";
+import { spillAppearance } from "./spill-appearance.js?v=188";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=188";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=188";
+import { goalHud } from "./campaign.js?v=188";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=188";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=188";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=188";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=188";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=188";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=188";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=188";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=188";
+import { spillEngineColor } from "./spill-content.js?v=188";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=188";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=188";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1739,7 +1739,7 @@ function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
     if (parked)
         ctx.globalAlpha = 0;
     ctx.fillStyle = grad;
-    ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
+    ctx.shadowColor = `rgba(${signal.r},${signal.g},${signal.b},.82)`;
     ctx.shadowBlur = (5 + 5 * thrust) / z;
     ctx.beginPath();
     ctx.moveTo(engineX, engineY - half);
@@ -1797,16 +1797,17 @@ function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
     for (const l of layers)
         if (!l.xf.behind)
             paint(l);
-    // The earned signal is cosmetic; remaining protection stays on the HUD.
-    for (let i = 0; i < s.utilities.length; i++) {
-        const id = s.utilities[i], x = 106 + i * 19;
-        ctx.fillStyle = "#122438";
-        ctx.fillRect(x - 2, 126, 16, 15);
-        ctx.strokeStyle = "#c5ac7a";
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(x - 2, 126, 16, 15);
-        ctx.strokeStyle = "#a4e9ea";
-        paintSpillModule(ctx, id, x, 127, 12);
+    // Fixed attachment mounts shared by flight and all ship previews.
+    const mounts = { magnet: [184, 134, 43, 48], scanner: [95, 45, 40, 48],
+        brake: [42, 112, 48, 46], capacitor: [115, 141, 45, 45] };
+    for (const id of s.utilities) {
+        const [mx, my, mw, mh] = mounts[id], module = art.spillShip[id];
+        if (module)
+            ctx.drawImage(module, mx, my, mw, mh);
+        else {
+            ctx.strokeStyle = "#a4e9ea";
+            paintSpillModule(ctx, id, mx + 6, my + 6, 20);
+        }
     }
     ctx.fillStyle = "#f5cb7a";
     for (let i = 0; i < 3; i++)
@@ -2260,7 +2261,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
     };
     if (s.bannerT > 0 && s.phase !== "countdown") {
         ctx.globalAlpha = Math.min(1, s.bannerT * 1.6);
-        hudLine(s.banner, s.banner.startsWith("HULL") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
+        hudLine(s.banner, s.banner.startsWith("HEALTH") ? "#ff9a8c" : s.banner.startsWith("PULSE") ? "#ffe680" : "#f2b653");
         ctx.globalAlpha = 1;
     }
     if (s.gold > 0)
@@ -2441,7 +2442,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillText("RESPAWN CORE", W / 2, H * 0.36);
         ctx.fillStyle = "rgba(215,230,247,.85)";
         ctx.font = "700 12px Figtree, system-ui";
-        ctx.fillText("hull restored · three seconds of Gold", W / 2, H * 0.36 + 22);
+        ctx.fillText("full health · 3 seconds of Gold protection", W / 2, H * 0.36 + 22);
     }
 }
 export function drawWorld(ctx, w, save, art) {
@@ -4295,11 +4296,11 @@ function trackRateMotion(t, vy) {
     ratePhase += dt * 2 * Math.PI * MOTION_CYCLE_HZ;
     return { pose, cycle: Math.sin(ratePhase) * MOTION_CYCLE_FRAMES * rateStill };
 }
-function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0, 
+function paintIllustrated(ctx, spr, x, y, size, helmet, suit, _t = 0, art, frameKey = "idle-1", sprNext, keyNext, blend = 0, halo = "dark", tailRot = 0, tapAnimT = -1, bounceAnimT = -1, bounceAnimDir = 0, bounceAnimStrength = 0, motionVy = 0, motionMode = 0, motionVx = 0,
 // the lean in force for this suit. Passed rather than looked up because
 // paintIllustrated has no save: the caller already resolved it, and two
 // resolutions could disagree.
-lean = SUIT_LEAN_DEFAULT, 
+lean = SUIT_LEAN_DEFAULT,
 // the loadout case hands in the pose itself (-1 full climb .. +1 full
 // dive, already shaped), so its sweep lands on frames exactly, with no
 // smoother between; NaN means "derive it from the motion, as in play"
@@ -4658,7 +4659,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     if (flagship)
         paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
     else
-        paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT, 
+        paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
         // is only heading for eclipse. everything else stays as it was"). The
         // switch that cycled Eclipse's three mappings is gone; Eclipse flies
@@ -4817,7 +4818,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
     }
     s.pilot.y = 0;
     s.held = true;
-    s.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+    s.signal = spillEngineColor(save).color;
     const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 };
     ctx.save();
     ctx.translate(cx, cy + Math.sin(t * 1.7) * 2);
@@ -4825,7 +4826,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
     drawSpillShip(ctx, w, save, art, s, 0);
     ctx.restore();
 }
-export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT, 
+export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean = SUIT_LEAN_DEFAULT,
 // THE LEAN EDITOR'S INSTRUMENT. The ordinary preview flies a gentle tap
 // arc that never reaches the attitudes a real dive does, so dialling a
 // lean against it would be tuning the wrong end of the range. In sweep

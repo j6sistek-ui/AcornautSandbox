@@ -1,17 +1,17 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=184";
-import { trailWornBy } from "./catalog.js?v=184";
-import { missionRandom } from "./mission-rng.js?v=184";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=184";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=184";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=184";
-import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=184";
-import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=184";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=184";
-import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=184";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=184";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=184";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=184";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=184";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=188";
+import { trailWornBy } from "./catalog.js?v=188";
+import { missionRandom } from "./mission-rng.js?v=188";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=188";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=188";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=188";
+import { vanguardModeOf, modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=188";
+import { GUIDE_SUIT, GUIDE_HELM } from "./catalog.js?v=188";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=188";
+import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=188";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=188";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=188";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=188";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=188";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -259,7 +259,7 @@ export function runPal(save, w) {
 }
 function palId(save, w) {
     if (w.lvl?.def.fx.pal)
-        return w.lvl.def.fx.pal;
+        return w.lvl.def.fx.pal === "switchback" ? "none" : w.lvl.def.fx.pal;
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
         return "buddy";
     // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
@@ -270,7 +270,7 @@ function palId(save, w) {
     // the companion you like without the effect you do not.
     if (save.noPalFx)
         return "none";
-    return save.equippedPal === "switchback" && (!IS_BETA || !!w.lvl) ? "none" : save.equippedPal;
+    return save.equippedPal === "switchback" ? "none" : save.equippedPal;
 }
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
 // designed, and a pilot who armed Thrill Seeker and then replayed it would
@@ -1045,7 +1045,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             w.spill.utilities = [starter];
             w.spill.ownedUtilities = [starter];
         }
-        w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+        w.spill.signal = spillEngineColor(save).color;
     }
     w.scrollReversing = false;
     w.scrollDirection = -1;
@@ -2438,8 +2438,6 @@ export function flap(w, save) {
     if (w.spill && !spillHold(w.spill, true))
         return "none";
     if (IS_BETA && !w.tut && w.flight === "fly") {
-        if (palId(save, w) === "switchback")
-            w.scrollDirection *= -1;
         if (w.lvl?.def.fx.tapFreeze)
             w.tapFrozen = !w.tapFrozen;
         if (w.stuck) {
@@ -3478,18 +3476,13 @@ export function updateWorld(w, save, dt) {
     w.squirrel.vy += gravOf(save, w) * simDt;
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
-    const reversing = IS_BETA && !w.tut && w.flight === "fly" && palId(save, w) === "switchback";
-    w.scrollReversing = reversing;
-    const move = w.speed * w.driftFactor * simDt * (reversing ? w.scrollDirection : 1);
+    // Switchback is cosmetic. Retired direction fields stay neutral.
+    w.scrollReversing = false;
+    const move = w.speed * w.driftFactor * simDt;
     if (save.equippedSuit === "vanguard")
         for (const p of w.vanguard.contacts)
             p.x -= move;
-    if (reversing) {
-        w.scrollTravel += move;
-        w.distance = Math.max(w.distance, w.scrollTravel);
-    }
-    else
-        w.distance += Math.abs(move);
+    w.distance += Math.abs(move);
     for (const p of w.planets) {
         p.x -= move;
         // how FAST the gate sways. Free Flight breathes at about half the
@@ -3529,10 +3522,8 @@ export function updateWorld(w, save, dt) {
             r: 64,
         });
     }
-    // Keep the finite mission corridor for backtracking. Endless experiments
-    // retain a bounded recent corridor; scoring flags never reset on reversal.
-    w.planets = w.planets.filter((p) => reversing ? !!w.lvl || p.x > -w.W * 12 : p.x > -90);
-    w.pickups = w.pickups.filter((a) => (reversing ? !!w.lvl || a.x > -w.W * 12 : a.x > -50) && !a.got);
+    w.planets = w.planets.filter((p) => p.x > -90);
+    w.pickups = w.pickups.filter((a) => a.x > -50 && !a.got);
     // A missed exit is not a life sentence. If the closing hole scrolled past
     // uncaught, arm the next gate to carry another one — the stretch ends by
     // being flown out of, so there always has to be a door on screen to aim at.

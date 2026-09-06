@@ -16,6 +16,12 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// Ship the approved Depot artwork through the shared production/beta export.
+mkdirSync(join(pages, "art/spill-ship/utilities"), { recursive: true });
+for (const id of ["magnet", "scanner", "brake", "capacitor"]) {
+  cpSync(join(root, `art-src/spill-workshop/${id}.webp`), join(pages, `art/spill-ship/utilities/${id}.webp`));
+}
+cpSync(join(root, "art-src/spill-workshop/workshop.webp"), join(pages, "art/spill-scene/workshop.webp"));
 // Painted zone masters are copied by the same production/beta export.
 mkdirSync(join(pages, "art/zone-scenes"), { recursive: true });
 for (const id of ["deep-space", "rust-belt", "blackout-zone", "crystal-belt", "hypervivid", "neon-bazaar", "prism-storm", "event-horizon"]) {
@@ -69,7 +75,7 @@ for (const name of readdirSync(join(pages, "js"))) {
       const bare = file.replace(/\?.*$/, "");
       return `from ${q}${bare}?v=${ver}${q2}`;
     },
-  ).replace("__BUILD_TIME__", buildTime);
+  ).replace("__BUILD_TIME__", buildTime).replace(/[ \t]+$/gm, "");
   writeFileSync(p, next);
 }
 
@@ -105,6 +111,10 @@ const idx = join(pages, "index.html");
 const zoneCss = readFileSync(join(root, "illustrated-src/star-map.css"), "utf8");
 const zoneStyle = `<style id="ac-star-map-css">${zoneCss}</style>`;
 let shell = readFileSync(idx, "utf8");
+const workshopStyle = `<style id="ac-spill-workshop-css">${readFileSync(join(root, "illustrated-src/spill-workshop.css"), "utf8")}</style>`;
+shell = shell.includes('<style id="ac-spill-workshop-css">')
+  ? shell.replace(/<style id="ac-spill-workshop-css">[\s\S]*?<\/style>/, workshopStyle)
+  : shell.replace("</head>", `${workshopStyle}\n</head>`);
 shell = shell.includes('<style id="ac-star-map-css">')
   ? shell.replace(/<style id="ac-star-map-css">[\s\S]*?<\/style>/, zoneStyle)
   : shell.replace("</head>", `${zoneStyle}\n</head>`);
