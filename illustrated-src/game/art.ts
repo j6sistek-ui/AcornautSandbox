@@ -409,7 +409,9 @@ const ASC_BANKS: Record<string, number> =
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8 }
+        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+        // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
+        briellacat: 7 }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
@@ -417,7 +419,8 @@ const DESC_BANKS: Record<string, number> =
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 7, verdant: 7, gemmie: 7,
-        sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
+        sammie: 7, frost: 8, ghost: 8, leviathan: 8,
+        briellacat: 4 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
   "vanguard",

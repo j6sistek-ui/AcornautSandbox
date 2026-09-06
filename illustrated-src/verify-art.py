@@ -1317,6 +1317,9 @@ CUSTOM_FLIGHT_SUITS = {
                   # nor pale. Still rigged, unlike the other custom
                   # characters: the neck cut took cleanly at a 13.3% tail
                   # share on the new master.
+    "briellacat", # owner-supplied sheet, 6 Sep 2026: Briella's Cat, a whole
+                  # pencil character. Twelve poses cut into a 7-frame climb
+                  # and a 4-frame dive; its own head, so no dome anchors.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
