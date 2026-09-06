@@ -220,7 +220,10 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        expected = (512, 512) if flagship else (256, 256)
+        if rel == "suits/vanguard/maneuver-parts.png":
+            expected = (1024, 768)  # twelve isolated 256px puppet-part cells
+        else:
+            expected = (512, 512) if flagship else (256, 256)
         if size != expected:
             wrong_size.append(f"{rel} is {size[0]}x{size[1]}")
         if "A" not in bands:

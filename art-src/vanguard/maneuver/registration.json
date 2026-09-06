@@ -1,0 +1,278 @@
+[
+  {
+    "name": "head",
+    "cell": 0,
+    "sourceBounds": {
+      "left": 38,
+      "top": 61,
+      "right": 328,
+      "bottom": 461,
+      "area": 78267,
+      "label": 1
+    },
+    "scale": 0.5925925925925926,
+    "anchors": [
+      [
+        124.148,
+        233.778
+      ],
+      [
+        155.556,
+        146.074
+      ]
+    ]
+  },
+  {
+    "name": "torso",
+    "cell": 1,
+    "sourceBounds": {
+      "left": 350,
+      "top": 110,
+      "right": 687,
+      "bottom": 442,
+      "area": 91288,
+      "label": 4
+    },
+    "scale": 0.7017543859649122,
+    "anchors": [
+      [
+        156.772,
+        50.456
+      ],
+      [
+        150.456,
+        228
+      ]
+    ]
+  },
+  {
+    "name": "nearUpperArm",
+    "cell": 2,
+    "sourceBounds": {
+      "left": 788,
+      "top": 87,
+      "right": 916,
+      "bottom": 437,
+      "area": 35171,
+      "label": 2
+    },
+    "scale": 0.676056338028169,
+    "anchors": [
+      [
+        112.113,
+        35.718
+      ],
+      [
+        142.535,
+        218.93
+      ]
+    ]
+  },
+  {
+    "name": "nearForearm",
+    "cell": 3,
+    "sourceBounds": {
+      "left": 1040,
+      "top": 89,
+      "right": 1190,
+      "bottom": 438,
+      "area": 32592,
+      "label": 3
+    },
+    "scale": 0.6779661016949152,
+    "anchors": [
+      [
+        148,
+        40.542
+      ],
+      [
+        148.678,
+        212.068
+      ]
+    ]
+  },
+  {
+    "name": "farUpperArm",
+    "cell": 4,
+    "sourceBounds": {
+      "left": 102,
+      "top": 494,
+      "right": 250,
+      "bottom": 809,
+      "area": 31419,
+      "label": 8
+    },
+    "scale": 0.75,
+    "anchors": [
+      [
+        150.125,
+        41
+      ],
+      [
+        102.125,
+        205.25
+      ]
+    ]
+  },
+  {
+    "name": "farForearm",
+    "cell": 5,
+    "sourceBounds": {
+      "left": 399,
+      "top": 486,
+      "right": 534,
+      "bottom": 815,
+      "area": 31143,
+      "label": 6
+    },
+    "scale": 0.718562874251497,
+    "anchors": [
+      [
+        122.97,
+        41.772
+      ],
+      [
+        121.533,
+        215.665
+      ]
+    ]
+  },
+  {
+    "name": "nearThigh",
+    "cell": 6,
+    "sourceBounds": {
+      "left": 693,
+      "top": 485,
+      "right": 847,
+      "bottom": 803,
+      "area": 39462,
+      "label": 5
+    },
+    "scale": 0.7430340557275542,
+    "anchors": [
+      [
+        123.17,
+        32.52
+      ],
+      [
+        138.031,
+        208.619
+      ]
+    ]
+  },
+  {
+    "name": "nearShin",
+    "cell": 7,
+    "sourceBounds": {
+      "left": 1008,
+      "top": 486,
+      "right": 1212,
+      "bottom": 817,
+      "area": 38475,
+      "label": 7
+    },
+    "scale": 0.7142857142857143,
+    "anchors": [
+      [
+        117.643,
+        37.286
+      ],
+      [
+        137.643,
+        218
+      ]
+    ]
+  },
+  {
+    "name": "farThigh",
+    "cell": 8,
+    "sourceBounds": {
+      "left": 77,
+      "top": 843,
+      "right": 244,
+      "bottom": 1169,
+      "area": 41860,
+      "label": 10
+    },
+    "scale": 0.7250755287009063,
+    "anchors": [
+      [
+        139.601,
+        40.628
+      ],
+      [
+        117.124,
+        204.495
+      ]
+    ]
+  },
+  {
+    "name": "farShin",
+    "cell": 9,
+    "sourceBounds": {
+      "left": 375,
+      "top": 845,
+      "right": 574,
+      "bottom": 1178,
+      "area": 36683,
+      "label": 11
+    },
+    "scale": 0.7100591715976331,
+    "anchors": [
+      [
+        97.467,
+        38.533
+      ],
+      [
+        120.899,
+        213.917
+      ]
+    ]
+  },
+  {
+    "name": "tail",
+    "cell": 10,
+    "sourceBounds": {
+      "left": 587,
+      "top": 839,
+      "right": 934,
+      "bottom": 1187,
+      "area": 67331,
+      "label": 9
+    },
+    "scale": 0.6798866855524079,
+    "anchors": [
+      [
+        224.544,
+        211.966
+      ],
+      [
+        68.85,
+        57.632
+      ]
+    ]
+  },
+  {
+    "name": "tailRelaxed",
+    "cell": 11,
+    "sourceBounds": {
+      "left": 918,
+      "top": 879,
+      "right": 1235,
+      "bottom": 1167,
+      "area": 56895,
+      "label": 12
+    },
+    "scale": 0.7453416149068323,
+    "anchors": [
+      [
+        227.13,
+        214.832
+      ],
+      [
+        76.571,
+        64.273
+      ]
+    ]
+  }
+]

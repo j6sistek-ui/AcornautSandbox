@@ -1,13 +1,15 @@
 import type { ArtBank } from './art';
 import { paintVanguardRig } from './vanguard-rig';
 import { PHYS } from './catalog';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver';
+import type { ManeuverMotion } from './vanguard-maneuver';
 
 export const VANGUARD_FRAMES = 16;
 // ONE MOTION (owner, 6 Sep 2026: "the Flight version is the version now,
 // remove the others"). The Cinematic, Continuous and Upright trials are
-// gone; what shipped as Flight - the articulated cruise - is AcorNut's
-// flight. The mode field stays on the state as a constant because the rig
-// keys its texture cache on it.
+// gone; what shipped as Flight - the articulated cruise on the maneuver
+// rig - is AcorNut's flight. The mode field stays on the state as a
+// constant because the rig keys its texture cache on it.
 export type VanguardMotionMode = 'cruise';
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
@@ -24,13 +26,14 @@ export type VanguardMotion = {
   diving: boolean; freshThrust: boolean;
   thrustLeft: number; thrustPower: number; thrust: number;
   /** THE JETPACK BURST (owner: "add jetpack effect on tap"): 1 on the tap,
-   *  gone in .42s - a flash at the nozzles and three puffs that carry off
+   *  gone in .42s - a flash at the pack and three puffs that carry off
    *  along the plume. Presentation only. */
   burst: number;
   contacts: Contact[];
   // Independent inertial joints. Taps add energy, never restart a gesture.
   nearArm: number; farArm: number; nearLeg: number; farLeg: number; settle: number;
   drive: number; contactAge: number; contactPower: number; contactNormalY: number;
+  maneuver: ManeuverMotion;
   rates: { heading: number; pitch: number; nearArm: number; farArm: number;
     nearLeg: number; farLeg: number; settle: number; drive: number };
 
@@ -39,12 +42,13 @@ export function createVanguardMotion(): VanguardMotion {
   return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16*DEG,
     time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
     thrust: 0, burst: 0, contacts: [], nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0,
-    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1,
+    drive: 0, contactAge: 10, contactPower: 0, contactNormalY: -1, maneuver:createManeuverMotion(false),
     rates: { heading: 0, pitch: 0, nearArm: 0, farArm: 0, nearLeg: 0, farLeg: 0, settle: 0, drive: 0 } };
 }
 export function vanguardGate(s: VanguardMotion) { s.freshThrust = true; }
 // deltaVy is the accepted upward impulse (old vy minus new vy).
 export function vanguardTap(s: VanguardMotion, deltaVy = 450) {
+  maneuverTap(s.maneuver,Math.max(0,deltaVy));
   // Actual accepted acceleration controls intensity. Repeated taps sustain
   // pressure; they cannot snap a joint or rewind the continuous tail.
   s.thrustPower = clamp(Math.max(0,deltaVy)/650, .24, 1);
@@ -60,6 +64,7 @@ export function vanguardContact(s: VanguardMotion, x: number, y: number, nx: num
   if (s.contacts.length > 3) s.contacts.shift();
   s.freshThrust = true; s.diving = false;
   s.contactAge = 0; s.contactPower = clamp(strength, .35, 1); s.contactNormalY = clamp(ny,-1,1);
+  maneuverContact(s.maneuver,ny,strength);
   // Surface dust outlives an immediate tap; the body follows the rebound vy.
 }
 const DEG = Math.PI/180;
@@ -121,6 +126,7 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
   if (!(dt>0) || !Number.isFinite(dt) || !Number.isFinite(vy)) return;
   // The engine bounds ticks; guard isolated preview callers after suspension.
   dt=Math.min(dt,.25);
+  stepManeuver(s.maneuver,dt,vy,s.diving,false);
   stepArticulated(s,dt,vy);
   for(const p of s.contacts) p.age+=dt;
   s.contacts=s.contacts.filter(p=>p.age<VANGUARD_CONTACT_SECONDS);
@@ -128,30 +134,35 @@ export function stepVanguard(s: VanguardMotion, dt: number, vy: number) {
 
 export function paintVanguard(ctx: CanvasRenderingContext2D, art: ArtBank | null | undefined,
   x: number, y: number, size: number, state?: VanguardMotion) {
+  if(state&&art?.vanguardParts){
+    paintManeuver(ctx,art.vanguardParts,x,y,size,state.maneuver);
+    if (state.burst > 0) paintManeuverBurst(ctx,x,y,size,state);
+    return;
+  }
   const bank = art?.vanguard?.length === VANGUARD_FRAMES ? art.vanguard : undefined;
   const frame = bank?.[state?.frame ?? 0] ?? art?.suits.vanguard;
   if (!frame) return;
   const scale = size / 400;
   ctx.save(); ctx.translate(x,y); ctx.rotate(state?.pitch ?? 16*DEG);
-  if (state && (state.thrust > .01 || state.burst > 0)) paintJetpackExhaust(ctx,scale,state);
+  if (state && state.thrust > .01) paintJetpackExhaust(ctx,scale,state);
   // One registered, fully opaque whole-character drawing. The face and legs
   // hold their scale; the drawn tail changes shape instead of being stretched.
   if (state) paintVanguardRig(ctx,frame,scale,state);
   else ctx.drawImage(frame,-280*scale,-280*scale,512*scale,512*scale);
-  if (state && state.burst > 0) paintJetpackBurst(ctx,scale,state);
+  if (state && state.burst > 0) paintBurstAt(ctx,scale,state,[[-60,-48,.8],[-44,-34,1]],-.92,-.40);
   ctx.restore();
 }
 // THE BURST (owner, 6 Sep 2026: "add jetpack effect on tap"). Painted OVER
-// the rig: the steady plume sits behind the body and the pack's own back
-// hides most of it, so a burst drawn there never read. This one leaves the
-// pack's mouth and travels back and up, clear of the tail: a white-hot
-// flash that dies in a third of the burst, and three puffs that grow and
-// fade along the way. Sized to the pack, not the pixel. Deterministic.
-function paintJetpackBurst(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion) {
+// the rig: the steady plume sits behind the body, and a burst drawn there
+// never read. A white-hot flash at the pack's mouth with a cyan streak that
+// dies in a third of the burst, and three puffs that grow and fade as they
+// travel off along the plume. Sized to the pack, not the pixel - the pilot
+// is 66px on a phone. Deterministic; nothing here feeds the sim.
+function paintBurstAt(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion,
+  nozzles: readonly (readonly [number, number, number])[], dx: number, dy: number) {
   ctx.save(); ctx.scale(scale,scale);
   const u=1-s.burst;                           // 0 at the tap, 1 when spent
-  const dx=-.92, dy=-.40;                      // back and up, in body space
-  for (const [x,y,m] of [[-60,-48,.8],[-44,-34,1]]) {
+  for (const [x,y,m] of nozzles) {
     ctx.save(); ctx.translate(x,y);
     const flash=Math.max(0,1-u*3.2);
     if (flash>0) {
@@ -169,7 +180,7 @@ function paintJetpackBurst(ctx: CanvasRenderingContext2D, scale: number, s: Vang
       ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(dx*L*.8,dy*L*.8);ctx.stroke();
     }
     for (let i=0;i<3;i++) {
-      const d=(26+i*30+u*(110+i*26))*m;         // distance back along the burst
+      const d=(26+i*30+u*(110+i*26))*m;         // distance along the burst
       const side=((i-1)*16)*m*(1+u*1.2);         // fan out as they travel
       const px=dx*d-dy*side, py=dy*d+dx*side;
       const r=(22+i*5+u*40)*m;
@@ -180,6 +191,14 @@ function paintJetpackBurst(ctx: CanvasRenderingContext2D, scale: number, s: Vang
     }
     ctx.restore();
   }
+  ctx.restore();
+}
+// The maneuver rig's pack: the same transform paintManeuver uses, the
+// nozzles paintExhaust uses, the plume's own direction (down and back).
+function paintManeuverBurst(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, s: VanguardMotion) {
+  const p=s.maneuver.pose, scale=size/400;
+  ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale); ctx.translate(0,60+p.heave); ctx.rotate(p.body*DEG);
+  paintBurstAt(ctx,1,s,[[-84,5,1],[-66,-1,.72]],-.35,.94);
   ctx.restore();
 }
 function paintJetpackExhaust(ctx: CanvasRenderingContext2D, scale: number, s: VanguardMotion) {

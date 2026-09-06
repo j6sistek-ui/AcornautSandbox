@@ -1,0 +1,253 @@
+{
+  "provenance": "Native production canvas, actual simulation and art; no browser or physical-device performance claim.",
+  "passed": {
+    "ordinaryField": true,
+    "noPhonePositionReset": true,
+    "threeModePhysicsEqualityEveryTick": true,
+    "realRisingAndFalling": true,
+    "continuousLegacyTail": true,
+    "newDirectionBanks": true,
+    "gateScoring": true,
+    "realPlanetContact": true,
+    "tapRetainsContact": true
+  },
+  "phone": {
+    "frames": 300,
+    "width": 1260,
+    "height": 1220,
+    "fps": 30,
+    "runs": [
+      {
+        "mode": "cinematic",
+        "score": 5,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minBodyPitchDegrees": 6.34503409150862,
+        "maxBodyPitchDegrees": 55.414316870547275,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 0.16365200000018376,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.00732100000459468,
+            "medianMs": 0.10206099999777507,
+            "p95Ms": 0.20090699999855133,
+            "maxMs": 1.6175499999999374
+          }
+        }
+      },
+      {
+        "mode": "cruise",
+        "score": 5,
+        "poseBanks": [
+          "rise",
+          "apex",
+          "fall",
+          "land",
+          "dive"
+        ],
+        "tailBaseDegrees": [
+          -108.0243091088259,
+          5.7989628540210285
+        ],
+        "tailTipDegrees": [
+          -91.09789075330897,
+          7.917927380750449
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minBodyPitchDegrees": 10.413099659907619,
+        "maxBodyPitchDegrees": 30.758084520015128,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 0.4180870000000141,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.1996149999977206,
+            "medianMs": 0.3017859999999928,
+            "p95Ms": 0.5162019999988843,
+            "maxMs": 1.7180979999993724
+          }
+        }
+      },
+      {
+        "mode": "jetpack",
+        "score": 5,
+        "poseBanks": [
+          "rise",
+          "apex",
+          "fall",
+          "land",
+          "dive"
+        ],
+        "tailBaseDegrees": [
+          -97.23813554594639,
+          16.59890076257814
+        ],
+        "tailTipDegrees": [
+          -80.29789259008662,
+          7.919178017234778
+        ],
+        "minY": 167.96963698616275,
+        "maxY": 431.5529703194961,
+        "minimumVy": -428.3333333333333,
+        "maximumVy": 879.8726865177745,
+        "minBodyPitchDegrees": -13.586900340092381,
+        "maxBodyPitchDegrees": 6.758084520015124,
+        "contacts": 2,
+        "paint": {
+          "firstSampleMs": 0.42478699999992386,
+          "warmed": {
+            "samples": 590,
+            "minMs": 0.19385600000532577,
+            "medianMs": 0.2410360000003493,
+            "p95Ms": 0.4120789999997214,
+            "maxMs": 3.2214420000018436
+          }
+        }
+      }
+    ]
+  },
+  "contact": {
+    "frames": 90,
+    "width": 1260,
+    "height": 1220,
+    "fps": 30,
+    "runs": [
+      {
+        "mode": "cinematic",
+        "score": 1,
+        "tailFrames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minBodyPitchDegrees": 6.8925345200933865,
+        "maxBodyPitchDegrees": 81.55098104632577,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 0.05380000000150176,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.005747999995946884,
+            "medianMs": 0.039738999999826774,
+            "p95Ms": 0.18584399999963352,
+            "maxMs": 0.6185639999966952
+          }
+        }
+      },
+      {
+        "mode": "cruise",
+        "score": 1,
+        "poseBanks": [
+          "rise",
+          "dive",
+          "land",
+          "apex",
+          "fall"
+        ],
+        "tailBaseDegrees": [
+          -102.59333241552451,
+          9.325633783336592
+        ],
+        "tailTipDegrees": [
+          -89.06336883769619,
+          8.431443146756555
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minBodyPitchDegrees": 12.119404185137482,
+        "maxBodyPitchDegrees": 39.369506164210605,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 0.4844249999950989,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.19688099999621045,
+            "medianMs": 0.2882859999954235,
+            "p95Ms": 0.4285829999935231,
+            "maxMs": 0.582299999994575
+          }
+        }
+      },
+      {
+        "mode": "jetpack",
+        "score": 1,
+        "poseBanks": [
+          "rise",
+          "dive",
+          "land",
+          "apex",
+          "fall"
+        ],
+        "tailBaseDegrees": [
+          -92.4741521397243,
+          20.12554759107737
+        ],
+        "tailTipDegrees": [
+          -79.51922519927257,
+          19.230381253388693
+        ],
+        "minY": 2016.7401304973641,
+        "maxY": 3536.017908275143,
+        "minimumVy": -692.7524342692047,
+        "maximumVy": 1976.6666666666695,
+        "minBodyPitchDegrees": -11.880595814862522,
+        "maxBodyPitchDegrees": 19.36191263948677,
+        "contacts": 1,
+        "paint": {
+          "firstSampleMs": 0.3839880000014091,
+          "warmed": {
+            "samples": 170,
+            "minMs": 0.19393599999602884,
+            "medianMs": 0.22470199999952456,
+            "p95Ms": 0.36087299999780953,
+            "maxMs": 1.4567019999958575
+          }
+        }
+      }
+    ]
+  },
+  "timingMethod": "performance.now around the FIRST paintVanguard call after every 60Hz simulation tick, at gameplay size52 and3× pixel density. Includes cache hits AND refreshes; excludes world, labels, dust and PNG encoding. First10 samples omitted from warmed statistics. Native CPU measurement, not iPhone timing."
+}

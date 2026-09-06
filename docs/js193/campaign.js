@@ -580,8 +580,8 @@ export const STAR_REWARDS = [
     { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
     { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
-    { stars: 500, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
-    { stars: 500, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
+    { stars: 500, kind: "suit", id: "vanguard", name: "Vanguard", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
+    { stars: 500, kind: "trail", id: "vanguardwake", name: "Vanguard Wake", desc: "Twin gold and cyan filaments. Worn only by Vanguard." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title

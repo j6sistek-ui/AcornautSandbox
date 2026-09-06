@@ -1,0 +1,27 @@
+{
+  "purpose": "Complete, separately painted anatomical parts for Vanguard's upright and forward flight maneuvers",
+  "source": "parts-keyed.png",
+  "sourceDimensions": [1254, 1254],
+  "generator": "image_gen.imagegen",
+  "generationBrief": "Preserve the approved Vanguard squirrel's orange fur, cream muzzle, gold helmet, white space suit, black ribbed joints, blue details, gold A chest badge and striped tail. Paint a modular 4-column by 3-row sheet of twelve isolated complete parts: helmeted head, torso with jetpack, two upper arms, two forearms with hands, two thighs, two shins with feet, and two fluffy tails. Keep consistent camera, lighting, material, proportions and crisp painterly detail. Parts must have room for rotation and overlap at anatomical joints. No extra characters or flames.",
+  "matteCorrectionBrief": "Keep the same twelve parts and their placement. Replace the false checkerboard background with a uniform pure chroma green background, preserving all fur edges and painted anatomy.",
+  "briefRecord": "Summarized production brief; the checked-in master raster is the authoritative generation output.",
+  "identityReference": "art-src/vanguard/master-alpha.png",
+  "motionReferences": [
+    "Owner's astronaut jump/fall/landing sheet IMG_7698.webp",
+    "Owner's upright, reaching and asymmetrical squirrel poses IMG_7709.webp, IMG_7706.webp, IMG_7707.webp, IMG_7701.webp, IMG_7702.webp, IMG_7711.webp",
+    "Owner's six-by-six motion sheets IMG_7712.jpeg and IMG_7713.jpeg"
+  ],
+  "exporter": "illustrated-src/export-vanguard-maneuver.mjs",
+  "shippingAtlas": "docs/art/suits/vanguard/maneuver-parts.png",
+  "shippingDimensions": [1024, 768],
+  "cells": {"columns": 4, "rows": 3, "width": 256, "height": 256},
+  "registration": "registration.json",
+  "invariants": [
+    "One stable head and torso, no pose-dependent scale",
+    "Fixed anatomical bone lengths with independent upper/lower limb angles",
+    "Twelve complete connected parts with transparent gutters",
+    "Measured source joint anchors survive independent cell normalization",
+    "Green matte removal and packing are deterministic; no anatomy is synthesized by the exporter"
+  ]
+}
