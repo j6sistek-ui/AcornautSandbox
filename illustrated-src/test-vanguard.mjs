@@ -75,6 +75,13 @@ assert.equal(e.buyTrail('vanguardwake'),'locked');assert(button('Vanguard Wake')
 e.buySuit('vanguard');e.setShopTab('suits');tick();
 if(mode==='beta') {
   assert(app.querySelector('.ac-vanguard-motion'));
+  // New choices persist through reload; originals stay available for comparison.
+  button('Upright').click();assert.equal(e.save.vanguardMotionMode,'jetpack');
+  assert.equal(S.loadSave().vanguardMotionMode,'jetpack');
+  assert.equal(button('Upright').getAttribute('aria-pressed'),'true');
+  app.querySelector('.ac-vanguard-motion button').click();
+  assert.equal(e.save.vanguardMotionMode,'cruise');
+  assert.equal(S.loadSave().vanguardMotionMode,'cruise');
   button('Continuous').click();assert.equal(e.save.vanguardMotionMode,'flow');
   assert.equal(S.loadSave().vanguardMotionMode,'flow');
   assert.equal(button('Continuous').getAttribute('aria-pressed'),'true');
@@ -88,8 +95,8 @@ if(mode==='beta') {
   e.resume();assert.equal(e.world.screen,'play');
 } else {
   assert(!app.querySelector('.ac-vanguard-motion'));
-  e.setVanguardMotionMode('flow');assert.equal(e.save.vanguardMotionMode,'cinematic');
-  assert.equal(S.vanguardModeOf({...e.save,vanguardMotionMode:'flow'}),'cinematic');
+  e.setVanguardMotionMode('flow');assert.equal(e.save.vanguardMotionMode,'cruise');
+  assert.equal(S.vanguardModeOf({...e.save,vanguardMotionMode:'flow'}),'cruise');
 }
 // Real simulation controls and contacts, independent of the old clocks.
 const w=Sim.makeWorld(390,760);Sim.resetRun(w,e.save,'fly',false);w.ready=false;
@@ -115,7 +122,7 @@ Sim.pausePlay(w);const paused=JSON.stringify(w.vanguard);Sim.updateWorld(w,e.sav
 assert.equal(JSON.stringify(w.vanguard),paused);assert.equal(Sim.flap(w,e.save),'none');
 Sim.resumePlay(w);Sim.resetRun(w,e.save,'fly',false);
 assert.deepEqual(w.vanguard,VG.createVanguardMotion(S.vanguardModeOf(e.save)));
-const readyY=w.squirrel.y;Sim.updateWorld(w,e.save,.1);assert.equal(w.vanguard.time,.1);assert.equal(w.squirrel.y,readyY);assert(w.vanguard.phase>0);
+const readyY=w.squirrel.y;Sim.updateWorld(w,e.save,.1);assert(Math.abs(w.vanguard.time-.1)<1e-9);assert.equal(w.squirrel.y,readyY);assert(w.vanguard.phase>0);
 // Even a doubled world pace must not double the flagship's visual clock.
 for(const pace of [1,2]) {
   const paced=Sim.makeWorld(390,5000),sv={...e.save};

@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=190";
-import { CHART_LEVELS } from "./campaign.js?v=190";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=190";
-import { restoreSpill } from "./spill.js?v=190";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=190";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=191";
+import { CHART_LEVELS } from "./campaign.js?v=191";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=191";
+import { restoreSpill } from "./spill.js?v=191";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=191";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=190";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=191";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -47,7 +47,7 @@ export function defaultSave() {
         guide: "pending",
         allStars: false,
         musicOff: false,
-        vanguardMotionMode: "cinematic",
+        vanguardMotionMode: "cruise",
         raceRecords: {},
         raceGates: [],
     };
@@ -133,8 +133,8 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
-    if (s.vanguardMotionMode !== "flow")
-        s.vanguardMotionMode = "cinematic";
+    if (!["cinematic", "flow", "cruise", "jetpack"].includes(s.vanguardMotionMode))
+        s.vanguardMotionMode = "cruise";
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -379,5 +379,5 @@ export function batteryUnlocked(s) {
 }
 /** The beta A/B preference cannot opt production into an experiment. */
 export function vanguardModeOf(s) {
-    return IS_BETA && s.vanguardMotionMode === "flow" ? "flow" : "cinematic";
+    return IS_BETA ? s.vanguardMotionMode ?? "cruise" : "cruise";
 }

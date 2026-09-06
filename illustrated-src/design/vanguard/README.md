@@ -1,133 +1,107 @@
-# Vanguard flight revision
+# Vanguard flight: articulated motion trials
 
-The owner's phone recording showed that Cinematic held one pose during rapid
-taps, while Continuous mostly moved the legs. Ordinary descent waited behind
-a 1.76-second tap clip, so the body could remain nose-up while falling.
-Those were gaps in the earlier controller and in its test coverage.
+The owner reported that the tail worked but Vanguard dove forward too much,
+held his arms still, and read as Superman. The previous body was deliberately
+fixed in every tail drawing. Its +34° art correction plus +22° gravity heading
+could rotate the whole drawing about 56°, pointing the face and hands down.
 
-[Normal phone-field comparison](phone-preview.mp4) · [Input/heading trace](phone-trace.json)
+This revision keeps that drawn tail and adds two selectable flight styles.
 
-![Normal field, actual game painter](phone-preview.png)
+[Flight comparison](Vanguard-Flight-Comparison.mp4) · [Planet push-off](Vanguard-Planet-Push-Off.mp4)
 
-## Current motion
+![Original, Flight and Upright](Vanguard-Flight-Comparison.png)
 
-- A continuous **whole-character tail loop** replaces the jump/tuck bank.
-  Sixteen new drawings sweep the thick striped tail while arms, knees and
-  helmet remain steady. The tail keeps moving during climb, level flight,
-  descent, repeated taps and no-input glides. It also idles on the ready
-  screen; pause still freezes it.
-- The body follows vertical flight direction with eased heading: climb,
-  level at the apex, then shallow descent. It no longer waits for a tap clip
-  or a tail cycle to finish. There is no leg pump, squash or jump on input.
-- A tap produces a restrained thruster pulse. The body's small reaction
-  comes from easing toward the changed velocity, without a pose restart.
-  A swipe permits a deeper heading; gravity alone stays shallow. The entire
-  registered drawing tilts, preserving shape and continuing the tail motion.
-- Cinematic uses a 1.8-second tail sweep with a 130ms body response;
-  Continuous uses a quicker 1.15-second sweep with a 90ms response. Both
-  remain available in beta's Hangar and Pause. Switching changes only
-  presentation and preserves the current phase.
-- The existing surface dust survives a bounce followed immediately by a
-  tap. Shield, fixed wake, hitboxes, forces, scores and other suits are intact.
+| Beta option | Behavior |
+| --- | --- |
+| Flight | Relaxed cruising posture; independent arm/hand drift, rising tuck and falling release; restrained body pitch and smooth thrust. New default. |
+| Upright | Taller jetpack posture, a more pronounced planet compression/push-off, and a modest forward tip in descent. |
+| Cinematic | Original whole-character motion, retained for comparison. |
+| Continuous | Original faster tail/heading response, retained for comparison. |
 
-Vanguard stays unlocked on fresh beta saves. Production retains the 500-star
-requirement and existing ownership. This revision adds no ship, pet or mode.
+Select Vanguard, then use **Hangar → Suits → Vanguard Motion** or the same
+picker while paused. All four choices persist in beta. Production uses Flight;
+experimental saved choices cannot change production behavior. Ownership stays
+at 500 earned stars in production and open in beta.
 
-## Assets and reproducibility
+## Motion design
 
-The built-in imagegen tool produced `art-src/vanguard/tail-loop.png` from the
-original flagship frame, then corrected the backing and cell margins.
-`tail-prompts.json` preserves both exact prompts. The original master and
-32-pose source sheets remain archived in `art-src/vanguard`.
+Normal flight reaches its apex about 346 ms after a tap (−450 velocity, 1300
+gravity). A whole-body jump cannot finish gracefully on every short input.
 
-`export-vanguard.mjs` extracts whole drawings and keys the green backing.
-`tail-heads.json` records scale/position measured by fitting the unchanged
-helmet/face to the first cell, rather than to moving tail bounds. The export
-fixes every helmet at (350,200), radius 60, on a 512px RGBA canvas. The drawn
-sweep determines frame order. The sequence follows a single down/up sweep, ordered by the painted tail mass.
-No tail pieces are cut out, stretched or rigged.
+- The 1.8-second tail clock never rewinds or pauses on taps. Existing 16
+  registered tail drawings and their fixed helmet scale remain in use.
+- Body heading follows vertical velocity; arms and knees have independent
+  damped motion. Continuous low-amplitude movement avoids a frozen hovering
+  pose under sustained taps. No random noise or camera shake is added.
+- Accepted tap acceleration sets a short pressure envelope. Arresting a fall
+  gives a stronger jetpack response than refreshing upward travel. Joints
+  ease toward it rather than replaying a squat or snapping to a keyframe.
+- Contact has a separate compression, push-off and settle response. It survives
+  an immediate next tap. Its dust remains on the contacted planet surface.
+- Both new postures use angular inertia and explicit speed limits, including
+  recovery from a swipe and switching between the new styles mid-run.
+- The exhaust uses attached nozzles, a white core, cyan flow and warm outer
+  falloff. It breathes smoothly and does not generate random particle bursts.
+- Forces, collision circles, input timing, scores, random seeds, other suits,
+  ship flight and Vanguard's separate Depot gag are unchanged.
 
-The active bank is 16 frames (16 MiB decoded, down from 32 MiB). It loads on
-equip only. A partial load keeps the exact first-frame still and can retry;
-the fallback follows the same body heading while its tail remains still.
-Superseded runtime poses are removed; source masters remain available.
+## Artwork and implementation
 
-Owner review on the actual phone remains the motion/performance quality gate.
+The original masters and registered tail export remain in `art-src/vanguard`.
+This change adds no raster frames. `vanguard-rig.ts` articulates localized limb
+regions at draw time; the existing tail drawing and helmet remain rigid inside
+the character. Joint limits protect the suit silhouette. Two bounded cached surfaces per
+active state (192px gameplay / 512px close-up) refresh limbs at up to 30Hz,
+with immediate tail-frame updates; outer body pitch stays at display cadence. The face is never
+scaled independently, and there is no crossfade between duplicate characters.
 
-## Validation
+`vanguard.ts` owns the visual state only. Its substepped damped joints do not
+feed the simulation. `sim.ts` passes the already-accepted velocity change into
+the thrust response, retaining the exact existing force assignments.
 
-- TypeScript production/beta export.
-- `test-vanguard.mjs`: fresh-beta equip, production 499/500 eligibility,
-  retained ownership/wake, disabled incompatible trail buttons and engine
-  transactions, actual 100/180/300ms simulation tapping, contact then tap, scored gate,
-  pause/resume and run reset, beta switch and preference persistence,
-  production experiment guard, unscaled visual time, replay star retention.
-- `test-vanguard-render.mjs`: actual world painter selects the independent poses;
-  gravity stays shallow, repeated swipes reach full dive, partial-bank fallback
-  remains the neutral still, poses stay opaque, and A/B physics match per tick.
-- Existing Star Map simulation/UI suites: production progression, all 260 beta
-  completion seams, three unchanged barriers, migration/seed/replay contracts.
-- At the Vanguard PR review, the full art audit passed except the then-existing
-  main-branch Switchback size mismatch (1254px asset vs 256px validator).
-  Baseline confirmed with main's validator and matching asset Git SHA
-  `2ae1f4d15a3b9837a01e24f5d38054970a5f2b56`. The subsequent Switchback sprite-sheet
-  integration fixes that asset to 256px; all 30 art QA groups now pass.
+## Review evidence
 
-## Decisions still open
+The comparison renderer uses the real simulation and world painter at
+390 × 760. Original Cinematic, Flight and Upright receive identical inputs.
+The primary clip uses ordinary short arcs and 100/180/300 ms tap bursts with
+no following camera or position resets. A separate, labeled tall chamber
+checks actual planet contact followed by a tap, with a following review camera.
 
-- Tutorial use: no substitution or gift change. Existing Ion tutorial kit stays.
-- Ship: later, following this ivory/gold/graphite material language.
-- Optional suit-only pal concept: a small acorn-shaped maintenance drone with
-  matching gold shell and cyan lens. Appearance only; no new gameplay effect.
-  Not added to the roster in this PR.
+Validation covers tick-for-tick gameplay equality, independent limb motion,
+non-restarting taps, bounded angular speed, contact recovery, 30/60/120 Hz
+controller consistency, ownership, saved selection, pause/resume, fallback art,
+and the separate Depot sequence. Native-canvas playback is not a Safari/device
+performance recording. Final appearance and phone frame pacing need owner
+playtesting; these remain comparison options rather than a claim of final polish.
 
-## Rebuild
+Measured native CPU cost includes the first draw after each 60Hz simulation
+step, so texture refreshes are counted. This is heavier than the original:
+roughly 4.8–5.2 ms median and 5.8–6.5 ms p95 for the new styles in this run,
+versus about 0.10 / 0.17 ms for Original. Cache hits are cheap; refreshes
+account for the cost. These are isolated painter measurements at gameplay
+size and 3× pixel density, not device frame-rate claims. The original styles
+remain available for phone comparison. `review-summary.json` retains the data.
 
-The existing raster bank is unchanged. Run the normal
-`node illustrated-src/export-sandbox.mjs`. Only run `export-vanguard.mjs`
-when intentionally rebuilding the measured source artwork. `ACORNAUT_CANVAS` may point to
-`@napi-rs/canvas`; `ACORNAUT_TSC` may point to TypeScript's `tsc.js`.
-Render review media with `node illustrated-src/test-vanguard-render.mjs`.
-The UI tests accept `ACORNAUT_HAPPY_DOM` for the installed happy-dom entry.
+All 30 shipping-art groups pass. Vanguard engine tests (production and beta),
+inertia, opaque seam coverage, real-render fallback/contact and the separate
+Depot/welcome/Spill simulation tests pass. The broader `test-spill-ui.mjs`
+harness fails on both untouched main build190 and this build: its mock
+`getTransform()` returns undefined after the already-merged backdrop change.
+That existing harness issue was not changed as part of flight animation.
+The cloud browser policy blocked localhost, so no browser/device pass is claimed.
 
-Encode the rendered comparison with:
+## Rebuild and review
 
 ```sh
-ffmpeg -framerate 30 -i /tmp/acornaut-vanguard-render/frames/%04d.png -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart illustrated-src/design/vanguard/vanguard-preview.mp4
-```
-
-```bash
-node illustrated-src/export-vanguard.mjs
 node illustrated-src/export-sandbox.mjs
 node illustrated-src/test-vanguard.mjs
-node illustrated-src/test-vanguard-render.mjs
-node illustrated-src/test-vanguard-flight.mjs
+node illustrated-src/test-vanguard-inertia.mjs
+node illustrated-src/test-vanguard-rig.mjs
+node illustrated-src/review-vanguard-flight.mjs
+node illustrated-src/test-vanguard-depot.mjs
 ```
 
-The exporter and canvas tests use `ACORNAUT_CANVAS` when native canvas is not
-on the default module path. The UI test accepts `ACORNAUT_HAPPY_DOM`; the
-TypeScript exporter accepts `ACORNAUT_TSC`.
-
-## Evidence and limits
-
-`test-vanguard-flight.mjs` now flies a normal 390×760 field for ten seconds,
-with actual simulation controls, gravity arcs, a rapid-tap burst, a swipe,
-and gate scoring. There is no follow camera, artificial y reset or long
-falling chamber in this primary preview. Both visual modes assert identical
-physics each tick. Their tails visit all 16 poses and headings visibly cross
-between climb and descent during ordinary short arcs.
-
-The extended [contact/swipe chamber](vanguard-preview.mp4) remains supplemental
-coverage for a surface contact followed by a tap on the next tick. Its camera
-follows the pilot and leaves extra vertical room; it is labeled accordingly.
-The menu/engine tests also cover fresh-beta and production ownership, mode
-persistence, pause, ready idle, independent visual time, repeated taps,
-no-input tail movement and descent interrupted midway through a tail beat.
-
-Native-canvas renders verify the actual painter, not mobile Safari layout or
-real-device frame pacing. The owner's phone playtest remains the appearance
-and feel review. This change is submitted as a PR, without merge or deploy.
-
-Current-main art audit: Vanguard passes. The full audit retains the existing
-Switchback 1254px still mismatch; its separate fix is in open PR #188. No
-validator gate was relaxed for that failure.
+The build accepts `ACORNAUT_TSC` pointing to TypeScript's `tsc.js`. Canvas
+harnesses accept `ACORNAUT_CANVAS`; DOM tests accept `ACORNAUT_HAPPY_DOM`.
+`ACORNAUT_QA_OUTPUT` selects a review output directory. No new runtime package
+is required. Rebuild changes through the normal exporter; never edit `docs/js*`.

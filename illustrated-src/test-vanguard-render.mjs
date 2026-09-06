@@ -11,7 +11,7 @@ const {createCanvas,loadImage,Image,GlobalFonts}=require(process.env.ACORNAUT_CA
 GlobalFonts.registerFromPath('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf','Vanguard Sans');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const output=process.env.ACORNAUT_QA_OUTPUT||join(tmpdir(),'acornaut-vanguard-render');mkdirSync(output,{recursive:true});
-const pending=[];
+const pending=[],drawn=[];
 class LocalImage extends Image {
   set src(value){
     this.sourceFile=value;
@@ -27,7 +27,7 @@ class LocalImage extends Image {
 }
 globalThis.Image=LocalImage;globalThis.HTMLImageElement=Image;
 globalThis.window={__ACORNAUT_BETA__:true,__ACORNAUT_ART__:join(root,'docs/art'),location:{href:'http://local/beta/',search:'?star-map=sample'},devicePixelRatio:1,addEventListener(){},matchMedia:()=>({matches:false,addEventListener(){}})};
-globalThis.document={createElement:()=>createCanvas(1,1),addEventListener(){},documentElement:{style:{}}};
+globalThis.document={createElement:()=>{const canvas=createCanvas(1,1),g=canvas.getContext('2d'),draw=g.drawImage.bind(g);g.drawImage=(im,...args)=>{if(im.sourceFile)drawn.push([im.sourceFile,args]);return draw(im,...args);};return canvas;},addEventListener(){},documentElement:{style:{}}};
 globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 const A=await import('../docs/js/art.js'),D=await import('../docs/js/draw.js'),S=await import('../docs/js/save.js'),Sim=await import('../docs/js/sim.js'),C=await import('../docs/js/campaign.js'),V=await import('../docs/js/zone-visuals.js');
 const VG=await import('../docs/js/vanguard.js');
@@ -50,7 +50,7 @@ const save=S.defaultSave();Object.assign(save,{equippedSuit:'vanguard',equippedT
 const world=Sim.makeWorld(390,760);Sim.resetRun(world,save,'fly',false);world.ready=false;world.shieldCharges=1;
 Sim.flap(world,save);for(let i=0;i<28;i++)VG.stepVanguard(world.vanguard,1/60,-200);
 world.tapAnimT=0;world.bounceAnimT=.01;world.squirrel.vy=650;
-const c=createCanvas(390,760),ctx=c.getContext('2d'),drawn=[];const original=ctx.drawImage.bind(ctx);
+const c=createCanvas(390,760),ctx=c.getContext('2d');const original=ctx.drawImage.bind(ctx);
 ctx.drawImage=(im,...args)=>{if(im.sourceFile)drawn.push([im.sourceFile,args]);return original(im,...args);};
 D.drawWorld(ctx,world,save,art);await Promise.all(pending);D.drawWorld(ctx,world,save,art);
 assert(drawn.some(([file])=>file===`suits/vanguard/frame-${world.vanguard.frame+1}.png`));

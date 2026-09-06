@@ -533,7 +533,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       notify();
     },
     setVanguardMotionMode(mode) {
-      if (!IS_BETA || (mode !== "cinematic" && mode !== "flow")) return;
+      if (!IS_BETA || !["cinematic", "flow", "cruise", "jetpack"].includes(mode)) return;
       save.vanguardMotionMode = mode;
       world.vanguard.mode = mode;
       writeSave(save);
