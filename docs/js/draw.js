@@ -1,22 +1,22 @@
-import { spillDockTravelDuration } from "./spill.js?v=191";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=191";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=191";
-import { runPal } from "./sim.js?v=191";
-import { spillAppearance } from "./spill-appearance.js?v=191";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=191";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=191";
-import { goalHud } from "./campaign.js?v=191";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=191";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=191";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=191";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=191";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=191";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=191";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=191";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=191";
-import { spillEngineColor } from "./spill-content.js?v=191";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=191";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=191";
+import { spillDockTravelDuration } from "./spill.js?v=192";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=192";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=192";
+import { runPal } from "./sim.js?v=192";
+import { spillAppearance } from "./spill-appearance.js?v=192";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=192";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=192";
+import { goalHud } from "./campaign.js?v=192";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=192";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=192";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=192";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=192";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=192";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=192";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=192";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=192";
+import { spillEngineColor } from "./spill-content.js?v=192";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=192";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=192";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4939,7 +4939,7 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean
 // mode the pilot rolls slowly between FULL CLIMB and FULL DIVE - the
 // clamps the sim actually uses - so the number being changed is judged at
 // the extremes where it matters.
-sweep = false, vanguardMode = "cinematic") {
+sweep = false, vanguardMode = "cruise") {
     if (!art)
         return;
     if (suit.id === "vanguard") {

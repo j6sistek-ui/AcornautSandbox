@@ -2328,13 +2328,14 @@ function tutGesture(w, save, kind) {
             // the beat IS a tap, so it flies one - real impulse, real gravity
             t.hold = false;
             t.stage = t.stage === "doTap1" ? "levelOff" : "learnDive";
+            const tutorialImpulse = w.squirrel.vy - flapOf(save, w);
             w.squirrel.vy = flapOf(save, w);
             w.flapBoost = 0.22;
             w.tapAnimFromRot = w.squirrel.rot;
             w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
             w.tapAnimDir = 1;
             if (save.equippedSuit === "vanguard")
-                vanguardTap(w.vanguard);
+                vanguardTap(w.vanguard, tutorialImpulse);
             break;
         case "doDive":
             t.hold = false;
@@ -2469,9 +2470,10 @@ export function flap(w, save) {
         }
     }
     if (!w.spill) {
+        const impulse = w.squirrel.vy - flapOf(save, w);
         w.squirrel.vy = flapOf(save, w);
         if (save.equippedSuit === "vanguard")
-            vanguardTap(w.vanguard);
+            vanguardTap(w.vanguard, impulse);
     }
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back

@@ -343,16 +343,20 @@ export async function bootStandalone(root) {
         row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
         row.setAttribute("role", "group");
         row.setAttribute("aria-label", "Vanguard motion");
-        for (const [mode, label] of [["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
+        for (const [mode, label] of [["cruise", "Flight"], ["jetpack", "Upright"], ["cinematic", "Cinematic"], ["flow", "Continuous"]]) {
             const on = vanguardModeOf(engine.save) === mode;
             const b = el("button", on ? "ac-mode on" : "ac-mode", label);
             b.setAttribute("aria-pressed", String(on));
             b.onclick = () => engine.setVanguardMotionMode(mode);
             row.append(b);
         }
-        panel.append(row, el("p", "ac-sub", vanguardModeOf(engine.save) === "cinematic"
-            ? "Slow tail sweep; body follows your climb and fall. Swipe down for a deeper dive."
-            : "Quicker tail sweep and body response. Same flight controls; swipe down for a deeper dive."));
+        const descriptions = {
+            cruise: "Flight: relaxed arms, soft rise and fall, flowing tail and smooth thrust.",
+            jetpack: "Upright: tall jetpack stance, planet push-off and a gentle forward dive.",
+            cinematic: "Original Cinematic motion for comparison.",
+            flow: "Original Continuous motion for comparison.",
+        };
+        panel.append(row, el("p", "ac-sub", descriptions[vanguardModeOf(engine.save)]));
         return panel;
     }
     const render = () => {
@@ -3105,11 +3109,30 @@ export async function bootStandalone(root) {
             target?.scrollIntoView({ block: "center", behavior: engine.save.motionOff ? "auto" : "smooth" });
             target?.focus({ preventScroll: true });
         };
-        // no find box (owner, 6 Sep 2026: "no searching needed") - the road
-        // scrolls, and Return to pilot brings the current mission back
         const pilot = el("button", "ac-ghost", "Return to pilot");
         pilot.onclick = () => goTo();
         nav.append(pilot);
+        const find = el("form", "ac-chart-find");
+        const query = el("input");
+        query.placeholder = "Level or name";
+        query.setAttribute("aria-label", "Find a level by number, mission or zone name");
+        const findButton = el("button", "ac-ghost", "Find");
+        findButton.type = "submit";
+        const found = el("span", "ac-chart-found");
+        found.setAttribute("role", "status");
+        find.onsubmit = event => {
+            event.preventDefault();
+            const q = query.value.trim().toLowerCase();
+            const match = q && CHART_LEVELS.find(l => String(l.ord) === q || l.name.toLowerCase().includes(q) || ENVS[l.fx.env ?? 0].name.toLowerCase().includes(q));
+            if (match) {
+                goTo(match.id);
+                found.textContent = `Level ${match.ord} · ${match.name}`;
+            }
+            else
+                found.textContent = "No matching level";
+        };
+        find.append(query, findButton);
+        nav.append(find, found);
         box.append(nav);
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");

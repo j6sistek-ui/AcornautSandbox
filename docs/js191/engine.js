@@ -408,7 +408,7 @@ export async function createEngine(canvas) {
             notify();
         },
         setVanguardMotionMode(mode) {
-            if (!IS_BETA || (mode !== "cinematic" && mode !== "flow"))
+            if (!IS_BETA || !["cinematic", "flow", "cruise", "jetpack"].includes(mode))
                 return;
             save.vanguardMotionMode = mode;
             world.vanguard.mode = mode;

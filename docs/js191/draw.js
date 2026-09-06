@@ -4939,7 +4939,7 @@ export function paintFlightPreview(ctx, art, suit, helmet, cx, cy, size, t, lean
 // mode the pilot rolls slowly between FULL CLIMB and FULL DIVE - the
 // clamps the sim actually uses - so the number being changed is judged at
 // the extremes where it matters.
-sweep = false, vanguardMode = "cinematic") {
+sweep = false, vanguardMode = "cruise") {
     if (!art)
         return;
     if (suit.id === "vanguard") {
