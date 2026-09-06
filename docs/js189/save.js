@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=185";
-import { CHART_LEVELS } from "./campaign.js?v=185";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=185";
-import { restoreSpill } from "./spill.js?v=185";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=185";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=189";
+import { CHART_LEVELS } from "./campaign.js?v=189";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=189";
+import { restoreSpill } from "./spill.js?v=189";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=189";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=185";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, } from "./catalog.js?v=189";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -47,7 +47,6 @@ export function defaultSave() {
         guide: "pending",
         allStars: false,
         musicOff: false,
-        eclipseMotionMode: 2,
         vanguardMotionMode: "cinematic",
         raceRecords: {},
         raceGates: [],
@@ -93,6 +92,11 @@ export function loadSave() {
         s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
     if (!s.unlockedPals?.includes("none"))
         s.unlockedPals = ["none", ...(s.unlockedPals || [])];
+    // Grandfather recorded ownership from the earlier beta companion. The
+    // new premium gate must not confiscate a pal already in the hangar.
+    if (s.unlockedPals.includes("switchback") && !(s.purchased || []).includes("switchback")) {
+        s.purchased = [...(s.purchased || []), "switchback"];
+    }
     if (!HELMETS.some((h) => h.id === s.equipped))
         s.equipped = "clear";
     // A save can arrive wearing things this build does not grant — the open
@@ -193,6 +197,9 @@ export function loadSave() {
     if (!SPILL_UTILITY_IDS.includes(s.spillStarter))
         s.spillStarter = null;
     s.spillSignal = s.spillSignal === true;
+    s.spillEngineColor = spillEngineColor(s).id;
+    s.spillSignal = s.spillEngineColor !== "stock";
+    s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
     // favourites are ids only; anything else in the array is a hand-edit
     if (!Array.isArray(s.favorites))
         s.favorites = [];

@@ -1,6 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=185";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=185";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=185";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=189";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=189";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=189";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=189";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -393,7 +394,14 @@ export function loadPalBank(bank, id) {
     const count = PAL_ANIM[id];
     const p = count
         ? many(`${artBase()}/solo/${id}-`, count).then((frames) => {
-            if (frames.length)
+            if (id === "switchback") {
+                // Never compress a partial bank into the wrong animation order.
+                if (frames.length === count)
+                    bank.palAnim[id] = frames;
+                else
+                    palBankLoads.delete(id);
+            }
+            else if (frames.length)
                 bank.palAnim[id] = frames;
         })
         : Promise.resolve();
@@ -427,7 +435,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
-        ...(IS_BETA ? ["switchback"] : []),
+        "switchback",
         "bee",
         "buddy",
         "ufo",
@@ -520,10 +528,10 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         }));
         return out;
     }
-    async function named(ids, folder, suffix = "", required = false) {
+    async function named(ids, folder, suffix = "", required = false, extension = "png") {
         const out = {};
         await Promise.all(ids.map(async (id) => {
-            const src = `${base}/${folder}/${id}${suffix}.png?v=${ART_VER}`;
+            const src = `${base}/${folder}/${id}${suffix}.${extension}?v=${ART_VER}`;
             try {
                 out[id] = asSprite(await loadImg(src));
             }
@@ -578,7 +586,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         optional(`${base}/pickups/acorn-coin.svg?v=${ART_VER}`),
         // the Spill's ship: 13 small files. A missing one is not fatal - the
         // painter falls back to the scout ship - so nothing here is required
-        named(SPILL_SHIP_IDS, "spill-ship"),
+        Promise.all([named(SPILL_SHIP_IDS, "spill-ship"), named(SPILL_UTILITY_IDS, "spill-ship/utilities", "", false, "webp")])
+            .then(([ship, utilities]) => ({ ...ship, ...utilities })),
         fetch(`${base}/spill-ship/transforms.json?v=${ART_VER}`)
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => (d && d.parts ? { parts: d.parts, overrides: d.overrides || {} } : null))

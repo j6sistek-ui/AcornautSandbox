@@ -10,7 +10,7 @@ import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?
 import { createRaceState, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=188";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=188";
 import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=188";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=188";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=188";
 import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=188";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
@@ -1045,7 +1045,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             w.spill.utilities = [starter];
             w.spill.ownedUtilities = [starter];
         }
-        w.spill.signal = save.spillSignal ? spillMastery(save.spillBest).current.color : "#c99bff";
+        w.spill.signal = spillEngineColor(save).color;
     }
     w.scrollReversing = false;
     w.scrollDirection = -1;

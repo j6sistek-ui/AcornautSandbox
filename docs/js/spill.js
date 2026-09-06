@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=188";
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=189";
 // THE SPILL — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -28,8 +28,8 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=188";
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=188";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=188";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=189";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=189";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -215,34 +215,34 @@ export function spillWaveSpec(n, seed = 0) {
 export const SPILL_LEVELS = 3;
 export const SPILL_SHOP = {
     plating: {
-        name: "Plating",
+        name: "Health",
         prices: [60, 110, 180],
-        levels: ["Four hull pips", "Five hull pips", "Six hull pips"],
+        levels: ["Max health 3 → 4", "Max health 4 → 5", "Max health 5 → 6"],
     },
     thrusters: {
         name: "Thrusters",
         prices: [50, 100, 170],
-        levels: ["Sharper bursts", "Two lunge charges", "Afterburner: a lunge shatters shards"],
+        levels: ["15% stronger bursts", "Carry 2 dash charges", "Dashes break small debris"],
     },
     pulse: {
-        name: "Pulse",
+        name: "Impact pulse",
         prices: [60, 110, 170],
-        levels: ["PULSE unlocked: fires on impact when charged", "Echo charge: ready after 5s, saved for the next threat", "Wide pulse, and shattered debris drops Acorn Coins"],
+        levels: ["Breaks debris on a charged hit", "Second blast readies after 5 seconds", "Wider blast · debris drops coins"],
     },
     shield: {
-        name: "Shield",
+        name: "Shields",
         prices: [35],
-        levels: ["A shield charge. Two carried. Eats one hit."],
+        levels: ["Blocks one hit. Carry up to 2."],
     },
     repair: {
         name: "Repair",
         prices: [30],
-        levels: ["Every pip back."],
+        levels: ["Restore all health."],
     },
     core: {
-        name: "Respawn Core",
+        name: "Extra life",
         prices: [150],
-        levels: ["One extra life: re-enter whole and golden."],
+        levels: ["Revive once with full health."],
     },
 };
 /** how hard a burst kicks at each THRUSTERS level. The hold is never
@@ -863,17 +863,20 @@ function openDepot(s) {
 }
 /** Purchases own the module for this run; fitting it uses one of two slots.
  *  Swapping owned parts at a Depot is free, without selling or duplicating Acorn Coins. */
-export function spillUtility(s, id) {
+export function spillUtility(s, id, replace) {
     if (s.welcome || s.phase !== "depot" || !s.depot || s.depot.arm > 0 || !SPILL_UTILITIES[id])
         return "closed";
     const i = s.utilities.indexOf(id);
+    if (replace && (i >= 0 || !s.utilities.includes(replace)))
+        return "closed";
     if (i >= 0) {
         s.utilities.splice(i, 1);
         s.charge = Math.min(s.charge, spillChargeCap(s));
         cue(s, "buy");
         return "ok";
     }
-    if (s.utilities.length >= 2)
+    // Validate the replacement before touching coins, ownership or slots.
+    if (s.utilities.length >= 2 && !replace)
         return "full";
     if (!s.ownedUtilities.includes(id)) {
         if (s.ore < SPILL_UTILITIES[id].price)
@@ -881,7 +884,11 @@ export function spillUtility(s, id) {
         s.ore -= SPILL_UTILITIES[id].price;
         s.ownedUtilities.push(id);
     }
-    s.utilities.push(id);
+    if (replace)
+        s.utilities.splice(s.utilities.indexOf(replace), 1, id);
+    else
+        s.utilities.push(id);
+    s.charge = Math.min(s.charge, spillChargeCap(s));
     cue(s, "buy");
     return "ok";
 }
@@ -1055,7 +1062,7 @@ function takeHit(s, r) {
     burst(s, s.pilot.x, s.pilot.y, 14, "hit", 1.1);
     cue(s, "hit");
     if (s.hull > 0) {
-        say(s, s.hull === 1 ? "HULL CRITICAL" : "HULL HIT", 1.2);
+        say(s, s.hull === 1 ? "HEALTH CRITICAL" : "HEALTH LOST", 1.2);
         return;
     }
     lose(s, r ? "STRUCK" : "GROUNDED");
@@ -1478,7 +1485,7 @@ function stepSpillBody(s, dt) {
             n.got = true;
             if (n.kind === "hull") {
                 s.hull = Math.min(s.maxHull, s.hull + 1);
-                say(s, "HULL PATCHED", 1.3);
+                say(s, "HEALTH RESTORED", 1.3);
                 burst(s, n.x, n.y, 14, "hull", 0.9);
                 cue(s, "hull");
             }
@@ -1492,7 +1499,7 @@ function stepSpillBody(s, dt) {
                     s.repairsThisWave++;
                     s.hull++;
                     cue(s, "hull");
-                    say(s, "SALVAGE ARMOR · +1 HULL", 1.2);
+                    say(s, "SALVAGE ARMOR · +1 HEALTH", 1.2);
                 }
                 s.repairOre = Math.min(30, s.repairOre);
                 s.combo = Math.min(9, s.combo + 1);
