@@ -1,21 +1,22 @@
-import { spillDockDuration } from "./spill.js?v=184";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=184";
-import { runPal } from "./sim.js?v=184";
-import { spillAppearance } from "./spill-appearance.js?v=184";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=184";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=184";
-import { goalHud } from "./campaign.js?v=184";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=184";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=184";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=184";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=184";
-import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=184";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=184";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=184";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=184";
-import { spillMastery } from "./spill-content.js?v=184";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=184";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=184";
+import { spillDockTravelDuration } from "./spill.js?v=185";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=185";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=185";
+import { runPal } from "./sim.js?v=185";
+import { spillAppearance } from "./spill-appearance.js?v=185";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=185";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=185";
+import { goalHud } from "./campaign.js?v=185";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=185";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=185";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=185";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=185";
+import { blockerX, gateOffset, liveGapY, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=185";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=185";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=185";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=185";
+import { spillMastery } from "./spill-content.js?v=185";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=185";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=185";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1693,7 +1694,7 @@ function rustHull(hull) {
     rustHullCache.set(hull, c);
     return c;
 }
-function drawSpillShip(ctx, w, save, art, s, x) {
+function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
     const appearance = spillAppearance(save);
     const rustWake = appearance.trail === "rust-wake";
     const parts = spillShipParts(s);
@@ -1735,6 +1736,8 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     grad.addColorStop(1, "rgba(83,38,180,0)");
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
+    if (parked)
+        ctx.globalAlpha = 0;
     ctx.fillStyle = grad;
     ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
     ctx.shadowBlur = (5 + 5 * thrust) / z;
@@ -1776,7 +1779,8 @@ function drawSpillShip(ctx, w, save, art, s, x) {
     ctx.strokeStyle = "#b49a71";
     ctx.lineWidth = 3;
     ctx.stroke();
-    paintSpillHead(ctx, art, save, hole);
+    if (!parked)
+        paintSpillHead(ctx, art, save, hole);
     // Glass is a restrained tint and edge glint, never an opaque disk.
     if (parts.cockpit) {
         ctx.beginPath();
@@ -1882,8 +1886,10 @@ function drawSpillWorld(ctx, w, save, art) {
     spillBackdrop(ctx, w, s, art);
     const dock = art.spillScene?.depot;
     if (dock && (s.phase === "docking" || s.phase === "depot")) {
-        const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT * SPILL.dockTime / spillDockDuration(s);
-        const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
+        const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+        const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
+        const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+        const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
         ctx.save();
         ctx.globalAlpha = view.opacity;
         ctx.drawImage(dock, view.x, view.y, view.width, view.height);
@@ -1895,6 +1901,22 @@ function drawSpillWorld(ctx, w, save, art) {
         ctx.fillRect(0, 0, W, H);
         const marshal = spillDockBear(view, arrival, !!save.motionOff);
         const bear = art.spillScene?.bear?.[marshal.frame];
+        if (cameo) {
+            const pose = vanguardDepotPose(gagTime);
+            const actorX = view.x + view.width * (.664 + .054 * pose.walk + .027 * pose.enter);
+            const actorY = view.y + view.height * (.645 - .10 * pose.enter);
+            // He travels behind the marshal. The same painted trousers stay in
+            // both hands through the laugh, then disappear into the waist pocket.
+            paintVanguardDepot(ctx, art.spillScene.vanguardDepot, actorX, actorY, marshal.height * .9, gagTime);
+            if (pose.enter > 0) {
+                const px = view.x + view.width * .745, py = view.y + view.height * .582;
+                const glow = ctx.createRadialGradient(px, py, 0, px, py, marshal.height * .8);
+                glow.addColorStop(0, `rgba(200,178,255,${.18 * Math.sin(pose.enter * Math.PI)})`);
+                glow.addColorStop(1, "rgba(124,73,239,0)");
+                ctx.fillStyle = glow;
+                ctx.fillRect(px - marshal.height, py - marshal.height, marshal.height * 2, marshal.height * 2);
+            }
+        }
         if (bear) {
             ctx.fillStyle = "rgba(6,5,16,.45)";
             ctx.beginPath();
@@ -1906,6 +1928,20 @@ function drawSpillWorld(ctx, w, save, art) {
             ctx.scale(-scale, scale); // face the incoming ship
             ctx.drawImage(bear.image, -bear.footX, -bear.footY);
             ctx.restore();
+        }
+        if (cameo) {
+            // The hull stays parked in the same world position as the camera
+            // moves in; its cockpit is empty and its thruster is off.
+            const parkedX = view.x + view.width * .648, parkedY = view.y + view.height * .64;
+            const shipScale = view.height / (Math.max(W / (dock.naturalWidth || dock.width), H / (dock.naturalHeight || dock.height)) * (dock.naturalHeight || dock.height) * 1.42);
+            ctx.save();
+            ctx.translate(parkedX, parkedY);
+            ctx.scale(shipScale, shipScale);
+            ctx.translate(-s.pilot.x, -s.pilot.y);
+            drawSpillShip(ctx, w, save, art, s, s.pilot.x, true);
+            ctx.restore();
+            ctx.restore();
+            return;
         }
         ctx.restore();
     }
@@ -2386,14 +2422,14 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillText("GO", W / 2, H * 0.34 + 120);
         ctx.restore();
     }
-    if (s.phase === "docking") {
+    if (s.phase === "docking" && !s.depotGag) {
         ctx.textAlign = "center";
         ctx.fillStyle = "#f5d59b";
         ctx.font = "800 12px Figtree, system-ui";
         ctx.fillText("SALVAGE DEPOT", W / 2, H * 0.24);
         ctx.fillStyle = "#f1e9ff";
         ctx.font = `800 ${W < 380 ? 21 : 26}px Figtree, system-ui`;
-        ctx.fillText(s.phaseT / spillDockDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
+        ctx.fillText(s.phaseT / spillDockTravelDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockTravelDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
         ctx.fillStyle = "rgba(209,222,246,.78)";
         ctx.font = "600 11px Figtree, system-ui";
         ctx.fillText("AUTOPILOT ENGAGED", W / 2, H * 0.24 + 58);

@@ -1,4 +1,5 @@
-import { spillDockDuration } from "./spill";
+import { spillDockTravelDuration } from "./spill";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview, type VanguardMotionMode } from "./vanguard";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
@@ -1837,7 +1838,7 @@ function rustHull(hull: Sprite) {
   rustHullCache.set(hull, c); return c;
 }
 
-function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number) {
+function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, art: ArtBank, s: SpillState, x: number, parked = false) {
   const appearance = spillAppearance(save);
   const rustWake = appearance.trail === "rust-wake";
   const parts = spillShipParts(s);
@@ -1878,6 +1879,7 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   grad.addColorStop(1, "rgba(83,38,180,0)");
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
+  if (parked) ctx.globalAlpha = 0;
   ctx.fillStyle = grad;
   ctx.shadowColor = rustWake ? "rgba(215,132,64,.82)" : "rgba(111,92,255,.82)";
   ctx.shadowBlur = (5 + 5 * thrust) / z;
@@ -1908,7 +1910,7 @@ function drawSpillShip(ctx: CanvasRenderingContext2D, w: World, save: SaveData, 
   ctx.save(); ctx.beginPath(); ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
   ctx.fillStyle = "#10243d"; ctx.fill();
   ctx.strokeStyle = "#b49a71"; ctx.lineWidth = 3; ctx.stroke();
-  paintSpillHead(ctx, art, save, hole);
+  if (!parked) paintSpillHead(ctx, art, save, hole);
   // Glass is a restrained tint and edge glint, never an opaque disk.
   if (parts.cockpit) {
     ctx.beginPath(); ctx.ellipse(hole.cx, hole.cy, hole.rx - 2, hole.ry - 2, 0, 0, Math.PI * 2);
@@ -1998,8 +2000,10 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   spillBackdrop(ctx, w, s, art);
   const dock = art.spillScene?.depot;
   if (dock && (s.phase === "docking" || s.phase === "depot")) {
-    const arrival = s.phase === "depot" ? SPILL.dockTime : s.phaseT * SPILL.dockTime / spillDockDuration(s);
-    const view = spillDockView(W, H, dock.naturalWidth, dock.naturalHeight, arrival);
+    const gagTime = s.phase === "docking" && s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+    const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
+    const arrival = s.phase === "depot" ? SPILL.dockTime : Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
+    const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
     ctx.save(); ctx.globalAlpha = view.opacity;
     ctx.drawImage(dock, view.x, view.y, view.width, view.height);
     const shade = ctx.createLinearGradient(0, 0, 0, H);
@@ -2007,6 +2011,22 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
     ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H);
     const marshal = spillDockBear(view, arrival, !!save.motionOff);
     const bear = art.spillScene?.bear?.[marshal.frame];
+    if (cameo) {
+      const pose = vanguardDepotPose(gagTime);
+      const actorX = view.x + view.width * (.664 + .054 * pose.walk + .027 * pose.enter);
+      const actorY = view.y + view.height * (.645 - .10 * pose.enter);
+      // He travels behind the marshal. The same painted trousers stay in
+      // both hands through the laugh, then disappear into the waist pocket.
+      paintVanguardDepot(ctx, art.spillScene!.vanguardDepot!, actorX, actorY,
+        marshal.height * .9, gagTime);
+      if (pose.enter > 0) {
+        const px = view.x + view.width * .745, py = view.y + view.height * .582;
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, marshal.height * .8);
+        glow.addColorStop(0, `rgba(200,178,255,${.18 * Math.sin(pose.enter * Math.PI)})`);
+        glow.addColorStop(1, "rgba(124,73,239,0)");
+        ctx.fillStyle = glow; ctx.fillRect(px - marshal.height, py - marshal.height, marshal.height * 2, marshal.height * 2);
+      }
+    }
     if (bear) {
       ctx.fillStyle = "rgba(6,5,16,.45)"; ctx.beginPath();
       ctx.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2); ctx.fill();
@@ -2014,6 +2034,16 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
       const scale = marshal.height / bear.image.height;
       ctx.scale(-scale, scale); // face the incoming ship
       ctx.drawImage(bear.image, -bear.footX, -bear.footY); ctx.restore();
+    }
+    if (cameo) {
+      // The hull stays parked in the same world position as the camera
+      // moves in; its cockpit is empty and its thruster is off.
+      const parkedX = view.x + view.width * .648, parkedY = view.y + view.height * .64;
+      const shipScale = view.height / (Math.max(W / (dock.naturalWidth || dock.width), H / (dock.naturalHeight || dock.height)) * (dock.naturalHeight || dock.height) * 1.42);
+      ctx.save(); ctx.translate(parkedX, parkedY); ctx.scale(shipScale, shipScale);
+      ctx.translate(-s.pilot.x, -s.pilot.y);
+      drawSpillShip(ctx, w, save, art, s, s.pilot.x, true); ctx.restore();
+      ctx.restore(); return;
     }
     ctx.restore();
   }
@@ -2447,13 +2477,13 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.fillText("GO", W / 2, H * 0.34 + 120);
     ctx.restore();
   }
-  if (s.phase === "docking") {
+  if (s.phase === "docking" && !s.depotGag) {
     ctx.textAlign = "center";
     ctx.fillStyle = "#f5d59b";
     ctx.font = "800 12px Figtree, system-ui";
     ctx.fillText("SALVAGE DEPOT", W / 2, H * 0.24);
     ctx.fillStyle = "#f1e9ff"; ctx.font = `800 ${W < 380 ? 21 : 26}px Figtree, system-ui`;
-    ctx.fillText(s.phaseT / spillDockDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
+    ctx.fillText(s.phaseT / spillDockTravelDuration(s) < .22 ? "DEPOT IN SIGHT" : s.phaseT / spillDockTravelDuration(s) < .78 ? "APPROACHING THE BAY" : "DOCKING COMPLETE", W / 2, H * 0.24 + 34);
     ctx.fillStyle = "rgba(209,222,246,.78)"; ctx.font = "600 11px Figtree, system-ui";
     ctx.fillText("AUTOPILOT ENGAGED", W / 2, H * 0.24 + 58);
   }

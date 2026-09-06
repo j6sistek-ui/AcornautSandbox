@@ -1,20 +1,21 @@
-import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=184";
-import { spillAppearance } from "./spill-appearance.js?v=184";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=184";
-import { reachedGate } from "./campaign.js?v=184";
-import { suitLean, SUIT_LEAN } from "./control-constants.js?v=184";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=184";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=184";
-import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=184";
-import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=184";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=184";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=184";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=184";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=184";
-import { raceViewport } from "./race-viewport.js?v=184";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=184";
-import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=184";
-import { bankSpill } from "./save.js?v=184";
+import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog.js?v=185";
+import { spillAppearance } from "./spill-appearance.js?v=185";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=185";
+import { reachedGate } from "./campaign.js?v=185";
+import { suitLean, SUIT_LEAN } from "./control-constants.js?v=185";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=185";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=185";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=185";
+import { GUIDE_HELM, GUIDE_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=185";
+import { drawHud, drawWorld, setPoseDials } from "./draw.js?v=185";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, } from "./save.js?v=185";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=185";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=185";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=185";
+import { raceViewport } from "./race-viewport.js?v=185";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=185";
+import { SPILL_UTILITIES, spillMastery } from "./spill-content.js?v=185";
+import { bankSpill } from "./save.js?v=185";
 export async function createEngine(canvas) {
     const raw = canvas.getContext("2d");
     if (!raw)
@@ -80,7 +81,7 @@ export async function createEngine(canvas) {
                 last = performance.now();
                 save.spillSuspended = null;
                 writeSave(save);
-                void loadSpillScene(engine.art).then(notify);
+                void loadSpillScene(engine.art, save.equippedSuit).then(notify);
             }
             resetInputTracking();
             notify();
@@ -139,7 +140,7 @@ export async function createEngine(canvas) {
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? def.seed ?? undefined : undefined);
             resize();
             if (def.base === "spill")
-                void loadSpillScene(engine.art).then(notify);
+                void loadSpillScene(engine.art, save.equippedSuit).then(notify);
             resetInputTracking();
             raceAccumulator = 0;
             guideStep("level");
@@ -512,7 +513,7 @@ export async function createEngine(canvas) {
             resetRun(world, save, "spill", false);
             world.spill = restored;
             resize();
-            void loadSpillScene(engine.art).then(notify);
+            void loadSpillScene(engine.art, save.equippedSuit).then(notify);
             world.ready = false;
             world.squirrel.y = restored.pilot.y;
             world.squirrel.vy = 0;
@@ -1429,6 +1430,12 @@ export async function createEngine(canvas) {
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
         last = now;
+        if (world.spill) {
+            const scene = engine.art.spillScene;
+            world.spill.depotGagReady = vanguardDepotEligible(save.equippedSuit, !!save.motionOff, !!scene?.depot && scene?.bear?.length === 36 && !!scene?.vanguardDepot && !!engine.art.spillShip[`hull-${world.spill.up.plating}`]);
+            if (save.motionOff && world.spill.depotGag)
+                world.spill.depotGag = false;
+        }
         if (world.race || world.spill) {
             raceAccumulator += frameDt;
             while (raceAccumulator + 1e-12 >= 1 / 60) {
@@ -1530,7 +1537,7 @@ export async function createEngine(canvas) {
         art = bank;
         engine.art = bank;
         if (world.spill)
-            void loadSpillScene(bank).then(notify);
+            void loadSpillScene(bank, save.equippedSuit).then(notify);
         notify();
         prefetchArtBanks(bank);
     })
@@ -1538,4 +1545,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=184";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=185";
