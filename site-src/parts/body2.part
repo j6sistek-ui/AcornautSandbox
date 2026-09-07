@@ -14,7 +14,7 @@
       <div class="rise">
         <p class="kicker">The Star Chart</p>
         <h2>260 missions on one climbing road.</h2>
-        <p class="lede" style="margin-top:20px">Numbered 1 to 260, three stars each &mdash; 780 in all. Beta opens the whole chart: <b>260 missions &middot; all unlocked in beta</b>. The reward rail rides beside the road, so you see what a star buys before you go for it. Spill missions on the road ask for waves, Ore, and Depots; the first wave-20 clear is level 258.</p>
+        <p class="lede" style="margin-top:20px">Beta opens the whole chart &mdash; all unlocked. The reward rail rides beside the road.</p>
       </div>
     </div>
   </div>
@@ -25,8 +25,8 @@
   <div class="wrap">
     <div class="hd rise">
       <p class="kicker">The Fitting Room</p>
-      <h2>Thirty suits. Not one of them is a recolour.</h2>
-      <p class="lede">Twenty ship in the live game today; the ones marked <b>Soon</b> are upcoming on the beta shelf. Pick one below &mdash; helmet, trail, and pal are built to match.</p>
+      <h2>Thirty-one suits. Not one of them is a recolour.</h2>
+        <p class="lede">Twenty-five ship in the live game today; the six marked <b>Soon</b> are upcoming on the beta shelf. Wall tally: <b>31 suits &middot; 30 helmets &middot; 20 trails &middot; 19 pals</b>. Pick one below &mdash; helmet and trail are built to match.</p>
     </div>
 
     <div class="case-grid">
@@ -66,7 +66,7 @@
     <div class="ans rise">
       <div>
         <h3>What does it cost?</h3>
-        <p>Nothing to play. There is a shop, and it is built to be easy to ignore: the shelf restocks each day, anything you already own leaves it for good instead of being dangled at you, and one featured pack sits at half price. Everything on that shelf is a suit, a helmet, a trail or a pal.</p>
+        <p>Nothing to play. Optional cosmetics live in a quiet shop &mdash; easy to ignore if you just want to fly.</p>
       </div>
       <div>
         <h3>Do I need an account?</h3>
@@ -74,7 +74,7 @@
       </div>
       <div>
         <h3>Who made it?</h3>
-        <p>One person. Every suit, planet and animation frame in it was painted for this game and nothing else.</p>
+        <p>One person. Suits, planets, and animation frames are hand-painted for this game.</p>
       </div>
     </div>
   </div>
@@ -85,7 +85,7 @@
   <div class="hero-art"><img src="{{A:bg-wide.jpg}}" alt="" loading="lazy"></div>
   <div class="wrap">
     <p class="kicker" style="justify-content:center">One more thing</p>
-    <h2>You have now read more about this game than it takes to play it.</h2>
+    <h2>Ready when you are.</h2>
     <a class="btn" href="https://acornaut.app" target="_blank" rel="noopener" style="margin-top:14px">Play Acornaut</a>
     <p class="note" style="text-align:center">Free. No account.</p>
   </div>
@@ -95,7 +95,7 @@
   <div class="wrap foot">
     <div class="foot-say">
       <p class="footmark">Acornaut</p>
-      <p class="note">Hand-painted, frame by frame, by one person. Still being built &mdash; the Discord is where the next suit gets argued about.</p>
+      <p class="note">Hand-painted by one person. Still being built &mdash; the Discord is where the next suit gets argued about.</p>
       <div class="foot-links">
         <a href="https://acornaut.app" target="_blank" rel="noopener"><span class="fi">&#9654;</span>acornaut.app</a>
         <a href="https://discord.gg/xGnCuaSDG" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.319 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.291.074.074 0 0 1 .078-.011c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.01c.12.099.246.198.373.292a.077.077 0 0 1-.007.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.04.107c.36.698.771 1.362 1.225 1.993a.076.076 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.029zM8.02 15.331c-1.183 0-2.157-1.086-2.157-2.4190-1.333.955-2.419 2.157-2.419 1.211 0 2.176 1.095 2.157 2.42 0 1.332-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.086-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.211 0 2.176 1.095 2.157 2.42 0 1.332-.946 2.418-2.157 2.418z"/></svg> Discord</a>
