@@ -1,18 +1,18 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=215";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=215";
-import { trailWornBy } from "./catalog.js?v=215";
-import { missionRandom } from "./mission-rng.js?v=215";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=215";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=215";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=215";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=215";
-import { TUTORIAL_SUIT } from "./catalog.js?v=215";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=215";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=215";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=215";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=215";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=215";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=215";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=219";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=219";
+import { trailWornBy } from "./catalog.js?v=219";
+import { missionRandom } from "./mission-rng.js?v=219";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=219";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=219";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=219";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=219";
+import { TUTORIAL_SUIT } from "./catalog.js?v=219";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=219";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=219";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=219";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=219";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=219";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=219";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -80,7 +80,7 @@ export function makeWorld(W, H) {
         zoneJump: 0,
         hitCooldown: 0,
         trailT: 0,
-        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {},
+        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null,
         clockMul: 1,
         clockPhase: 0,
         clockRate: 0.5,
@@ -260,7 +260,39 @@ export function envIndexFor(w, score) {
 /** The modifiers this run flies under: the mission's, or the lab's on a
  *  beta free flight. One question, so the two can never disagree. */
 export function fxOf(w) {
-    return w.lvl ? w.lvl.def.fx : w.lab;
+    const base = w.lvl ? w.lvl.def.fx : w.lab;
+    return w.palFx ? mergeFx(base, w.palFx) : base;
+}
+/** THE COMPANIONS THAT ARE LEVEL DIALS (owner, 7 Sep 2026). Magnetar,
+ *  Baby Alien, Satellite and AstraFox each do something a mission's fx
+ *  already can - flip the world, shrink the gates, close the fog, wind the
+ *  sway - so they are written AS fx and folded into fxOf. A pal effect and
+ *  a mission dial are then the same lever read at the same place, and a
+ *  new companion of this kind is one row here, not a fifth `if`. */
+const PAL_FX = {
+    magnetar: { upsideDown: true },
+    babyalien: { gapScale: 0.6 },
+    satellite: { fog: 1 },
+    astrafox: { driftRate: 2.5, driftScale: 2.5, spacing: 0.85, pace: 1.2 },
+};
+/** the run's fx with a companion's on top: multipliers multiply, fog takes
+ *  the thicker, the flip is an OR - so a mission's dial and the pal's stack
+ *  rather than one silently replacing the other */
+function mergeFx(base, pal) {
+    const out = { ...base };
+    if (pal.upsideDown)
+        out.upsideDown = true;
+    if (pal.fog !== undefined)
+        out.fog = Math.max(base.fog ?? 0, pal.fog);
+    for (const k of ["pace", "gapScale", "driftScale", "driftRate", "spacing"]) {
+        if (pal[k] !== undefined)
+            out[k] = (base[k] ?? 1) * pal[k];
+    }
+    return out;
+}
+/** the world is drawn upside down: a mission's or the lab's fx, or Magnetar */
+export function worldFlipped(w) {
+    return !!fxOf(w).upsideDown || w.palFlip;
 }
 export function runPal(save, w) {
     return w.lvl?.def.fx.pal ?? save.equippedPal;
@@ -312,14 +344,16 @@ function driftModOf(save, w) {
  *  A level's fx.pace rides the same lever, so SOLAR FURNACE is Thrill
  *  Seeker at 1.2 rather than a second clock to reason about. */
 function paceOf(save, w) {
+    // AstraFox rides the same clock (PAL_FX pace), on top of whatever the
+    // mission or the mods set - fxOf has already multiplied the two.
     if (w.lvl)
-        return w.lvl.def.fx.pace ?? 1;
+        return fxOf(w).pace ?? 1;
     // Wormhole scores compare one shared control model. Cosmetics still
     // travel with the pilot, but global mods do not silently change its
     // reaction window or invalidate a generated safe path.
     if (w.flight === "tunnel")
         return 1;
-    return modsLive(save, w) && save.thrillSeeker ? 2 : 1;
+    return (modsLive(save, w) && save.thrillSeeker ? 2 : 1) * (w.palFx?.pace ?? 1);
 }
 function gravOf(save, w) {
     if (w.flight === "tunnel")
@@ -801,6 +835,7 @@ export function shieldFalloff(w) {
 function spawnPair(w, save, x) {
     const env = ENVS[w.envB];
     const d = difficulty(w);
+    // BABY ALIEN (owner, 7 Sep 2026): planetary gaps at .6
     let gap = d.gap * (fxOf(w).gapScale ?? 1);
     const margin = 72;
     let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
@@ -1018,6 +1053,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // the pause-sheet lab rides only a beta free flight; everything else
     // flies clean so no mission and no live run can inherit a dial
     w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
+    w.palFx = PAL_FX[palId(save, w)] ?? null;
+    w.palFlip = !!w.palFx?.upsideDown;
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
@@ -1101,8 +1138,15 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // through palId so Pal Effects Off lifts the no-shield rule too
     const shieldPal = palId(save, w);
     const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
-    w.startShieldArmed = !!(save.startShield && canShield);
-    w.shieldCharges = w.startShieldArmed ? 1 : 0;
+    // UFO STARTS WITH A SHIELD (owner, 7 Sep 2026: the black-hole slow "was
+    // not working anyway, and it's useless really"). The saucer carries one
+    // charge onto every run for free. The hangar's armed shield is only
+    // spent on top of it when the battery has room for two; otherwise it
+    // stays armed for a later run rather than being burned for nothing.
+    const ufo = shieldPal === "ufo" && canShield;
+    const cap = batteryUnlocked(save) ? 3 : 1;
+    w.startShieldArmed = !!(save.startShield && canShield && (!ufo || cap > 1));
+    w.shieldCharges = Math.min(cap, (ufo ? 1 : 0) + (w.startShieldArmed ? 1 : 0));
     w.absorbGrace = 0;
     w.shieldFreeze = 0;
     w.shieldSlow = 0;
@@ -2813,8 +2857,6 @@ function enterWarp(w, save) {
     }
     w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
     w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
-    if (palId(save, w) === "ufo" && w.flight !== "deep")
-        w.powerLeft = Math.max(w.powerLeft, 2.4);
     w.shake = 0.18;
     spark(w, sx, cy, ["#b45cff", "#fff", "#4ad8ff"], 18, "warp");
 }

@@ -1,11 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=218";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=219";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "218";
+export const ART_VER = "219";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 06:48 UTC";
+export const BUILD_TIME = "2026-09-07 06:51 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
@@ -284,7 +284,7 @@ export const PALS = [
     { id: "cometsprite", name: "Comet", tag: "LONG SLOW", desc: "2x Freeze Duration", art: "cometsprite" },
     { id: "meteorcore", name: "Meteor Core", tag: "2X SPECIALS", desc: "2x Power Ups", art: "meteorcore" },
     { id: "pocketmoon", name: "Moon", tag: "LOW GRAV", desc: "Lower Gravity", art: "pocketmoon" },
-    { id: "ufo", name: "UFO", tag: "WARP SLOW", desc: "Slow Effect in blackholes", art: "ufo" },
+    { id: "ufo", name: "UFO", tag: "SHIELD UP", desc: "Start with Shield", art: "ufo" },
     { id: "nutsack", name: "Nut-Sack", tag: "2X NUTS", desc: "2x Acorns but the sack is heavy", art: "nutsack" },
     { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
     { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
@@ -295,9 +295,9 @@ export const PALS = [
     // owner, 7 Sep 2026: four new companions. Their effects live in PAL_FX
     // (sim.ts) as level fx, so a pal dial and a mission dial are one lever.
     { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
-    { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps (planetary gaps at .6)", art: "babyalien" },
+    { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps", art: "babyalien" },
     { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
-    { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gates", art: "astrafox" },
+    { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
 ];
 export const SKY_RGB = {
     indigo: [0.11, 0.14, 0.34],

@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=215";
-import { spillAppearance } from "./spill-appearance.js?v=215";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=215";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=215";
-import { addChartScenery } from "./star-map-view.js?v=215";
-import { mapDebrisIndex } from "./zone-visuals.js?v=215";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=215";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=215";
-import { suitLean } from "./control-constants.js?v=215";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=215";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=215";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=215";
-import { drawSprite as drawSpriteOn } from "./art.js?v=215";
-import { createEngine } from "./engine.js?v=215";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=215";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=215";
-import { formatRaceTicks } from "./race.js?v=215";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=215";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=215";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=215";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=215";
+import { suitPitchFor } from "./save.js?v=219";
+import { spillAppearance } from "./spill-appearance.js?v=219";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=219";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=219";
+import { addChartScenery } from "./star-map-view.js?v=219";
+import { mapDebrisIndex } from "./zone-visuals.js?v=219";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=219";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=219";
+import { suitLean } from "./control-constants.js?v=219";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=219";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=219";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=219";
+import { drawSprite as drawSpriteOn } from "./art.js?v=219";
+import { createEngine } from "./engine.js?v=219";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=219";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=219";
+import { formatRaceTicks } from "./race.js?v=219";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=219";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=219";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=219";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=219";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2194,26 +2194,10 @@ export async function bootStandalone(root) {
                 // Aurora and Stardust left this shelf for the beta bench (their
                 // banks drifted); production shows one placeholder card in their
                 // spot so the row reads "more coming", not "two got deleted".
-                // AcorNut leads the row (suitRank puts him first); the placeholder
-                // sits right after him so the goal is never behind a "?" card.
-                let ph = null;
-                if (sec.title === "STANDARD") {
-                    ph = el("div", "ac-card ac-card-soon");
-                    ph.append(el("span", "ac-soonmark", "?"));
-                    ph.append(el("p", "ac-cardname", "NEW SUITS"));
-                    ph.append(el("p", "ac-soonnote", "In the workshop"));
-                    if (items[0]?.id !== "vanguard") {
-                        row.append(ph);
-                        ph = null;
-                    }
-                }
-                for (const u of items) {
+                // the "NEW SUITS · In the workshop" placeholder that used to sit here
+                // is gone (owner, 7 Sep 2026: "useless")
+                for (const u of items)
                     row.append(suitCard(u));
-                    if (ph && u.id === "vanguard") {
-                        row.append(ph);
-                        ph = null;
-                    }
-                }
                 if (inStore.length) {
                     const sq = el("button", "ac-card ac-shopcard");
                     sq.append(el("span", "ac-shopglyph", "+"), document.createTextNode(`${inStore.length} IN THE STORE`));

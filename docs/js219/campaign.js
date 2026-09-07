@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=215";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=215";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=215";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=215";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=219";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=219";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=219";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=219";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -541,7 +541,7 @@ export const STAR_REWARDS = [
     { stars: 45, kind: "stage", name: "Chapter 4 — SOLAR FURNACE", desc: "The heat opens." },
     { stars: 45, kind: "pal", id: "pocketmoon", name: "Moon", desc: "Lower Gravity" },
     { stars: 48, kind: "helmet", id: "aurora", name: "Aurora Helmet", desc: "Polar light under glass. In the shop." },
-    { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Slow Effect in blackholes" },
+    { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Start with Shield" },
     { stars: 56, kind: "trail", id: "prism", name: "Prism Shards", desc: "Light, broken beautifully." },
     { stars: 58, kind: "helmet", id: "princess", name: "Rose Helmet", desc: "Petal glass, violet rim. In the shop." },
     { stars: 66, kind: "stage", name: "Chapter 5 — MIDNIGHT RUN", desc: "The dark opens." },

@@ -1634,8 +1634,15 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // through palId so Pal Effects Off lifts the no-shield rule too
   const shieldPal = palId(save, w);
   const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
-  w.startShieldArmed = !!(save.startShield && canShield);
-  w.shieldCharges = w.startShieldArmed ? 1 : 0;
+  // UFO STARTS WITH A SHIELD (owner, 7 Sep 2026: the black-hole slow "was
+  // not working anyway, and it's useless really"). The saucer carries one
+  // charge onto every run for free. The hangar's armed shield is only
+  // spent on top of it when the battery has room for two; otherwise it
+  // stays armed for a later run rather than being burned for nothing.
+  const ufo = shieldPal === "ufo" && canShield;
+  const cap = batteryUnlocked(save) ? 3 : 1;
+  w.startShieldArmed = !!(save.startShield && canShield && (!ufo || cap > 1));
+  w.shieldCharges = Math.min(cap, (ufo ? 1 : 0) + (w.startShieldArmed ? 1 : 0));
   w.absorbGrace = 0;
   w.shieldFreeze = 0;
   w.shieldSlow = 0;
@@ -3318,7 +3325,6 @@ function enterWarp(w: World, save: SaveData) {
   }
   w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
   w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
-  if (palId(save, w) === "ufo" && w.flight !== "deep") w.powerLeft = Math.max(w.powerLeft, 2.4);
   w.shake = 0.18;
   spark(w, sx, cy, ["#b45cff", "#fff", "#4ad8ff"], 18, "warp");
 }

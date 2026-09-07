@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "218";
+export const ART_VER = "219";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -357,7 +357,7 @@ export const PALS: Pal[] = [
   { id: "cometsprite", name: "Comet", tag: "LONG SLOW", desc: "2x Freeze Duration", art: "cometsprite" },
   { id: "meteorcore", name: "Meteor Core", tag: "2X SPECIALS", desc: "2x Power Ups", art: "meteorcore" },
   { id: "pocketmoon", name: "Moon", tag: "LOW GRAV", desc: "Lower Gravity", art: "pocketmoon" },
-  { id: "ufo", name: "UFO", tag: "WARP SLOW", desc: "Slow Effect in blackholes", art: "ufo" },
+  { id: "ufo", name: "UFO", tag: "SHIELD UP", desc: "Start with Shield", art: "ufo" },
   { id: "nutsack", name: "Nut-Sack", tag: "2X NUTS", desc: "2x Acorns but the sack is heavy", art: "nutsack" },
   { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
   { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
@@ -368,9 +368,9 @@ export const PALS: Pal[] = [
   // owner, 7 Sep 2026: four new companions. Their effects live in PAL_FX
   // (sim.ts) as level fx, so a pal dial and a mission dial are one lever.
   { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
-  { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps (planetary gaps at .6)", art: "babyalien" },
+  { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps", art: "babyalien" },
   { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
-  { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gates", art: "astrafox" },
+  { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
 ];
 
 export type Env = {

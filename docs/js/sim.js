@@ -1,18 +1,18 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=218";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=218";
-import { trailWornBy } from "./catalog.js?v=218";
-import { missionRandom } from "./mission-rng.js?v=218";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=218";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=218";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=218";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=218";
-import { TUTORIAL_SUIT } from "./catalog.js?v=218";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=218";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=218";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=218";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=218";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=218";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=218";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=219";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=219";
+import { trailWornBy } from "./catalog.js?v=219";
+import { missionRandom } from "./mission-rng.js?v=219";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=219";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=219";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=219";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=219";
+import { TUTORIAL_SUIT } from "./catalog.js?v=219";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=219";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=219";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=219";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=219";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=219";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=219";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -1138,8 +1138,15 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // through palId so Pal Effects Off lifts the no-shield rule too
     const shieldPal = palId(save, w);
     const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
-    w.startShieldArmed = !!(save.startShield && canShield);
-    w.shieldCharges = w.startShieldArmed ? 1 : 0;
+    // UFO STARTS WITH A SHIELD (owner, 7 Sep 2026: the black-hole slow "was
+    // not working anyway, and it's useless really"). The saucer carries one
+    // charge onto every run for free. The hangar's armed shield is only
+    // spent on top of it when the battery has room for two; otherwise it
+    // stays armed for a later run rather than being burned for nothing.
+    const ufo = shieldPal === "ufo" && canShield;
+    const cap = batteryUnlocked(save) ? 3 : 1;
+    w.startShieldArmed = !!(save.startShield && canShield && (!ufo || cap > 1));
+    w.shieldCharges = Math.min(cap, (ufo ? 1 : 0) + (w.startShieldArmed ? 1 : 0));
     w.absorbGrace = 0;
     w.shieldFreeze = 0;
     w.shieldSlow = 0;
@@ -2850,8 +2857,6 @@ function enterWarp(w, save) {
     }
     w.shieldFreeze = w.flight === "deep" ? 0.2 : 0.4;
     w.absorbGrace = w.flight === "deep" ? 0.9 : 1.6;
-    if (palId(save, w) === "ufo" && w.flight !== "deep")
-        w.powerLeft = Math.max(w.powerLeft, 2.4);
     w.shake = 0.18;
     spark(w, sx, cy, ["#b45cff", "#fff", "#4ad8ff"], 18, "warp");
 }

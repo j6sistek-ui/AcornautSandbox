@@ -1,11 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=215";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=219";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "215";
+export const ART_VER = "219";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 04:52 UTC";
+export const BUILD_TIME = "2026-09-07 06:51 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
@@ -81,7 +81,8 @@ export const TUTORIAL_SUIT = "vanguard";
 // in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
-export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0 };
+// owner, 7 Sep 2026: Eclipse leans 5 forward, Volt 25
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0, eclipse: 5, volt: 25 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
@@ -269,26 +270,34 @@ export const PAL_ANIM = {
     switchback: 16, bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
     nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
     starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
+    // owner sheets, 7 Sep 2026
+    magnetar: 36, babyalien: 36, satellite: 36, astrafox: 36,
 };
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
     // STOPWATCH (owner, 7 Sep 2026): the automaton holds the clock. The id
     // stays "switchback" so every save and receipt that named it still does.
-    { id: "switchback", name: "Stopwatch", tag: "COMPANION", desc: "A golden acorn automaton that holds the clock. Every tap toggles slow time, like the frozen acorn.", art: "switchback" },
+    { id: "switchback", name: "Stopwatch", tag: "COMPANION", desc: "Tap Toggles Scroll Speed", art: "switchback" },
     { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
     { id: "buddy", name: "Acorn", tag: "MAGNET", desc: "Magnet Effect", art: "buddy" },
     { id: "voidjelly", name: "Jelly", tag: "SOFT BOUNCE", desc: "Bounce Softer", art: "voidjelly" },
     { id: "cometsprite", name: "Comet", tag: "LONG SLOW", desc: "2x Freeze Duration", art: "cometsprite" },
     { id: "meteorcore", name: "Meteor Core", tag: "2X SPECIALS", desc: "2x Power Ups", art: "meteorcore" },
     { id: "pocketmoon", name: "Moon", tag: "LOW GRAV", desc: "Lower Gravity", art: "pocketmoon" },
-    { id: "ufo", name: "UFO", tag: "WARP SLOW", desc: "Slow Effect in blackholes", art: "ufo" },
+    { id: "ufo", name: "UFO", tag: "SHIELD UP", desc: "Start with Shield", art: "ufo" },
     { id: "nutsack", name: "Nut-Sack", tag: "2X NUTS", desc: "2x Acorns but the sack is heavy", art: "nutsack" },
     { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
     { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
     { id: "wisp", name: "Wisp", tag: "GATE DRIFT", desc: "More gate movement", art: "wisp" },
-    { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Every bounce repaints the sky a new vibrant colour.", art: "prismwing" },
-    { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll speed drifts, +50% to -70%, and never at a steady rate.", art: "clockling" },
-    { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "The gates stop drifting. A still sky to thread.", art: "nightglider" },
+    { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Planet Bounces Repaint Sky", art: "prismwing" },
+    { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll Speed Drift", art: "clockling" },
+    { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "Gate Drift Off", art: "nightglider" },
+    // owner, 7 Sep 2026: four new companions. Their effects live in PAL_FX
+    // (sim.ts) as level fx, so a pal dial and a mission dial are one lever.
+    { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
+    { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps", art: "babyalien" },
+    { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
+    { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
 ];
 export const SKY_RGB = {
     indigo: [0.11, 0.14, 0.34],
@@ -445,6 +454,10 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
+    { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
+    { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
+    { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
+    { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
     { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {
         id: "bundle-aurora",

@@ -698,7 +698,7 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 45, kind: "stage", name: "Chapter 4 — SOLAR FURNACE", desc: "The heat opens." },
   { stars: 45, kind: "pal", id: "pocketmoon", name: "Moon", desc: "Lower Gravity" },
   { stars: 48, kind: "helmet", id: "aurora", name: "Aurora Helmet", desc: "Polar light under glass. In the shop." },
-  { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Slow Effect in blackholes" },
+  { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Start with Shield" },
   { stars: 56, kind: "trail", id: "prism", name: "Prism Shards", desc: "Light, broken beautifully." },
   { stars: 58, kind: "helmet", id: "princess", name: "Rose Helmet", desc: "Petal glass, violet rim. In the shop." },
   { stars: 66, kind: "stage", name: "Chapter 5 — MIDNIGHT RUN", desc: "The dark opens." },
