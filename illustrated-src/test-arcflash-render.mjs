@@ -6,6 +6,7 @@ const require=createRequire(import.meta.url);
 const {createCanvas,loadImage}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
 const root=fileURLToPath(new URL('../',import.meta.url));
 const R=await import('../docs/js/arcflash.js'),M=await import('../docs/js/arcflash-motion.js');
+const {ARCFLASH_PARTS}=await import('../docs/js/arcflash-parts.js');
 const atlas=await loadImage(root+'docs/art/suits/arcflash/parts.png');
 const icon=await loadImage(root+'docs/art/suits/arcflash/body.png');
 assert.equal(atlas.width,1024);assert.equal(atlas.height,768);
@@ -25,6 +26,29 @@ assert.equal(matte,0,'green production matte does not ship on opaque artwork');
 for(let n=0;n<12;n++)for(let i=0;i<256;i++)for(const [x,y] of [[i,0],[i,255],[0,i],[255,i]]){
   assert(pixels[((Math.floor(n/4)*256+y)*1024+n%4*256+x)*4+3]<16,'atlas cells retain transparent padding');
 }
+// Connected pieces can still form a pinched, incomplete body. Measure the
+// reported back notch and the actual leg silhouettes in fixed rig units.
+function partAlpha(n,x,y,boneLength){
+  const p=ARCFLASH_PARTS[n],dx=p.b[0]-p.a[0],dy=p.b[1]-p.a[1];
+  const sx=Math.round(p.a[0]+(dx*y+dy*x)/boneLength),sy=Math.round(p.a[1]+(dy*y-dx*x)/boneLength);
+  if(sx<0||sx>=256||sy<0||sy>=256)return 0;
+  return pixels[((Math.floor(n/4)*256+sy)*1024+n%4*256+sx)*4+3];
+}
+let backOpaque=0,backTotal=0;
+for(let y=-30;y<=30;y++)for(let x=-90;x<=-60;x++){
+  backTotal++;if(partAlpha(1,x,y+82,140)>=128)backOpaque++;
+}
+const backCoverage=backOpaque/backTotal;
+assert(backCoverage>.6,'continuous back armor must fill the collar-to-hip corridor (old torso covered only 9%)');
+const legWidths=[];
+for(const [n,length,middleMinimum,ankleMinimum] of [[6,69,56,50],[7,63,50,34],[8,64,54,49],[9,59,37,27]]){
+  const widths=[.5,.75].map(t=>{
+    let width=0;for(let x=-100;x<=100;x+=.25)if(partAlpha(n,x,length*t,length)>=128)width+=.25;
+    return width;
+  });
+  assert(widths[0]>=middleMinimum&&widths[1]>=ankleMinimum,`${ARCFLASH_PARTS[n].name} retains painted leg volume`);
+  legWidths.push({part:ARCFLASH_PARTS[n].name,middle:widths[0],distal:widths[1]});
+}
 const canvas=createCanvas(640,640),c=canvas.getContext('2d');
 function components(data,W,H){
   const seen=new Uint8Array(W*H),q=new Int32Array(W*H),areas=[];
@@ -37,7 +61,7 @@ function components(data,W,H){
   }
   return areas.sort((a,b)=>b-a);
 }
-let minArea=Infinity,maxStray=0,maxVertexStep=0,previous;
+let minArea=Infinity,maxStray=0,maxVertexStep=0,minJointCoverage=1,previous;
 const state=M.createArcflashMotion();let vy=0;
 // A pitch adjustment moves the complete articulated pilot and each nozzle
 // together. Prior wake samples are deliberately outside this rotation.
@@ -66,12 +90,25 @@ for(let tick=0;tick<960;tick++){
   previous=mesh;
   if(tick%40===0){
     c.clearRect(0,0,640,640);R.paintArcflash(c,art,320,320,480,state,undefined,false);
-    const areas=components(c.getImageData(0,0,640,640).data,640,640);maxStray=Math.max(maxStray,areas[1]||0);
+    const rendered=c.getImageData(0,0,640,640).data;
+    const areas=components(rendered,640,640);maxStray=Math.max(maxStray,areas[1]||0);
     assert(areas[0]>15000,'complete character is rendered at each attitude');
     assert((areas[1]||0)<100,'head, paws, limbs and tail remain attached; only fine fur fragments may be separate');
+    const joints=R.arcflashLandmarks(state.pose),angle=state.pose.body*Math.PI/180,unit=480/540;
+    for(const key of ['nearHip','farHip','nearKnee','farKnee']){
+      const [x,y]=joints[key],cx=320+(65+x*Math.cos(angle)-y*Math.sin(angle))*unit,
+        cy=320+(25+state.pose.heave+x*Math.sin(angle)+y*Math.cos(angle))*unit;
+      let covered=0,total=0;
+      for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++)if(dx*dx+dy*dy<=36){
+        total++;if(rendered[(Math.round(cy+dy*unit)*640+Math.round(cx+dx*unit))*4+3]>=128)covered++;
+      }
+      minJointCoverage=Math.min(minJointCoverage,covered/total);
+      assert(covered/total>.9,`${key} has opaque overlap throughout short-input motion`);
+    }
   }
 }
 assert(minArea>100,'tail never inverts or folds a texture triangle');
 assert(maxVertexStep<16,'tail curvature guard does not introduce a visible snap');
 console.log(JSON.stringify({passed:true,fallbackExact:true,opaqueAtlasPixels:opaque,greenMattePixels:matte,
-  poses:24,largestDetachedFurFragment:maxStray,minTailTriangleArea:+minArea.toFixed(3),maxTailVertexStep120Hz:+maxVertexStep.toFixed(3)}));
+  backCoverage:+backCoverage.toFixed(3),legWidths,minJointCoverage,poses:24,largestDetachedFurFragment:maxStray,
+  minTailTriangleArea:+minArea.toFixed(3),maxTailVertexStep120Hz:+maxVertexStep.toFixed(3)}));

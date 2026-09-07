@@ -1,6 +1,6 @@
-import { ENVS } from "./catalog.js?v=204";
-import { artUrl, drawSprite } from "./art.js?v=204";
-import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals.js?v=204";
+import { ENVS } from "./catalog.js?v=205";
+import { artUrl, drawSprite } from "./art.js?v=205";
+import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals.js?v=205";
 /** Scenery belongs to the same stable zone as the mission node. Four mission
  * spacings overlap at each transition; there are no chapter panels or seams. */
 export function addChartScenery(map, levels, pos, step, art) {

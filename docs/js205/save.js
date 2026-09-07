@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=201";
-import { CHART_LEVELS } from "./campaign.js?v=201";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=201";
-import { restoreSpill } from "./spill.js?v=201";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=201";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=205";
+import { CHART_LEVELS } from "./campaign.js?v=205";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=205";
+import { restoreSpill } from "./spill.js?v=205";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=205";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=201";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=205";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -117,6 +117,10 @@ export function loadSave() {
         s.equippedSuit = "flight";
     if (!TRAILS.some((t) => t.id === s.equippedTrail))
         s.equippedTrail = "sparks";
+    // A fixed suit wake never replaces the pilot's selectable trail. Old or
+    // imported saves that stored this presentation effect use the starter.
+    if (s.equippedTrail === "arcflashwake")
+        s.equippedTrail = "sparks";
     if (!PALS.some((p) => p.id === s.equippedPal))
         s.equippedPal = "none";
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
@@ -225,6 +229,10 @@ export function loadSave() {
     s.spillSignal = s.spillEngineColor !== "stock";
     s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
     // favourites are ids only; anything else in the array is a hand-edit
+    // the case used to remember "compact"; it starts folded now and only
+    // remembers "expanded". The pin-to-home list is gone with its feature.
+    delete s.heroCompact;
+    delete s.pinnedRewards;
     if (!Array.isArray(s.favorites))
         s.favorites = [];
     s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
@@ -360,6 +368,8 @@ export function helmetRevealed(s, id) {
 export function trailUnlocked(s, id) {
     if (id === "vanguardwake")
         return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+    if (id === "arcflashwake")
+        return suitRevealed(s, "arcflash");
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.trails[id] === undefined)

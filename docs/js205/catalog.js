@@ -1,6 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=201";
-export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "201";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=205";
+// THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
+// launch-readiness stretch. The art stamp below is a cache key, not a
+// version, and is no longer shown. QuarterDrop Games is a reserved name,
+// not yet an LLC - no suffix until it is registered.
+export const GAME_VERSION = "V1.0.10";
+export const STUDIO = "Acornaut by QuarterDrop Games";
+export const ART_VER = "205";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -43,8 +48,9 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-06 23:59 UTC";
-export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
+export const BUILD_TIME = "2026-09-07 00:35 UTC";
+// the build time stays exported for tooling, and off the visible line
+export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
@@ -75,7 +81,7 @@ export const TUTORIAL_SUIT = "vanguard";
 // in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
-export const SUIT_PITCH_DEFAULTS = { vanguard: 12 };
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
@@ -167,6 +173,11 @@ export function helmetWornBy(equippedHelmet, equippedSuit) {
 export const SUITS = [
     { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
     { id: "vanguard", name: "AcorNut", cost: 0, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
+    // Carbon armour, blue eyes and a blue electrical wake; its articulated
+    // bare-headed pilot is one integrated look with independent flight motion.
+    // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
+    // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
+    { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -219,14 +230,21 @@ if (!IS_BETA) {
 export function trailWornBy(equippedTrail, equippedSuit) {
     if (equippedSuit === "vanguard")
         return "vanguardwake";
-    return equippedTrail === "vanguardwake" ? "sparks" : equippedTrail;
+    if (equippedSuit === "arcflash")
+        return "arcflashwake";
+    return equippedTrail === "vanguardwake" || equippedTrail === "arcflashwake" ? "sparks" : equippedTrail;
 }
 export function canWearTrail(id, suit) {
-    return suit === "vanguard" ? id === "vanguardwake" : id !== "vanguardwake";
+    if (suit === "vanguard")
+        return id === "vanguardwake";
+    if (suit === "arcflash")
+        return id === "arcflashwake";
+    return id !== "vanguardwake" && id !== "arcflashwake";
 }
 export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
     { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
+    { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -422,6 +440,10 @@ export const TITLES = [
     [30, "ACORNAUT"],
 ];
 export const BUNDLES = [
+    // ARCFLASH (owner, 7 Sep 2026): one suit, one price, its wake included.
+    // The wake is not an item - it is the only trail Arcflash can wear and it
+    // arrives with the suit (trailUnlocked), so it is not listed or priced.
+    { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
     { id: "bundle-switchback", name: "Switchback Companion", blurb: "Golden clockwork, teal fins, and good company. Cosmetic only.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {
         id: "bundle-aurora",
@@ -606,7 +628,12 @@ export function idWeight(id) {
         w += ITEM_WEIGHT.trail;
     return w;
 }
+/** STICKER PRICES. An id here sells singly at this number instead of the
+ *  weight rate - for a suit whose price was set by the owner, not derived. */
+export const DUST_STICKER = { arcflash: 1850 };
 export function idDust(id) {
+    if (DUST_STICKER[id] !== undefined)
+        return DUST_STICKER[id];
     return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 10) * 10);
 }
 // THE FREE TRAIL. Buying a set hands over its trail as well: the trail is
@@ -636,6 +663,8 @@ export function alaCarteTotal(ids, owns) {
  *  less rather than charging for it twice. */
 export const FEATURE_DISCOUNT = 0.5;
 export function featurePrice(b, owns) {
+    if (b.fixed)
+        return bundlePrice(b, owns);
     const due = alaCarteTotal(bundleIds(b), owns);
     if (due <= 0)
         return 0;
@@ -670,12 +699,12 @@ export const SUIT_SHELF = [
     // "underwhelming and not working well due to visual drifts". Their
     // helmets stay earned as rewards; the shelf shows a placeholder card in
     // their place until replacements arrive.
-    { title: "STANDARD", ids: ["flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"] },
+    // AcorNut leads the row, earned or not (owner, 7 Sep 2026)
+    { title: "STANDARD", ids: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"] },
     { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
     // premium suits the pilot owns; each one not yet bought shows as a door
     // to the shop instead of a locked card that answers nothing
-    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan"], shop: true },
-    { title: "FLAGSHIP · 500 STARS", ids: ["vanguard"] },
+    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     { title: "ACORN INTOLERANT", ids: ["catsuit"] },
