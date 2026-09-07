@@ -6,6 +6,18 @@
   "beta": false
  },
  {
+  "id": "vanguard",
+  "name": "AcorNut",
+  "glow": "#85edff",
+  "beta": false
+ },
+ {
+  "id": "arcflash",
+  "name": "Arcflash",
+  "glow": "#38caff",
+  "beta": false
+ },
+ {
   "id": "iontrim",
   "name": "Ion",
   "glow": "#4ad8ff",
@@ -30,22 +42,10 @@
   "beta": false
  },
  {
-  "id": "aurorasuit",
-  "name": "Aurora",
-  "glow": "#5dffd0",
-  "beta": true
- },
- {
   "id": "ember",
   "name": "Ember",
   "glow": "#ff5a1e",
   "beta": false
- },
- {
-  "id": "stardust",
-  "name": "Stardust",
-  "glow": "#8fb8ff",
-  "beta": true
  },
  {
   "id": "robo",
@@ -58,12 +58,6 @@
   "name": "Alien",
   "glow": "#7dff4d",
   "beta": false
- },
- {
-  "id": "alien2",
-  "name": "Alien 1",
-  "glow": "#7dff4d",
-  "beta": true
  },
  {
   "id": "ghost",
@@ -81,6 +75,24 @@
   "id": "catsuit",
   "name": "Cat",
   "glow": "#c9b6ff",
+  "beta": false
+ },
+ {
+  "id": "raccoon",
+  "name": "Bandit",
+  "glow": "#38d0ff",
+  "beta": false
+ },
+ {
+  "id": "ferret",
+  "name": "Noodle",
+  "glow": "#ffc83a",
+  "beta": false
+ },
+ {
+  "id": "hedgehog",
+  "name": "Quill",
+  "glow": "#ffa53a",
   "beta": false
  },
  {
@@ -135,49 +147,37 @@
   "id": "cinderforge",
   "name": "Cinderforge",
   "glow": "#ff3b22",
-  "beta": true
+  "beta": false
  },
  {
   "id": "groveguard",
   "name": "Groveguard",
   "glow": "#65dca1",
-  "beta": true
+  "beta": false
  },
  {
   "id": "cosmic",
   "name": "Cosmic",
   "glow": "#d687ff",
-  "beta": true
+  "beta": false
+ },
+ {
+  "id": "briellacat",
+  "name": "Briella's Cat",
+  "glow": "#c9b6ff",
+  "beta": false
  },
  {
   "id": "sunforged",
   "name": "Sunforged",
   "glow": "#ffad2b",
-  "beta": true
+  "beta": false
  },
  {
   "id": "abyssal",
   "name": "Abyssal",
   "glow": "#39dcff",
-  "beta": true
- },
- {
-  "id": "amethyst",
-  "name": "Amethyst",
-  "glow": "#c86dff",
-  "beta": true
- },
- {
-  "id": "ivoryguard",
-  "name": "Ivoryguard",
-  "glow": "#fff0b8",
-  "beta": true
- },
- {
-  "id": "reactor",
-  "name": "Reactor",
-  "glow": "#65ff32",
-  "beta": true
+  "beta": false
  },
  {
   "id": "cyber",
