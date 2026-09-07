@@ -1,18 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=220";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=220";
-import { trailWornBy } from "./catalog.js?v=220";
-import { missionRandom } from "./mission-rng.js?v=220";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=220";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=220";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=220";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=220";
-import { TUTORIAL_SUIT } from "./catalog.js?v=220";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=220";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=220";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=220";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=220";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=220";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=220";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=224";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=224";
+import { trailWornBy } from "./catalog.js?v=224";
+import { missionRandom } from "./mission-rng.js?v=224";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=224";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=224";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=224";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=224";
+import { platform } from "./platform.js?v=224";
+import { TUTORIAL_SUIT } from "./catalog.js?v=224";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=224";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=224";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=224";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=224";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=224";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=224";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -80,7 +81,7 @@ export function makeWorld(W, H) {
         zoneJump: 0,
         hitCooldown: 0,
         trailT: 0,
-        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null,
+        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, bounceHouse: false,
         clockMul: 1,
         clockPhase: 0,
         clockRate: 0.5,
@@ -513,6 +514,9 @@ function sealReach(w) {
 function sealBlockers(w, env, gapY, gap) {
     const r = PHYS.planetR;
     const blockers = [];
+    // a bounce house has nothing sharp in it
+    if (w.bounceHouse)
+        return blockers;
     // A short landscape field leaves only a thin band between each planet
     // and the screen edge — the portrait spacing (26px of air, 30px step,
     // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
@@ -896,7 +900,11 @@ function spawnPair(w, save, x) {
     const diveAmt = Math.max(60, 520 * dtGate - vMargin);
     gapY = Math.max(w.lastGapY - climb, Math.min(w.lastGapY + diveAmt, gapY));
     gapY = Math.max(margin + gap / 2, Math.min(w.H - margin - gap / 2, gapY));
-    const r = PHYS.planetR;
+    // BOUNCE HOUSE PLANETS (owner): each gate rolls its own size, up to 2.5x,
+    // and never more than a third of the screen tall
+    const r = w.bounceHouse
+        ? Math.min(w.H / 6, PHYS.planetR * (1 + (w.missionRng ?? Math.random)() * 1.5))
+        : PHYS.planetR;
     const topY = gapY - gap / 2 - r;
     const botY = gapY + gap / 2 + r;
     const blockers = sealBlockers(w, env, gapY, gap);
@@ -921,11 +929,23 @@ function spawnPair(w, save, x) {
             : w.tut ? 0
                 : gap * 0.15 * normalDrift) * lvlDrift;
     const pairKind = pickKind(w);
+    // BOUNCE HOUSE, and nowhere else: a lone planet, top or bottom by coin
+    // flip, parked where the whole ball is on screen. gapY is back-solved so
+    // the ordinary top/bottom arithmetic lands the one half where it was put.
+    let half;
+    if (w.bounceHouse) {
+        const rng = w.missionRng ?? Math.random;
+        half = rng() < 0.5 ? "top" : "bot";
+        const cy = r + 10 + rng() * Math.max(0, w.H - 2 * r - 20);
+        gapY = half === "top" ? cy + gap / 2 + r : cy - gap / 2 - r;
+    }
     w.planets.push({
         x,
         gapY,
         gap,
         r,
+        half,
+        solo: !!half,
         // ONE PLANET PER GATE, drawn once. The two halves of a gate are one
         // object as far as the eye is concerned - a striped giant above and an
         // ice moon below reads as two things that happen to be near each other,
@@ -942,7 +962,8 @@ function spawnPair(w, save, x) {
         blockers,
     });
     const bee = hasPal(save, w, "bee");
-    const noPick = bee || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
+    // Space Puppy's bounce house spawns nothing to collect either
+    const noPick = bee || w.bounceHouse || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
     // A collection star must never be lost to the spawn dice: a level with
     // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
     // achievable inside the level's own gate count with room to miss a few.
@@ -990,7 +1011,7 @@ function spawnPair(w, save, x) {
         (w.flight === "arcade" ? 2 : 1) *
         (w.flight === "fly" ? 0.5 : 1);
     const noShield = hasPal(save, w, "nutsack") || hasPal(save, w, "tinbot");
-    const noHoles = hasPal(save, w, "tinbot");
+    const noHoles = hasPal(save, w, "tinbot") || w.bounceHouse;
     if (!noPick) {
         // The three power-ups roll ONCE, weighted against each other, rather
         // than three times independently. Their combined chance is what it
@@ -1105,6 +1126,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         return fx ? mergeFx(acc ?? {}, fx) : acc;
     }, null);
     w.palFlip = !!w.palFx?.upsideDown;
+    w.bounceHouse = hasPal(save, w, "spacepuppy");
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
@@ -1808,7 +1830,7 @@ function tutClearY(w, want) {
             if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40)
                 continue;
             const gy = liveGapY(p, w);
-            for (const cy of [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
+            for (const cy of p.half === "top" ? [gy - p.gap / 2 - p.r] : p.half === "bot" ? [gy + p.gap / 2 + p.r] : [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
                 const need = p.r + PHYS.squirrelR + 8;
                 const d = y - cy;
                 if (Math.abs(d) < need) {
@@ -2716,7 +2738,7 @@ export function gateOffset(p, w) {
 function circleHit(x1, y1, r1, x2, y2, r2) {
     return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
 }
-function bounceOff(w, save, px, py) {
+function bounceOff(w, save, px, py, mul = 1) {
     // THE TEACHING LAUNCH IS NOT INTERRUPTIBLE. The tutorial's bounce stage
     // fires one arc that peaks exactly where the swipe lesson is taught, and
     // this function overwrites vy on contact - which is precisely how that
@@ -2734,7 +2756,7 @@ function bounceOff(w, save, px, py) {
     dy /= dist;
     const incomingVy = w.squirrel.vy;
     const jelly = hasPal(save, w, "voidjelly") ? 0.55 : 1;
-    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1);
+    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1) * mul;
     w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
     if (BOUNCE_ANIM_ENABLED) {
         w.bounceAnimT = 0;
@@ -3116,6 +3138,10 @@ function die(w, save) {
         save.spillBest = Math.max(save.spillBest ?? 0, w.score);
     else
         save.highScore = Math.max(save.highScore, w.score);
+    // the same number goes to the platform's board (Game Center, Steam);
+    // a mission or a tutorial is not a board run, and the web has no board
+    if (!w.lvl && !w.tut && w.score > 0)
+        platform.submitScore(w.flight, w.score);
     if (w.startShieldArmed)
         save.startShield = false;
     spark(w, pilotX(w), w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
@@ -3708,7 +3734,9 @@ export function updateWorld(w, save, dt) {
     for (const p of w.planets) {
         if (!p.scored && p.x + p.r < sx - 12) {
             p.scored = true;
-            w.score += 1;
+            // a bounce house keeps no score: gates pass uncounted (Space Puppy)
+            if (!w.bounceHouse)
+                w.score += 1;
             if (pilotSuitId(w, save) === "vanguard")
                 vanguardGate(w.vanguard);
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
@@ -3758,6 +3786,14 @@ export function updateWorld(w, save, dt) {
         w.squirrel.vy = Math.abs(w.squirrel.vy) * 0.45 + 90;
         w.squirrel.rot = 0.5;
         spark(w, sx, 4, ["#e8dcc8", "#fff"], 8, "poof");
+    }
+    // a bounce house has a floor: the pilot springs back up instead of
+    // falling out of the run (Space Puppy)
+    if (w.bounceHouse && sy > w.H - PHYS.squirrelR && w.squirrel.vy > 0) {
+        w.squirrel.y = w.H - PHYS.squirrelR;
+        w.squirrel.vy = -(Math.abs(w.squirrel.vy) * 0.6 + 260);
+        w.squirrel.rot = -0.5;
+        spark(w, sx, w.H - 4, ["#ffb6c9", "#fff"], 8, "poof");
     }
     if (sy > w.H + 36) {
         if (tutSafe(w)) {
@@ -3820,14 +3856,15 @@ export function updateWorld(w, save, dt) {
         const gy = liveGapY(p, w);
         const topY = gy - p.gap / 2 - p.r;
         const botY = gy + p.gap / 2 + p.r;
-        for (const py of [topY, botY]) {
+        for (const py of p.half === "top" ? [topY] : p.half === "bot" ? [botY] : [topY, botY]) {
             if (!circleHit(sx, sy, sr, p.x, py, p.r * 0.92))
                 continue;
             if (w.hitCooldown <= 0) {
                 if (w.shieldCharges > 0 && w.tut?.stage === "free") {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
-                bounceOff(w, save, p.x, py);
+                // BOUNCE HOUSE: 2x off every planet, 3x off the big ones (owner)
+                bounceOff(w, save, p.x, py, w.bounceHouse ? (p.r >= PHYS.planetR * 1.75 ? 3 : 2) : 1);
                 w.run.bounces += 1;
                 return "bounce";
             }

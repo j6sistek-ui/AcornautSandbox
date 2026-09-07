@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=223";
-import { platform } from "./platform.js?v=223";
-import { spillAppearance } from "./spill-appearance.js?v=223";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=223";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=223";
-import { addChartScenery } from "./star-map-view.js?v=223";
-import { mapDebrisIndex } from "./zone-visuals.js?v=223";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=223";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=223";
-import { suitLean } from "./control-constants.js?v=223";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=223";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=223";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=223";
-import { drawSprite as drawSpriteOn } from "./art.js?v=223";
-import { createEngine } from "./engine.js?v=223";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=223";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=223";
-import { formatRaceTicks } from "./race.js?v=223";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=223";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=223";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=223";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=223";
+import { suitPitchFor } from "./save.js?v=224";
+import { platform } from "./platform.js?v=224";
+import { spillAppearance } from "./spill-appearance.js?v=224";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=224";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=224";
+import { addChartScenery } from "./star-map-view.js?v=224";
+import { mapDebrisIndex } from "./zone-visuals.js?v=224";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=224";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=224";
+import { suitLean } from "./control-constants.js?v=224";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=224";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=224";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=224";
+import { drawSprite as drawSpriteOn } from "./art.js?v=224";
+import { createEngine } from "./engine.js?v=224";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=224";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=224";
+import { formatRaceTicks } from "./race.js?v=224";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=224";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=224";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=224";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=224";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1226,6 +1226,13 @@ export async function bootStandalone(root) {
     function drawHome() {
         const s = engine.save;
         const box = el("div", "ac-hub");
+        // THE DAILY SAYS SO HERE (owner, 7 Sep 2026: "a pop up on first log in
+        // ON the main menu, showing streak, collect"). Boot banks the dust;
+        // the first main menu of the day shows the receipt, once. The shop
+        // keeps only the tracker.
+        const claimed = engine.takeDailyClaim();
+        if (claimed)
+            dailyToast = claimed;
         const art = el("div", "ac-hub-art");
         const hubArt = window.innerWidth > window.innerHeight ? "menu-hub-wide.jpg" : "menu-hub.jpg";
         art.style.backgroundImage = `url("${artRootUrl()}/${hubArt}?v=${ART_VER}")`;
@@ -1389,7 +1396,7 @@ export async function bootStandalone(root) {
             drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
         // no dot: a badge should mean something NEW is inside, and nothing
         // in the mode sheet changes on its own
-        tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
+        tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
         box.append(tiles);
         // the Star Chart bar: campaign stars over this route's total, plus what the
         // next handful buys — a second door into the chart
@@ -1419,6 +1426,8 @@ export async function bootStandalone(root) {
         if (hyperRunOpen) {
             box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes"));
         }
+        if (dailyToast)
+            box.append(drawDailyToast(dailyToast));
         return box;
     }
     // The mode picker: FREE FLIGHT's four rule-sets, with the Lab's
@@ -1569,9 +1578,9 @@ export async function bootStandalone(root) {
             });
         });
         // What remains under the divider really is a lab: utilities, not modes.
-        // A store build has none of it (platform.devDoors): the lab pages are
-        // not in the app bundle, and a door to nowhere is a review finding.
-        if (platform.devDoors) {
+        // BETA ONLY (owner, 7 Sep 2026: "rig editor and ship bench need to
+        // remove from main app"), and never in a store build (platform.devDoors).
+        if (IS_BETA && platform.devDoors) {
             sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
             const door = (label, hit) => {
                 const b = el("button", "ac-moderow ac-modedoor");
@@ -3508,10 +3517,8 @@ export async function bootStandalone(root) {
     }
     function drawShopBeta() {
         const s = engine.save;
-        // open() already claimed on arrival; collect the payment for the strip
-        const claimed = engine.takeDailyClaim();
-        if (claimed)
-            dailyToast = claimed;
+        // the daily is banked at boot and SHOWN on the main menu (drawHome);
+        // the shop only carries the streak tracker
         const cy = shopCycle();
         const box = el("div", "ac-menu ac-shopbeta");
         box.append(header("Premium", "Shop", headAside(s.acorns)));
@@ -3797,8 +3804,6 @@ export async function bootStandalone(root) {
         box.append(drawCycleRoll(cy));
         if (featureOpen)
             box.append(drawFeatureSheet(featureOpen));
-        if (dailyToast)
-            box.append(drawDailyToast(dailyToast));
         return box;
     }
     /** THE PACK, OPENED. Every character in it goes on the squirrel — and
@@ -4941,20 +4946,7 @@ export async function bootStandalone(root) {
         const replay = el("button", "ac-ghost ac-replay", "REPLAY TUTORIAL");
         replay.onclick = () => engine.replayTutorial();
         scroll.append(replay);
-        // BETA reaches the prototype doors through the MODES sheet on the hub;
-        // the live page keeps them here, one deliberate tap away, as before.
-        // a store build has no prototype doors (platform.devDoors); the web
-        // page keeps them, one deliberate tap away
-        if (!BETA_FEATURES && platform.devDoors) {
-            const labRoot = "./lab/";
-            const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
-            rig.onclick = () => { window.location.href = labRoot + "rig/"; };
-            const ship = el("button", "ac-ghost ac-lab", "SHIP BENCH");
-            ship.onclick = () => { window.location.href = labRoot + "ship/"; };
-            const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
-            worm.onclick = () => engine.fly("tunnel");
-            scroll.append(rig, ship, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
-        }
+        // the prototype doors live on the beta's MODES sheet only
         // Starting over is a real feature, not a debug door: progression can
         // be flown from zero, in either build, without touching the browser.
         // Two taps, and the armed state disarms on any re-render.
