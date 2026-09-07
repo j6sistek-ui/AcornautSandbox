@@ -354,9 +354,8 @@ const RIGGED_SUITS = [
   // behind this flag, so a pilot who bought it flew a flat sticker while
   // the beta page flew the animation. A suit's art must follow the suit.
   "cyber",
-  ...(IS_BETA ? [
-    "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-  ] : []),
+  // Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now fly whole
+  // ascent/descent paintings; their static portraits are the loading fallback.
 ];
 const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // The Robo-timing rollout is DONE: it was beta-only while the owner flew
@@ -377,11 +376,8 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // bank it patched.
   // leviathan's generated tap bank is retired with its remaster: the suit
   // flies a painted 8/8 ramp now - the final delivery of the sweep.
-  // These eight stay here only because the SUITS do - they are beta-gated in
-  // catalog.ts, so production never loads them. Promote the pair together.
-  ...(IS_BETA ? {
-    cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16, abyssal: 16,
-  } : {}),
+  // The five unreleased suits' obsolete tap banks are retired with their
+  // owner-requested 8/8 replacement sheets (7 Sep 2026).
 } : {};
 const TAIL_TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
 const BOUNCE_BANKS: Record<string, number> = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
@@ -415,7 +411,8 @@ const ASC_BANKS: Record<string, number> =
         cryostar: 8, verdant: 8, gemmie: 8,
         sammie: 8, frost: 8, ghost: 8, leviathan: 8,
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
-        briellacat: 7 }
+        briellacat: 7,
+        ...(IS_BETA ? { cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 } : {}) }
     : {};
 const DESC_BANKS: Record<string, number> =
   TAP_ANIM_ENABLED
@@ -424,7 +421,8 @@ const DESC_BANKS: Record<string, number> =
         ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
         sammie: 8, frost: 8, ghost: 8, leviathan: 8,
-        briellacat: 4 }
+        briellacat: 4,
+        ...(IS_BETA ? { cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 } : {}) }
     : {};
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.

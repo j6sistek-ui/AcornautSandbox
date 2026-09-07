@@ -1,4 +1,5 @@
 import { spillDockTravelDuration } from "./spill.js?v=214";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=214";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=214";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=214";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=214";
@@ -3848,6 +3849,7 @@ function punchedHelm(spr, id, opaqueVisor = false) {
     cc.fillStyle = grad;
     cc.fillRect(0, 0, c.width, c.height);
     cc.globalCompositeOperation = "source-over";
+    clearHelmetRearCollar(cc, id);
     punchedCache.set(id, c);
     return c;
 }

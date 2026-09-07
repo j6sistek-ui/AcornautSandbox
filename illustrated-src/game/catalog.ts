@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "215";
+export const ART_VER = "216";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -348,7 +348,7 @@ export const PALS: Pal[] = [
   { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
   // STOPWATCH (owner, 7 Sep 2026): the automaton holds the clock. The id
   // stays "switchback" so every save and receipt that named it still does.
-  { id: "switchback", name: "Stopwatch", tag: "COMPANION", desc: "A golden acorn automaton that holds the clock. Every tap toggles slow time, like the frozen acorn.", art: "switchback" },
+  { id: "switchback", name: "Stopwatch", tag: "COMPANION", desc: "Tap Toggles Scroll Speed", art: "switchback" },
   { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
   { id: "buddy", name: "Acorn", tag: "MAGNET", desc: "Magnet Effect", art: "buddy" },
   { id: "voidjelly", name: "Jelly", tag: "SOFT BOUNCE", desc: "Bounce Softer", art: "voidjelly" },
@@ -360,9 +360,9 @@ export const PALS: Pal[] = [
   { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
   { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
   { id: "wisp", name: "Wisp", tag: "GATE DRIFT", desc: "More gate movement", art: "wisp" },
-  { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Every bounce repaints the sky a new vibrant colour.", art: "prismwing" },
-  { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll speed drifts, +50% to -70%, and never at a steady rate.", art: "clockling" },
-  { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "The gates stop drifting. A still sky to thread.", art: "nightglider" },
+  { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Planet Bounces Repaint Sky", art: "prismwing" },
+  { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll Speed Drift", art: "clockling" },
+  { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "Gate Drift Off", art: "nightglider" },
 ];
 
 export type Env = {

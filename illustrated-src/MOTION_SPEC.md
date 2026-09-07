@@ -1,5 +1,14 @@
 # Acornaut motion spec — how a suit flies
 
+## Five unreleased suits — explicit owner grant, 7 Sep 2026
+
+Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal receive replacement
+eight-frame ascent and eight-frame descent sheets from their static loadout
+portraits. This scoped request retires their obsolete tap/rig method. It does
+not promote their availability beyond beta. The new paintings articulate
+elbows, knees and tails; skull registration keeps the helmet on its flight arc.
+Masters, prompts and measurements live in `art-src/beta-flight-refresh`.
+
 ## Arcflash — explicit owner grant, 6 Sep 2026
 
 The owner requested this new blue-eyed, dark-carbon squirrel suit and supplied

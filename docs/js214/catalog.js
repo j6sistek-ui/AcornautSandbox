@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 03:40 UTC";
+export const BUILD_TIME = "2026-09-07 03:43 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.

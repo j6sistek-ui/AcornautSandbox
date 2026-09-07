@@ -1,5 +1,5 @@
 {
- "artVer": "215",
+ "artVer": "216",
  "suits": [
   {
    "id": "flight",
@@ -448,6 +448,246 @@
    "frame": false
   },
   {
+   "id": "abyssal-asc-1",
+   "name": "Abyssal asc 1",
+   "key": "abyssal-asc-1",
+   "file": "suits/abyssal-asc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    7.22
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-2",
+   "name": "Abyssal asc 2",
+   "key": "abyssal-asc-2",
+   "file": "suits/abyssal-asc-2.png",
+   "dome": [
+    175.89,
+    101.65,
+    30.8,
+    7.36
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-3",
+   "name": "Abyssal asc 3",
+   "key": "abyssal-asc-3",
+   "file": "suits/abyssal-asc-3.png",
+   "dome": [
+    173.22,
+    97.98,
+    30.8,
+    4.34
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-4",
+   "name": "Abyssal asc 4",
+   "key": "abyssal-asc-4",
+   "file": "suits/abyssal-asc-4.png",
+   "dome": [
+    170.3,
+    94.51,
+    30.8,
+    7.77
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-5",
+   "name": "Abyssal asc 5",
+   "key": "abyssal-asc-5",
+   "file": "suits/abyssal-asc-5.png",
+   "dome": [
+    167.15,
+    91.24,
+    30.8,
+    0.16
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-6",
+   "name": "Abyssal asc 6",
+   "key": "abyssal-asc-6",
+   "file": "suits/abyssal-asc-6.png",
+   "dome": [
+    163.78,
+    88.21,
+    30.8,
+    -6.79
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-7",
+   "name": "Abyssal asc 7",
+   "key": "abyssal-asc-7",
+   "file": "suits/abyssal-asc-7.png",
+   "dome": [
+    160.21,
+    85.41,
+    30.8,
+    -11.57
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-asc-8",
+   "name": "Abyssal asc 8",
+   "key": "abyssal-asc-8",
+   "file": "suits/abyssal-asc-8.png",
+   "dome": [
+    156.44,
+    82.88,
+    30.8,
+    -8.27
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-1",
+   "name": "Abyssal desc 1",
+   "key": "abyssal-desc-1",
+   "file": "suits/abyssal-desc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    7.22
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-2",
+   "name": "Abyssal desc 2",
+   "key": "abyssal-desc-2",
+   "file": "suits/abyssal-desc-2.png",
+   "dome": [
+    182.68,
+    114.71,
+    30.8,
+    16.16
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-3",
+   "name": "Abyssal desc 3",
+   "key": "abyssal-desc-3",
+   "file": "suits/abyssal-desc-3.png",
+   "dome": [
+    185.58,
+    124.49,
+    30.8,
+    27.23
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-4",
+   "name": "Abyssal desc 4",
+   "key": "abyssal-desc-4",
+   "file": "suits/abyssal-desc-4.png",
+   "dome": [
+    186.91,
+    134.6,
+    30.8,
+    37.23
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-5",
+   "name": "Abyssal desc 5",
+   "key": "abyssal-desc-5",
+   "file": "suits/abyssal-desc-5.png",
+   "dome": [
+    186.64,
+    144.79,
+    30.8,
+    43.71
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-6",
+   "name": "Abyssal desc 6",
+   "key": "abyssal-desc-6",
+   "file": "suits/abyssal-desc-6.png",
+   "dome": [
+    184.79,
+    154.82,
+    30.8,
+    47.05
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-7",
+   "name": "Abyssal desc 7",
+   "key": "abyssal-desc-7",
+   "file": "suits/abyssal-desc-7.png",
+   "dome": [
+    181.38,
+    164.44,
+    30.8,
+    61.64
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "abyssal-desc-8",
+   "name": "Abyssal desc 8",
+   "key": "abyssal-desc-8",
+   "file": "suits/abyssal-desc-8.png",
+   "dome": [
+    176.51,
+    173.4,
+    30.8,
+    70.44
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
    "id": "bigbooty-tap-1",
    "name": "Big Booty tap 1",
    "key": "bigbooty-tap-1",
@@ -688,6 +928,246 @@
    "frame": true
   },
   {
+   "id": "cinderforge-asc-1",
+   "name": "Cinderforge asc 1",
+   "key": "cinderforge-asc-1",
+   "file": "suits/cinderforge-asc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    13.45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-2",
+   "name": "Cinderforge asc 2",
+   "key": "cinderforge-asc-2",
+   "file": "suits/cinderforge-asc-2.png",
+   "dome": [
+    175.89,
+    101.65,
+    30.8,
+    12.32
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-3",
+   "name": "Cinderforge asc 3",
+   "key": "cinderforge-asc-3",
+   "file": "suits/cinderforge-asc-3.png",
+   "dome": [
+    173.22,
+    97.98,
+    30.8,
+    16.51
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-4",
+   "name": "Cinderforge asc 4",
+   "key": "cinderforge-asc-4",
+   "file": "suits/cinderforge-asc-4.png",
+   "dome": [
+    170.3,
+    94.51,
+    30.8,
+    17.33
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-5",
+   "name": "Cinderforge asc 5",
+   "key": "cinderforge-asc-5",
+   "file": "suits/cinderforge-asc-5.png",
+   "dome": [
+    167.15,
+    91.24,
+    30.8,
+    1.61
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-6",
+   "name": "Cinderforge asc 6",
+   "key": "cinderforge-asc-6",
+   "file": "suits/cinderforge-asc-6.png",
+   "dome": [
+    163.78,
+    88.21,
+    30.8,
+    9.49
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-7",
+   "name": "Cinderforge asc 7",
+   "key": "cinderforge-asc-7",
+   "file": "suits/cinderforge-asc-7.png",
+   "dome": [
+    160.21,
+    85.41,
+    30.8,
+    4.87
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-asc-8",
+   "name": "Cinderforge asc 8",
+   "key": "cinderforge-asc-8",
+   "file": "suits/cinderforge-asc-8.png",
+   "dome": [
+    156.44,
+    82.88,
+    30.8,
+    17.28
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-1",
+   "name": "Cinderforge desc 1",
+   "key": "cinderforge-desc-1",
+   "file": "suits/cinderforge-desc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    13.45
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-2",
+   "name": "Cinderforge desc 2",
+   "key": "cinderforge-desc-2",
+   "file": "suits/cinderforge-desc-2.png",
+   "dome": [
+    182.68,
+    114.71,
+    30.8,
+    10.81
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-3",
+   "name": "Cinderforge desc 3",
+   "key": "cinderforge-desc-3",
+   "file": "suits/cinderforge-desc-3.png",
+   "dome": [
+    185.58,
+    124.49,
+    30.8,
+    3.92
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-4",
+   "name": "Cinderforge desc 4",
+   "key": "cinderforge-desc-4",
+   "file": "suits/cinderforge-desc-4.png",
+   "dome": [
+    186.91,
+    134.6,
+    30.8,
+    7.56
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-5",
+   "name": "Cinderforge desc 5",
+   "key": "cinderforge-desc-5",
+   "file": "suits/cinderforge-desc-5.png",
+   "dome": [
+    186.64,
+    144.79,
+    30.8,
+    36.98
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-6",
+   "name": "Cinderforge desc 6",
+   "key": "cinderforge-desc-6",
+   "file": "suits/cinderforge-desc-6.png",
+   "dome": [
+    184.79,
+    154.82,
+    30.8,
+    36.08
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-7",
+   "name": "Cinderforge desc 7",
+   "key": "cinderforge-desc-7",
+   "file": "suits/cinderforge-desc-7.png",
+   "dome": [
+    181.38,
+    164.44,
+    30.8,
+    41.04
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cinderforge-desc-8",
+   "name": "Cinderforge desc 8",
+   "key": "cinderforge-desc-8",
+   "file": "suits/cinderforge-desc-8.png",
+   "dome": [
+    176.51,
+    173.4,
+    30.8,
+    43.9
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
    "id": "copper-asc-1",
    "name": "Copper asc 1",
    "key": "copper-asc-1",
@@ -922,6 +1402,246 @@
     159.84,
     30.8,
     41.66
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-1",
+   "name": "Cosmic asc 1",
+   "key": "cosmic-asc-1",
+   "file": "suits/cosmic-asc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    11.19
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-2",
+   "name": "Cosmic asc 2",
+   "key": "cosmic-asc-2",
+   "file": "suits/cosmic-asc-2.png",
+   "dome": [
+    175.89,
+    101.65,
+    30.8,
+    5.83
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-3",
+   "name": "Cosmic asc 3",
+   "key": "cosmic-asc-3",
+   "file": "suits/cosmic-asc-3.png",
+   "dome": [
+    173.22,
+    97.98,
+    30.8,
+    8.42
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-4",
+   "name": "Cosmic asc 4",
+   "key": "cosmic-asc-4",
+   "file": "suits/cosmic-asc-4.png",
+   "dome": [
+    170.3,
+    94.51,
+    30.8,
+    21.33
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-5",
+   "name": "Cosmic asc 5",
+   "key": "cosmic-asc-5",
+   "file": "suits/cosmic-asc-5.png",
+   "dome": [
+    167.15,
+    91.24,
+    30.8,
+    0.84
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-6",
+   "name": "Cosmic asc 6",
+   "key": "cosmic-asc-6",
+   "file": "suits/cosmic-asc-6.png",
+   "dome": [
+    163.78,
+    88.21,
+    30.8,
+    -4.27
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-7",
+   "name": "Cosmic asc 7",
+   "key": "cosmic-asc-7",
+   "file": "suits/cosmic-asc-7.png",
+   "dome": [
+    160.21,
+    85.41,
+    30.8,
+    4.56
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-asc-8",
+   "name": "Cosmic asc 8",
+   "key": "cosmic-asc-8",
+   "file": "suits/cosmic-asc-8.png",
+   "dome": [
+    156.44,
+    82.88,
+    30.8,
+    13.32
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-1",
+   "name": "Cosmic desc 1",
+   "key": "cosmic-desc-1",
+   "file": "suits/cosmic-desc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    11.19
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-2",
+   "name": "Cosmic desc 2",
+   "key": "cosmic-desc-2",
+   "file": "suits/cosmic-desc-2.png",
+   "dome": [
+    182.68,
+    114.71,
+    30.8,
+    27.3
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-3",
+   "name": "Cosmic desc 3",
+   "key": "cosmic-desc-3",
+   "file": "suits/cosmic-desc-3.png",
+   "dome": [
+    185.58,
+    124.49,
+    30.8,
+    22.96
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-4",
+   "name": "Cosmic desc 4",
+   "key": "cosmic-desc-4",
+   "file": "suits/cosmic-desc-4.png",
+   "dome": [
+    186.91,
+    134.6,
+    30.8,
+    11.65
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-5",
+   "name": "Cosmic desc 5",
+   "key": "cosmic-desc-5",
+   "file": "suits/cosmic-desc-5.png",
+   "dome": [
+    186.64,
+    144.79,
+    30.8,
+    29.25
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-6",
+   "name": "Cosmic desc 6",
+   "key": "cosmic-desc-6",
+   "file": "suits/cosmic-desc-6.png",
+   "dome": [
+    184.79,
+    154.82,
+    30.8,
+    29.96
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-7",
+   "name": "Cosmic desc 7",
+   "key": "cosmic-desc-7",
+   "file": "suits/cosmic-desc-7.png",
+   "dome": [
+    181.38,
+    164.44,
+    30.8,
+    33.78
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "cosmic-desc-8",
+   "name": "Cosmic desc 8",
+   "key": "cosmic-desc-8",
+   "file": "suits/cosmic-desc-8.png",
+   "dome": [
+    176.51,
+    173.4,
+    30.8,
+    34.1
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2717,6 +3437,246 @@
    "frame": true
   },
   {
+   "id": "groveguard-asc-1",
+   "name": "Groveguard asc 1",
+   "key": "groveguard-asc-1",
+   "file": "suits/groveguard-asc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    17.37
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-2",
+   "name": "Groveguard asc 2",
+   "key": "groveguard-asc-2",
+   "file": "suits/groveguard-asc-2.png",
+   "dome": [
+    175.89,
+    101.65,
+    30.8,
+    31.35
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-3",
+   "name": "Groveguard asc 3",
+   "key": "groveguard-asc-3",
+   "file": "suits/groveguard-asc-3.png",
+   "dome": [
+    173.22,
+    97.98,
+    30.8,
+    5.28
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-4",
+   "name": "Groveguard asc 4",
+   "key": "groveguard-asc-4",
+   "file": "suits/groveguard-asc-4.png",
+   "dome": [
+    170.3,
+    94.51,
+    30.8,
+    13.06
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-5",
+   "name": "Groveguard asc 5",
+   "key": "groveguard-asc-5",
+   "file": "suits/groveguard-asc-5.png",
+   "dome": [
+    167.15,
+    91.24,
+    30.8,
+    -0.69
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-6",
+   "name": "Groveguard asc 6",
+   "key": "groveguard-asc-6",
+   "file": "suits/groveguard-asc-6.png",
+   "dome": [
+    163.78,
+    88.21,
+    30.8,
+    -8.76
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-7",
+   "name": "Groveguard asc 7",
+   "key": "groveguard-asc-7",
+   "file": "suits/groveguard-asc-7.png",
+   "dome": [
+    160.21,
+    85.41,
+    30.8,
+    -22.61
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-asc-8",
+   "name": "Groveguard asc 8",
+   "key": "groveguard-asc-8",
+   "file": "suits/groveguard-asc-8.png",
+   "dome": [
+    156.44,
+    82.88,
+    30.8,
+    -14.15
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-1",
+   "name": "Groveguard desc 1",
+   "key": "groveguard-desc-1",
+   "file": "suits/groveguard-desc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    30.8,
+    17.37
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-2",
+   "name": "Groveguard desc 2",
+   "key": "groveguard-desc-2",
+   "file": "suits/groveguard-desc-2.png",
+   "dome": [
+    182.68,
+    114.71,
+    30.8,
+    7.93
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-3",
+   "name": "Groveguard desc 3",
+   "key": "groveguard-desc-3",
+   "file": "suits/groveguard-desc-3.png",
+   "dome": [
+    185.58,
+    124.49,
+    30.8,
+    -7.72
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-4",
+   "name": "Groveguard desc 4",
+   "key": "groveguard-desc-4",
+   "file": "suits/groveguard-desc-4.png",
+   "dome": [
+    186.91,
+    134.6,
+    30.8,
+    -2.75
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-5",
+   "name": "Groveguard desc 5",
+   "key": "groveguard-desc-5",
+   "file": "suits/groveguard-desc-5.png",
+   "dome": [
+    186.64,
+    144.79,
+    30.8,
+    24.89
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-6",
+   "name": "Groveguard desc 6",
+   "key": "groveguard-desc-6",
+   "file": "suits/groveguard-desc-6.png",
+   "dome": [
+    184.79,
+    154.82,
+    30.8,
+    28.98
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-7",
+   "name": "Groveguard desc 7",
+   "key": "groveguard-desc-7",
+   "file": "suits/groveguard-desc-7.png",
+   "dome": [
+    181.38,
+    164.44,
+    30.8,
+    35.05
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "groveguard-desc-8",
+   "name": "Groveguard desc 8",
+   "key": "groveguard-desc-8",
+   "file": "suits/groveguard-desc-8.png",
+   "dome": [
+    176.51,
+    173.4,
+    30.8,
+    49.26
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
    "id": "iontrim-asc-1",
    "name": "Ion asc 1",
    "key": "iontrim-asc-1",
@@ -3911,6 +4871,246 @@
     162,
     38,
     60
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-1",
+   "name": "Sunforged asc 1",
+   "key": "sunforged-asc-1",
+   "file": "suits/sunforged-asc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    29.4,
+    15.64
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-2",
+   "name": "Sunforged asc 2",
+   "key": "sunforged-asc-2",
+   "file": "suits/sunforged-asc-2.png",
+   "dome": [
+    175.89,
+    101.65,
+    29.4,
+    13.37
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-3",
+   "name": "Sunforged asc 3",
+   "key": "sunforged-asc-3",
+   "file": "suits/sunforged-asc-3.png",
+   "dome": [
+    173.22,
+    97.98,
+    29.4,
+    21.61
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-4",
+   "name": "Sunforged asc 4",
+   "key": "sunforged-asc-4",
+   "file": "suits/sunforged-asc-4.png",
+   "dome": [
+    170.3,
+    94.51,
+    29.4,
+    28.47
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-5",
+   "name": "Sunforged asc 5",
+   "key": "sunforged-asc-5",
+   "file": "suits/sunforged-asc-5.png",
+   "dome": [
+    167.15,
+    91.24,
+    29.4,
+    17
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-6",
+   "name": "Sunforged asc 6",
+   "key": "sunforged-asc-6",
+   "file": "suits/sunforged-asc-6.png",
+   "dome": [
+    163.78,
+    88.21,
+    29.4,
+    11.48
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-7",
+   "name": "Sunforged asc 7",
+   "key": "sunforged-asc-7",
+   "file": "suits/sunforged-asc-7.png",
+   "dome": [
+    160.21,
+    85.41,
+    29.4,
+    15
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-asc-8",
+   "name": "Sunforged asc 8",
+   "key": "sunforged-asc-8",
+   "file": "suits/sunforged-asc-8.png",
+   "dome": [
+    156.44,
+    82.88,
+    29.4,
+    15.93
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-1",
+   "name": "Sunforged desc 1",
+   "key": "sunforged-desc-1",
+   "file": "suits/sunforged-desc-1.png",
+   "dome": [
+    178.29,
+    105.5,
+    29.4,
+    15.64
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-2",
+   "name": "Sunforged desc 2",
+   "key": "sunforged-desc-2",
+   "file": "suits/sunforged-desc-2.png",
+   "dome": [
+    182.68,
+    114.71,
+    29.4,
+    27.97
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-3",
+   "name": "Sunforged desc 3",
+   "key": "sunforged-desc-3",
+   "file": "suits/sunforged-desc-3.png",
+   "dome": [
+    185.58,
+    124.49,
+    29.4,
+    24.72
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-4",
+   "name": "Sunforged desc 4",
+   "key": "sunforged-desc-4",
+   "file": "suits/sunforged-desc-4.png",
+   "dome": [
+    186.91,
+    134.6,
+    29.4,
+    36.86
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-5",
+   "name": "Sunforged desc 5",
+   "key": "sunforged-desc-5",
+   "file": "suits/sunforged-desc-5.png",
+   "dome": [
+    186.64,
+    144.79,
+    29.4,
+    42.41
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-6",
+   "name": "Sunforged desc 6",
+   "key": "sunforged-desc-6",
+   "file": "suits/sunforged-desc-6.png",
+   "dome": [
+    184.79,
+    154.82,
+    29.4,
+    51.15
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-7",
+   "name": "Sunforged desc 7",
+   "key": "sunforged-desc-7",
+   "file": "suits/sunforged-desc-7.png",
+   "dome": [
+    181.38,
+    164.44,
+    29.4,
+    52.72
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "sunforged-desc-8",
+   "name": "Sunforged desc 8",
+   "key": "sunforged-desc-8",
+   "file": "suits/sunforged-desc-8.png",
+   "dome": [
+    176.51,
+    173.4,
+    29.4,
+    58.01
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5699,678 +6899,6 @@
    "frame": true
   },
   {
-   "id": "abyssal-tap-1",
-   "name": "Abyssal tap 1",
-   "key": "abyssal-tap-1",
-   "file": "suits/abyssal-tap-1.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-2",
-   "name": "Abyssal tap 2",
-   "key": "abyssal-tap-2",
-   "file": "suits/abyssal-tap-2.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-3",
-   "name": "Abyssal tap 3",
-   "key": "abyssal-tap-3",
-   "file": "suits/abyssal-tap-3.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-4",
-   "name": "Abyssal tap 4",
-   "key": "abyssal-tap-4",
-   "file": "suits/abyssal-tap-4.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-5",
-   "name": "Abyssal tap 5",
-   "key": "abyssal-tap-5",
-   "file": "suits/abyssal-tap-5.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-6",
-   "name": "Abyssal tap 6",
-   "key": "abyssal-tap-6",
-   "file": "suits/abyssal-tap-6.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-7",
-   "name": "Abyssal tap 7",
-   "key": "abyssal-tap-7",
-   "file": "suits/abyssal-tap-7.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-8",
-   "name": "Abyssal tap 8",
-   "key": "abyssal-tap-8",
-   "file": "suits/abyssal-tap-8.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-9",
-   "name": "Abyssal tap 9",
-   "key": "abyssal-tap-9",
-   "file": "suits/abyssal-tap-9.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-10",
-   "name": "Abyssal tap 10",
-   "key": "abyssal-tap-10",
-   "file": "suits/abyssal-tap-10.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-11",
-   "name": "Abyssal tap 11",
-   "key": "abyssal-tap-11",
-   "file": "suits/abyssal-tap-11.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-12",
-   "name": "Abyssal tap 12",
-   "key": "abyssal-tap-12",
-   "file": "suits/abyssal-tap-12.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-13",
-   "name": "Abyssal tap 13",
-   "key": "abyssal-tap-13",
-   "file": "suits/abyssal-tap-13.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-14",
-   "name": "Abyssal tap 14",
-   "key": "abyssal-tap-14",
-   "file": "suits/abyssal-tap-14.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-15",
-   "name": "Abyssal tap 15",
-   "key": "abyssal-tap-15",
-   "file": "suits/abyssal-tap-15.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "abyssal-tap-16",
-   "name": "Abyssal tap 16",
-   "key": "abyssal-tap-16",
-   "file": "suits/abyssal-tap-16.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-1",
-   "name": "Cinderforge tap 1",
-   "key": "cinderforge-tap-1",
-   "file": "suits/cinderforge-tap-1.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-2",
-   "name": "Cinderforge tap 2",
-   "key": "cinderforge-tap-2",
-   "file": "suits/cinderforge-tap-2.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-3",
-   "name": "Cinderforge tap 3",
-   "key": "cinderforge-tap-3",
-   "file": "suits/cinderforge-tap-3.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-4",
-   "name": "Cinderforge tap 4",
-   "key": "cinderforge-tap-4",
-   "file": "suits/cinderforge-tap-4.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-5",
-   "name": "Cinderforge tap 5",
-   "key": "cinderforge-tap-5",
-   "file": "suits/cinderforge-tap-5.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-6",
-   "name": "Cinderforge tap 6",
-   "key": "cinderforge-tap-6",
-   "file": "suits/cinderforge-tap-6.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-7",
-   "name": "Cinderforge tap 7",
-   "key": "cinderforge-tap-7",
-   "file": "suits/cinderforge-tap-7.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-8",
-   "name": "Cinderforge tap 8",
-   "key": "cinderforge-tap-8",
-   "file": "suits/cinderforge-tap-8.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-9",
-   "name": "Cinderforge tap 9",
-   "key": "cinderforge-tap-9",
-   "file": "suits/cinderforge-tap-9.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-10",
-   "name": "Cinderforge tap 10",
-   "key": "cinderforge-tap-10",
-   "file": "suits/cinderforge-tap-10.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-11",
-   "name": "Cinderforge tap 11",
-   "key": "cinderforge-tap-11",
-   "file": "suits/cinderforge-tap-11.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-12",
-   "name": "Cinderforge tap 12",
-   "key": "cinderforge-tap-12",
-   "file": "suits/cinderforge-tap-12.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-13",
-   "name": "Cinderforge tap 13",
-   "key": "cinderforge-tap-13",
-   "file": "suits/cinderforge-tap-13.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-14",
-   "name": "Cinderforge tap 14",
-   "key": "cinderforge-tap-14",
-   "file": "suits/cinderforge-tap-14.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-15",
-   "name": "Cinderforge tap 15",
-   "key": "cinderforge-tap-15",
-   "file": "suits/cinderforge-tap-15.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cinderforge-tap-16",
-   "name": "Cinderforge tap 16",
-   "key": "cinderforge-tap-16",
-   "file": "suits/cinderforge-tap-16.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-1",
-   "name": "Cosmic tap 1",
-   "key": "cosmic-tap-1",
-   "file": "suits/cosmic-tap-1.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-2",
-   "name": "Cosmic tap 2",
-   "key": "cosmic-tap-2",
-   "file": "suits/cosmic-tap-2.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-3",
-   "name": "Cosmic tap 3",
-   "key": "cosmic-tap-3",
-   "file": "suits/cosmic-tap-3.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-4",
-   "name": "Cosmic tap 4",
-   "key": "cosmic-tap-4",
-   "file": "suits/cosmic-tap-4.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-5",
-   "name": "Cosmic tap 5",
-   "key": "cosmic-tap-5",
-   "file": "suits/cosmic-tap-5.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-6",
-   "name": "Cosmic tap 6",
-   "key": "cosmic-tap-6",
-   "file": "suits/cosmic-tap-6.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-7",
-   "name": "Cosmic tap 7",
-   "key": "cosmic-tap-7",
-   "file": "suits/cosmic-tap-7.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-8",
-   "name": "Cosmic tap 8",
-   "key": "cosmic-tap-8",
-   "file": "suits/cosmic-tap-8.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-9",
-   "name": "Cosmic tap 9",
-   "key": "cosmic-tap-9",
-   "file": "suits/cosmic-tap-9.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-10",
-   "name": "Cosmic tap 10",
-   "key": "cosmic-tap-10",
-   "file": "suits/cosmic-tap-10.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-11",
-   "name": "Cosmic tap 11",
-   "key": "cosmic-tap-11",
-   "file": "suits/cosmic-tap-11.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-12",
-   "name": "Cosmic tap 12",
-   "key": "cosmic-tap-12",
-   "file": "suits/cosmic-tap-12.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-13",
-   "name": "Cosmic tap 13",
-   "key": "cosmic-tap-13",
-   "file": "suits/cosmic-tap-13.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-14",
-   "name": "Cosmic tap 14",
-   "key": "cosmic-tap-14",
-   "file": "suits/cosmic-tap-14.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-15",
-   "name": "Cosmic tap 15",
-   "key": "cosmic-tap-15",
-   "file": "suits/cosmic-tap-15.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "cosmic-tap-16",
-   "name": "Cosmic tap 16",
-   "key": "cosmic-tap-16",
-   "file": "suits/cosmic-tap-16.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
    "id": "flight-tap-1",
    "name": "Flight tap 1",
    "key": "flight-tap-1",
@@ -6605,454 +7133,6 @@
     88,
     48,
     0
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-1",
-   "name": "Groveguard tap 1",
-   "key": "groveguard-tap-1",
-   "file": "suits/groveguard-tap-1.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-2",
-   "name": "Groveguard tap 2",
-   "key": "groveguard-tap-2",
-   "file": "suits/groveguard-tap-2.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-3",
-   "name": "Groveguard tap 3",
-   "key": "groveguard-tap-3",
-   "file": "suits/groveguard-tap-3.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-4",
-   "name": "Groveguard tap 4",
-   "key": "groveguard-tap-4",
-   "file": "suits/groveguard-tap-4.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-5",
-   "name": "Groveguard tap 5",
-   "key": "groveguard-tap-5",
-   "file": "suits/groveguard-tap-5.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-6",
-   "name": "Groveguard tap 6",
-   "key": "groveguard-tap-6",
-   "file": "suits/groveguard-tap-6.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-7",
-   "name": "Groveguard tap 7",
-   "key": "groveguard-tap-7",
-   "file": "suits/groveguard-tap-7.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-8",
-   "name": "Groveguard tap 8",
-   "key": "groveguard-tap-8",
-   "file": "suits/groveguard-tap-8.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-9",
-   "name": "Groveguard tap 9",
-   "key": "groveguard-tap-9",
-   "file": "suits/groveguard-tap-9.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-10",
-   "name": "Groveguard tap 10",
-   "key": "groveguard-tap-10",
-   "file": "suits/groveguard-tap-10.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-11",
-   "name": "Groveguard tap 11",
-   "key": "groveguard-tap-11",
-   "file": "suits/groveguard-tap-11.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-12",
-   "name": "Groveguard tap 12",
-   "key": "groveguard-tap-12",
-   "file": "suits/groveguard-tap-12.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-13",
-   "name": "Groveguard tap 13",
-   "key": "groveguard-tap-13",
-   "file": "suits/groveguard-tap-13.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-14",
-   "name": "Groveguard tap 14",
-   "key": "groveguard-tap-14",
-   "file": "suits/groveguard-tap-14.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-15",
-   "name": "Groveguard tap 15",
-   "key": "groveguard-tap-15",
-   "file": "suits/groveguard-tap-15.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "groveguard-tap-16",
-   "name": "Groveguard tap 16",
-   "key": "groveguard-tap-16",
-   "file": "suits/groveguard-tap-16.png",
-   "dome": [
-    183,
-    93,
-    44
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-1",
-   "name": "Sunforged tap 1",
-   "key": "sunforged-tap-1",
-   "file": "suits/sunforged-tap-1.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-2",
-   "name": "Sunforged tap 2",
-   "key": "sunforged-tap-2",
-   "file": "suits/sunforged-tap-2.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-3",
-   "name": "Sunforged tap 3",
-   "key": "sunforged-tap-3",
-   "file": "suits/sunforged-tap-3.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-4",
-   "name": "Sunforged tap 4",
-   "key": "sunforged-tap-4",
-   "file": "suits/sunforged-tap-4.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-5",
-   "name": "Sunforged tap 5",
-   "key": "sunforged-tap-5",
-   "file": "suits/sunforged-tap-5.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-6",
-   "name": "Sunforged tap 6",
-   "key": "sunforged-tap-6",
-   "file": "suits/sunforged-tap-6.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-7",
-   "name": "Sunforged tap 7",
-   "key": "sunforged-tap-7",
-   "file": "suits/sunforged-tap-7.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-8",
-   "name": "Sunforged tap 8",
-   "key": "sunforged-tap-8",
-   "file": "suits/sunforged-tap-8.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-9",
-   "name": "Sunforged tap 9",
-   "key": "sunforged-tap-9",
-   "file": "suits/sunforged-tap-9.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-10",
-   "name": "Sunforged tap 10",
-   "key": "sunforged-tap-10",
-   "file": "suits/sunforged-tap-10.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-11",
-   "name": "Sunforged tap 11",
-   "key": "sunforged-tap-11",
-   "file": "suits/sunforged-tap-11.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-12",
-   "name": "Sunforged tap 12",
-   "key": "sunforged-tap-12",
-   "file": "suits/sunforged-tap-12.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-13",
-   "name": "Sunforged tap 13",
-   "key": "sunforged-tap-13",
-   "file": "suits/sunforged-tap-13.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-14",
-   "name": "Sunforged tap 14",
-   "key": "sunforged-tap-14",
-   "file": "suits/sunforged-tap-14.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-15",
-   "name": "Sunforged tap 15",
-   "key": "sunforged-tap-15",
-   "file": "suits/sunforged-tap-15.png",
-   "dome": [
-    183,
-    89,
-    42
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "sunforged-tap-16",
-   "name": "Sunforged tap 16",
-   "key": "sunforged-tap-16",
-   "file": "suits/sunforged-tap-16.png",
-   "dome": [
-    183,
-    89,
-    42
    ],
    "ownHead": false,
    "bakedDome": false,

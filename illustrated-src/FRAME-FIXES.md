@@ -9,6 +9,12 @@ frames and share an identical neutral. The exporter registers skull scale
 and pelvis position, preserves the reference palette, and writes 256px RGBA
 frames. See `art-src/flight-refresh/README.md` for sources and review evidence.
 
+After that refresh was merged, the owner requested slightly more elbow/knee
+articulation while retaining the accepted tail motion and appearance. The
+limb-refinement follow-up composites local ImageGen edits over those paintings;
+registration, helmet anchors and QA thresholds are unchanged. See
+`art-src/flight-refresh/limb-refinement/README.md`.
+
 **Correction:** none of these suits is intended to change suit or fur hue
 with pose. The older hue-change interpretation below was incorrect and is
 superseded by the stable-colour requirement. The historical frame numbers

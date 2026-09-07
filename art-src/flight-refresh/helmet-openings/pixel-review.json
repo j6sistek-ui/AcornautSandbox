@@ -1,0 +1,157 @@
+[
+  {
+    "helmet": "abyssal",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "amethyst",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "aurora",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "cherry",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "chronarch",
+    "clearedRearArc": true,
+    "changedPixels": 4481
+  },
+  {
+    "helmet": "chrono",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "cinderforge",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "clear",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "comet",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "cosmic",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "cryostar",
+    "clearedRearArc": true,
+    "changedPixels": 4181
+  },
+  {
+    "helmet": "eclipse",
+    "clearedRearArc": true,
+    "changedPixels": 3789
+  },
+  {
+    "helmet": "gemmie",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "groveguard",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "ion",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "ivoryguard",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "leviathan",
+    "clearedRearArc": true,
+    "changedPixels": 2126
+  },
+  {
+    "helmet": "lunar",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "meteor",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "nebula",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "paladin",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "phoenix",
+    "clearedRearArc": true,
+    "changedPixels": 4335
+  },
+  {
+    "helmet": "princess",
+    "clearedRearArc": true,
+    "changedPixels": 2004
+  },
+  {
+    "helmet": "reactor",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "royal",
+    "clearedRearArc": true,
+    "changedPixels": 2634
+  },
+  {
+    "helmet": "sammie",
+    "clearedRearArc": true,
+    "changedPixels": 3891
+  },
+  {
+    "helmet": "seraph",
+    "clearedRearArc": true,
+    "changedPixels": 3097
+  },
+  {
+    "helmet": "solar",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "sunforged",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  },
+  {
+    "helmet": "verdant",
+    "clearedRearArc": true,
+    "changedPixels": 3513
+  },
+  {
+    "helmet": "void",
+    "clearedRearArc": false,
+    "changedPixels": 0
+  }
+]
