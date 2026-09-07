@@ -738,7 +738,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // an open trail simply equips.
     if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id)) return "locked";
     // Fixed wake is presentation, not a replacement for the previous trail.
-    if (id === "vanguardwake") return "equip";
+    if (id === "vanguardwake" || id === "arcflashwake") return "equip";
     save.equippedTrail = id;
     if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
     writeSave(save);

@@ -100,6 +100,7 @@ export type SuitLean = { up: number; down: number };
 export const SUIT_LEAN_DEFAULT: SuitLean = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN: Record<string, SuitLean> = {
   vanguard:    { up: 0, down: 0 }, // drawn attitudes; no extra body tipping
+  arcflash:    { up: 0, down: 0 }, // its own joint controller owns body attitude
   // the standard, and the reference every other suit is read against
   flight:      { up: 0.8, down: 0.3 },
 

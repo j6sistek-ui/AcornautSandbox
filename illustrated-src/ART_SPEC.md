@@ -1,5 +1,28 @@
 # Acornaut art spec — heads and helmets
 
+## Arcflash parts atlas (owner request, 6 September 2026)
+
+Arcflash is an explicitly requested new `ownHead` suit: orange squirrel fur,
+unhelmeted blue eyes, dark carbon armor, navy collar and blue chest reactor.
+The provided still and video authorize separated parts with procedural motion.
+Its head cannot accept a separate helmet. This exception is scoped to Arcflash.
+
+`art-src/arcflash/parts-master.png` is the generated source atlas and
+`reference.jpg` is the supplied design reference. `PROMPT.md` records the
+built-in ImageGen prompt. `export-arcflash.mjs` mechanically removes the green
+production matte, retains fur antialiasing, packs twelve 256px cells into
+`docs/art/suits/arcflash/parts.png` (1024×768 RGBA), and exports measured joint
+anchors. Eleven cells animate; the assembled reference cell never renders.
+All bone transforms use uniform, constant scale. The tail deforms as one
+volume with a positive triangle-area guard. No checkerboard, green backing,
+or baked trail ships on the character.
+
+`review-arcflash.mjs` renders `body.png` from that same rig at identical padded
+registration, so the loading fallback preserves its scale and location. The
+renderer supplies blue wrist jets and the persistent boot wake separately.
+The review scripts include game-size renders and the 100/180/300ms tap cases;
+see `design/arcflash/REVIEW.md` for reproduction and known limits.
+
 Every helmet has to sit on every helmet-wearing suit. There are 17 suits —
 one of which, the Cat, wears its own head — and 20 helmets, so that is 320
 shipping combinations. Flight's eight animation frames keep their baked

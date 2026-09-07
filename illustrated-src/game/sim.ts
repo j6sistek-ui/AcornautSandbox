@@ -1,4 +1,5 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
 import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
@@ -9,6 +10,7 @@ import { GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
   createRaceState,
+  RACE_DT,
   queueRaceInput,
   raceDecisionAge,
   stepRace,
@@ -331,6 +333,8 @@ export type World = {
   tapAnimT: number;
   /** Vanguard-only visual clock and contact plumes. No gameplay authority. */
   vanguard: VanguardMotion;
+  /** Arcflash-only joints and inertial tail. No gameplay authority. */
+  arcflash: ArcflashMotion;
   /** queued slow-recovery time from taps received before the burst settles */
   /** playback direction: 1 forward; -1 after a repeat tap, rewinding to
    *  the start before playing through to the end again */
@@ -526,6 +530,7 @@ export function makeWorld(W: number, H: number): World {
     flapBoost: 0,
     tapAnimT: -1,
     vanguard: createVanguardMotion(),
+    arcflash: createArcflashMotion(),
     tapAnimDir: 1,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
@@ -1546,6 +1551,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.flapBoost = 0;
   w.tapAnimT = -1;
   w.vanguard = createVanguardMotion();
+  w.arcflash = createArcflashMotion();
   w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -2476,12 +2482,15 @@ function spark(w: World, x: number, y: number, colors: string[], n = 12, kind = 
 }
 
 export function spawnTrail(w: World, save: SaveData, scale = 1) {
+  const trail = trailWornBy(save.equippedTrail, pilotSuitId(w, save));
+  // Arcflash emits from its moving wrist and boot nozzles in its own
+  // painter. Do not add the generic tail-origin particles or consume RNG.
+  if (trail === "arcflashwake") return;
   // the painted pilot's tail sweeps far to the left — emit behind it or
   // the whole plume is swallowed by the sprite
   const sx = pilotX(w) - 34;
   const sy = w.squirrel.y + 8;
   if (scale < 1 && Math.random() > scale) return;
-  const trail = trailWornBy(save.equippedTrail, pilotSuitId(w, save));
   const colors = (TRAILS.find((t) => t.id === trail) ?? TRAILS[0]).colors;
   if (trail === "vanguardwake") {
     for (const lane of [-1, 1]) w.particles.push({
@@ -2814,6 +2823,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
       w.tapAnimDir = 1;
       if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,tutorialImpulse);
+      if (pilotSuitId(w, save) === "arcflash") arcflashTap(w.arcflash, tutorialImpulse);
       break;
     case "doDive":
       t.hold = false;
@@ -2822,6 +2832,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.squirrel.vy = PHYS.dive;
       w.squirrel.rot = 0.5;
       if (pilotSuitId(w, save) === "vanguard") vanguardDive(w.vanguard);
+      if (pilotSuitId(w, save) === "arcflash") arcflashDive(w.arcflash);
       break;
     case "learnTap":
     case "learnTap2":
@@ -2941,6 +2952,7 @@ export function flap(w: World, save: SaveData) {
     const impulse = w.squirrel.vy-flapOf(save,w);
     w.squirrel.vy = flapOf(save, w);
     if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,impulse);
+    if (pilotSuitId(w, save) === "arcflash") arcflashTap(w.arcflash, impulse);
   }
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
@@ -2967,6 +2979,7 @@ export function dive(w: World, save: SaveData) {
     return w.tut.stage === "diving" && before !== "diving" ? "dive" : "none";
   }
   if (pilotSuitId(w, save) === "vanguard") vanguardDive(w.vanguard);
+  if (pilotSuitId(w, save) === "arcflash") arcflashDive(w.arcflash);
   if (w.bounceUp && w.hitCooldown > 0) {
     w.bounceUp = false;
     w.squirrel.vy = PHYS.bounceCancel;
@@ -3088,6 +3101,9 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   if (pilotSuitId(w, save) === "vanguard") {
     vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy,
       Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
+  }
+  if (pilotSuitId(w, save) === "arcflash") {
+    arcflashContact(w.arcflash, dy, Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
   }
   // PRISMWING. Contact repaints the SKY, and only the sky: a new hue every
   // bounce, stepped at least 60 degrees off the last so no two in a row
@@ -3647,6 +3663,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     // The ready overlay is outside race time: neither its authority tick nor
     // its physics may advance until a positive hold or drop launches the run.
     if (w.ready) return null;
+    const priorRaceTick = w.race.tick, priorRaceVy = w.race.vy;
+    const priorHeld = w.race.held, priorBoost = w.race.boost, priorDrops = w.race.dropTicks.length;
     const result = stepRace(w.race);
     w.raceCueEffects = result.cues;
     // Preserve producer order and distinct same-tick events. Presentation
@@ -3658,6 +3676,26 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     w.squirrel.y = raceViewportY(viewport, w.race.y);
     w.squirrel.vy = w.race.vy * viewport.scale;
     w.squirrel.rot = Math.max(-0.48, Math.min(0.72, w.race.vy / 720));
+    if (pilotSuitId(w, save) === "arcflash" && w.race.tick > priorRaceTick
+      && !w.tut?.hold && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
+      // Read consumed race input, never the unaccepted gesture queue. A
+      // continuous hold preserves joint rates and clocks between presses.
+      if (w.race.dropTicks.length > priorDrops) arcflashDive(w.arcflash);
+      else if (w.race.phase === "normal" && w.race.held
+        && (!priorHeld || (w.race.boost && !priorBoost))) {
+        arcflashTap(w.arcflash, Math.max(1, priorRaceVy - w.race.vy));
+      }
+      if (w.race.phase === "normal" && w.race.held && w.race.vy < 0) {
+        w.arcflash.boosting = true; // sustained authority hold, without a new tap accent
+      }
+      if (!w.race.held || w.race.phase !== "normal") {
+        w.arcflash.boosting = false;
+        if (priorHeld) w.arcflash.velocityReset = true; // release brake/phase handoff
+      }
+      // The authority always advances one 60 Hz tick. Canonical velocity
+      // keeps a phone and a large viewport in the same articulated pose.
+      stepArcflash(w.arcflash, RACE_DT, w.race.vy);
+    }
     w.speed = w.race.speed;
     w.distance = w.race.coursePosition;
     w.runAcorns = w.race.acorns;
@@ -3815,6 +3853,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
 
   if (pilotSuitId(w, save) === "vanguard" && !w.tut?.hold && !w.spill) {
     stepVanguard(w.vanguard, dt, w.ready ? 0 : w.squirrel.vy);
+  }
+  if (pilotSuitId(w, save) === "arcflash" && !w.tut?.hold && !w.spill
+    && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
+    // Use the flight clock so slow motion and faster contracts keep the
+    // same pose through the same gravity arc. READY has its own calm idle.
+    const visualSlow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
+    const visualDt = w.ready ? dt : dt * visualSlow * (w.shieldSlow > 0 ? .55 : 1) * paceOf(save, w);
+    stepArcflash(w.arcflash, visualDt, w.squirrel.vy, w.ready);
   }
 
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;

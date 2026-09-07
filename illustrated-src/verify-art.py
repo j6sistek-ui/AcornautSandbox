@@ -220,7 +220,7 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        if rel == "suits/vanguard/maneuver-parts.png":
+        if rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"}:
             expected = (1024, 768)  # twelve isolated 256px puppet-part cells
         else:
             expected = (512, 512) if flagship else (256, 256)
@@ -389,7 +389,7 @@ def verify_catalog_assets(
             )
 
     expected: list[str] = []
-    expected.extend(f"suits/{item}.png" for item in suits)
+    expected.extend("suits/arcflash/body.png" if item == "arcflash" else f"suits/{item}.png" for item in suits)
     expected.extend(f"helms/{item}.png" for item in helmets)
     expected.extend(f"solo/{item}.png" for item in pals)
     for item in rigged:
@@ -1271,6 +1271,7 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
+    "arcflash",   # explicit owner grant, 6 Sep 2026: video-led articulated rig
     "vanguard",   # owner grant, 5 Sep 2026: dedicated whole-character backend
 
     "flight",     # the default, and the reference the rest are measured against

@@ -28,6 +28,8 @@ export type ArtBank = {
   suits: Record<string, Sprite>;
   vanguard?: Sprite[];
   vanguardParts?: Sprite;
+  /** Arcflash's transparent 1024 × 768 joint atlas; never a frame bank. */
+  arcflash?: HTMLImageElement;
   sky: HTMLImageElement | null;
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
@@ -421,6 +423,7 @@ const DESC_BANKS: Record<string, number> =
     : {};
 const LAZY_SUIT_IDS = [...new Set([
   "vanguard",
+  ...(IS_BETA ? ["arcflash"] : []),
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
   ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -436,6 +439,20 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
   const layer = (suffix: string) =>
     loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
   const p = (async () => {
+    if (id === "arcflash") {
+      try {
+        const atlas = await loadImg(`${base}/suits/arcflash/parts.png?v=${ART_VER}`);
+        if (atlas.naturalWidth !== 1024 || atlas.naturalHeight !== 768) {
+          throw new Error("Invalid Arcflash parts atlas");
+        }
+        // Keep the original alpha and cell coordinates. Sprite measurement
+        // or frame slicing would break the joints' registration.
+        bank.arcflash = atlas;
+      } catch {
+        suitBankLoads.delete(id); // static body stays usable; allow retry
+      }
+      return;
+    }
     if (id === "vanguard") {
       const [frames,parts] = await Promise.all([
         many(`${base}/suits/vanguard/frame-`, VANGUARD_FRAMES),
@@ -598,7 +615,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "cyber",
     ...(IS_BETA ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor",
+      "abyssal", "amethyst", "ivoryguard", "reactor", "arcflash",
     ] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
@@ -623,7 +640,9 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     const out: Record<string, Sprite> = {};
     await Promise.all(
       ids.map(async (id) => {
-        const src = `${base}/${folder}/${id}${suffix}.${extension}?v=${ART_VER}`;
+        const path = folder === "suits" && id === "arcflash" && !suffix
+          ? "suits/arcflash/body.png" : `${folder}/${id}${suffix}.${extension}`;
+        const src = `${base}/${path}?v=${ART_VER}`;
         try {
           out[id] = asSprite(await loadImg(src));
         } catch (err) {
