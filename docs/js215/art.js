@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=211";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=211";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=211";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=211";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=215";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=215";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=215";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=215";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -238,13 +238,13 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
 // still touches its plume in the source, but the guarded mainline cut is
 // safer than the earlier colour split and remains an active rig.
 const RIGGED_SUITS = [
-    "flight", "iontrim", "copper", "frost", "voidsuit", "aurorasuit",
+    "flight", "iontrim", "copper", "frost", "voidsuit",
     // alien is NOT rigged any more: its new spiral-tail master has no neck
     // to cut (neck-cut.py itself refused the art), and the suit flies a full
     // 8/8 painted bank - the static master is the honest loading fallback.
     // ghost went bank-only with its spectral rebuild: the wisp tail has no
     // neck to cut, and a full bank needs no rig.
-    "ember", "stardust", "robo", "bigbooty",
+    "ember", "robo", "bigbooty",
     // seraph left the rig list with the shelf-card promotion: its winged
     // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
     // full bank - the static master is its loading fallback, like alien.
@@ -256,8 +256,7 @@ const RIGGED_SUITS = [
     // the beta page flew the animation. A suit's art must follow the suit.
     "cyber",
     ...(IS_BETA ? [
-        "cinderforge", "groveguard", "cosmic", "sunforged",
-        "abyssal", "amethyst", "ivoryguard", "reactor",
+        "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
     ] : []),
 ];
 const TAP_BANKS = TAP_ANIM_ENABLED ? {
@@ -282,8 +281,7 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // These eight stay here only because the SUITS do - they are beta-gated in
     // catalog.ts, so production never loads them. Promote the pair together.
     ...(IS_BETA ? {
-        cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16,
-        abyssal: 16, amethyst: 16, ivoryguard: 16, reactor: 16,
+        cinderforge: 16, groveguard: 16, cosmic: 16, sunforged: 16, abyssal: 16,
     } : {}),
 } : {};
 const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
@@ -312,8 +310,8 @@ const ASC_BANKS = TAP_ANIM_ENABLED
         // won and flies production "alien" at 8/8; the custom-posed bank
         // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
         // frame cuts - the black desc swirl and the bled-over spiral asc).
-        voidsuit: 8, alien: 8, alien2: 7,
-        stardust: 8, aurorasuit: 8, ember: 8,
+        voidsuit: 8, alien: 8,
+        ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
         sammie: 8, frost: 8, ghost: 8, leviathan: 8,
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
@@ -321,10 +319,10 @@ const ASC_BANKS = TAP_ANIM_ENABLED
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8, alien2: 7,
-        stardust: 8, aurorasuit: 8, ember: 8,
-        cryostar: 7, verdant: 7, gemmie: 7,
-        sammie: 7, frost: 8, ghost: 8, leviathan: 8,
+        voidsuit: 8, alien: 8,
+        ember: 8,
+        cryostar: 8, verdant: 8, gemmie: 8,
+        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
         briellacat: 4 }
     : {};
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
@@ -505,7 +503,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "seraph",
         "chronarch",
         "leviathan",
-        "paladin",
         "princess",
         "verdant",
         "cryostar",
@@ -522,12 +519,9 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "copper",
         "frost",
         "voidsuit",
-        "aurorasuit",
         "ember",
-        "stardust",
         "robo",
         "alien",
-        "alien2",
         "ghost",
         "bigbooty",
         "catsuit",
@@ -550,7 +544,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "raccoon", "ferret", "hedgehog",
         ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal", "amethyst", "ivoryguard", "reactor",
+            "abyssal",
             "briellacat",
         ] : []),
     ];

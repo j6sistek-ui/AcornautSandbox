@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=211";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=211";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=211";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=211";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=215";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=215";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=215";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=215";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -544,7 +544,6 @@ export const STAR_REWARDS = [
     { stars: 52, kind: "pal", id: "ufo", name: "UFO", desc: "Slow Effect in blackholes" },
     { stars: 56, kind: "trail", id: "prism", name: "Prism Shards", desc: "Light, broken beautifully." },
     { stars: 58, kind: "helmet", id: "princess", name: "Rose Helmet", desc: "Petal glass, violet rim. In the shop." },
-    { stars: 60, kind: "helmet", id: "paladin", name: "Paladin Helmet", desc: "Crusader glass, gold-barred. Was premium; now earned." },
     { stars: 66, kind: "stage", name: "Chapter 5 — MIDNIGHT RUN", desc: "The dark opens." },
     { stars: 66, kind: "pal", id: "starpup", name: "Star Child", desc: "Double Golden Effect" },
     { stars: 70, kind: "helmet", id: "meteor", name: "Meteor Helmet", desc: "Burnished impact glass. In the shop." },

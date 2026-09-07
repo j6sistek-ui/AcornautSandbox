@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=211";
-import { spillAppearance } from "./spill-appearance.js?v=211";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=211";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=211";
-import { addChartScenery } from "./star-map-view.js?v=211";
-import { mapDebrisIndex } from "./zone-visuals.js?v=211";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=211";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=211";
-import { suitLean } from "./control-constants.js?v=211";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=211";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=211";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=211";
-import { drawSprite as drawSpriteOn } from "./art.js?v=211";
-import { createEngine } from "./engine.js?v=211";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=211";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=211";
-import { formatRaceTicks } from "./race.js?v=211";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=211";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=211";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=211";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=211";
+import { suitPitchFor } from "./save.js?v=215";
+import { spillAppearance } from "./spill-appearance.js?v=215";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=215";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=215";
+import { addChartScenery } from "./star-map-view.js?v=215";
+import { mapDebrisIndex } from "./zone-visuals.js?v=215";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=215";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=215";
+import { suitLean } from "./control-constants.js?v=215";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=215";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=215";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=215";
+import { drawSprite as drawSpriteOn } from "./art.js?v=215";
+import { createEngine } from "./engine.js?v=215";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=215";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=215";
+import { formatRaceTicks } from "./race.js?v=215";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=215";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=215";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=215";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=215";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -960,7 +960,7 @@ export async function bootStandalone(root) {
         reset.onclick = () => engine.resetLab();
         toggles.append(reset);
         panel.append(toggles);
-        panel.append(el("p", "ac-fine", "Switchback as your pal: every tap toggles the slow, like the frozen acorn."));
+        panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
         return panel;
     }
     function suitPitchDial(suitId) {
@@ -2178,46 +2178,32 @@ export async function bootStandalone(root) {
                     // except on the PURCHASED row, where it shows as a door to the
                     // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
                     // "arcflash is only in SHOP")
-                    .filter((u) => sec.shop || !isIap(u.id) || iapOwned(s, u.id))
+                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
                     // cheapest first, so the shelf reads as a ladder rather than a
                     // pile. Owned things lead (nothing left to pay), then acorn
                     // prices in order, then star gates by their star price.
                     .sort((a, bq) => suitRank(a) - suitRank(bq));
-                if (!items.length)
+                // ONE DOOR PER ROW (owner, 7 Sep 2026): the premium suits this row
+                // sells that the pilot does not own become a single "in the store"
+                // card at the end of the row, not a card apiece.
+                const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !iapOwned(s, id));
+                if (!items.length && !inStore.length)
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
                 const row = el("div", "ac-shelfrow");
                 // Aurora and Stardust left this shelf for the beta bench (their
                 // banks drifted); production shows one placeholder card in their
                 // spot so the row reads "more coming", not "two got deleted".
-                // AcorNut leads the row (suitRank puts him first); the placeholder
-                // sits right after him so the goal is never behind a "?" card.
-                let ph = null;
-                if (sec.title === "STANDARD" && !SUITS.some((x) => x.id === "aurorasuit")) {
-                    ph = el("div", "ac-card ac-card-soon");
-                    ph.append(el("span", "ac-soonmark", "?"));
-                    ph.append(el("p", "ac-cardname", "NEW SUITS"));
-                    ph.append(el("p", "ac-soonnote", "In the workshop"));
-                    if (items[0]?.id !== "vanguard") {
-                        row.append(ph);
-                        ph = null;
-                    }
-                }
-                for (const u of items) {
-                    // on the purchased shelf, a premium suit not yet bought is a door
-                    // to the shop, not a dead locked card
-                    if (sec.shop && isIap(u.id) && !iapOwned(s, u.id)) {
-                        const sq = el("button", "ac-card ac-shopcard");
-                        sq.append(el("span", "ac-shopglyph", "+"), document.createTextNode(`${u.name}\nIN THE SHOP`));
-                        sq.onclick = () => engine.open("shop");
-                        row.append(sq);
-                        continue;
-                    }
+                // the "NEW SUITS · In the workshop" placeholder that used to sit here
+                // is gone (owner, 7 Sep 2026: "useless")
+                for (const u of items)
                     row.append(suitCard(u));
-                    if (ph && u.id === "vanguard") {
-                        row.append(ph);
-                        ph = null;
-                    }
+                if (inStore.length) {
+                    const sq = el("button", "ac-card ac-shopcard");
+                    sq.append(el("span", "ac-shopglyph", "+"), document.createTextNode(`${inStore.length} IN THE STORE`));
+                    sq.setAttribute("aria-label", `${inStore.length} suit${inStore.length === 1 ? "" : "s"} in the store`);
+                    sq.onclick = () => engine.open("shop");
+                    row.append(sq);
                 }
                 grid.append(row);
             }
@@ -2386,18 +2372,9 @@ export async function bootStandalone(root) {
                     grid.append(specs);
                 }
             }
-            grid.append(el("p", "ac-shelfhead", `UTILITY BUILD · ${previewShip.utilities.length}/2 SLOTS`));
-            const modules = el("div", "ac-spilloptions");
-            for (const id of SPILL_UTILITY_IDS) {
-                const u = SPILL_UTILITIES[id], fitted = previewShip.utilities.includes(id);
-                const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`);
-                b.dataset.shipUtility = id;
-                b.disabled = !fitted && previewShip.utilities.length >= 2;
-                b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc), el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} COINS AT DEPOT`));
-                b.onclick = () => { shipPlan = { ...shipPick, utilities: fitted ? previewShip.utilities.filter(x => x !== id) : [...previewShip.utilities, id] }; render(); };
-                modules.append(b);
-            }
-            grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 coins · Extra life: 150 coins, once per run."));
+            // The utility shelf that sat here duplicated the Starting utility picker
+            // above (owner, 7 Sep 2026); the plan previews the starter you chose.
+            grid.append(el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 coins · Extra life: 150 coins, once per run."));
         }
         scroll.append(grid);
         // Premium left these shelves, so something has to say where it went -

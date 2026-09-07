@@ -1,18 +1,18 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=211";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=211";
-import { trailWornBy } from "./catalog.js?v=211";
-import { missionRandom } from "./mission-rng.js?v=211";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=211";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=211";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=211";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=211";
-import { TUTORIAL_SUIT } from "./catalog.js?v=211";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=211";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=211";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=211";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=211";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=211";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=211";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=215";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=215";
+import { trailWornBy } from "./catalog.js?v=215";
+import { missionRandom } from "./mission-rng.js?v=215";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=215";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=215";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=215";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=215";
+import { TUTORIAL_SUIT } from "./catalog.js?v=215";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=215";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=215";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=215";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=215";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=215";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=215";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -3549,7 +3549,7 @@ export function updateWorld(w, save, dt) {
     w.squirrel.vy += gravOf(save, w) * simDt;
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
-    // Switchback is cosmetic. Retired direction fields stay neutral.
+    // Stopwatch (id switchback) toggles the slow on a tap; retired direction fields stay neutral.
     w.scrollReversing = false;
     const move = w.speed * w.driftFactor * simDt;
     if (pilotSuitId(w, save) === "vanguard")
