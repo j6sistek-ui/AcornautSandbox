@@ -928,11 +928,23 @@ function spawnPair(w, save, x) {
             : w.tut ? 0
                 : gap * 0.15 * normalDrift) * lvlDrift;
     const pairKind = pickKind(w);
+    // BOUNCE HOUSE, and nowhere else: a lone planet, top or bottom by coin
+    // flip, parked where the whole ball is on screen. gapY is back-solved so
+    // the ordinary top/bottom arithmetic lands the one half where it was put.
+    let half;
+    if (w.bounceHouse) {
+        const rng = w.missionRng ?? Math.random;
+        half = rng() < 0.5 ? "top" : "bot";
+        const cy = r + 10 + rng() * Math.max(0, w.H - 2 * r - 20);
+        gapY = half === "top" ? cy + gap / 2 + r : cy - gap / 2 - r;
+    }
     w.planets.push({
         x,
         gapY,
         gap,
         r,
+        half,
+        solo: !!half,
         // ONE PLANET PER GATE, drawn once. The two halves of a gate are one
         // object as far as the eye is concerned - a striped giant above and an
         // ice moon below reads as two things that happen to be near each other,
@@ -1817,7 +1829,7 @@ function tutClearY(w, want) {
             if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40)
                 continue;
             const gy = liveGapY(p, w);
-            for (const cy of [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
+            for (const cy of p.half === "top" ? [gy - p.gap / 2 - p.r] : p.half === "bot" ? [gy + p.gap / 2 + p.r] : [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
                 const need = p.r + PHYS.squirrelR + 8;
                 const d = y - cy;
                 if (Math.abs(d) < need) {
@@ -3839,7 +3851,7 @@ export function updateWorld(w, save, dt) {
         const gy = liveGapY(p, w);
         const topY = gy - p.gap / 2 - p.r;
         const botY = gy + p.gap / 2 + p.r;
-        for (const py of [topY, botY]) {
+        for (const py of p.half === "top" ? [topY] : p.half === "bot" ? [botY] : [topY, botY]) {
             if (!circleHit(sx, sy, sr, p.x, py, p.r * 0.92))
                 continue;
             if (w.hitCooldown <= 0) {

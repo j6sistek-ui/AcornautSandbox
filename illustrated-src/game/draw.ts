@@ -2683,8 +2683,9 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
   const halo: "dark" | "light" = skyLuma(w) > 0.42 ? "dark" : "light";
   for (const p of w.planets) {
     const gy = liveGapY(p, w);
-    drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
-    drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
+    // a bounce-house gate (Space Puppy) keeps one half; every other gate both
+    if (p.half !== "bot") drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
+    if (p.half !== "top") drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
       const bx = blockerX(p, b, w);
@@ -3051,8 +3052,8 @@ function drawRetroWorld(
   const { W } = w;
   for (const p of w.planets) {
     const gy = liveGapY(p, w);
-    retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
-    retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
+    if (p.half !== "bot") retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
+    if (p.half !== "top") retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
       retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
