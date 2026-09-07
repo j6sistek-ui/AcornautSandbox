@@ -616,9 +616,11 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     // decides - promoting it in catalog.ts alone gave the live page a Cyber
     // card with no painting behind it.
     "cyber",
+    // Arcflash is SOLD on production (7 Sep 2026), so its art loads there.
+    "arcflash",
     ...(IS_BETA ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
-      "abyssal", "amethyst", "ivoryguard", "reactor", "arcflash",
+      "abyssal", "amethyst", "ivoryguard", "reactor",
       "briellacat",
     ] : []),
   ];

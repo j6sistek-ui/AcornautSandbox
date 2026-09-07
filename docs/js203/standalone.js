@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=204";
-import { spillAppearance } from "./spill-appearance.js?v=204";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=204";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=204";
-import { addChartScenery } from "./star-map-view.js?v=204";
-import { mapDebrisIndex } from "./zone-visuals.js?v=204";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=204";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=204";
-import { suitLean } from "./control-constants.js?v=204";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=204";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=204";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=204";
-import { drawSprite as drawSpriteOn } from "./art.js?v=204";
-import { createEngine } from "./engine.js?v=204";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=204";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=204";
-import { formatRaceTicks } from "./race.js?v=204";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=204";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=204";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=204";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=204";
+import { suitPitchFor } from "./save.js?v=203";
+import { spillAppearance } from "./spill-appearance.js?v=203";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=203";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=203";
+import { addChartScenery } from "./star-map-view.js?v=203";
+import { mapDebrisIndex } from "./zone-visuals.js?v=203";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=203";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=203";
+import { suitLean } from "./control-constants.js?v=203";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=203";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=203";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=203";
+import { drawSprite as drawSpriteOn } from "./art.js?v=203";
+import { createEngine } from "./engine.js?v=203";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=203";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=203";
+import { formatRaceTicks } from "./race.js?v=203";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=203";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=203";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=203";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=203";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -122,7 +122,7 @@ export async function bootStandalone(root) {
     fillBox.append(fillImg, el("div", "ac-bootline"));
     bootNut.append(shell, fillBox);
     boot.append(bootNut, el("h1", "ac-boottitle", "ACORNAUT"), el("p", "ac-bootsub", "Prepping the launch pad"));
-    boot.append(el("p", "ac-fine ac-bootfine", BUILD));
+    boot.append(el("p", "ac-fine ac-bootfine", `${BUILD} · ${GAME_VERSION}`));
     overlay.append(boot);
     // The acorn fills, empties and fills again for as long as the load takes,
     // the way a barber's pole keeps turning — a bar that creeps to 88% and
@@ -984,7 +984,7 @@ export async function bootStandalone(root) {
         tap.append(icon(I_ACORN, 15, true), el("span", "", "TAP TO START"));
         stack.append(tap);
         box.append(stack);
-        box.append(el("p", "ac-fine ac-splash-fine", BUILD));
+        box.append(el("p", "ac-fine ac-splash-fine", `${BUILD} · ${GAME_VERSION}`));
         box.onclick = () => {
             engine.open("title");
             // INTRO VIDEO OFF skips the film outright; the title is already
@@ -3370,12 +3370,7 @@ export async function bootStandalone(root) {
         // take what is left - including the three suits that have no helmet of
         // their own, which is exactly what that shelf is for.
         const helms = dealFrom(helmPool, SHOP_CYCLE.helms, day * 13 + 5);
-        // A STICKER-PRICED SUIT IS ALWAYS ON THE SHELF (owner, 7 Sep 2026:
-        // Arcflash "is an in game purchase"). The daily shuffle can starve an
-        // id for weeks, and a suit sold at its own price is not a rotation
-        // item - it leads the row every day, and the deal fills in behind it.
-        const pinned = suitPool.filter((i) => DUST_STICKER[i] !== undefined && !helms.includes(i));
-        const suits = [...pinned, ...dealFrom(suitPool.filter((i) => !helms.includes(i) && !pinned.includes(i)), SHOP_CYCLE.suits, day * 7 + 1)];
+        const suits = dealFrom(suitPool.filter((i) => !helms.includes(i)), SHOP_CYCLE.suits, day * 7 + 1);
         const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
         return { day, feature, held, suits, helms, pals, owns };
     }
@@ -4640,7 +4635,7 @@ export async function bootStandalone(root) {
             r.append(el("span", "ac-sub", line));
             news.append(r);
         }
-        scroll.append(news, el("p", "ac-fine ac-mid", BUILD));
+        scroll.append(news, el("p", "ac-fine ac-mid", `${BUILD} · ${GAME_VERSION}`));
         box.append(scroll);
         if (!BETA_FEATURES)
             box.append(tabbar("profile"));
