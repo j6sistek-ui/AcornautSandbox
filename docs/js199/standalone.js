@@ -1091,7 +1091,7 @@ export async function bootStandalone(root) {
         port.append(portraitOf(helm, suit, 38));
         const stxt = el("div", "ac-loadtxt");
         stxt.append(el("p", "ac-kicker", "Loadout"));
-        const head = suit.cat || suit.ownHead ? "Own helmet" : helm.name;
+        const head = suit.id === "arcflash" ? "Integrated look" : suit.cat || suit.ownHead ? "Own helmet" : helm.name;
         stxt.append(el("p", "ac-loadname", `${suit.name} \u00b7 ${head} \u00b7 ${trail.name}`));
         strip.append(port, stxt, icon(I_CHEV, 16));
         strip.onclick = () => engine.open("hangar");
@@ -1991,7 +1991,7 @@ export async function bootStandalone(root) {
                 pane.append(el("i", `ac-casecorner ac-c-${corner}`));
             }
             if (ownHead)
-                pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
+                pane.append(el("span", "ac-tonohelm ac-casetag", wornSuit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
             stage.append(pane);
             const plate = el("div", "ac-caseplate");
             const fold = el("button", "ac-casefold", s.heroCompact ? "\u25BE" : "\u25B4");
@@ -2080,7 +2080,7 @@ export async function bootStandalone(root) {
             const locked = wearsOwnHead(suit);
             if (locked) {
                 const note = el("div", "ac-lockednote");
-                note.append(el("p", "ac-lockedhead", `${suit.name}: ${OWN_HEAD_LINE}`), el("p", "ac-sub", "The helmet is part of the character. Equip another suit to change helmets."));
+                note.append(el("p", "ac-lockedhead", `${suit.name}: ${suit.id === "arcflash" ? "integrated look" : OWN_HEAD_LINE}`), el("p", "ac-sub", suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets."));
                 scroll.append(note);
             }
             // grouped by what the GLASS does. A suit-locked helmet is not listed
@@ -2171,7 +2171,7 @@ export async function bootStandalone(root) {
                 // a fixed head takes no helmet; the card says so up front
                 if (wearsOwnHead(u)) {
                     const nh = el("span", "ac-nohelm");
-                    nh.title = OWN_HEAD_LINE;
+                    nh.title = u.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
                     b.append(nh);
                 }
                 // owned premium keeps its bloom; unowned premium never reaches here
@@ -2231,6 +2231,8 @@ export async function bootStandalone(root) {
         else if (engine.shopTab === "trails") {
             if (s.equippedSuit === "vanguard")
                 grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
+            if (s.equippedSuit === "arcflash")
+                grid.append(el("p", "ac-sub", "Arcflash carries its own blue electrical wake. Your previous trail returns when you change suits."));
             const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);
@@ -2253,7 +2255,7 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-cardoff");
                 b.disabled = !compatible;
                 if (!compatible)
-                    b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "AcorNut only" : "Change suit to wear"));
+                    b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "AcorNut only" : t.id === "arcflashwake" ? "Arcflash only" : "Change suit to wear"));
                 b.onclick = () => { if (open && compatible)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
                 b.append(pinReward("trail", t.id, t.name));
@@ -3528,7 +3530,7 @@ export async function bootStandalone(root) {
             pane.append(el("i", `ac-casecorner ac-c-${corner}`));
         }
         if (ownHead)
-            pane.append(el("span", "ac-tonohelm ac-casetag", OWN_HEAD_TAG));
+            pane.append(el("span", "ac-tonohelm ac-casetag", suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
         stage.append(pane);
         const plate = el("div", "ac-caseplate");
         plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));

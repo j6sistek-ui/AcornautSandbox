@@ -250,6 +250,9 @@ export function loadSave(): SaveData {
   }
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
+  // A fixed suit wake never replaces the pilot's selectable trail. Old or
+  // imported saves that stored this presentation effect use the starter.
+  if (s.equippedTrail === "arcflashwake") s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
   // saves written before Star Dust existed. dustPaidTo starts at 0 rather
@@ -464,6 +467,7 @@ export function helmetRevealed(s: SaveData, id: string) {
 // trails keep the purchase contract.
 export function trailUnlocked(s: SaveData, id: string) {
   if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+  if (id === "arcflashwake") return IS_BETA && suitRevealed(s, "arcflash");
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.trails[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);

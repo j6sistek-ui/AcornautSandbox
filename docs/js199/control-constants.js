@@ -60,6 +60,7 @@ export const WORM_EXIT_GRACE = 6;
 export const SUIT_LEAN_DEFAULT = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN = {
     vanguard: { up: 0, down: 0 }, // drawn attitudes; no extra body tipping
+    arcflash: { up: 0, down: 0 }, // its own joint controller owns body attitude
     // the standard, and the reference every other suit is read against
     flight: { up: 0.8, down: 0.3 },
     // --- rigged suits: these carry the velocity bank AND the heading pitch,

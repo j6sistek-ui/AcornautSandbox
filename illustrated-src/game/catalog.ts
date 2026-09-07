@@ -1,7 +1,7 @@
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "201";
+export const ART_VER = "202";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -86,7 +86,7 @@ export const TUTORIAL_SUIT = "vanguard";
 // in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
-export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12 };
+export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12, arcflash: 0 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id: string) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
@@ -230,6 +230,9 @@ export function helmetWornBy(equippedHelmet: string, equippedSuit: string): Helm
 export const SUITS: Suit[] = [
   { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
   { id: "vanguard", name: "AcorNut", cost: 0, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
+  // Carbon armour, blue eyes and a blue electrical wake; its articulated
+  // bare-headed pilot is one integrated look with independent flight motion.
+  { id: "arcflash", beta: true, name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
   { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
   { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
   { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -283,15 +286,19 @@ export type Trail = { id: string; name: string; cost: number; colors: string[] }
 
 export function trailWornBy(equippedTrail: string, equippedSuit: string): string {
   if (equippedSuit === "vanguard") return "vanguardwake";
-  return equippedTrail === "vanguardwake" ? "sparks" : equippedTrail;
+  if (equippedSuit === "arcflash") return "arcflashwake";
+  return equippedTrail === "vanguardwake" || equippedTrail === "arcflashwake" ? "sparks" : equippedTrail;
 }
 export function canWearTrail(id: string, suit: string): boolean {
-  return suit === "vanguard" ? id === "vanguardwake" : id !== "vanguardwake";
+  if (suit === "vanguard") return id === "vanguardwake";
+  if (suit === "arcflash") return id === "arcflashwake";
+  return id !== "vanguardwake" && id !== "arcflashwake";
 }
 
 export const TRAILS: Trail[] = [
   { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
   { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
+  ...(IS_BETA ? [{ id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] }] : []),
   { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
   { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
   { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -849,7 +856,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // 300-star prize, the full Star Chart, and nothing less
   { title: "ACORN INTOLERANT", ids: ["catsuit"] },
   { title: "BRIELLA'S CAT", ids: ["briellacat"] },
-  { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
+  { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor", "arcflash"] },
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

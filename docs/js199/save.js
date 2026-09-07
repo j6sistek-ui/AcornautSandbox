@@ -117,6 +117,10 @@ export function loadSave() {
         s.equippedSuit = "flight";
     if (!TRAILS.some((t) => t.id === s.equippedTrail))
         s.equippedTrail = "sparks";
+    // A fixed suit wake never replaces the pilot's selectable trail. Old or
+    // imported saves that stored this presentation effect use the starter.
+    if (s.equippedTrail === "arcflashwake")
+        s.equippedTrail = "sparks";
     if (!PALS.some((p) => p.id === s.equippedPal))
         s.equippedPal = "none";
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
@@ -360,6 +364,8 @@ export function helmetRevealed(s, id) {
 export function trailUnlocked(s, id) {
     if (id === "vanguardwake")
         return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+    if (id === "arcflashwake")
+        return IS_BETA && suitRevealed(s, "arcflash");
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.trails[id] === undefined)

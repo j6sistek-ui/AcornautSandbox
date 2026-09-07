@@ -1,5 +1,29 @@
 # Acornaut motion spec — how a suit flies
 
+## Arcflash — explicit owner grant, 6 Sep 2026
+
+The owner requested this new blue-eyed, dark-carbon squirrel suit and supplied
+two stills plus a flight video. They explicitly allowed separated head, arms,
+legs and tail driven by an algorithm, and asked to ignore the video's green
+color and flip/roll. This grants **Arcflash only** a new articulated backend;
+the older general prohibition on new split rigs below does not apply to it.
+
+`arcflash-motion.ts` drives eleven fixed-scale painted pieces in `arcflash.ts`.
+Torso attitude follows actual vertical velocity; elbows straighten on ascent,
+legs extend after the chest, the head counter-rotates, and three tail springs
+retain their momentum. An accepted tap adds pressure without resetting any
+pose, joint rate or tail clock. Contact recovery has an independent clock.
+The blue wake records recent boot positions in world space, and short wrist
+jets use the same forward kinematics as their artwork. No roll, green effect,
+physics force or gameplay RNG is introduced.
+
+This suit is a free beta option with its own electrical wake. Its reviewed
+source and registration live in `art-src/arcflash`; the eleven rig parts plus
+an unused source reference occupy one 1024×768 RGBA atlas. The 256px fallback
+is rendered from the same rig. See `design/arcflash/REVIEW.md` for validation.
+Vanguard/AcorNut's renderer, source art and animation modules are untouched;
+the reported PR #199 correction can proceed independently.
+
 ## THE RULE (owner, 26 Aug 2026)
 
 > **Everything gets the default flight treatment unless the owner says there

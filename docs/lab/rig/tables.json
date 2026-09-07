@@ -1,5 +1,5 @@
 {
- "artVer": "201",
+ "artVer": "202",
  "suits": [
   {
    "id": "flight",
@@ -20,6 +20,20 @@
    "name": "AcorNut",
    "key": "suit:vanguard",
    "file": "suits/vanguard.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "arcflash",
+   "name": "Arcflash",
+   "key": "suit:arcflash",
+   "file": "suits/arcflash.png",
    "dome": [
     128,
     128,

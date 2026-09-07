@@ -709,7 +709,7 @@ export async function createEngine(canvas) {
         if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id))
             return "locked";
         // Fixed wake is presentation, not a replacement for the previous trail.
-        if (id === "vanguardwake")
+        if (id === "vanguardwake" || id === "arcflashwake")
             return "equip";
         save.equippedTrail = id;
         if (!save.unlockedTrails.includes(id))
