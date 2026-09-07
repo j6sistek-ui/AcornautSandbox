@@ -11,13 +11,13 @@
   },
   {
     "helmet": "aurora",
-    "clearedRearArc": true,
-    "changedPixels": 4308
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "cherry",
-    "clearedRearArc": true,
-    "changedPixels": 4309
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "chronarch",
@@ -26,8 +26,8 @@
   },
   {
     "helmet": "chrono",
-    "clearedRearArc": true,
-    "changedPixels": 4307
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "cinderforge",
@@ -36,13 +36,13 @@
   },
   {
     "helmet": "clear",
-    "clearedRearArc": true,
-    "changedPixels": 4309
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "comet",
-    "clearedRearArc": true,
-    "changedPixels": 4309
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "cosmic",
@@ -71,8 +71,8 @@
   },
   {
     "helmet": "ion",
-    "clearedRearArc": true,
-    "changedPixels": 4309
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "ivoryguard",
@@ -86,13 +86,13 @@
   },
   {
     "helmet": "lunar",
-    "clearedRearArc": true,
-    "changedPixels": 4308
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "meteor",
-    "clearedRearArc": true,
-    "changedPixels": 4308
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "nebula",
@@ -136,8 +136,8 @@
   },
   {
     "helmet": "solar",
-    "clearedRearArc": true,
-    "changedPixels": 4309
+    "clearedRearArc": false,
+    "changedPixels": 0
   },
   {
     "helmet": "sunforged",

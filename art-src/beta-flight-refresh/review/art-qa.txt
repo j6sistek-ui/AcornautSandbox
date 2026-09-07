@@ -1,0 +1,55 @@
+Acornaut illustrated art QA
+  OK  docs/art holds 1374 shipping files
+  OK  decoded all 1362 raster assets
+  OK  validated runtime dimensions/alpha contract for 1218 runtime sprites
+  OK  catalog/load contract (31 suits x 30 helmets, 15 pals)
+  OK  pal cutouts have no remote components (cometsprite (59, 16, 199, 141), pocketmoon (66, 14, 189, 146))
+  OK  heavy rosters stay off the boot load, and the sweep walks both
+  OK  all 377 UI classes are styled in the page and its beta
+  OK  every scrollable flex column scrolls rather than squashing
+  OK  the guided step's coach sits in the shelf and measures its own fold
+  OK  every production-reachable suit has its art off the beta flag
+  OK  free unclaimed suits ask to be collected; fixed helmets speak once
+  OK  all 1 dev instruments sit where the table says
+  OK  the pause menu can always be left, however tall it gets
+  OK  one shipping tree: docs/
+  OK  Vanguard: 16 unique 512px RGBA poses, measured registration, exact fallback
+  OK  velocity-indexed pose banks complete for 22 suits (anchor per frame, radius held except 0 art-locked larger heads), 2 with a declared dead tap bank
+  OK  all 31 suits carry their own lean dial
+  OK  the wormhole answers to one control, with its numbers settled
+  OK  dust badge sheet is 8x4 cells of 128px, in step with the CSS
+  OK  all 9 base helmet display scales remain within 5% of their reviewed head fits
+  OK  per-pose dome tables complete for 3 suits (48 anchors, one radius each)
+  OK  no tap bank skips frames
+  OK  no per-suit motion release table
+  OK  objectives pinned, mission restart gated, acorn continue wired at both prices
+  OK  8 frames carry a painted dome; every other anchor is bare-headed bank art
+  OK  bank frame spread: 43 banks, 22 frame(s) flagged for the owner:
+      abyssal-desc-2: size +1%, width +22%, pixels +10%
+      abyssal-desc-3: size +0%, width +21%, pixels +16%
+      abyssal-desc-7: size +4%, width -21%, pixels -7%
+      abyssal-desc-8: size +12%, width -26%, pixels -5%
+      cryostar-asc-6: size +13%, width +13%, pixels +4%
+      cryostar-desc-2: size -1%, width +34%, pixels +0%
+      cryostar-desc-3: size -13%, width +18%, pixels -1%
+      cryostar-desc-4: size +1%, width +37%, pixels +4%
+      cryostar-desc-8: size +17%, width -26%, pixels +8%
+      ember-asc-8: size +18%, width +18%, pixels -1%
+      groveguard-asc-4: size -18%, width -18%, pixels +0%
+      groveguard-asc-7: size +21%, width +21%, pixels +7%
+      groveguard-asc-8: size +14%, width +14%, pixels +5%
+      groveguard-desc-4: size +14%, width +17%, pixels -3%
+      groveguard-desc-8: size +1%, width -21%, pixels +0%
+      iontrim-desc-2: size +8%, width +28%, pixels +10%
+      iontrim-desc-3: size -13%, width +2%, pixels +5%
+      sammie-desc-2: size +0%, width +20%, pixels +0%
+      sammie-desc-5: size -17%, width -5%, pixels -11%
+      sammie-desc-8: size +14%, width -9%, pixels -0%
+      seraph-desc-8: size -12%, width -12%, pixels +5%
+      sunforged-desc-8: size +13%, width -12%, pixels +0%
+  OK  repaired tail continuity held: sammie colour 0.001/0.006/0.012, head 6.8%; iontrim colour 0.000/0.007/0.016, head 4.2%; voidsuit colour 0.001/0.016/0.027, head 5.8%; ember colour 0.001/0.013/0.020, head 4.3%; copper colour 0.001/0.004/0.008, head 4.7%; cryostar colour 0.001/0.004/0.008, head 3.5%; verdant colour 0.001/0.013/0.008, head 4.6%; gemmie colour 0.001/0.020/0.012, head 9.6%
+  OK  repaired suit material continuity held: iontrim S/V 0.011/0.020; verdant S/V 0.017/0.020
+  OK  reviewed raster cutouts have clean, antialiased edges
+  OK  rig-tail audit passed for 17 active rigs
+
+PASS: shipping art passed 30 QA groups

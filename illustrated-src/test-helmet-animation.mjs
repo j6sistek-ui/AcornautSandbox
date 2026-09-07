@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Helmet-only regression against the pre-fit main-branch renderer.
+/** Helmet glass/fitting regression against the pre-repair main renderer.
  * Build first. ACORNAUT_CANVAS=/path/to/@napi-rs/canvas node illustrated-src/test-helmet-animation.mjs
  * Optional ACORNAUT_HELMET_BASE overrides the immutable comparison revision.
  *
@@ -20,7 +20,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 const require=createRequire(import.meta.url);
 const {createCanvas, loadImage, Image}=require(process.env.ACORNAUT_CANVAS || '@napi-rs/canvas');
 const root=resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const baseline=process.env.ACORNAUT_HELMET_BASE || '1fdbd10ef2a4044c6034bf1c7850c6f51ca326a8';
+const baseline=process.env.ACORNAUT_HELMET_BASE || '5acb81cc030480d87dc59ad59758b3c35168ae8a';
 const scratch=mkdtempSync(join(tmpdir(), 'acornaut-helmet-regression-'));
 const sources=new WeakMap();
 const counts={comparisons:0, pixelComparisons:0, motionFrames:0, tapFrames:0, acceptedTaps:0,
@@ -97,12 +97,27 @@ try {
   const blobs=new Map(execFileSync('git',['ls-tree','-r',baseline,'--','docs/art'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})
     .trim().split('\n').map(line=>{const [meta,path]=line.split('\t');return [path,meta.split(' ')[2]];}));
   const loaded=new Map();
+  const glassRepairs=new Set();
   async function sprite(path) {
     if(loaded.has(path)) return loaded.get(path);
     const promise=(async()=>{
       const bytes=readFileSync(join(root,'docs/art',path)), full='docs/art/'+path;
       const hash=createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-      assert.equal(hash,blobs.get(full),`${path}: body and helmet artwork remains unchanged`);
+      const repaired=path.match(/^helms\/(clear|aurora|cherry|chrono|comet|ion|lunar|meteor|solar)\.png$/);
+      if(repaired&&hash!==blobs.get(full)) {
+        glassRepairs.add(path);
+        // Authorized glass repaint: preserve the original alpha geometry and
+        // everything outside the lower pane. All body artwork stays exact.
+        const reference=readFileSync(join(root,'art-src/helmet-glass-repair',repaired[1]+'-reference.png'));
+        assert.equal(createHash('sha1').update(`blob ${reference.length}\0`).update(reference).digest('hex'),blobs.get(full),'glass reference must be the exact baseline art');
+        const pixels=async b=>{const c=createCanvas(256,256),g=c.getContext('2d');g.drawImage(await loadImage(b),0,0);return g.getImageData(0,0,256,256).data;};
+        const [a,b]=await Promise.all([pixels(bytes),pixels(reference)]);
+        for(let p=0;p<a.length;p+=4){
+          assert.equal(a[p+3],b[p+3],'painted glass cannot change helmet alpha geometry');
+          const x=p/4%256,y=Math.floor(p/4/256);
+          if(x<60||x>205||y<150||y>224)assert.deepEqual(a.slice(p,p+4),b.slice(p,p+4),'helmet exterior is protected');
+        }
+      } else assert.equal(hash,blobs.get(full),`${path}: unrepaired artwork remains unchanged`);
       const img=await loadImage(bytes);
       // The browser's URL is also the real halo cache's identity key.
       Object.defineProperty(img,'src',{get:()=>path});
@@ -240,7 +255,8 @@ try {
     }
   }
   console.log(JSON.stringify({passed:true,baseline,build:NewCat.ART_VER,productionWearableSuits:suits.map(s=>s.id),
-    sourceImagesUnchanged:loaded.size,...counts,limitation:'Native Canvas regression proves unchanged body animation; helmet fit still requires visual review.'},null,2));
+    sourceImagesChecked:loaded.size,sourceImagesUnchanged:loaded.size-glassRepairs.size,
+    repaintedGlass:[...glassRepairs],...counts,limitation:'Native Canvas regression proves unchanged body animation; helmet fit still requires visual review.'},null,2));
 } finally {
   rmSync(scratch,{recursive:true,force:true});
 }

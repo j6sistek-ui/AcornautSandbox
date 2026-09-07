@@ -9,12 +9,11 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const code=readFileSync(root+'docs/js/helmet-openings.js','utf8');
 const {clearHelmetRearCollar}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
 // Independent probes placed on the visibly obstructing rear arcs.
-const probes={clear:[125,184],aurora:[125,184],cherry:[125,184],chrono:[125,184],
- comet:[125,184],ion:[125,184],lunar:[125,184],meteor:[125,184],solar:[125,184],
- sammie:[120,159],princess:[176,150],chronarch:[125,186],phoenix:[130,185],
+const probes={sammie:[120,159],princess:[176,150],chronarch:[125,186],phoenix:[130,185],
  seraph:[135,199],cryostar:[137,187],verdant:[129,188],eclipse:[130,188],
  royal:[125,206],leviathan:[145,143]};
 const results=[];
+const bubbleIds=new Set(['clear','aurora','cherry','chrono','comet','ion','lunar','meteor','solar']);
 for(const file of readdirSync(root+'docs/art/helms').filter(n=>n.endsWith('.png'))){
  const id=file.slice(0,-4),im=await loadImage(root+'docs/art/helms/'+file);
  const c=createCanvas(im.width,im.height),g=c.getContext('2d');g.drawImage(im,0,0);
@@ -31,6 +30,13 @@ for(const file of readdirSync(root+'docs/art/helms').filter(n=>n.endsWith('.png'
   let y=c.height-1;while(y>=0&&before.data[(y*c.width+x)*4+3]<240)y--;
   if(y<0)continue;const i=(y*c.width+x)*4;
   assert.deepEqual(after.data.slice(i,i+4),before.data.slice(i,i+4),id+': changed external collar outline');
+ }
+ // Painted bubble repairs must retain a continuous pane, including the old
+ // rear-arc location; an alpha-zero probe would reward the original gap bug.
+ if(bubbleIds.has(id))for(const [x,y] of [[125,184],[100,197],[120,207],[140,215],[160,223]]){
+  const i=(y*c.width+x)*4;
+  assert(before.data[i+3]>0,id+': lower-pane probe must hit original artwork');
+  assert.deepEqual(after.data.slice(i,i+4),before.data.slice(i,i+4),id+': erased lower glass pane');
  }
  if(probes[id]){
   const [x,y]=probes[id],i=(y*c.width+x)*4;

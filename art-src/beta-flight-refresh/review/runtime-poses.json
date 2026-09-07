@@ -1,0 +1,1325 @@
+{
+  "build": "215",
+  "captures": [
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.13,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.13,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.26,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.26,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.39,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.39,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.52,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.52,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.65,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.65,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.78,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.78,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 0.91,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 0.91,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 1.04,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 1.04,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 1.17,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 1.17,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 1.3,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 1.3,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "clear",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cinderforge",
+      "helmet": "cinderforge",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "cinderforge",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.13,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.13,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.26,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.26,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.39,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.39,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.52,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.52,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.65,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.65,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.78,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.78,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 0.91,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 0.91,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 1.04,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 1.04,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 1.17,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 1.17,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 1.3,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 1.3,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "clear",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "groveguard",
+      "helmet": "groveguard",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "groveguard",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.13,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.13,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.26,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.26,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.39,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.39,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.52,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.52,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.65,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.65,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.78,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.78,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 0.91,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 0.91,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 1.04,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 1.04,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 1.17,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 1.17,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 1.3,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 1.3,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "clear",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "cosmic",
+      "helmet": "cosmic",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "cosmic",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.13,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.13,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.26,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.26,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.39,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.39,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.52,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.52,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.65,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.65,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.78,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.78,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 0.91,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 0.91,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 1.04,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 1.04,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 1.17,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 1.17,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 1.3,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 1.3,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "clear",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "sunforged",
+      "helmet": "sunforged",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "sunforged",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 8,
+        "v": -1
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.13,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.13,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 7,
+        "v": -0.8000000000000002
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.26,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.26,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 5,
+        "v": -0.5999999999999996
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.39,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.39,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 4,
+        "v": -0.3999999999999999
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.52,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.52,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 2,
+        "v": -0.19999999999999996
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.65,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.65,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "asc",
+        "idx": 1,
+        "v": -2.220446049250313e-16
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.78,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.78,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.0001
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 0.91,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 0.91,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 1,
+        "v": 0.02857142857142863
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 1.04,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 1.04,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.11428571428571432
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 1.17,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 1.17,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 1.3,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 1.3,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 3,
+        "v": 0.28571428571428553
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "clear",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    },
+    {
+      "suit": "abyssal",
+      "helmet": "abyssal",
+      "time": 1.4300000000000002,
+      "pose": {
+        "suit": "abyssal",
+        "bank": "desc",
+        "idx": 2,
+        "v": 0.19999999999999993
+      }
+    }
+  ]
+}

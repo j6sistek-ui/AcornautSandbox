@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "baseline": "5acb81cc030480d87dc59ad59758b3c35168ae8a",
+  "build": "215",
+  "productionWearableSuits": [
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "robo",
+    "ghost",
+    "bigbooty",
+    "gemmie",
+    "sammie",
+    "seraph",
+    "leviathan",
+    "verdant",
+    "cryostar",
+    "eclipse"
+  ],
+  "sourceImagesChecked": 345,
+  "sourceImagesUnchanged": 344,
+  "repaintedGlass": [
+    "helms/clear.png"
+  ],
+  "comparisons": 7808,
+  "pixelComparisons": 1856,
+  "motionFrames": 432,
+  "tapFrames": 64,
+  "acceptedTaps": 240,
+  "gameplayFrames": 5760,
+  "previewFrames": 1536,
+  "bodyDraws": 15972,
+  "helmetDraws": 7808,
+  "limitation": "Native Canvas regression proves unchanged body animation; helmet fit still requires visual review."
+}
