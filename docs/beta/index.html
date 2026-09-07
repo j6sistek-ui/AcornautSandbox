@@ -1164,12 +1164,15 @@
       background: linear-gradient(180deg,#57b9ff,#2f86d6); color: #fff; font-size: 9px; font-weight: 900; letter-spacing: .13em;
       padding: 3.5px 12px; border-radius: 7px; box-shadow: 0 3px 9px rgba(0,0,0,.5);
       clip-path: polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%); }
-    .ac-hub-bar { margin-top: 11px; flex: none; display: flex; align-items: center; gap: 11px; text-align: left; width: 100%;
-      background: rgba(22,14,48,.92); border: 1.5px solid rgba(170,140,240,.3); border-radius: 18px; padding: 9px 13px;
-      color: #f3efe4; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+    /* THE STAR CHART BAR (owner, 7 Sep 2026): a major feature that read as
+       one more strip. A gold rim on a violet plate, lit from behind. */
+    .ac-hub-bar { margin-top: 12px; flex: none; display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+      background: linear-gradient(135deg, #4a279c 0%, #1e1140 48%, #5a2fb8 100%); border: 2px solid rgba(255,214,106,.8); border-radius: 18px; padding: 12px 14px;
+      color: #fff3cf; box-shadow: 0 0 0 3px rgba(255,214,106,.14), 0 10px 28px rgba(0,0,0,.5), 0 0 26px rgba(184,118,255,.5), inset 0 1px 0 rgba(255,255,255,.2); }
+    .ac-hub-bar .ac-hub-bartxt b { font-size: 13px; color: #ffe9a8; text-shadow: 0 1px 0 rgba(0,0,0,.5); }
     .ac-hub-starbadge { width: 34px; height: 34px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: #7a4a08; background: radial-gradient(circle at 50% 35%, #ffe9a8, #e8a44a);
-      box-shadow: 0 0 12px rgba(255,206,92,.5); }
+      font-size: 20px; color: #7a4a08; background: radial-gradient(circle at 50% 35%, #ffe9a8, #e8a44a);
+      box-shadow: 0 0 18px rgba(255,206,92,.85); }
     .ac-hub-bartxt { flex: 1; min-width: 0; }
     .ac-hub-bartxt b { display: block; font-size: 11.5px; font-weight: 900; letter-spacing: .07em; }
     .ac-hub-track { position: relative; display: block; height: 14px; border-radius: 999px; background: #0b0618;
@@ -2000,7 +2003,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js212/standalone.js")
+    import("../js213/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

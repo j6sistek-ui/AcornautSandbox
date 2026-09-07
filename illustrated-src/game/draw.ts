@@ -3492,9 +3492,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:copper": [184, 100, 50, 5],
   "suit:frost": [175, 108, 39],
   "suit:voidsuit": [183, 105, 46, 0],
-  "suit:aurorasuit": [163, 97, 38],
   "suit:ember": [169, 100, 40, 0],
-  "suit:stardust": [162, 97, 38],
   "suit:robo": [181, 96, 43, 0],
   "suit:ghost": [180, 65, 49],
   "suit:bigbooty": [183, 104, 35, 10],
@@ -3512,9 +3510,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:cosmic": [183, 93, 44],
   "suit:sunforged": [183, 89, 42],
   "suit:abyssal": [183, 93, 44],
-  "suit:amethyst": [183, 93, 44],
-  "suit:ivoryguard": [183, 93, 44],
-  "suit:reactor": [183, 91, 44],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [190, 100, 45, 0],
   "robo-tap-2": [190, 100, 45, 0],
@@ -3659,40 +3654,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "voidsuit-desc-6": [172, 162, 46, 35],
   "voidsuit-desc-7": [180, 159, 46, 30],
   "voidsuit-desc-8": [173, 165, 46, 40],
-  // stardust — pose-specific head and collar registration.
-  "stardust-asc-1": [162, 97, 38],
-  "stardust-asc-2": [166, 97, 38],
-  "stardust-asc-3": [169, 87, 38, -25],
-  "stardust-asc-4": [166, 87, 38, -20],
-  "stardust-asc-5": [171, 89, 38, -15],
-  "stardust-asc-6": [168, 84, 38, -30],
-  "stardust-asc-7": [170, 87, 38, -25],
-  "stardust-asc-8": [168, 78, 38, -35],
-  "stardust-desc-1": [162, 97, 38],
-  "stardust-desc-2": [173, 128, 38, 25],
-  "stardust-desc-3": [171, 133, 38, 25],
-  "stardust-desc-4": [172, 135, 38, 25],
-  "stardust-desc-5": [169, 136, 38, 30],
-  "stardust-desc-6": [164, 142, 38, 35],
-  "stardust-desc-7": [169, 150, 38, 35],
-  "stardust-desc-8": [165, 148, 38, 35],
-  // aurorasuit — pose-specific head and collar registration.
-  "aurorasuit-asc-1": [163, 97, 38],
-  "aurorasuit-asc-2": [167, 95, 38],
-  "aurorasuit-asc-3": [164, 94, 38],
-  "aurorasuit-asc-4": [170, 94, 38],
-  "aurorasuit-asc-5": [168, 90, 38, -10],
-  "aurorasuit-asc-6": [165, 62, 38, -50],
-  "aurorasuit-asc-7": [166, 85, 38, -20],
-  "aurorasuit-asc-8": [166, 73, 38, -40],
-  "aurorasuit-desc-1": [163, 97, 38],
-  "aurorasuit-desc-2": [178, 128, 38, 25],
-  "aurorasuit-desc-3": [173, 137, 38, 30],
-  "aurorasuit-desc-4": [169, 135, 38, 30],
-  "aurorasuit-desc-5": [171, 145, 38, 35],
-  "aurorasuit-desc-6": [164, 149, 38, 40],
-  "aurorasuit-desc-7": [168, 148, 38, 35],
-  "aurorasuit-desc-8": [167, 152, 38, 40],
   // ember — pose-specific head and collar registration.
   "ember-asc-1": [169, 100, 40, 0],
   "ember-asc-2": [176, 97, 40, 0],
@@ -3869,7 +3830,6 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   "phoenix": [130, 116, 129.2, -2],
   "seraph": [125, 151, 110],
   "chronarch": [127.1, 120.5, 125.6],
-  "paladin": [133, 137, 119.6],
   // Princess is a shell with a face opening, not a bubble, so the head does
   // not sit at the shell's centre — it sits behind the opening, back from it
   // by about a fifth of its own radius, because the squirrel's face is
@@ -3906,7 +3866,7 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
 const punchedCache = new Map<string, HTMLCanvasElement>();
 const LIGHT_OPAQUE_VISORS = new Set([
   "gemmie", "phoenix", "sammie", "seraph",
-  "chronarch", "paladin", "princess",
+  "chronarch", "princess",
 ]);
 function punchedHelm(spr: Sprite, id: string, opaqueVisor = false) {
   const hit = punchedCache.get(id);
@@ -3946,7 +3906,6 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
   cyber: [101, 125],
-  aurorasuit: [100, 137],
   bigbooty: [92, 129],
   catsuit: [74, 149],
   copper: [108, 142],
@@ -3958,7 +3917,6 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   leviathan: [75, 138],
   robo: [101, 140],
   sammie: [111, 139],
-  stardust: [102, 139],
   voidsuit: [105, 147],
   verdant: [102, 142],
   cryostar: [106, 146],

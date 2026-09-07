@@ -85,7 +85,7 @@ function load(file, ver) {
 const punched = new Map();
 const LIGHT_OPAQUE_VISORS = new Set([
     "gemmie", "phoenix", "sammie", "seraph",
-    "chronarch", "paladin", "princess",
+    "chronarch", "princess",
 ]);
 function punch(rec, id, g, opaque = false) {
     const memo = `${id}:${g[2].toFixed(2)}:${g[0].toFixed(1)}:${g[1].toFixed(1)}`;

@@ -3986,7 +3986,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   w.squirrel.y += w.squirrel.vy * simDt;
   w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
 
-  // Switchback is cosmetic. Retired direction fields stay neutral.
+  // Stopwatch (id switchback) toggles the slow on a tap; retired direction fields stay neutral.
   w.scrollReversing = false;
   const move = w.speed * w.driftFactor * simDt;
   if (pilotSuitId(w, save) === "vanguard") for (const p of w.vanguard.contacts) p.x -= move;
