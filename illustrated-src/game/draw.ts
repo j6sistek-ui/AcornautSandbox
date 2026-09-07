@@ -1,6 +1,8 @@
 import { spillDockTravelDuration } from "./spill";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
+import { arcflashPreview } from "./arcflash-motion";
 import { runPal } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -1859,6 +1861,10 @@ function spillCanopyFrame(sp: Sprite) {
 
 function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveData, hole: SpillHole) {
   const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
+  if (suit.id === "arcflash") {
+    paintArcflashCockpit(ctx,art,hole.cx,hole.cy,hole.rx,hole.ry);
+    return;
+  }
   const body = art.suits[suit.id] ?? art.squirrelIdle[0];
   if (!body) return;
   const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
@@ -4559,6 +4565,10 @@ function paintIllustrated(
     paintVanguard(ctx, art, x, y, size);
     return;
   }
+  if (suit.id === "arcflash") {
+    paintArcflash(ctx, art, x, y, size);
+    return;
+  }
   const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
     ? (art?.suits?.[suit.id] ?? null)
     : null;
@@ -4839,8 +4849,10 @@ function drawPilot(
   const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
+  const arcflash = suit.id === "arcflash";
+  const independentRig = flagship || arcflash;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
-  const articulatedTap = flagship || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
+  const articulatedTap = independentRig || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
   const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
@@ -4874,14 +4886,18 @@ function drawPilot(
   }
   const kick = Math.min(1, Math.max(0, w.flapBoost) / 0.22);
   // THE PITCH DIAL: the suit's whole-animation forward lean, on top of the
-  // velocity bank. AcorNut applies his inside paintVanguard instead.
-  if (!flagship) ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12) + (suitPitchFor(save, suit.id) * Math.PI) / 180);
+  // velocity bank. Independent rigs apply it inside their own painters so
+  // moving nozzles turn without rotating already-emitted world-space wake.
+  if (!independentRig) ctx.rotate(bank - (articulatedTap ? 0 : kick * 0.12) + (suitPitchFor(save, suit.id) * Math.PI) / 180);
   const pop = 1 + (articulatedTap ? 0 : kick * 0.05);
   ctx.scale(pop, pop);
   // fresh planet bounce: a squash-and-stretch pulse sells the impact
   const sq = Math.max(0, (w.hitCooldown - 0.33) / 0.22);
-  if (!flagship && !eclipseImpact && sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
+  if (!independentRig && !eclipseImpact && sq > 0) ctx.scale(1 + sq * 0.16, 1 - sq * 0.2);
   if (flagship) paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
+  else if (arcflash) paintArcflash(ctx, art, 0, 2, 52, w.arcflash,
+    { x: x/localScale, y: y/localScale, travel: w.distance/localScale }, true,
+    (suitPitchFor(save, suit.id) * Math.PI) / 180);
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
@@ -5086,6 +5102,10 @@ export function paintFlightPreview(
   pitch = 0,
 ) {
   if (!art) return;
+  if (suit.id === "arcflash") {
+    paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx,t), undefined, true, pitch);
+    return;
+  }
   if (suit.id === "vanguard") {
     const state = vanguardPreview(ctx, t);
     ctx.save(); ctx.translate(cx,cy); ctx.scale(size/52,size/52);
@@ -5237,6 +5257,7 @@ export function paintTrailPreview(
   t = 0,
 ) {
   if (trail.id === "vanguardwake") paintVanguardWake(ctx, cx, cy, t);
+  else if (trail.id === "arcflashwake") paintArcflashWake(ctx, cx, cy, t);
   else drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 

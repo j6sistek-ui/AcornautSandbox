@@ -1,0 +1,10 @@
+Use case: stylized-concept. Asset type: articulated game character parts atlas.
+Image 1 is the exact character design reference: orange squirrel, luminous blue eyes, black carbon-fiber space armor with silver edges and thin electric blue circuitry, navy raised collar, round electric-blue chest reactor, orange paws, huge fluffy curled orange tail.
+Create an animation-ready separated-parts atlas matching that design as closely as possible. Premium detailed 3D rendered art, consistent three-quarter view facing right, soft studio illumination.
+Layout: portrait 3 columns by 4 rows of equal square cells, generous clean spacing, no lines or labels. Exactly these parts, centered within their respective cells:
+row 1: complete head with ears and short neck fur / complete upright torso from navy collar to pelvis WITHOUT head arms legs or tail / near upper arm from rounded shoulder to elbow.
+row 2: near forearm with orange paw and small blue wrist emitter / far upper arm / far forearm with orange paw and wrist emitter.
+row 3: near thigh from rounded hip to knee / near lower leg with orange foot and small boot emitter / far thigh.
+row 4: far lower leg with orange foot and boot emitter / entire large fluffy curled squirrel tail with thick attachment root at bottom / assembled character standing neutrally floating, for reference.
+The isolated limb pieces point vertically downward, slightly viewed from the right; rounded complete attachment caps with generous overlap for rotating bones. No pieces touch one another or cross cells. Front and far limbs match the same character; far pieces subtly darker. Head is full-size and unhelmeted. Torso keeps the whole thick collar and chest reactor. Tail is large and volumetric, no slicing. No baked lightning trail, no long exhaust, no shadows outside pieces, no text.
+Background: perfectly uniform solid chroma green #00FF00 throughout all empty space, absolutely no gradients or checkerboards. Green is only a removable production matte, never on the character. Keep all suit energy vividly BLUE. Preserve the detailed fur, carbon texture and cute face in the reference.

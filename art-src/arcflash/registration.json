@@ -1,0 +1,254 @@
+[
+  {
+    "name": "head",
+    "cell": 0,
+    "sourceBounds": {
+      "left": 50,
+      "top": 14,
+      "right": 342,
+      "bottom": 363,
+      "label": 1,
+      "area": 71609
+    },
+    "scale": 0.6629213483146067,
+    "a": [
+      145.567,
+      220.146
+    ],
+    "b": [
+      144.242,
+      106.124
+    ]
+  },
+  {
+    "name": "torso",
+    "cell": 1,
+    "sourceBounds": {
+      "left": 408,
+      "top": 16,
+      "right": 659,
+      "bottom": 363,
+      "label": 3,
+      "area": 67491
+    },
+    "scale": 0.6666666666666666,
+    "a": [
+      128.667,
+      56
+    ],
+    "b": [
+      132.667,
+      214.667
+    ]
+  },
+  {
+    "name": "nearUpperArm",
+    "cell": 2,
+    "sourceBounds": {
+      "left": 782,
+      "top": 15,
+      "right": 987,
+      "bottom": 359,
+      "label": 2,
+      "area": 41229
+    },
+    "scale": 0.6723646723646723,
+    "a": [
+      153.55,
+      40.929
+    ],
+    "b": [
+      86.986,
+      167.333
+    ]
+  },
+  {
+    "name": "nearForearm",
+    "cell": 3,
+    "sourceBounds": {
+      "left": 95,
+      "top": 378,
+      "right": 246,
+      "bottom": 719,
+      "label": 4,
+      "area": 33296
+    },
+    "scale": 0.6781609195402298,
+    "a": [
+      132.747,
+      33.736
+    ],
+    "b": [
+      135.46,
+      168.69
+    ]
+  },
+  {
+    "name": "farUpperArm",
+    "cell": 4,
+    "sourceBounds": {
+      "left": 443,
+      "top": 379,
+      "right": 639,
+      "bottom": 720,
+      "label": 5,
+      "area": 39688
+    },
+    "scale": 0.6781609195402298,
+    "a": [
+      91.04,
+      50.011
+    ],
+    "b": [
+      171.741,
+      184.287
+    ]
+  },
+  {
+    "name": "farForearm",
+    "cell": 5,
+    "sourceBounds": {
+      "left": 832,
+      "top": 379,
+      "right": 980,
+      "bottom": 717,
+      "label": 6,
+      "area": 32038
+    },
+    "scale": 0.6840579710144927,
+    "a": [
+      100.296,
+      33.258
+    ],
+    "b": [
+      157.072,
+      169.386
+    ]
+  },
+  {
+    "name": "nearThigh",
+    "cell": 6,
+    "sourceBounds": {
+      "left": 75,
+      "top": 730,
+      "right": 279,
+      "bottom": 1020,
+      "label": 8,
+      "area": 39738
+    },
+    "scale": 0.7946127946127947,
+    "a": [
+      137.138,
+      48.936
+    ],
+    "b": [
+      82.31,
+      203.091
+    ]
+  },
+  {
+    "name": "nearShin",
+    "cell": 7,
+    "sourceBounds": {
+      "left": 475,
+      "top": 732,
+      "right": 607,
+      "bottom": 1025,
+      "label": 9,
+      "area": 28242
+    },
+    "scale": 0.7866666666666666,
+    "a": [
+      104.793,
+      41.467
+    ],
+    "b": [
+      126.82,
+      172.053
+    ]
+  },
+  {
+    "name": "farThigh",
+    "cell": 8,
+    "sourceBounds": {
+      "left": 804,
+      "top": 728,
+      "right": 1008,
+      "bottom": 1021,
+      "label": 7,
+      "area": 40229
+    },
+    "scale": 0.7866666666666666,
+    "a": [
+      133.9,
+      45.4
+    ],
+    "b": [
+      179.527,
+      194.867
+    ]
+  },
+  {
+    "name": "farShin",
+    "cell": 9,
+    "sourceBounds": {
+      "left": 108,
+      "top": 1034,
+      "right": 239,
+      "bottom": 1391,
+      "label": 11,
+      "area": 33918
+    },
+    "scale": 0.6483516483516484,
+    "a": [
+      142.264,
+      38.527
+    ],
+    "b": [
+      128.648,
+      164.956
+    ]
+  },
+  {
+    "name": "tail",
+    "cell": 10,
+    "sourceBounds": {
+      "left": 360,
+      "top": 1038,
+      "right": 681,
+      "bottom": 1418,
+      "label": 12,
+      "area": 81281
+    },
+    "scale": 0.6098191214470284,
+    "a": [
+      206.057,
+      207.581
+    ],
+    "b": [
+      101.778,
+      67.933
+    ]
+  },
+  {
+    "name": "reference",
+    "cell": 11,
+    "sourceBounds": {
+      "left": 724,
+      "top": 1033,
+      "right": 1053,
+      "bottom": 1435,
+      "label": 10,
+      "area": 76989
+    },
+    "scale": 0.5770171149144254,
+    "a": [
+      133.77,
+      125.403
+    ],
+    "b": [
+      136.655,
+      56.161
+    ]
+  }
+]
