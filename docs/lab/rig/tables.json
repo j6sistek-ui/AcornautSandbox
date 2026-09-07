@@ -1,5 +1,5 @@
 {
- "artVer": "207",
+ "artVer": "208",
  "suits": [
   {
    "id": "flight",
@@ -8,8 +8,9 @@
    "file": "suits/flight.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -49,9 +50,10 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
-    184,
-    100,
-    36
+    187,
+    101,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -63,9 +65,10 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    181,
-    99,
-    44
+    184,
+    100,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -78,8 +81,8 @@
    "file": "suits/frost.png",
    "dome": [
     175,
-    112,
-    36
+    108,
+    39
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -91,9 +94,10 @@
    "key": "suit:voidsuit",
    "file": "suits/voidsuit.png",
    "dome": [
-    182,
+    183,
     105,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -119,9 +123,10 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    168,
+    169,
     100,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -148,8 +153,9 @@
    "file": "suits/robo.png",
    "dome": [
     181,
-    99,
-    38
+    96,
+    43,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -189,9 +195,9 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    176,
-    83,
-    38
+    180,
+    65,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -203,9 +209,10 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    185,
-    101,
-    35
+    183,
+    104,
+    35,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -273,9 +280,9 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    183,
-    102,
-    40
+    195,
+    94,
+    52
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -287,9 +294,9 @@
    "key": "suit:sammie",
    "file": "suits/sammie.png",
    "dome": [
-    186,
-    102,
-    35
+    193,
+    96,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -301,9 +308,10 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    205,
-    129,
-    35
+    204,
+    126,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -315,9 +323,10 @@
    "key": "suit:leviathan",
    "file": "suits/leviathan.png",
    "dome": [
-    177,
-    110,
-    30
+    174,
+    100,
+    36,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -329,9 +338,10 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    186,
+    196,
     92,
-    40
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -343,9 +353,10 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    191,
-    94,
-    40
+    198,
+    93,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -358,8 +369,9 @@
    "file": "suits/eclipse.png",
    "dome": [
     204,
-    86,
-    58
+    89,
+    58,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -760,9 +772,10 @@
    "key": "bigbooty-tap-1",
    "file": "suits/bigbooty-tap-1.png",
    "dome": [
-    209,
-    83,
-    41
+    206,
+    86,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -774,9 +787,10 @@
    "key": "bigbooty-tap-2",
    "file": "suits/bigbooty-tap-2.png",
    "dome": [
-    209,
-    84,
-    41
+    206,
+    87,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -788,9 +802,10 @@
    "key": "bigbooty-tap-3",
    "file": "suits/bigbooty-tap-3.png",
    "dome": [
-    209,
-    81,
-    41
+    206,
+    84,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -802,9 +817,10 @@
    "key": "bigbooty-tap-4",
    "file": "suits/bigbooty-tap-4.png",
    "dome": [
-    209,
-    74,
-    41
+    206,
+    77,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -816,9 +832,10 @@
    "key": "bigbooty-tap-5",
    "file": "suits/bigbooty-tap-5.png",
    "dome": [
-    210,
-    67,
-    41
+    207,
+    70,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -830,9 +847,10 @@
    "key": "bigbooty-tap-6",
    "file": "suits/bigbooty-tap-6.png",
    "dome": [
-    211,
-    66,
-    41
+    208,
+    69,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -844,9 +862,10 @@
    "key": "bigbooty-tap-7",
    "file": "suits/bigbooty-tap-7.png",
    "dome": [
-    209,
-    72,
-    41
+    206,
+    75,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -858,9 +877,10 @@
    "key": "bigbooty-tap-8",
    "file": "suits/bigbooty-tap-8.png",
    "dome": [
-    205,
-    82,
-    41
+    202,
+    85,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -872,9 +892,10 @@
    "key": "bigbooty-tap-9",
    "file": "suits/bigbooty-tap-9.png",
    "dome": [
-    206,
-    82,
-    41
+    203,
+    85,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -886,9 +907,10 @@
    "key": "bigbooty-tap-10",
    "file": "suits/bigbooty-tap-10.png",
    "dome": [
-    212,
-    73,
-    41
+    209,
+    76,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -900,9 +922,10 @@
    "key": "bigbooty-tap-11",
    "file": "suits/bigbooty-tap-11.png",
    "dome": [
-    216,
-    69,
-    41
+    213,
+    72,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -914,9 +937,10 @@
    "key": "bigbooty-tap-12",
    "file": "suits/bigbooty-tap-12.png",
    "dome": [
-    212,
-    74,
-    41
+    209,
+    77,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -928,9 +952,10 @@
    "key": "bigbooty-tap-13",
    "file": "suits/bigbooty-tap-13.png",
    "dome": [
-    206,
-    82,
-    41
+    203,
+    85,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -942,9 +967,10 @@
    "key": "bigbooty-tap-14",
    "file": "suits/bigbooty-tap-14.png",
    "dome": [
-    203,
-    85,
-    41
+    200,
+    88,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -956,9 +982,10 @@
    "key": "bigbooty-tap-15",
    "file": "suits/bigbooty-tap-15.png",
    "dome": [
-    205,
-    80,
-    41
+    202,
+    83,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -970,9 +997,10 @@
    "key": "bigbooty-tap-16",
    "file": "suits/bigbooty-tap-16.png",
    "dome": [
-    209,
-    75,
-    41
+    206,
+    78,
+    41,
+    10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -984,9 +1012,10 @@
    "key": "copper-asc-1",
    "file": "suits/copper-asc-1.png",
    "dome": [
-    181,
-    99,
-    44
+    184,
+    100,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -998,9 +1027,10 @@
    "key": "copper-asc-2",
    "file": "suits/copper-asc-2.png",
    "dome": [
-    182,
-    98,
-    44
+    185,
+    99,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1012,9 +1042,10 @@
    "key": "copper-asc-3",
    "file": "suits/copper-asc-3.png",
    "dome": [
-    180,
-    100,
-    44
+    183,
+    101,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1026,10 +1057,10 @@
    "key": "copper-asc-4",
    "file": "suits/copper-asc-4.png",
    "dome": [
-    174,
-    91,
-    44,
-    -25
+    175,
+    83,
+    50,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1041,9 +1072,10 @@
    "key": "copper-asc-5",
    "file": "suits/copper-asc-5.png",
    "dome": [
-    182,
-    96,
-    44
+    185,
+    97,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1055,9 +1087,10 @@
    "key": "copper-asc-6",
    "file": "suits/copper-asc-6.png",
    "dome": [
-    182,
-    98,
-    44
+    185,
+    99,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1069,10 +1102,10 @@
    "key": "copper-asc-7",
    "file": "suits/copper-asc-7.png",
    "dome": [
-    177,
-    86,
-    44,
-    -30
+    175,
+    80,
+    50,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1084,10 +1117,10 @@
    "key": "copper-asc-8",
    "file": "suits/copper-asc-8.png",
    "dome": [
-    176,
-    87,
-    44,
-    -40
+    161,
+    70,
+    50,
+    -15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1099,9 +1132,10 @@
    "key": "copper-desc-1",
    "file": "suits/copper-desc-1.png",
    "dome": [
-    181,
-    99,
-    44
+    184,
+    100,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1113,9 +1147,10 @@
    "key": "copper-desc-2",
    "file": "suits/copper-desc-2.png",
    "dome": [
-    193,
-    111,
-    44
+    196,
+    114,
+    50,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1127,9 +1162,9 @@
    "key": "copper-desc-3",
    "file": "suits/copper-desc-3.png",
    "dome": [
-    195,
-    136,
-    44,
+    198,
+    139,
+    50,
     25
    ],
    "ownHead": false,
@@ -1142,9 +1177,9 @@
    "key": "copper-desc-4",
    "file": "suits/copper-desc-4.png",
    "dome": [
-    194,
-    150,
-    44,
+    197,
+    153,
+    50,
     30
    ],
    "ownHead": false,
@@ -1157,9 +1192,9 @@
    "key": "copper-desc-5",
    "file": "suits/copper-desc-5.png",
    "dome": [
-    194,
-    143,
-    44,
+    197,
+    146,
+    50,
     30
    ],
    "ownHead": false,
@@ -1172,9 +1207,9 @@
    "key": "copper-desc-6",
    "file": "suits/copper-desc-6.png",
    "dome": [
-    187,
-    154,
-    44,
+    190,
+    157,
+    50,
     35
    ],
    "ownHead": false,
@@ -1187,9 +1222,9 @@
    "key": "copper-desc-7",
    "file": "suits/copper-desc-7.png",
    "dome": [
-    190,
-    149,
-    44,
+    193,
+    152,
+    50,
     35
    ],
    "ownHead": false,
@@ -1202,9 +1237,9 @@
    "key": "copper-desc-8",
    "file": "suits/copper-desc-8.png",
    "dome": [
-    185,
-    156,
-    44,
+    188,
+    159,
+    50,
     40
    ],
    "ownHead": false,
@@ -1217,9 +1252,10 @@
    "key": "cryostar-asc-1",
    "file": "suits/cryostar-asc-1.png",
    "dome": [
-    191,
-    94,
-    40
+    198,
+    93,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1231,9 +1267,10 @@
    "key": "cryostar-asc-2",
    "file": "suits/cryostar-asc-2.png",
    "dome": [
-    181,
-    85,
-    40
+    184,
+    84,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1247,7 +1284,7 @@
    "dome": [
     185,
     85,
-    40,
+    45,
     -10
    ],
    "ownHead": false,
@@ -1260,10 +1297,10 @@
    "key": "cryostar-asc-4",
    "file": "suits/cryostar-asc-4.png",
    "dome": [
-    181,
-    83,
-    40,
-    -20
+    178,
+    82,
+    45,
+    -13
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1275,9 +1312,9 @@
    "key": "cryostar-asc-5",
    "file": "suits/cryostar-asc-5.png",
    "dome": [
-    183,
-    88,
-    40,
+    178,
+    87,
+    45,
     -10
    ],
    "ownHead": false,
@@ -1290,10 +1327,10 @@
    "key": "cryostar-asc-6",
    "file": "suits/cryostar-asc-6.png",
    "dome": [
-    183,
-    78,
-    40,
-    -25
+    176,
+    77,
+    45,
+    -18
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1305,10 +1342,10 @@
    "key": "cryostar-asc-7",
    "file": "suits/cryostar-asc-7.png",
    "dome": [
-    176,
-    75,
-    40,
-    -30
+    172,
+    78,
+    45,
+    -15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1320,10 +1357,10 @@
    "key": "cryostar-asc-8",
    "file": "suits/cryostar-asc-8.png",
    "dome": [
-    184,
-    73,
-    40,
-    -30
+    181,
+    74,
+    45,
+    -21
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1335,9 +1372,9 @@
    "key": "cryostar-desc-1",
    "file": "suits/cryostar-desc-1.png",
    "dome": [
-    187,
-    121,
-    40,
+    190,
+    123,
+    45,
     15
    ],
    "ownHead": false,
@@ -1350,10 +1387,10 @@
    "key": "cryostar-desc-2",
    "file": "suits/cryostar-desc-2.png",
    "dome": [
-    186,
-    148,
-    40,
-    25
+    185,
+    152,
+    45,
+    26
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1366,9 +1403,9 @@
    "file": "suits/cryostar-desc-3.png",
    "dome": [
     185,
-    141,
-    40,
-    25
+    148,
+    45,
+    28
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1380,10 +1417,10 @@
    "key": "cryostar-desc-4",
    "file": "suits/cryostar-desc-4.png",
    "dome": [
-    186,
-    144,
-    40,
-    25
+    185,
+    151,
+    45,
+    28
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1396,9 +1433,9 @@
    "file": "suits/cryostar-desc-5.png",
    "dome": [
     192,
-    143,
-    40,
-    20
+    149,
+    45,
+    27
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1411,9 +1448,9 @@
    "file": "suits/cryostar-desc-6.png",
    "dome": [
     186,
-    146,
-    40,
-    25
+    152,
+    45,
+    28
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1426,9 +1463,9 @@
    "file": "suits/cryostar-desc-7.png",
    "dome": [
     179,
-    145,
-    40,
-    25
+    152,
+    45,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1441,8 +1478,9 @@
    "file": "suits/eclipse-asc-1.png",
    "dome": [
     186,
-    80,
-    52
+    82,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1455,8 +1493,9 @@
    "file": "suits/eclipse-asc-2.png",
    "dome": [
     185,
-    78,
-    52
+    80,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1469,8 +1508,9 @@
    "file": "suits/eclipse-asc-3.png",
    "dome": [
     185,
-    77,
-    52
+    79,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1483,8 +1523,9 @@
    "file": "suits/eclipse-asc-4.png",
    "dome": [
     187,
-    76,
-    52
+    78,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1497,8 +1538,9 @@
    "file": "suits/eclipse-asc-5.png",
    "dome": [
     188,
-    77,
-    52
+    79,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1511,8 +1553,9 @@
    "file": "suits/eclipse-asc-6.png",
    "dome": [
     191,
-    73,
-    52
+    75,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1525,8 +1568,9 @@
    "file": "suits/eclipse-asc-7.png",
    "dome": [
     193,
-    78,
-    52
+    80,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1539,8 +1583,9 @@
    "file": "suits/eclipse-asc-8.png",
    "dome": [
     195,
-    86,
-    52
+    88,
+    56,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1553,8 +1598,9 @@
    "file": "suits/eclipse-desc-1.png",
    "dome": [
     201,
-    84,
-    52
+    87,
+    56,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1566,9 +1612,10 @@
    "key": "eclipse-desc-2",
    "file": "suits/eclipse-desc-2.png",
    "dome": [
-    197,
-    100,
-    52
+    199,
+    104,
+    56,
+    5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1580,9 +1627,10 @@
    "key": "eclipse-desc-3",
    "file": "suits/eclipse-desc-3.png",
    "dome": [
-    184,
-    122,
-    52
+    187,
+    128,
+    56,
+    15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1594,9 +1642,10 @@
    "key": "eclipse-desc-4",
    "file": "suits/eclipse-desc-4.png",
    "dome": [
-    182,
-    131,
-    52
+    186,
+    138,
+    56,
+    20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1608,9 +1657,10 @@
    "key": "eclipse-desc-5",
    "file": "suits/eclipse-desc-5.png",
    "dome": [
-    180,
-    141,
-    52
+    185,
+    149,
+    56,
+    25
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1622,9 +1672,10 @@
    "key": "eclipse-desc-6",
    "file": "suits/eclipse-desc-6.png",
    "dome": [
-    178,
-    150,
-    52
+    184,
+    159,
+    56,
+    30
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1636,9 +1687,10 @@
    "key": "eclipse-desc-7",
    "file": "suits/eclipse-desc-7.png",
    "dome": [
-    178,
-    157,
-    52
+    184,
+    166,
+    56,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1650,9 +1702,10 @@
    "key": "eclipse-desc-8",
    "file": "suits/eclipse-desc-8.png",
    "dome": [
-    178,
-    157,
-    52
+    184,
+    166,
+    56,
+    35
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1665,8 +1718,9 @@
    "file": "suits/eclipse-tap-1.png",
    "dome": [
     196,
-    89,
-    53
+    92,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1679,8 +1733,9 @@
    "file": "suits/eclipse-tap-2.png",
    "dome": [
     196,
-    87,
-    53
+    90,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1693,8 +1748,9 @@
    "file": "suits/eclipse-tap-3.png",
    "dome": [
     194,
-    81,
-    53
+    84,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1707,8 +1763,9 @@
    "file": "suits/eclipse-tap-4.png",
    "dome": [
     190,
-    73,
-    53
+    76,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1721,8 +1778,9 @@
    "file": "suits/eclipse-tap-5.png",
    "dome": [
     186,
-    66,
-    53
+    69,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1735,8 +1793,9 @@
    "file": "suits/eclipse-tap-6.png",
    "dome": [
     183,
-    60,
-    53
+    63,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1749,8 +1808,9 @@
    "file": "suits/eclipse-tap-7.png",
    "dome": [
     182,
-    59,
-    53
+    62,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1763,8 +1823,9 @@
    "file": "suits/eclipse-tap-8.png",
    "dome": [
     183,
-    61,
-    53
+    64,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1777,8 +1838,9 @@
    "file": "suits/eclipse-tap-9.png",
    "dome": [
     186,
-    67,
-    53
+    70,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1791,8 +1853,9 @@
    "file": "suits/eclipse-tap-10.png",
    "dome": [
     191,
-    76,
-    53
+    79,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1805,8 +1868,9 @@
    "file": "suits/eclipse-tap-11.png",
    "dome": [
     195,
-    82,
-    53
+    85,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1819,8 +1883,9 @@
    "file": "suits/eclipse-tap-12.png",
    "dome": [
     197,
-    85,
-    53
+    88,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1833,8 +1898,9 @@
    "file": "suits/eclipse-tap-13.png",
    "dome": [
     198,
-    87,
-    53
+    90,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1847,8 +1913,9 @@
    "file": "suits/eclipse-tap-14.png",
    "dome": [
     198,
-    88,
-    53
+    91,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1861,8 +1928,9 @@
    "file": "suits/eclipse-tap-15.png",
    "dome": [
     198,
-    88,
-    53
+    91,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1875,8 +1943,9 @@
    "file": "suits/eclipse-tap-16.png",
    "dome": [
     198,
-    88,
-    53
+    91,
+    53,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1888,9 +1957,10 @@
    "key": "ember-asc-1",
    "file": "suits/ember-asc-1.png",
    "dome": [
-    168,
+    169,
     100,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1902,9 +1972,10 @@
    "key": "ember-asc-2",
    "file": "suits/ember-asc-2.png",
    "dome": [
-    175,
+    176,
     97,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1916,10 +1987,10 @@
    "key": "ember-asc-3",
    "file": "suits/ember-asc-3.png",
    "dome": [
-    172,
-    91,
-    38,
-    -10
+    173,
+    90,
+    40,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1931,9 +2002,10 @@
    "key": "ember-asc-4",
    "file": "suits/ember-asc-4.png",
    "dome": [
-    173,
+    174,
     98,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1945,9 +2017,10 @@
    "key": "ember-asc-5",
    "file": "suits/ember-asc-5.png",
    "dome": [
-    172,
+    173,
     94,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1959,10 +2032,10 @@
    "key": "ember-asc-6",
    "file": "suits/ember-asc-6.png",
    "dome": [
-    173,
-    81,
-    38,
-    -25
+    167,
+    77,
+    40,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1974,10 +2047,10 @@
    "key": "ember-asc-7",
    "file": "suits/ember-asc-7.png",
    "dome": [
-    174,
-    87,
-    38,
-    -20
+    169,
+    83,
+    40,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1989,10 +2062,10 @@
    "key": "ember-asc-8",
    "file": "suits/ember-asc-8.png",
    "dome": [
-    172,
-    76,
-    38,
-    -35
+    165,
+    73,
+    40,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2004,9 +2077,10 @@
    "key": "ember-desc-1",
    "file": "suits/ember-desc-1.png",
    "dome": [
-    168,
+    169,
     100,
-    38
+    40,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2018,9 +2092,9 @@
    "key": "ember-desc-2",
    "file": "suits/ember-desc-2.png",
    "dome": [
-    180,
+    181,
     131,
-    38,
+    40,
     25
    ],
    "ownHead": false,
@@ -2033,9 +2107,9 @@
    "key": "ember-desc-3",
    "file": "suits/ember-desc-3.png",
    "dome": [
-    178,
+    179,
     136,
-    38,
+    40,
     25
    ],
    "ownHead": false,
@@ -2048,9 +2122,9 @@
    "key": "ember-desc-4",
    "file": "suits/ember-desc-4.png",
    "dome": [
-    176,
+    177,
     139,
-    38,
+    40,
     30
    ],
    "ownHead": false,
@@ -2063,9 +2137,9 @@
    "key": "ember-desc-5",
    "file": "suits/ember-desc-5.png",
    "dome": [
-    178,
+    179,
     141,
-    38,
+    40,
     30
    ],
    "ownHead": false,
@@ -2078,9 +2152,9 @@
    "key": "ember-desc-6",
    "file": "suits/ember-desc-6.png",
    "dome": [
-    171,
+    172,
     146,
-    38,
+    40,
     35
    ],
    "ownHead": false,
@@ -2093,9 +2167,9 @@
    "key": "ember-desc-7",
    "file": "suits/ember-desc-7.png",
    "dome": [
-    173,
+    174,
     150,
-    38,
+    40,
     35
    ],
    "ownHead": false,
@@ -2108,10 +2182,130 @@
    "key": "ember-desc-8",
    "file": "suits/ember-desc-8.png",
    "dome": [
-    166,
+    167,
     151,
-    38,
+    40,
     40
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-asc-1",
+   "name": "Flight asc 1",
+   "key": "flight-asc-1",
+   "file": "suits/flight-asc-1.png",
+   "dome": [
+    174.1,
+    94.5,
+    42,
+    0
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-asc-2",
+   "name": "Flight asc 2",
+   "key": "flight-asc-2",
+   "file": "suits/flight-asc-2.png",
+   "dome": [
+    174.6,
+    96.6,
+    42,
+    0
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-asc-3",
+   "name": "Flight asc 3",
+   "key": "flight-asc-3",
+   "file": "suits/flight-asc-3.png",
+   "dome": [
+    174.1,
+    95.1,
+    42,
+    0
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-desc-1",
+   "name": "Flight desc 1",
+   "key": "flight-desc-1",
+   "file": "suits/flight-desc-1.png",
+   "dome": [
+    179,
+    99,
+    42,
+    0
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-desc-2",
+   "name": "Flight desc 2",
+   "key": "flight-desc-2",
+   "file": "suits/flight-desc-2.png",
+   "dome": [
+    178.4,
+    101.6,
+    42,
+    0
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-desc-3",
+   "name": "Flight desc 3",
+   "key": "flight-desc-3",
+   "file": "suits/flight-desc-3.png",
+   "dome": [
+    173.9,
+    116.8,
+    42,
+    3
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-desc-4",
+   "name": "Flight desc 4",
+   "key": "flight-desc-4",
+   "file": "suits/flight-desc-4.png",
+   "dome": [
+    171.8,
+    119.7,
+    42,
+    3
+   ],
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "flight-desc-5",
+   "name": "Flight desc 5",
+   "key": "flight-desc-5",
+   "file": "suits/flight-desc-5.png",
+   "dome": [
+    164.2,
+    144.4,
+    42,
+    12
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2124,8 +2318,8 @@
    "file": "suits/frost-asc-1.png",
    "dome": [
     175,
-    112,
-    36
+    108,
+    39
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2138,8 +2332,8 @@
    "file": "suits/frost-asc-2.png",
    "dome": [
     176,
-    107,
-    36
+    103,
+    39
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2151,9 +2345,9 @@
    "key": "frost-asc-3",
    "file": "suits/frost-asc-3.png",
    "dome": [
-    175,
-    102,
-    36,
+    171,
+    94,
+    39,
     -10
    ],
    "ownHead": false,
@@ -2167,8 +2361,8 @@
    "file": "suits/frost-asc-4.png",
    "dome": [
     174,
-    94,
-    36,
+    90,
+    39,
     -20
    ],
    "ownHead": false,
@@ -2181,9 +2375,9 @@
    "key": "frost-asc-5",
    "file": "suits/frost-asc-5.png",
    "dome": [
-    176,
-    98,
-    36,
+    172,
+    90,
+    39,
     -15
    ],
    "ownHead": false,
@@ -2196,9 +2390,9 @@
    "key": "frost-asc-6",
    "file": "suits/frost-asc-6.png",
    "dome": [
-    174,
-    95,
-    36,
+    169,
+    87,
+    39,
     -25
    ],
    "ownHead": false,
@@ -2212,8 +2406,8 @@
    "file": "suits/frost-asc-7.png",
    "dome": [
     173,
-    100,
-    36,
+    96,
+    39,
     -15
    ],
    "ownHead": false,
@@ -2227,8 +2421,8 @@
    "file": "suits/frost-asc-8.png",
    "dome": [
     174,
-    96,
-    36,
+    92,
+    39,
     -20
    ],
    "ownHead": false,
@@ -2242,8 +2436,8 @@
    "file": "suits/frost-desc-1.png",
    "dome": [
     175,
-    112,
-    36
+    108,
+    39
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2256,8 +2450,8 @@
    "file": "suits/frost-desc-2.png",
    "dome": [
     178,
-    134,
-    36,
+    130,
+    39,
     20
    ],
    "ownHead": false,
@@ -2271,8 +2465,8 @@
    "file": "suits/frost-desc-3.png",
    "dome": [
     177,
-    141,
-    36,
+    137,
+    39,
     25
    ],
    "ownHead": false,
@@ -2286,8 +2480,8 @@
    "file": "suits/frost-desc-4.png",
    "dome": [
     175,
-    147,
-    36,
+    143,
+    39,
     30
    ],
    "ownHead": false,
@@ -2301,8 +2495,8 @@
    "file": "suits/frost-desc-5.png",
    "dome": [
     173,
-    152,
-    36,
+    148,
+    39,
     35
    ],
    "ownHead": false,
@@ -2316,8 +2510,8 @@
    "file": "suits/frost-desc-6.png",
    "dome": [
     172,
-    148,
-    36,
+    144,
+    39,
     30
    ],
    "ownHead": false,
@@ -2331,8 +2525,8 @@
    "file": "suits/frost-desc-7.png",
    "dome": [
     170,
-    153,
-    36,
+    149,
+    39,
     35
    ],
    "ownHead": false,
@@ -2346,8 +2540,8 @@
    "file": "suits/frost-desc-8.png",
    "dome": [
     172,
-    152,
-    36,
+    148,
+    39,
     30
    ],
    "ownHead": false,
@@ -2360,9 +2554,9 @@
    "key": "gemmie-asc-1",
    "file": "suits/gemmie-asc-1.png",
    "dome": [
-    183,
-    102,
-    40
+    195,
+    94,
+    52
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2374,9 +2568,9 @@
    "key": "gemmie-asc-2",
    "file": "suits/gemmie-asc-2.png",
    "dome": [
-    181,
-    96,
-    40
+    185,
+    94,
+    48
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2388,9 +2582,9 @@
    "key": "gemmie-asc-3",
    "file": "suits/gemmie-asc-3.png",
    "dome": [
-    182,
-    94,
-    40,
+    181,
+    86,
+    46,
     -15
    ],
    "ownHead": false,
@@ -2403,9 +2597,9 @@
    "key": "gemmie-asc-4",
    "file": "suits/gemmie-asc-4.png",
    "dome": [
-    181,
-    93,
-    40,
+    177,
+    84,
+    44,
     -20
    ],
    "ownHead": false,
@@ -2418,9 +2612,9 @@
    "key": "gemmie-asc-5",
    "file": "suits/gemmie-asc-5.png",
    "dome": [
-    186,
-    89,
-    40,
+    179,
+    86,
+    44,
     -20
    ],
    "ownHead": false,
@@ -2433,10 +2627,10 @@
    "key": "gemmie-asc-6",
    "file": "suits/gemmie-asc-6.png",
    "dome": [
-    182,
-    82,
-    40,
-    -30
+    173,
+    78,
+    44,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2448,9 +2642,9 @@
    "key": "gemmie-asc-7",
    "file": "suits/gemmie-asc-7.png",
    "dome": [
-    184,
-    89,
-    40,
+    178,
+    86,
+    44,
     -20
    ],
    "ownHead": false,
@@ -2463,10 +2657,10 @@
    "key": "gemmie-asc-8",
    "file": "suits/gemmie-asc-8.png",
    "dome": [
-    181,
-    84,
-    40,
-    -25
+    178,
+    85,
+    44,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2478,9 +2672,9 @@
    "key": "gemmie-desc-1",
    "file": "suits/gemmie-desc-1.png",
    "dome": [
-    176,
-    134,
-    40,
+    181,
+    135,
+    44,
     25
    ],
    "ownHead": false,
@@ -2493,9 +2687,9 @@
    "key": "gemmie-desc-2",
    "file": "suits/gemmie-desc-2.png",
    "dome": [
-    178,
-    151,
-    40,
+    183,
+    152,
+    44,
     30
    ],
    "ownHead": false,
@@ -2508,9 +2702,9 @@
    "key": "gemmie-desc-3",
    "file": "suits/gemmie-desc-3.png",
    "dome": [
-    177,
-    148,
-    40,
+    182,
+    149,
+    44,
     30
    ],
    "ownHead": false,
@@ -2523,9 +2717,9 @@
    "key": "gemmie-desc-4",
    "file": "suits/gemmie-desc-4.png",
    "dome": [
-    176,
-    149,
-    40,
+    181,
+    150,
+    44,
     30
    ],
    "ownHead": false,
@@ -2538,9 +2732,9 @@
    "key": "gemmie-desc-5",
    "file": "suits/gemmie-desc-5.png",
    "dome": [
-    179,
-    152,
-    40,
+    184,
+    153,
+    44,
     30
    ],
    "ownHead": false,
@@ -2553,9 +2747,9 @@
    "key": "gemmie-desc-6",
    "file": "suits/gemmie-desc-6.png",
    "dome": [
-    175,
-    159,
-    40,
+    180,
+    160,
+    44,
     35
    ],
    "ownHead": false,
@@ -2568,9 +2762,9 @@
    "key": "gemmie-desc-7",
    "file": "suits/gemmie-desc-7.png",
    "dome": [
-    167,
-    153,
-    40,
+    172,
+    154,
+    44,
     35
    ],
    "ownHead": false,
@@ -2583,9 +2777,9 @@
    "key": "ghost-asc-1",
    "file": "suits/ghost-asc-1.png",
    "dome": [
-    176,
-    83,
-    38
+    180,
+    65,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2597,9 +2791,9 @@
    "key": "ghost-asc-2",
    "file": "suits/ghost-asc-2.png",
    "dome": [
-    172,
-    79,
-    38
+    176,
+    61,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2611,9 +2805,9 @@
    "key": "ghost-asc-3",
    "file": "suits/ghost-asc-3.png",
    "dome": [
-    174,
-    76,
-    38
+    173,
+    58,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2625,9 +2819,9 @@
    "key": "ghost-asc-4",
    "file": "suits/ghost-asc-4.png",
    "dome": [
-    173,
-    76,
-    38
+    172,
+    58,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2639,9 +2833,9 @@
    "key": "ghost-asc-5",
    "file": "suits/ghost-asc-5.png",
    "dome": [
-    176,
-    81,
-    38
+    180,
+    63,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2653,9 +2847,9 @@
    "key": "ghost-asc-6",
    "file": "suits/ghost-asc-6.png",
    "dome": [
-    168,
-    72,
-    38,
+    165,
+    57,
+    49,
     -10
    ],
    "ownHead": false,
@@ -2668,9 +2862,9 @@
    "key": "ghost-asc-7",
    "file": "suits/ghost-asc-7.png",
    "dome": [
-    168,
-    72,
-    38,
+    165,
+    57,
+    49,
     -10
    ],
    "ownHead": false,
@@ -2683,9 +2877,9 @@
    "key": "ghost-asc-8",
    "file": "suits/ghost-asc-8.png",
    "dome": [
-    170,
-    73,
-    38,
+    167,
+    58,
+    49,
     -10
    ],
    "ownHead": false,
@@ -2698,9 +2892,9 @@
    "key": "ghost-desc-1",
    "file": "suits/ghost-desc-1.png",
    "dome": [
-    176,
-    83,
-    38
+    180,
+    65,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2712,9 +2906,9 @@
    "key": "ghost-desc-2",
    "file": "suits/ghost-desc-2.png",
    "dome": [
-    177,
-    83,
-    38
+    181,
+    65,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2726,9 +2920,9 @@
    "key": "ghost-desc-3",
    "file": "suits/ghost-desc-3.png",
    "dome": [
-    176,
-    84,
-    38
+    180,
+    66,
+    49
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2740,9 +2934,9 @@
    "key": "ghost-desc-4",
    "file": "suits/ghost-desc-4.png",
    "dome": [
-    191,
-    136,
-    38,
+    198,
+    129,
+    49,
     55
    ],
    "ownHead": false,
@@ -2755,9 +2949,9 @@
    "key": "ghost-desc-5",
    "file": "suits/ghost-desc-5.png",
    "dome": [
-    191,
-    138,
-    38,
+    198,
+    131,
+    49,
     60
    ],
    "ownHead": false,
@@ -2770,9 +2964,9 @@
    "key": "ghost-desc-6",
    "file": "suits/ghost-desc-6.png",
    "dome": [
-    188,
-    138,
-    38,
+    195,
+    131,
+    49,
     60
    ],
    "ownHead": false,
@@ -2785,9 +2979,9 @@
    "key": "ghost-desc-7",
    "file": "suits/ghost-desc-7.png",
    "dome": [
-    185,
-    138,
-    38,
+    192,
+    131,
+    49,
     60
    ],
    "ownHead": false,
@@ -2800,9 +2994,9 @@
    "key": "ghost-desc-8",
    "file": "suits/ghost-desc-8.png",
    "dome": [
-    186,
-    109,
-    38,
+    191,
+    99,
+    49,
     30
    ],
    "ownHead": false,
@@ -2815,9 +3009,10 @@
    "key": "iontrim-asc-1",
    "file": "suits/iontrim-asc-1.png",
    "dome": [
-    184,
-    100,
-    36
+    187,
+    101,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2829,9 +3024,10 @@
    "key": "iontrim-asc-2",
    "file": "suits/iontrim-asc-2.png",
    "dome": [
-    184,
-    96,
-    36
+    187,
+    97,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2843,9 +3039,10 @@
    "key": "iontrim-asc-3",
    "file": "suits/iontrim-asc-3.png",
    "dome": [
-    189,
-    100,
-    36
+    192,
+    101,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2857,9 +3054,10 @@
    "key": "iontrim-asc-4",
    "file": "suits/iontrim-asc-4.png",
    "dome": [
-    186,
-    96,
-    36
+    189,
+    97,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2871,10 +3069,10 @@
    "key": "iontrim-asc-5",
    "file": "suits/iontrim-asc-5.png",
    "dome": [
-    177,
-    83,
-    36,
-    -25
+    180,
+    84,
+    44,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2887,9 +3085,9 @@
    "file": "suits/iontrim-asc-6.png",
    "dome": [
     183,
-    80,
-    36,
-    -25
+    79,
+    44,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2902,9 +3100,9 @@
    "file": "suits/iontrim-asc-7.png",
    "dome": [
     183,
-    84,
-    36,
-    -35
+    83,
+    44,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2916,10 +3114,10 @@
    "key": "iontrim-asc-8",
    "file": "suits/iontrim-asc-8.png",
    "dome": [
-    178,
-    74,
-    36,
-    -35
+    174,
+    73,
+    44,
+    -15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2931,9 +3129,10 @@
    "key": "iontrim-desc-1",
    "file": "suits/iontrim-desc-1.png",
    "dome": [
-    184,
-    100,
-    36
+    187,
+    101,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2945,9 +3144,10 @@
    "key": "iontrim-desc-2",
    "file": "suits/iontrim-desc-2.png",
    "dome": [
-    196,
-    110,
-    36
+    199,
+    111,
+    44,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2959,9 +3159,9 @@
    "key": "iontrim-desc-3",
    "file": "suits/iontrim-desc-3.png",
    "dome": [
-    185,
-    138,
-    36,
+    188,
+    139,
+    44,
     25
    ],
    "ownHead": false,
@@ -2974,9 +3174,9 @@
    "key": "iontrim-desc-4",
    "file": "suits/iontrim-desc-4.png",
    "dome": [
-    187,
-    153,
-    36,
+    190,
+    154,
+    44,
     30
    ],
    "ownHead": false,
@@ -2989,9 +3189,9 @@
    "key": "iontrim-desc-5",
    "file": "suits/iontrim-desc-5.png",
    "dome": [
-    187,
-    147,
-    36,
+    190,
+    148,
+    44,
     25
    ],
    "ownHead": false,
@@ -3004,9 +3204,9 @@
    "key": "iontrim-desc-6",
    "file": "suits/iontrim-desc-6.png",
    "dome": [
-    179,
-    159,
-    36,
+    182,
+    160,
+    44,
     40
    ],
    "ownHead": false,
@@ -3019,9 +3219,9 @@
    "key": "iontrim-desc-7",
    "file": "suits/iontrim-desc-7.png",
    "dome": [
-    180,
-    156,
-    36,
+    183,
+    157,
+    44,
     35
    ],
    "ownHead": false,
@@ -3034,9 +3234,9 @@
    "key": "iontrim-desc-8",
    "file": "suits/iontrim-desc-8.png",
    "dome": [
-    177,
-    165,
-    36,
+    180,
+    166,
+    44,
     40
    ],
    "ownHead": false,
@@ -3049,9 +3249,10 @@
    "key": "leviathan-asc-1",
    "file": "suits/leviathan-asc-1.png",
    "dome": [
-    177,
-    110,
-    30
+    174,
+    100,
+    36,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3063,9 +3264,10 @@
    "key": "leviathan-asc-2",
    "file": "suits/leviathan-asc-2.png",
    "dome": [
-    176,
-    106,
-    30
+    173,
+    96,
+    36,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3077,10 +3279,10 @@
    "key": "leviathan-asc-3",
    "file": "suits/leviathan-asc-3.png",
    "dome": [
-    170,
-    98,
-    30,
-    20
+    167,
+    88,
+    36,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3092,10 +3294,10 @@
    "key": "leviathan-asc-4",
    "file": "suits/leviathan-asc-4.png",
    "dome": [
-    167,
-    94,
-    30,
-    25
+    164,
+    84,
+    36,
+    -12
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3107,10 +3309,10 @@
    "key": "leviathan-asc-5",
    "file": "suits/leviathan-asc-5.png",
    "dome": [
-    167,
-    85,
-    30,
-    30
+    160,
+    77,
+    36,
+    -16
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3122,10 +3324,10 @@
    "key": "leviathan-asc-6",
    "file": "suits/leviathan-asc-6.png",
    "dome": [
-    163,
-    90,
-    30,
-    30
+    160,
+    80,
+    36,
+    -16
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3137,10 +3339,10 @@
    "key": "leviathan-asc-7",
    "file": "suits/leviathan-asc-7.png",
    "dome": [
-    166,
-    86,
-    30,
-    25
+    163,
+    78,
+    36,
+    -14
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3152,10 +3354,10 @@
    "key": "leviathan-asc-8",
    "file": "suits/leviathan-asc-8.png",
    "dome": [
-    158,
-    90,
-    30,
-    25
+    154,
+    82,
+    36,
+    -18
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3167,9 +3369,10 @@
    "key": "leviathan-desc-1",
    "file": "suits/leviathan-desc-1.png",
    "dome": [
-    177,
-    110,
-    30
+    174,
+    100,
+    36,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3182,9 +3385,9 @@
    "file": "suits/leviathan-desc-2.png",
    "dome": [
     178,
-    126,
-    30,
-    -15
+    118,
+    36,
+    14
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3196,10 +3399,10 @@
    "key": "leviathan-desc-3",
    "file": "suits/leviathan-desc-3.png",
    "dome": [
-    167,
-    136,
-    30,
-    -40
+    168,
+    129,
+    36,
+    31
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3212,9 +3415,9 @@
    "file": "suits/leviathan-desc-4.png",
    "dome": [
     172,
-    136,
-    30,
-    -40
+    129,
+    36,
+    32
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3226,10 +3429,10 @@
    "key": "leviathan-desc-5",
    "file": "suits/leviathan-desc-5.png",
    "dome": [
-    170,
-    139,
-    30,
-    -45
+    171,
+    132,
+    36,
+    33
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3241,10 +3444,10 @@
    "key": "leviathan-desc-6",
    "file": "suits/leviathan-desc-6.png",
    "dome": [
-    176,
-    143,
-    30,
-    -45
+    175,
+    136,
+    36,
+    34
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3257,9 +3460,9 @@
    "file": "suits/leviathan-desc-7.png",
    "dome": [
     174,
-    142,
-    30,
-    -45
+    135,
+    36,
+    34
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3272,9 +3475,9 @@
    "file": "suits/leviathan-desc-8.png",
    "dome": [
     173,
-    144,
-    30,
-    -50
+    138,
+    36,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3287,8 +3490,9 @@
    "file": "suits/robo-tap-1.png",
    "dome": [
     190,
-    103,
-    40
+    100,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3301,8 +3505,9 @@
    "file": "suits/robo-tap-2.png",
    "dome": [
     190,
-    103,
-    40
+    100,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3315,8 +3520,9 @@
    "file": "suits/robo-tap-3.png",
    "dome": [
     190,
-    101,
-    40
+    98,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3329,8 +3535,9 @@
    "file": "suits/robo-tap-4.png",
    "dome": [
     191,
-    96,
-    40
+    93,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3343,8 +3550,9 @@
    "file": "suits/robo-tap-5.png",
    "dome": [
     191,
-    88,
-    40
+    85,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3357,8 +3565,9 @@
    "file": "suits/robo-tap-6.png",
    "dome": [
     192,
-    82,
-    40
+    79,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3371,8 +3580,9 @@
    "file": "suits/robo-tap-7.png",
    "dome": [
     192,
-    80,
-    40
+    77,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3385,8 +3595,9 @@
    "file": "suits/robo-tap-8.png",
    "dome": [
     191,
-    84,
-    40
+    81,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3399,8 +3610,9 @@
    "file": "suits/robo-tap-9.png",
    "dome": [
     190,
-    93,
-    40
+    90,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3413,8 +3625,9 @@
    "file": "suits/robo-tap-10.png",
    "dome": [
     189,
-    103,
-    40
+    100,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3427,8 +3640,9 @@
    "file": "suits/robo-tap-11.png",
    "dome": [
     189,
-    110,
-    40
+    107,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3441,8 +3655,9 @@
    "file": "suits/robo-tap-12.png",
    "dome": [
     190,
-    111,
-    40
+    108,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3455,8 +3670,9 @@
    "file": "suits/robo-tap-13.png",
    "dome": [
     191,
-    110,
-    40
+    107,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3469,8 +3685,9 @@
    "file": "suits/robo-tap-14.png",
    "dome": [
     192,
-    107,
-    40
+    104,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3483,8 +3700,9 @@
    "file": "suits/robo-tap-15.png",
    "dome": [
     191,
-    104,
-    40
+    101,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3497,8 +3715,9 @@
    "file": "suits/robo-tap-16.png",
    "dome": [
     191,
-    100,
-    40
+    97,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3510,9 +3729,9 @@
    "key": "sammie-asc-1",
    "file": "suits/sammie-asc-1.png",
    "dome": [
-    186,
-    102,
-    35
+    193,
+    96,
+    46
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3524,9 +3743,9 @@
    "key": "sammie-asc-2",
    "file": "suits/sammie-asc-2.png",
    "dome": [
-    182,
-    101,
-    35
+    183,
+    98,
+    41
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3538,9 +3757,9 @@
    "key": "sammie-asc-3",
    "file": "suits/sammie-asc-3.png",
    "dome": [
-    181,
-    99,
-    35,
+    182,
+    97,
+    41,
     -10
    ],
    "ownHead": false,
@@ -3554,9 +3773,9 @@
    "file": "suits/sammie-asc-4.png",
    "dome": [
     179,
-    88,
-    35,
-    -25
+    85,
+    41,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3569,8 +3788,8 @@
    "file": "suits/sammie-asc-5.png",
    "dome": [
     180,
-    93,
-    35,
+    90,
+    41,
     -15
    ],
    "ownHead": false,
@@ -3583,10 +3802,10 @@
    "key": "sammie-asc-6",
    "file": "suits/sammie-asc-6.png",
    "dome": [
-    177,
-    87,
-    35,
-    -25
+    175,
+    84,
+    41,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3598,9 +3817,9 @@
    "key": "sammie-asc-7",
    "file": "suits/sammie-asc-7.png",
    "dome": [
-    184,
-    89,
-    35,
+    182,
+    88,
+    41,
     -15
    ],
    "ownHead": false,
@@ -3613,10 +3832,10 @@
    "key": "sammie-asc-8",
    "file": "suits/sammie-asc-8.png",
    "dome": [
-    181,
+    177,
     84,
-    35,
-    -30
+    41,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3628,9 +3847,9 @@
    "key": "sammie-desc-1",
    "file": "suits/sammie-desc-1.png",
    "dome": [
-    177,
+    179,
     135,
-    35,
+    41,
     20
    ],
    "ownHead": false,
@@ -3643,9 +3862,9 @@
    "key": "sammie-desc-2",
    "file": "suits/sammie-desc-2.png",
    "dome": [
-    180,
+    182,
     136,
-    35,
+    41,
     25
    ],
    "ownHead": false,
@@ -3658,9 +3877,9 @@
    "key": "sammie-desc-3",
    "file": "suits/sammie-desc-3.png",
    "dome": [
-    178,
+    180,
     138,
-    35,
+    41,
     25
    ],
    "ownHead": false,
@@ -3673,9 +3892,9 @@
    "key": "sammie-desc-4",
    "file": "suits/sammie-desc-4.png",
    "dome": [
-    189,
+    191,
     140,
-    35,
+    41,
     20
    ],
    "ownHead": false,
@@ -3688,9 +3907,9 @@
    "key": "sammie-desc-5",
    "file": "suits/sammie-desc-5.png",
    "dome": [
-    178,
+    180,
     144,
-    35,
+    41,
     25
    ],
    "ownHead": false,
@@ -3703,9 +3922,9 @@
    "key": "sammie-desc-6",
    "file": "suits/sammie-desc-6.png",
    "dome": [
-    171,
+    173,
     149,
-    35,
+    41,
     30
    ],
    "ownHead": false,
@@ -3718,9 +3937,9 @@
    "key": "sammie-desc-7",
    "file": "suits/sammie-desc-7.png",
    "dome": [
-    171,
+    173,
     156,
-    35,
+    41,
     35
    ],
    "ownHead": false,
@@ -3733,9 +3952,10 @@
    "key": "seraph-asc-1",
    "file": "suits/seraph-asc-1.png",
    "dome": [
-    205,
-    129,
-    35
+    204,
+    126,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3747,9 +3967,10 @@
    "key": "seraph-asc-2",
    "file": "suits/seraph-asc-2.png",
    "dome": [
-    205,
-    126,
-    35
+    204,
+    124,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3761,9 +3982,10 @@
    "key": "seraph-asc-3",
    "file": "suits/seraph-asc-3.png",
    "dome": [
-    205,
-    123,
-    35
+    204,
+    122,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3775,9 +3997,10 @@
    "key": "seraph-asc-4",
    "file": "suits/seraph-asc-4.png",
    "dome": [
-    206,
-    132,
-    35
+    204,
+    129,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3789,9 +4012,10 @@
    "key": "seraph-asc-5",
    "file": "suits/seraph-asc-5.png",
    "dome": [
-    205,
-    129,
-    35
+    204,
+    127,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3803,9 +4027,10 @@
    "key": "seraph-asc-6",
    "file": "suits/seraph-asc-6.png",
    "dome": [
-    205,
-    126,
-    35
+    204,
+    125,
+    38,
+    -3
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3817,10 +4042,10 @@
    "key": "seraph-asc-7",
    "file": "suits/seraph-asc-7.png",
    "dome": [
-    205,
+    204,
     123,
-    35,
-    -10
+    38,
+    -6
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3833,8 +4058,8 @@
    "file": "suits/seraph-asc-8.png",
    "dome": [
     204,
-    120,
-    35,
+    121,
+    38,
     -10
    ],
    "ownHead": false,
@@ -3847,9 +4072,10 @@
    "key": "seraph-desc-1",
    "file": "suits/seraph-desc-1.png",
    "dome": [
-    205,
-    129,
-    35
+    204,
+    126,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3861,9 +4087,10 @@
    "key": "seraph-desc-2",
    "file": "suits/seraph-desc-2.png",
    "dome": [
-    205,
-    132,
-    35
+    204,
+    129,
+    38,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3875,9 +4102,10 @@
    "key": "seraph-desc-3",
    "file": "suits/seraph-desc-3.png",
    "dome": [
-    205,
-    135,
-    35
+    204,
+    132,
+    38,
+    2
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3889,9 +4117,9 @@
    "key": "seraph-desc-4",
    "file": "suits/seraph-desc-4.png",
    "dome": [
-    205,
-    138,
-    35,
+    204,
+    136,
+    38,
     10
    ],
    "ownHead": false,
@@ -3904,10 +4132,10 @@
    "key": "seraph-desc-5",
    "file": "suits/seraph-desc-5.png",
    "dome": [
-    204,
-    141,
-    35,
-    15
+    203,
+    140,
+    38,
+    17
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3919,10 +4147,10 @@
    "key": "seraph-desc-6",
    "file": "suits/seraph-desc-6.png",
    "dome": [
-    203,
-    144,
-    35,
-    15
+    202,
+    143,
+    38,
+    21
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3935,9 +4163,9 @@
    "file": "suits/seraph-desc-7.png",
    "dome": [
     204,
-    154,
-    35,
-    35
+    157,
+    38,
+    52
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3950,9 +4178,9 @@
    "file": "suits/seraph-desc-8.png",
    "dome": [
     202,
-    158,
-    35,
-    40
+    162,
+    38,
+    60
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4201,9 +4429,10 @@
    "key": "verdant-asc-1",
    "file": "suits/verdant-asc-1.png",
    "dome": [
-    186,
+    196,
     92,
-    40
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4215,10 +4444,10 @@
    "key": "verdant-asc-2",
    "file": "suits/verdant-asc-2.png",
    "dome": [
-    180,
-    83,
-    40,
-    -10
+    184,
+    82,
+    45,
+    -4
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4230,9 +4459,10 @@
    "key": "verdant-asc-3",
    "file": "suits/verdant-asc-3.png",
    "dome": [
-    187,
-    86,
-    40
+    191,
+    85,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4244,10 +4474,10 @@
    "key": "verdant-asc-4",
    "file": "suits/verdant-asc-4.png",
    "dome": [
-    178,
+    180,
     76,
-    40,
-    -25
+    45,
+    -12
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4259,9 +4489,10 @@
    "key": "verdant-asc-5",
    "file": "suits/verdant-asc-5.png",
    "dome": [
-    186,
-    87,
-    40
+    185,
+    85,
+    45,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4273,10 +4504,10 @@
    "key": "verdant-asc-6",
    "file": "suits/verdant-asc-6.png",
    "dome": [
-    180,
-    72,
-    40,
-    -25
+    177,
+    73,
+    45,
+    -15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4288,10 +4519,10 @@
    "key": "verdant-asc-7",
    "file": "suits/verdant-asc-7.png",
    "dome": [
-    181,
-    78,
-    40,
-    -25
+    176,
+    77,
+    45,
+    -15
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4303,10 +4534,10 @@
    "key": "verdant-asc-8",
    "file": "suits/verdant-asc-8.png",
    "dome": [
-    189,
-    71,
-    40,
-    -30
+    177,
+    73,
+    45,
+    -20
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4318,10 +4549,10 @@
    "key": "verdant-desc-1",
    "file": "suits/verdant-desc-1.png",
    "dome": [
-    187,
-    110,
-    40,
-    15
+    193,
+    113,
+    45,
+    16
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4333,10 +4564,10 @@
    "key": "verdant-desc-2",
    "file": "suits/verdant-desc-2.png",
    "dome": [
-    183,
-    140,
-    40,
-    25
+    186,
+    146,
+    45,
+    26
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4348,9 +4579,9 @@
    "key": "verdant-desc-3",
    "file": "suits/verdant-desc-3.png",
    "dome": [
-    180,
-    147,
-    40,
+    183,
+    153,
+    45,
     30
    ],
    "ownHead": false,
@@ -4363,10 +4594,10 @@
    "key": "verdant-desc-4",
    "file": "suits/verdant-desc-4.png",
    "dome": [
-    176,
-    141,
-    40,
-    30
+    179,
+    147,
+    45,
+    29
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4378,10 +4609,10 @@
    "key": "verdant-desc-5",
    "file": "suits/verdant-desc-5.png",
    "dome": [
-    179,
-    145,
-    40,
-    30
+    181,
+    152,
+    45,
+    31
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4393,10 +4624,10 @@
    "key": "verdant-desc-6",
    "file": "suits/verdant-desc-6.png",
    "dome": [
-    170,
-    150,
-    40,
-    35
+    173,
+    157,
+    45,
+    32
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4408,10 +4639,10 @@
    "key": "verdant-desc-7",
    "file": "suits/verdant-desc-7.png",
    "dome": [
-    177,
-    149,
-    40,
-    30
+    179,
+    156,
+    45,
+    32
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4423,9 +4654,10 @@
    "key": "voidsuit-asc-1",
    "file": "suits/voidsuit-asc-1.png",
    "dome": [
-    182,
+    183,
     105,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4437,9 +4669,10 @@
    "key": "voidsuit-asc-2",
    "file": "suits/voidsuit-asc-2.png",
    "dome": [
-    183,
+    184,
     105,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4451,9 +4684,10 @@
    "key": "voidsuit-asc-3",
    "file": "suits/voidsuit-asc-3.png",
    "dome": [
-    183,
+    184,
     102,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4465,9 +4699,10 @@
    "key": "voidsuit-asc-4",
    "file": "suits/voidsuit-asc-4.png",
    "dome": [
-    183,
+    184,
     98,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4479,10 +4714,10 @@
    "key": "voidsuit-asc-5",
    "file": "suits/voidsuit-asc-5.png",
    "dome": [
-    179,
+    182,
     88,
-    45,
-    -10
+    46,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4494,10 +4729,10 @@
    "key": "voidsuit-asc-6",
    "file": "suits/voidsuit-asc-6.png",
    "dome": [
-    174,
-    83,
-    45,
-    -25
+    175,
+    79,
+    46,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4509,10 +4744,10 @@
    "key": "voidsuit-asc-7",
    "file": "suits/voidsuit-asc-7.png",
    "dome": [
-    173,
-    95,
-    45,
-    -25
+    172,
+    87,
+    46,
+    -5
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4524,10 +4759,10 @@
    "key": "voidsuit-asc-8",
    "file": "suits/voidsuit-asc-8.png",
    "dome": [
-    173,
-    91,
-    45,
-    -35
+    164,
+    78,
+    46,
+    -10
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4539,9 +4774,10 @@
    "key": "voidsuit-desc-1",
    "file": "suits/voidsuit-desc-1.png",
    "dome": [
-    182,
+    183,
     105,
-    45
+    46,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4553,9 +4789,9 @@
    "key": "voidsuit-desc-2",
    "file": "suits/voidsuit-desc-2.png",
    "dome": [
-    188,
+    189,
     141,
-    45,
+    46,
     15
    ],
    "ownHead": false,
@@ -4568,9 +4804,9 @@
    "key": "voidsuit-desc-3",
    "file": "suits/voidsuit-desc-3.png",
    "dome": [
-    177,
+    178,
     148,
-    45,
+    46,
     25
    ],
    "ownHead": false,
@@ -4583,9 +4819,9 @@
    "key": "voidsuit-desc-4",
    "file": "suits/voidsuit-desc-4.png",
    "dome": [
-    178,
+    179,
     155,
-    45,
+    46,
     30
    ],
    "ownHead": false,
@@ -4598,9 +4834,9 @@
    "key": "voidsuit-desc-5",
    "file": "suits/voidsuit-desc-5.png",
    "dome": [
-    177,
+    178,
     154,
-    45,
+    46,
     30
    ],
    "ownHead": false,
@@ -4613,9 +4849,9 @@
    "key": "voidsuit-desc-6",
    "file": "suits/voidsuit-desc-6.png",
    "dome": [
-    171,
+    172,
     162,
-    45,
+    46,
     35
    ],
    "ownHead": false,
@@ -4628,9 +4864,9 @@
    "key": "voidsuit-desc-7",
    "file": "suits/voidsuit-desc-7.png",
    "dome": [
-    179,
+    180,
     159,
-    45,
+    46,
     30
    ],
    "ownHead": false,
@@ -4643,9 +4879,9 @@
    "key": "voidsuit-desc-8",
    "file": "suits/voidsuit-desc-8.png",
    "dome": [
-    172,
+    173,
     165,
-    45,
+    46,
     40
    ],
    "ownHead": false,
@@ -7725,8 +7961,9 @@
    "file": "suits/flight-tap-1.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7739,8 +7976,9 @@
    "file": "suits/flight-tap-2.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7753,8 +7991,9 @@
    "file": "suits/flight-tap-3.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7767,8 +8006,9 @@
    "file": "suits/flight-tap-4.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7781,8 +8021,9 @@
    "file": "suits/flight-tap-5.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7795,8 +8036,9 @@
    "file": "suits/flight-tap-6.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7809,8 +8051,9 @@
    "file": "suits/flight-tap-7.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7823,8 +8066,9 @@
    "file": "suits/flight-tap-8.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7837,8 +8081,9 @@
    "file": "suits/flight-tap-9.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7851,8 +8096,9 @@
    "file": "suits/flight-tap-10.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7865,8 +8111,9 @@
    "file": "suits/flight-tap-11.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7879,8 +8126,9 @@
    "file": "suits/flight-tap-12.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7893,8 +8141,9 @@
    "file": "suits/flight-tap-13.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7907,8 +8156,9 @@
    "file": "suits/flight-tap-14.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7921,8 +8171,9 @@
    "file": "suits/flight-tap-15.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -7935,8 +8186,9 @@
    "file": "suits/flight-tap-16.png",
    "dome": [
     185,
-    82,
-    44
+    88,
+    48,
+    0
    ],
    "ownHead": false,
    "bakedDome": false,

@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=204";
-import { spillAppearance } from "./spill-appearance.js?v=204";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=204";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=204";
-import { addChartScenery } from "./star-map-view.js?v=204";
-import { mapDebrisIndex } from "./zone-visuals.js?v=204";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=204";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=204";
-import { suitLean } from "./control-constants.js?v=204";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=204";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=204";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=204";
-import { drawSprite as drawSpriteOn } from "./art.js?v=204";
-import { createEngine } from "./engine.js?v=204";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=204";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=204";
-import { formatRaceTicks } from "./race.js?v=204";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=204";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=204";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=204";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=204";
+import { suitPitchFor } from "./save.js?v=208";
+import { spillAppearance } from "./spill-appearance.js?v=208";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=208";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=208";
+import { addChartScenery } from "./star-map-view.js?v=208";
+import { mapDebrisIndex } from "./zone-visuals.js?v=208";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=208";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=208";
+import { suitLean } from "./control-constants.js?v=208";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=208";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=208";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=208";
+import { drawSprite as drawSpriteOn } from "./art.js?v=208";
+import { createEngine } from "./engine.js?v=208";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=208";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=208";
+import { formatRaceTicks } from "./race.js?v=208";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=208";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=208";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=208";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=208";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2120,8 +2120,11 @@ export async function bootStandalone(root) {
                 const items = sec.ids
                     .map((id) => SUITS.find((x) => x.id === id))
                     .filter((u) => !!u)
-                    // premium you do not own belongs in the shop, not the wardrobe
-                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
+                    // premium you do not own belongs in the shop, not the wardrobe -
+                    // except on the PURCHASED row, where it shows as a door to the
+                    // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
+                    // "arcflash is only in SHOP")
+                    .filter((u) => sec.shop || !isIap(u.id) || iapOwned(s, u.id))
                     // cheapest first, so the shelf reads as a ladder rather than a
                     // pile. Owned things lead (nothing left to pay), then acorn
                     // prices in order, then star gates by their star price.
