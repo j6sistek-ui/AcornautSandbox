@@ -129,7 +129,15 @@
     /* a wide window (desktop, landscape phone): the portrait film is shown
        whole on the dark plate instead of a zoomed crop of its middle
        (owner, 7 Sep 2026: "super zoomed in and missing a lot") */
-    @media (min-aspect-ratio: 1/1) { .ac-film video { object-fit: contain; } }
+    @media (min-aspect-ratio: 1/1) {
+      .ac-film video { object-fit: contain; }
+      /* the owner's wide plate behind the letterboxed film, so the sides
+         are a horizon rather than black; the film's own edge falls into a
+         soft shadow instead of a hard cut */
+      .ac-film { background: #05020e url("../art/film-backdrop-wide.jpg?v=224") center / cover no-repeat; }
+      .ac-film::before { content: ""; position: absolute; inset: 0; background: rgba(5,2,14,.28); pointer-events: none; }
+      .ac-film video { filter: drop-shadow(0 0 60px rgba(0,0,0,.85)); }
+    }
     .ac-film.out { opacity: 0; transition: opacity .38s ease; pointer-events: none; }
     .ac-filmskip { position: absolute; right: 14px; bottom: 18px; z-index: 2;
       background: rgba(10,16,32,.6); border: 1px solid rgba(150,166,200,.3); color: #cdd6ea;
