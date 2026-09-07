@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=205";
-import { CHART_LEVELS } from "./campaign.js?v=205";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=205";
-import { restoreSpill } from "./spill.js?v=205";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=205";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=209";
+import { CHART_LEVELS } from "./campaign.js?v=209";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=209";
+import { restoreSpill } from "./spill.js?v=209";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=209";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=205";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=209";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -257,9 +257,25 @@ export function loadSave() {
     // BUNDLES rather than written as a number, so re-pricing a pack can never
     // leave a tester unable to afford the set. Granted ONCE - a tester who
     // spends it is meant to stay spent, or the ledger is untestable too.
-    if (IS_BETA && !s.betaDustGrant) {
-        s.starDust += BUNDLES.reduce((n, b) => n + b.dust, 0); // every pack, at sticker price
-        s.betaDustGrant = true;
+    if (IS_BETA) {
+        const total = BUNDLES.reduce((n, b) => n + b.dust, 0); // every pack, at sticker price
+        if (!s.betaDustGrant) {
+            s.starDust += total;
+            s.betaDustGrant = true;
+            s.betaDustGrantTotal = total;
+        }
+        else {
+            // A PACK ADDED LATER TOPS THE GRANT UP (7 Sep 2026: Arcflash's 1,850
+            // arrived after testers had their grant, and none of them could buy
+            // it). A save that never recorded its grant got the packs that
+            // existed before the fixed-price ones, so that is the baseline.
+            const had = typeof s.betaDustGrantTotal === "number" && isFinite(s.betaDustGrantTotal)
+                ? s.betaDustGrantTotal
+                : BUNDLES.filter((b) => !b.fixed).reduce((n, b) => n + b.dust, 0);
+            if (total > had)
+                s.starDust += total - had;
+            s.betaDustGrantTotal = Math.max(had, total);
+        }
     }
     if (parsed && !parsed.campaignProgress) {
         // Save the exact source before any migrated write. A failed backup leaves
