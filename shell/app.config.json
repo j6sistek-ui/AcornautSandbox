@@ -1,0 +1,34 @@
+{
+  "_readme": "EVERY VALUE YOU WILL BE GIVEN BY APPLE, GOOGLE OR REVENUECAT GOES HERE, AND ONLY HERE. `npm run configure` stamps them into the native projects; nothing else needs editing. Anything still starting with PLACEHOLDER_ is unset. See README.md for where each one comes from.",
+  "appName": "Acornaut",
+  "appId": "PLACEHOLDER_BUNDLE_ID",
+  "marketingVersion": "1.0.12",
+  "buildNumber": 1,
+  "ios": {
+    "teamId": "PLACEHOLDER_APPLE_TEAM_ID",
+    "appStoreConnectAppId": "PLACEHOLDER_ASC_APP_ID"
+  },
+  "android": {
+    "packageName": "PLACEHOLDER_ANDROID_PACKAGE",
+    "playGamesProjectId": "PLACEHOLDER_PLAY_GAMES_PROJECT_ID"
+  },
+  "revenuecat": {
+    "iosApiKey": "PLACEHOLDER_REVENUECAT_IOS_KEY",
+    "androidApiKey": "PLACEHOLDER_REVENUECAT_ANDROID_KEY"
+  },
+  "products": {
+    "dust-100": "PLACEHOLDER_PRODUCT_DUST_100",
+    "dust-550": "PLACEHOLDER_PRODUCT_DUST_550",
+    "dust-1200": "PLACEHOLDER_PRODUCT_DUST_1200",
+    "dust-2600": "PLACEHOLDER_PRODUCT_DUST_2600"
+  },
+  "leaderboards": {
+    "fly": "PLACEHOLDER_LEADERBOARD_NORMAL",
+    "hyper": "PLACEHOLDER_LEADERBOARD_HYPER_RUN",
+    "spill": "PLACEHOLDER_LEADERBOARD_SPILL",
+    "deep": "",
+    "lost": "",
+    "arcade": "",
+    "tunnel": ""
+  }
+}
