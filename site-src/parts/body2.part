@@ -4,7 +4,7 @@
   <div class="wrap">
     <div class="road-grid">
       <figure class="shot rise" style="margin:0">
-        <div class="phone"><img src="{{A:mk-chart.jpg}}" alt="The beta Star Chart: a climbing road of 260 missions with a reward rail beside it" loading="lazy"></div>
+        <div class="phone"><img src="{{A:mk-chart.jpg}}" alt="The Star Chart: a climbing road of 260 missions with a rail of rewards beside it" loading="lazy"></div>
         <figcaption>The actual screen</figcaption>
       </figure>
       <figure class="shot rise" style="margin:0">
@@ -51,7 +51,7 @@
     <div class="wall rise">
       <div class="rail" id="railA"><div class="rail-in" id="railAin"></div></div>
       <div class="rail rev" id="railB"><div class="rail-in" id="railBin"></div></div>
-      <p class="tiny" style="margin-top:16px;text-align:center">30 on the wall &middot; 20 live &middot; 10 upcoming</p>
+      <p class="tiny" style="margin-top:16px;text-align:center">31 on the wall &middot; all live</p>
     </div>
   </div>
 </section>
