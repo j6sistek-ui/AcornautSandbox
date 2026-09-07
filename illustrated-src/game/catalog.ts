@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.10";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "205";
+export const ART_VER = "206";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -874,8 +874,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
   // the cat eats no acorns, so no amount of them buys it: it is the
   // 300-star prize, the full Star Chart, and nothing less
-  { title: "ACORN INTOLERANT", ids: ["catsuit"] },
-  { title: "BRIELLA'S CAT", ids: ["briellacat"] },
+  { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat"] },
   { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 
