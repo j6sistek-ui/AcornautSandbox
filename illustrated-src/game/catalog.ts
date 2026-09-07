@@ -370,7 +370,7 @@ export const PALS: Pal[] = [
   { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
   { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps (planetary gaps at .6)", art: "babyalien" },
   { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
-  { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway, 1.2x Scroll Speed", art: "astrafox" },
+  { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gates", art: "astrafox" },
 ];
 
 export type Env = {
