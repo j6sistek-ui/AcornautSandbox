@@ -1243,6 +1243,9 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
+    # Explicit owner request, 7 Sep 2026: replace these five obsolete flights
+    # with fresh sheets derived from their loadout portraits.
+    "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
     "arcflash",   # explicit owner grant, 6 Sep 2026: video-led articulated rig
     "vanguard",   # owner grant, 5 Sep 2026: dedicated whole-character backend
 

@@ -1,0 +1,1360 @@
+{
+  "suits": {
+    "cinderforge": {
+      "minimumMargin": 31,
+      "faceHSVSpread": [
+        0.0018,
+        0.0409,
+        0.0392
+      ],
+      "tailHSVSpread": [
+        0.0045,
+        0.0464,
+        0.1608
+      ],
+      "frames": [
+        {
+          "name": "cinderforge-asc-1",
+          "margin": 52,
+          "solidPixels": 8577,
+          "faceHSV": [
+            0.0624,
+            0.8125,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0547,
+            0.9084,
+            0.5255
+          ],
+          "sha256": "1526da77a598a5a2e3a7ef20946822a942802448e2065413b744163d257a6100"
+        },
+        {
+          "name": "cinderforge-asc-2",
+          "margin": 49,
+          "solidPixels": 8973,
+          "faceHSV": [
+            0.0612,
+            0.8055,
+            0.6784
+          ],
+          "tailHSV": [
+            0.055,
+            0.9097,
+            0.5373
+          ],
+          "sha256": "8d38c253f7483dddc35082d91edff79a99d5b7138adb2fed4b6d0e80dfe09881"
+        },
+        {
+          "name": "cinderforge-asc-3",
+          "margin": 39,
+          "solidPixels": 8723,
+          "faceHSV": [
+            0.0624,
+            0.8122,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0538,
+            0.9252,
+            0.498
+          ],
+          "sha256": "f3458740cdd9a049282ddd8731092807f31060c809d8c4b1d68137fa22cca0d8"
+        },
+        {
+          "name": "cinderforge-asc-4",
+          "margin": 31,
+          "solidPixels": 8048,
+          "faceHSV": [
+            0.0625,
+            0.8086,
+            0.6824
+          ],
+          "tailHSV": [
+            0.0519,
+            0.9381,
+            0.4549
+          ],
+          "sha256": "5893bec088db420420b5733a4cdc3edcfa961fc66cf6f682ddb4b0bc395ded53"
+        },
+        {
+          "name": "cinderforge-asc-5",
+          "margin": 37,
+          "solidPixels": 8879,
+          "faceHSV": [
+            0.0616,
+            0.8084,
+            0.6824
+          ],
+          "tailHSV": [
+            0.0526,
+            0.9316,
+            0.4667
+          ],
+          "sha256": "ce65d0bba15ca0030a35f5868d8b62bad7bdd31b4cd7c7a86aab662cd8e77e59"
+        },
+        {
+          "name": "cinderforge-asc-6",
+          "margin": 44,
+          "solidPixels": 8583,
+          "faceHSV": [
+            0.0612,
+            0.8091,
+            0.6784
+          ],
+          "tailHSV": [
+            0.0531,
+            0.9291,
+            0.4784
+          ],
+          "sha256": "64f3e8a8f27d3f3afa7140a19f37a4009177c1c8660d007452f8d7ceb5d7cc36"
+        },
+        {
+          "name": "cinderforge-asc-7",
+          "margin": 49,
+          "solidPixels": 8448,
+          "faceHSV": [
+            0.0619,
+            0.8038,
+            0.6725
+          ],
+          "tailHSV": [
+            0.0543,
+            0.9214,
+            0.5216
+          ],
+          "sha256": "ffd168c209864d054796cbc697869f1def9a0cd0a154d6d7f846c90f776f7dfd"
+        },
+        {
+          "name": "cinderforge-asc-8",
+          "margin": 47,
+          "solidPixels": 8365,
+          "faceHSV": [
+            0.0624,
+            0.8026,
+            0.6745
+          ],
+          "tailHSV": [
+            0.0529,
+            0.9271,
+            0.4902
+          ],
+          "sha256": "6e20e154235ad11ff5ef248f3c92c536e6c5dc09468ab8fbe595ff79fce312f9"
+        },
+        {
+          "name": "cinderforge-desc-1",
+          "margin": 52,
+          "solidPixels": 8577,
+          "faceHSV": [
+            0.0624,
+            0.8125,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0547,
+            0.9084,
+            0.5255
+          ],
+          "sha256": "1526da77a598a5a2e3a7ef20946822a942802448e2065413b744163d257a6100"
+        },
+        {
+          "name": "cinderforge-desc-2",
+          "margin": 50,
+          "solidPixels": 7571,
+          "faceHSV": [
+            0.0613,
+            0.8036,
+            0.6784
+          ],
+          "tailHSV": [
+            0.0561,
+            0.9008,
+            0.5608
+          ],
+          "sha256": "11621699fd2848c00d2f2da773e5a9513e577a4228ace7095f43f5e6af787b2d"
+        },
+        {
+          "name": "cinderforge-desc-3",
+          "margin": 46,
+          "solidPixels": 7838,
+          "faceHSV": [
+            0.0626,
+            0.8071,
+            0.6745
+          ],
+          "tailHSV": [
+            0.0556,
+            0.9,
+            0.5765
+          ],
+          "sha256": "a39a2179ec582c0feece38f725b6c9d4102ea6897ee1a591c9e7a8d10c14ec23"
+        },
+        {
+          "name": "cinderforge-desc-4",
+          "margin": 46,
+          "solidPixels": 6950,
+          "faceHSV": [
+            0.0623,
+            0.8109,
+            0.6745
+          ],
+          "tailHSV": [
+            0.0552,
+            0.8936,
+            0.5922
+          ],
+          "sha256": "076b925c0a16fdb02ea1f5c69d26bc65f599b2461a97993c600f359a97344d9e"
+        },
+        {
+          "name": "cinderforge-desc-5",
+          "margin": 48,
+          "solidPixels": 7871,
+          "faceHSV": [
+            0.0617,
+            0.8209,
+            0.6627
+          ],
+          "tailHSV": [
+            0.056,
+            0.894,
+            0.5843
+          ],
+          "sha256": "b9f89e63ec535b2ae9e86b18fbb06fbc7251bc4c435fdebc9be4e8fa0b67f836"
+        },
+        {
+          "name": "cinderforge-desc-6",
+          "margin": 49,
+          "solidPixels": 7076,
+          "faceHSV": [
+            0.062,
+            0.8265,
+            0.6627
+          ],
+          "tailHSV": [
+            0.0556,
+            0.8936,
+            0.5961
+          ],
+          "sha256": "af144bb79b26db0c1ae65088e746e95207dc401745f6a2250264b1abf24bb8cc"
+        },
+        {
+          "name": "cinderforge-desc-7",
+          "margin": 50,
+          "solidPixels": 6886,
+          "faceHSV": [
+            0.0608,
+            0.829,
+            0.6549
+          ],
+          "tailHSV": [
+            0.0559,
+            0.8931,
+            0.6
+          ],
+          "sha256": "c8cff6cbb368e169b3241de473e4766556bbebd1c9e2d2d6ffdb5798b56558ce"
+        },
+        {
+          "name": "cinderforge-desc-8",
+          "margin": 53,
+          "solidPixels": 7000,
+          "faceHSV": [
+            0.061,
+            0.8435,
+            0.651
+          ],
+          "tailHSV": [
+            0.0564,
+            0.8917,
+            0.6157
+          ],
+          "sha256": "6265679c8d62b3e6905da1981a3e180fbffd1b987463c74e8a31d958130cd80b"
+        }
+      ]
+    },
+    "groveguard": {
+      "minimumMargin": 18,
+      "faceHSVSpread": [
+        0.0033,
+        0.0191,
+        0.0255
+      ],
+      "tailHSVSpread": [
+        0.0017,
+        0.0214,
+        0.098
+      ],
+      "frames": [
+        {
+          "name": "groveguard-asc-1",
+          "margin": 55,
+          "solidPixels": 8781,
+          "faceHSV": [
+            0.0732,
+            0.8095,
+            0.7098
+          ],
+          "tailHSV": [
+            0.0676,
+            0.8733,
+            0.5922
+          ],
+          "sha256": "ab627bc4ba9a8c36f206712c80b515c925091d5053e193235b7a9d36b3874400"
+        },
+        {
+          "name": "groveguard-asc-2",
+          "margin": 57,
+          "solidPixels": 8603,
+          "faceHSV": [
+            0.0733,
+            0.8191,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0669,
+            0.8763,
+            0.5863
+          ],
+          "sha256": "74a8f7211dd969dfe993d059f0b3108967a6822bc8414fbb3f701a2076656aad"
+        },
+        {
+          "name": "groveguard-asc-3",
+          "margin": 44,
+          "solidPixels": 8819,
+          "faceHSV": [
+            0.0737,
+            0.8093,
+            0.7039
+          ],
+          "tailHSV": [
+            0.0669,
+            0.878,
+            0.5843
+          ],
+          "sha256": "6e45a47b1a3e31e092fe67223f8f7226fe2e414c90320bb0b1ae6b33f9d80137"
+        },
+        {
+          "name": "groveguard-asc-4",
+          "margin": 54,
+          "solidPixels": 9089,
+          "faceHSV": [
+            0.0732,
+            0.8121,
+            0.7157
+          ],
+          "tailHSV": [
+            0.067,
+            0.8916,
+            0.5451
+          ],
+          "sha256": "aa54c587892fc306a2eca1fb5941451353f46447b2d455306b3e8c625e0a7843"
+        },
+        {
+          "name": "groveguard-asc-5",
+          "margin": 44,
+          "solidPixels": 9079,
+          "faceHSV": [
+            0.073,
+            0.81,
+            0.702
+          ],
+          "tailHSV": [
+            0.0671,
+            0.8818,
+            0.5804
+          ],
+          "sha256": "7efbe71c4fd1d5243b485ad857c3c2c0a5b4e110a791114cf6495498ae5a63ec"
+        },
+        {
+          "name": "groveguard-asc-6",
+          "margin": 38,
+          "solidPixels": 8897,
+          "faceHSV": [
+            0.073,
+            0.8105,
+            0.702
+          ],
+          "tailHSV": [
+            0.0667,
+            0.8824,
+            0.5765
+          ],
+          "sha256": "58623fc3d86e4112af6f0cfd2046b4a1c41640a6b1c47f39871e86c79d4bf500"
+        },
+        {
+          "name": "groveguard-asc-7",
+          "margin": 18,
+          "solidPixels": 9678,
+          "faceHSV": [
+            0.0736,
+            0.8144,
+            0.7059
+          ],
+          "tailHSV": [
+            0.0675,
+            0.882,
+            0.5765
+          ],
+          "sha256": "a71a9bb4d4b0a5d3bd9db444c89aba75cbc890f2f4f0e7e7f76d330be79c511e"
+        },
+        {
+          "name": "groveguard-asc-8",
+          "margin": 20,
+          "solidPixels": 9505,
+          "faceHSV": [
+            0.0745,
+            0.8095,
+            0.702
+          ],
+          "tailHSV": [
+            0.0677,
+            0.8828,
+            0.5804
+          ],
+          "sha256": "3ca033cd06173ed713e4465e8a6fbe99f465509babda4606382d152da44e0867"
+        },
+        {
+          "name": "groveguard-desc-1",
+          "margin": 55,
+          "solidPixels": 8781,
+          "faceHSV": [
+            0.0732,
+            0.8095,
+            0.7098
+          ],
+          "tailHSV": [
+            0.0676,
+            0.8733,
+            0.5922
+          ],
+          "sha256": "ab627bc4ba9a8c36f206712c80b515c925091d5053e193235b7a9d36b3874400"
+        },
+        {
+          "name": "groveguard-desc-2",
+          "margin": 47,
+          "solidPixels": 9162,
+          "faceHSV": [
+            0.074,
+            0.8125,
+            0.702
+          ],
+          "tailHSV": [
+            0.0677,
+            0.8702,
+            0.5922
+          ],
+          "sha256": "b63a698af782e3de994952eb0e7302447fa8303a349530175f0c6672a889ba17"
+        },
+        {
+          "name": "groveguard-desc-3",
+          "margin": 40,
+          "solidPixels": 8262,
+          "faceHSV": [
+            0.0758,
+            0.8,
+            0.7059
+          ],
+          "tailHSV": [
+            0.0684,
+            0.875,
+            0.6353
+          ],
+          "sha256": "f6ac034c3e060a8accf07f1f3ad2eacb02400a74e033654c7a007282e26623ca"
+        },
+        {
+          "name": "groveguard-desc-4",
+          "margin": 33,
+          "solidPixels": 7589,
+          "faceHSV": [
+            0.0751,
+            0.8021,
+            0.7059
+          ],
+          "tailHSV": [
+            0.0683,
+            0.871,
+            0.6431
+          ],
+          "sha256": "be7c4ee1ea629924948c218ea7d6ebae6c21a395279af49b169c00c23320334e"
+        },
+        {
+          "name": "groveguard-desc-5",
+          "margin": 47,
+          "solidPixels": 7649,
+          "faceHSV": [
+            0.0748,
+            0.8146,
+            0.702
+          ],
+          "tailHSV": [
+            0.0679,
+            0.8764,
+            0.6353
+          ],
+          "sha256": "6977c3b5b793524ba74e7cc20ad6aa7723a08f5186d0f264384b409d85a532e6"
+        },
+        {
+          "name": "groveguard-desc-6",
+          "margin": 49,
+          "solidPixels": 7881,
+          "faceHSV": [
+            0.0749,
+            0.8092,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0676,
+            0.8779,
+            0.6353
+          ],
+          "sha256": "859d9d8a202f83d605d90e7121b3f8217b55a04e2e94e12d54aa194765b46327"
+        },
+        {
+          "name": "groveguard-desc-7",
+          "margin": 51,
+          "solidPixels": 7795,
+          "faceHSV": [
+            0.0754,
+            0.8096,
+            0.6902
+          ],
+          "tailHSV": [
+            0.0677,
+            0.8737,
+            0.6392
+          ],
+          "sha256": "723dc1f9a1ab812b71421b813ce7b76da39e533d5bd00bc40b96564f41166c87"
+        },
+        {
+          "name": "groveguard-desc-8",
+          "margin": 45,
+          "solidPixels": 7839,
+          "faceHSV": [
+            0.0763,
+            0.8022,
+            0.6961
+          ],
+          "tailHSV": [
+            0.0674,
+            0.878,
+            0.6392
+          ],
+          "sha256": "8668984ca1bd9c6a4d6d6f693f8be60ab42674ebaa23b2b01175d948f4ce69f5"
+        }
+      ]
+    },
+    "cosmic": {
+      "minimumMargin": 32,
+      "faceHSVSpread": [
+        0.0031,
+        0.0245,
+        0.0274
+      ],
+      "tailHSVSpread": [
+        0.0043,
+        0.0308,
+        0.1372
+      ],
+      "frames": [
+        {
+          "name": "cosmic-asc-1",
+          "margin": 53,
+          "solidPixels": 7647,
+          "faceHSV": [
+            0.0609,
+            0.8,
+            0.7157
+          ],
+          "tailHSV": [
+            0.0546,
+            0.8405,
+            0.6
+          ],
+          "sha256": "84431b34220cd61b8b665ea2967eee240117dc107a5b075f775bf6bee2d2765a"
+        },
+        {
+          "name": "cosmic-asc-2",
+          "margin": 52,
+          "solidPixels": 7229,
+          "faceHSV": [
+            0.0597,
+            0.7843,
+            0.7098
+          ],
+          "tailHSV": [
+            0.0543,
+            0.8389,
+            0.5882
+          ],
+          "sha256": "2f79b05fd660d14df10592884cb7d8116f3375f653fe31626403dda22977d72a"
+        },
+        {
+          "name": "cosmic-asc-3",
+          "margin": 51,
+          "solidPixels": 8060,
+          "faceHSV": [
+            0.0608,
+            0.8,
+            0.7098
+          ],
+          "tailHSV": [
+            0.0532,
+            0.853,
+            0.5608
+          ],
+          "sha256": "f70c1cd3cb8b612517d3a4cc1da87b0719262037f078e45364650b8fbadd76be"
+        },
+        {
+          "name": "cosmic-asc-4",
+          "margin": 32,
+          "solidPixels": 7771,
+          "faceHSV": [
+            0.0606,
+            0.7976,
+            0.702
+          ],
+          "tailHSV": [
+            0.0516,
+            0.8676,
+            0.4863
+          ],
+          "sha256": "eb2a9f3ccb9244b0aecc37d747c3d814c08c41c71032af1bbcf3d985d6e7909d"
+        },
+        {
+          "name": "cosmic-asc-5",
+          "margin": 54,
+          "solidPixels": 8025,
+          "faceHSV": [
+            0.06,
+            0.7984,
+            0.7098
+          ],
+          "tailHSV": [
+            0.053,
+            0.8525,
+            0.5529
+          ],
+          "sha256": "97e096122794f290604723d41344d62df6c1a4b357df028518e2806a9e490f39"
+        },
+        {
+          "name": "cosmic-asc-6",
+          "margin": 51,
+          "solidPixels": 7986,
+          "faceHSV": [
+            0.0601,
+            0.8,
+            0.7098
+          ],
+          "tailHSV": [
+            0.051,
+            0.8614,
+            0.5333
+          ],
+          "sha256": "94bf5e9b2462f42c9fc87d6cbb966245282c60bfb46365b431f4df4a010b7cd8"
+        },
+        {
+          "name": "cosmic-asc-7",
+          "margin": 45,
+          "solidPixels": 8449,
+          "faceHSV": [
+            0.0609,
+            0.8,
+            0.7059
+          ],
+          "tailHSV": [
+            0.0516,
+            0.8639,
+            0.502
+          ],
+          "sha256": "44e58d38f9b139c3fb35a9e163b13c95027703b1d450b7bc14f0645b9f5de18f"
+        },
+        {
+          "name": "cosmic-asc-8",
+          "margin": 44,
+          "solidPixels": 7906,
+          "faceHSV": [
+            0.0607,
+            0.801,
+            0.7098
+          ],
+          "tailHSV": [
+            0.0508,
+            0.8686,
+            0.4922
+          ],
+          "sha256": "6671c008b4f5d0c5d6e667e41feade58933bf495046ac73bf7024f0b347295de"
+        },
+        {
+          "name": "cosmic-desc-1",
+          "margin": 53,
+          "solidPixels": 7647,
+          "faceHSV": [
+            0.0609,
+            0.8,
+            0.7157
+          ],
+          "tailHSV": [
+            0.0546,
+            0.8405,
+            0.6
+          ],
+          "sha256": "84431b34220cd61b8b665ea2967eee240117dc107a5b075f775bf6bee2d2765a"
+        },
+        {
+          "name": "cosmic-desc-2",
+          "margin": 53,
+          "solidPixels": 7166,
+          "faceHSV": [
+            0.0605,
+            0.7908,
+            0.7137
+          ],
+          "tailHSV": [
+            0.0541,
+            0.8494,
+            0.6078
+          ],
+          "sha256": "a5684b703955dadbb7d1e2e0beb3818c3418774c495ff9d930d086dca90b0341"
+        },
+        {
+          "name": "cosmic-desc-3",
+          "margin": 50,
+          "solidPixels": 6989,
+          "faceHSV": [
+            0.0618,
+            0.8009,
+            0.7294
+          ],
+          "tailHSV": [
+            0.0541,
+            0.8395,
+            0.6157
+          ],
+          "sha256": "efe94234d4e8482b5da0d1599a2e9571971f5195e75cf24665818670ee776dc0"
+        },
+        {
+          "name": "cosmic-desc-4",
+          "margin": 48,
+          "solidPixels": 7036,
+          "faceHSV": [
+            0.0614,
+            0.8041,
+            0.7176
+          ],
+          "tailHSV": [
+            0.054,
+            0.8415,
+            0.6157
+          ],
+          "sha256": "4dabc69bb77dc2a3d5dff57bc8c707f60e75b7211e5ec65cf4e04f5e12e5bbfc"
+        },
+        {
+          "name": "cosmic-desc-5",
+          "margin": 50,
+          "solidPixels": 6758,
+          "faceHSV": [
+            0.0622,
+            0.8054,
+            0.7176
+          ],
+          "tailHSV": [
+            0.0551,
+            0.8378,
+            0.6235
+          ],
+          "sha256": "15a2b26674623051845cd7b6c43d5bc2609e9b4896c53d83565f6730d0010c5a"
+        },
+        {
+          "name": "cosmic-desc-6",
+          "margin": 52,
+          "solidPixels": 6558,
+          "faceHSV": [
+            0.0618,
+            0.8052,
+            0.7255
+          ],
+          "tailHSV": [
+            0.0545,
+            0.842,
+            0.6078
+          ],
+          "sha256": "c9ef5e285de254b09203f8b88cf6a96bcef09e7f1b1d9a752a7d024cfa95923a"
+        },
+        {
+          "name": "cosmic-desc-7",
+          "margin": 54,
+          "solidPixels": 6984,
+          "faceHSV": [
+            0.0628,
+            0.8088,
+            0.7216
+          ],
+          "tailHSV": [
+            0.0545,
+            0.8448,
+            0.6118
+          ],
+          "sha256": "2f524f87da1aebcd9716a6eefc4257e234492de7dc0e2d7525ed062088258b96"
+        },
+        {
+          "name": "cosmic-desc-8",
+          "margin": 58,
+          "solidPixels": 6608,
+          "faceHSV": [
+            0.0616,
+            0.8037,
+            0.7216
+          ],
+          "tailHSV": [
+            0.0539,
+            0.8432,
+            0.6
+          ],
+          "sha256": "548d9c0103a567252fe49ea1925e568d9b926c4c36ecd8baa15200fd72b8157e"
+        }
+      ]
+    },
+    "sunforged": {
+      "minimumMargin": 41,
+      "faceHSVSpread": [
+        0.0013,
+        0.0268,
+        0.0314
+      ],
+      "tailHSVSpread": [
+        0.0021,
+        0.0206,
+        0.0745
+      ],
+      "frames": [
+        {
+          "name": "sunforged-asc-1",
+          "margin": 56,
+          "solidPixels": 7768,
+          "faceHSV": [
+            0.0652,
+            0.7933,
+            0.698
+          ],
+          "tailHSV": [
+            0.0614,
+            0.8315,
+            0.4824
+          ],
+          "sha256": "2b9a9f5c38e4ab37b84c7a74a696d59c9510b8f0107a57a832f69db0f4f78f09"
+        },
+        {
+          "name": "sunforged-asc-2",
+          "margin": 59,
+          "solidPixels": 7334,
+          "faceHSV": [
+            0.0651,
+            0.7857,
+            0.698
+          ],
+          "tailHSV": [
+            0.0605,
+            0.8362,
+            0.4941
+          ],
+          "sha256": "ecdaf31482ed29c780950f8a4af97298a43e4252036ccc9b3c66d3a2435d52b4"
+        },
+        {
+          "name": "sunforged-asc-3",
+          "margin": 58,
+          "solidPixels": 7536,
+          "faceHSV": [
+            0.0654,
+            0.7929,
+            0.698
+          ],
+          "tailHSV": [
+            0.0608,
+            0.8302,
+            0.4627
+          ],
+          "sha256": "ab4f8215aad0b1db6907eeb062e448deae98f52a5784209a098a8ee5a17279f1"
+        },
+        {
+          "name": "sunforged-asc-4",
+          "margin": 50,
+          "solidPixels": 7851,
+          "faceHSV": [
+            0.065,
+            0.7941,
+            0.702
+          ],
+          "tailHSV": [
+            0.0617,
+            0.8245,
+            0.4667
+          ],
+          "sha256": "9ae4e7d0ba0f905b4ef5f9956b4cdf21c506e929b89444eb0ffedd00b311da3c"
+        },
+        {
+          "name": "sunforged-asc-5",
+          "margin": 49,
+          "solidPixels": 7838,
+          "faceHSV": [
+            0.0648,
+            0.7981,
+            0.698
+          ],
+          "tailHSV": [
+            0.0619,
+            0.8205,
+            0.4588
+          ],
+          "sha256": "ef9ae20697ae0e14798e28f94b5f2f95379164a59564b9eb9c864fab33c5988b"
+        },
+        {
+          "name": "sunforged-asc-6",
+          "margin": 56,
+          "solidPixels": 7260,
+          "faceHSV": [
+            0.0647,
+            0.7892,
+            0.6941
+          ],
+          "tailHSV": [
+            0.0621,
+            0.8195,
+            0.4627
+          ],
+          "sha256": "043e936a2822050eb1e7111c04741d35327ab1753696188e38ad4404260f95d3"
+        },
+        {
+          "name": "sunforged-asc-7",
+          "margin": 53,
+          "solidPixels": 7035,
+          "faceHSV": [
+            0.0647,
+            0.7986,
+            0.702
+          ],
+          "tailHSV": [
+            0.062,
+            0.8156,
+            0.4588
+          ],
+          "sha256": "d5007d40f81e0ad94aa70d64ff79c6b20e0a2e3ff0c795d3faa71a4a90d9f857"
+        },
+        {
+          "name": "sunforged-asc-8",
+          "margin": 49,
+          "solidPixels": 7142,
+          "faceHSV": [
+            0.065,
+            0.7968,
+            0.6941
+          ],
+          "tailHSV": [
+            0.0622,
+            0.8235,
+            0.4627
+          ],
+          "sha256": "70a7423c6a0b55f6a716176b17b5f0da672de117e0a5c543ecc0b3ae841cc879"
+        },
+        {
+          "name": "sunforged-desc-1",
+          "margin": 56,
+          "solidPixels": 7768,
+          "faceHSV": [
+            0.0652,
+            0.7933,
+            0.698
+          ],
+          "tailHSV": [
+            0.0614,
+            0.8315,
+            0.4824
+          ],
+          "sha256": "2b9a9f5c38e4ab37b84c7a74a696d59c9510b8f0107a57a832f69db0f4f78f09"
+        },
+        {
+          "name": "sunforged-desc-2",
+          "margin": 53,
+          "solidPixels": 7460,
+          "faceHSV": [
+            0.0648,
+            0.7932,
+            0.698
+          ],
+          "tailHSV": [
+            0.0611,
+            0.8304,
+            0.4784
+          ],
+          "sha256": "d2477b9353a687823792bcf5e99a0085dab29e0c115469dca5e16b445583fe0e"
+        },
+        {
+          "name": "sunforged-desc-3",
+          "margin": 51,
+          "solidPixels": 6658,
+          "faceHSV": [
+            0.0658,
+            0.7988,
+            0.6941
+          ],
+          "tailHSV": [
+            0.0612,
+            0.8225,
+            0.4902
+          ],
+          "sha256": "271fc9eb091959f1536997cd92c55d34aae1c41073552b767dc153754b9675c8"
+        },
+        {
+          "name": "sunforged-desc-4",
+          "margin": 49,
+          "solidPixels": 6769,
+          "faceHSV": [
+            0.065,
+            0.8012,
+            0.7059
+          ],
+          "tailHSV": [
+            0.0624,
+            0.8175,
+            0.5059
+          ],
+          "sha256": "592098e69caf3b6b4da2f9487f245dab6ebb1c53dab786339ab8d746ba0e8ebb"
+        },
+        {
+          "name": "sunforged-desc-5",
+          "margin": 41,
+          "solidPixels": 7004,
+          "faceHSV": [
+            0.0654,
+            0.7988,
+            0.6941
+          ],
+          "tailHSV": [
+            0.0625,
+            0.8182,
+            0.5137
+          ],
+          "sha256": "83ea063e3a75f5fc4cf09057076439a4bcb2010600ba41d5f56f2f19c15f4f7a"
+        },
+        {
+          "name": "sunforged-desc-6",
+          "margin": 41,
+          "solidPixels": 6556,
+          "faceHSV": [
+            0.0652,
+            0.8083,
+            0.6784
+          ],
+          "tailHSV": [
+            0.0625,
+            0.8177,
+            0.5216
+          ],
+          "sha256": "66baabe9115c74461aa4428de072ba127682878f0738679acc2df26821c720d6"
+        },
+        {
+          "name": "sunforged-desc-7",
+          "margin": 44,
+          "solidPixels": 6336,
+          "faceHSV": [
+            0.0645,
+            0.8125,
+            0.6745
+          ],
+          "tailHSV": [
+            0.0626,
+            0.8204,
+            0.5255
+          ],
+          "sha256": "63868ae5d603fcbb442494befe1eff9f4a96306ca195c9d21ff0f013064d6bad"
+        },
+        {
+          "name": "sunforged-desc-8",
+          "margin": 42,
+          "solidPixels": 6705,
+          "faceHSV": [
+            0.0652,
+            0.8071,
+            0.6863
+          ],
+          "tailHSV": [
+            0.0626,
+            0.8182,
+            0.5333
+          ],
+          "sha256": "c874be9c5109dca5c46c84267eb0174ec218cfd43b19dcfc908e628f625ac397"
+        }
+      ]
+    },
+    "abyssal": {
+      "minimumMargin": 36,
+      "faceHSVSpread": [
+        0.0023,
+        0.0125,
+        0.0353
+      ],
+      "tailHSVSpread": [
+        0.0043,
+        0.0274,
+        0.1529
+      ],
+      "frames": [
+        {
+          "name": "abyssal-asc-1",
+          "margin": 52,
+          "solidPixels": 8546,
+          "faceHSV": [
+            0.0632,
+            0.8398,
+            0.749
+          ],
+          "tailHSV": [
+            0.0587,
+            0.8855,
+            0.6431
+          ],
+          "sha256": "455463c7c2585051b73907c5c208841be7c780f0d42520a76850ab37e17ffaa1"
+        },
+        {
+          "name": "abyssal-asc-2",
+          "margin": 51,
+          "solidPixels": 8413,
+          "faceHSV": [
+            0.064,
+            0.8356,
+            0.7451
+          ],
+          "tailHSV": [
+            0.0581,
+            0.8889,
+            0.6373
+          ],
+          "sha256": "d19e3005cd6fcd99ba40cc556e5edde2a31f897d67f1fb062a96f6fa7e63be76"
+        },
+        {
+          "name": "abyssal-asc-3",
+          "margin": 46,
+          "solidPixels": 8367,
+          "faceHSV": [
+            0.064,
+            0.8371,
+            0.7373
+          ],
+          "tailHSV": [
+            0.0588,
+            0.883,
+            0.6392
+          ],
+          "sha256": "66d7228bd2a909b89bcf33b0b973a8fdaeb3fdb6e0edc1a936af13a649725f0b"
+        },
+        {
+          "name": "abyssal-asc-4",
+          "margin": 53,
+          "solidPixels": 9804,
+          "faceHSV": [
+            0.065,
+            0.8389,
+            0.7569
+          ],
+          "tailHSV": [
+            0.0595,
+            0.883,
+            0.6471
+          ],
+          "sha256": "22800e4048e2bf70e4b7ad901eb6857dde0d16ded76f0b86e6e92e1ba43bf305"
+        },
+        {
+          "name": "abyssal-asc-5",
+          "margin": 51,
+          "solidPixels": 8769,
+          "faceHSV": [
+            0.0643,
+            0.836,
+            0.749
+          ],
+          "tailHSV": [
+            0.0586,
+            0.8846,
+            0.6392
+          ],
+          "sha256": "5889bc22cd2573aa3f210c1d5328feaf70dd9931abdb6cc96d90ed84f142113a"
+        },
+        {
+          "name": "abyssal-asc-6",
+          "margin": 51,
+          "solidPixels": 8696,
+          "faceHSV": [
+            0.0635,
+            0.8382,
+            0.7294
+          ],
+          "tailHSV": [
+            0.0578,
+            0.8921,
+            0.6235
+          ],
+          "sha256": "9bf9e9d7ca707079b89e6dd1d947840357e07313d18e69780b8e87a2e3908fff"
+        },
+        {
+          "name": "abyssal-asc-7",
+          "margin": 50,
+          "solidPixels": 8571,
+          "faceHSV": [
+            0.0634,
+            0.8367,
+            0.7255
+          ],
+          "tailHSV": [
+            0.0571,
+            0.903,
+            0.5863
+          ],
+          "sha256": "c2d02c2bee48446763b5e40a1fd47baed9173f229448b6c54c7511707252f973"
+        },
+        {
+          "name": "abyssal-asc-8",
+          "margin": 36,
+          "solidPixels": 9496,
+          "faceHSV": [
+            0.0639,
+            0.8458,
+            0.7373
+          ],
+          "tailHSV": [
+            0.0556,
+            0.9104,
+            0.5216
+          ],
+          "sha256": "5206a9471a7e2b5100e41793c08e88610a8de1d689b5bdc43a84c9e377186088"
+        },
+        {
+          "name": "abyssal-desc-1",
+          "margin": 52,
+          "solidPixels": 8546,
+          "faceHSV": [
+            0.0632,
+            0.8398,
+            0.749
+          ],
+          "tailHSV": [
+            0.0587,
+            0.8855,
+            0.6431
+          ],
+          "sha256": "455463c7c2585051b73907c5c208841be7c780f0d42520a76850ab37e17ffaa1"
+        },
+        {
+          "name": "abyssal-desc-2",
+          "margin": 49,
+          "solidPixels": 8276,
+          "faceHSV": [
+            0.0638,
+            0.8419,
+            0.7412
+          ],
+          "tailHSV": [
+            0.0586,
+            0.8892,
+            0.6549
+          ],
+          "sha256": "9766fbd9d6e9f82811a5b766ae8c526613e705e913c09dc1b6aedd73a27dfb72"
+        },
+        {
+          "name": "abyssal-desc-3",
+          "margin": 47,
+          "solidPixels": 8724,
+          "faceHSV": [
+            0.064,
+            0.8452,
+            0.7451
+          ],
+          "tailHSV": [
+            0.0595,
+            0.887,
+            0.6667
+          ],
+          "sha256": "b64701611512b27b7242957ad957c16885748c13b16ae2fa3538ed89617dd5be"
+        },
+        {
+          "name": "abyssal-desc-4",
+          "margin": 47,
+          "solidPixels": 8552,
+          "faceHSV": [
+            0.0646,
+            0.8431,
+            0.7333
+          ],
+          "tailHSV": [
+            0.0595,
+            0.886,
+            0.6745
+          ],
+          "sha256": "e5fb0b9cc05615200bdf82e07df3fb2a525e3672aaace5f6aa86c6d989f41894"
+        },
+        {
+          "name": "abyssal-desc-5",
+          "margin": 49,
+          "solidPixels": 7505,
+          "faceHSV": [
+            0.0636,
+            0.8406,
+            0.7294
+          ],
+          "tailHSV": [
+            0.0593,
+            0.884,
+            0.6686
+          ],
+          "sha256": "cd7ca3d9bb13947a4a2307d07dc76562b39bd969984162193b49e1f14864b469"
+        },
+        {
+          "name": "abyssal-desc-6",
+          "margin": 50,
+          "solidPixels": 7103,
+          "faceHSV": [
+            0.0655,
+            0.8333,
+            0.7333
+          ],
+          "tailHSV": [
+            0.0591,
+            0.8852,
+            0.6745
+          ],
+          "sha256": "002ab74511f1db2911a8c063481b543d02166f223cfa847a3ec01a6429708244"
+        },
+        {
+          "name": "abyssal-desc-7",
+          "margin": 48,
+          "solidPixels": 6982,
+          "faceHSV": [
+            0.0647,
+            0.8409,
+            0.7255
+          ],
+          "tailHSV": [
+            0.059,
+            0.8869,
+            0.6667
+          ],
+          "sha256": "2056d6d6ea5239c6891275884c20d065c507850dd96a147b8e24b8afd94f091b"
+        },
+        {
+          "name": "abyssal-desc-8",
+          "margin": 44,
+          "solidPixels": 7145,
+          "faceHSV": [
+            0.0649,
+            0.8454,
+            0.7216
+          ],
+          "tailHSV": [
+            0.0599,
+            0.8863,
+            0.6706
+          ],
+          "sha256": "81cedeeb52aa2e4e2553bd0f3a87fc72efa3856840bed22ee14734227df473bd"
+        }
+      ]
+    }
+  },
+  "problems": []
+}

@@ -4,20 +4,10 @@
 type CollarOpening = readonly [number, number, number, number, number, number,
   number, number, number, number, number, number, number, number];
 
-const BUBBLE_COLLAR: CollarOpening = [
-  62, 158, 135, 166, 222, 203, 184, 221, 130, 221, 82, 190, 62, 175,
-];
-
 export const HELMET_COLLAR_OPENINGS: Readonly<Record<string, CollarOpening>> = {
-  clear: BUBBLE_COLLAR,
-  aurora: BUBBLE_COLLAR,
-  cherry: BUBBLE_COLLAR,
-  chrono: BUBBLE_COLLAR,
-  comet: BUBBLE_COLLAR,
-  ion: BUBBLE_COLLAR,
-  lunar: BUBBLE_COLLAR,
-  meteor: BUBBLE_COLLAR,
-  solar: BUBBLE_COLLAR,
+  // Clear and the eight bubble variants now have painted continuous glass.
+  // Their rear arcs are absent from the PNGs; cutting them again creates a
+  // bright slit or an open wedge over the muzzle. Keep normal visor tinting.
   sammie: [68, 138, 133, 142, 213, 176, 174, 194, 125, 195, 84, 175, 68, 153],
   princess: [133, 130, 177, 136, 229, 157, 208, 175, 178, 176, 146, 156, 133, 143],
   chronarch: [65, 159, 139, 168, 217, 199, 187, 224, 139, 225, 86, 194, 65, 178],

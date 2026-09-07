@@ -1,0 +1,1772 @@
+{
+  "cinderforge": [
+    {
+      "name": "cinderforge-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        236,
+        158,
+        51
+      ],
+      "sourcePelvis": [
+        160,
+        230
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 13.451842301022035,
+      "helmetRotation": 13.451842301022035,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        224.22,
+        160.38,
+        48.45
+      ],
+      "sourcePelvis": [
+        153,
+        223
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 7.323466600170731,
+      "helmetRotation": 12.32346660017073,
+      "pitch": -34,
+      "head": [
+        175.89,
+        101.65,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        212.71,
+        156.63,
+        48.45
+      ],
+      "sourcePelvis": [
+        148,
+        210
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 1.5143325177562625,
+      "helmetRotation": 16.514332517756262,
+      "pitch": -38,
+      "head": [
+        173.22,
+        97.98,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        197.4,
+        142.02,
+        51
+      ],
+      "sourcePelvis": [
+        139,
+        210
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 7.334909339978018,
+      "helmetRotation": 17.33490933997802,
+      "pitch": -42,
+      "head": [
+        170.3,
+        94.51,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        229.22,
+        134.38,
+        48.45
+      ],
+      "sourcePelvis": [
+        147,
+        210
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -3.3943992782290917,
+      "helmetRotation": 1.6056007217709083,
+      "pitch": -46,
+      "head": [
+        167.15,
+        91.24,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        222.93,
+        119.47,
+        48.45
+      ],
+      "sourcePelvis": [
+        149,
+        206
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -0.5101054875774697,
+      "helmetRotation": 9.48989451242253,
+      "pitch": -50,
+      "head": [
+        163.78,
+        88.21,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        212.6,
+        102.35,
+        48.45
+      ],
+      "sourcePelvis": [
+        150,
+        206
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 4.869886952178122,
+      "helmetRotation": 4.869886952178122,
+      "pitch": -54,
+      "head": [
+        160.21,
+        85.41,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        192.22,
+        88.38,
+        48.45
+      ],
+      "sourcePelvis": [
+        154,
+        195
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 12.27880039933125,
+      "helmetRotation": 17.27880039933125,
+      "pitch": -58,
+      "head": [
+        156.44,
+        82.88,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        236,
+        158,
+        51
+      ],
+      "sourcePelvis": [
+        160,
+        230
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 13.451842301022035,
+      "helmetRotation": 13.451842301022035,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        237.4,
+        151.02,
+        51
+      ],
+      "sourcePelvis": [
+        155,
+        184
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 0.8133970540723374,
+      "helmetRotation": 10.813397054072338,
+      "pitch": -21,
+      "head": [
+        182.68,
+        114.71,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        219.93,
+        168.47,
+        48.45
+      ],
+      "sourcePelvis": [
+        157,
+        175
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -6.075842908965342,
+      "helmetRotation": 3.924157091034658,
+      "pitch": -12,
+      "head": [
+        185.58,
+        124.49,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        210.22,
+        184.13,
+        51
+      ],
+      "sourcePelvis": [
+        157,
+        180
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": -7.437397020504665,
+      "helmetRotation": 7.562602979495335,
+      "pitch": -3,
+      "head": [
+        186.91,
+        134.6,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        245.45,
+        161.54,
+        48.45
+      ],
+      "sourcePelvis": [
+        160,
+        163
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 6.9788613142287845,
+      "helmetRotation": 36.97886131422879,
+      "pitch": 6,
+      "head": [
+        186.64,
+        144.79,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        227.11,
+        173.94,
+        51
+      ],
+      "sourcePelvis": [
+        151,
+        162
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 6.08420866407384,
+      "helmetRotation": 36.08420866407384,
+      "pitch": 15,
+      "head": [
+        184.79,
+        154.82,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        216.94,
+        179.64,
+        52.27
+      ],
+      "sourcePelvis": [
+        149,
+        164
+      ],
+      "scale": 0.5892481346852878,
+      "rotation": 11.036182751159966,
+      "helmetRotation": 41.03618275115997,
+      "pitch": 24,
+      "head": [
+        181.38,
+        164.44,
+        30.8
+      ]
+    },
+    {
+      "name": "cinderforge-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        195.94,
+        178.64,
+        52.27
+      ],
+      "sourcePelvis": [
+        145,
+        161
+      ],
+      "scale": 0.5892481346852878,
+      "rotation": 13.899554628248408,
+      "helmetRotation": 43.89955462824841,
+      "pitch": 33,
+      "head": [
+        176.51,
+        173.4,
+        30.8
+      ]
+    }
+  ],
+  "groveguard": [
+    {
+      "name": "groveguard-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        238,
+        147,
+        51
+      ],
+      "sourcePelvis": [
+        157,
+        235
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 17.37184218978922,
+      "helmetRotation": 17.37184218978922,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        210.24,
+        152.83,
+        51
+      ],
+      "sourcePelvis": [
+        150,
+        240
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 21.35306687980338,
+      "helmetRotation": 31.35306687980338,
+      "pitch": -34,
+      "head": [
+        175.89,
+        101.65,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        220.53,
+        134.16,
+        51
+      ],
+      "sourcePelvis": [
+        144,
+        220
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 10.281642449823782,
+      "helmetRotation": 5.2816424498237815,
+      "pitch": -38,
+      "head": [
+        173.22,
+        97.98,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        219.57,
+        109.89,
+        51
+      ],
+      "sourcePelvis": [
+        155,
+        187
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 8.058029746318098,
+      "helmetRotation": 13.058029746318098,
+      "pitch": -42,
+      "head": [
+        170.3,
+        94.51,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        236,
+        118,
+        51
+      ],
+      "sourcePelvis": [
+        143,
+        212
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": -0.6936083777292829,
+      "helmetRotation": -0.6936083777292829,
+      "pitch": -46,
+      "head": [
+        167.15,
+        91.24,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        238.57,
+        123.89,
+        51
+      ],
+      "sourcePelvis": [
+        147,
+        191
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": -13.76298395738674,
+      "helmetRotation": -8.76298395738674,
+      "pitch": -50,
+      "head": [
+        163.78,
+        88.21,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        237.19,
+        132.25,
+        48.45
+      ],
+      "sourcePelvis": [
+        149,
+        176
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -27.614542510236415,
+      "helmetRotation": -22.614542510236415,
+      "pitch": -54,
+      "head": [
+        160.21,
+        85.41,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        225.19,
+        111.25,
+        48.45
+      ],
+      "sourcePelvis": [
+        151,
+        171
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -19.15326134721545,
+      "helmetRotation": -14.153261347215452,
+      "pitch": -58,
+      "head": [
+        156.44,
+        82.88,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        238,
+        147,
+        51
+      ],
+      "sourcePelvis": [
+        157,
+        235
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 17.37184218978922,
+      "helmetRotation": 17.37184218978922,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        224.65,
+        127.3,
+        48.45
+      ],
+      "sourcePelvis": [
+        151,
+        168
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": 7.925641691996517,
+      "helmetRotation": 7.925641691996517,
+      "pitch": -21,
+      "head": [
+        182.68,
+        114.71,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        223.55,
+        161.3,
+        48.45
+      ],
+      "sourcePelvis": [
+        148,
+        147
+      ],
+      "scale": 0.6357069143446852,
+      "rotation": -22.718070075871797,
+      "helmetRotation": -7.718070075871797,
+      "pitch": -12,
+      "head": [
+        185.58,
+        124.49,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        226.75,
+        174.07,
+        51
+      ],
+      "sourcePelvis": [
+        142,
+        135
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": -27.749841012850492,
+      "helmetRotation": -2.749841012850492,
+      "pitch": -3,
+      "head": [
+        186.91,
+        134.6,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        256.75,
+        142.07,
+        51
+      ],
+      "sourcePelvis": [
+        144,
+        130
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": -0.11030009516602483,
+      "helmetRotation": 24.889699904833975,
+      "pitch": 6,
+      "head": [
+        186.64,
+        144.79,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        233.75,
+        149.07,
+        51
+      ],
+      "sourcePelvis": [
+        141,
+        131
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 3.9754619337947874,
+      "helmetRotation": 28.975461933794787,
+      "pitch": 15,
+      "head": [
+        184.79,
+        154.82,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        223.75,
+        156.07,
+        51
+      ],
+      "sourcePelvis": [
+        147,
+        137
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 10.046343086253337,
+      "helmetRotation": 35.04634308625334,
+      "pitch": 24,
+      "head": [
+        181.38,
+        164.44,
+        30.8
+      ]
+    },
+    {
+      "name": "groveguard-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        212.74,
+        152.3,
+        51
+      ],
+      "sourcePelvis": [
+        142,
+        135
+      ],
+      "scale": 0.6039215686274509,
+      "rotation": 19.25761760837244,
+      "helmetRotation": 49.25761760837244,
+      "pitch": 33,
+      "head": [
+        176.51,
+        173.4,
+        30.8
+      ]
+    }
+  ],
+  "cosmic": [
+    {
+      "name": "cosmic-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        239,
+        168,
+        50
+      ],
+      "sourcePelvis": [
+        159,
+        238
+      ],
+      "scale": 0.616,
+      "rotation": 11.18592516570965,
+      "helmetRotation": 11.18592516570965,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        239.7,
+        168.85,
+        51.25
+      ],
+      "sourcePelvis": [
+        158,
+        237
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": 5.833151945547582,
+      "helmetRotation": 5.833151945547582,
+      "pitch": -34,
+      "head": [
+        175.89,
+        101.65,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        231.57,
+        163.98,
+        50
+      ],
+      "sourcePelvis": [
+        159,
+        228
+      ],
+      "scale": 0.616,
+      "rotation": 3.4181815007992684,
+      "helmetRotation": 8.418181500799268,
+      "pitch": -38,
+      "head": [
+        173.22,
+        97.98,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        200.57,
+        146.98,
+        50
+      ],
+      "sourcePelvis": [
+        158,
+        216
+      ],
+      "scale": 0.616,
+      "rotation": 16.33463821032315,
+      "helmetRotation": 21.33463821032315,
+      "pitch": -42,
+      "head": [
+        170.3,
+        94.51,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        245.28,
+        121.8,
+        51.25
+      ],
+      "sourcePelvis": [
+        149,
+        208
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": -4.161744331477196,
+      "helmetRotation": 0.8382556685228044,
+      "pitch": -46,
+      "head": [
+        167.15,
+        91.24,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        252.28,
+        121.8,
+        51.25
+      ],
+      "sourcePelvis": [
+        151,
+        209
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": -9.272224810968225,
+      "helmetRotation": -4.2722248109682255,
+      "pitch": -50,
+      "head": [
+        163.78,
+        88.21,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        247.22,
+        114.01,
+        50
+      ],
+      "sourcePelvis": [
+        166,
+        206
+      ],
+      "scale": 0.616,
+      "rotation": -5.441994474491051,
+      "helmetRotation": 4.558005525508949,
+      "pitch": -54,
+      "head": [
+        160.21,
+        85.41,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        225.71,
+        91.88,
+        51.25
+      ],
+      "sourcePelvis": [
+        159,
+        192
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": -1.6755381894236019,
+      "helmetRotation": 13.324461810576398,
+      "pitch": -58,
+      "head": [
+        156.44,
+        82.88,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        239,
+        168,
+        50
+      ],
+      "sourcePelvis": [
+        159,
+        238
+      ],
+      "scale": 0.616,
+      "rotation": 11.18592516570965,
+      "helmetRotation": 11.18592516570965,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        242.22,
+        115.01,
+        50
+      ],
+      "sourcePelvis": [
+        165,
+        176
+      ],
+      "scale": 0.616,
+      "rotation": 17.302430395890866,
+      "helmetRotation": 27.302430395890866,
+      "pitch": -21,
+      "head": [
+        182.68,
+        114.71,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        258.45,
+        139.23,
+        51.25
+      ],
+      "sourcePelvis": [
+        163,
+        156
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": -2.035172855248711,
+      "helmetRotation": 22.96482714475129,
+      "pitch": -12,
+      "head": [
+        185.58,
+        124.49,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        230.55,
+        151.01,
+        51.25
+      ],
+      "sourcePelvis": [
+        145,
+        143
+      ],
+      "scale": 0.6009756097560975,
+      "rotation": -8.348978503981646,
+      "helmetRotation": 11.651021496018354,
+      "pitch": -3,
+      "head": [
+        186.91,
+        134.6,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        259.05,
+        128.96,
+        53.75
+      ],
+      "sourcePelvis": [
+        158,
+        117
+      ],
+      "scale": 0.5730232558139534,
+      "rotation": -0.749968880059576,
+      "helmetRotation": 29.250031119940424,
+      "pitch": 6,
+      "head": [
+        186.64,
+        144.79,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        253.87,
+        148.68,
+        55
+      ],
+      "sourcePelvis": [
+        162,
+        124
+      ],
+      "scale": 0.5599999999999999,
+      "rotation": -0.03694772388599447,
+      "helmetRotation": 29.963052276114006,
+      "pitch": 15,
+      "head": [
+        184.79,
+        154.82,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        247.05,
+        157.96,
+        53.75
+      ],
+      "sourcePelvis": [
+        163,
+        127
+      ],
+      "scale": 0.5730232558139534,
+      "rotation": 3.7786155867451567,
+      "helmetRotation": 33.778615586745154,
+      "pitch": 24,
+      "head": [
+        181.38,
+        164.44,
+        30.8
+      ]
+    },
+    {
+      "name": "cosmic-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        226.87,
+        165.68,
+        55
+      ],
+      "sourcePelvis": [
+        155,
+        126
+      ],
+      "scale": 0.5599999999999999,
+      "rotation": 4.0965610179387815,
+      "helmetRotation": 34.09656101793878,
+      "pitch": 33,
+      "head": [
+        176.51,
+        173.4,
+        30.8
+      ]
+    }
+  ],
+  "sunforged": [
+    {
+      "name": "sunforged-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        241,
+        145,
+        51
+      ],
+      "sourcePelvis": [
+        153,
+        235
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 15.643745714175386,
+      "helmetRotation": 15.643745714175386,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        228.68,
+        141.82,
+        52.27
+      ],
+      "sourcePelvis": [
+        142,
+        236
+      ],
+      "scale": 0.5624641285632294,
+      "rotation": 13.374611743540013,
+      "helmetRotation": 13.374611743540013,
+      "pitch": -34,
+      "head": [
+        175.89,
+        101.65,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        224.41,
+        139.85,
+        51
+      ],
+      "sourcePelvis": [
+        146,
+        232
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 11.605696764216582,
+      "helmetRotation": 21.60569676421658,
+      "pitch": -38,
+      "head": [
+        173.22,
+        97.98,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        220.67,
+        137.53,
+        48.45
+      ],
+      "sourcePelvis": [
+        146,
+        228
+      ],
+      "scale": 0.6068111455108358,
+      "rotation": 8.465218038704608,
+      "helmetRotation": 28.465218038704606,
+      "pitch": -42,
+      "head": [
+        170.3,
+        94.51,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        242.79,
+        108.38,
+        48.45
+      ],
+      "sourcePelvis": [
+        154,
+        207
+      ],
+      "scale": 0.6068111455108358,
+      "rotation": 2.0025177755379997,
+      "helmetRotation": 17.002517775538,
+      "pitch": -46,
+      "head": [
+        167.15,
+        91.24,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        241.79,
+        106.38,
+        48.45
+      ],
+      "sourcePelvis": [
+        151,
+        202
+      ],
+      "scale": 0.6068111455108358,
+      "rotation": -3.51576251533966,
+      "helmetRotation": 11.48423748466034,
+      "pitch": -50,
+      "head": [
+        163.78,
+        88.21,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        255.62,
+        84.75,
+        48.45
+      ],
+      "sourcePelvis": [
+        157,
+        180
+      ],
+      "scale": 0.6068111455108358,
+      "rotation": -9.995859765368044,
+      "helmetRotation": 15.004140234631956,
+      "pitch": -54,
+      "head": [
+        160.21,
+        85.41,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        250.63,
+        87.07,
+        48.45
+      ],
+      "sourcePelvis": [
+        150,
+        184
+      ],
+      "scale": 0.6068111455108358,
+      "rotation": -14.072937858348428,
+      "helmetRotation": 15.927062141651572,
+      "pitch": -58,
+      "head": [
+        156.44,
+        82.88,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        241,
+        145,
+        51
+      ],
+      "sourcePelvis": [
+        153,
+        235
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 15.643745714175386,
+      "helmetRotation": 15.643745714175386,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        242.25,
+        123.87,
+        51
+      ],
+      "sourcePelvis": [
+        153,
+        184
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 12.969153546556601,
+      "helmetRotation": 27.9691535465566,
+      "pitch": -21,
+      "head": [
+        182.68,
+        114.71,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        245.12,
+        139.62,
+        52.27
+      ],
+      "sourcePelvis": [
+        151,
+        187
+      ],
+      "scale": 0.5624641285632294,
+      "rotation": 14.720679768485196,
+      "helmetRotation": 24.720679768485198,
+      "pitch": -12,
+      "head": [
+        185.58,
+        124.49,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        242.18,
+        150.98,
+        51
+      ],
+      "sourcePelvis": [
+        148,
+        185
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 16.86089500410026,
+      "helmetRotation": 36.86089500410026,
+      "pitch": -3,
+      "head": [
+        186.91,
+        134.6,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        257.18,
+        143.16,
+        51
+      ],
+      "sourcePelvis": [
+        149,
+        165
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 17.41378439693761,
+      "helmetRotation": 42.413784396937615,
+      "pitch": 6,
+      "head": [
+        186.64,
+        144.79,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        251.05,
+        153.12,
+        52.27
+      ],
+      "sourcePelvis": [
+        150,
+        164
+      ],
+      "scale": 0.5624641285632294,
+      "rotation": 21.14533218634723,
+      "helmetRotation": 51.14533218634723,
+      "pitch": 15,
+      "head": [
+        184.79,
+        154.82,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        245.05,
+        161.12,
+        52.27
+      ],
+      "sourcePelvis": [
+        150,
+        159
+      ],
+      "scale": 0.5624641285632294,
+      "rotation": 22.722283887648185,
+      "helmetRotation": 52.72228388764819,
+      "pitch": 24,
+      "head": [
+        181.38,
+        164.44,
+        29.4
+      ]
+    },
+    {
+      "name": "sunforged-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        238.24,
+        169.44,
+        51
+      ],
+      "sourcePelvis": [
+        153,
+        162
+      ],
+      "scale": 0.5764705882352941,
+      "rotation": 28.011696298514504,
+      "helmetRotation": 58.01169629851451,
+      "pitch": 33,
+      "head": [
+        176.51,
+        173.4,
+        29.4
+      ]
+    }
+  ],
+  "abyssal": [
+    {
+      "name": "abyssal-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        246,
+        175,
+        56
+      ],
+      "sourcePelvis": [
+        142,
+        254
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 7.220862809085646,
+      "helmetRotation": 7.220862809085646,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        232,
+        154,
+        56
+      ],
+      "sourcePelvis": [
+        140,
+        235
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 7.361813422135335,
+      "helmetRotation": 7.361813422135335,
+      "pitch": -34,
+      "head": [
+        175.89,
+        101.65,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        225,
+        146,
+        56
+      ],
+      "sourcePelvis": [
+        135,
+        228
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 4.336999233932864,
+      "helmetRotation": 4.336999233932864,
+      "pitch": -38,
+      "head": [
+        173.22,
+        97.98,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        216.41,
+        129.27,
+        53.2
+      ],
+      "sourcePelvis": [
+        133,
+        212
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 2.7654934843459955,
+      "helmetRotation": 7.7654934843459955,
+      "pitch": -42,
+      "head": [
+        170.3,
+        94.51,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        245.75,
+        140.81,
+        56
+      ],
+      "sourcePelvis": [
+        130,
+        242
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": -4.839666921728615,
+      "helmetRotation": 0.16033307827138543,
+      "pitch": -46,
+      "head": [
+        167.15,
+        91.24,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        234,
+        131,
+        56
+      ],
+      "sourcePelvis": [
+        135,
+        224
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": -6.7899106082460685,
+      "helmetRotation": -6.7899106082460685,
+      "pitch": -50,
+      "head": [
+        163.78,
+        88.21,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        218,
+        138,
+        56
+      ],
+      "sourcePelvis": [
+        125,
+        223
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": -11.573359463176823,
+      "helmetRotation": -11.573359463176823,
+      "pitch": -54,
+      "head": [
+        160.21,
+        85.41,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        197.41,
+        144.27,
+        53.2
+      ],
+      "sourcePelvis": [
+        125,
+        216
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": -13.270298605744442,
+      "helmetRotation": -8.270298605744442,
+      "pitch": -58,
+      "head": [
+        156.44,
+        82.88,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        246,
+        175,
+        56
+      ],
+      "sourcePelvis": [
+        142,
+        254
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 7.220862809085646,
+      "helmetRotation": 7.220862809085646,
+      "pitch": -30,
+      "head": [
+        178.29,
+        105.5,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        238,
+        145,
+        56
+      ],
+      "sourcePelvis": [
+        143,
+        217
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 16.158296784896937,
+      "helmetRotation": 16.158296784896937,
+      "pitch": -21,
+      "head": [
+        182.68,
+        114.71,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        225.7,
+        152.4,
+        53.2
+      ],
+      "sourcePelvis": [
+        138,
+        224
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 27.22887439781031,
+      "helmetRotation": 27.22887439781031,
+      "pitch": -12,
+      "head": [
+        185.58,
+        124.49,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        213.41,
+        158.27,
+        53.2
+      ],
+      "sourcePelvis": [
+        143,
+        208
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 32.23324467233049,
+      "helmetRotation": 37.23324467233049,
+      "pitch": -3,
+      "head": [
+        186.91,
+        134.6,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        244.6,
+        113.69,
+        56
+      ],
+      "sourcePelvis": [
+        145,
+        166
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 33.708491309392315,
+      "helmetRotation": 43.708491309392315,
+      "pitch": 6,
+      "head": [
+        186.64,
+        144.79,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        230.6,
+        132.69,
+        56
+      ],
+      "sourcePelvis": [
+        136,
+        171
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 37.04638649112283,
+      "helmetRotation": 47.04638649112283,
+      "pitch": 15,
+      "head": [
+        184.79,
+        154.82,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        221.55,
+        140.65,
+        56
+      ],
+      "sourcePelvis": [
+        144,
+        173
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 46.643468279685365,
+      "helmetRotation": 61.643468279685365,
+      "pitch": 24,
+      "head": [
+        181.38,
+        164.44,
+        30.8
+      ]
+    },
+    {
+      "name": "abyssal-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        212.55,
+        153.65,
+        56
+      ],
+      "sourcePelvis": [
+        156,
+        177
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 55.436167535398525,
+      "helmetRotation": 70.43616753539852,
+      "pitch": 33,
+      "head": [
+        176.51,
+        173.4,
+        30.8
+      ]
+    }
+  ]
+}
