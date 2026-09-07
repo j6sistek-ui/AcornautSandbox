@@ -738,6 +738,19 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
   { stars: 500, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
   { stars: 500, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
+  // HIGH ORBIT (owner, 7 Sep 2026): the five former beta suits fill the
+  // gaps above 300. Cinderforge, Cosmic and Abyssal bring a helmet any
+  // suit can wear; Groveguard and Sunforged wear their own.
+  { stars: 340, kind: "suit", id: "cinderforge", name: "Cinderforge", desc: "Forge-black plate, ember trim. Earned at 340 stars." },
+  { stars: 340, kind: "helmet", id: "cinderforge", name: "Cinderforge Helmet", desc: "Ember glass. Arrives with the suit." },
+  { stars: 390, kind: "suit", id: "groveguard", name: "Groveguard", desc: "Forest green and brass, its own sealed helm. Earned at 390 stars." },
+  { stars: 390, kind: "helmet", id: "groveguard", name: "Groveguard Helm", desc: "Sealed. Worn only by Groveguard." },
+  { stars: 440, kind: "suit", id: "cosmic", name: "Cosmic", desc: "Violet nebula weave. Earned at 440 stars." },
+  { stars: 440, kind: "helmet", id: "cosmic", name: "Cosmic Helmet", desc: "Nebula glass. Arrives with the suit." },
+  { stars: 580, kind: "suit", id: "sunforged", name: "Sunforged", desc: "Bronze and solar gold, its own sealed helm. Earned at 580 stars." },
+  { stars: 580, kind: "helmet", id: "sunforged", name: "Sunforged Helm", desc: "Sealed. Worn only by Sunforged." },
+  { stars: 660, kind: "suit", id: "abyssal", name: "Abyssal", desc: "Deep-sea blue, bioluminescent trim. Earned at 660 stars." },
+  { stars: 660, kind: "helmet", id: "abyssal", name: "Abyssal Helmet", desc: "Abyss glass. Arrives with the suit." },
   // owner, 7 Sep 2026: the far end of the chart opens a second slot
   { stars: 720, kind: "mod", id: "dualpal", name: "Second Companion", desc: "Fly two pals at once, one high and one low. Their effects stack." },
 ];
