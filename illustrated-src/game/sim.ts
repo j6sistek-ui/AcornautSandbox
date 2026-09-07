@@ -379,6 +379,8 @@ export type World = {
    *  mechanic can be felt before it is written into a contract. Empty on
    *  every other run, so nothing here can touch a mission or production. */
   lab: LabFx;
+  /** MAGNETAR (owner, 7 Sep 2026): the companion turns the world over; fixed at run start */
+  palFlip: boolean;
   /** TurClock: the live scroll multiplier, and the wandering clock driving it */
   clockMul: number;
   clockPhase: number;
@@ -550,7 +552,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {},
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false,
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
@@ -752,6 +754,10 @@ export type LabFx = LevelFx & {
  *  beta free flight. One question, so the two can never disagree. */
 export function fxOf(w: World): LabFx {
   return w.lvl ? w.lvl.def.fx : w.lab;
+}
+/** the world is drawn upside down: a mission's or the lab's fx, or Magnetar */
+export function worldFlipped(w: World): boolean {
+  return !!fxOf(w).upsideDown || w.palFlip;
 }
 export function runPal(save: SaveData, w: World) {
   return w.lvl?.def.fx.pal ?? save.equippedPal;
@@ -1296,7 +1302,8 @@ export function shieldFalloff(w: World) {
 function spawnPair(w: World, save: SaveData, x: number) {
   const env = ENVS[w.envB];
   const d = difficulty(w);
-  let gap = d.gap * (fxOf(w).gapScale ?? 1);
+  // BABY ALIEN (owner, 7 Sep 2026): planetary gaps at .6
+  let gap = d.gap * (fxOf(w).gapScale ?? 1) * (palId(save, w) === "babyalien" ? 0.6 : 1);
   const margin = 72;
   let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
   const dx = Math.max(80, x - w.lastSpawnX);
@@ -1516,6 +1523,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // the pause-sheet lab rides only a beta free flight; everything else
   // flies clean so no mission and no live run can inherit a dial
   w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
+  w.palFlip = palId(save, w) === "magnetar";
   w.flight = flight;
   w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
   // A campaign level is an ordinary run wearing a finish line. It is set
