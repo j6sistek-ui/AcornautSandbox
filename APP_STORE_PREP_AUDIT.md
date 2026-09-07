@@ -1,6 +1,6 @@
 # App Store prep audit
 
-Repo audit at `956a92f` (main, 7 Sep 2026), read-only. Four passes: waste
+Repo audit at `956a92f` (main, 7 Sep 2026), read-only; §3 also notes the one commit that landed on main while it ran. Four passes: waste
 (assets and files), code and gameplay logic, UI and layout, store readiness.
 Every claim carries a `file:line`; a claim that was not confirmed by
 running something says so. Per-character variation (a suit with its own
@@ -69,6 +69,7 @@ Numbers are MiB on disk.
 | `illustrated-src/review-*.mjs` (19 files) | 0.23 | One-off evidence writers from past PRs. `review-hyper-run-r3-runtime.mjs:129-133` loads an Amethyst *suit* that never existed; `review-helmet-glass-repair.mjs` and `review-helmet-openings.mjs` import `docs/js/draw-before.js`, `draw-old.js`, `helmet-openings-old.js`, none present. |
 | `illustrated-src/ui/Acornaut.tsx` | 0.03 | React component importing `@/lib/auth/gates` and `lucide-react`. No `package.json`, no React, nothing imports it, not in the export's source list. |
 | `illustrated-src/design/**` footage | ~35 | 9 mp4 (~20 MB) and ~15 MB of PNG/JSON review traces. `star-map-260.json`, `BETA_260.md`, `free-flight-tuning.xlsx` and the `REVIEW.md`s are referenced and stay. |
+| `intro-landscape.mp4` at the repo root (PR #223, after this audit's base) | 6.4 | Raw upload, referenced by nothing. Masters live under `art-src/` (`intro-master.mov` is there); the served film is `docs/art/intro.mp4`. Move it beside `intro-master.mov`, or wire it into the landscape splash and stamp it. |
 | `.git` unreachable objects | 11.3 | `git reflog expire --expire=now --all && git gc --prune=now`. No history change. |
 
 Not waste, but worth knowing: `art-src` (316 MB) is read by the build and the gate (`export-sandbox.mjs:20-31` copies zone scenes, spill-workshop and switchback from it on every build; `verify-art.py:666,2021` reads two `registration.json`s; 23 scripts total). A build checkout cannot drop it. 17.2 MB of it is byte-identical to served files. `site-src` is live: `deploy-site.yml` publishes it to the `acornaut` repo for acornaut.io.
