@@ -22,7 +22,7 @@ const { HELMETS, SUITS, helmetWornBy, wearsOwnHead } =
   await import(pathToFileURL(join(js, "catalog.js")).href);
 
 const interchangeable = [
-  "cinderforge", "cosmic", "abyssal", "amethyst", "ivoryguard", "reactor",
+  "cinderforge", "cosmic", "abyssal",
 ];
 const exclusive = new Map([
   ["groveguard", "groveguard"],

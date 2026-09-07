@@ -913,7 +913,7 @@ export async function bootStandalone(root: HTMLElement) {
     reset.onclick = () => engine.resetLab();
     toggles.append(reset);
     panel.append(toggles);
-    panel.append(el("p", "ac-fine", "Switchback as your pal: every tap toggles the slow, like the frozen acorn."));
+    panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
     return panel;
   }
   function suitPitchDial(suitId: string) {
@@ -2145,12 +2145,16 @@ export async function bootStandalone(root: HTMLElement) {
           // except on the PURCHASED row, where it shows as a door to the
           // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
           // "arcflash is only in SHOP")
-          .filter((u) => sec.shop || !isIap(u.id) || iapOwned(s, u.id))
+          .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
           // cheapest first, so the shelf reads as a ladder rather than a
           // pile. Owned things lead (nothing left to pay), then acorn
           // prices in order, then star gates by their star price.
           .sort((a, bq) => suitRank(a) - suitRank(bq));
-        if (!items.length) continue;
+        // ONE DOOR PER ROW (owner, 7 Sep 2026): the premium suits this row
+        // sells that the pilot does not own become a single "in the store"
+        // card at the end of the row, not a card apiece.
+        const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !iapOwned(s, id));
+        if (!items.length && !inStore.length) continue;
         grid.append(el("p", "ac-shelfhead", sec.title));
         const row = el("div", "ac-shelfrow");
         // Aurora and Stardust left this shelf for the beta bench (their
@@ -2159,7 +2163,7 @@ export async function bootStandalone(root: HTMLElement) {
         // AcorNut leads the row (suitRank puts him first); the placeholder
         // sits right after him so the goal is never behind a "?" card.
         let ph: HTMLElement | null = null;
-        if (sec.title === "STANDARD" && !SUITS.some((x) => x.id === "aurorasuit")) {
+        if (sec.title === "STANDARD") {
           ph = el("div", "ac-card ac-card-soon");
           ph.append(el("span", "ac-soonmark", "?"));
           ph.append(el("p", "ac-cardname", "NEW SUITS"));
@@ -2167,18 +2171,16 @@ export async function bootStandalone(root: HTMLElement) {
           if (items[0]?.id !== "vanguard") { row.append(ph); ph = null; }
         }
         for (const u of items) {
-          // on the purchased shelf, a premium suit not yet bought is a door
-          // to the shop, not a dead locked card
-          if (sec.shop && isIap(u.id) && !iapOwned(s, u.id)) {
-            const sq = el("button", "ac-card ac-shopcard");
-            sq.append(el("span", "ac-shopglyph", "+"),
-              document.createTextNode(`${u.name}\nIN THE SHOP`));
-            sq.onclick = () => engine.open("shop");
-            row.append(sq);
-            continue;
-          }
           row.append(suitCard(u));
           if (ph && u.id === "vanguard") { row.append(ph); ph = null; }
+        }
+        if (inStore.length) {
+          const sq = el("button", "ac-card ac-shopcard");
+          sq.append(el("span", "ac-shopglyph", "+"),
+            document.createTextNode(`${inStore.length} IN THE STORE`));
+          sq.setAttribute("aria-label", `${inStore.length} suit${inStore.length === 1 ? "" : "s"} in the store`);
+          sq.onclick = () => engine.open("shop");
+          row.append(sq);
         }
         grid.append(row);
       }
@@ -2327,17 +2329,9 @@ export async function bootStandalone(root: HTMLElement) {
           grid.append(specs);
         }
       }
-      grid.append(el("p", "ac-shelfhead", `UTILITY BUILD · ${previewShip.utilities.length}/2 SLOTS`));
-      const modules = el("div", "ac-spilloptions");
-      for (const id of SPILL_UTILITY_IDS) {
-        const u = SPILL_UTILITIES[id], fitted = previewShip.utilities.includes(id);
-        const b = el("button", `ac-spilloption${fitted ? " selected" : ""}`); b.dataset.shipUtility = id;
-        b.disabled = !fitted && previewShip.utilities.length >= 2;
-        b.append(spillModuleIcon(id), el("b", "", u.name), el("span", "", u.desc),
-          el("strong", "", fitted ? "PREVIEW FITTED · REMOVE" : `PREVIEW · ${u.price} COINS AT DEPOT`));
-        b.onclick = () => { shipPlan = { ...shipPick, utilities: fitted ? previewShip.utilities.filter(x => x !== id) : [...previewShip.utilities, id] }; render(); }; modules.append(b);
-      }
-      grid.append(modules, el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 coins · Extra life: 150 coins, once per run."));
+      // The utility shelf that sat here duplicated the Starting utility picker
+      // above (owner, 7 Sep 2026); the plan previews the starter you chose.
+      grid.append(el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 coins · Extra life: 150 coins, once per run."));
 
     }
     scroll.append(grid);

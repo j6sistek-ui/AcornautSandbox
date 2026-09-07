@@ -81,7 +81,7 @@ for (const hp of [-1, -0.5, 0.5, 1]) {
   // THE ALIENS ARE THE DECLARED EXCEPTION (owner, 1 Sep 2026): both fly
   // full painted banks with "dive and pitch at 0 for both - the animation
   // does the work". Everything else stays on the one calibrated lean.
-  const ZERO_LEAN = new Set(["alien", "alien2"]);
+  const ZERO_LEAN = new Set(["alien"]);
   for (const id of ZERO_LEAN) {
     const l = SUIT_LEAN[id];
     ok(!!l && l.up === 0 && l.down === 0,

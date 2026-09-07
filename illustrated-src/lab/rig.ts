@@ -111,7 +111,7 @@ function load(file: string, ver: string): Promise<Loaded | null> {
 const punched = new Map<string, HTMLCanvasElement>();
 const LIGHT_OPAQUE_VISORS = new Set([
   "gemmie", "phoenix", "sammie", "seraph",
-  "chronarch", "paladin", "princess",
+  "chronarch", "princess",
 ]);
 function punch(rec: Loaded, id: string, g: Glass, opaque = false) {
   const memo = `${id}:${g[2].toFixed(2)}:${g[0].toFixed(1)}:${g[1].toFixed(1)}`;

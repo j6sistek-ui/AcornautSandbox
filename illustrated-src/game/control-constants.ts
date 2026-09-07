@@ -110,9 +110,7 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   copper:      { up: 0.8, down: 0.3 },
   frost:       { up: 0.8, down: 0.3 },
   voidsuit:    { up: 0.8, down: 0.3 },
-  aurorasuit:  { up: 0.8, down: 0.3 },
   ember:       { up: 0.8, down: 0.3 },
-  stardust:    { up: 0.8, down: 0.3 },
   ghost:       { up: 0.8, down: 0.3 },
   gemmie:      { up: 0.8, down: 0.3 },
   sammie:      { up: 0.8, down: 0.3 },
@@ -125,9 +123,6 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   cosmic:      { up: 0.8, down: 0.3 },
   sunforged:   { up: 0.8, down: 0.3 },
   abyssal:     { up: 0.8, down: 0.3 },
-  amethyst:    { up: 0.8, down: 0.3 },
-  ivoryguard:  { up: 0.8, down: 0.3 },
-  reactor:     { up: 0.8, down: 0.3 },
 
   // --- custom ANIMATION suits. Their frames are the owner's and are not to
   //     be touched; their LEAN is a dial like everyone else's.
@@ -148,7 +143,6 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   // both aliens fly with NO lean: the owner zeroed climb and dive -
   // "the animation does the work", the painted attitudes are the pitch
   alien:       { up: 0, down: 0 },
-  alien2:      { up: 0, down: 0 },
 };
 
 /** The dial for a suit, or the default for one that has none yet. */

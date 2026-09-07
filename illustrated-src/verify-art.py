@@ -65,9 +65,7 @@ BASE_SUIT_IDS = (
     "copper",
     "frost",
     "voidsuit",
-    "aurorasuit",
     "ember",
-    "stardust",
     "robo",
     "ghost",
     "bigbooty",
@@ -83,9 +81,7 @@ CALIBRATED_HELMET_SCALES = {
     "copper": 0.2538,     # 50 / 197
     "frost": 0.2308,      # 39 / 169
     "voidsuit": 0.2312,   # 46 / 199
-    "aurorasuit": 0.2171,
     "ember": 0.2367,      # 40 / 169
-    "stardust": 0.2222,
     "robo": 0.2275,       # 43 / 189
     "ghost": 0.2178,      # 49 / 225
     "bigbooty": 0.1872,
@@ -1272,11 +1268,8 @@ CUSTOM_FLIGHT_SUITS = {
                   # Bank-only - the spiral master has no neck to cut, so
                   # the suit carries no rig layers and zero lean ("the
                   # animation does the work").
-    "alien2",     # the RETIRED custom-posed character, kept on the beta
                   # shelf as "Alien 1". Runs 7/7 by the owner's frame cuts
                   # (the black desc swirl and the bled-over spiral asc).
-    "stardust",   # owner-delivered 1 Sep 2026: sweep deliveries #6-#8, one
-    "aurorasuit", # batch - same 8/8 ramps, tap banks retired with them,
     "ember",      # pose rotations seeded from measured tilt.
     "cryostar",   # owner-delivered 1 Sep 2026: sweep deliveries #9-#11,
     "verdant",    # same batch treatment as #6-#8.
