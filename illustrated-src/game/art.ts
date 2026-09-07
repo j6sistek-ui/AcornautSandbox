@@ -551,7 +551,7 @@ export function prefetchArtBanks(bank: ArtBank) {
 export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = []): Promise<ArtBank> {
   const base = artBase();
   const palIds = [
-    "magnetar", "babyalien", "satellite", "astrafox",
+    "magnetar", "babyalien", "satellite", "astrafox", "spacepuppy",
     "switchback",
     "bee",
     "buddy",

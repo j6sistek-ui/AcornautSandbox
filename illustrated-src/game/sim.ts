@@ -383,6 +383,9 @@ export type World = {
   palFlip: boolean;
   /** the equipped companion's level-style modifiers (PAL_FX), fixed at run start */
   palFx: LabFx | null;
+  /** SPACE PUPPY (owner, 7 Sep 2026): the run is a bounce house - no debris,
+   *  no pickups, no gate count, giant planets, a floor that bounces */
+  bounceHouse: boolean;
   /** TurClock: the live scroll multiplier, and the wandering clock driving it */
   clockMul: number;
   clockPhase: number;
@@ -556,7 +559,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null,
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, bounceHouse: false,
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
@@ -1009,6 +1012,8 @@ function sealReach(w: World) {
 function sealBlockers(w: World, env: (typeof ENVS)[number], gapY: number, gap: number) {
   const r = PHYS.planetR;
   const blockers: PlanetCol["blockers"] = [];
+  // a bounce house has nothing sharp in it
+  if (w.bounceHouse) return blockers;
   // A short landscape field leaves only a thin band between each planet
   // and the screen edge — the portrait spacing (26px of air, 30px step,
   // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
@@ -1394,7 +1399,11 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const diveAmt = Math.max(60, 520 * dtGate - vMargin);
   gapY = Math.max(w.lastGapY - climb, Math.min(w.lastGapY + diveAmt, gapY));
   gapY = Math.max(margin + gap / 2, Math.min(w.H - margin - gap / 2, gapY));
-  const r = PHYS.planetR;
+  // BOUNCE HOUSE PLANETS (owner): each gate rolls its own size, up to 2.5x,
+  // and never more than a third of the screen tall
+  const r = w.bounceHouse
+    ? Math.min(w.H / 6, PHYS.planetR * (1 + (w.missionRng ?? Math.random)() * 1.5))
+    : PHYS.planetR;
   const topY = gapY - gap / 2 - r;
   const botY = gapY + gap / 2 + r;
   const blockers = sealBlockers(w, env, gapY, gap);
@@ -1443,7 +1452,8 @@ function spawnPair(w: World, save: SaveData, x: number) {
   });
 
   const bee = hasPal(save, w, "bee");
-  const noPick = bee || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
+  // Space Puppy's bounce house spawns nothing to collect either
+  const noPick = bee || w.bounceHouse || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
   // A collection star must never be lost to the spawn dice: a level with
   // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
   // achievable inside the level's own gate count with room to miss a few.
@@ -1491,7 +1501,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
     (w.flight === "arcade" ? 2 : 1) *
     (w.flight === "fly" ? 0.5 : 1);
   const noShield = hasPal(save, w, "nutsack") || hasPal(save, w, "tinbot");
-  const noHoles = hasPal(save, w, "tinbot");
+  const noHoles = hasPal(save, w, "tinbot") || w.bounceHouse;
   if (!noPick) {
     // The three power-ups roll ONCE, weighted against each other, rather
     // than three times independently. Their combined chance is what it
@@ -1605,6 +1615,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
     return fx ? mergeFx(acc ?? {}, fx) : acc;
   }, null);
   w.palFlip = !!w.palFx?.upsideDown;
+  w.bounceHouse = hasPal(save, w, "spacepuppy");
   w.flight = flight;
   w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
   // A campaign level is an ordinary run wearing a finish line. It is set
@@ -3186,7 +3197,7 @@ function circleHit(x1: number, y1: number, r1: number, x2: number, y2: number, r
   return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
 }
 
-function bounceOff(w: World, save: SaveData, px: number, py: number) {
+function bounceOff(w: World, save: SaveData, px: number, py: number, mul = 1) {
   // THE TEACHING LAUNCH IS NOT INTERRUPTIBLE. The tutorial's bounce stage
   // fires one arc that peaks exactly where the swipe lesson is taught, and
   // this function overwrites vy on contact - which is precisely how that
@@ -3203,7 +3214,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   dy /= dist;
   const incomingVy = w.squirrel.vy;
   const jelly = hasPal(save, w, "voidjelly") ? 0.55 : 1;
-  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1);
+  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1) * mul;
   w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
   if (BOUNCE_ANIM_ENABLED) {
     w.bounceAnimT = 0;
@@ -4144,7 +4155,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   for (const p of w.planets) {
     if (!p.scored && p.x + p.r < sx - 12) {
       p.scored = true;
-      w.score += 1;
+      // a bounce house keeps no score: gates pass uncounted (Space Puppy)
+      if (!w.bounceHouse) w.score += 1;
       if (pilotSuitId(w, save) === "vanguard") vanguardGate(w.vanguard);
       if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
         w.tut.gates += 1;
@@ -4194,6 +4206,14 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     w.squirrel.vy = Math.abs(w.squirrel.vy) * 0.45 + 90;
     w.squirrel.rot = 0.5;
     spark(w, sx, 4, ["#e8dcc8", "#fff"], 8, "poof");
+  }
+  // a bounce house has a floor: the pilot springs back up instead of
+  // falling out of the run (Space Puppy)
+  if (w.bounceHouse && sy > w.H - PHYS.squirrelR && w.squirrel.vy > 0) {
+    w.squirrel.y = w.H - PHYS.squirrelR;
+    w.squirrel.vy = -(Math.abs(w.squirrel.vy) * 0.6 + 260);
+    w.squirrel.rot = -0.5;
+    spark(w, sx, w.H - 4, ["#ffb6c9", "#fff"], 8, "poof");
   }
   if (sy > w.H + 36) {
     if (tutSafe(w)) {
@@ -4257,7 +4277,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
         if (w.shieldCharges > 0 && w.tut?.stage === "free") {
           /* planets bounce even with a shield — shields save debris / fall */
         }
-        bounceOff(w, save, p.x, py);
+        // BOUNCE HOUSE: 2x off every planet, 3x off the big ones (owner)
+        bounceOff(w, save, p.x, py, w.bounceHouse ? (p.r >= PHYS.planetR * 1.75 ? 3 : 2) : 1);
         w.run.bounces += 1;
         return "bounce";
       }
