@@ -6,7 +6,7 @@ Run from anywhere in the repository:
     python3 illustrated-src/verify-art.py
 
 This gate checks contracts that can be decided mechanically, including the
-base suits' normalized on-screen helmet scale. Helmet seating is deliberately
+base suits' calibrated on-screen helmet scale. Helmet seating is deliberately
 not one of them: shaped glass openings and unusual heads still need the
 20-suit x 23-helmet visual matrix described in ART_SPEC.md.
 """
@@ -36,6 +36,7 @@ ART_SOURCE = ROOT / "illustrated-src" / "game" / "art.ts"
 DRAW_SOURCE = ROOT / "illustrated-src" / "game" / "draw.ts"
 RIG_AUDIT = ROOT / "illustrated-src" / "rig-tail.py"
 EDGE_AUDIT = ROOT / "illustrated-src" / "clean-raster-edges.py"
+HELMET_ART_BASELINE = ROOT / "illustrated-src" / "qa" / "helmet-art-baseline.json"
 
 RASTER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
 
@@ -71,35 +72,25 @@ BASE_SUIT_IDS = (
     "ghost",
     "bigbooty",
 )
-BASE_HELMET_SCALE_MIN = 0.235
-BASE_HELMET_SCALE_MAX = 0.243
-BASE_HELMET_SCALE_SPREAD_MAX = 0.005
-# Suits not painted to the family's proportions, and holding them to the
-# family's scale put a helmet on them a size too big - the glass swallowed
-# the head and cut into the body. Robo is a compact head on bulky armour;
-# Big Booty is the joke in the name. This audit divides by the whole
-# CHARACTER's bounding box, which is the right yardstick only while every
-# suit shares a head-to-body ratio, so these carry the owner's measured
-# scale instead. Held to +/-5%, so a typo here is still caught - they are
-# calibrated, not exempt.
-#
-# The 2026-09 shelf-drift fix promoted every swept suit's master to its own
-# bank asc-1 frame, so each of those suits now shows ITS art's proportions,
-# not the shared flight template's. Their measured display scales join the
-# calibrated table; flight stays the lone family-band reference.
-OFF_FAMILY_HELMET_SCALES = {
-    "robo": 0.2011,
-    "bigbooty": 0.1872,
-    "iontrim": 0.1895,
-    "copper": 0.2234,
-    "frost": 0.2130,
-    "voidsuit": 0.2250,
+# Each suit has its own head-to-body proportions. These display scales
+# record the build-206 head/collar fitting review against unchanged art;
+# uniform ratios against the whole character would undo that fit. Retain
+# the existing +/-5% typo guard for every suit, now including Flight.
+# Values are fitted DOME radius / runtime alpha-trimmed content span.
+CALIBRATED_HELMET_SCALES = {
+    "flight": 0.2609,     # 48 / 184
+    "iontrim": 0.2304,    # 44 / 191
+    "copper": 0.2538,     # 50 / 197
+    "frost": 0.2308,      # 39 / 169
+    "voidsuit": 0.2312,   # 46 / 199
     "aurorasuit": 0.2171,
-    "ember": 0.2249,
+    "ember": 0.2367,      # 40 / 169
     "stardust": 0.2222,
-    "ghost": 0.1689,
+    "robo": 0.2275,       # 43 / 189
+    "ghost": 0.2178,      # 49 / 225
+    "bigbooty": 0.1872,
 }
-OFF_FAMILY_HELMET_TOLERANCE = 0.05
+CALIBRATED_HELMET_TOLERANCE = 0.05
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -525,7 +516,7 @@ def verify_pal_bounds(qa: QA, pal_ids: list[str]) -> None:
 
 
 def verify_base_helmet_scale(qa: QA) -> None:
-    """Keep one helmet visually stable while switching among base suits.
+    """Keep each base suit's reviewed helmet display scale stable.
 
     drawSprite normalizes each suit by its alpha-trimmed bounding box, so the
     meaningful helmet scale is DOME radius / max(trimmed width, trimmed height),
@@ -547,7 +538,7 @@ def verify_base_helmet_scale(qa: QA) -> None:
     entries = {
         suit: float(radius)
         for suit, radius in re.findall(
-            r'"suit:([^"]+)"\s*:\s*\[\s*[-\d.]+\s*,\s*[-\d.]+\s*,\s*([-\d.]+)\s*\]',
+            r'"suit:([^"]+)"\s*:\s*\[\s*[-\d.]+\s*,\s*[-\d.]+\s*,\s*([-\d.]+)\s*(?:,\s*[-\d.]+\s*)?\]',
             table.group(1),
         )
     }
@@ -575,32 +566,19 @@ def verify_base_helmet_scale(qa: QA) -> None:
     if problems:
         qa.fail("base helmet scale contract\n" + "\n".join(problems))
         return
-    off = []
-    for suit, want in OFF_FAMILY_HELMET_SCALES.items():
-        got = scales.pop(suit, None)
-        if got is None:
-            continue
-        if abs(got - want) / want > OFF_FAMILY_HELMET_TOLERANCE:
-            off.append(f"{suit} {got:.4f} (calibrated {want:.4f})")
-    low = min(scales.values())
-    high = max(scales.values())
-    spread = high - low
-    outliers = off + [
-        f"{suit} {scale:.4f}"
-        for suit, scale in scales.items()
-        if scale < BASE_HELMET_SCALE_MIN or scale > BASE_HELMET_SCALE_MAX
-    ]
-    if outliers or spread > BASE_HELMET_SCALE_SPREAD_MAX:
-        detail = ", ".join(f"{suit} {scale:.4f}" for suit, scale in scales.items())
-        qa.fail(
-            "base helmet display scale drift\n"
-            f"range {low:.4f}-{high:.4f}, spread {spread:.4f}; {detail}"
-        )
+    outliers = []
+    for suit, got in scales.items():
+        want = CALIBRATED_HELMET_SCALES.get(suit)
+        if want is None:
+            outliers.append(f"{suit} has no reviewed display-scale calibration")
+        elif abs(got - want) / want > CALIBRATED_HELMET_TOLERANCE:
+            outliers.append(f"{suit} {got:.4f} (calibrated {want:.4f})")
+    if outliers:
+        qa.fail("base helmet display scale drift\n" + "; ".join(outliers))
         return
     qa.ok(
-        f"base helmet display scale harmonized across {len(scales)} family suits "
-        f"({low:.4f}-{high:.4f}, {spread / low * 100:.1f}% spread), "
-        f"{len(OFF_FAMILY_HELMET_SCALES)} calibrated off-family"
+        f"all {len(scales)} base helmet display scales remain within "
+        f"{CALIBRATED_HELMET_TOLERANCE * 100:.0f}% of their reviewed head fits"
     )
 
 
@@ -675,9 +653,10 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
     frames whose plume collapsed or ballooned, without mistaking normal
     foreshortening for a failure.
 
-    The helmet check is deliberately based on painted head area rather than
-    the DOME radius: a constant table value cannot prove that the drawing
-    under it stayed the same size.
+    Painted head area is sampled in fixed source-space regions. These are
+    the approved art repair's original regions, independent of the current
+    helmet sockets: moving a helmet must not alter a colour, volume or head
+    measurement of an unchanged painting.
     """
     try:
         import numpy as np
@@ -685,16 +664,9 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
         qa.fail("tail continuity needs numpy")
         return
 
-    draw = DRAW_SOURCE.read_text(encoding="utf8")
     art = ART_SOURCE.read_text(encoding="utf8")
-    anchors = {
-        key: (float(x), float(y), float(radius))
-        for key, x, y, radius in re.findall(
-            r'"([a-z]+-(?:asc|desc)-\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*'
-            r'([-\d.]+)\s*,\s*([-\d.]+)',
-            draw,
-        )
-    }
+    baseline = json.loads(HELMET_ART_BASELINE.read_text(encoding="utf8"))
+    anchors = baseline["repaired_art_regions"]
 
     def bank_counts(name: str) -> dict[str, int]:
         match = re.search(name + r"[^{]*\{([^}]*)\}", art)
@@ -728,7 +700,7 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
                 anchor = anchors.get(key)
                 path = DOCS_ART / "suits" / f"{key}.png"
                 if anchor is None or not path.exists():
-                    problems.append(f"{key} is missing art or its helmet anchor")
+                    problems.append(f"{key} is missing art or its fixed sampling region")
                     continue
                 with Image.open(path) as image:
                     rgba = np.asarray(image.convert("RGBA"), dtype=np.float32)
@@ -803,7 +775,7 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
             if head_spread > head_spread_limit:
                 problems.append(
                     f"{suit} painted head scale moves {head_spread * 100:.1f}% "
-                    f"under one helmet radius ({head_spread_limit * 100:.0f}% allowed)"
+                    f"in fixed art regions ({head_spread_limit * 100:.0f}% allowed)"
                 )
         summaries.append(
             f"{suit} colour {h_span:.3f}/{s_span:.3f}/{v_span:.3f}, "
@@ -1168,7 +1140,7 @@ def verify_pose_domes(qa: QA) -> None:
         return
     poses: dict[str, dict[int, tuple[float, float, float]]] = {}
     for suit, n, x, y, r in re.findall(
-            r'"([a-z]+)-tap-(\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\]',
+            r'"([a-z]+)-tap-(\d+)"\s*:\s*\[\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*(?:,\s*[-\d.]+\s*)?\]',
             table.group(1)):
         poses.setdefault(suit, {})[int(n)] = (float(x), float(y), float(r))
     problems: list[str] = []
@@ -1508,11 +1480,11 @@ def verify_motion_banks(qa: QA) -> None:
         not have, so the fault is not a drifting helmet - it is NO helmet,
         on that one pose, at that one attitude. On a contact sheet of eight
         frames it reads as "the climb frames look bare", if it reads at all.
-      * A HEAD THAT CHANGES SIZE across the bank. One scale fits the helmet
-        to the head, so a bank whose head grows and shrinks makes the dome
-        breathe against the face along the ramp. Flight holds 33px on all
-        eight - 0.0% spread - which is what makes any of the 20-odd helmets
-        sit correctly at every attitude.
+      * An unexpected HELMET SIZE CHANGE across the bank. Keep one radius
+        through a suit's poses, with four explicitly reviewed exceptions
+        for larger painted heads in unchanged Sammie/Gemmie artwork. Each
+        exception requires its exact fitted radius and the original art
+        hash; all other poses retain the regular radius check.
 
     Also catches the waste: a suit with a motion bank can never reach a tap
     bank, because fullMotion is tested first and has no time gate.
@@ -1521,6 +1493,9 @@ def verify_motion_banks(qa: QA) -> None:
     art = (ROOT / "illustrated-src/game/art.ts").read_text(encoding="utf8")
     dome = {k: [float(x) for x in v.split(",")]
             for k, v in re.findall(r'"([a-z]+-(?:asc|desc)-\d+)":\s*\[([^\]]+)\]', draw)}
+    baseline = json.loads(HELMET_ART_BASELINE.read_text(encoding="utf8"))
+    larger_heads = baseline["larger_painted_heads"]
+    exceptions = larger_heads["poses"]
 
     def banks(name: str) -> dict[str, int]:
         m = re.search(name + r"[^{]*\{([^}]*)\}", art, re.S)
@@ -1582,7 +1557,21 @@ def verify_motion_banks(qa: QA) -> None:
                         problems.append(f"{key} has no DOME anchor - that pose draws "
                                         f"NO helmet at all, silently")
                     continue
-                radii.append(dome[key][2])
+                radius = dome[key][2]
+                exception = exceptions.get(key)
+                if exception is not None:
+                    if radius != exception["radius"]:
+                        problems.append(f"{key}: larger painted head requires the reviewed "
+                                        f"radius {exception['radius']}, got {radius:g}")
+                    if hashlib.sha256(png.read_bytes()).hexdigest() != exception["art_sha256"]:
+                        problems.append(f"{key}: larger-head fit is calibrated to unchanged "
+                                        "art; the painting changed and needs a new review")
+                else:
+                    radii.append(radius)
+                    regular_radius = larger_heads["bank_radii"].get(suit)
+                    if regular_radius is not None and radius != regular_radius:
+                        problems.append(f"{key}: only the named larger-head poses may "
+                                        f"leave radius {regular_radius}; got {radius:g}")
                 # A frame's optional 4th value is its helmet POSE ROTATION.
                 # The steepest dive in any bank is ~65 degrees, so a value
                 # beyond 75 is a typo (a coordinate in the rot slot), and a
@@ -1618,7 +1607,8 @@ def verify_motion_banks(qa: QA) -> None:
         qa.fail("motion banks: " + "; ".join(problems))
     else:
         qa.ok(f"velocity-indexed pose banks complete for {checked} suits "
-              f"(anchor per frame, head radius held), {len(MOTION_TAP_OVERLAP)} "
+              f"(anchor per frame, radius held except {len(exceptions)} art-locked larger heads), "
+              f"{len(MOTION_TAP_OVERLAP)} "
               f"with a declared dead tap bank")
 
 

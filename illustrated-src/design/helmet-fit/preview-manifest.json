@@ -1,0 +1,35 @@
+{
+  "baseline": "81fb7e772866959c3bb65ec6cbef937ae9c4c9b7",
+  "build": "206",
+  "production": true,
+  "renderer": "paintFlightPreview",
+  "suits": [
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "robo",
+    "ghost",
+    "bigbooty",
+    "gemmie",
+    "sammie",
+    "seraph",
+    "leviathan",
+    "verdant",
+    "cryostar",
+    "eclipse"
+  ],
+  "helmets": {
+    "default": "clear",
+    "leviathan": "leviathan"
+  },
+  "width": 1440,
+  "height": 960,
+  "fps": 24,
+  "seconds": 20,
+  "frames": 480,
+  "view": "Actual default loadout animation, same time/size/pitch in every pair; no imposed body poses.",
+  "limitation": "Native Canvas playback; not a claim of on-device browser validation."
+}

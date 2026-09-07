@@ -1,24 +1,24 @@
-import { writeSave, suitPitchFor } from "./save.js?v=202";
-import { spillAppearance } from "./spill-appearance.js?v=202";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=202";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=202";
-import { addChartScenery } from "./star-map-view.js?v=202";
-import { mapDebrisIndex } from "./zone-visuals.js?v=202";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=202";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=202";
-import { suitLean } from "./control-constants.js?v=202";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=202";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=202";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=202";
-import { drawSprite as drawSpriteOn } from "./art.js?v=202";
-import { createEngine } from "./engine.js?v=202";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=202";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=202";
-import { formatRaceTicks } from "./race.js?v=202";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=202";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=202";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=202";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=202";
+import { suitPitchFor } from "./save.js?v=206";
+import { spillAppearance } from "./spill-appearance.js?v=206";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=206";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=206";
+import { addChartScenery } from "./star-map-view.js?v=206";
+import { mapDebrisIndex } from "./zone-visuals.js?v=206";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=206";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=206";
+import { suitLean } from "./control-constants.js?v=206";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=206";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=206";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=206";
+import { drawSprite as drawSpriteOn } from "./art.js?v=206";
+import { createEngine } from "./engine.js?v=206";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=206";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=206";
+import { formatRaceTicks } from "./race.js?v=206";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=206";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=206";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=206";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=206";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -122,7 +122,7 @@ export async function bootStandalone(root) {
     fillBox.append(fillImg, el("div", "ac-bootline"));
     bootNut.append(shell, fillBox);
     boot.append(bootNut, el("h1", "ac-boottitle", "ACORNAUT"), el("p", "ac-bootsub", "Prepping the launch pad"));
-    boot.append(el("p", "ac-fine ac-bootfine", `${BUILD} · ${GAME_VERSION}`));
+    boot.append(el("p", "ac-fine ac-bootfine", BUILD));
     overlay.append(boot);
     // The acorn fills, empties and fills again for as long as the load takes,
     // the way a barber's pole keeps turning — a bar that creeps to 88% and
@@ -827,6 +827,10 @@ export async function bootStandalone(root) {
      *  of price and mixing the two numbers on one axis would read as random. */
     function suitRank(u) {
         const s = engine.save;
+        // ACORNUT LEADS (owner, 7 Sep 2026): the flagship heads the standard
+        // row whether or not its 500 stars are in, so the goal is always seen.
+        if (u.id === "vanguard")
+            return -2;
         const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && iapOwned(s, u.id));
         if (owned)
             return -1;
@@ -980,7 +984,7 @@ export async function bootStandalone(root) {
         tap.append(icon(I_ACORN, 15, true), el("span", "", "TAP TO START"));
         stack.append(tap);
         box.append(stack);
-        box.append(el("p", "ac-fine ac-splash-fine", `${BUILD} · ${GAME_VERSION}`));
+        box.append(el("p", "ac-fine ac-splash-fine", BUILD));
         box.onclick = () => {
             engine.open("title");
             // INTRO VIDEO OFF skips the film outright; the title is already
@@ -1079,7 +1083,6 @@ export async function bootStandalone(root) {
         title.append(el("h1", "ac-home-title", "ACORNAUT"));
         title.append(el("p", "ac-home-kicker", "Fly the gaps \u00b7 Grab the acorns"));
         box.append(title, el("div", "ac-home-gap"));
-        box.append(pinnedHome());
         const controls = el("div", "ac-controls");
         // The loadout strip is the second door into the Hangar, so the tab
         // icon is never the only way in.
@@ -1224,7 +1227,6 @@ export async function bootStandalone(root) {
         mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
         mark.append(el("p", "ac-hub-kicker", "Fly the gaps · Grab the acorns"));
         box.append(mark, el("div", "ac-hub-space"));
-        box.append(pinnedHome());
         const tiles = el("div", "ac-hub-tiles");
         const tile = (cls, pic, label, sub, hit, dot, pulse) => {
             const b = el("button", `ac-hubtile ${cls}`);
@@ -1688,79 +1690,6 @@ export async function bootStandalone(root) {
      *  with the button's role rather than a nested button, and it swallows
      *  the press so starring never equips. The FAVOURITES shelf it feeds
      *  only exists while at least one star is lit. */
-    const rewardKey = (r) => `${r.kind}:${r.id ?? r.name}`;
-    let pinCatalog;
-    function pinCandidates() { return pinCatalog ?? (pinCatalog = buildPinCandidates()); }
-    function buildPinCandidates() {
-        const rewards = STAR_REWARDS.filter(r => r.kind !== "stage").map(r => ({ ...r, cost: 0 }));
-        for (const [kind, list] of [["suit", SUITS], ["helmet", HELMETS], ["trail", TRAILS], ["pal", PALS]]) {
-            for (const item of list)
-                if (!isIap(item.id) && !rewards.some(r => r.kind === kind && r.id === item.id))
-                    rewards.push({ kind, id: item.id, name: item.name, stars: 0, cost: "cost" in item ? item.cost : 0, desc: "" });
-        }
-        return rewards;
-    }
-    function pinnedKeys() {
-        const raw = engine.save.pinnedRewards;
-        return Array.isArray(raw) ? [...new Set(raw.filter(k => typeof k === "string"))].filter(k => pinCandidates().some(r => rewardKey(r) === k)) : [];
-    }
-    function pinReward(kind, id, name) {
-        const key = rewardKey({ kind, id, name });
-        if (!pinCandidates().some(r => rewardKey(r) === key))
-            return el("span");
-        const on = pinnedKeys().includes(key);
-        const pin = el("span", `ac-rewardpin${on ? " on" : ""}`, on ? "PINNED ✓" : "PIN TO HOME");
-        pin.setAttribute("role", "button");
-        pin.tabIndex = 0;
-        pin.dataset.rewardPin = key;
-        pin.setAttribute("aria-pressed", String(on));
-        pin.setAttribute("aria-label", `${on ? "Unpin" : "Pin"} ${name ?? pinCandidates().find(r => rewardKey(r) === key)?.name} ${on ? "from" : "to"} home`);
-        const flip = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            const keys = pinnedKeys();
-            engine.save.pinnedRewards = keys.includes(key) ? keys.filter(k => k !== key) : [...keys, key];
-            writeSave(engine.save);
-            render();
-        };
-        pin.addEventListener("pointerdown", e => e.stopPropagation());
-        pin.addEventListener("click", flip);
-        pin.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ")
-            flip(e); });
-        return pin;
-    }
-    function pinnedHome() {
-        const rail = el("section", "ac-pinnedhome");
-        rail.setAttribute("aria-label", "Pinned rewards");
-        const save = engine.save;
-        for (const key of pinnedKeys()) {
-            const r = pinCandidates().find(r => rewardKey(r) === key);
-            const card = el("div", "ac-pinnedreward");
-            const open = el("button", "ac-pinnedopen");
-            const earned = r.stars > 0 ? starsOf(save) >= r.stars : r.kind === "suit" ? save.unlockedSuits.includes(r.id)
-                : r.kind === "helmet" ? save.unlocked.includes(r.id) : r.kind === "trail" ? trailUnlocked(save, r.id) : palUnlocked(save, r.id);
-            const current = r.stars > 0 ? starsOf(save) : save.acorns, target = r.stars || r.cost;
-            open.append(rewardArtPicture(r, 32), el("b", "", r.name), el("span", "", earned ? "UNLOCKED · VIEW" : `${Math.min(current, target)} / ${target} ${r.stars ? "stars" : "acorns"}`));
-            const meter = el("progress");
-            meter.max = Math.max(1, target);
-            meter.value = earned ? meter.max : Math.min(current, target);
-            meter.setAttribute("aria-label", `${r.name} unlock progress`);
-            open.append(meter);
-            open.onclick = () => {
-                const tab = { suit: "suits", helmet: "helmets", trail: "trails", pal: "pals" }[r.kind];
-                if (tab) {
-                    engine.setShopTab(tab);
-                    engine.open("hangar");
-                }
-                else
-                    engine.open("log");
-            };
-            card.append(open, pinReward(r.kind, r.id, r.name));
-            rail.append(card);
-        }
-        rail.hidden = !rail.childElementCount;
-        return rail;
-    }
     function favStar(id) {
         const on = engine.isFavorite(id);
         const star = el("span", on ? "ac-favbtn on" : "ac-favbtn", on ? "\u2605" : "\u2606");
@@ -1965,13 +1894,13 @@ export async function bootStandalone(root) {
             // the room. The state lives in the save so it holds between visits,
             // and the little chevron on the plate says the gesture exists -
             // nothing else on the screen is double-tapped.
-            if (s.heroCompact)
+            if (!s.heroExpanded)
                 stage.classList.add("ac-casecompact");
             let lastTap = 0;
             stage.addEventListener("pointerup", (e) => {
                 const now = performance.now();
                 if (now - lastTap < 320) {
-                    engine.setHeroCompact(!engine.save.heroCompact);
+                    engine.setHeroExpanded(!engine.save.heroExpanded);
                     lastTap = 0;
                 }
                 else
@@ -1994,10 +1923,10 @@ export async function bootStandalone(root) {
                 pane.append(el("span", "ac-tonohelm ac-casetag", wornSuit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
             stage.append(pane);
             const plate = el("div", "ac-caseplate");
-            const fold = el("button", "ac-casefold", s.heroCompact ? "\u25BE" : "\u25B4");
-            fold.setAttribute("aria-label", s.heroCompact ? "Expand the preview" : "Shrink the preview");
+            const fold = el("button", "ac-casefold", s.heroExpanded ? "\u25B4" : "\u25BE");
+            fold.setAttribute("aria-label", s.heroExpanded ? "Shrink the preview" : "Expand the preview");
             fold.title = "Double-tap the case, or tap here";
-            fold.onclick = (e) => { e.stopPropagation(); engine.setHeroCompact(!engine.save.heroCompact); };
+            fold.onclick = (e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); };
             stage.append(fold);
             if (engine.shopTab === "ship") {
                 plate.append(el("span", "ac-caseeyebrow", shipPlan ? "DEPOT BUILD PREVIEW" : "NEXT ENDLESS RUN"));
@@ -2115,7 +2044,6 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!locked && open && (!premium || owned))
                     tx(b, () => engine.buyHelmet(h.id), h.cost); };
-                b.append(pinReward("helmet", h.id, h.name));
                 if (open && (!premium || owned))
                     b.append(favStar(h.id));
                 return b;
@@ -2181,7 +2109,6 @@ export async function bootStandalone(root) {
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
                     tx(b, () => engine.buySuit(u.id), u.cost); };
-                b.append(pinReward("suit", u.id, u.name));
                 if (open && (!premium || owned))
                     b.append(favStar(u.id));
                 return b;
@@ -2206,12 +2133,18 @@ export async function bootStandalone(root) {
                 // Aurora and Stardust left this shelf for the beta bench (their
                 // banks drifted); production shows one placeholder card in their
                 // spot so the row reads "more coming", not "two got deleted".
+                // AcorNut leads the row (suitRank puts him first); the placeholder
+                // sits right after him so the goal is never behind a "?" card.
+                let ph = null;
                 if (sec.title === "STANDARD" && !SUITS.some((x) => x.id === "aurorasuit")) {
-                    const ph = el("div", "ac-card ac-card-soon");
+                    ph = el("div", "ac-card ac-card-soon");
                     ph.append(el("span", "ac-soonmark", "?"));
                     ph.append(el("p", "ac-cardname", "NEW SUITS"));
                     ph.append(el("p", "ac-soonnote", "In the workshop"));
-                    row.append(ph);
+                    if (items[0]?.id !== "vanguard") {
+                        row.append(ph);
+                        ph = null;
+                    }
                 }
                 for (const u of items) {
                     // on the purchased shelf, a premium suit not yet bought is a door
@@ -2224,6 +2157,10 @@ export async function bootStandalone(root) {
                         continue;
                     }
                     row.append(suitCard(u));
+                    if (ph && u.id === "vanguard") {
+                        row.append(ph);
+                        ph = null;
+                    }
                 }
                 grid.append(row);
             }
@@ -2258,7 +2195,6 @@ export async function bootStandalone(root) {
                     b.append(el("span", "ac-sub", t.id === "vanguardwake" ? "AcorNut only" : t.id === "arcflashwake" ? "Arcflash only" : "Change suit to wear"));
                 b.onclick = () => { if (open && compatible)
                     tx(b, () => engine.buyTrail(t.id), t.cost); };
-                b.append(pinReward("trail", t.id, t.name));
                 if (open)
                     b.append(favStar(t.id));
                 return b;
@@ -2294,11 +2230,8 @@ export async function bootStandalone(root) {
             fx.append(ftxt, fsw);
             fx.onclick = () => engine.setMod("noPalFx");
             grid.append(fx);
-            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) {
-                const card = palCardOf(p);
-                card.append(pinReward("pal", p.id, p.name));
-                grid.append(card);
-            }
+            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id)))
+                grid.append(palCardOf(p));
         }
         else if (engine.shopTab === "ship") {
             grid.classList.add("ac-shelfcol", "ac-shipworkshop");
@@ -2620,7 +2553,7 @@ export async function bootStandalone(root) {
      *  it is actually given. */
     function rewardArt(item, px = 52) {
         const wrap = el("div", "ac-rewardwithpin");
-        wrap.append(rewardArtPicture(item, px), pinReward(item.kind, item.id, item.name));
+        wrap.append(rewardArtPicture(item, px));
         return wrap;
     }
     function rewardArtPicture(item, px = 52) {
@@ -3420,7 +3353,7 @@ export async function bootStandalone(root) {
         const owns = (i) => iapOwned(s, i);
         const day = shopDayIndex();
         // ONE featured pack, never one already owned outright
-        const open = BUNDLES.filter((b) => !bundleIds(b).every(owns));
+        const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
         const feature = open.length ? open[day % open.length] : null;
         // THE CATCH. What the pack holds cannot also be bought singly today.
         // You can put it on the squirrel and look at it; you cannot have it
@@ -3437,7 +3370,12 @@ export async function bootStandalone(root) {
         // take what is left - including the three suits that have no helmet of
         // their own, which is exactly what that shelf is for.
         const helms = dealFrom(helmPool, SHOP_CYCLE.helms, day * 13 + 5);
-        const suits = dealFrom(suitPool.filter((i) => !helms.includes(i)), SHOP_CYCLE.suits, day * 7 + 1);
+        // A STICKER-PRICED SUIT IS ALWAYS ON THE SHELF (owner, 7 Sep 2026:
+        // Arcflash "is an in game purchase"). The daily shuffle can starve an
+        // id for weeks, and a suit sold at its own price is not a rotation
+        // item - it leads the row every day, and the deal fills in behind it.
+        const pinned = suitPool.filter((i) => DUST_STICKER[i] !== undefined && !helms.includes(i));
+        const suits = [...pinned, ...dealFrom(suitPool.filter((i) => !helms.includes(i) && !pinned.includes(i)), SHOP_CYCLE.suits, day * 7 + 1)];
         const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
         return { day, feature, held, suits, helms, pals, owns };
     }
@@ -4702,7 +4640,7 @@ export async function bootStandalone(root) {
             r.append(el("span", "ac-sub", line));
             news.append(r);
         }
-        scroll.append(news, el("p", "ac-fine ac-mid", `${BUILD} · ${GAME_VERSION}`));
+        scroll.append(news, el("p", "ac-fine ac-mid", BUILD));
         box.append(scroll);
         if (!BETA_FEATURES)
             box.append(tabbar("profile"));
