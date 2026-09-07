@@ -1,13 +1,27 @@
 # Frame fixes: the motion banks, frame by frame
 
+## Fresh loadout-reference regeneration (September 2026)
+
+Copper, Cryostar, Verdant, Sammie and Gemmie now have fresh whole-character
+flight drawings generated from each suit's static loadout portrait alone.
+Old flight paintings were not generation inputs. Both ramps have eight
+frames and share an identical neutral. The exporter registers skull scale
+and pelvis position, preserves the reference palette, and writes 256px RGBA
+frames. See `art-src/flight-refresh/README.md` for sources and review evidence.
+
+**Correction:** none of these suits is intended to change suit or fur hue
+with pose. The older hue-change interpretation below was incorrect and is
+superseded by the stable-colour requirement. The historical frame numbers
+and measurements below describe the previous art, not the regenerated banks.
+
 Owner's brief (2 Sep 2026): "seraph animation frozen... again. gemmie is
 twitching sizes bad. ghost still has a flash frame that inverts itself and
 looks glitchy. cryostar still has a fat frame." Video moments given: ghost at
 7.77s, verdant 19.34s, gemmie 32.79s, sammie 34.41s ("sammie's big one").
 
 Owner's follow-up (2 Sep 2026) narrows the tail-colour repair to **Sammie,
-Ion, Void, Ember and Copper**. Gemmie, Cryostar and Verdant change hue by
-design; do not palette-normalize those three. Their geometry notes below
+Ion, Void, Ember and Copper**. The old assumption that Gemmie, Cryostar and
+Verdant change hue by design was incorrect. Their geometry notes below
 remain historical owner-review observations, not part of the tail repair.
 
 ## Tail continuity repair (v173)
@@ -31,7 +45,8 @@ painted suits. Ion's navy panels and Verdant's green panels changed
 brightness/saturation markedly between poses, making the costume itself
 appear to change even when the silhouette was sound. Their suit-colour
 pixels now hold one saturation/value baseline across each bank. Verdant's
-pose-dependent hue variation is intentionally preserved.
+pose-dependent hue variation was preserved at that time; the new regeneration
+corrects that mistake.
 
 Helmet fitting remains universal: every interchangeable helmet is seated
 through the same per-frame `DOME` socket for a standard suit. Alien, Cat,
