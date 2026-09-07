@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "217";
+export const ART_VER = "218";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -343,7 +343,7 @@ export const PAL_ANIM: Record<string, number> = {
   nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
   starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
   // owner sheets, 7 Sep 2026
-  magnetar: 36, babyalien: 36,
+  magnetar: 36, babyalien: 36, satellite: 36, astrafox: 36,
 };
 
 export const PALS: Pal[] = [
@@ -365,9 +365,12 @@ export const PALS: Pal[] = [
   { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Planet Bounces Repaint Sky", art: "prismwing" },
   { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll Speed Drift", art: "clockling" },
   { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "Gate Drift Off", art: "nightglider" },
-  // owner, 7 Sep 2026: two of four new companions
+  // owner, 7 Sep 2026: four new companions. Their effects live in PAL_FX
+  // (sim.ts) as level fx, so a pal dial and a mission dial are one lever.
   { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
   { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps (planetary gaps at .6)", art: "babyalien" },
+  { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
+  { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway, 1.2x Scroll Speed", art: "astrafox" },
 ];
 
 export type Env = {
@@ -590,6 +593,8 @@ export const BUNDLES: {
   { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
   { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
   { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
+  { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
+  { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
   { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
   {
     id: "bundle-aurora",

@@ -850,14 +850,22 @@
       color: #98a2bd; justify-content: center; }
     .ac-shopglyph { font-size: 26px; line-height: 1; color: #d4af37; font-weight: 800; }
     .ac-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; }
-    .ac-grid.ac-palgrid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    /* PALS RUN THREE WIDE (owner, 7 Sep 2026: "make the pal menu tighter...
+       keep pal size same, less open space on tile"). The painting keeps its
+       72x60 box; the tile loses its air - thin padding, a hair of gap - and
+       the shelf drops from eight rows to five. */
+    .ac-grid.ac-palgrid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 5px; }
     .ac-card { min-height: 118px; background: #141b30; color: #f3efe4; border: 1px solid #2a3454; border-radius: 13px; padding: 8px 4px 8px; font-size: 10px; font-weight: 700; white-space: pre-line; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; overflow: visible; }
     .ac-card img, .ac-card canvas { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
-    .ac-palcard { justify-content: flex-start; gap: 6px; padding: 10px 8px; min-height: 0; }
-    .ac-palcard .ac-palname { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-    .ac-palcard canvas { width: 66px; height: 56px; }
-    .ac-palcard .ac-paldesc { font-size: 10px; font-weight: 500; line-height: 1.35; color: #a7b1cc; white-space: normal; }
-    .ac-palcard .ac-palstat { margin-top: auto; font-size: 9px; font-weight: 800; letter-spacing: .06em; color: #8b95b0; }
+    .ac-palcard { justify-content: flex-start; gap: 2px; padding: 5px 4px 6px; min-height: 0; border-radius: 11px; }
+    .ac-palcard .ac-palname { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; line-height: 1.2;
+      max-width: 100%; overflow-wrap: anywhere; }
+    .ac-palcard .ac-paldesc { font-size: 9.5px; font-weight: 500; line-height: 1.25; color: #a7b1cc; white-space: normal;
+      max-width: 100%; overflow-wrap: anywhere; }
+    .ac-palcard .ac-palstat { margin-top: auto; padding-top: 2px; font-size: 8.5px; font-weight: 800; letter-spacing: .06em; color: #8b95b0; }
+    /* the premium star tucks into the corner so it clears a long name */
+    .ac-palcard.ac-premium::after { top: 2px; right: 4px; font-size: 10px; }
+    @media (max-width: 349px) { .ac-palcard .ac-palname { font-size: 9px; } }
     .ac-coderow { grid-column: 1 / -1; display: flex; gap: 8px; align-items: stretch; }
     .ac-codein { flex: 1; min-width: 0; background: #0d1326; border: 1px solid #2a3454; border-radius: 12px;
       color: #f3efe4; padding: 10px 14px; font-size: 15px; font-weight: 700; letter-spacing: .25em; }
@@ -2003,7 +2011,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js217/standalone.js")
+    import("../js218/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

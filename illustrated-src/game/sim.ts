@@ -381,6 +381,8 @@ export type World = {
   lab: LabFx;
   /** MAGNETAR (owner, 7 Sep 2026): the companion turns the world over; fixed at run start */
   palFlip: boolean;
+  /** the equipped companion's level-style modifiers (PAL_FX), fixed at run start */
+  palFx: LabFx | null;
   /** TurClock: the live scroll multiplier, and the wandering clock driving it */
   clockMul: number;
   clockPhase: number;
@@ -552,7 +554,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false,
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null,
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
@@ -753,7 +755,33 @@ export type LabFx = LevelFx & {
 /** The modifiers this run flies under: the mission's, or the lab's on a
  *  beta free flight. One question, so the two can never disagree. */
 export function fxOf(w: World): LabFx {
-  return w.lvl ? w.lvl.def.fx : w.lab;
+  const base = w.lvl ? w.lvl.def.fx : w.lab;
+  return w.palFx ? mergeFx(base, w.palFx) : base;
+}
+
+/** THE COMPANIONS THAT ARE LEVEL DIALS (owner, 7 Sep 2026). Magnetar,
+ *  Baby Alien, Satellite and AstraFox each do something a mission's fx
+ *  already can - flip the world, shrink the gates, close the fog, wind the
+ *  sway - so they are written AS fx and folded into fxOf. A pal effect and
+ *  a mission dial are then the same lever read at the same place, and a
+ *  new companion of this kind is one row here, not a fifth `if`. */
+const PAL_FX: Record<string, LabFx> = {
+  magnetar: { upsideDown: true },
+  babyalien: { gapScale: 0.6 },
+  satellite: { fog: 1 },
+  astrafox: { driftRate: 2.5, driftScale: 2.5, spacing: 0.85, pace: 1.2 },
+};
+/** the run's fx with a companion's on top: multipliers multiply, fog takes
+ *  the thicker, the flip is an OR - so a mission's dial and the pal's stack
+ *  rather than one silently replacing the other */
+function mergeFx(base: LabFx, pal: LabFx): LabFx {
+  const out: LabFx = { ...base };
+  if (pal.upsideDown) out.upsideDown = true;
+  if (pal.fog !== undefined) out.fog = Math.max(base.fog ?? 0, pal.fog);
+  for (const k of ["pace", "gapScale", "driftScale", "driftRate", "spacing"] as const) {
+    if (pal[k] !== undefined) out[k] = (base[k] ?? 1) * pal[k]!;
+  }
+  return out;
 }
 /** the world is drawn upside down: a mission's or the lab's fx, or Magnetar */
 export function worldFlipped(w: World): boolean {
@@ -805,12 +833,14 @@ function driftModOf(save: SaveData, w: World) {
  *  A level's fx.pace rides the same lever, so SOLAR FURNACE is Thrill
  *  Seeker at 1.2 rather than a second clock to reason about. */
 function paceOf(save: SaveData, w: World) {
-  if (w.lvl) return w.lvl.def.fx.pace ?? 1;
+  // AstraFox rides the same clock (PAL_FX pace), on top of whatever the
+  // mission or the mods set - fxOf has already multiplied the two.
+  if (w.lvl) return fxOf(w).pace ?? 1;
   // Wormhole scores compare one shared control model. Cosmetics still
   // travel with the pilot, but global mods do not silently change its
   // reaction window or invalidate a generated safe path.
   if (w.flight === "tunnel") return 1;
-  return modsLive(save, w) && save.thrillSeeker ? 2 : 1;
+  return (modsLive(save, w) && save.thrillSeeker ? 2 : 1) * (w.palFx?.pace ?? 1);
 }
 
 function gravOf(save: SaveData, w: World) {
@@ -1303,7 +1333,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const env = ENVS[w.envB];
   const d = difficulty(w);
   // BABY ALIEN (owner, 7 Sep 2026): planetary gaps at .6
-  let gap = d.gap * (fxOf(w).gapScale ?? 1) * (palId(save, w) === "babyalien" ? 0.6 : 1);
+  let gap = d.gap * (fxOf(w).gapScale ?? 1);
   const margin = 72;
   let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
   const dx = Math.max(80, x - w.lastSpawnX);
@@ -1523,7 +1553,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // the pause-sheet lab rides only a beta free flight; everything else
   // flies clean so no mission and no live run can inherit a dial
   w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
-  w.palFlip = palId(save, w) === "magnetar";
+  w.palFx = PAL_FX[palId(save, w)] ?? null;
+  w.palFlip = !!w.palFx?.upsideDown;
   w.flight = flight;
   w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
   // A campaign level is an ordinary run wearing a finish line. It is set

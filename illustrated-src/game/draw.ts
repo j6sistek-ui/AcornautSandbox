@@ -2732,7 +2732,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl || w.lab.fog) {
+  {
+    // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
     const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
@@ -3079,7 +3080,8 @@ function drawRetroWorld(
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl || w.lab.fog) {
+  {
+    // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
     const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
