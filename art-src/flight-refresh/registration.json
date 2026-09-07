@@ -1,0 +1,2012 @@
+{
+  "copper": [
+    {
+      "name": "copper-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        231,
+        125,
+        56
+      ],
+      "sourcePelvis": [
+        132,
+        204
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 8.589159979767555,
+      "pitch": -30,
+      "head": [
+        182.33,
+        103.17,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        229,
+        126,
+        56
+      ],
+      "sourcePelvis": [
+        142,
+        213
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 10.999999999999996,
+      "pitch": -34,
+      "head": [
+        178.1,
+        100.16,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        219.61,
+        110.66,
+        56
+      ],
+      "sourcePelvis": [
+        145,
+        212
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 15.63821924765319,
+      "pitch": -38,
+      "head": [
+        176.54,
+        95.39,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        204.61,
+        99.66,
+        56
+      ],
+      "sourcePelvis": [
+        157,
+        222
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 26.735935447881136,
+      "pitch": -42,
+      "head": [
+        175.66,
+        89.69,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        222.61,
+        124.66,
+        56
+      ],
+      "sourcePelvis": [
+        128,
+        232
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 2.6068904255781224,
+      "pitch": -46,
+      "head": [
+        176.67,
+        81.39,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        221.61,
+        113.66,
+        56
+      ],
+      "sourcePelvis": [
+        143,
+        240
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 8.109716759061289,
+      "pitch": -50,
+      "head": [
+        174.61,
+        75.31,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        214.63,
+        90.45,
+        58.8
+      ],
+      "sourcePelvis": [
+        159,
+        236
+      ],
+      "scale": 0.5238095238095238,
+      "rotation": 15.082872502254581,
+      "pitch": -54,
+      "head": [
+        169.97,
+        71.97,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        196.63,
+        80.45,
+        58.8
+      ],
+      "sourcePelvis": [
+        168,
+        234
+      ],
+      "scale": 0.5238095238095238,
+      "rotation": 21.438255874321428,
+      "pitch": -58,
+      "head": [
+        165.36,
+        68.62,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        231,
+        125,
+        56
+      ],
+      "sourcePelvis": [
+        132,
+        204
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 8.589159979767555,
+      "pitch": -30,
+      "head": [
+        182.33,
+        103.17,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        233.48,
+        163.57,
+        53.73
+      ],
+      "sourcePelvis": [
+        138,
+        236
+      ],
+      "scale": 0.5732365531360506,
+      "rotation": 16.1835243874444,
+      "pitch": -21,
+      "head": [
+        186.14,
+        113.38,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        238.61,
+        200.34,
+        56
+      ],
+      "sourcePelvis": [
+        147,
+        240
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 11.408856225212011,
+      "pitch": -12,
+      "head": [
+        175.7,
+        126.58,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        233.61,
+        227.34,
+        56
+      ],
+      "sourcePelvis": [
+        164,
+        243
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 9.678620749658373,
+      "pitch": -3,
+      "head": [
+        161.19,
+        135.95,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        225.61,
+        184.34,
+        56
+      ],
+      "sourcePelvis": [
+        119,
+        230
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 29.18496796796913,
+      "pitch": 6,
+      "head": [
+        185.44,
+        144.67,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        226.61,
+        208.34,
+        56
+      ],
+      "sourcePelvis": [
+        131,
+        233
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 29.462681704969768,
+      "pitch": 15,
+      "head": [
+        174.46,
+        152.06,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        226.48,
+        223.57,
+        53.2
+      ],
+      "sourcePelvis": [
+        143,
+        237
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 33.139256353428244,
+      "pitch": 24,
+      "head": [
+        166.72,
+        157.91,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "copper-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        220.48,
+        226.57,
+        53.2
+      ],
+      "sourcePelvis": [
+        152,
+        237
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 41.660007988850225,
+      "pitch": 33,
+      "head": [
+        155.63,
+        159.84,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    }
+  ],
+  "cryostar": [
+    {
+      "name": "cryostar-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        224,
+        198,
+        44
+      ],
+      "sourcePelvis": [
+        135,
+        264
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 6.559634724493368,
+      "pitch": -30,
+      "head": [
+        186.12,
+        100.98,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        209,
+        183,
+        44
+      ],
+      "sourcePelvis": [
+        132,
+        261
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 11.369645061847018,
+      "pitch": -34,
+      "head": [
+        182.71,
+        97.05,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        199,
+        167,
+        44
+      ],
+      "sourcePelvis": [
+        140,
+        250
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 16.59313426273034,
+      "pitch": -38,
+      "head": [
+        175.62,
+        96.11,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        180,
+        134,
+        44
+      ],
+      "sourcePelvis": [
+        146,
+        224
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 27.30454926593672,
+      "pitch": -42,
+      "head": [
+        169.77,
+        94.99,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        230.35,
+        155.9,
+        46.2
+      ],
+      "sourcePelvis": [
+        137,
+        227
+      ],
+      "scale": 0.6363636363636362,
+      "rotation": -8.705299091892705,
+      "pitch": -46,
+      "head": [
+        173.87,
+        84.28,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        221,
+        147,
+        44
+      ],
+      "sourcePelvis": [
+        137,
+        232
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": -4.660975675548552,
+      "pitch": -50,
+      "head": [
+        173.33,
+        76.83,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        206,
+        129,
+        44
+      ],
+      "sourcePelvis": [
+        142,
+        230
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 3.63906244063011,
+      "pitch": -54,
+      "head": [
+        168.96,
+        73.36,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        204.35,
+        99.9,
+        46.2
+      ],
+      "sourcePelvis": [
+        155,
+        222
+      ],
+      "scale": 0.6363636363636362,
+      "rotation": 9.992578657846419,
+      "pitch": -58,
+      "head": [
+        166.41,
+        66.93,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        224,
+        198,
+        44
+      ],
+      "sourcePelvis": [
+        135,
+        264
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 6.559634724493368,
+      "pitch": -30,
+      "head": [
+        186.12,
+        100.98,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        219,
+        112,
+        44
+      ],
+      "sourcePelvis": [
+        130,
+        170
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 12.091699938682437,
+      "pitch": -21,
+      "head": [
+        188.27,
+        112.56,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        210,
+        121,
+        44
+      ],
+      "sourcePelvis": [
+        134,
+        174
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 22.890701507504826,
+      "pitch": -12,
+      "head": [
+        182.56,
+        125.13,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        198,
+        122,
+        44
+      ],
+      "sourcePelvis": [
+        140,
+        171
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 37.192046036969536,
+      "pitch": -3,
+      "head": [
+        172.66,
+        135.34,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        235.36,
+        104.44,
+        46.2
+      ],
+      "sourcePelvis": [
+        135,
+        140
+      ],
+      "scale": 0.6363636363636362,
+      "rotation": 25.510479933890206,
+      "pitch": 6,
+      "head": [
+        189.38,
+        145.08,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        225.96,
+        111.7,
+        44
+      ],
+      "sourcePelvis": [
+        134,
+        140
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 32.105355850160336,
+      "pitch": 15,
+      "head": [
+        184.1,
+        154.64,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        206.96,
+        126.7,
+        44
+      ],
+      "sourcePelvis": [
+        141,
+        147
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 41.1063912892958,
+      "pitch": 24,
+      "head": [
+        164.13,
+        156.76,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "cryostar-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        196.74,
+        132.77,
+        44
+      ],
+      "sourcePelvis": [
+        150,
+        145
+      ],
+      "scale": 0.6681818181818181,
+      "rotation": 47.66328203782412,
+      "pitch": 33,
+      "head": [
+        149.07,
+        155.58,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    }
+  ],
+  "verdant": [
+    {
+      "name": "verdant-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        230,
+        144,
+        48
+      ],
+      "sourcePelvis": [
+        135,
+        215
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 6.773277535891835,
+      "pitch": -30,
+      "head": [
+        184.91,
+        101.68,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        236,
+        146,
+        48
+      ],
+      "sourcePelvis": [
+        137,
+        217
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 1.6470207499067462,
+      "pitch": -34,
+      "head": [
+        183.86,
+        96.27,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        243,
+        135,
+        48
+      ],
+      "sourcePelvis": [
+        146,
+        206
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": -1.797410709991058,
+      "pitch": -38,
+      "head": [
+        180.02,
+        92.67,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        218,
+        112,
+        48
+      ],
+      "sourcePelvis": [
+        158,
+        205
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 15.171458208587474,
+      "pitch": -42,
+      "head": [
+        172.38,
+        92.64,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        230,
+        131,
+        48
+      ],
+      "sourcePelvis": [
+        132,
+        219
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": -4.07745539942437,
+      "pitch": -46,
+      "head": [
+        178.04,
+        79.97,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        242,
+        120,
+        48
+      ],
+      "sourcePelvis": [
+        133,
+        225
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": -6.070824454786959,
+      "pitch": -50,
+      "head": [
+        181.59,
+        66.99,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        241,
+        89,
+        48
+      ],
+      "sourcePelvis": [
+        146,
+        218
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": -0.36919821145155657,
+      "pitch": -54,
+      "head": [
+        179.68,
+        58.61,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        220.22,
+        66.26,
+        48
+      ],
+      "sourcePelvis": [
+        153,
+        209
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 6.783027113883713,
+      "pitch": -58,
+      "head": [
+        173.21,
+        56.05,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        230,
+        144,
+        48
+      ],
+      "sourcePelvis": [
+        135,
+        215
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 6.773277535891835,
+      "pitch": -30,
+      "head": [
+        184.91,
+        101.68,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        224.67,
+        165.53,
+        48
+      ],
+      "sourcePelvis": [
+        134,
+        220
+      ],
+      "scale": 0.6124999999999999,
+      "rotation": 9.995341853853622,
+      "pitch": -21,
+      "head": [
+        182.48,
+        114.78,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        225.33,
+        182.56,
+        45.6
+      ],
+      "sourcePelvis": [
+        139,
+        222
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 12.553367339044122,
+      "pitch": -12,
+      "head": [
+        181.86,
+        125.28,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        227.33,
+        203.56,
+        45.6
+      ],
+      "sourcePelvis": [
+        155,
+        222
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 11.302465118153217,
+      "pitch": -3,
+      "head": [
+        170.06,
+        135.48,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        211.33,
+        175.56,
+        45.6
+      ],
+      "sourcePelvis": [
+        112,
+        192
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 15.397768354239302,
+      "pitch": 6,
+      "head": [
+        186.56,
+        144.79,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        210.33,
+        193.56,
+        45.6
+      ],
+      "sourcePelvis": [
+        120,
+        194
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 15.279087164865063,
+      "pitch": 15,
+      "head": [
+        178.26,
+        153.07,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        211.33,
+        204.56,
+        45.6
+      ],
+      "sourcePelvis": [
+        131,
+        190
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 13.726539876773263,
+      "pitch": 24,
+      "head": [
+        170.08,
+        159.41,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "verdant-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        212.88,
+        218.29,
+        45.6
+      ],
+      "sourcePelvis": [
+        146,
+        196
+      ],
+      "scale": 0.644736842105263,
+      "rotation": 14.567621301308678,
+      "pitch": 33,
+      "head": [
+        160.12,
+        162.75,
+        29.4
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    }
+  ],
+  "sammie": [
+    {
+      "name": "sammie-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        233,
+        168,
+        47
+      ],
+      "sourcePelvis": [
+        135,
+        237
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 5.14867265719194,
+      "pitch": -30,
+      "head": [
+        183.84,
+        102.3,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        236,
+        167,
+        47
+      ],
+      "sourcePelvis": [
+        135,
+        238
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 1.1060793302645864,
+      "pitch": -34,
+      "head": [
+        182.98,
+        96.87,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        233,
+        155,
+        47
+      ],
+      "sourcePelvis": [
+        139,
+        230
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 0.5853981926602911,
+      "pitch": -38,
+      "head": [
+        178.45,
+        93.89,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        225.3,
+        133.95,
+        49.35
+      ],
+      "sourcePelvis": [
+        151,
+        222
+      ],
+      "scale": 0.5673758865248226,
+      "rotation": 7.84103088177358,
+      "pitch": -42,
+      "head": [
+        170.58,
+        94.26,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        233.3,
+        115.95,
+        49.35
+      ],
+      "sourcePelvis": [
+        129,
+        201
+      ],
+      "scale": 0.5673758865248226,
+      "rotation": -6.804950237123413,
+      "pitch": -46,
+      "head": [
+        175.04,
+        83.07,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        235.7,
+        115.05,
+        44.65
+      ],
+      "sourcePelvis": [
+        132,
+        205
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": -9.061435580082051,
+      "pitch": -50,
+      "head": [
+        177.33,
+        72.05,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        233.4,
+        101.64,
+        44.65
+      ],
+      "sourcePelvis": [
+        143,
+        204
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": -5.449573563277426,
+      "pitch": -54,
+      "head": [
+        172.34,
+        68.72,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        226.74,
+        75.41,
+        47
+      ],
+      "sourcePelvis": [
+        151,
+        189
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": -1.6947233536597883,
+      "pitch": -58,
+      "head": [
+        165.1,
+        69.02,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        233,
+        168,
+        47
+      ],
+      "sourcePelvis": [
+        135,
+        237
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 5.14867265719194,
+      "pitch": -30,
+      "head": [
+        183.84,
+        102.3,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        237,
+        125,
+        47
+      ],
+      "sourcePelvis": [
+        136,
+        189
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 11.360937559369894,
+      "pitch": -21,
+      "head": [
+        188.5,
+        112.47,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        236,
+        145,
+        47
+      ],
+      "sourcePelvis": [
+        144,
+        202
+      ],
+      "scale": 0.5957446808510638,
+      "rotation": 19.78091509298341,
+      "pitch": -12,
+      "head": [
+        185.07,
+        124.59,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        223.4,
+        175.64,
+        44.65
+      ],
+      "sourcePelvis": [
+        152,
+        213
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": 24.62078196998608,
+      "pitch": -3,
+      "head": [
+        172.46,
+        135.36,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        234.3,
+        82.95,
+        49.35
+      ],
+      "sourcePelvis": [
+        132,
+        146
+      ],
+      "scale": 0.5673758865248226,
+      "rotation": 37.646546957204,
+      "pitch": 6,
+      "head": [
+        189.81,
+        145.13,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        236.4,
+        97.64,
+        44.65
+      ],
+      "sourcePelvis": [
+        135,
+        161
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": 46.9992879124136,
+      "pitch": 15,
+      "head": [
+        194.43,
+        157.41,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        234.4,
+        139.64,
+        44.65
+      ],
+      "sourcePelvis": [
+        142,
+        164
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": 38.769198530291646,
+      "pitch": 24,
+      "head": [
+        176.74,
+        162.37,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "sammie-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        212.4,
+        181.64,
+        44.65
+      ],
+      "sourcePelvis": [
+        150,
+        177
+      ],
+      "scale": 0.6270996640537514,
+      "rotation": 28.74737103642101,
+      "pitch": 33,
+      "head": [
+        154.91,
+        159.37,
+        28
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    }
+  ],
+  "gemmie": [
+    {
+      "name": "gemmie-asc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        242,
+        162,
+        56
+      ],
+      "sourcePelvis": [
+        141,
+        231
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 4.3396517054646715,
+      "pitch": -30,
+      "head": [
+        180.26,
+        104.36,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-2",
+      "sourceIndex": 1,
+      "sourceHead": [
+        243,
+        145,
+        56
+      ],
+      "sourcePelvis": [
+        143,
+        226
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 5.00747255212104,
+      "pitch": -34,
+      "head": [
+        180.68,
+        98.42,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-3",
+      "sourceIndex": 2,
+      "sourceHead": [
+        232,
+        118,
+        56
+      ],
+      "sourcePelvis": [
+        150,
+        215
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 11.790130722363232,
+      "pitch": -38,
+      "head": [
+        177.05,
+        94.99,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-4",
+      "sourceIndex": 3,
+      "sourceHead": [
+        222.95,
+        101,
+        53.2
+      ],
+      "sourcePelvis": [
+        159,
+        204
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 16.164938170300957,
+      "pitch": -42,
+      "head": [
+        174.16,
+        91.03,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-5",
+      "sourceIndex": 4,
+      "sourceHead": [
+        235,
+        129,
+        56
+      ],
+      "sourcePelvis": [
+        133,
+        244
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 2.4283685588549755,
+      "pitch": -46,
+      "head": [
+        180.73,
+        77.18,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-6",
+      "sourceIndex": 5,
+      "sourceHead": [
+        235.95,
+        123,
+        53.2
+      ],
+      "sourcePelvis": [
+        137,
+        245
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 0.9556812013638873,
+      "pitch": -50,
+      "head": [
+        180.46,
+        68.33,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-7",
+      "sourceIndex": 6,
+      "sourceHead": [
+        230.95,
+        103,
+        53.2
+      ],
+      "sourcePelvis": [
+        148,
+        236
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 4.048861300692365,
+      "pitch": -54,
+      "head": [
+        175.34,
+        64.58,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-asc-8",
+      "sourceIndex": 7,
+      "sourceHead": [
+        212.57,
+        72.67,
+        53.2
+      ],
+      "sourcePelvis": [
+        162,
+        221
+      ],
+      "scale": 0.5789473684210525,
+      "rotation": 13.174267554887455,
+      "pitch": -58,
+      "head": [
+        170.08,
+        61.06,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-1",
+      "sourceIndex": 0,
+      "sourceHead": [
+        242,
+        162,
+        56
+      ],
+      "sourcePelvis": [
+        141,
+        231
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 4.3396517054646715,
+      "pitch": -30,
+      "head": [
+        180.26,
+        104.36,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-2",
+      "sourceIndex": 9,
+      "sourceHead": [
+        242,
+        175,
+        56
+      ],
+      "sourcePelvis": [
+        140,
+        229
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 6.897271030947628,
+      "pitch": -21,
+      "head": [
+        181.26,
+        115.25,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-3",
+      "sourceIndex": 10,
+      "sourceHead": [
+        234.65,
+        196.08,
+        56
+      ],
+      "sourcePelvis": [
+        149,
+        229
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": 9.024510144569241,
+      "pitch": -12,
+      "head": [
+        171.36,
+        127.51,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-4",
+      "sourceIndex": 11,
+      "sourceHead": [
+        229.65,
+        230.08,
+        56
+      ],
+      "sourcePelvis": [
+        157,
+        230
+      ],
+      "scale": 0.5499999999999999,
+      "rotation": -3.0630923676306945,
+      "pitch": -3,
+      "head": [
+        161.9,
+        135.91,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-5",
+      "sourceIndex": 12,
+      "sourceHead": [
+        252.65,
+        222.08,
+        57.4
+      ],
+      "sourcePelvis": [
+        139,
+        226
+      ],
+      "scale": 0.5365853658536585,
+      "rotation": 7.975454917910443,
+      "pitch": 6,
+      "head": [
+        182.68,
+        144.38,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-6",
+      "sourceIndex": 13,
+      "sourceHead": [
+        243.65,
+        231.08,
+        57.4
+      ],
+      "sourcePelvis": [
+        145,
+        226
+      ],
+      "scale": 0.5365853658536585,
+      "rotation": 12.052147054758837,
+      "pitch": 15,
+      "head": [
+        173.2,
+        151.72,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-7",
+      "sourceIndex": 14,
+      "sourceHead": [
+        230.37,
+        237.98,
+        54.53
+      ],
+      "sourcePelvis": [
+        149,
+        222
+      ],
+      "scale": 0.5648267008985879,
+      "rotation": 12.889259770042543,
+      "pitch": 24,
+      "head": [
+        164.79,
+        157.05,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    },
+    {
+      "name": "gemmie-desc-8",
+      "sourceIndex": 15,
+      "sourceHead": [
+        216.37,
+        252.98,
+        54.53
+      ],
+      "sourcePelvis": [
+        158,
+        223
+      ],
+      "scale": 0.5648267008985879,
+      "rotation": 5.814060577229915,
+      "pitch": 33,
+      "head": [
+        153.08,
+        158.19,
+        30.8
+      ],
+      "pelvis": [
+        122,
+        138
+      ]
+    }
+  ]
+}
