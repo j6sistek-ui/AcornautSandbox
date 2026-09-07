@@ -33,8 +33,8 @@ win.HTMLElement.prototype.scrollIntoView=function(){const sc=this.closest('.ac-s
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 
 const S=await import('../docs/js/save.js'), Sim=await import('../docs/js/sim.js'), Cat=await import('../docs/js/catalog.js'), Art=await import('../docs/js/art.js');
-assert.equal(Cat.SUITS.some(s=>s.id==='arcflash'),mode==='beta');
-assert.equal(Cat.TRAILS.some(s=>s.id==='arcflashwake'),mode==='beta');
+assert(Cat.SUITS.some(s=>s.id==='arcflash'),'Arcflash is sold on both pages');
+assert(Cat.TRAILS.some(s=>s.id==='arcflashwake'),'its wake ships with it on both pages');
 assert.equal(Cat.trailWornBy('ion','arcflash'),'arcflashwake');
 assert.equal(Cat.trailWornBy('arcflashwake','flight'),'sparks');
 assert.equal(Cat.trailWornBy('arcflashwake','vanguard'),'vanguardwake');

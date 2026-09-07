@@ -33,7 +33,6 @@ import {
 } from "./catalog";
 
 export type SaveData = {
-  pinnedRewards?: string[];
   campaignProgress?: CampaignProgress;
   betaSampleCreditImported?: boolean;
   spillAppearance?: SpillAppearance;
@@ -137,8 +136,8 @@ export type SaveData = {
    *  They surface in a FAVOURITES shelf at the top of each tab, a shelf
    *  that does not exist until the first star. */
   favorites?: string[];
-  /** the loadout's animated case, shrunk so the shelves get the room */
-  heroCompact?: boolean;
+  /** the loadout's animated case, opened out; folded is the default */
+  heroExpanded?: boolean;
   /** AcorNut's forward lean in degrees, dialled on the phone until it settles */
   /** per-suit forward lean in whole degrees, set with the beta pitch dial;
    *  absent = the catalog default (SUIT_PITCH_DEFAULTS) */
@@ -335,6 +334,10 @@ export function loadSave(): SaveData {
   s.spillSignal = s.spillEngineColor !== "stock";
   s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
   // favourites are ids only; anything else in the array is a hand-edit
+  // the case used to remember "compact"; it starts folded now and only
+  // remembers "expanded". The pin-to-home list is gone with its feature.
+  delete (s as unknown as { heroCompact?: unknown }).heroCompact;
+  delete (s as unknown as { pinnedRewards?: unknown }).pinnedRewards;
   if (!Array.isArray(s.favorites)) s.favorites = [];
   s.favorites = [...new Set(s.favorites.filter((x) => typeof x === "string"))];
   if (!Array.isArray(s.raceGates)) s.raceGates = [];
@@ -467,7 +470,7 @@ export function helmetRevealed(s: SaveData, id: string) {
 // trails keep the purchase contract.
 export function trailUnlocked(s: SaveData, id: string) {
   if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
-  if (id === "arcflashwake") return IS_BETA && suitRevealed(s, "arcflash");
+  if (id === "arcflashwake") return suitRevealed(s, "arcflash");
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.trails[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);

@@ -103,16 +103,6 @@ for(const hz of [120,90,144]) {
  assert(Math.abs(engine.world.spill.t-startT-1)<1e-6,`${hz} Hz preserves one second of simulation`);
  assert(clears-startClears>=59&&clears-startClears<=61,`${hz} Hz paints ${clears-startClears} frames, expected 60`);
 }
-// Pinning changes only the home list, never equipment, credit, or purchases.
-engine.open('hangar');engine.setShopTab('suits');
-const pin=app.querySelector('[data-reward-pin^="suit:"]');assert(pin);const key=pin.dataset.rewardPin;
-const equipped=engine.save.equippedSuit,wallet=engine.save.acorns;
-pin.click();assert(engine.save.pinnedRewards.includes(key));assert.equal(engine.save.equippedSuit,equipped);assert.equal(engine.save.acorns,wallet);
-assert(Save.loadSave().pinnedRewards.includes(key));
-engine.open('title');assert(app.querySelector('.ac-pinnedreward'));assert(app.querySelector('.ac-pinnedopen progress'));
-app.querySelector('.ac-pinnedopen').click();assert.equal(engine.world.screen,'hangar');
-engine.open('title');app.querySelector('[data-reward-pin]').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-assert(!engine.save.pinnedRewards.includes(key));assert(!app.querySelector('.ac-pinnedreward'));
 // The actual engine admits the extra beat only after complete art readiness
 // and only for Vanguard. Its Depot overlay must remain closed throughout it.
 const scene={depot:{width:1536,height:1024,naturalWidth:1536,naturalHeight:1024},

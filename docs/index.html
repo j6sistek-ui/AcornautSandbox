@@ -1290,8 +1290,11 @@
     body.ac-beta .ac-switch { background: #241740; border-color: rgba(170,140,240,.3); }
     body.ac-beta .ac-codein { background: #1a1136; border-color: rgba(170,140,240,.3); }
     /* hub-and-spoke: the beta menus' way home, and room where the bar was */
+    /* the same purple as the MODES back button, so it reads as a button and
+       not a blend-in glyph (owner, 7 Sep 2026) */
     .ac-backbtn { flex: none; width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center;
-      background: rgba(30,20,62,.85); border: 1px solid rgba(170,140,240,.3); color: #cfd8ea; align-self: center; }
+      background: linear-gradient(180deg, #8a5ae4, #4a279c); border: 1px solid rgba(206,186,255,.5); color: #fff; align-self: center;
+      box-shadow: 0 10px 26px -10px rgba(138,90,228,.85), inset 0 1px 0 rgba(255,255,255,.3); }
     .ac-backbtn:active { transform: scale(.94); }
     body.ac-beta .ac-menu .ac-sheet-scroll { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
     body.ac-beta .ac-coach { bottom: calc(20px + env(safe-area-inset-bottom)); }
@@ -1799,18 +1802,7 @@
     .ac-depothealth { width: 90px; height: 12px; accent-color: #64e09b; }
     .ac-depothealth::-webkit-progress-bar { background:#ffffff22; border-radius:6px; }
     .ac-depothealth::-webkit-progress-value { background:linear-gradient(#a3ffb2,#26af78); border-radius:6px; }
-    .ac-rewardpin { display:block; cursor:pointer; padding:9px 5px; color:#ffe299; font:800 10px Figtree,sans-serif; text-align:center; border-radius:7px; background:#302847; }
-    .ac-rewardpin.on { background:#225443; color:#cbffe5; }
-    .ac-rewardpin:focus-visible { outline:2px solid #ffe299; outline-offset:2px; }
     .ac-rewardwithpin { display:flex; flex-direction:column; align-items:center; gap:3px; }
-    .ac-palmark .ac-rewardpin { font-size:8px; padding:6px 2px; }
-    .ac-pinnedhome { display:flex; flex-shrink:0; gap:8px; overflow-x:auto; max-width:100%; width:100%; z-index:2; padding:4px 12px 8px; box-sizing:border-box; }
-    .ac-pinnedhome[hidden] { display:none; }
-    .ac-pinnedreward { min-width:155px; max-width:180px; border:1px solid #b3935766; border-radius:12px; padding:7px; background:linear-gradient(135deg,#293d57ee,#181b30ee); }
-    .ac-pinnedopen { display:grid; grid-template-columns:32px 1fr; gap:4px 8px; color:#fff1ce; width:100%; background:none; border:0; text-align:left; cursor:pointer; }
-    .ac-pinnedopen b { font-size:12px; } .ac-pinnedopen span { font-size:10px; grid-column:1 / -1; }
-    .ac-pinnedopen progress { width:100%; height:5px; grid-column:1 / -1; accent-color:#f3c362; }
-    .ac-pinnedreward .ac-rewardpin { margin-top:5px; padding:6px; }
   </style>
 <style id="ac-star-map-css">/* Continuous zone scenery; generated into both page shells by export-sandbox. */
 .ac-zone-chart { background: #090e1b; }
@@ -1997,7 +1989,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js200/standalone.js")
+    import("./js205/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

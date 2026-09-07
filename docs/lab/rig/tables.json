@@ -1,5 +1,5 @@
 {
- "artVer": "198",
+ "artVer": "205",
  "suits": [
   {
    "id": "flight",
@@ -20,6 +20,20 @@
    "name": "AcorNut",
    "key": "suit:vanguard",
    "file": "suits/vanguard.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "arcflash",
+   "name": "Arcflash",
+   "key": "suit:arcflash",
+   "file": "suits/arcflash.png",
    "dome": [
     128,
     128,
@@ -362,6 +376,20 @@
     44
    ],
    "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "briellacat",
+   "name": "Briella's Cat",
+   "key": "suit:briellacat",
+   "file": "suits/briellacat.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
    "bakedDome": false,
    "frame": false
   },
@@ -4993,6 +5021,160 @@
    "name": "Alien 1 desc 7",
    "key": "alien2-desc-7",
    "file": "suits/alien2-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-1",
+   "name": "Briella's Cat asc 1",
+   "key": "briellacat-asc-1",
+   "file": "suits/briellacat-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-2",
+   "name": "Briella's Cat asc 2",
+   "key": "briellacat-asc-2",
+   "file": "suits/briellacat-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-3",
+   "name": "Briella's Cat asc 3",
+   "key": "briellacat-asc-3",
+   "file": "suits/briellacat-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-4",
+   "name": "Briella's Cat asc 4",
+   "key": "briellacat-asc-4",
+   "file": "suits/briellacat-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-5",
+   "name": "Briella's Cat asc 5",
+   "key": "briellacat-asc-5",
+   "file": "suits/briellacat-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-6",
+   "name": "Briella's Cat asc 6",
+   "key": "briellacat-asc-6",
+   "file": "suits/briellacat-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-asc-7",
+   "name": "Briella's Cat asc 7",
+   "key": "briellacat-asc-7",
+   "file": "suits/briellacat-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-desc-1",
+   "name": "Briella's Cat desc 1",
+   "key": "briellacat-desc-1",
+   "file": "suits/briellacat-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-desc-2",
+   "name": "Briella's Cat desc 2",
+   "key": "briellacat-desc-2",
+   "file": "suits/briellacat-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-desc-3",
+   "name": "Briella's Cat desc 3",
+   "key": "briellacat-desc-3",
+   "file": "suits/briellacat-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "briellacat-desc-4",
+   "name": "Briella's Cat desc 4",
+   "key": "briellacat-desc-4",
+   "file": "suits/briellacat-desc-4.png",
    "dome": [
     128,
     128,

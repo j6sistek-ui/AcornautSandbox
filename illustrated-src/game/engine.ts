@@ -171,7 +171,8 @@ export type Engine = {
   toggleFavorite: (id: string) => boolean;
   isFavorite: (id: string) => boolean;
   /** shrink or restore the loadout's animated case */
-  setHeroCompact: (on: boolean) => void;
+  /** the loadout case: folded by default, expanded on request */
+  setHeroExpanded: (on: boolean) => void;
   /** AcorNut's pitch trim, in degrees; the dial until the number settles */
   /** the beta pitch dial: a suit's whole-animation forward lean, in degrees */
   setSuitPitch: (suitId: string, deg: number) => void;
@@ -489,8 +490,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
-    setHeroCompact(on) {
-      save.heroCompact = !!on;
+    setHeroExpanded(on) {
+      save.heroExpanded = !!on;
       writeSave(save);
       notify();
     },
