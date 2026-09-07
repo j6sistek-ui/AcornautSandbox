@@ -1,24 +1,24 @@
-import { writeSave } from "./save.js?v=197";
-import { spillAppearance } from "./spill-appearance.js?v=197";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=197";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=197";
-import { addChartScenery } from "./star-map-view.js?v=197";
-import { mapDebrisIndex } from "./zone-visuals.js?v=197";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=197";
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=197";
-import { suitLean } from "./control-constants.js?v=197";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=197";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=197";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=197";
-import { drawSprite as drawSpriteOn } from "./art.js?v=197";
-import { createEngine } from "./engine.js?v=197";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=197";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=197";
-import { formatRaceTicks } from "./race.js?v=197";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=197";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=197";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=197";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=197";
+import { writeSave, suitPitchFor } from "./save.js?v=201";
+import { spillAppearance } from "./spill-appearance.js?v=201";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=201";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=201";
+import { addChartScenery } from "./star-map-view.js?v=201";
+import { mapDebrisIndex } from "./zone-visuals.js?v=201";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=201";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=201";
+import { suitLean } from "./control-constants.js?v=201";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=201";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GAME_VERSION, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=201";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=201";
+import { drawSprite as drawSpriteOn } from "./art.js?v=201";
+import { createEngine } from "./engine.js?v=201";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=201";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=201";
+import { formatRaceTicks } from "./race.js?v=201";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=201";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=201";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=201";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=201";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -420,8 +420,10 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "pause") {
             const sheet = el("div", "ac-sheet ac-center ac-pausesheet");
-            if (engine.save.equippedSuit === "vanguard" || engine.world.tutSuit)
-                sheet.append(acornutPitchDial());
+            // THE PITCH DIAL (owner: "keep the tool in for all suits, only in
+            // beta"): the worn suit's forward lean, tuned mid-flight.
+            if (IS_BETA)
+                sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
                 : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
                     : `Score ${engine.world.score}`));
@@ -903,15 +905,17 @@ export async function bootStandalone(root) {
     // under his card in the hangar while he is worn; -5 / +5 degrees a tap,
     // the number shown. Lives in the save so it survives a reload. Goes the
     // moment the owner calls a number.
-    function acornutPitchDial() {
-        const panel = el("div", "ac-acornut-pitch");
-        const deg = engine.save.acornutPitch ?? 25;
-        panel.append(el("p", "ac-sub", `ACORNUT PITCH · ${deg > 0 ? "+" : ""}${deg}° forward`));
+    function suitPitchDial(suitId) {
+        const panel = el("div", "ac-suit-pitch");
+        const deg = suitPitchFor(engine.save, suitId);
+        const base = suitPitchDefault(suitId);
+        const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+        panel.append(el("p", "ac-sub", `${name} PITCH · ${deg > 0 ? "+" : ""}${deg}° forward`));
         const row = el("div", "ac-modes");
-        row.style.gridTemplateColumns = "repeat(3, minmax(0,1fr))";
-        for (const [label, d] of [["−5°", -5], ["reset 25°", 0], ["+5°", 5]]) {
+        row.style.gridTemplateColumns = "repeat(5, minmax(0,1fr))";
+        for (const [label, d] of [["−5°", -5], ["−1°", -1], [`reset ${base}°`, 0], ["+1°", 1], ["+5°", 5]]) {
             const b = el("button", "ac-mode", label);
-            b.onclick = () => engine.setAcornutPitch(d === 0 ? 25 : deg + d);
+            b.onclick = () => engine.setSuitPitch(suitId, d === 0 ? base : deg + d);
             row.append(b);
         }
         panel.append(row);
@@ -2043,7 +2047,7 @@ export async function bootStandalone(root) {
                     else {
                         if (palWorn)
                             paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
-                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, suitLean(wornSuit.id));
+                        paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt, suitLean(wornSuit.id), false, (suitPitchFor(engine.save, wornSuit.id) * Math.PI) / 180);
                     }
                     requestAnimationFrame(tick);
                 };
@@ -3558,7 +3562,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, CASE_W, CASE_H);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
-                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined);
+                paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, (suitPitchFor(engine.save, suit.id) * Math.PI) / 180);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -4383,7 +4387,7 @@ export async function bootStandalone(root) {
                 ctx.clearRect(0, 0, 300, 190);
                 if (palDef)
                     paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
-                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined);
+                paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, (suitPitchFor(engine.save, suit.id) * Math.PI) / 180);
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);

@@ -1,6 +1,6 @@
-import { paintVanguardRig } from './vanguard-rig.js?v=197';
-import { PHYS } from './catalog.js?v=197';
-import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=197';
+import { paintVanguardRig } from './vanguard-rig.js?v=201';
+import { PHYS } from './catalog.js?v=201';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=201';
 export const VANGUARD_FRAMES = 16;
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
@@ -50,7 +50,7 @@ const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 // Whole-animation forward lean (degrees, positive = nose down/forward). The
 // maneuver rig and the frames fallback both rotate by it; the pause-sheet dial
 // adjusts it at runtime and the save remembers the choice.
-export const VANGUARD_PITCH_TRIM_DEFAULT = 25;
+export const VANGUARD_PITCH_TRIM_DEFAULT = 12;
 let pitchTrim = VANGUARD_PITCH_TRIM_DEFAULT * DEG;
 export function setVanguardPitchTrim(degrees) {
     if (!Number.isFinite(degrees))

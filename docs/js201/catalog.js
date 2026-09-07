@@ -1,6 +1,6 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=197";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=201";
 export const GAME_VERSION = "v1.2.1-illust";
-export const ART_VER = "197";
+export const ART_VER = "201";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -43,7 +43,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-06 23:16 UTC";
+export const BUILD_TIME = "2026-09-06 23:59 UTC";
 export const BUILD = `Illustrated · ${IS_BETA ? "beta" : "flight"} v${ART_VER}${BUILD_TIME.startsWith("__") ? "" : ` · ${BUILD_TIME}`}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
@@ -71,6 +71,13 @@ export const GUIDE_SUIT = "iontrim";
 // borrows the flagship; graduation hands it back, seats the pilot in Flight
 // and the coach walks them to the Ion kit. He is earned at 500 stars.
 export const TUTORIAL_SUIT = "vanguard";
+// SUIT PITCH (owner, 6 Sep 2026): a whole-animation forward lean per suit,
+// in degrees, positive = nose down. AcorNut tested best at 10-15 - split the
+// difference. Every other suit flies as drawn until the owner tunes it with
+// the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12 };
+export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
+export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
 export const PHYS = {
     gravity: FLIGHT_GRAVITY,
@@ -187,6 +194,10 @@ export const SUITS = [
     { id: "cinderforge", beta: true, name: "Cinderforge", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2a1114", suitLite: "#7e2f27", suitDark: "#12080a", trim: "#ff4b2f", glow: "#ff3b22", dust: "#ff9470" },
     { id: "groveguard", beta: true, name: "Groveguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2e5e2d", suitLite: "#719452", suitDark: "#18351c", trim: "#c6a75d", glow: "#65dca1", dust: "#bff0ac" },
     { id: "cosmic", beta: true, name: "Cosmic", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#6b4b91", suitLite: "#b978d3", suitDark: "#30214d", trim: "#e4b8ff", glow: "#d687ff", dust: "#f0cfff" },
+    // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
+    // its own head, no helmet. Ships the still for now; the flight sprite
+    // sheet follows and is wired as its bank when it lands. Beta until then.
+    { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
     { id: "sunforged", beta: true, name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
     { id: "abyssal", beta: true, name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
     { id: "amethyst", beta: true, name: "Amethyst", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#78529a", suitLite: "#c58ce1", suitDark: "#38214f", trim: "#e0ba65", glow: "#c86dff", dust: "#efc9ff" },
@@ -668,6 +679,7 @@ export const SUIT_SHELF = [
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     { title: "ACORN INTOLERANT", ids: ["catsuit"] },
+    { title: "BRIELLA'S CAT", ids: ["briellacat"] },
     { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a

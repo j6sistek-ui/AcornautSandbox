@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=197";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=197";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=197";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=197";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=201";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=201";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=201";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=201";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -315,14 +315,17 @@ const ASC_BANKS = TAP_ANIM_ENABLED
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8 }
+        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+        // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
+        briellacat: 7 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
         voidsuit: 8, alien: 8, alien2: 7,
         stardust: 8, aurorasuit: 8, ember: 8,
         cryostar: 7, verdant: 7, gemmie: 7,
-        sammie: 7, frost: 8, ghost: 8, leviathan: 8 }
+        sammie: 7, frost: 8, ghost: 8, leviathan: 8,
+        briellacat: 4 }
     : {};
 const LAZY_SUIT_IDS = [...new Set([
         "vanguard",
@@ -519,6 +522,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor",
+            "briellacat",
         ] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
