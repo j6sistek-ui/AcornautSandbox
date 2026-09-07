@@ -1029,10 +1029,17 @@ export async function bootStandalone(root: HTMLElement) {
     // game — but a Chromium built without proprietary codecs (which is what
     // the headless browser this is tested in uses) refuses it outright. The
     // browser takes the first source it can decode.
-    for (const [file, type] of [
+    // A WIDE WINDOW GETS THE WIDE FILM (owner, 7 Sep 2026): desktops and
+    // landscape screens play intro-wide.mp4 over the horizon plate; the
+    // portrait film stays behind it as the fallback for a browser that
+    // cannot decode H.264. Phones and the app never see the wide file.
+    const wide = window.innerWidth > window.innerHeight;
+    const sources: [string, string][] = [
+      ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.4D401E"'] as [string, string]] : []),
       ["intro.webm", 'video/webm; codecs="vp9"'],
       ["intro.mp4", 'video/mp4; codecs="avc1.4D401E"'],
-    ] as const) {
+    ];
+    for (const [file, type] of sources) {
       const src = document.createElement("source");
       src.src = `${artRootUrl()}/${file}?v=${ART_VER}`;
       src.type = type;

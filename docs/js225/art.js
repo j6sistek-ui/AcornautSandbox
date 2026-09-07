@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=221";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=221";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=221";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=221";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=225";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=225";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=225";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=225";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -467,7 +467,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
-        "magnetar", "babyalien", "satellite", "astrafox",
+        "magnetar", "babyalien", "satellite", "astrafox", "spacepuppy",
         "switchback",
         "bee",
         "buddy",

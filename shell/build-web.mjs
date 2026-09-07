@@ -26,7 +26,8 @@ const SKIP = new Set(["beta", "lab", "v11", "v12", "v13", "v14", "index.html"]);
 for (const name of readdirSync(docs)) {
   if (SKIP.has(name)) continue;
   if (/^js\d+$/.test(name) && name !== `js${stamp}`) continue;
-  cpSync(join(docs, name), join(www, name), { recursive: true });
+  // the app is portrait-only: the wide film and its plate stay on the web
+  cpSync(join(docs, name), join(www, name), { recursive: true, filter: (src) => !/intro-wide\.|film-backdrop-wide\./.test(src) });
 }
 // the page: same file, module script routed through the adapter
 writeFileSync(join(www, "index.html"), html.replace(tag,

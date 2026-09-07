@@ -1,11 +1,12 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=221";
+import { platform } from "./platform.js?v=225";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=225";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "221";
+export const ART_VER = "225";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,9 +49,12 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 07:13 UTC";
+export const BUILD_TIME = "2026-09-07 20:08 UTC";
 // the build time stays exported for tooling, and off the visible line
-export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
+// a store build wears the bare version: "Alpha" is a web-page word
+export const BUILD = platform.native
+    ? `${STUDIO} · ${GAME_VERSION}`
+    : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
@@ -271,7 +275,7 @@ export const PAL_ANIM = {
     nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
     starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
     // owner sheets, 7 Sep 2026
-    magnetar: 36, babyalien: 36, satellite: 36, astrafox: 36,
+    magnetar: 36, babyalien: 36, satellite: 36, astrafox: 36, spacepuppy: 36,
 };
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
@@ -298,6 +302,10 @@ export const PALS = [
     { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps", art: "babyalien" },
     { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
     { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
+    // SPACE PUPPY (owner, 7 Sep 2026: "one last pal to make the page even").
+    // The axolotl turns a run into a bounce house: no debris, no pickups,
+    // no gate count, planets up to 2.5x, bounces 2x and 3x off the big ones.
+    { id: "spacepuppy", name: "Space Puppy", tag: "BOUNCE HOUSE", desc: "Bounce House", art: "spacepuppy" },
 ];
 /** THE COMPANIONS THAT MOVE THE GATES. Nightglider holds them still, so
  *  it cannot fly beside one of these (owner, 7 Sep 2026) - the two would
@@ -465,6 +473,7 @@ export const BUNDLES = [
     { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
     { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
     { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
+    { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
     { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
     { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {

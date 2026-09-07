@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=221";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=221";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=221";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=221";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=221";
-import { arcflashPreview } from "./arcflash-motion.js?v=221";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=221";
-import { spillAppearance } from "./spill-appearance.js?v=221";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=221";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=221";
-import { goalHud } from "./campaign.js?v=221";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=221";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=221";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=221";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=221";
-import { suitPitchFor } from "./save.js?v=221";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=221";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=221";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=221";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=221";
-import { spillEngineColor } from "./spill-content.js?v=221";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=221";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=221";
+import { spillDockTravelDuration } from "./spill.js?v=225";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=225";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=225";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=225";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=225";
+import { arcflashPreview } from "./arcflash-motion.js?v=225";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=225";
+import { spillAppearance } from "./spill-appearance.js?v=225";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=225";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=225";
+import { goalHud } from "./campaign.js?v=225";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=225";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=225";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=225";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=225";
+import { suitPitchFor } from "./save.js?v=225";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=225";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=225";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=225";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=225";
+import { spillEngineColor } from "./spill-content.js?v=225";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=225";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=225";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2607,8 +2607,11 @@ export function drawWorld(ctx, w, save, art) {
     const halo = skyLuma(w) > 0.42 ? "dark" : "light";
     for (const p of w.planets) {
         const gy = liveGapY(p, w);
-        drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
-        drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
+        // a bounce-house gate (Space Puppy) keeps one half; every other gate both
+        if (p.half !== "bot")
+            drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
+        if (p.half !== "top")
+            drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
             const bx = blockerX(p, b, w);
@@ -2989,8 +2992,10 @@ function drawRetroWorld(ctx, w, save, art) {
     const { W } = w;
     for (const p of w.planets) {
         const gy = liveGapY(p, w);
-        retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
-        retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
+        if (p.half !== "bot")
+            retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
+        if (p.half !== "top")
+            retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
             retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
