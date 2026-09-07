@@ -1,11 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=210";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=211";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.10";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "210";
+export const ART_VER = "211";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 02:42 UTC";
+export const BUILD_TIME = "2026-09-07 02:51 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.

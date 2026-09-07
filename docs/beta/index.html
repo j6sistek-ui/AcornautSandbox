@@ -35,6 +35,14 @@
     .ac-stage { position: relative; width: 100%; max-width: 480px; height: 100%; background: #0c1224; overflow: hidden; }
     .ac-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
     .ac-backplate { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+    /* the beta flight lab on the pause sheet */
+    .ac-lab { margin: 6px 0 4px; text-align: left; }
+    .ac-labhead { text-align: center; margin-bottom: 4px; }
+    .ac-labrow { display: grid; grid-template-columns: 9.5em 1fr 3.6em; align-items: center; gap: 8px; margin: 3px 0; font-size: 11px; }
+    .ac-labname { color: #cfd8ea; letter-spacing: .04em; text-transform: uppercase; }
+    .ac-labval { text-align: right; color: #ffe299; font-variant-numeric: tabular-nums; }
+    .ac-labslider { width: 100%; accent-color: #b876ff; }
+    .ac-lab .ac-modes { margin: 6px 0 2px; }
     /* a built-in wake is shown, not chosen: full strength while disabled */
     .ac-builtintrail, .ac-builtintrail:disabled { opacity: 1; cursor: default; }
     .ac-suit-pitch { margin: 6px 0 2px; }
@@ -1992,7 +2000,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js210/standalone.js")
+    import("../js211/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

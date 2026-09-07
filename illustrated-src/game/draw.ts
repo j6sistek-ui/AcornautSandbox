@@ -3,7 +3,7 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
-import { runPal } from "./sim";
+import { runPal, fxOf } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
@@ -66,7 +66,7 @@ function frameOf<T>(list: T[], t: number, speed = 6) {
 }
 
 function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
-  if (w.lvl?.def.fx.upsideDown) { ctx.translate(w.W,w.H); ctx.rotate(Math.PI); }
+  if (fxOf(w).upsideDown) { ctx.translate(w.W,w.H); ctx.rotate(Math.PI); }
   const lost = w.flight === "lost";
   const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return;
@@ -2731,8 +2731,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl) {
-    const fx = w.lvl.def.fx;
+  if (w.lvl || w.lab.fog) {
+    const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
     if (fx.fog) {
@@ -3078,8 +3078,8 @@ function drawRetroWorld(
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl) {
-    const fx = w.lvl.def.fx;
+  if (w.lvl || w.lab.fog) {
+    const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
     if (fx.fog) {
@@ -5543,7 +5543,7 @@ if (w.lvl) {
   if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
     hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
   const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-    : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+    : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
     : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
   if (experiment && !w.ready) {
     ctx.save(); ctx.font="bold 12px sans-serif"; ctx.textAlign="center";

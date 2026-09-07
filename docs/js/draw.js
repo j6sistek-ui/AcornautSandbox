@@ -1,32 +1,32 @@
-import { spillDockTravelDuration } from "./spill.js?v=210";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=210";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=210";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=210";
-import { arcflashPreview } from "./arcflash-motion.js?v=210";
-import { runPal } from "./sim.js?v=210";
-import { spillAppearance } from "./spill-appearance.js?v=210";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=210";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=210";
-import { goalHud } from "./campaign.js?v=210";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=210";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=210";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=210";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=210";
-import { suitPitchFor } from "./save.js?v=210";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=210";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=210";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=210";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=210";
-import { spillEngineColor } from "./spill-content.js?v=210";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=210";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=210";
+import { spillDockTravelDuration } from "./spill.js?v=211";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=211";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=211";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=211";
+import { arcflashPreview } from "./arcflash-motion.js?v=211";
+import { runPal, fxOf } from "./sim.js?v=211";
+import { spillAppearance } from "./spill-appearance.js?v=211";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=211";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=211";
+import { goalHud } from "./campaign.js?v=211";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=211";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=211";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=211";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=211";
+import { suitPitchFor } from "./save.js?v=211";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=211";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=211";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=211";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=211";
+import { spillEngineColor } from "./spill-content.js?v=211";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=211";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=211";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
-    if (w.lvl?.def.fx.upsideDown) {
+    if (fxOf(w).upsideDown) {
         ctx.translate(w.W, w.H);
         ctx.rotate(Math.PI);
     }
@@ -2662,8 +2662,8 @@ export function drawWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -3013,8 +3013,8 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -5397,7 +5397,7 @@ export function drawHud(ctx, w, art, save) {
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-        : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+        : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
             : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
     if (experiment && !w.ready) {
         ctx.save();

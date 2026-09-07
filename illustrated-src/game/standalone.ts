@@ -375,6 +375,8 @@ export async function bootStandalone(root: HTMLElement) {
       // THE PITCH DIAL (owner: "keep the tool in for all suits, only in
       // beta"): the worn suit's forward lean, tuned mid-flight.
       if (IS_BETA) sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
+      // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
+      if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
       sheet.append(
         el("h2", "", "PAUSED"),
         el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
@@ -868,6 +870,52 @@ export async function bootStandalone(root: HTMLElement) {
   // under his card in the hangar while he is worn; -5 / +5 degrees a tap,
   // the number shown. Lives in the save so it survives a reload. Goes the
   // moment the owner calls a number.
+  // THE FLIGHT LAB. Sliders and switches for the modifiers a mission can
+  // carry, felt on a live free flight before they are written into the
+  // road. Every dial writes straight into the running world and the beta
+  // save, so a change is visible the moment the sheet closes and holds
+  // across runs until RESET.
+  function flightLab() {
+    const lab = engine.save.lab ?? {};
+    const panel = el("div", "ac-lab");
+    panel.append(el("p", "ac-sub ac-labhead", "FLIGHT LAB · free flight only"));
+    const slider = (key: string, label: string, min: number, max: number, step: number, base: number, fmt: (v: number) => string) => {
+      const row = el("div", "ac-labrow");
+      const v = typeof lab[key] === "number" ? (lab[key] as number) : base;
+      const name = el("span", "ac-labname", label);
+      const val = el("span", "ac-labval", fmt(v));
+      const input = document.createElement("input");
+      input.type = "range"; input.min = String(min); input.max = String(max); input.step = String(step); input.value = String(v);
+      input.className = "ac-labslider"; input.setAttribute("aria-label", label);
+      input.oninput = () => { val.textContent = fmt(Number(input.value)); };
+      input.onchange = () => { const n = Number(input.value); engine.setLab({ [key]: n === base ? undefined : n }); };
+      row.append(name, input, val);
+      panel.append(row);
+    };
+    const pct = (v: number) => `${Math.round(v * 100)}%`;
+    const x = (v: number) => `${v.toFixed(2)}×`;
+    slider("fog", "Fog", 0, 1, 0.05, 0, pct);
+    slider("stickChance", "Sticky planets", 0, 1, 0.05, 0, pct);
+    slider("driftRate", "Gate sway speed", 0, 3, 0.1, 1, x);
+    slider("driftScale", "Gate sway distance", 0, 2.5, 0.1, 1, x);
+    slider("gapScale", "Gate opening", 0.6, 1.8, 0.05, 1, x);
+    slider("spacing", "Gate distance", 0.6, 1.8, 0.05, 1, x);
+    slider("bounceScale", "Planet rebound", 0.3, 2.5, 0.1, 1, x);
+    const toggles = el("div", "ac-modes");
+    (toggles as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+    for (const [key, label] of [["upsideDown", "Upside down"], ["tapFreeze", "Tap to slow time"], ["freeRevive", "Unlimited crash recovery"]] as const) {
+      const on = lab[key] === true;
+      const b = el("button", on ? "ac-mode on" : "ac-mode", `${label} · ${on ? "ON" : "OFF"}`);
+      b.onclick = () => engine.setLab({ [key]: on ? undefined : true });
+      toggles.append(b);
+    }
+    const reset = el("button", "ac-mode", "RESET LAB");
+    reset.onclick = () => engine.resetLab();
+    toggles.append(reset);
+    panel.append(toggles);
+    panel.append(el("p", "ac-fine", "Switchback as your pal: every tap toggles the slow, like the frozen acorn."));
+    return panel;
+  }
   function suitPitchDial(suitId: string) {
     const panel = el("div", "ac-suit-pitch");
     const deg = suitPitchFor(engine.save, suitId);

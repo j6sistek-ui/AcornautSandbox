@@ -1,4 +1,4 @@
-import { VANGUARD_PARTS } from './vanguard-parts.js?v=210';
+import { VANGUARD_PARTS } from './vanguard-parts.js?v=211';
 const pose = (body, head, heave, na, ne, fa, fe, nt, nk, ft, fk) => ({ body, head, heave,
     nearArm: na, nearElbow: ne, farArm: fa, farElbow: fe, nearThigh: nt, nearKnee: nk, farThigh: ft, farKnee: fk });
 // Each row is a pose, not another tilt of the same drawing. Keep separate

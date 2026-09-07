@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=207";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=207";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=207";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=207";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=211";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=211";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=211";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=211";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -154,7 +154,7 @@ export function emptyArt() {
         planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
         suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
         frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
-        suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+        suitTail: {}, suitBody: {}, suitTap: {}, suitLoop: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
         spillShip: {}, spillShipFit: null,
     };
 }
@@ -327,9 +327,15 @@ const DESC_BANKS = TAP_ANIM_ENABLED
         sammie: 7, frost: 8, ghost: 8, leviathan: 8,
         briellacat: 4 }
     : {};
+// THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
+// on the clock for as long as the suit is worn. See suitLoop / fullLoop.
+const LOOP_BANKS = { raccoon: 16, ferret: 16, hedgehog: 16 };
 const LAZY_SUIT_IDS = [...new Set([
         "vanguard",
-        ...(IS_BETA ? ["arcflash"] : []),
+        // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
+        // there too, or the suit flies as a flat body sticker off the live page.
+        "arcflash",
+        ...Object.keys(LOOP_BANKS),
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
         ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -380,8 +386,9 @@ export function loadSuitBank(bank, id) {
             rigged ? layer("-tail") : Promise.resolve(null),
             rigged ? layer("-body") : Promise.resolve(null),
         ]);
-        const [tap, tailTap, bounce, asc, desc] = await Promise.all([
+        const [tap, loop, tailTap, bounce, asc, desc] = await Promise.all([
             TAP_BANKS[id] ? many(`${base}/suits/${id}-tap-`, TAP_BANKS[id]) : Promise.resolve([]),
+            LOOP_BANKS[id] ? many(`${base}/suits/${id}-loop-`, LOOP_BANKS[id]) : Promise.resolve([]),
             TAIL_TAP_BANKS[id] ? many(`${base}/suits/${id}-tail-tap-`, TAIL_TAP_BANKS[id]) : Promise.resolve([]),
             BOUNCE_BANKS[id] ? many(`${base}/suits/${id}-bounce-`, BOUNCE_BANKS[id]) : Promise.resolve([]),
             ASC_BANKS[id] ? many(`${base}/suits/${id}-asc-`, ASC_BANKS[id]) : Promise.resolve([]),
@@ -393,6 +400,8 @@ export function loadSuitBank(bank, id) {
             bank.suitBody[id] = body;
         if (tap.length)
             bank.suitTap[id] = tap;
+        if (loop.length)
+            bank.suitLoop[id] = loop;
         if (tailTap.length)
             bank.suitTapTail[id] = tailTap;
         if (bounce.length)
@@ -537,6 +546,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "cyber",
         // Arcflash is SOLD on production (7 Sep 2026), so its art loads there.
         "arcflash",
+        // the Critter Pack (7 Sep 2026): sold on production
+        "raccoon", "ferret", "hedgehog",
         ...(IS_BETA ? [
             "cinderforge", "groveguard", "cosmic", "sunforged",
             "abyssal", "amethyst", "ivoryguard", "reactor",
@@ -650,6 +661,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         suitTail,
         suitBody,
         suitTap,
+        suitLoop: {},
         suitTapTail,
         suitBounce,
         suitAsc,

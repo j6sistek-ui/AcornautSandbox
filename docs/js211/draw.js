@@ -1,32 +1,32 @@
-import { spillDockTravelDuration } from "./spill.js?v=207";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=207";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=207";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=207";
-import { arcflashPreview } from "./arcflash-motion.js?v=207";
-import { runPal } from "./sim.js?v=207";
-import { spillAppearance } from "./spill-appearance.js?v=207";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=207";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=207";
-import { goalHud } from "./campaign.js?v=207";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=207";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=207";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=207";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=207";
-import { suitPitchFor } from "./save.js?v=207";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=207";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=207";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=207";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=207";
-import { spillEngineColor } from "./spill-content.js?v=207";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=207";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=207";
+import { spillDockTravelDuration } from "./spill.js?v=211";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=211";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=211";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=211";
+import { arcflashPreview } from "./arcflash-motion.js?v=211";
+import { runPal, fxOf } from "./sim.js?v=211";
+import { spillAppearance } from "./spill-appearance.js?v=211";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=211";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=211";
+import { goalHud } from "./campaign.js?v=211";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=211";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=211";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=211";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=211";
+import { suitPitchFor } from "./save.js?v=211";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=211";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=211";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=211";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=211";
+import { spillEngineColor } from "./spill-content.js?v=211";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=211";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=211";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
-    if (w.lvl?.def.fx.upsideDown) {
+    if (fxOf(w).upsideDown) {
         ctx.translate(w.W, w.H);
         ctx.rotate(Math.PI);
     }
@@ -2662,8 +2662,8 @@ export function drawWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -3013,8 +3013,8 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -4257,7 +4257,9 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog"]);
+// the critters' flight cycles play at this rate, on the world clock
+const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
@@ -4385,8 +4387,12 @@ poseOverride = NaN) {
     // character, so a suit that has them needs no rig to fly them; every
     // branch in here that touches rigT/rigB is unreachable on that route
     // (fullMotion is checked first and returns).
+    // A flight CYCLE is a ticket in for the same reason (the critters,
+    // 7 Sep 2026): sixteen whole-character frames, no rig cut, and the gate
+    // was holding them to the static sprite - the owner's sheets never moved.
     const bankReady = suited
-        ? (art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0
+        ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
+            || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
         : false;
     if (suited && ((rigT && rigB) || bankReady)) {
         // Rig-driven heading flight: the whole character pitches to point along
@@ -4420,6 +4426,11 @@ poseOverride = NaN) {
         const ascFrames = art?.suitAsc?.[suit.id] ?? [];
         const descFrames = art?.suitDesc?.[suit.id] ?? [];
         const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
+        // A CONTINUOUS CYCLE (the critters): whole-character frames that loop on
+        // the clock the whole time the suit is worn. Outranks the tap bank, and
+        // like a motion bank it carries its own tail, so no rig layer draws.
+        const loopFrames = art?.suitLoop?.[suit.id] ?? [];
+        const fullLoop = !fullMotion && loopFrames.length > 0;
         const tapFrames = art?.suitTap?.[suit.id] ?? [];
         const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
         // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
@@ -4433,7 +4444,7 @@ poseOverride = NaN) {
         const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
         let tailPose = rigT;
         let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
-        if (fullBounce || fullMotion) {
+        if (fullBounce || fullMotion || fullLoop) {
             /* these frames carry the whole character, tail included */
         }
         else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
@@ -4441,7 +4452,7 @@ poseOverride = NaN) {
                 * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
         }
-        else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && tapTailFrames.length === 12) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && tapTailFrames.length === 12) {
             // One tail drawing per 30 fps presentation frame. The sequence bends
             // progressively from the planted hinge to the tip: launch drag, delayed
             // whip, one rebound, settle. A small share of the live spring remains so
@@ -4463,10 +4474,10 @@ poseOverride = NaN) {
             tailPoseRot *= 0.48;
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
-        else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && pivot) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && pivot) {
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
         }
-        else if (!fullTap && !fullBounce && !fullMotion) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop) {
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         let poseA = rigB;
@@ -4553,6 +4564,13 @@ poseOverride = NaN) {
             if (!wearsOwnHead(suit)) {
                 paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`, helmet, x, y, size, art);
             }
+        }
+        else if (fullLoop) {
+            // the cycle runs on the world clock, so it never restarts on a tap and
+            // reads the same in the hangar case and in flight
+            const idx = Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+            const refL = loopFrames[0].box ?? ref;
+            drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
         }
         else if (fullTap) {
             // frame registration comes from the bank's own first frame, so every
@@ -5379,7 +5397,7 @@ export function drawHud(ctx, w, art, save) {
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-        : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+        : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
             : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
     if (experiment && !w.ready) {
         ctx.save();

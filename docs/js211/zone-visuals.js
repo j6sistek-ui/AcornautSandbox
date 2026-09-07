@@ -1,5 +1,5 @@
-import { ENVS } from "./catalog.js?v=207";
-import { artUrl } from "./art.js?v=207";
+import { ENVS } from "./catalog.js?v=211";
+import { artUrl } from "./art.js?v=211";
 export const ZONE_VISUALS = [
     {
         "id": "deep-space",

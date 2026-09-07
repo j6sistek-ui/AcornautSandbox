@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=210";
-import { CHART_LEVELS } from "./campaign.js?v=210";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=210";
-import { restoreSpill } from "./spill.js?v=210";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=210";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=211";
+import { CHART_LEVELS } from "./campaign.js?v=211";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=211";
+import { restoreSpill } from "./spill.js?v=211";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=211";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=210";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=211";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -136,6 +136,14 @@ export function loadSave() {
         s.betaDustGrant = false;
     if (typeof s.shelfGrid !== "boolean")
         s.shelfGrid = false;
+    // the lab: numbers and booleans only, anything else dropped
+    if (!s.lab || typeof s.lab !== "object")
+        s.lab = {};
+    for (const k of Object.keys(s.lab)) {
+        const v = s.lab[k];
+        if (!(typeof v === "boolean" || (typeof v === "number" && isFinite(v))))
+            delete s.lab[k];
+    }
     // the pitch table: whole degrees in range, anything else dropped. The
     // one-suit acornutPitch it replaces migrates unless it was the old 25
     // default, which the retested 12 supersedes.
