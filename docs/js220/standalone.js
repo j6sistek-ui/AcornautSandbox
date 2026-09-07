@@ -1339,7 +1339,10 @@ export async function bootStandalone(root) {
         const ltxt = el("span", "ac-hub-launchtxt");
         const spillSelected = MODES[selectedMode].id === "spill";
         const suspended = spillSelected ? s.spillSuspended : null;
-        ltxt.append(el("b", "", suspended ? "RESUME EXPEDITION" : spillSelected ? "THE SPILL" : "FREE FLIGHT"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Salvage. Survive. Build." : "Begin your flight"));
+        // ONE WORD (owner, 7 Sep 2026: "instead of free flight, just Launch...
+        // large and in charge"). The ribbon above names the mode; the line
+        // under says what the tap does in it.
+        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Salvage. Survive. Build." : "Begin your flight"));
         // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
         // and were previously invisible from here - you had to remember. One
         // line, named plainly, so nobody launches wondering why the gates are
