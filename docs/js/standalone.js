@@ -1,24 +1,25 @@
-import { suitPitchFor } from "./save.js?v=222";
-import { spillAppearance } from "./spill-appearance.js?v=222";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=222";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=222";
-import { addChartScenery } from "./star-map-view.js?v=222";
-import { mapDebrisIndex } from "./zone-visuals.js?v=222";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=222";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=222";
-import { suitLean } from "./control-constants.js?v=222";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=222";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=222";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=222";
-import { drawSprite as drawSpriteOn } from "./art.js?v=222";
-import { createEngine } from "./engine.js?v=222";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=222";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=222";
-import { formatRaceTicks } from "./race.js?v=222";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=222";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=222";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=222";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=222";
+import { suitPitchFor } from "./save.js?v=223";
+import { platform } from "./platform.js?v=223";
+import { spillAppearance } from "./spill-appearance.js?v=223";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=223";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=223";
+import { addChartScenery } from "./star-map-view.js?v=223";
+import { mapDebrisIndex } from "./zone-visuals.js?v=223";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=223";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=223";
+import { suitLean } from "./control-constants.js?v=223";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=223";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=223";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=223";
+import { drawSprite as drawSpriteOn } from "./art.js?v=223";
+import { createEngine } from "./engine.js?v=223";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=223";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=223";
+import { formatRaceTicks } from "./race.js?v=223";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=223";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=223";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=223";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=223";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1388,7 +1389,7 @@ export async function bootStandalone(root) {
             drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
         // no dot: a badge should mean something NEW is inside, and nothing
         // in the mode sheet changes on its own
-        tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly · Lab`, () => { modesOpen = true; render(); });
+        tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
         box.append(tiles);
         // the Star Chart bar: campaign stars over this route's total, plus what the
         // next handful buys — a second door into the chart
@@ -1568,19 +1569,23 @@ export async function bootStandalone(root) {
             });
         });
         // What remains under the divider really is a lab: utilities, not modes.
-        sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
-        const door = (label, hit) => {
-            const b = el("button", "ac-moderow ac-modedoor");
-            const t = el("span", "ac-moderowtxt");
-            t.append(el("b", "", label));
-            b.append(t, icon(I_CHEV, 16));
-            b.onclick = hit;
-            sheet.append(b);
-        };
-        door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
-        door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
-        if (IS_BETA)
-            door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
+        // A store build has none of it (platform.devDoors): the lab pages are
+        // not in the app bundle, and a door to nowhere is a review finding.
+        if (platform.devDoors) {
+            sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
+            const door = (label, hit) => {
+                const b = el("button", "ac-moderow ac-modedoor");
+                const t = el("span", "ac-moderowtxt");
+                t.append(el("b", "", label));
+                b.append(t, icon(I_CHEV, 16));
+                b.onclick = hit;
+                sheet.append(b);
+            };
+            door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
+            door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
+            if (IS_BETA)
+                door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
+        }
         const back = el("button", "ac-primary ac-modeback", "BACK");
         back.onclick = () => { modesOpen = false; render(); };
         sheet.append(back);
@@ -1909,6 +1914,7 @@ export async function bootStandalone(root) {
         unknown: () => "That item is not in this build.",
         owned: () => "Already yours.",
         armed: () => "Already armed — your next run spends it.",
+        unavailable: () => "Star Dust packs are sold in the app.",
         clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
     };
     function announce(msg) {
@@ -3762,16 +3768,26 @@ export async function bootStandalone(root) {
             row.append(face);
             const t = el("div", "ac-modtxt");
             t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`), el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
-            row.append(t, el("span", "ac-modprice ac-cashprice", dp.price));
+            // the STORE's localized price when a shell is answering; the catalog's
+            // sticker is only the web page's placeholder
+            row.append(t, el("span", "ac-modprice ac-cashprice", platform.priceOf(dp.id) ?? dp.price));
             row.onclick = () => { tx(row, () => engine.buyDust(dp.id)); render(); };
             scroll.append(row);
         }
+        if (platform.storeReady) {
+            // Apple asks for this button on every storefront, consumables or not
+            const restore = el("button", "ac-ghost ac-restore", "RESTORE PURCHASES");
+            restore.onclick = () => { void engine.restorePurchases(); };
+            scroll.append(restore);
+        }
         scroll.append(codeRow());
-        // The rail is unconnected on BOTH pages, so live needs to be told too -
-        // just not in the beta's words.
-        scroll.append(el("p", "ac-fine", IS_BETA
-            ? "The payment rail is not connected yet, so dust is granted during the beta."
-            : "Star Dust purchases are not open yet. Everything else on this page works."));
+        // Say where the money goes. A shell with a store says nothing; the
+        // beta says dust is granted; the live web page says the store is
+        // the app's.
+        if (!platform.storeReady)
+            scroll.append(el("p", "ac-fine", IS_BETA
+                ? "The payment rail is not connected yet, so dust is granted during the beta."
+                : "Star Dust packs are sold in the app. Everything else on this page works."));
         box.append(scroll);
         // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
         // the storefront was, but the storefront is the shop on both pages now
@@ -4771,6 +4787,13 @@ export async function bootStandalone(root) {
             : flown === 1 ? "One mode on the board"
                 : `${flown} modes on the board`));
         scroll.append(hero);
+        // the platform's own boards - all-time, monthly, friends - when a shell
+        // provides them (Game Center on iOS); the web page has only its bests
+        if (platform.boardsReady) {
+            const global = el("button", "ac-primary ac-boardglobal", "GLOBAL & FRIENDS");
+            global.onclick = () => platform.showBoards();
+            scroll.append(global);
+        }
         scroll.append(el("p", "ac-shelfhead", "BEST RUN, BY MODE"));
         const list = el("div", "ac-boardlist");
         runs.forEach((r, i) => {
@@ -4920,7 +4943,9 @@ export async function bootStandalone(root) {
         scroll.append(replay);
         // BETA reaches the prototype doors through the MODES sheet on the hub;
         // the live page keeps them here, one deliberate tap away, as before.
-        if (!BETA_FEATURES) {
+        // a store build has no prototype doors (platform.devDoors); the web
+        // page keeps them, one deliberate tap away
+        if (!BETA_FEATURES && platform.devDoors) {
             const labRoot = "./lab/";
             const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
             rig.onclick = () => { window.location.href = labRoot + "rig/"; };

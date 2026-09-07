@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=219";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=219";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=219";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=219";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=223";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=223";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=223";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=223";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -312,7 +312,8 @@ const ASC_BANKS = TAP_ANIM_ENABLED
         sammie: 8, frost: 8, ghost: 8, leviathan: 8,
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
         briellacat: 7,
-        ...(IS_BETA ? { cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 } : {}) }
+        // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
+        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
     : {};
 const DESC_BANKS = TAP_ANIM_ENABLED
     ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
@@ -321,7 +322,7 @@ const DESC_BANKS = TAP_ANIM_ENABLED
         cryostar: 8, verdant: 8, gemmie: 8,
         sammie: 8, frost: 8, ghost: 8, leviathan: 8,
         briellacat: 4,
-        ...(IS_BETA ? { cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 } : {}) }
+        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
     : {};
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -466,7 +467,7 @@ export function prefetchArtBanks(bank) {
 export async function loadArt(eagerSuits = [], eagerPals = []) {
     const base = artBase();
     const palIds = [
-        "magnetar", "babyalien", "satellite", "astrafox",
+        "magnetar", "babyalien", "satellite", "astrafox", "spacepuppy",
         "switchback",
         "bee",
         "buddy",
@@ -506,10 +507,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "verdant",
         "cryostar",
         "eclipse",
-        ...(IS_BETA ? [
-            "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal", "amethyst", "ivoryguard", "reactor",
-        ] : []),
+        "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
+        ...(IS_BETA ? ["amethyst", "ivoryguard", "reactor"] : []),
     ];
     const suitIds = [
         "vanguard",
@@ -541,11 +540,9 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "arcflash",
         // the Critter Pack (7 Sep 2026): sold on production
         "raccoon", "ferret", "hedgehog",
-        ...(IS_BETA ? [
-            "cinderforge", "groveguard", "cosmic", "sunforged",
-            "abyssal",
-            "briellacat",
-        ] : []),
+        // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
+        "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
+        ...(IS_BETA ? ["briellacat"] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [

@@ -1,4 +1,5 @@
 import { writeSave, suitPitchFor, type SaveData } from "./save";
+import { platform } from "./platform";
 import { spillAppearance } from "./spill-appearance";
 import { trailWornBy, canWearTrail } from "./catalog";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
@@ -1379,7 +1380,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
-    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly · Lab`,
+    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${platform.devDoors ? " · Lab" : ""}`,
       () => { modesOpen = true; render(); });
     box.append(tiles);
 
@@ -1561,18 +1562,22 @@ export async function bootStandalone(root: HTMLElement) {
     });
 
     // What remains under the divider really is a lab: utilities, not modes.
-    sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
-    const door = (label: string, hit: () => void) => {
-      const b = el("button", "ac-moderow ac-modedoor");
-      const t = el("span", "ac-moderowtxt");
-      t.append(el("b", "", label));
-      b.append(t, icon(I_CHEV, 16));
-      b.onclick = hit;
-      sheet.append(b);
-    };
-    door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
-    door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
-    if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
+    // A store build has none of it (platform.devDoors): the lab pages are
+    // not in the app bundle, and a door to nowhere is a review finding.
+    if (platform.devDoors) {
+      sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
+      const door = (label: string, hit: () => void) => {
+        const b = el("button", "ac-moderow ac-modedoor");
+        const t = el("span", "ac-moderowtxt");
+        t.append(el("b", "", label));
+        b.append(t, icon(I_CHEV, 16));
+        b.onclick = hit;
+        sheet.append(b);
+      };
+      door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
+      door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
+      if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
+    }
     const back = el("button", "ac-primary ac-modeback", "BACK");
     back.onclick = () => { modesOpen = false; render(); };
     sheet.append(back);
@@ -1897,6 +1902,7 @@ export async function bootStandalone(root: HTMLElement) {
     unknown: () => "That item is not in this build.",
     owned: () => "Already yours.",
     armed: () => "Already armed — your next run spends it.",
+    unavailable: () => "Star Dust packs are sold in the app.",
     clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
   };
   function announce(msg: string) {
@@ -3666,16 +3672,25 @@ export async function bootStandalone(root: HTMLElement) {
       const t = el("div", "ac-modtxt");
       t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`),
         el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
-      row.append(t, el("span", "ac-modprice ac-cashprice", dp.price));
+      // the STORE's localized price when a shell is answering; the catalog's
+      // sticker is only the web page's placeholder
+      row.append(t, el("span", "ac-modprice ac-cashprice", platform.priceOf(dp.id) ?? dp.price));
       row.onclick = () => { tx(row, () => engine.buyDust(dp.id)); render(); };
       scroll.append(row);
     }
+    if (platform.storeReady) {
+      // Apple asks for this button on every storefront, consumables or not
+      const restore = el("button", "ac-ghost ac-restore", "RESTORE PURCHASES");
+      restore.onclick = () => { void engine.restorePurchases(); };
+      scroll.append(restore);
+    }
     scroll.append(codeRow());
-    // The rail is unconnected on BOTH pages, so live needs to be told too -
-    // just not in the beta's words.
-    scroll.append(el("p", "ac-fine", IS_BETA
+    // Say where the money goes. A shell with a store says nothing; the
+    // beta says dust is granted; the live web page says the store is
+    // the app's.
+    if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
       ? "The payment rail is not connected yet, so dust is granted during the beta."
-      : "Star Dust purchases are not open yet. Everything else on this page works."));
+      : "Star Dust packs are sold in the app. Everything else on this page works."));
 
     box.append(scroll);
     // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
@@ -4625,6 +4640,13 @@ export async function bootStandalone(root: HTMLElement) {
       : `${flown} modes on the board`));
     scroll.append(hero);
 
+    // the platform's own boards - all-time, monthly, friends - when a shell
+    // provides them (Game Center on iOS); the web page has only its bests
+    if (platform.boardsReady) {
+      const global = el("button", "ac-primary ac-boardglobal", "GLOBAL & FRIENDS");
+      global.onclick = () => platform.showBoards();
+      scroll.append(global);
+    }
     scroll.append(el("p", "ac-shelfhead", "BEST RUN, BY MODE"));
     const list = el("div", "ac-boardlist");
     runs.forEach((r, i) => {
@@ -4770,7 +4792,9 @@ export async function bootStandalone(root: HTMLElement) {
 
     // BETA reaches the prototype doors through the MODES sheet on the hub;
     // the live page keeps them here, one deliberate tap away, as before.
-    if (!BETA_FEATURES) {
+    // a store build has no prototype doors (platform.devDoors); the web
+    // page keeps them, one deliberate tap away
+    if (!BETA_FEATURES && platform.devDoors) {
       const labRoot = "./lab/";
       const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
       rig.onclick = () => { window.location.href = labRoot + "rig/"; };

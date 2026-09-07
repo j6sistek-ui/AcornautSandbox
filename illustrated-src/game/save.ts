@@ -32,6 +32,7 @@ import {
   suitPitchDefault,
   palsClash,
 } from "./catalog";
+import { platform } from "./platform";
 
 export type SaveData = {
   campaignProgress?: CampaignProgress;
@@ -224,7 +225,7 @@ export function bankSpill(save: SaveData, s: SpillState, end = false) {
 
 function readRaw(key: string): Record<string, unknown> | null {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = platform.storage.get(key);
     return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
   } catch {
     return null;
@@ -406,17 +407,17 @@ export function loadSave(): SaveData {
     // the original save untouched; normal load still works in restricted storage.
     try {
       const key = SAVE_KEY + ":before-campaign-v1";
-      if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(parsed));
+      if (!platform.storage.get(key)) platform.storage.set(key, JSON.stringify(parsed));
     } catch { /* writeSave will still surface a real persistence failure */ }
   }
   migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
   if (IS_BETA && !s.betaSampleCreditImported) {
     try {
-      const raw = localStorage.getItem("acornaut_star_map_sample_v1");
+      const raw = platform.storage.get("acornaut_star_map_sample_v1");
       const archived = raw ? JSON.parse(raw) : null;
       if (archived && typeof archived === "object" && (archived.stars || archived.campaignProgress?.version === 1)) {
-        if (parsed && !localStorage.getItem(SAVE_KEY + ":before-beta-260"))
-          localStorage.setItem(SAVE_KEY + ":before-beta-260", JSON.stringify(parsed));
+        if (parsed && !platform.storage.get(SAVE_KEY + ":before-beta-260"))
+          platform.storage.set(SAVE_KEY + ":before-beta-260", JSON.stringify(parsed));
         importSampleCredit(s, { ...defaultSave(), ...archived });
       }
       s.betaSampleCreditImported = true;
@@ -461,7 +462,9 @@ export function grantTutorialKit(s: SaveData) {
 }
 
 export function writeSave(s: SaveData) {
-  localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+  // through the bridge: localStorage on the web, the shell's durable
+  // store in an app - the ONE place the save is written
+  platform.storage.set(SAVE_KEY, JSON.stringify(s));
 }
 
 // The one deliberate way to start over. Writes a FRESH save into this
