@@ -138,6 +138,10 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   catsuit:     { up: 0.8, down: 0.3 },
   // Briella's Cat flies its still until its sprite sheet lands
   briellacat:  { up: 0.8, down: 0.3 },
+  // the critters fly their painted tap banks with the standard lean
+  raccoon:     { up: 0.8, down: 0.3 },
+  ferret:      { up: 0.8, down: 0.3 },
+  hedgehog:    { up: 0.8, down: 0.3 },
 
   // --- declared shape exceptions
   cyber:       { up: 0.8, down: 0.3 },
