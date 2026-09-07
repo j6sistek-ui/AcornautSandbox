@@ -4,7 +4,7 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
-import { runPal, fxOf } from "./sim";
+import { runPal, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
@@ -67,7 +67,7 @@ function frameOf<T>(list: T[], t: number, speed = 6) {
 }
 
 function applyWarp(ctx: CanvasRenderingContext2D, w: World) {
-  if (fxOf(w).upsideDown) { ctx.translate(w.W,w.H); ctx.rotate(Math.PI); }
+  if (worldFlipped(w)) { ctx.translate(w.W,w.H); ctx.rotate(Math.PI); }
   const lost = w.flight === "lost";
   const wp = w.warpT > 0 ? 1 - w.warpT : w.warpLeft > 0 || w.warpGateEnd >= 0 || lost ? 1 : 0;
   if (wp <= 0) return;
@@ -2732,7 +2732,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl || w.lab.fog) {
+  {
+    // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
     const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
@@ -3079,7 +3080,8 @@ function drawRetroWorld(
 
   for (const p of w.particles) drawParticle(ctx, p);
 
-  if (w.lvl || w.lab.fog) {
+  {
+    // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
     const fx = fxOf(w);
     const px = W * PHYS.squirrelX;
     const py = w.squirrel.y;
