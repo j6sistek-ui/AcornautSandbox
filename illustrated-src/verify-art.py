@@ -646,8 +646,8 @@ def verify_bank_frame_spread(qa: QA) -> None:
 def verify_repaired_tail_continuity(qa: QA) -> None:
     """Hold the five owner-identified tail banks to their repaired baseline.
 
-    Gemmie, Cryostar and Verdant deliberately change colour with pose, so
-    they are intentionally absent. For the five repaired suits, sample only
+    Gemmie, Cryostar and Verdant also require stable colours. For the
+    repaired suits, sample only
     warm, opaque pixels behind and outside the tracked head. That isolates
     the tail well enough to catch the original brightness flash and the
     frames whose plume collapsed or ballooned, without mistaking normal
@@ -667,6 +667,8 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
     art = ART_SOURCE.read_text(encoding="utf8")
     baseline = json.loads(HELMET_ART_BASELINE.read_text(encoding="utf8"))
     anchors = baseline["repaired_art_regions"]
+    refreshed = json.loads((ROOT / "art-src/flight-refresh/registration.json").read_text())
+    refreshed_pitch = {f["name"]: math.radians(f["pitch"]) for frames in refreshed.values() for f in frames}
 
     def bank_counts(name: str) -> dict[str, int]:
         match = re.search(name + r"[^{]*\{([^}]*)\}", art)
@@ -677,7 +679,7 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
 
     asc = bank_counts("ASC_BANKS")
     desc = bank_counts("DESC_BANKS")
-    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper")
+    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper", "cryostar", "verdant", "gemmie")
     hue_limit = 0.004
     saturation_limit = 0.035
     value_limit = 0.055
@@ -724,12 +726,14 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
                 cx, cy, radius = anchor
                 yy, xx = np.ogrid[:rgba.shape[0], :rgba.shape[1]]
                 distance2 = (xx - cx) ** 2 + (yy - cy) ** 2
+                angle = refreshed_pitch.get(key, 0.0)
+                behind = (xx - cx) * math.cos(angle) + (yy - cy) * math.sin(angle) < -0.65 * radius
                 tail = (
                     (rgba[:, :, 3] >= 32)
                     & (hue < 0.16)
                     & (saturation > 0.35)
                     & (high > 0.08)
-                    & (xx < cx - 0.65 * radius)
+                    & behind
                     & (distance2 > (1.05 * radius) ** 2)
                 )
                 area = int(tail.sum())
@@ -791,9 +795,9 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
 def verify_repaired_suit_material_continuity(qa: QA) -> None:
     """Keep Ion and Verdant's outfit material stable through their banks.
 
-    This deliberately does not constrain hue: Verdant's hue progression is
-    part of its design. Saturation and value are the properties that made the
-    painted suit look like a different material from one pose to the next.
+    Pose-dependent hue changes are not part of Verdant's design. The fresh
+    flight export calibrates hue, saturation and value to its loadout portrait.
+    This legacy check retains its saturation/value limits.
     """
     import colorsys
     import statistics

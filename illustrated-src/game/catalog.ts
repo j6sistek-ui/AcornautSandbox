@@ -4,9 +4,9 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
-export const GAME_VERSION = "V1.0.10";
+export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "211";
+export const ART_VER = "212";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
