@@ -7,6 +7,36 @@ arms, legs and delayed tail movement. Its green palette and late roll are
 excluded. Descent is an interpretation: the useful pre-roll video does not
 contain a clean sustained falling example.
 
+## Build 200: back and leg repair
+
+The owner approved the in-game motion after #204, then supplied a phone
+recording showing thin shins and a notch behind the collar in the hangar.
+The torso was connected, but its narrow painted waist did not fill the
+back beneath the separately rotating collar. The previous connected-part
+test could not detect that missing volume.
+
+The repaired torso has a continuous rounded back in the same armor style.
+Thighs are widened 1.28× perpendicular to their bones. Shins are widened
+1.35× through the calf, tapering to the original terminal paw artwork.
+These corrections are baked into the existing atlas; all twelve attachment
+pairs remain identical. The renderer, motion controller, simulation, head,
+tail, arms and jet/wake logic are unchanged. There are no extra runtime
+draw calls. The fallback portrait is rebuilt from the repaired rig.
+
+`repair-review.png` and `repair-preview.mp4` compare #204 with build 200
+using identical motion states and scale. The eight-second, 240-frame native
+Canvas replay includes short tap groups, descent, down-swipe and contact
+recovery. Effects are hidden to expose the artwork edges. This is a
+controller-driven comparison, not a new phone recording or gameplay replay.
+
+The focused raster check measures 68.9% coverage in the reported back
+corridor, up from about 9%. All hip/knee overlap disks are fully opaque in
+24 sampled poses. Both legs meet minimum mid/distal breadth checks;
+terminal paw pixels are preserved by the offline export. The existing
+motion and integration tests pass, including saved pitch and HyperRun
+isolation. Shipping art passes all 30 QA groups. Phone motion was approved
+by the owner; the repaired artwork has been reviewed here at enlarged size.
+
 The branch includes main `85ce67d`, preserving AcorNut repairs #200 and
 #201 and the per-suit beta pitch dial from #202. AcorNut's restored maneuver rig preserves motion across quick inputs;
 its separate powered-ascent booster provided one additional useful lesson.
@@ -68,6 +98,10 @@ The strongest small-scale cues are chest attitude and delayed tail movement.
 Forearm motion is subtler at 52px. Physical-phone frame pacing and final owner
 approval of the proportions and motion remain to be checked in the beta.
 
+The owner's later phone feedback and the build 200 correction above supersede
+that original approval status. The original flight movie is retained as
+historical evidence; use the repair comparison to inspect the current art.
+
 ## Reproduce
 
 Use Node, TypeScript, `@napi-rs/canvas`, `happy-dom`, Python/Pillow and ffmpeg.
@@ -82,6 +116,7 @@ node illustrated-src/test-arcflash-motion.mjs
 node illustrated-src/test-arcflash-render.mjs
 node illustrated-src/test-arcflash-integration.mjs
 node illustrated-src/review-arcflash-flight.mjs
+node illustrated-src/review-arcflash-repair.mjs
 python3 illustrated-src/verify-art.py
 ```
 
@@ -89,4 +124,6 @@ For external dependencies set `ACORNAUT_TSC` to TypeScript's `lib/tsc.js`,
 `ACORNAUT_CANVAS` to the canvas package, and `ACORNAUT_HAPPY_DOM` to
 happy-dom's `lib/index.js`. Video encoding uses `ACORNAUT_FFMPEG` and
 `ACORNAUT_FFPROBE` when provided. Generated game code is build 199; the
-standard exporter owns stamp retention and generated HTML.
+standard exporter owns stamp retention and generated HTML. Current shipping
+code is build 200. The repair comparison requires baseline commit `160eb85`
+in local git history.
