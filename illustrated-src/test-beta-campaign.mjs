@@ -88,7 +88,8 @@ const ship=Sp.createSpill(390,760,123,0,false);ship.phase='depot';ship.depot={ar
 assert.notEqual(Sp.spillBuy(ship,'repair'),'ok');assert.equal(ship.repairs,0);
 ship.hull=1;assert.equal(Sp.spillBuy(ship,'repair'),'ok');assert.equal(ship.repairs,1);
 assert.equal(C.goalMet({kind:'repairs',n:1},{...C.emptyStats(),repairs:ship.repairs}),true);
-const imported=S.defaultSave();imported.betaDustGrant=true;imported.starDust=87;
+// the grant is already up to date, so the archive import is the only thing that could touch dust - and it must not
+const imported=S.defaultSave();imported.betaDustGrant=true;imported.betaDustGrantTotal=1e9;imported.starDust=87;
 const archive=S.defaultSave();archive.stars['1-2']=7;archive.unlockedSuits.push('catsuit');
 archive.raceGates=[33];archive.starDust=999999;
 storage.set('acornaut_illust_beta',JSON.stringify(imported));storage.set('acornaut_star_map_sample_v1',JSON.stringify(archive));
