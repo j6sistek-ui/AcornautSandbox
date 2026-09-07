@@ -269,8 +269,10 @@ function paintTile(cv, s, h, size) {
         label(ctx, "own head — no helmet", size);
         return;
     }
-    // Clear over art that still has a dome painted in is a no-op in the game
-    const skip = h.id === "clear" && (s.frame || s.bakedDome);
+    // Being an animation frame does not imply a painted dome: every suit
+    // motion bank is bare-headed and wears Clear through the same seat as
+    // other helmets. Only genuinely baked artwork skips the overlay.
+    const skip = h.id === "clear" && s.bakedDome;
     const { a, g, rot } = effective(s, h);
     const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
     const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;

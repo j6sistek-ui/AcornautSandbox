@@ -85,16 +85,15 @@ export function buildTables(root) {
       name: r.name,
       key,
       file: `suits/${r.id}.png`,
-      dome: dome[key] ? dome[key].slice(0, 3) : [128, 128, 40],
+      dome: dome[key] ? dome[key].slice(0, 4) : [128, 128, 40],
       ownHead: r.ownHead,
       bakedDome: r.bakedDome,
       frame: false,
     });
   }
-  // Flight animation frames retain their baked Clear dome. The shipping
-  // renderer uses bare `suits/flight.png` for every custom helmet, so those
-  // eight frames no longer form another 160 helmet combinations. They are
-  // reviewed as Clear-only animation art in the visual-audit page instead.
+  // Only the eight original art/squirrel idle/flap paintings retain a
+  // baked Clear dome. Flight's current art/suits motion banks are bare
+  // headed, so their helmet fit belongs in this editor with every bank.
 
   // A BANK'S FRAMES ARE SEATABLE ART - every bank, not just the velocity
   // ramps. A Grok-swept suit flies a painted ascent/descent ramp whose
@@ -104,14 +103,12 @@ export function buildTables(root) {
   // hijack the suit selector, and its COPY report prints the same keys
   // draw.ts uses, so a fitting session pastes straight back into the
   // table. Not hardcoded to a roster: any `<suit>-asc/desc/tap/bounce-N`
-  // anchor in DOME earns its tile the moment it lands. Flight's asc/desc
-  // frames are the one deliberate exception (bare art, baked Clear dome -
-  // see above).
+  // anchor in DOME earns its tile the moment it lands.
   const KIND_ORDER = ["asc", "desc", "tap", "bounce"];
   const label = (r, sid) => (r ? r.name : sid[0].toUpperCase() + sid.slice(1));
   const frameTiles = Object.keys(dome)
     .map((k) => /^(\w+?)-(asc|desc|tap|bounce)-(\d+)$/.exec(k))
-    .filter((m) => m && !(m[1] === "flight" && m[2] !== "tap"))
+    .filter(Boolean)
     .sort((a, b) => a[1].localeCompare(b[1])
       || KIND_ORDER.indexOf(a[2]) - KIND_ORDER.indexOf(b[2])
       || Number(a[3]) - Number(b[3]));
@@ -191,7 +188,7 @@ export function buildTables(root) {
         name: `${label(suitRows.find((r) => r.id === sid), sid)} tap ${i}`,
         key: `${sid}-tap-${i}`,
         file: `suits/${sid}-tap-${i}.png`,
-        dome: seat.slice(0, 3),
+        dome: seat.slice(0, 4),
         ownHead: false,
         bakedDome: false,
         frame: true,

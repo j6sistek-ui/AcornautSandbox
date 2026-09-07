@@ -1,0 +1,41 @@
+Acornaut illustrated art QA
+  OK  docs/art holds 1349 shipping files
+  OK  decoded all 1337 raster assets
+  OK  validated runtime dimensions/alpha contract for 1193 runtime sprites
+  OK  catalog/load contract (34 suits x 31 helmets, 15 pals)
+  OK  pal cutouts have no remote components (cometsprite (59, 16, 199, 141), pocketmoon (66, 14, 189, 146))
+  OK  heavy rosters stay off the boot load, and the sweep walks both
+  OK  all 371 UI classes are styled in the page and its beta
+  OK  every scrollable flex column scrolls rather than squashing
+  OK  the guided step's coach sits in the shelf and measures its own fold
+  OK  every production-reachable suit has its art off the beta flag
+  OK  free unclaimed suits ask to be collected; fixed helmets speak once
+  OK  all 1 dev instruments sit where the table says
+  OK  the pause menu can always be left, however tall it gets
+  OK  one shipping tree: docs/
+  OK  Vanguard: 16 unique 512px RGBA poses, measured registration, exact fallback
+  OK  velocity-indexed pose banks complete for 20 suits (anchor per frame, radius held except 4 art-locked larger heads), 2 with a declared dead tap bank
+  OK  all 34 suits carry their own lean dial
+  OK  the wormhole answers to one control, with its numbers settled
+  OK  dust badge sheet is 8x4 cells of 128px, in step with the CSS
+  OK  all 11 base helmet display scales remain within 5% of their reviewed head fits
+  OK  per-pose dome tables complete for 3 suits (48 anchors, one radius each)
+  OK  no tap bank skips frames
+  OK  no per-suit motion release table
+  OK  objectives pinned, mission restart gated, acorn continue wired at both prices
+  OK  8 frames carry a painted dome; every other anchor is bare-headed bank art
+  OK  bank frame spread: 39 banks, 8 frame(s) flagged for the owner:
+      alien2-desc-4: size +4%, width +4%, pixels +36%
+      alien2-desc-7: size -8%, width -20%, pixels -15%
+      copper-desc-2: size +6%, width +20%, pixels -1%
+      ember-asc-8: size +18%, width +18%, pixels -1%
+      iontrim-desc-2: size +8%, width +28%, pixels +10%
+      iontrim-desc-3: size -13%, width +2%, pixels +5%
+      sammie-desc-7: size +12%, width -7%, pixels -7%
+      seraph-desc-8: size -12%, width -12%, pixels +5%
+  OK  repaired tail continuity held: sammie colour 0.001/0.013/0.035, head 8.5%; iontrim colour 0.000/0.007/0.016, head 4.2%; voidsuit colour 0.001/0.016/0.027, head 5.8%; ember colour 0.001/0.013/0.020, head 4.3%; copper colour 0.001/0.009/0.020, head 8.8%
+  OK  repaired suit material continuity held: iontrim S/V 0.011/0.020; verdant S/V 0.008/0.027
+  OK  reviewed raster cutouts have clean, antialiased edges
+  OK  rig-tail audit passed for 27 active rigs
+
+PASS: shipping art passed 30 QA groups

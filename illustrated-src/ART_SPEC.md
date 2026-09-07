@@ -1,5 +1,18 @@
 # Acornaut art spec — heads and helmets
 
+## Animated helmet fitting (7 September 2026)
+
+The current production roster has 16 suits with interchangeable helmets.
+Their static portraits and bare-headed motion banks use per-painting `DOME`
+positions, radii and optional local rotations. Fit the ears, muzzle and
+collar in each pose; a uniform head-to-body ratio is not a substitute for
+that review. Flight's current suit banks are bare-headed too. Only the
+eight original `art/squirrel` idle/flap paintings retain baked Clear domes.
+
+See [the helmet fitting review](design/helmet-fit/REVIEW.md) for the current
+animated comparisons and unchanged-flight regression. Its roster and bank
+coverage supersede the older static combination counts below.
+
 ## Arcflash parts atlas (owner request, 6 September 2026)
 
 Arcflash is an explicitly requested new `ownHead` suit: orange squirrel fur,
