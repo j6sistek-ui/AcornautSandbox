@@ -147,37 +147,37 @@
   "id": "cinderforge",
   "name": "Cinderforge",
   "glow": "#ff3b22",
-  "beta": true
+  "beta": false
  },
  {
   "id": "groveguard",
   "name": "Groveguard",
   "glow": "#65dca1",
-  "beta": true
+  "beta": false
  },
  {
   "id": "cosmic",
   "name": "Cosmic",
   "glow": "#d687ff",
-  "beta": true
+  "beta": false
  },
  {
   "id": "briellacat",
   "name": "Briella's Cat",
   "glow": "#c9b6ff",
-  "beta": true
+  "beta": false
  },
  {
   "id": "sunforged",
   "name": "Sunforged",
   "glow": "#ffad2b",
-  "beta": true
+  "beta": false
  },
  {
   "id": "abyssal",
   "name": "Abyssal",
   "glow": "#39dcff",
-  "beta": true
+  "beta": false
  },
  {
   "id": "cyber",
