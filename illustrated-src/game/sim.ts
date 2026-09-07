@@ -6,6 +6,7 @@ import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, 
 import { CHART_LEVELS, reachedGate } from "./campaign";
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit, equippedPals} from "./save";
+import { platform } from "./platform";
 import { GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT } from "./catalog";
 import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type LevelFx, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
@@ -3605,6 +3606,9 @@ function die(w: World, save: SaveData) {
   else if (w.flight === "tunnel") save.tunnelBest = Math.max(save.tunnelBest, w.score);
   else if (w.flight === "spill") save.spillBest = Math.max(save.spillBest ?? 0, w.score);
   else save.highScore = Math.max(save.highScore, w.score);
+  // the same number goes to the platform's board (Game Center, Steam);
+  // a mission or a tutorial is not a board run, and the web has no board
+  if (!w.lvl && !w.tut && w.score > 0) platform.submitScore(w.flight, w.score);
   if (w.startShieldArmed) save.startShield = false;
   spark(w, pilotX(w), w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
   return "die";

@@ -1,4 +1,5 @@
 import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog";
+import { platform } from "./platform";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
@@ -121,7 +122,11 @@ export type Engine = {
    *  clears it, which is what stops the popup reappearing on every
    *  re-render of the same visit. */
   takeDailyClaim: () => { amount: number; streak: number; bonus: boolean } | null;
-  buyDust: (id: string) => "ok" | "missing";
+  /** "pending": the store took over and will grant on success; "ok": granted
+   *  outright (beta only); "unavailable": no store on this platform */
+  buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable";
+  /** Apple requires the button; on the web it is a no-op */
+  restorePurchases: () => Promise<void>;
   buyBundle: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** buy ONE shop id with Star Dust. A set id hands over its suit, its
    *  matching helmet and its trail together - see idGrants. */
@@ -243,7 +248,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // The Spill used to live on a lab page and post its mission result back
   // through localStorage for the boot to bank. It flies inside the engine
   // now, so a stale record from that era is simply dropped.
-  try { localStorage.removeItem("acornaut_spill_result"); } catch { /* private mode */ }
+  platform.storage.remove("acornaut_spill_result");
   let shopTab: ShopTab = "helmets";
 
   const engine: Engine = {
@@ -437,6 +442,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
      *  what is still worth pointing at is the receipt nobody has seen. */
     dailyUnseen: () => pendingDaily !== null,
     buyDust,
+    restorePurchases,
     buyBundle,
     buyShopItem,
     buyFeature,
@@ -885,15 +891,29 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return "ok";
   }
 
-  /** The payment rail is not built yet, so a pack GRANTS its dust and says
-   *  so plainly. When real billing lands this is the one place it hooks. */
-  function buyDust(id: string) {
-    const pack = DUST_PACKS.find((p) => p.id === id);
-    if (!pack) return "missing";
+  /** REAL MONEY GOES THROUGH THE BRIDGE. With a store adapter (the App
+   *  Store shell) the purchase runs there and the dust is granted here on
+   *  "ok" - the one place a receipt turns into currency. Without one, the
+   *  beta still grants outright so testers can shop; the live web page
+   *  refuses, because a pack that grants for free is not a placeholder, it
+   *  is a loophole. */
+  function grantDust(pack: (typeof DUST_PACKS)[number]) {
     save.starDust += pack.dust + pack.bonus;
     writeSave(save);
     notify();
-    return "ok";
+  }
+  function buyDust(id: string) {
+    const pack = DUST_PACKS.find((p) => p.id === id);
+    if (!pack) return "missing";
+    if (platform.storeReady) {
+      void platform.buyDust(id).then((r) => { if (r === "ok") grantDust(pack); });
+      return "pending";
+    }
+    if (IS_BETA) { grantDust(pack); return "ok"; }
+    return "unavailable";
+  }
+  function restorePurchases() {
+    return platform.restorePurchases().then(() => notify());
   }
 
   function buyBundle(id: string) {

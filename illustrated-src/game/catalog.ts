@@ -1,3 +1,4 @@
+import { platform } from "./platform";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
@@ -6,7 +7,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "222";
+export const ART_VER = "223";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -58,7 +59,10 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // (labs, tests) shows no stamp rather than a stale one.
 export const BUILD_TIME = "__BUILD_TIME__";
 // the build time stays exported for tooling, and off the visible line
-export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
+// a store build wears the bare version: "Alpha" is a web-page word
+export const BUILD = platform.native
+  ? `${STUDIO} · ${GAME_VERSION}`
+  : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.

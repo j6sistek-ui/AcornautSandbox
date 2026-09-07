@@ -21,7 +21,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=4" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png?v=4" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=4" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" />
+  <link rel="stylesheet" href="./fonts/fonts.css" />
   <style>
     /* Long-press must never become a text selection: a held thrust in
        Hyper Run was painting the whole screen selection-blue on phones.
@@ -863,6 +863,10 @@
        72x60 box; the tile loses its air - thin padding, a hair of gap - and
        the shelf drops from eight rows to five. */
     .ac-grid.ac-palgrid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 5px; }
+    /* store-build affordances: Restore Purchases under the dust packs, the
+       platform's own boards above the local bests */
+    .ac-restore { margin: 6px 0 2px; }
+    .ac-boardglobal { margin: 8px 0 12px; }
     /* the seats line above the pal shelf */
     .ac-palseats { grid-column: 1 / -1; margin: 2px 2px 0; font: 800 9px/1.35 Figtree, sans-serif;
       letter-spacing: .08em; text-transform: uppercase; color: #9aa6c8; }
@@ -2032,7 +2036,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js222/standalone.js")
+    import("./js223/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

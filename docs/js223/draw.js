@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=219";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=219";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=219";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=219";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=219";
-import { arcflashPreview } from "./arcflash-motion.js?v=219";
-import { runPal, fxOf, worldFlipped } from "./sim.js?v=219";
-import { spillAppearance } from "./spill-appearance.js?v=219";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=219";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=219";
-import { goalHud } from "./campaign.js?v=219";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=219";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=219";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=219";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=219";
-import { suitPitchFor } from "./save.js?v=219";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=219";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=219";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=219";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=219";
-import { spillEngineColor } from "./spill-content.js?v=219";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=219";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=219";
+import { spillDockTravelDuration } from "./spill.js?v=223";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=223";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=223";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=223";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=223";
+import { arcflashPreview } from "./arcflash-motion.js?v=223";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=223";
+import { spillAppearance } from "./spill-appearance.js?v=223";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=223";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=223";
+import { goalHud } from "./campaign.js?v=223";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=223";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=223";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=223";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=223";
+import { suitPitchFor } from "./save.js?v=223";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=223";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=223";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=223";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=223";
+import { spillEngineColor } from "./spill-content.js?v=223";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=223";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=223";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2607,8 +2607,11 @@ export function drawWorld(ctx, w, save, art) {
     const halo = skyLuma(w) > 0.42 ? "dark" : "light";
     for (const p of w.planets) {
         const gy = liveGapY(p, w);
-        drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
-        drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
+        // a bounce-house gate (Space Puppy) keeps one half; every other gate both
+        if (p.half !== "bot")
+            drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
+        if (p.half !== "top")
+            drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
             const bx = blockerX(p, b, w);
@@ -2679,12 +2682,10 @@ export function drawWorld(ctx, w, save, art) {
         }
     }
     // Nightglider keeps its existing steady-gates effect in the simulation.
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-        ? "buddy"
-        : runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+    for (const [i, pal] of flyingPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+        paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
     // The shield and golden rings belong to the PILOT, so they must be
@@ -2976,10 +2977,10 @@ function drawTunnelWorld(ctx, w, save, art) {
         ctx.fillStyle = frost;
         ctx.fillRect(0, 0, W, H);
     }
-    const pal = runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+    for (const [i, pal] of runPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+        paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
 }
@@ -2991,8 +2992,10 @@ function drawRetroWorld(ctx, w, save, art) {
     const { W } = w;
     for (const p of w.planets) {
         const gy = liveGapY(p, w);
-        retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
-        retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
+        if (p.half !== "bot")
+            retroPlanet(ctx, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind);
+        if (p.half !== "top")
+            retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
             retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
@@ -3030,13 +3033,11 @@ function drawRetroWorld(ctx, w, save, art) {
             ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
         }
     }
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-        ? "buddy"
-        : runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
+    for (const [i, pal] of flyingPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
         // live draws its pals at unit SCALE, not at a pixel size
-        drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
+        drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
     }
     const wornId = pilotSuitId(w, save);
     const helm = helmetWornBy(save.equipped, wornId);
@@ -4795,6 +4796,13 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     ctx.restore();
 }
 const PAL_ANIM_FPS = 12;
+/** the companions to paint: the tutorial's Acorn alone during its lesson,
+ *  otherwise every pal the run flies, high slot first */
+function flyingPals(save, w) {
+    if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
+        return ["buddy"];
+    return runPals(save, w);
+}
 function paintPal(ctx, art, id, x, y, size, time = 0) {
     // A pal with an idle bank plays it; one without keeps its still, which is
     // what every pal did before the banks existed. The banks are their own
@@ -5444,7 +5452,7 @@ export function drawHud(ctx, w, art, save) {
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-        : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+        : fxOf(w).tapFreeze || runPals(save, w).includes("switchback") ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
             : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
     if (experiment && !w.ready) {
         ctx.save();

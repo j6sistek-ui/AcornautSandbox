@@ -1,18 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=219";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=219";
-import { trailWornBy } from "./catalog.js?v=219";
-import { missionRandom } from "./mission-rng.js?v=219";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=219";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=219";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=219";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=219";
-import { TUTORIAL_SUIT } from "./catalog.js?v=219";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=219";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=219";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=219";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=219";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=219";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=219";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=223";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=223";
+import { trailWornBy } from "./catalog.js?v=223";
+import { missionRandom } from "./mission-rng.js?v=223";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=223";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=223";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=223";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=223";
+import { platform } from "./platform.js?v=223";
+import { TUTORIAL_SUIT } from "./catalog.js?v=223";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=223";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=223";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=223";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=223";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=223";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=223";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -80,7 +81,7 @@ export function makeWorld(W, H) {
         zoneJump: 0,
         hitCooldown: 0,
         trailT: 0,
-        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null,
+        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, bounceHouse: false,
         clockMul: 1,
         clockPhase: 0,
         clockRate: 0.5,
@@ -118,6 +119,7 @@ export function makeWorld(W, H) {
         tailV: 0,
         recoveryMsg: "",
         palPos: { x: 0, y: 0, dart: 0 },
+        palPos2: { x: 0, y: 0, dart: 0 },
         shake: 0,
         pausedFrom: null,
         tutSuit: false,
@@ -178,6 +180,8 @@ export function resizeWorld(w, W, H) {
         w.squirrel.y = Math.max(resizedBounds.top + PHYS.squirrelR + 2, Math.min(resizedBounds.bottom - PHYS.squirrelR - 2, w.squirrel.y * scaleY));
         w.palPos.x += shiftX;
         w.palPos.y *= scaleY;
+        w.palPos2.x += shiftX;
+        w.palPos2.y *= scaleY;
         w.lastGapY *= scaleY;
     }
     // every planet mode — anything that is not the tunnel, which remapped
@@ -215,6 +219,8 @@ export function resizeWorld(w, W, H) {
         w.squirrel.y = Math.max(20, Math.min(H - 20, w.squirrel.y * scaleY));
         w.palPos.x += shiftX;
         w.palPos.y *= scaleY;
+        w.palPos2.x += shiftX;
+        w.palPos2.y *= scaleY;
         w.lastGapY = Math.max(margin + 84, Math.min(H - margin - 84, w.lastGapY * scaleY));
         // keep the spawner's look-ahead anchored to the new right edge
         w.lastSpawnX += W - oldW;
@@ -294,23 +300,40 @@ function mergeFx(base, pal) {
 export function worldFlipped(w) {
     return !!fxOf(w).upsideDown || w.palFlip;
 }
-export function runPal(save, w) {
-    return w.lvl?.def.fx.pal ?? save.equippedPal;
-}
-function palId(save, w) {
+/** EVERY COMPANION FLYING THIS RUN, high slot first - the list the painter
+ *  and the HUD read. A mission's pal flies alone; otherwise both hangar
+ *  slots (owner, 7 Sep 2026: two pals, "one flys high one flys low"). */
+export function runPals(save, w) {
     if (w.lvl?.def.fx.pal)
-        return w.lvl.def.fx.pal === "switchback" ? "none" : w.lvl.def.fx.pal;
+        return [w.lvl.def.fx.pal];
+    return equippedPals(save);
+}
+export function runPal(save, w) {
+    return runPals(save, w)[0] ?? "none";
+}
+/** the companions whose EFFECTS are live this run */
+function palIds(save, w) {
+    if (w.lvl?.def.fx.pal)
+        return w.lvl.def.fx.pal === "switchback" ? [] : [w.lvl.def.fx.pal];
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
-        return "buddy";
+        return ["buddy"];
     // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
-    // one question, so answering "none" here turns all of them off at once
+    // one question, so answering "nobody" here turns all of them off at once
     // and cannot miss one the way a flag checked in fourteen places would.
-    // The pal is still EQUIPPED and still drawn - the draw path reads
-    // save.equippedPal directly - because the point of the switch is to keep
-    // the companion you like without the effect you do not.
+    // The pals are still EQUIPPED and still drawn - the draw path reads
+    // runPals - because the point of the switch is to keep the companion
+    // you like without the effect you do not.
     if (save.noPalFx)
-        return "none";
-    return save.equippedPal === "switchback" ? "none" : save.equippedPal;
+        return [];
+    // Stopwatch's tap toggle reads runPals directly; it has no fx entry here
+    return equippedPals(save).filter((p) => p !== "switchback");
+}
+/** is this companion's effect live? With two slots, EVERY effect is asked
+ *  this way, so stacking is the default and the exceptions are written
+ *  where they bite: Wisp yields to AstraFox, Astrolobee's veto beats Meteor
+ *  Core's bonus, Nightglider never boards beside a drift pal (catalog). */
+function hasPal(save, w, id) {
+    return palIds(save, w).includes(id);
 }
 // A mod never touches a TUTORIAL run. The tutorial is teaching the game as
 // designed, and a pilot who armed Thrill Seeker and then replayed it would
@@ -336,7 +359,7 @@ function driftModOf(save, w) {
     // strobes, it turns into steady gates"). The pal does what the Steady
     // Gates mod did, the way Wisp took over Rough Air - the pal is the one
     // you can see doing it, so the mod card is gone from the loadout.
-    if (save.equippedPal === "nightglider" && !save.noPalFx)
+    if (hasPal(save, w, "nightglider"))
         return 0;
     return 1;
 }
@@ -355,17 +378,35 @@ function paceOf(save, w) {
         return 1;
     return (modsLive(save, w) && save.thrillSeeker ? 2 : 1) * (w.palFx?.pace ?? 1);
 }
+/** THE TWO COMPANIONS' PLACES. The high one rides just above and behind
+ *  the pilot's shoulder, where the only pal always flew; the low one takes
+ *  the mirror seat under the tail, on its own bob phase so the pair never
+ *  reads as one sprite drawn twice. A dart (Acorn fetching a pickup) snaps
+ *  the slot it happened in and the seat pulls it back afterwards. */
+function followPals(w, sx, sy, dt) {
+    const seats = [
+        [w.palPos, -22, 0],
+        [w.palPos2, 30, 2.1],
+    ];
+    for (const [pos, dy, phase] of seats) {
+        const tx = sx - 42;
+        const ty = sy + dy + Math.sin(w.time * 2.6 + phase) * 7;
+        const k = Math.min(1, dt * (pos.dart > 0 ? 14 : 5));
+        pos.x += (tx - pos.x) * k;
+        pos.y += (ty - pos.y) * k;
+        if (pos.dart > 0)
+            pos.dart = Math.max(0, pos.dart - dt);
+    }
+}
 function gravOf(save, w) {
     if (w.flight === "tunnel")
         return WORMHOLE_GRAVITY;
-    const id = palId(save, w);
-    return PHYS.gravity * (id === "pocketmoon" ? 0.85 : id === "nutsack" ? 1.2 : 1);
+    return PHYS.gravity * (hasPal(save, w, "pocketmoon") ? 0.85 : 1) * (hasPal(save, w, "nutsack") ? 1.2 : 1);
 }
 function flapOf(save, w) {
     if (w.flight === "tunnel")
         return WORMHOLE_FLAP;
-    const id = palId(save, w);
-    return PHYS.flap * (id === "nutsack" ? 0.71 : 1);
+    return PHYS.flap * (hasPal(save, w, "nutsack") ? 0.71 : 1);
 }
 function gapSpacing(w) {
     return 230 + Math.min(50, w.distance * 0.004);
@@ -473,6 +514,9 @@ function sealReach(w) {
 function sealBlockers(w, env, gapY, gap) {
     const r = PHYS.planetR;
     const blockers = [];
+    // a bounce house has nothing sharp in it
+    if (w.bounceHouse)
+        return blockers;
     // A short landscape field leaves only a thin band between each planet
     // and the screen edge — the portrait spacing (26px of air, 30px step,
     // 20px edge reserve) fit ZERO rocks there and every gate spawned bare.
@@ -856,7 +900,11 @@ function spawnPair(w, save, x) {
     const diveAmt = Math.max(60, 520 * dtGate - vMargin);
     gapY = Math.max(w.lastGapY - climb, Math.min(w.lastGapY + diveAmt, gapY));
     gapY = Math.max(margin + gap / 2, Math.min(w.H - margin - gap / 2, gapY));
-    const r = PHYS.planetR;
+    // BOUNCE HOUSE PLANETS (owner): each gate rolls its own size, up to 2.5x,
+    // and never more than a third of the screen tall
+    const r = w.bounceHouse
+        ? Math.min(w.H / 6, PHYS.planetR * (1 + (w.missionRng ?? Math.random)() * 1.5))
+        : PHYS.planetR;
     const topY = gapY - gap / 2 - r;
     const botY = gapY + gap / 2 + r;
     const blockers = sealBlockers(w, env, gapY, gap);
@@ -869,21 +917,35 @@ function spawnPair(w, save, x) {
     // sway entirely, Rough Air doubles it. They do not touch Lost in Space,
     // whose drift is the mode's whole identity, and neither touches a black
     // hole's tilt — that is orientation, not drift, and it stays either way.
-    const pilot = palId(save, w);
+    // WISP YIELDS TO ASTRAFOX (owner): the two drift companions do not stack,
+    // so with both aboard the fox's multiplier rides the mode's own sway
+    const wisp = hasPal(save, w, "wisp") && !hasPal(save, w, "astrafox");
     const normalDrift = w.flight === "fly" ? driftModOf(save, w) : 1;
     // a level's fx sway rides on top of the mode's own; CRIMSON STORM is
     // Rough Air with the volume knob exposed
     const lvlDrift = fxOf(w).driftScale ?? 1;
-    const driftAmp = (pilot === "wisp" ? 26
+    const driftAmp = (wisp ? 26
         : w.flight === "lost" ? 12
             : w.tut ? 0
                 : gap * 0.15 * normalDrift) * lvlDrift;
     const pairKind = pickKind(w);
+    // BOUNCE HOUSE, and nowhere else: a lone planet, top or bottom by coin
+    // flip, parked where the whole ball is on screen. gapY is back-solved so
+    // the ordinary top/bottom arithmetic lands the one half where it was put.
+    let half;
+    if (w.bounceHouse) {
+        const rng = w.missionRng ?? Math.random;
+        half = rng() < 0.5 ? "top" : "bot";
+        const cy = r + 10 + rng() * Math.max(0, w.H - 2 * r - 20);
+        gapY = half === "top" ? cy + gap / 2 + r : cy - gap / 2 - r;
+    }
     w.planets.push({
         x,
         gapY,
         gap,
         r,
+        half,
+        solo: !!half,
         // ONE PLANET PER GATE, drawn once. The two halves of a gate are one
         // object as far as the eye is concerned - a striped giant above and an
         // ice moon below reads as two things that happen to be near each other,
@@ -899,8 +961,9 @@ function spawnPair(w, save, x) {
         driftAmp,
         blockers,
     });
-    const pal = palId(save, w);
-    const noPick = pal === "bee" || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
+    const bee = hasPal(save, w, "bee");
+    // Space Puppy's bounce house spawns nothing to collect either
+    const noPick = bee || w.bounceHouse || (w.tut && w.tut.stage !== "gates7" && w.tut.stage !== "portal" && w.tut.stage !== "free");
     // A collection star must never be lost to the spawn dice: a level with
     // fx.acornEvery guarantees one acorn per gate, so "collect N" is always
     // achievable inside the level's own gate count with room to miss a few.
@@ -941,11 +1004,14 @@ function spawnPair(w, save, x) {
     // NOTE: this scales the three power-ups (freeze, golden, shield). The
     // black hole is a hazard and the 8-bit acorn is the door to the other
     // game, so neither rides this multiplier.
-    const specialMul = (pal === "meteorcore" ? 2 : 1) *
+    const specialMul =
+    // Astrolobee's veto beats Meteor Core's bonus (owner): no pickups at
+    // all, so there is nothing to double
+    (hasPal(save, w, "meteorcore") && !bee ? 2 : 1) *
         (w.flight === "arcade" ? 2 : 1) *
         (w.flight === "fly" ? 0.5 : 1);
-    const noShield = pal === "nutsack" || pal === "tinbot";
-    const noHoles = pal === "tinbot";
+    const noShield = hasPal(save, w, "nutsack") || hasPal(save, w, "tinbot");
+    const noHoles = hasPal(save, w, "tinbot") || w.bounceHouse;
     if (!noPick) {
         // The three power-ups roll ONCE, weighted against each other, rather
         // than three times independently. Their combined chance is what it
@@ -1053,8 +1119,14 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // the pause-sheet lab rides only a beta free flight; everything else
     // flies clean so no mission and no live run can inherit a dial
     w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
-    w.palFx = PAL_FX[palId(save, w)] ?? null;
+    // every companion's fx, folded together - two pals stack the same way a
+    // pal stacks on a mission
+    w.palFx = palIds(save, w).reduce((acc, id) => {
+        const fx = PAL_FX[id];
+        return fx ? mergeFx(acc ?? {}, fx) : acc;
+    }, null);
     w.palFlip = !!w.palFx?.upsideDown;
+    w.bounceHouse = hasPal(save, w, "spacepuppy");
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
@@ -1136,14 +1208,13 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.pausedFrom = null;
     w.shake = 0;
     // through palId so Pal Effects Off lifts the no-shield rule too
-    const shieldPal = palId(save, w);
-    const canShield = shieldPal !== "nutsack" && shieldPal !== "tinbot";
+    const canShield = !hasPal(save, w, "nutsack") && !hasPal(save, w, "tinbot");
     // UFO STARTS WITH A SHIELD (owner, 7 Sep 2026: the black-hole slow "was
     // not working anyway, and it's useless really"). The saucer carries one
     // charge onto every run for free. The hangar's armed shield is only
     // spent on top of it when the battery has room for two; otherwise it
     // stays armed for a later run rather than being burned for nothing.
-    const ufo = shieldPal === "ufo" && canShield;
+    const ufo = hasPal(save, w, "ufo") && canShield;
     const cap = batteryUnlocked(save) ? 3 : 1;
     w.startShieldArmed = !!(save.startShield && canShield && (!ufo || cap > 1));
     w.shieldCharges = Math.min(cap, (ufo ? 1 : 0) + (w.startShieldArmed ? 1 : 0));
@@ -1170,6 +1241,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.envMsgT = 0; // the opening environment never announces itself —
     // its name (DEEP SPACE) reads as a mode label; shifts still toast
     w.palPos = { x: w.W * PHYS.squirrelX - 42, y: w.H * 0.45 - 20, dart: 0 };
+    w.palPos2 = { x: w.W * PHYS.squirrelX - 42, y: w.H * 0.45 + 28, dart: 0 };
     if (flight === "lost") {
         w.warpMirror = false;
         w.warpTilt = lostTiltAt(w.tiltPhase);
@@ -1758,7 +1830,7 @@ function tutClearY(w, want) {
             if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40)
                 continue;
             const gy = liveGapY(p, w);
-            for (const cy of [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
+            for (const cy of p.half === "top" ? [gy - p.gap / 2 - p.r] : p.half === "bot" ? [gy + p.gap / 2 + p.r] : [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
                 const need = p.r + PHYS.squirrelR + 8;
                 const d = y - cy;
                 if (Math.abs(d) < need) {
@@ -1926,11 +1998,7 @@ function updateTunnel(w, save, simDt, realDt) {
     const sy = w.squirrel.y;
     // Pals travel with the pilot visually, but their abilities remain off in
     // this score-normalized mode.
-    const palTargetX = sx - 42;
-    const palTargetY = sy - 22 + Math.sin(w.time * 2.6) * 7;
-    const palFollow = Math.min(1, realDt * 5);
-    w.palPos.x += (palTargetX - w.palPos.x) * palFollow;
-    w.palPos.y += (palTargetY - w.palPos.y) * palFollow;
+    followPals(w, sx, sy, realDt);
     const bounds = tunnelBoundsAt(w, sx);
     if (sy - PHYS.squirrelR <= bounds.top || sy + PHYS.squirrelR >= bounds.bottom)
         return die(w, save);
@@ -2513,7 +2581,7 @@ export function flap(w, save) {
     if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
         // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
         // the slow, the way the frozen acorn does - a slow, never a full stop.
-        if (fxOf(w).tapFreeze || (runPal(save, w) === "switchback" && !save.noPalFx))
+        if (fxOf(w).tapFreeze || (runPals(save, w).includes("switchback") && !save.noPalFx))
             w.tapFrozen = !w.tapFrozen;
         if (w.stuck) {
             w.stuck = false;
@@ -2670,7 +2738,7 @@ export function gateOffset(p, w) {
 function circleHit(x1, y1, r1, x2, y2, r2) {
     return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
 }
-function bounceOff(w, save, px, py) {
+function bounceOff(w, save, px, py, mul = 1) {
     // THE TEACHING LAUNCH IS NOT INTERRUPTIBLE. The tutorial's bounce stage
     // fires one arc that peaks exactly where the swipe lesson is taught, and
     // this function overwrites vy on contact - which is precisely how that
@@ -2687,8 +2755,8 @@ function bounceOff(w, save, px, py) {
     dx /= dist;
     dy /= dist;
     const incomingVy = w.squirrel.vy;
-    const jelly = palId(save, w) === "voidjelly" ? 0.55 : 1;
-    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1);
+    const jelly = hasPal(save, w, "voidjelly") ? 0.55 : 1;
+    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1) * mul;
     w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
     if (BOUNCE_ANIM_ENABLED) {
         w.bounceAnimT = 0;
@@ -2708,7 +2776,7 @@ function bounceOff(w, save, px, py) {
     // bounce, stepped at least 60 degrees off the last so no two in a row
     // read as the same colour. Planets keep their zone and debris keeps its
     // palette - a pilot still has to recognise what is about to hit them.
-    if (palId(save, w) === "prismwing") {
+    if (hasPal(save, w, "prismwing")) {
         w.prismHue = (w.prismHue + 60 + Math.random() * 240) % 360;
     }
     w.bounceUp = w.squirrel.vy < 0;
@@ -3070,6 +3138,10 @@ function die(w, save) {
         save.spillBest = Math.max(save.spillBest ?? 0, w.score);
     else
         save.highScore = Math.max(save.highScore, w.score);
+    // the same number goes to the platform's board (Game Center, Steam);
+    // a mission or a tutorial is not a board run, and the web has no board
+    if (!w.lvl && !w.tut && w.score > 0)
+        platform.submitScore(w.flight, w.score);
     if (w.startShieldArmed)
         save.startShield = false;
     spark(w, pilotX(w), w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
@@ -3572,7 +3644,7 @@ export function updateWorld(w, save, dt) {
     // the phase comes round, so the next swell is never the last one's
     // length. The multiplier is smoothed toward its target rather than set,
     // so no frame ever jumps the world sideways.
-    if (palId(save, w) === "clockling" && !w.ready) {
+    if (hasPal(save, w, "clockling") && !w.ready) {
         w.clockPhase += simDt * w.clockRate;
         if (w.clockPhase >= Math.PI * 2) {
             w.clockPhase -= Math.PI * 2;
@@ -3604,7 +3676,7 @@ export function updateWorld(w, save, dt) {
         // rate — the travel was right, the frequency read as fidgety.
         // Rough Air doubles how FAST a gate sways as well as how far, so the
         // two together read as turbulence rather than a slow deep breath.
-        const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
+        const driftRate = (hasPal(save, w, "wisp") && !hasPal(save, w, "astrafox") ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
             * (fxOf(w).driftRate ?? 1);
         p.drift += simDt * driftRate;
     }
@@ -3662,7 +3734,9 @@ export function updateWorld(w, save, dt) {
     for (const p of w.planets) {
         if (!p.scored && p.x + p.r < sx - 12) {
             p.scored = true;
-            w.score += 1;
+            // a bounce house keeps no score: gates pass uncounted (Space Puppy)
+            if (!w.bounceHouse)
+                w.score += 1;
             if (pilotSuitId(w, save) === "vanguard")
                 vanguardGate(w.vanguard);
             if (w.tut && (w.tut.stage === "gates3" || w.tut.stage === "gates7" || w.tut.stage === "portal")) {
@@ -3677,15 +3751,12 @@ export function updateWorld(w, save, dt) {
             }
         }
     }
-    const pal = palId(save, w);
-    const tx = sx - 42;
-    const ty = sy - 22 + Math.sin(w.time * 2.6) * 7;
-    const k = Math.min(1, dt * (w.palPos.dart > 0 ? 14 : 5));
-    w.palPos.x += (tx - w.palPos.x) * k;
-    w.palPos.y += (ty - w.palPos.y) * k;
-    if (w.palPos.dart > 0)
-        w.palPos.dart = Math.max(0, w.palPos.dart - dt);
-    if (pal === "buddy" || (w.tut && (w.tut.stage === "gates7" || w.tut.stage === "portal"))) {
+    const pals = palIds(save, w);
+    const has = (id) => pals.includes(id);
+    followPals(w, sx, sy, dt);
+    // the magnet's dart goes to whichever slot Acorn is flying in
+    const buddyPos = runPals(save, w)[1] === "buddy" ? w.palPos2 : w.palPos;
+    if (has("buddy") || (w.tut && (w.tut.stage === "gates7" || w.tut.stage === "portal"))) {
         // Pull at a fixed speed, not in proportion to the distance. A
         // proportional pull looks right and never lands: the world drags the
         // acorn LEFT at w.speed while the magnet drags it right at dx * 4.2, so
@@ -3715,6 +3786,14 @@ export function updateWorld(w, save, dt) {
         w.squirrel.vy = Math.abs(w.squirrel.vy) * 0.45 + 90;
         w.squirrel.rot = 0.5;
         spark(w, sx, 4, ["#e8dcc8", "#fff"], 8, "poof");
+    }
+    // a bounce house has a floor: the pilot springs back up instead of
+    // falling out of the run (Space Puppy)
+    if (w.bounceHouse && sy > w.H - PHYS.squirrelR && w.squirrel.vy > 0) {
+        w.squirrel.y = w.H - PHYS.squirrelR;
+        w.squirrel.vy = -(Math.abs(w.squirrel.vy) * 0.6 + 260);
+        w.squirrel.rot = -0.5;
+        spark(w, sx, w.H - 4, ["#ffb6c9", "#fff"], 8, "poof");
     }
     if (sy > w.H + 36) {
         if (tutSafe(w)) {
@@ -3777,14 +3856,15 @@ export function updateWorld(w, save, dt) {
         const gy = liveGapY(p, w);
         const topY = gy - p.gap / 2 - p.r;
         const botY = gy + p.gap / 2 + p.r;
-        for (const py of [topY, botY]) {
+        for (const py of p.half === "top" ? [topY] : p.half === "bot" ? [botY] : [topY, botY]) {
             if (!circleHit(sx, sy, sr, p.x, py, p.r * 0.92))
                 continue;
             if (w.hitCooldown <= 0) {
                 if (w.shieldCharges > 0 && w.tut?.stage === "free") {
                     /* planets bounce even with a shield — shields save debris / fall */
                 }
-                bounceOff(w, save, p.x, py);
+                // BOUNCE HOUSE: 2x off every planet, 3x off the big ones (owner)
+                bounceOff(w, save, p.x, py, w.bounceHouse ? (p.r >= PHYS.planetR * 1.75 ? 3 : 2) : 1);
                 w.run.bounces += 1;
                 return "bounce";
             }
@@ -3800,31 +3880,31 @@ export function updateWorld(w, save, dt) {
             continue;
         a.got = true;
         if (a.kind === "acorn") {
-            w.runAcorns += pal === "nutsack" ? 2 : 1;
+            w.runAcorns += has("nutsack") ? 2 : 1;
             if (w.lvl)
-                w.lvl.stats.acorns += pal === "nutsack" ? 2 : 1;
+                w.lvl.stats.acorns += has("nutsack") ? 2 : 1;
             if (a.pulled) {
-                w.palPos.x = a.x;
-                w.palPos.y = a.y;
-                w.palPos.dart = 0.35;
+                buddyPos.x = a.x;
+                buddyPos.y = a.y;
+                buddyPos.dart = 0.35;
             }
             spark(w, a.x, ay, ["#ffd060", "#fff"], 10, "gold");
             snd = "acorn";
         }
         else if (a.kind === "slow") {
-            w.powerLeft = PHYS.powerDuration * (pal === "cometsprite" ? 2 : 1);
+            w.powerLeft = PHYS.powerDuration * (has("cometsprite") ? 2 : 1);
             spark(w, a.x, ay, ["#6ef0ff", "#fff"], 12, "cyan");
             snd = "gold";
         }
         else if (a.kind === "gold") {
             if (w.lvl)
                 w.lvl.stats.gold += 1;
-            w.invulnLeft = PHYS.goldDuration * (pal === "starpup" ? 2 : 1);
+            w.invulnLeft = PHYS.goldDuration * (has("starpup") ? 2 : 1);
             spark(w, a.x, ay, ["#ffe080", "#ffd060"], 14, "gold");
             snd = "gold";
         }
         else if (a.kind === "shield") {
-            if (pal !== "nutsack" && pal !== "tinbot") {
+            if (!has("nutsack") && !has("tinbot")) {
                 // SHIELD BATTERY IS A STAR RUNG, NOT A PURCHASE (owner, 2 Sep 2026:
                 // "always active, not a toggle"): earn the stars and you carry
                 // three charges from then on. save.battery is left in place for
