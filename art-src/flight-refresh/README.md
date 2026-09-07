@@ -31,7 +31,7 @@ are frozen from the new registration independently of subsequent helmet edits.
 Reproduce with Node, TypeScript and @napi-rs/canvas:
 
 ```
-node illustrated-src/export-flight-refresh.mjs
+node illustrated-src/refine-flight-limbs.mjs
 node illustrated-src/export-sandbox.mjs
 node illustrated-src/review-flight-refresh.mjs
 python illustrated-src/verify-art.py
@@ -44,3 +44,9 @@ Canvas renderer verification; it does not claim testing on a physical phone.
 The full-frame preview includes deep dive frames outside the current shallow
 gameplay range. Bounding-box width naturally varies as a whole character turns;
 the scale tests use the skull and tail rather than forcing identical boxes.
+
+The merged refresh received a small arm/leg-motion follow-up. See
+`limb-refinement/README.md` for the targeted ImageGen edits, compositing
+footprints and independent preservation checks. The original whole-painting
+exporter remains the reproducible starting point; the refinement command
+above runs it before applying the local edits.
