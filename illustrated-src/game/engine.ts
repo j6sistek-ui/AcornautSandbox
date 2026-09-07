@@ -1,4 +1,4 @@
-import { canWearTrail, STAR_MAP_PREVIEW } from "./catalog";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
@@ -26,6 +26,7 @@ import {
   writeSave,
   type SaveData,
   cleanPilotName,
+  dualPalUnlocked,
 } from "./save";
 import { hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
 import {
@@ -769,7 +770,20 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // jump the queue so their pal flies animated rather than still
     if (art && art.ready) void loadPalBank(art, id);
     if (!save.unlockedPals.includes(id)) save.unlockedPals.push(id);
-    save.equippedPal = id;
+    // TWO SLOTS (owner, 7 Sep 2026, earned at 720 stars). The high slot is
+    // the one the game always had; the low slot opens beside it. A tap on
+    // a free pal takes the first empty slot, or replaces the low one when
+    // both are full. A tap on a pal already flying dismisses it, and a
+    // lone companion always climbs to the high slot. "None" clears both.
+    if (id === "none") { save.equippedPal = "none"; save.equippedPal2 = "none"; }
+    else if (!dualPalUnlocked(save)) { save.equippedPal = id; save.equippedPal2 = "none"; }
+    else if (save.equippedPal === id) { save.equippedPal = save.equippedPal2; save.equippedPal2 = "none"; }
+    else if (save.equippedPal2 === id) save.equippedPal2 = "none";
+    else if (save.equippedPal === "none") save.equippedPal = id;
+    else {
+      if (palsClash(save.equippedPal, id)) return "clash";
+      save.equippedPal2 = id;
+    }
     writeSave(save);
     notify();
     return "equip";
@@ -1480,7 +1494,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   // the first flight is flown in AcorNut, so his bank rides the boot load
   // until the tutorial is done
-  engine.artReady = loadArt(save.tutorialDone ? [save.equippedSuit] : [save.equippedSuit, TUTORIAL_SUIT], [save.equippedPal])
+  engine.artReady = loadArt(save.tutorialDone ? [save.equippedSuit] : [save.equippedSuit, TUTORIAL_SUIT], [save.equippedPal, save.equippedPal2])
     .then((bank) => {
       art = bank;
       engine.art = bank;

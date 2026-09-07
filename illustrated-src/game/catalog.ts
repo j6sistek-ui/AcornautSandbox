@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "219";
+export const ART_VER = "220";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -372,6 +372,15 @@ export const PALS: Pal[] = [
   { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
   { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
 ];
+
+/** THE COMPANIONS THAT MOVE THE GATES. Nightglider holds them still, so
+ *  it cannot fly beside one of these (owner, 7 Sep 2026) - the two would
+ *  simply cancel and the pilot would be flying a blank. */
+export const DRIFT_PALS = new Set(["wisp", "astrafox"]);
+/** two companions that refuse to fly together */
+export function palsClash(a: string, b: string) {
+  return (a === "nightglider" && DRIFT_PALS.has(b)) || (b === "nightglider" && DRIFT_PALS.has(a));
+}
 
 export type Env = {
   name: string;

@@ -1,11 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=216";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=220";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "216";
+export const ART_VER = "220";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 05:51 UTC";
+export const BUILD_TIME = "2026-09-07 07:02 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
@@ -270,6 +270,8 @@ export const PAL_ANIM = {
     switchback: 16, bee: 9, buddy: 25, clockling: 36, cometsprite: 4, meteorcore: 25,
     nightglider: 16, nutsack: 36, pocketmoon: 25, prismwing: 16,
     starpup: 25, tinbot: 36, ufo: 16, voidjelly: 36, wisp: 25,
+    // owner sheets, 7 Sep 2026
+    magnetar: 36, babyalien: 36, satellite: 36, astrafox: 36,
 };
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
@@ -282,7 +284,7 @@ export const PALS = [
     { id: "cometsprite", name: "Comet", tag: "LONG SLOW", desc: "2x Freeze Duration", art: "cometsprite" },
     { id: "meteorcore", name: "Meteor Core", tag: "2X SPECIALS", desc: "2x Power Ups", art: "meteorcore" },
     { id: "pocketmoon", name: "Moon", tag: "LOW GRAV", desc: "Lower Gravity", art: "pocketmoon" },
-    { id: "ufo", name: "UFO", tag: "WARP SLOW", desc: "Slow Effect in blackholes", art: "ufo" },
+    { id: "ufo", name: "UFO", tag: "SHIELD UP", desc: "Start with Shield", art: "ufo" },
     { id: "nutsack", name: "Nut-Sack", tag: "2X NUTS", desc: "2x Acorns but the sack is heavy", art: "nutsack" },
     { id: "starpup", name: "Star Child", tag: "LONG GOLD", desc: "Double Golden Effect", art: "starpup" },
     { id: "tinbot", name: "TinTin", tag: "NO HOLES", desc: "Disables Blackholes", art: "tinbot" },
@@ -290,7 +292,21 @@ export const PALS = [
     { id: "prismwing", name: "Prismwing", tag: "HUE SHIFT", desc: "Planet Bounces Repaint Sky", art: "prismwing" },
     { id: "clockling", name: "TurClock", tag: "TIME SLIP", desc: "Scroll Speed Drift", art: "clockling" },
     { id: "nightglider", name: "Nightglider", tag: "STEADY GATES", desc: "Gate Drift Off", art: "nightglider" },
+    // owner, 7 Sep 2026: four new companions. Their effects live in PAL_FX
+    // (sim.ts) as level fx, so a pal dial and a mission dial are one lever.
+    { id: "magnetar", name: "Magnetar", tag: "FLIPPED", desc: "Upside Down World", art: "magnetar" },
+    { id: "babyalien", name: "Baby Alien", tag: "MINI GAPS", desc: "Mini Gaps", art: "babyalien" },
+    { id: "satellite", name: "Satellite", tag: "FOG 100%", desc: "Visibility Reduced", art: "satellite" },
+    { id: "astrafox", name: "AstraFox", tag: "WILD GATES", desc: "Wild Gate Sway", art: "astrafox" },
 ];
+/** THE COMPANIONS THAT MOVE THE GATES. Nightglider holds them still, so
+ *  it cannot fly beside one of these (owner, 7 Sep 2026) - the two would
+ *  simply cancel and the pilot would be flying a blank. */
+export const DRIFT_PALS = new Set(["wisp", "astrafox"]);
+/** two companions that refuse to fly together */
+export function palsClash(a, b) {
+    return (a === "nightglider" && DRIFT_PALS.has(b)) || (b === "nightglider" && DRIFT_PALS.has(a));
+}
 export const SKY_RGB = {
     indigo: [0.11, 0.14, 0.34],
     ice: [0.57, 0.73, 0.83],
@@ -446,6 +462,10 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
+    { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
+    { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
+    { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
+    { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
     { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {
         id: "bundle-aurora",

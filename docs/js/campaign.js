@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=219";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=219";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=219";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=219";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=220";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=220";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=220";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=220";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -581,6 +581,8 @@ export const STAR_REWARDS = [
     { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
     { stars: 500, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
     { stars: 500, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
+    // owner, 7 Sep 2026: the far end of the chart opens a second slot
+    { stars: 720, kind: "mod", id: "dualpal", name: "Second Companion", desc: "Fly two pals at once, one high and one low. Their effects stack." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title
@@ -615,4 +617,6 @@ export const STAR_UNLOCKS = {
     deep: 12,
     lost: 45,
     flightMods: 180,
+    /** the second companion slot (owner, 7 Sep 2026) */
+    dualPal: 720,
 };

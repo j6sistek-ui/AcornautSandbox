@@ -1,4 +1,4 @@
-import { writeSave, suitPitchFor } from "./save";
+import { writeSave, suitPitchFor, type SaveData } from "./save";
 import { spillAppearance } from "./spill-appearance";
 import { trailWornBy, canWearTrail } from "./catalog";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
@@ -12,7 +12,7 @@ import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SU
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine } from "./engine";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
+import { batteryUnlocked, dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery, type SpillSpecialty, type SpillUtility } from "./spill-content";
@@ -1341,15 +1341,22 @@ export async function bootStandalone(root: HTMLElement) {
     {
       const on: string[] = [];
       for (const m of MODS) if (s[m.save]) on.push(m.name);
-      const palOn = PALS.find((x) => x.id === s.equippedPal);
       // desc, not tag: "MAGNET" is a label, "Magnet Effect" is what the
       // hangar card says and it is the one a pilot has actually read.
-      if (palOn && palOn.id !== "none" && !s.noPalFx) on.push(`${palOn.name}: ${palOn.desc}`);
+      // Two seats means two chips (owner, 7 Sep 2026).
+      if (!s.noPalFx) for (const id of equippedPals(s)) {
+        const palOn = PALS.find((x) => x.id === id);
+        if (palOn) on.push(`${palOn.name} \u00b7 ${palOn.desc}`);
+      }
       if (on.length && !spillSelected) {
         // prefixed, because an unlabelled green line beneath a launch button
-        // reads as a slogan rather than as the state of the run
+        // reads as a slogan rather than as the state of the run. One CHIP
+        // per effect, so a long description wraps to its own row instead
+        // of shoving the whole tile sideways (owner: "scrunches up with
+        // too much text").
         const line = el("span", "ac-hub-active");
-        line.append(el("b", "", "Active Effects: "), el("span", "", on.join(" \u00b7 ")));
+        line.append(el("b", "", "ACTIVE"));
+        for (const t of on) line.append(el("span", "ac-hub-fx", t));
         ltxt.append(line);
       }
     }
@@ -1361,9 +1368,9 @@ export async function bootStandalone(root: HTMLElement) {
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
     // an equipped pal announces itself on the tile — one green line
-    const hubPal = PALS.find((p) => p.id === s.equippedPal);
-    if (hubPal && hubPal.id !== "none") {
-      loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPal.name} equipped`));
+    const hubPals = equippedPals(s).map((id) => PALS.find((p) => p.id === id)?.name).filter(Boolean);
+    if (hubPals.length) {
+      loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
     }
     const planet = miniCanvas(50, 50);
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
@@ -1801,11 +1808,20 @@ export async function bootStandalone(root: HTMLElement) {
     if (hue) node.style.setProperty("--pg", hue);
   }
 
+  /** the pal in the LOW seat on a stage that is trying one on up high: the
+   *  hangar's second companion, unless it is the very one being tried */
+  function lowSeatPal(s: SaveData, high?: string) {
+    const low = equippedPals(s)[1] ?? (equippedPals(s)[0] !== high ? equippedPals(s)[0] : undefined);
+    return low && low !== high ? low : undefined;
+  }
+
   function palCardOf(pl: (typeof PALS)[number], forShop = false) {
     const s = engine.save;
     const premium = isIap(pl.id);
     const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
-    const b = el("button", s.equippedPal === pl.id ? "ac-card ac-palcard on" : "ac-card ac-palcard");
+    // "None" is the empty high seat, never the empty low one
+    const seat = s.equippedPal === pl.id ? "HIGH" : pl.id !== "none" && s.equippedPal2 === pl.id ? "LOW" : "";
+    const b = el("button", seat ? "ac-card ac-palcard on" : "ac-card ac-palcard");
     if (premium) markPremium(b);   // pals carry no palette of their own
     if (!open) b.classList.add("ac-cardoff");
     b.append(el("p", "ac-palname", pl.name));
@@ -1816,7 +1832,9 @@ export async function bootStandalone(root: HTMLElement) {
     // The card is NAME, painting, DESCRIPTION. The foot line only exists
     // when it says something the description does not: the star price, the
     // premium state — never a redundant tag.
-    const status = premium ? (open ? "OWNED" : "PREMIUM")
+    // with two seats open, an equipped pal says WHICH it is flying in
+    const status = seat && dualPalUnlocked(s) && pl.id !== "none" ? `FLYING ${seat}`
+      : premium ? (open ? "OWNED" : "PREMIUM")
       : open ? ""
       : STAR_UNLOCKS.pals[pl.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.pals[pl.id]}`
       : forShop ? "EARNED BY FLYING" : "LOCKED";
@@ -1876,6 +1894,7 @@ export async function bootStandalone(root: HTMLElement) {
     unknown: () => "That item is not in this build.",
     owned: () => "Already yours.",
     armed: () => "Already armed — your next run spends it.",
+    clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
   };
   function announce(msg: string) {
     if (!denyEl) return;
@@ -1924,7 +1943,7 @@ export async function bootStandalone(root: HTMLElement) {
       const wornSuit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
       const wornHelm = helmetWornBy(s.equipped, s.equippedSuit);
       const ownHead = wearsOwnHead(wornSuit);
-      const palWorn = PALS.find((x) => x.id === s.equippedPal && x.id !== "none");
+      const palsWorn = equippedPals(s).map((id) => PALS.find((x) => x.id === id)).filter((x): x is (typeof PALS)[number] => !!x);
       const CASE_W = 344, CASE_H = 236;
       const stage = el("div", "ac-shopcase ac-hangarcase");
       // A CASE YOU CAN SHRINK (owner, 2 Sep 2026). Browsing a long shelf
@@ -1969,7 +1988,7 @@ export async function bootStandalone(root: HTMLElement) {
       } else {
         plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
         plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
-        plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palWorn?.name ?? "No pal"}`));
+        plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palsWorn.length ? palsWorn.map((p) => p.name).join(" + ") : "No pal"}`));
       }
       // THE NEXT-RUN SHIELD LIVES ON THE PLATE (owner, 2 Sep 2026: "find a
       // home elsewhere in the loadout, maybe a small button on the
@@ -1992,7 +2011,7 @@ export async function bootStandalone(root: HTMLElement) {
         // the worn suit is usually home already, but a pilot who equips and
         // opens the loadout inside the same second can still beat the load
         engine.wantSuitArt(wornSuit.id);
-        if (palWorn) engine.wantPalArt(palWorn.id);
+        for (const p of palsWorn) engine.wantPalArt(p.id);
         const t0 = performance.now();
         const tick = () => {
           if (!c.isConnected) return;
@@ -2003,7 +2022,8 @@ export async function bootStandalone(root: HTMLElement) {
           if (engine.shopTab === "ship") {
             paintShipPreview(ctx, engine.art, s, CASE_W / 2, 122, 4.0, tt, shipPick);
           } else {
-            if (palWorn) paintPalPreview(ctx, engine.art, palWorn.id, CASE_W - 58, 80, 52);
+            // high seat over the shoulder, low seat under the tail
+            palsWorn.forEach((p, i) => paintPalPreview(ctx, engine.art, p.id, CASE_W - 58, i === 0 ? 80 : 172, 52));
             paintFlightPreview(ctx, engine.art, wornSuit, wornHelm, CASE_W / 2 - 14, 128, 158, tt,
               suitLean(wornSuit.id), false, (suitPitchFor(engine.save, wornSuit.id) * Math.PI) / 180);
           }
@@ -2245,6 +2265,12 @@ export async function bootStandalone(root: HTMLElement) {
       fx.append(ftxt, fsw);
       fx.onclick = () => engine.setMod("noPalFx");
       grid.append(fx);
+      // TWO SEATS (owner, 7 Sep 2026). One line above the shelf says how
+      // the second one works - or what earns it - because a tap that now
+      // dismisses a pal instead of doing nothing needs to have been said.
+      grid.append(el("p", "ac-palseats", dualPalUnlocked(s)
+        ? "TWO SEATS \u00b7 tap a second pal to fly it low \u00b7 tap a flying pal to dismiss it"
+        : `SECOND SEAT AT \u2605 ${STAR_UNLOCKS.dualPal} \u00b7 fly two pals at once, effects stacked`));
       for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) grid.append(palCardOf(p));
     } else if (engine.shopTab === "ship") {
       grid.classList.add("ac-shelfcol", "ac-shipworkshop");
@@ -2579,6 +2605,10 @@ export async function bootStandalone(root: HTMLElement) {
       // Space, the blue vortex for Lost in Space
       const idx = item.name === "Lost in Space" ? 8 : 17;
       drawSpriteOn(ctx, art.planets?.[idx] ?? null, px / 2, px / 2, px * 0.9);
+    } else if (item.kind === "mod" && item.id === "dualpal") {
+      // two companions, one high and one low - the reward is the seat
+      paintPalPreview(ctx, art, "buddy", px * 0.62, px * 0.34, px * 0.56);
+      paintPalPreview(ctx, art, "bee", px * 0.38, px * 0.7, px * 0.56);
     } else if (item.kind === "mod") {
       drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "title") {
@@ -3478,6 +3508,8 @@ export async function bootStandalone(root: HTMLElement) {
         const t = (performance.now() - t0) / 1000;
         ctx.clearRect(0, 0, CASE_W, CASE_H);
         if (palDef) paintPalPreview(ctx, engine.art, palDef.id, CASE_W - 58, 80, 52);
+        const low = lowSeatPal(engine.save, palDef?.id);
+        if (low) paintPalPreview(ctx, engine.art, low, CASE_W - 58, 172, 52);
         paintFlightPreview(ctx, engine.art, suit, helm, CASE_W / 2 - 14, 128, 158, t, undefined, false, (suitPitchFor(engine.save, suit.id) * Math.PI) / 180);
         requestAnimationFrame(tick);
       };
@@ -4022,7 +4054,7 @@ export async function bootStandalone(root: HTMLElement) {
       const worn = kind === "suit" ? s.equippedSuit === itemId
         : kind === "helm" ? s.equipped === itemId
         : kind === "trail" ? trailWornBy(s.equippedTrail, s.equippedSuit) === itemId
-        : s.equippedPal === itemId;
+        : equippedPals(s).includes(itemId);
       const act = el("button", worn ? "ac-primary ac-revealequip off" : "ac-primary ac-revealequip");
       if (worn) { act.textContent = `${g?.name ?? ""} EQUIPPED`; act.disabled = true; }
       else {
@@ -4242,6 +4274,8 @@ export async function bootStandalone(root: HTMLElement) {
         const t = (performance.now() - t0) / 1000;
         ctx.clearRect(0, 0, 300, 190);
         if (palDef) paintPalPreview(ctx, engine.art, palDef.id, 232, 62, 44);
+        const low = lowSeatPal(engine.save, palDef?.id);
+        if (low) paintPalPreview(ctx, engine.art, low, 232, 140, 44);
         paintFlightPreview(ctx, engine.art, suit, helm, 132, 104, 108, t, undefined, false, (suitPitchFor(engine.save, suit.id) * Math.PI) / 180);
         requestAnimationFrame(tick);
       };

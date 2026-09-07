@@ -1,10 +1,10 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=216";
-import { CHART_LEVELS } from "./campaign.js?v=216";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=216";
-import { restoreSpill } from "./spill.js?v=216";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=216";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=220";
+import { CHART_LEVELS } from "./campaign.js?v=220";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=220";
+import { restoreSpill } from "./spill.js?v=220";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=220";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, } from "./catalog.js?v=216";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=220";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -40,6 +40,7 @@ export function defaultSave() {
         equippedTrail: "sparks",
         unlockedPals: ["none"],
         equippedPal: "none",
+        equippedPal2: "none",
         runs: 0,
         lifetimeAcorns: 0,
         zonesSeen: [],
@@ -125,6 +126,18 @@ export function loadSave() {
         s.equippedPal = "none";
     if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal))
         s.equippedPal = "none";
+    // the low slot: a real pal, open, not a twin of the high one, not one
+    // that clashes with it, and only while the slot itself is earned
+    if (typeof s.equippedPal2 !== "string" || !PALS.some((p) => p.id === s.equippedPal2))
+        s.equippedPal2 = "none";
+    if (s.equippedPal2 !== "none" && (!palUnlocked(s, s.equippedPal2) || !dualPalUnlocked(s)
+        || s.equippedPal2 === s.equippedPal || palsClash(s.equippedPal, s.equippedPal2)))
+        s.equippedPal2 = "none";
+    // a lone companion always flies high
+    if (s.equippedPal === "none" && s.equippedPal2 !== "none") {
+        s.equippedPal = s.equippedPal2;
+        s.equippedPal2 = "none";
+    }
     // saves written before Star Dust existed. dustPaidTo starts at 0 rather
     // than at the pilot's current stars, so a long-standing save is PAID its
     // backlog on next load instead of silently losing it.
@@ -442,6 +455,15 @@ export function startShieldUnlocked(s) {
 }
 export function batteryUnlocked(s) {
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
+}
+/** the second companion slot (owner, 7 Sep 2026): a Star Chart reward */
+export function dualPalUnlocked(s) {
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.dualPal;
+}
+/** the companions the hangar has equipped, high slot first, without the
+ *  empty "none" - the one list every screen that shows a pal reads */
+export function equippedPals(s) {
+    return [s.equippedPal, s.equippedPal2].filter((p) => p && p !== "none");
 }
 /** The beta A/B preference cannot opt production into an experiment. */
 /** the forward lean a suit flies at: the dialled number, else the catalog default */

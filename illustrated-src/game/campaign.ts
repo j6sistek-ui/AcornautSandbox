@@ -738,6 +738,8 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
   { stars: 500, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
   { stars: 500, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
+  // owner, 7 Sep 2026: the far end of the chart opens a second slot
+  { stars: 720, kind: "mod", id: "dualpal", name: "Second Companion", desc: "Fly two pals at once, one high and one low. Their effects stack." },
 ];
 
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
@@ -775,4 +777,6 @@ export const STAR_UNLOCKS = {
   deep: 12,
   lost: 45,
   flightMods: 180,
+  /** the second companion slot (owner, 7 Sep 2026) */
+  dualPal: 720,
 };

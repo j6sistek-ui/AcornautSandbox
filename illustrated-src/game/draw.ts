@@ -4,7 +4,7 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
-import { runPal, fxOf, worldFlipped } from "./sim";
+import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
@@ -2751,13 +2751,10 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
 
   // Nightglider keeps its existing steady-gates effect in the simulation.
 
-  const pal =
-    w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-      ? "buddy"
-      : runPal(save, w);
-  if (pal && pal !== "none") {
-    const bob = Math.sin(w.time * 2.6) * 2;
-    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+  for (const [i, pal] of flyingPals(save, w).entries()) {
+    const pos = i === 0 ? w.palPos : w.palPos2;
+    const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+    paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
   }
 
   drawPilot(ctx, w, save, art);
@@ -3036,10 +3033,10 @@ function drawTunnelWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData
     ctx.fillStyle = frost;
     ctx.fillRect(0, 0, W, H);
   }
-  const pal = runPal(save, w);
-  if (pal && pal !== "none") {
-    const bob = Math.sin(w.time * 2.6) * 2;
-    paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+  for (const [i, pal] of runPals(save, w).entries()) {
+    const pos = i === 0 ? w.palPos : w.palPos2;
+    const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+    paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
   }
   drawPilot(ctx, w, save, art);
 }
@@ -3097,14 +3094,11 @@ function drawRetroWorld(
 
   }
 
-  const pal =
-    w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-      ? "buddy"
-      : runPal(save, w);
-  if (pal && pal !== "none") {
-    const bob = Math.sin(w.time * 2.6) * 2;
+  for (const [i, pal] of flyingPals(save, w).entries()) {
+    const pos = i === 0 ? w.palPos : w.palPos2;
+    const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
     // live draws its pals at unit SCALE, not at a pixel size
-    drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
+    drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
   }
 
   const wornId = pilotSuitId(w, save);
@@ -4911,6 +4905,13 @@ function drawPilot(
 
 const PAL_ANIM_FPS = 12;
 
+/** the companions to paint: the tutorial's Acorn alone during its lesson,
+ *  otherwise every pal the run flies, high slot first */
+function flyingPals(save: SaveData, w: World): string[] {
+  if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")) return ["buddy"];
+  return runPals(save, w);
+}
+
 function paintPal(
   ctx: CanvasRenderingContext2D,
   art: ArtBank | null | undefined,
@@ -5590,7 +5591,7 @@ if (w.lvl) {
   if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
     hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
   const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-    : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+    : fxOf(w).tapFreeze || runPals(save, w).includes("switchback") ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
     : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
   if (experiment && !w.ready) {
     ctx.save(); ctx.font="bold 12px sans-serif"; ctx.textAlign="center";

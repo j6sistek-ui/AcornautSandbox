@@ -1,33 +1,33 @@
-import { spillDockTravelDuration } from "./spill.js?v=216";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=216";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=216";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=216";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=216";
-import { arcflashPreview } from "./arcflash-motion.js?v=216";
-import { runPal, fxOf } from "./sim.js?v=216";
-import { spillAppearance } from "./spill-appearance.js?v=216";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=216";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=216";
-import { goalHud } from "./campaign.js?v=216";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=216";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=216";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=216";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=216";
-import { suitPitchFor } from "./save.js?v=216";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=216";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=216";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=216";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=216";
-import { spillEngineColor } from "./spill-content.js?v=216";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=216";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=216";
+import { spillDockTravelDuration } from "./spill.js?v=220";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=220";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=220";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=220";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=220";
+import { arcflashPreview } from "./arcflash-motion.js?v=220";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=220";
+import { spillAppearance } from "./spill-appearance.js?v=220";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=220";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=220";
+import { goalHud } from "./campaign.js?v=220";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=220";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=220";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=220";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=220";
+import { suitPitchFor } from "./save.js?v=220";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=220";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=220";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=220";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=220";
+import { spillEngineColor } from "./spill-content.js?v=220";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=220";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=220";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
-    if (fxOf(w).upsideDown) {
+    if (worldFlipped(w)) {
         ctx.translate(w.W, w.H);
         ctx.rotate(Math.PI);
     }
@@ -2663,7 +2663,8 @@ export function drawWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl || w.lab.fog) {
+    {
+        // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
         const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
@@ -2678,12 +2679,10 @@ export function drawWorld(ctx, w, save, art) {
         }
     }
     // Nightglider keeps its existing steady-gates effect in the simulation.
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-        ? "buddy"
-        : runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+    for (const [i, pal] of flyingPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+        paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
     // The shield and golden rings belong to the PILOT, so they must be
@@ -2975,10 +2974,10 @@ function drawTunnelWorld(ctx, w, save, art) {
         ctx.fillStyle = frost;
         ctx.fillRect(0, 0, W, H);
     }
-    const pal = runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
-        paintPal(ctx, art, pal, w.palPos.x, w.palPos.y + bob, 26, w.time);
+    for (const [i, pal] of runPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
+        paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     drawPilot(ctx, w, save, art);
 }
@@ -3014,7 +3013,8 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl || w.lab.fog) {
+    {
+        // a mission's fog, the lab's, or Satellite's (PAL_FX) - fxOf has them all
         const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
@@ -3028,13 +3028,11 @@ function drawRetroWorld(ctx, w, save, art) {
             ctx.fillRect(-w.W, -w.H, w.W * 3, w.H * 3);
         }
     }
-    const pal = w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")
-        ? "buddy"
-        : runPal(save, w);
-    if (pal && pal !== "none") {
-        const bob = Math.sin(w.time * 2.6) * 2;
+    for (const [i, pal] of flyingPals(save, w).entries()) {
+        const pos = i === 0 ? w.palPos : w.palPos2;
+        const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
         // live draws its pals at unit SCALE, not at a pixel size
-        drawPalOn(ctx, pal, w.palPos.x, w.palPos.y + bob, 1, w.time);
+        drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
     }
     const wornId = pilotSuitId(w, save);
     const helm = helmetWornBy(save.equipped, wornId);
@@ -4793,6 +4791,13 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     ctx.restore();
 }
 const PAL_ANIM_FPS = 12;
+/** the companions to paint: the tutorial's Acorn alone during its lesson,
+ *  otherwise every pal the run flies, high slot first */
+function flyingPals(save, w) {
+    if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
+        return ["buddy"];
+    return runPals(save, w);
+}
 function paintPal(ctx, art, id, x, y, size, time = 0) {
     // A pal with an idle bank plays it; one without keeps its still, which is
     // what every pal did before the banks existed. The banks are their own
@@ -5442,7 +5447,7 @@ export function drawHud(ctx, w, art, save) {
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-        : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+        : fxOf(w).tapFreeze || runPals(save, w).includes("switchback") ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
             : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
     if (experiment && !w.ready) {
         ctx.save();
