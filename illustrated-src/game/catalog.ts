@@ -6,7 +6,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.10";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "206";
+export const ART_VER = "207";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -257,6 +257,12 @@ export const SUITS: Suit[] = [
   { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
   { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
+  // THE CRITTERS (owner, 7 Sep 2026): three more acorn-intolerant characters,
+  // each its own head, sold as the Critter Pack like the Circuit trio. Each
+  // flies a painted 16-frame tap bank cut from the owner's sheets.
+  { id: "raccoon", name: "Bandit", cost: 0, ownHead: true, fur: "#8f8a86", furDark: "#3a3532", belly: "#e8e2da", suit: "#d7dde3", suitLite: "#ffffff", suitDark: "#5c6672", trim: "#33c8ff", glow: "#38d0ff", dust: "#a8ecff" },
+  { id: "ferret", name: "Noodle", cost: 0, ownHead: true, fur: "#6b4a3a", furDark: "#3b2418", belly: "#f1e6d6", suit: "#f2b21c", suitLite: "#ffd75a", suitDark: "#8a5f0a", trim: "#2b2b2b", glow: "#ffc83a", dust: "#ffe08a" },
+  { id: "hedgehog", name: "Quill", cost: 0, ownHead: true, fur: "#8a6a48", furDark: "#3f2b18", belly: "#e9d6bd", suit: "#6f8f4a", suitLite: "#a8c46e", suitDark: "#37502a", trim: "#ff9a2a", glow: "#ffa53a", dust: "#ffd28a" },
   { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
   { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
   { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
@@ -618,6 +624,15 @@ export const BUNDLES: {
       { kind: "pal", id: "nightglider" },
     ],
   },
+  {
+    id: "bundle-critters",
+    name: "Critter Pack",
+    blurb: "Bandit, Noodle and Quill. Three more who eat no acorns.",
+    dust: 750,
+    items: [
+      { kind: "suit", id: "raccoon" }, { kind: "suit", id: "ferret" }, { kind: "suit", id: "hedgehog" },
+    ],
+  },
   // The small packs. They overlap the big ones ON PURPOSE: a pilot who owns
   // Robo should meet a Robo pack that has already taken his suit off the
   // price, which is the whole reason the pricing below exists.
@@ -874,7 +889,8 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
   // the cat eats no acorns, so no amount of them buys it: it is the
   // 300-star prize, the full Star Chart, and nothing less
-  { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat"] },
+  // the critters are premium: unowned ones show as doors to the shop
+  { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog"], shop: true },
   { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 

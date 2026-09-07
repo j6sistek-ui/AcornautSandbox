@@ -366,6 +366,8 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
   flight: 16,
+  // the critters (owner sheets, 7 Sep 2026): whole-character 16-frame banks
+  raccoon: 16, ferret: 16, hedgehog: 16,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -618,6 +620,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "cyber",
     // Arcflash is SOLD on production (7 Sep 2026), so its art loads there.
     "arcflash",
+    // the Critter Pack (7 Sep 2026): sold on production
+    "raccoon", "ferret", "hedgehog",
     ...(IS_BETA ? [
       "cinderforge", "groveguard", "cosmic", "sunforged",
       "abyssal", "amethyst", "ivoryguard", "reactor",
