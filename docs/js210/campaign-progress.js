@@ -1,5 +1,5 @@
-import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=211";
-import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=211";
+import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=210";
+import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=210";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" ? `legacy:dust:${r.stars}` : `legacy:${r.kind}:${r.id ?? r.name}:${r.stars}`;
 const clampMask = (n) => typeof n === "number" && Number.isFinite(n) ? n & 7 : 0;

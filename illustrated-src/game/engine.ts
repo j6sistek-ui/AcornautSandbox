@@ -176,6 +176,9 @@ export type Engine = {
   /** AcorNut's pitch trim, in degrees; the dial until the number settles */
   /** the beta pitch dial: a suit's whole-animation forward lean, in degrees */
   setSuitPitch: (suitId: string, deg: number) => void;
+  /** the beta flight lab: merge dials into the save and the live free flight */
+  setLab: (patch: Record<string, number | boolean | undefined>) => void;
+  resetLab: () => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -483,6 +486,19 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return on;
     },
     isFavorite: (id) => (save.favorites ?? []).includes(id),
+    setLab(patch) {
+      save.lab = { ...(save.lab ?? {}), ...patch };
+      for (const k of Object.keys(save.lab)) if (save.lab[k] === undefined) delete save.lab[k];
+      if (IS_BETA && world.flight === "fly" && !world.lvl && !world.tut) world.lab = { ...save.lab };
+      writeSave(save);
+      notify();
+    },
+    resetLab() {
+      save.lab = {};
+      if (!world.lvl) world.lab = {};
+      writeSave(save);
+      notify();
+    },
     setSuitPitch(suitId, deg) {
       if (!save.suitPitch) save.suitPitch = {};
       save.suitPitch[suitId] = Math.max(-20, Math.min(45, Math.round(deg)));

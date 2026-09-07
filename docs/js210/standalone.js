@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=211";
-import { spillAppearance } from "./spill-appearance.js?v=211";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=211";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=211";
-import { addChartScenery } from "./star-map-view.js?v=211";
-import { mapDebrisIndex } from "./zone-visuals.js?v=211";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=211";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=211";
-import { suitLean } from "./control-constants.js?v=211";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=211";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=211";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=211";
-import { drawSprite as drawSpriteOn } from "./art.js?v=211";
-import { createEngine } from "./engine.js?v=211";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=211";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=211";
-import { formatRaceTicks } from "./race.js?v=211";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=211";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=211";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=211";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=211";
+import { suitPitchFor } from "./save.js?v=210";
+import { spillAppearance } from "./spill-appearance.js?v=210";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=210";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=210";
+import { addChartScenery } from "./star-map-view.js?v=210";
+import { mapDebrisIndex } from "./zone-visuals.js?v=210";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=210";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=210";
+import { suitLean } from "./control-constants.js?v=210";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=210";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=210";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=210";
+import { drawSprite as drawSpriteOn } from "./art.js?v=210";
+import { createEngine } from "./engine.js?v=210";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=210";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=210";
+import { formatRaceTicks } from "./race.js?v=210";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=210";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=210";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=210";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=210";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -424,9 +424,6 @@ export async function bootStandalone(root) {
             // beta"): the worn suit's forward lean, tuned mid-flight.
             if (IS_BETA)
                 sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
-            // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
-            if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill)
-                sheet.append(flightLab());
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
                 : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
                     : `Score ${engine.world.score}`));
@@ -912,57 +909,6 @@ export async function bootStandalone(root) {
     // under his card in the hangar while he is worn; -5 / +5 degrees a tap,
     // the number shown. Lives in the save so it survives a reload. Goes the
     // moment the owner calls a number.
-    // THE FLIGHT LAB. Sliders and switches for the modifiers a mission can
-    // carry, felt on a live free flight before they are written into the
-    // road. Every dial writes straight into the running world and the beta
-    // save, so a change is visible the moment the sheet closes and holds
-    // across runs until RESET.
-    function flightLab() {
-        const lab = engine.save.lab ?? {};
-        const panel = el("div", "ac-lab");
-        panel.append(el("p", "ac-sub ac-labhead", "FLIGHT LAB · free flight only"));
-        const slider = (key, label, min, max, step, base, fmt) => {
-            const row = el("div", "ac-labrow");
-            const v = typeof lab[key] === "number" ? lab[key] : base;
-            const name = el("span", "ac-labname", label);
-            const val = el("span", "ac-labval", fmt(v));
-            const input = document.createElement("input");
-            input.type = "range";
-            input.min = String(min);
-            input.max = String(max);
-            input.step = String(step);
-            input.value = String(v);
-            input.className = "ac-labslider";
-            input.setAttribute("aria-label", label);
-            input.oninput = () => { val.textContent = fmt(Number(input.value)); };
-            input.onchange = () => { const n = Number(input.value); engine.setLab({ [key]: n === base ? undefined : n }); };
-            row.append(name, input, val);
-            panel.append(row);
-        };
-        const pct = (v) => `${Math.round(v * 100)}%`;
-        const x = (v) => `${v.toFixed(2)}×`;
-        slider("fog", "Fog", 0, 1, 0.05, 0, pct);
-        slider("stickChance", "Sticky planets", 0, 1, 0.05, 0, pct);
-        slider("driftRate", "Gate sway speed", 0, 3, 0.1, 1, x);
-        slider("driftScale", "Gate sway distance", 0, 2.5, 0.1, 1, x);
-        slider("gapScale", "Gate opening", 0.6, 1.8, 0.05, 1, x);
-        slider("spacing", "Gate distance", 0.6, 1.8, 0.05, 1, x);
-        slider("bounceScale", "Planet rebound", 0.3, 2.5, 0.1, 1, x);
-        const toggles = el("div", "ac-modes");
-        toggles.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
-        for (const [key, label] of [["upsideDown", "Upside down"], ["tapFreeze", "Tap to slow time"], ["freeRevive", "Unlimited crash recovery"]]) {
-            const on = lab[key] === true;
-            const b = el("button", on ? "ac-mode on" : "ac-mode", `${label} · ${on ? "ON" : "OFF"}`);
-            b.onclick = () => engine.setLab({ [key]: on ? undefined : true });
-            toggles.append(b);
-        }
-        const reset = el("button", "ac-mode", "RESET LAB");
-        reset.onclick = () => engine.resetLab();
-        toggles.append(reset);
-        panel.append(toggles);
-        panel.append(el("p", "ac-fine", "Switchback as your pal: every tap toggles the slow, like the frozen acorn."));
-        return panel;
-    }
     function suitPitchDial(suitId) {
         const panel = el("div", "ac-suit-pitch");
         const deg = suitPitchFor(engine.save, suitId);

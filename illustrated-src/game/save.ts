@@ -141,6 +141,9 @@ export type SaveData = {
   /** the loadout's animated case, opened out; folded is the default */
   heroExpanded?: boolean;
   /** AcorNut's forward lean in degrees, dialled on the phone until it settles */
+  /** the beta flight lab's dials (fog, stickChance, spacing, gapScale, driftScale,
+   *  driftRate, bounceScale, upsideDown, tapFreeze, freeRevive); beta only */
+  lab?: Record<string, number | boolean>;
   /** per-suit forward lean in whole degrees, set with the beta pitch dial;
    *  absent = the catalog default (SUIT_PITCH_DEFAULTS) */
   suitPitch?: Record<string, number>;
@@ -263,6 +266,12 @@ export function loadSave(): SaveData {
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
+  // the lab: numbers and booleans only, anything else dropped
+  if (!s.lab || typeof s.lab !== "object") s.lab = {};
+  for (const k of Object.keys(s.lab)) {
+    const v = s.lab[k];
+    if (!(typeof v === "boolean" || (typeof v === "number" && isFinite(v)))) delete s.lab[k];
+  }
   // the pitch table: whole degrees in range, anything else dropped. The
   // one-suit acornutPitch it replaces migrates unless it was the old 25
   // default, which the retested 12 supersedes.

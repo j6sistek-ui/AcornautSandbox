@@ -7,7 +7,7 @@ import { CHART_LEVELS, reachedGate } from "./campaign";
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, DEBRIS_RGB, PLANET_RGB, SKY_RGB,  BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_SWIPE_TOP, TUT_SWIPE_LIFT, TUT_SWIPE_BAND, TUT_READ, skyIdFor, PHYS, TRAILS, TUT_ARM, levelForXp, runXp } from "./catalog";
 import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit} from "./save";
 import { GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT } from "./catalog";
-import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type RunStats, nextGate, gateClearedBy} from "./campaign";
+import { countBits, emptyStats, goalMet, goldGatesFor, type LevelDef, type LevelFx, type RunStats, nextGate, gateClearedBy} from "./campaign";
 import {
   createRaceState,
   RACE_DT,
@@ -374,6 +374,11 @@ export type World = {
   scrollTravel: number;
   tapFrozen: boolean;
   stuck: boolean;
+  /** THE FLIGHT LAB (owner, 7 Sep 2026; beta, free flight only): the same
+   *  modifiers a mission can carry, dialled from the pause sheet so a
+   *  mechanic can be felt before it is written into a contract. Empty on
+   *  every other run, so nothing here can touch a mission or production. */
+  lab: LabFx;
   /** TurClock: the live scroll multiplier, and the wandering clock driving it */
   clockMul: number;
   clockPhase: number;
@@ -545,7 +550,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false,
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {},
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
@@ -735,6 +740,19 @@ export function envIndexFor(w: World, score: number) {
   return w.envOrder[Math.min(step, ENVS.length - 1)];
 }
 
+export type LabFx = LevelFx & {
+  /** 0..1 chance a planet contact sticks (a mission's `sticky: true` is 1) */
+  stickChance?: number;
+  /** multiplies the distance between gates */
+  spacing?: number;
+  /** the crash sheet's continue costs nothing */
+  freeRevive?: boolean;
+};
+/** The modifiers this run flies under: the mission's, or the lab's on a
+ *  beta free flight. One question, so the two can never disagree. */
+export function fxOf(w: World): LabFx {
+  return w.lvl ? w.lvl.def.fx : w.lab;
+}
 export function runPal(save: SaveData, w: World) {
   return w.lvl?.def.fx.pal ?? save.equippedPal;
 }
@@ -809,9 +827,9 @@ function gapSpacing(w: World) {
 // 100%–115% of the base rhythm, and Lost in Space keeps the full
 // 85%–115% spread because its rotation gives tight pairs room to read.
 function nextGapSpacing(w: World) {
-  return w.flight === "lost"
+  return (fxOf(w).spacing ?? 1) * (w.flight === "lost"
     ? gapSpacing(w) * (0.85 + (w.missionRng ?? Math.random)() * 0.3)
-    : gapSpacing(w) * (1 + (w.missionRng ?? Math.random)() * 0.15);
+    : gapSpacing(w) * (1 + (w.missionRng ?? Math.random)() * 0.15));
 }
 
 function overdriveT(score: number) {
@@ -1278,7 +1296,7 @@ export function shieldFalloff(w: World) {
 function spawnPair(w: World, save: SaveData, x: number) {
   const env = ENVS[w.envB];
   const d = difficulty(w);
-  let gap = d.gap * (w.lvl?.def.fx.gapScale ?? 1);
+  let gap = d.gap * (fxOf(w).gapScale ?? 1);
   const margin = 72;
   let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
   const dx = Math.max(80, x - w.lastSpawnX);
@@ -1316,7 +1334,7 @@ function spawnPair(w: World, save: SaveData, x: number) {
   const normalDrift = w.flight === "fly" ? driftModOf(save, w) : 1;
   // a level's fx sway rides on top of the mode's own; CRIMSON STORM is
   // Rough Air with the volume knob exposed
-  const lvlDrift = w.lvl?.def.fx.driftScale ?? 1;
+  const lvlDrift = fxOf(w).driftScale ?? 1;
   const driftAmp =
     (pilot === "wisp" ? 26
       : w.flight === "lost" ? 12
@@ -1495,6 +1513,9 @@ export function pilotSuitId(w: World, save: SaveData) {
 }
 
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, level?: LevelDef, tunnelSeed?: number) {
+  // the pause-sheet lab rides only a beta free flight; everything else
+  // flies clean so no mission and no live run can inherit a dial
+  w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
   w.flight = flight;
   w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
   // A campaign level is an ordinary run wearing a finish line. It is set
@@ -2924,7 +2945,9 @@ export function flap(w: World, save: SaveData) {
   if (w.spill && !spillHold(w.spill, true)) return "none";
   // the road's contracts fly on both pages: these modifiers follow the mission, not the page
   if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
-    if (w.lvl?.def.fx.tapFreeze) w.tapFrozen = !w.tapFrozen;
+    // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
+    // the slow, the way the frozen acorn does - a slow, never a full stop.
+    if (fxOf(w).tapFreeze || (runPal(save, w) === "switchback" && !save.noPalFx)) w.tapFrozen = !w.tapFrozen;
     if (w.stuck) { w.stuck = false; w.hitCooldown = .75; }
   }
   w.run.taps += 1;
@@ -3088,7 +3111,7 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   dy /= dist;
   const incomingVy = w.squirrel.vy;
   const jelly = palId(save, w) === "voidjelly" ? 0.55 : 1;
-  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (w.lvl?.def.fx.bounceScale ?? 1);
+  const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1);
   w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
   if (BOUNCE_ANIM_ENABLED) {
     w.bounceAnimT = 0;
@@ -3118,7 +3141,11 @@ function bounceOff(w: World, save: SaveData, px: number, py: number) {
   w.hitCooldown = 0.55;
   w.shake = 0.18;
   if (w.lvl) w.lvl.stats.bounces += 1;
-  if ((IS_BETA || STAR_MAP_LIVE) && w.lvl?.def.fx.sticky) { w.stuck = true; w.squirrel.vy = 0; }
+  {
+    const fx = fxOf(w);
+    const stick = fx.sticky ? 1 : Math.max(0, Math.min(1, fx.stickChance ?? 0));
+    if ((IS_BETA || STAR_MAP_LIVE) && stick > 0 && (w.missionRng ?? Math.random)() < stick) { w.stuck = true; w.squirrel.vy = 0; }
+  }
   spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
 }
 
@@ -3483,6 +3510,7 @@ function die(w: World, save: SaveData) {
 // deterministic time trial where a continue would be a lie.
 
 export function reviveCost(w: World) {
+  if (w.lab.freeRevive) return 0;           // the lab's unlimited recovery
   return w.score > 100 ? 50 : 10;
 }
 
@@ -3970,7 +3998,7 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     // Rough Air doubles how FAST a gate sways as well as how far, so the
     // two together read as turbulence rather than a slow deep breath.
     const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
-      * (w.lvl?.def.fx.driftRate ?? 1);
+      * (fxOf(w).driftRate ?? 1);
     p.drift += simDt * driftRate;
   }
   for (const a of w.pickups) {
