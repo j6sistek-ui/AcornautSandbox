@@ -1,24 +1,24 @@
-import { suitPitchFor } from "./save.js?v=206";
-import { spillAppearance } from "./spill-appearance.js?v=206";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=206";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=206";
-import { addChartScenery } from "./star-map-view.js?v=206";
-import { mapDebrisIndex } from "./zone-visuals.js?v=206";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=206";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=206";
-import { suitLean } from "./control-constants.js?v=206";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=206";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=206";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=206";
-import { drawSprite as drawSpriteOn } from "./art.js?v=206";
-import { createEngine } from "./engine.js?v=206";
-import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=206";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=206";
-import { formatRaceTicks } from "./race.js?v=206";
-import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=206";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=206";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=206";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=206";
+import { suitPitchFor } from "./save.js?v=210";
+import { spillAppearance } from "./spill-appearance.js?v=210";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=210";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=210";
+import { addChartScenery } from "./star-map-view.js?v=210";
+import { mapDebrisIndex } from "./zone-visuals.js?v=210";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=210";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=210";
+import { suitLean } from "./control-constants.js?v=210";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=210";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=210";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=210";
+import { drawSprite as drawSpriteOn } from "./art.js?v=210";
+import { createEngine } from "./engine.js?v=210";
+import { deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=210";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=210";
+import { formatRaceTicks } from "./race.js?v=210";
+import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=210";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=210";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=210";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=210";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2173,10 +2173,27 @@ export async function bootStandalone(root) {
                 grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
             if (s.equippedSuit === "arcflash")
                 grid.append(el("p", "ac-sub", "Arcflash carries its own blue electrical wake. Your previous trail returns when you change suits."));
+            // BUILT-IN WAKES (owner, 7 Sep 2026): AcorNut's and Arcflash's trails
+            // are part of the character - no other suit can wear them and they
+            // cannot be taken off - so they are listed only while that suit is
+            // worn, as one fixed card, and never as a choice for anyone else.
+            const builtInOf = (id) => id === "vanguardwake" ? "vanguard" : id === "arcflashwake" ? "arcflash" : null;
             const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);
                 const compatible = canWearTrail(t.id, s.equippedSuit);
+                const builtIn = builtInOf(t.id);
+                if (builtIn) {
+                    const b = el("button", "ac-card on ac-builtintrail");
+                    const { c, ctx } = miniCanvas(64, 56);
+                    c.setAttribute("role", "img");
+                    c.setAttribute("aria-label", `${t.name} trail preview`);
+                    if (ctx)
+                        paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
+                    b.append(c, document.createTextNode(`${t.name}\nBUILT-IN TRAIL`));
+                    b.disabled = true;
+                    return b;
+                }
                 const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
                 const { c, ctx } = miniCanvas(64, 56);
                 c.setAttribute("role", "img");
@@ -2202,7 +2219,7 @@ export async function bootStandalone(root) {
                     b.append(favStar(t.id));
                 return b;
             };
-            const listed = TRAILS.filter((x) => !isIap(x.id) || iapOwned(s, x.id));
+            const listed = TRAILS.filter((x) => (!isIap(x.id) || iapOwned(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
             const favTrails = favShelf(listed.map((t) => t.id), (id) => { const t = TRAILS.find((x) => x.id === id); return t ? trailCard(t) : null; });
             if (favTrails) {
                 grid.classList.add("ac-shelfcol");

@@ -1,25 +1,25 @@
-import { spillDockTravelDuration } from "./spill.js?v=206";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=206";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=206";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=206";
-import { arcflashPreview } from "./arcflash-motion.js?v=206";
-import { runPal } from "./sim.js?v=206";
-import { spillAppearance } from "./spill-appearance.js?v=206";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=206";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=206";
-import { goalHud } from "./campaign.js?v=206";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=206";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=206";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=206";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=206";
-import { suitPitchFor } from "./save.js?v=206";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=206";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=206";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=206";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=206";
-import { spillEngineColor } from "./spill-content.js?v=206";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=206";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=206";
+import { spillDockTravelDuration } from "./spill.js?v=210";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=210";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=210";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=210";
+import { arcflashPreview } from "./arcflash-motion.js?v=210";
+import { runPal } from "./sim.js?v=210";
+import { spillAppearance } from "./spill-appearance.js?v=210";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=210";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=210";
+import { goalHud } from "./campaign.js?v=210";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=210";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=210";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=210";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=210";
+import { suitPitchFor } from "./save.js?v=210";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=210";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=210";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=210";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=210";
+import { spillEngineColor } from "./spill-content.js?v=210";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=210";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=210";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3425,26 +3425,15 @@ function hexRgb(hex) {
     const n = parseInt(full, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
-// Where the glass dome sits in each 256px body render (x, y, radius),
-// measured from the paintings themselves. Flight frames key by frame
-// name, suit renders by suit id. The equipped helmet paints its
-// identity — tinted glass, rim, glow — exactly onto the painted dome.
-// Where the painted helmet sits on each body (x, y, r in sprite space).
-// Seraph, Leviathan, Gemmie and Sammie ship bare-headed — their art
-// carries no helmet of its own.
-//
-// Position and scale solve two different problems here. The x/y values are
-// the hand-fitted centres from the rig editor. The radius is normalised by
-// each suit's runtime-trimmed box, because the renderer scales that box to a
-// common display size. Keeping raw radii equal would therefore make a helmet
-// grow and shrink as the player switches suits.
-//
-// Gemmie and Sammie are the approved visual reference. The twelve base suits
-// target r / max(trimmed box) ~= 0.239, within one source pixel of that target.
-// Their helmet footprint now varies by less than 2% on screen; small raw-radius
-// differences remain only to compensate for each painting's crop.
-// x, y, r — and on motion-bank frames an optional 4th value: the pose's
-// helmet rotation in degrees, added to HELM_GLASS's own art rot.
+// Helmet sockets measured against the unchanged 256px suit paintings.
+// Refitted 7 Sep 2026 for every interchangeable-helmet production suit;
+// see design/helmet-fit/REVIEW.md. The dome contains ears and muzzle, and
+// its neck ring follows the painted collar instead of the body's lean.
+// x/y are source-space centers, r is the fitted glass radius, and the
+// optional fourth value is local head/collar rotation in degrees. Frame
+// timing, body transforms, artwork and HELM_GLASS are independent of this
+// table and stay unchanged. Static portraits and oversized painted neutral
+// heads may need different radii from the remaining motion bank.
 const DOME = {
     "idle-1": [192, 106, 56],
     "idle-2": [192, 103, 51],
@@ -3454,218 +3443,180 @@ const DOME = {
     "flap-2": [164, 93, 50],
     "flap-3": [164, 79, 48],
     "flap-4": [163, 80, 45],
-    // The twelve originals were re-rendered bare-headed, so every one of
-    // these was measured again against flight's face. Ghost is the exception
-    // and still wears a painted dome -- see bakedDome in catalog.ts.
-    // ---------------------------------------------------------------- TAP
-    // PER-POSE DOME ANCHORS. Three suits have tap banks that MOVE THE HEAD -
-    // robo, bigbooty and eclipse - and the single "suit:<id>" anchor is right
-    // for exactly one of the sixteen poses. The other fifteen leave the glass
-    // behind: at loadout size the head walks clean out of the helmet.
-    //
-    // The other fifteen rigged suits do NOT need this. Their banks animate the
-    // TAIL and hold the head still, which is why the one anchor has always
-    // been fine for them - checked by rendering every one of them with a
-    // helmet through all sixteen frames.
-    //
-    // Measured, not guessed: a head patch cut from each suit's own static
-    // render is matched through its bank in the bank's reference box, then the
-    // track is median-filtered because a head cannot teleport between frames.
-    // Robo and Eclipse tracked cleanly (smoothing moved <= 4px); Big Booty's
-    // matcher loses a small head against a large body, so its numbers moved up
-    // to 14px and were checked by eye rather than trusted outright.
-    "robo-tap-1": [190, 103, 40],
-    "robo-tap-2": [190, 103, 40],
-    "robo-tap-3": [190, 101, 40],
-    "robo-tap-4": [191, 96, 40],
-    "robo-tap-5": [191, 88, 40],
-    "robo-tap-6": [192, 82, 40],
-    "robo-tap-7": [192, 80, 40],
-    "robo-tap-8": [191, 84, 40],
-    "robo-tap-9": [190, 93, 40],
-    "robo-tap-10": [189, 103, 40],
-    "robo-tap-11": [189, 110, 40],
-    "robo-tap-12": [190, 111, 40],
-    "robo-tap-13": [191, 110, 40],
-    "robo-tap-14": [192, 107, 40],
-    "robo-tap-15": [191, 104, 40],
-    "robo-tap-16": [191, 100, 40],
-    "bigbooty-tap-1": [209, 83, 41],
-    "bigbooty-tap-2": [209, 84, 41],
-    "bigbooty-tap-3": [209, 81, 41],
-    "bigbooty-tap-4": [209, 74, 41],
-    "bigbooty-tap-5": [210, 67, 41],
-    "bigbooty-tap-6": [211, 66, 41],
-    "bigbooty-tap-7": [209, 72, 41],
-    "bigbooty-tap-8": [205, 82, 41],
-    "bigbooty-tap-9": [206, 82, 41],
-    "bigbooty-tap-10": [212, 73, 41],
-    "bigbooty-tap-11": [216, 69, 41],
-    "bigbooty-tap-12": [212, 74, 41],
-    "bigbooty-tap-13": [206, 82, 41],
-    "bigbooty-tap-14": [203, 85, 41],
-    "bigbooty-tap-15": [205, 80, 41],
-    "bigbooty-tap-16": [209, 75, 41],
-    "eclipse-tap-1": [196, 89, 53],
-    "eclipse-tap-2": [196, 87, 53],
-    "eclipse-tap-3": [194, 81, 53],
-    "eclipse-tap-4": [190, 73, 53],
-    "eclipse-tap-5": [186, 66, 53],
-    "eclipse-tap-6": [183, 60, 53],
-    "eclipse-tap-7": [182, 59, 53],
-    "eclipse-tap-8": [183, 61, 53],
-    "eclipse-tap-9": [186, 67, 53],
-    "eclipse-tap-10": [191, 76, 53],
-    "eclipse-tap-11": [195, 82, 53],
-    "eclipse-tap-12": [197, 85, 53],
-    "eclipse-tap-13": [198, 87, 53],
-    "eclipse-tap-14": [198, 88, 53],
-    "eclipse-tap-15": [198, 88, 53],
-    "eclipse-tap-16": [198, 88, 53],
-    "suit:flight": [185, 82, 44],
-    "suit:iontrim": [184, 100, 36],
-    "suit:copper": [181, 99, 44],
-    "suit:frost": [175, 112, 36],
-    "suit:voidsuit": [182, 105, 45],
+    // Static portraits; each radius fits that painting's head, not its body box.
+    "suit:flight": [185, 88, 48, 0],
+    "suit:iontrim": [187, 101, 44, 0],
+    "suit:copper": [184, 100, 50, 5],
+    "suit:frost": [175, 108, 39],
+    "suit:voidsuit": [183, 105, 46, 0],
     "suit:aurorasuit": [163, 97, 38],
-    "suit:ember": [168, 100, 38],
+    "suit:ember": [169, 100, 40, 0],
     "suit:stardust": [162, 97, 38],
-    // owner-tuned: the dome was drawn a size too big, so the glass swallowed
-    // the head instead of sitting on it
-    "suit:robo": [181, 99, 38],
-    // re-rendered bare-headed on a black plate (the pale-on-cream key was
-    // unrecoverable); measured against the new art, and near-identical to
-    // flight, which is the same pose in the same framing
-    "suit:ghost": [176, 83, 38],
-    // owner-tuned: sat low, left and oversized - the glass cut into the body
-    // and the head walked out of it on the late tap poses
-    "suit:bigbooty": [185, 101, 35],
+    "suit:robo": [181, 96, 43, 0],
+    "suit:ghost": [180, 65, 49],
+    "suit:bigbooty": [183, 104, 35, 10],
     "suit:catsuit": [212, 86, 50],
-    "suit:gemmie": [183, 102, 40],
+    "suit:gemmie": [195, 94, 52],
     "suit:phoenix": [207, 92, 41],
-    "suit:sammie": [186, 102, 35],
-    "suit:seraph": [205, 129, 35],
-    "suit:leviathan": [177, 110, 30], // re-measured on the promoted asc-1 master
-    "suit:verdant": [186, 92, 40],
-    "suit:cryostar": [191, 94, 40],
-    "suit:eclipse": [204, 86, 58],
-    // Eclipse's physics-pose banks are HEAD-NORMALIZED: every frame is
-    // scaled so the (rigid) head is identical, which pins the character's
-    // on-screen size and makes the dome one constant radius. Anchors are
-    // auto-measured per frame (merged-blob dive frames interpolated).
-    "eclipse-asc-1": [186, 80, 52],
-    "eclipse-asc-2": [185, 78, 52],
-    "eclipse-asc-3": [185, 77, 52],
-    "eclipse-asc-4": [187, 76, 52],
-    "eclipse-asc-5": [188, 77, 52],
-    "eclipse-asc-6": [191, 73, 52],
-    "eclipse-asc-7": [193, 78, 52],
-    "eclipse-asc-8": [195, 86, 52],
-    "eclipse-desc-1": [201, 84, 52],
-    "eclipse-desc-2": [197, 100, 52],
-    "eclipse-desc-3": [184, 122, 52],
-    "eclipse-desc-4": [182, 131, 52],
-    "eclipse-desc-5": [180, 141, 52],
-    "eclipse-desc-6": [178, 150, 52],
-    "eclipse-desc-7": [178, 157, 52],
-    "eclipse-desc-8": [178, 157, 52],
-    // The automatic face estimator lands 13px right, 7px low, and 7px large
-    // on this shared head family (it makes the same error on approved Aurora).
-    // These sockets apply Aurora's hand-reviewed correction to each new suit's
-    // measured head, preserving the small pose-specific vertical differences.
-    // Flight's banks come from a motion TRANSFER of Eclipse's own arc, so
-    // its head sits differently in every frame and each one carries its own
-    // anchor, exactly as Eclipse's do.
-    "flight-asc-1": [174.1, 88.5, 32.6],
-    "flight-asc-2": [174.6, 90.6, 32.6],
-    "flight-asc-3": [174.1, 89.1, 32.6],
-    "flight-desc-1": [179.0, 93.0, 32.6],
-    "flight-desc-2": [178.4, 95.6, 32.6],
-    "flight-desc-3": [173.9, 110.8, 32.6],
-    "flight-desc-4": [171.8, 113.7, 32.6],
-    "flight-desc-5": [164.2, 138.4, 32.6],
-    // SERAPH's velocity bank - the first Grok-generated delivery. The head
-    // was TRACKED through the frames (template match, the two steep-dive
-    // frames re-found by fur blob), then verified by overlay. One radius,
-    // r/box = 50/211, the roster's common on-screen dome size.
-    "seraph-asc-1": [205, 129, 35],
-    "seraph-asc-2": [205, 126, 35],
-    "seraph-asc-3": [205, 123, 35],
-    "seraph-asc-4": [206, 132, 35],
-    "seraph-asc-5": [205, 129, 35],
-    "seraph-asc-6": [205, 126, 35],
-    "seraph-asc-7": [205, 123, 35, -10],
-    "seraph-asc-8": [204, 120, 35, -10],
-    "seraph-desc-1": [205, 129, 35],
-    "seraph-desc-2": [205, 132, 35],
-    "seraph-desc-3": [205, 135, 35],
-    "seraph-desc-4": [205, 138, 35, 10],
-    "seraph-desc-5": [204, 141, 35, 15],
-    "seraph-desc-6": [203, 144, 35, 15],
-    "seraph-desc-7": [204, 154, 35, 35],
-    "seraph-desc-8": [202, 158, 35, 40],
-    // ION's velocity bank - Grok delivery #2. Head found per frame by the
-    // fur-blob tracker (top-weighted centroid, so the jaw fur doesn't drag
-    // the dome down), then verified by overlay sheet. One radius, sized to
-    // the SKULL of the delivered art - never to the box ratio.
-    "iontrim-asc-1": [184, 100, 36],
-    "iontrim-asc-2": [184, 96, 36],
-    "iontrim-asc-3": [189, 100, 36],
-    "iontrim-asc-4": [186, 96, 36],
-    "iontrim-asc-5": [177, 83, 36, -25],
-    "iontrim-asc-6": [183, 80, 36, -25],
-    "iontrim-asc-7": [183, 84, 36, -35],
-    "iontrim-asc-8": [178, 74, 36, -35],
-    "iontrim-desc-1": [184, 100, 36],
-    "iontrim-desc-2": [196, 110, 36],
-    "iontrim-desc-3": [185, 138, 36, 25],
-    "iontrim-desc-4": [187, 153, 36, 30],
-    "iontrim-desc-5": [187, 147, 36, 25],
-    "iontrim-desc-6": [179, 159, 36, 40],
-    "iontrim-desc-7": [180, 156, 36, 35],
-    "iontrim-desc-8": [177, 165, 36, 40],
-    // COPPER's velocity bank - Grok delivery #3. Same fur-blob tracker as
-    // Ion, with a +5/-8 nudge measured off the overlay sheet (Copper's jaw
-    // fur drags the raw centroid low-left of the skull). The repaired bank
-    // holds one head scale; r=44 is the overlay-reviewed fit on that scale.
-    "copper-asc-1": [181, 99, 44],
-    "copper-asc-2": [182, 98, 44],
-    "copper-asc-3": [180, 100, 44],
-    "copper-asc-4": [174, 91, 44, -25],
-    "copper-asc-5": [182, 96, 44],
-    "copper-asc-6": [182, 98, 44],
-    "copper-asc-7": [177, 86, 44, -30],
-    "copper-asc-8": [176, 87, 44, -40],
-    "copper-desc-1": [181, 99, 44],
-    "copper-desc-2": [193, 111, 44],
-    "copper-desc-3": [195, 136, 44, 25],
-    "copper-desc-4": [194, 150, 44, 30],
-    "copper-desc-5": [194, 143, 44, 30],
-    "copper-desc-6": [187, 154, 44, 35],
-    "copper-desc-7": [190, 149, 44, 35],
-    "copper-desc-8": [185, 156, 44, 40],
-    // VOIDSUIT's velocity bank - Grok delivery #4. Same tracker, with a
-    // +4/+6 nudge measured off the overlay sheet (Void's fluffy crown fur
-    // pulls the top-weighted centroid high-left of the face).
-    "voidsuit-asc-1": [182, 105, 45],
-    "voidsuit-asc-2": [183, 105, 45],
-    "voidsuit-asc-3": [183, 102, 45],
-    "voidsuit-asc-4": [183, 98, 45],
-    "voidsuit-asc-5": [179, 88, 45, -10],
-    "voidsuit-asc-6": [174, 83, 45, -25],
-    "voidsuit-asc-7": [173, 95, 45, -25],
-    "voidsuit-asc-8": [173, 91, 45, -35],
-    "voidsuit-desc-1": [182, 105, 45],
-    "voidsuit-desc-2": [188, 141, 45, 15],
-    "voidsuit-desc-3": [177, 148, 45, 25],
-    "voidsuit-desc-4": [178, 155, 45, 30],
-    "voidsuit-desc-5": [177, 154, 45, 30],
-    "voidsuit-desc-6": [171, 162, 45, 35],
-    "voidsuit-desc-7": [179, 159, 45, 30],
-    "voidsuit-desc-8": [172, 165, 45, 40],
-    // STARDUST, AURORASUIT and EMBER - Grok deliveries #6-#8, one batch.
-    // Same fur-blob tracker, overlay-verified; one skull-sized radius each,
-    // pose rotations seeded from each frame's measured tilt like the rest.
+    "suit:sammie": [193, 96, 46],
+    "suit:seraph": [204, 126, 38, 0],
+    "suit:leviathan": [174, 100, 36, 0],
+    "suit:verdant": [196, 92, 45, 0],
+    "suit:cryostar": [198, 93, 45, 0],
+    "suit:eclipse": [204, 89, 58, -5],
+    "suit:cinderforge": [183, 93, 44],
+    "suit:groveguard": [183, 93, 44],
+    "suit:cosmic": [183, 93, 44],
+    "suit:sunforged": [183, 89, 42],
+    "suit:abyssal": [183, 93, 44],
+    "suit:amethyst": [183, 93, 44],
+    "suit:ivoryguard": [183, 93, 44],
+    "suit:reactor": [183, 91, 44],
+    // robo — pose-specific head and collar registration.
+    "robo-tap-1": [190, 100, 45, 0],
+    "robo-tap-2": [190, 100, 45, 0],
+    "robo-tap-3": [190, 98, 45, 0],
+    "robo-tap-4": [191, 93, 45, 0],
+    "robo-tap-5": [191, 85, 45, 0],
+    "robo-tap-6": [192, 79, 45, 0],
+    "robo-tap-7": [192, 77, 45, 0],
+    "robo-tap-8": [191, 81, 45, 0],
+    "robo-tap-9": [190, 90, 45, 0],
+    "robo-tap-10": [189, 100, 45, 0],
+    "robo-tap-11": [189, 107, 45, 0],
+    "robo-tap-12": [190, 108, 45, 0],
+    "robo-tap-13": [191, 107, 45, 0],
+    "robo-tap-14": [192, 104, 45, 0],
+    "robo-tap-15": [191, 101, 45, 0],
+    "robo-tap-16": [191, 97, 45, 0],
+    // bigbooty — pose-specific head and collar registration.
+    "bigbooty-tap-1": [206, 86, 41, 10],
+    "bigbooty-tap-2": [206, 87, 41, 10],
+    "bigbooty-tap-3": [206, 84, 41, 10],
+    "bigbooty-tap-4": [206, 77, 41, 10],
+    "bigbooty-tap-5": [207, 70, 41, 10],
+    "bigbooty-tap-6": [208, 69, 41, 10],
+    "bigbooty-tap-7": [206, 75, 41, 10],
+    "bigbooty-tap-8": [202, 85, 41, 10],
+    "bigbooty-tap-9": [203, 85, 41, 10],
+    "bigbooty-tap-10": [209, 76, 41, 10],
+    "bigbooty-tap-11": [213, 72, 41, 10],
+    "bigbooty-tap-12": [209, 77, 41, 10],
+    "bigbooty-tap-13": [203, 85, 41, 10],
+    "bigbooty-tap-14": [200, 88, 41, 10],
+    "bigbooty-tap-15": [202, 83, 41, 10],
+    "bigbooty-tap-16": [206, 78, 41, 10],
+    // eclipse — pose-specific head and collar registration.
+    "eclipse-tap-1": [196, 92, 53, -5],
+    "eclipse-tap-2": [196, 90, 53, -5],
+    "eclipse-tap-3": [194, 84, 53, -5],
+    "eclipse-tap-4": [190, 76, 53, -5],
+    "eclipse-tap-5": [186, 69, 53, -5],
+    "eclipse-tap-6": [183, 63, 53, -5],
+    "eclipse-tap-7": [182, 62, 53, -5],
+    "eclipse-tap-8": [183, 64, 53, -5],
+    "eclipse-tap-9": [186, 70, 53, -5],
+    "eclipse-tap-10": [191, 79, 53, -5],
+    "eclipse-tap-11": [195, 85, 53, -5],
+    "eclipse-tap-12": [197, 88, 53, -5],
+    "eclipse-tap-13": [198, 90, 53, -5],
+    "eclipse-tap-14": [198, 91, 53, -5],
+    "eclipse-tap-15": [198, 91, 53, -5],
+    "eclipse-tap-16": [198, 91, 53, -5],
+    "eclipse-asc-1": [186, 82, 56, -5],
+    "eclipse-asc-2": [185, 80, 56, -5],
+    "eclipse-asc-3": [185, 79, 56, -5],
+    "eclipse-asc-4": [187, 78, 56, -5],
+    "eclipse-asc-5": [188, 79, 56, -5],
+    "eclipse-asc-6": [191, 75, 56, -5],
+    "eclipse-asc-7": [193, 80, 56, -5],
+    "eclipse-asc-8": [195, 88, 56, -5],
+    "eclipse-desc-1": [201, 87, 56, 0],
+    "eclipse-desc-2": [199, 104, 56, 5],
+    "eclipse-desc-3": [187, 128, 56, 15],
+    "eclipse-desc-4": [186, 138, 56, 20],
+    "eclipse-desc-5": [185, 149, 56, 25],
+    "eclipse-desc-6": [184, 159, 56, 30],
+    "eclipse-desc-7": [184, 166, 56, 35],
+    "eclipse-desc-8": [184, 166, 56, 35],
+    // flight — pose-specific head and collar registration.
+    "flight-asc-1": [174.1, 94.5, 42, 0],
+    "flight-asc-2": [174.6, 96.6, 42, 0],
+    "flight-asc-3": [174.1, 95.1, 42, 0],
+    "flight-desc-1": [179, 99, 42, 0],
+    "flight-desc-2": [178.4, 101.6, 42, 0],
+    "flight-desc-3": [173.9, 116.8, 42, 3],
+    "flight-desc-4": [171.8, 119.7, 42, 3],
+    "flight-desc-5": [164.2, 144.4, 42, 12],
+    // seraph — pose-specific head and collar registration.
+    "seraph-asc-1": [204, 126, 38, 0],
+    "seraph-asc-2": [204, 124, 38, 0],
+    "seraph-asc-3": [204, 122, 38, 0],
+    "seraph-asc-4": [204, 129, 38, 0],
+    "seraph-asc-5": [204, 127, 38, 0],
+    "seraph-asc-6": [204, 125, 38, -3],
+    "seraph-asc-7": [204, 123, 38, -6],
+    "seraph-asc-8": [204, 121, 38, -10],
+    "seraph-desc-1": [204, 126, 38, 0],
+    "seraph-desc-2": [204, 129, 38, 0],
+    "seraph-desc-3": [204, 132, 38, 2],
+    "seraph-desc-4": [204, 136, 38, 10],
+    "seraph-desc-5": [203, 140, 38, 17],
+    "seraph-desc-6": [202, 143, 38, 21],
+    "seraph-desc-7": [204, 157, 38, 52],
+    "seraph-desc-8": [202, 162, 38, 60],
+    // iontrim — pose-specific head and collar registration.
+    "iontrim-asc-1": [187, 101, 44, 0],
+    "iontrim-asc-2": [187, 97, 44, 0],
+    "iontrim-asc-3": [192, 101, 44, 0],
+    "iontrim-asc-4": [189, 97, 44, 0],
+    "iontrim-asc-5": [180, 84, 44, -5],
+    "iontrim-asc-6": [183, 79, 44, -10],
+    "iontrim-asc-7": [183, 83, 44, -5],
+    "iontrim-asc-8": [174, 73, 44, -15],
+    "iontrim-desc-1": [187, 101, 44, 0],
+    "iontrim-desc-2": [199, 111, 44, 0],
+    "iontrim-desc-3": [188, 139, 44, 25],
+    "iontrim-desc-4": [190, 154, 44, 30],
+    "iontrim-desc-5": [190, 148, 44, 25],
+    "iontrim-desc-6": [182, 160, 44, 40],
+    "iontrim-desc-7": [183, 157, 44, 35],
+    "iontrim-desc-8": [180, 166, 44, 40],
+    // copper — pose-specific head and collar registration.
+    "copper-asc-1": [184, 100, 50, 5],
+    "copper-asc-2": [185, 99, 50, 5],
+    "copper-asc-3": [183, 101, 50, 5],
+    "copper-asc-4": [175, 83, 50, -10],
+    "copper-asc-5": [185, 97, 50, 5],
+    "copper-asc-6": [185, 99, 50, 5],
+    "copper-asc-7": [175, 80, 50, -5],
+    "copper-asc-8": [161, 70, 50, -15],
+    "copper-desc-1": [184, 100, 50, 5],
+    "copper-desc-2": [196, 114, 50, 5],
+    "copper-desc-3": [198, 139, 50, 25],
+    "copper-desc-4": [197, 153, 50, 30],
+    "copper-desc-5": [197, 146, 50, 30],
+    "copper-desc-6": [190, 157, 50, 35],
+    "copper-desc-7": [193, 152, 50, 35],
+    "copper-desc-8": [188, 159, 50, 40],
+    // voidsuit — pose-specific head and collar registration.
+    "voidsuit-asc-1": [183, 105, 46, 0],
+    "voidsuit-asc-2": [184, 105, 46, 0],
+    "voidsuit-asc-3": [184, 102, 46, 0],
+    "voidsuit-asc-4": [184, 98, 46, 0],
+    "voidsuit-asc-5": [182, 88, 46, -5],
+    "voidsuit-asc-6": [175, 79, 46, -10],
+    "voidsuit-asc-7": [172, 87, 46, -5],
+    "voidsuit-asc-8": [164, 78, 46, -10],
+    "voidsuit-desc-1": [183, 105, 46, 0],
+    "voidsuit-desc-2": [189, 141, 46, 15],
+    "voidsuit-desc-3": [178, 148, 46, 25],
+    "voidsuit-desc-4": [179, 155, 46, 30],
+    "voidsuit-desc-5": [178, 154, 46, 30],
+    "voidsuit-desc-6": [172, 162, 46, 35],
+    "voidsuit-desc-7": [180, 159, 46, 30],
+    "voidsuit-desc-8": [173, 165, 46, 40],
+    // stardust — pose-specific head and collar registration.
     "stardust-asc-1": [162, 97, 38],
     "stardust-asc-2": [166, 97, 38],
     "stardust-asc-3": [169, 87, 38, -25],
@@ -3682,6 +3633,7 @@ const DOME = {
     "stardust-desc-6": [164, 142, 38, 35],
     "stardust-desc-7": [169, 150, 38, 35],
     "stardust-desc-8": [165, 148, 38, 35],
+    // aurorasuit — pose-specific head and collar registration.
     "aurorasuit-asc-1": [163, 97, 38],
     "aurorasuit-asc-2": [167, 95, 38],
     "aurorasuit-asc-3": [164, 94, 38],
@@ -3698,158 +3650,138 @@ const DOME = {
     "aurorasuit-desc-6": [164, 149, 38, 40],
     "aurorasuit-desc-7": [168, 148, 38, 35],
     "aurorasuit-desc-8": [167, 152, 38, 40],
-    "ember-asc-1": [168, 100, 38],
-    "ember-asc-2": [175, 97, 38],
-    "ember-asc-3": [172, 91, 38, -10],
-    "ember-asc-4": [173, 98, 38],
-    "ember-asc-5": [172, 94, 38],
-    "ember-asc-6": [173, 81, 38, -25],
-    "ember-asc-7": [174, 87, 38, -20],
-    "ember-asc-8": [172, 76, 38, -35],
-    "ember-desc-1": [168, 100, 38],
-    "ember-desc-2": [180, 131, 38, 25],
-    "ember-desc-3": [178, 136, 38, 25],
-    "ember-desc-4": [176, 139, 38, 30],
-    "ember-desc-5": [178, 141, 38, 30],
-    "ember-desc-6": [171, 146, 38, 35],
-    "ember-desc-7": [173, 150, 38, 35],
-    "ember-desc-8": [166, 151, 38, 40],
-    // CRYOSTAR, VERDANT and GEMMIE - Grok deliveries #9-#11, one batch.
-    // Same tracker and overlay pass; cryostar's dive frames took a +5/-3
-    // nudge (its crystal collar drags the blob low-left).
-    "cryostar-asc-1": [191, 94, 40],
-    "cryostar-asc-2": [181, 85, 40],
-    "cryostar-asc-3": [185, 85, 40, -10],
-    "cryostar-asc-4": [181, 83, 40, -20],
-    "cryostar-asc-5": [183, 88, 40, -10],
-    "cryostar-asc-6": [183, 78, 40, -25],
-    "cryostar-asc-7": [176, 75, 40, -30],
-    "cryostar-asc-8": [184, 73, 40, -30],
-    "cryostar-desc-1": [187, 121, 40, 15],
-    "cryostar-desc-2": [186, 148, 40, 25],
-    "cryostar-desc-3": [185, 141, 40, 25],
-    "cryostar-desc-4": [186, 144, 40, 25],
-    "cryostar-desc-5": [192, 143, 40, 20],
-    "cryostar-desc-6": [186, 146, 40, 25],
-    "cryostar-desc-7": [179, 145, 40, 25],
-    "verdant-asc-1": [186, 92, 40],
-    "verdant-asc-2": [180, 83, 40, -10],
-    "verdant-asc-3": [187, 86, 40],
-    "verdant-asc-4": [178, 76, 40, -25],
-    "verdant-asc-5": [186, 87, 40],
-    "verdant-asc-6": [180, 72, 40, -25],
-    "verdant-asc-7": [181, 78, 40, -25],
-    "verdant-asc-8": [189, 71, 40, -30],
-    "verdant-desc-1": [187, 110, 40, 15],
-    "verdant-desc-2": [183, 140, 40, 25],
-    "verdant-desc-3": [180, 147, 40, 30],
-    "verdant-desc-4": [176, 141, 40, 30],
-    "verdant-desc-5": [179, 145, 40, 30],
-    "verdant-desc-6": [170, 150, 40, 35],
-    "verdant-desc-7": [177, 149, 40, 30],
-    "gemmie-asc-1": [183, 102, 40],
-    "gemmie-asc-2": [181, 96, 40],
-    "gemmie-asc-3": [182, 94, 40, -15],
-    "gemmie-asc-4": [181, 93, 40, -20],
-    "gemmie-asc-5": [186, 89, 40, -20],
-    "gemmie-asc-6": [182, 82, 40, -30],
-    "gemmie-asc-7": [184, 89, 40, -20],
-    "gemmie-asc-8": [181, 84, 40, -25],
-    "gemmie-desc-1": [176, 134, 40, 25],
-    "gemmie-desc-2": [178, 151, 40, 30],
-    "gemmie-desc-3": [177, 148, 40, 30],
-    "gemmie-desc-4": [176, 149, 40, 30],
-    "gemmie-desc-5": [179, 152, 40, 30],
-    "gemmie-desc-6": [175, 159, 40, 35],
-    "gemmie-desc-7": [167, 153, 40, 35],
-    // SAMMIE and FROST - Grok deliveries #12-#13. Sammie's neutral frame
-    // was normalized with the bank, then its one helmet radius was refitted
-    // at r=35. Frost's head is ICE-BLUE, invisible to the orange fur-blob
-    // tracker, so its anchors came from a pale-fur variant (high value, low
-    // saturation) - overlay-verified like every other bank.
-    "sammie-asc-1": [186, 102, 35],
-    "sammie-asc-2": [182, 101, 35],
-    "sammie-asc-3": [181, 99, 35, -10],
-    "sammie-asc-4": [179, 88, 35, -25],
-    "sammie-asc-5": [180, 93, 35, -15],
-    "sammie-asc-6": [177, 87, 35, -25],
-    "sammie-asc-7": [184, 89, 35, -15],
-    "sammie-asc-8": [181, 84, 35, -30],
-    "sammie-desc-1": [177, 135, 35, 20],
-    "sammie-desc-2": [180, 136, 35, 25],
-    "sammie-desc-3": [178, 138, 35, 25],
-    "sammie-desc-4": [189, 140, 35, 20],
-    "sammie-desc-5": [178, 144, 35, 25],
-    "sammie-desc-6": [171, 149, 35, 30],
-    "sammie-desc-7": [171, 156, 35, 35],
-    "frost-asc-1": [175, 112, 36],
-    "frost-asc-2": [176, 107, 36],
-    "frost-asc-3": [175, 102, 36, -10],
-    "frost-asc-4": [174, 94, 36, -20],
-    "frost-asc-5": [176, 98, 36, -15],
-    "frost-asc-6": [174, 95, 36, -25],
-    "frost-asc-7": [173, 100, 36, -15],
-    "frost-asc-8": [174, 96, 36, -20],
-    "frost-desc-1": [175, 112, 36],
-    "frost-desc-2": [178, 134, 36, 20],
-    "frost-desc-3": [177, 141, 36, 25],
-    "frost-desc-4": [175, 147, 36, 30],
-    "frost-desc-5": [173, 152, 36, 35],
-    "frost-desc-6": [172, 148, 36, 30],
-    "frost-desc-7": [170, 153, 36, 35],
-    "frost-desc-8": [172, 152, 36, 30],
-    // GHOST - the owner's custom spectral rebuild, replacing the whole
-    // character (new master, bank-only: its wisp tail has no neck to cut,
-    // neck-cut claimed 5.5% and that is a fragment, not a tail). Pale-fur
-    // tracker anchors, overlay-verified.
-    "ghost-asc-1": [176, 83, 38],
-    "ghost-asc-2": [172, 79, 38],
-    "ghost-asc-3": [174, 76, 38],
-    "ghost-asc-4": [173, 76, 38],
-    "ghost-asc-5": [176, 81, 38],
-    "ghost-asc-6": [168, 72, 38, -10],
-    "ghost-asc-7": [168, 72, 38, -10],
-    "ghost-asc-8": [170, 73, 38, -10],
-    "ghost-desc-1": [176, 83, 38],
-    "ghost-desc-2": [177, 83, 38],
-    "ghost-desc-3": [176, 84, 38],
-    "ghost-desc-4": [191, 136, 38, 55],
-    "ghost-desc-5": [191, 138, 38, 60],
-    "ghost-desc-6": [188, 138, 38, 60],
-    "ghost-desc-7": [185, 138, 38, 60],
-    "ghost-desc-8": [186, 109, 38, 30],
-    // LEVIATHAN, the final delivery of the flight-bank sweep (owner, 2 Sep
-    // 2026). Its anchors come from a THIRD head tracker: the orange-fur mask
-    // finds nothing on a teal sea-squirrel, and the pale mask built for Frost
-    // and Ghost lights up its whole body, because here the body IS the light
-    // thing. What is unique to this head is the cream muzzle - 146 px on the
-    // sprite, 131 of them in the leading third - so the muzzle is the
-    // landmark and the dome sits 16px back along each frame's own travel
-    // axis, because a muzzle hangs in front of the skull it belongs to.
-    "leviathan-asc-1": [177, 110, 30],
-    "leviathan-asc-2": [176, 106, 30],
-    "leviathan-asc-3": [170, 98, 30, 20],
-    "leviathan-asc-4": [167, 94, 30, 25],
-    "leviathan-asc-5": [167, 85, 30, 30],
-    "leviathan-asc-6": [163, 90, 30, 30],
-    "leviathan-asc-7": [166, 86, 30, 25],
-    "leviathan-asc-8": [158, 90, 30, 25],
-    "leviathan-desc-1": [177, 110, 30],
-    "leviathan-desc-2": [178, 126, 30, -15],
-    "leviathan-desc-3": [167, 136, 30, -40],
-    "leviathan-desc-4": [172, 136, 30, -40],
-    "leviathan-desc-5": [170, 139, 30, -45],
-    "leviathan-desc-6": [176, 143, 30, -45],
-    "leviathan-desc-7": [174, 142, 30, -45],
-    "leviathan-desc-8": [173, 144, 30, -50],
-    "suit:cinderforge": [183, 93, 44],
-    "suit:groveguard": [183, 93, 44],
-    "suit:cosmic": [183, 93, 44],
-    "suit:sunforged": [183, 89, 42],
-    "suit:abyssal": [183, 93, 44],
-    "suit:amethyst": [183, 93, 44],
-    "suit:ivoryguard": [183, 93, 44],
-    "suit:reactor": [183, 91, 44],
+    // ember — pose-specific head and collar registration.
+    "ember-asc-1": [169, 100, 40, 0],
+    "ember-asc-2": [176, 97, 40, 0],
+    "ember-asc-3": [173, 90, 40, -5],
+    "ember-asc-4": [174, 98, 40, 0],
+    "ember-asc-5": [173, 94, 40, 0],
+    "ember-asc-6": [167, 77, 40, -5],
+    "ember-asc-7": [169, 83, 40, -5],
+    "ember-asc-8": [165, 73, 40, -5],
+    "ember-desc-1": [169, 100, 40, 0],
+    "ember-desc-2": [181, 131, 40, 25],
+    "ember-desc-3": [179, 136, 40, 25],
+    "ember-desc-4": [177, 139, 40, 30],
+    "ember-desc-5": [179, 141, 40, 30],
+    "ember-desc-6": [172, 146, 40, 35],
+    "ember-desc-7": [174, 150, 40, 35],
+    "ember-desc-8": [167, 151, 40, 40],
+    // cryostar — pose-specific head and collar registration.
+    "cryostar-asc-1": [198, 93, 45, 0],
+    "cryostar-asc-2": [184, 84, 45, 0],
+    "cryostar-asc-3": [185, 85, 45, -10],
+    "cryostar-asc-4": [178, 82, 45, -13],
+    "cryostar-asc-5": [178, 87, 45, -10],
+    "cryostar-asc-6": [176, 77, 45, -18],
+    "cryostar-asc-7": [172, 78, 45, -15],
+    "cryostar-asc-8": [181, 74, 45, -21],
+    "cryostar-desc-1": [190, 123, 45, 15],
+    "cryostar-desc-2": [185, 152, 45, 26],
+    "cryostar-desc-3": [185, 148, 45, 28],
+    "cryostar-desc-4": [185, 151, 45, 28],
+    "cryostar-desc-5": [192, 149, 45, 27],
+    "cryostar-desc-6": [186, 152, 45, 28],
+    "cryostar-desc-7": [179, 152, 45, 30],
+    // verdant — pose-specific head and collar registration.
+    "verdant-asc-1": [196, 92, 45, 0],
+    "verdant-asc-2": [184, 82, 45, -4],
+    "verdant-asc-3": [191, 85, 45, 0],
+    "verdant-asc-4": [180, 76, 45, -12],
+    "verdant-asc-5": [185, 85, 45, 0],
+    "verdant-asc-6": [177, 73, 45, -15],
+    "verdant-asc-7": [176, 77, 45, -15],
+    "verdant-asc-8": [177, 73, 45, -20],
+    "verdant-desc-1": [193, 113, 45, 16],
+    "verdant-desc-2": [186, 146, 45, 26],
+    "verdant-desc-3": [183, 153, 45, 30],
+    "verdant-desc-4": [179, 147, 45, 29],
+    "verdant-desc-5": [181, 152, 45, 31],
+    "verdant-desc-6": [173, 157, 45, 32],
+    "verdant-desc-7": [179, 156, 45, 32],
+    // gemmie — pose-specific head and collar registration.
+    "gemmie-asc-1": [195, 94, 52],
+    "gemmie-asc-2": [185, 94, 48],
+    "gemmie-asc-3": [181, 86, 46, -15],
+    "gemmie-asc-4": [177, 84, 44, -20],
+    "gemmie-asc-5": [179, 86, 44, -20],
+    "gemmie-asc-6": [173, 78, 44, -20],
+    "gemmie-asc-7": [178, 86, 44, -20],
+    "gemmie-asc-8": [178, 85, 44, -20],
+    "gemmie-desc-1": [181, 135, 44, 25],
+    "gemmie-desc-2": [183, 152, 44, 30],
+    "gemmie-desc-3": [182, 149, 44, 30],
+    "gemmie-desc-4": [181, 150, 44, 30],
+    "gemmie-desc-5": [184, 153, 44, 30],
+    "gemmie-desc-6": [180, 160, 44, 35],
+    "gemmie-desc-7": [172, 154, 44, 35],
+    // sammie — pose-specific head and collar registration.
+    "sammie-asc-1": [193, 96, 46],
+    "sammie-asc-2": [183, 98, 41],
+    "sammie-asc-3": [182, 97, 41, -10],
+    "sammie-asc-4": [179, 85, 41, -20],
+    "sammie-asc-5": [180, 90, 41, -15],
+    "sammie-asc-6": [175, 84, 41, -20],
+    "sammie-asc-7": [182, 88, 41, -15],
+    "sammie-asc-8": [177, 84, 41, -20],
+    "sammie-desc-1": [179, 135, 41, 20],
+    "sammie-desc-2": [182, 136, 41, 25],
+    "sammie-desc-3": [180, 138, 41, 25],
+    "sammie-desc-4": [191, 140, 41, 20],
+    "sammie-desc-5": [180, 144, 41, 25],
+    "sammie-desc-6": [173, 149, 41, 30],
+    "sammie-desc-7": [173, 156, 41, 35],
+    // frost — pose-specific head and collar registration.
+    "frost-asc-1": [175, 108, 39],
+    "frost-asc-2": [176, 103, 39],
+    "frost-asc-3": [171, 94, 39, -10],
+    "frost-asc-4": [174, 90, 39, -20],
+    "frost-asc-5": [172, 90, 39, -15],
+    "frost-asc-6": [169, 87, 39, -25],
+    "frost-asc-7": [173, 96, 39, -15],
+    "frost-asc-8": [174, 92, 39, -20],
+    "frost-desc-1": [175, 108, 39],
+    "frost-desc-2": [178, 130, 39, 20],
+    "frost-desc-3": [177, 137, 39, 25],
+    "frost-desc-4": [175, 143, 39, 30],
+    "frost-desc-5": [173, 148, 39, 35],
+    "frost-desc-6": [172, 144, 39, 30],
+    "frost-desc-7": [170, 149, 39, 35],
+    "frost-desc-8": [172, 148, 39, 30],
+    // ghost — pose-specific head and collar registration.
+    "ghost-asc-1": [180, 65, 49],
+    "ghost-asc-2": [176, 61, 49],
+    "ghost-asc-3": [173, 58, 49],
+    "ghost-asc-4": [172, 58, 49],
+    "ghost-asc-5": [180, 63, 49],
+    "ghost-asc-6": [165, 57, 49, -10],
+    "ghost-asc-7": [165, 57, 49, -10],
+    "ghost-asc-8": [167, 58, 49, -10],
+    "ghost-desc-1": [180, 65, 49],
+    "ghost-desc-2": [181, 65, 49],
+    "ghost-desc-3": [180, 66, 49],
+    "ghost-desc-4": [198, 129, 49, 55],
+    "ghost-desc-5": [198, 131, 49, 60],
+    "ghost-desc-6": [195, 131, 49, 60],
+    "ghost-desc-7": [192, 131, 49, 60],
+    "ghost-desc-8": [191, 99, 49, 30],
+    // leviathan — pose-specific head and collar registration.
+    "leviathan-asc-1": [174, 100, 36, 0],
+    "leviathan-asc-2": [173, 96, 36, 0],
+    "leviathan-asc-3": [167, 88, 36, -10],
+    "leviathan-asc-4": [164, 84, 36, -12],
+    "leviathan-asc-5": [160, 77, 36, -16],
+    "leviathan-asc-6": [160, 80, 36, -16],
+    "leviathan-asc-7": [163, 78, 36, -14],
+    "leviathan-asc-8": [154, 82, 36, -18],
+    "leviathan-desc-1": [174, 100, 36, 0],
+    "leviathan-desc-2": [178, 118, 36, 14],
+    "leviathan-desc-3": [168, 129, 36, 31],
+    "leviathan-desc-4": [172, 129, 36, 32],
+    "leviathan-desc-5": [171, 132, 36, 33],
+    "leviathan-desc-6": [175, 136, 36, 34],
+    "leviathan-desc-7": [174, 135, 36, 34],
+    "leviathan-desc-8": [173, 138, 36, 36],
 };
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
 // All twelve helmets have a solo render; the tinted-ring path below
@@ -4325,7 +4257,9 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog"]);
+// the critters' flight cycles play at this rate, on the world clock
+const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
@@ -4453,8 +4387,12 @@ poseOverride = NaN) {
     // character, so a suit that has them needs no rig to fly them; every
     // branch in here that touches rigT/rigB is unreachable on that route
     // (fullMotion is checked first and returns).
+    // A flight CYCLE is a ticket in for the same reason (the critters,
+    // 7 Sep 2026): sixteen whole-character frames, no rig cut, and the gate
+    // was holding them to the static sprite - the owner's sheets never moved.
     const bankReady = suited
-        ? (art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0
+        ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
+            || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
         : false;
     if (suited && ((rigT && rigB) || bankReady)) {
         // Rig-driven heading flight: the whole character pitches to point along
@@ -4488,6 +4426,11 @@ poseOverride = NaN) {
         const ascFrames = art?.suitAsc?.[suit.id] ?? [];
         const descFrames = art?.suitDesc?.[suit.id] ?? [];
         const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
+        // A CONTINUOUS CYCLE (the critters): whole-character frames that loop on
+        // the clock the whole time the suit is worn. Outranks the tap bank, and
+        // like a motion bank it carries its own tail, so no rig layer draws.
+        const loopFrames = art?.suitLoop?.[suit.id] ?? [];
+        const fullLoop = !fullMotion && loopFrames.length > 0;
         const tapFrames = art?.suitTap?.[suit.id] ?? [];
         const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
         // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
@@ -4501,7 +4444,7 @@ poseOverride = NaN) {
         const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
         let tailPose = rigT;
         let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
-        if (fullBounce || fullMotion) {
+        if (fullBounce || fullMotion || fullLoop) {
             /* these frames carry the whole character, tail included */
         }
         else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
@@ -4509,7 +4452,7 @@ poseOverride = NaN) {
                 * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
         }
-        else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && tapTailFrames.length === 12) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && tapTailFrames.length === 12) {
             // One tail drawing per 30 fps presentation frame. The sequence bends
             // progressively from the planted hinge to the tip: launch drag, delayed
             // whip, one rebound, settle. A small share of the live spring remains so
@@ -4531,10 +4474,10 @@ poseOverride = NaN) {
             tailPoseRot *= 0.48;
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
-        else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && pivot) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && pivot) {
             drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
         }
-        else if (!fullTap && !fullBounce && !fullMotion) {
+        else if (!fullTap && !fullBounce && !fullMotion && !fullLoop) {
             drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
         }
         let poseA = rigB;
@@ -4622,6 +4565,13 @@ poseOverride = NaN) {
                 paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`, helmet, x, y, size, art);
             }
         }
+        else if (fullLoop) {
+            // the cycle runs on the world clock, so it never restarts on a tap and
+            // reads the same in the hangar case and in flight
+            const idx = Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+            const refL = loopFrames[0].box ?? ref;
+            drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
+        }
         else if (fullTap) {
             // frame registration comes from the bank's own first frame, so every
             // frame lands at the same scale and the character never pulses in size
@@ -4639,8 +4589,10 @@ poseOverride = NaN) {
                 const pose = `${suit.id}-tap-${idx + 1}`;
                 if (DOME[pose])
                     paintDome(ctx, tapFrames[0], pose, helmet, x, y, size, art);
+                // Even a static source-space socket must use the same bank box as
+                // the body. The suit portrait's trim can differ from tap[0]'s trim.
                 else
-                    paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+                    paintDome(ctx, tapFrames[0], "suit:" + suit.id, helmet, x, y, size, art);
             }
         }
         else if (tapAnimT >= 0 && tapFrames.length !== 8 && pivot) {
