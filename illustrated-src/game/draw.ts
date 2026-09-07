@@ -4367,7 +4367,9 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien"]);
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog"]);
+// the critters' flight cycles play at this rate, on the world clock
+const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
 // well would pitch the character twice. Cyber's bank is not built that way:
 // it is one glide ramp played in both directions, carrying how far the body
@@ -4519,8 +4521,12 @@ function paintIllustrated(
   // character, so a suit that has them needs no rig to fly them; every
   // branch in here that touches rigT/rigB is unreachable on that route
   // (fullMotion is checked first and returns).
+  // A flight CYCLE is a ticket in for the same reason (the critters,
+  // 7 Sep 2026): sixteen whole-character frames, no rig cut, and the gate
+  // was holding them to the static sprite - the owner's sheets never moved.
   const bankReady = suited
-    ? (art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0
+    ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
+      || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
     : false;
   if (suited && ((rigT && rigB) || bankReady)) {
     // Rig-driven heading flight: the whole character pitches to point along
@@ -4554,6 +4560,11 @@ function paintIllustrated(
     const ascFrames = art?.suitAsc?.[suit.id] ?? [];
     const descFrames = art?.suitDesc?.[suit.id] ?? [];
     const fullMotion = ascFrames.length > 0 && descFrames.length > 0;
+    // A CONTINUOUS CYCLE (the critters): whole-character frames that loop on
+    // the clock the whole time the suit is worn. Outranks the tap bank, and
+    // like a motion bank it carries its own tail, so no rig layer draws.
+    const loopFrames = art?.suitLoop?.[suit.id] ?? [];
+    const fullLoop = !fullMotion && loopFrames.length > 0;
     const tapFrames = art?.suitTap?.[suit.id] ?? [];
     const tapTailFrames = art?.suitTapTail?.[suit.id] ?? [];
     // A SIXTEEN-frame bank is a full-character shoot — body, tail, and all —
@@ -4567,13 +4578,13 @@ function paintIllustrated(
     const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
     let tailPose: Sprite | HTMLImageElement = rigT;
     let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
-    if (fullBounce || fullMotion) {
+    if (fullBounce || fullMotion || fullLoop) {
       /* these frames carry the whole character, tail included */
     } else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
       const bend = bounceAnimDir * bounceAnimStrength
         * sampleMotionCurve(BOUNCE_TAIL_CURVE, bounceAnimT, BOUNCE_ANIM_DURATION);
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.42, bend, pivot);
-    } else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && tapTailFrames.length === 12) {
+    } else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && tapTailFrames.length === 12) {
       // One tail drawing per 30 fps presentation frame. The sequence bends
       // progressively from the planted hinge to the tip: launch drag, delayed
       // whip, one rebound, settle. A small share of the live spring remains so
@@ -4591,9 +4602,9 @@ function paintIllustrated(
       // while the painted recovery is still in progress.
       tailPoseRot *= 0.48;
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
-    } else if (!fullTap && !fullBounce && !fullMotion && tapAnimT >= 0 && pivot) {
+    } else if (!fullTap && !fullBounce && !fullMotion && !fullLoop && tapAnimT >= 0 && pivot) {
       drawBentRigLayer(ctx, rigT, ref, x, y, size, tailRot * 0.48, sampleTapCurve(TAP_TAIL_CURVE, tapAnimT), pivot);
-    } else if (!fullTap && !fullBounce && !fullMotion) {
+    } else if (!fullTap && !fullBounce && !fullMotion && !fullLoop) {
       drawRigLayer(ctx, tailPose, ref, x, y, size, tailPoseRot, pivot, halo);
     }
     let poseA: Sprite | HTMLImageElement = rigB;
@@ -4671,6 +4682,12 @@ function paintIllustrated(
         paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`,
           helmet, x, y, size, art);
       }
+    } else if (fullLoop) {
+      // the cycle runs on the world clock, so it never restarts on a tap and
+      // reads the same in the hangar case and in flight
+      const idx = Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+      const refL = (loopFrames[0] as Sprite).box ?? ref;
+      drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
     } else if (fullTap) {
       // frame registration comes from the bank's own first frame, so every
       // frame lands at the same scale and the character never pulses in size

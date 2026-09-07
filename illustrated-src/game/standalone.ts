@@ -2137,10 +2137,26 @@ export async function bootStandalone(root: HTMLElement) {
     } else if (engine.shopTab === "trails") {
       if (s.equippedSuit === "vanguard") grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
       if (s.equippedSuit === "arcflash") grid.append(el("p", "ac-sub", "Arcflash carries its own blue electrical wake. Your previous trail returns when you change suits."));
+      // BUILT-IN WAKES (owner, 7 Sep 2026): AcorNut's and Arcflash's trails
+      // are part of the character - no other suit can wear them and they
+      // cannot be taken off - so they are listed only while that suit is
+      // worn, as one fixed card, and never as a choice for anyone else.
+      const builtInOf = (id: string) => id === "vanguardwake" ? "vanguard" : id === "arcflashwake" ? "arcflash" : null;
       const trailCard = (t: (typeof TRAILS)[number]) => {
         const premium = isIap(t.id);
         const open = trailUnlocked(s, t.id);
         const compatible = canWearTrail(t.id, s.equippedSuit);
+        const builtIn = builtInOf(t.id);
+        if (builtIn) {
+          const b = el("button", "ac-card on ac-builtintrail");
+          const { c, ctx } = miniCanvas(64, 56);
+          c.setAttribute("role", "img");
+          c.setAttribute("aria-label", `${t.name} trail preview`);
+          if (ctx) paintTrailPreview(ctx, t, 32, 28, performance.now() / 1000);
+          b.append(c, document.createTextNode(`${t.name}\nBUILT-IN TRAIL`));
+          b.disabled = true;
+          return b;
+        }
         const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
         const { c, ctx } = miniCanvas(64, 56);
         c.setAttribute("role", "img");
@@ -2161,7 +2177,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (open) b.append(favStar(t.id));
         return b;
       };
-      const listed = TRAILS.filter((x) => !isIap(x.id) || iapOwned(s, x.id));
+      const listed = TRAILS.filter((x) => (!isIap(x.id) || iapOwned(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
       const favTrails = favShelf(listed.map((t) => t.id),
         (id) => { const t = TRAILS.find((x) => x.id === id); return t ? trailCard(t) : null; });
       if (favTrails) {

@@ -1080,7 +1080,7 @@ def verify_beta_art_gates(qa: QA) -> None:
     # in catalog.ts - the pair has to move together or the art goes missing
     # exactly the way Cyber's did.
     for table in ("RIGGED_SUITS", "ASC_BANKS", "DESC_BANKS", "TAP_BANKS",
-                  "BOUNCE_BANKS", "TAIL_TAP_BANKS"):
+                  "BOUNCE_BANKS", "TAIL_TAP_BANKS", "LOOP_BANKS"):
         i = art.find(f"const {table}")
         if i < 0:
             continue

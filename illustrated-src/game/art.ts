@@ -56,6 +56,10 @@ export type ArtBank = {
   // Optional one-shot body animation banks. Frames stay on the same 256px
   // canvas as the static suit so the tail hinge and helmet rig remain stable.
   suitTap: Record<string, Sprite[]>;
+  /** Continuous flight cycles (owner sheets, 7 Sep 2026): a whole-character
+   *  loop that plays the entire time the suit is worn, on the clock, not on
+   *  a tap - the critters' sixteen poses are a swimming cycle, not a burst. */
+  suitLoop: Record<string, Sprite[]>;
   // Tail-only companion banks. These preserve the approved painted fur while
   // bending through the plume instead of rotating as one rigid piece.
   suitTapTail: Record<string, Sprite[]>;
@@ -237,7 +241,7 @@ export function emptyArt(): ArtBank {
     planets: [], debris: [], pals: {}, palAnim: {}, helms: {},
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
-    suitTail: {}, suitBody: {}, suitTap: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
+    suitTail: {}, suitBody: {}, suitTap: {}, suitLoop: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
     spillShip: {}, spillShipFit: null,
   };
 }
@@ -366,8 +370,6 @@ const TAP_BANKS: Record<string, number> = TAP_ANIM_ENABLED ? {
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
   flight: 16,
-  // the critters (owner sheets, 7 Sep 2026): whole-character 16-frame banks
-  raccoon: 16, ferret: 16, hedgehog: 16,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -426,9 +428,15 @@ const DESC_BANKS: Record<string, number> =
         sammie: 7, frost: 8, ghost: 8, leviathan: 8,
         briellacat: 4 }
     : {};
+// THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
+// on the clock for as long as the suit is worn. See suitLoop / fullLoop.
+const LOOP_BANKS: Record<string, number> = { raccoon: 16, ferret: 16, hedgehog: 16 };
 const LAZY_SUIT_IDS = [...new Set([
   "vanguard",
-  ...(IS_BETA ? ["arcflash"] : []),
+  // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
+  // there too, or the suit flies as a flat body sticker off the live page.
+  "arcflash",
+  ...Object.keys(LOOP_BANKS),
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
   ...Object.keys(BOUNCE_BANKS), ...Object.keys(ASC_BANKS), ...Object.keys(DESC_BANKS),
@@ -475,8 +483,9 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
       rigged ? layer("-tail") : Promise.resolve(null),
       rigged ? layer("-body") : Promise.resolve(null),
     ]);
-    const [tap, tailTap, bounce, asc, desc] = await Promise.all([
+    const [tap, loop, tailTap, bounce, asc, desc] = await Promise.all([
       TAP_BANKS[id] ? many(`${base}/suits/${id}-tap-`, TAP_BANKS[id]) : Promise.resolve([]),
+      LOOP_BANKS[id] ? many(`${base}/suits/${id}-loop-`, LOOP_BANKS[id]) : Promise.resolve([]),
       TAIL_TAP_BANKS[id] ? many(`${base}/suits/${id}-tail-tap-`, TAIL_TAP_BANKS[id]) : Promise.resolve([]),
       BOUNCE_BANKS[id] ? many(`${base}/suits/${id}-bounce-`, BOUNCE_BANKS[id]) : Promise.resolve([]),
       ASC_BANKS[id] ? many(`${base}/suits/${id}-asc-`, ASC_BANKS[id]) : Promise.resolve([]),
@@ -485,6 +494,7 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
     if (tail) bank.suitTail[id] = tail;
     if (body) bank.suitBody[id] = body;
     if (tap.length) bank.suitTap[id] = tap;
+    if (loop.length) bank.suitLoop[id] = loop;
     if (tailTap.length) bank.suitTapTail[id] = tailTap;
     if (bounce.length) bank.suitBounce[id] = bounce;
     if (asc.length) bank.suitAsc[id] = asc;
@@ -743,6 +753,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     suitTail,
     suitBody,
     suitTap,
+    suitLoop: {},
     suitTapTail,
     suitBounce,
     suitAsc,
