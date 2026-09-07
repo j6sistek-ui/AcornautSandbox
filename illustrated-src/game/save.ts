@@ -30,6 +30,7 @@ import {
   SUIT_PITCH_MIN,
   SUIT_PITCH_MAX,
   suitPitchDefault,
+  palsClash,
 } from "./catalog";
 
 export type SaveData = {
@@ -107,6 +108,9 @@ export type SaveData = {
   equippedTrail: string;
   unlockedPals: string[];
   equippedPal: string;
+  /** THE LOW SLOT (owner, 7 Sep 2026): a second companion, earned at 720
+   *  stars. equippedPal flies high; this one flies low. "none" when empty. */
+  equippedPal2: string;
   // lifetime tallies — the Profile screen's three tiles. These only ever
   // grow; acorns spent in the hangar come off `acorns`, never off these.
   runs: number;
@@ -192,6 +196,7 @@ export function defaultSave(): SaveData {
     equippedTrail: "sparks",
     unlockedPals: ["none"],
     equippedPal: "none",
+    equippedPal2: "none",
     runs: 0,
     lifetimeAcorns: 0,
     zonesSeen: [],
@@ -259,6 +264,13 @@ export function loadSave(): SaveData {
   if (s.equippedTrail === "arcflashwake") s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
+  // the low slot: a real pal, open, not a twin of the high one, not one
+  // that clashes with it, and only while the slot itself is earned
+  if (typeof s.equippedPal2 !== "string" || !PALS.some((p) => p.id === s.equippedPal2)) s.equippedPal2 = "none";
+  if (s.equippedPal2 !== "none" && (!palUnlocked(s, s.equippedPal2) || !dualPalUnlocked(s)
+    || s.equippedPal2 === s.equippedPal || palsClash(s.equippedPal, s.equippedPal2))) s.equippedPal2 = "none";
+  // a lone companion always flies high
+  if (s.equippedPal === "none" && s.equippedPal2 !== "none") { s.equippedPal = s.equippedPal2; s.equippedPal2 = "none"; }
   // saves written before Star Dust existed. dustPaidTo starts at 0 rather
   // than at the pilot's current stars, so a long-standing save is PAID its
   // backlog on next load instead of silently losing it.
@@ -545,6 +557,17 @@ export function startShieldUnlocked(s: SaveData) {
 
 export function batteryUnlocked(s: SaveData) {
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
+}
+
+/** the second companion slot (owner, 7 Sep 2026): a Star Chart reward */
+export function dualPalUnlocked(s: SaveData) {
+  return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.dualPal;
+}
+
+/** the companions the hangar has equipped, high slot first, without the
+ *  empty "none" - the one list every screen that shows a pal reads */
+export function equippedPals(s: SaveData): string[] {
+  return [s.equippedPal, s.equippedPal2].filter((p) => p && p !== "none");
 }
 
 /** The beta A/B preference cannot opt production into an experiment. */
