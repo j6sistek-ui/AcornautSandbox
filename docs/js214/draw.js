@@ -1,32 +1,32 @@
-import { spillDockTravelDuration } from "./spill.js?v=210";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=210";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=210";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=210";
-import { arcflashPreview } from "./arcflash-motion.js?v=210";
-import { runPal } from "./sim.js?v=210";
-import { spillAppearance } from "./spill-appearance.js?v=210";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=210";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=210";
-import { goalHud } from "./campaign.js?v=210";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=210";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=210";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=210";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=210";
-import { suitPitchFor } from "./save.js?v=210";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=210";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=210";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=210";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=210";
-import { spillEngineColor } from "./spill-content.js?v=210";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=210";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=210";
+import { spillDockTravelDuration } from "./spill.js?v=214";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=214";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=214";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=214";
+import { arcflashPreview } from "./arcflash-motion.js?v=214";
+import { runPal, fxOf } from "./sim.js?v=214";
+import { spillAppearance } from "./spill-appearance.js?v=214";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=214";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=214";
+import { goalHud } from "./campaign.js?v=214";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=214";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=214";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=214";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=214";
+import { suitPitchFor } from "./save.js?v=214";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=214";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=214";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=214";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=214";
+import { spillEngineColor } from "./spill-content.js?v=214";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=214";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=214";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
     return list[Math.floor(t * speed) % list.length];
 }
 function applyWarp(ctx, w) {
-    if (w.lvl?.def.fx.upsideDown) {
+    if (fxOf(w).upsideDown) {
         ctx.translate(w.W, w.H);
         ctx.rotate(Math.PI);
     }
@@ -2662,8 +2662,8 @@ export function drawWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -3013,8 +3013,8 @@ function drawRetroWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
-    if (w.lvl) {
-        const fx = w.lvl.def.fx;
+    if (w.lvl || w.lab.fog) {
+        const fx = fxOf(w);
         const px = W * PHYS.squirrelX;
         const py = w.squirrel.y;
         if (fx.fog) {
@@ -3449,9 +3449,7 @@ const DOME = {
     "suit:copper": [184, 100, 50, 5],
     "suit:frost": [175, 108, 39],
     "suit:voidsuit": [183, 105, 46, 0],
-    "suit:aurorasuit": [163, 97, 38],
     "suit:ember": [169, 100, 40, 0],
-    "suit:stardust": [162, 97, 38],
     "suit:robo": [181, 96, 43, 0],
     "suit:ghost": [180, 65, 49],
     "suit:bigbooty": [183, 104, 35, 10],
@@ -3469,9 +3467,6 @@ const DOME = {
     "suit:cosmic": [183, 93, 44],
     "suit:sunforged": [183, 89, 42],
     "suit:abyssal": [183, 93, 44],
-    "suit:amethyst": [183, 93, 44],
-    "suit:ivoryguard": [183, 93, 44],
-    "suit:reactor": [183, 91, 44],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [190, 100, 45, 0],
     "robo-tap-2": [190, 100, 45, 0],
@@ -3583,22 +3578,22 @@ const DOME = {
     "iontrim-desc-7": [183, 157, 44, 35],
     "iontrim-desc-8": [180, 166, 44, 40],
     // copper — pose-specific head and collar registration.
-    "copper-asc-1": [184, 100, 50, 5],
-    "copper-asc-2": [185, 99, 50, 5],
-    "copper-asc-3": [183, 101, 50, 5],
-    "copper-asc-4": [175, 83, 50, -10],
-    "copper-asc-5": [185, 97, 50, 5],
-    "copper-asc-6": [185, 99, 50, 5],
-    "copper-asc-7": [175, 80, 50, -5],
-    "copper-asc-8": [161, 70, 50, -15],
-    "copper-desc-1": [184, 100, 50, 5],
-    "copper-desc-2": [196, 114, 50, 5],
-    "copper-desc-3": [198, 139, 50, 25],
-    "copper-desc-4": [197, 153, 50, 30],
-    "copper-desc-5": [197, 146, 50, 30],
-    "copper-desc-6": [190, 157, 50, 35],
-    "copper-desc-7": [193, 152, 50, 35],
-    "copper-desc-8": [188, 159, 50, 40],
+    "copper-asc-1": [182.33, 103.17, 30.8, 8.59],
+    "copper-asc-2": [178.1, 100.16, 30.8, 11.00],
+    "copper-asc-3": [176.54, 95.39, 30.8, 15.64],
+    "copper-asc-4": [175.66, 89.69, 30.8, 26.74],
+    "copper-asc-5": [176.67, 81.39, 30.8, 2.61],
+    "copper-asc-6": [174.61, 75.31, 30.8, 8.11],
+    "copper-asc-7": [169.97, 71.97, 30.8, 15.08],
+    "copper-asc-8": [165.36, 68.62, 30.8, 21.44],
+    "copper-desc-1": [182.33, 103.17, 30.8, 8.59],
+    "copper-desc-2": [186.14, 113.38, 30.8, 16.18],
+    "copper-desc-3": [175.7, 126.58, 30.8, 11.41],
+    "copper-desc-4": [161.19, 135.95, 30.8, 9.68],
+    "copper-desc-5": [185.44, 144.67, 30.8, 29.18],
+    "copper-desc-6": [174.46, 152.06, 30.8, 29.46],
+    "copper-desc-7": [166.72, 157.91, 30.8, 33.14],
+    "copper-desc-8": [155.63, 159.84, 30.8, 41.66],
     // voidsuit — pose-specific head and collar registration.
     "voidsuit-asc-1": [183, 105, 46, 0],
     "voidsuit-asc-2": [184, 105, 46, 0],
@@ -3616,40 +3611,6 @@ const DOME = {
     "voidsuit-desc-6": [172, 162, 46, 35],
     "voidsuit-desc-7": [180, 159, 46, 30],
     "voidsuit-desc-8": [173, 165, 46, 40],
-    // stardust — pose-specific head and collar registration.
-    "stardust-asc-1": [162, 97, 38],
-    "stardust-asc-2": [166, 97, 38],
-    "stardust-asc-3": [169, 87, 38, -25],
-    "stardust-asc-4": [166, 87, 38, -20],
-    "stardust-asc-5": [171, 89, 38, -15],
-    "stardust-asc-6": [168, 84, 38, -30],
-    "stardust-asc-7": [170, 87, 38, -25],
-    "stardust-asc-8": [168, 78, 38, -35],
-    "stardust-desc-1": [162, 97, 38],
-    "stardust-desc-2": [173, 128, 38, 25],
-    "stardust-desc-3": [171, 133, 38, 25],
-    "stardust-desc-4": [172, 135, 38, 25],
-    "stardust-desc-5": [169, 136, 38, 30],
-    "stardust-desc-6": [164, 142, 38, 35],
-    "stardust-desc-7": [169, 150, 38, 35],
-    "stardust-desc-8": [165, 148, 38, 35],
-    // aurorasuit — pose-specific head and collar registration.
-    "aurorasuit-asc-1": [163, 97, 38],
-    "aurorasuit-asc-2": [167, 95, 38],
-    "aurorasuit-asc-3": [164, 94, 38],
-    "aurorasuit-asc-4": [170, 94, 38],
-    "aurorasuit-asc-5": [168, 90, 38, -10],
-    "aurorasuit-asc-6": [165, 62, 38, -50],
-    "aurorasuit-asc-7": [166, 85, 38, -20],
-    "aurorasuit-asc-8": [166, 73, 38, -40],
-    "aurorasuit-desc-1": [163, 97, 38],
-    "aurorasuit-desc-2": [178, 128, 38, 25],
-    "aurorasuit-desc-3": [173, 137, 38, 30],
-    "aurorasuit-desc-4": [169, 135, 38, 30],
-    "aurorasuit-desc-5": [171, 145, 38, 35],
-    "aurorasuit-desc-6": [164, 149, 38, 40],
-    "aurorasuit-desc-7": [168, 148, 38, 35],
-    "aurorasuit-desc-8": [167, 152, 38, 40],
     // ember — pose-specific head and collar registration.
     "ember-asc-1": [169, 100, 40, 0],
     "ember-asc-2": [176, 97, 40, 0],
@@ -3668,69 +3629,73 @@ const DOME = {
     "ember-desc-7": [174, 150, 40, 35],
     "ember-desc-8": [167, 151, 40, 40],
     // cryostar — pose-specific head and collar registration.
-    "cryostar-asc-1": [198, 93, 45, 0],
-    "cryostar-asc-2": [184, 84, 45, 0],
-    "cryostar-asc-3": [185, 85, 45, -10],
-    "cryostar-asc-4": [178, 82, 45, -13],
-    "cryostar-asc-5": [178, 87, 45, -10],
-    "cryostar-asc-6": [176, 77, 45, -18],
-    "cryostar-asc-7": [172, 78, 45, -15],
-    "cryostar-asc-8": [181, 74, 45, -21],
-    "cryostar-desc-1": [190, 123, 45, 15],
-    "cryostar-desc-2": [185, 152, 45, 26],
-    "cryostar-desc-3": [185, 148, 45, 28],
-    "cryostar-desc-4": [185, 151, 45, 28],
-    "cryostar-desc-5": [192, 149, 45, 27],
-    "cryostar-desc-6": [186, 152, 45, 28],
-    "cryostar-desc-7": [179, 152, 45, 30],
+    "cryostar-asc-1": [186.12, 100.98, 29.4, 6.56],
+    "cryostar-asc-2": [182.71, 97.05, 29.4, 11.37],
+    "cryostar-asc-3": [175.62, 96.11, 29.4, 16.59],
+    "cryostar-asc-4": [169.77, 94.99, 29.4, 27.30],
+    "cryostar-asc-5": [173.87, 84.28, 29.4, -8.71],
+    "cryostar-asc-6": [173.33, 76.83, 29.4, -4.66],
+    "cryostar-asc-7": [168.96, 73.36, 29.4, 3.64],
+    "cryostar-asc-8": [166.41, 66.93, 29.4, 9.99],
+    "cryostar-desc-1": [186.12, 100.98, 29.4, 6.56],
+    "cryostar-desc-2": [188.27, 112.56, 29.4, 12.09],
+    "cryostar-desc-3": [182.56, 125.13, 29.4, 22.89],
+    "cryostar-desc-4": [172.66, 135.34, 29.4, 37.19],
+    "cryostar-desc-5": [189.38, 145.08, 29.4, 25.51],
+    "cryostar-desc-6": [184.1, 154.64, 29.4, 32.11],
+    "cryostar-desc-7": [164.13, 156.76, 29.4, 41.11],
+    "cryostar-desc-8": [149.07, 155.58, 29.4, 47.66],
     // verdant — pose-specific head and collar registration.
-    "verdant-asc-1": [196, 92, 45, 0],
-    "verdant-asc-2": [184, 82, 45, -4],
-    "verdant-asc-3": [191, 85, 45, 0],
-    "verdant-asc-4": [180, 76, 45, -12],
-    "verdant-asc-5": [185, 85, 45, 0],
-    "verdant-asc-6": [177, 73, 45, -15],
-    "verdant-asc-7": [176, 77, 45, -15],
-    "verdant-asc-8": [177, 73, 45, -20],
-    "verdant-desc-1": [193, 113, 45, 16],
-    "verdant-desc-2": [186, 146, 45, 26],
-    "verdant-desc-3": [183, 153, 45, 30],
-    "verdant-desc-4": [179, 147, 45, 29],
-    "verdant-desc-5": [181, 152, 45, 31],
-    "verdant-desc-6": [173, 157, 45, 32],
-    "verdant-desc-7": [179, 156, 45, 32],
+    "verdant-asc-1": [184.91, 101.68, 29.4, 6.77],
+    "verdant-asc-2": [183.86, 96.27, 29.4, 1.65],
+    "verdant-asc-3": [180.02, 92.67, 29.4, -1.80],
+    "verdant-asc-4": [172.38, 92.64, 29.4, 15.17],
+    "verdant-asc-5": [178.04, 79.97, 29.4, -4.08],
+    "verdant-asc-6": [181.59, 66.99, 29.4, -6.07],
+    "verdant-asc-7": [179.68, 58.61, 29.4, -0.37],
+    "verdant-asc-8": [173.21, 56.05, 29.4, 6.78],
+    "verdant-desc-1": [184.91, 101.68, 29.4, 6.77],
+    "verdant-desc-2": [182.48, 114.78, 29.4, 10.00],
+    "verdant-desc-3": [181.86, 125.28, 29.4, 12.55],
+    "verdant-desc-4": [170.06, 135.48, 29.4, 11.30],
+    "verdant-desc-5": [186.56, 144.79, 29.4, 15.40],
+    "verdant-desc-6": [178.26, 153.07, 29.4, 15.28],
+    "verdant-desc-7": [170.08, 159.41, 29.4, 13.73],
+    "verdant-desc-8": [160.12, 162.75, 29.4, 14.57],
     // gemmie — pose-specific head and collar registration.
-    "gemmie-asc-1": [195, 94, 52],
-    "gemmie-asc-2": [185, 94, 48],
-    "gemmie-asc-3": [181, 86, 46, -15],
-    "gemmie-asc-4": [177, 84, 44, -20],
-    "gemmie-asc-5": [179, 86, 44, -20],
-    "gemmie-asc-6": [173, 78, 44, -20],
-    "gemmie-asc-7": [178, 86, 44, -20],
-    "gemmie-asc-8": [178, 85, 44, -20],
-    "gemmie-desc-1": [181, 135, 44, 25],
-    "gemmie-desc-2": [183, 152, 44, 30],
-    "gemmie-desc-3": [182, 149, 44, 30],
-    "gemmie-desc-4": [181, 150, 44, 30],
-    "gemmie-desc-5": [184, 153, 44, 30],
-    "gemmie-desc-6": [180, 160, 44, 35],
-    "gemmie-desc-7": [172, 154, 44, 35],
+    "gemmie-asc-1": [180.26, 104.36, 30.8, 4.34],
+    "gemmie-asc-2": [180.68, 98.42, 30.8, 5.01],
+    "gemmie-asc-3": [177.05, 94.99, 30.8, 11.79],
+    "gemmie-asc-4": [174.16, 91.03, 30.8, 16.16],
+    "gemmie-asc-5": [180.73, 77.18, 30.8, 2.43],
+    "gemmie-asc-6": [180.46, 68.33, 30.8, 0.96],
+    "gemmie-asc-7": [175.34, 64.58, 30.8, 4.05],
+    "gemmie-asc-8": [170.08, 61.06, 30.8, 13.17],
+    "gemmie-desc-1": [180.26, 104.36, 30.8, 4.34],
+    "gemmie-desc-2": [181.26, 115.25, 30.8, 6.90],
+    "gemmie-desc-3": [171.36, 127.51, 30.8, 9.02],
+    "gemmie-desc-4": [161.9, 135.91, 30.8, -3.06],
+    "gemmie-desc-5": [182.68, 144.38, 30.8, 7.98],
+    "gemmie-desc-6": [173.2, 151.72, 30.8, 12.05],
+    "gemmie-desc-7": [164.79, 157.05, 30.8, 12.89],
+    "gemmie-desc-8": [153.08, 158.19, 30.8, 5.81],
     // sammie — pose-specific head and collar registration.
-    "sammie-asc-1": [193, 96, 46],
-    "sammie-asc-2": [183, 98, 41],
-    "sammie-asc-3": [182, 97, 41, -10],
-    "sammie-asc-4": [179, 85, 41, -20],
-    "sammie-asc-5": [180, 90, 41, -15],
-    "sammie-asc-6": [175, 84, 41, -20],
-    "sammie-asc-7": [182, 88, 41, -15],
-    "sammie-asc-8": [177, 84, 41, -20],
-    "sammie-desc-1": [179, 135, 41, 20],
-    "sammie-desc-2": [182, 136, 41, 25],
-    "sammie-desc-3": [180, 138, 41, 25],
-    "sammie-desc-4": [191, 140, 41, 20],
-    "sammie-desc-5": [180, 144, 41, 25],
-    "sammie-desc-6": [173, 149, 41, 30],
-    "sammie-desc-7": [173, 156, 41, 35],
+    "sammie-asc-1": [183.84, 102.3, 28, 5.15],
+    "sammie-asc-2": [182.98, 96.87, 28, 1.11],
+    "sammie-asc-3": [178.45, 93.89, 28, 0.59],
+    "sammie-asc-4": [170.58, 94.26, 28, 7.84],
+    "sammie-asc-5": [175.04, 83.07, 28, -6.80],
+    "sammie-asc-6": [177.33, 72.05, 28, -9.06],
+    "sammie-asc-7": [172.34, 68.72, 28, -5.45],
+    "sammie-asc-8": [165.1, 69.02, 28, -1.69],
+    "sammie-desc-1": [183.84, 102.3, 28, 5.15],
+    "sammie-desc-2": [188.5, 112.47, 28, 11.36],
+    "sammie-desc-3": [185.07, 124.59, 28, 19.78],
+    "sammie-desc-4": [172.46, 135.36, 28, 24.62],
+    "sammie-desc-5": [189.81, 145.13, 28, 37.65],
+    "sammie-desc-6": [194.43, 157.41, 28, 47.00],
+    "sammie-desc-7": [176.74, 162.37, 28, 38.77],
+    "sammie-desc-8": [154.91, 159.37, 28, 28.75],
     // frost — pose-specific head and collar registration.
     "frost-asc-1": [175, 108, 39],
     "frost-asc-2": [176, 103, 39],
@@ -3821,7 +3786,6 @@ const HELM_GLASS = {
     "phoenix": [130, 116, 129.2, -2],
     "seraph": [125, 151, 110],
     "chronarch": [127.1, 120.5, 125.6],
-    "paladin": [133, 137, 119.6],
     // Princess is a shell with a face opening, not a bubble, so the head does
     // not sit at the shell's centre — it sits behind the opening, back from it
     // by about a fifth of its own radius, because the squirrel's face is
@@ -3857,7 +3821,7 @@ const HELM_GLASS = {
 const punchedCache = new Map();
 const LIGHT_OPAQUE_VISORS = new Set([
     "gemmie", "phoenix", "sammie", "seraph",
-    "chronarch", "paladin", "princess",
+    "chronarch", "princess",
 ]);
 function punchedHelm(spr, id, opaqueVisor = false) {
     const hit = punchedCache.get(id);
@@ -3895,7 +3859,6 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     cyber: [101, 125],
-    aurorasuit: [100, 137],
     bigbooty: [92, 129],
     catsuit: [74, 149],
     copper: [108, 142],
@@ -3907,7 +3870,6 @@ const TAIL_PIVOT = {
     leviathan: [75, 138],
     robo: [101, 140],
     sammie: [111, 139],
-    stardust: [102, 139],
     voidsuit: [105, 147],
     verdant: [102, 142],
     cryostar: [106, 146],
@@ -5397,7 +5359,7 @@ export function drawHud(ctx, w, art, save) {
     if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
         hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
     const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-        : w.lvl?.def.fx.tapFreeze ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+        : fxOf(w).tapFreeze || runPal(save, w) === "switchback" ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
             : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
     if (experiment && !w.ready) {
         ctx.save();

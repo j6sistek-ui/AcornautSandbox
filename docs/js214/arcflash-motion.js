@@ -1,4 +1,4 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from './control-constants.js?v=210';
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from './control-constants.js?v=214';
 export const ARCFLASH_CONTACT_SECONDS = .68;
 export const ARCFLASH_PREVIEW_SECONDS = 7.2;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));

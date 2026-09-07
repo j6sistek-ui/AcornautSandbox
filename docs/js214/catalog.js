@@ -1,11 +1,11 @@
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=210";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=214";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
-export const GAME_VERSION = "V1.0.10";
+export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "210";
+export const ART_VER = "214";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 02:42 UTC";
+export const BUILD_TIME = "2026-09-07 03:40 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
@@ -132,7 +132,6 @@ export const HELMETS = [
     { id: "seraph", name: "Seraph", cost: 0, visor: "#fff4d8", tint: 0.14, rim: "#e8c66a", trim: "#a8853a", glow: "#ffe9a8" },
     { id: "chronarch", name: "Chronarch", cost: 0, visor: "#f0e6d2", tint: 0.16, rim: "#8a5a2a", trim: "#d4af37", glow: null },
     { id: "leviathan", suitOnly: "leviathan", name: "Leviathan", cost: 0, visor: "#d6fbff", tint: 0.18, rim: "#1c8f96", trim: "#0d5257", glow: "#3fe8f0" },
-    { id: "paladin", name: "Paladin", cost: 0, visor: "#f4efe4", tint: 0.15, rim: "#d8cfae", trim: "#8d8256", glow: null },
     { id: "princess", name: "Rose", cost: 350, visor: "#fdeef6", tint: 0.16, rim: "#6b3f9e", trim: "#c0348a", glow: "#ff8ad0" },
     { id: "verdant", name: "Verdant", cost: 0, visor: "#d8fff3", tint: 0.14, rim: "#d7b85a", trim: "#087a50", glow: "#38ff9a" },
     { id: "cryostar", name: "Cryostar", cost: 0, visor: "#dff8ff", tint: 0.15, rim: "#dcecf7", trim: "#168bd1", glow: "#54d8ff" },
@@ -182,15 +181,12 @@ export const SUITS = [
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
     { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
-    { id: "aurorasuit", beta: true, name: "Aurora", cost: 280, fur: "#cf8a3c", furDark: "#9c5f1d", belly: "#f4ddb4", suit: "#0f5c4c", suitLite: "#2fae8f", suitDark: "#073a2f", trim: "#5dffd0", glow: "#5dffd0", dust: "#a8ffe8" },
     { id: "ember", name: "Ember", cost: 90, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
-    { id: "stardust", beta: true, name: "Stardust", cost: 300, fur: "#c8873f", furDark: "#94601f", belly: "#f2dcb2", suit: "#1a2560", suitLite: "#3d4fa8", suitDark: "#0c1233", trim: "#ffd76a", glow: "#8fb8ff", dust: "#fff3b8" },
     { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
     { id: "alien", name: "Alien", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
     // The A/B is DECIDED: the standard bank won and flies "alien" above.
     // This is the retired custom-posed character, kept on the beta shelf as
     // Alien 1 by the owner's call ("alien 1 retires to unreleased").
-    { id: "alien2", beta: true, name: "Alien 1", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
     { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
     { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
     { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
@@ -217,9 +213,6 @@ export const SUITS = [
     { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
     { id: "sunforged", beta: true, name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
     { id: "abyssal", beta: true, name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
-    { id: "amethyst", beta: true, name: "Amethyst", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#78529a", suitLite: "#c58ce1", suitDark: "#38214f", trim: "#e0ba65", glow: "#c86dff", dust: "#efc9ff" },
-    { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#e8ddc5", suitLite: "#fffaf0", suitDark: "#9b8765", trim: "#d9ad55", glow: "#fff0b8", dust: "#fff7dd" },
-    { id: "reactor", beta: true, name: "Reactor", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#61752f", suitLite: "#9aaf4a", suitDark: "#293914", trim: "#65ff32", glow: "#65ff32", dust: "#b8ff80" },
     { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -279,7 +272,9 @@ export const PAL_ANIM = {
 };
 export const PALS = [
     { id: "none", name: "None", tag: "SOLO", desc: "Fly solo. The classic run." },
-    { id: "switchback", name: "Switchback", tag: "COMPANION", desc: "A golden acorn automaton, along for the flight. Cosmetic only; no gameplay effect.", art: "switchback" },
+    // STOPWATCH (owner, 7 Sep 2026): the automaton holds the clock. The id
+    // stays "switchback" so every save and receipt that named it still does.
+    { id: "switchback", name: "Stopwatch", tag: "COMPANION", desc: "A golden acorn automaton that holds the clock. Every tap toggles slow time, like the frozen acorn.", art: "switchback" },
     { id: "bee", name: "Astrolobee", tag: "VANILLA", desc: "Powerup/Acorns Disabled", art: "bee" },
     { id: "buddy", name: "Acorn", tag: "MAGNET", desc: "Magnet Effect", art: "buddy" },
     { id: "voidjelly", name: "Jelly", tag: "SOFT BOUNCE", desc: "Bounce Softer", art: "voidjelly" },
@@ -450,7 +445,7 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
-    { id: "bundle-switchback", name: "Switchback Companion", blurb: "Golden clockwork, teal fins, and good company. Cosmetic only.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
+    { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
     {
         id: "bundle-aurora",
         name: "Aurora Pack",
@@ -724,14 +719,14 @@ export const SUIT_SHELF = [
     // 300-star prize, the full Star Chart, and nothing less
     // the critters are premium: unowned ones show as doors to the shop
     { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog"], shop: true },
-    { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
+    { title: "UNRELEASED", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:
 // they arrive with their suit and equipping them elsewhere does nothing,
 // so a card would be a lie.
 export const HELMET_SHELF = [
-    { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "sammie", "seraph", "chronarch", "paladin"] },
+    { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "sammie", "seraph", "chronarch"] },
     { title: "COLOR VISORS", ids: ["ion", "solar", "void", "comet", "cherry", "meteor", "chrono", "amethyst", "reactor"] },
     { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "cosmic", "abyssal", "ivoryguard"] },
 ];

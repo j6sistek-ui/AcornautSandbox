@@ -1,18 +1,18 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=210";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=210";
-import { trailWornBy } from "./catalog.js?v=210";
-import { missionRandom } from "./mission-rng.js?v=210";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=210";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=210";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=210";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=210";
-import { TUTORIAL_SUIT } from "./catalog.js?v=210";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=210";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=210";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=210";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=210";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=210";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=210";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=214";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=214";
+import { trailWornBy } from "./catalog.js?v=214";
+import { missionRandom } from "./mission-rng.js?v=214";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=214";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=214";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=214";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit } from "./save.js?v=214";
+import { TUTORIAL_SUIT } from "./catalog.js?v=214";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=214";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=214";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=214";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=214";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=214";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=214";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -80,7 +80,7 @@ export function makeWorld(W, H) {
         zoneJump: 0,
         hitCooldown: 0,
         trailT: 0,
-        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false,
+        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {},
         clockMul: 1,
         clockPhase: 0,
         clockRate: 0.5,
@@ -257,6 +257,11 @@ export function envIndexFor(w, score) {
         return w.envOrder[(step + w.zoneJump) % ENVS.length];
     return w.envOrder[Math.min(step, ENVS.length - 1)];
 }
+/** The modifiers this run flies under: the mission's, or the lab's on a
+ *  beta free flight. One question, so the two can never disagree. */
+export function fxOf(w) {
+    return w.lvl ? w.lvl.def.fx : w.lab;
+}
 export function runPal(save, w) {
     return w.lvl?.def.fx.pal ?? save.equippedPal;
 }
@@ -335,9 +340,9 @@ function gapSpacing(w) {
 // 100%–115% of the base rhythm, and Lost in Space keeps the full
 // 85%–115% spread because its rotation gives tight pairs room to read.
 function nextGapSpacing(w) {
-    return w.flight === "lost"
+    return (fxOf(w).spacing ?? 1) * (w.flight === "lost"
         ? gapSpacing(w) * (0.85 + (w.missionRng ?? Math.random)() * 0.3)
-        : gapSpacing(w) * (1 + (w.missionRng ?? Math.random)() * 0.15);
+        : gapSpacing(w) * (1 + (w.missionRng ?? Math.random)() * 0.15));
 }
 function overdriveT(score) {
     if (score < PHYS.overdriveGate)
@@ -796,7 +801,7 @@ export function shieldFalloff(w) {
 function spawnPair(w, save, x) {
     const env = ENVS[w.envB];
     const d = difficulty(w);
-    let gap = d.gap * (w.lvl?.def.fx.gapScale ?? 1);
+    let gap = d.gap * (fxOf(w).gapScale ?? 1);
     const margin = 72;
     let gapY = margin + gap / 2 + (w.missionRng ?? Math.random)() * (w.H - 2 * margin - gap);
     const dx = Math.max(80, x - w.lastSpawnX);
@@ -833,7 +838,7 @@ function spawnPair(w, save, x) {
     const normalDrift = w.flight === "fly" ? driftModOf(save, w) : 1;
     // a level's fx sway rides on top of the mode's own; CRIMSON STORM is
     // Rough Air with the volume knob exposed
-    const lvlDrift = w.lvl?.def.fx.driftScale ?? 1;
+    const lvlDrift = fxOf(w).driftScale ?? 1;
     const driftAmp = (pilot === "wisp" ? 26
         : w.flight === "lost" ? 12
             : w.tut ? 0
@@ -1010,6 +1015,9 @@ export function pilotSuitId(w, save) {
     return w.tutSuit ? TUTORIAL_SUIT : save.equippedSuit;
 }
 export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
+    // the pause-sheet lab rides only a beta free flight; everything else
+    // flies clean so no mission and no live run can inherit a dial
+    w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
@@ -2459,7 +2467,9 @@ export function flap(w, save) {
         return "none";
     // the road's contracts fly on both pages: these modifiers follow the mission, not the page
     if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
-        if (w.lvl?.def.fx.tapFreeze)
+        // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
+        // the slow, the way the frozen acorn does - a slow, never a full stop.
+        if (fxOf(w).tapFreeze || (runPal(save, w) === "switchback" && !save.noPalFx))
             w.tapFrozen = !w.tapFrozen;
         if (w.stuck) {
             w.stuck = false;
@@ -2634,7 +2644,7 @@ function bounceOff(w, save, px, py) {
     dy /= dist;
     const incomingVy = w.squirrel.vy;
     const jelly = palId(save, w) === "voidjelly" ? 0.55 : 1;
-    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (w.lvl?.def.fx.bounceScale ?? 1);
+    const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1);
     w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
     if (BOUNCE_ANIM_ENABLED) {
         w.bounceAnimT = 0;
@@ -2664,9 +2674,13 @@ function bounceOff(w, save, px, py) {
     w.shake = 0.18;
     if (w.lvl)
         w.lvl.stats.bounces += 1;
-    if ((IS_BETA || STAR_MAP_LIVE) && w.lvl?.def.fx.sticky) {
-        w.stuck = true;
-        w.squirrel.vy = 0;
+    {
+        const fx = fxOf(w);
+        const stick = fx.sticky ? 1 : Math.max(0, Math.min(1, fx.stickChance ?? 0));
+        if ((IS_BETA || STAR_MAP_LIVE) && stick > 0 && (w.missionRng ?? Math.random)() < stick) {
+            w.stuck = true;
+            w.squirrel.vy = 0;
+        }
     }
     spark(w, sx, sy, ["#e8dcc8", "#ffd080", "#fff"], 18);
 }
@@ -3036,6 +3050,8 @@ function die(w, save) {
 // a wormhole corridor is a fifteen-second side trip, and Hyper Run is a
 // deterministic time trial where a continue would be a lie.
 export function reviveCost(w) {
+    if (w.lab.freeRevive)
+        return 0; // the lab's unlimited recovery
     return w.score > 100 ? 50 : 10;
 }
 // ------------------------------------------------------------- the Spill
@@ -3533,7 +3549,7 @@ export function updateWorld(w, save, dt) {
     w.squirrel.vy += gravOf(save, w) * simDt;
     w.squirrel.y += w.squirrel.vy * simDt;
     w.squirrel.rot = Math.max(-0.55, Math.min(0.95, w.squirrel.vy / 700));
-    // Switchback is cosmetic. Retired direction fields stay neutral.
+    // Stopwatch (id switchback) toggles the slow on a tap; retired direction fields stay neutral.
     w.scrollReversing = false;
     const move = w.speed * w.driftFactor * simDt;
     if (pilotSuitId(w, save) === "vanguard")
@@ -3547,7 +3563,7 @@ export function updateWorld(w, save, dt) {
         // Rough Air doubles how FAST a gate sways as well as how far, so the
         // two together read as turbulence rather than a slow deep breath.
         const driftRate = (palId(save, w) === "wisp" ? 1.7 : w.flight === "fly" ? 0.5 : 1.05)
-            * (w.lvl?.def.fx.driftRate ?? 1);
+            * (fxOf(w).driftRate ?? 1);
         p.drift += simDt * driftRate;
     }
     for (const a of w.pickups) {

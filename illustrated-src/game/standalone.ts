@@ -2160,20 +2160,9 @@ export async function bootStandalone(root: HTMLElement) {
         // Aurora and Stardust left this shelf for the beta bench (their
         // banks drifted); production shows one placeholder card in their
         // spot so the row reads "more coming", not "two got deleted".
-        // AcorNut leads the row (suitRank puts him first); the placeholder
-        // sits right after him so the goal is never behind a "?" card.
-        let ph: HTMLElement | null = null;
-        if (sec.title === "STANDARD") {
-          ph = el("div", "ac-card ac-card-soon");
-          ph.append(el("span", "ac-soonmark", "?"));
-          ph.append(el("p", "ac-cardname", "NEW SUITS"));
-          ph.append(el("p", "ac-soonnote", "In the workshop"));
-          if (items[0]?.id !== "vanguard") { row.append(ph); ph = null; }
-        }
-        for (const u of items) {
-          row.append(suitCard(u));
-          if (ph && u.id === "vanguard") { row.append(ph); ph = null; }
-        }
+        // the "NEW SUITS · In the workshop" placeholder that used to sit here
+        // is gone (owner, 7 Sep 2026: "useless")
+        for (const u of items) row.append(suitCard(u));
         if (inStore.length) {
           const sq = el("button", "ac-card ac-shopcard");
           sq.append(el("span", "ac-shopglyph", "+"),
