@@ -2,7 +2,7 @@
 
 The production suits' helmets often sat above the muzzle, clipped the ears, or rotated away from the collar during flight. This change refits 276 helmet sockets across all 16 production suits that accept interchangeable helmets. Each socket belongs to a specific unchanged painting; its position, radius and angle follow that painting's head and collar.
 
-The branch is based on main `81fb7e772866959c3bb65ec6cbef937ae9c4c9b7`, including the latest hangar/shop changes and Briella's Cat. The cache stamp is 206; the displayed game version remains V1.0.10.
+The branch is based on main `1fdbd10ef2a4044c6034bf1c7850c6f51ca326a8`, including the latest hangar/shop changes, beta Arcflash access and Briella's Cat. The cache stamp is 207; the displayed game version remains V1.0.10.
 
 ## What changed
 
@@ -20,6 +20,8 @@ No suit or helmet images, limb cuts, frame sequences, rig algorithms, timing, fl
 - [Animated comparison](helmet-fit-preview.mp4): the actual shipping loadout renderer, before and after, with identical animation times and inputs. Four suits per page cover all 16; Clear is used except for Leviathan's matching helmet.
 - [Close-up comparison](helmet-fit-comparison.png): selected problem suits at an enlarged loadout scale.
 - The per-page PNGs accompany the video for still inspection.
+
+The footage was rendered from helmet build 206 against main `81fb7e7`. Build 207 incorporates the concurrent shop-only main update; its helmet geometry and animation are identical to that footage. The final regression report compares build 207 directly with main `1fdbd10`.
 
 The visual fitting pass also checked Lunar and relevant costume helmets. The footage uses native Canvas, not a recording from a physical phone. The original drawings have some head-size and pose discontinuities; this work adjusts their helmet sockets without editing those animations.
 

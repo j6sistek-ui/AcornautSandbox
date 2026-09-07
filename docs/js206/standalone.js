@@ -2120,8 +2120,11 @@ export async function bootStandalone(root) {
                 const items = sec.ids
                     .map((id) => SUITS.find((x) => x.id === id))
                     .filter((u) => !!u)
-                    // premium you do not own belongs in the shop, not the wardrobe
-                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
+                    // premium you do not own belongs in the shop, not the wardrobe -
+                    // except on the PURCHASED row, where it shows as a door to the
+                    // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
+                    // "arcflash is only in SHOP")
+                    .filter((u) => sec.shop || !isIap(u.id) || iapOwned(s, u.id))
                     // cheapest first, so the shelf reads as a ladder rather than a
                     // pile. Owned things lead (nothing left to pay), then acorn
                     // prices in order, then star gates by their star price.

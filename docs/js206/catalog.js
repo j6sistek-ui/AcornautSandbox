@@ -48,7 +48,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-07 01:06 UTC";
+export const BUILD_TIME = "2026-09-07 00:56 UTC";
 // the build time stays exported for tooling, and off the visible line
 export const BUILD = `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
 // The production key predates the split and keeps every player's save.
@@ -707,8 +707,7 @@ export const SUIT_SHELF = [
     { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
-    { title: "ACORN INTOLERANT", ids: ["catsuit"] },
-    { title: "BRIELLA'S CAT", ids: ["briellacat"] },
+    { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat"] },
     { title: "UNRELEASED", ids: ["alien2", "aurorasuit", "stardust", "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "amethyst", "ivoryguard", "reactor"] },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a

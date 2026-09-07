@@ -20,7 +20,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 const require=createRequire(import.meta.url);
 const {createCanvas, loadImage, Image}=require(process.env.ACORNAUT_CANVAS || '@napi-rs/canvas');
 const root=resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const baseline=process.env.ACORNAUT_HELMET_BASE || '81fb7e772866959c3bb65ec6cbef937ae9c4c9b7';
+const baseline=process.env.ACORNAUT_HELMET_BASE || '1fdbd10ef2a4044c6034bf1c7850c6f51ca326a8';
 const scratch=mkdtempSync(join(tmpdir(), 'acornaut-helmet-regression-'));
 const sources=new WeakMap();
 const counts={comparisons:0, pixelComparisons:0, motionFrames:0, tapFrames:0, acceptedTaps:0,
