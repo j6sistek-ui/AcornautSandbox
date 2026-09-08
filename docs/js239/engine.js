@@ -477,6 +477,15 @@ export async function createEngine(canvas) {
             if (world.ready) {
                 if (flap(world, save) === "flap")
                     sfx.flap();
+                // AND THEN LET GO (audit, 8 Sep 2026). The launch arrives from a DOM
+                // button on the launch sheet, or from a key with no keyup of its
+                // own, so nothing ever registered a thrust source - yet flap's ready
+                // branch latched s.pressed. Wave 1 then opened with the thrust stuck
+                // on, the ship climbing by itself, and the pilot's first press
+                // reading as "already held" and doing nothing. Release unless a real
+                // finger or key is genuinely down, which the source set knows.
+                if (!spillThrustSources.size)
+                    spillRelease(world);
                 notify();
                 return;
             }
@@ -1016,7 +1025,11 @@ export async function createEngine(canvas) {
         if (save.starDust < due)
             return "poor";
         save.starDust -= due;
-        save.purchased = [...new Set([...(save.purchased || []), ...ids])];
+        // idGrants, like every other buy (audit, 8 Sep 2026): a pack listing a
+        // suit must also hand over the trail painted for it, or the Circuit Pack
+        // gives Cyber without the Clockwork wake that the single shelf and the
+        // featured pack both include for the same id.
+        save.purchased = [...new Set([...(save.purchased || []), ...ids.flatMap((i) => idGrants(i))])];
         writeSave(save);
         notify();
         return "ok";
@@ -1135,8 +1148,12 @@ export async function createEngine(canvas) {
         // over splits evenly rather than piling up on one side.
         const W = Math.min(rect.width, 3840);
         const H = rect.height;
-        // the notch: --sat is env(safe-area-inset-top) on the stage (index.html)
-        world.insetTop = parseFloat(getComputedStyle(parent).getPropertyValue("--sat")) || 0;
+        // the notch: --sat is env(safe-area-inset-top) on the stage (index.html).
+        // window.getComputedStyle, not the bare global: the bare name is not on
+        // globalThis outside a real browser, so every harness test that boots the
+        // engine threw here (audit, 8 Sep 2026) - which is exactly the six tests
+        // that cover engine.ts and standalone.ts at all.
+        world.insetTop = parseFloat(window.getComputedStyle(parent).getPropertyValue("--sat")) || 0;
         const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
         const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
             && raceGesture.owner !== null;
@@ -1692,8 +1709,16 @@ export async function createEngine(canvas) {
     // and anything the store still owes from a purchase that finished while
     // the app was away - again whenever the app comes back to the front
     void deliverPending();
-    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible")
-        void deliverPending(); });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible")
+            return;
+        // AND THE DAY MAY HAVE TURNED WHILE WE WERE AWAY (audit, 8 Sep 2026).
+        // An installed app is resumed far more often than it is launched, so a
+        // pilot who never cold-starts was never paid and their streak broke on
+        // its own. claimDaily is a no-op for a day already taken.
+        claimDaily();
+        void deliverPending();
+    });
     // the switches that are not read from the save on the fly are applied
     // once here, so a reload lands in the state the pilot left
     setSfxMuted(!!save.sfxOff);

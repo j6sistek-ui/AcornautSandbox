@@ -233,6 +233,9 @@ export async function bootStandalone(root: HTMLElement) {
   let keptScroll = 0;
   let keptRowScroll: number[] = [];
   let shelfKey = "";              // which tab the kept rows belong to
+  let keptScrollKey = "";         // which screen the kept scroll belongs to
+  let lastScrollKey = "";         // the screen the last render painted
+  let cardFocus = "";             // the Loadout control the keyboard was on
   const keepShelves = () => {
     keptRowScroll = [...overlay.querySelectorAll(".ac-shelfrow")].map((r) => r.scrollLeft);
   };
@@ -306,12 +309,22 @@ export async function bootStandalone(root: HTMLElement) {
     throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
   }
 
-  const render = () => {
+  const paint = () => {
     disposeChart(); disposeChart = () => {};
     updateSpillControls();
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
-    if (prevScroll) keptScroll = prevScroll.scrollTop;
+    // A KEPT SCROLL BELONGS TO THE SCREEN IT CAME FROM (audit, Sep 2026).
+    // The capture below runs whatever screen is leaving, and the Shop and
+    // the Loadout put it back without ever asking where it came from - so
+    // a reward tapped high on a nine-thousand-pixel chart opened the Shop
+    // clamped to its bottom, on the real-money rows, instead of at the
+    // boost the pilot had just been sent to buy. The scroll now carries
+    // the key of the screen it was lifted from and goes back on that one
+    // only; a Loadout tab counts as its own screen for the same reason.
+    const scrollKey = `${snap.screen}:${engine.shopTab}`;
+    if (prevScroll) { keptScroll = prevScroll.scrollTop; keptScrollKey = lastScrollKey; }
+    lastScrollKey = scrollKey;
     // a screen that asked to land on the pilot drops the scroll the last
     // screen left behind (the Shop's, after a boost purchase)
     if (landOnPilot) { keptScroll = 0; landOnPilot = false; }
@@ -323,10 +336,22 @@ export async function bootStandalone(root: HTMLElement) {
     const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
       : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
     const depotFocus = (document.activeElement as HTMLElement)?.dataset.spillControl;
+    // the same trick the Depot has always used, for the Loadout: the card
+    // that was just used gets the keyboard back after the rebuild
+    cardFocus = (document.activeElement as HTMLElement)?.dataset.focus ?? "";
     overlay.innerHTML = "";
     // an armed boost card asks "are you sure" for THIS visit only: leaving
     // the Shop disarms it, so coming back never spends dust on one tap
     if (snap.screen !== "shop") boostConfirm = null;
+    // AN OPEN PACK SHEET DOES NOT FOLLOW YOU OUT (audit, Sep 2026). The
+    // header arrow - and the Android hardware back that taps it - leaves
+    // the Shop with the sheet still flagged open, so every later visit
+    // opened on that pack, and on a later cycle day it was still offering
+    // yesterday's bundle at the featured half price. It leaves with the
+    // screen, the same way the armed boost card does.
+    // (the plain pack sheet used to be reset here too - it sits below
+    // drawShop's unconditional `return drawShopBeta()` and cannot be opened)
+    if (snap.screen !== "shop") { featureOpen = null; confirmBuy = false; }
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
       // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
@@ -592,7 +617,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (snap.screen === "hangar") {
       overlay.append(drawHangar());
       const sc = overlay.querySelector(".ac-sheet-scroll");
-      if (sc && keptScroll) sc.scrollTop = keptScroll;
+      if (sc && keptScroll && keptScrollKey === scrollKey) sc.scrollTop = keptScroll;
       // put the sideways shelves back where they were — but only when the
       // rebuilt rows are the same tab's rows; a fresh tab starts at its front
       const key = `hangar:${engine.shopTab}`;
@@ -606,7 +631,7 @@ export async function bootStandalone(root: HTMLElement) {
       // chapter opens at its locked top unless we scroll to the pilot
       const sc = overlay.querySelector(".ac-sheet-scroll");
       if (sc) {
-        if (keptScroll) {
+        if (keptScroll && keptScrollKey === scrollKey) {
           sc.scrollTop = keptScroll;
         } else {
           const cur = sc.querySelector("[data-blocking-barrier], .ac-mapnode.cur");
@@ -622,7 +647,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (snap.screen === "shop") {
       overlay.append(drawShop());
       const sc = overlay.querySelector(".ac-sheet-scroll");
-      if (sc && keptScroll) sc.scrollTop = keptScroll;
+      if (sc && keptScroll && keptScrollKey === scrollKey) sc.scrollTop = keptScroll;
       return;
     }
     if (snap.screen === "scores") {
@@ -633,6 +658,44 @@ export async function bootStandalone(root: HTMLElement) {
       overlay.append(drawHelp());
     }
   };
+
+  /** WHAT HAS TO HOLD ACROSS THE REBUILD (audit, Sep 2026). The overlay is
+   *  wiped on every notify, and the keyboard went with it: a sheet opened
+   *  behind ~130 map nodes without ever taking focus, those nodes stayed
+   *  tabbable and Enter-able UNDER the open sheet, and every equip on the
+   *  Loadout dropped the pilot back to <body>. A sheet is a modal, so the
+   *  screen behind it stops answering and its card takes the focus as the
+   *  dialog it already looks like. This runs after the paint because every
+   *  screen branch returns early from it. */
+  const settle = () => {
+    // the Depot wears the same sheet class but IS the screen while a run
+    // is paused in it, and it already places its own focus - leave it be
+    const sheets = overlay.querySelectorAll<HTMLElement>(".ac-lvlsheet:not(.ac-depotwrap)");
+    const top = sheets[sheets.length - 1];
+    if (!top) {
+      if (cardFocus) overlay.querySelector<HTMLElement>(`[data-focus="${cardFocus}"]`)?.focus({ preventScroll: true });
+      return;
+    }
+    const box = top.parentElement;
+    if (box) {
+      for (const sib of [...box.children]) if (sib !== top) sib.setAttribute("aria-hidden", "true");
+      // NOT `inert`: the Android shell's hardware back taps the header
+      // arrow with .click(), and an inert arrow would answer nothing at
+      // all. Taking the page behind out of the tab order does the job the
+      // sheet needs without silencing that door.
+      for (const f of box.querySelectorAll<HTMLElement>("button, a[href], input, select, textarea, [tabindex]")) {
+        if (!top.contains(f)) f.tabIndex = -1;
+      }
+    }
+    const card = top.firstElementChild as HTMLElement | null;
+    if (!card) return;
+    if (!card.getAttribute("role")) card.setAttribute("role", "dialog");
+    card.setAttribute("aria-modal", "true");
+    card.tabIndex = -1;
+    card.focus({ preventScroll: true });
+  };
+
+  const render = () => { paint(); settle(); };
 
   const SVG = "http://www.w3.org/2000/svg";
   function icon(d: string[], size = 20, fill = false) {
@@ -1653,6 +1716,10 @@ export async function bootStandalone(root: HTMLElement) {
     // "None" is the empty high seat, never the empty low one
     const seat = s.equippedPal === pl.id ? "HIGH" : pl.id !== "none" && s.equippedPal2 === pl.id ? "LOW" : "";
     const b = el("button", seat ? "ac-card ac-palcard on" : "ac-card ac-palcard");
+    // a flying pal reads as flying to a screen reader too (audit, Sep
+    // 2026): with one seat open the card carried no words for it at all
+    b.setAttribute("aria-pressed", String(!!seat));
+    b.dataset.focus = `pal:${pl.id}`;
     if (premium) markPremium(b);   // pals carry no palette of their own
     if (!open) b.classList.add("ac-cardoff");
     b.append(el("p", "ac-palname", pl.name));
@@ -1887,6 +1954,10 @@ export async function bootStandalone(root: HTMLElement) {
     const tabs = el("div", "ac-cats");
     for (const t of ["suits", "helmets", "trails", "pals", "ship"] as const) {
       const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
+      // WHICH TAB IS OPEN WAS A COLOUR AND NOTHING ELSE (audit, Sep 2026):
+      // the class said it, so a screen reader heard five identical tabs.
+      b.setAttribute("aria-pressed", String(t === engine.shopTab));
+      b.dataset.focus = `tab:${t}`;
       if ((s.guide === "hangar" && t === "suits" && engine.shopTab !== "suits") ||
           (s.guide === "helmet" && t === "helmets" && engine.shopTab !== "helmets")) {
         b.classList.add("ac-pulse");
@@ -1925,6 +1996,11 @@ export async function bootStandalone(root: HTMLElement) {
           const open = helmetRevealed(s, h.id);
           const owned = premium ? ownsPremium(s, h.id) : s.unlocked.includes(h.id);
           const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
+          // WORN IS A STATE, NOT A COLOUR (audit, Sep 2026). The card said
+          // "OWNED" whether it was on the pilot's head or on the shelf, so
+          // the worn one was told apart by a border and nothing else.
+          b.setAttribute("aria-pressed", String(!locked && s.equipped === h.id));
+          b.dataset.focus = `helm:${h.id}`;
           // A bare integer told the pilot nothing: "70" next to "OWNED"
           // reads as a score, and a free helmet rendered the word "0".
           // State stays in the text node; a real price becomes its own
@@ -1980,6 +2056,9 @@ export async function bootStandalone(root: HTMLElement) {
         const open = suitRevealed(s, u.id);
         const owned = premium ? ownsPremium(s, u.id) : s.unlockedSuits.includes(u.id);
         const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
+        // same as the helmets: the worn suit says so out loud (audit)
+        b.setAttribute("aria-pressed", String(s.equippedSuit === u.id));
+        b.dataset.focus = `suit:${u.id}`;
         const claim = !premium && open && !owned && u.cost <= 0;
         b.append(
           suitCardOf(u, 64),
@@ -2067,6 +2146,9 @@ export async function bootStandalone(root: HTMLElement) {
           return b;
         }
         const b = el("button", trailWornBy(s.equippedTrail, s.equippedSuit) === t.id ? "ac-card on" : "ac-card");
+        // the worn trail says so out loud, not in a border (audit)
+        b.setAttribute("aria-pressed", String(trailWornBy(s.equippedTrail, s.equippedSuit) === t.id));
+        b.dataset.focus = `trail:${t.id}`;
         const { c, ctx } = miniCanvas(64, 56);
         c.setAttribute("role", "img");
         c.setAttribute("aria-label", `${t.name} trail preview`);
@@ -2113,7 +2195,18 @@ export async function bootStandalone(root: HTMLElement) {
       const fsw = el("span", s.noPalFx ? "ac-switch on" : "ac-switch");
       fsw.append(el("i", "ac-knob"));
       fx.append(ftxt, fsw);
-      fx.onclick = () => engine.setMod("noPalFx");
+      // IT IS A SWITCH, SO IT SAYS SO (audit, Sep 2026). It was drawn like
+      // the Settings switches but carried none of their state, so the one
+      // control that makes every pal cosmetic was a coin-flip for anyone
+      // who could not see the knob. Same shape as settingsRows: the state
+      // is set on the button and re-stated on the flip.
+      fx.setAttribute("role", "switch");
+      fx.setAttribute("aria-checked", String(!!s.noPalFx));
+      fx.dataset.focus = "mod:noPalFx";
+      fx.onclick = () => {
+        engine.setMod("noPalFx");
+        fx.setAttribute("aria-checked", String(!!engine.save.noPalFx));
+      };
       grid.append(fx);
       // TWO SEATS (owner, 7 Sep 2026). One line above the shelf says how
       // the second one works - or what earns it - because a tap that now
@@ -2629,7 +2722,10 @@ export async function bootStandalone(root: HTMLElement) {
         // every real reward opens its sheet: what it is, how far off it is,
         // and the Star Unlock that skips the wait
         const key = rewardId(r as StarReward);
-        mark.setAttribute("aria-label", `Reward at ${r.stars} stars: ${r.name}${have ? ", yours" : ""}`);
+        // "yours" only when it really is: a priced rung is revealed, and
+        // the Loadout still has a price on it (audit, Sep 2026)
+        const due = have ? rewardDue(r as StarReward) : 0;
+        mark.setAttribute("aria-label", `Reward at ${r.stars} stars: ${r.name}${have ? (due ? `, revealed for ${due} acorns` : ", yours") : ""}`);
         mark.onclick = () => { rewardOpen = key; boostNote = null; render(); };
       }
       map.append(mark);
@@ -2796,6 +2892,32 @@ export async function bootStandalone(root: HTMLElement) {
     return wrap;
   }
 
+  /** WHAT A RUNG STILL COSTS - which, by rule, is now nothing.
+   *
+   *  Nine helmet rungs used to REVEAL their helmet for acorns rather than
+   *  hand it over, so the rail, the reward sheet and the level-done screen
+   *  all said the Void Helmet was yours while the Loadout went on charging
+   *  90 for it (audit, Sep 2026). The owner settled it the other way: those
+   *  rungs pay acorns instead, the helmets keep their shelf gate at the same
+   *  star count, and a rung either grants outright or is not a rung. That
+   *  invariant is held by test-star-map, so this answers 0 for every reward
+   *  on the road today. It stays because it is the check the Loadout card
+   *  itself makes: if a priced item is ever dropped onto a rung again, these
+   *  screens say what it costs rather than calling it yours. */
+  function rewardDue(r: StarReward) {
+    if (!r.id || isIap(r.id)) return 0;
+    const s = engine.save;
+    if (r.kind === "helmet") {
+      const h = HELMETS.find((x) => x.id === r.id);
+      return h && !s.unlocked.includes(h.id) ? h.cost : 0;
+    }
+    if (r.kind === "suit") {
+      const u = SUITS.find((x) => x.id === r.id);
+      return u && !s.unlockedSuits.includes(u.id) ? u.cost : 0;
+    }
+    return 0;
+  }
+
   /** ONE REWARD ON THE RAIL, opened: what it is, how far off it is, and -
    *  when a Star Unlock is held - the hold that opens it now. */
   function drawRewardSheet(key: string) {
@@ -2812,9 +2934,13 @@ export async function bootStandalone(root: HTMLElement) {
     art.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 96));
     sheet.append(art, el("h2", "ac-lvlname", r.name), el("p", "ac-sub", r.desc));
     const paidInstead = s.rewardSubs?.[key];
+    // a priced rung opens the item on the shelf; it does not buy it
+    const due = rewardDue(r);
     sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
       ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
-      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
+      : owned ? (have >= r.stars
+          ? (due > 0 ? `Open in the Loadout — ${due.toLocaleString()} acorns.` : "Yours.")
+          : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
       : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
     const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
     if (!owned && item) {
@@ -3137,10 +3263,15 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.append(goals);
     if (last.gained > 0) sheet.append(el("p", "ac-gold", `+${last.gained} STAR${last.gained > 1 ? "S" : ""} \u00b7 ${last.totalAfter} TOTAL`));
 
-    // anything the new total just paid for gets its moment
+    // anything the new total just paid for gets its moment - and a priced
+    // rung says what it actually did, which is open the item on the shelf
+    // rather than hand it over (audit, Sep 2026)
     for (const r of STAR_REWARDS) {
       if (r.kind !== "stage" && r.stars > last.totalBefore && r.stars <= last.totalAfter) {
-        sheet.append(el("p", "ac-gold", `UNLOCKED \u2014 ${r.name}`));
+        const due = rewardDue(r);
+        sheet.append(el("p", "ac-gold", due > 0
+          ? `OPEN IN THE LOADOUT \u2014 ${r.name} \u00b7 ${due.toLocaleString()} ACORNS`
+          : `UNLOCKED \u2014 ${r.name}`));
       }
     }
 
@@ -3409,12 +3540,33 @@ export async function bootStandalone(root: HTMLElement) {
         // something rather than refusing the whole basket
         const order = [...cart.ids].sort((a, b) => idDust(a) - idDust(b));
         let bought = 0;
+        let refused = "";
         for (const id of order) {
-          if (!tx(bar, () => engine.buyShopItem(id), idDust(id), "dust")) break;
+          if (!tx(bar, () => engine.buyShopItem(id), idDust(id), "dust")) {
+            refused = denyEl?.textContent ?? "";
+            break;
+          }
           picked.delete(id);
           bought += 1;
         }
-        if (bought) render();
+        // A HALF-BOUGHT BASKET HAS TO SAY SO (audit, Sep 2026). Each
+        // success notifies, and a notify re-renders, so the refusal on the
+        // item after it was written onto a status line that was thrown
+        // away in the same breath: dust dropped, one item stayed ticked,
+        // and nothing on screen said why. The line is carried across the
+        // rebuild and re-announced, and the rebuilt bar takes the shake.
+        if (bought) {
+          render();
+          if (refused) {
+            announce(refused);
+            const rebuilt = overlay.querySelector<HTMLElement>(".ac-combobar");
+            if (rebuilt) {
+              rebuilt.classList.remove("ac-shake");
+              void rebuilt.offsetWidth;
+              rebuilt.classList.add("ac-shake");
+            }
+          }
+        }
       };
       bar.append(t, go);
     }
@@ -3454,6 +3606,9 @@ export async function bootStandalone(root: HTMLElement) {
         else price.append(icon(I_DUST, 11, true), el("span", "", idDust(id).toLocaleString()));
         b.append(price);
         if (SET_TRAIL[id] && !owned) b.append(el("span", "ac-tilebonus", "+ TRAIL"));
+        // the tick in the corner was the only thing that said "in the
+        // cart", and a tick is not readable (audit, Sep 2026)
+        b.setAttribute("aria-pressed", String(picked.has(id)));
         if (picked.has(id)) {
           b.classList.add("on");
           b.append(el("i", "ac-tickbadge", "\u2713"));
@@ -3496,14 +3651,22 @@ export async function bootStandalone(root: HTMLElement) {
       if (held) t.append(el("p", "ac-sub ac-boostheld", `${held} in your account — spend it on the Star Chart.`));
       row.append(t);
       const pr = el("span", "ac-modprice ac-dustprice");
-      pr.append(el("span", "", boostConfirm === id ? "CONFIRM " : ""), icon(I_DUST, 13, true), el("span", "", spec.dust.toLocaleString()));
+      const cue = el("span", "", boostConfirm === id ? "CONFIRM " : "");
+      pr.append(cue, icon(I_DUST, 13, true), el("span", "", spec.dust.toLocaleString()));
       row.append(pr);
       row.onclick = () => {
         if (boostConfirm !== id) { boostConfirm = id; render(); return; }
         boostConfirm = null;
         // the chart opens on the pilot, not wherever the shop was scrolled
         if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) { landOnPilot = true; engine.open("log"); }
-        else render();
+        // A REFUSED CONFIRM HAS TO SAY SOMETHING (audit, Sep 2026). The
+        // re-render here rebuilt the shop, and with it an empty status
+        // line - so "Not enough Star Dust" was written and thrown away in
+        // the same tap and the card simply dropped out of CONFIRM. The
+        // pack sheet already only re-renders on success for this reason;
+        // this one disarms the live card instead, keeping the line and
+        // the shake the pilot is meant to see.
+        else { row.classList.remove("ac-confirming"); cue.textContent = ""; }
       };
       scroll.append(row);
     }
@@ -3600,6 +3763,10 @@ export async function bootStandalone(root: HTMLElement) {
     // one. It stays rolled up to a single line until it is asked for, so
     // it costs a player who never opens it nothing but a row of small type.
     box.append(drawCycleRoll(cy));
+    // and the sheet only ever shows the pack TODAY is featuring: the
+    // featured price belongs to the cycle, not to whatever was open when
+    // the day rolled over (audit, Sep 2026)
+    if (featureOpen && featureOpen !== cy.feature?.id) { featureOpen = null; confirmBuy = false; }
     if (featureOpen) box.append(drawFeatureSheet(featureOpen));
     return box;
   }
@@ -4273,6 +4440,49 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
     return box;
   }
+
+  /** ESCAPE CLOSES THE SHEET, NOT THE SCREEN (audit, Sep 2026). Every
+   *  sheet closed by its own BACK button or a tap on the backdrop and by
+   *  nothing else, while the engine's Escape is a screen-level key: over
+   *  an open mission briefing it tore the whole chart down to the hub -
+   *  and since the flag that opened the sheet was never touched, walking
+   *  back onto the chart re-opened the very same sheet. The topmost sheet
+   *  closes the way its own BACK closes it, one press at a time. */
+  const closeTopSheet = () => {
+    if (spendAsk) spendAsk = null;
+    else if (dailyToast) dailyToast = null;
+    else if (featureOpen) { featureOpen = null; confirmBuy = false; }
+    else if (hyperRunOpen) {
+      // the briefing's BACK, exactly: opened from the hub it came out of
+      // MODES, so MODES is what it goes back to
+      hyperRunOpen = false; boostNote = null;
+      if (engine.world.screen === "title") modesOpen = true;
+    }
+    else if (rewardOpen) { rewardOpen = null; boostNote = null; }
+    else if (rewardPreviewAt) {
+      rewardPreviewAt = null;
+      render();
+      overlay.querySelector<HTMLButtonElement>("[data-reward-preview]")?.focus({ preventScroll: true });
+      return true;
+    }
+    else if (chartLevel) { chartLevel = null; boostNote = null; }
+    else if (modesOpen) modesOpen = false;
+    else return false;
+    render();
+    return true;
+  };
+  // capture, so this lands before the engine's own window listener and can
+  // keep it from leaving the screen underneath
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const on = document.activeElement as HTMLElement | null;
+    // a text field owns its own Escape (the pilot name is edited in one)
+    if (on && (on.tagName === "INPUT" || on.tagName === "TEXTAREA")) return;
+    if (!overlay.querySelector(".ac-lvlsheet:not(.ac-depotwrap)")) return;
+    if (!closeTopSheet()) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, { capture: true });
 
   engine.subscribe(render);
   render();

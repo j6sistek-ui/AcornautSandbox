@@ -172,6 +172,16 @@ function armMusicUnlock() {
         return;
     musicUnlockArmed = true;
     const kick = () => {
+        // RESUME THE CONTEXT, NOT JUST THE ELEMENT (audit, 8 Sep 2026). The menu
+        // score wants to play from the first frame, so ac() built a context
+        // before any gesture existed and the browser left it suspended. This
+        // retry only re-played the audio element, so the score stayed silent
+        // until something else happened to call ac() - the first run. ac()
+        // resumes a suspended context and is safe to call again.
+        try {
+            ac();
+        }
+        catch { /* no audio device: the game is still playable */ }
         const el = musicWanted ? musicEls[musicWanted] : null;
         if (el && el.paused && !musicMuted)
             playWanted(600);

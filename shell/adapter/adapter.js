@@ -12,11 +12,15 @@
  */
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
-import { Purchases, LOG_LEVEL } from "@revenuecat/purchases-capacitor";
+import { Purchases, LOG_LEVEL, PRODUCT_CATEGORY } from "@revenuecat/purchases-capacitor";
 import { App } from "@capacitor/app";
 import config from "./config.json";
 
 const Boards = registerPlugin("Boards");
+
+// set the moment the bundle is handed the page, so the failure path below
+// can tell "never started" from "started and then threw"
+let booted = false;
 
 // resolved against the PAGE, not this module: the bundle sits beside
 // index.html, this file sits under shell/
@@ -57,20 +61,66 @@ function storeOf(platformName) {
     await Purchases.configure({ apiKey });
     const ids = Object.values(productIds).filter((id) => id && !id.startsWith("PLACEHOLDER"));
     if (!ids.length) return;
-    const res = await Purchases.getProducts({ productIdentifiers: ids });
+    // NON_SUBSCRIPTION, EXPLICITLY (audit, 8 Sep 2026). Android defaults the
+    // fetch to SUBSCRIPTION, so every dust pack came back empty, every row
+    // stayed priceless and disabled, and nothing could be sold on Google
+    // Play at all. iOS ignores the field, so naming it costs nothing there.
+    const res = await Purchases.getProducts({ productIdentifiers: ids, type: PRODUCT_CATEGORY.NON_SUBSCRIPTION });
     for (const p of res.products || []) { prices.set(p.identifier, p.priceString); products.set(p.identifier, p); }
   })().catch((e) => console.warn("[acornaut shell] store not ready:", e?.message || e));
   const storeId = (gameId) => productIds[gameId];
+  /** the RevenueCat transaction id for the purchase just made, read from the
+   *  same list pending() walks so the two can never disagree.
+   *
+   *  PurchasesStoreTransaction dates its rows with `purchaseDate`, an ISO
+   *  8601 STRING - there is no millis field - so parse it, and treat an
+   *  unparseable date as the oldest rather than sorting on NaN. */
+  const rowsFor = (info, sid) => (info?.nonSubscriptionTransactions || []).filter((t) => t.productIdentifier === sid);
+  const at = (t) => { const ms = Date.parse(t?.purchaseDate); return Number.isFinite(ms) ? ms : 0; };
+  const newest = (rows) => rows.slice().sort((a, b) => at(b) - at(a))[0]?.transactionIdentifier || null;
+  /** the id of a row this product did not already have. `seen` is the set
+   *  taken BEFORE the purchase, so a repeat buy of the same pack cannot
+   *  hand back the earlier receipt - which the game's ledger has already
+   *  paid, and would therefore deliver nothing for. */
+  const fresh = (info, sid, seen) => {
+    const rows = rowsFor(info, sid);
+    const unseen = rows.filter((t) => t.transactionIdentifier && !seen.has(t.transactionIdentifier));
+    return newest(unseen.length ? unseen : (seen.size ? [] : rows));
+  };
+  async function knownIds(sid) {
+    try { const { customerInfo } = await Purchases.getCustomerInfo(); return new Set(rowsFor(customerInfo, sid).map((t) => t.transactionIdentifier)); }
+    catch { return new Set(); }
+  }
+  async function recallTransactionId(res, sid, seen) {
+    const fromPurchase = fresh(res?.customerInfo, sid, seen);
+    if (fromPurchase) return fromPurchase;
+    try { const { customerInfo } = await Purchases.getCustomerInfo(); return fresh(customerInfo, sid, seen); }
+    catch { return null; }
+  }
   return {
     priceOf: (gameId) => prices.get(storeId(gameId)) ?? null,
     async buy(gameId) {
       await ready;
-      const product = products.get(storeId(gameId));
+      const sid = storeId(gameId);
+      const product = products.get(sid);
       if (!product) return { result: "unavailable" };
+      const seen = await knownIds(sid);
       try {
         const res = await Purchases.purchaseStoreProduct({ product });
-        // the transaction id is what makes the grant idempotent (engine.grantDust)
-        return { result: "ok", transactionId: res?.transaction?.transactionIdentifier || `${res?.productIdentifier || storeId(gameId)}:${Date.now()}` };
+        // ONE ID SPACE, OR THE GRANT HAPPENS TWICE (audit, 8 Sep 2026).
+        // The transaction id is what makes the grant idempotent
+        // (engine.grantDust via takeReceipt) - but this used to return the
+        // STORE's id while pending() reports RevenueCat's id for the very
+        // same receipt, so the next resume paid the same purchase again.
+        // Take the id from the same place pending() reads it, and if that
+        // is somehow missing or still stale, re-ask once rather than
+        // inventing a synthetic id that can never match. A purchase we
+        // cannot name is reported as "failed": deliverPending() pays it on
+        // the next boot or resume, whereas resolving "ok" with no id would
+        // grant it unconditionally, and resolving "ok" with the PREVIOUS
+        // receipt for the same pack would grant nothing at all.
+        const id = await recallTransactionId(res, sid, seen);
+        return id ? { result: "ok", transactionId: id } : { result: "failed" };
       } catch (e) {
         return { result: e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };
       }
@@ -125,11 +175,29 @@ async function boot() {
     App.addListener("backButton", () => { document.querySelector(".ac-backbtn")?.click(); });
   }
   const m = await import(bundleSrc);
+  booted = true;
   m.bootStandalone(document.getElementById("app"));
 }
 
 boot().catch(async (e) => {
   console.error("[acornaut shell] boot failed", e);
+  // A FAILED BOOT IS STILL THE NATIVE BUILD (audit, 8 Sep 2026). This path
+  // used to load the bundle with nothing on window.__acornautPlatform, so
+  // platform.ts read the kind as "web" and handed a store build
+  // `devDoors: !native` - true. One rejection from Preferences at launch
+  // (line 31-33) was enough to put the access-code row in the Shop and the
+  // catalog's USD stickers on the dust rows of a shipped app, with nothing
+  // on screen to say so. Install the smallest honest adapter first: the
+  // real platform kind with the dev doors shut. Storage falls back to
+  // localStorage, which the next good boot adopts into Preferences, so
+  // this costs the player nothing but the store and the boards.
+  if (Capacitor.isNativePlatform() && !window.__acornautPlatform) {
+    window.__acornautPlatform = { kind: Capacitor.getPlatform(), devDoors: false };
+  }
+  // and if the game was already on the page when it threw, leave it there -
+  // a second bootStandalone would stack a second game on top of the first
+  if (booted) return;
   const m = await import(bundleSrc);
+  booted = true;
   m.bootStandalone(document.getElementById("app"));
 });

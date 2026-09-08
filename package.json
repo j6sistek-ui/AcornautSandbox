@@ -1,0 +1,20 @@
+{
+  "name": "acornaut",
+  "private": true,
+  "version": "1.0.12",
+  "description": "Acornaut: the game sources, the two pages under docs/, and the harness that gates them.",
+  "type": "module",
+  "scripts": {
+    "build": "node illustrated-src/export-sandbox.mjs && node illustrated-src/build-lab.mjs",
+    "typecheck": "tsc illustrated-src/game/*.ts illustrated-src/lab/rig.ts --noEmit --module es2015 --target es2020 --skipLibCheck --moduleResolution bundler --strict false",
+    "art": "python3 illustrated-src/verify-art.py",
+    "bridge": "node illustrated-src/test-platform-bridge.mjs",
+    "test": "node illustrated-src/run-tests.mjs",
+    "gates": "npm run typecheck && npm run art && npm run test && npm run bridge"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^0.1.60",
+    "happy-dom": "^15.11.6",
+    "typescript": "^5.6.3"
+  }
+}

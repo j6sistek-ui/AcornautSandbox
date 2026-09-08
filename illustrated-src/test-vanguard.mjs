@@ -11,8 +11,14 @@ win.__ACORNAUT_BETA__=mode!=='production';
 // happy-dom rejects valid multi-layer gradient/url background values. Record
 // assignments for wiring checks; this harness does not validate browser CSS.
 const backgrounds=new WeakMap();
+// TOLERATE EITHER happy-dom SHAPE (audit, 8 Sep 2026). Older versions gave
+// backgroundImage an accessor on the prototype; newer ones do not, and
+// `bg.set` was then undefined - which threw on the first assignment and
+// took this whole test down before it asserted anything about the game.
 const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'backgroundImage');
-Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}});
+Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',bg&&bg.set
+  ?{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}}
+  :{configurable:true,get(){return backgrounds.get(this)??'';},set(value){backgrounds.set(this,value);}});
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;
@@ -38,26 +44,47 @@ const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.inc
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
 const VG=await import('../docs/js/vanguard.js');
 assert.equal(Cat.SUITS[0].id,'flight');assert.equal(Cat.TRAILS[0].id,'sparks');
-assert.equal(C.STAR_UNLOCKS.suits.vanguard,500);assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,500);
+// The generated ladder (ten-star spacing) put AcorNut at 570 and his wake
+// at 520. Pin both, and pin the RELATIONSHIP that outlives any retune: the
+// wake must never land after the suit it belongs to, or it is unwearable
+// on the rung that grants it.
+assert.equal(C.STAR_UNLOCKS.suits.vanguard,570);assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,520);
+assert(C.STAR_UNLOCKS.trails.vanguardwake<=C.STAR_UNLOCKS.suits.vanguard,'the wake cannot arrive after its suit');
 assert.equal(Cat.GUIDE_SUIT,'iontrim');assert(!Cat.IAP_ITEMS.includes('vanguard'));
 assert.equal(S.starsOf(e.save),0);
 if(mode==='production'){
   assert.equal(e.buySuit('vanguard'),'locked');
-  // Eligibility boundary, independent of the currently shorter live route.
-  // The actual live route remains 100 missions; this models retained credit
-  // after the future production expansion has become earnable.
-  const ledger=P.migrateCampaign(e.save);
-  ledger.legacyEntitlementFloor=499;assert.equal(e.buySuit('vanguard'),'locked');
-  ledger.legacyEntitlementFloor=500;assert(['buy','equip'].includes(e.buySuit('vanguard')));
+  // Eligibility boundary, read off the rung itself rather than pinned: the
+  // rung moved 500 -> 570 when the ladder was regenerated on ten-star
+  // spacing, and production now flies the same 260-mission / 780-star road
+  // the beta playtested, so this total is earnable on the live route.
+  const ledger=P.migrateCampaign(e.save),gate=C.STAR_UNLOCKS.suits.vanguard;
+  ledger.legacyEntitlementFloor=gate-1;assert.equal(e.buySuit('vanguard'),'locked');
+  ledger.legacyEntitlementFloor=gate;assert(['buy','equip'].includes(e.buySuit('vanguard')));
   ledger.legacyEntitlementFloor=0;assert(S.suitRevealed(e.save,'vanguard'),'earned suit survives later save reconciliation');
 }else{
   assert(S.suitRevealed(e.save,'vanguard'),'fresh beta opens flagship at zero stars');
   assert(['buy','equip'].includes(e.buySuit('vanguard')));
-  const earned=S.defaultSave();
-  for(let i=0;i<166;i++)P.settleMissionCredit(earned,C.ALL_LEVELS[i],7);
-  P.settleMissionCredit(earned,C.ALL_LEVELS[166],1);assert.equal(S.starsOf(earned),499);
-  P.settleMissionCredit(earned,C.ALL_LEVELS[166],3);assert.equal(S.starsOf(earned),500);
-  P.settleMissionCredit(earned,C.ALL_LEVELS[166],1);assert.equal(S.starsOf(earned),500);
+  // Climb the road to AcorNut's rung with real settlements. Derived from
+  // the rung (570 now, not 500) and the road's length (260 missions on both
+  // pages since the Star Map went live), so a future retune moves the climb
+  // instead of rotting the arithmetic.
+  const earned=S.defaultSave(),gate=C.STAR_UNLOCKS.suits.vanguard;
+  // Each mission is settled once and only once, walking forward down the
+  // road: whole missions pay three stars, the mission on the boundary pays
+  // exactly what is still owed.
+  let next=0;
+  const climb=target=>{
+    while(S.starsOf(earned)<target&&next<C.ALL_LEVELS.length)
+      P.settleMissionCredit(earned,C.ALL_LEVELS[next++],(1<<Math.min(3,target-S.starsOf(earned)))-1);
+    return S.starsOf(earned);
+  };
+  assert.equal(climb(gate-1),gate-1,'one star short of the rung');
+  assert.equal(climb(gate),gate);
+  assert(next<C.ALL_LEVELS.length,'the rung has to be reachable on the road that shipped');
+  // Replaying an already three-starred mission for a single goal never takes
+  // the other two back.
+  P.settleMissionCredit(earned,C.ALL_LEVELS[0],1);assert.equal(S.starsOf(earned),gate);
 }
 assert.equal(e.save.equippedSuit,'vanguard');
 e.save.equippedTrail='ion';e.save.unlockedTrails.push('ion');
@@ -65,11 +92,19 @@ assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'vanguard
 assert.equal(e.buyTrail('ion'),'locked');assert.equal(e.save.equippedTrail,'ion');
 assert.equal(e.buyTrail('vanguardwake'),'equip');assert.equal(e.save.equippedTrail,'ion');
 e.open('hangar');e.setShopTab('trails');tick();
-assert(button('Ion Stream').disabled);assert(!button('AcorNut Wake').disabled);
+// A BUILT-IN WAKE, NOT A CHOICE (owner, 7 Sep 2026): AcorNut's wake is part
+// of the character. It is no longer an enabled card you equip - while
+// AcorNut is worn it is one fixed, untappable "BUILT-IN TRAIL" card, and no
+// other suit sees it in the list at all.
+assert(button('Ion Stream').disabled);
+const wake=button('AcorNut Wake');
+assert(wake.disabled,'the built-in wake cannot be taken off');
+assert(wake.classList.contains('ac-builtintrail')&&wake.textContent.includes('BUILT-IN TRAIL'));
 assert(app.textContent.includes('Your previous trail returns'));
 assert(['buy','equip'].includes(e.buySuit('flight')));tick();
 assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'ion');
-assert.equal(e.buyTrail('vanguardwake'),'locked');assert(button('AcorNut Wake').disabled);
+assert.equal(e.buyTrail('vanguardwake'),'locked');
+assert(!button('AcorNut Wake'),'another suit is never offered AcorNut\'s wake');
 // THE MOTION PICKER IS GONE (owner, 6 Sep 2026): Flight is the motion on
 // both pages, and nothing on the hangar or the pause sheet selects one.
 e.buySuit('vanguard');e.setShopTab('suits');tick();
@@ -135,30 +170,53 @@ for(const interval of [.1,.18,.3]) {
   assert(live.vanguard.thrust>.2);
 }
 // Direction changes interrupt no tail cycle and wait for no animation beat.
-// A normal tap arc crosses the apex well inside the old 1.76s gesture.
+// THE ATTITUDE IS SHALLOW NOW. These thresholds were written against the
+// Cinematic and Continuous trials, which tipped the whole body by an
+// atan2 clamped to 28 deg up / 60 deg down - hence the old .2 / .95 / .3
+// radians. Those trials were deleted (owner, 6 Sep 2026: "the Flight
+// version is the version now, remove the others"), and the shipped
+// articulated cruise reads "descent mostly in limbs, not a nose dive":
+// heading eases toward 10 deg on a climb, 8 deg on an ordinary fall and
+// 18 deg on a deliberate swipe, each scaled by vy/360. Same events, same
+// timings, thresholds moved onto the shipped scale - and the swipe is
+// pinned to a RATIO against an ordinary fall at the same speed, so a
+// later attitude retune moves both together instead of rotting this.
 {
  const state=VG.createVanguardMotion();VG.vanguardTap(state);
  for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,-220);
- assert(state.heading<-.2);
+ assert(state.heading<-.09,'climb reads nose-up inside .3s');   // ~-.102 rad = 5.9 deg of the 6.1 deg target
  for(let i=0;i<18;i++)VG.stepVanguard(state,1/60,220);
- assert(state.heading>.2,'fall must read within .3s of reversing vertical travel');
+ assert(state.heading>.068,'fall must read within .3s of reversing vertical travel');
  const firstPhase=state.phase, seen=new Set();
  for(let i=0;i<150;i++){VG.stepVanguard(state,1/60,0);seen.add(state.frame);}
  assert.equal(seen.size,16,'no-input glide keeps the entire tail loop alive');
  assert.notEqual(state.phase,firstPhase);assert(Math.abs(state.heading)<.001);
+ for(let i=0;i<36;i++)VG.stepVanguard(state,1/60,650);
+ const plainFall=state.heading;                                  // ~.139 rad: gravity alone at swipe speed
  VG.vanguardDive(state);
  for(let i=0;i<36;i++)VG.stepVanguard(state,1/60,650);
- assert(state.heading>.95,'explicit swipe reaches a visibly deeper attitude');
+ assert(state.heading>.29,'explicit swipe reaches a visibly deeper attitude');   // 18 deg target, ~.314 rad
+ assert(state.heading>plainFall*1.9,'the swipe must sit clearly deeper than the same speed unbidden');
  const pose=[state.phase,state.frame,state.heading];VG.vanguardTap(state);
  assert.deepEqual([state.phase,state.frame,state.heading],pose,'tap reacts without a body snap');
  for(let i=0;i<24;i++)VG.stepVanguard(state,1/60,-310);
- assert(state.heading<-.3,'climb recovers promptly through velocity, not a queued clip');
+ assert(state.heading<-.1,'climb recovers promptly through velocity, not a queued clip');
 }
 // Old suit clocks are preserved, including their repeat-tap rewind.
 const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};
 Sim.resetRun(legacy,flight,'fly',false);Sim.flap(legacy,flight);legacy.tapAnimT=.3;
 Sim.flap(legacy,flight);assert.equal(legacy.tapAnimDir,-1);
 assert.deepEqual(legacy.vanguard,VG.createVanguardMotion());
-S.writeSave(e.save);assert(S.loadSave().unlockedSuits.includes('vanguard'));
-console.log(`Vanguard ${mode}: fresh beta access / production 499→500 gate, entitlements, trail UI/actions, beta A/B and persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
+// EARNED, NEVER LISTED (owner, 6 Sep 2026: "immediately after the tutorial
+// is done, he is locked"). loadSave now strips AcorNut out of unlockedSuits
+// on every launch, precisely so an old free grant cannot stand in for the
+// stars - so the list is the one place he must NOT be found. The round trip
+// is asserted on the gate the rest of the game reads instead: the ledger.
+S.writeSave(e.save);
+assert(!S.loadSave().unlockedSuits.includes('vanguard'),'a list grant never carries AcorNut past a launch');
+P.migrateCampaign(e.save).legacyEntitlementFloor=C.STAR_UNLOCKS.suits.vanguard;S.writeSave(e.save);
+const reloaded=S.loadSave();
+assert.equal(S.starsOf(reloaded),C.STAR_UNLOCKS.suits.vanguard,'the star ledger is what survives the write');
+assert(S.suitRevealed(reloaded,'vanguard'),'an earned AcorNut survives the save round trip');
+console.log(`Vanguard ${mode}: fresh beta access / production ${C.STAR_UNLOCKS.suits.vanguard-1}→${C.STAR_UNLOCKS.suits.vanguard} gate, entitlements, built-in wake UI/actions, beta A/B and ledger persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
 e.destroy?.();await win.happyDOM.abort();process.exit(0);

@@ -21,7 +21,15 @@ let missing = 0;
 for (const [k, v, from] of rows) { const ok = !unset(v); if (!ok) missing++; console.log(`${ok ? "  set    " : "  MISSING"} ${k.padEnd(28)} ${ok ? "" : "← " + from}`); }
 console.log(`\n${missing} value(s) still to fill in app.config.json, then \`npm run configure\`.`);
 const pb = join(here, "ios", "App", "App.xcodeproj", "project.pbxproj");
-console.log("ios project:    " + (existsSync(pb) ? (readFileSync(pb, "utf8").includes("BoardsPlugin.swift in Sources") ? "stamped" : "present, not configured") : "missing"));
+// "STAMPED" MUST MEAN THE PLUGIN IS REACHABLE (audit, 8 Sep 2026). The pbxproj
+// alone only proves BoardsPlugin compiles. The window SceneDelegate builds is
+// the one the player talks to, and while that was rooted in the stock
+// CAPBridgeViewController this line said "stamped" over a build whose every
+// Game Center call rejected. Ask for both.
+const sd = join(here, "ios", "App", "App", "SceneDelegate.swift");
+const iosStamped = () => readFileSync(pb, "utf8").includes("BoardsPlugin.swift in Sources")
+  && existsSync(sd) && readFileSync(sd, "utf8").includes("rootViewController = AcornautViewController()");
+console.log("ios project:    " + (existsSync(pb) ? (iosStamped() ? "stamped" : "present, not configured") : "missing"));
 const gr = join(here, "android", "app", "build.gradle");
 console.log("android project:" + (existsSync(gr) ? (readFileSync(gr, "utf8").includes("play-services-games") ? " stamped" : " present, not configured") : " missing"));
 console.log("www:            " + (existsSync(join(here, "www", "shell", "adapter.js")) ? "built" : "not built (npm run web)"));

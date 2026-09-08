@@ -36,15 +36,27 @@ function use(c: CanvasRenderingContext2D) {
   ctx = c;
 }
 
+// A CACHE KEYED ON A RAW FLOAT IS NOT A CACHE (audit, 8 Sep 2026). The key
+// used to be the alpha exactly as it arrived, and half the callers here hand
+// over a number that moves every frame — the robo core pulse, the ghost
+// plumes, the alien bolts, the thruster flame as it decays after a tap. Each
+// frame therefore minted new entries that nothing ever evicted, so a long run
+// left six figures of dead rgba strings pinned for the life of the page and
+// every lookup got slower than the one before it. Rounding to 1/200 caps the
+// table at 201 alphas per colour; every fixed alpha in this file and every
+// helmet tint in the catalog is already a multiple of 0.01, so they all land
+// on themselves and nothing on screen changes. The rounded value goes into
+// the string too, or the key and the colour it names would disagree.
 const _rgba = {};
 function withAlpha(hex, a) {
-  const key = hex + '|' + a;
+  const q = Math.round(a * 200) / 200;
+  const key = hex + '|' + q;
   let v = _rgba[key];
   if (v) return v;
   const h = hex.replace('#', '');
   const full = h.length === 3 ? h[0] + h[0] + h[1] + h[1] + h[2] + h[2] : h;
   const n = parseInt(full, 16);
-  v = 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  v = 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + q + ')';
   _rgba[key] = v;
   return v;
 }
@@ -1362,6 +1374,19 @@ function drawAstronaut(x, y, rot, scale, helm, suit, opts) {
 
   ctx.restore();
 }
+/** WHICH COMPANIONS THE VECTOR KIT CAN DRAW. drawPal below is one if/else
+ *  chain, and an id it has never heard of falls out of the bottom having
+ *  painted nothing. That was invisible until the arcade timeline asked it
+ *  for the nine later pals and got blank sky beside a live effect (audit,
+ *  8 Sep 2026). The list lives HERE, beside the chain it describes, so a
+ *  twelfth pal is one edit rather than two files quietly disagreeing; the
+ *  painters that need a fallback ask canDrawPal instead of keeping a copy. */
+const PAL_VECTORS = new Set([
+  "buddy", "bee", "nutsack", "meteorcore", "cometsprite", "pocketmoon",
+  "voidjelly", "ufo", "starpup", "tinbot", "wisp",
+]);
+export function canDrawPal(id: string) { return PAL_VECTORS.has(id); }
+
 function drawPal(id, x, y, s, t) {
   ctx.save();
   ctx.translate(x, y);

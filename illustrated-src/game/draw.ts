@@ -9,7 +9,7 @@ import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { goalHud } from "./campaign";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
@@ -3049,7 +3049,14 @@ function drawRetroWorld(
     if (p.half !== "top") retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
-      retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
+      // blockerX, NOT p.x + b.xOff (audit, 8 Sep 2026). Every rock drifts
+      // along the flight axis by up to its own radius, and the COLLIDER
+      // reads that drift (see the blockerX calls in sim). Painting the home
+      // position instead put the picture up to a full rock-width away from
+      // the thing that kills you: the pilot threaded visibly clear and
+      // died, or flew through a painted rock untouched. The illustrated
+      // painter above already reads it the same way.
+      retroObstacle(ctx, blockerX(p, b, w), by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
     }
   }
 
@@ -3058,6 +3065,16 @@ function drawRetroWorld(
     const y = a.y + Math.sin(a.bob) * 4;
     if (a.kind === "retro") {
       drawShiftAcorn(ctx, art, a.x, y, w.time);
+      continue;
+    }
+    // THE DOOR HAS TO READ AS A DOOR (audit, 8 Sep 2026). Every arcade-based
+    // Star Chart mission ends on a portal, and this loop had no case for it:
+    // it fell through the chain to `a.kind === "slow"`, i.e. false, and the
+    // arrival marker was painted as an ordinary brown acorn - the very thing
+    // the pilot has spent the run grazing past - over a 64px hitbox. The
+    // corridor painter learned this lesson already; so does this one.
+    if (a.kind === "portal") {
+      drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
       continue;
     }
     const power =
@@ -3091,8 +3108,12 @@ function drawRetroWorld(
   for (const [i, pal] of flyingPals(save, w).entries()) {
     const pos = i === 0 ? w.palPos : w.palPos2;
     const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
-    // live draws its pals at unit SCALE, not at a pixel size
-    drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+    // live draws its pals at unit SCALE, not at a pixel size - but only
+    // the companions its vector kit actually has. A pal it has never
+    // heard of used to be painted as nothing here; it keeps its painted
+    // still instead, at the size the illustrated timeline flies it.
+    if (canDrawPal(pal)) drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+    else paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
   }
 
   const wornId = pilotSuitId(w, save);

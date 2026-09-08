@@ -14,7 +14,8 @@ globalThis.document = { createElement: () => ({ getContext: () => null, style: {
 
 const C = await import("../docs/js/catalog.js");
 const { BUNDLES, ITEM_WEIGHT, bundleIds, bundleWeight, bundlePrice, shopBundles,
-        SHOP_SLOTS, SHOP_DAY_MS, IAP_ITEMS } = C;
+        SHOP_SLOTS, SHOP_DAY_MS, IAP_ITEMS,
+        idDust, idGrants, alaCarteTotal, featurePrice, DUST_STICKER, SHOP_CYCLE } = C;
 
 const fail = [];
 const ok = (c, m) => { if (!c) fail.push(m); };
@@ -103,6 +104,55 @@ for (const b of BUNDLES) {
   }
 }
 
+// ---- and now the prices the storefront ACTUALLY charges -----------------
+// Everything above this line prices the old tabbed shop, and `drawShop` has
+// opened with `return drawShopBeta()` since the storefront shipped - so no
+// pilot has reached a single number it proves. The audit found the live
+// path with no test at all: the storefront prices singles with `idDust`
+// and packs with `featurePrice` struck off what the same ids cost one at a
+// time, and until this block FEATURE_DISCOUNT or DUST_PER_WEIGHT could be
+// changed to anything whatever and the suite still printed green. The
+// day's deal still lives in standalone.ts as `shopCycle`, out of a
+// harness's reach; these are the rules that can be imported.
+{
+  // the single-item rate, pinned at real numbers rather than restated as
+  // its own formula: a suit on its own, a suit that carries its helmet on
+  // the same id, and a trail
+  ok(idDust("volt") === 270, `a suit alone should be 270 dust, got ${idDust("volt")}`);
+  ok(idDust("cryostar") === 360, `a suit that brings its helmet should be 360, got ${idDust("cryostar")}`);
+  ok(idDust("celestialtide") === 90, `a trail should be 90, got ${idDust("celestialtide")}`);
+  // and a sticker price beats the rate wherever the owner set one
+  ok(DUST_STICKER.arcflash === 1850 && idDust("arcflash") === 1850,
+    `Arcflash is priced by hand at 1850, got ${idDust("arcflash")}`);
+
+  // a set trail is never sold, it is handed over with the suit
+  ok(idGrants("cryostar").includes("celestialtide"),
+    "buying Cryostar must hand over Celestial Tide with it");
+  ok(SHOP_CYCLE.trails === 0, "the singles shelf must deal no trails: they come with the set");
+
+  const weightSum = (ids, owns) => ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+  for (const b of BUNDLES) {
+    const ids = bundleIds(b);
+    const due = featurePrice(b, none);
+    ok(due <= b.dust, `${b.name} featured at ${due} must not ask more than its sticker ${b.dust}`);
+    ok(due <= alaCarteTotal(ids, none),
+      `${b.name} featured at ${due} must never cost more than buying it singly (${alaCarteTotal(ids, none)})`);
+    ok(featurePrice(b, () => true) === 0, `${b.name} fully owned must be free`);
+    if (b.fixed) continue;
+    // HALF, written out as half rather than as FEATURE_DISCOUNT, so that
+    // moving the constant is caught instead of being agreed with
+    ok(due === Math.max(10, Math.round(weightSum(ids, none) / 2 / 10) * 10),
+      `${b.name} should feature at half its contents, got ${due} of ${weightSum(ids, none)}`);
+    ok(due > 0, `${b.name} still owes something, so it must never feature at nothing`);
+  }
+
+  // half of what REMAINS: a pack whose suit is already in the wardrobe has
+  // to get cheaper, or the pilot pays for that suit twice
+  const aurora = byId("bundle-aurora");
+  ok(featurePrice(aurora, owner("cryostar")) < featurePrice(aurora, none),
+    "a part-owned pack must feature for less than the same pack untouched");
+}
+
 // ---- the first shelf a new pilot ever sees ------------------------------
 // "Collect Reward" is not a decoration: it is the loudest badge on a card
 // and it means FREE, REVEALED, UNCLAIMED. Two helmets shipped that way with
@@ -141,7 +191,8 @@ for (const b of BUNDLES) {
 const t0 = 1_800_000_000_000;
 console.log(JSON.stringify({
   suite: "shop rotation and cross-pack pricing",
-  packs: BUNDLES.map((b) => ({ id: b.id, items: b.items.length, weight: bundleWeight(b), dust: b.dust })),
+  packs: BUNDLES.map((b) => ({ id: b.id, items: b.items.length, weight: bundleWeight(b),
+    dust: b.dust, feature: featurePrice(b, none), singly: alaCarteTotal(bundleIds(b), none) })),
   shelfToday: shopBundles(t0, none).map((b) => b.id),
   shelfTomorrow: shopBundles(t0 + DAY, none).map((b) => b.id),
   failures: fail,

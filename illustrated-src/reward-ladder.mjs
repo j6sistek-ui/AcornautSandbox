@@ -34,6 +34,36 @@ const rows = [...block.matchAll(/\{ stars: (\d+), kind: "(\w+)", (?:id: "([^"]+)
 const by = (kind) => rows.filter((r) => r.kind === kind);
 const clean = (d) => d.replace(/\s*Earned at \d+ stars\.?/g, "").replace(/\s*Earned here or available early in the shop\./g, "").replace(/\s*Earned on the Star Chart; also available early in the Regalia Pack\./g, "").replace(/\s*A second chart milestone for the Opal Feather Trail\./, "").trim() || "Earned on the Star Chart.";
 
+// A RUNG NEVER CHARGES (owner, 8 Sep 2026: "remove from star rung ... at
+// those star rung replace with acorns for now. might add new asset later to
+// replace"). These nine helmet rungs used to REVEAL a helmet the Loadout
+// then charged 90-500 acorns for, so the road announced an unlock over a
+// price tag. They pay acorns now, at their block's rate, and the helmets
+// keep their shelf gate at the same star count - so the rung is what buys
+// the thing it puts in the window.
+//
+// They stay in the POOL, holding the slots they always held, and only what
+// gets WRITTEN changes. That is the whole trick: drop them instead and the
+// eight surviving helmets re-spread, which walks the Ghost Suit to 60, the
+// Cat Suit to 300, AcorNut to 550 and the Chronarch Helmet all the way down
+// to 15 stars. Nothing else may move, so nothing else does. test-star-map
+// holds the rule for whatever is dropped onto these rungs later.
+const PRICED = new Set(["void", "comet", "cherry", "phoenix", "royal", "aurora", "princess", "meteor", "chrono"]);
+// their entries as the list carried them, at the stars that fixed their
+// order in the pool - the list itself no longer names them
+for (const [stars, id, name, desc] of [
+  [15, "void", "Void Helmet", "Obsidian glass, gold rim. In the shop."],
+  [60, "comet", "Comet Helmet", "Molten amber glass. In the shop."],
+  [70, "cherry", "Cherry Helmet", "Rose-tinted glass. In the shop."],
+  [120, "phoenix", "Phoenix Helmet", "Firebird glass, ember rim. In the shop."],
+  [180, "royal", "Royal Helmet", "Crowned. Obviously. In the shop."],
+  [190, "aurora", "Aurora Helmet", "Polar light under glass. In the shop."],
+  [300, "princess", "Rose Helmet", "Petal glass, violet rim. In the shop."],
+  [540, "meteor", "Meteor Helmet", "Burnished impact glass. In the shop."],
+  [560, "chrono", "Chrono Helmet", "Brass clockwork glass. In the shop."],
+]) rows.push({ stars, kind: "helmet", id, name, desc });
+rows.sort((a, b) => a.stars - b.stars);
+
 const suits = by("suit");
 const helmetsAll = by("helmet");
 const matched = new Set(helmetsAll.filter((h) => suits.some((s) => s.id === h.id)).map((h) => h.id));
@@ -97,11 +127,15 @@ slots.forEach((stars, i) => {
     r = f ? carry[f].shift() : currency(kind === "dust" ? "dust" : "acorns", b);
     if (!f && !(kind === "acorns" || kind === "dust")) r = currency(out.filter((x) => x.kind === "acorns").length <= out.filter((x) => x.kind === "dust").length ? "acorns" : "dust", b);
   }
+  // BY KIND AND ID, never the id alone: the Comet Booster and the Aurora
+  // Ribbon are TRAILS that share their name-ids with these two helmets,
+  // and a bare-id test quietly turned both trails into currency.
+  if (r.kind === "helmet" && r.id && PRICED.has(r.id)) r = currency("acorns", b);   // the rung buys it; it does not hand it over
   out.push({ ...r, stars, desc: r.desc ? clean(r.desc) : r.desc });
 });
 // the road ends mid-block, so whatever the last block could not seat joins
 // the final rung as a set - the completionist's prize is the biggest one
-for (const f of Object.keys(carry)) for (const r of carry[f]) out.push({ ...r, stars: MAX, desc: r.desc ? clean(r.desc) : r.desc });
+for (const f of Object.keys(carry)) for (const r0 of carry[f]) { const r = r0.kind === "helmet" && r0.id && PRICED.has(r0.id) ? currency("acorns", BLOCKS - 1) : r0; out.push({ ...r, stars: MAX, desc: r.desc ? clean(r.desc) : r.desc }); }
 // the gates keep their own rungs (fives); a currency filler there gives way
 const snap = (n) => Math.max(5, Math.round(n / 5) * 5);
 for (const g of gates) {

@@ -1,6 +1,6 @@
 import { BETA_MISSION_ROWS } from "./beta-campaign-manifest";
 import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest";
-import { IS_BETA } from "./catalog";
+import { IS_BETA, PALS } from "./catalog";
 import {
   RACE_MAX_ACORNS,
   RACE_RINGS,
@@ -430,7 +430,17 @@ export function goalText(g: Goal, def: LevelDef): string {
 
 export function fxText(fx: LevelFx): string[] {
   const out: string[] = [];
-  if (fx.pal) out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · COSMETIC" : fx.pal.toUpperCase()}`);
+  // THE SHEET NAMES THE PAL THE HANGAR NAMES. This tag printed the raw id
+  // and called Stopwatch cosmetic; the audit found both wrong. A mission
+  // flies its designated pal with its effects LIVE, and Stopwatch is no
+  // exception - its tap toggle reads runPals, so in a mission every tap
+  // still toggles the slow and a pilot who trusted "cosmetic" lost the run
+  // to it. The ids fared no better: nothing else in the game calls
+  // Astrolobee "bee" or Acorn "buddy", so the catalog name is what shows.
+  if (fx.pal) {
+    const pal = PALS.find((p) => p.id === fx.pal);
+    out.push(`PAL: ${(pal ? pal.name : fx.pal).toUpperCase()}`);
+  }
   if (fx.upsideDown) out.push("UPSIDE DOWN");
   if (fx.bounceScale) out.push("SPRINGY PLANETS");
   if (fx.sticky) out.push("STICKY PLANETS · TAP TO RELEASE");
@@ -667,30 +677,29 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 5, kind: "trail", id: "ion", name: "Ion Stream", desc: "A trail of charged sky." },
   { stars: 10, kind: "mode", id: "deep", name: "Deep Space Flight", desc: "Endless mode: space shifts every 10s." },
   { stars: 10, kind: "pal", id: "bee", name: "Astrolobee", desc: "Powerup/Acorns Disabled" },
-  { stars: 15, kind: "helmet", id: "void", name: "Void Helmet", desc: "Obsidian glass, gold rim. In the shop." },
+  { stars: 15, kind: "acorns", name: "100 Acorns", desc: "Spending acorns for the hangar.", amount: 100 },
   { stars: 20, kind: "suit", id: "alien", name: "Alien Suit", desc: "The visitor look, antennae included." },
   { stars: 25, kind: "mod", id: "battery", name: "Shield Battery", desc: "Carry three shield charges at once." },
   { stars: 30, kind: "acorns", name: "100 Acorns", desc: "Spending acorns for the hangar.", amount: 100 },
   { stars: 40, kind: "trail", id: "bubble", name: "Bubble Jets", desc: "A wake of glass beads." },
   { stars: 45, kind: "mode", id: "lost", name: "Lost in Space", desc: "Endless mode: the sky rotates, drifts and mirrors." },
   { stars: 50, kind: "pal", id: "buddy", name: "Acorn", desc: "Magnet Effect" },
-  { stars: 60, kind: "helmet", id: "comet", name: "Comet Helmet", desc: "Molten amber glass. In the shop." },
-  { stars: 70, kind: "helmet", id: "cherry", name: "Cherry Helmet", desc: "Rose-tinted glass. In the shop." },
+  { stars: 60, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
+  { stars: 70, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
   { stars: 80, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes." },
-  { stars: 90, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
+  { stars: 90, kind: "dust", name: "19 Star Dust", desc: "Premium dust for the shop.", amount: 19 },
   { stars: 100, kind: "trail", id: "bloom", name: "Nebula Bloom", desc: "Petals of nebula light." },
   { stars: 110, kind: "pal", id: "voidjelly", name: "Jelly", desc: "Bounce Softer" },
-  { stars: 120, kind: "helmet", id: "phoenix", name: "Phoenix Helmet", desc: "Firebird glass, ember rim. In the shop." },
+  { stars: 120, kind: "acorns", name: "240 Acorns", desc: "Spending acorns for the hangar.", amount: 240 },
   { stars: 130, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle." },
   { stars: 140, kind: "dust", name: "22 Star Dust", desc: "Premium dust for the shop.", amount: 22 },
-  { stars: 150, kind: "acorns", name: "240 Acorns", desc: "Spending acorns for the hangar.", amount: 240 },
+  { stars: 150, kind: "dust", name: "22 Star Dust", desc: "Premium dust for the shop.", amount: 22 },
   { stars: 160, kind: "trail", id: "comet", name: "Comet Booster", desc: "Burn like the real thing." },
   { stars: 170, kind: "pal", id: "cometsprite", name: "Comet", desc: "2x Freeze Duration" },
   { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates and Thrill Seeker unlock in the hangar." },
-  { stars: 180, kind: "helmet", id: "royal", name: "Royal Helmet", desc: "Crowned. Obviously. In the shop." },
-  { stars: 190, kind: "helmet", id: "aurora", name: "Aurora Helmet", desc: "Polar light under glass. In the shop." },
+  { stars: 190, kind: "acorns", name: "310 Acorns", desc: "Spending acorns for the hangar.", amount: 310 },
   { stars: 200, kind: "dust", name: "26 Star Dust", desc: "Premium dust for the shop.", amount: 26 },
-  { stars: 210, kind: "acorns", name: "310 Acorns", desc: "Spending acorns for the hangar.", amount: 310 },
+  { stars: 210, kind: "dust", name: "26 Star Dust", desc: "Premium dust for the shop.", amount: 26 },
   { stars: 220, kind: "trail", id: "prism", name: "Prism Shards", desc: "Light, broken beautifully." },
   { stars: 230, kind: "pal", id: "meteorcore", name: "Meteor Core", desc: "2x Power Ups" },
   { stars: 240, kind: "helmet", id: "sammie", name: "Samurai Helmet", desc: "Earned on the Star Chart." },
@@ -699,22 +708,22 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 270, kind: "acorns", name: "380 Acorns", desc: "Spending acorns for the hangar.", amount: 380 },
   { stars: 280, kind: "trail", id: "plasma", name: "Plasma Arc", desc: "A live violet current." },
   { stars: 290, kind: "pal", id: "pocketmoon", name: "Moon", desc: "Lower Gravity" },
-  { stars: 300, kind: "helmet", id: "princess", name: "Rose Helmet", desc: "Petal glass, violet rim. In the shop." },
+  { stars: 300, kind: "acorns", name: "450 Acorns", desc: "Spending acorns for the hangar.", amount: 450 },
   { stars: 310, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns." },
   { stars: 320, kind: "dust", name: "33 Star Dust", desc: "Premium dust for the shop.", amount: 33 },
-  { stars: 330, kind: "acorns", name: "450 Acorns", desc: "Spending acorns for the hangar.", amount: 450 },
+  { stars: 330, kind: "dust", name: "33 Star Dust", desc: "Premium dust for the shop.", amount: 33 },
   { stars: 340, kind: "pal", id: "ufo", name: "UFO", desc: "Start with Shield" },
   { stars: 350, kind: "helmet", id: "cinderforge", name: "Cinderforge Helmet", desc: "Ember glass. Arrives with the suit." },
   { stars: 360, kind: "suit", id: "cinderforge", name: "Cinderforge", desc: "Forge-black plate, ember trim." },
   { stars: 370, kind: "acorns", name: "520 Acorns", desc: "Spending acorns for the hangar.", amount: 520 },
   { stars: 380, kind: "dust", name: "36 Star Dust", desc: "Premium dust for the shop.", amount: 36 },
-  { stars: 390, kind: "dust", name: "36 Star Dust", desc: "Premium dust for the shop.", amount: 36 },
+  { stars: 390, kind: "acorns", name: "520 Acorns", desc: "Spending acorns for the hangar.", amount: 520 },
   { stars: 400, kind: "trail", id: "galaxy", name: "Galaxy Dust", desc: "A spiral arm behind you." },
   { stars: 410, kind: "pal", id: "starpup", name: "Star Child", desc: "Double Golden Effect" },
   { stars: 420, kind: "helmet", id: "groveguard", name: "Groveguard Helm", desc: "Sealed. Worn only by Groveguard." },
   { stars: 430, kind: "pal", id: "tinbot", name: "TinTin", desc: "Disables Blackholes" },
   { stars: 440, kind: "suit", id: "groveguard", name: "Groveguard", desc: "Forest green and brass, its own sealed helm." },
-  { stars: 450, kind: "acorns", name: "590 Acorns", desc: "Spending acorns for the hangar.", amount: 590 },
+  { stars: 450, kind: "dust", name: "40 Star Dust", desc: "Premium dust for the shop.", amount: 40 },
   { stars: 460, kind: "trail", id: "aurora", name: "Aurora Ribbon", desc: "The polar sky, towed." },
   { stars: 470, kind: "pal", id: "wisp", name: "Wisp", desc: "More gate movement" },
   { stars: 480, kind: "helmet", id: "cosmic", name: "Cosmic Helmet", desc: "Nebula glass. Arrives with the suit." },
@@ -723,9 +732,9 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 510, kind: "acorns", name: "660 Acorns", desc: "Spending acorns for the hangar.", amount: 660 },
   { stars: 520, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
   { stars: 530, kind: "pal", id: "nutsack", name: "Nut-Sack", desc: "2x Acorns but the sack is heavy" },
-  { stars: 540, kind: "helmet", id: "meteor", name: "Meteor Helmet", desc: "Burnished impact glass. In the shop." },
+  { stars: 540, kind: "acorns", name: "730 Acorns", desc: "Spending acorns for the hangar.", amount: 730 },
   { stars: 550, kind: "trail", id: "frost", name: "Frostbite", desc: "A wake of hoarfrost." },
-  { stars: 560, kind: "helmet", id: "chrono", name: "Chrono Helmet", desc: "Brass clockwork glass. In the shop." },
+  { stars: 560, kind: "acorns", name: "730 Acorns", desc: "Spending acorns for the hangar.", amount: 730 },
   { stars: 570, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake." },
   { stars: 580, kind: "trail", id: "voidsmoke", name: "Void Smoke", desc: "What the dark exhales." },
   { stars: 590, kind: "pal", id: "magnetar", name: "Magnetar PAL", desc: "Upside Down World." },
@@ -788,10 +797,31 @@ export function substituteFor(_stars: number): { kind: "dust" | "acorns"; amount
   return { kind: "acorns", amount: SUB_ACORNS };
 }
 
+/** A SHELF GATE WITHOUT A RUNG (owner, 8 Sep 2026: "remove from star rung,
+ *  some items are acorns.. at those star rung replace with acorns for now").
+ *
+ *  These nine helmets used to hold rungs that REVEALED them for acorns
+ *  rather than handing them over, and those rungs now pay acorns instead.
+ *  But every other gate in this table is DERIVED from the ladder by
+ *  rewardGates, so taking the nine off the ladder would also have taken
+ *  their shelf gates with them and put all nine in the shop from the first
+ *  flight - a pacing change nobody asked for. They keep the star counts they
+ *  always appeared at, so the shop opens at exactly the rate it did; what
+ *  changed is only that the road now pays you for arriving instead of
+ *  announcing an unlock you still have to buy. A new asset dropped onto one
+ *  of these rungs later gets its gate from the ladder like everything else,
+ *  and its entry here should go. */
+const PRICED_HELMET_GATES: Record<string, number> = {
+  void: 15, comet: 60, cherry: 70, phoenix: 120, royal: 180,
+  aurora: 190, princess: 300, meteor: 540, chrono: 560,
+};
+
 export const STAR_UNLOCKS = {
   pals: rewardGates("pal"),
   suits: rewardGates("suit"),
-  helmets: rewardGates("helmet"),
+  // the ladder wins where both name a helmet, so a real rung always outranks
+  // a bare shelf gate
+  helmets: { ...PRICED_HELMET_GATES, ...rewardGates("helmet") },
   trails: rewardGates("trail"),
   startShield: 5,
   battery: 25,

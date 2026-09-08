@@ -1,5 +1,9 @@
 import { VANGUARD_FRAMES } from "./vanguard.js?v=239";
+<<<<<<< HEAD
 import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=239";
+=======
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=239";
+>>>>>>> origin/main
 import { prepareDepotBear } from "./spill-depot-bear.js?v=239";
 import { SPILL_UTILITY_IDS } from "./spill-content.js?v=239";
 export const SPILL_SHIP_IDS = [
