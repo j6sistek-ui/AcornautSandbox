@@ -1038,9 +1038,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!parent) return;
     const rect = parent.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
-    // widescreen everywhere: the play area may take the whole window,
-    // capped only at desktop-panorama width
-    const W = Math.min(rect.width, 1600);
+    // widescreen everywhere: the play area takes the whole window. The old
+    // 1600px cap left a dark bar down the right of a wide monitor (owner,
+    // 7 Sep 2026); the cap is now past any desktop, and whatever is left
+    // over splits evenly rather than piling up on one side.
+    const W = Math.min(rect.width, 3840);
     const H = rect.height;
     const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
     const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
@@ -1068,6 +1070,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     canvas.height = Math.floor(H * dpr);
     canvas.style.width = `${W}px`;
     canvas.style.height = `${H}px`;
+    canvas.style.left = `${Math.max(0, Math.floor((rect.width - W) / 2))}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     resizeWorld(world, W, H);
     if (!world.stars.length) initStars(world);
@@ -1226,6 +1229,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     e.preventDefault();
   });
 
+  const DIVE_KEYS = new Set(["ArrowDown", "KeyS", "ControlLeft", "ControlRight"]);
   window.addEventListener("keydown", (e) => {
     // TYPING IS NOT FLYING. Space is the flap key, and this listener claimed
     // it globally with preventDefault - so pressing space in the pilot-name
@@ -1271,7 +1275,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       } else if (world.screen === "dead" && world.deadTimer > 0.55) engine.dismissDead();
       notify();
     }
-    if (e.code === "ArrowDown" && world.screen === "play" && world.race) {
+    // DIVE KEYS (owner, 7 Sep 2026: "computer specific controls, like the
+    // control key for swipe down"): ArrowDown, S, or either Control key
+    if (DIVE_KEYS.has(e.code) && world.screen === "play" && world.race) {
       e.preventDefault();
       if (raceResizeKeyboardReleasePending) return;
       if (e.repeat) return;
@@ -1284,7 +1290,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         ));
       } else if (applyRaceGesture(dropRaceGesture(raceGesture))) sfx.dive();
       notify();
-    } else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
+    } else if (DIVE_KEYS.has(e.code) && world.screen === "play" && world.flight !== "tunnel") {
+      if (e.repeat) return;
       const ev = dive(world, save);
       if (ev === "dive") sfx.dive();
       notify();
@@ -1313,7 +1320,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
       }
     }
-    if (e.code === "ArrowDown") {
+    if (DIVE_KEYS.has(e.code)) {
       if (raceResizeKeyboardReleasePending === "keyboard-drop") {
         raceResizeKeyboardReleasePending = null;
         return;

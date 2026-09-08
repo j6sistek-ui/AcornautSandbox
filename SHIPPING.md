@@ -115,6 +115,11 @@ What a store build changes, and where:
 | Fonts | `docs/fonts/` | local | local |
 | Network | none required | | none allowed (review runs offline) |
 
+The shell itself lives in `shell/` (Capacitor, iOS and Android). Its
+README is the slow walkthrough for the Apple, Google Play and RevenueCat
+accounts; `shell/app.config.json` is the one file that takes the values
+they issue, and `npm run configure` stamps them into the native projects.
+
 Release checklist for an app update:
 
 1. `GAME_VERSION` bumped; the marketing version and build number in the

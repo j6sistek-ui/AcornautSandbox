@@ -1,0 +1,18 @@
+{
+  "_readme": "Generated from app.config.json by `npm run configure`. Do not edit by hand.",
+  "appId": "com.placeholder.acornaut",
+  "appName": "Acornaut",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#070b16",
+    "scheme": "Acornaut"
+  },
+  "android": {
+    "backgroundColor": "#070b16",
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

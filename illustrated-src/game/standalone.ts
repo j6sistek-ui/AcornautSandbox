@@ -1029,10 +1029,17 @@ export async function bootStandalone(root: HTMLElement) {
     // game — but a Chromium built without proprietary codecs (which is what
     // the headless browser this is tested in uses) refuses it outright. The
     // browser takes the first source it can decode.
-    for (const [file, type] of [
+    // A WIDE WINDOW GETS THE WIDE FILM (owner, 7 Sep 2026): desktops and
+    // landscape screens play intro-wide.mp4 over the horizon plate; the
+    // portrait film stays behind it as the fallback for a browser that
+    // cannot decode H.264. Phones and the app never see the wide file.
+    const wide = window.innerWidth > window.innerHeight;
+    const sources: [string, string][] = [
+      ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.4D401E"'] as [string, string]] : []),
       ["intro.webm", 'video/webm; codecs="vp9"'],
       ["intro.mp4", 'video/mp4; codecs="avc1.4D401E"'],
-    ] as const) {
+    ];
+    for (const [file, type] of sources) {
       const src = document.createElement("source");
       src.src = `${artRootUrl()}/${file}?v=${ART_VER}`;
       src.type = type;
@@ -1202,6 +1209,12 @@ export async function bootStandalone(root: HTMLElement) {
   function drawHome() {
     const s = engine.save;
     const box = el("div", "ac-hub");
+    // THE DAILY SAYS SO HERE (owner, 7 Sep 2026: "a pop up on first log in
+    // ON the main menu, showing streak, collect"). Boot banks the dust;
+    // the first main menu of the day shows the receipt, once. The shop
+    // keeps only the tracker.
+    const claimed = engine.takeDailyClaim();
+    if (claimed) dailyToast = claimed;
 
     const art = el("div", "ac-hub-art");
     const hubArt = window.innerWidth > window.innerHeight ? "menu-hub-wide.jpg" : "menu-hub.jpg";
@@ -1380,7 +1393,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
-    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${platform.devDoors ? " · Lab" : ""}`,
+    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
       () => { modesOpen = true; render(); });
     box.append(tiles);
 
@@ -1411,6 +1424,7 @@ export async function bootStandalone(root: HTMLElement) {
     if (hyperRunOpen) {
       box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes"));
     }
+    if (dailyToast) box.append(drawDailyToast(dailyToast));
     return box;
   }
 
@@ -1562,9 +1576,9 @@ export async function bootStandalone(root: HTMLElement) {
     });
 
     // What remains under the divider really is a lab: utilities, not modes.
-    // A store build has none of it (platform.devDoors): the lab pages are
-    // not in the app bundle, and a door to nowhere is a review finding.
-    if (platform.devDoors) {
+    // BETA ONLY (owner, 7 Sep 2026: "rig editor and ship bench need to
+    // remove from main app"), and never in a store build (platform.devDoors).
+    if (IS_BETA && platform.devDoors) {
       sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
       const door = (label: string, hit: () => void) => {
         const b = el("button", "ac-moderow ac-modedoor");
@@ -2622,6 +2636,9 @@ export async function bootStandalone(root: HTMLElement) {
       drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "title") {
       drawRankBadge(ctx, item.name ?? "", px);
+    } else if (item.kind === "acorns") {
+      // the 597-star cargo hold (owner's chart, PR #222): the acorn itself
+      drawSpriteOn(ctx, art.acorn?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "dust") {
       // the same four-point crystal the counter and the shop use, drawn by
       // hand because the rail paints to canvas rather than mounting an svg
@@ -3433,9 +3450,8 @@ export async function bootStandalone(root: HTMLElement) {
 
   function drawShopBeta() {
     const s = engine.save;
-    // open() already claimed on arrival; collect the payment for the strip
-    const claimed = engine.takeDailyClaim();
-    if (claimed) dailyToast = claimed;
+    // the daily is banked at boot and SHOWN on the main menu (drawHome);
+    // the shop only carries the streak tracker
     const cy = shopCycle();
 
     const box = el("div", "ac-menu ac-shopbeta");
@@ -3700,7 +3716,6 @@ export async function bootStandalone(root: HTMLElement) {
     // it costs a player who never opens it nothing but a row of small type.
     box.append(drawCycleRoll(cy));
     if (featureOpen) box.append(drawFeatureSheet(featureOpen));
-    if (dailyToast) box.append(drawDailyToast(dailyToast));
     return box;
   }
 
@@ -4790,20 +4805,7 @@ export async function bootStandalone(root: HTMLElement) {
     replay.onclick = () => engine.replayTutorial();
     scroll.append(replay);
 
-    // BETA reaches the prototype doors through the MODES sheet on the hub;
-    // the live page keeps them here, one deliberate tap away, as before.
-    // a store build has no prototype doors (platform.devDoors); the web
-    // page keeps them, one deliberate tap away
-    if (!BETA_FEATURES && platform.devDoors) {
-      const labRoot = "./lab/";
-      const rig = el("button", "ac-ghost ac-lab", "RIG EDITOR");
-      rig.onclick = () => { window.location.href = labRoot + "rig/"; };
-      const ship = el("button", "ac-ghost ac-lab", "SHIP BENCH");
-      ship.onclick = () => { window.location.href = labRoot + "ship/"; };
-      const worm = el("button", "ac-ghost ac-lab", "WORMHOLE RUN");
-      worm.onclick = () => engine.fly("tunnel");
-      scroll.append(rig, ship, worm, el("p", "ac-fine ac-labnote", "Prototypes \u00b7 not part of the game"));
-    }
+    // the prototype doors live on the beta's MODES sheet only
     // Starting over is a real feature, not a debug door: progression can
     // be flown from zero, in either build, without touching the browser.
     // Two taps, and the armed state disarms on any re-render.

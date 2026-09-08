@@ -601,11 +601,12 @@ const dock = (seed) => {
   const def = camp.levelById("2-8");
   const rung = def.gates;
   ok(camp.goalText(def.goals[0], def) === `Clear ${rung} waves of the Spill`, `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
-  ok(def.goals[1].kind === "ore" && def.goals[2].kind === "noHit", "the stars are Ore and a clean hull");
+  // owner's planner export (PR #222): every Spill mission pays three finish
+  // stars for the wave count, so the HUD carries one line - the finish
+  ok(def.goals.every((g) => g.kind === "finish"), "the stars are three finishes");
   const st = camp.emptyStats();
-  ok(camp.goalHud(def.goals[2], st, 0, def).state === "done", "no hits yet reads green");
+  ok(camp.goalHud(def.goals[0], st, 0, def).state !== "done", "the finish is open until the waves are cleared");
   st.hits = 1;
-  ok(camp.goalHud(def.goals[2], st, 0, def).state === "lost", "one hit turns it red");
   ok(camp.goalHud(def.goals[0], st, 1, def).text === `WAVE 1/${rung}`, "the finish pill counts waves");
   // flown through the sim: reaching the rung settles the level with its stars
   const w = sim.makeWorld(430, 900);
