@@ -11,19 +11,15 @@ win.__ACORNAUT_BETA__=mode!=='production';
 // happy-dom rejects valid multi-layer gradient/url background values. Record
 // assignments for wiring checks; this harness does not validate browser CSS.
 const backgrounds=new WeakMap();
-// TOLERATE EITHER happy-dom SHAPE (audit, 8 Sep 2026). Older versions gave
-// backgroundImage an accessor on the prototype; newer ones do not, and
-// `bg.set` was then undefined - which threw on the first assignment and
-// took this whole test down before it asserted anything about the game.
+// Preserve assignments through both happy-dom 15's partial CSS parser and
+// newer versions' style proxies. Read the recorded value on the same receiver
+// as the setter, before a native getter can return a truncated gradient.
 const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'backgroundImage');
-Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',bg&&bg.set
-  ?{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}}
-  :{configurable:true,get(){return backgrounds.get(this)??'';},set(value){backgrounds.set(this,value);}});
-// READ IT BACK THE WAY THE PAGE WOULD. happy-dom 20 hands out a PROXY for
-// element.style, and the accessor above runs on that proxy's TARGET, so the
-// WeakMap keyed by a caller's `el.style` misses every recorded assignment.
-// The patched getter still returns the value; the map stays as the fallback for
-// the older shape, whose native setter drops multi-layer values on the floor.
+Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',{
+  configurable:true,
+  get(){return backgrounds.get(this)??bg?.get?.call(this)??'';},
+  set(value){backgrounds.set(this,value);bg?.set?.call(this,value);}
+});
 const backgroundOf=el=>el.style.backgroundImage||backgrounds.get(el.style)||'';
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
@@ -106,7 +102,8 @@ if(mode==='production'){
   assert.equal(app.querySelectorAll('.ac-debristag.done').length,3);
   const dust=e.save.starDust,receipts=JSON.stringify(e.save.campaignProgress.paidRewards);e.settleDust();assert.equal(e.save.starDust,dust);assert.equal(JSON.stringify(e.save.campaignProgress.paidRewards),receipts);
 } else {
-  assert(!app.querySelector('a[href$="?star-map=sample"]'));
+  // happy-dom 15 treats the attribute value as an unescaped RegExp.
+  assert(![...app.querySelectorAll('a[href]')].some(a=>a.getAttribute('href').endsWith('?star-map=sample')));
   assert(Cat.PALS.some(p=>p.id==='switchback'));
   button('Rust Belt').click();tick();
   assert(app.querySelector('[data-order="101"] .ac-mapdisc canvas'));
@@ -131,4 +128,21 @@ if(mode==='production'){
   assert(app.querySelector('[data-order="241"] .ac-mapdisc canvas'));
   assert(app.querySelectorAll('.ac-mapdisc canvas').length<=48);
 }
+// Hyper chrome keeps both return paths and the original held launch.
+// Beta's reverse-launch checks above do not finish missions. Give this
+// navigation fixture an earned barrier, as the production road already has.
+if(mode!=='production')e.save.raceGates=[C.RACE_GATES[0].after];
+chart();app.querySelector('.ac-debristag').click();assert(app.querySelector('.ac-racecard'));
+app.querySelector('[aria-label="Hyper Run instructions"]').click();
+assert(document.activeElement.classList.contains('ac-racebrief'));
+app.querySelector('[aria-label="Back to Star Chart"]').click();
+assert(app.querySelector('.ac-chartmap'));assert(!app.querySelector('.ac-racecard'));
+e.open('title');button('MODES').click();button('HYPER RUN').click();button('LAUNCH').click();
+assert(app.querySelector('.ac-racecard'));assert(!app.querySelector('.ac-racecard').textContent.includes('Acorn Coins'));
+app.querySelector('[aria-label="Back to Modes"]').click();assert(app.querySelector('.ac-modecard'));
+button('HYPER RUN').click();button('LAUNCH').click();button('START RUN').click();
+assert.equal(e.world.screen,'play');assert(e.world.ready);const readyTick=e.world.race.tick;Sim.updateWorld(e.world,e.save,1/60);assert.equal(e.world.race.tick,readyTick);
+e.canvas.dispatchEvent(new win.PointerEvent('pointerdown',{pointerId:900,pointerType:'touch',isPrimary:true,clientX:120,clientY:200,bubbles:true}));
+assert(!e.world.ready,'the held canvas gesture still launches Hyper Run');
+e.canvas.dispatchEvent(new win.PointerEvent('pointerup',{pointerId:900,pointerType:'touch',isPrimary:true,clientX:120,clientY:200,bubbles:true}));
 e.stop();await win.happyDOM.close();console.log(`star map UI ${mode}: menu navigation, zone families, bounded canvases, engine access and progression passed`);

@@ -20,6 +20,18 @@ function button(text){const b=[...app.querySelectorAll('button')].find(b=>b.text
 function control(id){const b=app.querySelector(`[data-spill-control="${id}"]`);assert(b,`missing Depot control ${id}`);return b;}
 function ship(kind,id){const b=app.querySelector(`[data-ship-${kind}="${id}"]`);assert(b,`missing ship ${kind} ${id}`);return b;}
 function fixture(wave=5){engine.save.spillStarter=null;engine.fly('spill');const s=engine.world.spill;s.phase='depot';s.wave=s.cleared=wave;s.depot={arm:0,bought:[]};s.ore=2000;s.oreMined=70;s.depotVisits=wave/5;s.expeditionDone=wave>=20;engine.world.ready=false;s.cues=['depot'];tick();return s;}
+// Briefing replay is informational: it neither starts a run nor consumes
+// the first-visit guide. The planet tutorial and currency cluster remain.
+engine.open('help');
+assert(app.textContent.includes('SWIPE DOWN'));assert(button('REPLAY TUTORIAL'));
+assert.deepEqual([...app.querySelectorAll('.ac-helprow')].slice(0,3).map(r=>r.querySelector('p').textContent),['ACORN','STAR DUST','ACORN COINS']);
+const beforeHelp=JSON.stringify(engine.save);
+button('DEBRIS FIELD BRIEFING').click();assert(app.querySelector('.ac-spillhelpwrap'));
+assert(app.textContent.includes('HOW TO FLY · DEBRIS FIELD'));
+app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
+assert(!app.querySelector('.ac-spillhelpwrap'));assert.equal(engine.world.screen,'help');
+assert.equal(document.activeElement.dataset.spillBriefing,'');
+assert.equal(JSON.stringify(engine.save),beforeHelp);
 // The Loadout equips earned starters, while the build planner cannot spend or alter a run.
 engine.save.spillBest=4;engine.open('hangar');engine.setShopTab('ship');
 assert.equal(app.querySelectorAll('[data-ship-tier]').length,15);assert(!app.textContent.includes('UNDER CONSTRUCTION'));assert(!app.textContent.includes('not active yet'));
@@ -36,13 +48,22 @@ button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttr
 engine.fly('spill');assert(app.querySelector('.ac-spillsetup'));assert(app.textContent.includes('Your next ship'));
 const setup=app.querySelector('.ac-spillsetup');setup.scrollTop=250;ship('starter','scanner').focus();ship('starter','scanner').click();assert.equal(app.querySelector('.ac-spillsetup').scrollTop,250);assert.equal(document.activeElement.dataset.shipStarter,'scanner');assert.deepEqual(engine.world.spill.utilities,['scanner']);ship('starter','magnet').click();
 assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true');
+const beforeBriefing=JSON.stringify(engine.world.spill);
+control('setup-guide').click();assert(app.querySelector('.ac-spillhelpwrap'));
+app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true}));
+app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keyup',{key:' ',code:'Space',bubbles:true}));
+assert.equal(JSON.stringify(engine.world.spill),beforeBriefing,'briefing keys never start or steer the ship');
+control('enter-depot').click();assert(!app.querySelector('.ac-spillhelpwrap'));
+assert.equal(engine.save.spillDepotGuideSeen,false,'previewing help preserves the automatic first Depot guide');
+assert.equal(document.activeElement.dataset.spillControl,'setup-guide');
+
 control('land').click();assert.equal(engine.world.spill.phase,'docking');tick(200);
 assert.equal(engine.world.spill.depotVisits,0);assert(app.querySelector('.ac-depotguidecard'));assert(!app.querySelector('[data-spill-control="plating"]'));
 const guidedState=JSON.stringify(engine.world.spill);control('enter-depot').click();assert.equal(Save.loadSave().spillDepotGuideSeen,true);
 assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
 control('guide').click();assert(app.textContent.includes('Unlocks stay'));control('enter-depot').click();assert.equal(JSON.stringify(engine.world.spill),guidedState);
 control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
-assert.equal(control('launch').textContent,'Launch wave 1 →');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
+assert.equal(control('launch').textContent,'LAUNCH WAVE 1');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
 // Button holds survive HUD rebuilds, multi-touch actions and mixed gesture/keyboard release.
 const thrust=app.querySelector('.ac-throttle'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
@@ -86,7 +107,7 @@ ship('color','cobalt').click();assert(engine.spillResume());tick(50);assert.equa
 engine.save.spillBest=19;
 const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstPass);assert(app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));assert.equal(engine.save.spillRecords.expeditions,1);assert.equal(engine.save.spillRecords.runs,0);
 control('plating').click();const hull=end.maxHull,bank=end.ore;control('save').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
-assert.equal(control('launch').textContent,'Launch wave 21 →');control('launch').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
+assert.equal(control('launch').textContent,'LAUNCH WAVE 21');control('launch').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
 const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));control('launch').click();assert.equal(later.wave,21);assert.equal(engine.world.screen,'play');assert.equal(engine.save.spillRecords.expeditions,2);assert.equal(engine.save.spillRecords.runs,0);
 // A rematch always returns to an explicit, editable starting ship; guide is shown once.
 engine.world.spill.phase='over';engine.world.spill.hull=0;engine.world.spill.cause='impact';engine.world.spill.cues=['dead'];tick();

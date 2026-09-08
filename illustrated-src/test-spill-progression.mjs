@@ -137,7 +137,7 @@ for(const W of [320,390,1280])for(const event of ['cargo','vein','lanes','rig'])
  const legacy=structuredClone(cp);delete legacy.state.firstPass;legacy.state.finished=false;assert(S.restoreSpill(legacy,390,760),'existing Depot saves remain resumable');
 }
 {
- const save=Save.defaultSave();assert.equal(save.spillSuspended,null);assert.equal(C.spillMastery(5).current.title,'Salvager');assert.equal(C.spillMastery(20).current.title,'Spillbreaker');
+ const save=Save.defaultSave();assert.equal(save.spillSuspended,null);assert.equal(C.spillMastery(5).current.title,'Salvager');assert.equal(C.spillMastery(20).current.title,'Fieldbreaker');
  const w=Sim.makeWorld(390,760);save.spillBest=5;save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,['magnet']);
  save.spillStarter='capacitor';Sim.resetRun(w,save,'spill',false);assert.deepEqual(w.spill.utilities,[]);
  save.spillStarter='magnet';Sim.resetRun(w,save,'spill',false,Camp.levelById('4-8'));assert.deepEqual(w.spill.utilities,[],'missions start with a standard ship');
