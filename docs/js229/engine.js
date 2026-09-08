@@ -16,7 +16,11 @@ import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGest
 import { raceViewport } from "./race-viewport.js?v=229";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=229";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=229";
+<<<<<<< HEAD
+import { bankSpill, suitPitchFor } from "./save.js?v=229";
+=======
 import { bankSpill, suitPitchFor, takeReceipt } from "./save.js?v=229";
+>>>>>>> origin/main
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -899,8 +903,16 @@ export async function createEngine(canvas) {
      *  ignored; one it has not is paid and recorded. Without an id (the
      *  beta's free grant) it simply pays. */
     function grantDust(pack, transactionId) {
+<<<<<<< HEAD
+        if (transactionId) {
+            if (save.receipts.includes(transactionId))
+                return false;
+            save.receipts.push(transactionId);
+        }
+=======
         if (transactionId && !takeReceipt(save, transactionId))
             return false;
+>>>>>>> origin/main
         save.starDust += pack.dust + pack.bonus;
         writeSave(save);
         notify();
@@ -917,6 +929,10 @@ export async function createEngine(canvas) {
         if (!pack)
             return "missing";
         if (platform.storeReady) {
+<<<<<<< HEAD
+            void platform.buyDust(id).then((r) => { if (r.result === "ok")
+                grantDust(pack, r.transactionId); });
+=======
             if (dustPurchase?.state === "pending")
                 return "pending";
             dustPurchase = { id, state: "pending" };
@@ -931,6 +947,7 @@ export async function createEngine(canvas) {
                 // a store that throws (network gone, sheet dismissed by the OS) is
                 // a failed purchase, not an unhandled rejection with a stuck row
                 .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
+>>>>>>> origin/main
             return "pending";
         }
         if (IS_BETA) {
@@ -939,6 +956,8 @@ export async function createEngine(canvas) {
         }
         return "unavailable";
     }
+<<<<<<< HEAD
+=======
     function dustPending() { return dustPurchase?.state === "pending" ? dustPurchase.id : null; }
     function takeDustOutcome() {
         if (!dustPurchase || dustPurchase.state === "pending")
@@ -947,6 +966,7 @@ export async function createEngine(canvas) {
         dustPurchase = null;
         return out;
     }
+>>>>>>> origin/main
     /** WHAT THE STORE STILL OWES. Every consumable on the store's record
      *  that the ledger has not paid: a purchase that finished after the app
      *  was suspended, a child's Ask to Buy approved hours later, a receipt

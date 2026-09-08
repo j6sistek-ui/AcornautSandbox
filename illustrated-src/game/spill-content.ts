@@ -1,4 +1,4 @@
-// Shared descriptions and progression for The Spill. No DOM or persistence.
+// Shared descriptions and progression for Debris Field (mode id "spill"). No DOM or persistence.
 export type SpillUtility = "magnet" | "scanner" | "brake" | "capacitor";
 export const SPILL_UTILITIES: Record<SpillUtility, { name: string; price: number; desc: string; detail: string; unlock: number; icon: string }> = {
   magnet: { name: "Salvage magnet", price: 40, desc: "Pulls in nearby coins and gold.", detail: "Health pickups still need a direct hit.", unlock: 5, icon: "◎" },

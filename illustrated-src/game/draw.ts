@@ -2390,7 +2390,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
         : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
           : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
-            : s.phase === "respawn" ? "RESPAWN CORE" : "THE SPILL";
+            : s.phase === "respawn" ? "RESPAWN CORE" : "DEBRIS FIELD";
   ctx.fillText(sub, W / 2, 64);
   // the PULSE meter. Locked, it is dim and says so; unlocked and full it
   // is armed, and fires by itself at the next impact
@@ -2560,7 +2560,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     const titleY = Math.max(H * 0.3, hudY + 24);
     ctx.fillStyle = "#fff";
     ctx.font = "900 30px Figtree, system-ui";
-    ctx.fillText("THE SPILL", W / 2, titleY);
+    ctx.fillText("DEBRIS FIELD", W / 2, titleY);
     ctx.fillStyle = "rgba(215,230,247,.8)";
     ctx.font = "600 12px Figtree, system-ui";
     if (compact) {

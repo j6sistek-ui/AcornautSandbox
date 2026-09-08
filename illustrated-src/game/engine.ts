@@ -116,7 +116,7 @@ export type Engine = {
   finishTutorial: () => void;
   /** pay out any Star Dust lines the pilot has crossed; returns the amount */
   settleDust: () => number;
-  dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; amount: number };
+  dailyState: () => { claimedToday: boolean; streak: number; bonusDay: boolean; pack: boolean; amount: number };
   claimDaily: () => "ok" | "claimed";
   dailyUnseen: () => boolean;
   /** Hand over a claim that has just been paid, ONCE. The shop claims on
@@ -124,7 +124,7 @@ export type Engine = {
    *  payment is parked here and the next render collects it. Reading it
    *  clears it, which is what stops the popup reappearing on every
    *  re-render of the same visit. */
-  takeDailyClaim: () => { amount: number; streak: number; bonus: boolean } | null;
+  takeDailyClaim: () => { amount: number; streak: number; bonus: boolean; pack: boolean } | null;
   /** "pending": the store took over and will grant on success; "ok": granted
    *  outright (beta only); "unavailable": no store on this platform */
   buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable";
@@ -875,6 +875,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   }
 
   /** How the daily stands right now, without claiming it. */
+  /** Bandit, Noodle and Quill: the first full week's prize */
+  const STREAK_PACK = ["raccoon", "ferret", "hedgehog"];
   function dailyState() {
     const t = dayNumber(today());
     const last = dayNumber(save.lastDaily);
@@ -883,15 +885,21 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const continues = !isNaN(last) && t - last === 1;
     const nextStreak = claimedToday ? save.dailyStreak : continues ? save.dailyStreak + 1 : 1;
     const wrapped = ((nextStreak - 1) % DAILY_STREAK_LEN) + 1;
+    const bonusDay = wrapped === DAILY_STREAK_LEN;
+    // THE FIRST FULL WEEK PAYS THE CRITTER PACK (owner, 8 Sep 2026: "the
+    // VERY FIRST 7 day streak unlocks Quill, Bandit and Noodle... After
+    // that, it's star dust"). The pack replaces that week's dust bonus.
+    const pack = bonusDay && !save.streakPackClaimed;
     return {
       claimedToday,
       streak: claimedToday ? ((save.dailyStreak - 1) % DAILY_STREAK_LEN) + 1 : wrapped,
-      bonusDay: wrapped === DAILY_STREAK_LEN,
-      amount: DAILY_DUST + (wrapped === DAILY_STREAK_LEN ? DAILY_STREAK_BONUS : 0),
+      bonusDay,
+      pack,
+      amount: DAILY_DUST + (bonusDay && !pack ? DAILY_STREAK_BONUS : 0),
     };
   }
 
-  let pendingDaily: { amount: number; streak: number; bonus: boolean } | null = null;
+  let pendingDaily: { amount: number; streak: number; bonus: boolean; pack: boolean } | null = null;
 
   function claimDaily() {
     const st = dailyState();
@@ -903,7 +911,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
     save.lastDaily = today();
     save.starDust += st.amount;
-    pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay };
+    if (st.pack) {
+      save.purchased = [...new Set([...(save.purchased || []), ...STREAK_PACK])];
+      save.streakPackClaimed = true;
+      if (art && art.ready) for (const id of STREAK_PACK) void loadSuitBank(art, id);
+    }
+    pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay, pack: st.pack };
     writeSave(save);
     notify();
     return "ok";

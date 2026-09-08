@@ -95,6 +95,9 @@ export type SaveData = {
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
   lastDaily: string;
+  /** THE FIRST SEVEN-DAY STREAK PAYS THE CRITTER PACK (owner, 8 Sep 2026);
+   *  every seventh day after that pays the dust bonus. Set once. */
+  streakPackClaimed: boolean;
   /** how many days in a row have been claimed, 1..DAILY_STREAK_LEN */
   dailyStreak: number;
   /** flight mods, bought once and kept. See MODS in catalog.ts. */
@@ -187,6 +190,7 @@ export function defaultSave(): SaveData {
     suitLean: {},
     dustPaidTo: 0,
     lastDaily: "",
+    streakPackClaimed: false,
     dailyStreak: 0,
     steadyGates: false,
     roughAir: false,
@@ -338,6 +342,7 @@ export function loadSave(): SaveData {
   }
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
+  if (typeof s.streakPackClaimed !== "boolean") s.streakPackClaimed = false;
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"] as const) {

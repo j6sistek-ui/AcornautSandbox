@@ -3802,19 +3802,27 @@ export async function bootStandalone(root) {
             // front of a non-US reviewer is a rejection, not a fallback.
             const price = platform.priceOf(dp.id);
             const priced = !!price || !platform.native;
+<<<<<<< HEAD
+            row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
+=======
             const waiting = inFlight === dp.id;
             const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : dp.price);
             row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
+>>>>>>> origin/main
             if (!priced) {
                 row.disabled = true;
                 row.setAttribute("aria-label", "Price loading");
             }
+<<<<<<< HEAD
+            row.onclick = () => { if (!priced)
+=======
             if (inFlight) {
                 row.disabled = true;
                 if (waiting)
                     row.setAttribute("aria-label", "Purchase in progress");
             }
             row.onclick = () => { if (!priced || inFlight)
+>>>>>>> origin/main
                 return; tx(row, () => engine.buyDust(dp.id)); render(); };
             scroll.append(row);
         }
