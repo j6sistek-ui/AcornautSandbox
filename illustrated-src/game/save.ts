@@ -1,6 +1,6 @@
 import type { SpillAppearance } from "./spill-appearance";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId, type CampaignProgress } from "./campaign-progress";
-import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
 import { STAR_UNLOCKS,
   RACE_GATES,
 } from "./campaign";
@@ -145,7 +145,8 @@ export type SaveData = {
   /** the post-tutorial guided path. See GUIDE_SUIT in catalog.ts.
    *  pending -> reward -> hangar -> helmet -> levels -> done */
   guide: "pending" | "reward" | "hangar" | "helmet" | "levels" | "done";
-  /** Briella's code: the game simply believes it has all 300 stars */
+  /** Briella's code: the game simply believes it has every star on the
+   *  road (CHART_MAX_STARS, 780 today - it follows the road, owner 8 Sep 2026) */
   allStars: boolean;
   /** the Profile's music switch — absent (old saves) means music ON */
   musicOff?: boolean;
@@ -538,7 +539,7 @@ export function eraseSave() {
 
 export function starsOf(s: SaveData) {
   const p = migrateCampaign(s);
-  return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
+  return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
 }
 
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
