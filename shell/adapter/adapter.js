@@ -70,22 +70,41 @@ function storeOf(platformName) {
   })().catch((e) => console.warn("[acornaut shell] store not ready:", e?.message || e));
   const storeId = (gameId) => productIds[gameId];
   /** the RevenueCat transaction id for the purchase just made, read from the
-   *  same list pending() walks so the two can never disagree */
-  const newestOf = (info, sid) => (info?.nonSubscriptionTransactions || [])
-    .filter((t) => t.productIdentifier === sid)
-    .sort((a, b) => (b.purchaseDateMillis || 0) - (a.purchaseDateMillis || 0))[0]?.transactionIdentifier || null;
-  async function recallTransactionId(res, sid) {
-    const fromPurchase = newestOf(res?.customerInfo, sid);
+   *  same list pending() walks so the two can never disagree.
+   *
+   *  PurchasesStoreTransaction dates its rows with `purchaseDate`, an ISO
+   *  8601 STRING - there is no millis field - so parse it, and treat an
+   *  unparseable date as the oldest rather than sorting on NaN. */
+  const rowsFor = (info, sid) => (info?.nonSubscriptionTransactions || []).filter((t) => t.productIdentifier === sid);
+  const at = (t) => { const ms = Date.parse(t?.purchaseDate); return Number.isFinite(ms) ? ms : 0; };
+  const newest = (rows) => rows.slice().sort((a, b) => at(b) - at(a))[0]?.transactionIdentifier || null;
+  /** the id of a row this product did not already have. `seen` is the set
+   *  taken BEFORE the purchase, so a repeat buy of the same pack cannot
+   *  hand back the earlier receipt - which the game's ledger has already
+   *  paid, and would therefore deliver nothing for. */
+  const fresh = (info, sid, seen) => {
+    const rows = rowsFor(info, sid);
+    const unseen = rows.filter((t) => t.transactionIdentifier && !seen.has(t.transactionIdentifier));
+    return newest(unseen.length ? unseen : (seen.size ? [] : rows));
+  };
+  async function knownIds(sid) {
+    try { const { customerInfo } = await Purchases.getCustomerInfo(); return new Set(rowsFor(customerInfo, sid).map((t) => t.transactionIdentifier)); }
+    catch { return new Set(); }
+  }
+  async function recallTransactionId(res, sid, seen) {
+    const fromPurchase = fresh(res?.customerInfo, sid, seen);
     if (fromPurchase) return fromPurchase;
-    try { const { customerInfo } = await Purchases.getCustomerInfo(); return newestOf(customerInfo, sid); }
+    try { const { customerInfo } = await Purchases.getCustomerInfo(); return fresh(customerInfo, sid, seen); }
     catch { return null; }
   }
   return {
     priceOf: (gameId) => prices.get(storeId(gameId)) ?? null,
     async buy(gameId) {
       await ready;
-      const product = products.get(storeId(gameId));
+      const sid = storeId(gameId);
+      const product = products.get(sid);
       if (!product) return { result: "unavailable" };
+      const seen = await knownIds(sid);
       try {
         const res = await Purchases.purchaseStoreProduct({ product });
         // ONE ID SPACE, OR THE GRANT HAPPENS TWICE (audit, 8 Sep 2026).
@@ -94,11 +113,13 @@ function storeOf(platformName) {
         // STORE's id while pending() reports RevenueCat's id for the very
         // same receipt, so the next resume paid the same purchase again.
         // Take the id from the same place pending() reads it, and if that
-        // is somehow missing, re-ask once rather than inventing a synthetic
-        // id that can never match. A purchase we cannot name is reported as
-        // "failed": deliverPending() will pay it on the next boot, whereas
-        // resolving "ok" with no id would grant it unconditionally.
-        const id = await recallTransactionId(res, storeId(gameId));
+        // is somehow missing or still stale, re-ask once rather than
+        // inventing a synthetic id that can never match. A purchase we
+        // cannot name is reported as "failed": deliverPending() pays it on
+        // the next boot or resume, whereas resolving "ok" with no id would
+        // grant it unconditionally, and resolving "ok" with the PREVIOUS
+        // receipt for the same pack would grant nothing at all.
+        const id = await recallTransactionId(res, sid, seen);
         return id ? { result: "ok", transactionId: id } : { result: "failed" };
       } catch (e) {
         return { result: e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };

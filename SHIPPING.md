@@ -75,7 +75,7 @@ later shell expensive, so the test fails the build instead.
 3. Gate, all four, before pushing:
    - `npx tsc illustrated-src/game/*.ts illustrated-src/lab/rig.ts --noEmit --module es2015 --target es2020 --skipLibCheck --moduleResolution bundler --strict false`
    - `python3 illustrated-src/verify-art.py` (30 groups; every catalog id must have its still and banks)
-   - the harness: every `illustrated-src/test-*.mjs` (the render/UI tests need `@napi-rs/canvas`; `test-warp` needs about four minutes)
+   - the harness: `node illustrated-src/run-tests.mjs` (or `npm test`), which runs every `illustrated-src/test-*.mjs` with no skip list. Sixteen of them need `happy-dom` or `@napi-rs/canvas`: `npm install` at the repo root, or the runner reports them SKIPPED and fails. `test-warp` needs about four minutes.
    - `node illustrated-src/test-platform-bridge.mjs`
 4. Prove it in the browser once, at 390 wide, on the page it changes
    (production or beta). Screens that changed get a screenshot in the PR.

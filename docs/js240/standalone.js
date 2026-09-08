@@ -398,6 +398,7 @@ export async function bootStandalone(root) {
         // screen, the same way the armed boost card does.
         if (snap.screen !== "shop") {
             featureOpen = null;
+            packOpen = null;
             confirmBuy = false;
         }
         if (snap.screen === "play") {
@@ -5538,6 +5539,12 @@ export async function bootStandalone(root) {
             spendAsk = null;
         else if (dailyToast)
             dailyToast = null;
+        // the pack sheet is appended after the featured one, so it is the
+        // topmost of the two on the rare visit that has both open
+        else if (packOpen) {
+            packOpen = null;
+            confirmBuy = false;
+        }
         else if (featureOpen) {
             featureOpen = null;
             confirmBuy = false;

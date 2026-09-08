@@ -282,13 +282,6 @@ function writeReceiptVault(paid: Set<string>) {
   catch { /* a device with no writable storage pays the old risk, not a new one */ }
 }
 
-/** every id already paid, from both halves - the ledger deliverPending reads */
-export function paidReceipts(save: SaveData): Set<string> {
-  const paid = receiptVault();
-  for (const r of save.receipts || []) paid.add(r);
-  return paid;
-}
-
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
 export function bankSpill(save: SaveData, s: SpillState, end = false) {

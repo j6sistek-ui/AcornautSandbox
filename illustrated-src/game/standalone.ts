@@ -349,7 +349,7 @@ export async function bootStandalone(root: HTMLElement) {
     // opened on that pack, and on a later cycle day it was still offering
     // yesterday's bundle at the featured half price. It leaves with the
     // screen, the same way the armed boost card does.
-    if (snap.screen !== "shop") { featureOpen = null; confirmBuy = false; }
+    if (snap.screen !== "shop") { featureOpen = null; packOpen = null; confirmBuy = false; }
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
       // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
@@ -5314,6 +5314,9 @@ export async function bootStandalone(root: HTMLElement) {
   const closeTopSheet = () => {
     if (spendAsk) spendAsk = null;
     else if (dailyToast) dailyToast = null;
+    // the pack sheet is appended after the featured one, so it is the
+    // topmost of the two on the rare visit that has both open
+    else if (packOpen) { packOpen = null; confirmBuy = false; }
     else if (featureOpen) { featureOpen = null; confirmBuy = false; }
     else if (hyperRunOpen) {
       // the briefing's BACK, exactly: opened from the hub it came out of
