@@ -207,13 +207,36 @@ const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};
 Sim.resetRun(legacy,flight,'fly',false);Sim.flap(legacy,flight);legacy.tapAnimT=.3;
 Sim.flap(legacy,flight);assert.equal(legacy.tapAnimDir,-1);
 assert.deepEqual(legacy.vanguard,VG.createVanguardMotion());
-// EARNED, NEVER LISTED (owner, 6 Sep 2026: "immediately after the tutorial
-// is done, he is locked"). loadSave now strips AcorNut out of unlockedSuits
-// on every launch, precisely so an old free grant cannot stand in for the
-// stars - so the list is the one place he must NOT be found. The round trip
-// is asserted on the gate the rest of the game reads instead: the ledger.
+// EARNED, THEN LISTED (owner, 6 Sep 2026: "immediately after the tutorial
+// is done, he is locked"; 8 Sep 2026: "i still have to collect acornut
+// everytime i load in"). loadSave strips AcorNut out of unlockedSuits on
+// launch so that an old free grant cannot stand in for the stars - but the
+// strip asks first now, because the entry the shelf's Collect Reward tap
+// writes is the pilot's own, and tearing it out every launch is what made
+// the game ask for the same collection forever. What has to hold is the
+// original guarantee, not the blunt instrument that carried it: a grant
+// with NOTHING BEHIND IT does not survive a launch. Production is where
+// that has teeth - the beta opens every gate outright, so a list entry
+// there stands in for nothing.
 S.writeSave(e.save);
-assert(!S.loadSave().unlockedSuits.includes('vanguard'),'a list grant never carries AcorNut past a launch');
+{
+  const back=S.loadSave();
+  if(mode==='production'){
+    assert(!S.tutorialSuitEarned(back),'no stars and no receipt at this point in the run');
+    assert(!back.unlockedSuits.includes('vanguard'),'an UNEARNED list grant never carries AcorNut past a launch');
+  } else {
+    assert(S.tutorialSuitEarned(back),'the beta opens the flagship gate outright');
+    assert(S.suitRevealed(back,'vanguard'),'the beta keeps AcorNut revealed across a launch');
+  }
+}
+// ...and once he IS earned, the collection sticks: the tap writes the id,
+// the launch leaves it alone, and the shelf never asks a second time.
+{
+  const earned={...e.save,allStars:true,unlockedSuits:[...new Set([...e.save.unlockedSuits,'vanguard'])]};
+  S.writeSave(earned);
+  const back=S.loadSave();
+  assert(back.unlockedSuits.includes('vanguard'),'a collected AcorNut survives the launch that follows it');
+}
 P.migrateCampaign(e.save).legacyEntitlementFloor=C.STAR_UNLOCKS.suits.vanguard;S.writeSave(e.save);
 const reloaded=S.loadSave();
 assert.equal(S.starsOf(reloaded),C.STAR_UNLOCKS.suits.vanguard,'the star ledger is what survives the write');
