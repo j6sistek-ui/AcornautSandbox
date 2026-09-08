@@ -1,15 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=234";
-import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=234";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=234";
-import { restoreSpill } from "./spill.js?v=234";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=234";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=238";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=238";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=238";
+import { restoreSpill } from "./spill.js?v=238";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=238";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-<<<<<<< HEAD
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, } from "./catalog.js?v=234";
-=======
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=234";
->>>>>>> origin/main
-import { platform } from "./platform.js?v=234";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=238";
+import { platform } from "./platform.js?v=238";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -171,11 +167,7 @@ export function loadSave() {
         s.receipts = [];
     s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     // saves written before the Star Chart boosts existed
-<<<<<<< HEAD
-    if (!s.boosts || typeof s.boosts !== "object")
-=======
     if (!s.boosts || typeof s.boosts !== "object" || Array.isArray(s.boosts))
->>>>>>> origin/main
         s.boosts = { levelskip: 0, starunlock: 0 };
     for (const id of BOOST_IDS) {
         const n = s.boosts[id];
@@ -189,8 +181,6 @@ export function loadSave() {
     s.boostedRewards = s.boostedRewards.filter((k) => typeof k === "string");
     if (!s.rewardSubs || typeof s.rewardSubs !== "object" || Array.isArray(s.rewardSubs))
         s.rewardSubs = {};
-<<<<<<< HEAD
-=======
     // every entry is read by the reward sheet as {kind, amount}; a malformed
     // one would throw inside render and blank the chart, so it is dropped here
     for (const k of Object.keys(s.rewardSubs)) {
@@ -199,7 +189,6 @@ export function loadSave() {
             || typeof v.amount !== "number" || !isFinite(v.amount))
             delete s.rewardSubs[k];
     }
->>>>>>> origin/main
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
@@ -438,7 +427,7 @@ export function pilotTitleOf(s) {
 }
 export function starsOf(s) {
     const p = migrateCampaign(s);
-    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
+    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
 }
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
 // The old XP thresholds are retired for good with the production split:
@@ -608,15 +597,11 @@ export function unlockableRewards(s) {
  *  in the same unlocked* list a star crossing would fill; mods and modes
  *  are keyed by the reward's id. */
 export function unlockReward(s, r) {
-<<<<<<< HEAD
-    if (r.kind === "acorns" || r.kind === "dust" || !r.id)
-=======
     // only the kinds an unlock can actually hand over; anything else (a
     // currency line, a stage, a title) would spend the boost and open nothing
     const openable = r.kind === "suit" || r.kind === "helmet" || r.kind === "trail"
         || r.kind === "pal" || r.kind === "mod" || r.kind === "mode";
     if (!openable || !r.id)
->>>>>>> origin/main
         return "currency";
     if (rewardOwned(s, r))
         return "owned";
@@ -626,21 +611,12 @@ export function unlockReward(s, r) {
     const add = (list) => { if (!list.includes(r.id))
         list.push(r.id); };
     // a premium id is owned through `purchased` - the one list every gate
-<<<<<<< HEAD
-    // and the shop read for it - so a Star Unlock lands it there
-    if (r.kind === "mod" || r.kind === "mode")
-        add(s.keyUnlocks);
-    else if (isIap(r.id)) {
-        if (!(s.purchased || []).includes(r.id))
-            s.purchased = [...(s.purchased || []), r.id];
-=======
     // and the shop read for it - so a Star Unlock lands it there, with the
     // set trail the shop would hand over beside it (idGrants)
     if (r.kind === "mod" || r.kind === "mode")
         add(s.keyUnlocks);
     else if (isIap(r.id)) {
         s.purchased = [...new Set([...(s.purchased || []), ...idGrants(r.id)])];
->>>>>>> origin/main
     }
     else if (r.kind === "suit")
         add(s.unlockedSuits);
@@ -701,17 +677,10 @@ export function settleStarRewards(s) {
         }
         if (!r.id)
             continue;
-<<<<<<< HEAD
-        const keyed = (s.boostedRewards || []).includes(r.id);
-        const bought = !keyed && (s.purchased || []).includes(r.id);
-        if (keyed || bought) {
-            const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
-=======
         // already yours, by Star Unlock or by purchase: the rung pays the one
         // flat substitute either way
         if ((s.boostedRewards || []).includes(r.id) || (s.purchased || []).includes(r.id)) {
             const sub = substituteFor(r.stars);
->>>>>>> origin/main
             if (sub.kind === "dust")
                 dust += sub.amount;
             else

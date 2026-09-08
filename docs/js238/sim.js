@@ -1,19 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=234";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=234";
-import { trailWornBy } from "./catalog.js?v=234";
-import { missionRandom } from "./mission-rng.js?v=234";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=234";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=234";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=234";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=234";
-import { platform } from "./platform.js?v=234";
-import { TUTORIAL_SUIT } from "./catalog.js?v=234";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=234";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=234";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=234";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=234";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=234";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=234";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=238";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=238";
+import { trailWornBy } from "./catalog.js?v=238";
+import { missionRandom } from "./mission-rng.js?v=238";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=238";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=238";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=238";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=238";
+import { platform } from "./platform.js?v=238";
+import { TUTORIAL_SUIT } from "./catalog.js?v=238";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=238";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=238";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=238";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=238";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=238";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=238";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -308,8 +308,11 @@ export function worldFlipped(w) {
  *  and the HUD read. A mission's pal flies alone; otherwise both hangar
  *  slots (owner, 7 Sep 2026: two pals, "one flys high one flys low"). */
 export function runPals(save, w) {
-    if (w.lvl?.def.fx.pal)
-        return [w.lvl.def.fx.pal];
+    // THE STAR CHART NEVER ADOPTS THE LOADOUT (owner, 8 Sep 2026: "no pal in
+    // the star chart means no pal... it must run with active effects of
+    // designated pal"). A mission flies its own pal or nobody.
+    if (w.lvl)
+        return w.lvl.def.fx.pal ? [w.lvl.def.fx.pal] : [];
     return equippedPals(save);
 }
 export function runPal(save, w) {
@@ -317,8 +320,11 @@ export function runPal(save, w) {
 }
 /** the companions whose EFFECTS are live this run */
 function palIds(save, w) {
-    if (w.lvl?.def.fx.pal)
-        return w.lvl.def.fx.pal === "switchback" ? [] : [w.lvl.def.fx.pal];
+    // a mission's pal is LIVE whatever the Pal Effects switch says - the
+    // switch is a loadout comfort, and a star certifies the designated
+    // flight; a mission without a pal has no pal effects at all
+    if (w.lvl)
+        return w.lvl.def.fx.pal && w.lvl.def.fx.pal !== "switchback" ? [w.lvl.def.fx.pal] : [];
     if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal"))
         return ["buddy"];
     // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
@@ -1123,14 +1129,6 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     // the pause-sheet lab rides only a beta free flight; everything else
     // flies clean so no mission and no live run can inherit a dial
     w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
-    // every companion's fx, folded together - two pals stack the same way a
-    // pal stacks on a mission
-    w.palFx = palIds(save, w).reduce((acc, id) => {
-        const fx = PAL_FX[id];
-        return fx ? mergeFx(acc ?? {}, fx) : acc;
-    }, null);
-    w.palFlip = !!w.palFx?.upsideDown;
-    w.bounceHouse = hasPal(save, w, "spacepuppy");
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
     // A campaign level is an ordinary run wearing a finish line. It is set
@@ -1142,6 +1140,17 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
             barrierAfter: level.base === "race" ? reachedGate(routeMasks(save), save.raceGates)?.after : undefined,
             goldGates: goldGatesFor(level), spawnOrd: 0 }
         : null;
+    // every companion's fx, folded together - two pals stack the same way a
+    // pal stacks on a mission. AFTER the mission is set: palIds reads w.lvl,
+    // and computing this above it read the PREVIOUS run's mission, which is
+    // how a mission flew the loadout's pal effects and a free flight after a
+    // mission kept the mission's (owner, 8 Sep 2026).
+    w.palFx = palIds(save, w).reduce((acc, id) => {
+        const fx = PAL_FX[id];
+        return fx ? mergeFx(acc ?? {}, fx) : acc;
+    }, null);
+    w.palFlip = !!w.palFx?.upsideDown;
+    w.bounceHouse = hasPal(save, w, "spacepuppy");
     // every run starts in this game; the arcade acorn is the only way out
     // Arcade IS the retro game — it starts there and never leaves. Every
     // other mode starts illustrated; in Free Flight the 8-bit acorn is the
@@ -2585,7 +2594,9 @@ export function flap(w, save) {
     if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
         // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
         // the slow, the way the frozen acorn does - a slow, never a full stop.
-        if (fxOf(w).tapFreeze || (runPals(save, w).includes("switchback") && !save.noPalFx))
+        // a mission's Stopwatch ignores the Pal Effects switch, like every
+        // other designated pal
+        if (fxOf(w).tapFreeze || (runPals(save, w).includes("switchback") && (!!w.lvl || !save.noPalFx)))
             w.tapFrozen = !w.tapFrozen;
         if (w.stuck) {
             w.stuck = false;

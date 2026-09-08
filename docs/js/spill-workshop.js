@@ -1,11 +1,11 @@
-import { artUrl } from "./art.js?v=237";
-import { spillAppearance } from "./spill-appearance.js?v=237";
-import { SUITS } from "./catalog.js?v=237";
-import { paintShipPreview } from "./draw.js?v=237";
-import { writeSave } from "./save.js?v=237";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=237";
-import { spillBuildFromState } from "./spill-presentation.js?v=237";
-import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=237";
+import { artUrl } from "./art.js?v=238";
+import { spillAppearance } from "./spill-appearance.js?v=238";
+import { SUITS } from "./catalog.js?v=238";
+import { paintShipPreview } from "./draw.js?v=238";
+import { writeSave } from "./save.js?v=238";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=238";
+import { spillBuildFromState } from "./spill-presentation.js?v=238";
+import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=238";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
