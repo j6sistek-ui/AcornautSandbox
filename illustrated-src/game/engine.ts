@@ -1,4 +1,4 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
@@ -73,7 +73,7 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill, suitPitchFor, takeReceipt } from "./save";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -140,6 +140,14 @@ export type Engine = {
   buyShopItem: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** buy the featured pack at the featured (half) price */
   buyFeature: (id: string) => "ok" | "missing" | "owned" | "poor";
+  /** buy a Star Chart boost with Star Dust; it lands in save.boosts and is
+   *  spent on the chart. See BOOSTS in catalog.ts. */
+  buyBoost: (id: BoostId) => "ok" | "poor";
+  /** spend a held Level Skip: three stars on a reachable mission */
+  useLevelSkip: (levelId: string) => "ok" | "missing" | "hyper" | "done" | "locked" | "none";
+  /** spend a held Star Unlock on one reward item, named by its ledger id
+   *  (rewardId) */
+  useStarUnlock: (rewardKey: string) => "ok" | "missing" | "currency" | "owned" | "none";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   /** restart the mission being flown or paused - same level, fresh run */
@@ -459,6 +467,34 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     buyBundle,
     buyShopItem,
     buyFeature,
+    buyBoost(id) {
+      const r = buyBoost(save, id);
+      if (r !== "ok") return r;
+      writeSave(save);
+      notify();
+      return "ok";
+    },
+    useLevelSkip(levelId) {
+      const def = levelById(levelId);
+      if (!def) return "missing";
+      const r = skipLevel(save, def);
+      if (r !== "ok") return r;
+      writeSave(save);
+      // three new stars may cross a currency line; pay it now, not on the
+      // next finish
+      settleDust();
+      notify();
+      return "ok";
+    },
+    useStarUnlock(rewardKey) {
+      const r = STAR_REWARDS.find((x) => rewardId(x) === rewardKey);
+      if (!r) return "missing";
+      const out = unlockReward(save, r);
+      if (out !== "ok") return out;
+      writeSave(save);
+      notify();
+      return "ok";
+    },
     setMusicOff(off) {
       save.musicOff = off;
       writeSave(save);
@@ -854,24 +890,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
    *  Called on load and after every finish, so old saves collect their whole
    *  backlog rather than losing it. */
   function settleDust() {
-    const have = starsOf(save);
-    const ledger = migrateCampaign(save);
-    let dustOwed = 0, acornsOwed = 0, high = save.dustPaidTo;
-    for (const r of STAR_REWARDS) {
-      if ((r.kind !== "dust" && r.kind !== "acorns") || !r.amount) continue;
-      if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) {
-        if (r.kind === "dust") { dustOwed += r.amount; high = Math.max(high, r.stars); }
-        else acornsOwed += r.amount;
-        ledger.paidRewards.push(rewardId(r));
-      }
-    }
-    if (dustOwed <= 0 && acornsOwed <= 0) return 0;
-    save.starDust += dustOwed;
-    save.acorns += acornsOwed;
-    save.dustPaidTo = high;
+    // the rules live on the save (settleStarRewards) so the harness can
+    // prove them; this is the write and the notify
+    const paid = settleStarRewards(save);
+    if (paid <= 0) return 0;
     writeSave(save);
     notify();
-    return dustOwed + acornsOwed;
+    return paid;
   }
 
   /** How the daily stands right now, without claiming it. */
@@ -996,11 +1021,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const bn = BUNDLES.find((b) => b.id === id);
     if (!bn) return "missing";
     const ids = bundleIds(bn);
-    if (ids.every((i) => (save.purchased || []).includes(i))) return "owned";
+    if (ids.every((i) => ownsPremium(save, i))) return "owned";
     // the price the SHELF is showing, not the sticker: a pack whose suit
-    // the pilot already owns costs less, and charging the sticker here
-    // would take dust the card never asked for
-    const due = bundlePrice(bn, (i) => (save.purchased || []).includes(i));
+    // the pilot already owns - bought, keyed or earned on the road - costs
+    // less, and charging the sticker here would take dust the card never
+    // asked for
+    const due = bundlePrice(bn, (i) => ownsPremium(save, i));
     if (save.starDust < due) return "poor";
     save.starDust -= due;
     save.purchased = [...new Set([...(save.purchased || []), ...ids])];
@@ -1014,7 +1040,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // matches it and the trail painted for it, for one price.
   function buyShopItem(id: string) {
     if (!IAP_ITEMS.includes(id)) return "missing";
-    if ((save.purchased || []).includes(id)) return "owned";
+    if (ownsPremium(save, id)) return "owned";
     const due = idDust(id);
     if (save.starDust < due) return "poor";
     save.starDust -= due;
@@ -1030,8 +1056,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const bn = BUNDLES.find((b) => b.id === id);
     if (!bn) return "missing";
     const ids = bundleIds(bn);
-    if (ids.every((i) => (save.purchased || []).includes(i))) return "owned";
-    const due = featurePrice(bn, (i) => (save.purchased || []).includes(i));
+    if (ids.every((i) => ownsPremium(save, i))) return "owned";
+    const due = featurePrice(bn, (i) => ownsPremium(save, i));
     if (save.starDust < due) return "poor";
     save.starDust -= due;
     // a pack hands over its trails too, and idGrants folds in any set trail
