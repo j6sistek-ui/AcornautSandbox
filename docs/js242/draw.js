@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=238";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=238";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=238";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=238";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=238";
-import { arcflashPreview } from "./arcflash-motion.js?v=238";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=238";
-import { spillAppearance } from "./spill-appearance.js?v=238";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=238";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=238";
-import { goalHud } from "./campaign.js?v=238";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=238";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=238";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=238";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=238";
-import { suitPitchFor } from "./save.js?v=238";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=238";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=238";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=238";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=238";
-import { spillEngineColor } from "./spill-content.js?v=238";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=238";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=238";
+import { spillDockTravelDuration } from "./spill.js?v=242";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=242";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=242";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=242";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=242";
+import { arcflashPreview } from "./arcflash-motion.js?v=242";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=242";
+import { spillAppearance } from "./spill-appearance.js?v=242";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=242";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=242";
+import { goalHud } from "./campaign.js?v=242";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=242";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=242";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=242";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=242";
+import { suitPitchFor } from "./save.js?v=242";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=242";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=242";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=242";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=242";
+import { spillEngineColor } from "./spill-content.js?v=242";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=242";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=242";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -394,9 +394,6 @@ function writeHyperRunFlow(args, samples) {
     });
     samples.length = cursor;
     return samples;
-}
-export function hyperRunFlowSnapshot(args) {
-    return writeHyperRunFlow(args, []).map((sample) => ({ ...sample }));
 }
 function raceReducedMotion() {
     return typeof window !== "undefined"
@@ -3053,8 +3050,14 @@ function drawRetroWorld(ctx, w, save, art) {
     for (const [i, pal] of flyingPals(save, w).entries()) {
         const pos = i === 0 ? w.palPos : w.palPos2;
         const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
-        // live draws its pals at unit SCALE, not at a pixel size
-        drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+        // live draws its pals at unit SCALE, not at a pixel size - but only
+        // the companions its vector kit actually has. A pal it has never
+        // heard of used to be painted as nothing here; it keeps its painted
+        // still instead, at the size the illustrated timeline flies it.
+        if (canDrawPal(pal))
+            drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+        else
+            paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     const wornId = pilotSuitId(w, save);
     const helm = helmetWornBy(save.equipped, wornId);
@@ -4434,9 +4437,7 @@ poseOverride = NaN) {
         paintArcflash(ctx, art, x, y, size);
         return;
     }
-    const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
-        ? (art?.suits?.[suit.id] ?? null)
-        : null;
+    const suited = art?.suits?.[suit.id] ?? null;
     const body = suited ?? spr;
     if (!body)
         return;

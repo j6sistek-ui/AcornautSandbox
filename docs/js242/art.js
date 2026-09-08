@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=238";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=238";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=238";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=238";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=242";
+import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=242";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=242";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=242";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -258,7 +258,7 @@ const RIGGED_SUITS = [
     // Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now fly whole
     // ascent/descent paintings; their static portraits are the loading fallback.
 ];
-const TAP_BANKS = TAP_ANIM_ENABLED ? {
+const TAP_BANKS = {
     // The Robo-timing rollout is DONE: it was beta-only while the owner flew
     // each silhouette, and the verdict is that the painted bank beats the rig.
     // Production used to fall back to the universal rig path, whose tap is a
@@ -279,9 +279,9 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // flies a painted 8/8 ramp now - the final delivery of the sweep.
     // The five unreleased suits' obsolete tap banks are retired with their
     // owner-requested 8/8 replacement sheets (7 Sep 2026).
-} : {};
-const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
-const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+};
+const TAIL_TAP_BANKS = { eclipse: 12 };
+const BOUNCE_BANKS = { volt: 16 };
 // Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
 // heavy black tail-swirl that would flash on colored skies, so the owner
 // excluded it from the loop - desc-8 was renumbered into its slot. Banks
@@ -300,30 +300,26 @@ const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
-        // won and flies production "alien" at 8/8; the custom-posed bank
-        // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
-        // frame cuts - the black desc swirl and the bled-over spiral asc).
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
-        // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
-        briellacat: 7,
-        // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
-        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
-    : {};
-const DESC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
-        briellacat: 4,
-        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
-    : {};
+const ASC_BANKS = { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
+    // won and flies production "alien" at 8/8; the custom-posed bank
+    // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
+    // frame cuts - the black desc swirl and the bled-over spiral asc).
+    voidsuit: 8, alien: 8,
+    ember: 8,
+    cryostar: 8, verdant: 8, gemmie: 8,
+    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+    // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
+    briellacat: 7,
+    // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
+const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    voidsuit: 8, alien: 8,
+    ember: 8,
+    cryostar: 8, verdant: 8, gemmie: 8,
+    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+    briellacat: 4,
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
 const LOOP_BANKS = { raccoon: 16, ferret: 16, hedgehog: 16 };
@@ -407,6 +403,26 @@ export function loadSuitBank(bank, id) {
             bank.suitAsc[id] = asc;
         if (desc.length)
             bank.suitDesc[id] = desc;
+        // many() drops a frame it could not fetch rather than sinking the whole
+        // bank, and that is the right instinct - but draw.ts reads the tap,
+        // tail-tap and bounce banks by EXACT count (16, 12, 16), so fifteen
+        // frames is not one pose missing, it is the painted animation switched
+        // off and the suit back on the universal rig's 2.8% belly tuck. Nothing
+        // released the cache slot either way, so one flaky request on mobile
+        // data pinned that for the rest of the session and a re-equip could not
+        // clear it. An audit found it. Give a short bank the same courtesy
+        // vanguard and switchback already get and drop the slot, so the next
+        // equip or the background sweep can ask again. Whatever DID arrive stays
+        // published: asc, desc and loop are read at whatever length they have,
+        // so a 7-of-8 ramp still plays and only an empty one is worth a retry.
+        const shortBank = (TAP_BANKS[id] && tap.length !== TAP_BANKS[id]) ||
+            (TAIL_TAP_BANKS[id] && tailTap.length !== TAIL_TAP_BANKS[id]) ||
+            (BOUNCE_BANKS[id] && bounce.length !== BOUNCE_BANKS[id]) ||
+            (LOOP_BANKS[id] && !loop.length) ||
+            (ASC_BANKS[id] && !asc.length) ||
+            (DESC_BANKS[id] && !desc.length);
+        if (shortBank)
+            suitBankLoads.delete(id);
     })();
     suitBankLoads.set(id, p);
     return p;
@@ -435,6 +451,13 @@ export function loadPalBank(bank, id) {
             }
             else if (frames.length)
                 bank.palAnim[id] = frames;
+            // Nothing arrived at all, and the resolved promise stayed in the
+            // cache - so a pal that lost its bank to a bad connection drew as a
+            // still portrait for the rest of the session, since every caller
+            // short-circuits on that hit. The audit found the same trap here as
+            // in the suits. Drop the slot and let a later equip try again.
+            else
+                palBankLoads.delete(id);
         })
         : Promise.resolve();
     palBankLoads.set(id, p);
@@ -542,7 +565,9 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "raccoon", "ferret", "hedgehog",
         // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
         "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-        ...(IS_BETA ? ["briellacat"] : []),
+        // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
+        // 2026), so its sheet loads there rather than only on the beta host
+        "briellacat",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [
@@ -551,13 +576,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "gate-missed-back", "gate-missed-front",
         "return-back", "return-front", "return-glyphs", "scout-ship",
     ];
-    async function namedSeries(counts, folder, separator) {
-        const out = {};
-        await Promise.all(Object.entries(counts).map(async ([id, count]) => {
-            out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
-        }));
-        return out;
-    }
     async function named(ids, folder, suffix = "", required = false, extension = "png") {
         const out = {};
         await Promise.all(ids.map(async (id) => {

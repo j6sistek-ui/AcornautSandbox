@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=238";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=238";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=238";
-import { restoreSpill } from "./spill.js?v=238";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=238";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=242";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=242";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=242";
+import { restoreSpill } from "./spill.js?v=242";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=242";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=238";
-import { platform } from "./platform.js?v=238";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=242";
+import { platform } from "./platform.js?v=242";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -103,13 +103,6 @@ function writeReceiptVault(paid) {
     }
     catch { /* a device with no writable storage pays the old risk, not a new one */ }
 }
-/** every id already paid, from both halves - the ledger deliverPending reads */
-export function paidReceipts(save) {
-    const paid = receiptVault();
-    for (const r of save.receipts || [])
-        paid.add(r);
-    return paid;
-}
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
 export function bankSpill(save, s, end = false) {
@@ -132,7 +125,20 @@ export function bankSpill(save, s, end = false) {
 function readRaw(key) {
     try {
         const raw = platform.storage.get(key);
-        return raw ? JSON.parse(raw) : null;
+        if (!raw)
+            return null;
+        // A SAVE HAS TO BE AN OBJECT (App Store prep audit, section 2). JSON.parse
+        // only throws on malformed text: `5`, `"abc"` and `[1,2]` all parse, all
+        // come back truthy, and all used to be handed on as a save. Spreading a
+        // string into the defaults pastes its characters on as numbered keys, and
+        // worse, loadSave takes the FIRST key that reads truthy - so one corrupt
+        // byte in the live slot would shadow a perfectly good legacy save behind
+        // it. Anything that is not a plain object is not a save; say so, and the
+        // next key in the list gets its turn.
+        const value = JSON.parse(raw);
+        if (typeof value !== "object" || value === null || Array.isArray(value))
+            return null;
+        return value;
     }
     catch {
         return null;
@@ -464,12 +470,6 @@ export function writeSave(s) {
 export function eraseSave() {
     writeSave(defaultSave());
 }
-export function pilotLevelOf(s) {
-    return levelForXp(s.xp || 0);
-}
-export function pilotTitleOf(s) {
-    return titleForLevel(pilotLevelOf(s));
-}
 export function starsOf(s) {
     const p = migrateCampaign(s);
     return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
@@ -500,8 +500,16 @@ export function helmetRevealed(s, id) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s, id) {
+    // THE WAKE HAS ITS OWN RUNG at 520, fifty stars ahead of AcorNut, and
+    // this line used to answer before the ladder below was ever read: an
+    // audit found the crossed rung still printing "525 of 520 stars" with a
+    // HOLD TO USE STAR UNLOCK button, so a pilot could burn a 500-dust boost
+    // on a trail the chart had already given them. The rung counts here too;
+    // it cannot leak the wake onto another suit, which canWearTrail still
+    // refuses.
     if (id === "vanguardwake")
-        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id)
+            || starsOf(s) >= (STAR_UNLOCKS.trails[id] ?? Infinity);
     if (id === "arcflashwake")
         return suitRevealed(s, "arcflash");
     if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id])
@@ -526,7 +534,8 @@ export function suitRevealed(s, id) {
     // only for suits with no gate at all, or the cat would have been free
     if (STAR_UNLOCKS.suits[id] !== undefined)
         return BETA_UNLOCK_GATES;
-    return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
+    // no gate at all: on the shelf for everyone
+    return true;
 }
 // Premium items are owned only once bought - on BOTH pages. The beta used
 // to hand them over outright, which meant the one thing the beta could

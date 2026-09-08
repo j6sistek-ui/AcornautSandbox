@@ -7,7 +7,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "241";
+export const ART_VER = "242";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -15,8 +15,17 @@ export const ART_VER = "241";
 // gets the open TEST build: gates open, premium handed over, prototype
 // doors on the Help sheet — and its own save slot, so an open-gate save
 // can never leak into the production one.
+// NEVER ON A STORE BUILD (App Store prep audit, section 2). The flag is a
+// bare global, so anything that can get that global set - a stray script, a
+// page loaded inside the shell, a future webDir slip - would hand a shipped
+// app the open TEST build: every gate down, premium granted, a 10,000-acorn
+// floor and free dust packs. The beta page is already outside shell/www, so
+// this is the second lock rather than the first, and it is the one that
+// cannot be undone by a packaging mistake. platform.native is set by the
+// native adapter before the bundle boots.
 export const IS_BETA =
   typeof window !== "undefined" &&
+  !platform.native &&
   (window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ === true;
 
 /** Beta itself is the 260-mission playtest. Retained name for cosmetic previews. */
@@ -118,7 +127,7 @@ export const PHYS = {
 };
 
 export const NEWS = [
-  "THE STAR CHART: a hundred levels, three stars each.",
+  "THE STAR CHART: 260 missions, three stars each.",
   "Stars unlock pals, mods, suits and modes.",
   "Golden acorns still bounce off planets. Debris phases.",
   "Debris kills. Planets bounce. Swipe cancels a bounce.",

@@ -3433,6 +3433,13 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
     const bestFinishTicks = newBestTime ? finishTicks : priorTicks;
     const bestAcorns = Math.max(priorAcorns, lvl.stats.acorns);
     records[def.raceEventId ?? def.id] = { bestFinishTicks, bestAcorns };
+    // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
+    // "hyper" board has been declared and configured since the shell landed
+    // and nothing ever posted to it. A race is scored on TIME, so this posts
+    // ticks and the board has to be set Low to High - app.config.json says so
+    // beside the id, and check.mjs repeats it, because a board configured the
+    // usual way would rank the slowest pilot first.
+    if (finished && finishTicks > 0) platform.submitScore("hyper", finishTicks);
     // DEBRIS FIELD. A finish inside the time clears the gate the pilot is
     // actually standing at - the first uncleared one - and only that one.
     // Beating 1:42 at the very first field does not silently bank all

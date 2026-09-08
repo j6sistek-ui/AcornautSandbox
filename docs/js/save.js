@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=241";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=241";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=241";
-import { restoreSpill } from "./spill.js?v=241";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=241";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=242";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=242";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=242";
+import { restoreSpill } from "./spill.js?v=242";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=242";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=241";
-import { platform } from "./platform.js?v=241";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=242";
+import { platform } from "./platform.js?v=242";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -125,7 +125,20 @@ export function bankSpill(save, s, end = false) {
 function readRaw(key) {
     try {
         const raw = platform.storage.get(key);
-        return raw ? JSON.parse(raw) : null;
+        if (!raw)
+            return null;
+        // A SAVE HAS TO BE AN OBJECT (App Store prep audit, section 2). JSON.parse
+        // only throws on malformed text: `5`, `"abc"` and `[1,2]` all parse, all
+        // come back truthy, and all used to be handed on as a save. Spreading a
+        // string into the defaults pastes its characters on as numbered keys, and
+        // worse, loadSave takes the FIRST key that reads truthy - so one corrupt
+        // byte in the live slot would shadow a perfectly good legacy save behind
+        // it. Anything that is not a plain object is not a save; say so, and the
+        // next key in the list gets its turn.
+        const value = JSON.parse(raw);
+        if (typeof value !== "object" || value === null || Array.isArray(value))
+            return null;
+        return value;
     }
     catch {
         return null;
