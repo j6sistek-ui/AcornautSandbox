@@ -18,6 +18,10 @@ import config from "./config.json";
 
 const Boards = registerPlugin("Boards");
 
+// set the moment the bundle is handed the page, so the failure path below
+// can tell "never started" from "started and then threw"
+let booted = false;
+
 // resolved against the PAGE, not this module: the bundle sits beside
 // index.html, this file sits under shell/
 const bundleSrc = new URL(document.querySelector("script[data-bundle]")?.dataset.bundle || "./js/standalone.js", document.baseURI).href;
@@ -150,11 +154,29 @@ async function boot() {
     App.addListener("backButton", () => { document.querySelector(".ac-backbtn")?.click(); });
   }
   const m = await import(bundleSrc);
+  booted = true;
   m.bootStandalone(document.getElementById("app"));
 }
 
 boot().catch(async (e) => {
   console.error("[acornaut shell] boot failed", e);
+  // A FAILED BOOT IS STILL THE NATIVE BUILD (audit, 8 Sep 2026). This path
+  // used to load the bundle with nothing on window.__acornautPlatform, so
+  // platform.ts read the kind as "web" and handed a store build
+  // `devDoors: !native` - true. One rejection from Preferences at launch
+  // (line 31-33) was enough to put the access-code row in the Shop and the
+  // catalog's USD stickers on the dust rows of a shipped app, with nothing
+  // on screen to say so. Install the smallest honest adapter first: the
+  // real platform kind with the dev doors shut. Storage falls back to
+  // localStorage, which the next good boot adopts into Preferences, so
+  // this costs the player nothing but the store and the boards.
+  if (Capacitor.isNativePlatform() && !window.__acornautPlatform) {
+    window.__acornautPlatform = { kind: Capacitor.getPlatform(), devDoors: false };
+  }
+  // and if the game was already on the page when it threw, leave it there -
+  // a second bootStandalone would stack a second game on top of the first
+  if (booted) return;
   const m = await import(bundleSrc);
+  booted = true;
   m.bootStandalone(document.getElementById("app"));
 });

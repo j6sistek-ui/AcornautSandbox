@@ -617,7 +617,15 @@ export function helmetRevealed(s: SaveData, id: string) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s: SaveData, id: string) {
-  if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+  // THE WAKE HAS ITS OWN RUNG at 520, fifty stars ahead of AcorNut, and
+  // this line used to answer before the ladder below was ever read: an
+  // audit found the crossed rung still printing "525 of 520 stars" with a
+  // HOLD TO USE STAR UNLOCK button, so a pilot could burn a 500-dust boost
+  // on a trail the chart had already given them. The rung counts here too;
+  // it cannot leak the wake onto another suit, which canWearTrail still
+  // refuses.
+  if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id)
+    || starsOf(s) >= (STAR_UNLOCKS.trails[id] ?? Infinity);
   if (id === "arcflashwake") return suitRevealed(s, "arcflash");
   if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id]) return true;
   if (isIap(id)) return iapOwned(s, id);

@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=236";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=236";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=236";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=236";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=236";
-import { arcflashPreview } from "./arcflash-motion.js?v=236";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=236";
-import { spillAppearance } from "./spill-appearance.js?v=236";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=236";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=236";
-import { goalHud } from "./campaign.js?v=236";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=236";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=236";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=236";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=236";
-import { suitPitchFor } from "./save.js?v=236";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=236";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=236";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=236";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=236";
-import { spillEngineColor } from "./spill-content.js?v=236";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=236";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=236";
+import { spillDockTravelDuration } from "./spill.js?v=240";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=240";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=240";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=240";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=240";
+import { arcflashPreview } from "./arcflash-motion.js?v=240";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=240";
+import { spillAppearance } from "./spill-appearance.js?v=240";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=240";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=240";
+import { goalHud } from "./campaign.js?v=240";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=240";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=240";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=240";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=240";
+import { suitPitchFor } from "./save.js?v=240";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=240";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=240";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=240";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=240";
+import { spillEngineColor } from "./spill-content.js?v=240";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=240";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=240";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2998,7 +2998,14 @@ function drawRetroWorld(ctx, w, save, art) {
             retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
         for (const b of p.blockers) {
             const by = b.y + gateOffset(p, w);
-            retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
+            // blockerX, NOT p.x + b.xOff (audit, 8 Sep 2026). Every rock drifts
+            // along the flight axis by up to its own radius, and the COLLIDER
+            // reads that drift (see the blockerX calls in sim). Painting the home
+            // position instead put the picture up to a full rock-width away from
+            // the thing that kills you: the pilot threaded visibly clear and
+            // died, or flew through a painted rock untouched. The illustrated
+            // painter above already reads it the same way.
+            retroObstacle(ctx, blockerX(p, b, w), by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
         }
     }
     for (const a of w.pickups) {
@@ -3007,6 +3014,16 @@ function drawRetroWorld(ctx, w, save, art) {
         const y = a.y + Math.sin(a.bob) * 4;
         if (a.kind === "retro") {
             drawShiftAcorn(ctx, art, a.x, y, w.time);
+            continue;
+        }
+        // THE DOOR HAS TO READ AS A DOOR (audit, 8 Sep 2026). Every arcade-based
+        // Star Chart mission ends on a portal, and this loop had no case for it:
+        // it fell through the chain to `a.kind === "slow"`, i.e. false, and the
+        // arrival marker was painted as an ordinary brown acorn - the very thing
+        // the pilot has spent the run grazing past - over a 64px hitbox. The
+        // corridor painter learned this lesson already; so does this one.
+        if (a.kind === "portal") {
+            drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
             continue;
         }
         const power = a.kind === "gold" ? "golden"
@@ -3036,8 +3053,14 @@ function drawRetroWorld(ctx, w, save, art) {
     for (const [i, pal] of flyingPals(save, w).entries()) {
         const pos = i === 0 ? w.palPos : w.palPos2;
         const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
-        // live draws its pals at unit SCALE, not at a pixel size
-        drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+        // live draws its pals at unit SCALE, not at a pixel size - but only
+        // the companions its vector kit actually has. A pal it has never
+        // heard of used to be painted as nothing here; it keeps its painted
+        // still instead, at the size the illustrated timeline flies it.
+        if (canDrawPal(pal))
+            drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+        else
+            paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
     }
     const wornId = pilotSuitId(w, save);
     const helm = helmetWornBy(save.equipped, wornId);

@@ -1,12 +1,12 @@
-import { platform } from "./platform.js?v=236";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=236";
+import { platform } from "./platform.js?v=240";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=240";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "236";
+export const ART_VER = "240";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -49,7 +49,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-08 07:27 UTC";
+export const BUILD_TIME = "2026-09-08 16:24 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
@@ -693,19 +693,42 @@ export function idGrants(id) {
     const t = SET_TRAIL[id];
     return t ? [id, t] : [id];
 }
-/** what the ids you do NOT own would cost bought one at a time */
-export function alaCarteTotal(ids, owns) {
+/** THE WEIGHT SUM: every unowned id at its sticker or its weight rate, a
+ *  set trail included. This is the base the featured price has always been
+ *  struck off, and the owner set the shelf around the numbers it gives
+ *  (Aurora 720, Regalia 900), so the audit left it exactly where it stood
+ *  and corrected only what the card CLAIMS you are saving. */
+function weightTotal(ids, owns) {
     return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+}
+/** what the ids you do NOT own would cost bought one at a time.
+ *
+ *  A set trail costs NOTHING here (audit, 8 Sep 2026). SHOP_CYCLE sells no
+ *  trail singly and idGrants hands it over free with its suit, so pricing
+ *  one at the weight rate quoted a "was" figure nobody could ever be
+ *  charged: the featured card struck through 1,440 for Aurora and called it
+ *  50% OFF when the same three suits and the pal cost 1,170 on the single
+ *  shelf. A trail is only free when the suit that grants it is in this list
+ *  AND still unowned - that is the only way a purchase hands it over - so
+ *  that is the only case zeroed.
+ */
+export function alaCarteTotal(ids, owns) {
+    const owed = ids.filter((i) => !owns(i));
+    const free = new Set(owed.map((i) => SET_TRAIL[i]).filter(Boolean));
+    return owed.reduce((n, i) => n + (free.has(i) ? 0 : idDust(i)), 0);
 }
 /** THE FEATURED PACK. One at a time, and always the best deal on the
  *  shelf: half of what its remaining contents would cost singly. Half of
  *  what REMAINS, so a pack whose suit you already bought quietly costs
- *  less rather than charging for it twice. */
+ *  less rather than charging for it twice. Half of the WEIGHT SUM, not of
+ *  the shelf total above it: the free trail sits inside the base these
+ *  packs were priced against, and taking it out would cut every featured
+ *  price, which is the owner's call and not an audit's. */
 export const FEATURE_DISCOUNT = 0.5;
 export function featurePrice(b, owns) {
     if (b.fixed)
         return bundlePrice(b, owns);
-    const due = alaCarteTotal(bundleIds(b), owns);
+    const due = weightTotal(bundleIds(b), owns);
     if (due <= 0)
         return 0;
     return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);

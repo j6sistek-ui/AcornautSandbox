@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=239";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=239";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=239";
-import { restoreSpill } from "./spill.js?v=239";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=239";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=240";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=240";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=240";
+import { restoreSpill } from "./spill.js?v=240";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=240";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=239";
-import { platform } from "./platform.js?v=239";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=240";
+import { platform } from "./platform.js?v=240";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -500,8 +500,16 @@ export function helmetRevealed(s, id) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s, id) {
+    // THE WAKE HAS ITS OWN RUNG at 520, fifty stars ahead of AcorNut, and
+    // this line used to answer before the ladder below was ever read: an
+    // audit found the crossed rung still printing "525 of 520 stars" with a
+    // HOLD TO USE STAR UNLOCK button, so a pilot could burn a 500-dust boost
+    // on a trail the chart had already given them. The rung counts here too;
+    // it cannot leak the wake onto another suit, which canWearTrail still
+    // refuses.
     if (id === "vanguardwake")
-        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+        return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id)
+            || starsOf(s) >= (STAR_UNLOCKS.trails[id] ?? Infinity);
     if (id === "arcflashwake")
         return suitRevealed(s, "arcflash");
     if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id])

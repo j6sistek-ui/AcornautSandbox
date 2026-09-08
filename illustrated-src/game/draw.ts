@@ -9,7 +9,7 @@ import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { goalHud } from "./campaign";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite, type SpillShipXf } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
@@ -3115,8 +3115,12 @@ function drawRetroWorld(
   for (const [i, pal] of flyingPals(save, w).entries()) {
     const pos = i === 0 ? w.palPos : w.palPos2;
     const bob = Math.sin(w.time * 2.6 + i * 2.1) * 2;
-    // live draws its pals at unit SCALE, not at a pixel size
-    drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+    // live draws its pals at unit SCALE, not at a pixel size - but only
+    // the companions its vector kit actually has. A pal it has never
+    // heard of used to be painted as nothing here; it keeps its painted
+    // still instead, at the size the illustrated timeline flies it.
+    if (canDrawPal(pal)) drawPalOn(ctx, pal, pos.x, pos.y + bob, 1, w.time);
+    else paintPal(ctx, art, pal, pos.x, pos.y + bob, 26, w.time);
   }
 
   const wornId = pilotSuitId(w, save);

@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=236";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=236";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=236";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=236";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=240";
+import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=240";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=240";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=240";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -407,6 +407,26 @@ export function loadSuitBank(bank, id) {
             bank.suitAsc[id] = asc;
         if (desc.length)
             bank.suitDesc[id] = desc;
+        // many() drops a frame it could not fetch rather than sinking the whole
+        // bank, and that is the right instinct - but draw.ts reads the tap,
+        // tail-tap and bounce banks by EXACT count (16, 12, 16), so fifteen
+        // frames is not one pose missing, it is the painted animation switched
+        // off and the suit back on the universal rig's 2.8% belly tuck. Nothing
+        // released the cache slot either way, so one flaky request on mobile
+        // data pinned that for the rest of the session and a re-equip could not
+        // clear it. An audit found it. Give a short bank the same courtesy
+        // vanguard and switchback already get and drop the slot, so the next
+        // equip or the background sweep can ask again. Whatever DID arrive stays
+        // published: asc, desc and loop are read at whatever length they have,
+        // so a 7-of-8 ramp still plays and only an empty one is worth a retry.
+        const shortBank = (TAP_BANKS[id] && tap.length !== TAP_BANKS[id]) ||
+            (TAIL_TAP_BANKS[id] && tailTap.length !== TAIL_TAP_BANKS[id]) ||
+            (BOUNCE_BANKS[id] && bounce.length !== BOUNCE_BANKS[id]) ||
+            (LOOP_BANKS[id] && !loop.length) ||
+            (ASC_BANKS[id] && !asc.length) ||
+            (DESC_BANKS[id] && !desc.length);
+        if (shortBank)
+            suitBankLoads.delete(id);
     })();
     suitBankLoads.set(id, p);
     return p;
@@ -435,6 +455,13 @@ export function loadPalBank(bank, id) {
             }
             else if (frames.length)
                 bank.palAnim[id] = frames;
+            // Nothing arrived at all, and the resolved promise stayed in the
+            // cache - so a pal that lost its bank to a bad connection drew as a
+            // still portrait for the rest of the session, since every caller
+            // short-circuits on that hit. The audit found the same trap here as
+            // in the suits. Drop the slot and let a later equip try again.
+            else
+                palBankLoads.delete(id);
         })
         : Promise.resolve();
     palBankLoads.set(id, p);

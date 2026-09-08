@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=239";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=239";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=239";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=239";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=240";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=240";
+import { IS_BETA, PALS, STAR_MAP_LIVE } from "./catalog.js?v=240";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=240";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -327,8 +327,17 @@ export function goalText(g, def) {
 }
 export function fxText(fx) {
     const out = [];
-    if (fx.pal)
-        out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · COSMETIC" : fx.pal.toUpperCase()}`);
+    // THE SHEET NAMES THE PAL THE HANGAR NAMES. This tag printed the raw id
+    // and called Stopwatch cosmetic; the audit found both wrong. A mission
+    // flies its designated pal with its effects LIVE, and Stopwatch is no
+    // exception - its tap toggle reads runPals, so in a mission every tap
+    // still toggles the slow and a pilot who trusted "cosmetic" lost the run
+    // to it. The ids fared no better: nothing else in the game calls
+    // Astrolobee "bee" or Acorn "buddy", so the catalog name is what shows.
+    if (fx.pal) {
+        const pal = PALS.find((p) => p.id === fx.pal);
+        out.push(`PAL: ${(pal ? pal.name : fx.pal).toUpperCase()}`);
+    }
     if (fx.upsideDown)
         out.push("UPSIDE DOWN");
     if (fx.bounceScale)

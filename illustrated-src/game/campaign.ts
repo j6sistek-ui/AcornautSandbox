@@ -1,6 +1,6 @@
 import { BETA_MISSION_ROWS } from "./beta-campaign-manifest";
 import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest";
-import { IS_BETA, STAR_MAP_LIVE, STAR_MAP_PREVIEW } from "./catalog";
+import { IS_BETA, PALS, STAR_MAP_LIVE, STAR_MAP_PREVIEW } from "./catalog";
 import {
   RACE_MAX_ACORNS,
   RACE_RINGS,
@@ -432,7 +432,17 @@ export function goalText(g: Goal, def: LevelDef): string {
 
 export function fxText(fx: LevelFx): string[] {
   const out: string[] = [];
-  if (fx.pal) out.push(`PAL: ${fx.pal === "switchback" ? "SWITCHBACK · COSMETIC" : fx.pal.toUpperCase()}`);
+  // THE SHEET NAMES THE PAL THE HANGAR NAMES. This tag printed the raw id
+  // and called Stopwatch cosmetic; the audit found both wrong. A mission
+  // flies its designated pal with its effects LIVE, and Stopwatch is no
+  // exception - its tap toggle reads runPals, so in a mission every tap
+  // still toggles the slow and a pilot who trusted "cosmetic" lost the run
+  // to it. The ids fared no better: nothing else in the game calls
+  // Astrolobee "bee" or Acorn "buddy", so the catalog name is what shows.
+  if (fx.pal) {
+    const pal = PALS.find((p) => p.id === fx.pal);
+    out.push(`PAL: ${(pal ? pal.name : fx.pal).toUpperCase()}`);
+  }
   if (fx.upsideDown) out.push("UPSIDE DOWN");
   if (fx.bounceScale) out.push("SPRINGY PLANETS");
   if (fx.sticky) out.push("STICKY PLANETS · TAP TO RELEASE");
