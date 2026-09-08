@@ -641,6 +641,17 @@ function rewardGates(kind) {
 }
 /** star thresholds the save-side gates read; kept beside the reward list */
 /** WHAT A RUNG PAYS WHEN ITS ITEM IS ALREADY YOURS (owner, 8 Sep 2026:
+<<<<<<< HEAD
+ *  "if they buy it now... it is replaced in the star chart as currency...
+ *  if they use a star reward unlock, it's replaced with acorns... like 50
+ *  star dust, not an equivalent share"). Flat, whatever the rung: a bought
+ *  item's rung pays SUB_DUST Star Dust, a Star-Unlocked item's rung pays
+ *  SUB_ACORNS acorns. Two numbers, here, to retune. */
+export const SUB_DUST = 50;
+export const SUB_ACORNS = 250;
+export function substituteFor(_stars, kind) {
+    return kind === "acorns" ? { kind, amount: SUB_ACORNS } : { kind, amount: SUB_DUST };
+=======
  *  "change pay out to acorns, 250, flat regardless of star unlock or store
  *  purchase... acorns are less useful long term"). Flat, whatever the rung
  *  and whichever way the item arrived. A suit and its helmet on two rungs
@@ -650,6 +661,7 @@ function rewardGates(kind) {
 export const SUB_ACORNS = 250;
 export function substituteFor(_stars) {
     return { kind: "acorns", amount: SUB_ACORNS };
+>>>>>>> origin/main
 }
 export const STAR_UNLOCKS = {
     pals: rewardGates("pal"),

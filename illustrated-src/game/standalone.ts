@@ -1372,8 +1372,11 @@ export async function bootStandalone(root: HTMLElement) {
     boardBtn.onclick = () => engine.open("scores");
     const gear = el("button", "ac-hub-sq");
     gear.setAttribute("aria-label", "Settings and help");
-    // the owner's painted acorn-gear plate replaces the line glyph
-    gear.append(hubIcon("settings", false));
+    // THE OWNER'S ACORN-GEAR (8 Sep 2026: "keep in a square background
+    // like the leaderboard and shop. current button has white box that
+    // disrupts the bar's look"). Same painted-on-dark treatment as the
+    // gift and the trophy: screen-blended into the rail's own square.
+    gear.append(hubIcon("settings"));
     gear.onclick = () => engine.open("help");
     rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);

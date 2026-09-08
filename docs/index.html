@@ -1160,9 +1160,6 @@
     .ac-hub-railgap { flex: 1; }
     .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 12px; background: rgba(8,10,24,.5);
       border: 1px solid rgba(170,140,240,.18); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
-    /* the painted settings plate carries its own frame - no screen blend */
-    .ac-hub-sq .ac-hubic-art { width: 40px; height: 40px; max-width: none; max-height: none;
-      object-fit: cover; border-radius: 10px; mix-blend-mode: normal; }
     .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px; }
     .ac-hub-sq canvas { width: 36px; height: 36px; }
     .ac-hub-wordmark { margin-top: 10px; text-align: center; }
@@ -2053,7 +2050,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js234/standalone.js")
+    import("./js236/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
