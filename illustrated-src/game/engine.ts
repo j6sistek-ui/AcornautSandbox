@@ -835,25 +835,30 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
   }
 
-  /** Pay every dust line the pilot has crossed but not yet been paid for.
-   *  Idempotent by construction: dustPaidTo only ever moves forward, so
-   *  calling this twice pays once. Called on load and after every finish,
-   *  which also means a save from before dust existed collects its whole
+  /** Pay every currency line the pilot has crossed but not yet been paid for.
+   *  Idempotent by construction: each reward has a stable ledger id, while
+   *  dustPaidTo retains the compatibility watermark used by older bundles.
+   *  Called on load and after every finish, so old saves collect their whole
    *  backlog rather than losing it. */
   function settleDust() {
     const have = starsOf(save);
     const ledger = migrateCampaign(save);
-    let owed = 0, high = save.dustPaidTo;
+    let dustOwed = 0, acornsOwed = 0, high = save.dustPaidTo;
     for (const r of STAR_REWARDS) {
-      if (r.kind !== "dust" || !r.amount) continue;
-      if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) { owed += r.amount; high = Math.max(high, r.stars); ledger.paidRewards.push(rewardId(r)); }
+      if ((r.kind !== "dust" && r.kind !== "acorns") || !r.amount) continue;
+      if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) {
+        if (r.kind === "dust") { dustOwed += r.amount; high = Math.max(high, r.stars); }
+        else acornsOwed += r.amount;
+        ledger.paidRewards.push(rewardId(r));
+      }
     }
-    if (owed <= 0) return 0;
-    save.starDust += owed;
+    if (dustOwed <= 0 && acornsOwed <= 0) return 0;
+    save.starDust += dustOwed;
+    save.acorns += acornsOwed;
     save.dustPaidTo = high;
     writeSave(save);
     notify();
-    return owed;
+    return dustOwed + acornsOwed;
   }
 
   /** How the daily stands right now, without claiming it. */
@@ -1528,3 +1533,4 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 }
 
 export { deepUnlocked, lostUnlocked } from "./save";
+
