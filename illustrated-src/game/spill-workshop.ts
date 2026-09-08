@@ -63,13 +63,13 @@ function shipPreview(engine: Engine, pick: ShipPick, height: number, flashAt = -
 export function drawSpillStarters(engine: Engine, onPick = () => {}) {
   const save = engine.save, wrap = el("section", "ac-starting-kit");
   wrap.append(el("h3", "", "Starting utility"), el("p", "ac-workshop-note", "Choose one earned item. Free on every new run."));
-  const none = el("button", `ac-starter-none${!save.spillStarter ? " selected" : ""}`, !save.spillStarter ? "✓ No starting utility" : "No starting utility");
+  const none = el("button", `ac-starter-none${!save.spillStarter ? " on" : ""}`, !save.spillStarter ? "✓ No starting utility" : "No starting utility");
   none.dataset.shipStarter = "stock"; none.setAttribute("aria-pressed", String(!save.spillStarter));
   none.onclick = () => { onPick(); engine.spillStarter(null); }; wrap.append(none);
   const choices = el("div", "ac-starting-options");
   for (const id of SPILL_UTILITY_IDS) {
     const u = SPILL_UTILITIES[id], earned = save.spillBest >= u.unlock, selected = save.spillStarter === id;
-    const b = el("button", `ac-starter-option${selected ? " selected" : ""}`), text = el("span", "ac-starter-text");
+    const b = el("button", `ac-starter-option${selected ? " on" : ""}`), text = el("span", "ac-starter-text");
     b.dataset.shipStarter = id; b.title = u.detail; b.disabled = !earned; b.setAttribute("aria-pressed", String(selected));
     text.append(el("b", "", u.name), el("span", "", id === "capacitor" ? "Extra Pulse charge · needs Impact pulse." : u.desc), el("strong", "", !earned ? `Clear wave ${u.unlock}` : selected ? "✓ Selected for next run" : "Select · free"));
     b.append(spillUtilityArt(id), text); b.onclick = () => { onPick(); engine.spillStarter(id); }; choices.append(b);
@@ -82,7 +82,7 @@ export function drawSpillEnginePicker(engine: Engine) {
   const colors = el("div", "ac-engine-colors");
   for (const color of SPILL_ENGINE_COLORS) {
     const selected = color.id === chosen.id, earned = engine.save.spillBest >= color.at;
-    const b = el("button", `ac-engine-color${selected ? " selected" : ""}`), swatch = el("i", "ac-engine-swatch");
+    const b = el("button", `ac-engine-color${selected ? " on" : ""}`), swatch = el("i", "ac-engine-swatch");
     b.dataset.shipColor = color.id; b.disabled = !earned; b.setAttribute("aria-pressed", String(selected));
     b.setAttribute("aria-label", `${color.name}${selected ? ", selected" : ""}${earned ? "" : `, clear wave ${color.at} to unlock`}`);
     swatch.style.setProperty("--engine-color", color.color); swatch.setAttribute("aria-hidden", "true");
@@ -93,30 +93,34 @@ export function drawSpillEnginePicker(engine: Engine) {
   if (spillAppearance(engine.save).trail === "rust-wake") wrap.append(el("p", "ac-workshop-note", "Rust Wake overrides this color with orange. Switch to the standard trail in Loadout to use your color."));
   return wrap;
 }
-export function drawSpillLaunchSetup(engine: Engine) {
+export function drawSpillLaunchSetup(engine: Engine, onGuide: () => void) {
   const save = engine.save, wrap = el("div", "ac-spillprep ac-spillsetup");
   const pilot = SUITS.find(s => s.id === save.equippedSuit)?.name ?? "Pilot";
-  wrap.append(el("p", "ac-kicker", "DEBRIS FIELD · NEW RUN"), el("h2", "", "Your next ship"));
+  const head = el("header", "ac-setup-head"), heading = el("div");
+  heading.append(el("p", "ac-kicker", "DEBRIS FIELD · NEW RUN"), el("h2", "", "Your next ship"));
+  const help = el("button", "ac-helpdot", "?"); help.dataset.spillControl = "setup-guide";
+  help.setAttribute("aria-label", "Debris Field briefing"); help.onclick = onGuide;
+  head.append(heading, help); wrap.append(head);
   const stage = el("div", "ac-launch-ship");
   stage.append(shipPreview(engine, { plating: 0, thrusters: 0, pulse: 0, shield: 0, utilities: save.spillStarter ? [save.spillStarter] : [] }, 140), el("b", "ac-launch-pilot", `${pilot} aboard`));
   wrap.append(stage, el("p", "ac-launch-stats", "3 health · 0 shields · first upgrade free"), drawSpillStarters(engine), drawSpillEnginePicker(engine));
   if (!save.helpOff && !save.spillPromptsOff) wrap.append(el("p", "ac-workshop-note ac-launch-controls", save.spillButtonsOff ? "Hold to rise · release to fall · swipe to burst." : "Throttle rises · Dive drops · Lunge dashes."));
-  const actions = el("div", "ac-workshop-actions"), back = el("button", "ac-workshop-exit", "Main menu"), go = el("button", "ac-workshop-launch", "Land & choose free upgrade →");
+  const actions = el("div", "ac-workshop-actions"), back = el("button", "ac-ghost ac-workshop-exit", "MAIN MENU"), go = el("button", "ac-primary ac-workshop-launch", "LAND · FREE UPGRADE");
   back.onclick = () => engine.open("title"); go.dataset.spillControl = "land"; go.onclick = () => engine.spillLunge();
   actions.append(back, go); wrap.append(actions); return wrap;
 }
 
 export type DepotView = { key: string; part: System; extras: boolean; specialties: boolean; guide: boolean; swap: SpillUtility | null; receipt: string; flashAt: number };
 export const createDepotView = (): DepotView => ({ key: "", part: "plating", extras: false, specialties: false, guide: false, swap: null, receipt: "", flashAt: -10000 });
-function drawDepotGuide(engine: Engine, view: DepotView, rerender: () => void) {
+function drawDepotGuide(engine: Engine, onClose: () => void, closeLabel: string) {
   const sheet = el("section", "ac-lvlcard ac-depotcard ac-depotguidecard");
-  sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-label", "Depot quick guide");
-  const goal = engine.world.lvl?.def.spillFinish;
-  const objective = goal ? goal.kind === "ore" ? `Collect ${goal.n} coins.` : `Visit ${goal.n} depots.`
-    : engine.world.spill?.target ? `Survive ${engine.world.spill.target} waves.` : "Clear waves. Beat your best.";
-  sheet.append(el("p", "ac-kicker", "DEBRIS FIELD · DEPOT GUIDE"), el("h2", "", "Build. Survive. Repeat."), el("p", "ac-workshop-note", objective));
+  sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-label", "How the Depot works"); sheet.tabIndex = -1;
+  const inRun = engine.world.screen === "play", goal = inRun ? engine.world.lvl?.def.spillFinish : null;
+  const objective = goal ? goal.kind === "ore" ? `Collect ${goal.n} Acorn Coins.` : `Visit ${goal.n} depots.`
+    : inRun && engine.world.spill?.target ? `Survive ${engine.world.spill.target} waves.` : "Clear waves. Beat your best.";
+  sheet.append(el("p", "ac-kicker", "DEBRIS FIELD · DEPOT GUIDE"), el("h2", "", "How the Depot works"), el("p", "ac-workshop-note", objective));
   const collect = el("div", "ac-guide-collect"), words = el("div");
-  words.append(el("h3", "", "Collect coins"), el("p", "", "Buy upgrades here. First one free.")); collect.append(coin(), words); sheet.append(collect);
+  words.append(el("h3", "", "Collect Acorn Coins"), el("p", "", "Buy upgrades here. First one free.")); collect.append(coin(), words); sheet.append(collect);
   const effects = el("div", "ac-guide-systems");
   for (const [id, name, effect] of [["plating", "Health", "More health"], ["shield", "Shields", "Block hits"], ["thrusters", "Thrusters", "Stronger bursts"], ["pulse", "Pulse", "Charged blast"]] as const) {
     const item = el("div"); item.dataset.system = id; item.append(systemIcon(id), el("b", "", name), el("span", "", effect)); effects.append(item);
@@ -124,16 +128,48 @@ function drawDepotGuide(engine: Engine, view: DepotView, rerender: () => void) {
   sheet.append(effects);
   const title = el("div", "ac-workshop-sectionhead ac-guide-utilityhead"); title.append(el("h3", "", "Utilities"), el("span", "", "Fit 2")); sheet.append(title);
   const kit = el("div", "ac-guide-kit");
-  for (const [id, name, effect] of [["magnet", "Magnet", "Pull coins"], ["scanner", "Scanner", "Spot debris"], ["brake", "Brake", "Edge recovery"], ["capacitor", "Battery", "Extra Pulse"]] as const) {
-    const item = el("div"); item.append(spillUtilityArt(id), el("b", "", name), el("span", "", effect)); kit.append(item);
+  for (const id of SPILL_UTILITY_IDS) {
+    const u = SPILL_UTILITIES[id], item = el("div"); item.setAttribute("aria-label", u.name);
+    item.append(spillUtilityArt(id), el("b", "", u.short), el("span", "", u.guide)); kit.append(item);
   }
   sheet.append(kit, el("p", "ac-guide-services", "Repair · full health   |   Extra life · revive once"));
   const carry = el("div", "ac-guide-carry"), lost = el("div", "ac-guide-loss"), kept = el("div", "ac-guide-keep");
-  lost.append(el("h3", "", "Out of lives"), el("p", "", "Wave 1. Coins & upgrades reset."));
+  lost.append(el("h3", "", "Out of lives"), el("p", "", "Wave 1. Acorn Coins & upgrades reset."));
   kept.append(el("h3", "", "Unlocks stay"), el("p", "", "Starting utility choices & engine colors.")); carry.append(lost, kept); sheet.append(carry);
-  const enter = el("button", "ac-workshop-launch", engine.save.spillDepotGuideSeen ? "Back to depot →" : "Enter depot →"); enter.dataset.spillControl = "enter-depot";
-  enter.onclick = () => { engine.save.spillDepotGuideSeen = true; writeSave(engine.save); view.guide = false; rerender(); };
+  const enter = el("button", "ac-primary ac-workshop-launch", closeLabel); enter.dataset.spillControl = "enter-depot";
+  enter.onclick = onClose;
   sheet.append(enter, el("p", "ac-workshop-note ac-guide-timing", "Depot every 5 waves · No timer")); return sheet;
+}
+
+/** Informational replay: reading it before a run never consumes the first-visit guide. */
+export function drawSpillGuideSheet(engine: Engine, onClose: () => void, closeLabel: string) {
+  const wrap = el("div", "ac-lvlsheet ac-depotwrap ac-workshop ac-spillhelpwrap");
+  wrap.style.setProperty("--workshop-art", `url("${artUrl("spill-scene/workshop.webp")}")`);
+  const sheet = drawDepotGuide(engine, onClose, closeLabel);
+  sheet.querySelector(".ac-guide-collect")?.before(drawSpillFlightHelp());
+  wrap.append(sheet);
+  wrap.onclick = e => { if (e.target === wrap) onClose(); };
+  // Reading a modal must not throttle or launch the ready ship behind it.
+  wrap.onkeydown = e => {
+    e.stopPropagation();
+    if (e.key === "Tab") { e.preventDefault(); sheet.querySelector("button")?.focus(); }
+  };
+  wrap.onkeyup = e => e.stopPropagation();
+  return wrap;
+}
+
+/** The same instructions in Settings & Help and the replayable briefing. */
+export function drawSpillFlightHelp() {
+  const section = el("section", "ac-spillflighthelp");
+  section.setAttribute("aria-label", "How to fly · Debris Field");
+  section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"));
+  const controls = el("div", "ac-spillhelp-controls");
+  for (const [input, action, note] of [["HOLD", "Rise", "Throttle / Space"], ["RELEASE", "Fall", "Let go"], ["LUNGE", "Dash forward", "Swipe right / →"]]) {
+    const card = el("div");
+    card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note)); controls.append(card);
+  }
+  section.append(controls, el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
+  return section;
 }
 
 export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () => void) {
@@ -141,7 +177,12 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   if (key !== view.key) Object.assign(view, createDepotView(), { key, guide: !!sp.welcome && !engine.save.spillDepotGuideSeen });
   const wrap = el("div", "ac-lvlsheet ac-depotwrap ac-workshop");
   wrap.style.setProperty("--workshop-art", `url("${artUrl("spill-scene/workshop.webp")}")`);
-  if (view.guide) { wrap.append(drawDepotGuide(engine, view, rerender)); return wrap; }
+  if (view.guide) {
+    wrap.append(drawDepotGuide(engine, () => {
+      engine.save.spillDepotGuideSeen = true; writeSave(engine.save); view.guide = false; rerender();
+    }, engine.save.spillDepotGuideSeen ? "BACK TO DEPOT" : "ENTER DEPOT"));
+    return wrap;
+  }
   const sheet = el("section", "ac-lvlcard ac-depotcard ac-workshop-card");
   sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-label", "Salvage depot");
   const arming = (sp.depot?.arm ?? 0) > 0;
@@ -153,7 +194,7 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
       : sp.welcome && !sp.freeUpgrade ? "Next stop" : price === 0 ? "Free" : String(price);
     if (label && price !== null) b.append(el("span", "", label));
     if (price !== null && price > 0 && !sp.welcome) b.append(coin()); b.append(el("span", "", text));
-    b.setAttribute("aria-label", `${SPILL_SHOP[what].name}: ${price === null ? "complete" : price === 0 ? "free upgrade" : `${price} coins`}`);
+    b.setAttribute("aria-label", `${SPILL_SHOP[what].name}: ${price === null ? "complete" : price === 0 ? "free upgrade" : `${price} Acorn Coins`}`);
     b.onclick = () => {
       feedback(what === "repair" ? "Health restored" : what === "core" ? "Extra life ready" : `${SPILL_SHOP[what].name} upgraded`);
       if (engine.spillBuy(what) !== "ok") { view.receipt = "Upgrade unavailable"; rerender(); }
@@ -161,8 +202,8 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   };
   const head = el("header", "ac-workshop-head"), heading = el("div"), tools = el("div", "ac-workshop-headtools"), wallet = el("div", "ac-workshop-wallet");
   heading.append(el("p", "ac-kicker", `DEBRIS FIELD · ${sp.welcome ? "PRE-FLIGHT" : `WAVE ${sp.wave} CLEARED`}`), el("h2", "", sp.firstPass ? "First pass complete" : "Salvage depot"));
-  wallet.setAttribute("aria-label", `${sp.ore} coins`); wallet.append(coin(), el("b", "", String(sp.ore)));
-  const guide = el("button", "ac-workshop-help", "Guide"); guide.dataset.spillControl = "guide"; guide.onclick = () => { view.guide = true; rerender(); };
+  wallet.setAttribute("aria-label", `${sp.ore} Acorn Coins`); wallet.append(coin(), el("b", "", String(sp.ore)));
+  const guide = el("button", "ac-helpdot", "?"); guide.setAttribute("aria-label", "How the Depot works"); guide.dataset.spillControl = "guide"; guide.onclick = () => { view.guide = true; rerender(); };
   tools.append(wallet, guide); head.append(heading, tools); sheet.append(head);
   if (sp.firstPass) sheet.append(el("p", "ac-workshop-milestone", "Wave 20 complete. Victory recorded. Keep your ship and fly on."));
   const status = el("div", "ac-workshop-status"), health = el("div", "ac-workshop-health"), healthText = el("span"), healthBar = el("progress");
@@ -192,7 +233,7 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     : tier >= max ? "Fully upgraded" : SPILL_SHOP[part].levels[tier]));
   selection.append(systemIcon(part), words, priceButton(part)); sheet.append(selection);
   const price = spillPrice(sp, part);
-  if (!sp.welcome && price !== null && price > sp.ore) sheet.append(el("p", "ac-workshop-need", `${price - sp.ore} more coins needed`));
+  if (!sp.welcome && price !== null && price > sp.ore) sheet.append(el("p", "ac-workshop-need", `${price - sp.ore} more Acorn Coins needed`));
   if (!sp.welcome && part !== "shield" && tier >= 2) {
     const details = el("details", "ac-workshop-specialties"); details.open = view.specialties; details.append(el("summary", "", "Customize this upgrade · free"));
     details.ontoggle = () => { if (details.isConnected) view.specialties = details.open; };
@@ -220,7 +261,7 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     if (id === "capacitor" && !sp.up.pulse) card.append(el("small", "ac-workshop-requirement", "Needs Impact pulse"));
     const buy = el("button", `ac-workshop-buy${fitted ? " fitted" : ""}`); buy.dataset.spillControl = id;
     buy.disabled = arming || !!sp.welcome || (!fitted && !owned && sp.ore < u.price);
-    buy.setAttribute("aria-label", `${fitted ? "Remove" : "Fit"} ${u.name}${!owned ? ` for ${u.price} coins` : ""}`);
+    buy.setAttribute("aria-label", `${fitted ? "Remove" : "Fit"} ${u.name}${!owned ? ` for ${u.price} Acorn Coins` : ""}`);
     buy.append(el("span", "", sp.welcome ? fitted ? "Starting utility" : "Next stop" : fitted ? "✓ Fitted · remove" : sp.utilities.length === 2 ? "Swap" : "Fit"));
     if (!sp.welcome && !owned) buy.append(coin(), el("span", "", String(u.price)));
     else if (!sp.welcome && owned && !fitted) buy.append(el("span", "", "Free"));
@@ -236,13 +277,13 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     const swapId = view.swap, swap = el("div", "ac-workshop-swap"); swap.setAttribute("role", "group");
     swap.append(el("p", "", `Replace which utility with ${SPILL_UTILITIES[swapId].name.toLowerCase()}?`));
     for (const id of sp.utilities) {
-      const b = el("button", "ac-workshop-secondary", SPILL_UTILITIES[id].name); b.dataset.spillControl = `replace-${id}`; b.disabled = arming;
+      const b = el("button", "ac-ghost ac-workshop-secondary", SPILL_UTILITIES[id].name); b.dataset.spillControl = `replace-${id}`; b.disabled = arming;
       b.onclick = () => {
         view.swap = null; feedback(`${SPILL_UTILITIES[swapId].name} fitted`); engine.spillUtility(swapId, id);
         document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
       }; swap.append(b);
     }
-    const cancel = el("button", "ac-workshop-exit", "Cancel"); cancel.dataset.spillControl = "cancel-swap";
+    const cancel = el("button", "ac-ghost ac-workshop-exit", "CANCEL"); cancel.dataset.spillControl = "cancel-swap";
     cancel.onclick = () => {
       view.swap = null; rerender(); document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
     }; swap.append(cancel); shelf.append(swap);
@@ -256,7 +297,7 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     if (sp.contract) extras.append(el("p", "ac-workshop-contract", spillContractProgress(sp)));
     else for (const offer of spillContractOffers(sp.wave)) {
       const b = el("button", "ac-workshop-contract-option"), text = el("span"); b.disabled = arming; b.dataset.spillControl = `contract-${offer.kind}`;
-      text.append(el("b", "", offer.name), el("span", "", offer.desc)); b.append(text, el("strong", "", `+${offer.reward} coins`));
+      text.append(el("b", "", offer.name), el("span", "", offer.desc)); b.append(text, el("strong", "", `+${offer.reward} Acorn Coins`));
       b.onclick = () => { feedback(`${offer.name} selected`); engine.spillContract(offer.kind); }; extras.append(b);
     }
     sheet.append(extras);
@@ -266,9 +307,9 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   const receipt = el("p", "ac-workshop-receipt", view.receipt || (sp.welcome ? "One free upgrade before takeoff" : "Take your time · next depot in 5 waves"));
   receipt.setAttribute("aria-live", "polite"); footer.append(receipt);
   if (!sp.target) {
-    const save = el("button", "ac-workshop-exit", "Save & exit"); save.disabled = arming; save.dataset.spillControl = "save"; save.onclick = () => engine.spillSuspend(); actions.append(save);
+    const save = el("button", "ac-ghost ac-workshop-exit", "SAVE & EXIT"); save.disabled = arming; save.dataset.spillControl = "save"; save.onclick = () => engine.spillSuspend(); actions.append(save);
   }
-  const go = el("button", "ac-workshop-launch", sp.welcome && sp.freeUpgrade ? "Choose a free upgrade above" : `Launch wave ${sp.welcome ? 1 : sp.wave + 1} →`);
+  const go = el("button", "ac-primary ac-workshop-launch", sp.welcome && sp.freeUpgrade ? "CHOOSE FREE UPGRADE" : `LAUNCH WAVE ${sp.welcome ? 1 : sp.wave + 1}`);
   go.disabled = arming || !!(sp.welcome && sp.freeUpgrade); go.dataset.spillControl = "launch"; go.onclick = () => engine.spillLeaveDepot();
   actions.append(go); footer.append(actions); sheet.append(footer); wrap.append(sheet); return wrap;
 }

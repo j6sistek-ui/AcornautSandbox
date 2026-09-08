@@ -270,7 +270,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   pulse: {
     name: "Impact pulse",
     prices: [60, 110, 170],
-    levels: ["Breaks debris on a charged hit", "Second blast readies after 5 seconds", "Wider blast · debris drops coins"],
+    levels: ["Breaks debris on a charged hit", "Second blast readies after 5 seconds", "Wider blast · debris drops Acorn Coins"],
   },
   shield: {
     name: "Shields",
@@ -1116,7 +1116,7 @@ function settleContract(s: SpillState) {
   if (!c || s.wave < c.endWave) return;
   const won = c.kind === "clean" ? s.hits === c.startHits : c.kind === "salvage" ? s.oreMined - c.startOre >= c.target : s.shards - c.startShards >= c.target;
   if (won) { s.ore += c.reward; s.contractsDone++; s.score += 500; }
-  s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} COINS` : "CONTRACT MISSED · choose another";
+  s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} ACORN COINS` : "CONTRACT MISSED · choose another";
   s.contract = null; cue(s, "contract");
 }
 

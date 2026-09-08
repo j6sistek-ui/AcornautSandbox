@@ -2516,9 +2516,9 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     // on a phone a long line pushed the sprites off the panel's edge.
     const lines = [
       "SURVIVE THE WAVES",
-      "COLLECT COINS",
+      "COLLECT ACORN COINS",
       compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
-              : "EVERY 5 WAVES: DEPOT · SPEND COINS · UPGRADE THE SHIP",
+              : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
       compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
               : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
       "PRESS TO LAUNCH",
@@ -5451,22 +5451,25 @@ function drawHudBody(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | nu
       const compact = W < 520;
       const lineHeight = compact ? 20 : 21;
       const panelWidth = Math.min(W - 24, compact ? 430 : 560);
-      const panelHeight = readyLines.length * lineHeight + 28;
+      const panelHeight = readyLines.length * lineHeight + 40;
       const panelTop = Math.min(w.H - (w.insetTop || 0) - panelHeight - 12, Math.max(96, w.H * 0.66));
-      ctx.fillStyle = "rgba(4,8,20,.78)";
-      ctx.strokeStyle = "rgba(169,245,255,.34)";
+      ctx.fillStyle = "#101830";
+      ctx.strokeStyle = "#2a3454";
       ctx.lineWidth = 1;
-      round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 12);
+      round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 18);
       ctx.fill();
       ctx.stroke();
+      ctx.fillStyle = "#4ab4ff";
+      round(ctx, W / 2 - panelWidth / 2 + 10, panelTop + panelHeight - 44, panelWidth - 20, 34, 16);
+      ctx.fill();
       ctx.textAlign = "center";
       readyLines.forEach((line, i) => {
         const isLaunch = i === readyLines.length - 1;
-        ctx.fillStyle = isLaunch ? "#ffe086" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
+        ctx.fillStyle = isLaunch ? "#0c1224" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
         ctx.font = isLaunch
-          ? "900 15px Figtree, system-ui"
+          ? "800 18px Figtree, system-ui"
           : i === 0 ? "900 14px Figtree, system-ui" : "800 14px Figtree, system-ui";
-        ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+        ctx.fillText(line, W / 2, isLaunch ? panelTop + panelHeight - 19 : panelTop + 21 + i * lineHeight);
       });
     }
     return;
