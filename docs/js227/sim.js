@@ -1,19 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=223";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=223";
-import { trailWornBy } from "./catalog.js?v=223";
-import { missionRandom } from "./mission-rng.js?v=223";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=223";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=223";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=223";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=223";
-import { platform } from "./platform.js?v=223";
-import { TUTORIAL_SUIT } from "./catalog.js?v=223";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=223";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=223";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=223";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=223";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=223";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=223";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=227";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=227";
+import { trailWornBy } from "./catalog.js?v=227";
+import { missionRandom } from "./mission-rng.js?v=227";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=227";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=227";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=227";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=227";
+import { platform } from "./platform.js?v=227";
+import { TUTORIAL_SUIT } from "./catalog.js?v=227";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=227";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=227";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=227";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=227";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=227";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=227";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -152,8 +152,12 @@ export function resizeWorld(w, W, H) {
     if (w.flight === "tunnel" && w.tunnel && oldW > 0 && oldH > 0 && (oldW !== W || oldH !== H)) {
         const scaleY = H / oldH;
         const shiftX = W * PHYS.squirrelX - oldW * PHYS.squirrelX;
-        const minHalf = Math.max(72, Math.min(88, H * 0.15));
-        const maxHalf = Math.max(minHalf + 38, Math.min(150, H * 0.27));
+        // the SAME clamp the track builder uses (tunnelMinHalf / tunnelMaxHalf,
+        // WORMHOLE_WIDTH included). This was an inline copy without the width
+        // factor, so a resize round-trip narrowed the corridor from 172.5 to
+        // 150 at 640px; test-tunnel's resize check is what caught it.
+        const minHalf = tunnelMinHalf(H);
+        const maxHalf = tunnelMaxHalf(H);
         w.tunnel.patternStartCenter = Math.max(minHalf + 18, Math.min(H - minHalf - 18, w.tunnel.patternStartCenterRatio * H));
         w.tunnel.patternStartHalf = Math.max(minHalf, Math.min(maxHalf, w.tunnel.patternStartHalfRatio * H));
         for (const n of w.tunnel.nodes) {

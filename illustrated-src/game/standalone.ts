@@ -3689,9 +3689,14 @@ export async function bootStandalone(root: HTMLElement) {
       t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`),
         el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
       // the STORE's localized price when a shell is answering; the catalog's
-      // sticker is only the web page's placeholder
-      row.append(t, el("span", "ac-modprice ac-cashprice", platform.priceOf(dp.id) ?? dp.price));
-      row.onclick = () => { tx(row, () => engine.buyDust(dp.id)); render(); };
+      // sticker is only the web page's placeholder. A shell that has not
+      // answered yet shows no price and cannot be tapped: a USD sticker in
+      // front of a non-US reviewer is a rejection, not a fallback.
+      const price = platform.priceOf(dp.id);
+      const priced = !!price || !platform.native;
+      row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
+      if (!priced) { row.disabled = true; row.setAttribute("aria-label", "Price loading"); }
+      row.onclick = () => { if (!priced) return; tx(row, () => engine.buyDust(dp.id)); render(); };
       scroll.append(row);
     }
     if (platform.storeReady) {
@@ -3700,7 +3705,8 @@ export async function bootStandalone(root: HTMLElement) {
       restore.onclick = () => { void engine.restorePurchases(); };
       scroll.append(restore);
     }
-    scroll.append(codeRow());
+    // the access-code door is a dev door: gone wherever the shell closes them
+    if (platform.devDoors) scroll.append(codeRow());
     // Say where the money goes. A shell with a store says nothing; the
     // beta says dust is granted; the live web page says the store is
     // the app's.
@@ -3990,7 +3996,7 @@ export async function bootStandalone(root: HTMLElement) {
         grid.append(el("p", "ac-sub ac-shelfempty",
           "That is the shelf for today \u2014 it restocks tomorrow."));
       }
-      grid.append(codeRow());
+      if (platform.devDoors) grid.append(codeRow());
     } else {
       for (const pk of DUST_PACKS) {
         const card = el("button", "ac-card ac-bundle ac-dustpack");

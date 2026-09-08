@@ -67,6 +67,12 @@ try {
     updateWorld,
   } = require(join(out, "sim.js"));
   const { PHYS } = require(join(out, "catalog.js"));
+  // The corridor flies its OWN lift, gravity and dive cap (control-constants),
+  // not PHYS. The reachability solver below must plan with the numbers the
+  // sim uses or its "survivable" route dies in the exact replay - which is
+  // what happened once the Wormhole feel was folded in and this stayed on PHYS.
+  const { WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_MAX_VY, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING,
+    WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP } = require(join(out, "control-constants.js"));
   const { defaultSave } = require(join(out, "save.js"));
 
   function startWorld(seed, W = 360, H = 640, save = defaultSave()) {
@@ -208,8 +214,8 @@ try {
   }
 
   function advanceVertical(state, tap, snapshot, sx) {
-    let vy = tap ? PHYS.flap : state.vy;
-    vy = Math.min(620, vy + PHYS.gravity * DT);
+    let vy = tap ? WORMHOLE_FLAP : state.vy;
+    vy = Math.min(WORMHOLE_MAX_VY, vy + WORMHOLE_GRAVITY * DT);
     const y = state.y + vy * DT;
     const margin = marginAt(y, snapshot, sx);
     if (margin <= 0 || hitsFreeze(y, snapshot, sx)) return null;
@@ -226,7 +232,7 @@ try {
     const HORIZON = 150;
     const MAX_FRONTIER = 1700;
     const sx = track.W * PHYS.squirrelX;
-    let current = { y: track.H * 0.5, vy: PHYS.flap, since: 0 };
+    let current = { y: track.H * 0.5, vy: WORMHOLE_FLAP, since: 0 };
     const tapFrames = [];
     let smallestFrontier = Infinity;
     let largestFrontier = 0;
@@ -358,7 +364,11 @@ try {
       assert(gap >= PHYS.squirrelR * 2 + 100,
         `node ${b.index} has inadequate corridor: ${gap}`);
       assert(halfDelta <= 8.01, `width changed too abruptly at node ${b.index}: ${halfDelta}`);
-      assert(centerTurn <= 9.61, `center changed too abruptly at node ${b.index}: ${centerTurn}`);
+      // the sim's cap is (3.8 + widthRoom * 5.8) * WORMHOLE_TURN per node,
+      // so the widest corridor may turn 9.6 * WORMHOLE_TURN; anything past
+      // that is a builder fault, not a tuning choice
+      assert(centerTurn <= 9.6 * WORMHOLE_TURN + 0.01,
+        `center changed too abruptly at node ${b.index}: ${centerTurn}`);
     }
 
     const firstSectionFor = Object.fromEntries(catalog.map((pattern) => {
@@ -402,11 +412,21 @@ try {
     assert(extrema(gaps(byPattern.ripples)) >= 4, "ripples lacks repeated wall pulses");
     const weaveHazards = hazardsFor("debrisWeave");
     const weaveFreeze = pickupsFor("debrisWeave").filter((p) => p.kind === "slow");
-    assert(weaveHazards.length === 2, `debrisWeave needs two hazards, got ${weaveHazards.length}`);
-    assert(weaveHazards[0].side === -weaveHazards[1].side,
+    // THE SPACING DIAL EATS THE SECOND WEAVE HAZARD. The pattern authors two
+    // (marks at 31% and 69% of its 54 nodes, 20 nodes = 1120px apart), but
+    // addTunnelHazard refuses anything closer than 820 * WORMHOLE_DEBRIS_SPACING
+    // to the last one, which is 1367px since the dial was folded in at 1/0.6.
+    // Every Wormhole hazard is authored, so that dial's whole effect today is
+    // this one dropped hazard. That is the flown tuning, not a builder fault;
+    // the guard follows the constant so the expectation moves when the dial does.
+    const weaveSpan = 20 * 56;
+    const expectedWeave = weaveSpan < 820 * WORMHOLE_DEBRIS_SPACING ? 1 : 2;
+    assert(weaveHazards.length === expectedWeave,
+      `debrisWeave needs ${expectedWeave} hazard(s), got ${weaveHazards.length}`);
+    if (expectedWeave === 2) assert(weaveHazards[0].side === -weaveHazards[1].side,
       "debrisWeave hazards must alternate sides");
     assert(weaveFreeze.length === 1 && weaveFreeze[0].x < Math.min(...weaveHazards.map((h) => h.x)),
-      "debrisWeave Freeze must precede both hazards");
+      "debrisWeave Freeze must precede its hazards");
     assert(range(centers(byPattern.surge)) >= 90, "surge lacks high-amplitude movement");
     assert(hazardsFor("surge").length === 1, "surge must contain one hazard");
 
@@ -432,7 +452,7 @@ try {
         snapshot.speedPattern === next.speedPattern &&
         snapshot.activePattern === snapshot.speedPattern;
       if (stablePattern) {
-        const baseSpeed = 220 + Math.min(1, snapshot.beforeDistance / 30000) * 160;
+        const baseSpeed = WORMHOLE_SPEED_BASE + Math.min(1, snapshot.beforeDistance / 30000) * WORMHOLE_SPEED_RAMP;
         const expectedSpeed = baseSpeed * (snapshot.speedPattern === "surge" ? 1.08 : 1);
         close(snapshot.speed, expectedSpeed, 0.001, "distance/surge speed progression");
         if (snapshot.speedPattern === "surge") surgeFrames++;
@@ -511,7 +531,7 @@ try {
     const near = startWorld(7002);
     clearOptionalObjects(near.world);
     for (const node of near.world.tunnel.nodes) node.announced = true;
-    const nextVy = near.world.squirrel.vy + PHYS.gravity * DT;
+    const nextVy = near.world.squirrel.vy + WORMHOLE_GRAVITY * DT;
     const nextY = near.world.squirrel.y + nextVy * DT;
     const hazardR = 20;
     near.world.tunnel.hazards.push({
@@ -563,7 +583,7 @@ try {
     clearOptionalObjects(lethal.world);
     lethal.world.powerLeft = 2;
     const slowDt = DT * PHYS.slowFactor;
-    const lethalVy = lethal.world.squirrel.vy + PHYS.gravity * slowDt;
+    const lethalVy = lethal.world.squirrel.vy + WORMHOLE_GRAVITY * slowDt;
     const lethalY = lethal.world.squirrel.y + lethalVy * slowDt;
     lethal.world.tunnel.hazards.push({
       x: lethal.world.W * PHYS.squirrelX + lethal.world.speed * slowDt,
