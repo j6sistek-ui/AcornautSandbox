@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=225";
-import { CHART_LEVELS } from "./campaign.js?v=225";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=225";
-import { restoreSpill } from "./spill.js?v=225";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=225";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=229";
+import { CHART_LEVELS } from "./campaign.js?v=229";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=229";
+import { restoreSpill } from "./spill.js?v=229";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=229";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=225";
-import { platform } from "./platform.js?v=225";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=229";
+import { platform } from "./platform.js?v=229";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -16,6 +16,7 @@ export function defaultSave() {
         spillBest: 0,
         spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
+        receipts: [],
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -104,9 +105,9 @@ export function loadSave() {
     // beta hands premium out, production does not, and the two share a
     // browser. Anything equipped but not owned HERE comes off; it is not
     // deleted from the save, so a real purchase puts it straight back on.
-    if (isIap(s.equippedSuit) && !iapOwned(s, s.equippedSuit))
+    if (isIap(s.equippedSuit) && !suitRevealed(s, s.equippedSuit))
         s.equippedSuit = "flight";
-    if (isIap(s.equipped) && !iapOwned(s, s.equipped))
+    if (isIap(s.equipped) && !helmetRevealed(s, s.equipped))
         s.equipped = "clear";
     // a matched-set helmet stranded on the wrong suit (saved before the rule
     // existed, or edited by hand) comes off rather than half-fitting
@@ -144,6 +145,9 @@ export function loadSave() {
     // backlog on next load instead of silently losing it.
     if (typeof s.starDust !== "number" || !isFinite(s.starDust))
         s.starDust = 0;
+    if (!Array.isArray(s.receipts))
+        s.receipts = [];
+    s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
@@ -386,16 +390,18 @@ export function starsOf(s) {
 // The old XP thresholds are retired for good with the production split:
 // a gate is stars, a stored unlock, or the beta. Nothing else opens one.
 export function palUnlocked(s, id) {
-    if (isIap(id))
-        return iapOwned(s, id);
     if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id])
         return true;
+    if (isIap(id))
+        return iapOwned(s, id);
     return BETA_UNLOCK_GATES || s.unlockedPals.includes(id);
 }
 // Helmets with a rung on the ladder reveal at their star count; the four
 // starter tints have no rung and are open from the first flight. A helmet
 // already bought stays owned whatever the ladder says.
 export function helmetRevealed(s, id) {
+    if (STAR_UNLOCKS.helmets[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.helmets[id])
+        return true;
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.helmets[id] === undefined)
@@ -410,6 +416,8 @@ export function trailUnlocked(s, id) {
         return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
     if (id === "arcflashwake")
         return suitRevealed(s, "arcflash");
+    if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id])
+        return true;
     if (isIap(id))
         return iapOwned(s, id);
     if (STAR_UNLOCKS.trails[id] === undefined)
@@ -422,10 +430,10 @@ export function suitRevealed(s, id) {
     // 300-star prize
     if ((s.purchased || []).includes(id) || s.unlockedSuits.includes(id))
         return true;
-    if (isIap(id))
-        return iapOwned(s, id);
     if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id])
         return true;
+    if (isIap(id))
+        return iapOwned(s, id);
     // a suit with a star gate is LOCKED below it - the no-gate fallback is
     // only for suits with no gate at all, or the cat would have been free
     if (STAR_UNLOCKS.suits[id] !== undefined)
