@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=235";
-import { platform } from "./platform.js?v=235";
-import { spillAppearance } from "./spill-appearance.js?v=235";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=235";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=235";
-import { addChartScenery } from "./star-map-view.js?v=235";
-import { mapDebrisIndex } from "./zone-visuals.js?v=235";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=235";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=235";
-import { suitLean } from "./control-constants.js?v=235";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=235";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=235";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=235";
-import { drawSprite as drawSpriteOn } from "./art.js?v=235";
-import { createEngine } from "./engine.js?v=235";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=235";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=235";
-import { formatRaceTicks } from "./race.js?v=235";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=235";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=235";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=235";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=235";
+import { suitPitchFor } from "./save.js?v=239";
+import { platform } from "./platform.js?v=239";
+import { spillAppearance } from "./spill-appearance.js?v=239";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=239";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=239";
+import { addChartScenery } from "./star-map-view.js?v=239";
+import { mapDebrisIndex } from "./zone-visuals.js?v=239";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=239";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=239";
+import { suitLean } from "./control-constants.js?v=239";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=239";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=239";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=239";
+import { drawSprite as drawSpriteOn } from "./art.js?v=239";
+import { createEngine } from "./engine.js?v=239";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=239";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=239";
+import { formatRaceTicks } from "./race.js?v=239";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=239";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=239";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=239";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=239";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -59,8 +59,12 @@ function holdToFire(b, ms, fire) {
         b.classList.add("ac-holding");
         timer = window.setTimeout(() => {
             timer = 0;
-            fired = true;
             b.classList.remove("ac-holding");
+            // a render in the meantime replaced this button; the pointer can no
+            // longer cancel a detached one, so it must not fire either
+            if (!b.isConnected)
+                return;
+            fired = true;
             fire();
         }, ms);
     });
@@ -364,6 +368,10 @@ export async function bootStandalone(root) {
             : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
         const depotFocus = document.activeElement?.dataset.spillControl;
         overlay.innerHTML = "";
+        // an armed boost card asks "are you sure" for THIS visit only: leaving
+        // the Shop disarms it, so coming back never spends dust on one tap
+        if (snap.screen !== "shop")
+            boostConfirm = null;
         if (snap.screen === "play") {
             const bar = el("div", "ac-playbar");
             // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
@@ -1184,9 +1192,12 @@ export async function bootStandalone(root) {
         // landscape screens play intro-wide.mp4 over the horizon plate; the
         // portrait film stays behind it as the fallback for a browser that
         // cannot decode H.264. Phones and the app never see the wide file.
+        // The wide file is the owner's final cut (8 Sep 2026): 1280x720, H.264
+        // High 3.1, and the codecs string says so - a browser reads it to pick
+        // a source, so it has to name what the file actually is.
         const wide = window.innerWidth > window.innerHeight;
         const sources = [
-            ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.4D401E"']] : []),
+            ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.64001F"']] : []),
             ["intro.webm", 'video/webm; codecs="vp9"'],
             ["intro.mp4", 'video/mp4; codecs="avc1.4D401E"'],
         ];
@@ -3216,7 +3227,7 @@ export async function bootStandalone(root) {
         const paidInstead = s.rewardSubs?.[key];
         sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
             ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
-            : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${(s.boostedRewards || []).includes(r.id ?? "") ? "acorns" : "Star Dust"} instead.`)
+            : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
                 : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
         const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
         if (!owned && item) {

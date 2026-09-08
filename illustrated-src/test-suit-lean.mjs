@@ -78,10 +78,14 @@ for (const hp of [-1, -0.5, 0.5, 1]) {
 // What replaces it is the calibration itself: one number for the whole
 // roster, which is what was chosen.
 {
-  // THE ALIENS ARE THE DECLARED EXCEPTION (owner, 1 Sep 2026): both fly
+  // THE DECLARED ZERO-LEAN EXCEPTIONS. The aliens (owner, 1 Sep 2026) fly
   // full painted banks with "dive and pitch at 0 for both - the animation
-  // does the work". Everything else stays on the one calibrated lean.
-  const ZERO_LEAN = new Set(["alien"]);
+  // does the work". AcorNut and Arcflash are INDEPENDENT RIGS: draw.ts
+  // skips the velocity rotate for them entirely (see independentRig), so
+  // their own painters own body attitude and a non-zero dial here would be
+  // dead weight. Everything else stays on the one calibrated lean, and the
+  // loop below still proves each named exception really carries 0/0.
+  const ZERO_LEAN = new Set(["alien", "vanguard", "arcflash"]);
   for (const id of ZERO_LEAN) {
     const l = SUIT_LEAN[id];
     ok(!!l && l.up === 0 && l.down === 0,

@@ -13,8 +13,14 @@ win.__ACORNAUT_BETA__=mode!=='production';
 // happy-dom rejects valid multi-layer gradient/url background values. Record
 // assignments for wiring checks; this harness does not validate browser CSS.
 const backgrounds=new WeakMap();
+// TOLERATE EITHER happy-dom SHAPE (audit, 8 Sep 2026). Older versions gave
+// backgroundImage an accessor on the prototype; newer ones do not, and
+// `bg.set` was then undefined - which threw on the first assignment and
+// took this whole test down before it asserted anything about the game.
 const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'backgroundImage');
-Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}});
+Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',bg&&bg.set
+  ?{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}}
+  :{configurable:true,get(){return backgrounds.get(this)??'';},set(value){backgrounds.set(this,value);}});
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;

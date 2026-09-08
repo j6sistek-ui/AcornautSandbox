@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=238";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=238";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=238";
-import { restoreSpill } from "./spill.js?v=238";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=238";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=239";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=239";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=239";
+import { restoreSpill } from "./spill.js?v=239";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=239";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=238";
-import { platform } from "./platform.js?v=238";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=239";
+import { platform } from "./platform.js?v=239";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -67,10 +67,48 @@ export function defaultSave() {
 export function takeReceipt(save, transactionId) {
     if (!Array.isArray(save.receipts))
         save.receipts = [];
-    if (save.receipts.includes(transactionId))
+    // THE LEDGER OUTLIVES THE SAVE (audit, 8 Sep 2026). Receipts also live in
+    // their own storage slot, which Start Over never clears. Without it, a
+    // pilot who reset their save kept their store identity, so the very next
+    // boot's deliverPending() saw the whole consumable history as unpaid and
+    // granted every dust pack they had ever bought, again. The two copies are
+    // merged on read and written together; the save's own copy stays for
+    // older builds that only know about it.
+    const paid = receiptVault();
+    if (save.receipts.includes(transactionId) || paid.has(transactionId))
         return false;
     save.receipts.push(transactionId);
+    paid.add(transactionId);
+    writeReceiptVault(paid);
     return true;
+}
+/** the durable half of the receipt ledger: every transaction id this device
+ *  has ever been paid for, kept beside the save rather than inside it */
+const RECEIPT_KEY = SAVE_KEY + ":receipts";
+function receiptVault() {
+    try {
+        const raw = platform.storage.get(RECEIPT_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return new Set(Array.isArray(list) ? list.filter((r) => typeof r === "string") : []);
+    }
+    catch {
+        return new Set();
+    }
+}
+function writeReceiptVault(paid) {
+    // newest last, and bounded: a store history is finite but a corrupted
+    // slot should not be able to grow without end
+    try {
+        platform.storage.set(RECEIPT_KEY, JSON.stringify([...paid].slice(-2000)));
+    }
+    catch { /* a device with no writable storage pays the old risk, not a new one */ }
+}
+/** every id already paid, from both halves - the ledger deliverPending reads */
+export function paidReceipts(save) {
+    const paid = receiptVault();
+    for (const r of save.receipts || [])
+        paid.add(r);
+    return paid;
 }
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
@@ -225,11 +263,8 @@ export function loadSave() {
     // tutorial's borrowed flight. A beta grant or an old free unlock in the
     // list does not count; the star gate in suitRevealed does.
     s.unlockedSuits = (s.unlockedSuits ?? []).filter((id) => id !== TUTORIAL_SUIT);
-    if (s.equippedSuit === TUTORIAL_SUIT && !((s.purchased || []).includes(TUTORIAL_SUIT))) {
-        const total = Object.values(s.stars ?? {}).reduce((n, m) => n + (typeof m === "number" ? ((m & 1) + ((m >> 1) & 1) + ((m >> 2) & 1)) : 0), 0);
-        if (!(total >= (STAR_UNLOCKS.suits[TUTORIAL_SUIT] ?? 500)))
-            s.equippedSuit = "flight";
-    }
+    // The check that this suit is EARNED now runs below, after
+    // migrateCampaign: see "ACORNUT'S GATE READS THE LEDGER".
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -357,6 +392,16 @@ export function loadSave() {
         catch { /* writeSave will still surface a real persistence failure */ }
     }
     migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+    // ACORNUT'S GATE READS THE LEDGER (audit, 8 Sep 2026). This used to count
+    // bits in the legacy `stars` map, which is only a compatibility bridge:
+    // for an ambiguous mission it carries the finish bit alone, so a pilot at
+    // 570 real stars could total ~190 there and have AcorNut torn off on
+    // every launch. suitRevealed asks the same question the rest of the game
+    // asks (purchased, the ledger's star total, the beta). It must run AFTER
+    // migrateCampaign: that call caches on first use, and an earlier starsOf()
+    // would build the ledger without the cross-page ambiguity flag.
+    if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT))
+        s.equippedSuit = "flight";
     if (IS_BETA && !s.betaSampleCreditImported) {
         try {
             const raw = platform.storage.get("acornaut_star_map_sample_v1");

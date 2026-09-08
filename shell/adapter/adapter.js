@@ -12,7 +12,7 @@
  */
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
-import { Purchases, LOG_LEVEL } from "@revenuecat/purchases-capacitor";
+import { Purchases, LOG_LEVEL, PRODUCT_CATEGORY } from "@revenuecat/purchases-capacitor";
 import { App } from "@capacitor/app";
 import config from "./config.json";
 
@@ -57,10 +57,25 @@ function storeOf(platformName) {
     await Purchases.configure({ apiKey });
     const ids = Object.values(productIds).filter((id) => id && !id.startsWith("PLACEHOLDER"));
     if (!ids.length) return;
-    const res = await Purchases.getProducts({ productIdentifiers: ids });
+    // NON_SUBSCRIPTION, EXPLICITLY (audit, 8 Sep 2026). Android defaults the
+    // fetch to SUBSCRIPTION, so every dust pack came back empty, every row
+    // stayed priceless and disabled, and nothing could be sold on Google
+    // Play at all. iOS ignores the field, so naming it costs nothing there.
+    const res = await Purchases.getProducts({ productIdentifiers: ids, type: PRODUCT_CATEGORY.NON_SUBSCRIPTION });
     for (const p of res.products || []) { prices.set(p.identifier, p.priceString); products.set(p.identifier, p); }
   })().catch((e) => console.warn("[acornaut shell] store not ready:", e?.message || e));
   const storeId = (gameId) => productIds[gameId];
+  /** the RevenueCat transaction id for the purchase just made, read from the
+   *  same list pending() walks so the two can never disagree */
+  const newestOf = (info, sid) => (info?.nonSubscriptionTransactions || [])
+    .filter((t) => t.productIdentifier === sid)
+    .sort((a, b) => (b.purchaseDateMillis || 0) - (a.purchaseDateMillis || 0))[0]?.transactionIdentifier || null;
+  async function recallTransactionId(res, sid) {
+    const fromPurchase = newestOf(res?.customerInfo, sid);
+    if (fromPurchase) return fromPurchase;
+    try { const { customerInfo } = await Purchases.getCustomerInfo(); return newestOf(customerInfo, sid); }
+    catch { return null; }
+  }
   return {
     priceOf: (gameId) => prices.get(storeId(gameId)) ?? null,
     async buy(gameId) {
@@ -69,8 +84,18 @@ function storeOf(platformName) {
       if (!product) return { result: "unavailable" };
       try {
         const res = await Purchases.purchaseStoreProduct({ product });
-        // the transaction id is what makes the grant idempotent (engine.grantDust)
-        return { result: "ok", transactionId: res?.transaction?.transactionIdentifier || `${res?.productIdentifier || storeId(gameId)}:${Date.now()}` };
+        // ONE ID SPACE, OR THE GRANT HAPPENS TWICE (audit, 8 Sep 2026).
+        // The transaction id is what makes the grant idempotent
+        // (engine.grantDust via takeReceipt) - but this used to return the
+        // STORE's id while pending() reports RevenueCat's id for the very
+        // same receipt, so the next resume paid the same purchase again.
+        // Take the id from the same place pending() reads it, and if that
+        // is somehow missing, re-ask once rather than inventing a synthetic
+        // id that can never match. A purchase we cannot name is reported as
+        // "failed": deliverPending() will pay it on the next boot, whereas
+        // resolving "ok" with no id would grant it unconditionally.
+        const id = await recallTransactionId(res, storeId(gameId));
+        return id ? { result: "ok", transactionId: id } : { result: "failed" };
       } catch (e) {
         return { result: e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };
       }

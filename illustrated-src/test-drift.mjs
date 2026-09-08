@@ -46,7 +46,13 @@ ok(peak <= 12, `the fastest rock crosses ${peak.toFixed(1)}px/s at its quickest;
 // The spread was already right: this must never become an amplitude change.
 const src = await (await import("node:fs/promises")).readFile(
   new URL("./game/sim.ts", import.meta.url), "utf8");
-ok(/amp: Math\.random\(\) \* rr,/.test(src),
+// EITHER RNG, THE SAME RULE. The seeded mission RNG (28a4071, so a mission
+// replays identically) swapped every Math.random() in the spawner for
+// (w.missionRng ?? Math.random)(). Both are uniform on [0,1), so the rule
+// this line guards - amplitude is a plain fraction of the rock's OWN radius,
+// with no second factor - is unchanged; only the spelling moved. The
+// trailing "* rr," with its comma is the tooth: any extra factor fails.
+ok(/amp: (?:Math\.random\(\)|\(w\.missionRng \?\? Math\.random\)\(\)) \* rr,/.test(src),
   "amplitude is no longer a plain random fraction of the rock's own radius - " +
   "the drift WIDTH was already correct and must not be scaled with the rate");
 ok(!/amp:[^\n]*DEBRIS_DRIFT_RATE/.test(src),

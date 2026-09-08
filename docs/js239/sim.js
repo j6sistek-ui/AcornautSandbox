@@ -1,19 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=235";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=235";
-import { trailWornBy } from "./catalog.js?v=235";
-import { missionRandom } from "./mission-rng.js?v=235";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=235";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=235";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=235";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=235";
-import { platform } from "./platform.js?v=235";
-import { TUTORIAL_SUIT } from "./catalog.js?v=235";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=235";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=235";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=235";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=235";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=235";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=235";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=239";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=239";
+import { trailWornBy } from "./catalog.js?v=239";
+import { missionRandom } from "./mission-rng.js?v=239";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=239";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=239";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=239";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=239";
+import { platform } from "./platform.js?v=239";
+import { TUTORIAL_SUIT } from "./catalog.js?v=239";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=239";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=239";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=239";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=239";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=239";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=239";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -361,17 +361,22 @@ function modsLive(save, w) {
 function driftModOf(save, w) {
     if (w.lvl?.def.fx.pal === "nightglider")
         return 0;
-    if (!modsLive(save, w))
-        return 1;
-    if (save.steadyGates)
-        return 0;
     // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
     // strobes, it turns into steady gates"). The pal does what the Steady
     // Gates mod did, the way Wisp took over Rough Air - the pal is the one
     // you can see doing it, so the mod card is gone from the loadout.
+    //
+    // IT IS A COMPANION, NOT A MOD (audit, 8 Sep 2026). This sat below the
+    // modsLive gate, so a pal bought with real money did nothing at all
+    // until the pilot also reached the 180-star Flight Mods rung - a paid
+    // item with no effect, which is exactly what a store reviewer tests.
+    // hasPal already answers "nobody" under Pal Effects Off and on a
+    // mission that did not name it, so asking first changes nothing else.
     if (hasPal(save, w, "nightglider"))
         return 0;
-    return 1;
+    if (!modsLive(save, w))
+        return 1;
+    return save.steadyGates ? 0 : 1;
 }
 /** Thrill Seeker runs the whole world at double speed. See updateWorld.
  *  A level's fx.pace rides the same lever, so SOLAR FURNACE is Thrill

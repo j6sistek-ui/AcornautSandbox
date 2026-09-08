@@ -3056,7 +3056,14 @@ function drawRetroWorld(
     if (p.half !== "top") retroPlanet(ctx, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind);
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
-      retroObstacle(ctx, p.x + b.xOff, by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
+      // blockerX, NOT p.x + b.xOff (audit, 8 Sep 2026). Every rock drifts
+      // along the flight axis by up to its own radius, and the COLLIDER
+      // reads that drift (see the blockerX calls in sim). Painting the home
+      // position instead put the picture up to a full rock-width away from
+      // the thing that kills you: the pilot threaded visibly clear and
+      // died, or flew through a painted rock untouched. The illustrated
+      // painter above already reads it the same way.
+      retroObstacle(ctx, blockerX(p, b, w), by, { r: b.r, ...retroBlocker(w.envB, b.debris, b.y) });
     }
   }
 
@@ -3065,6 +3072,16 @@ function drawRetroWorld(
     const y = a.y + Math.sin(a.bob) * 4;
     if (a.kind === "retro") {
       drawShiftAcorn(ctx, art, a.x, y, w.time);
+      continue;
+    }
+    // THE DOOR HAS TO READ AS A DOOR (audit, 8 Sep 2026). Every arcade-based
+    // Star Chart mission ends on a portal, and this loop had no case for it:
+    // it fell through the chain to `a.kind === "slow"`, i.e. false, and the
+    // arrival marker was painted as an ordinary brown acorn - the very thing
+    // the pilot has spent the run grazing past - over a 64px hitbox. The
+    // corridor painter learned this lesson already; so does this one.
+    if (a.kind === "portal") {
+      drawFinishPortal(ctx, a.x, y, w.time, a.r ?? 64, warpMirroredNow(w));
       continue;
     }
     const power =

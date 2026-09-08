@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=235";
-import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=235";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=235";
-import { restoreSpill } from "./spill.js?v=235";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=235";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=239";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=239";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=239";
+import { restoreSpill } from "./spill.js?v=239";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=239";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, } from "./catalog.js?v=235";
-import { platform } from "./platform.js?v=235";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=239";
+import { platform } from "./platform.js?v=239";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -67,10 +67,48 @@ export function defaultSave() {
 export function takeReceipt(save, transactionId) {
     if (!Array.isArray(save.receipts))
         save.receipts = [];
-    if (save.receipts.includes(transactionId))
+    // THE LEDGER OUTLIVES THE SAVE (audit, 8 Sep 2026). Receipts also live in
+    // their own storage slot, which Start Over never clears. Without it, a
+    // pilot who reset their save kept their store identity, so the very next
+    // boot's deliverPending() saw the whole consumable history as unpaid and
+    // granted every dust pack they had ever bought, again. The two copies are
+    // merged on read and written together; the save's own copy stays for
+    // older builds that only know about it.
+    const paid = receiptVault();
+    if (save.receipts.includes(transactionId) || paid.has(transactionId))
         return false;
     save.receipts.push(transactionId);
+    paid.add(transactionId);
+    writeReceiptVault(paid);
     return true;
+}
+/** the durable half of the receipt ledger: every transaction id this device
+ *  has ever been paid for, kept beside the save rather than inside it */
+const RECEIPT_KEY = SAVE_KEY + ":receipts";
+function receiptVault() {
+    try {
+        const raw = platform.storage.get(RECEIPT_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return new Set(Array.isArray(list) ? list.filter((r) => typeof r === "string") : []);
+    }
+    catch {
+        return new Set();
+    }
+}
+function writeReceiptVault(paid) {
+    // newest last, and bounded: a store history is finite but a corrupted
+    // slot should not be able to grow without end
+    try {
+        platform.storage.set(RECEIPT_KEY, JSON.stringify([...paid].slice(-2000)));
+    }
+    catch { /* a device with no writable storage pays the old risk, not a new one */ }
+}
+/** every id already paid, from both halves - the ledger deliverPending reads */
+export function paidReceipts(save) {
+    const paid = receiptVault();
+    for (const r of save.receipts || [])
+        paid.add(r);
+    return paid;
 }
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
@@ -167,7 +205,7 @@ export function loadSave() {
         s.receipts = [];
     s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     // saves written before the Star Chart boosts existed
-    if (!s.boosts || typeof s.boosts !== "object")
+    if (!s.boosts || typeof s.boosts !== "object" || Array.isArray(s.boosts))
         s.boosts = { levelskip: 0, starunlock: 0 };
     for (const id of BOOST_IDS) {
         const n = s.boosts[id];
@@ -181,6 +219,14 @@ export function loadSave() {
     s.boostedRewards = s.boostedRewards.filter((k) => typeof k === "string");
     if (!s.rewardSubs || typeof s.rewardSubs !== "object" || Array.isArray(s.rewardSubs))
         s.rewardSubs = {};
+    // every entry is read by the reward sheet as {kind, amount}; a malformed
+    // one would throw inside render and blank the chart, so it is dropped here
+    for (const k of Object.keys(s.rewardSubs)) {
+        const v = s.rewardSubs[k];
+        if (!v || typeof v !== "object" || (v.kind !== "dust" && v.kind !== "acorns")
+            || typeof v.amount !== "number" || !isFinite(v.amount))
+            delete s.rewardSubs[k];
+    }
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
@@ -217,11 +263,8 @@ export function loadSave() {
     // tutorial's borrowed flight. A beta grant or an old free unlock in the
     // list does not count; the star gate in suitRevealed does.
     s.unlockedSuits = (s.unlockedSuits ?? []).filter((id) => id !== TUTORIAL_SUIT);
-    if (s.equippedSuit === TUTORIAL_SUIT && !((s.purchased || []).includes(TUTORIAL_SUIT))) {
-        const total = Object.values(s.stars ?? {}).reduce((n, m) => n + (typeof m === "number" ? ((m & 1) + ((m >> 1) & 1) + ((m >> 2) & 1)) : 0), 0);
-        if (!(total >= (STAR_UNLOCKS.suits[TUTORIAL_SUIT] ?? 500)))
-            s.equippedSuit = "flight";
-    }
+    // The check that this suit is EARNED now runs below, after
+    // migrateCampaign: see "ACORNUT'S GATE READS THE LEDGER".
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -349,6 +392,16 @@ export function loadSave() {
         catch { /* writeSave will still surface a real persistence failure */ }
     }
     migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+    // ACORNUT'S GATE READS THE LEDGER (audit, 8 Sep 2026). This used to count
+    // bits in the legacy `stars` map, which is only a compatibility bridge:
+    // for an ambiguous mission it carries the finish bit alone, so a pilot at
+    // 570 real stars could total ~190 there and have AcorNut torn off on
+    // every launch. suitRevealed asks the same question the rest of the game
+    // asks (purchased, the ledger's star total, the beta). It must run AFTER
+    // migrateCampaign: that call caches on first use, and an earlier starsOf()
+    // would build the ledger without the cross-page ambiguity flag.
+    if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT))
+        s.equippedSuit = "flight";
     if (IS_BETA && !s.betaSampleCreditImported) {
         try {
             const raw = platform.storage.get("acornaut_star_map_sample_v1");
@@ -419,7 +472,7 @@ export function pilotTitleOf(s) {
 }
 export function starsOf(s) {
     const p = migrateCampaign(s);
-    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
+    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
 }
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
 // The old XP thresholds are retired for good with the production split:
@@ -589,7 +642,11 @@ export function unlockableRewards(s) {
  *  in the same unlocked* list a star crossing would fill; mods and modes
  *  are keyed by the reward's id. */
 export function unlockReward(s, r) {
-    if (r.kind === "acorns" || r.kind === "dust" || !r.id)
+    // only the kinds an unlock can actually hand over; anything else (a
+    // currency line, a stage, a title) would spend the boost and open nothing
+    const openable = r.kind === "suit" || r.kind === "helmet" || r.kind === "trail"
+        || r.kind === "pal" || r.kind === "mod" || r.kind === "mode";
+    if (!openable || !r.id)
         return "currency";
     if (rewardOwned(s, r))
         return "owned";
@@ -599,12 +656,12 @@ export function unlockReward(s, r) {
     const add = (list) => { if (!list.includes(r.id))
         list.push(r.id); };
     // a premium id is owned through `purchased` - the one list every gate
-    // and the shop read for it - so a Star Unlock lands it there
+    // and the shop read for it - so a Star Unlock lands it there, with the
+    // set trail the shop would hand over beside it (idGrants)
     if (r.kind === "mod" || r.kind === "mode")
         add(s.keyUnlocks);
     else if (isIap(r.id)) {
-        if (!(s.purchased || []).includes(r.id))
-            s.purchased = [...(s.purchased || []), r.id];
+        s.purchased = [...new Set([...(s.purchased || []), ...idGrants(r.id)])];
     }
     else if (r.kind === "suit")
         add(s.unlockedSuits);
@@ -665,10 +722,10 @@ export function settleStarRewards(s) {
         }
         if (!r.id)
             continue;
-        const keyed = (s.boostedRewards || []).includes(r.id);
-        const bought = !keyed && (s.purchased || []).includes(r.id);
-        if (keyed || bought) {
-            const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
+        // already yours, by Star Unlock or by purchase: the rung pays the one
+        // flat substitute either way
+        if ((s.boostedRewards || []).includes(r.id) || (s.purchased || []).includes(r.id)) {
+            const sub = substituteFor(r.stars);
             if (sub.kind === "dust")
                 dust += sub.amount;
             else
