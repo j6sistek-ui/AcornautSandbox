@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=233";
-import { platform } from "./platform.js?v=233";
-import { spillAppearance } from "./spill-appearance.js?v=233";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=233";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=233";
-import { addChartScenery } from "./star-map-view.js?v=233";
-import { mapDebrisIndex } from "./zone-visuals.js?v=233";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=233";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=233";
-import { suitLean } from "./control-constants.js?v=233";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=233";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=233";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=233";
-import { drawSprite as drawSpriteOn } from "./art.js?v=233";
-import { createEngine } from "./engine.js?v=233";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=233";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=233";
-import { formatRaceTicks } from "./race.js?v=233";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=233";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=233";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=233";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=233";
+import { suitPitchFor } from "./save.js?v=234";
+import { platform } from "./platform.js?v=234";
+import { spillAppearance } from "./spill-appearance.js?v=234";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=234";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=234";
+import { addChartScenery } from "./star-map-view.js?v=234";
+import { mapDebrisIndex } from "./zone-visuals.js?v=234";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=234";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=234";
+import { suitLean } from "./control-constants.js?v=234";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=234";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=234";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=234";
+import { drawSprite as drawSpriteOn } from "./art.js?v=234";
+import { createEngine } from "./engine.js?v=234";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=234";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=234";
+import { formatRaceTicks } from "./race.js?v=234";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=234";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=234";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=234";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=234";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1402,8 +1402,11 @@ export async function bootStandalone(root) {
         boardBtn.onclick = () => engine.open("scores");
         const gear = el("button", "ac-hub-sq");
         gear.setAttribute("aria-label", "Settings and help");
-        // the owner's painted acorn-gear plate replaces the line glyph
-        gear.append(hubIcon("settings", false));
+        // THE OWNER'S ACORN-GEAR (8 Sep 2026: "keep in a square background
+        // like the leaderboard and shop. current button has white box that
+        // disrupts the bar's look"). Same painted-on-dark treatment as the
+        // gift and the trophy: screen-blended into the rail's own square.
+        gear.append(hubIcon("settings"));
         gear.onclick = () => engine.open("help");
         rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
         box.append(rail);
