@@ -165,7 +165,7 @@ S.writeSave(migrated);assert.deepEqual(S.loadSave(),migrated,'migration is idemp
 assert.deepEqual(JSON.parse(storage.get(Cat.SAVE_KEY+':before-campaign-v1')),legacy);
 const owned=fresh();owned.unlockedSuits.push('catsuit');assert(S.suitRevealed(owned,'catsuit'),'earned ownership survives a low star tally');
 const dust=C.STAR_REWARDS.find(r=>r.kind==='dust');assert.equal(P.rewardId(dust),P.rewardId({...dust,name:'Renamed Dust reward'}));
-const code=fresh();code.allStars=true;assert.equal(S.starsOf(code),300);assert.equal(P.earnedCampaignStars(code),0);assert.deepEqual(Object.values(P.routeMasks(code)),C.LEVELS.map(()=>0));
+const code=fresh();code.allStars=true;assert.equal(S.starsOf(code),C.CHART_MAX_STARS);assert.equal(C.CHART_MAX_STARS,780);assert.equal(P.earnedCampaignStars(code),0);assert.deepEqual(Object.values(P.routeMasks(code)),C.LEVELS.map(()=>0));
 // Seeding beta from an already-versioned production save also preserves slots.
 const cross=fresh(),crossDef=C.LEVELS.find(l=>l.id==='2-4');P.migrateCampaign(cross,false);
 const otherId=Cat.IS_BETA?'2-4':'beta-tunnel-2-4';

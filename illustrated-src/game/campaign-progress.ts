@@ -1,4 +1,4 @@
-import { LEVELS, STAR_REWARDS, countBits, missionProgressId, type LevelDef } from "./campaign";
+import { LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId, type LevelDef } from "./campaign";
 import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog";
 import type { SaveData } from "./save";
 
@@ -34,7 +34,7 @@ const prepared = new WeakMap<SaveData, CampaignProgress>();
 function carryCompatibilityWrites(save: SaveData, p: CampaignProgress) {
   let oldTotal = 0;
   for (const value of Object.values(save.stars ?? {})) oldTotal += countBits(clampMask(value));
-  p.legacyEntitlementFloor = Math.max(p.legacyEntitlementFloor, Math.min(300, oldTotal));
+  p.legacyEntitlementFloor = Math.max(p.legacyEntitlementFloor, Math.min(CHART_MAX_STARS, oldTotal));
   for (const def of LEVELS) {
     const mask = clampMask(save.stars?.[def.id]);
     if (!mask) continue;
@@ -92,7 +92,7 @@ export function migrateCampaign(save: SaveData, existing = true, legacyPageUnkno
   const p: CampaignProgress = {
     version: 1, missions: {}, barriers: (save.raceGates ?? []).map(barrierId).filter(Boolean),
     paidRewards: STAR_REWARDS.filter(r => r.kind === "dust" && r.stars <= (save.dustPaidTo || 0)).map(rewardId),
-    legacyEntitlementFloor: existing ? Math.min(300, Math.max(rawTotal, save.allStars ? 300 : 0)) : 0,
+    legacyEntitlementFloor: existing ? Math.min(CHART_MAX_STARS, Math.max(rawTotal, save.allStars ? CHART_MAX_STARS : 0)) : 0,
     zoneVisits: [],
   };
   save.campaignProgress = p;

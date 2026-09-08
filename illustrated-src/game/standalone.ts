@@ -1140,9 +1140,12 @@ export async function bootStandalone(root: HTMLElement) {
     // landscape screens play intro-wide.mp4 over the horizon plate; the
     // portrait film stays behind it as the fallback for a browser that
     // cannot decode H.264. Phones and the app never see the wide file.
+    // The wide file is the owner's final cut (8 Sep 2026): 1280x720, H.264
+    // High 3.1, and the codecs string says so - a browser reads it to pick
+    // a source, so it has to name what the file actually is.
     const wide = window.innerWidth > window.innerHeight;
     const sources: [string, string][] = [
-      ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.4D401E"'] as [string, string]] : []),
+      ...(wide ? [["intro-wide.mp4", 'video/mp4; codecs="avc1.64001F"'] as [string, string]] : []),
       ["intro.webm", 'video/webm; codecs="vp9"'],
       ["intro.mp4", 'video/mp4; codecs="avc1.4D401E"'],
     ];
