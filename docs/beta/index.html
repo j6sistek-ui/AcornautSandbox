@@ -425,20 +425,8 @@
     .ac-tostage ~ .ac-shelfrow, .ac-asgrid .ac-shelfrow > .ac-tocard { min-width: 0; }
     .ac-asgrid .ac-shelfrow:has(> .ac-tocard) { grid-template-columns: repeat(3, minmax(0,1fr)); }
 
-    /* THE CALIBRATION PANEL, in the Wormhole Run pause menu. Dense on
-       purpose: seven dials have to fit above RESUME on a phone without the
-       sheet scrolling away from the button that gets you back to the run. */
-    /* the three Wormhole controls, flown back to back */
-      text-align: left; padding: 9px 12px; border-radius: 12px; color: #d7def0;
-      background: rgba(12,18,38,.6); border: 1px solid #2a3454; }
-      grid-template-areas: "label label label label label" "minus slide slide plus val";
-      align-items: center; gap: 6px; }
-      justify-content: flex-start; }
-      font-size: 12.5px; opacity: .7; }
-      border: 1px solid rgba(203,180,255,.35); background: rgba(20,14,44,.8);
-      color: #e8e2ff; font-size: 15px; line-height: 1; }
-    /* THE PAUSE SHEET CAN BE TALLER THAN THE PHONE. With the calibration
-       panel open it runs to ~943px, and .ac-sheet is a fixed-height flex
+    /* THE PAUSE SHEET CAN BE TALLER THAN THE PHONE. With the Spill settings
+       open it runs well past a short screen, and .ac-sheet is a fixed-height flex
        column with overflow:hidden and justify-content:center — so it spilled
        off BOTH ends and RESUME went with it. You could read every dial and
        have no way to leave. .ac-result already solved exactly this; the pause
@@ -454,35 +442,6 @@
       background: linear-gradient(to top, rgba(7,11,22,.97) 64%, rgba(7,11,22,0)); }
     body.ac-beta .ac-pauseact {
       background: linear-gradient(to top, rgba(16,8,36,.97) 64%, rgba(16,8,36,0)); }
-
-    /* THE TUNING RIG. The dials, on screen, while the corridor is moving —
-       because the pause menu is the one place they cannot do their job.
-       Docked to a corner rather than centred: the corridor is the thing
-       being judged and it uses the full height, so the rig takes a column
-       and leaves the flight visible beside it. Collapsing gives back a
-       clear screen for flying the setting by hand. */
-      width: min(268px, calc(100% - 16px)); max-height: calc(100% - 76px);
-      display: flex; flex-direction: column; overflow: auto;
-      padding: 9px 11px 10px; border-radius: 14px; color: #e9edf8;
-      background: rgba(8,12,26,.82); border: 1px solid #2a3454;
-      -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
-      box-shadow: 0 10px 30px -14px rgba(0,0,0,.9);
-      transition: opacity .12s ease; }
-    /* THE RIG STEPS ASIDE WHILE YOU TURN A DIAL. In portrait it has to cover
-       corridor - there is nowhere else for it to be - and the one moment
-       that matters is the moment the dial is moving. So it fades under the
-       finger and comes back on release: you see the change you are making,
-       where it is happening, without letting go. */
-      font: 600 10.5px/1.2 Figtree, sans-serif; color: #94a0bd;
-      font-variant-numeric: tabular-nums; }
-      border: 1px solid rgba(203,180,255,.35); background: rgba(20,14,44,.8);
-      color: #e8e2ff; font-size: 15px; line-height: 1; }
-      text-align: center; }
-    /* live rows are one line each: name, slider, number — there is no room
-       for the hint text, and by the time you are flying you know the dial */
-      grid-template-areas: "name slide val"; gap: 8px; }
-    @media (orientation: portrait) {
-    }
 
     /* THE ROTATING SHELF. A pack whose contents the pilot part-owns shows
        what it costs THEM, with the sticker struck through beside it, so a
@@ -2049,7 +2008,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js226/standalone.js")
+    import("../js227/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

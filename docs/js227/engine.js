@@ -1,22 +1,22 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=223";
-import { platform } from "./platform.js?v=223";
-import { spillAppearance } from "./spill-appearance.js?v=223";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=223";
-import { reachedGate } from "./campaign.js?v=223";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=223";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=223";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=223";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=223";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=223";
-import { setVanguardPitchTrim } from "./vanguard.js?v=223";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=223";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=223";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=223";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=223";
-import { raceViewport } from "./race-viewport.js?v=223";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=223";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=223";
-import { bankSpill, suitPitchFor } from "./save.js?v=223";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=227";
+import { platform } from "./platform.js?v=227";
+import { spillAppearance } from "./spill-appearance.js?v=227";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=227";
+import { reachedGate } from "./campaign.js?v=227";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=227";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=227";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=227";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=227";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=227";
+import { setVanguardPitchTrim } from "./vanguard.js?v=227";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=227";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=227";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=227";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=227";
+import { raceViewport } from "./race-viewport.js?v=227";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=227";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=227";
+import { bankSpill, suitPitchFor } from "./save.js?v=227";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -135,6 +135,11 @@ export async function createEngine(canvas) {
             window.location.reload();
         },
         redeemAccessCode(code) {
+            // A DEV DOOR, not a store feature. Both codes hand out content for
+            // free, which a store build must never do (App Store 3.1.1), so a
+            // shell that closes the dev doors closes this one too.
+            if (!platform.devDoors)
+                return "denied";
             const entered = code.trim();
             if (entered === "120189") {
                 save.purchased = save.purchased || [];
@@ -817,31 +822,36 @@ export async function createEngine(canvas) {
         const [y, m, d] = iso.split("-").map(Number);
         return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
     }
-    /** Pay every dust line the pilot has crossed but not yet been paid for.
-     *  Idempotent by construction: dustPaidTo only ever moves forward, so
-     *  calling this twice pays once. Called on load and after every finish,
-     *  which also means a save from before dust existed collects its whole
+    /** Pay every currency line the pilot has crossed but not yet been paid for.
+     *  Idempotent by construction: each reward has a stable ledger id, while
+     *  dustPaidTo retains the compatibility watermark used by older bundles.
+     *  Called on load and after every finish, so old saves collect their whole
      *  backlog rather than losing it. */
     function settleDust() {
         const have = starsOf(save);
         const ledger = migrateCampaign(save);
-        let owed = 0, high = save.dustPaidTo;
+        let dustOwed = 0, acornsOwed = 0, high = save.dustPaidTo;
         for (const r of STAR_REWARDS) {
-            if (r.kind !== "dust" || !r.amount)
+            if ((r.kind !== "dust" && r.kind !== "acorns") || !r.amount)
                 continue;
             if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) {
-                owed += r.amount;
-                high = Math.max(high, r.stars);
+                if (r.kind === "dust") {
+                    dustOwed += r.amount;
+                    high = Math.max(high, r.stars);
+                }
+                else
+                    acornsOwed += r.amount;
                 ledger.paidRewards.push(rewardId(r));
             }
         }
-        if (owed <= 0)
+        if (dustOwed <= 0 && acornsOwed <= 0)
             return 0;
-        save.starDust += owed;
+        save.starDust += dustOwed;
+        save.acorns += acornsOwed;
         save.dustPaidTo = high;
         writeSave(save);
         notify();
-        return owed;
+        return dustOwed + acornsOwed;
     }
     /** How the daily stands right now, without claiming it. */
     function dailyState() {
@@ -1033,9 +1043,11 @@ export async function createEngine(canvas) {
             return;
         const rect = parent.getBoundingClientRect();
         const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
-        // widescreen everywhere: the play area may take the whole window,
-        // capped only at desktop-panorama width
-        const W = Math.min(rect.width, 1600);
+        // widescreen everywhere: the play area takes the whole window. The old
+        // 1600px cap left a dark bar down the right of a wide monitor (owner,
+        // 7 Sep 2026); the cap is now past any desktop, and whatever is left
+        // over splits evenly rather than piling up on one side.
+        const W = Math.min(rect.width, 3840);
         const H = rect.height;
         const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
         const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
@@ -1071,6 +1083,7 @@ export async function createEngine(canvas) {
         canvas.height = Math.floor(H * dpr);
         canvas.style.width = `${W}px`;
         canvas.style.height = `${H}px`;
+        canvas.style.left = `${Math.max(0, Math.floor((rect.width - W) / 2))}px`;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         resizeWorld(world, W, H);
         if (!world.stars.length)
@@ -1237,6 +1250,7 @@ export async function createEngine(canvas) {
             return;
         e.preventDefault();
     });
+    const DIVE_KEYS = new Set(["ArrowDown", "KeyS", "ControlLeft", "ControlRight"]);
     window.addEventListener("keydown", (e) => {
         // TYPING IS NOT FLYING. Space is the flap key, and this listener claimed
         // it globally with preventDefault - so pressing space in the pilot-name
@@ -1296,7 +1310,9 @@ export async function createEngine(canvas) {
                 engine.dismissDead();
             notify();
         }
-        if (e.code === "ArrowDown" && world.screen === "play" && world.race) {
+        // DIVE KEYS (owner, 7 Sep 2026: "computer specific controls, like the
+        // control key for swipe down"): ArrowDown, S, or either Control key
+        if (DIVE_KEYS.has(e.code) && world.screen === "play" && world.race) {
             e.preventDefault();
             if (raceResizeKeyboardReleasePending)
                 return;
@@ -1309,7 +1325,9 @@ export async function createEngine(canvas) {
                 sfx.dive();
             notify();
         }
-        else if (e.code === "ArrowDown" && world.screen === "play" && world.flight !== "tunnel") {
+        else if (DIVE_KEYS.has(e.code) && world.screen === "play" && world.flight !== "tunnel") {
+            if (e.repeat)
+                return;
             const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
@@ -1342,7 +1360,7 @@ export async function createEngine(canvas) {
                 applyRaceGesture(releaseRaceGesture(raceGesture, "keyboard-rise"));
             }
         }
-        if (e.code === "ArrowDown") {
+        if (DIVE_KEYS.has(e.code)) {
             if (raceResizeKeyboardReleasePending === "keyboard-drop") {
                 raceResizeKeyboardReleasePending = null;
                 return;
@@ -1603,4 +1621,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=223";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=227";
