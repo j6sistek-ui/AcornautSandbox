@@ -180,9 +180,9 @@ export const HELMETS: Helmet[] = [
   { id: "cosmic", name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
   { id: "sunforged", suitOnly: "sunforged", opaqueVisor: true, name: "Sunforged", cost: 0, visor: "#ffbf36", tint: 0.22, rim: "#c08a33", trim: "#4c351d", glow: "#ffb52e" },
   { id: "abyssal", name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
-  { id: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
-  { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
-  { id: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
+  { id: "amethyst", name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
+  { id: "ivoryguard", name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
+  { id: "reactor", name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
 ];
 if (!IS_BETA) {
   for (let i = HELMETS.length - 1; i >= 0; i--) {
@@ -278,7 +278,7 @@ export const SUITS: Suit[] = [
   // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
   // its own head, no helmet. Ships the still for now; the flight sprite
   // sheet follows and is wired as its bank when it lands. Beta until then.
-  { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
+  { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
@@ -614,6 +614,17 @@ export const BUNDLES: {
   { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
   { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
   { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
+  // THE THREE STANDALONE VISORS (owner, 8 Sep 2026: "Add them to the shop,
+  // premium purchases, in the rotations"). They came off the beta host, and
+  // premium HERE means being in a bundle - IAP_ITEMS is derived from this
+  // table, isIap reads that, and the shop's helmet rotation deals from
+  // HELMETS.filter(isIap). One helmet apiece, priced like the companions
+  // they most resemble: every other premium helmet shares its id with a
+  // suit and carries that set's weight, but these three are visors and
+  // nothing else, so idWeight makes them 90 dust singly.
+  { id: "bundle-amethyst", name: "Amethyst Visor", blurb: "Violet glass under a gold rim.", dust: 90, items: [{ kind: "helm", id: "amethyst" }] },
+  { id: "bundle-ivoryguard", name: "Ivoryguard Visor", blurb: "Pale ice, steel trim, a cold blue light.", dust: 90, items: [{ kind: "helm", id: "ivoryguard" }] },
+  { id: "bundle-reactor", name: "Reactor Visor", blurb: "Acid green, and it glows in the dark of the run.", dust: 90, items: [{ kind: "helm", id: "reactor" }] },
   {
     id: "bundle-aurora",
     name: "Aurora Pack",

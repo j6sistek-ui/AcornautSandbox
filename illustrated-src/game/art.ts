@@ -652,7 +652,9 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "raccoon", "ferret", "hedgehog",
     // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-    ...(IS_BETA ? ["briellacat"] : []),
+    // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
+    // 2026), so its sheet loads there rather than only on the beta host
+    "briellacat",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [
