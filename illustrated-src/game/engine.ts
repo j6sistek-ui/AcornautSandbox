@@ -289,6 +289,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       window.location.reload();
     },
     redeemAccessCode(code) {
+      // A DEV DOOR, not a store feature. Both codes hand out content for
+      // free, which a store build must never do (App Store 3.1.1), so a
+      // shell that closes the dev doors closes this one too.
+      if (!platform.devDoors) return "denied";
       const entered = code.trim();
       if (entered === "120189") {
         save.purchased = save.purchased || [];

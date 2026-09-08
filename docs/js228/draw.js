@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=224";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=224";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=224";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=224";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=224";
-import { arcflashPreview } from "./arcflash-motion.js?v=224";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=224";
-import { spillAppearance } from "./spill-appearance.js?v=224";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=224";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=224";
-import { goalHud } from "./campaign.js?v=224";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=224";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=224";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=224";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=224";
-import { suitPitchFor } from "./save.js?v=224";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=224";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=224";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=224";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=224";
-import { spillEngineColor } from "./spill-content.js?v=224";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=224";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=224";
+import { spillDockTravelDuration } from "./spill.js?v=228";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=228";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=228";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=228";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=228";
+import { arcflashPreview } from "./arcflash-motion.js?v=228";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=228";
+import { spillAppearance } from "./spill-appearance.js?v=228";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=228";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=228";
+import { goalHud } from "./campaign.js?v=228";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=228";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=228";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=228";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=228";
+import { suitPitchFor } from "./save.js?v=228";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=228";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=228";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=228";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=228";
+import { spillEngineColor } from "./spill-content.js?v=228";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=228";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=228";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2419,7 +2419,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.font = "800 11px Figtree, system-ui";
         const label = names;
         const tw = ctx.measureText(label).width;
-        const cx = 16, cy = H - 26 - 14;
+        const cx = 16, cy = H - (w.insetTop || 0) - 26 - 14;
         const cw = tw + 26;
         ctx.fillStyle = "rgba(14,20,38,.8)";
         round(ctx, cx, cy - 15, cw, 30, 15);
@@ -5224,6 +5224,19 @@ export function hyperRunReadyLines(viewWidth) {
     ];
 }
 export function drawHud(ctx, w, art, save) {
+    // THE NOTCH. Everything in the HUD is laid out from the top edge, so the
+    // whole HUD steps down by the safe-area inset; the two bottom-anchored
+    // pieces (the Spill's corner control and the level panel) step back up.
+    ctx.save();
+    ctx.translate(0, w.insetTop || 0);
+    try {
+        drawHudBody(ctx, w, art, save);
+    }
+    finally {
+        ctx.restore();
+    }
+}
+function drawHudBody(ctx, w, art, save) {
     const { W } = w;
     if (w.spill) {
         drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
@@ -5287,7 +5300,7 @@ export function drawHud(ctx, w, art, save) {
             const lineHeight = compact ? 20 : 21;
             const panelWidth = Math.min(W - 24, compact ? 430 : 560);
             const panelHeight = readyLines.length * lineHeight + 28;
-            const panelTop = Math.min(w.H - panelHeight - 12, Math.max(96, w.H * 0.66));
+            const panelTop = Math.min(w.H - (w.insetTop || 0) - panelHeight - 12, Math.max(96, w.H * 0.66));
             ctx.fillStyle = "rgba(4,8,20,.78)";
             ctx.strokeStyle = "rgba(169,245,255,.34)";
             ctx.lineWidth = 1;

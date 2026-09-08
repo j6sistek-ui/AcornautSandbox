@@ -639,8 +639,12 @@ export function resizeWorld(w: World, W: number, H: number) {
   if (w.flight === "tunnel" && w.tunnel && oldW > 0 && oldH > 0 && (oldW !== W || oldH !== H)) {
     const scaleY = H / oldH;
     const shiftX = W * PHYS.squirrelX - oldW * PHYS.squirrelX;
-    const minHalf = Math.max(72, Math.min(88, H * 0.15));
-    const maxHalf = Math.max(minHalf + 38, Math.min(150, H * 0.27));
+    // the SAME clamp the track builder uses (tunnelMinHalf / tunnelMaxHalf,
+    // WORMHOLE_WIDTH included). This was an inline copy without the width
+    // factor, so a resize round-trip narrowed the corridor from 172.5 to
+    // 150 at 640px; test-tunnel's resize check is what caught it.
+    const minHalf = tunnelMinHalf(H);
+    const maxHalf = tunnelMaxHalf(H);
     w.tunnel.patternStartCenter = Math.max(
       minHalf + 18,
       Math.min(H - minHalf - 18, w.tunnel.patternStartCenterRatio * H),
