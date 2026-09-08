@@ -13,7 +13,6 @@ import {
   batteryUnlocked,
   deepUnlocked,
   helmetRevealed,
-  iapOwned,
   trailUnlocked,
   eraseSave,
   lostUnlocked,
@@ -741,7 +740,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // A premium item that is OWNED equips — it never re-enters the buy
     // path, whatever its cost field says. The Cat carried a stale acorn
     // price from before it went premium, and "owned" met "poor".
-    if (save.unlocked.includes(id) || (isIap(id) && iapOwned(save, id))) {
+    if (save.unlocked.includes(id) || (isIap(id) && ownsPremium(save, id))) {
       save.equipped = id;
       guideStep("helm");
       writeSave(save);
@@ -767,7 +766,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // Only against the REAL bank — a load into the placeholder would be
     // thrown away with it, yet still marked done.
     if (art && art.ready) void loadSuitBank(art, id);
-    if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id)) || (save.purchased || []).includes(id)) {
+    // bought, keyed or earned on the road: the same answer the Loadout gives
+    if (save.unlockedSuits.includes(id) || (isIap(id) && ownsPremium(save, id))) {
       save.equippedSuit = id;
       dropOrphanedHelmet();
       guideStep("suit");

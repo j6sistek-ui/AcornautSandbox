@@ -59,8 +59,11 @@ function holdToFire(b: HTMLButtonElement, ms: number, fire: () => void) {
     b.classList.add("ac-holding");
     timer = window.setTimeout(() => {
       timer = 0;
-      fired = true;
       b.classList.remove("ac-holding");
+      // a render in the meantime replaced this button; the pointer can no
+      // longer cancel a detached one, so it must not fire either
+      if (!b.isConnected) return;
+      fired = true;
       fire();
     }, ms);
   });
@@ -321,6 +324,9 @@ export async function bootStandalone(root: HTMLElement) {
       : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
     const depotFocus = (document.activeElement as HTMLElement)?.dataset.spillControl;
     overlay.innerHTML = "";
+    // an armed boost card asks "are you sure" for THIS visit only: leaving
+    // the Shop disarms it, so coming back never spends dust on one tap
+    if (snap.screen !== "shop") boostConfirm = null;
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
       // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for

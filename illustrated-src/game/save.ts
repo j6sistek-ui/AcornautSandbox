@@ -33,6 +33,7 @@ import {
   palsClash,
   BOOSTS,
   BOOST_IDS,
+  idGrants,
   type BoostId,
 } from "./catalog";
 import { platform } from "./platform";
@@ -321,7 +322,7 @@ export function loadSave(): SaveData {
   if (!Array.isArray(s.receipts)) s.receipts = [];
   s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
   // saves written before the Star Chart boosts existed
-  if (!s.boosts || typeof s.boosts !== "object") s.boosts = { levelskip: 0, starunlock: 0 };
+  if (!s.boosts || typeof s.boosts !== "object" || Array.isArray(s.boosts)) s.boosts = { levelskip: 0, starunlock: 0 };
   for (const id of BOOST_IDS) {
     const n = (s.boosts as Record<string, unknown>)[id];
     s.boosts[id] = typeof n === "number" && isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
@@ -331,6 +332,13 @@ export function loadSave(): SaveData {
   if (!Array.isArray(s.boostedRewards)) s.boostedRewards = [];
   s.boostedRewards = s.boostedRewards.filter((k) => typeof k === "string");
   if (!s.rewardSubs || typeof s.rewardSubs !== "object" || Array.isArray(s.rewardSubs)) s.rewardSubs = {};
+  // every entry is read by the reward sheet as {kind, amount}; a malformed
+  // one would throw inside render and blank the chart, so it is dropped here
+  for (const k of Object.keys(s.rewardSubs)) {
+    const v = s.rewardSubs[k] as { kind?: unknown; amount?: unknown } | null;
+    if (!v || typeof v !== "object" || (v.kind !== "dust" && v.kind !== "acorns")
+      || typeof v.amount !== "number" || !isFinite(v.amount)) delete s.rewardSubs[k];
+  }
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
@@ -709,15 +717,20 @@ export function unlockableRewards(s: SaveData) {
  *  in the same unlocked* list a star crossing would fill; mods and modes
  *  are keyed by the reward's id. */
 export function unlockReward(s: SaveData, r: StarReward): "currency" | "owned" | "none" | "ok" {
-  if (r.kind === "acorns" || r.kind === "dust" || !r.id) return "currency";
+  // only the kinds an unlock can actually hand over; anything else (a
+  // currency line, a stage, a title) would spend the boost and open nothing
+  const openable = r.kind === "suit" || r.kind === "helmet" || r.kind === "trail"
+    || r.kind === "pal" || r.kind === "mod" || r.kind === "mode";
+  if (!openable || !r.id) return "currency";
   if (rewardOwned(s, r)) return "owned";
   const paid = spendBoost(s, "starunlock");
   if (paid !== "ok") return paid;
   const add = (list: string[]) => { if (!list.includes(r.id!)) list.push(r.id!); };
   // a premium id is owned through `purchased` - the one list every gate
-  // and the shop read for it - so a Star Unlock lands it there
+  // and the shop read for it - so a Star Unlock lands it there, with the
+  // set trail the shop would hand over beside it (idGrants)
   if (r.kind === "mod" || r.kind === "mode") add(s.keyUnlocks);
-  else if (isIap(r.id)) { if (!(s.purchased || []).includes(r.id)) s.purchased = [...(s.purchased || []), r.id]; }
+  else if (isIap(r.id)) { s.purchased = [...new Set([...(s.purchased || []), ...idGrants(r.id)])]; }
   else if (r.kind === "suit") add(s.unlockedSuits);
   else if (r.kind === "helmet") add(s.unlocked);
   else if (r.kind === "trail") add(s.unlockedTrails);

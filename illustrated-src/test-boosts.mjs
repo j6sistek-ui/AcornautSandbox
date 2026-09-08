@@ -110,8 +110,12 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     const sub = s.rewardSubs[Prog2.rewardId(magnetar)];
     ok(sub && sub.kind === "dust" && sub.amount === Camp.substituteFor(magnetar.stars, "dust").amount, `the Magnetar rung paid dust instead (${JSON.stringify(sub)})`);
     ok(s.starDust - before >= sub.amount, "the dust landed in the purse");
+    // the first settle also paid every currency rung crossed on the way, so
+    // idempotence is measured from AFTER it: a second pass moves nothing
+    const settled = s.starDust, settledAcorns = s.acorns;
     settleStarRewards(s);
-    ok(s.rewardSubs[Prog2.rewardId(magnetar)].amount === sub.amount && s.starDust - before < 2 * sub.amount + 1000, "a second settle pays nothing twice");
+    ok(s.rewardSubs[Prog2.rewardId(magnetar)].amount === sub.amount && s.starDust === settled && s.acorns === settledAcorns,
+      "a second settle pays nothing twice");
     void acorns;
   }
   // opened with a Star Unlock, then the road reaches its rung: acorns instead
@@ -151,6 +155,31 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
   const s = defaultSave();
   ok(s.boosts && s.boosts.levelskip === 0 && s.boosts.starunlock === 0 && Array.isArray(s.keyUnlocks) && !s.keyUnlocks.length,
     "a fresh save carries empty boosts and no keys");
+}
+
+// ---- a set suit opens with its trail, like the shop hands it over --------
+{
+  const s = defaultSave(); s.boosts.starunlock = 1;
+  const gemmie = STAR_REWARDS.find((r) => r.kind === "suit" && r.id === "gemmie");
+  ok(unlockReward(s, gemmie) === "ok" && Save.ownsPremium(s, "gemmie"), "the Gemmie suit opens by Star Unlock");
+  ok(C.idGrants("gemmie").every((i) => Save.ownsPremium(s, i)), "and its set trail comes with it, as a shop purchase would");
+}
+
+// ---- a boost is never spent on a reward it cannot open -------------------
+{
+  const s = defaultSave(); s.boosts.starunlock = 1;
+  ok(unlockReward(s, { stars: 1, kind: "title", id: "x", name: "x" }) === "currency" && s.boosts.starunlock === 1,
+    "a title with an id is refused and the boost stays");
+}
+
+// ---- a damaged save loads clean ------------------------------------------
+{
+  const store = new Map();
+  globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
+  store.set(C.SAVE_KEY, JSON.stringify({ ...defaultSave(), boosts: [5, 6], rewardSubs: { a: { kind: "dust" }, b: "z", c: { kind: "acorns", amount: 250 } } }));
+  const s = Save.loadSave();
+  ok(s.boosts.levelskip === 0 && s.boosts.starunlock === 0 && !Array.isArray(s.boosts), "an array where the boosts should be is reset, not kept");
+  ok(Object.keys(s.rewardSubs).join() === "c", "malformed substitute entries are dropped, whole ones kept");
 }
 
 if (fail.length) { console.error("boosts: FAIL\n  " + fail.join("\n  ")); process.exit(1); }

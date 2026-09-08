@@ -1,5 +1,5 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=230";
-// THE SPILL — wave survival authority.
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=234";
+// DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
 // rock, cargo and shrapnel travelling one way: at you. No gates, no planets.
@@ -28,8 +28,8 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=230";
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=230";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=230";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=234";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=234";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
