@@ -5,16 +5,16 @@ import { trailWornBy, canWearTrail } from "./catalog";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
 import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign";
-import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
 import { createEngine, type DustPurchaseState } from "./engine";
-import { batteryUnlocked, dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
+import { batteryUnlocked, dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium} from "./save";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, type StarReward, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
 import { SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillMastery, type SpillSpecialty, type SpillUtility } from "./spill-content";
 import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation";
@@ -309,6 +309,9 @@ export async function bootStandalone(root: HTMLElement) {
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
     if (prevScroll) keptScroll = prevScroll.scrollTop;
+    // a screen that asked to land on the pilot drops the scroll the last
+    // screen left behind (the Shop's, after a boost purchase)
+    if (landOnPilot) { keptScroll = 0; landOnPilot = false; }
     keepShelves();
     const oldGuide = !!overlay.querySelector(".ac-depotguidecard");
     const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
@@ -884,7 +887,7 @@ export async function bootStandalone(root: HTMLElement) {
     // ACORNUT LEADS (owner, 7 Sep 2026): the flagship heads the standard
     // row whether or not its 500 stars are in, so the goal is always seen.
     if (u.id === "vanguard") return -2;
-    const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && iapOwned(s, u.id));
+    const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && ownsPremium(s, u.id));
     if (owned) return -1;
     const gate = STAR_UNLOCKS.suits[u.id];
     if (gate !== undefined) return 1_000_000 + gate;
@@ -892,7 +895,7 @@ export async function bootStandalone(root: HTMLElement) {
   }
   function helmRank(h: (typeof HELMETS)[number]) {
     const s = engine.save;
-    const owned = s.unlocked.includes(h.id) || (isIap(h.id) && iapOwned(s, h.id));
+    const owned = s.unlocked.includes(h.id) || (isIap(h.id) && ownsPremium(s, h.id));
     if (owned) return -1;
     const gate = STAR_UNLOCKS.helmets[h.id];
     if (gate !== undefined) return 1_000_000 + gate;
@@ -1938,7 +1941,7 @@ export async function bootStandalone(root: HTMLElement) {
   function palCardOf(pl: (typeof PALS)[number], forShop = false) {
     const s = engine.save;
     const premium = isIap(pl.id);
-    const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
+    const open = premium ? ownsPremium(s, pl.id) : palUnlocked(s, pl.id);
     // "None" is the empty high seat, never the empty low one
     const seat = s.equippedPal === pl.id ? "HIGH" : pl.id !== "none" && s.equippedPal2 === pl.id ? "LOW" : "";
     const b = el("button", seat ? "ac-card ac-palcard on" : "ac-card ac-palcard");
@@ -2016,7 +2019,22 @@ export async function bootStandalone(root: HTMLElement) {
     armed: () => "Already armed — your next run spends it.",
     unavailable: () => "Star Dust packs are sold in the app.",
     clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
+    // the Star Chart boosts
+    hyper: () => "Hyper Run keeps its own record — a Level Skip cannot land there.",
+    done: () => "That mission already has three stars.",
+    none: () => "No boost held. Buy one in the Shop.",
+    currency: () => "Acorn and Star Dust lines pay out on their own as your stars climb.",
   };
+  /** a boost's badge, from the owner's art, at any size */
+  function boostArt(id: BoostId, px: number) {
+    const im = document.createElement("img");
+    im.src = `${artRootUrl()}/${BOOSTS[id].art}?v=${ART_VER}`;
+    im.alt = ""; im.draggable = false; im.width = px; im.height = px;
+    im.className = "ac-boostart";
+    return im;
+  }
+  const REWARD_KIND: Record<string, string> = { pal: "PAL", mod: "MOD", mode: "MODE", suit: "SUIT",
+    helmet: "HELMET", trail: "TRAIL", title: "TITLE", stage: "CHAPTER", dust: "STAR DUST", acorns: "ACORNS" };
   /** how a real-money purchase ended, in the shop's own status line. "ok"
    *  has no line: the dust badge is the receipt. */
   const DUST_OUTCOME_TEXT: Partial<Record<DustPurchaseState, string>> = {
@@ -2201,7 +2219,7 @@ export async function bootStandalone(root: HTMLElement) {
       const helmCard = (h: (typeof HELMETS)[number]) => {
           const premium = isIap(h.id);
           const open = helmetRevealed(s, h.id);
-          const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
+          const owned = premium ? ownsPremium(s, h.id) : s.unlocked.includes(h.id);
           const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
           // A bare integer told the pilot nothing: "70" next to "OWNED"
           // reads as a score, and a free helmet rendered the word "0".
@@ -2222,7 +2240,7 @@ export async function bootStandalone(root: HTMLElement) {
           return b;
       };
       const helmListed = (h: (typeof HELMETS)[number]) =>
-        !h.suitOnly && (!isIap(h.id) || iapOwned(s, h.id));
+        !h.suitOnly && (!isIap(h.id) || ownsPremium(s, h.id));
       const favHelms = favShelf(HELMETS.filter(helmListed).map((h) => h.id),
         (id) => { const h = HELMETS.find((x) => x.id === id); return h ? helmCard(h) : null; });
       if (favHelms) grid.append(favHelms);
@@ -2256,7 +2274,7 @@ export async function bootStandalone(root: HTMLElement) {
       const suitCard = (u: (typeof SUITS)[number]) => {
         const premium = isIap(u.id);
         const open = suitRevealed(s, u.id);
-        const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
+        const owned = premium ? ownsPremium(s, u.id) : s.unlockedSuits.includes(u.id);
         const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
         const claim = !premium && open && !owned && u.cost <= 0;
         b.append(
@@ -2282,7 +2300,7 @@ export async function bootStandalone(root: HTMLElement) {
         return b;
       };
       const favSuits = favShelf(
-        SUITS.filter((u) => !isIap(u.id) || iapOwned(s, u.id)).map((u) => u.id),
+        SUITS.filter((u) => !isIap(u.id) || ownsPremium(s, u.id)).map((u) => u.id),
         (id) => { const u = SUITS.find((x) => x.id === id); return u ? suitCard(u) : null; });
       if (favSuits) grid.append(favSuits);
       for (const sec of SUIT_SHELF) {
@@ -2293,7 +2311,7 @@ export async function bootStandalone(root: HTMLElement) {
           // except on the PURCHASED row, where it shows as a door to the
           // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
           // "arcflash is only in SHOP")
-          .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
+          .filter((u) => !isIap(u.id) || ownsPremium(s, u.id))
           // cheapest first, so the shelf reads as a ladder rather than a
           // pile. Owned things lead (nothing left to pay), then acorn
           // prices in order, then star gates by their star price.
@@ -2301,7 +2319,7 @@ export async function bootStandalone(root: HTMLElement) {
         // ONE DOOR PER ROW (owner, 7 Sep 2026): the premium suits this row
         // sells that the pilot does not own become a single "in the store"
         // card at the end of the row, not a card apiece.
-        const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !iapOwned(s, id));
+        const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !ownsPremium(s, id));
         if (!items.length && !inStore.length) continue;
         grid.append(el("p", "ac-shelfhead", sec.title));
         const row = el("div", "ac-shelfrow");
@@ -2364,7 +2382,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (open) b.append(favStar(t.id));
         return b;
       };
-      const listed = TRAILS.filter((x) => (!isIap(x.id) || iapOwned(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
+      const listed = TRAILS.filter((x) => (!isIap(x.id) || ownsPremium(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
       const favTrails = favShelf(listed.map((t) => t.id),
         (id) => { const t = TRAILS.find((x) => x.id === id); return t ? trailCard(t) : null; });
       if (favTrails) {
@@ -2399,7 +2417,7 @@ export async function bootStandalone(root: HTMLElement) {
       grid.append(el("p", "ac-palseats", dualPalUnlocked(s)
         ? "TWO SEATS \u00b7 tap a second pal to fly it low \u00b7 tap a flying pal to dismiss it"
         : `SECOND SEAT AT \u2605 ${STAR_UNLOCKS.dualPal} \u00b7 fly two pals at once, effects stacked`));
-      for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id))) grid.append(palCardOf(p));
+      for (const p of PALS.filter((x) => !isIap(x.id) || ownsPremium(s, x.id))) grid.append(palCardOf(p));
     } else if (engine.shopTab === "ship") {
       grid.classList.add("ac-shelfcol", "ac-shipworkshop");
       if (STAR_MAP_PREVIEW) {
@@ -2891,7 +2909,9 @@ export async function bootStandalone(root: HTMLElement) {
       svg.append(gold);
     }
     miles.forEach((r, i) => {
-      const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+      // a reward opened ahead of its stars with a Star Unlock reads as earned
+      const have = !r.planned && (total >= r.stars || rewardOwned(engine.save, r as StarReward));
+      const mark = el("button", r.planned ? "ac-palmark mile planned" : have ? "ac-palmark mile earned" : "ac-palmark mile");
       mark.style.left = `${railX}px`;
       mark.style.top = `${mileY[i]}px`;
       mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
@@ -2902,6 +2922,12 @@ export async function bootStandalone(root: HTMLElement) {
         mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
         mark.append(el("span", "ac-concept-label", "CONCEPT"));
         mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+      } else {
+        // every real reward opens its sheet: what it is, how far off it is,
+        // and the Star Unlock that skips the wait
+        const key = rewardId(r as StarReward);
+        mark.setAttribute("aria-label", `Reward at ${r.stars} stars: ${r.name}${have ? ", yours" : ""}`);
+        mark.onclick = () => { rewardOpen = key; boostNote = null; render(); };
       }
       map.append(mark);
     });
@@ -3068,6 +3094,55 @@ export async function bootStandalone(root: HTMLElement) {
     return wrap;
   }
 
+  /** ONE REWARD ON THE RAIL, opened: what it is, how far off it is, and -
+   *  when a Star Unlock is held - the hold that opens it now. */
+  function drawRewardSheet(key: string) {
+    const wrap = el("div", "ac-lvlsheet");
+    const r = STAR_REWARDS.find((x) => rewardId(x) === key);
+    if (!r) return wrap;
+    const s = engine.save;
+    const have = starsOf(s);
+    const owned = rewardOwned(s, r);
+    const close = () => { rewardOpen = null; boostNote = null; render(); };
+    const sheet = el("div", "ac-lvlcard ac-rewardsheet");
+    sheet.append(el("p", "ac-kicker", `★ ${r.stars} STARS · ${REWARD_KIND[r.kind] ?? r.kind.toUpperCase()}`));
+    const art = el("div", "ac-rewardbig");
+    art.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 96));
+    sheet.append(art, el("h2", "ac-lvlname", r.name), el("p", "ac-sub", r.desc));
+    const paidInstead = s.rewardSubs?.[key];
+    sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
+      ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
+      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${(s.boostedRewards || []).includes(r.id ?? "") ? "acorns" : "Star Dust"} instead.`)
+      : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
+    const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
+    if (!owned && item) {
+      if (boostReady(s, "starunlock")) {
+        const held = s.boosts.starunlock;
+        const b = el("button", "ac-primary ac-holdbtn ac-unlockbtn");
+        b.append(boostArt("starunlock", 24), el("span", "", `HOLD TO USE STAR UNLOCK · ${held} HELD`));
+        holdToFire(b as HTMLButtonElement, 700, () => {
+          const out = engine.useStarUnlock(key);
+          if (out === "ok") { boostNote = null; render(); return; }
+          boostNote = DENY_TEXT[out]?.() ?? "That unlock did not land.";
+          render();
+        });
+        sheet.append(b);
+        if (boostNote) sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+      } else {
+        const go = el("button", "ac-ghost ac-unlockgo");
+        go.append(boostArt("starunlock", 22), el("span", "", `STAR UNLOCK · ${BOOSTS.starunlock.dust} IN THE SHOP`));
+        go.onclick = () => { rewardOpen = null; engine.open("shop"); };
+        sheet.append(go, el("p", "ac-fine", "Or earn it on the road."));
+      }
+    }
+    const back = el("button", "ac-ghost", "BACK");
+    back.onclick = close;
+    sheet.append(back);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    return wrap;
+  }
+
   function drawLog() {
     const sv = engine.save;
     const stars = routeMasks(sv, CHART_LEVELS);
@@ -3090,6 +3165,20 @@ export async function bootStandalone(root: HTMLElement) {
     // scrolls, and Return to pilot brings the current mission back
     const pilot = el("button", "ac-ghost", "Return to pilot"); pilot.onclick = () => goTo(); nav.append(pilot);
     box.append(nav);
+    // A HELD BOOST SAYS WHERE IT GOES. The Shop lands here right after a
+    // purchase, and the Profile's USE NOW does too, so the first thing on
+    // the chart is what to tap next.
+    for (const id of BOOST_IDS) {
+      const n = sv.boosts?.[id] ?? 0;
+      if (!n) continue;
+      const arm = el("div", "ac-boostarm");
+      arm.append(boostArt(id, 34));
+      const t = el("span", "");
+      t.append(el("b", "", `${BOOSTS[id].name} · ${n} held`),
+        el("span", "", id === "levelskip" ? "Open a mission and hold LEVEL SKIP." : "Tap a reward on the rail and hold STAR UNLOCK."));
+      arm.append(t);
+      box.append(arm);
+    }
     if (STAR_MAP_PREVIEW) {
       const samples = el("div", "ac-chart-samples");
       const rewards = el("button", "ac-ghost", "Reward preview"); rewards.dataset.rewardPreview = "true";
@@ -3188,6 +3277,7 @@ export async function bootStandalone(root: HTMLElement) {
       if (def) box.append(drawLevelSheet(def, verifiedMask(sv, def)));
     }
     if (STAR_MAP_PREVIEW && rewardPreviewAt) box.append(drawRewardPreview());
+    if (rewardOpen) box.append(drawRewardSheet(rewardOpen));
     // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
     // hyperRunOpen was only ever read by the hub - so tapping a field set a
     // flag nothing on the chart looked at, and the one route to Hyper Run
@@ -3289,6 +3379,19 @@ export async function bootStandalone(root: HTMLElement) {
       }
       sheet.append(el("p", "ac-sub", "OWN RECORD \u00b7 CAMPAIGN STARS UNCHANGED"));
     }
+    // LEVEL SKIP, when one is held: a hold on this button spends it here
+    let skip: HTMLElement | null = null;
+    if (!def.standalone && boostReady(engine.save, "levelskip") && skipEligible(engine.save, def) === "ok") {
+      const held = engine.save.boosts.levelskip;
+      skip = el("button", "ac-ghost ac-holdbtn ac-skipbtn");
+      skip.append(boostArt("levelskip", 24), el("span", "", `HOLD TO USE LEVEL SKIP · 3 STARS NOW · ${held} HELD`));
+      holdToFire(skip as HTMLButtonElement, 700, () => {
+        const r = engine.useLevelSkip(def.id);
+        if (r === "ok") { chartLevel = null; boostNote = null; render(); return; }
+        boostNote = DENY_TEXT[r]?.() ?? "That skip did not land.";
+        render();
+      });
+    }
     const fly = el("button", "ac-primary", def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
     fly.onclick = () => {
       chartLevel = null;
@@ -3310,6 +3413,7 @@ export async function bootStandalone(root: HTMLElement) {
     const back = el("button", "ac-ghost", "BACK");
     const close = () => {
       chartLevel = null;
+      boostNote = null;
       // the sheet is open because a flag says so, and the flag has to be
       // cleared on BOTH routes or closing it from the chart just redraws it
       hyperRunOpen = false;
@@ -3317,7 +3421,10 @@ export async function bootStandalone(root: HTMLElement) {
       render();
     };
     back.onclick = close;
-    sheet.append(fly, back);
+    sheet.append(fly);
+    if (skip) sheet.append(skip);
+    if (boostNote && skip) sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+    sheet.append(back);
     wrap.append(sheet);
     wrap.onclick = (e) => { if (e.target === wrap) close(); };
     return wrap;
@@ -3462,6 +3569,13 @@ export async function bootStandalone(root: HTMLElement) {
   // storefront. This one is genuinely not ready for that.
   let devRollOpen = false;
   let featureOpen: string | null = null;   // the featured pack, opened
+  // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
+  // chart: a held Level Skip lands on a mission from its sheet, a held Star
+  // Unlock on a reward from the rail. Both are hold-to-confirm.
+  let boostConfirm: BoostId | null = null; // the shop card asking "are you sure"
+  let rewardOpen: string | null = null;    // the reward sheet on the chart, by rewardId
+  let boostNote: string | null = null;     // one line under a boost control that refused
+  let landOnPilot = false;                 // the next chart render scrolls to the pilot
   // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
   // and the bar adds up whatever is in here. Nothing is forced along with
   // anything else; a helmet does not drag its suit onto the stage.
@@ -3487,7 +3601,7 @@ export async function bootStandalone(root: HTMLElement) {
   /** what the shop is showing today - and what it is deliberately not */
   function shopCycle() {
     const s = engine.save;
-    const owns = (i: string) => iapOwned(s, i);
+    const owns = (i: string) => ownsPremium(s, i);
     const day = shopDayIndex();
     // ONE featured pack, never one already owned outright
     const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
@@ -3751,6 +3865,35 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(el("p", "ac-fine",
       "The shelf restocks tomorrow. Trails are not sold on their own — they arrive with their set."));
 
+    // ---- STAR CHART BOOSTS (owner, 8 Sep 2026). Bought here, into the
+    // account; spent on the Star Chart with a hold. The purchase itself is
+    // a two-tap confirm like the packs, and a successful one walks the
+    // pilot to the chart with the boost armed.
+    scroll.append(el("p", "ac-shelfhead", "STAR CHART BOOSTS"));
+    for (const id of BOOST_IDS) {
+      const spec = BOOSTS[id];
+      const held = s.boosts?.[id] ?? 0;
+      const row = el("button", boostConfirm === id ? "ac-card ac-modcard ac-boostcard ac-confirming" : "ac-card ac-modcard ac-boostcard");
+      row.append(boostArt(id, 56));
+      const t = el("div", "ac-modtxt");
+      t.append(el("p", "ac-modname", spec.name), el("p", "ac-sub", spec.blurb));
+      if (held) t.append(el("p", "ac-sub ac-boostheld", `${held} in your account — spend it on the Star Chart.`));
+      row.append(t);
+      const pr = el("span", "ac-modprice ac-dustprice");
+      pr.append(el("span", "", boostConfirm === id ? "CONFIRM " : ""), icon(I_DUST, 13, true), el("span", "", spec.dust.toLocaleString()));
+      row.append(pr);
+      row.onclick = () => {
+        if (boostConfirm !== id) { boostConfirm = id; render(); return; }
+        boostConfirm = null;
+        // the chart opens on the pilot, not wherever the shop was scrolled
+        if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) { landOnPilot = true; engine.open("log"); }
+        else render();
+      };
+      scroll.append(row);
+    }
+    scroll.append(el("p", "ac-fine",
+      "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
+
     // ---- THE FEATURED PACK.
     if (cy.feature) {
       const bn = cy.feature;
@@ -3854,7 +3997,7 @@ export async function bootStandalone(root: HTMLElement) {
     const bn = BUNDLES.find((b) => b.id === id);
     if (!bn) return wrap;
     const s = engine.save;
-    const owns = (i: string) => iapOwned(s, i);
+    const owns = (i: string) => ownsPremium(s, i);
     const sheet = el("div", "ac-lvlcard ac-featuresheet");
     const full = alaCarteTotal(bundleIds(bn), owns);
     const due = featurePrice(bn, owns);
@@ -3979,7 +4122,7 @@ export async function bootStandalone(root: HTMLElement) {
     const bar = el("button", "ac-devbar");
     bar.setAttribute("aria-expanded", String(devRollOpen));
     bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"),
-      el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} owned`));
+      el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} of ${IAP_ITEMS.length} premium items owned`));
     bar.onclick = () => { devRollOpen = !devRollOpen; render(); };
     wrap.append(bar);
     if (!devRollOpen) return wrap;
@@ -4012,7 +4155,7 @@ export async function bootStandalone(root: HTMLElement) {
     group("HELD BY THE FEATURED PACK", held,
       `${cy.feature?.name ?? "no pack"} — not buyable singly until it rotates out.`);
     group("RESTING", resting, "In the pool, not dealt today. Comes back on a future day.");
-    group("OWNED", owned, "Bought already, so the shelf never offers it again.");
+    group("OWNED", owned, `Bought already, so the shelf never offers it again. Premium ids, not suits: a suit and its helmet share one.`);
     wrap.append(panel);
     return wrap;
   }
@@ -4073,7 +4216,7 @@ export async function bootStandalone(root: HTMLElement) {
       // date, the same three all day, a fresh draw tomorrow - and a pack
       // the pilot owns is gone from the pool for good rather than sitting
       // there greyed out. See shopBundles.
-      const shelf = shopBundles(Date.now(), (i) => iapOwned(s, i));
+      const shelf = shopBundles(Date.now(), (i) => ownsPremium(s, i));
       for (const bn of shelf) {
         const card = el("button", "ac-card ac-bundle");
         const strip = el("div", "ac-bundlestrip");
@@ -4093,7 +4236,7 @@ export async function bootStandalone(root: HTMLElement) {
         card.append(txt);
         // what the pack costs THIS pilot: the packs overlap, so anything
         // already owned has come off the price
-        const due = bundlePrice(bn, (i) => iapOwned(s, i));
+        const due = bundlePrice(bn, (i) => ownsPremium(s, i));
         const price = el("span", "ac-modprice ac-dustprice");
         price.append(icon(I_DUST, 12, true), el("span", "", due.toLocaleString()));
         if (due < bn.dust) {
@@ -4295,7 +4438,7 @@ export async function bootStandalone(root: HTMLElement) {
           chip.append(c);
         }
         chip.append(el("span", "", it.name));
-        if (iapOwned(s, it.id)) chip.classList.add("owned");
+        if (ownsPremium(s, it.id)) chip.classList.add("owned");
         row.append(chip);
       }
       listWrap.append(row);
@@ -4303,11 +4446,11 @@ export async function bootStandalone(root: HTMLElement) {
     sheet.append(listWrap);
     sheet.append(el("p", "ac-fine", `${total} items in this pack.`));
 
-    const owned = bundleIds(bn).every((i) => iapOwned(s, i));
+    const owned = bundleIds(bn).every((i) => ownsPremium(s, i));
     // what THIS pilot owes: the packs overlap, so anything already in the
     // loadout has come off the price and the button must say so
-    const due = bundlePrice(bn, (i) => iapOwned(s, i));
-    const already = bn.items.filter((i) => iapOwned(s, i.id)).length;
+    const due = bundlePrice(bn, (i) => ownsPremium(s, i));
+    const already = bn.items.filter((i) => ownsPremium(s, i.id)).length;
     if (already && !owned) {
       sheet.append(el("p", "ac-fine ac-packcredit",
         `${already} of these are already yours \u2014 ${(bn.dust - due).toLocaleString()} Star Dust off.`));
@@ -4465,7 +4608,7 @@ export async function bootStandalone(root: HTMLElement) {
           b.append(pc);
           markPremium(b);
         }
-        b.append(document.createTextNode(`${it.name}\n${iapOwned(s, it.id) ? "OWNED" : "IN A PACK"}`));
+        b.append(document.createTextNode(`${it.name}\n${ownsPremium(s, it.id) ? "OWNED" : "IN A PACK"}`));
         b.onclick = () => { tryOn = { ...tryOn, [kind]: it.id }; render(); };
         row.append(b);
       }
@@ -4686,6 +4829,27 @@ export async function bootStandalone(root: HTMLElement) {
       tiles.append(t);
     }
     scroll.append(tiles);
+
+    // THE INVENTORY (owner, 8 Sep 2026): a bought boost lives in the
+    // account, so a closed app or a dropped connection between the Shop
+    // and the chart loses nothing. USE NOW walks to the chart, armed.
+    if (BOOST_IDS.some((id) => (s.boosts?.[id] ?? 0) > 0)) {
+      scroll.append(el("p", "ac-kicker ac-secthead", "Inventory"));
+      const inv = el("div", "ac-rows");
+      for (const id of BOOST_IDS) {
+        const n = s.boosts?.[id] ?? 0;
+        if (!n) continue;
+        const row = el("div", "ac-row ac-invrow");
+        row.append(boostArt(id, 40));
+        const t = el("span", "ac-socialtxt");
+        t.append(el("b", "", `${BOOSTS[id].name} × ${n}`), el("span", "", BOOSTS[id].blurb));
+        const use = el("button", "ac-ghost ac-invuse", "USE NOW");
+        use.onclick = () => { landOnPilot = true; engine.open("log"); };
+        row.append(t, use);
+        inv.append(row);
+      }
+      scroll.append(inv, el("p", "ac-fine", "Spent on the Star Chart with a hold: a mission for a Level Skip, a reward on the rail for a Star Unlock."));
+    }
 
     // The five per-mode records used to be listed here as well. They live
     // on the mode buttons themselves - fly, deep, lost and arcade read the

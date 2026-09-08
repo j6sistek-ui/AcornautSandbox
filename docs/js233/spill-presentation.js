@@ -1,5 +1,5 @@
-import { SPILL, SPILL_SHOP, createSpill } from "./spill.js?v=229";
-import { SPILL_SPECIALTIES, SPILL_UTILITIES } from "./spill-content.js?v=229";
+import { SPILL, SPILL_SHOP, createSpill } from "./spill.js?v=233";
+import { SPILL_SPECIALTIES, SPILL_UTILITIES } from "./spill-content.js?v=233";
 /** Font-independent equipment marks shared by the hull, HUD and workshop. */
 export const SPILL_MODULE_MARKS = {
     magnet: [[[5, 4], [5, 13], [7, 18], [12, 21], [17, 18], [19, 13], [19, 4]], [[5, 9], [8, 9]], [[16, 9], [19, 9]]],

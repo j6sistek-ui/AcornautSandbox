@@ -1,11 +1,11 @@
-import { artUrl } from "./art.js?v=229";
-import { spillAppearance } from "./spill-appearance.js?v=229";
-import { SUITS } from "./catalog.js?v=229";
-import { paintShipPreview } from "./draw.js?v=229";
-import { writeSave } from "./save.js?v=229";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=229";
-import { spillBuildFromState } from "./spill-presentation.js?v=229";
-import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=229";
+import { artUrl } from "./art.js?v=233";
+import { spillAppearance } from "./spill-appearance.js?v=233";
+import { SUITS } from "./catalog.js?v=233";
+import { paintShipPreview } from "./draw.js?v=233";
+import { writeSave } from "./save.js?v=233";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=233";
+import { spillBuildFromState } from "./spill-presentation.js?v=233";
+import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=233";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
@@ -128,7 +128,7 @@ export function drawSpillEnginePicker(engine) {
 export function drawSpillLaunchSetup(engine) {
     const save = engine.save, wrap = el("div", "ac-spillprep ac-spillsetup");
     const pilot = SUITS.find(s => s.id === save.equippedSuit)?.name ?? "Pilot";
-    wrap.append(el("p", "ac-kicker", "THE SPILL · NEW RUN"), el("h2", "", "Your next ship"));
+    wrap.append(el("p", "ac-kicker", "DEBRIS FIELD · NEW RUN"), el("h2", "", "Your next ship"));
     const stage = el("div", "ac-launch-ship");
     stage.append(shipPreview(engine, { plating: 0, thrusters: 0, pulse: 0, shield: 0, utilities: save.spillStarter ? [save.spillStarter] : [] }, 140), el("b", "ac-launch-pilot", `${pilot} aboard`));
     wrap.append(stage, el("p", "ac-launch-stats", "3 health · 0 shields · first upgrade free"), drawSpillStarters(engine), drawSpillEnginePicker(engine));
@@ -150,7 +150,7 @@ function drawDepotGuide(engine, view, rerender) {
     const goal = engine.world.lvl?.def.spillFinish;
     const objective = goal ? goal.kind === "ore" ? `Collect ${goal.n} coins.` : `Visit ${goal.n} depots.`
         : engine.world.spill?.target ? `Survive ${engine.world.spill.target} waves.` : "Clear waves. Beat your best.";
-    sheet.append(el("p", "ac-kicker", "THE SPILL · DEPOT GUIDE"), el("h2", "", "Build. Survive. Repeat."), el("p", "ac-workshop-note", objective));
+    sheet.append(el("p", "ac-kicker", "DEBRIS FIELD · DEPOT GUIDE"), el("h2", "", "Build. Survive. Repeat."), el("p", "ac-workshop-note", objective));
     const collect = el("div", "ac-guide-collect"), words = el("div");
     words.append(el("h3", "", "Collect coins"), el("p", "", "Buy upgrades here. First one free."));
     collect.append(coin(), words);
@@ -221,7 +221,7 @@ export function drawDepotWorkshop(engine, view, rerender) {
         return b;
     };
     const head = el("header", "ac-workshop-head"), heading = el("div"), tools = el("div", "ac-workshop-headtools"), wallet = el("div", "ac-workshop-wallet");
-    heading.append(el("p", "ac-kicker", `THE SPILL · ${sp.welcome ? "PRE-FLIGHT" : `WAVE ${sp.wave} CLEARED`}`), el("h2", "", sp.firstPass ? "First pass complete" : "Salvage depot"));
+    heading.append(el("p", "ac-kicker", `DEBRIS FIELD · ${sp.welcome ? "PRE-FLIGHT" : `WAVE ${sp.wave} CLEARED`}`), el("h2", "", sp.firstPass ? "First pass complete" : "Salvage depot"));
     wallet.setAttribute("aria-label", `${sp.ore} coins`);
     wallet.append(coin(), el("b", "", String(sp.ore)));
     const guide = el("button", "ac-workshop-help", "Guide");
