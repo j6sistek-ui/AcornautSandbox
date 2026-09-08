@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=233";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=233";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=233";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=233";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=234";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=234";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=234";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=234";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -641,15 +641,15 @@ function rewardGates(kind) {
 }
 /** star thresholds the save-side gates read; kept beside the reward list */
 /** WHAT A RUNG PAYS WHEN ITS ITEM IS ALREADY YOURS (owner, 8 Sep 2026:
- *  "if they buy it now... it is replaced in the star chart as currency...
- *  if they use a star reward unlock, it's replaced with acorns... like 50
- *  star dust, not an equivalent share"). Flat, whatever the rung: a bought
- *  item's rung pays SUB_DUST Star Dust, a Star-Unlocked item's rung pays
- *  SUB_ACORNS acorns. Two numbers, here, to retune. */
-export const SUB_DUST = 50;
+ *  "change pay out to acorns, 250, flat regardless of star unlock or store
+ *  purchase... acorns are less useful long term"). Flat, whatever the rung
+ *  and whichever way the item arrived. A suit and its helmet on two rungs
+ *  are two items and pay twice, by the same decision. One number, here,
+ *  to retune. Saves written under the earlier rule may still carry a
+ *  "dust" entry in rewardSubs; the sheet shows what was paid. */
 export const SUB_ACORNS = 250;
-export function substituteFor(_stars, kind) {
-    return kind === "acorns" ? { kind, amount: SUB_ACORNS } : { kind, amount: SUB_DUST };
+export function substituteFor(_stars) {
+    return { kind: "acorns", amount: SUB_ACORNS };
 }
 export const STAR_UNLOCKS = {
     pals: rewardGates("pal"),

@@ -8,7 +8,7 @@ import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
@@ -59,8 +59,11 @@ function holdToFire(b: HTMLButtonElement, ms: number, fire: () => void) {
     b.classList.add("ac-holding");
     timer = window.setTimeout(() => {
       timer = 0;
-      fired = true;
       b.classList.remove("ac-holding");
+      // a render in the meantime replaced this button; the pointer can no
+      // longer cancel a detached one, so it must not fire either
+      if (!b.isConnected) return;
+      fired = true;
       fire();
     }, ms);
   });
@@ -321,6 +324,9 @@ export async function bootStandalone(root: HTMLElement) {
       : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
     const depotFocus = (document.activeElement as HTMLElement)?.dataset.spillControl;
     overlay.innerHTML = "";
+    // an armed boost card asks "are you sure" for THIS visit only: leaving
+    // the Shop disarms it, so coming back never spends dust on one tap
+    if (snap.screen !== "shop") boostConfirm = null;
     if (snap.screen === "play") {
       const bar = el("div", "ac-playbar");
       // A FIRST FLIGHT YOU CAN LEAVE. A tutorial with no exit is a trap for
@@ -3112,7 +3118,7 @@ export async function bootStandalone(root: HTMLElement) {
     const paidInstead = s.rewardSubs?.[key];
     sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
       ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
-      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${(s.boostedRewards || []).includes(r.id ?? "") ? "acorns" : "Star Dust"} instead.`)
+      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
       : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
     const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
     if (!owned && item) {

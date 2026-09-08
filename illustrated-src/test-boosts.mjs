@@ -105,14 +105,17 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     const s = defaultSave(); s.starDust = 0; s.purchased = ["magnetar"];
     ok(ownsPremium(s, "magnetar") && !ownsPremium(s, "astrafox"), "a bought pal is owned; an unbought one is not");
     reach(s, magnetar.stars);
-    const before = s.starDust, acorns = s.acorns;
+    const acorns = s.acorns;
     settleStarRewards(s);
     const sub = s.rewardSubs[Prog2.rewardId(magnetar)];
-    ok(sub && sub.kind === "dust" && sub.amount === Camp.substituteFor(magnetar.stars, "dust").amount, `the Magnetar rung paid dust instead (${JSON.stringify(sub)})`);
-    ok(s.starDust - before >= sub.amount, "the dust landed in the purse");
+    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(magnetar.stars).amount, `the Magnetar rung paid acorns instead (${JSON.stringify(sub)})`);
+    ok(s.acorns - acorns >= sub.amount, "the acorns landed in the purse");
+    // the first settle also paid every currency rung crossed on the way, so
+    // idempotence is measured from AFTER it: a second pass moves nothing
+    const settled = s.starDust, settledAcorns = s.acorns;
     settleStarRewards(s);
-    ok(s.rewardSubs[Prog2.rewardId(magnetar)].amount === sub.amount && s.starDust - before < 2 * sub.amount + 1000, "a second settle pays nothing twice");
-    void acorns;
+    ok(s.rewardSubs[Prog2.rewardId(magnetar)].amount === sub.amount && s.starDust === settled && s.acorns === settledAcorns,
+      "a second settle pays nothing twice");
   }
   // opened with a Star Unlock, then the road reaches its rung: acorns instead
   {
@@ -122,7 +125,7 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     const before = s.acorns;
     settleStarRewards(s);
     const sub = s.rewardSubs[Prog2.rewardId(bee)];
-    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(bee.stars, "acorns").amount, `the Astrolobee rung paid acorns instead (${JSON.stringify(sub)})`);
+    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(bee.stars).amount, `the Astrolobee rung paid acorns instead (${JSON.stringify(sub)})`);
     ok(s.acorns - before >= sub.amount, "the acorns landed in the wallet");
   }
   // a premium id opened with a Star Unlock is owned the way the shop reads it
@@ -141,9 +144,19 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     ok(!shelf.some((b) => b.id === "bundle-magnetar"), "the Magnetar pack leaves the shelf once the road handed it over");
     ok(!C.IAP_ITEMS.some((i) => i === "magnetar" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");
   }
-  // the substitute is flat, whatever the rung (owner: "like 50 star dust, not an equivalent share")
-  ok(Camp.substituteFor(30, "dust").amount === 50 && Camp.substituteFor(780, "dust").amount === 50, "a bought item's rung pays 50 Star Dust anywhere on the road");
-  ok(Camp.substituteFor(30, "acorns").amount === Camp.SUB_ACORNS && Camp.substituteFor(780, "acorns").amount === Camp.SUB_ACORNS, "a Star-Unlocked item's rung pays the flat acorn sum anywhere");
+  // the substitute is flat, whatever the rung and whichever way the item arrived
+  // (owner: "acorns, 250, flat regardless of star unlock or store purchase")
+  ok(Camp.substituteFor(30).kind === "acorns" && Camp.substituteFor(30).amount === 250 && Camp.substituteFor(780).amount === 250,
+    "an owned item's rung pays 250 acorns anywhere on the road");
+  // a suit and its helmet on two rungs are two items: both pay (owner, 8 Sep 2026)
+  {
+    const s = defaultSave(); s.purchased = ["sammie"];
+    const rungs = STAR_REWARDS.filter((r) => r.id === "sammie");
+    reach(s, Math.max(...rungs.map((r) => r.stars)));
+    const before = s.acorns; settleStarRewards(s);
+    ok(rungs.length === 2 && rungs.every((r) => s.rewardSubs[Prog2.rewardId(r)]?.amount === 250),
+      "both Sammie rungs pay when the id is owned");
+  }
 }
 
 // ---- the defaults ---------------------------------------------------------
@@ -151,6 +164,31 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
   const s = defaultSave();
   ok(s.boosts && s.boosts.levelskip === 0 && s.boosts.starunlock === 0 && Array.isArray(s.keyUnlocks) && !s.keyUnlocks.length,
     "a fresh save carries empty boosts and no keys");
+}
+
+// ---- a set suit opens with its trail, like the shop hands it over --------
+{
+  const s = defaultSave(); s.boosts.starunlock = 1;
+  const gemmie = STAR_REWARDS.find((r) => r.kind === "suit" && r.id === "gemmie");
+  ok(unlockReward(s, gemmie) === "ok" && Save.ownsPremium(s, "gemmie"), "the Gemmie suit opens by Star Unlock");
+  ok(C.idGrants("gemmie").every((i) => Save.ownsPremium(s, i)), "and its set trail comes with it, as a shop purchase would");
+}
+
+// ---- a boost is never spent on a reward it cannot open -------------------
+{
+  const s = defaultSave(); s.boosts.starunlock = 1;
+  ok(unlockReward(s, { stars: 1, kind: "title", id: "x", name: "x" }) === "currency" && s.boosts.starunlock === 1,
+    "a title with an id is refused and the boost stays");
+}
+
+// ---- a damaged save loads clean ------------------------------------------
+{
+  const store = new Map();
+  globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
+  store.set(C.SAVE_KEY, JSON.stringify({ ...defaultSave(), boosts: [5, 6], rewardSubs: { a: { kind: "dust" }, b: "z", c: { kind: "acorns", amount: 250 } } }));
+  const s = Save.loadSave();
+  ok(s.boosts.levelskip === 0 && s.boosts.starunlock === 0 && !Array.isArray(s.boosts), "an array where the boosts should be is reset, not kept");
+  ok(Object.keys(s.rewardSubs).join() === "c", "malformed substitute entries are dropped, whole ones kept");
 }
 
 if (fail.length) { console.error("boosts: FAIL\n  " + fail.join("\n  ")); process.exit(1); }
