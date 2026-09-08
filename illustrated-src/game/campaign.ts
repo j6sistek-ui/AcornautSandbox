@@ -1,6 +1,6 @@
 import { BETA_MISSION_ROWS } from "./beta-campaign-manifest";
 import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest";
-import { IS_BETA, PALS, STAR_MAP_LIVE, STAR_MAP_PREVIEW } from "./catalog";
+import { IS_BETA, PALS } from "./catalog";
 import {
   RACE_MAX_ACORNS,
   RACE_RINGS,
@@ -352,17 +352,15 @@ export const STAGES: StageDef[] = [
  * have their own progress identity. Production never loads preview progress. */
 // the road's contracts: the beta's authored 260 on both pages now that the
 // road is live, the original production rows only if it is ever pulled back
-const ROAD = IS_BETA || STAR_MAP_LIVE;
 export const LEGACY_LEVELS: LevelDef[] = MISSION_ROWS.slice(0, 100).map(row => {
-  const variant = ROAD ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+  const variant = BETA_VARIANTS.find(v => v.id === row.id);
   return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
     goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) as [Goal, Goal, Goal] };
 });
-export const ALL_LEVELS: LevelDef[] = (ROAD ? BETA_MISSION_ROWS : MISSION_ROWS).map(row =>
+export const ALL_LEVELS: LevelDef[] = BETA_MISSION_ROWS.map(row =>
   ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) as [Goal, Goal, Goal] }));
-export const LEVELS = ROAD ? ALL_LEVELS : LEGACY_LEVELS;
+export const LEVELS = ALL_LEVELS;
 export const CHART_LEVELS = LEVELS;
-export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
 export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
 export const levelById = (id: string) => CHART_LEVELS.find(l => l.id === id) ?? null;
 export const nextLevel = (id: string, order: readonly LevelDef[] = CHART_LEVELS) => {
@@ -588,20 +586,6 @@ export function goalMet(g: Goal, s: RunStats): boolean {
 /** stars for one level live in a 3-bit mask so each goal keeps its own */
 export function countBits(mask: number) {
   return (mask & 1) + ((mask >> 1) & 1) + ((mask >> 2) & 1);
-}
-
-export function totalStars(stars: Record<string, number>) {
-  let n = 0;
-  for (const id in stars) n += countBits(stars[id] || 0);
-  return n;
-}
-
-export function stageUnlocked(stageNum: number, total: number) {
-  // The beta is a TEST BUILD: every chapter is open so experimental
-  // missions can be flown without earning the road first.
-  if (IS_BETA) return true;
-  const st = STAGES.find((s) => s.num === stageNum);
-  return !!st && total >= st.unlock;
 }
 
 /** a level opens when its stage is open and the level before it is finished */

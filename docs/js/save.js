@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=240";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=240";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=240";
-import { restoreSpill } from "./spill.js?v=240";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=240";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=241";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=241";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=241";
+import { restoreSpill } from "./spill.js?v=241";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=241";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=240";
-import { platform } from "./platform.js?v=240";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=241";
+import { platform } from "./platform.js?v=241";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -457,12 +457,6 @@ export function writeSave(s) {
 export function eraseSave() {
     writeSave(defaultSave());
 }
-export function pilotLevelOf(s) {
-    return levelForXp(s.xp || 0);
-}
-export function pilotTitleOf(s) {
-    return titleForLevel(pilotLevelOf(s));
-}
 export function starsOf(s) {
     const p = migrateCampaign(s);
     return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
@@ -527,7 +521,8 @@ export function suitRevealed(s, id) {
     // only for suits with no gate at all, or the cat would have been free
     if (STAR_UNLOCKS.suits[id] !== undefined)
         return BETA_UNLOCK_GATES;
-    return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
+    // no gate at all: on the shelf for everyone
+    return true;
 }
 // Premium items are owned only once bought - on BOTH pages. The beta used
 // to hand them over outright, which meant the one thing the beta could

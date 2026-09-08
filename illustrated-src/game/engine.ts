@@ -1,7 +1,7 @@
 import { canWearTrail, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
+import { routeMasks, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
@@ -28,7 +28,7 @@ import {
   cleanPilotName,
   dualPalUnlocked,
 } from "./save";
-import { hyperRunById, levelById, levelUnlocked, type LevelDef, STAR_REWARDS} from "./campaign";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS} from "./campaign";
 import {
   dive,
   flap,

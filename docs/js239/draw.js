@@ -7,7 +7,11 @@ import { arcflashPreview } from "./arcflash-motion.js?v=239";
 import { runPals, fxOf, worldFlipped } from "./sim.js?v=239";
 import { spillAppearance } from "./spill-appearance.js?v=239";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=239";
+<<<<<<< HEAD
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=239";
+=======
 import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=239";
+>>>>>>> origin/main
 import { goalHud } from "./campaign.js?v=239";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=239";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=239";
@@ -394,9 +398,6 @@ function writeHyperRunFlow(args, samples) {
     });
     samples.length = cursor;
     return samples;
-}
-export function hyperRunFlowSnapshot(args) {
-    return writeHyperRunFlow(args, []).map((sample) => ({ ...sample }));
 }
 function raceReducedMotion() {
     return typeof window !== "undefined"
@@ -4434,9 +4435,7 @@ poseOverride = NaN) {
         paintArcflash(ctx, art, x, y, size);
         return;
     }
-    const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
-        ? (art?.suits?.[suit.id] ?? null)
-        : null;
+    const suited = art?.suits?.[suit.id] ?? null;
     const body = suited ?? spr;
     if (!body)
         return;

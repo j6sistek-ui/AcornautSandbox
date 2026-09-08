@@ -13,9 +13,6 @@ export const VANGUARD_FRAMES = 16;
 export type VanguardMotionMode = 'cruise';
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
-// Neutral art points upward by 34 degrees. This fixed offset seats the
-// entire drawing horizontally; heading below follows flight, not taps.
-export const VANGUARD_ART_PITCH = 34 * Math.PI / 180;
 type Contact = { x: number; y: number; nx: number; ny: number; age: number; strength: number };
 /** Presentation only: a continuous tail clock plus an independent heading.
  * Neither clock feeds forces, collision, scoring or random seeds.
@@ -85,7 +82,6 @@ export function setVanguardPitchTrim(degrees: number) {
   if (!Number.isFinite(degrees)) degrees = VANGUARD_PITCH_TRIM_DEFAULT;
   pitchTrim = clamp(degrees,-20,45)*DEG;
 }
-export function vanguardPitchTrim() { return pitchTrim; }
 // Critically damped second-order response with bounded angular speed. Unlike
 // a pose lerp, an accepted tap cannot reverse rotation in one video frame.
 function joint(s: VanguardMotion, key: keyof VanguardMotion['rates'], target: number,

@@ -1,12 +1,12 @@
-import { platform } from "./platform.js?v=237";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=237";
+import { platform } from "./platform.js?v=241";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=241";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "237";
+export const ART_VER = "241";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -24,18 +24,12 @@ export const STAR_MAP_PREVIEW = IS_BETA;
 // three Hyper Run barriers, the reward ladder. Only the beta keeps its
 // test conveniences (every mission open, the sample cosmetics, the dust
 // grant), which still follow IS_BETA. Separate from STAR_MAP_PREVIEW on
-// purpose: that flag carries the beta-only previews, this one the road.
-export const STAR_MAP_LIVE = true;
-// WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
-// until the beta set was promoted, and conflating them is dangerous: the save
-// key is derived from IS_BETA, so turning the beta features on for production
-// by flipping that flag would have moved every live player onto the beta save
-// slot and silently wiped their progress.
-//
-// So the two are separate now. IS_BETA still means "this is the beta PAGE",
-// and still decides the save key and the build label. BETA_FEATURES decides
-// what is built, and is on everywhere.
-export const BETA_FEATURES = true;
+// purpose: that flag carries the beta-only previews. The road itself is
+// no longer a flag: campaign.ts builds the 260 rows for both pages.
+// WHICH FEATURES, as opposed to WHICH SAVE SLOT. There used to be a second
+// flag, BETA_FEATURES, for what is built; it was on everywhere and is gone.
+// IS_BETA means only "this is the beta PAGE": it decides the save key, the
+// build label and the test conveniences, never what the game contains.
 // The two the owner asked to hold back are gated on their own, so either can
 // be turned on by itself without touching anything else.
 // HYPER RUN SHIPS. It was gated to the beta while it was a prototype; it
@@ -45,11 +39,10 @@ export const BETA_FEATURES = true;
 // couple of call sites read it, and a named constant that says what it
 // means beats `true` scattered through four files.
 export const HYPER_RUN_ENABLED = true;
-export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-08 07:58 UTC";
+export const BUILD_TIME = "2026-09-08 20:33 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
@@ -67,12 +60,10 @@ export const TUT_ARM = 1.25;
 // deliberately longer than a normal tap interval so the pose can keep
 // settling between inputs instead of snapping home before the next tap.
 export const TAP_ANIM_DURATION = 1.0;
-// Approved from the beta trial: the burst runs everywhere now. Suits
-// without a painted bank still take the universal articulated path.
-export const TAP_ANIM_ENABLED = true;
+// Approved from the beta trial: the burst runs everywhere. Suits without a
+// painted bank take the universal articulated path.
 // Rendering-only planet contact response — approved from the beta trial.
 export const BOUNCE_ANIM_DURATION = 0.38;
-export const BOUNCE_ANIM_ENABLED = true;
 // The tutorial's graduation gift, and the trail of guided steps that
 // follows it: equip the suit, equip the helmet, fly Mission 1. One pair,
 // named once, so the crash sheet, the hangar and the coach all agree.
@@ -146,9 +137,9 @@ export const HELMETS = [
     { id: "cosmic", name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
     { id: "sunforged", suitOnly: "sunforged", opaqueVisor: true, name: "Sunforged", cost: 0, visor: "#ffbf36", tint: 0.22, rim: "#c08a33", trim: "#4c351d", glow: "#ffb52e" },
     { id: "abyssal", name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
-    { id: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
-    { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
-    { id: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
+    { id: "amethyst", name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
+    { id: "ivoryguard", name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
+    { id: "reactor", name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
 ];
 if (!IS_BETA) {
     for (let i = HELMETS.length - 1; i >= 0; i--) {
@@ -215,7 +206,7 @@ export const SUITS = [
     // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
     // its own head, no helmet. Ships the still for now; the flight sprite
     // sheet follows and is wired as its bank when it lands. Beta until then.
-    { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
+    { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
     { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
     { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
     { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
@@ -377,17 +368,6 @@ export const PLANET_RGB = [
     [0.15, 0.11, 0.28], [0.24, 0.60, 0.81], [0.16, 0.21, 0.48],
     [0.43, 0.26, 0.64], [0.36, 0.58, 0.69], [0.30, 0.15, 0.09],
 ];
-export const DEBRIS_RGB = [
-    [0.27, 0.25, 0.25], [0.30, 0.22, 0.19], [0.63, 0.68, 0.77],
-    [0.28, 0.25, 0.23], [0.29, 0.26, 0.24], [0.31, 0.29, 0.28],
-    [0.73, 0.54, 0.83], [0.27, 0.22, 0.22], [0.23, 0.22, 0.24],
-    [0.54, 0.28, 0.61], [0.33, 0.35, 0.38], [0.57, 0.73, 0.81],
-    [0.22, 0.16, 0.15], [0.19, 0.49, 0.75], [0.29, 0.07, 0.09],
-    [0.58, 0.38, 0.10], [0.10, 0.25, 0.61], [0.21, 0.32, 0.20],
-    [0.33, 0.34, 0.61], [0.40, 0.52, 0.66], [0.60, 0.62, 0.66],
-    [0.43, 0.44, 0.45], [0.14, 0.13, 0.27], [0.39, 0.40, 0.55],
-    [0.44, 0.49, 0.11], [0.70, 0.51, 0.15], [0.39, 0.23, 0.14],
-];
 /** Perceptual separation in a luma + opponent-colour space. Luminance
  *  is weighted heaviest because form reads by brightness first, but hue
  *  gets its say — which is what makes pink-on-green legible. Calibrated
@@ -451,20 +431,6 @@ export const RETRO_GATE = 100;
 // at a hole you fly into, so this is a distance the pilot reads, not a
 // timer that expires on them.
 export const WARP_GATES = 15;
-export const XP_STEPS = [
-    60, 100, 150, 200, 260, 320, 390, 460, 540, 620, 710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720, 1860, 2000,
-    2150, 2300, 2460, 2620, 2790, 2960, 3140,
-];
-export const MAX_LEVEL = XP_STEPS.length + 1;
-export const TITLES = [
-    [1, "CADET"],
-    [5, "PILOT"],
-    [10, "VOIDFARER"],
-    [15, "ACE"],
-    [18, "COMET CHASER"],
-    [25, "EVENT HORIZON"],
-    [30, "ACORNAUT"],
-];
 export const BUNDLES = [
     // ARCFLASH (owner, 7 Sep 2026): one suit, one price, its wake included.
     // The wake is not an item - it is the only trail Arcflash can wear and it
@@ -476,6 +442,17 @@ export const BUNDLES = [
     { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
     { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
     { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
+    // THE THREE STANDALONE VISORS (owner, 8 Sep 2026: "Add them to the shop,
+    // premium purchases, in the rotations"). They came off the beta host, and
+    // premium HERE means being in a bundle - IAP_ITEMS is derived from this
+    // table, isIap reads that, and the shop's helmet rotation deals from
+    // HELMETS.filter(isIap). One helmet apiece, priced like the companions
+    // they most resemble: every other premium helmet shares its id with a
+    // suit and carries that set's weight, but these three are visors and
+    // nothing else, so idWeight makes them 90 dust singly.
+    { id: "bundle-amethyst", name: "Amethyst Visor", blurb: "Violet glass under a gold rim.", dust: 90, items: [{ kind: "helm", id: "amethyst" }] },
+    { id: "bundle-ivoryguard", name: "Ivoryguard Visor", blurb: "Pale ice, steel trim, a cold blue light.", dust: 90, items: [{ kind: "helm", id: "ivoryguard" }] },
+    { id: "bundle-reactor", name: "Reactor Visor", blurb: "Acid green, and it glows in the dark of the run.", dust: 90, items: [{ kind: "helm", id: "reactor" }] },
     {
         id: "bundle-aurora",
         name: "Aurora Pack",
@@ -608,10 +585,6 @@ export const TUNNEL_LEAD_BLEND = 6;
  *  ignoring them. Beats that ask for a TAP or a SWIPE still wait forever.
  */
 export const TUT_READ = 0.5;
-export const TUT_SWIPE_TOP = 0.34;
-export const TUT_SWIPE_LIFT = 620; // px per second
-/** how close to the authored height counts as arrived */
-export const TUT_SWIPE_BAND = 6;
 export const SHOP_SLOTS = 3;
 export const SHOP_DAY_MS = 24 * 60 * 60 * 1000;
 function keyOf(day, id) {
@@ -693,19 +666,42 @@ export function idGrants(id) {
     const t = SET_TRAIL[id];
     return t ? [id, t] : [id];
 }
-/** what the ids you do NOT own would cost bought one at a time */
-export function alaCarteTotal(ids, owns) {
+/** THE WEIGHT SUM: every unowned id at its sticker or its weight rate, a
+ *  set trail included. This is the base the featured price has always been
+ *  struck off, and the owner set the shelf around the numbers it gives
+ *  (Aurora 720, Regalia 900), so the audit left it exactly where it stood
+ *  and corrected only what the card CLAIMS you are saving. */
+function weightTotal(ids, owns) {
     return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+}
+/** what the ids you do NOT own would cost bought one at a time.
+ *
+ *  A set trail costs NOTHING here (audit, 8 Sep 2026). SHOP_CYCLE sells no
+ *  trail singly and idGrants hands it over free with its suit, so pricing
+ *  one at the weight rate quoted a "was" figure nobody could ever be
+ *  charged: the featured card struck through 1,440 for Aurora and called it
+ *  50% OFF when the same three suits and the pal cost 1,170 on the single
+ *  shelf. A trail is only free when the suit that grants it is in this list
+ *  AND still unowned - that is the only way a purchase hands it over - so
+ *  that is the only case zeroed.
+ */
+export function alaCarteTotal(ids, owns) {
+    const owed = ids.filter((i) => !owns(i));
+    const free = new Set(owed.map((i) => SET_TRAIL[i]).filter(Boolean));
+    return owed.reduce((n, i) => n + (free.has(i) ? 0 : idDust(i)), 0);
 }
 /** THE FEATURED PACK. One at a time, and always the best deal on the
  *  shelf: half of what its remaining contents would cost singly. Half of
  *  what REMAINS, so a pack whose suit you already bought quietly costs
- *  less rather than charging for it twice. */
+ *  less rather than charging for it twice. Half of the WEIGHT SUM, not of
+ *  the shelf total above it: the free trail sits inside the base these
+ *  packs were priced against, and taking it out would cut every featured
+ *  price, which is the owner's call and not an audit's. */
 export const FEATURE_DISCOUNT = 0.5;
 export function featurePrice(b, owns) {
     if (b.fixed)
         return bundlePrice(b, owns);
-    const due = alaCarteTotal(bundleIds(b), owns);
+    const due = weightTotal(bundleIds(b), owns);
     if (due <= 0)
         return 0;
     return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
@@ -780,41 +776,6 @@ export const HELMET_SHELF = [
 export function isIap(id) {
     return IAP_ITEMS.includes(id);
 }
-export const SUIT_REVEAL = {
-    robo: 12,
-    alien: 16,
-    ghost: 20,
-    bigbooty: 24,
-    volt: 28,
-};
-export const TRACK = [
-    { lvl: 2, kind: "pal", id: "bee" },
-    { lvl: 3, kind: "mod", name: "Start Shield", desc: "Arm any run with a shield from the hangar." },
-    { lvl: 4, kind: "pal", id: "buddy" },
-    { lvl: 5, kind: "mode", name: "Deep Space Flight", desc: "Space itself shifts every 10s. Survive the chain." },
-    { lvl: 5, kind: "title", name: "PILOT" },
-    { lvl: 6, kind: "pal", id: "voidjelly" },
-    { lvl: 7, kind: "pal", id: "cometsprite" },
-    { lvl: 8, kind: "mod", name: "Shield Battery", desc: "Carry three shield charges at once." },
-    { lvl: 9, kind: "pal", id: "meteorcore" },
-    { lvl: 10, kind: "mode", name: "Lost in Space", desc: "The sky rotates, drifts and mirrors." },
-    { lvl: 10, kind: "title", name: "VOIDFARER" },
-    { lvl: 11, kind: "pal", id: "pocketmoon" },
-    { lvl: 12, kind: "pal", id: "ufo" },
-    { lvl: 12, kind: "suit", id: "robo", name: "Robo Suit", desc: "Full chrome, scanning visor. Now in the shop." },
-    { lvl: 13, kind: "pal", id: "starpup" },
-    { lvl: 14, kind: "pal", id: "tinbot" },
-    { lvl: 15, kind: "pal", id: "wisp" },
-    { lvl: 15, kind: "title", name: "ACE" },
-    { lvl: 16, kind: "pal", id: "nutsack" },
-    { lvl: 16, kind: "suit", id: "alien", name: "Alien Suit", desc: "The visitor look, antennae included. In the shop." },
-    { lvl: 18, kind: "title", name: "COMET CHASER" },
-    { lvl: 20, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes. In the shop." },
-    { lvl: 24, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle. In the shop." },
-    { lvl: 25, kind: "title", name: "EVENT HORIZON" },
-    { lvl: 30, kind: "title", name: "ACORNAUT" },
-    { lvl: 30, kind: "mod", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
-];
 export const MOD_SHIELD_COST = 25;
 export const MOD_BATTERY_COST = 500;
 // The beta page's master switch. Production leaves it off and every
@@ -852,39 +813,3 @@ export const MODS = [{
         desc: "The whole world runs at double speed. The same flight, half the time to read it. Power-ups still last as long — you just cover twice the ground.",
     },
 ];
-export function xpCumulative(level) {
-    let acc = 0;
-    for (let i = 0; i < level - 1 && i < XP_STEPS.length; i++)
-        acc += XP_STEPS[i];
-    return acc;
-}
-export function levelForXp(xp) {
-    let l = 1;
-    let acc = 0;
-    for (const s of XP_STEPS) {
-        if (xp < acc + s)
-            break;
-        acc += s;
-        l++;
-    }
-    return l;
-}
-export function titleForLevel(level) {
-    let t = "CADET";
-    for (const [lv, name] of TITLES)
-        if (level >= lv)
-            t = name;
-    return t;
-}
-export function runXp(score, acorns, deep, lost) {
-    let xp = score + acorns;
-    if (score >= 25)
-        xp += 10;
-    if (score >= 50)
-        xp += 15;
-    if (score >= 75)
-        xp += 20;
-    if (score >= 100)
-        xp += 25;
-    return Math.round(xp * (lost ? 1.5 : deep ? 1.25 : 1));
-}

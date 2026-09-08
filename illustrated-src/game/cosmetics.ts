@@ -2090,17 +2090,6 @@ export function drawPalOn(
   drawPal(id, x, y, s, t);
 }
 
-export function drawPalPreviewOn(
-  c: CanvasRenderingContext2D,
-  id: string,
-  cx: number,
-  cy: number,
-  t: number,
-) {
-  use(c);
-  drawPalPreview(id, cx, cy, t);
-}
-
 export function drawTrailPreviewOn(
   c: CanvasRenderingContext2D,
   id: string,
@@ -2112,17 +2101,3 @@ export function drawTrailPreviewOn(
   drawTrailPreview(id, cx, cy, t);
 }
 
-export function drawHelmetOn(
-  c: CanvasRenderingContext2D,
-  helm: HelmDraw,
-  suit: SuitDraw,
-  t = 0,
-  seed = 0,
-) {
-  use(c);
-  drawHelmet(helm, suit, t, seed);
-}
-
-export function helmetCenter() {
-  return { x: 11, y: -11, r: 15.2 };
-}

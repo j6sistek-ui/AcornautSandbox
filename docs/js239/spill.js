@@ -1541,21 +1541,6 @@ export function spillCount(s) {
 export function spillRamp(s) {
     return ramp(s);
 }
-export function spillSignature(s) {
-    return {
-        wave: s.wave,
-        cleared: s.cleared,
-        phase: s.phase,
-        hull: s.hull,
-        ore: s.ore,
-        oreMined: s.oreMined,
-        score: Math.floor(s.score),
-        hits: s.hits,
-        grazes: s.grazes,
-        shattered: s.shattered,
-        up: { ...s.up },
-    };
-}
 /** Only a docked, ordinary expedition may be suspended. The checkpoint
  *  carries its RNG and bank ledger, so resuming cannot reroll or repay it. */
 export function spillCheckpoint(s) {

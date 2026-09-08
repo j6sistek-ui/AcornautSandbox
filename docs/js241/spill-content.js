@@ -28,13 +28,6 @@ export const SPILL_EVENTS = {
     lanes: { name: "CONVOY CROSSING", hint: "CONVOY: alternating marked lanes · move through the opening" },
     rig: { name: "RIG BREAKUP", hint: "RIG BREAKUP: successive marked debris sweeps · fly the open corridor" },
 };
-export const SPILL_SECTORS = [
-    { name: "OUTER WRECKAGE", color: "#bd956b", subtitle: "Find your line" },
-    { name: "CARGO FIELD", color: "#c99bff", subtitle: "Follow the salvage" },
-    { name: "REACTOR DEBRIS", color: "#79dce0", subtitle: "Read the energy" },
-    { name: "RIG CORE", color: "#ffb46a", subtitle: "Weather the breakup" },
-];
-export function spillSector(wave) { return SPILL_SECTORS[Math.min(3, Math.floor((wave - 1) / 5))]; }
 export function spillEventFor(wave, seed) {
     if (wave % 20 === 0 || wave === 10)
         return "rig";

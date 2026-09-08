@@ -1,5 +1,5 @@
-import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=237";
-import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=237";
+import { LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=241";
+import { ENVS } from "./catalog.js?v=241";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" || r.kind === "acorns"
     ? `legacy:${r.kind}:${r.stars}`
@@ -13,7 +13,7 @@ function carryCompatibilityWrites(save, p) {
     let oldTotal = 0;
     for (const value of Object.values(save.stars ?? {}))
         oldTotal += countBits(clampMask(value));
-    p.legacyEntitlementFloor = Math.max(p.legacyEntitlementFloor, Math.min(300, oldTotal));
+    p.legacyEntitlementFloor = Math.max(p.legacyEntitlementFloor, Math.min(CHART_MAX_STARS, oldTotal));
     for (const def of LEVELS) {
         const mask = clampMask(save.stars?.[def.id]);
         if (!mask)
@@ -42,7 +42,7 @@ function carryCompatibilityWrites(save, p) {
 /** The two historical ID collisions cannot be dated from an unversioned save.
  * Credit and route passage survive; current checklists need successful replays. */
 export function ambiguousLegacy(def) {
-    return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || ((IS_BETA || STAR_MAP_LIVE) && def.n === 4));
+    return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || def.n === 4);
 }
 /** Beta can inherit a versioned production save on first visit. The same
  * route position can then contain a different mission, so transfer passage
@@ -75,7 +75,7 @@ export function migrateCampaign(save, existing = true, legacyPageUnknown = false
     const p = {
         version: 1, missions: {}, barriers: (save.raceGates ?? []).map(barrierId).filter(Boolean),
         paidRewards: STAR_REWARDS.filter(r => r.kind === "dust" && r.stars <= (save.dustPaidTo || 0)).map(rewardId),
-        legacyEntitlementFloor: existing ? Math.min(300, Math.max(rawTotal, save.allStars ? 300 : 0)) : 0,
+        legacyEntitlementFloor: existing ? Math.min(CHART_MAX_STARS, Math.max(rawTotal, save.allStars ? CHART_MAX_STARS : 0)) : 0,
         zoneVisits: [],
     };
     save.campaignProgress = p;

@@ -15,7 +15,8 @@ recorded here.
 
 Confirmed by severity: 2 blockers, 7 high, 27 medium, 58 low.
 **38 are fixed** (PR #236, commits `2f10882`, `ef0ef67`, `8e18051` and the
-one that carries this file); **56 remain open** and are listed in §3 so
+one that carries this file); one more (F79) was resolved by the dead-code
+sweep in #233; **55 remain open** and are listed in §3 so
 none is rediscovered as a new bug.
 
 Findings the verifiers refuted are not listed. The most common reason
@@ -140,7 +141,8 @@ Three mediums, with the reason:
 
 ## 3. Open, by file
 
-Fifty-six confirmed findings not fixed here. Severity is the verifiers'.
+Fifty-five confirmed findings not fixed here (F79 is struck through: #233's
+dead-code sweep removed the code it described). Severity is the verifiers'.
 The Fix column is the finder's suggestion, kept short — it is a starting
 point, not a decision.
 
@@ -153,7 +155,7 @@ point, not a decision.
 | F39 | 59 | low | Menu-animation-off removes the hold-to-confirm fill, so HOLD TO CONTINUE / STAR UNLOCK / LEVEL SKIP give no feedback while held | docs/index.html: exempt the state fill from the blanket rule — `body.ac-nomotion .ac-holdbtn.ac-holding::after { animation: acHoldFill var(--ac-hold, 550ms) linear forwards !important; }` (a linear fill is progress, not decoration); or, in … |
 | F77 | 357 | low | In-flight pause button has no accessible name (text 'II') and is 40px, under the 44pt minimum | `pause.setAttribute("aria-label", "Pause")` in standalone.ts and `.ac-iconbtn { width:44px; height:44px }` in docs/index.html. |
 | F78 | 1349 | low | Hub acorn and Star Dust counters are aria-labelled 'Shop'/'Buy Star Dust', hiding the balances from screen readers | Label with the value: `acorns.setAttribute("aria-label", `${s.acorns.toLocaleString()} acorns — open the Shop`)` and `dust.setAttribute("aria-label", `${s.starDust.toLocaleString()} Star Dust — buy more`)`. |
-| F79 | 1359 | low | Hub "Buy Star Dust" door sets a shopPage the storefront never reads; it lands at the top of the shop, not the dust rows | In the shop render branch, honour the requested page once: `if (shopPage === "dust") { overlay.querySelector(".ac-dustrow")?.scrollIntoView({ block: "start" }); shopPage = "packs"; }` (or give the STAR DUST head an id and scroll to it) … |
+| ~~F79~~ | — | low | ~~Hub "Buy Star Dust" door sets a shopPage the storefront never reads~~ — **resolved by #233**: `shopPage` and the tabbed shop it belonged to sat below `drawShop`'s unconditional `return drawShopBeta()` and are gone. |
 | F80 | 1466 | low | A run suspended at the pre-flight depot is labelled 'Saved at Depot 0' / 'RESUME DEBRIS FIELD · DEPOT 0' | Label the welcome checkpoint by its state rather than its wave: e.g. `suspended.state.welcome ? "Saved at pre-flight" : `Saved at Depot ${suspended.state.wave}`` in both places (or expose a small `spillCheckpointLabel(cp)` helper next to … |
 | F41 | 1672 | low | "Debris Field" names both the Spill mode and the Hyper Run barrier, so the Hyper Run lock text sends players to the wrong mode | Give the barrier its own name in one place — e.g. add `name: "Hyper Run barrier"` to RACE_GATES in campaign.ts — and use it in the four strings (1672: `Pass the Hyper Run barrier after level 33 — a 2:30 finish — to unlock.`; 3039; 3388 … |
 | F42 | 1890 | low | Favourite star is a 22px target nested inside the equip/buy button; a near-miss equips or opens the spend sheet, and the card's accessible name absorbs 'Add to favourites' | Render the star as a sibling of the card (wrap card+star in a `position:relative` span, or place the star in the shelf row after the card) so it is its own top-level `<button>`; give it a 44px hit area with padding/negative margin … |

@@ -7,7 +7,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "240";
+export const ART_VER = "241";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -29,19 +29,13 @@ export const STAR_MAP_PREVIEW = IS_BETA;
 // three Hyper Run barriers, the reward ladder. Only the beta keeps its
 // test conveniences (every mission open, the sample cosmetics, the dust
 // grant), which still follow IS_BETA. Separate from STAR_MAP_PREVIEW on
-// purpose: that flag carries the beta-only previews, this one the road.
-export const STAR_MAP_LIVE = true;
+// purpose: that flag carries the beta-only previews. The road itself is
+// no longer a flag: campaign.ts builds the 260 rows for both pages.
 
-// WHICH FEATURES, as opposed to WHICH SAVE SLOT. These were the same flag
-// until the beta set was promoted, and conflating them is dangerous: the save
-// key is derived from IS_BETA, so turning the beta features on for production
-// by flipping that flag would have moved every live player onto the beta save
-// slot and silently wiped their progress.
-//
-// So the two are separate now. IS_BETA still means "this is the beta PAGE",
-// and still decides the save key and the build label. BETA_FEATURES decides
-// what is built, and is on everywhere.
-export const BETA_FEATURES = true;
+// WHICH FEATURES, as opposed to WHICH SAVE SLOT. There used to be a second
+// flag, BETA_FEATURES, for what is built; it was on everywhere and is gone.
+// IS_BETA means only "this is the beta PAGE": it decides the save key, the
+// build label and the test conveniences, never what the game contains.
 
 // The two the owner asked to hold back are gated on their own, so either can
 // be turned on by itself without touching anything else.
@@ -52,7 +46,6 @@ export const BETA_FEATURES = true;
 // couple of call sites read it, and a named constant that says what it
 // means beats `true` scattered through four files.
 export const HYPER_RUN_ENABLED = true;
-export const STORY_MODE_ENABLED = IS_BETA;
 
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
@@ -76,13 +69,11 @@ export const TUT_ARM = 1.25;
 // deliberately longer than a normal tap interval so the pose can keep
 // settling between inputs instead of snapping home before the next tap.
 export const TAP_ANIM_DURATION = 1.0;
-// Approved from the beta trial: the burst runs everywhere now. Suits
-// without a painted bank still take the universal articulated path.
-export const TAP_ANIM_ENABLED = true;
+// Approved from the beta trial: the burst runs everywhere. Suits without a
+// painted bank take the universal articulated path.
 
 // Rendering-only planet contact response — approved from the beta trial.
 export const BOUNCE_ANIM_DURATION = 0.38;
-export const BOUNCE_ANIM_ENABLED = true;
 
 // The tutorial's graduation gift, and the trail of guided steps that
 // follows it: equip the suit, equip the helmet, fly Mission 1. One pair,
@@ -479,18 +470,6 @@ export const PLANET_RGB: RGB[] = [
   [0.43, 0.26, 0.64], [0.36, 0.58, 0.69], [0.30, 0.15, 0.09],
 ];
 
-export const DEBRIS_RGB: RGB[] = [
-  [0.27, 0.25, 0.25], [0.30, 0.22, 0.19], [0.63, 0.68, 0.77],
-  [0.28, 0.25, 0.23], [0.29, 0.26, 0.24], [0.31, 0.29, 0.28],
-  [0.73, 0.54, 0.83], [0.27, 0.22, 0.22], [0.23, 0.22, 0.24],
-  [0.54, 0.28, 0.61], [0.33, 0.35, 0.38], [0.57, 0.73, 0.81],
-  [0.22, 0.16, 0.15], [0.19, 0.49, 0.75], [0.29, 0.07, 0.09],
-  [0.58, 0.38, 0.10], [0.10, 0.25, 0.61], [0.21, 0.32, 0.20],
-  [0.33, 0.34, 0.61], [0.40, 0.52, 0.66], [0.60, 0.62, 0.66],
-  [0.43, 0.44, 0.45], [0.14, 0.13, 0.27], [0.39, 0.40, 0.55],
-  [0.44, 0.49, 0.11], [0.70, 0.51, 0.15], [0.39, 0.23, 0.14],
-];
-
 /** Perceptual separation in a luma + opponent-colour space. Luminance
  *  is weighted heaviest because form reads by brightness first, but hue
  *  gets its say — which is what makes pink-on-green legible. Calibrated
@@ -558,22 +537,6 @@ export const RETRO_GATE = 100;
 // at a hole you fly into, so this is a distance the pilot reads, not a
 // timer that expires on them.
 export const WARP_GATES = 15;
-
-export const XP_STEPS = [
-  60, 100, 150, 200, 260, 320, 390, 460, 540, 620, 710, 800, 900, 1000, 1110, 1220, 1340, 1460, 1590, 1720, 1860, 2000,
-  2150, 2300, 2460, 2620, 2790, 2960, 3140,
-];
-export const MAX_LEVEL = XP_STEPS.length + 1;
-
-export const TITLES: [number, string][] = [
-  [1, "CADET"],
-  [5, "PILOT"],
-  [10, "VOIDFARER"],
-  [15, "ACE"],
-  [18, "COMET CHASER"],
-  [25, "EVENT HORIZON"],
-  [30, "ACORNAUT"],
-];
 
 // Premium items. These never appear on the level track — no amount of
 // flying reveals them — and acorns cannot buy them; they are bought for
@@ -773,10 +736,6 @@ export const TUNNEL_LEAD_BLEND = 6;
  */
 export const TUT_READ = 0.5;
 
-export const TUT_SWIPE_TOP = 0.34;
-export const TUT_SWIPE_LIFT = 620;      // px per second
-/** how close to the authored height counts as arrived */
-export const TUT_SWIPE_BAND = 6;
 
 
 
@@ -988,51 +947,6 @@ export function isIap(id: string) {
   return IAP_ITEMS.includes(id);
 }
 
-export const SUIT_REVEAL: Record<string, number> = {
-  robo: 12,
-  alien: 16,
-  ghost: 20,
-  bigbooty: 24,
-  volt: 28,
-};
-
-export type TrackItem = {
-  lvl: number;
-  kind: "pal" | "mod" | "mode" | "title" | "suit" | "helmet" | "trail";
-  id?: string;
-  name?: string;
-  desc?: string;
-};
-
-export const TRACK: TrackItem[] = [
-  { lvl: 2, kind: "pal", id: "bee" },
-  { lvl: 3, kind: "mod", name: "Start Shield", desc: "Arm any run with a shield from the hangar." },
-  { lvl: 4, kind: "pal", id: "buddy" },
-  { lvl: 5, kind: "mode", name: "Deep Space Flight", desc: "Space itself shifts every 10s. Survive the chain." },
-  { lvl: 5, kind: "title", name: "PILOT" },
-  { lvl: 6, kind: "pal", id: "voidjelly" },
-  { lvl: 7, kind: "pal", id: "cometsprite" },
-  { lvl: 8, kind: "mod", name: "Shield Battery", desc: "Carry three shield charges at once." },
-  { lvl: 9, kind: "pal", id: "meteorcore" },
-  { lvl: 10, kind: "mode", name: "Lost in Space", desc: "The sky rotates, drifts and mirrors." },
-  { lvl: 10, kind: "title", name: "VOIDFARER" },
-  { lvl: 11, kind: "pal", id: "pocketmoon" },
-  { lvl: 12, kind: "pal", id: "ufo" },
-  { lvl: 12, kind: "suit", id: "robo", name: "Robo Suit", desc: "Full chrome, scanning visor. Now in the shop." },
-  { lvl: 13, kind: "pal", id: "starpup" },
-  { lvl: 14, kind: "pal", id: "tinbot" },
-  { lvl: 15, kind: "pal", id: "wisp" },
-  { lvl: 15, kind: "title", name: "ACE" },
-  { lvl: 16, kind: "pal", id: "nutsack" },
-  { lvl: 16, kind: "suit", id: "alien", name: "Alien Suit", desc: "The visitor look, antennae included. In the shop." },
-  { lvl: 18, kind: "title", name: "COMET CHASER" },
-  { lvl: 20, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes. In the shop." },
-  { lvl: 24, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle. In the shop." },
-  { lvl: 25, kind: "title", name: "EVENT HORIZON" },
-  { lvl: 30, kind: "title", name: "ACORNAUT" },
-  { lvl: 30, kind: "mod", name: "Flight Mods", desc: "Steady Gates, Rough Air and Thrill Seeker unlock in the hangar." },
-];
-
 export const MOD_SHIELD_COST = 25;
 export const MOD_BATTERY_COST = 500;
 // The beta page's master switch. Production leaves it off and every
@@ -1094,34 +1008,3 @@ export const MODS: Mod[] = [  {
   },
 ];
 
-export function xpCumulative(level: number) {
-  let acc = 0;
-  for (let i = 0; i < level - 1 && i < XP_STEPS.length; i++) acc += XP_STEPS[i];
-  return acc;
-}
-
-export function levelForXp(xp: number) {
-  let l = 1;
-  let acc = 0;
-  for (const s of XP_STEPS) {
-    if (xp < acc + s) break;
-    acc += s;
-    l++;
-  }
-  return l;
-}
-
-export function titleForLevel(level: number) {
-  let t = "CADET";
-  for (const [lv, name] of TITLES) if (level >= lv) t = name;
-  return t;
-}
-
-export function runXp(score: number, acorns: number, deep: boolean, lost: boolean) {
-  let xp = score + acorns;
-  if (score >= 25) xp += 10;
-  if (score >= 50) xp += 15;
-  if (score >= 75) xp += 20;
-  if (score >= 100) xp += 25;
-  return Math.round(xp * (lost ? 1.5 : deep ? 1.25 : 1));
-}
