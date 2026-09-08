@@ -73,8 +73,9 @@ export type SaveData = {
   /** item ids opened with a Star Unlock, wardrobe and keyed alike. When
    *  the road later reaches one of these, the rung pays acorns instead. */
   boostedRewards: string[];
-  /** what a rung paid INSTEAD of its item, by reward ledger id - the
-   *  Star Dust for a shop-bought item, the acorns for a Star-Unlocked one */
+  /** what a rung paid INSTEAD of its item, by reward ledger id: SUB_ACORNS
+   *  acorns for an item already owned, bought or Star-Unlocked alike. A
+   *  "dust" entry is one written under the earlier rule and stays as paid. */
   rewardSubs: Record<string, { kind: "dust" | "acorns"; amount: number }>;
   acorns: number;
   xp: number;
@@ -775,10 +776,10 @@ export function settleStarRewards(s: SaveData) {
       continue;
     }
     if (!r.id) continue;
-    const keyed = (s.boostedRewards || []).includes(r.id);
-    const bought = !keyed && (s.purchased || []).includes(r.id);
-    if (keyed || bought) {
-      const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
+    // already yours, by Star Unlock or by purchase: the rung pays the one
+    // flat substitute either way
+    if ((s.boostedRewards || []).includes(r.id) || (s.purchased || []).includes(r.id)) {
+      const sub = substituteFor(r.stars);
       if (sub.kind === "dust") dust += sub.amount; else acorns += sub.amount;
       s.rewardSubs = { ...(s.rewardSubs || {}), [key]: sub };
     }

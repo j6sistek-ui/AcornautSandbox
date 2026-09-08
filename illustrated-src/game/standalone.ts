@@ -8,7 +8,7 @@ import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
@@ -3118,7 +3118,7 @@ export async function bootStandalone(root: HTMLElement) {
     const paidInstead = s.rewardSubs?.[key];
     sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
       ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
-      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${(s.boostedRewards || []).includes(r.id ?? "") ? "acorns" : "Star Dust"} instead.`)
+      : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
       : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
     const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
     if (!owned && item) {

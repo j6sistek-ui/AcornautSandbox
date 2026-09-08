@@ -677,10 +677,10 @@ export function settleStarRewards(s) {
         }
         if (!r.id)
             continue;
-        const keyed = (s.boostedRewards || []).includes(r.id);
-        const bought = !keyed && (s.purchased || []).includes(r.id);
-        if (keyed || bought) {
-            const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
+        // already yours, by Star Unlock or by purchase: the rung pays the one
+        // flat substitute either way
+        if ((s.boostedRewards || []).includes(r.id) || (s.purchased || []).includes(r.id)) {
+            const sub = substituteFor(r.stars);
             if (sub.kind === "dust")
                 dust += sub.amount;
             else
