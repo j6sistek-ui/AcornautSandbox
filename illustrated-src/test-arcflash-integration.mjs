@@ -13,8 +13,14 @@ win.__ACORNAUT_BETA__=mode!=='production';
 // happy-dom rejects valid multi-layer gradient/url background values. Record
 // assignments for wiring checks; this harness does not validate browser CSS.
 const backgrounds=new WeakMap();
+// TOLERATE EITHER happy-dom SHAPE (audit, 8 Sep 2026). Older versions gave
+// backgroundImage an accessor on the prototype; newer ones do not, and
+// `bg.set` was then undefined - which threw on the first assignment and
+// took this whole test down before it asserted anything about the game.
 const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'backgroundImage');
-Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}});
+Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',bg&&bg.set
+  ?{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}}
+  :{configurable:true,get(){return backgrounds.get(this)??'';},set(value){backgrounds.set(this,value);}});
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;
@@ -45,11 +51,46 @@ assert(!Cat.canWearTrail('arcflashwake','flight'));
 const save=S.defaultSave();Object.assign(save,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});S.writeSave(save);
 const {bootStandalone}=await import('../docs/js/standalone.js');const app=document.createElement('main');document.body.append(app);await bootStandalone(app);const e=win.__sandbox;assert(e);
 if(mode==='production'){
- assert.equal(e.buySuit('arcflash'),'missing');
- assert.equal(e.buyTrail('arcflashwake'),'missing');
- console.log('production: Arcflash absent; trail exclusion/fallback correct');process.exit(0);
+ // ARCFLASH IS SOLD ON THE LIVE PAGE (owner, 7 Sep 2026: "Arcflash is sold on
+ // production: 1,850 star dust, its blue electrical wake built in"). It used to
+ // be stripped from the production catalog, so both calls answered 'missing'.
+ // Nothing is missing now; the gate moved from EXISTENCE to OWNERSHIP. An
+ // unbought premium suit is 'locked' - on the shelf, not obtainable for free -
+ // and its wake is locked with it.
+ const pack=Cat.BUNDLES.find(b=>b.id==='bundle-arcflash');
+ assert(pack&&pack.fixed,'a fixed-price pack: never featured, never discounted');
+ assert.deepEqual(Cat.bundleIds(pack),['arcflash'],'the wake is not a listed item - it arrives with the suit');
+ assert.equal(pack.dust,1850,'the owner set this sticker by hand, not by weight');
+ assert.equal(Cat.idDust('arcflash'),pack.dust,'the singles shelf asks the same number');
+ assert(Cat.IAP_ITEMS.includes('arcflash'),'production sells it');
+ assert(!Cat.IAP_ITEMS.includes('arcflashwake'),'the wake is never priced separately');
+ assert(!S.suitRevealed(e.save,'arcflash'),'unbought on a fresh production save');
+ assert(!S.trailUnlocked(e.save,'arcflashwake'),'its wake waits on the suit');
+ assert.equal(e.buySuit('arcflash'),'locked','present, but no acorn route to it');
+ assert.equal(e.buyTrail('arcflashwake'),'locked');
+ assert.notEqual(e.save.equippedSuit,'arcflash','a locked suit is not equipped by asking');
+ // and it IS reachable - dust is the only route, at exactly the sticker.
+ e.save.starDust=pack.dust-10;assert.equal(e.buyBundle('bundle-arcflash'),'poor');
+ e.save.starDust=pack.dust;assert.equal(e.buyBundle('bundle-arcflash'),'ok');
+ assert.equal(e.save.starDust,0,'the pack charges its whole sticker');
+ assert.equal(e.buySuit('arcflash'),'equip');assert.equal(e.save.equippedSuit,'arcflash');
+ assert.equal(e.buyTrail('arcflashwake'),'equip','the wake comes with the suit, unpriced');
+ assert.equal(Cat.trailWornBy(e.save.equippedTrail,'arcflash'),'arcflashwake','and it is the only wake Arcflash wears');
+ assert.equal(e.buyBundle('bundle-arcflash'),'owned','a bought pack leaves the shelf');
+ console.log('production: Arcflash sold, not absent - locked until bought, then suit+wake; trail exclusion/fallback correct');process.exit(0);
 }
-assert(['buy','equip'].includes(e.buySuit('arcflash')));
+// PREMIUM IS OWNED ONLY BY PURCHASE, ON BOTH PAGES (v130, "Beta buys its packs
+// instead of being handed them"): iapOwned no longer short-circuits on
+// BETA_UNLOCK_GATES, so the beta cannot equip Arcflash for free either. The
+// tester is granted dust summed from BUNDLES instead and buys it like a player,
+// which is the whole point - the shop path is what the beta is there to test.
+const pack=Cat.BUNDLES.find(b=>b.id==='bundle-arcflash');
+assert.equal(e.buySuit('arcflash'),'locked','unbought premium is locked on the beta too');
+assert(e.save.starDust>=Cat.BUNDLES.reduce((n,b)=>n+b.dust,0),'the beta grant covers every pack at sticker price');
+const dustBefore=e.save.starDust;
+assert.equal(e.buyBundle('bundle-arcflash'),'ok');
+assert.equal(dustBefore-e.save.starDust,pack.dust,'charged the pack sticker, nothing else');
+assert.equal(e.buySuit('arcflash'),'equip','bought, so the shelf equips it');
 assert.equal(S.suitPitchFor(e.save,'arcflash'),0,'Arcflash starts at its authored angle');
 assert.equal(S.suitPitchFor(e.save,'vanguard'),12,'latest AcorNut default survives integration');
 e.setSuitPitch('arcflash',15);assert.equal(S.suitPitchFor(e.save,'arcflash'),15);

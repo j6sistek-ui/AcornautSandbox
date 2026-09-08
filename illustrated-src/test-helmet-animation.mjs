@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /** Helmet glass/fitting regression against the pre-repair main renderer.
  * Build first. ACORNAUT_CANVAS=/path/to/@napi-rs/canvas node illustrated-src/test-helmet-animation.mjs
- * Optional ACORNAUT_HELMET_BASE overrides the immutable comparison revision.
+ * Optional ACORNAUT_HELMET_BASE overrides the immutable comparison revision;
+ * ACORNAUT_HELMET_SHIPPED overrides the revision that pins artwork the
+ * comparison revision never held (the HIGH ORBIT ascent/descent sheets).
  *
  * Private helpers are exported only from disposable module copies. The actual
  * helmet composite is recognized by its source image and omitted from pixels;
@@ -23,7 +25,7 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const baseline=process.env.ACORNAUT_HELMET_BASE || '5acb81cc030480d87dc59ad59758b3c35168ae8a';
 const scratch=mkdtempSync(join(tmpdir(), 'acornaut-helmet-regression-'));
 const sources=new WeakMap();
-const counts={comparisons:0, pixelComparisons:0, motionFrames:0, tapFrames:0, acceptedTaps:0,
+const counts={comparisons:0, soloFrames:0, pixelComparisons:0, motionFrames:0, tapFrames:0, acceptedTaps:0,
   gameplayFrames:0, previewFrames:0, bodyDraws:0, helmetDraws:0};
 const dimensions=384;
 
@@ -89,13 +91,40 @@ try {
     beforeImport('catalog'),afterImport('catalog'),beforeImport('sim'),afterImport('sim'),
     beforeImport('save'),afterImport('save'),beforeImport('control-constants'),afterImport('control-constants')]);
   assert(!NewCat.IS_BETA, 'the main-page roster is the primary test target');
+  // HIGH ORBIT (84b8497, owner 7 Sep 2026): five suits that were beta-gated at
+  // the baseline revision went live as star rewards above 300. They are the
+  // ONLY roster change since; every other suit must still match the baseline
+  // object for object, and no suit may quietly lose its wearable head.
+  const HIGH_ORBIT=['cinderforge','groveguard','cosmic','sunforged','abyssal'];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
-  assert.equal(suits.length,16,'all sixteen production suits with wearable helmets are covered');
-  assert.deepEqual(suits,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)),'helmet fitting does not change the suit roster');
+  assert.equal(suits.length,21,'all twenty-one production suits with wearable helmets are covered');
+  const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id));
+  // e8bf123 replaced these five suits' flights outright and gave them brand new
+  // dome anchors, so there is no pre-repair rendering of them to diff against:
+  // the old-vs-new comparisons below run over `legacy`, and `promoted` flies its
+  // own single-renderer pass so the five are still flown, not merely loaded.
+  const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id));
+  assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)),'helmet fitting does not change the pre-existing suit roster');
+  assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
+  const withoutHighOrbit=table=>Array.isArray(table) ? table.filter(id=>!HIGH_ORBIT.includes(id))
+    : Object.fromEntries(Object.entries(table).filter(([id])=>!HIGH_ORBIT.includes(id)));
   for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS','ASC_BANKS','DESC_BANKS'])
-    assert.deepEqual(NewArt[name],OldArt[name],`${name} animation availability is unchanged`);
-  const blobs=new Map(execFileSync('git',['ls-tree','-r',baseline,'--','docs/art'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})
+    assert.deepEqual(withoutHighOrbit(NewArt[name]),OldArt[name],`${name} animation availability is unchanged`);
+  for(const id of HIGH_ORBIT) {
+    assert.equal(NewArt.ASC_BANKS[id],8,`${id}: HIGH ORBIT ascent bank is the shipped 8/8 sheet`);
+    assert.equal(NewArt.DESC_BANKS[id],8,`${id}: HIGH ORBIT descent bank is the shipped 8/8 sheet`);
+    for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])
+      assert(!(Array.isArray(NewArt[name]) ? NewArt[name].includes(id) : id in NewArt[name]),
+        `${id}: the obsolete ${name} rig stays retired`);
+  }
+  const tree=rev=>new Map(execFileSync('git',['ls-tree','-r',rev,'--','docs/art'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})
     .trim().split('\n').map(line=>{const [meta,path]=line.split('\t');return [path,meta.split(' ')[2]];}));
+  const blobs=tree(baseline);
+  // The HIGH ORBIT ascent/descent sheets did not exist at the baseline: they
+  // were painted by e8bf123 "Replace five obsolete suit flights and restore
+  // continuous helmet glass". Artwork the baseline never held is pinned to the
+  // revision that shipped it, so every image on screen still has an exact hash.
+  const shipped=tree(process.env.ACORNAUT_HELMET_SHIPPED || 'e8bf1230c765df5f34a6168be8b183c5be626e8d');
   const loaded=new Map();
   const glassRepairs=new Set();
   async function sprite(path) {
@@ -117,7 +146,11 @@ try {
           const x=p/4%256,y=Math.floor(p/4/256);
           if(x<60||x>205||y<150||y>224)assert.deepEqual(a.slice(p,p+4),b.slice(p,p+4),'helmet exterior is protected');
         }
-      } else assert.equal(hash,blobs.get(full),`${path}: unrepaired artwork remains unchanged`);
+      } else {
+        const pinned=blobs.get(full) ?? shipped.get(full);
+        assert(pinned,`${path}: no pinned revision covers this artwork`);
+        assert.equal(hash,pinned,`${path}: unrepaired artwork remains unchanged`);
+      }
       const img=await loadImage(bytes);
       // The browser's URL is also the real halo cache's identity key.
       Object.defineProperty(img,'src',{get:()=>path});
@@ -180,15 +213,37 @@ try {
     }
     counts.comparisons++; counts.bodyDraws+=outputs[1].body.length;counts.helmetDraws+=outputs[1].helmet.length;
   }
+  // The five HIGH ORBIT suits have no pre-repair rendering to diff against, so
+  // they fly the shipped renderer alone: the body must actually paint and the
+  // equipped helmet must land exactly once on the frame that was asked for.
+  function solo(label,draw,{expectHelmet=true,frame}={}) {
+    canvases[1].getContext('2d').reset();outputs[1].body.length=0;outputs[1].helmet.length=0;
+    delete window.__acornautPose;
+    draw(After,contexts[1],1);
+    const pose=window.__acornautPose ? structuredClone(window.__acornautPose) : null;
+    assert(outputs[1].body.length,`${label}: the body actually rendered`);
+    if(frame) {
+      assert.equal(pose?.suit,frame.suit,`${label}: the equipped suit is the one painted`);
+      assert.equal(pose?.bank,frame.bank,`${label}: requested bank is exercised`);
+      assert.equal(pose?.idx,frame.idx,`${label}: requested source frame is exercised`);
+    }
+    if(expectHelmet) assert.equal(outputs[1].helmet.length,1,`${label}: exactly one equipped helmet is composited`);
+    counts.soloFrames++; counts.bodyDraws+=outputs[1].body.length;counts.helmetDraws+=outputs[1].helmet.length;
+  }
   const lean=NewControl.SUIT_LEAN_DEFAULT;
   assert.deepEqual(lean,OldControl.SUIT_LEAN_DEFAULT,'default lean unchanged');
+  // a76c23e dialled Eclipse to 5 degrees forward and Volt to 25; no other
+  // suit's flight lean moved, and every suit flown below is flown at its own
+  // resolved lean so the two renderers never disagree about the attitude.
+  assert.deepEqual(NewCat.SUIT_PITCH_DEFAULTS,{...OldCat.SUIT_PITCH_DEFAULTS,eclipse:5,volt:25},
+    'suit lean defaults changed only by the dialled Eclipse/Volt rungs');
   function illustrated(renderer,ctx,suit,bank,{pose=NaN,tap=-1,time=0,size=256,pitch=0,vy=0}={}) {
     ctx.translate(dimensions/2,dimensions/2);ctx.rotate(pitch);
     renderer.paintIllustrated(ctx,art.squirrelIdle[0],0,0,size,helmet,suit,time,bank,'idle-1',
       undefined,undefined,0,'light',.12,tap,-1,0,0,vy,suit.id==='eclipse'?2:0,300,lean,pose);
   }
 
-  for(const suit of suits) {
+  for(const suit of legacy) {
     const id=suit.id;
     // Exercise every shipped ascent/descent pose including full deep-dive
     // extremes and frame-space boundaries at gameplay and loadout scale.
@@ -223,9 +278,40 @@ try {
     }
   }
 
+  // HIGH ORBIT, on the shipped renderer alone: every one of the five must fly
+  // its whole 8/8 ascent and descent, land the frame the pose asks for, keep a
+  // body on screen at both scales and wear exactly one helmet - loading art for
+  // them is not enough, a bare-headed or non-rendering promotion fails here.
+  for(const suit of promoted) {
+    const id=suit.id;
+    for(const [property,bank,sign] of [['suitAsc','asc',-1],['suitDesc','desc',1]]) {
+      const n=art[property][id]?.length || 0;
+      assert.equal(n,8,`${id}: the shipped ${bank} sheet loads all eight frames`);
+      for(let i=0;i<n;i++) for(const size of [52,256]) {
+        const pose=i===0 && sign>0 ? 1e-6 : sign*i/Math.max(1,n-1);
+        solo(`${id} ${bank}-${i+1} size ${size}`,(renderer,ctx)=>illustrated(renderer,ctx,suit,art,
+          {pose,size,pitch:size===52?-.21:.32}),{frame:{suit:id,bank,idx:i+1}});
+        counts.motionFrames++;
+      }
+    }
+    const loading={...art,suitTail:{},suitBody:{},suitAsc:{},suitDesc:{},suitTap:{}};
+    solo(`${id} static loading fallback`,(renderer,ctx)=>illustrated(renderer,ctx,suit,loading));
+    for(let tick=0;tick<96;tick++) {
+      const time=tick/15;
+      solo(`${id} loadout t=${time}`,(renderer,ctx)=>renderer.paintFlightPreview(ctx,art,suit,helmet,
+        dimensions/2,dimensions/2,256,time,lean,tick>=48,.2));
+      counts.previewFrames++;
+    }
+  }
+
   const nativeRandom=Math.random;
   function makeRun(Sim,Save,id) {
-    const save=Save.defaultSave();Object.assign(save,{equippedSuit:id,equippedHelmet:'clear',equippedTrail:'ion',tutorialDone:true,guide:'done'});
+    // Fly both renderers at the SAME real lean: drawPilot resolves the suit's
+    // pitch from the save, and a76c23e moved two of the defaults, so the saved
+    // number is pinned to what production resolves today rather than letting a
+    // dialled default masquerade as a rendering change.
+    const save=Save.defaultSave();Object.assign(save,{equippedSuit:id,equippedHelmet:'clear',equippedTrail:'ion',tutorialDone:true,guide:'done',
+      suitPitch:{[id]:NewCat.suitPitchDefault(id)}});
     Math.random=()=>.5;
     let world;
     try { world=Sim.makeWorld(390,5000);Sim.resetRun(world,save,'fly',false); }
@@ -235,7 +321,7 @@ try {
   }
   const motionKeys=['time','squirrel','distance','screen','ready','tapAnimT','tapAnimFromRot',
     'tailA','tailV','bounceAnimT','bounceAnimDir','bounceAnimStrength','flapBoost','speed'];
-  for(const suit of suits) for(const interval of [.1,.18,.3]) {
+  for(const suit of legacy) for(const interval of [.1,.18,.3]) {
     const runs=[makeRun(OldSim,OldSave,suit.id),makeRun(NewSim,NewSave,suit.id)];
     const taps=new Set(Array.from({length:5},(_,i)=>Math.round(i*interval*60)));
     for(let tick=0;tick<120;tick++) {
@@ -254,7 +340,24 @@ try {
       counts.gameplayFrames++;if(taps.has(tick)) counts.acceptedTaps++;
     }
   }
+  // The five promoted suits also have to survive a real flight on the shipped
+  // sim: taps accepted, a dive taken, and a pilot painted with one helmet on
+  // every frame of the run - the gameplay path the legacy loop above covers.
+  for(const suit of promoted) {
+    const run=makeRun(NewSim,NewSave,suit.id);
+    const taps=new Set([0,11,22,33,44]);
+    for(let tick=0;tick<120;tick++) {
+      if(taps.has(tick)) assert.equal(NewSim.flap(run.world,run.save),'flap',`${suit.id}: real 180ms input accepted`);
+      if(tick===95) NewSim.dive(run.world,run.save);
+      Math.random=()=>.5;
+      try { NewSim.updateWorld(run.world,run.save,1/60); } finally { Math.random=nativeRandom; }
+      solo(`${suit.id} gameplay tick ${tick}`,(renderer,ctx)=>
+        renderer.drawPilot(ctx,run.world,run.save,art,dimensions/2,1,dimensions/2));
+      counts.gameplayFrames++;if(taps.has(tick)) counts.acceptedTaps++;
+    }
+  }
   console.log(JSON.stringify({passed:true,baseline,build:NewCat.ART_VER,productionWearableSuits:suits.map(s=>s.id),
+    highOrbitPromotions:promoted.map(s=>s.id),
     sourceImagesChecked:loaded.size,sourceImagesUnchanged:loaded.size-glassRepairs.size,
     repaintedGlass:[...glassRepairs],...counts,limitation:'Native Canvas regression proves unchanged body animation; helmet fit still requires visual review.'},null,2));
 } finally {

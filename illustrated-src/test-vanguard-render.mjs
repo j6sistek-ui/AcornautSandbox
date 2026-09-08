@@ -68,17 +68,23 @@ const blend=VG.createVanguardMotion();blend.frame=1;
 VG.paintVanguard(op,{suits:{vanguard:solid},vanguard:Array(VG.VANGUARD_FRAMES).fill(solid)},280,280,400,blend);
 assert.deepEqual([...op.getImageData(256,256,1,1).data],[255,255,255,255]);
 // Body direction is independent of loop progress. Gravity stays shallow,
-// swipes may point down, and every attitude retains the continuous tail.
+// a swipe tips further down, and every attitude retains the continuous tail.
+// Descent is read in the limbs, so every attitude is an exact settled angle
+// of the one articulated model: fall 8deg, swipe 18deg, climb direction*10deg.
 for(const style of ['cruise']) {   // the trial modes are gone: Flight is the motion
  const state=VG.createVanguardMotion();
  for(let i=0;i<180;i++)VG.stepVanguard(state,1/60,1500);
- assert(Math.abs(state.heading-22*Math.PI/180)<.001);
+ assert(Math.abs(state.heading-8*Math.PI/180)<.001);
+ const fall=state.heading;
  VG.vanguardDive(state);for(let i=0;i<60;i++)VG.stepVanguard(state,1/60,650);
- assert(state.heading>1);
+ assert(Math.abs(state.heading-18*Math.PI/180)<.001);
+ // The swipe is not merely a number: it still points further down than gravity.
+ assert(state.heading>fall+.05);
  const pose=[state.frame,state.phase,state.heading];VG.vanguardTap(state);
  assert.deepEqual([state.frame,state.phase,state.heading],pose);
  for(let i=0;i<60;i++)VG.stepVanguard(state,1/60,-200);
- assert(state.heading<-.3);assert(!state.diving);
+ // Climb tips the nose up, proportional to vy: -(200/360)*10deg, not a clamp.
+ assert(Math.abs(state.heading+(200/360)*10*Math.PI/180)<.002);assert(state.heading<0);assert(!state.diving);
 }
 // A scripted flight chamber leaves vertical room for a full dive. All
 // inputs, forces, gate scoring and contact use sim.ts. The test camera

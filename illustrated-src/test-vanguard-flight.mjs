@@ -53,7 +53,7 @@ const runs=['cruise'].map(mode=>{   // the trial modes are gone: Flight is the m
  const sv={...save};const w=Sim.makeWorld(390,760);
  Sim.resetRun(w,sv,'fly',false);w.planets=[];w.pickups=[];w.lastSpawnX=100000;
  for(let i=0;i<8;i++)w.planets.push({x:350+i*320,gapY:380,gap:420,r:58,topKind:i%33,botKind:(i+4)%33,scored:false,drift:0,driftAmp:0,blockers:[]});
- return {sv,w,c:createCanvas(390,760),headings:[],tail:new Set()};
+ return {sv,w,c:createCanvas(390,760),headings:[],vys:[],tail:new Set()};
 });
 const film=createCanvas(1280,920),g=film.getContext('2d'),frameDir=join(output,'phone-frames');mkdirSync(frameDir,{recursive:true});
 const events=[],trace=[];
@@ -66,7 +66,7 @@ for(let tick=0;tick<600;tick++){
   if(tap)Sim.flap(r.w,r.sv);if(swipe)Sim.dive(r.w,r.sv);
   Sim.updateWorld(r.w,r.sv,1/60);
   assert.equal(r.w.screen,'play');assert(r.w.squirrel.y>60&&r.w.squirrel.y<650,'actual phone field stays in frame');
-  r.headings.push(r.w.vanguard.heading);r.tail.add(r.w.vanguard.frame);
+  r.headings.push(r.w.vanguard.heading);r.vys.push(r.w.squirrel.vy);r.tail.add(r.w.vanguard.frame);
  }
  trace.push({tick,y:w0.squirrel.y,vy:w0.squirrel.vy,tap,swipe,flight:runs[0].w.vanguard.heading});
  if(tick%2)continue;
@@ -87,6 +87,31 @@ for(let tick=0;tick<600;tick++){
  writeFileSync(join(frameDir,String(tick/2).padStart(4,'0')+'.png'),film.toBuffer('image/png'));
  if(tick===310)writeFileSync(join(output,'phone-preview.png'),film.toBuffer('image/png'));
 }
-for(const r of runs){assert.equal(r.tail.size,16);assert(Math.max(...r.headings)>.2);assert(Math.min(...r.headings)<-.3);assert(r.w.score>=5);}
+// Flight's body pitch is the direction-driven rule (5c44e92): climb caps at 10
+// degrees, ordinary descent at 8 - the fall reads in the limbs, not a nose dive.
+// The retired atan2 attitude (-28 climb / +22 descent / +60 dive) is what the
+// old .2/-.3 bounds measured; test-vanguard-inertia.mjs now forbids it outright.
+const DEG=Math.PI/180;
+for(const r of runs){
+ assert.equal(r.tail.size,16);
+ const nose=Math.max(...r.headings),lift=Math.min(...r.headings);
+ assert(nose>.12,`descent pitch reaches the shipped 8 degree cap, got ${nose}`);
+ assert(lift<-.16,`climb pitch reaches the shipped 10 degree cap, got ${lift}`);
+ // Those extremes are only worth anything if velocity put them there: every
+ // frame pitched that far is a frame the pilot is genuinely falling or
+ // climbing, never a tap ("heading below follows flight, not taps",
+ // vanguard.ts:17). A level pilot, or one pitched by input instead of vy,
+ // fails here even though the two bounds above are well inside the caps.
+ for(let i=0;i<r.headings.length;i++){
+  const h=r.headings[i],vy=r.vys[i];
+  if(h>=.12)assert(vy>0,`nose-down ${h} at tick ${i} without a fall (vy ${vy})`);
+  if(h<=-.16)assert(vy<0,`nose-up ${h} at tick ${i} without a climb (vy ${vy})`);
+  // ...and the whole flight stays inside the small-angle rule: 18 degrees is
+  // the largest target it can ask for (the diving branch), so the old nose
+  // dive cannot come back unnoticed.
+  assert(Math.abs(h)<18*DEG,`body pitch stays inside the direction-driven rule, got ${h} at tick ${i}`);
+ }
+ assert(r.w.score>=5);
+}
 writeFileSync(join(output,'phone-trace.json'),JSON.stringify({events,trace},null,2));
 console.log('Vanguard phone field: 10 seconds of ordinary climb/fall arcs, burst taps, swipe, all tail poses, score and A/B physics checks passed');

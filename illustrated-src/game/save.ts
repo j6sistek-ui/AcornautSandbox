@@ -250,9 +250,36 @@ export function defaultSave(): SaveData {
  *  dust already went out. The caller writes the save. */
 export function takeReceipt(save: SaveData, transactionId: string) {
   if (!Array.isArray(save.receipts)) save.receipts = [];
-  if (save.receipts.includes(transactionId)) return false;
+  // THE LEDGER OUTLIVES THE SAVE (audit, 8 Sep 2026). Receipts also live in
+  // their own storage slot, which Start Over never clears. Without it, a
+  // pilot who reset their save kept their store identity, so the very next
+  // boot's deliverPending() saw the whole consumable history as unpaid and
+  // granted every dust pack they had ever bought, again. The two copies are
+  // merged on read and written together; the save's own copy stays for
+  // older builds that only know about it.
+  const paid = receiptVault();
+  if (save.receipts.includes(transactionId) || paid.has(transactionId)) return false;
   save.receipts.push(transactionId);
+  paid.add(transactionId);
+  writeReceiptVault(paid);
   return true;
+}
+
+/** the durable half of the receipt ledger: every transaction id this device
+ *  has ever been paid for, kept beside the save rather than inside it */
+const RECEIPT_KEY = SAVE_KEY + ":receipts";
+function receiptVault(): Set<string> {
+  try {
+    const raw = platform.storage.get(RECEIPT_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(list) ? list.filter((r) => typeof r === "string") : []);
+  } catch { return new Set(); }
+}
+function writeReceiptVault(paid: Set<string>) {
+  // newest last, and bounded: a store history is finite but a corrupted
+  // slot should not be able to grow without end
+  try { platform.storage.set(RECEIPT_KEY, JSON.stringify([...paid].slice(-2000))); }
+  catch { /* a device with no writable storage pays the old risk, not a new one */ }
 }
 
 /** Bank only new progress. This ledger is part of a suspended expedition,
@@ -368,10 +395,8 @@ export function loadSave(): SaveData {
   // tutorial's borrowed flight. A beta grant or an old free unlock in the
   // list does not count; the star gate in suitRevealed does.
   s.unlockedSuits = (s.unlockedSuits ?? []).filter((id: string) => id !== TUTORIAL_SUIT);
-  if (s.equippedSuit === TUTORIAL_SUIT && !((s.purchased || []).includes(TUTORIAL_SUIT))) {
-    const total = Object.values(s.stars ?? {}).reduce((n: number, m: unknown) => n + (typeof m === "number" ? ((m & 1) + ((m >> 1) & 1) + ((m >> 2) & 1)) : 0), 0);
-    if (!(total >= (STAR_UNLOCKS.suits[TUTORIAL_SUIT] ?? 500))) s.equippedSuit = "flight";
-  }
+  // The check that this suit is EARNED now runs below, after
+  // migrateCampaign: see "ACORNUT'S GATE READS THE LEDGER".
   // an old save has no lean table, and a corrupted one must not be able to
   // tip every suit sideways - anything that is not two finite numbers in
   // range is dropped rather than trusted
@@ -477,6 +502,15 @@ export function loadSave(): SaveData {
     } catch { /* writeSave will still surface a real persistence failure */ }
   }
   migrateCampaign(s, !!parsed, !!source && source.key !== SAVE_KEY);
+  // ACORNUT'S GATE READS THE LEDGER (audit, 8 Sep 2026). This used to count
+  // bits in the legacy `stars` map, which is only a compatibility bridge:
+  // for an ambiguous mission it carries the finish bit alone, so a pilot at
+  // 570 real stars could total ~190 there and have AcorNut torn off on
+  // every launch. suitRevealed asks the same question the rest of the game
+  // asks (purchased, the ledger's star total, the beta). It must run AFTER
+  // migrateCampaign: that call caches on first use, and an earlier starsOf()
+  // would build the ledger without the cross-page ambiguity flag.
+  if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT)) s.equippedSuit = "flight";
   if (IS_BETA && !s.betaSampleCreditImported) {
     try {
       const raw = platform.storage.get("acornaut_star_map_sample_v1");
@@ -576,7 +610,15 @@ export function helmetRevealed(s: SaveData, id: string) {
 // Sparks has no rung and is everyone's from the first flight; premium
 // trails keep the purchase contract.
 export function trailUnlocked(s: SaveData, id: string) {
-  if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
+  // THE WAKE HAS ITS OWN RUNG at 520, fifty stars ahead of AcorNut, and
+  // this line used to answer before the ladder below was ever read: an
+  // audit found the crossed rung still printing "525 of 520 stars" with a
+  // HOLD TO USE STAR UNLOCK button, so a pilot could burn a 500-dust boost
+  // on a trail the chart had already given them. The rung counts here too;
+  // it cannot leak the wake onto another suit, which canWearTrail still
+  // refuses.
+  if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id)
+    || starsOf(s) >= (STAR_UNLOCKS.trails[id] ?? Infinity);
   if (id === "arcflashwake") return suitRevealed(s, "arcflash");
   if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id]) return true;
   if (isIap(id)) return iapOwned(s, id);

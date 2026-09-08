@@ -496,6 +496,26 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
     if (bounce.length) bank.suitBounce[id] = bounce;
     if (asc.length) bank.suitAsc[id] = asc;
     if (desc.length) bank.suitDesc[id] = desc;
+    // many() drops a frame it could not fetch rather than sinking the whole
+    // bank, and that is the right instinct - but draw.ts reads the tap,
+    // tail-tap and bounce banks by EXACT count (16, 12, 16), so fifteen
+    // frames is not one pose missing, it is the painted animation switched
+    // off and the suit back on the universal rig's 2.8% belly tuck. Nothing
+    // released the cache slot either way, so one flaky request on mobile
+    // data pinned that for the rest of the session and a re-equip could not
+    // clear it. An audit found it. Give a short bank the same courtesy
+    // vanguard and switchback already get and drop the slot, so the next
+    // equip or the background sweep can ask again. Whatever DID arrive stays
+    // published: asc, desc and loop are read at whatever length they have,
+    // so a 7-of-8 ramp still plays and only an empty one is worth a retry.
+    const shortBank =
+      (TAP_BANKS[id] && tap.length !== TAP_BANKS[id]) ||
+      (TAIL_TAP_BANKS[id] && tailTap.length !== TAIL_TAP_BANKS[id]) ||
+      (BOUNCE_BANKS[id] && bounce.length !== BOUNCE_BANKS[id]) ||
+      (LOOP_BANKS[id] && !loop.length) ||
+      (ASC_BANKS[id] && !asc.length) ||
+      (DESC_BANKS[id] && !desc.length);
+    if (shortBank) suitBankLoads.delete(id);
   })();
   suitBankLoads.set(id, p);
   return p;
@@ -520,6 +540,12 @@ export function loadPalBank(bank: ArtBank, id: string): Promise<void> {
           if (frames.length === count) bank.palAnim[id] = frames;
           else palBankLoads.delete(id);
         } else if (frames.length) bank.palAnim[id] = frames;
+        // Nothing arrived at all, and the resolved promise stayed in the
+        // cache - so a pal that lost its bank to a bad connection drew as a
+        // still portrait for the rest of the session, since every caller
+        // short-circuits on that hit. The audit found the same trap here as
+        // in the suits. Drop the slot and let a later equip try again.
+        else palBankLoads.delete(id);
       })
     : Promise.resolve();
   palBankLoads.set(id, p);
@@ -626,7 +652,9 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "raccoon", "ferret", "hedgehog",
     // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-    ...(IS_BETA ? ["briellacat"] : []),
+    // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
+    // 2026), so its sheet loads there rather than only on the beta host
+    "briellacat",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [

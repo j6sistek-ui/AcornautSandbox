@@ -863,14 +863,20 @@ function modsLive(save: SaveData, w: World) {
 /** How hard the gates sway in Normal: 0 with Steady Gates, 1 otherwise. */
 function driftModOf(save: SaveData, w: World) {
   if (w.lvl?.def.fx.pal === "nightglider") return 0;
-  if (!modsLive(save, w)) return 1;
-  if (save.steadyGates) return 0;
   // NIGHTGLIDER HOLDS THE GATES STILL (owner, 2 Sep 2026: "no longer
   // strobes, it turns into steady gates"). The pal does what the Steady
   // Gates mod did, the way Wisp took over Rough Air - the pal is the one
   // you can see doing it, so the mod card is gone from the loadout.
+  //
+  // IT IS A COMPANION, NOT A MOD (audit, 8 Sep 2026). This sat below the
+  // modsLive gate, so a pal bought with real money did nothing at all
+  // until the pilot also reached the 180-star Flight Mods rung - a paid
+  // item with no effect, which is exactly what a store reviewer tests.
+  // hasPal already answers "nobody" under Pal Effects Off and on a
+  // mission that did not name it, so asking first changes nothing else.
   if (hasPal(save, w, "nightglider")) return 0;
-  return 1;
+  if (!modsLive(save, w)) return 1;
+  return save.steadyGates ? 0 : 1;
 }
 
 /** Thrill Seeker runs the whole world at double speed. See updateWorld.

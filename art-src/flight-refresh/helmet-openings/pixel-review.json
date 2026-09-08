@@ -100,11 +100,6 @@
     "changedPixels": 0
   },
   {
-    "helmet": "paladin",
-    "clearedRearArc": false,
-    "changedPixels": 0
-  },
-  {
     "helmet": "phoenix",
     "clearedRearArc": true,
     "changedPixels": 4335

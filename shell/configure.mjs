@@ -84,6 +84,13 @@ if (existsSync(ios)) {
   // storyboard: our bridge controller
   const sb = join(app, "Base.lproj", "Main.storyboard");
   write(sb, read(sb).replace(/customClass="CAPBridgeViewController" customModule="Capacitor"/, 'customClass="AcornautViewController" customModule="App" customModuleProvider="target"'));
+  // scene delegate: our bridge controller there too. The template throws the
+  // storyboard's window away and roots its own in a stock
+  // CAPBridgeViewController, so the storyboard patch alone shipped a bridge
+  // with no BoardsPlugin and Game Center answered "not implemented" (audit,
+  // 8 Sep 2026). Idempotent: after the first pass the old literal is gone.
+  const sd = join(app, "SceneDelegate.swift");
+  if (existsSync(sd)) write(sd, read(sd).replace("rootViewController = CAPBridgeViewController()", "rootViewController = AcornautViewController()"));
 } else warn.push("ios/ missing: run `npx cap add ios`");
 
 // ---- Android

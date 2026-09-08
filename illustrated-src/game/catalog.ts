@@ -7,7 +7,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "238";
+export const ART_VER = "240";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -180,9 +180,9 @@ export const HELMETS: Helmet[] = [
   { id: "cosmic", name: "Cosmic", cost: 0, visor: "#c8a7ff", tint: 0.2, rim: "#e0c8ff", trim: "#9c78bb", glow: "#c87dff" },
   { id: "sunforged", suitOnly: "sunforged", opaqueVisor: true, name: "Sunforged", cost: 0, visor: "#ffbf36", tint: 0.22, rim: "#c08a33", trim: "#4c351d", glow: "#ffb52e" },
   { id: "abyssal", name: "Abyssal", cost: 0, visor: "#4de8ff", tint: 0.24, rim: "#50cde8", trim: "#184c66", glow: "#39dcff" },
-  { id: "amethyst", beta: true, name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
-  { id: "ivoryguard", beta: true, name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
-  { id: "reactor", beta: true, name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
+  { id: "amethyst", name: "Amethyst", cost: 0, visor: "#d8b5ff", tint: 0.2, rim: "#d3a94e", trim: "#4a2a76", glow: "#bf66ff" },
+  { id: "ivoryguard", name: "Ivoryguard", cost: 0, visor: "#d9f4ff", tint: 0.17, rim: "#d8e9f1", trim: "#8a9ba8", glow: "#79d9ff" },
+  { id: "reactor", name: "Reactor", cost: 0, visor: "#68ff4a", tint: 0.22, rim: "#b6ff5c", trim: "#6d7e28", glow: "#66ff32" },
 ];
 if (!IS_BETA) {
   for (let i = HELMETS.length - 1; i >= 0; i--) {
@@ -278,7 +278,7 @@ export const SUITS: Suit[] = [
   // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
   // its own head, no helmet. Ships the still for now; the flight sprite
   // sheet follows and is wired as its bank when it lands. Beta until then.
-  { id: "briellacat", beta: true, name: "Briella's Cat", cost: 0, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
+  { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
@@ -614,6 +614,17 @@ export const BUNDLES: {
   { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
   { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
   { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
+  // THE THREE STANDALONE VISORS (owner, 8 Sep 2026: "Add them to the shop,
+  // premium purchases, in the rotations"). They came off the beta host, and
+  // premium HERE means being in a bundle - IAP_ITEMS is derived from this
+  // table, isIap reads that, and the shop's helmet rotation deals from
+  // HELMETS.filter(isIap). One helmet apiece, priced like the companions
+  // they most resemble: every other premium helmet shares its id with a
+  // suit and carries that set's weight, but these three are visors and
+  // nothing else, so idWeight makes them 90 dust singly.
+  { id: "bundle-amethyst", name: "Amethyst Visor", blurb: "Violet glass under a gold rim.", dust: 90, items: [{ kind: "helm", id: "amethyst" }] },
+  { id: "bundle-ivoryguard", name: "Ivoryguard Visor", blurb: "Pale ice, steel trim, a cold blue light.", dust: 90, items: [{ kind: "helm", id: "ivoryguard" }] },
+  { id: "bundle-reactor", name: "Reactor Visor", blurb: "Acid green, and it glows in the dark of the run.", dust: 90, items: [{ kind: "helm", id: "reactor" }] },
   {
     id: "bundle-aurora",
     name: "Aurora Pack",
@@ -854,22 +865,46 @@ export function idGrants(id: string) {
   return t ? [id, t] : [id];
 }
 
-/** what the ids you do NOT own would cost bought one at a time */
-export function alaCarteTotal(ids: string[], owns: (id: string) => boolean) {
+/** THE WEIGHT SUM: every unowned id at its sticker or its weight rate, a
+ *  set trail included. This is the base the featured price has always been
+ *  struck off, and the owner set the shelf around the numbers it gives
+ *  (Aurora 720, Regalia 900), so the audit left it exactly where it stood
+ *  and corrected only what the card CLAIMS you are saving. */
+function weightTotal(ids: string[], owns: (id: string) => boolean) {
   return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+}
+
+/** what the ids you do NOT own would cost bought one at a time.
+ *
+ *  A set trail costs NOTHING here (audit, 8 Sep 2026). SHOP_CYCLE sells no
+ *  trail singly and idGrants hands it over free with its suit, so pricing
+ *  one at the weight rate quoted a "was" figure nobody could ever be
+ *  charged: the featured card struck through 1,440 for Aurora and called it
+ *  50% OFF when the same three suits and the pal cost 1,170 on the single
+ *  shelf. A trail is only free when the suit that grants it is in this list
+ *  AND still unowned - that is the only way a purchase hands it over - so
+ *  that is the only case zeroed.
+ */
+export function alaCarteTotal(ids: string[], owns: (id: string) => boolean) {
+  const owed = ids.filter((i) => !owns(i));
+  const free = new Set(owed.map((i) => SET_TRAIL[i]).filter(Boolean));
+  return owed.reduce((n, i) => n + (free.has(i) ? 0 : idDust(i)), 0);
 }
 
 /** THE FEATURED PACK. One at a time, and always the best deal on the
  *  shelf: half of what its remaining contents would cost singly. Half of
  *  what REMAINS, so a pack whose suit you already bought quietly costs
- *  less rather than charging for it twice. */
+ *  less rather than charging for it twice. Half of the WEIGHT SUM, not of
+ *  the shelf total above it: the free trail sits inside the base these
+ *  packs were priced against, and taking it out would cut every featured
+ *  price, which is the owner's call and not an audit's. */
 export const FEATURE_DISCOUNT = 0.5;
 export function featurePrice(
   b: (typeof BUNDLES)[number],
   owns: (id: string) => boolean,
 ) {
   if (b.fixed) return bundlePrice(b, owns);
-  const due = alaCarteTotal(bundleIds(b), owns);
+  const due = weightTotal(bundleIds(b), owns);
   if (due <= 0) return 0;
   return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
 }

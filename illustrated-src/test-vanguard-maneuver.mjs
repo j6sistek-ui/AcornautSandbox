@@ -12,6 +12,8 @@ import {tmpdir} from 'node:os';
 import * as M from '../docs/js/vanguard-maneuver.js';
 import * as V from '../docs/js/vanguard.js';
 
+// the owner's forward trim is a deliberate constant lean on the whole drawing
+const trim=V.VANGUARD_PITCH_TRIM_DEFAULT*Math.PI/180,cosT=Math.cos(trim),sinT=Math.sin(trim);
 const require=createRequire(import.meta.url);
 const {createCanvas,loadImage}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -171,7 +173,9 @@ for(const s of samples){
   areas.torso.push(records.find(r=>r.args[0]===256&&r.args[1]===0).area);
   const l=M.maneuverLandmarks(display.pose);
   for(const p of [l.nearElbow,l.farElbow,l.nearKnee,l.farKnee,[-14,32],[32,31],[-36,-63],[47,-59]]){
-    const alpha=ctx.getImageData(Math.round(350+p[0]),Math.round(350+p[1]),1,1).data[3];
+    // paintManeuver rotates the rig by the trim about its origin; sample there.
+    const alpha=ctx.getImageData(Math.round(350+p[0]*cosT-p[1]*sinT),
+      Math.round(350+p[0]*sinT+p[1]*cosT),1,1).data[3];
     assert(alpha>240,'anatomical joints remain covered and opaque');seamSamples++;
   }
 }

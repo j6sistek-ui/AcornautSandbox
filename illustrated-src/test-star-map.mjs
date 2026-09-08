@@ -81,6 +81,29 @@ for(const [kind,id] of ownerRewards){
   assert.equal(gate,reward.stars,`${kind}/${id} gate reads its rung`);
 }
 assert(C.STAR_REWARDS.some(r=>r.kind==='acorns'&&r.amount>0),'acorn rungs exist');
+// A RUNG NEVER CHARGES (owner, 8 Sep 2026: "remove from star rung ... at
+// those star rung replace with acorns for now"). Nine helmet rungs used to
+// REVEAL a helmet the Loadout then charged 90-500 acorns for, so the road
+// announced an unlock over a price tag; they pay acorns now. This holds the
+// rule for whatever lands on them next: a rung hands its item over outright,
+// or it is not a rung.
+for(const r of C.STAR_REWARDS){
+  if((r.kind!=='helmet'&&r.kind!=='suit')||!r.id||Cat.isIap(r.id))continue;
+  const item=(r.kind==='helmet'?Cat.HELMETS:Cat.SUITS).find(x=>x.id===r.id);
+  assert(item,`the ${r.kind} rung at ${r.stars} stars names a real item (${r.id})`);
+  assert.equal(item.cost,0,`the ${r.kind} rung at ${r.stars} stars (${r.id}) still costs ${item.cost} acorns in the Loadout: a rung grants, it does not reveal`);
+}
+// and the other half of that bargain: those nine helmets keep their shelf
+// gate at the star count they always appeared at (PRICED_HELMET_GATES), so
+// by the time the shop shows one, the road has paid for it. Cumulative, not
+// per-rung: 180 stars is the Flight Mods gate, so the Royal Helmet's shelf
+// gate has no acorn rung of its own and is covered by the road behind it.
+for(const [id,stars] of Object.entries(C.STAR_UNLOCKS.helmets)){
+  const h=Cat.HELMETS.find(x=>x.id===id);
+  if(!h||h.cost<=0||Cat.isIap(id))continue;
+  const paid=C.STAR_REWARDS.filter(r=>r.kind==='acorns'&&r.stars<=stars).reduce((a,r)=>a+r.amount,0);
+  assert(paid>=h.cost,`${stars} stars puts ${id} on the shelf at ${h.cost} acorns but the road has only paid ${paid}`);
+}
 assert(C.STAR_REWARDS.filter(r=>r.kind==='dust').reduce((a,r)=>a+r.amount,0)>0,'dust rungs exist');
 {const rungs=[...new Set(C.STAR_REWARDS.map(r=>r.stars))].sort((a,b)=>a-b);
  for(let i=1;i<rungs.length;i++)assert(rungs[i]-rungs[i-1]<=10,`no stretch longer than ten stars without a reward (${rungs[i-1]}→${rungs[i]})`);
