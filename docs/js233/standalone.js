@@ -13,7 +13,7 @@ import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, H
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=233";
 import { drawSprite as drawSpriteOn } from "./art.js?v=233";
 import { createEngine } from "./engine.js?v=233";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned } from "./save.js?v=233";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=233";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=233";
 import { formatRaceTicks } from "./race.js?v=233";
 import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=233";
@@ -950,7 +950,7 @@ export async function bootStandalone(root) {
         // row whether or not its 500 stars are in, so the goal is always seen.
         if (u.id === "vanguard")
             return -2;
-        const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && iapOwned(s, u.id));
+        const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && ownsPremium(s, u.id));
         if (owned)
             return -1;
         const gate = STAR_UNLOCKS.suits[u.id];
@@ -960,7 +960,7 @@ export async function bootStandalone(root) {
     }
     function helmRank(h) {
         const s = engine.save;
-        const owned = s.unlocked.includes(h.id) || (isIap(h.id) && iapOwned(s, h.id));
+        const owned = s.unlocked.includes(h.id) || (isIap(h.id) && ownsPremium(s, h.id));
         if (owned)
             return -1;
         const gate = STAR_UNLOCKS.helmets[h.id];
@@ -1965,7 +1965,7 @@ export async function bootStandalone(root) {
     function palCardOf(pl, forShop = false) {
         const s = engine.save;
         const premium = isIap(pl.id);
-        const open = premium ? iapOwned(s, pl.id) : palUnlocked(s, pl.id);
+        const open = premium ? ownsPremium(s, pl.id) : palUnlocked(s, pl.id);
         // "None" is the empty high seat, never the empty low one
         const seat = s.equippedPal === pl.id ? "HIGH" : pl.id !== "none" && s.equippedPal2 === pl.id ? "LOW" : "";
         const b = el("button", seat ? "ac-card ac-palcard on" : "ac-card ac-palcard");
@@ -2260,7 +2260,7 @@ export async function bootStandalone(root) {
             const helmCard = (h) => {
                 const premium = isIap(h.id);
                 const open = helmetRevealed(s, h.id);
-                const owned = premium ? iapOwned(s, h.id) : s.unlocked.includes(h.id);
+                const owned = premium ? ownsPremium(s, h.id) : s.unlocked.includes(h.id);
                 const b = el("button", !locked && s.equipped === h.id ? "ac-card on" : "ac-card");
                 // A bare integer told the pilot nothing: "70" next to "OWNED"
                 // reads as a score, and a free helmet rendered the word "0".
@@ -2287,7 +2287,7 @@ export async function bootStandalone(root) {
                     b.append(favStar(h.id));
                 return b;
             };
-            const helmListed = (h) => !h.suitOnly && (!isIap(h.id) || iapOwned(s, h.id));
+            const helmListed = (h) => !h.suitOnly && (!isIap(h.id) || ownsPremium(s, h.id));
             const favHelms = favShelf(HELMETS.filter(helmListed).map((h) => h.id), (id) => { const h = HELMETS.find((x) => x.id === id); return h ? helmCard(h) : null; });
             if (favHelms)
                 grid.append(favHelms);
@@ -2325,7 +2325,7 @@ export async function bootStandalone(root) {
             const suitCard = (u) => {
                 const premium = isIap(u.id);
                 const open = suitRevealed(s, u.id);
-                const owned = premium ? iapOwned(s, u.id) : s.unlockedSuits.includes(u.id);
+                const owned = premium ? ownsPremium(s, u.id) : s.unlockedSuits.includes(u.id);
                 const b = el("button", s.equippedSuit === u.id ? "ac-card on" : "ac-card");
                 const claim = !premium && open && !owned && u.cost <= 0;
                 b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
@@ -2352,7 +2352,7 @@ export async function bootStandalone(root) {
                     b.append(favStar(u.id));
                 return b;
             };
-            const favSuits = favShelf(SUITS.filter((u) => !isIap(u.id) || iapOwned(s, u.id)).map((u) => u.id), (id) => { const u = SUITS.find((x) => x.id === id); return u ? suitCard(u) : null; });
+            const favSuits = favShelf(SUITS.filter((u) => !isIap(u.id) || ownsPremium(s, u.id)).map((u) => u.id), (id) => { const u = SUITS.find((x) => x.id === id); return u ? suitCard(u) : null; });
             if (favSuits)
                 grid.append(favSuits);
             for (const sec of SUIT_SHELF) {
@@ -2363,7 +2363,7 @@ export async function bootStandalone(root) {
                     // except on the PURCHASED row, where it shows as a door to the
                     // shop so a pilot can see what is for sale (owner, 7 Sep 2026:
                     // "arcflash is only in SHOP")
-                    .filter((u) => !isIap(u.id) || iapOwned(s, u.id))
+                    .filter((u) => !isIap(u.id) || ownsPremium(s, u.id))
                     // cheapest first, so the shelf reads as a ladder rather than a
                     // pile. Owned things lead (nothing left to pay), then acorn
                     // prices in order, then star gates by their star price.
@@ -2371,7 +2371,7 @@ export async function bootStandalone(root) {
                 // ONE DOOR PER ROW (owner, 7 Sep 2026): the premium suits this row
                 // sells that the pilot does not own become a single "in the store"
                 // card at the end of the row, not a card apiece.
-                const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !iapOwned(s, id));
+                const inStore = sec.ids.filter((id) => SUITS.some((x) => x.id === id) && isIap(id) && !ownsPremium(s, id));
                 if (!items.length && !inStore.length)
                     continue;
                 grid.append(el("p", "ac-shelfhead", sec.title));
@@ -2444,7 +2444,7 @@ export async function bootStandalone(root) {
                     b.append(favStar(t.id));
                 return b;
             };
-            const listed = TRAILS.filter((x) => (!isIap(x.id) || iapOwned(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
+            const listed = TRAILS.filter((x) => (!isIap(x.id) || ownsPremium(s, x.id)) && (!builtInOf(x.id) || builtInOf(x.id) === s.equippedSuit));
             const favTrails = favShelf(listed.map((t) => t.id), (id) => { const t = TRAILS.find((x) => x.id === id); return t ? trailCard(t) : null; });
             if (favTrails) {
                 grid.classList.add("ac-shelfcol");
@@ -2481,7 +2481,7 @@ export async function bootStandalone(root) {
             grid.append(el("p", "ac-palseats", dualPalUnlocked(s)
                 ? "TWO SEATS \u00b7 tap a second pal to fly it low \u00b7 tap a flying pal to dismiss it"
                 : `SECOND SEAT AT \u2605 ${STAR_UNLOCKS.dualPal} \u00b7 fly two pals at once, effects stacked`));
-            for (const p of PALS.filter((x) => !isIap(x.id) || iapOwned(s, x.id)))
+            for (const p of PALS.filter((x) => !isIap(x.id) || ownsPremium(s, x.id)))
                 grid.append(palCardOf(p));
         }
         else if (engine.shopTab === "ship") {
@@ -3210,7 +3210,11 @@ export async function bootStandalone(root) {
         const art = el("div", "ac-rewardbig");
         art.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 96));
         sheet.append(art, el("h2", "ac-lvlname", r.name), el("p", "ac-sub", r.desc));
-        sheet.append(el("p", "ac-sub ac-rewardstate", owned ? "Yours." : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
+        const paidInstead = s.rewardSubs?.[key];
+        sheet.append(el("p", "ac-sub ac-rewardstate", paidInstead
+            ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
+            : owned ? (have >= r.stars ? "Yours." : `Yours already. When the road reaches ${r.stars} stars this rung pays ${(s.boostedRewards || []).includes(r.id ?? "") ? "acorns" : "Star Dust"} instead.`)
+                : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
         const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
         if (!owned && item) {
             if (boostReady(s, "starunlock")) {
@@ -3711,7 +3715,7 @@ export async function bootStandalone(root) {
     /** what the shop is showing today - and what it is deliberately not */
     function shopCycle() {
         const s = engine.save;
-        const owns = (i) => iapOwned(s, i);
+        const owns = (i) => ownsPremium(s, i);
         const day = shopDayIndex();
         // ONE featured pack, never one already owned outright
         const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
@@ -4145,7 +4149,7 @@ export async function bootStandalone(root) {
         if (!bn)
             return wrap;
         const s = engine.save;
-        const owns = (i) => iapOwned(s, i);
+        const owns = (i) => ownsPremium(s, i);
         const sheet = el("div", "ac-lvlcard ac-featuresheet");
         const full = alaCarteTotal(bundleIds(bn), owns);
         const due = featurePrice(bn, owns);
@@ -4377,7 +4381,7 @@ export async function bootStandalone(root) {
             // date, the same three all day, a fresh draw tomorrow - and a pack
             // the pilot owns is gone from the pool for good rather than sitting
             // there greyed out. See shopBundles.
-            const shelf = shopBundles(Date.now(), (i) => iapOwned(s, i));
+            const shelf = shopBundles(Date.now(), (i) => ownsPremium(s, i));
             for (const bn of shelf) {
                 const card = el("button", "ac-card ac-bundle");
                 const strip = el("div", "ac-bundlestrip");
@@ -4400,7 +4404,7 @@ export async function bootStandalone(root) {
                 card.append(txt);
                 // what the pack costs THIS pilot: the packs overlap, so anything
                 // already owned has come off the price
-                const due = bundlePrice(bn, (i) => iapOwned(s, i));
+                const due = bundlePrice(bn, (i) => ownsPremium(s, i));
                 const price = el("span", "ac-modprice ac-dustprice");
                 price.append(icon(I_DUST, 12, true), el("span", "", due.toLocaleString()));
                 if (due < bn.dust) {
@@ -4621,7 +4625,7 @@ export async function bootStandalone(root) {
                     chip.append(c);
                 }
                 chip.append(el("span", "", it.name));
-                if (iapOwned(s, it.id))
+                if (ownsPremium(s, it.id))
                     chip.classList.add("owned");
                 row.append(chip);
             }
@@ -4629,11 +4633,11 @@ export async function bootStandalone(root) {
         }
         sheet.append(listWrap);
         sheet.append(el("p", "ac-fine", `${total} items in this pack.`));
-        const owned = bundleIds(bn).every((i) => iapOwned(s, i));
+        const owned = bundleIds(bn).every((i) => ownsPremium(s, i));
         // what THIS pilot owes: the packs overlap, so anything already in the
         // loadout has come off the price and the button must say so
-        const due = bundlePrice(bn, (i) => iapOwned(s, i));
-        const already = bn.items.filter((i) => iapOwned(s, i.id)).length;
+        const due = bundlePrice(bn, (i) => ownsPremium(s, i));
+        const already = bn.items.filter((i) => ownsPremium(s, i.id)).length;
         if (already && !owned) {
             sheet.append(el("p", "ac-fine ac-packcredit", `${already} of these are already yours \u2014 ${(bn.dust - due).toLocaleString()} Star Dust off.`));
         }
@@ -4803,7 +4807,7 @@ export async function bootStandalone(root) {
                     b.append(pc);
                     markPremium(b);
                 }
-                b.append(document.createTextNode(`${it.name}\n${iapOwned(s, it.id) ? "OWNED" : "IN A PACK"}`));
+                b.append(document.createTextNode(`${it.name}\n${ownsPremium(s, it.id) ? "OWNED" : "IN A PACK"}`));
                 b.onclick = () => { tryOn = { ...tryOn, [kind]: it.id }; render(); };
                 row.append(b);
             }

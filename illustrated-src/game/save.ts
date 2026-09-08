@@ -1,6 +1,6 @@
 import type { SpillAppearance } from "./spill-appearance";
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, type CampaignProgress } from "./campaign-progress";
-import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, type LevelDef, type StarReward } from "./campaign";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId, type CampaignProgress } from "./campaign-progress";
+import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
 import { STAR_UNLOCKS,
   RACE_GATES,
 } from "./campaign";
@@ -69,6 +69,12 @@ export type SaveData = {
    *  "dualpal"). Wardrobe rewards go into the unlocked* lists like any
    *  other unlock. */
   keyUnlocks: string[];
+  /** item ids opened with a Star Unlock, wardrobe and keyed alike. When
+   *  the road later reaches one of these, the rung pays acorns instead. */
+  boostedRewards: string[];
+  /** what a rung paid INSTEAD of its item, by reward ledger id - the
+   *  Star Dust for a shop-bought item, the acorns for a Star-Unlocked one */
+  rewardSubs: Record<string, { kind: "dust" | "acorns"; amount: number }>;
   acorns: number;
   xp: number;
   startShield: boolean;
@@ -193,6 +199,8 @@ export function defaultSave(): SaveData {
     receipts: [],
     boosts: { levelskip: 0, starunlock: 0 },
     keyUnlocks: [],
+    boostedRewards: [],
+    rewardSubs: {},
     acorns: 0,
     xp: 0,
     startShield: false,
@@ -320,6 +328,9 @@ export function loadSave(): SaveData {
   }
   if (!Array.isArray(s.keyUnlocks)) s.keyUnlocks = [];
   s.keyUnlocks = s.keyUnlocks.filter((k) => typeof k === "string");
+  if (!Array.isArray(s.boostedRewards)) s.boostedRewards = [];
+  s.boostedRewards = s.boostedRewards.filter((k) => typeof k === "string");
+  if (!s.rewardSubs || typeof s.rewardSubs !== "object" || Array.isArray(s.rewardSubs)) s.rewardSubs = {};
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;
@@ -703,12 +714,68 @@ export function unlockReward(s: SaveData, r: StarReward): "currency" | "owned" |
   const paid = spendBoost(s, "starunlock");
   if (paid !== "ok") return paid;
   const add = (list: string[]) => { if (!list.includes(r.id!)) list.push(r.id!); };
-  if (r.kind === "suit") add(s.unlockedSuits);
+  // a premium id is owned through `purchased` - the one list every gate
+  // and the shop read for it - so a Star Unlock lands it there
+  if (r.kind === "mod" || r.kind === "mode") add(s.keyUnlocks);
+  else if (isIap(r.id)) { if (!(s.purchased || []).includes(r.id)) s.purchased = [...(s.purchased || []), r.id]; }
+  else if (r.kind === "suit") add(s.unlockedSuits);
   else if (r.kind === "helmet") add(s.unlocked);
   else if (r.kind === "trail") add(s.unlockedTrails);
   else if (r.kind === "pal") add(s.unlockedPals);
-  else add(s.keyUnlocks);
+  add(s.boostedRewards);
   return "ok";
+}
+
+/** DOES THE PILOT HAVE THIS PREMIUM ID, by any route: bought, opened with
+ *  a Star Unlock, or earned on the road. The shop reads this rather than
+ *  the purchase list alone, so an item the road handed over leaves the
+ *  shelf and comes off a pack's price (owner, 8 Sep 2026: "once they earn
+ *  it on the road, it's removed from the shop"). */
+export function ownsPremium(s: SaveData, id: string) {
+  if ((s.purchased || []).includes(id)) return true;
+  if (SUITS.some((u) => u.id === id)) return suitRevealed(s, id);
+  if (HELMETS.some((h) => h.id === id)) return helmetRevealed(s, id);
+  if (PALS.some((p) => p.id === id)) return palUnlocked(s, id);
+  if (TRAILS.some((t) => t.id === id)) return trailUnlocked(s, id);
+  return false;
+}
+
+/** PAY EVERY RUNG THE PILOT HAS CROSSED AND NOT BEEN PAID FOR. Currency
+ *  rungs pay their amount. An item rung whose item another route already
+ *  handed over pays currency in its place: Star Dust for a shop purchase,
+ *  acorns for a Star Unlock. Every crossed rung is written to the ledger
+ *  once, so nothing pays twice. The caller writes the save. Returns the
+ *  total paid. */
+export function settleStarRewards(s: SaveData) {
+  const have = starsOf(s);
+  const ledger = migrateCampaign(s);
+  let dust = 0, acorns = 0, high = s.dustPaidTo;
+  for (const r of STAR_REWARDS) {
+    if (r.stars > have) continue;
+    const key = rewardId(r);
+    if (ledger.paidRewards.includes(key)) continue;
+    if (r.kind === "dust" || r.kind === "acorns") {
+      if (!r.amount) continue;
+      if (r.kind === "dust") { dust += r.amount; high = Math.max(high, r.stars); }
+      else acorns += r.amount;
+      ledger.paidRewards.push(key);
+      continue;
+    }
+    if (!r.id) continue;
+    const keyed = (s.boostedRewards || []).includes(r.id);
+    const bought = !keyed && (s.purchased || []).includes(r.id);
+    if (keyed || bought) {
+      const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
+      if (sub.kind === "dust") dust += sub.amount; else acorns += sub.amount;
+      s.rewardSubs = { ...(s.rewardSubs || {}), [key]: sub };
+    }
+    ledger.paidRewards.push(key);
+  }
+  if (dust <= 0 && acorns <= 0) return 0;
+  s.starDust += dust;
+  s.acorns += acorns;
+  s.dustPaidTo = high;
+  return dust + acorns;
 }
 
 /** the companions the hangar has equipped, high slot first, without the

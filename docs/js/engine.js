@@ -1,7 +1,7 @@
 import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=233";
 import { platform } from "./platform.js?v=233";
 import { spillAppearance } from "./spill-appearance.js?v=233";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=233";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=233";
 import { reachedGate } from "./campaign.js?v=233";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=233";
 import { vanguardDepotEligible } from "./spill-depot-gag.js?v=233";
@@ -16,7 +16,7 @@ import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGest
 import { raceViewport } from "./race-viewport.js?v=233";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=233";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=233";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward } from "./save.js?v=233";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=233";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -863,30 +863,14 @@ export async function createEngine(canvas) {
      *  Called on load and after every finish, so old saves collect their whole
      *  backlog rather than losing it. */
     function settleDust() {
-        const have = starsOf(save);
-        const ledger = migrateCampaign(save);
-        let dustOwed = 0, acornsOwed = 0, high = save.dustPaidTo;
-        for (const r of STAR_REWARDS) {
-            if ((r.kind !== "dust" && r.kind !== "acorns") || !r.amount)
-                continue;
-            if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) {
-                if (r.kind === "dust") {
-                    dustOwed += r.amount;
-                    high = Math.max(high, r.stars);
-                }
-                else
-                    acornsOwed += r.amount;
-                ledger.paidRewards.push(rewardId(r));
-            }
-        }
-        if (dustOwed <= 0 && acornsOwed <= 0)
+        // the rules live on the save (settleStarRewards) so the harness can
+        // prove them; this is the write and the notify
+        const paid = settleStarRewards(save);
+        if (paid <= 0)
             return 0;
-        save.starDust += dustOwed;
-        save.acorns += acornsOwed;
-        save.dustPaidTo = high;
         writeSave(save);
         notify();
-        return dustOwed + acornsOwed;
+        return paid;
     }
     /** How the daily stands right now, without claiming it. */
     /** Bandit, Noodle and Quill: the first full week's prize */
@@ -1021,12 +1005,13 @@ export async function createEngine(canvas) {
         if (!bn)
             return "missing";
         const ids = bundleIds(bn);
-        if (ids.every((i) => (save.purchased || []).includes(i)))
+        if (ids.every((i) => ownsPremium(save, i)))
             return "owned";
         // the price the SHELF is showing, not the sticker: a pack whose suit
-        // the pilot already owns costs less, and charging the sticker here
-        // would take dust the card never asked for
-        const due = bundlePrice(bn, (i) => (save.purchased || []).includes(i));
+        // the pilot already owns - bought, keyed or earned on the road - costs
+        // less, and charging the sticker here would take dust the card never
+        // asked for
+        const due = bundlePrice(bn, (i) => ownsPremium(save, i));
         if (save.starDust < due)
             return "poor";
         save.starDust -= due;
@@ -1041,7 +1026,7 @@ export async function createEngine(canvas) {
     function buyShopItem(id) {
         if (!IAP_ITEMS.includes(id))
             return "missing";
-        if ((save.purchased || []).includes(id))
+        if (ownsPremium(save, id))
             return "owned";
         const due = idDust(id);
         if (save.starDust < due)
@@ -1059,9 +1044,9 @@ export async function createEngine(canvas) {
         if (!bn)
             return "missing";
         const ids = bundleIds(bn);
-        if (ids.every((i) => (save.purchased || []).includes(i)))
+        if (ids.every((i) => ownsPremium(save, i)))
             return "owned";
-        const due = featurePrice(bn, (i) => (save.purchased || []).includes(i));
+        const due = featurePrice(bn, (i) => ownsPremium(save, i));
         if (save.starDust < due)
             return "poor";
         save.starDust -= due;

@@ -92,6 +92,60 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
   ok(starsOf(s) === 0, "an unlock adds no stars");
 }
 
+// ---- one item, two routes ---------------------------------------------------
+{
+  const { ownsPremium, settleStarRewards } = Save;
+  const Prog2 = Prog;
+  const magnetar = STAR_REWARDS.find((r) => r.kind === "pal" && r.id === "magnetar");
+  const bee = STAR_REWARDS.find((r) => r.kind === "pal" && r.id === "bee");
+  ok(magnetar && bee, "Magnetar and Astrolobee sit on the road");
+  const reach = (s, stars) => { s.allStars = false; s.campaignProgress = undefined; s.stars = {}; let left = stars; for (const def of CHART_LEVELS) { if (left <= 0) break; const n = Math.min(3, left); Prog2.settleMissionCredit(s, def, (1 << n) - 1); left -= n; } };
+  // bought in the shop, then the road reaches its rung: Star Dust instead
+  {
+    const s = defaultSave(); s.starDust = 0; s.purchased = ["magnetar"];
+    ok(ownsPremium(s, "magnetar") && !ownsPremium(s, "astrafox"), "a bought pal is owned; an unbought one is not");
+    reach(s, magnetar.stars);
+    const before = s.starDust, acorns = s.acorns;
+    settleStarRewards(s);
+    const sub = s.rewardSubs[Prog2.rewardId(magnetar)];
+    ok(sub && sub.kind === "dust" && sub.amount === Camp.substituteFor(magnetar.stars, "dust").amount, `the Magnetar rung paid dust instead (${JSON.stringify(sub)})`);
+    ok(s.starDust - before >= sub.amount, "the dust landed in the purse");
+    settleStarRewards(s);
+    ok(s.rewardSubs[Prog2.rewardId(magnetar)].amount === sub.amount && s.starDust - before < 2 * sub.amount + 1000, "a second settle pays nothing twice");
+    void acorns;
+  }
+  // opened with a Star Unlock, then the road reaches its rung: acorns instead
+  {
+    const s = defaultSave(); s.boosts.starunlock = 1;
+    ok(unlockReward(s, bee) === "ok" && palUnlocked(s, "bee"), "Astrolobee opens by Star Unlock");
+    reach(s, bee.stars);
+    const before = s.acorns;
+    settleStarRewards(s);
+    const sub = s.rewardSubs[Prog2.rewardId(bee)];
+    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(bee.stars, "acorns").amount, `the Astrolobee rung paid acorns instead (${JSON.stringify(sub)})`);
+    ok(s.acorns - before >= sub.amount, "the acorns landed in the wallet");
+  }
+  // a premium id opened with a Star Unlock is owned the way the shop reads it
+  {
+    const s = defaultSave(); s.boosts.starunlock = 1;
+    ok(unlockReward(s, magnetar) === "ok" && ownsPremium(s, "magnetar") && palUnlocked(s, "magnetar"), "a Star-Unlocked premium pal is owned everywhere");
+    reach(s, magnetar.stars); settleStarRewards(s);
+    ok(s.rewardSubs[Prog2.rewardId(magnetar)]?.kind === "acorns", "and its rung pays acorns, not dust");
+  }
+  // earned on the road: owned, nothing paid, and gone from the shop
+  {
+    const s = defaultSave();
+    reach(s, magnetar.stars); settleStarRewards(s);
+    ok(ownsPremium(s, "magnetar") && !s.rewardSubs[Prog2.rewardId(magnetar)], "a road-earned pal is owned and its rung paid no substitute");
+    const shelf = C.shopBundles(Date.now(), (i) => ownsPremium(s, i));
+    ok(!shelf.some((b) => b.id === "bundle-magnetar"), "the Magnetar pack leaves the shelf once the road handed it over");
+    ok(!C.IAP_ITEMS.some((i) => i === "magnetar" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");
+  }
+  // the substitute is flat, whatever the rung (owner: "like 50 star dust, not an equivalent share")
+  ok(Camp.substituteFor(30, "dust").amount === 50 && Camp.substituteFor(780, "dust").amount === 50, "a bought item's rung pays 50 Star Dust anywhere on the road");
+  ok(Camp.substituteFor(30, "acorns").amount === Camp.SUB_ACORNS && Camp.substituteFor(780, "acorns").amount === Camp.SUB_ACORNS, "a Star-Unlocked item's rung pays the flat acorn sum anywhere");
+}
+
 // ---- the defaults ---------------------------------------------------------
 {
   const s = defaultSave();
