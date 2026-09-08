@@ -34,6 +34,51 @@ for(const def of C.ALL_LEVELS){
   assert(Cat.ENVS[def.fx.env].planetBias.includes(V.mapPlanetIndex(def)));
   assert.equal(V.mapPlanetIndex({...def,ord:def.ord+55}),V.mapPlanetIndex(def));
 }
+// Owner-authored table pass (7 Sep 2026): the first 100 levels and every
+// non-Free mode follow the core curve. PAL effects remain runtime behavior.
+const pct=(n,share)=>Math.max(1,Math.round(n*share+1e-9));
+for(const def of C.ALL_LEVELS.filter(d=>d.ord!==1&&!['spill','tunnel','race'].includes(d.base)&&(d.base!=='fly'||d.ord<=100))){
+  const band=Math.floor((def.stage-1)/5),basePace=.91+.035*band,opening=1.18-.025*band;
+  let pace=basePace,gap=opening;
+  if(def.base==='fly'){
+    if(def.n===3)pace=basePace+.15;else if(def.n===5)pace=.96;else if(def.n===10)pace=1+.03*band;
+  }else if(def.base==='lost')gap=opening+.1;
+  else if(def.base==='deep')gap=opening+.08;
+  else if(def.base==='arcade')pace=.96+.025*band;
+  assert.equal(def.fx.pace,Number(pace.toFixed(3)),`level ${def.ord} pace follows ${def.base}`);
+  assert.equal(def.fx.gapScale,Number(gap.toFixed(3)),`level ${def.ord} opening follows ${def.base}`);
+  assert.equal(def.fx.driftScale,Number((.8+.13*((def.stage-1)%5)).toFixed(3)),`level ${def.ord} sway follows its field`);
+  assert.equal(def.fx.driftRate,undefined,`level ${def.ord} uses core sway speed`);
+}
+const expandedFreeTuning=stage=>{const early=Math.max(0,Math.min(9,stage-11)),late=Math.max(0,stage-20);return{pace:Number((1+.2*early/9+.01*late).toFixed(3)),gapScale:Number((1.1-.2*early/9-.01*late).toFixed(3)),driftScale:Number((1+.2*early/9+.02*late).toFixed(3))}};
+const expandedAcornAccuracy=stage=>stage<=20?1+.2*Math.max(0,stage-11)/9:1+.2*Math.max(0,stage-21)/5;
+for(const def of C.ALL_LEVELS.filter(d=>d.ord>100&&d.base==='fly')){
+  const standard=def.stage*10,cap=def.ord<=200?100:200,g=def.n===10?pct(standard,.5):cap,tuning=expandedFreeTuning(def.stage),accuracy=expandedAcornAccuracy(def.stage),acorns=share=>pct(g,share*accuracy);
+  if(def.n===1)assert.deepEqual(def.goals,[{kind:'finish'},{kind:'acorns',n:acorns(.5)},{kind:'gold',n:3}]);
+  else if(def.n===2)assert.deepEqual(def.goals,[{kind:'finish'},{kind:'acorns',n:acorns(.5)},{kind:'acorns',n:acorns(.65)}]);
+  else if(def.n===3)assert.deepEqual(def.goals,[{kind:'finish'},{kind:'acorns',n:acorns(.25)},{kind:'maxTaps',n:g*4}]);
+  else if(def.n===4)assert.deepEqual(def.goals,[{kind:'finish'},{kind:'acorns',n:acorns(.3)},{kind:'bounces',n:pct(g,.15)}]);
+  else if(def.n===5)assert.deepEqual(def.goals,[{kind:'finish'},{kind:'acorns',n:acorns(.5)},{kind:'noShield'}]);
+  else if(def.n===10){assert.deepEqual(def.goals,[{kind:'finish'},{kind:'finish'},{kind:'finish'}]);assert.equal(def.fx.fog,1);}
+  else assert.fail(`unexpected expanded Free Flight slot ${def.ord}/${def.n}`);
+  assert.equal(def.gates,g,`level ${def.ord} gate cap`);
+  assert.equal(def.fx.pace,tuning.pace,`level ${def.ord} expanded pace`);
+  assert.equal(def.fx.gapScale,tuning.gapScale,`level ${def.ord} expanded opening`);
+  assert.equal(def.fx.driftScale,tuning.driftScale,`level ${def.ord} expanded sway`);
+  assert.equal(def.fx.driftRate,undefined,`level ${def.ord} uses core sway speed`);
+  assert(!def.fx.upsideDown&&!def.fx.tapFreeze&&!def.fx.sticky,`level ${def.ord} retired encounter toggles stay retired`);
+}
+const ownerRewards=[
+  [168,'helmet','sammie'],[198,'suit','sammie'],[210,'pal','magnetar'],[318,'trail','phoenixplume'],
+  [438,'trail','opalfeather'],[588,'trail','opalfeather'],[597,'acorns',undefined,1000],
+  [528,'pal','astrafox'],[648,'pal','satellite'],[708,'pal','switchback'],
+  [738,'helmet','gemmie'],[768,'suit','gemmie'],[774,'dust',undefined,200],
+];
+for(const [stars,kind,id,amount] of ownerRewards){
+  const reward=C.STAR_REWARDS.find(r=>r.stars===stars&&r.kind===kind&&r.id===id);
+  assert(reward,`owner reward ${stars}/${kind}/${id??''} exists`);if(amount)assert.equal(reward.amount,amount);
+}
+assert.equal(C.STAR_UNLOCKS.trails.opalfeather,438,'the first duplicate reward rung unlocks the item');
 if(page!=='production'){
   assert.equal(Cat.SAVE_KEY,'acornaut_illust_beta');
   assert.equal(C.CHART_LEVELS.length,260);
@@ -55,6 +100,13 @@ for(const def of future){
 }
 assert.deepEqual(stops,[33,66,99]);assert(!C.levelUnlocked(future[60],{},780,[],future,false));
 const fresh=()=>S.defaultSave(), world=()=>Sim.makeWorld(390,760);
+if(page==='production'){
+  const saveAt=total=>{const s=fresh();P.migrateCampaign(s,false);for(let i=0;i<total/3;i++)P.settleMissionCredit(s,C.LEVELS[i],7);return s;};
+  assert(!S.helmetRevealed(saveAt(165),'sammie'));assert(S.helmetRevealed(saveAt(168),'sammie'));
+  assert(!S.suitRevealed(saveAt(195),'sammie'));assert(S.suitRevealed(saveAt(198),'sammie'));
+  assert(!S.palUnlocked(saveAt(207),'magnetar'));assert(S.palUnlocked(saveAt(210),'magnetar'));
+  assert(!S.trailUnlocked(saveAt(435),'opalfeather'));assert(S.trailUnlocked(saveAt(438),'opalfeather'));
+}
 // Existing IDs, mission targets and goals are exact, including all Spill assignments.
 for(const def of C.LEGACY_LEVELS){
   const expected=def.base==='tunnel'?plan.betaLegacyVariants.find(l=>l.id===def.id):plan.missions.find(l=>l.id===def.id);
@@ -78,8 +130,8 @@ w.ready=false;Sim.updateWorld(w,visit,1/60);assert(visit.zonesSeen.includes('NEB
 // Successful side goals union; a failed replay adds no stars.
 const replay=fresh(),masks=[];
 for(const [acorns,taps,gold,finished] of [[100,100,0,true],[0,0,3,true],[100,0,3,false]]){
-  Sim.resetRun(w,replay,'fly',false,C.levelById('1-2'));Object.assign(w.lvl.stats,{acorns,taps,gold});Sim.settleLevel(w,replay,finished);
-  masks.push(P.verifiedMask(replay,C.levelById('1-2')));
+  Sim.resetRun(w,replay,'fly',false,C.levelById('1-1'));Object.assign(w.lvl.stats,{acorns,taps,gold});Sim.settleLevel(w,replay,finished);
+  masks.push(P.verifiedMask(replay,C.levelById('1-1')));
 }
 assert.deepEqual(masks,[3,7,7]);
 // Ambiguous old bits preserve credit/passages but never certify current Spill goals.
@@ -150,3 +202,4 @@ try {
   }
 } finally { Math.random=random; }
 console.log(`star map ${page}: 260-route locks, 100 legacy contracts, full beta access, 512 credit unions, pickups, visits, first mission, replay stars, three barriers, seed/order independence passed`);
+

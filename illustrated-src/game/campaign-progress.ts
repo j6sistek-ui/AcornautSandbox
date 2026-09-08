@@ -21,7 +21,9 @@ export type CampaignProgress = {
 
 export const barrierId = (after: number) => ({33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3"}[after]);
 export const rewardId = (r: (typeof STAR_REWARDS)[number]) =>
-  r.kind === "dust" ? `legacy:dust:${r.stars}` : `legacy:${r.kind}:${r.id ?? r.name}:${r.stars}`;
+  r.kind === "dust" || r.kind === "acorns"
+    ? `legacy:${r.kind}:${r.stars}`
+    : `legacy:${r.kind}:${r.id ?? r.name}:${r.stars}`;
 const clampMask = (n: unknown) => typeof n === "number" && Number.isFinite(n) ? n & 7 : 0;
 const objectiveIds = (def: LevelDef) => def.objectiveIds ?? def.goals.map((g, i) =>
   `${missionProgressId(def)}:${def.base}:${def.gates}:${i}:${JSON.stringify(g)}`);
@@ -180,3 +182,4 @@ export function importSampleCredit(save: SaveData, sample: SaveData) {
   }
   carryPageVariants(save, target);
 }
+
