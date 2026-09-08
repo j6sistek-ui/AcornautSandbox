@@ -26,7 +26,7 @@ Build, then reproduce:
 
 ```
 node illustrated-src/test-helmet-openings.mjs
-node illustrated-src/review-helmet-openings.mjs
+node illustrated-src/archive/review-helmet-openings.mjs
 node illustrated-src/test-helmet-compatibility.mjs
 ```
 

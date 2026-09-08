@@ -111,12 +111,12 @@ installation is needed when those packages are already available.
 ```sh
 node illustrated-src/export-arcflash.mjs
 node illustrated-src/export-sandbox.mjs
-node illustrated-src/review-arcflash.mjs
+node illustrated-src/archive/review-arcflash.mjs
 node illustrated-src/test-arcflash-motion.mjs
 node illustrated-src/test-arcflash-render.mjs
 node illustrated-src/test-arcflash-integration.mjs
-node illustrated-src/review-arcflash-flight.mjs
-node illustrated-src/review-arcflash-repair.mjs
+node illustrated-src/archive/review-arcflash-flight.mjs
+node illustrated-src/archive/review-arcflash-repair.mjs
 python3 illustrated-src/verify-art.py
 ```
 

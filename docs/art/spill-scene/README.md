@@ -17,7 +17,7 @@ half, violet portal illumination, a small acorn insignia, midnight blue space
 and restrained cyan lights. Preserve open space on the left for the modular
 player ship. Match the worn bronze, silver and white ship kit; no characters,
 ships, captions, labels or interface elements. The existing
-`spill-ship/concepts/dock-painted.jpg` was inspected as visual direction.
+`art-src/spill-ship-concepts/dock-painted.jpg` was inspected as visual direction.
 
 **Sector panorama:** A continuous 3:1 illustrated deep-space panorama. Travel
 from bronze asteroid wreckage on the left through violet cargo platforms and

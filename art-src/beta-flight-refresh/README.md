@@ -33,7 +33,7 @@ node illustrated-src/export-beta-flight-refresh.mjs
 node illustrated-src/export-sandbox.mjs
 python illustrated-src/verify-beta-flight-refresh.py
 python illustrated-src/verify-art.py
-node illustrated-src/review-beta-flight-refresh.mjs
+node illustrated-src/archive/review-beta-flight-refresh.mjs
 ```
 
 The eye measurement/export reproduces the checked-in PNGs. If measurements
