@@ -600,7 +600,7 @@ const dock = (seed) => {
   ok(spills.every((l) => l.spillFinish || l.gates >= 1), "each names the wave to clear or an Ore / Depot finish");
   const def = camp.levelById("2-8");
   const rung = def.gates;
-  ok(camp.goalText(def.goals[0], def) === `Clear ${rung} waves of the Spill`, `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
+  ok(camp.goalText(def.goals[0], def) === `Clear ${rung} waves of the Debris Field`, `the finish reads as waves: ${camp.goalText(def.goals[0], def)}`);
   // owner's planner export (PR #222): every Spill mission pays three finish
   // stars for the wave count, so the HUD carries one line - the finish
   ok(def.goals.every((g) => g.kind === "finish"), "the stars are three finishes");

@@ -504,9 +504,24 @@
       font: 800 12px/1 Figtree, sans-serif;
       background: rgba(120,90,20,.28); border: 1px solid rgba(255,206,92,.4); }
     .ac-hub-idnut svg { filter: drop-shadow(0 0 4px rgba(255,206,92,.6)); }
-    /* a price, never a bare number */
-    .ac-costtag { display: inline-flex; align-items: center; gap: 3px; color: #ffd76a;
-      font: 800 10px/1 Figtree, sans-serif; }
+    /* a price, never a bare number: the gold tag from the currency sheet -
+       the acorn and the count on one amber pill, dark text, so it reads as
+       a price the moment the eye lands on it */
+    .ac-costtag { display: inline-flex; align-items: center; gap: 4px; color: #2b1700;
+      font: 800 11px/1 Figtree, sans-serif; padding: 3px 8px 3px 5px; border-radius: 999px;
+      background: linear-gradient(180deg, #ffcd5a, #f29a1e);
+      box-shadow: 0 1px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+    .ac-nutimg { flex: none; vertical-align: middle; filter: drop-shadow(0 1px 1px rgba(0,0,0,.35)); }
+    /* "Spend X acorns to unlock Y?" - the one sheet between a tap and a purse */
+    .ac-spendsheet { align-items: center; padding: 18px; z-index: 40; }
+    .ac-spendcard { width: min(380px, 100%); border-radius: 18px; border: 1px solid #3a4468;
+      text-align: center; gap: 12px; padding-bottom: 18px; }
+    .ac-spendask { margin: 0; color: #f3efe4; font: 700 17px/1.4 Figtree, sans-serif;
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; }
+    .ac-spendask b { color: #ffd76a; }
+    .ac-spendbal { display: flex; justify-content: center; align-items: center; gap: 4px; margin: 0; }
+    .ac-spendrow { display: flex; gap: 10px; }
+    .ac-spendrow > button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     /* An unclaimed free reward is an INVITATION, not a status line. It sits
        where the price would sit, wears the acorn gold so it reads as value,
        and breathes so a full shelf still shows you which card is waiting.
@@ -2017,7 +2032,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js230/standalone.js")
+    import("./js231/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

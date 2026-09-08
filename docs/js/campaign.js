@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=230";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=230";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=230";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=230";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=231";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=231";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=231";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=231";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -306,7 +306,7 @@ export function goalText(g, def) {
         case "depots": return `Visit ${g.n} Depot${g.n === 1 ? "" : "s"}`;
         case "repairs": return `Buy ${g.n} hull repair at a Depot`;
         case "finish": return def.spillFinish ? def.spillFinish.kind === "ore" ? `Collect ${def.spillFinish.n} Acorn Coins` : `Reach Depot ${def.spillFinish.n}` : def.base === "tunnel" ? `Survive ${def.gates} seconds in the wormhole`
-            : def.base === "spill" ? `Clear ${def.gates} waves of the Spill`
+            : def.base === "spill" ? `Clear ${def.gates} waves of the Debris Field`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
         case "acorns": return `Collect ${g.n} acorns`;

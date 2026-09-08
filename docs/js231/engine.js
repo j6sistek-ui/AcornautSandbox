@@ -1,22 +1,22 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=227";
-import { platform } from "./platform.js?v=227";
-import { spillAppearance } from "./spill-appearance.js?v=227";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=227";
-import { reachedGate } from "./campaign.js?v=227";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=227";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=227";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=227";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=227";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=227";
-import { setVanguardPitchTrim } from "./vanguard.js?v=227";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=227";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=227";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=227";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=227";
-import { raceViewport } from "./race-viewport.js?v=227";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=227";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=227";
-import { bankSpill, suitPitchFor } from "./save.js?v=227";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=231";
+import { platform } from "./platform.js?v=231";
+import { spillAppearance } from "./spill-appearance.js?v=231";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=231";
+import { reachedGate } from "./campaign.js?v=231";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=231";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=231";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=231";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=231";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=231";
+import { setVanguardPitchTrim } from "./vanguard.js?v=231";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=231";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=231";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=231";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=231";
+import { raceViewport } from "./race-viewport.js?v=231";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=231";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=231";
+import { bankSpill, suitPitchFor } from "./save.js?v=231";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -854,6 +854,8 @@ export async function createEngine(canvas) {
         return dustOwed + acornsOwed;
     }
     /** How the daily stands right now, without claiming it. */
+    /** Bandit, Noodle and Quill: the first full week's prize */
+    const STREAK_PACK = ["raccoon", "ferret", "hedgehog"];
     function dailyState() {
         const t = dayNumber(today());
         const last = dayNumber(save.lastDaily);
@@ -862,11 +864,17 @@ export async function createEngine(canvas) {
         const continues = !isNaN(last) && t - last === 1;
         const nextStreak = claimedToday ? save.dailyStreak : continues ? save.dailyStreak + 1 : 1;
         const wrapped = ((nextStreak - 1) % DAILY_STREAK_LEN) + 1;
+        const bonusDay = wrapped === DAILY_STREAK_LEN;
+        // THE FIRST FULL WEEK PAYS THE CRITTER PACK (owner, 8 Sep 2026: "the
+        // VERY FIRST 7 day streak unlocks Quill, Bandit and Noodle... After
+        // that, it's star dust"). The pack replaces that week's dust bonus.
+        const pack = bonusDay && !save.streakPackClaimed;
         return {
             claimedToday,
             streak: claimedToday ? ((save.dailyStreak - 1) % DAILY_STREAK_LEN) + 1 : wrapped,
-            bonusDay: wrapped === DAILY_STREAK_LEN,
-            amount: DAILY_DUST + (wrapped === DAILY_STREAK_LEN ? DAILY_STREAK_BONUS : 0),
+            bonusDay,
+            pack,
+            amount: DAILY_DUST + (bonusDay && !pack ? DAILY_STREAK_BONUS : 0),
         };
     }
     let pendingDaily = null;
@@ -882,7 +890,14 @@ export async function createEngine(canvas) {
         save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
         save.lastDaily = today();
         save.starDust += st.amount;
-        pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay };
+        if (st.pack) {
+            save.purchased = [...new Set([...(save.purchased || []), ...STREAK_PACK])];
+            save.streakPackClaimed = true;
+            if (art && art.ready)
+                for (const id of STREAK_PACK)
+                    void loadSuitBank(art, id);
+        }
+        pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay, pack: st.pack };
         writeSave(save);
         notify();
         return "ok";
@@ -1655,4 +1670,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=227";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=231";

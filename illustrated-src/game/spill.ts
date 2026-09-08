@@ -1,5 +1,5 @@
 import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
-// THE SPILL — wave survival authority.
+// DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
 // rock, cargo and shrapnel travelling one way: at you. No gates, no planets.

@@ -94,7 +94,7 @@ export async function bootStandalone(root: HTMLElement) {
   // Held controls must survive HUD/menu re-renders without losing pointer capture.
   const spillControls = el("div", "ac-spillbar ac-spillcontrols");
   spillControls.hidden = true;
-  spillControls.setAttribute("role", "group"); spillControls.setAttribute("aria-label", "Spill flight controls");
+  spillControls.setAttribute("role", "group"); spillControls.setAttribute("aria-label", "Debris Field flight controls");
   // The launch film lives on the STAGE, not in the overlay: render() clears
   // the overlay wholesale on every notify, and a film mounted inside it
   // would restart from frame one each time the engine so much as ticked.
@@ -186,13 +186,16 @@ export async function bootStandalone(root: HTMLElement) {
   const ALL_MODES: { id: "fly" | "deep" | "lost" | "arcade" | "tunnel" | "race" | "spill";
                      label: string; short: string; blurb: string }[] = [
     { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
-    // THE SPILL sits second (owner, 2 Sep 2026: "it's a serious mode")
-    { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive five-wave sectors. Build at untimed Depots." },
+    // THE THREE CORE MODES COME FIRST (owner, 8 Sep 2026: "the three core
+    // modes are first. The other three are just mods in a way"). Debris
+    // Field keeps its "spill" id everywhere below the label: saves, the
+    // leaderboard, the Star Chart rows.
+    { id: "spill", label: "DEBRIS FIELD", short: "DEBRIS", blurb: "Wave survival. Upgrade your ship. Survive the dangers of space." },
+    { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
     { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
     { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
     { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
     { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
-    { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
   ];
   const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
 
@@ -713,7 +716,7 @@ export async function bootStandalone(root: HTMLElement) {
   ];
   const I_X = ["M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"];
   const I_MAIL = ["M3.4 6.6h17.2v10.8H3.4z", "m3.8 7.2 8.2 6 8.2-6"];
-  const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
+  // I_NUT (the line-drawn cup) retired 8 Sep 2026: every acorn count now wears acornImg().
   const I_GEAR = [
     "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
     "M12 3.2v2.2M12 18.6v2.2M20.8 12h-2.2M5.4 12H3.2M18.2 5.8l-1.6 1.6M7.4 16.6l-1.6 1.6M18.2 18.2l-1.6-1.6M7.4 7.4 5.8 5.8",
@@ -759,13 +762,108 @@ export async function bootStandalone(root: HTMLElement) {
     return b;
   }
 
+  /** THE ACORN ITSELF (owner, 8 Sep 2026: "we need to use the acorn... The
+   *  drawn version, it's very confusing what the number is, or why it's
+   *  there. It doesn't align with the game"). The line-drawn cup read as a
+   *  bucket next to a number; this is the pickup the pilot has been
+   *  catching all run, so the price reads as the thing it costs. */
+  let acornIconN = 0;
+  function acornImg(px: number) {
+    // THE CURRENCY ACORN (owner's pick, 8 Sep 2026: the warm gold body under
+    // a brown scalloped cap - "simple shape, high contrast, recognizable at
+    // small sizes"). Drawn as a vector so 13px and 22px are both crisp; the
+    // in-run pickup sprite went muddy at price-tag size on the purple cards.
+    const svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("width", `${px}`); svg.setAttribute("height", `${px}`);
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", "ac-nutimg");
+    const uid = `acnut${++acornIconN}`;
+    const defs = document.createElementNS(SVG, "defs");
+    const grad = (id: string, stops: [string, string][], x2 = "0", y2 = "1") => {
+      const g = document.createElementNS(SVG, "linearGradient");
+      g.setAttribute("id", id); g.setAttribute("x1", "0"); g.setAttribute("y1", "0"); g.setAttribute("x2", x2); g.setAttribute("y2", y2);
+      for (const [off, col] of stops) { const st = document.createElementNS(SVG, "stop"); st.setAttribute("offset", off); st.setAttribute("stop-color", col); g.append(st); }
+      defs.append(g);
+    };
+    grad(`${uid}b`, [["0", "#ffbe45"], ["0.55", "#f39a1c"], ["1", "#c9660c"]], "0.35", "1");
+    grad(`${uid}c`, [["0", "#b0713a"], ["1", "#6a3a12"]]);
+    svg.append(defs);
+    const path = (d: string, fill: string, extra?: Record<string, string>) => {
+      const p = document.createElementNS(SVG, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", fill);
+      for (const [k, v] of Object.entries(extra ?? {})) p.setAttribute(k, v);
+      svg.append(p);
+    };
+    // body: a plump nut with a soft point; a thin dark edge keeps the
+    // orange separate from the gold price tag it usually sits on
+    path("M5.2 10.6h13.6c0 5.3-2.6 9.6-6.8 12.3C7.8 20.2 5.2 15.9 5.2 10.6z", `url(#${uid}b)`, { stroke: "rgba(70,30,0,.6)", "stroke-width": "0.9" });
+    // body sheen on the left shoulder
+    path("M7.6 12.4c.3 3.1 1.8 5.8 4 7.7", "none", { stroke: "rgba(255,240,200,.6)", "stroke-width": "1.4", "stroke-linecap": "round" });
+    // cap: the dome and its scalloped brim
+    path("M4.4 9.8c0-3.6 3.5-6.2 7.6-6.2s7.6 2.6 7.6 6.2v.4c-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.7 0z", `url(#${uid}c)`, { stroke: "rgba(50,22,0,.55)", "stroke-width": "0.7" });
+    // the scales: two rows of little arcs, the texture the owner's icon wears
+    path("M6.2 8.2c.9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.4 0M7.6 6.4c.9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.5-.8 2.3 0", "none", { stroke: "rgba(40,18,0,.4)", "stroke-width": "0.8", "stroke-linecap": "round" });
+    path("M6.8 8.1c.5-1.9 2.3-3.2 4.6-3.5", "none", { stroke: "rgba(255,220,170,.4)", "stroke-width": "1", "stroke-linecap": "round" });
+    // stem
+    path("M10.9 1.4h2.2a.6.6 0 0 1 .6.6v2.5h-3.4V2a.6.6 0 0 1 .6-.6z", "#8a4f1c", { stroke: "rgba(40,18,0,.5)", "stroke-width": "0.6" });
+    return svg;
+  }
+
   /** a number that is a PRICE, never a bare integer. A card reading "70"
    *  says nothing about which purse it wants, and next to a card reading
    *  "OWNED" it reads like a score. */
   function costTag(n: number) {
     const w = el("span", "ac-costtag");
-    w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
+    w.append(acornImg(14), el("b", "", n.toLocaleString()));
     return w;
+  }
+
+  /** ONE TAP USED TO SPEND IT (owner, 8 Sep 2026: "tapping it shouldn't
+   *  auto unlock it, a pop up, 'Spend X acorns to unlock Y?'... you can
+   *  accidentally buy it way too easy"). Every acorn price on the loadout
+   *  goes through here: owned or free, the tap equips as before; priced
+   *  and affordable, it asks first and the sheet's SPEND commits; priced
+   *  and short, the card shakes with the deny line as it always did. */
+  let spendAsk: { name: string; cost: number; run: () => string; card: HTMLElement; verb: string } | null = null;
+  function spend(card: HTMLElement, name: string, cost: number, owned: boolean, run: () => string, verb = "unlock") {
+    if (owned || cost <= 0 || engine.save.acorns < cost) return tx(card, run, cost);
+    spendAsk = { name, cost, run, card, verb };
+    render();
+    return false;
+  }
+  function drawSpendSheet() {
+    const ask = spendAsk!;
+    const s = engine.save;
+    const close = () => { spendAsk = null; render(); };
+    const wrap = el("div", "ac-lvlsheet ac-spendsheet");
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    const sheet = el("div", "ac-lvlcard ac-spendcard");
+    sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-label", `Spend ${ask.cost} acorns to ${ask.verb} ${ask.name}?`);
+    sheet.append(el("p", "ac-kicker", ask.verb.toUpperCase()));
+    const q = el("p", "ac-spendask");
+    q.append(el("span", "", "Spend "), acornImg(22), el("b", "", ask.cost.toLocaleString()),
+      el("span", "", ` acorns to ${ask.verb} `), el("b", "", ask.name), el("span", "", "?"));
+    sheet.append(q);
+    const bal = el("p", "ac-sub ac-spendbal");
+    bal.append(el("span", "", "You have "), acornImg(13), el("b", "", s.acorns.toLocaleString()),
+      el("span", "", ` · ${(s.acorns - ask.cost).toLocaleString()} after`));
+    sheet.append(bal);
+    const row = el("div", "ac-spendrow");
+    const no = el("button", "ac-ghost", "NOT NOW");
+    no.onclick = close;
+    const yes = el("button", "ac-primary");
+    yes.append(el("span", "", "SPEND "), acornImg(18), el("span", "", ask.cost.toLocaleString()));
+    yes.onclick = () => {
+      const { card, run, cost } = ask;
+      spendAsk = null;
+      tx(card, run, cost);
+      render();
+    };
+    row.append(no, yes);
+    sheet.append(row);
+    wrap.append(sheet);
+    return wrap;
   }
 
   /** The one card "state" that was never a state. A revealed, unowned,
@@ -803,7 +901,7 @@ export async function bootStandalone(root: HTMLElement) {
 
   function acornPill(n: number) {
     const pill = el("div", "ac-pill ac-pill-gold");
-    pill.append(icon(I_NUT, 13), el("span", "", n.toLocaleString()));
+    pill.append(acornImg(15), el("span", "", n.toLocaleString()));
     return pill;
   }
 
@@ -1237,7 +1335,7 @@ export async function bootStandalone(root: HTMLElement) {
     // send a pilot who wants more of them.
     const acorns = el("button", "ac-hub-idacorns ac-hub-idnut");
     acorns.setAttribute("aria-label", "Shop");
-    acorns.append(icon(I_NUT, 14), el("span", "", s.acorns.toLocaleString()));
+    acorns.append(acornImg(16), el("span", "", s.acorns.toLocaleString()));
     acorns.onclick = () => engine.open("shop");
     // Star Dust sits beside acorns and carries a plus, because the only
     // way to get more is to buy it - so the counter may as well be the
@@ -1350,7 +1448,7 @@ export async function bootStandalone(root: HTMLElement) {
     // large and in charge"). The ribbon above names the mode; the line
     // under says what the tap does in it.
     ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"),
-      el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Salvage. Survive. Build." : "Begin your flight"));
+      el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
     // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
     // and were previously invisible from here - you had to remember. One
     // line, named plainly, so nobody launches wondering why the gates are
@@ -1486,7 +1584,7 @@ export async function bootStandalone(root: HTMLElement) {
     const sheet = el("div", "ac-lvlcard ac-modecard");
     sheet.append(el("p", "ac-kicker", "FREE FLIGHT"), el("h2", "ac-lvlname", "Modes"));
     if (s.spillSuspended) {
-      const resume = el("button", "ac-primary", `RESUME SPILL · DEPOT ${s.spillSuspended.state.wave}`);
+      const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · DEPOT ${s.spillSuspended.state.wave}`);
       resume.onclick = () => { modesOpen = false; engine.spillResume(); }; sheet.append(resume);
     }
     const bests: Record<string, number> = {
@@ -1990,7 +2088,7 @@ export async function bootStandalone(root: HTMLElement) {
       const { c, ctx } = miniCanvas(CASE_W, CASE_H);
       c.className = "ac-tocanvas ac-casecanvas";
       c.setAttribute("role", "img");
-      c.setAttribute("aria-label", engine.shopTab === "ship" ? "Spill ship build preview" : `${wornSuit.name} in flight`);
+      c.setAttribute("aria-label", engine.shopTab === "ship" ? "Debris Field ship build preview" : `${wornSuit.name} in flight`);
       pane.append(el("i", "ac-casebeam"), c, el("i", "ac-casefloor"));
       for (const corner of ["tl", "tr", "bl", "br"]) {
         pane.append(el("i", `ac-casecorner ac-c-${corner}`));
@@ -2025,7 +2123,7 @@ export async function bootStandalone(root: HTMLElement) {
       } else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
         const arm = el("button", "ac-platebtn");
         arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
-        arm.onclick = (e) => { e.stopPropagation(); tx(arm, () => engine.toggleMod("shield"), MOD_SHIELD_COST); };
+        arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
         plate.append(arm);
       }
       stage.append(plate);
@@ -2112,7 +2210,7 @@ export async function bootStandalone(root: HTMLElement) {
           if (premium) markPremium(b, h.glow);
           if (locked || !open) b.classList.add("ac-cardoff");
           if (s.guide === "helmet" && h.id === GUIDE_HELM) b.classList.add("ac-pulse", "ac-guidetarget");
-          b.onclick = () => { if (!locked && open && (!premium || owned)) tx(b, () => engine.buyHelmet(h.id), h.cost); };
+          b.onclick = () => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); };
           if (open && (!premium || owned)) b.append(favStar(h.id));
           return b;
       };
@@ -2172,7 +2270,7 @@ export async function bootStandalone(root: HTMLElement) {
         // owned premium keeps its bloom; unowned premium never reaches here
         if (premium) markPremium(b, u.glow);
         if (s.guide === "hangar" && u.id === GUIDE_SUIT) b.classList.add("ac-pulse", "ac-guidetarget");
-        b.onclick = () => { if (!premium || owned) tx(b, () => engine.buySuit(u.id), u.cost); };
+        b.onclick = () => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); };
         if (open && (!premium || owned)) b.append(favStar(u.id));
         return b;
       };
@@ -2311,7 +2409,7 @@ export async function bootStandalone(root: HTMLElement) {
         const pal = miniCanvas(64, 64);
         if (pal.ctx) paintPalPreview(pal.ctx, engine.art, "tinbot", 32, 32, 52);
         concept.append(pal.c, el("b", "", "Rivet · placeholder concept"),
-          el("p", "", "Tinbot artwork stands in for a future Spill-only cosmetic companion. No companion ability or equip option is added by this sample."));
+          el("p", "", "Tinbot artwork stands in for a future Debris Field-only cosmetic companion. No companion ability or equip option is added by this sample."));
         look.append(concept); grid.append(look);
       }
       const launch = el("section", "ac-shiplaunch");
@@ -2474,6 +2572,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
     box.append(scroll);
     if (!BETA_FEATURES) box.append(tabbar("hangar"));
+    if (spendAsk) box.append(drawSpendSheet());
     return box;
   }
 
@@ -3102,7 +3201,7 @@ export async function bootStandalone(root: HTMLElement) {
     // Names and zone clues follow the same continuous road on both pages.
     const place = def.base === "race" ? "HYPER RUN"
       : def.base === "tunnel" ? "WORMHOLE RUN"
-      : def.base === "spill" ? "THE SPILL"
+      : def.base === "spill" ? "DEBRIS FIELD"
       : ENVS[def.fx.env ?? 0]?.name ?? "";
     sheet.append(el("p", "ac-kicker", def.standalone
       ? "HYPER RUN · TIME TRIAL"
@@ -3116,7 +3215,7 @@ export async function bootStandalone(root: HTMLElement) {
       def.base === "lost" ? "LOST IN SPACE RULES" :
       def.base === "arcade" ? "ARCADE TIMELINE" :
       def.base === "tunnel" ? "WORMHOLE MISSION" :
-      def.base === "spill" ? "SPILL MISSION" : "";
+      def.base === "spill" ? "DEBRIS FIELD MISSION" : "";
     const fxs = fxText(def.fx);
     if (mode || fxs.length) {
       const tags = el("div", "ac-lvltags");
@@ -4656,7 +4755,7 @@ export async function bootStandalone(root: HTMLElement) {
       { id: "lost", name: "Lost in Space", best: s.lostBest || 0, unit: "gates" },
       { id: "arcade", name: "Arcade", best: s.arcadeBest || 0, unit: "gates" },
       { id: "tunnel", name: "Wormhole Run", best: s.tunnelBest || 0, unit: "score" },
-      { id: "spill", name: "The Spill", best: s.spillBest || 0, unit: "waves" },
+      { id: "spill", name: "Debris Field", best: s.spillBest || 0, unit: "waves" },
     ].sort((a, b) => b.best - a.best);
 
     const box = el("div", "ac-menu");
@@ -4784,7 +4883,7 @@ export async function bootStandalone(root: HTMLElement) {
     item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
     item(pic((ctx: CanvasRenderingContext2D, px: number) =>
       drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)),
-      "COINS", "The Spill's currency. Spend it at the Depot.");
+      "COINS", "Debris Field's currency. Spend it at the Depot.");
     item(pic((ctx, px) => {
       const g = ctx.createRadialGradient(px/2, px/2, 1, px/2, px/2, px/2);
       g.addColorStop(0, "#120424"); g.addColorStop(0.6, "#6a3fb8"); g.addColorStop(1, "rgba(0,0,0,0)");
@@ -4807,11 +4906,11 @@ export async function bootStandalone(root: HTMLElement) {
       const modes = el("ul", "ac-helplist");
       for (const [name, line] of [
         ["NORMAL", "Gates and power-ups."],
+        ["DEBRIS FIELD", "Wave survival. Upgrade your ship at untimed Depots. Survive the dangers of space. Wave 20 records your first pass; the run continues."],
+        ["HYPER RUN", "Thread gates. Finish fast."],
         ["DEEP SPACE", "Space shifts every 10s."],
         ["LOST IN SPACE", "Drift, tilt, wormholes."],
         ["ARCADE", "The 8-bit original. Double power-ups."],
-        ["HYPER RUN", "Thread gates. Finish fast."],
-        ["THE SPILL", "Survive endless waves. Build at untimed Depots and take contracts. Wave 20 records your first-pass victory; the run continues."],
       ]) {
         const li = el("li", "");
         li.append(el("b", "", name), el("span", "", line));
