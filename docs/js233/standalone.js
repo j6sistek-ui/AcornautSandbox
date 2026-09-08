@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=229";
-import { platform } from "./platform.js?v=229";
-import { spillAppearance } from "./spill-appearance.js?v=229";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=229";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=229";
-import { addChartScenery } from "./star-map-view.js?v=229";
-import { mapDebrisIndex } from "./zone-visuals.js?v=229";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=229";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=229";
-import { suitLean } from "./control-constants.js?v=229";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=229";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=229";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=229";
-import { drawSprite as drawSpriteOn } from "./art.js?v=229";
-import { createEngine } from "./engine.js?v=229";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=229";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=229";
-import { formatRaceTicks } from "./race.js?v=229";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=229";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=229";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=229";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=229";
+import { suitPitchFor } from "./save.js?v=233";
+import { platform } from "./platform.js?v=233";
+import { spillAppearance } from "./spill-appearance.js?v=233";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=233";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=233";
+import { addChartScenery } from "./star-map-view.js?v=233";
+import { mapDebrisIndex } from "./zone-visuals.js?v=233";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=233";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=233";
+import { suitLean } from "./control-constants.js?v=233";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=233";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=233";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=233";
+import { drawSprite as drawSpriteOn } from "./art.js?v=233";
+import { createEngine } from "./engine.js?v=233";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned } from "./save.js?v=233";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=233";
+import { formatRaceTicks } from "./race.js?v=233";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=233";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=233";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=233";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=233";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -97,7 +97,7 @@ export async function bootStandalone(root) {
     const spillControls = el("div", "ac-spillbar ac-spillcontrols");
     spillControls.hidden = true;
     spillControls.setAttribute("role", "group");
-    spillControls.setAttribute("aria-label", "Spill flight controls");
+    spillControls.setAttribute("aria-label", "Debris Field flight controls");
     // The launch film lives on the STAGE, not in the overlay: render() clears
     // the overlay wholesale on every notify, and a film mounted inside it
     // would restart from frame one each time the engine so much as ticked.
@@ -184,13 +184,16 @@ export async function bootStandalone(root) {
     const WORMHOLE_RUN_ON_SHEET = false;
     const ALL_MODES = [
         { id: "fly", label: "NORMAL", short: "NORMAL", blurb: "Standard gates and power-ups." },
-        // THE SPILL sits second (owner, 2 Sep 2026: "it's a serious mode")
-        { id: "spill", label: "THE SPILL", short: "SPILL", blurb: "Survive five-wave sectors. Build at untimed Depots." },
+        // THE THREE CORE MODES COME FIRST (owner, 8 Sep 2026: "the three core
+        // modes are first. The other three are just mods in a way"). Debris
+        // Field keeps its "spill" id everywhere below the label: saves, the
+        // leaderboard, the Star Chart rows.
+        { id: "spill", label: "DEBRIS FIELD", short: "DEBRIS", blurb: "Wave survival. Upgrade your ship. Survive the dangers of space." },
+        { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
         { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
         { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
         { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
         { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
-        { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
     ];
     const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
     /** Start whatever is selected. Hyper Run opens its briefing first - it
@@ -766,7 +769,7 @@ export async function bootStandalone(root) {
     ];
     const I_X = ["M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"];
     const I_MAIL = ["M3.4 6.6h17.2v10.8H3.4z", "m3.8 7.2 8.2 6 8.2-6"];
-    const I_NUT = ["M6.5 9.5h11l-1.2 7A4 4 0 0 1 12.4 20h-.8a4 4 0 0 1-3.9-3.5z", "M6 6.6h12"];
+    // I_NUT (the line-drawn cup) retired 8 Sep 2026: every acorn count now wears acornImg().
     const I_GEAR = [
         "M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8z",
         "M12 3.2v2.2M12 18.6v2.2M20.8 12h-2.2M5.4 12H3.2M18.2 5.8l-1.6 1.6M7.4 16.6l-1.6 1.6M18.2 18.2l-1.6-1.6M7.4 7.4 5.8 5.8",
@@ -809,13 +812,119 @@ export async function bootStandalone(root) {
         b.onclick = () => engine.open("help");
         return b;
     }
+    /** THE ACORN ITSELF (owner, 8 Sep 2026: "we need to use the acorn... The
+     *  drawn version, it's very confusing what the number is, or why it's
+     *  there. It doesn't align with the game"). The line-drawn cup read as a
+     *  bucket next to a number; this is the pickup the pilot has been
+     *  catching all run, so the price reads as the thing it costs. */
+    let acornIconN = 0;
+    function acornImg(px) {
+        // THE CURRENCY ACORN (owner's pick, 8 Sep 2026: the warm gold body under
+        // a brown scalloped cap - "simple shape, high contrast, recognizable at
+        // small sizes"). Drawn as a vector so 13px and 22px are both crisp; the
+        // in-run pickup sprite went muddy at price-tag size on the purple cards.
+        const svg = document.createElementNS(SVG, "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("width", `${px}`);
+        svg.setAttribute("height", `${px}`);
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("class", "ac-nutimg");
+        const uid = `acnut${++acornIconN}`;
+        const defs = document.createElementNS(SVG, "defs");
+        const grad = (id, stops, x2 = "0", y2 = "1") => {
+            const g = document.createElementNS(SVG, "linearGradient");
+            g.setAttribute("id", id);
+            g.setAttribute("x1", "0");
+            g.setAttribute("y1", "0");
+            g.setAttribute("x2", x2);
+            g.setAttribute("y2", y2);
+            for (const [off, col] of stops) {
+                const st = document.createElementNS(SVG, "stop");
+                st.setAttribute("offset", off);
+                st.setAttribute("stop-color", col);
+                g.append(st);
+            }
+            defs.append(g);
+        };
+        grad(`${uid}b`, [["0", "#ffbe45"], ["0.55", "#f39a1c"], ["1", "#c9660c"]], "0.35", "1");
+        grad(`${uid}c`, [["0", "#b0713a"], ["1", "#6a3a12"]]);
+        svg.append(defs);
+        const path = (d, fill, extra) => {
+            const p = document.createElementNS(SVG, "path");
+            p.setAttribute("d", d);
+            p.setAttribute("fill", fill);
+            for (const [k, v] of Object.entries(extra ?? {}))
+                p.setAttribute(k, v);
+            svg.append(p);
+        };
+        // body: a plump nut with a soft point; a thin dark edge keeps the
+        // orange separate from the gold price tag it usually sits on
+        path("M5.2 10.6h13.6c0 5.3-2.6 9.6-6.8 12.3C7.8 20.2 5.2 15.9 5.2 10.6z", `url(#${uid}b)`, { stroke: "rgba(70,30,0,.6)", "stroke-width": "0.9" });
+        // body sheen on the left shoulder
+        path("M7.6 12.4c.3 3.1 1.8 5.8 4 7.7", "none", { stroke: "rgba(255,240,200,.6)", "stroke-width": "1.4", "stroke-linecap": "round" });
+        // cap: the dome and its scalloped brim
+        path("M4.4 9.8c0-3.6 3.5-6.2 7.6-6.2s7.6 2.6 7.6 6.2v.4c-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.5 0-.9-.8-1.6-.8-2.7 0z", `url(#${uid}c)`, { stroke: "rgba(50,22,0,.55)", "stroke-width": "0.7" });
+        // the scales: two rows of little arcs, the texture the owner's icon wears
+        path("M6.2 8.2c.9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.4 0M7.6 6.4c.9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.6-.8 2.5 0 .9-.8 1.5-.8 2.3 0", "none", { stroke: "rgba(40,18,0,.4)", "stroke-width": "0.8", "stroke-linecap": "round" });
+        path("M6.8 8.1c.5-1.9 2.3-3.2 4.6-3.5", "none", { stroke: "rgba(255,220,170,.4)", "stroke-width": "1", "stroke-linecap": "round" });
+        // stem
+        path("M10.9 1.4h2.2a.6.6 0 0 1 .6.6v2.5h-3.4V2a.6.6 0 0 1 .6-.6z", "#8a4f1c", { stroke: "rgba(40,18,0,.5)", "stroke-width": "0.6" });
+        return svg;
+    }
     /** a number that is a PRICE, never a bare integer. A card reading "70"
      *  says nothing about which purse it wants, and next to a card reading
      *  "OWNED" it reads like a score. */
     function costTag(n) {
         const w = el("span", "ac-costtag");
-        w.append(icon(I_NUT, 11), el("b", "", n.toLocaleString()));
+        w.append(acornImg(14), el("b", "", n.toLocaleString()));
         return w;
+    }
+    /** ONE TAP USED TO SPEND IT (owner, 8 Sep 2026: "tapping it shouldn't
+     *  auto unlock it, a pop up, 'Spend X acorns to unlock Y?'... you can
+     *  accidentally buy it way too easy"). Every acorn price on the loadout
+     *  goes through here: owned or free, the tap equips as before; priced
+     *  and affordable, it asks first and the sheet's SPEND commits; priced
+     *  and short, the card shakes with the deny line as it always did. */
+    let spendAsk = null;
+    function spend(card, name, cost, owned, run, verb = "unlock") {
+        if (owned || cost <= 0 || engine.save.acorns < cost)
+            return tx(card, run, cost);
+        spendAsk = { name, cost, run, card, verb };
+        render();
+        return false;
+    }
+    function drawSpendSheet() {
+        const ask = spendAsk;
+        const s = engine.save;
+        const close = () => { spendAsk = null; render(); };
+        const wrap = el("div", "ac-lvlsheet ac-spendsheet");
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        const sheet = el("div", "ac-lvlcard ac-spendcard");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-label", `Spend ${ask.cost} acorns to ${ask.verb} ${ask.name}?`);
+        sheet.append(el("p", "ac-kicker", ask.verb.toUpperCase()));
+        const q = el("p", "ac-spendask");
+        q.append(el("span", "", "Spend "), acornImg(22), el("b", "", ask.cost.toLocaleString()), el("span", "", ` acorns to ${ask.verb} `), el("b", "", ask.name), el("span", "", "?"));
+        sheet.append(q);
+        const bal = el("p", "ac-sub ac-spendbal");
+        bal.append(el("span", "", "You have "), acornImg(13), el("b", "", s.acorns.toLocaleString()), el("span", "", ` · ${(s.acorns - ask.cost).toLocaleString()} after`));
+        sheet.append(bal);
+        const row = el("div", "ac-spendrow");
+        const no = el("button", "ac-ghost", "NOT NOW");
+        no.onclick = close;
+        const yes = el("button", "ac-primary");
+        yes.append(el("span", "", "SPEND "), acornImg(18), el("span", "", ask.cost.toLocaleString()));
+        yes.onclick = () => {
+            const { card, run, cost } = ask;
+            spendAsk = null;
+            tx(card, run, cost);
+            render();
+        };
+        row.append(no, yes);
+        sheet.append(row);
+        wrap.append(sheet);
+        return wrap;
     }
     /** The one card "state" that was never a state. A revealed, unowned,
      *  free suit or helmet is a reward sitting there UNCLAIMED - the tap
@@ -855,7 +964,7 @@ export async function bootStandalone(root) {
     }
     function acornPill(n) {
         const pill = el("div", "ac-pill ac-pill-gold");
-        pill.append(icon(I_NUT, 13), el("span", "", n.toLocaleString()));
+        pill.append(acornImg(15), el("span", "", n.toLocaleString()));
         return pill;
     }
     function dustPill(n) {
@@ -1259,7 +1368,7 @@ export async function bootStandalone(root) {
         // send a pilot who wants more of them.
         const acorns = el("button", "ac-hub-idacorns ac-hub-idnut");
         acorns.setAttribute("aria-label", "Shop");
-        acorns.append(icon(I_NUT, 14), el("span", "", s.acorns.toLocaleString()));
+        acorns.append(acornImg(16), el("span", "", s.acorns.toLocaleString()));
         acorns.onclick = () => engine.open("shop");
         // Star Dust sits beside acorns and carries a plus, because the only
         // way to get more is to buy it - so the counter may as well be the
@@ -1357,7 +1466,7 @@ export async function bootStandalone(root) {
         // ONE WORD (owner, 7 Sep 2026: "instead of free flight, just Launch...
         // large and in charge"). The ribbon above names the mode; the line
         // under says what the tap does in it.
-        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Salvage. Survive. Build." : "Begin your flight"));
+        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
         // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
         // and were previously invisible from here - you had to remember. One
         // line, named plainly, so nobody launches wondering why the gates are
@@ -1495,7 +1604,7 @@ export async function bootStandalone(root) {
         const sheet = el("div", "ac-lvlcard ac-modecard");
         sheet.append(el("p", "ac-kicker", "FREE FLIGHT"), el("h2", "ac-lvlname", "Modes"));
         if (s.spillSuspended) {
-            const resume = el("button", "ac-primary", `RESUME SPILL · DEPOT ${s.spillSuspended.state.wave}`);
+            const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · DEPOT ${s.spillSuspended.state.wave}`);
             resume.onclick = () => { modesOpen = false; engine.spillResume(); };
             sheet.append(resume);
         }
@@ -1932,7 +2041,25 @@ export async function bootStandalone(root) {
         armed: () => "Already armed — your next run spends it.",
         unavailable: () => "Star Dust packs are sold in the app.",
         clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
+        // the Star Chart boosts
+        hyper: () => "Hyper Run keeps its own record — a Level Skip cannot land there.",
+        done: () => "That mission already has three stars.",
+        none: () => "No boost held. Buy one in the Shop.",
+        currency: () => "Acorn and Star Dust lines pay out on their own as your stars climb.",
     };
+    /** a boost's badge, from the owner's art, at any size */
+    function boostArt(id, px) {
+        const im = document.createElement("img");
+        im.src = `${artRootUrl()}/${BOOSTS[id].art}?v=${ART_VER}`;
+        im.alt = "";
+        im.draggable = false;
+        im.width = px;
+        im.height = px;
+        im.className = "ac-boostart";
+        return im;
+    }
+    const REWARD_KIND = { pal: "PAL", mod: "MOD", mode: "MODE", suit: "SUIT",
+        helmet: "HELMET", trail: "TRAIL", title: "TITLE", stage: "CHAPTER", dust: "STAR DUST", acorns: "ACORNS" };
     /** how a real-money purchase ended, in the shop's own status line. "ok"
      *  has no line: the dust badge is the receipt. */
     const DUST_OUTCOME_TEXT = {
@@ -2020,7 +2147,7 @@ export async function bootStandalone(root) {
             const { c, ctx } = miniCanvas(CASE_W, CASE_H);
             c.className = "ac-tocanvas ac-casecanvas";
             c.setAttribute("role", "img");
-            c.setAttribute("aria-label", engine.shopTab === "ship" ? "Spill ship build preview" : `${wornSuit.name} in flight`);
+            c.setAttribute("aria-label", engine.shopTab === "ship" ? "Debris Field ship build preview" : `${wornSuit.name} in flight`);
             pane.append(el("i", "ac-casebeam"), c, el("i", "ac-casefloor"));
             for (const corner of ["tl", "tr", "bl", "br"]) {
                 pane.append(el("i", `ac-casecorner ac-c-${corner}`));
@@ -2057,7 +2184,7 @@ export async function bootStandalone(root) {
             else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
                 const arm = el("button", "ac-platebtn");
                 arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
-                arm.onclick = (e) => { e.stopPropagation(); tx(arm, () => engine.toggleMod("shield"), MOD_SHIELD_COST); };
+                arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
                 plate.append(arm);
             }
             stage.append(plate);
@@ -2149,7 +2276,7 @@ export async function bootStandalone(root) {
                 if (s.guide === "helmet" && h.id === GUIDE_HELM)
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!locked && open && (!premium || owned))
-                    tx(b, () => engine.buyHelmet(h.id), h.cost); };
+                    spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); };
                 if (open && (!premium || owned))
                     b.append(favStar(h.id));
                 return b;
@@ -2214,7 +2341,7 @@ export async function bootStandalone(root) {
                 if (s.guide === "hangar" && u.id === GUIDE_SUIT)
                     b.classList.add("ac-pulse", "ac-guidetarget");
                 b.onclick = () => { if (!premium || owned)
-                    tx(b, () => engine.buySuit(u.id), u.cost); };
+                    spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); };
                 if (open && (!premium || owned))
                     b.append(favStar(u.id));
                 return b;
@@ -2367,7 +2494,7 @@ export async function bootStandalone(root) {
                 const pal = miniCanvas(64, 64);
                 if (pal.ctx)
                     paintPalPreview(pal.ctx, engine.art, "tinbot", 32, 32, 52);
-                concept.append(pal.c, el("b", "", "Rivet · placeholder concept"), el("p", "", "Tinbot artwork stands in for a future Spill-only cosmetic companion. No companion ability or equip option is added by this sample."));
+                concept.append(pal.c, el("b", "", "Rivet · placeholder concept"), el("p", "", "Tinbot artwork stands in for a future Debris Field-only cosmetic companion. No companion ability or equip option is added by this sample."));
                 look.append(concept);
                 grid.append(look);
             }
@@ -2539,6 +2666,8 @@ export async function bootStandalone(root) {
         box.append(scroll);
         if (!BETA_FEATURES)
             box.append(tabbar("hangar"));
+        if (spendAsk)
+            box.append(drawSpendSheet());
         return box;
     }
     // Every rank earns its OWN emblem — a cadet chevron through the
@@ -2862,7 +2991,9 @@ export async function bootStandalone(root) {
             svg.append(gold);
         }
         miles.forEach((r, i) => {
-            const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+            // a reward opened ahead of its stars with a Star Unlock reads as earned
+            const have = !r.planned && (total >= r.stars || rewardOwned(engine.save, r));
+            const mark = el("button", r.planned ? "ac-palmark mile planned" : have ? "ac-palmark mile earned" : "ac-palmark mile");
             mark.style.left = `${railX}px`;
             mark.style.top = `${mileY[i]}px`;
             mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
@@ -2873,6 +3004,13 @@ export async function bootStandalone(root) {
                 mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
                 mark.append(el("span", "ac-concept-label", "CONCEPT"));
                 mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+            }
+            else {
+                // every real reward opens its sheet: what it is, how far off it is,
+                // and the Star Unlock that skips the wait
+                const key = rewardId(r);
+                mark.setAttribute("aria-label", `Reward at ${r.stars} stars: ${r.name}${have ? ", yours" : ""}`);
+                mark.onclick = () => { rewardOpen = key; boostNote = null; render(); };
             }
             map.append(mark);
         });
@@ -3050,6 +3188,58 @@ export async function bootStandalone(root) {
         });
         return wrap;
     }
+    /** ONE REWARD ON THE RAIL, opened: what it is, how far off it is, and -
+     *  when a Star Unlock is held - the hold that opens it now. */
+    function drawRewardSheet(key) {
+        const wrap = el("div", "ac-lvlsheet");
+        const r = STAR_REWARDS.find((x) => rewardId(x) === key);
+        if (!r)
+            return wrap;
+        const s = engine.save;
+        const have = starsOf(s);
+        const owned = rewardOwned(s, r);
+        const close = () => { rewardOpen = null; boostNote = null; render(); };
+        const sheet = el("div", "ac-lvlcard ac-rewardsheet");
+        sheet.append(el("p", "ac-kicker", `★ ${r.stars} STARS · ${REWARD_KIND[r.kind] ?? r.kind.toUpperCase()}`));
+        const art = el("div", "ac-rewardbig");
+        art.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 96));
+        sheet.append(art, el("h2", "ac-lvlname", r.name), el("p", "ac-sub", r.desc));
+        sheet.append(el("p", "ac-sub ac-rewardstate", owned ? "Yours." : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
+        const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
+        if (!owned && item) {
+            if (boostReady(s, "starunlock")) {
+                const held = s.boosts.starunlock;
+                const b = el("button", "ac-primary ac-holdbtn ac-unlockbtn");
+                b.append(boostArt("starunlock", 24), el("span", "", `HOLD TO USE STAR UNLOCK · ${held} HELD`));
+                holdToFire(b, 700, () => {
+                    const out = engine.useStarUnlock(key);
+                    if (out === "ok") {
+                        boostNote = null;
+                        render();
+                        return;
+                    }
+                    boostNote = DENY_TEXT[out]?.() ?? "That unlock did not land.";
+                    render();
+                });
+                sheet.append(b);
+                if (boostNote)
+                    sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+            }
+            else {
+                const go = el("button", "ac-ghost ac-unlockgo");
+                go.append(boostArt("starunlock", 22), el("span", "", `STAR UNLOCK · ${BOOSTS.starunlock.dust} IN THE SHOP`));
+                go.onclick = () => { rewardOpen = null; engine.open("shop"); };
+                sheet.append(go, el("p", "ac-fine", "Or earn it on the road."));
+            }
+        }
+        const back = el("button", "ac-ghost", "BACK");
+        back.onclick = close;
+        sheet.append(back);
+        wrap.append(sheet);
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        return wrap;
+    }
     function drawLog() {
         const sv = engine.save;
         const stars = routeMasks(sv, CHART_LEVELS);
@@ -3073,6 +3263,20 @@ export async function bootStandalone(root) {
         pilot.onclick = () => goTo();
         nav.append(pilot);
         box.append(nav);
+        // A HELD BOOST SAYS WHERE IT GOES. The Shop lands here right after a
+        // purchase, and the Profile's USE NOW does too, so the first thing on
+        // the chart is what to tap next.
+        for (const id of BOOST_IDS) {
+            const n = sv.boosts?.[id] ?? 0;
+            if (!n)
+                continue;
+            const arm = el("div", "ac-boostarm");
+            arm.append(boostArt(id, 34));
+            const t = el("span", "");
+            t.append(el("b", "", `${BOOSTS[id].name} · ${n} held`), el("span", "", id === "levelskip" ? "Open a mission and hold LEVEL SKIP." : "Tap a reward on the rail and hold STAR UNLOCK."));
+            arm.append(t);
+            box.append(arm);
+        }
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
             const rewards = el("button", "ac-ghost", "Reward preview");
@@ -3180,6 +3384,8 @@ export async function bootStandalone(root) {
         }
         if (STAR_MAP_PREVIEW && rewardPreviewAt)
             box.append(drawRewardPreview());
+        if (rewardOpen)
+            box.append(drawRewardSheet(rewardOpen));
         // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
         // hyperRunOpen was only ever read by the hub - so tapping a field set a
         // flag nothing on the chart looked at, and the one route to Hyper Run
@@ -3200,7 +3406,7 @@ export async function bootStandalone(root) {
         // Names and zone clues follow the same continuous road on both pages.
         const place = def.base === "race" ? "HYPER RUN"
             : def.base === "tunnel" ? "WORMHOLE RUN"
-                : def.base === "spill" ? "THE SPILL"
+                : def.base === "spill" ? "DEBRIS FIELD"
                     : ENVS[def.fx.env ?? 0]?.name ?? "";
         sheet.append(el("p", "ac-kicker", def.standalone
             ? "HYPER RUN · TIME TRIAL"
@@ -3215,7 +3421,7 @@ export async function bootStandalone(root) {
                 def.base === "lost" ? "LOST IN SPACE RULES" :
                     def.base === "arcade" ? "ARCADE TIMELINE" :
                         def.base === "tunnel" ? "WORMHOLE MISSION" :
-                            def.base === "spill" ? "SPILL MISSION" : "";
+                            def.base === "spill" ? "DEBRIS FIELD MISSION" : "";
         const fxs = fxText(def.fx);
         if (mode || fxs.length) {
             const tags = el("div", "ac-lvltags");
@@ -3273,6 +3479,24 @@ export async function bootStandalone(root) {
             }
             sheet.append(el("p", "ac-sub", "OWN RECORD \u00b7 CAMPAIGN STARS UNCHANGED"));
         }
+        // LEVEL SKIP, when one is held: a hold on this button spends it here
+        let skip = null;
+        if (!def.standalone && boostReady(engine.save, "levelskip") && skipEligible(engine.save, def) === "ok") {
+            const held = engine.save.boosts.levelskip;
+            skip = el("button", "ac-ghost ac-holdbtn ac-skipbtn");
+            skip.append(boostArt("levelskip", 24), el("span", "", `HOLD TO USE LEVEL SKIP · 3 STARS NOW · ${held} HELD`));
+            holdToFire(skip, 700, () => {
+                const r = engine.useLevelSkip(def.id);
+                if (r === "ok") {
+                    chartLevel = null;
+                    boostNote = null;
+                    render();
+                    return;
+                }
+                boostNote = DENY_TEXT[r]?.() ?? "That skip did not land.";
+                render();
+            });
+        }
         const fly = el("button", "ac-primary", def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
         fly.onclick = () => {
             chartLevel = null;
@@ -3295,6 +3519,7 @@ export async function bootStandalone(root) {
         const back = el("button", "ac-ghost", "BACK");
         const close = () => {
             chartLevel = null;
+            boostNote = null;
             // the sheet is open because a flag says so, and the flag has to be
             // cleared on BOTH routes or closing it from the chart just redraws it
             hyperRunOpen = false;
@@ -3303,7 +3528,12 @@ export async function bootStandalone(root) {
             render();
         };
         back.onclick = close;
-        sheet.append(fly, back);
+        sheet.append(fly);
+        if (skip)
+            sheet.append(skip);
+        if (boostNote && skip)
+            sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+        sheet.append(back);
         wrap.append(sheet);
         wrap.onclick = (e) => { if (e.target === wrap)
             close(); };
@@ -3444,6 +3674,12 @@ export async function bootStandalone(root) {
     // storefront. This one is genuinely not ready for that.
     let devRollOpen = false;
     let featureOpen = null; // the featured pack, opened
+    // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
+    // chart: a held Level Skip lands on a mission from its sheet, a held Star
+    // Unlock on a reward from the rail. Both are hold-to-confirm.
+    let boostConfirm = null; // the shop card asking "are you sure"
+    let rewardOpen = null; // the reward sheet on the chart, by rewardId
+    let boostNote = null; // one line under a boost control that refused
     // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
     // and the bar adds up whatever is in here. Nothing is forced along with
     // anything else; a helmet does not drag its suit onto the stage.
@@ -3750,6 +3986,42 @@ export async function bootStandalone(root) {
         shelf("HELMETS", "helm", cy.helms, "today");
         shelf("PALS", "pal", cy.pals, "today");
         scroll.append(el("p", "ac-fine", "The shelf restocks tomorrow. Trails are not sold on their own — they arrive with their set."));
+        // ---- STAR CHART BOOSTS (owner, 8 Sep 2026). Bought here, into the
+        // account; spent on the Star Chart with a hold. The purchase itself is
+        // a two-tap confirm like the packs, and a successful one walks the
+        // pilot to the chart with the boost armed.
+        scroll.append(el("p", "ac-shelfhead", "STAR CHART BOOSTS"));
+        for (const id of BOOST_IDS) {
+            const spec = BOOSTS[id];
+            const held = s.boosts?.[id] ?? 0;
+            const row = el("button", boostConfirm === id ? "ac-card ac-modcard ac-boostcard ac-confirming" : "ac-card ac-modcard ac-boostcard");
+            row.append(boostArt(id, 56));
+            const t = el("div", "ac-modtxt");
+            t.append(el("p", "ac-modname", spec.name), el("p", "ac-sub", spec.blurb));
+            if (held)
+                t.append(el("p", "ac-sub ac-boostheld", `${held} in your account — spend it on the Star Chart.`));
+            row.append(t);
+            const pr = el("span", "ac-modprice ac-dustprice");
+            pr.append(el("span", "", boostConfirm === id ? "CONFIRM " : ""), icon(I_DUST, 13, true), el("span", "", spec.dust.toLocaleString()));
+            row.append(pr);
+            row.onclick = () => {
+                if (boostConfirm !== id) {
+                    boostConfirm = id;
+                    render();
+                    return;
+                }
+                boostConfirm = null;
+                // the chart opens on the pilot, not wherever the shop was scrolled
+                if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) {
+                    keptScroll = 0;
+                    engine.open("log");
+                }
+                else
+                    render();
+            };
+            scroll.append(row);
+        }
+        scroll.append(el("p", "ac-fine", "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
         // ---- THE FEATURED PACK.
         if (cy.feature) {
             const bn = cy.feature;
@@ -3802,27 +4074,19 @@ export async function bootStandalone(root) {
             // front of a non-US reviewer is a rejection, not a fallback.
             const price = platform.priceOf(dp.id);
             const priced = !!price || !platform.native;
-<<<<<<< HEAD
-            row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
-=======
             const waiting = inFlight === dp.id;
             const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : dp.price);
             row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
->>>>>>> origin/main
             if (!priced) {
                 row.disabled = true;
                 row.setAttribute("aria-label", "Price loading");
             }
-<<<<<<< HEAD
-            row.onclick = () => { if (!priced)
-=======
             if (inFlight) {
                 row.disabled = true;
                 if (waiting)
                     row.setAttribute("aria-label", "Purchase in progress");
             }
             row.onclick = () => { if (!priced || inFlight)
->>>>>>> origin/main
                 return; tx(row, () => engine.buyDust(dp.id)); render(); };
             scroll.append(row);
         }
@@ -4019,7 +4283,7 @@ export async function bootStandalone(root) {
         }
         const bar = el("button", "ac-devbar");
         bar.setAttribute("aria-expanded", String(devRollOpen));
-        bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"), el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} owned`));
+        bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"), el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} of ${IAP_ITEMS.length} premium items owned`));
         bar.onclick = () => { devRollOpen = !devRollOpen; render(); };
         wrap.append(bar);
         if (!devRollOpen)
@@ -4052,7 +4316,7 @@ export async function bootStandalone(root) {
         panel.append(el("p", "ac-devday", `Cycle day ${cy.day} · seed is the date · shelf: ${cy.suits.length} suits, ${cy.helms.length} helmets, ${cy.pals.length} pal, 0 trails`));
         group("HELD BY THE FEATURED PACK", held, `${cy.feature?.name ?? "no pack"} — not buyable singly until it rotates out.`);
         group("RESTING", resting, "In the pool, not dealt today. Comes back on a future day.");
-        group("OWNED", owned, "Bought already, so the shelf never offers it again.");
+        group("OWNED", owned, `Bought already, so the shelf never offers it again. Premium ids, not suits: a suit and its helmet share one.`);
         wrap.append(panel);
         return wrap;
     }
@@ -4623,13 +4887,29 @@ export async function bootStandalone(root) {
         const sheet = el("div", "ac-lvlcard ac-dailycard");
         sheet.append(dustBadge("ac-dailybadgebig"));
         sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
-        const big = el("div", "ac-dailybig");
-        big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
-        sheet.append(big);
-        sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
-        sheet.append(el("p", "ac-sub", t.bonus
-            ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
-            : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+        if (t.pack) {
+            // THE FIRST FULL WEEK: three critters, painted, not a number
+            const trio = el("div", "ac-dailytrio");
+            for (const id of ["raccoon", "ferret", "hedgehog"]) {
+                const suit = SUITS.find((u) => u.id === id);
+                const { c, ctx } = miniCanvas(64, 64);
+                if (ctx && suit)
+                    paintFlightPreview(ctx, engine.art, suit, helmetWornBy("clear", id), 32, 34, 58, 0, undefined, false, 0);
+                trio.append(c);
+            }
+            sheet.append(trio);
+            sheet.append(el("h2", "ac-lvlname", "Critter Pack unlocked"));
+            sheet.append(el("p", "ac-sub", `Bandit, Noodle and Quill are yours - a full week of flying. Today also paid ${DAILY_DUST} dust; every seventh day from now pays the ${DAILY_STREAK_BONUS} streak bonus.`));
+        }
+        else {
+            const big = el("div", "ac-dailybig");
+            big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
+            sheet.append(big);
+            sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
+            sheet.append(el("p", "ac-sub", t.bonus
+                ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
+                : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 ${engine.save.streakPackClaimed ? `day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more` : `day ${DAILY_STREAK_LEN} unlocks the Critter Pack`}.`));
+        }
         const pips = el("div", "ac-pips");
         for (let i = 1; i <= DAILY_STREAK_LEN; i++) {
             pips.append(el("i", `ac-pip${i <= t.streak ? " on" : ""}${i === DAILY_STREAK_LEN ? " big" : ""}`));
@@ -4661,9 +4941,10 @@ export async function bootStandalone(root) {
             pips.append(pip);
         }
         left.append(pips);
+        const packAhead = !engine.save.streakPackClaimed;
         left.append(el("p", "ac-sub", st.bonusDay
-            ? `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`
-            : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+            ? (st.pack ? `Day ${DAILY_STREAK_LEN} \u2014 the Critter Pack is yours. Back tomorrow to start again.` : `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`)
+            : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} ${packAhead ? "unlocks the Critter Pack: Bandit, Noodle and Quill" : `pays ${DAILY_STREAK_BONUS} more`}.`));
         card.append(left);
         // No button: arriving here already claimed it. This is a receipt and a
         // streak tracker, not a control.
@@ -4752,6 +5033,27 @@ export async function bootStandalone(root) {
             tiles.append(t);
         }
         scroll.append(tiles);
+        // THE INVENTORY (owner, 8 Sep 2026): a bought boost lives in the
+        // account, so a closed app or a dropped connection between the Shop
+        // and the chart loses nothing. USE NOW walks to the chart, armed.
+        if (BOOST_IDS.some((id) => (s.boosts?.[id] ?? 0) > 0)) {
+            scroll.append(el("p", "ac-kicker ac-secthead", "Inventory"));
+            const inv = el("div", "ac-rows");
+            for (const id of BOOST_IDS) {
+                const n = s.boosts?.[id] ?? 0;
+                if (!n)
+                    continue;
+                const row = el("div", "ac-row ac-invrow");
+                row.append(boostArt(id, 40));
+                const t = el("span", "ac-socialtxt");
+                t.append(el("b", "", `${BOOSTS[id].name} × ${n}`), el("span", "", BOOSTS[id].blurb));
+                const use = el("button", "ac-ghost ac-invuse", "USE NOW");
+                use.onclick = () => { keptScroll = 0; engine.open("log"); };
+                row.append(t, use);
+                inv.append(row);
+            }
+            scroll.append(inv, el("p", "ac-fine", "Spent on the Star Chart with a hold: a mission for a Level Skip, a reward on the rail for a Star Unlock."));
+        }
         // The five per-mode records used to be listed here as well. They live
         // on the mode buttons themselves - fly, deep, lost and arcade read the
         // same save fields this list did, and Wormhole Run the same tunnelBest -
@@ -4834,7 +5136,7 @@ export async function bootStandalone(root) {
             { id: "lost", name: "Lost in Space", best: s.lostBest || 0, unit: "gates" },
             { id: "arcade", name: "Arcade", best: s.arcadeBest || 0, unit: "gates" },
             { id: "tunnel", name: "Wormhole Run", best: s.tunnelBest || 0, unit: "score" },
-            { id: "spill", name: "The Spill", best: s.spillBest || 0, unit: "waves" },
+            { id: "spill", name: "Debris Field", best: s.spillBest || 0, unit: "waves" },
         ].sort((a, b) => b.best - a.best);
         const box = el("div", "ac-menu");
         box.append(header("Your bests", "Leaderboard", headAside(s.acorns)));
@@ -4956,7 +5258,7 @@ export async function bootStandalone(root) {
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
-        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "COINS", "The Spill's currency. Spend it at the Depot.");
+        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "COINS", "Debris Field's currency. Spend it at the Depot.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
@@ -4988,11 +5290,11 @@ export async function bootStandalone(root) {
             const modes = el("ul", "ac-helplist");
             for (const [name, line] of [
                 ["NORMAL", "Gates and power-ups."],
+                ["DEBRIS FIELD", "Wave survival. Upgrade your ship at untimed Depots. Survive the dangers of space. Wave 20 records your first pass; the run continues."],
+                ["HYPER RUN", "Thread gates. Finish fast."],
                 ["DEEP SPACE", "Space shifts every 10s."],
                 ["LOST IN SPACE", "Drift, tilt, wormholes."],
                 ["ARCADE", "The 8-bit original. Double power-ups."],
-                ["HYPER RUN", "Thread gates. Finish fast."],
-                ["THE SPILL", "Survive endless waves. Build at untimed Depots and take contracts. Wave 20 records your first-pass victory; the run continues."],
             ]) {
                 const li = el("li", "");
                 li.append(el("b", "", name), el("span", "", line));

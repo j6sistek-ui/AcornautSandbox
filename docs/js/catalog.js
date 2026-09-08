@@ -1,12 +1,12 @@
-import { platform } from "./platform.js?v=232";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=232";
+import { platform } from "./platform.js?v=233";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=233";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "232";
+export const ART_VER = "233";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -49,7 +49,7 @@ export const STORY_MODE_ENABLED = IS_BETA;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-08 05:23 UTC";
+export const BUILD_TIME = "2026-09-08 05:50 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
@@ -724,6 +724,20 @@ export const DUST_PACKS = [
     { id: "dust-1200", dust: 1000, bonus: 200, price: "$9.99" },
     { id: "dust-2600", dust: 2000, bonus: 600, price: "$19.99" },
 ];
+/** STAR CHART BOOSTS (owner, 8 Sep 2026: "a level skip item... instant 3
+ *  star any level (make it 100 star dust). And instant unlock any star
+ *  reward item 500 star dust... consumed on purchase. only inventory if
+ *  further 'seasonal style' rewards given"). A boost is spent the moment
+ *  it is bought, on the mission or the reward picked right then. A count
+ *  in save.boosts - handed out by a season or a code, never sold - pays
+ *  first, and only then does the Profile show an inventory. */
+export const BOOSTS = {
+    levelskip: { name: "Level Skip", dust: 100, art: "ui/boost-skip.png",
+        blurb: "Three stars on any Star Chart mission, right now. Not for Hyper Run." },
+    starunlock: { name: "Star Unlock", dust: 500, art: "ui/boost-star.png",
+        blurb: "Any Star Chart reward item, yours ahead of its stars." },
+};
+export const BOOST_IDS = Object.keys(BOOSTS);
 /** claimed once per day; the seventh straight day pays the streak bonus */
 export const DAILY_DUST = 5;
 export const DAILY_STREAK_BONUS = 25;

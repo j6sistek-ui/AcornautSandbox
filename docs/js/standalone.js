@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=232";
-import { platform } from "./platform.js?v=232";
-import { spillAppearance } from "./spill-appearance.js?v=232";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=232";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=232";
-import { addChartScenery } from "./star-map-view.js?v=232";
-import { mapDebrisIndex } from "./zone-visuals.js?v=232";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=232";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=232";
-import { suitLean } from "./control-constants.js?v=232";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=232";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=232";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=232";
-import { drawSprite as drawSpriteOn } from "./art.js?v=232";
-import { createEngine } from "./engine.js?v=232";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=232";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=232";
-import { formatRaceTicks } from "./race.js?v=232";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=232";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=232";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=232";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=232";
+import { suitPitchFor } from "./save.js?v=233";
+import { platform } from "./platform.js?v=233";
+import { spillAppearance } from "./spill-appearance.js?v=233";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=233";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=233";
+import { addChartScenery } from "./star-map-view.js?v=233";
+import { mapDebrisIndex } from "./zone-visuals.js?v=233";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=233";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=233";
+import { suitLean } from "./control-constants.js?v=233";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=233";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=233";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=233";
+import { drawSprite as drawSpriteOn } from "./art.js?v=233";
+import { createEngine } from "./engine.js?v=233";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned } from "./save.js?v=233";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=233";
+import { formatRaceTicks } from "./race.js?v=233";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=233";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=233";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=233";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=233";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2041,7 +2041,25 @@ export async function bootStandalone(root) {
         armed: () => "Already armed — your next run spends it.",
         unavailable: () => "Star Dust packs are sold in the app.",
         clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
+        // the Star Chart boosts
+        hyper: () => "Hyper Run keeps its own record — a Level Skip cannot land there.",
+        done: () => "That mission already has three stars.",
+        none: () => "No boost held. Buy one in the Shop.",
+        currency: () => "Acorn and Star Dust lines pay out on their own as your stars climb.",
     };
+    /** a boost's badge, from the owner's art, at any size */
+    function boostArt(id, px) {
+        const im = document.createElement("img");
+        im.src = `${artRootUrl()}/${BOOSTS[id].art}?v=${ART_VER}`;
+        im.alt = "";
+        im.draggable = false;
+        im.width = px;
+        im.height = px;
+        im.className = "ac-boostart";
+        return im;
+    }
+    const REWARD_KIND = { pal: "PAL", mod: "MOD", mode: "MODE", suit: "SUIT",
+        helmet: "HELMET", trail: "TRAIL", title: "TITLE", stage: "CHAPTER", dust: "STAR DUST", acorns: "ACORNS" };
     /** how a real-money purchase ended, in the shop's own status line. "ok"
      *  has no line: the dust badge is the receipt. */
     const DUST_OUTCOME_TEXT = {
@@ -2973,7 +2991,9 @@ export async function bootStandalone(root) {
             svg.append(gold);
         }
         miles.forEach((r, i) => {
-            const mark = el(r.planned ? "button" : "div", r.planned ? "ac-palmark mile planned" : total >= r.stars ? "ac-palmark mile earned" : "ac-palmark mile");
+            // a reward opened ahead of its stars with a Star Unlock reads as earned
+            const have = !r.planned && (total >= r.stars || rewardOwned(engine.save, r));
+            const mark = el("button", r.planned ? "ac-palmark mile planned" : have ? "ac-palmark mile earned" : "ac-palmark mile");
             mark.style.left = `${railX}px`;
             mark.style.top = `${mileY[i]}px`;
             mark.append(r.planned ? proposedRewardArt(r, 40) : rewardArt({ kind: r.kind, id: r.id, name: r.name }, 40));
@@ -2984,6 +3004,13 @@ export async function bootStandalone(root) {
                 mark.setAttribute("aria-label", `Proposed reward at ${r.stars} stars: ${r.name}. Preview concept.`);
                 mark.append(el("span", "ac-concept-label", "CONCEPT"));
                 mark.onclick = () => { rewardPreviewAt = r.id ?? "all"; render(); };
+            }
+            else {
+                // every real reward opens its sheet: what it is, how far off it is,
+                // and the Star Unlock that skips the wait
+                const key = rewardId(r);
+                mark.setAttribute("aria-label", `Reward at ${r.stars} stars: ${r.name}${have ? ", yours" : ""}`);
+                mark.onclick = () => { rewardOpen = key; boostNote = null; render(); };
             }
             map.append(mark);
         });
@@ -3161,6 +3188,58 @@ export async function bootStandalone(root) {
         });
         return wrap;
     }
+    /** ONE REWARD ON THE RAIL, opened: what it is, how far off it is, and -
+     *  when a Star Unlock is held - the hold that opens it now. */
+    function drawRewardSheet(key) {
+        const wrap = el("div", "ac-lvlsheet");
+        const r = STAR_REWARDS.find((x) => rewardId(x) === key);
+        if (!r)
+            return wrap;
+        const s = engine.save;
+        const have = starsOf(s);
+        const owned = rewardOwned(s, r);
+        const close = () => { rewardOpen = null; boostNote = null; render(); };
+        const sheet = el("div", "ac-lvlcard ac-rewardsheet");
+        sheet.append(el("p", "ac-kicker", `★ ${r.stars} STARS · ${REWARD_KIND[r.kind] ?? r.kind.toUpperCase()}`));
+        const art = el("div", "ac-rewardbig");
+        art.append(rewardArt({ kind: r.kind, id: r.id, name: r.name }, 96));
+        sheet.append(art, el("h2", "ac-lvlname", r.name), el("p", "ac-sub", r.desc));
+        sheet.append(el("p", "ac-sub ac-rewardstate", owned ? "Yours." : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
+        const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
+        if (!owned && item) {
+            if (boostReady(s, "starunlock")) {
+                const held = s.boosts.starunlock;
+                const b = el("button", "ac-primary ac-holdbtn ac-unlockbtn");
+                b.append(boostArt("starunlock", 24), el("span", "", `HOLD TO USE STAR UNLOCK · ${held} HELD`));
+                holdToFire(b, 700, () => {
+                    const out = engine.useStarUnlock(key);
+                    if (out === "ok") {
+                        boostNote = null;
+                        render();
+                        return;
+                    }
+                    boostNote = DENY_TEXT[out]?.() ?? "That unlock did not land.";
+                    render();
+                });
+                sheet.append(b);
+                if (boostNote)
+                    sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+            }
+            else {
+                const go = el("button", "ac-ghost ac-unlockgo");
+                go.append(boostArt("starunlock", 22), el("span", "", `STAR UNLOCK · ${BOOSTS.starunlock.dust} IN THE SHOP`));
+                go.onclick = () => { rewardOpen = null; engine.open("shop"); };
+                sheet.append(go, el("p", "ac-fine", "Or earn it on the road."));
+            }
+        }
+        const back = el("button", "ac-ghost", "BACK");
+        back.onclick = close;
+        sheet.append(back);
+        wrap.append(sheet);
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        return wrap;
+    }
     function drawLog() {
         const sv = engine.save;
         const stars = routeMasks(sv, CHART_LEVELS);
@@ -3184,6 +3263,20 @@ export async function bootStandalone(root) {
         pilot.onclick = () => goTo();
         nav.append(pilot);
         box.append(nav);
+        // A HELD BOOST SAYS WHERE IT GOES. The Shop lands here right after a
+        // purchase, and the Profile's USE NOW does too, so the first thing on
+        // the chart is what to tap next.
+        for (const id of BOOST_IDS) {
+            const n = sv.boosts?.[id] ?? 0;
+            if (!n)
+                continue;
+            const arm = el("div", "ac-boostarm");
+            arm.append(boostArt(id, 34));
+            const t = el("span", "");
+            t.append(el("b", "", `${BOOSTS[id].name} · ${n} held`), el("span", "", id === "levelskip" ? "Open a mission and hold LEVEL SKIP." : "Tap a reward on the rail and hold STAR UNLOCK."));
+            arm.append(t);
+            box.append(arm);
+        }
         if (STAR_MAP_PREVIEW) {
             const samples = el("div", "ac-chart-samples");
             const rewards = el("button", "ac-ghost", "Reward preview");
@@ -3291,6 +3384,8 @@ export async function bootStandalone(root) {
         }
         if (STAR_MAP_PREVIEW && rewardPreviewAt)
             box.append(drawRewardPreview());
+        if (rewardOpen)
+            box.append(drawRewardSheet(rewardOpen));
         // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
         // hyperRunOpen was only ever read by the hub - so tapping a field set a
         // flag nothing on the chart looked at, and the one route to Hyper Run
@@ -3384,6 +3479,24 @@ export async function bootStandalone(root) {
             }
             sheet.append(el("p", "ac-sub", "OWN RECORD \u00b7 CAMPAIGN STARS UNCHANGED"));
         }
+        // LEVEL SKIP, when one is held: a hold on this button spends it here
+        let skip = null;
+        if (!def.standalone && boostReady(engine.save, "levelskip") && skipEligible(engine.save, def) === "ok") {
+            const held = engine.save.boosts.levelskip;
+            skip = el("button", "ac-ghost ac-holdbtn ac-skipbtn");
+            skip.append(boostArt("levelskip", 24), el("span", "", `HOLD TO USE LEVEL SKIP · 3 STARS NOW · ${held} HELD`));
+            holdToFire(skip, 700, () => {
+                const r = engine.useLevelSkip(def.id);
+                if (r === "ok") {
+                    chartLevel = null;
+                    boostNote = null;
+                    render();
+                    return;
+                }
+                boostNote = DENY_TEXT[r]?.() ?? "That skip did not land.";
+                render();
+            });
+        }
         const fly = el("button", "ac-primary", def.standalone ? "START RUN" : mask & 1 ? "FLY AGAIN" : "FLY");
         fly.onclick = () => {
             chartLevel = null;
@@ -3406,6 +3519,7 @@ export async function bootStandalone(root) {
         const back = el("button", "ac-ghost", "BACK");
         const close = () => {
             chartLevel = null;
+            boostNote = null;
             // the sheet is open because a flag says so, and the flag has to be
             // cleared on BOTH routes or closing it from the chart just redraws it
             hyperRunOpen = false;
@@ -3414,7 +3528,12 @@ export async function bootStandalone(root) {
             render();
         };
         back.onclick = close;
-        sheet.append(fly, back);
+        sheet.append(fly);
+        if (skip)
+            sheet.append(skip);
+        if (boostNote && skip)
+            sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
+        sheet.append(back);
         wrap.append(sheet);
         wrap.onclick = (e) => { if (e.target === wrap)
             close(); };
@@ -3555,6 +3674,12 @@ export async function bootStandalone(root) {
     // storefront. This one is genuinely not ready for that.
     let devRollOpen = false;
     let featureOpen = null; // the featured pack, opened
+    // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
+    // chart: a held Level Skip lands on a mission from its sheet, a held Star
+    // Unlock on a reward from the rail. Both are hold-to-confirm.
+    let boostConfirm = null; // the shop card asking "are you sure"
+    let rewardOpen = null; // the reward sheet on the chart, by rewardId
+    let boostNote = null; // one line under a boost control that refused
     // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
     // and the bar adds up whatever is in here. Nothing is forced along with
     // anything else; a helmet does not drag its suit onto the stage.
@@ -3861,6 +3986,42 @@ export async function bootStandalone(root) {
         shelf("HELMETS", "helm", cy.helms, "today");
         shelf("PALS", "pal", cy.pals, "today");
         scroll.append(el("p", "ac-fine", "The shelf restocks tomorrow. Trails are not sold on their own — they arrive with their set."));
+        // ---- STAR CHART BOOSTS (owner, 8 Sep 2026). Bought here, into the
+        // account; spent on the Star Chart with a hold. The purchase itself is
+        // a two-tap confirm like the packs, and a successful one walks the
+        // pilot to the chart with the boost armed.
+        scroll.append(el("p", "ac-shelfhead", "STAR CHART BOOSTS"));
+        for (const id of BOOST_IDS) {
+            const spec = BOOSTS[id];
+            const held = s.boosts?.[id] ?? 0;
+            const row = el("button", boostConfirm === id ? "ac-card ac-modcard ac-boostcard ac-confirming" : "ac-card ac-modcard ac-boostcard");
+            row.append(boostArt(id, 56));
+            const t = el("div", "ac-modtxt");
+            t.append(el("p", "ac-modname", spec.name), el("p", "ac-sub", spec.blurb));
+            if (held)
+                t.append(el("p", "ac-sub ac-boostheld", `${held} in your account — spend it on the Star Chart.`));
+            row.append(t);
+            const pr = el("span", "ac-modprice ac-dustprice");
+            pr.append(el("span", "", boostConfirm === id ? "CONFIRM " : ""), icon(I_DUST, 13, true), el("span", "", spec.dust.toLocaleString()));
+            row.append(pr);
+            row.onclick = () => {
+                if (boostConfirm !== id) {
+                    boostConfirm = id;
+                    render();
+                    return;
+                }
+                boostConfirm = null;
+                // the chart opens on the pilot, not wherever the shop was scrolled
+                if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) {
+                    keptScroll = 0;
+                    engine.open("log");
+                }
+                else
+                    render();
+            };
+            scroll.append(row);
+        }
+        scroll.append(el("p", "ac-fine", "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
         // ---- THE FEATURED PACK.
         if (cy.feature) {
             const bn = cy.feature;
@@ -4122,7 +4283,7 @@ export async function bootStandalone(root) {
         }
         const bar = el("button", "ac-devbar");
         bar.setAttribute("aria-expanded", String(devRollOpen));
-        bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"), el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} owned`));
+        bar.append(el("b", "", devRollOpen ? "▾ OFF THE SHELF TODAY" : "▴ OFF THE SHELF TODAY"), el("span", "", `${held.length} in the pack · ${resting.length} resting · ${owned.length} of ${IAP_ITEMS.length} premium items owned`));
         bar.onclick = () => { devRollOpen = !devRollOpen; render(); };
         wrap.append(bar);
         if (!devRollOpen)
@@ -4155,7 +4316,7 @@ export async function bootStandalone(root) {
         panel.append(el("p", "ac-devday", `Cycle day ${cy.day} · seed is the date · shelf: ${cy.suits.length} suits, ${cy.helms.length} helmets, ${cy.pals.length} pal, 0 trails`));
         group("HELD BY THE FEATURED PACK", held, `${cy.feature?.name ?? "no pack"} — not buyable singly until it rotates out.`);
         group("RESTING", resting, "In the pool, not dealt today. Comes back on a future day.");
-        group("OWNED", owned, "Bought already, so the shelf never offers it again.");
+        group("OWNED", owned, `Bought already, so the shelf never offers it again. Premium ids, not suits: a suit and its helmet share one.`);
         wrap.append(panel);
         return wrap;
     }
@@ -4872,6 +5033,27 @@ export async function bootStandalone(root) {
             tiles.append(t);
         }
         scroll.append(tiles);
+        // THE INVENTORY (owner, 8 Sep 2026): a bought boost lives in the
+        // account, so a closed app or a dropped connection between the Shop
+        // and the chart loses nothing. USE NOW walks to the chart, armed.
+        if (BOOST_IDS.some((id) => (s.boosts?.[id] ?? 0) > 0)) {
+            scroll.append(el("p", "ac-kicker ac-secthead", "Inventory"));
+            const inv = el("div", "ac-rows");
+            for (const id of BOOST_IDS) {
+                const n = s.boosts?.[id] ?? 0;
+                if (!n)
+                    continue;
+                const row = el("div", "ac-row ac-invrow");
+                row.append(boostArt(id, 40));
+                const t = el("span", "ac-socialtxt");
+                t.append(el("b", "", `${BOOSTS[id].name} × ${n}`), el("span", "", BOOSTS[id].blurb));
+                const use = el("button", "ac-ghost ac-invuse", "USE NOW");
+                use.onclick = () => { keptScroll = 0; engine.open("log"); };
+                row.append(t, use);
+                inv.append(row);
+            }
+            scroll.append(inv, el("p", "ac-fine", "Spent on the Star Chart with a hold: a mission for a Level Skip, a reward on the rail for a Star Unlock."));
+        }
         // The five per-mode records used to be listed here as well. They live
         // on the mode buttons themselves - fly, deep, lost and arcade read the
         // same save fields this list did, and Wormhole Run the same tunnelBest -

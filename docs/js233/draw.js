@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=229";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=229";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=229";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=229";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=229";
-import { arcflashPreview } from "./arcflash-motion.js?v=229";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=229";
-import { spillAppearance } from "./spill-appearance.js?v=229";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=229";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=229";
-import { goalHud } from "./campaign.js?v=229";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=229";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=229";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=229";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=229";
-import { suitPitchFor } from "./save.js?v=229";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=229";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=229";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=229";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=229";
-import { spillEngineColor } from "./spill-content.js?v=229";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=229";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=229";
+import { spillDockTravelDuration } from "./spill.js?v=233";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=233";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=233";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=233";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=233";
+import { arcflashPreview } from "./arcflash-motion.js?v=233";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=233";
+import { spillAppearance } from "./spill-appearance.js?v=233";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=233";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=233";
+import { goalHud } from "./campaign.js?v=233";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics.js?v=233";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=233";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=233";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=233";
+import { suitPitchFor } from "./save.js?v=233";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=233";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=233";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=233";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=233";
+import { spillEngineColor } from "./spill-content.js?v=233";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=233";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=233";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2296,7 +2296,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
             : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
                 : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
                     : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
-                        : s.phase === "respawn" ? "RESPAWN CORE" : "THE SPILL";
+                        : s.phase === "respawn" ? "RESPAWN CORE" : "DEBRIS FIELD";
     ctx.fillText(sub, W / 2, 64);
     // the PULSE meter. Locked, it is dim and says so; unlocked and full it
     // is armed, and fires by itself at the next impact
@@ -2486,7 +2486,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         const titleY = Math.max(H * 0.3, hudY + 24);
         ctx.fillStyle = "#fff";
         ctx.font = "900 30px Figtree, system-ui";
-        ctx.fillText("THE SPILL", W / 2, titleY);
+        ctx.fillText("DEBRIS FIELD", W / 2, titleY);
         ctx.fillStyle = "rgba(215,230,247,.8)";
         ctx.font = "600 12px Figtree, system-ui";
         if (compact) {

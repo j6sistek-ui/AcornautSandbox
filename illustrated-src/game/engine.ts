@@ -1,4 +1,4 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress";
@@ -73,7 +73,7 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill, suitPitchFor, takeReceipt } from "./save";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -140,6 +140,14 @@ export type Engine = {
   buyShopItem: (id: string) => "ok" | "missing" | "owned" | "poor";
   /** buy the featured pack at the featured (half) price */
   buyFeature: (id: string) => "ok" | "missing" | "owned" | "poor";
+  /** buy a Star Chart boost with Star Dust; it lands in save.boosts and is
+   *  spent on the chart. See BOOSTS in catalog.ts. */
+  buyBoost: (id: BoostId) => "ok" | "poor";
+  /** spend a held Level Skip: three stars on a reachable mission */
+  useLevelSkip: (levelId: string) => "ok" | "missing" | "hyper" | "done" | "locked" | "none";
+  /** spend a held Star Unlock on one reward item, named by its ledger id
+   *  (rewardId) */
+  useStarUnlock: (rewardKey: string) => "ok" | "missing" | "currency" | "owned" | "none";
   /** start a Star Chart level; returns false if it is still locked */
   flyLevel: (id: string) => boolean;
   /** restart the mission being flown or paused - same level, fresh run */
@@ -459,6 +467,34 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     buyBundle,
     buyShopItem,
     buyFeature,
+    buyBoost(id) {
+      const r = buyBoost(save, id);
+      if (r !== "ok") return r;
+      writeSave(save);
+      notify();
+      return "ok";
+    },
+    useLevelSkip(levelId) {
+      const def = levelById(levelId);
+      if (!def) return "missing";
+      const r = skipLevel(save, def);
+      if (r !== "ok") return r;
+      writeSave(save);
+      // three new stars may cross a currency line; pay it now, not on the
+      // next finish
+      settleDust();
+      notify();
+      return "ok";
+    },
+    useStarUnlock(rewardKey) {
+      const r = STAR_REWARDS.find((x) => rewardId(x) === rewardKey);
+      if (!r) return "missing";
+      const out = unlockReward(save, r);
+      if (out !== "ok") return out;
+      writeSave(save);
+      notify();
+      return "ok";
+    },
     setMusicOff(off) {
       save.musicOff = off;
       writeSave(save);
