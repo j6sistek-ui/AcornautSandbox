@@ -15,9 +15,13 @@ own calibration guards.
 **Status since.** Ship blockers 1, 3, 4, 5 landed in #226 (stamp 227).
 Blocker 2's ledger and blocker 6's insets landed in #225 (stamp 228).
 Blocker 2's failure path (a store that throws, cancelled and failed
-outcomes shown in the shop, a test for the ledger) is stamp 229. Open:
-blocker 7 (the shell needs store accounts; see `shell/README.md`),
-section 2 onward. DEBRIS WEAVE stays at one hazard by decision.
+outcomes shown in the shop, a test for the ledger) is stamp 229. The
+section 3 deletes (dead pages, the 100 unreferenced art files, the orphan
+React file; review scripts moved to `illustrated-src/archive/`) followed.
+Open: blocker 7 (the shell needs store accounts; see `shell/README.md`),
+section 2 onward, section 4. Left for a human look: `zone-spawn-planner.html`,
+`hyper-run-contact-sheet.png`, `chart-bg.jpg` and `sky-wide.jpg` (read by
+`site-src/prep-assets.py`). DEBRIS WEAVE stays at one hazard by decision.
 
 ---
 

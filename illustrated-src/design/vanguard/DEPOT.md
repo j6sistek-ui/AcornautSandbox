@@ -48,7 +48,7 @@ The production build, `test-vanguard-depot.mjs`, `test-spill-welcome.mjs`,
 The UI test drives the real engine through Vanguard, Flight, reduced-motion
 and missing-art arrivals, checking the overlay lock and pause/resume.
 
-`review-vanguard-depot.mjs` renders the actual painter at 390×760, with
+`archive/review-vanguard-depot.mjs` renders the actual painter at 390×760, with
 320px and desktop framing checks. A local sans font substitutes for remote
 Figtree in native-canvas exports. The cloud browser could not reach the local
 build (`ERR_BLOCKED_BY_CLIENT`), so browser playback and real-device frame

@@ -9,7 +9,11 @@ import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=234";
 import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=234";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=234";
 import { setVanguardPitchTrim } from "./vanguard.js?v=234";
+<<<<<<< HEAD
 import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=234";
+=======
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=234";
+>>>>>>> origin/main
 import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=234";
 import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=234";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=234";
@@ -689,7 +693,7 @@ export async function createEngine(canvas) {
         // A premium item that is OWNED equips — it never re-enters the buy
         // path, whatever its cost field says. The Cat carried a stale acorn
         // price from before it went premium, and "owned" met "poor".
-        if (save.unlocked.includes(id) || (isIap(id) && iapOwned(save, id))) {
+        if (save.unlocked.includes(id) || (isIap(id) && ownsPremium(save, id))) {
             save.equipped = id;
             guideStep("helm");
             writeSave(save);
@@ -718,7 +722,8 @@ export async function createEngine(canvas) {
         // thrown away with it, yet still marked done.
         if (art && art.ready)
             void loadSuitBank(art, id);
-        if (save.unlockedSuits.includes(id) || (isIap(id) && iapOwned(save, id)) || (save.purchased || []).includes(id)) {
+        // bought, keyed or earned on the road: the same answer the Loadout gives
+        if (save.unlockedSuits.includes(id) || (isIap(id) && ownsPremium(save, id))) {
             save.equippedSuit = id;
             dropOrphanedHelmet();
             guideStep("suit");

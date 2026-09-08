@@ -21,7 +21,7 @@ Reproduce with the project Canvas dependency:
 node illustrated-src/export-helmet-glass-repair.mjs
 node illustrated-src/export-sandbox.mjs
 node illustrated-src/test-helmet-openings.mjs
-node illustrated-src/review-beta-flight-refresh.mjs
+node illustrated-src/archive/review-beta-flight-refresh.mjs
 python illustrated-src/verify-art.py
 ```
 

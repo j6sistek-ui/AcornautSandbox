@@ -26,7 +26,7 @@ Reproduce after installing Node, TypeScript and @napi-rs/canvas:
 ```
 node illustrated-src/refine-flight-limbs.mjs
 node illustrated-src/export-sandbox.mjs
-node illustrated-src/review-flight-refresh.mjs
+node illustrated-src/archive/review-flight-refresh.mjs
 node illustrated-src/verify-flight-limb-refinement.mjs
 python illustrated-src/verify-art.py
 ```
