@@ -569,6 +569,10 @@ export const STAR_REWARDS = [
     { stars: 198, kind: "suit", id: "sammie", name: "Sammie Suit", desc: "Earned on the Star Chart; also available early in the Regalia Pack." },
     { stars: 200, kind: "helmet", id: "chronarch", name: "Chronarch Helmet", desc: "Time under glass. Was premium; now earned." },
     { stars: 210, kind: "pal", id: "magnetar", name: "Magnetar PAL", desc: "Upside Down World. Earned here or available early in the shop." },
+<<<<<<< HEAD
+=======
+    { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
+>>>>>>> origin/main
     { stars: 225, kind: "dust", amount: 90, name: "90 Star Dust", desc: "The far side pays better." },
     { stars: 245, kind: "dust", amount: 100, name: "100 Star Dust", desc: "Still going." },
     { stars: 270, kind: "dust", amount: 120, name: "120 Star Dust", desc: "Almost the whole chart." },

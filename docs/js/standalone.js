@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=231";
-import { platform } from "./platform.js?v=231";
-import { spillAppearance } from "./spill-appearance.js?v=231";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=231";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=231";
-import { addChartScenery } from "./star-map-view.js?v=231";
-import { mapDebrisIndex } from "./zone-visuals.js?v=231";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=231";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=231";
-import { suitLean } from "./control-constants.js?v=231";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=231";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=231";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=231";
-import { drawSprite as drawSpriteOn } from "./art.js?v=231";
-import { createEngine } from "./engine.js?v=231";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=231";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=231";
-import { formatRaceTicks } from "./race.js?v=231";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=231";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=231";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=231";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=231";
+import { suitPitchFor } from "./save.js?v=232";
+import { platform } from "./platform.js?v=232";
+import { spillAppearance } from "./spill-appearance.js?v=232";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=232";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=232";
+import { addChartScenery } from "./star-map-view.js?v=232";
+import { mapDebrisIndex } from "./zone-visuals.js?v=232";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=232";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=232";
+import { suitLean } from "./control-constants.js?v=232";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=232";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=232";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=232";
+import { drawSprite as drawSpriteOn } from "./art.js?v=232";
+import { createEngine } from "./engine.js?v=232";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=232";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=232";
+import { formatRaceTicks } from "./race.js?v=232";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=232";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=232";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=232";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=232";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2042,6 +2042,13 @@ export async function bootStandalone(root) {
         unavailable: () => "Star Dust packs are sold in the app.",
         clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
     };
+    /** how a real-money purchase ended, in the shop's own status line. "ok"
+     *  has no line: the dust badge is the receipt. */
+    const DUST_OUTCOME_TEXT = {
+        cancelled: "Purchase cancelled. Nothing was charged.",
+        failed: "The store did not complete the purchase. If you were charged, RESTORE PURCHASES delivers it.",
+        unavailable: "That pack is not on sale right now.",
+    };
     function announce(msg) {
         if (!denyEl)
             return;
@@ -3890,6 +3897,9 @@ export async function bootStandalone(root) {
         }
         // ---- TOP UP.
         scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
+        // while the store's sheet is up every row waits: the one being bought
+        // says so, the rest cannot start a second purchase underneath it
+        const inFlight = engine.dustPending();
         for (const dp of DUST_PACKS) {
             const row = el("button", "ac-card ac-modcard ac-dustrow");
             const face = el("span", "ac-dustface");
@@ -3903,14 +3913,32 @@ export async function bootStandalone(root) {
             // front of a non-US reviewer is a rejection, not a fallback.
             const price = platform.priceOf(dp.id);
             const priced = !!price || !platform.native;
-            row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
+            const waiting = inFlight === dp.id;
+            const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : dp.price);
+            row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
             if (!priced) {
                 row.disabled = true;
                 row.setAttribute("aria-label", "Price loading");
             }
-            row.onclick = () => { if (!priced)
+            if (inFlight) {
+                row.disabled = true;
+                if (waiting)
+                    row.setAttribute("aria-label", "Purchase in progress");
+            }
+            row.onclick = () => { if (!priced || inFlight)
                 return; tx(row, () => engine.buyDust(dp.id)); render(); };
             scroll.append(row);
+        }
+        // the store answered while we were away from this list, or just now:
+        // a success shows as dust in the badge and needs no words; anything
+        // else gets one line so a tap that did nothing is never a mystery
+        const outcome = engine.takeDustOutcome();
+        if (outcome) {
+            const note = DUST_OUTCOME_TEXT[outcome.state];
+            if (note)
+                announce(note);
+            else
+                clearDeny();
         }
         if (platform.storeReady) {
             // Apple asks for this button on every storefront, consumables or not

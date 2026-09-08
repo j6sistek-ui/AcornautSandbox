@@ -73,9 +73,12 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill, suitPitchFor } from "./save";
+import { bankSpill, suitPitchFor, takeReceipt } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
+
+/** where a real-money dust purchase stands: the store sheet is up, or how it ended */
+export type DustPurchaseState = "pending" | "ok" | "cancelled" | "failed" | "unavailable";
 
 export type Engine = {
   canvas: HTMLCanvasElement;
@@ -125,6 +128,10 @@ export type Engine = {
   /** "pending": the store took over and will grant on success; "ok": granted
    *  outright (beta only); "unavailable": no store on this platform */
   buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable";
+  /** the pack id whose store purchase is in flight, or null */
+  dustPending: () => string | null;
+  /** the finished purchase the shop has not shown yet, ONCE; reading clears it */
+  takeDustOutcome: () => { id: string; state: DustPurchaseState } | null;
   /** Apple requires the button; on the web it is a no-op */
   restorePurchases: () => Promise<void>;
   buyBundle: (id: string) => "ok" | "missing" | "owned" | "poor";
@@ -446,6 +453,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
      *  what is still worth pointing at is the receipt nobody has seen. */
     dailyUnseen: () => pendingDaily !== null,
     buyDust,
+    dustPending,
+    takeDustOutcome,
     restorePurchases,
     buyBundle,
     buyShopItem,
@@ -923,24 +932,45 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
    *  ignored; one it has not is paid and recorded. Without an id (the
    *  beta's free grant) it simply pays. */
   function grantDust(pack: (typeof DUST_PACKS)[number], transactionId?: string) {
-    if (transactionId) {
-      if (save.receipts.includes(transactionId)) return false;
-      save.receipts.push(transactionId);
-    }
+    if (transactionId && !takeReceipt(save, transactionId)) return false;
     save.starDust += pack.dust + pack.bonus;
     writeSave(save);
     notify();
     return true;
   }
+  /** THE PURCHASE THE SHOP IS WAITING ON. While the store sheet is up the
+   *  row is disabled and says so; when the store answers, the outcome is
+   *  parked here until the shop has shown it, the way takeDailyClaim parks
+   *  a daily. A second tap while one is in flight is ignored rather than
+   *  opening a second sheet. */
+  let dustPurchase: { id: string; state: DustPurchaseState } | null = null;
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
     if (platform.storeReady) {
-      void platform.buyDust(id).then((r) => { if (r.result === "ok") grantDust(pack, r.transactionId); });
+      if (dustPurchase?.state === "pending") return "pending";
+      dustPurchase = { id, state: "pending" };
+      notify();
+      platform.buyDust(id)
+        .then((r) => {
+          if (r.result === "ok") grantDust(pack, r.transactionId);
+          dustPurchase = { id, state: r.result };
+          notify();
+        })
+        // a store that throws (network gone, sheet dismissed by the OS) is
+        // a failed purchase, not an unhandled rejection with a stuck row
+        .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
       return "pending";
     }
     if (IS_BETA) { grantDust(pack); return "ok"; }
     return "unavailable";
+  }
+  function dustPending() { return dustPurchase?.state === "pending" ? dustPurchase.id : null; }
+  function takeDustOutcome() {
+    if (!dustPurchase || dustPurchase.state === "pending") return null;
+    const out = dustPurchase;
+    dustPurchase = null;
+    return out;
   }
   /** WHAT THE STORE STILL OWES. Every consumable on the store's record
    *  that the ledger has not paid: a purchase that finished after the app

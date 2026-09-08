@@ -54,6 +54,19 @@ export function defaultSave() {
         raceGates: [],
     };
 }
+/** ONE RECEIPT, ONE GRANT. The store may hand the same transaction to the
+ *  game more than once: the purchase promise, then the pending list on the
+ *  next resume, then Restore Purchases. The ledger says whether this id
+ *  has been paid. True means "new, now recorded, pay it"; false means the
+ *  dust already went out. The caller writes the save. */
+export function takeReceipt(save, transactionId) {
+    if (!Array.isArray(save.receipts))
+        save.receipts = [];
+    if (save.receipts.includes(transactionId))
+        return false;
+    save.receipts.push(transactionId);
+    return true;
+}
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
 export function bankSpill(save, s, end = false) {

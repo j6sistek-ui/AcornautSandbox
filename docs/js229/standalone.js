@@ -1933,6 +1933,13 @@ export async function bootStandalone(root) {
         unavailable: () => "Star Dust packs are sold in the app.",
         clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
     };
+    /** how a real-money purchase ended, in the shop's own status line. "ok"
+     *  has no line: the dust badge is the receipt. */
+    const DUST_OUTCOME_TEXT = {
+        cancelled: "Purchase cancelled. Nothing was charged.",
+        failed: "The store did not complete the purchase. If you were charged, RESTORE PURCHASES delivers it.",
+        unavailable: "That pack is not on sale right now.",
+    };
     function announce(msg) {
         if (!denyEl)
             return;
@@ -3779,6 +3786,9 @@ export async function bootStandalone(root) {
         }
         // ---- TOP UP.
         scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
+        // while the store's sheet is up every row waits: the one being bought
+        // says so, the rest cannot start a second purchase underneath it
+        const inFlight = engine.dustPending();
         for (const dp of DUST_PACKS) {
             const row = el("button", "ac-card ac-modcard ac-dustrow");
             const face = el("span", "ac-dustface");
@@ -3792,14 +3802,40 @@ export async function bootStandalone(root) {
             // front of a non-US reviewer is a rejection, not a fallback.
             const price = platform.priceOf(dp.id);
             const priced = !!price || !platform.native;
+<<<<<<< HEAD
             row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
+=======
+            const waiting = inFlight === dp.id;
+            const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : dp.price);
+            row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
+>>>>>>> origin/main
             if (!priced) {
                 row.disabled = true;
                 row.setAttribute("aria-label", "Price loading");
             }
+<<<<<<< HEAD
             row.onclick = () => { if (!priced)
+=======
+            if (inFlight) {
+                row.disabled = true;
+                if (waiting)
+                    row.setAttribute("aria-label", "Purchase in progress");
+            }
+            row.onclick = () => { if (!priced || inFlight)
+>>>>>>> origin/main
                 return; tx(row, () => engine.buyDust(dp.id)); render(); };
             scroll.append(row);
+        }
+        // the store answered while we were away from this list, or just now:
+        // a success shows as dust in the badge and needs no words; anything
+        // else gets one line so a tap that did nothing is never a mystery
+        const outcome = engine.takeDustOutcome();
+        if (outcome) {
+            const note = DUST_OUTCOME_TEXT[outcome.state];
+            if (note)
+                announce(note);
+            else
+                clearDeny();
         }
         if (platform.storeReady) {
             // Apple asks for this button on every storefront, consumables or not

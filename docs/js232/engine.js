@@ -1,22 +1,22 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=228";
-import { platform } from "./platform.js?v=228";
-import { spillAppearance } from "./spill-appearance.js?v=228";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=228";
-import { reachedGate } from "./campaign.js?v=228";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=228";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=228";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=228";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=228";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=228";
-import { setVanguardPitchTrim } from "./vanguard.js?v=228";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=228";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=228";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=228";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=228";
-import { raceViewport } from "./race-viewport.js?v=228";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=228";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=228";
-import { bankSpill, suitPitchFor } from "./save.js?v=228";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=232";
+import { platform } from "./platform.js?v=232";
+import { spillAppearance } from "./spill-appearance.js?v=232";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=232";
+import { reachedGate } from "./campaign.js?v=232";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=232";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=232";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=232";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=232";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=232";
+import { setVanguardPitchTrim } from "./vanguard.js?v=232";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=232";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=232";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=232";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=232";
+import { raceViewport } from "./race-viewport.js?v=232";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=232";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=232";
+import { bankSpill, suitPitchFor, takeReceipt } from "./save.js?v=232";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -313,6 +313,8 @@ export async function createEngine(canvas) {
          *  what is still worth pointing at is the receipt nobody has seen. */
         dailyUnseen: () => pendingDaily !== null,
         buyDust,
+        dustPending,
+        takeDustOutcome,
         restorePurchases,
         buyBundle,
         buyShopItem,
@@ -854,6 +856,8 @@ export async function createEngine(canvas) {
         return dustOwed + acornsOwed;
     }
     /** How the daily stands right now, without claiming it. */
+    /** Bandit, Noodle and Quill: the first full week's prize */
+    const STREAK_PACK = ["raccoon", "ferret", "hedgehog"];
     function dailyState() {
         const t = dayNumber(today());
         const last = dayNumber(save.lastDaily);
@@ -862,11 +866,17 @@ export async function createEngine(canvas) {
         const continues = !isNaN(last) && t - last === 1;
         const nextStreak = claimedToday ? save.dailyStreak : continues ? save.dailyStreak + 1 : 1;
         const wrapped = ((nextStreak - 1) % DAILY_STREAK_LEN) + 1;
+        const bonusDay = wrapped === DAILY_STREAK_LEN;
+        // THE FIRST FULL WEEK PAYS THE CRITTER PACK (owner, 8 Sep 2026: "the
+        // VERY FIRST 7 day streak unlocks Quill, Bandit and Noodle... After
+        // that, it's star dust"). The pack replaces that week's dust bonus.
+        const pack = bonusDay && !save.streakPackClaimed;
         return {
             claimedToday,
             streak: claimedToday ? ((save.dailyStreak - 1) % DAILY_STREAK_LEN) + 1 : wrapped,
-            bonusDay: wrapped === DAILY_STREAK_LEN,
-            amount: DAILY_DUST + (wrapped === DAILY_STREAK_LEN ? DAILY_STREAK_BONUS : 0),
+            bonusDay,
+            pack,
+            amount: DAILY_DUST + (bonusDay && !pack ? DAILY_STREAK_BONUS : 0),
         };
     }
     let pendingDaily = null;
@@ -882,7 +892,14 @@ export async function createEngine(canvas) {
         save.dailyStreak = !isNaN(last) && t - last === 1 ? save.dailyStreak + 1 : 1;
         save.lastDaily = today();
         save.starDust += st.amount;
-        pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay };
+        if (st.pack) {
+            save.purchased = [...new Set([...(save.purchased || []), ...STREAK_PACK])];
+            save.streakPackClaimed = true;
+            if (art && art.ready)
+                for (const id of STREAK_PACK)
+                    void loadSuitBank(art, id);
+        }
+        pendingDaily = { amount: st.amount, streak: st.streak, bonus: st.bonusDay, pack: st.pack };
         writeSave(save);
         notify();
         return "ok";
@@ -897,23 +914,38 @@ export async function createEngine(canvas) {
      *  ignored; one it has not is paid and recorded. Without an id (the
      *  beta's free grant) it simply pays. */
     function grantDust(pack, transactionId) {
-        if (transactionId) {
-            if (save.receipts.includes(transactionId))
-                return false;
-            save.receipts.push(transactionId);
-        }
+        if (transactionId && !takeReceipt(save, transactionId))
+            return false;
         save.starDust += pack.dust + pack.bonus;
         writeSave(save);
         notify();
         return true;
     }
+    /** THE PURCHASE THE SHOP IS WAITING ON. While the store sheet is up the
+     *  row is disabled and says so; when the store answers, the outcome is
+     *  parked here until the shop has shown it, the way takeDailyClaim parks
+     *  a daily. A second tap while one is in flight is ignored rather than
+     *  opening a second sheet. */
+    let dustPurchase = null;
     function buyDust(id) {
         const pack = DUST_PACKS.find((p) => p.id === id);
         if (!pack)
             return "missing";
         if (platform.storeReady) {
-            void platform.buyDust(id).then((r) => { if (r.result === "ok")
-                grantDust(pack, r.transactionId); });
+            if (dustPurchase?.state === "pending")
+                return "pending";
+            dustPurchase = { id, state: "pending" };
+            notify();
+            platform.buyDust(id)
+                .then((r) => {
+                if (r.result === "ok")
+                    grantDust(pack, r.transactionId);
+                dustPurchase = { id, state: r.result };
+                notify();
+            })
+                // a store that throws (network gone, sheet dismissed by the OS) is
+                // a failed purchase, not an unhandled rejection with a stuck row
+                .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
             return "pending";
         }
         if (IS_BETA) {
@@ -921,6 +953,14 @@ export async function createEngine(canvas) {
             return "ok";
         }
         return "unavailable";
+    }
+    function dustPending() { return dustPurchase?.state === "pending" ? dustPurchase.id : null; }
+    function takeDustOutcome() {
+        if (!dustPurchase || dustPurchase.state === "pending")
+            return null;
+        const out = dustPurchase;
+        dustPurchase = null;
+        return out;
     }
     /** WHAT THE STORE STILL OWES. Every consumable on the store's record
      *  that the ledger has not paid: a purchase that finished after the app
@@ -1655,4 +1695,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=228";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=232";
