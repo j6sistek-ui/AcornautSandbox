@@ -12,6 +12,13 @@ Gate state on this commit: `tsc` clean, `test-platform-bridge` clean
 `test-tunnel` **fails**, `test-drift` and `test-suit-lean` fail on their
 own calibration guards.
 
+**Status since.** Ship blockers 1, 3, 4, 5 landed in #226 (stamp 227).
+Blocker 2's ledger and blocker 6's insets landed in #225 (stamp 228).
+Blocker 2's failure path (a store that throws, cancelled and failed
+outcomes shown in the shop, a test for the ledger) is stamp 229. Open:
+blocker 7 (the shell needs store accounts; see `shell/README.md`),
+section 2 onward. DEBRIS WEAVE stays at one hazard by decision.
+
 ---
 
 ## 1. Ship blockers

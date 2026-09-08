@@ -36,7 +36,8 @@ adopts whatever members it provides:
 window.__acornautPlatform = {
   kind: "ios",
   storage: { get, set, remove },        // durable, preloaded, synchronous
-  store:   { priceOf, buy, restore },   // StoreKit behind it; buy resolves "ok" | "cancelled" | "failed"
+  store:   { priceOf, buy, restore, pending },   // StoreKit behind it; buy resolves { result, transactionId }
+                                        // pending() lists every consumable on record, as game ids
   boards:  { submit, show },            // Game Center behind it
   devDoors: false,
 };
@@ -49,6 +50,11 @@ Rules, enforced by `illustrated-src/test-platform-bridge.mjs`:
   adds a member to the bridge, with a web fallback, in the same PR.
 - The game grants currency; the shell only reports that money changed
   hands. `engine.buyDust` is the one place a receipt becomes dust.
+- One receipt, one grant. Every transaction id goes through
+  `takeReceipt` in `save.ts` (`save.receipts`), so the purchase promise,
+  the pending list on resume and Restore Purchases can all hand the game
+  the same transaction and it pays once. A purchase that throws is a
+  failed purchase the shop reports, never a stuck row.
 - A score is posted from `sim.ts` at run end through
   `platform.submitScore`; boards are read in the platform's own UI via
   `platform.showBoards`. The game never renders another player's score

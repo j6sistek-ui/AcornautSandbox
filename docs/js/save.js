@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=228";
-import { CHART_LEVELS } from "./campaign.js?v=228";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=228";
-import { restoreSpill } from "./spill.js?v=228";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=228";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=229";
+import { CHART_LEVELS } from "./campaign.js?v=229";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=229";
+import { restoreSpill } from "./spill.js?v=229";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=229";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=228";
-import { platform } from "./platform.js?v=228";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=229";
+import { platform } from "./platform.js?v=229";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -53,6 +53,19 @@ export function defaultSave() {
         raceRecords: {},
         raceGates: [],
     };
+}
+/** ONE RECEIPT, ONE GRANT. The store may hand the same transaction to the
+ *  game more than once: the purchase promise, then the pending list on the
+ *  next resume, then Restore Purchases. The ledger says whether this id
+ *  has been paid. True means "new, now recorded, pay it"; false means the
+ *  dust already went out. The caller writes the save. */
+export function takeReceipt(save, transactionId) {
+    if (!Array.isArray(save.receipts))
+        save.receipts = [];
+    if (save.receipts.includes(transactionId))
+        return false;
+    save.receipts.push(transactionId);
+    return true;
 }
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
