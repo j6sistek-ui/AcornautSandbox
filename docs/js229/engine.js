@@ -1,22 +1,22 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=225";
-import { platform } from "./platform.js?v=225";
-import { spillAppearance } from "./spill-appearance.js?v=225";
-import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=225";
-import { reachedGate } from "./campaign.js?v=225";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=225";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=225";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=225";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=225";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=225";
-import { setVanguardPitchTrim } from "./vanguard.js?v=225";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=225";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=225";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=225";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=225";
-import { raceViewport } from "./race-viewport.js?v=225";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=225";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=225";
-import { bankSpill, suitPitchFor } from "./save.js?v=225";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=229";
+import { platform } from "./platform.js?v=229";
+import { spillAppearance } from "./spill-appearance.js?v=229";
+import { routeMasks, migrateCampaign, rewardId } from "./campaign-progress.js?v=229";
+import { reachedGate } from "./campaign.js?v=229";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=229";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=229";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=229";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=229";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=229";
+import { setVanguardPitchTrim } from "./vanguard.js?v=229";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, iapOwned, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=229";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=229";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=229";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=229";
+import { raceViewport } from "./race-viewport.js?v=229";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=229";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=229";
+import { bankSpill, suitPitchFor, takeReceipt } from "./save.js?v=229";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -135,6 +135,11 @@ export async function createEngine(canvas) {
             window.location.reload();
         },
         redeemAccessCode(code) {
+            // A DEV DOOR, not a store feature. Both codes hand out content for
+            // free, which a store build must never do (App Store 3.1.1), so a
+            // shell that closes the dev doors closes this one too.
+            if (!platform.devDoors)
+                return "denied";
             const entered = code.trim();
             if (entered === "120189") {
                 save.purchased = save.purchased || [];
@@ -308,6 +313,8 @@ export async function createEngine(canvas) {
          *  what is still worth pointing at is the receipt nobody has seen. */
         dailyUnseen: () => pendingDaily !== null,
         buyDust,
+        dustPending,
+        takeDustOutcome,
         restorePurchases,
         buyBundle,
         buyShopItem,
@@ -817,31 +824,36 @@ export async function createEngine(canvas) {
         const [y, m, d] = iso.split("-").map(Number);
         return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
     }
-    /** Pay every dust line the pilot has crossed but not yet been paid for.
-     *  Idempotent by construction: dustPaidTo only ever moves forward, so
-     *  calling this twice pays once. Called on load and after every finish,
-     *  which also means a save from before dust existed collects its whole
+    /** Pay every currency line the pilot has crossed but not yet been paid for.
+     *  Idempotent by construction: each reward has a stable ledger id, while
+     *  dustPaidTo retains the compatibility watermark used by older bundles.
+     *  Called on load and after every finish, so old saves collect their whole
      *  backlog rather than losing it. */
     function settleDust() {
         const have = starsOf(save);
         const ledger = migrateCampaign(save);
-        let owed = 0, high = save.dustPaidTo;
+        let dustOwed = 0, acornsOwed = 0, high = save.dustPaidTo;
         for (const r of STAR_REWARDS) {
-            if (r.kind !== "dust" || !r.amount)
+            if ((r.kind !== "dust" && r.kind !== "acorns") || !r.amount)
                 continue;
             if (r.stars <= have && !ledger.paidRewards.includes(rewardId(r))) {
-                owed += r.amount;
-                high = Math.max(high, r.stars);
+                if (r.kind === "dust") {
+                    dustOwed += r.amount;
+                    high = Math.max(high, r.stars);
+                }
+                else
+                    acornsOwed += r.amount;
                 ledger.paidRewards.push(rewardId(r));
             }
         }
-        if (owed <= 0)
+        if (dustOwed <= 0 && acornsOwed <= 0)
             return 0;
-        save.starDust += owed;
+        save.starDust += dustOwed;
+        save.acorns += acornsOwed;
         save.dustPaidTo = high;
         writeSave(save);
         notify();
-        return owed;
+        return dustOwed + acornsOwed;
     }
     /** How the daily stands right now, without claiming it. */
     function dailyState() {
@@ -883,18 +895,42 @@ export async function createEngine(canvas) {
      *  beta still grants outright so testers can shop; the live web page
      *  refuses, because a pack that grants for free is not a placeholder, it
      *  is a loophole. */
-    function grantDust(pack) {
+    /** ONE RECEIPT, ONE GRANT. A transaction id the ledger has seen is
+     *  ignored; one it has not is paid and recorded. Without an id (the
+     *  beta's free grant) it simply pays. */
+    function grantDust(pack, transactionId) {
+        if (transactionId && !takeReceipt(save, transactionId))
+            return false;
         save.starDust += pack.dust + pack.bonus;
         writeSave(save);
         notify();
+        return true;
     }
+    /** THE PURCHASE THE SHOP IS WAITING ON. While the store sheet is up the
+     *  row is disabled and says so; when the store answers, the outcome is
+     *  parked here until the shop has shown it, the way takeDailyClaim parks
+     *  a daily. A second tap while one is in flight is ignored rather than
+     *  opening a second sheet. */
+    let dustPurchase = null;
     function buyDust(id) {
         const pack = DUST_PACKS.find((p) => p.id === id);
         if (!pack)
             return "missing";
         if (platform.storeReady) {
-            void platform.buyDust(id).then((r) => { if (r === "ok")
-                grantDust(pack); });
+            if (dustPurchase?.state === "pending")
+                return "pending";
+            dustPurchase = { id, state: "pending" };
+            notify();
+            platform.buyDust(id)
+                .then((r) => {
+                if (r.result === "ok")
+                    grantDust(pack, r.transactionId);
+                dustPurchase = { id, state: r.result };
+                notify();
+            })
+                // a store that throws (network gone, sheet dismissed by the OS) is
+                // a failed purchase, not an unhandled rejection with a stuck row
+                .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
             return "pending";
         }
         if (IS_BETA) {
@@ -903,8 +939,34 @@ export async function createEngine(canvas) {
         }
         return "unavailable";
     }
+    function dustPending() { return dustPurchase?.state === "pending" ? dustPurchase.id : null; }
+    function takeDustOutcome() {
+        if (!dustPurchase || dustPurchase.state === "pending")
+            return null;
+        const out = dustPurchase;
+        dustPurchase = null;
+        return out;
+    }
+    /** WHAT THE STORE STILL OWES. Every consumable on the store's record
+     *  that the ledger has not paid: a purchase that finished after the app
+     *  was suspended, a child's Ask to Buy approved hours later, a receipt
+     *  the store re-delivers on the next launch. Asked at boot, on resume and
+     *  after Restore Purchases; idempotent by the ledger. */
+    function deliverPending() {
+        if (!platform.storeReady)
+            return Promise.resolve(0);
+        return platform.pendingPurchases().then((list) => {
+            let paid = 0;
+            for (const p of list) {
+                const pack = DUST_PACKS.find((d) => d.id === p.id);
+                if (pack && grantDust(pack, p.transactionId))
+                    paid++;
+            }
+            return paid;
+        });
+    }
     function restorePurchases() {
-        return platform.restorePurchases().then(() => notify());
+        return platform.restorePurchases().then(() => deliverPending()).then(() => notify());
     }
     function buyBundle(id) {
         const bn = BUNDLES.find((b) => b.id === id);
@@ -1039,6 +1101,8 @@ export async function createEngine(canvas) {
         // over splits evenly rather than piling up on one side.
         const W = Math.min(rect.width, 3840);
         const H = rect.height;
+        // the notch: --sat is env(safe-area-inset-top) on the stage (index.html)
+        world.insetTop = parseFloat(getComputedStyle(parent).getPropertyValue("--sat")) || 0;
         const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
         const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
             && raceGesture.owner !== null;
@@ -1591,6 +1655,11 @@ export async function createEngine(canvas) {
     // as the engine comes up - not on the walk to a storefront. claimDaily is
     // a no-op for a day already taken, so a reload never pays twice.
     claimDaily();
+    // and anything the store still owes from a purchase that finished while
+    // the app was away - again whenever the app comes back to the front
+    void deliverPending();
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible")
+        void deliverPending(); });
     // the switches that are not read from the save on the fly are applied
     // once here, so a reload lands in the state the pilot left
     setSfxMuted(!!save.sfxOff);
@@ -1611,4 +1680,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=225";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=229";

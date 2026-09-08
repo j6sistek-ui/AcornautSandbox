@@ -12,7 +12,7 @@ import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "
 import { xpCumulative, ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRACK, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { artUrl, drawSprite as drawSpriteOn } from "./art";
-import { createEngine } from "./engine";
+import { createEngine, type DustPurchaseState } from "./engine";
 import { batteryUnlocked, dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, modsUnlocked, starsOf, trailUnlocked, PILOT_NAME_MAX} from "./save";
 import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, type LevelDef, RACE_GATES, gateBefore, nextGate} from "./campaign";
 import { formatRaceTicks } from "./race";
@@ -1919,6 +1919,13 @@ export async function bootStandalone(root: HTMLElement) {
     unavailable: () => "Star Dust packs are sold in the app.",
     clash: () => "Nightglider holds the gates still — it will not fly beside Wisp or AstraFox.",
   };
+  /** how a real-money purchase ended, in the shop's own status line. "ok"
+   *  has no line: the dust badge is the receipt. */
+  const DUST_OUTCOME_TEXT: Partial<Record<DustPurchaseState, string>> = {
+    cancelled: "Purchase cancelled. Nothing was charged.",
+    failed: "The store did not complete the purchase. If you were charged, RESTORE PURCHASES delivers it.",
+    unavailable: "That pack is not on sale right now.",
+  };
   function announce(msg: string) {
     if (!denyEl) return;
     // re-set the text even when it repeats, or a second identical refusal
@@ -3680,6 +3687,9 @@ export async function bootStandalone(root: HTMLElement) {
 
     // ---- TOP UP.
     scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
+    // while the store's sheet is up every row waits: the one being bought
+    // says so, the rest cannot start a second purchase underneath it
+    const inFlight = engine.dustPending();
     for (const dp of DUST_PACKS) {
       const row = el("button", "ac-card ac-modcard ac-dustrow");
       const face = el("span", "ac-dustface");
@@ -3694,10 +3704,21 @@ export async function bootStandalone(root: HTMLElement) {
       // front of a non-US reviewer is a rejection, not a fallback.
       const price = platform.priceOf(dp.id);
       const priced = !!price || !platform.native;
-      row.append(t, el("span", "ac-modprice ac-cashprice", price ?? (platform.native ? "…" : dp.price)));
+      const waiting = inFlight === dp.id;
+      const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : dp.price);
+      row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
       if (!priced) { row.disabled = true; row.setAttribute("aria-label", "Price loading"); }
-      row.onclick = () => { if (!priced) return; tx(row, () => engine.buyDust(dp.id)); render(); };
+      if (inFlight) { row.disabled = true; if (waiting) row.setAttribute("aria-label", "Purchase in progress"); }
+      row.onclick = () => { if (!priced || inFlight) return; tx(row, () => engine.buyDust(dp.id)); render(); };
       scroll.append(row);
+    }
+    // the store answered while we were away from this list, or just now:
+    // a success shows as dust in the badge and needs no words; anything
+    // else gets one line so a tap that did nothing is never a mystery
+    const outcome = engine.takeDustOutcome();
+    if (outcome) {
+      const note = DUST_OUTCOME_TEXT[outcome.state];
+      if (note) announce(note); else clearDeny();
     }
     if (platform.storeReady) {
       // Apple asks for this button on every storefront, consumables or not
