@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=231";
-import { CHART_LEVELS } from "./campaign.js?v=231";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=231";
-import { restoreSpill } from "./spill.js?v=231";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=231";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=235";
+import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=235";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=235";
+import { restoreSpill } from "./spill.js?v=235";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=235";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=231";
-import { platform } from "./platform.js?v=231";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, } from "./catalog.js?v=235";
+import { platform } from "./platform.js?v=235";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -17,6 +17,10 @@ export function defaultSave() {
         spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
         receipts: [],
+        boosts: { levelskip: 0, starunlock: 0 },
+        keyUnlocks: [],
+        boostedRewards: [],
+        rewardSubs: {},
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -54,6 +58,19 @@ export function defaultSave() {
         raceRecords: {},
         raceGates: [],
     };
+}
+/** ONE RECEIPT, ONE GRANT. The store may hand the same transaction to the
+ *  game more than once: the purchase promise, then the pending list on the
+ *  next resume, then Restore Purchases. The ledger says whether this id
+ *  has been paid. True means "new, now recorded, pay it"; false means the
+ *  dust already went out. The caller writes the save. */
+export function takeReceipt(save, transactionId) {
+    if (!Array.isArray(save.receipts))
+        save.receipts = [];
+    if (save.receipts.includes(transactionId))
+        return false;
+    save.receipts.push(transactionId);
+    return true;
 }
 /** Bank only new progress. This ledger is part of a suspended expedition,
  *  so loading or docking repeatedly never duplicates mastery or rewards. */
@@ -149,6 +166,21 @@ export function loadSave() {
     if (!Array.isArray(s.receipts))
         s.receipts = [];
     s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
+    // saves written before the Star Chart boosts existed
+    if (!s.boosts || typeof s.boosts !== "object")
+        s.boosts = { levelskip: 0, starunlock: 0 };
+    for (const id of BOOST_IDS) {
+        const n = s.boosts[id];
+        s.boosts[id] = typeof n === "number" && isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+    }
+    if (!Array.isArray(s.keyUnlocks))
+        s.keyUnlocks = [];
+    s.keyUnlocks = s.keyUnlocks.filter((k) => typeof k === "string");
+    if (!Array.isArray(s.boostedRewards))
+        s.boostedRewards = [];
+    s.boostedRewards = s.boostedRewards.filter((k) => typeof k === "string");
+    if (!s.rewardSubs || typeof s.rewardSubs !== "object" || Array.isArray(s.rewardSubs))
+        s.rewardSubs = {};
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
@@ -455,24 +487,202 @@ export function iapOwned(s, id) {
 }
 // Flight mods change how the game FEELS, so they are held back until a
 // player has flown enough of the chart to have an opinion about it.
+// A mod or a mode opened with a Star Unlock is opened: the reward's id
+// sits in keyUnlocks and every gate below reads it beside the stars.
+const keyed = (s, id) => (s.keyUnlocks || []).includes(id);
 export function modsUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.flightMods || keyed(s, "flightmods");
 }
 export function deepUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.deep || keyed(s, "deep");
 }
 export function lostUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.lost;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.lost || keyed(s, "lost");
 }
 export function startShieldUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.startShield;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.startShield || keyed(s, "startShield");
 }
 export function batteryUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.battery || keyed(s, "battery");
 }
 /** the second companion slot (owner, 7 Sep 2026): a Star Chart reward */
 export function dualPalUnlocked(s) {
-    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.dualPal;
+    return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.dualPal || keyed(s, "dualpal");
+}
+// ------------------------------------------------------ star chart boosts
+// The rules live here, on the save, so the harness can prove them without
+// a DOM: the engine wraps each one with a write and a notify.
+/** a boost held in the account, waiting to be spent on the Star Chart */
+export function boostReady(s, id) {
+    return (s.boosts?.[id] ?? 0) > 0;
+}
+/** BUYING PUTS IT IN THE ACCOUNT (owner, 8 Sep 2026: "if they pay but
+ *  lose connection or close app, it may be lost on the prompt, so it must
+ *  stay in their account"). The Shop charges Star Dust and the count goes
+ *  up; the Star Chart is where it is spent, one hold-to-confirm at a time. */
+export function buyBoost(s, id) {
+    if (s.starDust < BOOSTS[id].dust)
+        return "poor";
+    s.starDust -= BOOSTS[id].dust;
+    s.boosts[id] = (s.boosts[id] ?? 0) + 1;
+    return "ok";
+}
+function spendBoost(s, id) {
+    if (!boostReady(s, id))
+        return "none";
+    s.boosts[id] -= 1;
+    return "ok";
+}
+/** why a Level Skip cannot land on this mission, or "ok" */
+export function skipEligible(s, def) {
+    if (def.standalone || def.base === "race")
+        return "hyper";
+    if (missionCredit(s, def) >= 3)
+        return "done";
+    if (!levelUnlocked(def, routeMasks(s), starsOf(s), s.raceGates || []))
+        return "locked";
+    return "ok";
+}
+/** every mission a Level Skip could land on right now, in road order */
+export function skippableLevels(s) {
+    return CHART_LEVELS.filter((def) => skipEligible(s, def) === "ok");
+}
+/** LEVEL SKIP: three stars on a reachable, unfinished mission. The credit
+ *  goes through the same ledger a flown finish uses, so the road, the
+ *  star total and every reward line read it the same way. */
+export function skipLevel(s, def) {
+    const why = skipEligible(s, def);
+    if (why !== "ok")
+        return why;
+    const paid = spendBoost(s, "levelskip");
+    if (paid !== "ok")
+        return paid;
+    settleMissionCredit(s, def, 7);
+    return "ok";
+}
+/** is this Star Chart reward already the pilot's, by stars or otherwise? */
+export function rewardOwned(s, r) {
+    if (r.kind === "acorns" || r.kind === "dust")
+        return starsOf(s) >= r.stars;
+    if (!r.id)
+        return starsOf(s) >= r.stars;
+    switch (r.kind) {
+        case "suit": return suitRevealed(s, r.id);
+        case "helmet": return helmetRevealed(s, r.id);
+        case "trail": return trailUnlocked(s, r.id);
+        case "pal": return palUnlocked(s, r.id);
+        case "mode": return r.id === "deep" ? deepUnlocked(s) : r.id === "lost" ? lostUnlocked(s) : starsOf(s) >= r.stars;
+        case "mod": return r.id === "startShield" ? startShieldUnlocked(s)
+            : r.id === "battery" ? batteryUnlocked(s)
+                : r.id === "flightmods" ? modsUnlocked(s)
+                    : r.id === "dualpal" ? dualPalUnlocked(s)
+                        : starsOf(s) >= r.stars;
+        default: return starsOf(s) >= r.stars;
+    }
+}
+/** the rewards a Star Unlock can open: items, not currency, not owned */
+export function unlockableRewards(s) {
+    return STAR_REWARDS.filter((r) => r.kind !== "acorns" && r.kind !== "dust" && r.kind !== "stage"
+        && r.kind !== "title" && !!r.id && !rewardOwned(s, r));
+}
+/** STAR UNLOCK: one reward item ahead of its stars. Wardrobe rewards land
+ *  in the same unlocked* list a star crossing would fill; mods and modes
+ *  are keyed by the reward's id. */
+export function unlockReward(s, r) {
+    if (r.kind === "acorns" || r.kind === "dust" || !r.id)
+        return "currency";
+    if (rewardOwned(s, r))
+        return "owned";
+    const paid = spendBoost(s, "starunlock");
+    if (paid !== "ok")
+        return paid;
+    const add = (list) => { if (!list.includes(r.id))
+        list.push(r.id); };
+    // a premium id is owned through `purchased` - the one list every gate
+    // and the shop read for it - so a Star Unlock lands it there
+    if (r.kind === "mod" || r.kind === "mode")
+        add(s.keyUnlocks);
+    else if (isIap(r.id)) {
+        if (!(s.purchased || []).includes(r.id))
+            s.purchased = [...(s.purchased || []), r.id];
+    }
+    else if (r.kind === "suit")
+        add(s.unlockedSuits);
+    else if (r.kind === "helmet")
+        add(s.unlocked);
+    else if (r.kind === "trail")
+        add(s.unlockedTrails);
+    else if (r.kind === "pal")
+        add(s.unlockedPals);
+    add(s.boostedRewards);
+    return "ok";
+}
+/** DOES THE PILOT HAVE THIS PREMIUM ID, by any route: bought, opened with
+ *  a Star Unlock, or earned on the road. The shop reads this rather than
+ *  the purchase list alone, so an item the road handed over leaves the
+ *  shelf and comes off a pack's price (owner, 8 Sep 2026: "once they earn
+ *  it on the road, it's removed from the shop"). */
+export function ownsPremium(s, id) {
+    if ((s.purchased || []).includes(id))
+        return true;
+    if (SUITS.some((u) => u.id === id))
+        return suitRevealed(s, id);
+    if (HELMETS.some((h) => h.id === id))
+        return helmetRevealed(s, id);
+    if (PALS.some((p) => p.id === id))
+        return palUnlocked(s, id);
+    if (TRAILS.some((t) => t.id === id))
+        return trailUnlocked(s, id);
+    return false;
+}
+/** PAY EVERY RUNG THE PILOT HAS CROSSED AND NOT BEEN PAID FOR. Currency
+ *  rungs pay their amount. An item rung whose item another route already
+ *  handed over pays currency in its place: Star Dust for a shop purchase,
+ *  acorns for a Star Unlock. Every crossed rung is written to the ledger
+ *  once, so nothing pays twice. The caller writes the save. Returns the
+ *  total paid. */
+export function settleStarRewards(s) {
+    const have = starsOf(s);
+    const ledger = migrateCampaign(s);
+    let dust = 0, acorns = 0, high = s.dustPaidTo;
+    for (const r of STAR_REWARDS) {
+        if (r.stars > have)
+            continue;
+        const key = rewardId(r);
+        if (ledger.paidRewards.includes(key))
+            continue;
+        if (r.kind === "dust" || r.kind === "acorns") {
+            if (!r.amount)
+                continue;
+            if (r.kind === "dust") {
+                dust += r.amount;
+                high = Math.max(high, r.stars);
+            }
+            else
+                acorns += r.amount;
+            ledger.paidRewards.push(key);
+            continue;
+        }
+        if (!r.id)
+            continue;
+        const keyed = (s.boostedRewards || []).includes(r.id);
+        const bought = !keyed && (s.purchased || []).includes(r.id);
+        if (keyed || bought) {
+            const sub = substituteFor(r.stars, bought ? "dust" : "acorns");
+            if (sub.kind === "dust")
+                dust += sub.amount;
+            else
+                acorns += sub.amount;
+            s.rewardSubs = { ...(s.rewardSubs || {}), [key]: sub };
+        }
+        ledger.paidRewards.push(key);
+    }
+    if (dust <= 0 && acorns <= 0)
+        return 0;
+    s.starDust += dust;
+    s.acorns += acorns;
+    s.dustPaidTo = high;
+    return dust + acorns;
 }
 /** the companions the hangar has equipped, high slot first, without the
  *  empty "none" - the one list every screen that shows a pal reads */
