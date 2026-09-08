@@ -32,7 +32,9 @@
     input, textarea { -webkit-user-select: text; user-select: text; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #070b16; color: #f3efe4; font-family: Figtree, system-ui, sans-serif; touch-action: none; user-select: none; }
     #app, .ac-root { width: 100%; height: 100%; display: flex; justify-content: center; }
-    .ac-stage { position: relative; width: 100%; max-width: 480px; height: 100%; background: #0c1224; overflow: hidden; }
+    .ac-stage { position: relative; width: 100%; max-width: 480px; height: 100%; background: #0c1224; overflow: hidden;
+      /* the notch, published for the canvas HUD to read (engine resize) */
+      --sat: env(safe-area-inset-top, 0px); }
     .ac-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
     .ac-backplate { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
     /* the beta flight lab on the pause sheet */
@@ -302,7 +304,8 @@
     .ac-bigpip.earned { color: #ffd060; text-shadow: 0 0 16px rgba(255,208,96,.7); }
     .ac-bigpip.kept { color: #a08b52; }
     .ac-modlock { grid-column: 1 / -1; margin: 2px 0 8px; line-height: 1.45; }
-    .ac-menuhead { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 16px 16px 10px; }
+    .ac-menuhead { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px;
+      padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 10px; }
     .ac-menuheadtext { min-width: 0; }
     .ac-menutitle { font-family: Fraunces, serif; font-weight: 800; font-size: 24px; line-height: 1.1; }
     .ac-menu .ac-kicker { color: #8b95b0; font-size: 9px; }
@@ -838,6 +841,10 @@
        platform's own boards above the local bests */
     .ac-restore { margin: 6px 0 2px; }
     .ac-boardglobal { margin: 8px 0 12px; }
+    /* SAFE AREA (8 Sep 2026): the sheets that open over a run and the
+       in-flight pause button keep clear of the notch as well */
+    .ac-pausesheet { padding-top: max(18px, env(safe-area-inset-top, 0px)); }
+    .ac-lvlsheet > .ac-lvlcard { max-height: calc(100% - env(safe-area-inset-top, 0px)); }
     /* the seats line above the pal shelf */
     .ac-palseats { grid-column: 1 / -1; margin: 2px 2px 0; font: 800 9px/1.35 Figtree, sans-serif;
       letter-spacing: .08em; text-transform: uppercase; color: #9aa6c8; }
@@ -1002,7 +1009,7 @@
     .ac-xpbar > div { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #e8a44a, #ffd080); transition: width 1.1s cubic-bezier(.2,.8,.3,1); }
     @keyframes ac-pulse { 0%,100% { box-shadow: 0 0 8px rgba(232,164,74,.18); } 50% { box-shadow: 0 0 18px rgba(232,164,74,.4); } }
     .ac-log.on { border-color: rgba(232,164,74,.4); background: #141b30; }
-    .ac-playbar { display: flex; justify-content: flex-end; padding: 12px; }
+    .ac-playbar { display: flex; justify-content: flex-end; padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 12px; }
     /* the first flight can be left; the button sits beside pause and is
        deliberately quiet, so it reads as an escape hatch rather than an
        invitation to leave the lesson */
@@ -1094,7 +1101,7 @@
        The home is a hub of saturated tiles over the purple key art.
        Sub-screens keep the galaxy chrome; only home wears this. */
     .ac-hub { position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;
-      background: #120a2c; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); }
+      background: #120a2c; padding: calc(12px + env(safe-area-inset-top, 0px)) 14px calc(12px + env(safe-area-inset-bottom)); }
     .ac-hub-art { position: absolute; inset: 0; background-size: cover; background-position: 50% 26%; filter: saturate(1.1); }
     .ac-hub-scrim { position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(16,7,38,.68) 0%, rgba(16,7,38,.12) 22%, rgba(16,7,38,.14) 60%, rgba(10,4,26,.82) 94%); }
@@ -2008,7 +2015,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));max-height:c
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js227/standalone.js")
+    import("../js228/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

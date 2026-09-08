@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=227";
-import { CHART_LEVELS } from "./campaign.js?v=227";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=227";
-import { restoreSpill } from "./spill.js?v=227";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=227";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=228";
+import { CHART_LEVELS } from "./campaign.js?v=228";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=228";
+import { restoreSpill } from "./spill.js?v=228";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=228";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=227";
-import { platform } from "./platform.js?v=227";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=228";
+import { platform } from "./platform.js?v=228";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -16,6 +16,7 @@ export function defaultSave() {
         spillBest: 0,
         spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
+        receipts: [],
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -144,6 +145,9 @@ export function loadSave() {
     // backlog on next load instead of silently losing it.
     if (typeof s.starDust !== "number" || !isFinite(s.starDust))
         s.starDust = 0;
+    if (!Array.isArray(s.receipts))
+        s.receipts = [];
+    s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")

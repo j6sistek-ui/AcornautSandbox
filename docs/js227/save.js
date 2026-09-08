@@ -16,6 +16,7 @@ export function defaultSave() {
         spillBest: 0,
         spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
+        receipts: [],
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -144,6 +145,9 @@ export function loadSave() {
     // backlog on next load instead of silently losing it.
     if (typeof s.starDust !== "number" || !isFinite(s.starDust))
         s.starDust = 0;
+    if (!Array.isArray(s.receipts))
+        s.receipts = [];
+    s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")

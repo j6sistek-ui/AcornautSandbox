@@ -20,6 +20,14 @@ export type PlatformKind = "web" | "ios" | "android" | "steam";
 export type BoardId = "fly" | "deep" | "lost" | "arcade" | "tunnel" | "spill" | "hyper";
 
 export type BuyResult = "ok" | "cancelled" | "failed" | "unavailable";
+/** what a finished purchase hands back: the outcome, and on "ok" the
+ *  store's transaction id so the same receipt is never granted twice */
+export type BuyOutcome = { result: BuyResult; transactionId?: string };
+/** a consumable the store has on record for this user - the game grants
+ *  the ones its receipt ledger has not seen (a purchase that completed
+ *  after the app was suspended, an Ask to Buy approved later, a store
+ *  re-delivery on the next launch) */
+export type PendingPurchase = { id: string; transactionId: string };
 
 /** WHAT A SHELL HANDS IN. Every member is optional: an adapter that says
  *  nothing about boards gets the web answer for boards. */
@@ -32,10 +40,15 @@ export type PlatformAdapter = {
   store?: {
     /** localized price string from the store, or null until it has answered */
     priceOf(id: string): string | null;
-    /** completes the purchase; the GAME grants the dust on "ok" */
-    buy(id: string): Promise<BuyResult>;
+    /** completes the purchase; the GAME grants the dust on "ok". A bare
+     *  BuyResult is accepted from an older adapter; a BuyOutcome carries
+     *  the transaction id that makes the grant idempotent. */
+    buy(id: string): Promise<BuyResult | BuyOutcome>;
     /** Apple requires the button even when every product is consumable */
     restore(): Promise<void>;
+    /** every consumable transaction the store knows for this user, as
+     *  GAME ids (the adapter maps store product ids back) */
+    pending?(): Promise<PendingPurchase[]>;
   };
   boards?: {
     submit(board: BoardId, score: number): void;
@@ -54,8 +67,10 @@ export type Platform = {
    *  takes real money and offers Restore Purchases */
   storeReady: boolean;
   priceOf(id: string): string | null;
-  buyDust(id: string): Promise<BuyResult>;
+  buyDust(id: string): Promise<BuyOutcome>;
   restorePurchases(): Promise<void>;
+  /** consumables on record at the store; [] on the web or before the store answers */
+  pendingPurchases(): Promise<PendingPurchase[]>;
   boardsReady: boolean;
   submitScore(board: BoardId, score: number): void;
   showBoards(board?: BoardId): void;
@@ -89,8 +104,11 @@ function build(a: PlatformAdapter | null): Platform {
     storage,
     storeReady: !!store,
     priceOf: (id) => store?.priceOf(id) ?? null,
-    buyDust: (id) => store ? store.buy(id) : Promise.resolve("unavailable"),
+    buyDust: (id) => store
+      ? store.buy(id).then((r) => typeof r === "string" ? { result: r } : r)
+      : Promise.resolve({ result: "unavailable" as const }),
     restorePurchases: () => store ? store.restore() : Promise.resolve(),
+    pendingPurchases: () => store?.pending ? store.pending().catch(() => []) : Promise.resolve([]),
     boardsReady: !!boards,
     submitScore: (board, score) => { try { boards?.submit(board, score); } catch { /* a board that is down never costs a run */ } },
     showBoards: (board) => boards?.show(board),

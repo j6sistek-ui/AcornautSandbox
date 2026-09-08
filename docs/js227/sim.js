@@ -81,7 +81,7 @@ export function makeWorld(W, H) {
         zoneJump: 0,
         hitCooldown: 0,
         trailT: 0,
-        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, bounceHouse: false,
+        bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, insetTop: 0, bounceHouse: false,
         clockMul: 1,
         clockPhase: 0,
         clockRate: 0.5,

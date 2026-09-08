@@ -2493,7 +2493,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.font = "800 11px Figtree, system-ui";
     const label = names;
     const tw = ctx.measureText(label).width;
-    const cx = 16, cy = H - 26 - 14;
+    const cx = 16, cy = H - (w.insetTop || 0) - 26 - 14;
     const cw = tw + 26;
     ctx.fillStyle = "rgba(14,20,38,.8)";
     round(ctx, cx, cy - 15, cw, 30, 15);
@@ -5368,6 +5368,15 @@ export function hyperRunReadyLines(viewWidth: number): readonly string[] {
 }
 
 export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
+  // THE NOTCH. Everything in the HUD is laid out from the top edge, so the
+  // whole HUD steps down by the safe-area inset; the two bottom-anchored
+  // pieces (the Spill's corner control and the level panel) step back up.
+  ctx.save();
+  ctx.translate(0, w.insetTop || 0);
+  try { drawHudBody(ctx, w, art, save); } finally { ctx.restore(); }
+}
+
+function drawHudBody(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
   const { W } = w;
   if (w.spill) {
     drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
@@ -5431,7 +5440,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
       const lineHeight = compact ? 20 : 21;
       const panelWidth = Math.min(W - 24, compact ? 430 : 560);
       const panelHeight = readyLines.length * lineHeight + 28;
-      const panelTop = Math.min(w.H - panelHeight - 12, Math.max(96, w.H * 0.66));
+      const panelTop = Math.min(w.H - (w.insetTop || 0) - panelHeight - 12, Math.max(96, w.H * 0.66));
       ctx.fillStyle = "rgba(4,8,20,.78)";
       ctx.strokeStyle = "rgba(169,245,255,.34)";
       ctx.lineWidth = 1;

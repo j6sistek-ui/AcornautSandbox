@@ -54,6 +54,9 @@ export type SaveData = {
   spillEngineColor?: SpillEngineColor;
   spillDepotGuideSeen?: boolean;
   purchased: string[];
+  /** store transaction ids already turned into dust, so a re-delivered
+   *  receipt is never paid twice (owner's store build, 8 Sep 2026) */
+  receipts: string[];
   acorns: number;
   xp: number;
   startShield: boolean;
@@ -172,6 +175,7 @@ export function defaultSave(): SaveData {
     spillBest: 0,
     spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
     purchased: [],
+    receipts: [],
     acorns: 0,
     xp: 0,
     startShield: false,
@@ -276,6 +280,8 @@ export function loadSave(): SaveData {
   // than at the pilot's current stars, so a long-standing save is PAID its
   // backlog on next load instead of silently losing it.
   if (typeof s.starDust !== "number" || !isFinite(s.starDust)) s.starDust = 0;
+  if (!Array.isArray(s.receipts)) s.receipts = [];
+  s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
   if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo)) s.dustPaidTo = 0;
   if (typeof s.betaDustGrant !== "boolean") s.betaDustGrant = false;
   if (typeof s.shelfGrid !== "boolean") s.shelfGrid = false;

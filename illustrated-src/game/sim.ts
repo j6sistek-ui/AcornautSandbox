@@ -388,6 +388,9 @@ export type World = {
   palFlip: boolean;
   /** the equipped companion's level-style modifiers (PAL_FX), fixed at run start */
   palFx: LabFx | null;
+  /** SAFE AREA (8 Sep 2026): the notch or status bar height in CSS px,
+   *  read from the page at resize; the HUD's top row keeps clear of it */
+  insetTop: number;
   /** SPACE PUPPY (owner, 7 Sep 2026): the run is a bounce house - no debris,
    *  no pickups, no gate count, giant planets, a floor that bounces */
   bounceHouse: boolean;
@@ -564,7 +567,7 @@ export function makeWorld(W: number, H: number): World {
     zoneJump: 0,
     hitCooldown: 0,
     trailT: 0,
-    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, bounceHouse: false,
+    bounceUp: false, scrollDirection: -1, scrollTravel: 0, tapFrozen: false, stuck: false, lab: {}, palFlip: false, palFx: null, insetTop: 0, bounceHouse: false,
     clockMul: 1,
     clockPhase: 0,
     clockRate: 0.5,
