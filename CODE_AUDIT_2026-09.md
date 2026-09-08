@@ -272,25 +272,59 @@ point, not a decision.
 
 ---
 
-## 4. One question for the owner
+## 4. The owner's answer: a rung never charges
 
-Nine star rungs REVEAL a helmet rather than granting it: reaching the rung
-opens the item on the shelf, and the Loadout then charges acorns for it.
+Nine star rungs REVEALED a helmet rather than granting it — reaching the rung
+opened the item on the shelf, and the Loadout then charged acorns for it. F44
+fixed the words; the owner settled the rule (8 Sep 2026): *"remove from star
+rung, some items are acorns.. at those star rung replace with acorns for now.
+might add new asset later to replace."*
 
-| Stars | Helmet | Acorns |
-|---:|---|---:|
-| 15 | Void | 90 |
-| 60 | Comet | 120 |
-| 70 | Cherry | 150 |
-| 120 | Phoenix | 175 |
-| 180 | Royal | 200 |
-| 190 | Aurora | 300 |
-| 300 | Princess | 350 |
-| 540 | Meteor | 400 |
-| 560 | Chrono | 500 |
+Those nine helmets came off the ladder. The rungs pay acorns at their block's
+rate — the same `100 + 70 x block` the generator already uses for every other
+acorn rung — and each helmet keeps the shelf gate it always had, so the shop
+opens at exactly the pace it did:
 
-F44 fixed the words — the rail, the reward sheet and the level-done screen
-now say "Open in the Loadout — N acorns" instead of "Yours." — but not the
-rule, because the rule is a design decision. Making these rungs hand the
-helmet over free would be cleaner to explain, and would also delete the
-Loadout's main acorn sink. That is the owner's call, not an audit's.
+| Stars | Was | The rung now | Helmet, still on the shelf here | Acorns the road has paid by then |
+|---:|---|---|---:|---:|
+| 15 | Void Helmet | 100 acorns | 90 | 100 |
+| 60 | Comet Helmet | 170 acorns | 120 | 370 |
+| 70 | Cherry Helmet | 170 acorns | 150 | 540 |
+| 120 | Phoenix Helmet | 240 acorns | 175 | 780 |
+| 180 | Royal Helmet | *Flight Mods gate* | 200 | 780 |
+| 190 | Aurora Helmet | 310 acorns | 300 | 1,090 |
+| 300 | Rose Helmet | 450 acorns | 350 | 1,920 |
+| 540 | Meteor Helmet | 730 acorns | 400 | 4,350 |
+| 560 | Chrono Helmet | 730 acorns | 500 | 5,080 |
+
+180 is the exception: the Flight Mods gate already owns that rung, so the
+Royal Helmet is covered by the road behind it rather than by a rung of its
+own. Every helmet is paid for by the time it reaches the shelf, so the acorn
+sink survives and nothing on the road announces an unlock over a price tag.
+
+### Three things this turned up
+
+- **The ladder is generated, and it was idempotent.** A fresh
+  `reward-ladder.mjs` run reproduced the committed list 87 rows out of 87, so
+  a hand edit would have left the generator disagreeing with the file it
+  owns — the same trap recorded as F94 for `road-rules.py`. The generator was
+  taught the rule instead, and a re-run now reproduces the ladder byte for
+  byte. **All 55 item rungs are untouched.**
+- **Dropping the nine from the pool would move everything else.** The eight
+  surviving helmets re-spread: the Ghost Suit walks to 60, the Cat Suit to
+  300, AcorNut to 550, and the Chronarch Helmet lands at 15 stars. So the
+  nine stay in the pool holding the slots they always held, and only what
+  gets *written* at those slots changes.
+- **`STAR_UNLOCKS.helmets` is derived from the ladder.** Taking the nine off
+  it also took their shelf gates, which would have put all nine helmets in
+  the shop from the first flight — a pacing change nobody asked for. They are
+  now declared in `PRICED_HELMET_GATES` and merged, with the ladder winning
+  where both name a helmet, so a new asset dropped onto one of these rungs
+  later takes its gate from the ladder as usual.
+
+`test-star-map.mjs` holds both halves of the rule for whatever lands on these
+rungs later: no helmet or suit rung may name an item the Loadout still charges
+for, and no priced helmet may reach the shelf before the road has paid its
+price. Both were mutation-tested against the product. `rewardDue` in
+`standalone.ts` stays as the screens' own check — it answers 0 for every
+reward on the road today.

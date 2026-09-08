@@ -3200,15 +3200,18 @@ export async function bootStandalone(root: HTMLElement) {
     return wrap;
   }
 
-  /** WHAT A RUNG STILL COSTS. A priced helmet or suit rung REVEALS its
-   *  item for acorns rather than handing it over - that split is the
-   *  economy (Collect for free, a price tag for paid) - but the gate that
-   *  answers "is this rung earned" answers REVEALED, so the rail, the
-   *  reward sheet and the level-done screen all said the Void Helmet was
-   *  yours while the Loadout went on charging 90 acorns for it (audit,
-   *  Sep 2026). The prices are not the bug; the words were. This says what
-   *  the Loadout will still ask, or 0 when the rung really did hand it
-   *  over - the same test the Loadout card itself makes. */
+  /** WHAT A RUNG STILL COSTS - which, by rule, is now nothing.
+   *
+   *  Nine helmet rungs used to REVEAL their helmet for acorns rather than
+   *  hand it over, so the rail, the reward sheet and the level-done screen
+   *  all said the Void Helmet was yours while the Loadout went on charging
+   *  90 for it (audit, Sep 2026). The owner settled it the other way: those
+   *  rungs pay acorns instead, the helmets keep their shelf gate at the same
+   *  star count, and a rung either grants outright or is not a rung. That
+   *  invariant is held by test-star-map, so this answers 0 for every reward
+   *  on the road today. It stays because it is the check the Loadout card
+   *  itself makes: if a priced item is ever dropped onto a rung again, these
+   *  screens say what it costs rather than calling it yours. */
   function rewardDue(r: StarReward) {
     if (!r.id || isIap(r.id)) return 0;
     const s = engine.save;
