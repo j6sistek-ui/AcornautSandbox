@@ -66,15 +66,28 @@ function storeOf(platformName) {
     async buy(gameId) {
       await ready;
       const product = products.get(storeId(gameId));
-      if (!product) return "unavailable";
+      if (!product) return { result: "unavailable" };
       try {
-        await Purchases.purchaseStoreProduct({ product });
-        return "ok";
+        const res = await Purchases.purchaseStoreProduct({ product });
+        // the transaction id is what makes the grant idempotent (engine.grantDust)
+        return { result: "ok", transactionId: res?.transaction?.transactionIdentifier || `${res?.productIdentifier || storeId(gameId)}:${Date.now()}` };
       } catch (e) {
-        return e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed";
+        return { result: e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };
       }
     },
     async restore() { await ready; try { await Purchases.restorePurchases(); } catch (e) { console.warn("[acornaut shell] restore:", e?.message || e); } },
+    // EVERY CONSUMABLE ON RECORD, as game ids. The game's receipt ledger
+    // decides which are still unpaid, so this may list years of history.
+    async pending() {
+      await ready;
+      const gameIdOf = new Map(Object.entries(productIds).map(([g, s]) => [s, g]));
+      try {
+        const { customerInfo } = await Purchases.getCustomerInfo();
+        return (customerInfo?.nonSubscriptionTransactions || [])
+          .map((t) => ({ id: gameIdOf.get(t.productIdentifier), transactionId: t.transactionIdentifier }))
+          .filter((p) => p.id && p.transactionId);
+      } catch (e) { console.warn("[acornaut shell] pending:", e?.message || e); return []; }
+    },
   };
 }
 

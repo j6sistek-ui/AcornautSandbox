@@ -902,23 +902,47 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
    *  beta still grants outright so testers can shop; the live web page
    *  refuses, because a pack that grants for free is not a placeholder, it
    *  is a loophole. */
-  function grantDust(pack: (typeof DUST_PACKS)[number]) {
+  /** ONE RECEIPT, ONE GRANT. A transaction id the ledger has seen is
+   *  ignored; one it has not is paid and recorded. Without an id (the
+   *  beta's free grant) it simply pays. */
+  function grantDust(pack: (typeof DUST_PACKS)[number], transactionId?: string) {
+    if (transactionId) {
+      if (save.receipts.includes(transactionId)) return false;
+      save.receipts.push(transactionId);
+    }
     save.starDust += pack.dust + pack.bonus;
     writeSave(save);
     notify();
+    return true;
   }
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
     if (platform.storeReady) {
-      void platform.buyDust(id).then((r) => { if (r === "ok") grantDust(pack); });
+      void platform.buyDust(id).then((r) => { if (r.result === "ok") grantDust(pack, r.transactionId); });
       return "pending";
     }
     if (IS_BETA) { grantDust(pack); return "ok"; }
     return "unavailable";
   }
+  /** WHAT THE STORE STILL OWES. Every consumable on the store's record
+   *  that the ledger has not paid: a purchase that finished after the app
+   *  was suspended, a child's Ask to Buy approved hours later, a receipt
+   *  the store re-delivers on the next launch. Asked at boot, on resume and
+   *  after Restore Purchases; idempotent by the ledger. */
+  function deliverPending() {
+    if (!platform.storeReady) return Promise.resolve(0);
+    return platform.pendingPurchases().then((list) => {
+      let paid = 0;
+      for (const p of list) {
+        const pack = DUST_PACKS.find((d) => d.id === p.id);
+        if (pack && grantDust(pack, p.transactionId)) paid++;
+      }
+      return paid;
+    });
+  }
   function restorePurchases() {
-    return platform.restorePurchases().then(() => notify());
+    return platform.restorePurchases().then(() => deliverPending()).then(() => notify());
   }
 
   function buyBundle(id: string) {
@@ -1044,6 +1068,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // over splits evenly rather than piling up on one side.
     const W = Math.min(rect.width, 3840);
     const H = rect.height;
+    // the notch: --sat is env(safe-area-inset-top) on the stage (index.html)
+    world.insetTop = parseFloat(getComputedStyle(parent).getPropertyValue("--sat")) || 0;
     const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
     const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
       && raceGesture.owner !== null;
@@ -1517,6 +1543,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // as the engine comes up - not on the walk to a storefront. claimDaily is
   // a no-op for a day already taken, so a reload never pays twice.
   claimDaily();
+  // and anything the store still owes from a purchase that finished while
+  // the app was away - again whenever the app comes back to the front
+  void deliverPending();
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") void deliverPending(); });
 
   // the switches that are not read from the save on the fly are applied
   // once here, so a reload lands in the state the pilot left
