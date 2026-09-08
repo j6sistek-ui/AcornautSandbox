@@ -54,8 +54,11 @@ function build(a) {
         storage,
         storeReady: !!store,
         priceOf: (id) => store?.priceOf(id) ?? null,
-        buyDust: (id) => store ? store.buy(id) : Promise.resolve("unavailable"),
+        buyDust: (id) => store
+            ? store.buy(id).then((r) => typeof r === "string" ? { result: r } : r)
+            : Promise.resolve({ result: "unavailable" }),
         restorePurchases: () => store ? store.restore() : Promise.resolve(),
+        pendingPurchases: () => store?.pending ? store.pending().catch(() => []) : Promise.resolve([]),
         boardsReady: !!boards,
         submitScore: (board, score) => { try {
             boards?.submit(board, score);

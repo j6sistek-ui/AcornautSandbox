@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=226";
-import { CHART_LEVELS } from "./campaign.js?v=226";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=226";
-import { restoreSpill } from "./spill.js?v=226";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=226";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars } from "./campaign-progress.js?v=230";
+import { CHART_LEVELS } from "./campaign.js?v=230";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=230";
+import { restoreSpill } from "./spill.js?v=230";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=230";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=226";
-import { platform } from "./platform.js?v=226";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, } from "./catalog.js?v=230";
+import { platform } from "./platform.js?v=230";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -16,6 +16,7 @@ export function defaultSave() {
         spillBest: 0,
         spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
         purchased: [],
+        receipts: [],
         acorns: 0,
         xp: 0,
         startShield: false,
@@ -27,6 +28,7 @@ export function defaultSave() {
         suitLean: {},
         dustPaidTo: 0,
         lastDaily: "",
+        streakPackClaimed: false,
         dailyStreak: 0,
         steadyGates: false,
         roughAir: false,
@@ -144,6 +146,9 @@ export function loadSave() {
     // backlog on next load instead of silently losing it.
     if (typeof s.starDust !== "number" || !isFinite(s.starDust))
         s.starDust = 0;
+    if (!Array.isArray(s.receipts))
+        s.receipts = [];
+    s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
     if (typeof s.dustPaidTo !== "number" || !isFinite(s.dustPaidTo))
         s.dustPaidTo = 0;
     if (typeof s.betaDustGrant !== "boolean")
@@ -201,6 +206,8 @@ export function loadSave() {
     s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";
+    if (typeof s.streakPackClaimed !== "boolean")
+        s.streakPackClaimed = false;
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
         s.dailyStreak = 0;
     // saves written before the flight mods existed

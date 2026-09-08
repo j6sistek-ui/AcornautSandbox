@@ -3339,7 +3339,7 @@ export async function bootStandalone(root: HTMLElement) {
   let packOpen: string | null = null;      // the pack whose contents are open
   let confirmBuy = false;                  // the pack sheet is asking "are you sure"
   /** set by the engine's arrival-claim so the shop can announce it once */
-  let dailyToast: { amount: number; streak: number; bonus: boolean } | null = null;
+  let dailyToast: { amount: number; streak: number; bonus: boolean; pack: boolean } | null = null;
   let revealPack: string | null = null;    // a pack just bought, being shown off
   let revealPick: string | null = null;    // the card tapped inside the reveal
   let revealScroll = 0;                    // where the swipe strip was left
@@ -4422,19 +4422,33 @@ export async function bootStandalone(root: HTMLElement) {
    *  rather than for them. This is the only thing in the shop that
    *  interrupts, and it is closed by hand: a reward that vanishes on its
    *  own timer is one a distracted player never saw. */
-  function drawDailyToast(t: { amount: number; streak: number; bonus: boolean }) {
+  function drawDailyToast(t: { amount: number; streak: number; bonus: boolean; pack: boolean }) {
     const close = () => { dailyToast = null; render(); };
     const wrap = el("div", "ac-lvlsheet");
     const sheet = el("div", "ac-lvlcard ac-dailycard");
     sheet.append(dustBadge("ac-dailybadgebig"));
     sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
-    const big = el("div", "ac-dailybig");
-    big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
-    sheet.append(big);
-    sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
-    sheet.append(el("p", "ac-sub", t.bonus
-      ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
-      : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+    if (t.pack) {
+      // THE FIRST FULL WEEK: three critters, painted, not a number
+      const trio = el("div", "ac-dailytrio");
+      for (const id of ["raccoon", "ferret", "hedgehog"]) {
+        const suit = SUITS.find((u) => u.id === id);
+        const { c, ctx } = miniCanvas(64, 64);
+        if (ctx && suit) paintFlightPreview(ctx, engine.art, suit, helmetWornBy("clear", id), 32, 34, 58, 0, undefined, false, 0);
+        trio.append(c);
+      }
+      sheet.append(trio);
+      sheet.append(el("h2", "ac-lvlname", "Critter Pack unlocked"));
+      sheet.append(el("p", "ac-sub", `Bandit, Noodle and Quill are yours - a full week of flying. Today also paid ${DAILY_DUST} dust; every seventh day from now pays the ${DAILY_STREAK_BONUS} streak bonus.`));
+    } else {
+      const big = el("div", "ac-dailybig");
+      big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
+      sheet.append(big);
+      sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
+      sheet.append(el("p", "ac-sub", t.bonus
+        ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
+        : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 ${engine.save.streakPackClaimed ? `day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more` : `day ${DAILY_STREAK_LEN} unlocks the Critter Pack`}.`));
+    }
     const pips = el("div", "ac-pips");
     for (let i = 1; i <= DAILY_STREAK_LEN; i++) {
       pips.append(el("i", `ac-pip${i <= t.streak ? " on" : ""}${i === DAILY_STREAK_LEN ? " big" : ""}`));
@@ -4466,9 +4480,10 @@ export async function bootStandalone(root: HTMLElement) {
       pips.append(pip);
     }
     left.append(pips);
+    const packAhead = !engine.save.streakPackClaimed;
     left.append(el("p", "ac-sub", st.bonusDay
-      ? `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`
-      : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+      ? (st.pack ? `Day ${DAILY_STREAK_LEN} \u2014 the Critter Pack is yours. Back tomorrow to start again.` : `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`)
+      : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} ${packAhead ? "unlocks the Critter Pack: Bandit, Noodle and Quill" : `pays ${DAILY_STREAK_BONUS} more`}.`));
     card.append(left);
     // No button: arriving here already claimed it. This is a receipt and a
     // streak tracker, not a control.

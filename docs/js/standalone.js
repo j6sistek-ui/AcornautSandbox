@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=229";
-import { platform } from "./platform.js?v=229";
-import { spillAppearance } from "./spill-appearance.js?v=229";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=229";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=229";
-import { addChartScenery } from "./star-map-view.js?v=229";
-import { mapDebrisIndex } from "./zone-visuals.js?v=229";
-import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=229";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=229";
-import { suitLean } from "./control-constants.js?v=229";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=229";
-import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=229";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=229";
-import { drawSprite as drawSpriteOn } from "./art.js?v=229";
-import { createEngine } from "./engine.js?v=229";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=229";
-import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=229";
-import { formatRaceTicks } from "./race.js?v=229";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=229";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=229";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=229";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=229";
+import { suitPitchFor } from "./save.js?v=230";
+import { platform } from "./platform.js?v=230";
+import { spillAppearance } from "./spill-appearance.js?v=230";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=230";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=230";
+import { addChartScenery } from "./star-map-view.js?v=230";
+import { mapDebrisIndex } from "./zone-visuals.js?v=230";
+import { missionCredit, verifiedMask, routeMasks } from "./campaign-progress.js?v=230";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=230";
+import { suitLean } from "./control-constants.js?v=230";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate } from "./campaign.js?v=230";
+import { ART_VER, BETA_FEATURES, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, bundlePrice, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, shopBundles, SHOP_SLOTS, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=230";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=230";
+import { drawSprite as drawSpriteOn } from "./art.js?v=230";
+import { createEngine } from "./engine.js?v=230";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, iapOwned, starsOf, trailUnlocked, PILOT_NAME_MAX } from "./save.js?v=230";
+import { LEVELS, HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAGES, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, stageUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=230";
+import { formatRaceTicks } from "./race.js?v=230";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=230";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=230";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, spillUtilityArt } from "./spill-workshop.js?v=230";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=230";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -4587,13 +4587,29 @@ export async function bootStandalone(root) {
         const sheet = el("div", "ac-lvlcard ac-dailycard");
         sheet.append(dustBadge("ac-dailybadgebig"));
         sheet.append(el("p", "ac-kicker", t.bonus ? "SEVEN DAY STREAK" : "DAILY REWARD"));
-        const big = el("div", "ac-dailybig");
-        big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
-        sheet.append(big);
-        sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
-        sheet.append(el("p", "ac-sub", t.bonus
-            ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
-            : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+        if (t.pack) {
+            // THE FIRST FULL WEEK: three critters, painted, not a number
+            const trio = el("div", "ac-dailytrio");
+            for (const id of ["raccoon", "ferret", "hedgehog"]) {
+                const suit = SUITS.find((u) => u.id === id);
+                const { c, ctx } = miniCanvas(64, 64);
+                if (ctx && suit)
+                    paintFlightPreview(ctx, engine.art, suit, helmetWornBy("clear", id), 32, 34, 58, 0, undefined, false, 0);
+                trio.append(c);
+            }
+            sheet.append(trio);
+            sheet.append(el("h2", "ac-lvlname", "Critter Pack unlocked"));
+            sheet.append(el("p", "ac-sub", `Bandit, Noodle and Quill are yours - a full week of flying. Today also paid ${DAILY_DUST} dust; every seventh day from now pays the ${DAILY_STREAK_BONUS} streak bonus.`));
+        }
+        else {
+            const big = el("div", "ac-dailybig");
+            big.append(icon(I_DUST, 34, true), el("b", "", `+${t.amount}`));
+            sheet.append(big);
+            sheet.append(el("h2", "ac-lvlname", "Star Dust collected"));
+            sheet.append(el("p", "ac-sub", t.bonus
+                ? `Day ${DAILY_STREAK_LEN} paid ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Come back tomorrow and the streak starts again.`
+                : `Day ${t.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow to keep the streak \u2014 ${engine.save.streakPackClaimed ? `day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more` : `day ${DAILY_STREAK_LEN} unlocks the Critter Pack`}.`));
+        }
         const pips = el("div", "ac-pips");
         for (let i = 1; i <= DAILY_STREAK_LEN; i++) {
             pips.append(el("i", `ac-pip${i <= t.streak ? " on" : ""}${i === DAILY_STREAK_LEN ? " big" : ""}`));
@@ -4625,9 +4641,10 @@ export async function bootStandalone(root) {
             pips.append(pip);
         }
         left.append(pips);
+        const packAhead = !engine.save.streakPackClaimed;
         left.append(el("p", "ac-sub", st.bonusDay
-            ? `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`
-            : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} pays ${DAILY_STREAK_BONUS} more.`));
+            ? (st.pack ? `Day ${DAILY_STREAK_LEN} \u2014 the Critter Pack is yours. Back tomorrow to start again.` : `Day ${DAILY_STREAK_LEN} \u2014 ${DAILY_DUST} plus the ${DAILY_STREAK_BONUS} streak bonus. Back tomorrow to start again.`)
+            : `Day ${st.streak} of ${DAILY_STREAK_LEN}. Come back tomorrow \u2014 day ${DAILY_STREAK_LEN} ${packAhead ? "unlocks the Critter Pack: Bandit, Noodle and Quill" : `pays ${DAILY_STREAK_BONUS} more`}.`));
         card.append(left);
         // No button: arriving here already claimed it. This is a receipt and a
         // streak tracker, not a control.
