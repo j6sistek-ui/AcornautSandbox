@@ -19,6 +19,12 @@ const bg=Object.getOwnPropertyDescriptor(win.CSSStyleDeclaration.prototype,'back
 Object.defineProperty(win.CSSStyleDeclaration.prototype,'backgroundImage',bg&&bg.set
   ?{...bg,set(value){backgrounds.set(this,value);bg.set.call(this,value);}}
   :{configurable:true,get(){return backgrounds.get(this)??'';},set(value){backgrounds.set(this,value);}});
+// READ IT BACK THE WAY THE PAGE WOULD. happy-dom 20 hands out a PROXY for
+// element.style, and the accessor above runs on that proxy's TARGET, so the
+// WeakMap keyed by a caller's `el.style` misses every recorded assignment.
+// The patched getter still returns the value; the map stays as the fallback for
+// the older shape, whose native setter drops multi-layer values on the floor.
+const backgroundOf=el=>el.style.backgroundImage||backgrounds.get(el.style)||'';
 let now=0,id=0;const frames=new Map();
 for(const k of ['window','document','localStorage','navigator','HTMLElement','HTMLCanvasElement','Event','PointerEvent','KeyboardEvent','ResizeObserver','Audio'])Object.defineProperty(globalThis,k,{value:k==='window'?win:win[k],configurable:true,writable:true});
 globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);win.requestAnimationFrame=requestAnimationFrame;win.cancelAnimationFrame=cancelAnimationFrame;
@@ -35,7 +41,11 @@ win.HTMLElement.prototype.getBoundingClientRect=function(){
 };
 win.HTMLElement.prototype.scrollIntoView=function(){const sc=this.closest('.ac-sheet-scroll');if(sc){sc.scrollTop=Math.max(0,parseFloat(this.style.top||'0')-250);sc.dispatchEvent(new win.Event('scroll'));}};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
-const S=await import('../docs/js/save.js'),P=await import('../docs/js/campaign-progress.js'),C=await import('../docs/js/campaign.js'),Sim=await import('../docs/js/sim.js'),Cat=await import('../docs/js/catalog.js'),V=await import('../docs/js/zone-visuals.js');
+const S=await import('../docs/js/save.js'),P=await import('../docs/js/campaign-progress.js'),C=await import('../docs/js/campaign.js'),Sim=await import('../docs/js/sim.js'),Cat=await import('../docs/js/catalog.js'),V=await import('../docs/js/zone-visuals.js'),R=await import('../docs/js/star-map-rewards.js');
+// Name the salvage-kit samples from the reward catalog rather than from the shelf
+// label: the button reads "Rust Runner ship finish" since the Spill workshop
+// retired the word "hull" (6f9a380), and the reward's NAME is the stable half.
+const rewardName=id=>{const r=R.PLANNED_STAR_REWARDS.find(r=>r.id===id);assert(r,`planned reward ${id}`);return r.name;};
 const save=S.defaultSave();Object.assign(save,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});S.writeSave(save);
 localStorage.setItem('acornaut_star_map_sample_v1',JSON.stringify({sentinel:'archived sample'}));
 const {bootStandalone}=await import('../docs/js/standalone.js');const app=document.createElement('main');document.body.append(app);await bootStandalone(app);const e=win.__sandbox;assert(e);
@@ -66,7 +76,7 @@ if(mode==='production'){
   assert(Cat.PALS.some(p=>p.id==='switchback'));assert(Cat.isIap('switchback'));
   assert(!e.flyLevel(C.HYPER_RUN_MISSION.id),'production rejects Hyper Run before arrival/access');
   assert(!e.flyLevel('2-1'),'star totals cannot skip the road');
-  // Actual engine launches and sim settlement, one star at a time, through all 100.
+  // Actual engine launches and sim settlement, one star at a time, through all 260.
   const stopped=[];
   for(const def of C.LEVELS){
     if(!e.flyLevel(def.id)){
@@ -78,8 +88,21 @@ if(mode==='production'){
     if(e.world.spill){e.world.spill.oreMined=0;e.world.spill.hits=1;}
     Sim.settleLevel(e.world,e.save,true);
   }
-  assert.deepEqual(stopped,[33,66,99]);assert.equal(P.earnedCampaignStars(e.save),100);
-  chart();assert.equal(app.querySelectorAll('.ac-mapnode.done').length,100);
+  assert.deepEqual(stopped,[33,66,99]);
+  // The stub stats above fail every graded goal (no acorns, no gold, a bounce, a
+  // shield, 999 taps), so a mission banks its finish star and nothing more - except
+  // the road's own gimmes, which a finish alone satisfies: the chapter-10 Free Flight
+  // and Spill rows carry repeat `finish` goals (test-star-map pins that contract) and
+  // three early rows ask for a single bounce. Was 100 on the retired 100-mission road;
+  // today 367 = 260 finishes + 107 gimmes, and it follows the road rather than a page.
+  const gimmes=def=>def.goals.filter((g,i)=>i>0&&(g.kind==='finish'||(g.kind==='bounces'&&g.n<=1))).length;
+  const roadStars=C.LEVELS.length+C.LEVELS.reduce((n,def)=>n+gimmes(def),0);
+  assert.equal(roadStars,367,'260 finishes plus 107 finish-alone gimmes');
+  assert.equal(P.earnedCampaignStars(e.save),roadStars);
+  // Every mission on the road now reads done - the road is 260 long, not the retired
+  // 100 - and with nothing left unflown no node keeps the `cur` class.
+  chart();assert.equal(app.querySelectorAll('.ac-mapnode.done').length,C.CHART_LEVELS.length);
+  assert.equal(app.querySelectorAll('.ac-mapnode.cur').length,0);
   assert.equal(app.querySelectorAll('.ac-debristag.done').length,3);
   const dust=e.save.starDust,receipts=JSON.stringify(e.save.campaignProgress.paidRewards);e.settleDust();assert.equal(e.save.starDust,dust);assert.equal(JSON.stringify(e.save.campaignProgress.paidRewards),receipts);
 } else {
@@ -87,7 +110,7 @@ if(mode==='production'){
   assert(Cat.PALS.some(p=>p.id==='switchback'));
   button('Rust Belt').click();tick();
   assert(app.querySelector('[data-order="101"] .ac-mapdisc canvas'));
-  assert(backgrounds.get(app.querySelector('[data-zone="rust-belt"]').style)?.includes('rust-belt.png'));
+  assert(backgroundOf(app.querySelector('[data-zone="rust-belt"]')).includes('rust-belt.png'));
   app.querySelector('[data-order="101"]').click();assert(app.textContent.includes('Mooring Line'));
   assert(e.flyLevel(C.ALL_LEVELS[100].id));assert.equal(e.world.lvl.def.id,C.ALL_LEVELS[100].id);
   assert(e.flyLevel(C.ALL_LEVELS[110].id));
@@ -97,7 +120,7 @@ if(mode==='production'){
     if (def.base === 'spill') assert.equal(e.world.spill.target,def.spillFinish ? Number.MAX_SAFE_INTEGER : def.gates);
   }
 
-  e.open('hangar');e.setShopTab('ship');assert(button('Rust Runner hull'));button('Rust Runner hull').click();button('Rust Wake exhaust').click();
+  e.open('hangar');e.setShopTab('ship');assert(button(rewardName('rust-runner')));button(rewardName('rust-runner')).click();button(rewardName('rust-wake')).click();
   assert.equal(S.loadSave().spillAppearance.finish,'rust-runner');assert.equal(S.loadSave().spillAppearance.trail,'rust-wake');
   assert(app.textContent.includes('Rivet · placeholder concept'));
   e.fly('spill');const before=JSON.stringify(e.world.spill);assert(e.setSpillAppearance('finish','stock'));assert.equal(JSON.stringify(e.world.spill),before,'cosmetic selection cannot mutate simulation');
