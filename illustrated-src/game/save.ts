@@ -250,8 +250,8 @@ export function loadSave(): SaveData {
   // beta hands premium out, production does not, and the two share a
   // browser. Anything equipped but not owned HERE comes off; it is not
   // deleted from the save, so a real purchase puts it straight back on.
-  if (isIap(s.equippedSuit) && !iapOwned(s, s.equippedSuit)) s.equippedSuit = "flight";
-  if (isIap(s.equipped) && !iapOwned(s, s.equipped)) s.equipped = "clear";
+  if (isIap(s.equippedSuit) && !suitRevealed(s, s.equippedSuit)) s.equippedSuit = "flight";
+  if (isIap(s.equipped) && !helmetRevealed(s, s.equipped)) s.equipped = "clear";
   // a matched-set helmet stranded on the wrong suit (saved before the rule
   // existed, or edited by hand) comes off rather than half-fitting
   {
@@ -491,8 +491,8 @@ export function starsOf(s: SaveData) {
 // The old XP thresholds are retired for good with the production split:
 // a gate is stars, a stored unlock, or the beta. Nothing else opens one.
 export function palUnlocked(s: SaveData, id: string) {
-  if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id]) return true;
+  if (isIap(id)) return iapOwned(s, id);
   return BETA_UNLOCK_GATES || s.unlockedPals.includes(id);
 }
 
@@ -500,6 +500,7 @@ export function palUnlocked(s: SaveData, id: string) {
 // starter tints have no rung and are open from the first flight. A helmet
 // already bought stays owned whatever the ladder says.
 export function helmetRevealed(s: SaveData, id: string) {
+  if (STAR_UNLOCKS.helmets[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.helmets[id]) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.helmets[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.helmets[id] || s.unlocked.includes(id);
@@ -511,6 +512,7 @@ export function helmetRevealed(s: SaveData, id: string) {
 export function trailUnlocked(s: SaveData, id: string) {
   if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id);
   if (id === "arcflashwake") return suitRevealed(s, "arcflash");
+  if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id]) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.trails[id] === undefined) return true;
   return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
@@ -521,8 +523,8 @@ export function suitRevealed(s: SaveData, id: string) {
   // the premium list - the cat did exactly that when it became the
   // 300-star prize
   if ((s.purchased || []).includes(id) || s.unlockedSuits.includes(id)) return true;
-  if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.suits[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.suits[id]) return true;
+  if (isIap(id)) return iapOwned(s, id);
   // a suit with a star gate is LOCKED below it - the no-gate fallback is
   // only for suits with no gate at all, or the cat would have been free
   if (STAR_UNLOCKS.suits[id] !== undefined) return BETA_UNLOCK_GATES;
@@ -580,3 +582,4 @@ export function suitPitchFor(save: SaveData | null | undefined, id: string): num
   const v = save?.suitPitch?.[id];
   return typeof v === "number" && isFinite(v) ? v : suitPitchDefault(id);
 }
+
