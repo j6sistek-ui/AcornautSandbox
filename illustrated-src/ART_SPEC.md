@@ -30,7 +30,7 @@ All bone transforms use uniform, constant scale. The tail deforms as one
 volume with a positive triangle-area guard. No checkerboard, green backing,
 or baked trail ships on the character.
 
-`review-arcflash.mjs` renders `body.png` from that same rig at identical padded
+`archive/review-arcflash.mjs` renders `body.png` from that same rig at identical padded
 registration, so the loading fallback preserves its scale and location. The
 renderer supplies blue wrist jets and the persistent boot wake separately.
 The review scripts include game-size renders and the 100/180/300ms tap cases;

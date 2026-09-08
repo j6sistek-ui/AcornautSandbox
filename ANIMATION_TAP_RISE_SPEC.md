@@ -118,7 +118,7 @@ Source of truth:
 Validation and review:
 
 - `art-src/tap-rollout/verify_robo_motion_banks.py`
-- `illustrated-src/review-tap-models.mjs`
+- `illustrated-src/archive/review-tap-models.mjs`
 - `illustrated-src/test-tap-recovery.mjs`
 - `illustrated-src/test-bounce-impact.mjs`
 - `illustrated-src/test-tunnel.mjs`
@@ -141,7 +141,7 @@ node illustrated-src/test-bounce-impact.mjs
 ACORNAUT_TSC=/path/to/typescript/lib/tsc.js node illustrated-src/test-tunnel.mjs
 python3 illustrated-src/verify-art.py
 ACORNAUT_CANVAS_MODULE=/path/to/@napi-rs/canvas/index.js \
-  node illustrated-src/review-tap-models.mjs /tmp/acornaut-tap-review
+  node illustrated-src/archive/review-tap-models.mjs /tmp/acornaut-tap-review
 git diff --check
 ```
 

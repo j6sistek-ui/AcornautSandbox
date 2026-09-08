@@ -131,8 +131,8 @@ node illustrated-src/test-vanguard.mjs
 node illustrated-src/test-vanguard-inertia.mjs
 node illustrated-src/test-vanguard-rig.mjs
 node illustrated-src/test-vanguard-organic.mjs
-node illustrated-src/review-vanguard-flight.mjs
-node illustrated-src/review-vanguard-organic.mjs
+node illustrated-src/archive/review-vanguard-flight.mjs
+node illustrated-src/archive/review-vanguard-organic.mjs
 node illustrated-src/test-vanguard-depot.mjs
 ```
 

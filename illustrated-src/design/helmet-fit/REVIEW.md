@@ -42,7 +42,7 @@ To reproduce, first build with `node illustrated-src/export-sandbox.mjs`, then r
 node illustrated-src/test-helmet-animation.mjs
 node illustrated-src/test-helmet-compatibility.mjs
 python3 illustrated-src/verify-art.py
-node illustrated-src/review-helmet-fit.mjs
+node illustrated-src/archive/review-helmet-fit.mjs
 ```
 
 `ACORNAUT_TSC` may point to TypeScript's `tsc.js`; the two Canvas scripts accept `ACORNAUT_CANVAS` pointing to `@napi-rs/canvas`. The review script also requires ffmpeg and ffprobe.

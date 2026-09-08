@@ -22,7 +22,7 @@ const [tag, bundle, stamp] = m;
 
 rmSync(www, { recursive: true, force: true });
 mkdirSync(www, { recursive: true });
-const SKIP = new Set(["beta", "lab", "v11", "v12", "v13", "v14", "index.html"]);
+const SKIP = new Set(["beta", "lab", "index.html"]);
 for (const name of readdirSync(docs)) {
   if (SKIP.has(name)) continue;
   if (/^js\d+$/.test(name) && name !== `js${stamp}`) continue;

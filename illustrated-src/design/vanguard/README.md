@@ -136,8 +136,8 @@ node illustrated-src/export-sandbox.mjs
 node illustrated-src/test-vanguard-maneuver.mjs
 node illustrated-src/test-vanguard.mjs
 node illustrated-src/test-vanguard-inertia.mjs
-node illustrated-src/review-vanguard-flight.mjs
-node illustrated-src/review-vanguard-maneuver.mjs
+node illustrated-src/archive/review-vanguard-flight.mjs
+node illustrated-src/archive/review-vanguard-maneuver.mjs
 node illustrated-src/test-vanguard-depot.mjs
 node illustrated-src/test-spill-welcome.mjs
 node illustrated-src/test-spill.mjs
