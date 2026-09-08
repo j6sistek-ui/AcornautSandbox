@@ -309,6 +309,9 @@ export async function bootStandalone(root: HTMLElement) {
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
     if (prevScroll) keptScroll = prevScroll.scrollTop;
+    // a screen that asked to land on the pilot drops the scroll the last
+    // screen left behind (the Shop's, after a boost purchase)
+    if (landOnPilot) { keptScroll = 0; landOnPilot = false; }
     keepShelves();
     const oldGuide = !!overlay.querySelector(".ac-depotguidecard");
     const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
@@ -3568,6 +3571,7 @@ export async function bootStandalone(root: HTMLElement) {
   let boostConfirm: BoostId | null = null; // the shop card asking "are you sure"
   let rewardOpen: string | null = null;    // the reward sheet on the chart, by rewardId
   let boostNote: string | null = null;     // one line under a boost control that refused
+  let landOnPilot = false;                 // the next chart render scrolls to the pilot
   // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
   // and the bar adds up whatever is in here. Nothing is forced along with
   // anything else; a helmet does not drag its suit onto the stage.
@@ -3878,7 +3882,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (boostConfirm !== id) { boostConfirm = id; render(); return; }
         boostConfirm = null;
         // the chart opens on the pilot, not wherever the shop was scrolled
-        if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) { keptScroll = 0; engine.open("log"); }
+        if (tx(row, () => engine.buyBoost(id), spec.dust, "dust")) { landOnPilot = true; engine.open("log"); }
         else render();
       };
       scroll.append(row);
@@ -4836,7 +4840,7 @@ export async function bootStandalone(root: HTMLElement) {
         const t = el("span", "ac-socialtxt");
         t.append(el("b", "", `${BOOSTS[id].name} × ${n}`), el("span", "", BOOSTS[id].blurb));
         const use = el("button", "ac-ghost ac-invuse", "USE NOW");
-        use.onclick = () => { keptScroll = 0; engine.open("log"); };
+        use.onclick = () => { landOnPilot = true; engine.open("log"); };
         row.append(t, use);
         inv.append(row);
       }
