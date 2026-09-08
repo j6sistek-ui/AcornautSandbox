@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=231";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=231";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=231";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=231";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=235";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=235";
+import { IS_BETA } from "./catalog.js?v=235";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=235";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -256,16 +256,14 @@ export const STAGES = [
  * have their own progress identity. Production never loads preview progress. */
 // the road's contracts: the beta's authored 260 on both pages now that the
 // road is live, the original production rows only if it is ever pulled back
-const ROAD = IS_BETA || STAR_MAP_LIVE;
 export const LEGACY_LEVELS = MISSION_ROWS.slice(0, 100).map(row => {
-    const variant = ROAD ? BETA_VARIANTS.find(v => v.id === row.id) : undefined;
+    const variant = BETA_VARIANTS.find(v => v.id === row.id);
     return { ...row, ...variant, fx: { ...(variant?.fx ?? row.fx) },
         goals: (variant?.goals ?? row.goals).map(g => ({ ...g })) };
 });
-export const ALL_LEVELS = (ROAD ? BETA_MISSION_ROWS : MISSION_ROWS).map(row => ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) }));
-export const LEVELS = ROAD ? ALL_LEVELS : LEGACY_LEVELS;
+export const ALL_LEVELS = BETA_MISSION_ROWS.map(row => ({ ...row, fx: { ...row.fx }, goals: row.goals.map(g => ({ ...g })) }));
+export const LEVELS = ALL_LEVELS;
 export const CHART_LEVELS = LEVELS;
-export const CAMPAIGN_MAX_STARS = LEVELS.length * 3;
 export const CHART_MAX_STARS = CHART_LEVELS.length * 3;
 export const levelById = (id) => CHART_LEVELS.find(l => l.id === id) ?? null;
 export const nextLevel = (id, order = CHART_LEVELS) => {
@@ -442,20 +440,6 @@ export function goalMet(g, s) {
 /** stars for one level live in a 3-bit mask so each goal keeps its own */
 export function countBits(mask) {
     return (mask & 1) + ((mask >> 1) & 1) + ((mask >> 2) & 1);
-}
-export function totalStars(stars) {
-    let n = 0;
-    for (const id in stars)
-        n += countBits(stars[id] || 0);
-    return n;
-}
-export function stageUnlocked(stageNum, total) {
-    // The beta is a TEST BUILD: every chapter is open so experimental
-    // missions can be flown without earning the road first.
-    if (IS_BETA)
-        return true;
-    const st = STAGES.find((s) => s.num === stageNum);
-    return !!st && total >= st.unlock;
 }
 /** a level opens when its stage is open and the level before it is finished */
 // DEBRIS FIELDS. Every 33 levels the road is blocked outright and the only
@@ -640,6 +624,17 @@ function rewardGates(kind) {
     return out;
 }
 /** star thresholds the save-side gates read; kept beside the reward list */
+/** WHAT A RUNG PAYS WHEN ITS ITEM IS ALREADY YOURS (owner, 8 Sep 2026:
+ *  "change pay out to acorns, 250, flat regardless of star unlock or store
+ *  purchase... acorns are less useful long term"). Flat, whatever the rung
+ *  and whichever way the item arrived. A suit and its helmet on two rungs
+ *  are two items and pay twice, by the same decision. One number, here,
+ *  to retune. Saves written under the earlier rule may still carry a
+ *  "dust" entry in rewardSubs; the sheet shows what was paid. */
+export const SUB_ACORNS = 250;
+export function substituteFor(_stars) {
+    return { kind: "acorns", amount: SUB_ACORNS };
+}
 export const STAR_UNLOCKS = {
     pals: rewardGates("pal"),
     suits: rewardGates("suit"),

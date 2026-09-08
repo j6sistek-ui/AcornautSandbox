@@ -1,5 +1,5 @@
-import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=234";
-import { ENVS, IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=234";
+import { LEVELS, STAR_REWARDS, countBits, missionProgressId } from "./campaign.js?v=235";
+import { ENVS } from "./catalog.js?v=235";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" || r.kind === "acorns"
     ? `legacy:${r.kind}:${r.stars}`
@@ -42,7 +42,7 @@ function carryCompatibilityWrites(save, p) {
 /** The two historical ID collisions cannot be dated from an unversioned save.
  * Credit and route passage survive; current checklists need successful replays. */
 export function ambiguousLegacy(def) {
-    return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || ((IS_BETA || STAR_MAP_LIVE) && def.n === 4));
+    return !!def.previousIds || def.stage >= 2 && def.stage <= 10 && (def.n === 8 || def.n === 4);
 }
 /** Beta can inherit a versioned production save on first visit. The same
  * route position can then contain a different mission, so transfer passage

@@ -15,17 +15,12 @@
 .ac-zone-chart .ac-mapnode { min-width: 62px; min-height: 62px; }
 .ac-zone-chart .ac-mapnode.locked { pointer-events: auto; }
 .ac-zone-chart .ac-mapnode.locked .ac-mapdisc canvas { filter: brightness(.8) drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
-.ac-zone-chart .ac-mapnode:focus-visible, .ac-chart-nav button:focus-visible, .ac-chart-nav input:focus-visible {
+.ac-zone-chart .ac-mapnode:focus-visible, .ac-chart-nav button:focus-visible {
   outline: 2px solid #f3d38c; outline-offset: 5px; border-radius: 16px; }
 .ac-chart-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 8px 16px 10px;
   position: relative; z-index: 4; background: linear-gradient(#101729, #0d1424); border-bottom: 1px solid #ffffff12; }
 .ac-current-zone { flex: 1; min-width: 110px; color: #d1bfdd; font: 700 10px/1.4 system-ui; letter-spacing: .09em; }
 .ac-chart-nav .ac-ghost, .ac-chart-samples .ac-ghost { width: auto; margin: 0; padding: 8px 12px; min-height: 44px; font-size: 11px; }
-.ac-chart-find { display: flex; width: 100%; gap: 6px; }
-.ac-chart-find input { min-width: 0; flex: 1; border: 1px solid #45405b; border-radius: 9px; color: #eee4d2;
-  background: #080e1c; padding: 9px 12px; font: 14px/1.2 system-ui; }
-.ac-chart-found { color: #c9b894; font: 11px/1.4 system-ui; }
-.ac-chart-found:empty { display: none; }
 .ac-chart-samples { display: flex; flex-wrap: wrap; padding: 6px 16px; gap: 5px; background: #13192b; }
 .ac-chart-samples a, .ac-chart-nav a { text-align: center; text-decoration: none; }
 .ac-chart-end { position: absolute; width: 100%; text-align: center; color: #9c9bab; font: 9px/1.4 system-ui; letter-spacing: .13em; }
@@ -39,7 +34,3 @@
   background: radial-gradient(ellipse at 50% 5%, #59426155, transparent 70%), #101729; text-align: center; }
 .ac-reward-concept h3 { color: #f1d6a7; margin: 8px 0; font: 700 17px/1.3 system-ui; }
 .ac-reward-concept .ac-sub { font-size: 12px; line-height: 1.5; }
-
-/* Beta flagship comparison, shared by the hangar and pause sheet. */
-.ac-vanguard-motion{grid-column:1/-1;width:100%;box-sizing:border-box;margin:8px 0;padding:12px;border:1px solid rgba(218,183,118,.28);border-radius:16px;background:rgba(14,24,42,.65)}
-.ac-vanguard-motion .ac-modes{margin:8px 0}

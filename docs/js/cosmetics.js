@@ -2219,18 +2219,7 @@ export function drawPalOn(c, id, x, y, s, t) {
     use(c);
     drawPal(id, x, y, s, t);
 }
-export function drawPalPreviewOn(c, id, cx, cy, t) {
-    use(c);
-    drawPalPreview(id, cx, cy, t);
-}
 export function drawTrailPreviewOn(c, id, cx, cy, t) {
     use(c);
     drawTrailPreview(id, cx, cy, t);
-}
-export function drawHelmetOn(c, helm, suit, t = 0, seed = 0) {
-    use(c);
-    drawHelmet(helm, suit, t, seed);
-}
-export function helmetCenter() {
-    return { x: 11, y: -11, r: 15.2 };
 }

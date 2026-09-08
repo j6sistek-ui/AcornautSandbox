@@ -17,11 +17,8 @@ import {
   PALS,
   SAVE_KEY,
   SUITS,
-  SUIT_REVEAL,
   isIap,
   TRAILS,
-  levelForXp,
-  titleForLevel,
   BUNDLES,
   IS_BETA,
   GUIDE_SUIT,
@@ -539,14 +536,6 @@ export function eraseSave() {
   writeSave(defaultSave());
 }
 
-export function pilotLevelOf(s: SaveData) {
-  return levelForXp(s.xp || 0);
-}
-
-export function pilotTitleOf(s: SaveData) {
-  return titleForLevel(pilotLevelOf(s));
-}
-
 export function starsOf(s: SaveData) {
   const p = migrateCampaign(s);
   return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? 300 : 0);
@@ -593,7 +582,8 @@ export function suitRevealed(s: SaveData, id: string) {
   // a suit with a star gate is LOCKED below it - the no-gate fallback is
   // only for suits with no gate at all, or the cat would have been free
   if (STAR_UNLOCKS.suits[id] !== undefined) return BETA_UNLOCK_GATES;
-  return !SUIT_REVEAL[id] || BETA_UNLOCK_GATES;
+  // no gate at all: on the shelf for everyone
+  return true;
 }
 
 // Premium items are owned only once bought - on BOTH pages. The beta used

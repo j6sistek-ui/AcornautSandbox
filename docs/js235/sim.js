@@ -1,19 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=231";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=231";
-import { trailWornBy } from "./catalog.js?v=231";
-import { missionRandom } from "./mission-rng.js?v=231";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=231";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=231";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, STAR_MAP_LIVE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, TUT_READ, skyIdFor, PHYS, TRAILS, levelForXp, runXp } from "./catalog.js?v=231";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=231";
-import { platform } from "./platform.js?v=231";
-import { TUTORIAL_SUIT } from "./catalog.js?v=231";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=231";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=231";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=231";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=231";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=231";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=231";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=235";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=235";
+import { trailWornBy } from "./catalog.js?v=235";
+import { missionRandom } from "./mission-rng.js?v=235";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=235";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=235";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=235";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=235";
+import { platform } from "./platform.js?v=235";
+import { TUTORIAL_SUIT } from "./catalog.js?v=235";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=235";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=235";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=235";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=235";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=235";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=235";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -312,6 +312,7 @@ export function runPals(save, w) {
         return [w.lvl.def.fx.pal];
     return equippedPals(save);
 }
+/** the high-slot companion this run flies; the harness reads it */
 export function runPal(save, w) {
     return runPals(save, w)[0] ?? "none";
 }
@@ -578,31 +579,23 @@ function sealBlockers(w, env, gapY, gap) {
 function buildTutorialCourse(w, save) {
     w.planets = [];
     w.pickups = [];
-    const env = ENVS[w.envB];
     const sx = w.W * PHYS.squirrelX;
     const g = gravOf(save, w);
     const fv = flapOf(save, w);
     const arc = (v, t) => v * t + 0.5 * g * t * t;
-    const gap = 176; // a touch friendlier while learning
-    const clampY = (y) => Math.max(70 + gap / 2, Math.min(w.H - 70 - gap / 2, y));
     const y0 = w.H * 0.45; // the squirrel's start line
     const y1 = y0 + arc(fv, 0.8); // at the TAP prompt
     const y2 = y1 + arc(fv, 0.55); // at the TAP AGAIN prompt
     const tLand = 0.9;
     const yLand = y2 + arc(fv, tLand); // the fall meets the planet here
-    const dLand = PHYS.baseSpeed * (0.8 + 0.55 + tLand);
     const tApex = (640 - 60) / g; // the −640 spring up to the freeze
     const yApex = yLand - (640 * tApex - 0.5 * g * tApex * tApex);
-    // THE COURSE IS BUILT AROUND THIS HEIGHT. dyDive below places the
-    // recovery gate relative to the apex, so the swipe lesson only makes
-    // sense with the pilot AT the apex - anywhere else and "dive back down
-    // and make the gap" points at a gap that is not below them.
+    // THE COURSE IS BUILT AROUND THIS HEIGHT. The recovery gate is placed
+    // relative to the apex when its beat begins, so the swipe lesson only
+    // makes sense with the pilot AT the apex - anywhere else and "dive back
+    // down and make the gap" points at a gap that is not below them.
     if (w.tut)
         w.tut.apexY = yApex;
-    const dApex = dLand + PHYS.baseSpeed * tApex;
-    // the recovery gate: as deep below the apex as the screen allows
-    const dyDive = Math.max(120, Math.min(352, w.H - 70 - gap / 2 - yApex - 20));
-    const tDive = (-PHYS.dive + Math.sqrt(PHYS.dive * PHYS.dive + 2 * g * dyDive)) / g;
     // NOTHING IS PRE-PLACED FOR THE SCRIPTED BEATS. The bounce planet and
     // the gates that follow are laid at the moment their beat begins, from
     // where the pilot actually is - see placeBouncePlanet and
@@ -909,8 +902,6 @@ function spawnPair(w, save, x) {
     const r = w.bounceHouse
         ? Math.min(w.H / 6, PHYS.planetR * (1 + (w.missionRng ?? Math.random)() * 1.5))
         : PHYS.planetR;
-    const topY = gapY - gap / 2 - r;
-    const botY = gapY + gap / 2 + r;
     const blockers = sealBlockers(w, env, gapY, gap);
     // Vertical drift: the gate itself breathes up and down. Free Flight
     // now carries a gentle 15%-of-gap sway so a run is never a static
@@ -1294,10 +1285,6 @@ export function setRaceInput(w, input) {
     if (input.held || input.drop || input.dragY != null)
         w.ready = false;
     return true;
-}
-/** Compatibility shim for callers that only know the original hold control. */
-export function setRaceHeld(w, held) {
-    return setRaceInput(w, { held, boost: false });
 }
 /**
  * Consume the current fixed step's presentation side effects exactly once.
@@ -1814,39 +1801,6 @@ function exitWormhole(w) {
     w.hitCooldown = 0;
     w.recoveryMsg = "OUT THE FAR SIDE";
     w.shake = 0.24;
-}
-/** A height near `want` that no planet is standing in.
- *
- *  The apex the course was built around is the RIGHT place for the swipe
- *  lesson - the recovery gate is placed relative to it - but on a short
- *  screen clampY compresses the course and the apex can land inside the
- *  bounce planet the pilot just came off. Two pixels of overlap is enough
- *  to make a dive read as phasing through solid ground, which is exactly
- *  how it was reported. So the apex is a target, not a promise: push it
- *  clear of anything at the flight line and keep the lesson honest.
- */
-function tutClearY(w, want) {
-    const sx = w.W * PHYS.squirrelX;
-    let y = want;
-    for (let pass = 0; pass < 6; pass++) {
-        let moved = false;
-        for (const p of w.planets) {
-            if (Math.abs(p.x - sx) > p.r + PHYS.squirrelR + 40)
-                continue;
-            const gy = liveGapY(p, w);
-            for (const cy of p.half === "top" ? [gy - p.gap / 2 - p.r] : p.half === "bot" ? [gy + p.gap / 2 + p.r] : [gy - p.gap / 2 - p.r, gy + p.gap / 2 + p.r]) {
-                const need = p.r + PHYS.squirrelR + 8;
-                const d = y - cy;
-                if (Math.abs(d) < need) {
-                    y = cy + (d < 0 ? -need : need);
-                    moved = true;
-                }
-            }
-        }
-        if (!moved)
-            break;
-    }
-    return Math.max(60, Math.min(w.H - 60, y));
 }
 /** BOTH MOUTHS ARE SLOW.
  *
@@ -2471,7 +2425,7 @@ function tutGesture(w, save, kind) {
             w.squirrel.vy = flapOf(save, w);
             w.flapBoost = 0.22;
             w.tapAnimFromRot = w.squirrel.rot;
-            w.tapAnimT = TAP_ANIM_ENABLED ? 0 : -1;
+            w.tapAnimT = 0;
             w.tapAnimDir = 1;
             if (pilotSuitId(w, save) === "vanguard")
                 vanguardTap(w.vanguard, tutorialImpulse);
@@ -2582,7 +2536,7 @@ export function flap(w, save) {
     if (w.spill && !spillHold(w.spill, true))
         return "none";
     // the road's contracts fly on both pages: these modifiers follow the mission, not the page
-    if ((IS_BETA || STAR_MAP_LIVE) && !w.tut && w.flight === "fly") {
+    if (!w.tut && w.flight === "fly") {
         // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
         // the slow, the way the frozen acorn does - a slow, never a full stop.
         if (fxOf(w).tapFreeze || (runPals(save, w).includes("switchback") && !save.noPalFx))
@@ -2601,18 +2555,16 @@ export function flap(w, save) {
     // pose and recovery clock. Physics, particles, pitch, and the live tail
     // spring still respond immediately, so the new input adds motion without
     // forcing the painted body through its idle/anticipation bookend again.
-    if (TAP_ANIM_ENABLED) {
-        if (w.tapAnimT < 0) {
-            w.tapAnimT = 0;
-            w.tapAnimDir = 1;
-            w.tapAnimFromRot = w.squirrel.rot;
-        }
-        else {
-            // A repeat tap REWINDS the picture: the animation plays backward from
-            // wherever it is, bounces off the start, and runs through to the end
-            // again — a natural second wingbeat, never a hyper-speed restart.
-            w.tapAnimDir = -1;
-        }
+    if (w.tapAnimT < 0) {
+        w.tapAnimT = 0;
+        w.tapAnimDir = 1;
+        w.tapAnimFromRot = w.squirrel.rot;
+    }
+    else {
+        // A repeat tap REWINDS the picture: the animation plays backward from
+        // wherever it is, bounces off the start, and runs through to the end
+        // again — a natural second wingbeat, never a hyper-speed restart.
+        w.tapAnimDir = -1;
     }
     if (!w.spill) {
         const impulse = w.squirrel.vy - flapOf(save, w);
@@ -2762,14 +2714,12 @@ function bounceOff(w, save, px, py, mul = 1) {
     const jelly = hasPal(save, w, "voidjelly") ? 0.55 : 1;
     const mag = Math.min(560, 170 + Math.abs(w.squirrel.vy) * 0.5) * jelly * (fxOf(w).bounceScale ?? 1) * mul;
     w.squirrel.vy = dy * mag + (dy >= 0 ? 90 : -160);
-    if (BOUNCE_ANIM_ENABLED) {
-        w.bounceAnimT = 0;
-        w.bounceAnimDir = dy >= 0 ? 1 : -1;
-        w.bounceAnimStrength = Math.max(0.68, Math.min(1, Math.abs(incomingVy) / 430));
-        // Contact throws the plume opposite the rebound. This is additive to the
-        // existing spring, so the authored impact settles naturally afterward.
-        w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
-    }
+    w.bounceAnimT = 0;
+    w.bounceAnimDir = dy >= 0 ? 1 : -1;
+    w.bounceAnimStrength = Math.max(0.68, Math.min(1, Math.abs(incomingVy) / 430));
+    // Contact throws the plume opposite the rebound. This is additive to the
+    // existing spring, so the authored impact settles naturally afterward.
+    w.tailV += w.bounceAnimDir * (5.5 + 2.5 * w.bounceAnimStrength);
     if (pilotSuitId(w, save) === "vanguard") {
         vanguardContact(w.vanguard, sx - dx * 18, sy - dy * 18, dx, dy, Math.max(.68, Math.min(1, Math.abs(incomingVy) / 430)));
     }
@@ -2793,7 +2743,7 @@ function bounceOff(w, save, px, py, mul = 1) {
     {
         const fx = fxOf(w);
         const stick = fx.sticky ? 1 : Math.max(0, Math.min(1, fx.stickChance ?? 0));
-        if ((IS_BETA || STAR_MAP_LIVE) && stick > 0 && (w.missionRng ?? Math.random)() < stick) {
+        if (stick > 0 && (w.missionRng ?? Math.random)() < stick) {
             w.stuck = true;
             w.squirrel.vy = 0;
         }
@@ -3037,12 +2987,10 @@ export function settleLevel(w, save, finished) {
     const totalBefore = earnedCampaignStars(save, CHART_LEVELS);
     const credit = settleMissionCredit(save, def, mask);
     const totalAfter = earnedCampaignStars(save, CHART_LEVELS);
-    // the run still banks like any other: acorns are real, XP keeps the
-    // pilot's title alive, lifetime tallies grow
+    // the run still banks like any other: acorns are real, lifetime tallies grow
     save.acorns += w.runAcorns;
     save.runs = (save.runs ?? 0) + 1;
     save.lifetimeAcorns = (save.lifetimeAcorns ?? 0) + w.runAcorns;
-    save.xp = (save.xp || 0) + runXp(w.score, w.runAcorns, def.base === "deep", def.base === "lost");
     if (w.startShieldArmed)
         save.startShield = false;
     writeSave(save);
@@ -3095,16 +3043,9 @@ function die(w, save) {
         save.guide = "reward";
         writeSave(save);
     }
-    const fromXp = save.xp || 0;
-    const fromLv = levelForXp(fromXp);
-    const xp = runXp(w.score, w.runAcorns, w.flight === "deep", w.flight === "lost");
     w.lastRun = {
         score: w.score,
         acorns: w.runAcorns,
-        xp,
-        fromXp,
-        fromLv,
-        toLv: levelForXp(fromXp + xp),
         best: w.flight === "deep"
             ? w.score >= save.deepBest
             : w.flight === "lost"
@@ -3125,7 +3066,6 @@ function die(w, save) {
         bounces: w.run.bounces,
         holes: w.run.holes,
     };
-    save.xp = fromXp + xp;
     save.acorns += w.runAcorns;
     // lifetime tallies for the Profile screen: these only ever grow
     save.runs = (save.runs ?? 0) + 1;
@@ -3284,9 +3224,6 @@ export function reviveRun(w, save) {
     w.deadTimer = 0;
     w.screen = "play";
     return true;
-}
-export function bankDeathLevels(_w, _save) {
-    /* levels are now stamped in die() */
 }
 export function pausePlay(w) {
     if (w.screen !== "play" || w.tut)
@@ -3528,7 +3465,7 @@ export function updateWorld(w, save, dt) {
         w.tailA = -TAIL.maxA;
         w.tailV *= -0.35;
     }
-    if (TAP_ANIM_ENABLED && w.tapAnimT >= 0) {
+    if (w.tapAnimT >= 0) {
         const tapDt = dt * paceOf(save, w);
         w.tapAnimT += tapDt * w.tapAnimDir;
         if (w.tapAnimDir < 0 && w.tapAnimT <= 0) {
@@ -3541,7 +3478,7 @@ export function updateWorld(w, save, dt) {
             w.tapAnimDir = 1;
         }
     }
-    if (BOUNCE_ANIM_ENABLED && w.bounceAnimT >= 0) {
+    if (w.bounceAnimT >= 0) {
         w.bounceAnimT += dt * paceOf(save, w);
         if (w.bounceAnimT >= BOUNCE_ANIM_DURATION) {
             w.bounceAnimT = -1;

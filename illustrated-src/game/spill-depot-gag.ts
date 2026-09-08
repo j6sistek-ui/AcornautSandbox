@@ -2,7 +2,6 @@
  * sampled from the simulation clock; no live video or limb deformation. */
 export const VANGUARD_DEPOT_SECONDS = 3.8;
 export const VANGUARD_DEPOT_CELL = 320;
-export const VANGUARD_DEPOT_FRAMES = 16;
 
 export const depotEase = (value: number) => {
   const t = Math.max(0, Math.min(1, value));

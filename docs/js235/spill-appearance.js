@@ -1,4 +1,4 @@
-import { STAR_MAP_PREVIEW } from "./catalog.js?v=231";
+import { STAR_MAP_PREVIEW } from "./catalog.js?v=235";
 export const stockSpillAppearance = () => ({ finish: "stock", trail: "stock" });
 /** Sample cosmetics are not published rewards. The separate sample save is
  * their only equip surface until the extension's reward ladder is activated. */

@@ -1,12 +1,9 @@
-import { paintVanguardRig } from './vanguard-rig.js?v=231';
-import { PHYS } from './catalog.js?v=231';
-import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=231';
+import { paintVanguardRig } from './vanguard-rig.js?v=235';
+import { PHYS } from './catalog.js?v=235';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=235';
 export const VANGUARD_FRAMES = 16;
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;
-// Neutral art points upward by 34 degrees. This fixed offset seats the
-// entire drawing horizontally; heading below follows flight, not taps.
-export const VANGUARD_ART_PITCH = 34 * Math.PI / 180;
 export function createVanguardMotion() {
     return { mode: 'cruise', phase: 0, frame: 0, heading: 0, pitch: 16 * DEG + pitchTrim,
         time: 0, diving: false, freshThrust: true, thrustLeft: 0, thrustPower: 0,
@@ -57,7 +54,6 @@ export function setVanguardPitchTrim(degrees) {
         degrees = VANGUARD_PITCH_TRIM_DEFAULT;
     pitchTrim = clamp(degrees, -20, 45) * DEG;
 }
-export function vanguardPitchTrim() { return pitchTrim; }
 // Critically damped second-order response with bounded angular speed. Unlike
 // a pose lerp, an accepted tap cannot reverse rotation in one video frame.
 function joint(s, key, target, dt, omega = 15, maxRate = 1.2) {

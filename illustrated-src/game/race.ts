@@ -447,10 +447,6 @@ export function queueRaceInput(race: RaceState, input: RaceInputSnapshot, tick =
   });
 }
 
-export function queueRaceHeld(race: RaceState, held: boolean, tick = race.tick) {
-  queueRaceInput(race, { held, boost: held ? race.boost : false }, tick);
-}
-
 export function loadRaceInputs(race: RaceState, inputs: readonly RaceInputTransition[]) {
   const ordered = inputs.map((input, order) => {
     const hasDragY = input.dragY !== undefined;
@@ -703,13 +699,6 @@ export function raceTunnelGeometry(
   };
   const f = smoothstep((at - a.tick) / Math.max(1, b.tick - a.tick));
   return { center: centerAt(a) + (centerAt(b) - centerAt(a)) * f, half: a.half + (b.half - a.half) * f };
-}
-
-export function raceTunnelCenter(
-  race: Pick<RaceState, "seed" | "wormholes" | "entryAnchorY">,
-  tick: number,
-) {
-  return raceTunnelGeometry(race, tick).center;
 }
 
 export function raceTunnelRings(

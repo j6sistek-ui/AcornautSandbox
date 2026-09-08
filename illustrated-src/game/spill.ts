@@ -1660,22 +1660,6 @@ export function spillRamp(s: SpillState) {
   return ramp(s);
 }
 
-export function spillSignature(s: SpillState) {
-  return {
-    wave: s.wave,
-    cleared: s.cleared,
-    phase: s.phase,
-    hull: s.hull,
-    ore: s.ore,
-    oreMined: s.oreMined,
-    score: Math.floor(s.score),
-    hits: s.hits,
-    grazes: s.grazes,
-    shattered: s.shattered,
-    up: { ...s.up },
-  };
-}
-
 export type SpillCheckpoint = { version: 1; state: SpillState };
 
 /** Only a docked, ordinary expedition may be suspended. The checkpoint

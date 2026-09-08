@@ -7,11 +7,11 @@ import { arcflashPreview } from "./arcflash-motion";
 import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
-import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TUT_ARM, TAP_ANIM_DURATION, TAP_ANIM_ENABLED, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite, type SpillShipXf } from "./art";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import { suitPitchFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
@@ -28,23 +28,20 @@ import {
   type SpillRock,
   type SpillState,
 } from "./spill";
-import { SPILL_EVENTS, spillSector, spillEngineColor } from "./spill-content";
+import { spillEngineColor } from "./spill-content";
 import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
 import {
   RACE_ACORNS,
   RACE_BASE_SPEED,
   RACE_DEBRIS,
   RACE_ENTRY_TICKS,
-  RACE_GATE_APERTURE,
   RACE_GATE_CLEARANCE,
   RACE_GATE_MISS_FADE_TICKS,
   RACE_GATE_PASS_FADE_TICKS,
-  RACE_HEIGHT,
   RACE_HZ,
   RACE_LENGTH,
   RACE_MAX_INTERACTIVE_GAP,
   RACE_MAX_SPEED,
-  RACE_PILOT_RADIUS,
   RACE_PILOT_X,
   RACE_READY_COPY,
   RACE_RETURN_TICKS,
@@ -510,10 +507,6 @@ function writeHyperRunFlow(args: HyperRunFlowArgs, samples: MutableHyperRunFlowS
   });
   samples.length = cursor;
   return samples;
-}
-
-export function hyperRunFlowSnapshot(args: HyperRunFlowArgs): HyperRunFlowSample[] {
-  return writeHyperRunFlow(args, []).map((sample) => ({ ...sample }));
 }
 
 function raceReducedMotion() {
@@ -4545,9 +4538,7 @@ function paintIllustrated(
     paintArcflash(ctx, art, x, y, size);
     return;
   }
-  const suited = suit.id !== "flight" || helmet.id !== "clear" || TAP_ANIM_ENABLED
-    ? (art?.suits?.[suit.id] ?? null)
-    : null;
+  const suited = art?.suits?.[suit.id] ?? null;
   const body = suited ?? spr;
   if (!body) return;
 
