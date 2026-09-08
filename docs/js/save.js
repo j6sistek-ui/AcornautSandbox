@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=236";
-import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=236";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=236";
-import { restoreSpill } from "./spill.js?v=236";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=236";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=237";
+import { CHART_LEVELS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=237";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=237";
+import { restoreSpill } from "./spill.js?v=237";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=237";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=236";
-import { platform } from "./platform.js?v=236";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, SUIT_REVEAL, isIap, TRAILS, levelForXp, titleForLevel, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=237";
+import { platform } from "./platform.js?v=237";
 export function defaultSave() {
     return {
         highScore: 0,
