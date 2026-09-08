@@ -161,5 +161,5 @@ Workshop rules should **call hub classes**, not re-declare competing fills.
 
 *Method: local `/workspace/ui-audit` files only; no clone.*
 
-## Hyper Run note (do not implement this pass)
-Jim flagged Hyper Run as the other big gap. This pass does **not** rewrite Hyper. When aliasing shared chrome (`.ac-primary`, `.ac-ghost`, `.ac-backbtn`, `.ac-kicker`, `.ac-helpdot`), re-check the Hyper **ready card** so it keeps consuming the same hub tokens and does not drift to workshop-only classes.
+## Hyper Run menus (IN SCOPE for chrome)
+Apply the same hub chrome aliases to Hyper ready/briefing sheets (`.ac-primary`, `.ac-ghost`, `.ac-backbtn`, `.ac-kicker`, `.ac-helpdot`). Keep Hyper’s race/time fantasy — do **not** paste Debris Field wave/Depot copy onto Hyper sheets. Player-facing name stays Hyper Run / accurate mode language (never Spill).
