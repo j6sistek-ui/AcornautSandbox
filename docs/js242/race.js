@@ -3,7 +3,7 @@
 // This module knows nothing about canvas size, render cadence, DOM events, or
 // the campaign. Feed it semantic input snapshots stamped with simulation ticks
 // and call stepRace exactly once per 1/60-second live race step.
-import { QUICK_DROP_VY } from "./control-constants.js?v=238";
+import { QUICK_DROP_VY } from "./control-constants.js?v=242";
 export const RACE_EVENT_ID = "hyper-run";
 export const RACE_SEED = 0x48595231;
 export const RACE_HZ = 60;
@@ -282,9 +282,6 @@ export function queueRaceInput(race, input, tick = race.tick) {
         ...(hasDragY ? { dragY: dragY } : {}),
     });
 }
-export function queueRaceHeld(race, held, tick = race.tick) {
-    queueRaceInput(race, { held, boost: held ? race.boost : false }, tick);
-}
 export function loadRaceInputs(race, inputs) {
     const ordered = inputs.map((input, order) => {
         const hasDragY = input.dragY !== undefined;
@@ -540,9 +537,6 @@ export function raceTunnelGeometry(race, tick) {
     };
     const f = smoothstep((at - a.tick) / Math.max(1, b.tick - a.tick));
     return { center: centerAt(a) + (centerAt(b) - centerAt(a)) * f, half: a.half + (b.half - a.half) * f };
-}
-export function raceTunnelCenter(race, tick) {
-    return raceTunnelGeometry(race, tick).center;
 }
 export function raceTunnelRings(race) {
     return RACE_TUNNEL_RING_TICKS.map((tick, index) => ({

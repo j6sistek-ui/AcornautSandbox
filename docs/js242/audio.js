@@ -91,6 +91,8 @@ const musicFades = { menu: 0, flight: 0, voyage: 0, cosmos: 0 }; // rAF ids
 let musicWanted = null;
 let musicMuted = false;
 let musicUnlockArmed = false;
+let lifecycleArmed = false;
+let sleptTrack = null;
 function musicUrl(track) {
     const raw = (typeof window !== "undefined" && window.__ACORNAUT_ART__) || "/art";
     return `${raw.replace(/\/$/, "")}/${MUSIC_FILES[track]}`;
@@ -172,12 +174,65 @@ function armMusicUnlock() {
         return;
     musicUnlockArmed = true;
     const kick = () => {
+        // RESUME THE CONTEXT, NOT JUST THE ELEMENT (audit, 8 Sep 2026). The menu
+        // score wants to play from the first frame, so ac() built a context
+        // before any gesture existed and the browser left it suspended. This
+        // retry only re-played the audio element, so the score stayed silent
+        // until something else happened to call ac() - the first run. ac()
+        // resumes a suspended context and is safe to call again.
+        try {
+            ac();
+        }
+        catch { /* no audio device: the game is still playable */ }
         const el = musicWanted ? musicEls[musicWanted] : null;
         if (el && el.paused && !musicMuted)
             playWanted(600);
     };
     document.addEventListener("pointerdown", kick, { capture: true, passive: true });
     document.addEventListener("keydown", kick, { capture: true, passive: true });
+}
+// THE APP GOES AWAY, AND SO SHOULD THE SOUND (App Store prep audit, section
+// 2). Nothing suspended the AudioContext or paused the score when the app
+// left the foreground: engine.ts auto-pauses only Race and the Debris Field
+// on blur, so a phone locked mid-flight kept a running context and a playing
+// element behind the lock screen. That is battery a reviewer notices, and on
+// iOS a context left running across an interruption comes back wrong.
+//
+// Suspend only what we own, and put back only what the pilot still wants: if
+// the track changed while we were away, or they muted, `wake` leaves it to
+// the engine's next `music.set`. A context that was never built is left
+// alone, so the first gesture still does the unlocking.
+function armLifecycle() {
+    if (lifecycleArmed || typeof document === "undefined")
+        return;
+    lifecycleArmed = true;
+    const sleep = () => {
+        sleptTrack = musicWanted;
+        for (const el of Object.values(musicEls))
+            if (el && !el.paused)
+                el.pause();
+        if (ctx && ctx.state === "running")
+            void ctx.suspend();
+    };
+    const wake = () => {
+        if (!ctx)
+            return;
+        if (ctx.state === "suspended")
+            void ctx.resume();
+        if (sleptTrack && sleptTrack === musicWanted && !musicMuted)
+            playWanted(300);
+        sleptTrack = null;
+    };
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden")
+            sleep();
+        else
+            wake();
+    });
+    // pagehide fires where visibilitychange does not: a WKWebView going into
+    // the back/forward cache, and a tab being closed
+    window.addEventListener("pagehide", sleep);
+    window.addEventListener("pageshow", wake);
 }
 export const music = {
     // Called every frame with the track the moment wants (or null for
@@ -191,6 +246,7 @@ export const music = {
             fadeMusic(prev, 0, 450);
         if (track) {
             armMusicUnlock();
+            armLifecycle();
             playWanted(600);
         }
     },

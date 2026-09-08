@@ -1,22 +1,22 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=238";
-import { platform } from "./platform.js?v=238";
-import { spillAppearance } from "./spill-appearance.js?v=238";
-import { routeMasks, rewardId } from "./campaign-progress.js?v=238";
-import { reachedGate } from "./campaign.js?v=238";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=238";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=238";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=238";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=238";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=238";
-import { setVanguardPitchTrim } from "./vanguard.js?v=238";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=238";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=238";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=238";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=238";
-import { raceViewport } from "./race-viewport.js?v=238";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=238";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=238";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=238";
+import { canWearTrail, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=242";
+import { platform } from "./platform.js?v=242";
+import { spillAppearance } from "./spill-appearance.js?v=242";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=242";
+import { reachedGate } from "./campaign.js?v=242";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=242";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=242";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=242";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=242";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=242";
+import { setVanguardPitchTrim } from "./vanguard.js?v=242";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=242";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=242";
+import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=242";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=242";
+import { raceViewport } from "./race-viewport.js?v=242";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=242";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=242";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=242";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -1025,7 +1025,11 @@ export async function createEngine(canvas) {
         if (save.starDust < due)
             return "poor";
         save.starDust -= due;
-        save.purchased = [...new Set([...(save.purchased || []), ...ids])];
+        // idGrants, like every other buy (audit, 8 Sep 2026): a pack listing a
+        // suit must also hand over the trail painted for it, or the Circuit Pack
+        // gives Cyber without the Clockwork wake that the single shelf and the
+        // featured pack both include for the same id.
+        save.purchased = [...new Set([...(save.purchased || []), ...ids.flatMap((i) => idGrants(i))])];
         writeSave(save);
         notify();
         return "ok";
@@ -1553,6 +1557,14 @@ export async function createEngine(canvas) {
         const spill = world.spill;
         if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
             bankSpill(save, spill, true);
+            // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
+            // "spill" board has been declared and configured since the shell
+            // landed, and nothing ever posted to it: only endless free flight
+            // reached submitScore (sim.ts). Waves cleared is the Debris Field's
+            // own number - it is what the mode is scored on and what spillBest
+            // already keeps - and higher is better, so it needs no special board.
+            if (spill.cleared > 0)
+                platform.submitScore("spill", spill.cleared);
             if (!spill.target)
                 save.spillSuspended = null;
             writeSave(save);
@@ -1705,8 +1717,16 @@ export async function createEngine(canvas) {
     // and anything the store still owes from a purchase that finished while
     // the app was away - again whenever the app comes back to the front
     void deliverPending();
-    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible")
-        void deliverPending(); });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible")
+            return;
+        // AND THE DAY MAY HAVE TURNED WHILE WE WERE AWAY (audit, 8 Sep 2026).
+        // An installed app is resumed far more often than it is launched, so a
+        // pilot who never cold-starts was never paid and their streak broke on
+        // its own. claimDaily is a no-op for a day already taken.
+        claimDaily();
+        void deliverPending();
+    });
     // the switches that are not read from the save on the fly are applied
     // once here, so a reload lands in the state the pilot left
     setSfxMuted(!!save.sfxOff);
@@ -1727,4 +1747,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=238";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=242";

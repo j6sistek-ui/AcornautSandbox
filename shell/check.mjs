@@ -15,7 +15,12 @@ const rows = [
   ["revenuecat.iosApiKey", cfg.revenuecat?.iosApiKey, "RevenueCat → Project → Apps → the iOS app → Public API key"],
   ["revenuecat.androidApiKey", cfg.revenuecat?.androidApiKey, "RevenueCat → Project → Apps → the Android app → Public API key"],
   ...Object.entries(cfg.products).map(([k, v]) => [`products.${k}`, v, "App Store Connect → In-App Purchases (consumable) → Product ID; same ID in Play Console → In-app products"]),
-  ...Object.entries(cfg.leaderboards).filter(([, v]) => v !== "").map(([k, v]) => [`leaderboards.${k}`, v, "App Store Connect → Game Center → Leaderboards → Leaderboard ID; Play Console → Play Games Services → Leaderboards → ID"]),
+  // The hyper board is scored on TIME, so it is the one board that must be
+  // sorted the other way: the game posts finish ticks (sim.ts), and a board
+  // left on the default sort would crown the slowest pilot.
+  ...Object.entries(cfg.leaderboards).filter(([, v]) => v !== "").map(([k, v]) => [`leaderboards.${k}`, v,
+    "App Store Connect → Game Center → Leaderboards → Leaderboard ID; Play Console → Play Games Services → Leaderboards → ID"
+    + (k === "hyper" ? "  ** sort LOW TO HIGH, format elapsed time: this board is posted finish ticks **" : "")]),
 ];
 let missing = 0;
 for (const [k, v, from] of rows) { const ok = !unset(v); if (!ok) missing++; console.log(`${ok ? "  set    " : "  MISSING"} ${k.padEnd(28)} ${ok ? "" : "← " + from}`); }

@@ -1510,6 +1510,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const spill = world.spill;
     if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
       bankSpill(save, spill, true);
+      // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
+      // "spill" board has been declared and configured since the shell
+      // landed, and nothing ever posted to it: only endless free flight
+      // reached submitScore (sim.ts). Waves cleared is the Debris Field's
+      // own number - it is what the mode is scored on and what spillBest
+      // already keeps - and higher is better, so it needs no special board.
+      if (spill.cleared > 0) platform.submitScore("spill", spill.cleared);
       if (!spill.target) save.spillSuspended = null;
       writeSave(save);
     } else if (cues.includes("depot")) checkpointSpill();

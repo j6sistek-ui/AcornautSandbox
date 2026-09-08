@@ -295,7 +295,18 @@ export function bankSpill(save: SaveData, s: SpillState, end = false) {
 function readRaw(key: string): Record<string, unknown> | null {
   try {
     const raw = platform.storage.get(key);
-    return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
+    if (!raw) return null;
+    // A SAVE HAS TO BE AN OBJECT (App Store prep audit, section 2). JSON.parse
+    // only throws on malformed text: `5`, `"abc"` and `[1,2]` all parse, all
+    // come back truthy, and all used to be handed on as a save. Spreading a
+    // string into the defaults pastes its characters on as numbered keys, and
+    // worse, loadSave takes the FIRST key that reads truthy - so one corrupt
+    // byte in the live slot would shadow a perfectly good legacy save behind
+    // it. Anything that is not a plain object is not a save; say so, and the
+    // next key in the list gets its turn.
+    const value: unknown = JSON.parse(raw);
+    if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+    return value as Record<string, unknown>;
   } catch {
     return null;
   }

@@ -18,8 +18,21 @@ Blocker 2's failure path (a store that throws, cancelled and failed
 outcomes shown in the shop, a test for the ledger) is stamp 229. The
 section 3 deletes (dead pages, the 100 unreferenced art files, the orphan
 React file; review scripts moved to `illustrated-src/archive/`) followed.
-Open: blocker 7 (the shell needs store accounts; see `shell/README.md`),
-section 2 onward, section 4. Left for a human look: `zone-spawn-planner.html`,
+Section 4 (the classic screens, the XP ladder, constant flags, 20 unreferenced
+exports, 264 dead CSS rules) landed in #233 at stamp 241, brought forward onto
+the September code audit (#236) and re-verified against the full 41-test
+harness that audit made real. Section 2 followed at stamp 242: the fonts carry their OFL licences, the save
+loader refuses anything that is not an object, the audio suspends when the app
+leaves the foreground, `NEWS[0]` and the page description say 260 missions, the
+lab pages load the self-hosted fonts instead of a CDN, the Debris Field and
+Hyper Run boards are posted to at last, and `IS_BETA` can no longer be true on
+a native build. Two more of its items needed nothing: the external links no
+longer open a new context, and the cycle inspector ships on both pages by
+decision (`standalone.ts`, see the note above `drawCycleRoll`).
+
+Open: blocker 7 (the shell needs store accounts and the fourteen values
+`shell/check.mjs` lists; see `shell/README.md`), the docs that lie at the end
+of section 2 (README row 31, PARITY.md's header), and sections 5 and 6. Left for a human look: `zone-spawn-planner.html`,
 `hyper-run-contact-sheet.png`, `chart-bg.jpg` and `sky-wide.jpg` (read by
 `site-src/prep-assets.py`). DEBRIS WEAVE stays at one hazard by decision.
 
