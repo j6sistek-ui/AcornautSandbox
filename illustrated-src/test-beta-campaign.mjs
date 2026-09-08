@@ -14,9 +14,12 @@ for(let zone=0;zone<26;zone++){
  for(const base of ['lost','deep','arcade','spill'])assert.equal(rows.filter(l=>l.base===base).length,1);
  assert(rows.every(l=>l.fx.env===rows[0].fx.env));
 }
-assert.equal(C.LEVELS.filter(l=>l.base==='spill'&&l.gates>=20).length,1);
-assert(C.LEVELS.filter(l=>l.base==='spill'&&l.gates>=20).every(l=>l.ord>200));
-assert.equal(C.LEVELS[7].gates,1);assert.equal(C.LEVELS[17].gates,2);
+// THE SPILL LADDER (owner's planner export, PR #222): waves climb zone by
+// zone and never fall back; only the last seven zones ask twenty or more
+{const sp=C.LEVELS.filter(l=>l.base==='spill');
+ for(let i=1;i<sp.length;i++)assert(sp[i].gates>=sp[i-1].gates,`spill waves never fall back (${sp[i].id})`);
+ assert.equal(sp.filter(l=>l.gates>=20).length,7);assert(sp.filter(l=>l.gates>=20).every(l=>l.ord>=198));}
+assert.equal(C.LEVELS[7].gates,2);assert.equal(C.LEVELS[17].gates,3);
 assert.equal(C.LEVELS[0].gates,8);assert(C.LEVELS[0].fx.noFail);
 // Beta changes have unique contracts and opaque credit transferred from every previous ID.
 for(const def of C.LEVELS.filter(l=>l.previousIds)){
@@ -43,10 +46,15 @@ for(const def of C.LEVELS.filter(l=>l.fx.pal==='switchback')) {
  w.planets[0].scored=true;const score=w.score;Sim.updateWorld(w,save,1/60);assert.equal(w.score,score);
 }
 // Slow toggles are independent of pickup duration and restore on reset.
-const frozen=run(C.LEVELS.find(l=>l.fx.tapFreeze));Sim.flap(frozen,save);assert(frozen.tapFrozen);
+// (the owner's 7 Sep planner export carries no tapFreeze mission; the seam
+// is exercised only when one exists)
+const tapDef=C.LEVELS.find(l=>l.fx.tapFreeze);
+if(tapDef){
+const frozen=run(tapDef);Sim.flap(frozen,save);assert(frozen.tapFrozen);
 const slowX=frozen.planets[0].x;Sim.updateWorld(frozen,save,1/60);const slowMove=slowX-frozen.planets[0].x;
 Sim.flap(frozen,save);assert(!frozen.tapFrozen);const fastX=frozen.planets[0].x;Sim.updateWorld(frozen,save,1/60);
 assert(fastX-frozen.planets[0].x>slowMove*1.5);
+}
 // Actual collision, not an injected stuck flag, pauses until the accepted tap.
 function contact(def){
  const w=run(def),sx=w.W*Cat.PHYS.squirrelX,r=62,gap=220,y=w.H*.5,center=y+50;
@@ -55,9 +63,13 @@ function contact(def){
  let event;for(let i=0;i<4&&event!=='bounce';i++)event=Sim.updateWorld(w,save,1/120);
  assert.equal(event,'bounce');return w;
 }
-const sticky=contact(C.LEVELS.find(l=>l.fx.sticky));assert(sticky.stuck);assert.equal(sticky.lvl.stats.bounces,1);
+// (sticky planets left the owner's 7 Sep chart; the seam runs when a mission carries them)
+const stickyDef=C.LEVELS.find(l=>l.fx.sticky);
+if(stickyDef){
+const sticky=contact(stickyDef);assert(sticky.stuck);assert.equal(sticky.lvl.stats.bounces,1);
 const still=[sticky.planets[0].x,sticky.squirrel.y];for(let i=0;i<120;i++)Sim.updateWorld(sticky,save,1/60);
 assert.deepEqual([sticky.planets[0].x,sticky.squirrel.y],still);Sim.flap(sticky,save);assert(!sticky.stuck);Sim.updateWorld(sticky,save,1/60);assert(sticky.planets[0].x<still[0]);
+}
 const springDef=C.LEVELS.find(l=>l.fx.bounceScale);const spring=contact(springDef),normal=contact({...springDef,fx:{...springDef.fx,bounceScale:1}});
 assert(Math.abs(spring.squirrel.vy)>Math.abs(normal.squirrel.vy));
 // Simulate every mission's real completion seam. Flight reaches its portal,
@@ -80,9 +92,11 @@ for(const def of C.LEVELS){
  assert(P.verifiedMask(save,def)&1);
 }
 // Objective missions cannot become resumable endless saves or pass on lethal hits.
-const oreDef=C.LEVELS.find(l=>l.spillFinish?.kind==='ore');const dead=run(oreDef);dead.ready=false;
+// (Ore finishes left the owner's 7 Sep chart with the wave ladder; the seam runs when one exists)
+const oreDef=C.LEVELS.find(l=>l.spillFinish?.kind==='ore');
+if(oreDef){const dead=run(oreDef);dead.ready=false;
 dead.spill.oreMined=oreDef.spillFinish.n;dead.spill.phase='over';dead.spill.hull=0;dead.spill.deadFor=0;
-assert.equal(Sp.spillCheckpoint(dead.spill),null);Sim.updateWorld(dead,save,1/60);assert.notEqual(dead.screen,'lvldone');
+assert.equal(Sp.spillCheckpoint(dead.spill),null);Sim.updateWorld(dead,save,1/60);assert.notEqual(dead.screen,'lvldone');}
 // Repairs count only successful purchases; a full-hull attempt is not a repair.
 const ship=Sp.createSpill(390,760,123,0,false);ship.phase='depot';ship.depot={arm:0,bought:[]};ship.ore=1000;
 assert.notEqual(Sp.spillBuy(ship,'repair'),'ok');assert.equal(ship.repairs,0);

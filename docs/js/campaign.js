@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=225";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=225";
-import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=225";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=225";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=226";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=226";
+import { IS_BETA, STAR_MAP_LIVE } from "./catalog.js?v=226";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=226";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -566,11 +566,14 @@ export const STAR_REWARDS = [
     { stars: 147, kind: "stage", name: "Chapter 8 — LOST REACHES", desc: "Lost-in-space levels open." },
     { stars: 152, kind: "dust", amount: 60, name: "60 Star Dust", desc: "Deep-space wages." },
     { stars: 160, kind: "suit", id: "bigbooty", name: "Big Booty Suit", desc: "Maximum silhouette. Real jiggle." },
+    { stars: 168, kind: "helmet", id: "sammie", name: "Samurai Helmet", desc: "Earned on the Star Chart; also available early in the Regalia Pack." },
     { stars: 170, kind: "trail", id: "supernova", name: "Supernova", desc: "The loudest exit there is." },
     { stars: 180, kind: "stage", name: "Chapter 9 — THE BLACKOUT", desc: "Lights out." },
     { stars: 180, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates and Thrill Seeker unlock in the hangar." },
     { stars: 190, kind: "dust", amount: 75, name: "75 Star Dust", desc: "Blackout bonus." },
+    { stars: 198, kind: "suit", id: "sammie", name: "Sammie Suit", desc: "Earned on the Star Chart; also available early in the Regalia Pack." },
     { stars: 200, kind: "helmet", id: "chronarch", name: "Chronarch Helmet", desc: "Time under glass. Was premium; now earned." },
+    { stars: 210, kind: "pal", id: "magnetar", name: "Magnetar PAL", desc: "Upside Down World. Earned here or available early in the shop." },
     { stars: 216, kind: "stage", name: "Chapter 10 — EVENT HORIZON", desc: "The last ten." },
     { stars: 225, kind: "dust", amount: 90, name: "90 Star Dust", desc: "The far side pays better." },
     { stars: 245, kind: "dust", amount: 100, name: "100 Star Dust", desc: "Still going." },
@@ -579,6 +582,7 @@ export const STAR_REWARDS = [
     { stars: 285, kind: "dust", amount: 150, name: "150 Star Dust", desc: "The last stretch." },
     { stars: 300, kind: "title", name: "STARLORD", desc: "The original 300-star honor." },
     { stars: 300, kind: "suit", id: "catsuit", name: "Cat Suit", desc: "Eats no acorns. Earned at 300 stars." },
+    { stars: 318, kind: "trail", id: "phoenixplume", name: "Phoenix Plumage Trail", desc: "Earned here or available early in the Regalia Pack." },
     { stars: 500, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake. Earned at 500 stars." },
     { stars: 500, kind: "trail", id: "vanguardwake", name: "AcorNut Wake", desc: "Twin gold and cyan filaments. Worn only by AcorNut." },
     // HIGH ORBIT (owner, 7 Sep 2026): the five former beta suits fill the
@@ -588,14 +592,23 @@ export const STAR_REWARDS = [
     { stars: 340, kind: "helmet", id: "cinderforge", name: "Cinderforge Helmet", desc: "Ember glass. Arrives with the suit." },
     { stars: 390, kind: "suit", id: "groveguard", name: "Groveguard", desc: "Forest green and brass, its own sealed helm. Earned at 390 stars." },
     { stars: 390, kind: "helmet", id: "groveguard", name: "Groveguard Helm", desc: "Sealed. Worn only by Groveguard." },
+    { stars: 438, kind: "trail", id: "opalfeather", name: "Opal Feather Trail", desc: "Earned here or available early in the Regalia Pack." },
     { stars: 440, kind: "suit", id: "cosmic", name: "Cosmic", desc: "Violet nebula weave. Earned at 440 stars." },
     { stars: 440, kind: "helmet", id: "cosmic", name: "Cosmic Helmet", desc: "Nebula glass. Arrives with the suit." },
+    { stars: 528, kind: "pal", id: "astrafox", name: "AstraFox PAL", desc: "Wild Gate Sway. Earned here or available early in the shop." },
     { stars: 580, kind: "suit", id: "sunforged", name: "Sunforged", desc: "Bronze and solar gold, its own sealed helm. Earned at 580 stars." },
     { stars: 580, kind: "helmet", id: "sunforged", name: "Sunforged Helm", desc: "Sealed. Worn only by Sunforged." },
+    { stars: 588, kind: "trail", id: "opalfeather", name: "Opal Feather Trail", desc: "A second chart milestone for the Opal Feather Trail." },
+    { stars: 597, kind: "acorns", amount: 1000, name: "1,000 Acorns", desc: "A cargo hold of spending acorns." },
+    { stars: 648, kind: "pal", id: "satellite", name: "Satellite PAL", desc: "Visibility Reduced. Earned here or available early in the shop." },
     { stars: 660, kind: "suit", id: "abyssal", name: "Abyssal", desc: "Deep-sea blue, bioluminescent trim. Earned at 660 stars." },
     { stars: 660, kind: "helmet", id: "abyssal", name: "Abyssal Helmet", desc: "Abyss glass. Arrives with the suit." },
+    { stars: 708, kind: "pal", id: "switchback", name: "Stopwatch PAL", desc: "Tap Toggles Scroll Speed. Earned here or available early in the shop." },
     // owner, 7 Sep 2026: the far end of the chart opens a second slot
     { stars: 720, kind: "mod", id: "dualpal", name: "Second Companion", desc: "Fly two pals at once, one high and one low. Their effects stack." },
+    { stars: 738, kind: "helmet", id: "gemmie", name: "Opal Helmet", desc: "Earned on the Star Chart; also available early in the Regalia Pack." },
+    { stars: 768, kind: "suit", id: "gemmie", name: "Gemmie Suit", desc: "Earned on the Star Chart; also available early in the Regalia Pack." },
+    { stars: 774, kind: "dust", amount: 200, name: "200 Star Dust", desc: "The final approach pays in Star Dust." },
 ];
 /** the pilot's TITLE comes from stars now, not XP — same ladder the
  *  rewards climb. Thresholds sit on chapter openings and the two title
@@ -617,12 +630,21 @@ export function starTitle(total) {
         return "PILOT";
     return "CADET";
 }
+/** The first rung wins when an item is deliberately celebrated twice. */
+function rewardGates(kind) {
+    const out = {};
+    for (const reward of STAR_REWARDS)
+        if (reward.kind === kind && reward.id) {
+            out[reward.id] = Math.min(out[reward.id] ?? Infinity, reward.stars);
+        }
+    return out;
+}
 /** star thresholds the save-side gates read; kept beside the reward list */
 export const STAR_UNLOCKS = {
-    pals: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "pal" && r.id).map((r) => [r.id, r.stars])),
-    suits: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "suit" && r.id).map((r) => [r.id, r.stars])),
-    helmets: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "helmet" && r.id).map((r) => [r.id, r.stars])),
-    trails: Object.fromEntries(STAR_REWARDS.filter((r) => r.kind === "trail" && r.id).map((r) => [r.id, r.stars])),
+    pals: rewardGates("pal"),
+    suits: rewardGates("suit"),
+    helmets: rewardGates("helmet"),
+    trails: rewardGates("trail"),
     startShield: 6,
     battery: 27,
     // modes open with a CHAPTER, not a loose star count: Deep Space with

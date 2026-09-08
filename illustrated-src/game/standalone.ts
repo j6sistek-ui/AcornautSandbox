@@ -2636,6 +2636,9 @@ export async function bootStandalone(root: HTMLElement) {
       drawSpriteOn(ctx, art.shield?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "title") {
       drawRankBadge(ctx, item.name ?? "", px);
+    } else if (item.kind === "acorns") {
+      // the 597-star cargo hold (owner's chart, PR #222): the acorn itself
+      drawSpriteOn(ctx, art.acorn?.[0] ?? null, px / 2, px / 2, px * 0.82);
     } else if (item.kind === "dust") {
       // the same four-point crystal the counter and the shop use, drawn by
       // hand because the rail paints to canvas rather than mounting an svg
