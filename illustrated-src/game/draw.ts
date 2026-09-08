@@ -4319,7 +4319,12 @@ let motionVyClock = -1;
 // 9/s a tap's -450 impulse crossed zero in about four frames, so the
 // neutral pose flashed by unseen. 5.5/s puts the level frame on screen
 // for ~150ms on the way through, in both directions.
-const POSE_SMOOTH = 5.5;
+// HOW FAST THE POSE FOLLOWS THE CLIMB (owner, 8 Sep 2026: "it had a visual
+// animation"). At 5.5 the smoother ate the tap spike whole: measured over a
+// real run at the owner's own cadence (31 taps in 20s), the pose reached
+// three of eight frames and changed on 2% of frames - a still with a twitch.
+// See POSE_CLIMB_SPAN below for the other half of the fix.
+const POSE_SMOOTH = 24;
 function smoothMotionVy(t: number, vy: number) {
   const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
   motionVyClock = t;
@@ -4343,6 +4348,18 @@ export const POSE_CURVE = 1.7;
 // and no deeper (0.5^1.7 = 0.31 of an eight-frame ramp); every frame of
 // the climb flies. The loadout case sweeps exactly this reach.
 export const POSE_DIVE_DEPTH = 0.5;
+
+// THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
+// 470 px/s, and the game never gets there - a hard climb peaks near 428, so
+// even the best tap asked for 60% of the ramp, which POSE_CURVE then bent
+// down to about 30%. The deep frames of every ascent bank were unreachable
+// art. 260 is measured, not guessed: the pose walks all eight frames and
+// changes on 20% of frames, against the 22% of the spring tail that a motion
+// bank REPLACES (fullMotion suppresses the rig tail, so this ramp is the
+// whole animation for a suit that has one). The dive keeps its own 620 and
+// POSE_DIVE_DEPTH untouched - the shallow dive is the owner's call from
+// 2 Sep and this changes nothing about it.
+export const POSE_CLIMB_SPAN = 260;
 
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
@@ -4709,7 +4726,7 @@ function paintIllustrated(
           v = trackHeadingMotion(_t, motionVy, motionVx);
         } else {
           const sv = smoothMotionVy(_t, motionVy);
-          v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+          v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
         }
         // shape the attitude: the dive half shallowed, both halves curved
         if (v > 0) v *= POSE_DIVE_DEPTH;

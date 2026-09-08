@@ -190,7 +190,7 @@ try {
   const canvases=[createCanvas(dimensions,dimensions),createCanvas(dimensions,dimensions)];
   const outputs=[{body:[],helmet:[]},{body:[],helmet:[]}];
   const contexts=canvases.map((canvas,i)=>instrument(canvas,outputs[i]));
-  function compare(label,draw,{pixels=true,expectHelmet=true,frame}={}) {
+  function compare(label,draw,{pixels=true,expectHelmet=true,frame,crossVersion=true}={}) {
     const poses=[];
     for(let i=0;i<2;i++) {
       canvases[i].getContext('2d').reset();outputs[i].body.length=0;outputs[i].helmet.length=0;
@@ -198,15 +198,27 @@ try {
       draw(i===0?Before:After,contexts[i],i);
       poses.push(window.__acornautPose ? structuredClone(window.__acornautPose) : null);
     }
-    assert.deepEqual(outputs[1].body,outputs[0].body,`${label}: body sources, registration, transforms, alpha and halos are unchanged`);
+    // crossVersion:false says "this scene is EXPECTED to pick a different
+    // frame than the baseline". The pose ramp was deliberately retuned on
+    // 8 Sep 2026 (POSE_SMOOTH 5.5 -> 24, POSE_CLIMB_SPAN 470 -> 260) because
+    // the old dials reached three of eight frames and changed on 2% of frames
+    // at the owner's measured tap rate - a still with a twitch. So a
+    // time-driven gameplay tick now lands on a deeper frame than the baseline
+    // did, by design. What must NOT drift is registration: the frame-pinned
+    // sweep above still compares every bank, every frame and every size
+    // against the baseline exactly, and the per-version helmet count and
+    // body-rendered checks below still run here.
+    if (crossVersion) {
+      assert.deepEqual(outputs[1].body,outputs[0].body,`${label}: body sources, registration, transforms, alpha and halos are unchanged`);
+      assert.deepEqual(poses[1],poses[0],`${label}: selected motion frame and shaped pose are unchanged`);
+    }
     assert(outputs[1].body.length,`${label}: the body actually rendered`);
-    assert.deepEqual(poses[1],poses[0],`${label}: selected motion frame and shaped pose are unchanged`);
     if(frame) {
       assert.equal(poses[1]?.bank,frame.bank,`${label}: requested bank is exercised`);
       assert.equal(poses[1]?.idx,frame.idx,`${label}: requested source frame is exercised`);
     }
     if(expectHelmet) assert.equal(outputs[1].helmet.length,1,`${label}: exactly one equipped helmet is composited`);
-    if(pixels) {
+    if(pixels && crossVersion) {
       assert.deepEqual(canvases[1].getContext('2d').getImageData(0,0,dimensions,dimensions).data,
         canvases[0].getContext('2d').getImageData(0,0,dimensions,dimensions).data,`${label}: bare-body pixels are identical`);
       counts.pixelComparisons++;
@@ -336,7 +348,7 @@ try {
       compare(`${suit.id} gameplay ${interval}s tick ${tick}`,(renderer,ctx,i)=>{
         const run=runs[i];
         renderer.drawPilot(ctx,run.world,run.save,art,dimensions/2,1,dimensions/2);
-      },{pixels:tick%6===0});
+      },{pixels:tick%6===0,crossVersion:false});
       counts.gameplayFrames++;if(taps.has(tick)) counts.acceptedTaps++;
     }
   }
