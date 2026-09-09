@@ -16,6 +16,7 @@ const tracks=JSON.parse(readFileSync(source+'head-tracks.json','utf8'));
 const standards=['iontrim','copper','voidsuit','sammie','gemmie','leviathan','ember','frost','ghost'];
 const standard=[206,106,36];
 const yPath=[0,-.7,-1.5,-2.4,-3.5,-4.7,-6,-7,0,.8,1.8,3,4.2,5.6,7,8];
+const crownRepair=JSON.parse(readFileSync(source+'anatomy-repair/regions.json','utf8'));
 const anchors={},report={};
 for(const [suit,track] of Object.entries(tracks)) {
   if(!standards.includes(suit))continue;
@@ -46,6 +47,13 @@ for(const [suit,track] of Object.entries(tracks)) {
   const target=standard,cw=im.width/4,ch=im.height/4;
   report[suit]=[];
   let neutralHead;
+  let previousCrown;
+  let repairedCrown;
+  if(crownRepair[suit]) {
+    const repaired=await loadImage(source+'anatomy-repair/'+suit+'-asc-8.png');
+    const rc=createCanvas(256,256),rg=rc.getContext('2d');rg.drawImage(repaired,0,0,256,256);
+    repairedCrown=rg.getImageData(0,0,256,256).data;
+  }
   for(let n=0;n<16;n++) {
     const j=n===8?0:n,t=track.frames[j],s=target[2]/t.head[2];
     const x=target[0],y=target[1]+yPath[n];
@@ -83,6 +91,37 @@ for(const [suit,track] of Object.entries(tracks)) {
         g.putImageData(current,0,0);
       }
     }
+    if(n===7&&repairedCrown) {
+      const patch=g.getImageData(0,0,256,256),pd=patch.data,[x0,y0,x1,y1]=crownRepair[suit];
+      // The generated edit supplies only the missing crown silhouette.
+      // Keep every surviving original RGB value and all pixels outside this
+      // small region, including the correct tail, face and complete costume.
+      for(let py=y0;py<y1;py++)for(let px=x0;px<x1;px++) {
+        const p=(py*256+px)*4,spill=Math.min(repairedCrown[p],repairedCrown[p+2])-repairedCrown[p+1];
+        const matte=spill>150?1:Math.max(0,Math.min(1,(spill-8)/247));
+        pd[p+3]=Math.round(pd[p+3]*(1-matte));
+        if(!pd[p+3])pd[p]=pd[p+1]=pd[p+2]=0;
+      }
+      g.putImageData(patch,0,0);
+      if(suit==='copper') {
+        // The original plume covered the rear ear. Erasure alone would
+        // leave plume-colored fur in that ear. Restore the adjacent pose's
+        // actual ear, translated one pixel along the registered head path.
+        const a=g.getImageData(0,0,256,256),ad=a.data;
+        const shifted=createCanvas(256,256),sc=shifted.getContext('2d');
+        sc.drawImage(previousCrown,0,yPath[7]-yPath[6]);
+        const bd=sc.getImageData(0,0,256,256).data;
+        for(let py=45;py<86;py++)for(let px=193;px<229;px++) {
+          const k=(py*256+px)*4;
+          const mix=Math.min(1,(px-193)/3,(229-px)/3,(86-py)/3);
+          const aa=ad[k+3]*(1-mix),ba=bd[k+3]*mix,alpha=aa+ba;
+          for(let ch=0;ch<3;ch++)ad[k+ch]=alpha?(ad[k+ch]*aa+bd[k+ch]*ba)/alpha:0;
+          ad[k+3]=alpha;
+        }
+        g.putImageData(a,0,0);
+      }
+    }
+    if(suit==='copper'&&n===6){previousCrown=createCanvas(256,256);previousCrown.getContext('2d').drawImage(c,0,0);}
     const fd=g.getImageData(0,0,256,256).data;
     let minX=256,minY=256,maxX=-1,maxY=-1,edge=0,ink=0;
     for(let yy=0;yy<256;yy++)for(let xx=0;xx<256;xx++)if(fd[(yy*256+xx)*4+3]>32){minX=Math.min(minX,xx);maxX=Math.max(maxX,xx);minY=Math.min(minY,yy);maxY=Math.max(maxY,yy);ink++;if(xx<2||xx>253||yy<2||yy>253)edge++;}

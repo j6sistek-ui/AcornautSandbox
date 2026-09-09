@@ -9,6 +9,7 @@
         30.46,
         32.46
       ],
+      "maxUnexpectedCrownPixels": 6,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -18,13 +19,14 @@
       ]
     },
     "copper": {
-      "tailWork": 2.999,
-      "nearChangedInk": 24969,
+      "tailWork": 3.053,
+      "nearChangedInk": 24529,
       "farChangedInk": 74879,
       "paintedHeadRadiusRange": [
         32.42,
-        33.43
+        33.0
       ],
+      "maxUnexpectedCrownPixels": 0,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -34,13 +36,14 @@
       ]
     },
     "voidsuit": {
-      "tailWork": 3.795,
-      "nearChangedInk": 23456,
+      "tailWork": 3.89,
+      "nearChangedInk": 22887,
       "farChangedInk": 89027,
       "paintedHeadRadiusRange": [
-        31.2,
-        32.66
+        30.71,
+        32.49
       ],
+      "maxUnexpectedCrownPixels": 0,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -57,6 +60,7 @@
         32.12,
         33.17
       ],
+      "maxUnexpectedCrownPixels": 8,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -73,6 +77,7 @@
         31.69,
         32.75
       ],
+      "maxUnexpectedCrownPixels": 7,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -89,6 +94,7 @@
         32.23,
         32.41
       ],
+      "maxUnexpectedCrownPixels": 0,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -105,6 +111,7 @@
         32.52,
         33.62
       ],
+      "maxUnexpectedCrownPixels": 12,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -121,6 +128,7 @@
         32.46,
         33.39
       ],
+      "maxUnexpectedCrownPixels": 0,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,
@@ -137,6 +145,7 @@
         31.15,
         31.77
       ],
+      "maxUnexpectedCrownPixels": 1,
       "headXSpan": 0.0,
       "maxHeadStep": 1.4000000000000057,
       "headDrift": 0.07500000000000284,

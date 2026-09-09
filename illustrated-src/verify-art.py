@@ -1919,6 +1919,12 @@ def main() -> int:
         qa.fail('Natural flight: ' + result.stdout.strip() + result.stderr.strip())
     else:
         qa.ok(result.stdout.strip().splitlines()[-1])
+    result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/test-natural-flight-anatomy.py')],
+                            capture_output=True, text=True)
+    if result.returncode:
+        qa.fail('Natural flight anatomy regression: ' + result.stdout.strip() + result.stderr.strip())
+    else:
+        qa.ok('Natural flight anatomy: both original crown defects rejected; bounded repairs pass')
     verify_repaired_suit_material_continuity(qa)
     result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/verify-eclipse-motion-transfer.py')],
                             capture_output=True, text=True)

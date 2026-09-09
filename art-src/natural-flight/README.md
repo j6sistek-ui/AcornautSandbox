@@ -4,6 +4,12 @@ The owner requested natural, standardized flight with stable costumes and
 heads, then approved the new Gemmie tail whip as guidance. The owner also
 permitted actual head-size normalization for consistent helmet fitting.
 
+The first visual-clearance claim was incorrect: Void and Copper ascent 8
+contained duplicated crown plumes. Both have been repaired. See
+[the audit](AUDIT-2026-09-09.md) for the defects, original regression images,
+repair boundaries and limitations of the checks. Passing measurements do
+not establish complete anatomy or costume consistency.
+
 ## Exact scope
 
 | Group | Shipping ids | Frames |
@@ -24,6 +30,13 @@ gemmie-generated.png is the owner-approved tail reference. Nine master PNGs
 are the final standard sources. LEVIATHAN-FINAL-REFINEMENT records its
 continuous fin-ramp correction.
 
+The anatomy-repair directory preserves the two defective exported frames,
+generated crown edits, prompts and bounded repair rectangles. The exporter
+uses generated alpha to remove the plumes. Copper additionally restores
+its real rear ear from ascent 7, translated one pixel with the head path,
+inside a small feathered crown patch; alpha-only removal left plume texture
+inside the ear. These corrections affect only the two ascent-8 PNGs.
+
 companions-owner-sheet.jpg is the supplied source, including the excluded
 panda. Three owner-cells PNGs isolate the approved sequences. The Quill
 repair master and QUILL-TAIL-REPAIR-PROMPT preserve its generated correction.
@@ -36,6 +49,7 @@ python illustrated-src/measure-natural-flight.py
 node illustrated-src/export-natural-flight.mjs
 node illustrated-src/export-owner-companions.mjs
 python illustrated-src/verify-natural-flight.py
+python illustrated-src/test-natural-flight-anatomy.py
 node illustrated-src/export-sandbox.mjs
 node illustrated-src/build-lab.mjs
 node illustrated-src/test-natural-flight.mjs
@@ -79,7 +93,9 @@ controls, rewards and save schema are unchanged. Cache stamp 247 is rebuilt.
 
 ## Visual review
 
-All 192 poses were reviewed in whole-character and head contacts.
+The repeat audit inspected all nine masters, the 192 exported poses in
+whole-character/head contacts and the three companion loops. The original
+review missed two anatomy defects, so its blanket clearance is withdrawn.
 
 | Suit | Features checked across the bank |
 | --- | --- |
@@ -94,9 +110,12 @@ All 192 poses were reviewed in whole-character and head contacts.
 | Ghost | Pearl spectral body, stable face and wisps without costume additions |
 | Companions | Approved source poses and costume pixels; localized Quill tail repair |
 
-No disappearing closure, added button, relocated panel or suit-color switch
-was observed. This is semantic visual review: hashes prevent later changes,
-but do not independently prove costume identity.
+No additional duplicated crown plume was found among the other ten
+characters. No disappearing closure, added button, relocated panel or
+suit-color switch was observed in the repeat contact review. This is a
+visual observation, not an independent proof of zero costume delta.
+The new crown envelope rejects the actual two defective originals and
+passes their repairs; it does not inspect tail intersections elsewhere.
 
 Every standard bank has head x-span 0px, fitted radius 36px, worst adjacent
 head step 1.4px and median path curvature 0.075px. Independent pupil residual
@@ -113,7 +132,8 @@ sheet approval rather than the standard squirrel choreography.
 ## Verification
 
 - Source/lab builds, TypeScript and diff whitespace checks pass; no lint script.
-- All 31 shipping art QA groups pass.
+- All 32 shipping art QA groups pass, including the new negative regression
+  using the two actual defective images and a repair-locality comparison.
 - Production painter: 8,640 frame/helmet/size cases covering all 30 helmets,
   48 companion poses, loop wrap/held clocks, 3,240 live simulation frames,
   2,160 preview frames and nine neutral loading/portrait comparisons.

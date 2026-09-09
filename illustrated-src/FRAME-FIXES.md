@@ -4,8 +4,12 @@
 
 Ion, Copper, Void, Sammie, Gemmie, Leviathan, Ember, Frost and Ghost now
 have replacement 8/8 banks, normalized painted skulls and shared smooth
-pose selection. Head, costume and palette continuity were reviewed across
-every frame. Leviathan additionally holds one generated head painting with
+pose selection. The initial review missed duplicated crown plumes in Void
+and Copper ascent 8; both are now repaired with localized generated alpha.
+The anatomy regression retains both actual defective frames and proves
+that the crown guard rejects them. This guard does not establish complete
+anatomy or costume continuity; see the dated audit in art-src/natural-flight.
+Leviathan additionally holds one generated head painting with
 a collar blend to remove residual shimmer. The standard tail-work and head
 boundaries are enforced by `verify-natural-flight.py`.
 

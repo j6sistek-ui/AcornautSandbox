@@ -12,6 +12,7 @@ from collections import deque
 import json, os, hashlib, re, math
 import numpy as np
 from PIL import Image
+from natural_flight_anatomy import crown_excess, CROWN_EXCESS_LIMIT
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT/'art-src/natural-flight'
@@ -47,7 +48,8 @@ def eye_center(rgba, head, target=None):
     return min(groups,key=lambda p:np.linalg.norm(p-aim))
 
 for suit,frames in reg['report'].items():
-    arrays=[];heads=np.array([f['head'] for f in frames]);eyes=[];areas=[]
+    arrays=[];heads=np.array([f['head'] for f in frames]);eyes=[];areas=[];crowns=[]
+    neutral_rgba=np.asarray(Image.open(ART/(frames[0]['key']+'.png')))
     for i,f in enumerate(frames):
         path=ART/(f['key']+'.png');image=Image.open(path)
         assert image.size==(256,256) and image.mode=='RGBA',str(path)
@@ -60,6 +62,9 @@ for suit,frames in reg['report'].items():
         hx,hy,r=f['head'];inside=(xx-hx)**2+(yy-hy)**2<r*r
         areas.append(float(np.sqrt(((rgba[:,:,3]>32)&inside).sum()/math.pi)))
         if suit not in loops:
+            excess=crown_excess(neutral_rgba,rgba,heads[0],f['head'])
+            crowns.append(excess)
+            if excess>CROWN_EXCESS_LIMIT:failures.append(f"{f['key']}: unexpected crown silhouette {excess} > {CROWN_EXCESS_LIMIT}")
             p=eye_center(rgba,f['head'])
             if p is None:failures.append(f['key']+': pupil not found')
             else:eyes.append(p)
@@ -78,6 +83,7 @@ for suit,frames in reg['report'].items():
     if suit not in loops and ratio<2.9:failures.append(f'{suit}: tail work {ratio:.2f} < 2.9')
     metrics={'tailWork':round(ratio,3),'nearChangedInk':near,'farChangedInk':far,'paintedHeadRadiusRange':[round(min(areas),2),round(max(areas),2)]}
     if suit not in loops:
+        metrics['maxUnexpectedCrownPixels']=max(crowns)
         assert np.ptp(heads[:,2])==0 and heads[0,2]==36
         steps=[float(np.linalg.norm(heads[i,:2]-heads[j,:2])) for i,j in pairs]
         drift=[np.linalg.norm(heads[i,:2]-(heads[i-1,:2]+heads[i+1,:2])/2) for i in range(1,15) if i not in (7,8)]
