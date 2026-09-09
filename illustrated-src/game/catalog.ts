@@ -1,4 +1,5 @@
 import { platform } from "./platform";
+import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
@@ -16,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "248";
+export const ART_VER = "251";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -316,21 +317,25 @@ if (!IS_BETA) {
 
 export type Trail = { id: string; name: string; cost: number; colors: string[] };
 
+const SUIT_BUILT_IN_TRAILS: Record<string,string> = {
+  vanguard:"vanguardwake", arcflash:"arcflashwake",
+  ...Object.fromEntries(HIGH_ORBIT_IDS.map(id=>[id,HIGH_ORBIT_PROFILES[id].trail])),
+};
+export const builtInTrailSuit = (trail:string):string|undefined =>
+  Object.keys(SUIT_BUILT_IN_TRAILS).find(id=>SUIT_BUILT_IN_TRAILS[id]===trail);
+
 export function trailWornBy(equippedTrail: string, equippedSuit: string): string {
-  if (equippedSuit === "vanguard") return "vanguardwake";
-  if (equippedSuit === "arcflash") return "arcflashwake";
-  return equippedTrail === "vanguardwake" || equippedTrail === "arcflashwake" ? "sparks" : equippedTrail;
+  return SUIT_BUILT_IN_TRAILS[equippedSuit] || (builtInTrailSuit(equippedTrail) ? "sparks" : equippedTrail);
 }
 export function canWearTrail(id: string, suit: string): boolean {
-  if (suit === "vanguard") return id === "vanguardwake";
-  if (suit === "arcflash") return id === "arcflashwake";
-  return id !== "vanguardwake" && id !== "arcflashwake";
+  return SUIT_BUILT_IN_TRAILS[suit] ? id === SUIT_BUILT_IN_TRAILS[suit] : !builtInTrailSuit(id);
 }
 
 export const TRAILS: Trail[] = [
   { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
   { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
   { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
+  ...HIGH_ORBIT_IDS.map(id=>({id:HIGH_ORBIT_PROFILES[id].trail,name:HIGH_ORBIT_PROFILES[id].wake,cost:0,colors:[...HIGH_ORBIT_PROFILES[id].colors]})),
   { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
   { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
   { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },

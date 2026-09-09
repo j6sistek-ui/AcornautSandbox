@@ -1,5 +1,18 @@
 # Acornaut motion spec — how a suit flies
 
+## High Orbit cut rigs — explicit owner grant, 9 Sep 2026
+
+Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now use eleven remastered
+painted parts each, with original continuous motion and a suit-exclusive
+built-in wake. This supersedes the five-suit 7 September sheet grant below.
+The owner explicitly requested articulated cuts like AcorNut with independent
+motion between AcorNut and Arcflash; their existing art and motion stay intact.
+
+The five share fixed 36px head registration at a 192px reference, constant
+bone lengths and a single area-preserving tail painting. Their old 8/8 banks
+are retired from the loader. See `art-src/high-orbit/README.md` for source
+provenance, extraction, runtime paths and review evidence.
+
 ## Natural standard series and approved companions — 9 Sep 2026
 
 The owner requested Ion, Copper, Void, Sammie, Gemmie, Leviathan, Ember,

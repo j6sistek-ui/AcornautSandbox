@@ -1,5 +1,5 @@
 {
- "artVer": "248",
+ "artVer": "251",
  "suits": [
   {
    "id": "flight",
@@ -359,9 +359,9 @@
    "key": "suit:cinderforge",
    "file": "suits/cinderforge.png",
    "dome": [
-    183,
-    93,
-    44
+    181,
+    88,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -373,9 +373,9 @@
    "key": "suit:groveguard",
    "file": "suits/groveguard.png",
    "dome": [
-    183,
-    93,
-    44
+    181,
+    88,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -387,9 +387,9 @@
    "key": "suit:cosmic",
    "file": "suits/cosmic.png",
    "dome": [
-    183,
-    93,
-    44
+    181,
+    88,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -415,9 +415,9 @@
    "key": "suit:sunforged",
    "file": "suits/sunforged.png",
    "dome": [
-    183,
-    89,
-    42
+    181,
+    88,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -429,9 +429,9 @@
    "key": "suit:abyssal",
    "file": "suits/abyssal.png",
    "dome": [
-    183,
-    93,
-    44
+    181,
+    88,
+    36
    ],
    "ownHead": false,
    "bakedDome": false,

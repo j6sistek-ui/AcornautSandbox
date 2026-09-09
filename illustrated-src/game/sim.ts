@@ -1,5 +1,7 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
+import { createHighOrbitMotion, stepHighOrbit, type HighOrbitMotion } from "./high-orbit-motion";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config";
 import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
@@ -336,6 +338,7 @@ export type World = {
   vanguard: VanguardMotion;
   /** Arcflash-only joints and inertial tail. No gameplay authority. */
   arcflash: ArcflashMotion;
+  highOrbit: HighOrbitMotion;
   /** queued slow-recovery time from taps received before the burst settles */
   /** playback direction: 1 forward; -1 after a repeat tap, rewinding to
    *  the start before playing through to the end again */
@@ -549,6 +552,7 @@ export function makeWorld(W: number, H: number): World {
     tapAnimT: -1,
     vanguard: createVanguardMotion(),
     arcflash: createArcflashMotion(),
+    highOrbit: createHighOrbitMotion(),
     tapAnimDir: 1,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
@@ -1699,6 +1703,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.tapAnimT = -1;
   w.vanguard = createVanguardMotion();
   w.arcflash = createArcflashMotion();
+  w.highOrbit = createHighOrbitMotion();
   w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -2600,6 +2605,7 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   // Arcflash emits from its moving wrist and boot nozzles in its own
   // painter. Do not add the generic tail-origin particles or consume RNG.
   if (trail === "arcflashwake") return;
+  if (highOrbitTrailSuit(trail)) return;
   // the painted pilot's tail sweeps far to the left — emit behind it or
   // the whole plume is swallowed by the sprite
   const sx = pilotX(w) - 34;
@@ -3810,6 +3816,10 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       // keeps a phone and a large viewport in the same articulated pose.
       stepArcflash(w.arcflash, RACE_DT, w.race.vy);
     }
+    const orbitRaceSuit=pilotSuitId(w,save);
+    if (isHighOrbit(orbitRaceSuit) && w.race.tick>priorRaceTick && !w.tut?.hold
+      && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck)
+      stepHighOrbit(w.highOrbit,orbitRaceSuit,RACE_DT,w.race.vy);
     w.speed = w.race.speed;
     w.distance = w.race.coursePosition;
     w.runAcorns = w.race.acorns;
@@ -3977,6 +3987,12 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     stepArcflash(w.arcflash, visualDt, w.squirrel.vy, w.ready);
   }
 
+  const orbitSuit=pilotSuitId(w,save);
+  if (isHighOrbit(orbitSuit) && !w.tut?.hold && !w.spill && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck) {
+    const slow=w.powerLeft>0||w.tapFrozen?PHYS.slowFactor:1;
+    const visualDt=w.ready?dt:dt*slow*(w.shieldSlow>0?.55:1)*paceOf(save,w);
+    stepHighOrbit(w.highOrbit,orbitSuit,visualDt,w.squirrel.vy,w.ready);
+  }
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
 

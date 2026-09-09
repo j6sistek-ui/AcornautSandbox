@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "id": "cinderforge",
+      "maxJointStep": 1.1712458739117722,
+      "minHeadGap": 9.875829727087854,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 4,
+      "minTailAreaRatio": 0.9999999999999971,
+      "maxTailAreaRatio": 1.0000000000000027,
+      "bodyRange": 30.97927657007406,
+      "tailRange": 62.71013923216657
+    },
+    {
+      "id": "groveguard",
+      "maxJointStep": 1.2904772460743885,
+      "minHeadGap": 12.757463931807578,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 6,
+      "minTailAreaRatio": 0.9999999999999958,
+      "maxTailAreaRatio": 1.0000000000000036,
+      "bodyRange": 31.02520526434073,
+      "tailRange": 65.26873754430355
+    },
+    {
+      "id": "cosmic",
+      "maxJointStep": 1.2071504504394497,
+      "minHeadGap": 10.287025687253333,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 3,
+      "minTailAreaRatio": 0.9999999999999972,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "bodyRange": 30.984687617222953,
+      "tailRange": 62.98663835406357
+    },
+    {
+      "id": "sunforged",
+      "maxJointStep": 1.1341165457831153,
+      "minHeadGap": 14.691417413789985,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 4,
+      "minTailAreaRatio": 0.9999999999999973,
+      "maxTailAreaRatio": 1.0000000000000036,
+      "bodyRange": 30.968339893422407,
+      "tailRange": 59.75897157595573
+    },
+    {
+      "id": "abyssal",
+      "maxJointStep": 1.2472885623820318,
+      "minHeadGap": 12.669867402425105,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 5,
+      "minTailAreaRatio": 0.9999999999999969,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "bodyRange": 31.006644478322443,
+      "tailRange": 69.06999542319353
+    }
+  ]
+}

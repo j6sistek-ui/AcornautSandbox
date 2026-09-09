@@ -1,5 +1,14 @@
 # Frame fixes: the motion banks, frame by frame
 
+## High Orbit remaster (9 September 2026)
+
+Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now animate fixed painted
+cut parts instead of repainting a frame bank. The same head, buttons, panels,
+colors and tail surface persist throughout the cycle. Full-head registration
+fits the existing helmet glass, and the tail root stays at the pelvis.
+Each has its own exclusive material-specific wake. See
+`art-src/high-orbit/README.md` and the interactive `docs/lab/high-orbit/` review.
+
 ## Natural flight and companion sheet repair (9 September 2026)
 
 Ion, Copper, Void, Sammie, Gemmie, Leviathan, Ember, Frost and Ghost now

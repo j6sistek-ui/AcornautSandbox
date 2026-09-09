@@ -4,6 +4,10 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
+import {isHighOrbit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
+import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
+import {highOrbitPreview,type HighOrbitMotion} from "./high-orbit-motion";
+import {paintHighOrbitWake,type HighOrbitTravel} from "./high-orbit-effects";
 import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -1855,6 +1859,10 @@ function spillCanopyFrame(sp: Sprite) {
 
 function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveData, hole: SpillHole) {
   const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
+  if(isHighOrbit(suit.id)){
+    paintHighOrbitCockpit(ctx,art,suit.id,hole.cx,hole.cy,hole.rx,hole.ry);
+    return;
+  }
   if (suit.id === "arcflash") {
     paintArcflashCockpit(ctx,art,hole.cx,hole.cy,hole.rx,hole.ry);
     return;
@@ -3598,11 +3606,11 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:verdant": [196, 92, 45, 0],
   "suit:cryostar": [198, 93, 45, 0],
   "suit:eclipse": [204, 89, 58, -5],
-  "suit:cinderforge": [183, 93, 44],
-  "suit:groveguard": [183, 93, 44],
-  "suit:cosmic": [183, 93, 44],
-  "suit:sunforged": [183, 89, 42],
-  "suit:abyssal": [183, 93, 44],
+  "suit:cinderforge": [181, 88, 36],
+  "suit:groveguard": [181, 88, 36],
+  "suit:cosmic": [181, 88, 36],
+  "suit:sunforged": [181, 88, 36],
+  "suit:abyssal": [181, 88, 36],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [190, 100, 45, 0],
   "robo-tap-2": [190, 100, 45, 0],
@@ -4241,19 +4249,6 @@ const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
 function naturalFlightKey(key: string) {
   return NATURAL_FLIGHT_SUITS.has(key.replace(/^suit:/, "").replace(/-(asc|desc)-\d+$/, ""));
 }
-const naturalFlightState = new Map<string, { t: number; pose: number }>();
-function trackNaturalFlight(id: string, t: number, target: number) {
-  let state = naturalFlightState.get(id);
-  if (!state || t < state.t) state = { t: t - 1 / 60, pose: 0 };
-  const dt = Math.max(0, Math.min(0.05, t - state.t));
-  // Sixteen painted steps per second carries the tail through its intervening
-  // poses after a tap; a velocity impulse cannot skip straight across the arc.
-  const step = dt * 16 / 7;
-  state.pose += Math.max(-step, Math.min(step, target - state.pose));
-  state.t = t;
-  naturalFlightState.set(id, state);
-  return state.pose;
-}
 
 function paintDome(
   ctx: CanvasRenderingContext2D,
@@ -4279,6 +4274,13 @@ function paintDome(
   const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
   const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
   const r = a[2] * scale;
+  paintRegisteredDome(ctx,helmet,hx,hy,r,a[3]||0,art);
+}
+
+/** Both measured frame banks and articulated skulls use the same helmet art
+ * and glass opening. A rig supplies its actual head transform directly. */
+function paintRegisteredDome(ctx:CanvasRenderingContext2D,helmet:(typeof HELMETS)[number],
+ hx:number,hy:number,r:number,headAngle:number,art?:ArtBank|null) {
   // the REAL helmet render sits on the head — scaled so its glass circle
   // matches the painted dome exactly
   const helmSpr = art?.helms?.[helmet.id];
@@ -4292,7 +4294,7 @@ function paintDome(
       // the POSE's head pitch - a motion frame whose head dives 55 degrees
       // carries that in its own dome anchor, so the rim and neck ring
       // follow the head instead of staying level through the dive.
-      const rot = (g[3] || 0) + (a[3] || 0);
+      const rot = (g[3] || 0) + headAngle;
       if (rot) {
         ctx.save();
         ctx.translate(hx, hy);
@@ -4326,6 +4328,12 @@ function paintDome(
   ctx.arc(hx, hy, r * 0.97, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
+}
+
+export function paintOrbitPilot(ctx:CanvasRenderingContext2D,art:ArtBank|null|undefined,id:HighOrbitId,
+ x:number,y:number,size:number,helmet:(typeof HELMETS)[number],state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0){
+  paintHighOrbit(ctx,art,id,x,y,size,state,travel,effects,pitch,
+    (hx,hy,r,angle)=>paintRegisteredDome(ctx,helmet,hx,hy,r,angle,art));
 }
 
 // presentation-only smoothing for the physics-pose banks: one shared clock
@@ -4560,6 +4568,7 @@ const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
 // banks share Eclipse's heading, preview arc and contact response.
 const ECLIPSE_FLIGHT_SUITS = new Set(["eclipse", "cryostar", "verdant"]);
 
+
 // Suits with no painted motion banks get the same flight from their RIG.
 // Measured off Eclipse's banks, its motion is mostly two rotations: the body
 // pitches about 19 degrees through the climb and about 40 through the dive,
@@ -4635,6 +4644,33 @@ function tapFrameOrder(id: string, n: number): number[] {
 }
 let headingA = 0;
 let headingClock = -1;
+// WHEN THE DESCENT FRAMES TRIGGER (owner, 9 Sep 2026: "then it's a matter
+// of devising when descent frames trigger... like the descent frames the
+// tail doesn't need to appear in free fall, if your barely falling, for a
+// tap, it's a jump up driven by motion of the squirrel so the tap should
+// play").
+//
+// The tap owns a whole second, and gravity does not wait: by the time the
+// gesture finishes the pilot is often already falling hard. Handing over
+// raw at that moment jumps the picture from level straight to the deepest
+// dive - measured at tick 204 of the harness, pose 0 to pose 7 in one
+// frame, on a fall of 872 px/s. So the DIVE eases in over this time
+// constant while the TAP stays exact: the tap is a gesture and must land on
+// its drawn frames, the dive is momentum and should arrive like momentum.
+// Seeded from wherever the tap left off, which is level, so the handover
+// itself costs nothing.
+const DIVE_ENTRY_SECONDS = 0.18;
+let bankPose = 0;
+let bankPoseClock = -1;
+function easeBankPose(t: number, target: number, exact: boolean) {
+  const fresh = bankPoseClock < 0 || t < bankPoseClock;
+  const dt = fresh ? 0.016 : Math.min(0.05, t - bankPoseClock);
+  bankPoseClock = t;
+  if (exact || fresh) bankPose = target;
+  else bankPose += (target - bankPose) * (1 - Math.exp(-dt / DIVE_ENTRY_SECONDS));
+  return bankPose;
+}
+
 function trackHeadingMotion(t: number, vy: number, vx: number) {
   const fresh = headingClock < 0 || t < headingClock;
   if (fresh) headingA = 0;
@@ -4728,6 +4764,10 @@ function paintIllustrated(
   }
   if (suit.id === "arcflash") {
     paintArcflash(ctx, art, x, y, size);
+    return;
+  }
+  if (isHighOrbit(suit.id)) {
+    paintOrbitPilot(ctx,art,suit.id,x,y,size,helmet);
     return;
   }
   const suited = art?.suits?.[suit.id] ?? null;
@@ -4876,8 +4916,63 @@ function paintIllustrated(
       // two mappings, switched from the hangar so both can be flown back to back
       let v: number;
       let cycle = 0;
+      // set when a branch has already produced a frame position and must not
+      // be run through the dive depth and pose curve a second time
+      let preShaped = false;
       if (Number.isFinite(poseOverride)) {
         v = Math.max(-1, Math.min(1, poseOverride));
+      } else if (tapAnimT >= 0 && ascFrames.length > 1) {
+        // THE TAP PLAYS THE ANIMATION. EVERY SUIT. VELOCITY PLAYS THE DIVE.
+        //
+        // Owner, 9 Sep 2026: "every single suit, regardless of its custom
+        // frames or anything, should follow this... if the tap animation
+        // doesn't play fully, it feels unresponsive... a 16 frame animation
+        // should play." And on why velocity was the wrong master: "i think
+        // when we tried to trigger tail motion depth by velocity, the tail
+        // position downward passes over to frame depth."
+        //
+        // That is the bug in one sentence. Driving the climb from vertical
+        // speed makes the ARC own the picture, so a tap only gets whatever
+        // slice of the bank its velocity spike happens to reach - and a tap
+        // is a jump, not a readout. The nine newest banks shipped with a
+        // slew-rate limiter on top of that, which inverted it completely:
+        // measured on the sim, a second tap after a pause moved the pose no
+        // visible frame at all, while spamming taps was the only way to
+        // reach the deep frames.
+        //
+        // So the climb runs on the TAP CLOCK for every banked suit, exactly
+        // the way Cat and Robo's sixteen-frame banks do a few branches
+        // below - the whole bank across the whole tap, linearly, whatever
+        // the velocity is doing. The sim rewinds that clock on a repeat tap,
+        // so a second tap replays the gesture instead of truncating it.
+        //
+        //   tap, pause, tap    robo (16f, shipped)  1345789bcdfg.1245689acde
+        //                      a bank on the clock  122344566788.11233455677
+        //
+        // The dive is untouched and stays velocity-driven below: no tap is
+        // involved in falling, so it engages on real downward momentum.
+        // OUT AND BACK, because an ascent bank is a RAMP, not a cycle.
+        // Robo's sixteen frames are a whole gesture that returns to neutral
+        // on its own; the eight-frame path a few branches below even
+        // bookends them, [rig, ...frames, rig]. An asc bank is not that: it
+        // runs level -> deepest climb, so playing it straight through and
+        // stopping leaves the pilot parked at maximum climb and then SNAPS
+        // into the dive. The harness caught exactly that - "iontrim: no
+        // skipped tail pose at tick 204", the tick the tap window closes.
+        //
+        // So the gesture climbs out and settles back to level inside the
+        // tap, on the cadence already authored for the eight-frame bank
+        // (poseTimes below): through the bank over the first 62.5% of the
+        // window, home over the rest. It ends where the glide and the dive
+        // both begin, so the handover costs no frame.
+        const n = ascFrames.length;
+        const at = Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION));
+        const OUT = 0.625;
+        const climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
+        const k = Math.min(n - 1, Math.round(climb * (n - 1)));
+        // already a frame position, so the pose curve must not touch it
+        v = easeBankPose(_t, -(k / (n - 1)), true);
+        preShaped = true;
       } else {
         if (motionMode === 1) {
           const r = trackRateMotion(_t, motionVy);
@@ -4885,17 +4980,17 @@ function paintIllustrated(
           cycle = r.cycle;
         } else if (motionMode === 2) {
           v = trackHeadingMotion(_t, motionVy, motionVx);
-        } else if (NATURAL_FLIGHT_SUITS.has(suit.id)) {
-          // The per-suit pose follower below owns smoothing for this group.
-          v = motionVy < 0 ? -Math.min(1, -motionVy / POSE_CLIMB_SPAN) : Math.min(1, motionVy / 620);
         } else {
           const sv = smoothMotionVy(_t, motionVy);
           v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
         }
         // shape the attitude: the dive half shallowed, both halves curved
         if (v > 0) v *= diveDepthFor(suit.id);
+      }
+      if (!preShaped && !Number.isFinite(poseOverride)) {
         v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
-        if (NATURAL_FLIGHT_SUITS.has(suit.id)) v = trackNaturalFlight(suit.id, _t, v);
+        // the dive arrives like momentum, not like a cut
+        if (ascFrames.length > 1) v = easeBankPose(_t, v, false);
       }
       const diving = v > 0;
       const bank = diving ? descFrames : ascFrames;
@@ -4919,9 +5014,26 @@ function paintIllustrated(
           helmet, x, y, size, art);
       }
     } else if (fullLoop) {
-      // the cycle runs on the world clock, so it never restarts on a tap and
-      // reads the same in the hangar case and in flight
-      const idx = Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+      // THE TAP TRIGGERS IT, NOT A CLOCK (owner, 9 Sep 2026: "the critters
+      // still should activate on tap, not a clock. even if it's not a ascent
+      // bank or descent bank.. it's an animation triggered by the tap").
+      //
+      // Quill, Noodle and Bandit carry a sixteen-frame cycle and no ascent
+      // or descent bank at all, so they were the one group the tap could not
+      // reach: the cycle ran free on the world clock and a tap changed
+      // nothing about the picture. That is the unresponsive feel exactly -
+      // the pilot presses and the character does not answer.
+      //
+      // So the cycle plays across the tap, the same way every other painted
+      // bank now does, and the sim's rewind on a repeat tap replays it. With
+      // no tap running the character rests on its first frame, which is what
+      // a bank with no dive half can honestly show. The world clock stays
+      // for the hangar and any caller with no tap of its own, so a shelf
+      // card still breathes.
+      const idx = tapAnimT >= 0
+        ? Math.min(loopFrames.length - 1,
+            Math.floor((tapAnimT / TAP_ANIM_DURATION) * loopFrames.length))
+        : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
       const refL = (loopFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
     } else if (fullTap) {
@@ -5037,7 +5149,8 @@ function drawPilot(
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
   const arcflash = suit.id === "arcflash";
-  const independentRig = flagship || arcflash;
+  const orbit = isHighOrbit(suit.id);
+  const independentRig = flagship || arcflash || orbit;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
   const articulatedTap = independentRig || (NATURAL_FLIGHT_SUITS.has(suit.id) || !!art.suitBody?.[suit.id]) && w.tapAnimT >= 0;
   const eclipseImpact = ECLIPSE_FLIGHT_SUITS.has(suit.id) && w.bounceAnimT >= 0;
@@ -5085,6 +5198,9 @@ function drawPilot(
   else if (arcflash) paintArcflash(ctx, art, 0, 2, 52, w.arcflash,
     { x: x/localScale, y: y/localScale, travel: w.distance/localScale }, true,
     (suitPitchFor(save, suit.id) * Math.PI) / 180);
+  else if (isHighOrbit(suit.id)) paintOrbitPilot(ctx,art,suit.id,0,2,52,helm,w.highOrbit,
+    {x:x/localScale,y:(y+2*localScale)/localScale,travel:w.distance/localScale},true,
+    (suitPitchFor(save,suit.id)*Math.PI)/180);
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
@@ -5172,6 +5288,10 @@ export function paintPortrait(
   size: number,
   _t = 0,
 ) {
+  if(isHighOrbit(suit.id)){
+    paintOrbitPilot(ctx,art,suit.id,cx,cy+2,size,helmet,undefined,undefined,false);
+    return;
+  }
   // Always paint the PILOT wearing the helmet. Helmet-only art belongs
   // on the helmet cards, which have their own path — short-circuiting
   // here left the Flight suit showing a floating helmet and no squirrel.
@@ -5297,6 +5417,10 @@ export function paintFlightPreview(
   if (!art) return;
   if (suit.id === "arcflash") {
     paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx,t), undefined, true, pitch);
+    return;
+  }
+  if (isHighOrbit(suit.id)) {
+    paintOrbitPilot(ctx,art,suit.id,cx,cy,size,helmet,highOrbitPreview(ctx,suit.id,t),undefined,true,pitch);
     return;
   }
   if (suit.id === "vanguard") {
@@ -5452,6 +5576,7 @@ export function paintTrailPreview(
 ) {
   if (trail.id === "vanguardwake") paintVanguardWake(ctx, cx, cy, t);
   else if (trail.id === "arcflashwake") paintArcflashWake(ctx, cx, cy, t);
+  else if (highOrbitTrailSuit(trail.id)) paintHighOrbitWake(ctx,highOrbitTrailSuit(trail.id)!,cx,cy,t);
   else drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 

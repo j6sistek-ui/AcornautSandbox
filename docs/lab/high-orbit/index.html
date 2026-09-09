@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>High Orbit flight review</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#080e1c;color:#e3edf7}
+body{margin:0;padding:24px;max-width:1500px;margin:auto}h1{font-size:30px;margin:0 0 8px}p{color:#a9bbcf;line-height:1.5;max-width:780px}
+nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0}
+button,select{font:inherit;background:#18283e;border:1px solid #3e5777;color:#e3edf7;border-radius:9px;padding:10px;cursor:pointer}
+label{display:flex;gap:8px;align-items:center;font-size:14px}#grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+article{background:#101c30;border:1px solid #263a55;border-radius:16px;overflow:hidden}article h2{font-size:19px;margin:16px 18px 0}
+article p{font-size:13px;margin:6px 18px 14px}canvas{width:100%;height:auto;display:block;aspect-ratio:390/280}
+#status{font-size:13px}a{color:#9bcfff}@media(max-width:480px){body{padding:14px}#grid{grid-template-columns:1fr}h1{font-size:25px}}
+</style></head><body>
+<h1>High Orbit flight review</h1>
+<p>Five remastered suits with a continuous tail sweep, stable heads, and an exclusive built-in wake for each material. Compare the same flight rhythm across all five.</p>
+<nav><button id="play">Pause</button><button id="export">Save snapshot</button>
+<label>Motion <select id="motion"><option value="natural">Natural flight</option><option value="climb">Sustained climb</option><option value="glide">Glide</option><option value="dive">Deep dive</option></select></label>
+<label>Helmet <select id="helm"><option value="clear">Clear</option><option value="matching">Matching helmet</option><option value="bare">Bare head</option></select></label>
+<label>Speed <select id="rate"><option value="1">Normal</option><option value=".5">Half speed</option><option value=".25">Quarter speed</option></select></label>
+<label><input id="effects" type="checkbox" checked> Wakes</label></nav>
+<p id="status">Loading all five painted atlases…</p><main id="grid"></main>
+<p><a href="../../">Open the game</a> · Fixed 36px head registration at the 192px body reference. No frame blending or per-pose resizing.</p>
+<script type="module">
+import {HIGH_ORBIT_IDS,HIGH_ORBIT_PROFILES} from '../../js/high-orbit-config.js';
+import {paintHighOrbit} from '../../js/high-orbit.js';
+import {createHighOrbitMotion,stepHighOrbit} from '../../js/high-orbit-motion.js';
+import {paintOrbitPilot} from '../../js/draw.js';
+import {HELMETS,SUITS,ART_VER} from '../../js/catalog.js';
+import {loadSuitBank,emptyArt} from '../../js/art.js';
+window.__ACORNAUT_ART__=new URL('../../art/',location.href).pathname.replace(/\/$/,'');
+const art=emptyArt(),load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
+await Promise.all(HIGH_ORBIT_IDS.flatMap(id=>[loadSuitBank(art,id),load('../../art/suits/'+id+'.png?v='+ART_VER).then(i=>art.suits[id]=i)]));
+await Promise.all(HELMETS.map(h=>load('../../art/helms/'+h.id+'.png?v='+ART_VER).then(i=>art.helms[h.id]=i).catch(()=>{})));
+for(const h of HELMETS.filter(h=>h.id!=='clear'))document.querySelector('#helm').add(new Option(h.name,h.id));
+const rows=HIGH_ORBIT_IDS.map(id=>{
+ const card=document.createElement('article'),title=document.createElement('h2'),canvas=document.createElement('canvas'),caption=document.createElement('p');
+ title.textContent=HIGH_ORBIT_PROFILES[id].name;caption.textContent=HIGH_ORBIT_PROFILES[id].wake+' · Built in and exclusive';
+ canvas.width=780;canvas.height=560;canvas.setAttribute('aria-label',HIGH_ORBIT_PROFILES[id].name+' animated flight');
+ card.append(title,canvas,caption);document.querySelector('#grid').append(card);
+ return {id,canvas,ctx:canvas.getContext('2d'),state:createHighOrbitMotion(id),time:0};
+});
+let paused=false,last=performance.now(),time=0;
+document.querySelector('#play').onclick=()=>{paused=!paused;document.querySelector('#play').textContent=paused?'Play':'Pause';};
+document.querySelector('#export').onclick=()=>{
+ const image=document.createElement('canvas');image.width=1170;image.height=730;
+ const ctx=image.getContext('2d');ctx.fillStyle='#080e1c';ctx.fillRect(0,0,image.width,image.height);
+ ctx.fillStyle='#e3edf7';ctx.font='24px system-ui';ctx.fillText('High Orbit · '+document.querySelector('#helm').selectedOptions[0].textContent,20,35);
+ rows.forEach((row,i)=>{
+   const x=i%3*390,y=60+Math.floor(i/3)*330;
+   ctx.drawImage(row.canvas,x,y,390,280);ctx.fillStyle='#e3edf7';ctx.font='17px system-ui';
+   ctx.fillText(HIGH_ORBIT_PROFILES[row.id].name,x+20,y+298);
+   ctx.fillStyle='#a9bbcf';ctx.font='13px system-ui';ctx.fillText(HIGH_ORBIT_PROFILES[row.id].wake,x+20,y+318);
+ });
+ const link=document.createElement('a');link.download='high-orbit-browser-review.png';link.href=image.toDataURL('image/png');link.click();
+};
+function draw(now){
+ const dt=Math.min(.04,(now-last)/1000)*(+document.querySelector('#rate').value);last=now;if(!paused)time+=dt;
+ for(const row of rows){
+   const mode=document.querySelector('#motion').value,local=time%4.8,tapAge=local<1.44?local%.36:local-1.08;
+   const vy=mode==='climb'?-420:mode==='dive'?610:mode==='glide'?0:local>3.85?610:Math.min(590,-400+1100*tapAge);
+   if(!paused)stepHighOrbit(row.state,row.id,dt,vy);
+   const ctx=row.ctx;ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#101c30';ctx.fillRect(0,0,390,280);
+   ctx.fillStyle='#28405c';for(let i=0;i<18;i++){const x=((i*139-time*14)%390+390)%390,y=(i*71)%270;ctx.fillRect(x,y,1,1);}
+   const selected=document.querySelector('#helm').value,h=HELMETS.find(h=>h.id===(selected==='matching'?row.id:selected));
+   const travel={x:228,y:142,travel:time*360},effects=document.querySelector('#effects').checked;
+   if(h)paintOrbitPilot(ctx,art,row.id,228,142,184,h,row.state,travel,effects);
+   else paintHighOrbit(ctx,art,row.id,228,142,184,row.state,travel,effects);
+ }
+ document.querySelector('#status').textContent=(paused?'Paused':'Playing')+' · 5 of 5 atlases loaded · '+time.toFixed(1)+' seconds';
+ requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script></body></html>
