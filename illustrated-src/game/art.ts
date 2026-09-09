@@ -2,7 +2,7 @@ import { VANGUARD_FRAMES } from "./vanguard";
 import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog";
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 import { SPILL_UTILITY_IDS } from "./spill-content";
-import {HIGH_ORBIT_IDS,isHighOrbit,type HighOrbitId} from "./high-orbit-config";
+import {ORBIT_PILOT_IDS,PREMIUM_SUIT_IDS,isPremiumSuit,isHighOrbitRig,type HighOrbitRigId,type PremiumSuitId} from "./high-orbit-config";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -31,7 +31,9 @@ export type ArtBank = {
   vanguardParts?: Sprite;
   /** Arcflash's transparent 1024 × 768 joint atlas; never a frame bank. */
   arcflash?: HTMLImageElement;
-  highOrbit?: Partial<Record<HighOrbitId,HTMLImageElement>>;
+  highOrbit?: Partial<Record<HighOrbitRigId,HTMLImageElement>>;
+  /** Sixteen complete poses in a 4x4 sheet; never a cut-part atlas. */
+  premiumFlight?: Partial<Record<PremiumSuitId,HTMLImageElement>>;
   sky: HTMLImageElement | null;
   arcadeAcorn: Sprite | null;
   frozen: Sprite | null;
@@ -473,7 +475,7 @@ const LAZY_SUIT_IDS = [...new Set([
   // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
   // there too, or the suit flies as a flat body sticker off the live page.
   "arcflash",
-  ...HIGH_ORBIT_IDS,
+  ...ORBIT_PILOT_IDS,
   ...Object.keys(LOOP_BANKS),
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -490,7 +492,16 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
   const layer = (suffix: string) =>
     loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
   const p = (async () => {
-    if (isHighOrbit(id)) {
+    if (isPremiumSuit(id)) {
+      try {
+        const sheet=await loadImg(`${base}/suits/${id}/flight.png?v=${ART_VER}`);
+        if(sheet.naturalWidth!==1024||sheet.naturalHeight!==1024)throw new Error("Invalid premium flight sheet");
+        // One decoded image publishes all sixteen poses atomically.
+        (bank.premiumFlight??={})[id]=sheet;
+      } catch { suitBankLoads.delete(id); }
+      return;
+    }
+    if (isHighOrbitRig(id)) {
       try {
         const atlas=await loadImg(`${base}/suits/${id}/parts.png?v=${ART_VER}`);
         if(atlas.naturalWidth!==1024||atlas.naturalHeight!==768)throw new Error("Invalid High Orbit parts atlas");
@@ -701,6 +712,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "raccoon", "ferret", "hedgehog",
     // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
+    ...PREMIUM_SUIT_IDS,
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",

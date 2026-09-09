@@ -1379,6 +1379,16 @@
       align-items: flex-end; gap: 1px; }
     .ac-card.ac-featurecard .ac-wasprice { margin: 0; }
     .ac-card.ac-featurecard .ac-bundlecount { position: static; align-self: flex-end; }
+    /* Three pilots need their own artwork row in the narrow Shop column. */
+    .ac-card.ac-featurecard.ac-premiumtrio { display: grid;
+      grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+    .ac-card.ac-premiumtrio .ac-bundlestrip { grid-column: 1 / -1;
+      justify-self: start; max-width: none; gap: 4px; }
+    .ac-card.ac-premiumtrio .ac-bundlestrip img,
+    .ac-card.ac-premiumtrio .ac-bundlestrip canvas { width: 54px; height: 54px; }
+    .ac-card.ac-premiumtrio .ac-modtxt { grid-column: 1; align-self: start; }
+    .ac-card.ac-premiumtrio .ac-modprice { grid-column: 2; align-self: start; padding-top: 2px; }
+    .ac-card.ac-premiumtrio .ac-bundlecount { grid-column: 1 / -1; justify-self: end; }
     .ac-card.ac-dustrow { width: 100%; min-height: 0; flex-direction: row; align-items: center;
       justify-content: flex-start; gap: 12px; text-align: left; padding: 11px 14px; }
     .ac-card.ac-dustrow .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
@@ -1753,7 +1763,7 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js253/standalone.js")
+    import("./js254/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

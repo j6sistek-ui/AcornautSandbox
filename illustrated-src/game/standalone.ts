@@ -11,7 +11,7 @@ import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-pr
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { drawSprite as drawSpriteOn } from "./art";
 import { createEngine, type DustPurchaseState } from "./engine";
@@ -1814,6 +1814,7 @@ export async function bootStandalone(root: HTMLElement) {
     },
     locked: () => "Locked. Earn more stars to open this.",
     suitOnly: () => "This one belongs to another suit.",
+    fixedHead: () => "This pilot's head design stays as shown. Equip another suit to change helmets.",
     missing: () => "That item is not in this build.",
     unknown: () => "That item is not in this build.",
     owned: () => "Already yours.",
@@ -1915,7 +1916,7 @@ export async function bootStandalone(root: HTMLElement) {
       for (const corner of ["tl", "tr", "bl", "br"]) {
         pane.append(el("i", `ac-casecorner ac-c-${corner}`));
       }
-      if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", wornSuit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
+      if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(wornSuit)));
       stage.append(pane);
       const plate = el("div", "ac-caseplate");
       const fold = el("button", "ac-casefold", s.heroExpanded ? "\u25B4" : "\u25BE");
@@ -2007,8 +2008,8 @@ export async function bootStandalone(root: HTMLElement) {
       if (locked) {
         const note = el("div", "ac-lockednote");
         note.append(
-          el("p", "ac-lockedhead", `${suit.name}: ${suit.id === "arcflash" ? "integrated look" : OWN_HEAD_LINE}`),
-          el("p", "ac-sub", suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets."),
+          el("p", "ac-lockedhead", `${suit.name}: ${fixedHeadLine(suit)}`),
+          el("p", "ac-sub", fixedHeadDescription(suit)),
         );
         scroll.append(note);
       }
@@ -2098,7 +2099,7 @@ export async function bootStandalone(root: HTMLElement) {
         // a fixed head takes no helmet; the card says so up front
         if (wearsOwnHead(u)) {
           const nh = el("span", "ac-nohelm");
-          nh.title = u.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
+          nh.title = fixedHeadLine(u);
           b.append(nh);
         }
         // owned premium keeps its bloom; unowned premium never reaches here
@@ -3356,7 +3357,7 @@ export async function bootStandalone(root: HTMLElement) {
   // pieces that make it are bought underneath, and the featured pack sits
   // below as the bulk alternative.
   let devRollOpen = false;
-  let featureOpen: string | null = null;   // the featured pack, opened
+  let featureOpen: string | null = null;   // the featured or always-available pack, opened
   // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
   // chart: a held Level Skip lands on a mission from its sheet, a held Star
   // Unlock on a reward from the rail. Both are hold-to-confirm.
@@ -3392,13 +3393,12 @@ export async function bootStandalone(root: HTMLElement) {
     const owns = (i: string) => ownsPremium(s, i);
     const day = shopDayIndex();
     // ONE featured pack, never one already owned outright
-    const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
+    const open = BUNDLES.filter((b) => !b.fixed && !b.alwaysAvailable && !bundleIds(b).every(owns));
     const feature = open.length ? open[day % open.length] : null;
-    // THE CATCH. What the pack holds cannot also be bought singly today.
-    // You can put it on the squirrel and look at it; you cannot have it
-    // unless you take the pack, or wait for the cycle to hand it over
-    // on its own later.
-    const held = new Set<string>(feature ? bundleIds(feature) : []);
+    const always = BUNDLES.filter((b) => b.alwaysAvailable && !bundleIds(b).every(owns));
+    // Most featured packs reserve their contents for the day. A pack can
+    // explicitly keep its singles available alongside it.
+    const held = new Set<string>(feature && !feature.keepSingles ? bundleIds(feature) : []);
     const shelfOf = (ids: string[]) => ids.filter((i) => !held.has(i) && !owns(i));
     const suitPool = shelfOf(SUITS.filter((u) => isIap(u.id)).map((u) => u.id));
     const helmPool = shelfOf(HELMETS.filter((h) => isIap(h.id)).map((h) => h.id));
@@ -3416,7 +3416,7 @@ export async function bootStandalone(root: HTMLElement) {
     const pinned = suitPool.filter((i) => DUST_STICKER[i] !== undefined && !helms.includes(i));
     const suits = [...pinned, ...dealFrom(suitPool.filter((i) => !helms.includes(i) && !pinned.includes(i)), SHOP_CYCLE.suits, day * 7 + 1)];
     const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
-    return { day, feature, held, suits, helms, pals, owns };
+    return { day, feature, always, held, suits, helms, pals, owns };
   }
 
   type Cycle = ReturnType<typeof shopCycle>;
@@ -3510,7 +3510,7 @@ export async function bootStandalone(root: HTMLElement) {
     for (const corner of ["tl", "tr", "bl", "br"]) {
       pane.append(el("i", `ac-casecorner ac-c-${corner}`));
     }
-    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
+    if (ownHead) pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(suit)));
     stage.append(pane);
     const plate = el("div", "ac-caseplate");
     plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
@@ -3714,14 +3714,15 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(el("p", "ac-fine",
       "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
 
-    // ---- THE FEATURED PACK.
-    if (cy.feature) {
-      const bn = cy.feature;
+    // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
+    for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
       const full = alaCarteTotal(bundleIds(bn), cy.owns);
       const due = featurePrice(bn, cy.owns);
       const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
-      scroll.append(el("p", "ac-shelfhead ac-featurehead", "FEATURED PACK"));
+      scroll.append(el("p", "ac-shelfhead ac-featurehead", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"));
       const card = el("button", "ac-card ac-featurecard");
+      if (bn.id === "bundle-premium-trio") card.classList.add("ac-premiumtrio");
+      card.dataset.bundleId = bn.id;
       const strip = el("div", "ac-bundlestrip");
       const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);
       for (const it of faces) {
@@ -3744,7 +3745,9 @@ export async function bootStandalone(root: HTMLElement) {
       card.onclick = () => { featureOpen = bn.id; confirmBuy = false; render(); };
       scroll.append(card);
       scroll.append(el("p", "ac-fine",
-        "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
+        bn.keepSingles
+          ? "These pilots are also available individually on the single shelf."
+          : "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
     }
 
     // ---- TOP UP.
@@ -3804,18 +3807,15 @@ export async function bootStandalone(root: HTMLElement) {
     // one. It stays rolled up to a single line until it is asked for, so
     // it costs a player who never opens it nothing but a row of small type.
     box.append(drawCycleRoll(cy));
-    // and the sheet only ever shows the pack TODAY is featuring: the
-    // featured price belongs to the cycle, not to whatever was open when
-    // the day rolled over (audit, Sep 2026)
-    if (featureOpen && featureOpen !== cy.feature?.id) { featureOpen = null; confirmBuy = false; }
+    // A daily feature closes when it rotates out. Always-available packs
+    // keep their sheet and sticker price across the date boundary.
+    if (featureOpen && featureOpen !== cy.feature?.id && !BUNDLES.find((b) => b.id === featureOpen)?.alwaysAvailable) { featureOpen = null; confirmBuy = false; }
     if (featureOpen) box.append(drawFeatureSheet(featureOpen));
     return box;
   }
 
-  /** THE PACK, OPENED. Every character in it goes on the squirrel — and
-   *  none of them is for sale on its own. That IS the offer: you see
-   *  exactly what you are missing, and the only door to it is the pack.
-   *  The patient get it on the single shelf after it rotates out. */
+  /** The opened pack previews every wearable and states whether its contents
+   *  remain available on the single shelf during this feature. */
   function drawFeatureSheet(id: string) {
     const wrap = el("div", "ac-lvlsheet");
     const bn = BUNDLES.find((b) => b.id === id);
@@ -3827,7 +3827,7 @@ export async function bootStandalone(root: HTMLElement) {
     const due = featurePrice(bn, owns);
     const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
 
-    sheet.append(el("p", "ac-kicker", "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
+    sheet.append(el("p", "ac-kicker", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
     sheet.append(el("p", "ac-sub", bn.blurb));
 
     const group = (title: string, kind: "suit" | "helm" | "trail" | "pal") => {
@@ -3890,7 +3890,9 @@ export async function bootStandalone(root: HTMLElement) {
     group("PALS", "pal");
 
     sheet.append(el("p", "ac-fine",
-      "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
+      bn.keepSingles
+        ? "Tap any pilot to preview it. Each is also available individually on the single shelf."
+        : "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
 
     // the sheet covers the page, so it carries its own status line - the
     // one up in the menu would be announced to nobody

@@ -1,0 +1,270 @@
+{
+  "verifiedAt": "2026-09-09T22:09:25Z",
+  "baseline": "83628d296692cd31713c61630ab901d498ad31a5",
+  "artBuild": 254,
+  "fullHarness": {
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "note": "Final character art and runtime passed the complete harness before the subsequent scoped premium-trio card CSS/class change.",
+    "tests": [
+      {
+        "file": "test-acornut-collect.mjs",
+        "seconds": 0.2
+      },
+      {
+        "file": "test-arcflash-integration.mjs",
+        "seconds": 0.7
+      },
+      {
+        "file": "test-arcflash-motion.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-arcflash-render.mjs",
+        "seconds": 0.4
+      },
+      {
+        "file": "test-beta-campaign.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-boosts.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-bounce-impact.mjs",
+        "seconds": 0.3
+      },
+      {
+        "file": "test-bundle.mjs",
+        "seconds": 0.4
+      },
+      {
+        "file": "test-drift.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-eclipse-motion-transfer.mjs",
+        "seconds": 1.6
+      },
+      {
+        "file": "test-flight-studio.mjs",
+        "seconds": 1.2
+      },
+      {
+        "file": "test-frozen-roster.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-helmet-animation.mjs",
+        "seconds": 7.3
+      },
+      {
+        "file": "test-helmet-compatibility.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-helmet-openings.mjs",
+        "seconds": 0.6
+      },
+      {
+        "file": "test-high-orbit-integration.mjs",
+        "seconds": 0.8
+      },
+      {
+        "file": "test-high-orbit.mjs",
+        "seconds": 2.1
+      },
+      {
+        "file": "test-hyper-run.mjs",
+        "seconds": 2.7
+      },
+      {
+        "file": "test-level-hud.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-mission-pals.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-natural-flight.mjs",
+        "seconds": 7
+      },
+      {
+        "file": "test-platform-bridge.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-premium-pilots.mjs",
+        "seconds": 4.5
+      },
+      {
+        "file": "test-premium-pricing.mjs",
+        "seconds": 1.5
+      },
+      {
+        "file": "test-receipts.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-rig-anatomy.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-shop.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-spill-progression.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-spill-render.mjs",
+        "seconds": 1.8
+      },
+      {
+        "file": "test-spill-ui.mjs",
+        "seconds": 17
+      },
+      {
+        "file": "test-spill-welcome.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-spill.mjs",
+        "seconds": 0.4
+      },
+      {
+        "file": "test-star-map-render.mjs",
+        "seconds": 2.9
+      },
+      {
+        "file": "test-star-map-ui.mjs",
+        "seconds": 51.8
+      },
+      {
+        "file": "test-star-map.mjs",
+        "seconds": 0.3
+      },
+      {
+        "file": "test-suit-lean.mjs",
+        "seconds": 0
+      },
+      {
+        "file": "test-switchback-render.mjs",
+        "seconds": 0.3
+      },
+      {
+        "file": "test-switchback.mjs",
+        "seconds": 0.8
+      },
+      {
+        "file": "test-tap-recovery.mjs",
+        "seconds": 0.2
+      },
+      {
+        "file": "test-tunnel-controls.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-tunnel.mjs",
+        "seconds": 20.8
+      },
+      {
+        "file": "test-tutorial.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-vanguard-depot.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-vanguard-flight.mjs",
+        "seconds": 28.2
+      },
+      {
+        "file": "test-vanguard-inertia.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-vanguard-maneuver.mjs",
+        "seconds": 0.9
+      },
+      {
+        "file": "test-vanguard-organic.mjs",
+        "seconds": 4.7
+      },
+      {
+        "file": "test-vanguard-render.mjs",
+        "seconds": 27.3
+      },
+      {
+        "file": "test-vanguard-rig.mjs",
+        "seconds": 0.4
+      },
+      {
+        "file": "test-vanguard.mjs",
+        "seconds": 1
+      },
+      {
+        "file": "test-warp.mjs",
+        "seconds": 69.5
+      },
+      {
+        "file": "test-wormhole-trip.mjs",
+        "seconds": 0.5
+      },
+      {
+        "file": "test-zone-art-loading.mjs",
+        "seconds": 0.1
+      },
+      {
+        "file": "test-zone-families.mjs",
+        "seconds": 0.2
+      }
+    ]
+  },
+  "afterLayoutCorrection": {
+    "builds": [
+      "source export and production/beta",
+      "lab",
+      "Flight Studio"
+    ],
+    "typecheck": "pass",
+    "artGroups": 32,
+    "bridgeFiles": 51,
+    "whitespace": "pass",
+    "tests": [
+      "test-premium-pilots.mjs",
+      "test-premium-pricing.mjs",
+      "test-shop.mjs",
+      "test-bundle.mjs",
+      "test-flight-studio.mjs",
+      "test-platform-bridge.mjs",
+      "test-switchback.mjs"
+    ]
+  },
+  "fileSha256": {
+    "illustrated-src/game/standalone.ts": "773a17b15e0dd68dab79969b062b65eeb2313ff8bbfd1f139e3cf2eb26796ae6",
+    "illustrated-src/game/catalog.ts": "a6f92fd4cfd36c9f8ddb4a066fc556559c5cac9d5efeb0d4df4bdc642b1ae818",
+    "illustrated-src/game/premium-flight.ts": "5e2b2f654cbdb06cefed4b6026bf99db7a1eb2f6a245647c620805221a52a4fb",
+    "illustrated-src/game/premium-flight-frames.ts": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
+    "illustrated-src/game/high-orbit-motion.ts": "e01e337504e596aa7acb3128dabdb8237d66273cd52b6cfd5246a605567878b0",
+    "docs/index.html": "052bcfa3cc25a52f73cf369c4a097f35920094c0ccb9156e1610bb76582efc85",
+    "docs/beta/index.html": "7f5e0bebd36c34a869e3065ba094f452ff6f7fe4cc787b1a3bc155fb8f1c05f8",
+    "docs/js/standalone.js": "c8779a85946d6acb9455aec64e5bc3d9d6d331f1b118e2ebebfaacf02675b947",
+    "docs/js/premium-flight.js": "8c86ee8a315e397c39a020d571156cb6f72e0f9754cc15e4642b500ae550ab32",
+    "art-src/premium-flight/registration.json": "9e79b1f4e4b2495b85c0e0f86916b12697d548a102f89c6606d004ca0fdfa850"
+  },
+  "environment": {
+    "node": "24.19.0",
+    "python": "3.11.9",
+    "pillow": "11.3.0",
+    "numpy": "2.1.2",
+    "scipy": "1.17.1",
+    "docker": "unavailable; repository-authorized existing-tool fallback; no installations"
+  },
+  "existingArtFilesUnchanged": 1600
+}

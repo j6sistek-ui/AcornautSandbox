@@ -1,5 +1,5 @@
 import type { SpillAppearance } from "./spill-appearance";
-import { highOrbitTrailSuit } from "./high-orbit-config";
+import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
 import { STAR_UNLOCKS,
@@ -337,7 +337,7 @@ export function loadSave(): SaveData {
   // existed, or edited by hand) comes off rather than half-fitting
   {
     const h = HELMETS.find((x) => x.id === s.equipped);
-    if (h?.suitOnly && h.suitOnly !== s.equippedSuit) s.equipped = "clear";
+    if (!isPremiumSuit(s.equippedSuit) && h?.suitOnly && h.suitOnly !== s.equippedSuit) s.equipped = "clear";
   }
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";

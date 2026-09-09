@@ -1,8 +1,13 @@
-import {HIGH_ORBIT_PROFILES, type HighOrbitId} from './high-orbit-config';
+import {HIGH_ORBIT_PROFILES,isPremiumSuit,type HighOrbitId} from './high-orbit-config';
+
+export const PREMIUM_FLIGHT_DURATION=1;
+export type PremiumFramePlayback={age:number;active:boolean;queued:boolean};
 
 /** A separate presentation controller: a continuous paddling/whip rhythm
  * follows accepted velocity. A new tap adds recoil energy without restarting
- * the rhythm or any joint. No game forces, save writes or simulation RNG. */
+ * the rhythm or any joint. Premium full-body frames share only its accepted
+ * input lifecycle, clock and wake power; their unused joint poses never move.
+ * No game forces, save writes or simulation RNG. */
 export type HighOrbitPose = {
   body:number; head:number; heave:number;
   nearArm:number; nearElbow:number; farArm:number; farElbow:number;
@@ -12,6 +17,8 @@ export type HighOrbitPose = {
 export type HighOrbitMotion = {
   id:HighOrbitId; time:number; phase:number; velocity:number; previousVy:number;
   initialized:boolean; pulse:number; recoil:number; power:number; pose:HighOrbitPose; rates:HighOrbitPose;
+  /** Premium whole-frame playback; absent from the five articulated rigs. */
+  frames?:PremiumFramePlayback;
 };
 const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 const smooth=(v:number)=>{v=clamp(v,0,1);return v*v*(3-2*v);};
@@ -21,6 +28,7 @@ const rest:HighOrbitPose={body:49,head:0,heave:0,nearArm:60,nearElbow:50,farArm:
   nearThigh:18,nearKnee:-32,farThigh:12,farKnee:-26,tailRoot:0,tailMid:0,tailTip:0};
 export function createHighOrbitMotion(id:HighOrbitId='cinderforge'):HighOrbitMotion {
   return {id,time:0,phase:0,velocity:0,previousVy:0,initialized:false,pulse:0,recoil:0,power:.12,
+    ...(isPremiumSuit(id)?{frames:{age:0,active:false,queued:false}}:{}),
     pose:{...rest},rates:Object.fromEntries(keys.map(k=>[k,0])) as HighOrbitPose};
 }
 /** An accepted tap accents even a short refresh below the velocity detector's
@@ -28,6 +36,14 @@ export function createHighOrbitMotion(id:HighOrbitId='cinderforge'):HighOrbitMot
 export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450) {
   if(!Number.isFinite(acceptedImpulse)||acceptedImpulse<=0)return;
   s.recoil=Math.max(s.recoil,.5+.5*(1-Math.exp(-acceptedImpulse/360)));
+  if(isPremiumSuit(s.id)){
+    const f=s.frames??(s.frames={age:0,active:false,queued:false});
+    if(!f.active){f.age=0;f.active=true;}
+    // Finish every authored pose before replaying. Rapid taps must not hold
+    // the character on the first few frames. The explicit accepted-tap hook
+    // and its same-instant velocity observation count as only one request.
+    else if(f.age>1e-8)f.queued=true;
+  }
 }
 function follow(s:HighOrbitMotion,key:keyof HighOrbitPose,target:number,dt:number,frequency:number,damping:number) {
   const omega=frequency*2*Math.PI,acceleration=(target-s.pose[key])*omega*omega-2*damping*omega*s.rates[key];
@@ -50,11 +66,19 @@ export function stepHighOrbit(s:HighOrbitMotion,id:HighOrbitId,dt:number,vy:numb
     const current=ready?0:start+(vy-start)*(dt-left)/dt;
     s.velocity+=(current-s.velocity)*(1-Math.exp(-h/.045));
     s.time+=h;s.phase+=h*2*Math.PI/profile.period;
+    if(isPremiumSuit(id)&&s.frames?.active&&!ready){
+      const f=s.frames;f.age+=h;
+      if(f.age>=PREMIUM_FLIGHT_DURATION-1e-10){
+        if(f.queued){f.age=Math.max(0,f.age-PREMIUM_FLIGHT_DURATION);f.queued=false;}
+        else{f.age=PREMIUM_FLIGHT_DURATION;f.active=false;}
+      }
+    }
     s.pulse*=Math.exp(-h/.24);
     s.recoil*=Math.exp(-h/.24);
     const lift=ready?0:smooth(-s.velocity/370),fall=ready?0:smooth(s.velocity/610);
     const power=ready?.12:.14+.65*lift+.18*s.pulse;
     s.power+=(power-s.power)*(1-Math.exp(-h/.07));
+    if(isPremiumSuit(id))continue;
     const wave=Math.sin(s.phase),lag=Math.sin(s.phase-1.1);
     const energy=ready?.32:1;
     const target:HighOrbitPose={
@@ -86,7 +110,7 @@ const previews=new WeakMap<object,Map<HighOrbitId,{state:HighOrbitMotion,time:nu
 export function highOrbitPreview(owner:object,id:HighOrbitId,time:number):HighOrbitMotion {
   let map=previews.get(owner);if(!map){map=new Map();previews.set(owner,map);}
   let p=map.get(id);
-  if(!p||time<p.time){p={state:createHighOrbitMotion(id),time:time-.016};map.set(id,p);}
+  if(!p||time<p.time){p={state:createHighOrbitMotion(id),time:time-.016};if(isPremiumSuit(id))highOrbitTap(p.state);map.set(id,p);}
   const elapsed=clamp(time-p.time,0,.1);
   for(let left=elapsed;left>1e-8;){
     const dt=Math.min(left,1/60);left-=dt;p.time+=dt;

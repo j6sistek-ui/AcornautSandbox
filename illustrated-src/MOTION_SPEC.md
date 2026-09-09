@@ -1,5 +1,20 @@
 # Acornaut motion spec — how a suit flies
 
+## Premium pilot trio — explicit owner selection, 9 Sep 2026
+
+The owner selected Porcelain Paragon with Sovereign Shell (B), always worn;
+Nacre Envoy, helmetless by design; and Foldspace Origamist with Facet Shell,
+always worn, for new production kits after reviewing the High Orbit rig and
+concepts. These three reuse that eleven-part anatomy, fixed 36px head radius
+at the 192px reference, continuous controller and suit-specific wake path.
+Porcelain and Origamist have integrated shell paintings; Nacre has a bare
+head. None accepts an interchangeable helmet overlay. Origamist's folded tail
+rotates rigidly, so its painted facets do not bend like fur.
+
+This scoped selection does not authorize new motion art for the five remaining
+proposal characters. Sources, measured attachments, deterministic rebuilds and
+review boundaries are in [the premium source README](../art-src/premium-pilots/README.md).
+
 ## High Orbit cut rigs — explicit owner grant, 9 Sep 2026
 
 Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now use eleven remastered
