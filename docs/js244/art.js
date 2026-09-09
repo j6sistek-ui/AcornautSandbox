@@ -1,7 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=240";
-import { PAL_ANIM, BOUNCE_ANIM_ENABLED, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA, TAP_ANIM_ENABLED } from "./catalog.js?v=240";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=240";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=240";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=244";
+import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=244";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=244";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=244";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -258,7 +258,7 @@ const RIGGED_SUITS = [
     // Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now fly whole
     // ascent/descent paintings; their static portraits are the loading fallback.
 ];
-const TAP_BANKS = TAP_ANIM_ENABLED ? {
+const TAP_BANKS = {
     // The Robo-timing rollout is DONE: it was beta-only while the owner flew
     // each silhouette, and the verdict is that the painted bank beats the rig.
     // Production used to fall back to the universal rig path, whose tap is a
@@ -279,9 +279,9 @@ const TAP_BANKS = TAP_ANIM_ENABLED ? {
     // flies a painted 8/8 ramp now - the final delivery of the sweep.
     // The five unreleased suits' obsolete tap banks are retired with their
     // owner-requested 8/8 replacement sheets (7 Sep 2026).
-} : {};
-const TAIL_TAP_BANKS = TAP_ANIM_ENABLED ? { eclipse: 12 } : {};
-const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
+};
+const TAIL_TAP_BANKS = { eclipse: 12 };
+const BOUNCE_BANKS = { volt: 16 };
 // Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
 // heavy black tail-swirl that would flash on colored skies, so the owner
 // excluded it from the loop - desc-8 was renumbered into its slot. Banks
@@ -300,30 +300,26 @@ const BOUNCE_BANKS = BOUNCE_ANIM_ENABLED ? { volt: 16 } : {};
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
-        // won and flies production "alien" at 8/8; the custom-posed bank
-        // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
-        // frame cuts - the black desc swirl and the bled-over spiral asc).
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
-        // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
-        briellacat: 7,
-        // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
-        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
-    : {};
-const DESC_BANKS = TAP_ANIM_ENABLED
-    ? { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
-        briellacat: 4,
-        cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 }
-    : {};
+const ASC_BANKS = { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
+    // won and flies production "alien" at 8/8; the custom-posed bank
+    // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
+    // frame cuts - the black desc swirl and the bled-over spiral asc).
+    voidsuit: 8, alien: 8,
+    ember: 8,
+    cryostar: 8, verdant: 8, gemmie: 8,
+    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+    // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
+    briellacat: 7,
+    // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
+const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    voidsuit: 8, alien: 8,
+    ember: 8,
+    cryostar: 8, verdant: 8, gemmie: 8,
+    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+    briellacat: 4,
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
 const LOOP_BANKS = { raccoon: 16, ferret: 16, hedgehog: 16 };
@@ -580,13 +576,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "gate-missed-back", "gate-missed-front",
         "return-back", "return-front", "return-glyphs", "scout-ship",
     ];
-    async function namedSeries(counts, folder, separator) {
-        const out = {};
-        await Promise.all(Object.entries(counts).map(async ([id, count]) => {
-            out[id] = await many(`${base}/${folder}/${id}${separator}`, count);
-        }));
-        return out;
-    }
     async function named(ids, folder, suffix = "", required = false, extension = "png") {
         const out = {};
         await Promise.all(ids.map(async (id) => {
