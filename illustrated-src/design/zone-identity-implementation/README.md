@@ -47,10 +47,15 @@ they are controlled scenes, not evidence of completing those missions.
 ## Preservation and verification
 
 The [integrity receipt](integrity-verification.json) compares against main
-`85f30e60b8b7568cdd911a9cf888122b47833d83`: **all 1,471 original art files**,
+`85f30e60b8b7568cdd911a9cf888122b47833d83`: **1,470 original art files**,
 the procedural sky generator, both campaign manifests, campaign/rewards,
 progression and save source are byte-identical. Existing background layer
 recipes, washes, pan speeds and transitions were not edited.
+
+The only regenerated original output is Arcflash's derived 256px fallback
+portrait, rebuilt from its unchanged live rig to resolve the existing exact
+pixel check before the owner-authorized merge. No planet, debris, background,
+Arcflash source painting or live-rig pixels changed in that repair.
 
 The new family test compares **780 geometry fixtures**: all 260 missions at
 390×844, 844×390 and 1440×900, against frozen main
@@ -78,15 +83,18 @@ workspace-local; no host system packages were installed.
   about physical-phone performance.
 - Platform bridge and whitespace checks; no repository lint script exists.
 
-The final full harness finished with **50 passed, 1 failed and 0 skipped, of
-51 tests**, recorded in [validation.json](validation.json). The gallery also
+The final full harness passed **all 51 tests with zero failures or skips**,
+recorded in [validation.json](validation.json). The gallery also
 passed navigation, all 213 image decodes and page-width checks at 1440 and 390px.
-An inherited `test-arcflash-render.mjs` exact-pixel failure remains: both main
-and this implementation differ from the old fallback PNG by 25 pixels / 28
-channel bytes, maximum channel difference 3. The integrity receipt proves
-identical live/fallback RGBA hashes on both revisions. The original art and
-strict assertion have not been changed. **This PR remains draft until that
-existing failure is resolved or the owner explicitly accepts an exception.**
+
+The first complete run found an inherited `test-arcflash-render.mjs` failure:
+main's fallback portrait differed from its current live renderer by 25 pixels /
+28 channel bytes, maximum channel difference 3. On 9 September the owner
+approved fixing the check and merging. The fallback is now exported from the
+shipping rig during the normal build by `export-arcflash-portrait.mjs`. The
+integrity receipt verifies identical live-rig hashes on both revisions and
+**zero differing fallback pixels** after regeneration. The strict assertion
+and all animation/attachment checks remain intact; no test waiver is used.
 
 ## Source and reproduction
 

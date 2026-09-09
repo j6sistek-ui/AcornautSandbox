@@ -82,6 +82,9 @@ for (const name of readdirSync(join(pages, "js"))) {
   writeFileSync(p, next);
 }
 
+// Keep the loading portrait registered pixel-for-pixel with this renderer.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-arcflash-portrait.mjs")], { cwd: root, stdio: "inherit" });
+
 // the cache-stamped copy the loader actually imports
 const stamped = join(pages, `js${ver}`);
 rmSync(stamped, { recursive: true, force: true });

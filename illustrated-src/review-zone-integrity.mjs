@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Preserve evidence for the art-only boundaries and the inherited render failure.
+// Preserve evidence for the art boundaries and the repaired derived portrait.
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
@@ -13,7 +13,8 @@ const out=resolve(root,'illustrated-src/design/zone-identity-implementation');
 const git=(...args)=>execFileSync('git',args,{cwd:root,maxBuffer:32*1024*1024});
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const files=git('ls-tree','-r','--name-only',base,'docs/art','illustrated-src/game').toString().trim().split('\n');
-const retained=files.filter(f=>f.startsWith('docs/art/')||/\/(?:sky-gen|campaign|campaign-manifest|beta-campaign-manifest|campaign-progress|save)\.ts$/.test(f));
+const portrait='docs/art/suits/arcflash/body.png';
+const retained=files.filter(f=>f!==portrait&&(f.startsWith('docs/art/')||/\/(?:sky-gen|campaign|campaign-manifest|beta-campaign-manifest|campaign-progress|save)\.ts$/.test(f)));
 for(const f of retained){
  const old=git('show',`${base}:${f}`),current=readFileSync(resolve(root,f));
  assert.equal(hash(current),hash(old),`protected original changed: ${f}`);
@@ -36,7 +37,9 @@ for(const [name,dir] of [['base',source],['zone-implementation',root]]){
  for(let i=0;i<actual.length;i+=4){let changed=false;for(let k=0;k<4;k++)if(actual[i+k]!==expected[i+k]){changed=true;bytes++;maxDelta=Math.max(maxDelta,Math.abs(actual[i+k]-expected[i+k]));}if(changed)pixels++;}
  arcflash.push({name,pixels,bytes,maxDelta,rigRgbaSha256:hash(actual),fallbackRgbaSha256:hash(expected)});
 }
-for(const key of ['pixels','bytes','maxDelta','rigRgbaSha256','fallbackRgbaSha256'])assert.equal(arcflash[0][key],arcflash[1][key]);
-const result={base,protectedFiles:retained.length,originalArtFiles:retained.filter(f=>f.startsWith('docs/art/')).length,protectedSource:retained.filter(f=>!f.startsWith('docs/art/')),allByteIdentical:true,arcflash};
+assert.equal(arcflash[0].rigRgbaSha256,arcflash[1].rigRgbaSha256,'live rig unchanged');
+assert.equal(arcflash[1].pixels,0,'rebuilt portrait matches live rig exactly');
+const regeneratedDerivedArt=[{path:portrait,baseSha256:hash(git('show',`${base}:${portrait}`)),currentSha256:hash(readFileSync(resolve(root,portrait)))}];
+const result={base,protectedFiles:retained.length,originalArtFiles:retained.filter(f=>f.startsWith('docs/art/')).length,protectedSource:retained.filter(f=>!f.startsWith('docs/art/')),allByteIdentical:true,regeneratedDerivedArt,arcflash};
 writeFileSync(resolve(out,'integrity-verification.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
