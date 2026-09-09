@@ -1933,24 +1933,8 @@ export async function bootStandalone(root: HTMLElement) {
         plate.append(el("span", "ac-casesub",
           `${shipPlan ? previewShip.utilities.map(id => SPILL_UTILITIES[id].name).join(" + ") || "No utilities" : s.spillStarter ? SPILL_UTILITIES[s.spillStarter].name : "No starting utility"} · ${wornSuit.name} aboard`));
       } else {
-        plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
         plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
         plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palsWorn.length ? palsWorn.map((p) => p.name).join(" + ") : "No pal"}`));
-      }
-      // THE NEXT-RUN SHIELD LIVES ON THE PLATE (owner, 2 Sep 2026: "find a
-      // home elsewhere in the loadout, maybe a small button on the
-      // animator"). One small control under the name: armed, it is the
-      // blue tag it always was; not armed and unlocked, it is the button
-      // that arms it for MOD_SHIELD_COST acorns.
-      if (engine.shopTab !== "ship" && s.startShield) {
-        const tags = el("div", "ac-rigtags");
-        tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD \u00b7 NEXT RUN"));
-        plate.append(tags);
-      } else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
-        const arm = el("button", "ac-platebtn");
-        arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
-        arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
-        plate.append(arm);
       }
       stage.append(plate);
       box.append(stage);
@@ -1981,6 +1965,9 @@ export async function bootStandalone(root: HTMLElement) {
 
     }
 
+    // A quiet surface behind browsing keeps the galaxy around the live pilot.
+    const selection = el("div", "ac-loadout-selection");
+    box.append(selection);
     const tabs = el("div", "ac-cats");
     for (const t of ["suits", "helmets", "trails", "pals", "ship"] as const) {
       const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
@@ -1995,12 +1982,26 @@ export async function bootStandalone(root: HTMLElement) {
       b.onclick = () => engine.setShopTab(t);
       tabs.append(b);
     }
-    box.append(tabs);
-    if (engine.shopTab === "suits" || engine.shopTab === "helmets") box.append(shelfToggle());
+    selection.append(tabs);
+    // The existing shield action shares the shelf-view row; selection state
+    // is already on the cards, so no duplicate EQUIPPED badge is needed above.
+    const controls = el("div", "ac-loadout-controls");
+    if (engine.shopTab !== "ship" && s.startShield) {
+      const tags = el("div", "ac-rigtags");
+      tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD \u00b7 NEXT RUN"));
+      controls.append(tags);
+    } else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
+      const arm = el("button", "ac-platebtn");
+      arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
+      arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
+      controls.append(arm);
+    }
+    if (engine.shopTab === "suits" || engine.shopTab === "helmets") controls.append(shelfToggle());
+    if (controls.childElementCount) selection.append(controls);
     denyEl = el("p", "ac-deny");
     denyEl.setAttribute("role", "status");
     denyEl.setAttribute("aria-live", "polite");
-    box.append(denyEl);
+    selection.append(denyEl);
     const scroll = el("div", "ac-sheet-scroll");
     const grid = el("div", "ac-grid");
     if (engine.shopTab === "helmets") {
@@ -2423,9 +2424,9 @@ export async function bootStandalone(root: HTMLElement) {
       // and it has to STOP pointing once they get there
       host.addEventListener("scroll", arrow, { passive: true });
     } else if (s.guide === "levels") {
-      box.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
+      selection.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
     }
-    box.append(scroll);
+    selection.append(scroll);
     if (spendAsk) box.append(drawSpendSheet());
     return box;
   }

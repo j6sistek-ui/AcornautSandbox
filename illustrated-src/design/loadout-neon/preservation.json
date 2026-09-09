@@ -20,5 +20,10 @@
   },
   "catalog": "byte-equivalent after build-stamp and line-ending normalization",
   "production_shell": "byte-equivalent after removing loadout stylesheet and normalizing loader stamp and line endings",
-  "source_diff": "1\t1\tillustrated-src/game/catalog.ts\n13\t10\tillustrated-src/game/standalone.ts"
+  "source_diff": "1\t1\tillustrated-src/game/catalog.ts\n35\t31\tillustrated-src/game/standalone.ts\n",
+  "approved_presentation_adjustments": [
+    "Remove redundant EQUIPPED caption below live pilot; card equipment state retained",
+    "Move existing shield control and armed tag beside existing shelf/grid toggle",
+    "Brighten view toggle and add opaque selection surface below galaxy hero"
+  ]
 }

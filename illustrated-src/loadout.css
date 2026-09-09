@@ -40,12 +40,23 @@ body .ac-loadout .ac-hangarcase {
   box-shadow: inset 0 0 8px #43f8d84d, 0 0 9px #43f8d84d;
   font-size: 10px; letter-spacing: .1em;
 }
-.ac-loadout .ac-caseplate .ac-rigtags, .ac-loadout .ac-caseplate .ac-platebtn { order: 2; }
 .ac-loadout .ac-casecompact .ac-caseplate { padding: 0 12px 5px; gap: 3px; }
 .ac-loadout .ac-casecompact .ac-caseplate b { font-size: 15px; }
 .ac-loadout .ac-casecompact .ac-caseeyebrow { padding: 4px 12px; font-size: 9px; }
+.ac-loadout-selection {
+  display: flex; flex-direction: column; flex: 1; min-height: 0; position: relative;
+  background: linear-gradient(180deg, #110b23, #090615);
+  border: 1px solid #7951a7; border-bottom: 0; border-radius: 22px 22px 0 0;
+  box-shadow: inset 0 1px 0 #d3a1ff22; overflow: hidden;
+}
+.ac-loadout-controls {
+  display: flex; align-items: center; justify-content: space-between; flex: none;
+  gap: 10px; padding: 2px 15px 9px;
+}
+.ac-loadout-controls .ac-viewrow { margin: 0 0 0 auto; }
+.ac-loadout-controls .ac-rigtags, .ac-loadout-controls .ac-platebtn { margin: 0; }
 body .ac-loadout .ac-cats {
-  margin: 0 14px 8px; padding: 3px; gap: 1px; border: 1px solid #955bdd;
+  margin: 10px 12px 8px; padding: 3px; gap: 1px; border: 1px solid #955bdd;
   border-radius: 999px; background: rgba(14, 6, 32, .84);
   box-shadow: inset 0 0 9px #9d5aea33, 0 0 10px #9d5aea33;
 }
@@ -81,8 +92,15 @@ body .ac-loadout .ac-card.on {
 body .ac-loadout .ac-card.ac-premium.on {
   box-shadow: inset 0 0 0 1px #f3ca75, inset 0 0 14px #e7b45533, 0 0 12px #42f9dc88;
 }
-body .ac-loadout .ac-viewseg { border-color: #ac79e2; background: #130b29cc; }
-body .ac-loadout .ac-viewbtn.on { color: #effffc; background: #196466; box-shadow: inset 0 0 6px #62ffdc77; }
+body .ac-loadout .ac-viewseg {
+  padding: 3px; gap: 3px; border: 1px solid #b88af6; border-radius: 13px;
+  background: #190d32; box-shadow: inset 0 0 8px #b777ff33, 0 0 8px #b777ff44;
+}
+body .ac-loadout .ac-viewbtn { width: 34px; height: 30px; border-radius: 9px; color: #e5cbff; }
+body .ac-loadout .ac-viewbtn.on {
+  color: #fff; background: linear-gradient(#238f88, #114c55);
+  box-shadow: inset 0 0 0 1px #82ffe9, inset 0 0 8px #62ffdcaa, 0 0 9px #53ffdc99;
+}
 body .ac-loadout .ac-backbtn, body .ac-loadout .ac-casefold, body .ac-loadout .ac-helpdot {
   border: 1px solid #ce95ff; color: #f6edff;
   background: radial-gradient(ellipse at top, #572579, #170d2e 72%);
@@ -123,17 +141,12 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
   .ac-loadout::after { width: 45%; height: 100%; mask-image: linear-gradient(90deg, #000 55%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent); }
 }
 @media (min-width: 700px) and (orientation: landscape) {
-  /* Explicit rows leave all remaining height to the shelf, including tabs
-     without a view toggle or an active tutorial coach. */
-  body .ac-menu.ac-loadout { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 12px; grid-template-rows: auto auto auto auto auto minmax(0, 1fr); }
+  /* The opaque browsing surface fills the right column beside the pilot. */
+  body .ac-menu.ac-loadout { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 12px; grid-template-rows: auto minmax(0, 1fr); }
   body .ac-menu.ac-loadout > * { grid-column: 2; }
   body .ac-menu.ac-loadout > .ac-menuhead { grid-column: 1 / -1; grid-row: 1; }
-  body .ac-menu.ac-loadout > .ac-hangarcase { grid-column: 1; grid-row: 2 / 7; align-self: start; }
-  body .ac-menu.ac-loadout > .ac-cats { grid-row: 2; }
-  body .ac-menu.ac-loadout > .ac-viewrow { grid-row: 3; }
-  body .ac-menu.ac-loadout > .ac-deny { grid-row: 4; }
-  body .ac-menu.ac-loadout > .ac-coach { grid-row: 5; }
-  body .ac-menu.ac-loadout > .ac-sheet-scroll { grid-row: 6; min-height: 0; }
+  body .ac-menu.ac-loadout > .ac-hangarcase { grid-column: 1; grid-row: 2; align-self: start; }
+  body .ac-menu.ac-loadout > .ac-loadout-selection { grid-column: 2; grid-row: 2; align-self: stretch; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
   .ac-loadout .ac-caseplate b { font-size: 14px; }

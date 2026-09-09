@@ -151,7 +151,13 @@ if (process.argv.includes('--serve')) {
     } else {
       const before = JSON.parse(readFileSync(out + 'baseline-verification.json', 'utf8'));
       assert.equal(before.baselineCommit, baselineCommit, 'baseline receipt belongs to a different commit');
-      assert.deepEqual(inventory, before.inventory, 'current main catalog or existing menu control semantics changed');
+      // The owner moved the existing shield beside the view toggle. Ignore
+      // only that control's DOM position; all identities/actions still match.
+      const alignShield = value => ({ ...value, tabs: Object.fromEntries(Object.entries(value.tabs).map(([tab, buttons]) => {
+        const shield = b => b.text.includes('SHIELD NEXT RUN');
+        return [tab, [...buttons.filter(shield), ...buttons.filter(b => !shield(b))]];
+      })) });
+      assert.deepEqual(alignShield(inventory), alignShield(before.inventory), 'current main catalog or existing menu control semantics changed');
       interactions.push({ label: 'current-main-content-preserved', baselineCommit, catalogCounts: Object.fromEntries(Object.entries(inventory.catalog).map(([kind, items]) => [kind, items.length])), buttonCounts: Object.fromEntries(Object.entries(inventory.tabs).map(([tab, buttons]) => [tab, buttons.length])) });
       for (const [label, width, height] of [['mobile390', 390, 844], ['landscape844', 844, 390], ['desktop1440', 1440, 900], ['mobile320', 320, 568]]) {
         await page.setViewportSize({ width, height });
@@ -265,6 +271,19 @@ if (process.argv.includes('--serve')) {
       await measure('beta-mobile390-expanded');
       await page.locator('.ac-casefold').click(); await measure('beta-mobile390-compact');
       for (const tab of ['helmets', 'trails', 'pals', 'ship']) { await page.locator(`[data-focus="tab:${tab}"]`).click(); await scrollToEnd('beta-' + tab); }
+      await page.locator('[data-focus="tab:suits"]').click();
+      await page.evaluate(() => window.__sandbox.setHeroExpanded(true));
+      assert.equal(await page.locator('.ac-hangarcase .ac-caseeyebrow').count(), 0, 'redundant hero state caption remains');
+      const shield = page.locator('.ac-loadout-controls .ac-platebtn');
+      await shield.click();
+      await page.getByRole('button', { name: 'NOT NOW', exact: true }).click();
+      assert.equal(await page.evaluate(() => window.__sandbox.save.acorns), 77, 'cancelled shield spent currency');
+      await shield.click();
+      await page.locator('.ac-spendcard .ac-primary').click();
+      const shieldState = await page.evaluate(() => ({ armed: window.__sandbox.save.startShield, acorns: window.__sandbox.save.acorns, expanded: window.__sandbox.save.heroExpanded }));
+      assert.deepEqual(shieldState, { armed: true, acorns: 52, expanded: true });
+      assert.equal(await page.locator('.ac-loadout-controls .ac-tagblue').textContent(), '+1 SHIELD · NEXT RUN');
+      interactions.push({ label: 'relocated-shield-cancel-and-arm', ...shieldState, location: 'beside the existing view toggle', duplicateHeroCaption: false });
     }
     assert.deepEqual(errors, []); assert.deepEqual(failedArt, []);
     writeFileSync(out + (baseline ? 'baseline-verification.json' : 'browser-verification.json'), JSON.stringify({ profile: 'isolated Playwright browser, synthetic owned wardrobe; no installed save accessed', baseline, baselineCommit, builds, inventory, receipts, interactions, errors, failedArt }, null, 2) + '\n');
