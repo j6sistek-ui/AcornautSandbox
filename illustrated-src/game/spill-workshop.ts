@@ -59,7 +59,7 @@ function shipPreview(engine: Engine, pick: ShipPick, height: number, flashAt = -
   return canvas;
 }
 
-/** Shared earned choices in Loadout and before every endless rematch. */
+/** Earned starting utilities are equipped in Loadout. */
 export function drawSpillStarters(engine: Engine, onPick = () => {}) {
   const save = engine.save, wrap = el("section", "ac-starting-kit");
   wrap.append(el("h3", "", "Starting utility"), el("p", "ac-workshop-note", "Choose one earned item. Free on every new run."));
@@ -101,11 +101,11 @@ export function drawSpillLaunchSetup(engine: Engine, onGuide: () => void) {
   const help = el("button", "ac-helpdot", "?"); help.dataset.spillControl = "setup-guide";
   help.setAttribute("aria-label", "Debris Field briefing"); help.onclick = onGuide;
   head.append(heading, help); wrap.append(head);
-  const stage = el("div", "ac-launch-ship");
+  const body = el("div", "ac-setup-body"), stage = el("div", "ac-launch-ship");
   stage.append(shipPreview(engine, { plating: 0, thrusters: 0, pulse: 0, shield: 0, utilities: save.spillStarter ? [save.spillStarter] : [] }, 140), el("b", "ac-launch-pilot", `${pilot} aboard`));
-  wrap.append(stage, el("p", "ac-launch-stats", "3 health · 0 shields · first upgrade free"), drawSpillStarters(engine), drawSpillEnginePicker(engine));
-  if (!save.helpOff && !save.spillPromptsOff) wrap.append(el("p", "ac-workshop-note ac-launch-controls", save.spillButtonsOff ? "Hold to rise · release to fall · swipe to burst." : "Throttle rises · Dive drops · Lunge dashes."));
-  const actions = el("div", "ac-workshop-actions"), back = el("button", "ac-ghost ac-workshop-exit", "MAIN MENU"), go = el("button", "ac-primary ac-workshop-launch", "LAND · FREE UPGRADE");
+  body.append(stage, el("p", "ac-launch-stats", "3 health · first upgrade free"), el("p", "ac-workshop-note ac-launch-controls", "Land at the Depot. Choose Health, Shields, Thrusters or Pulse for free."));
+  wrap.append(body);
+  const actions = el("div", "ac-workshop-actions"), back = el("button", "ac-ghost ac-workshop-exit", "MAIN MENU"), go = el("button", "ac-primary ac-workshop-launch", "START RUN");
   back.onclick = () => engine.open("title"); go.dataset.spillControl = "land"; go.onclick = () => engine.spillLunge();
   actions.append(back, go); wrap.append(actions); return wrap;
 }
@@ -246,49 +246,52 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     }
     details.append(choices); sheet.append(details);
   }
-  const shelf = el("section", "ac-workshop-utilities"), shelfHead = el("div", "ac-workshop-sectionhead"), slots = el("div", "ac-workshop-slots");
-  shelfHead.append(el("h3", "", `Utilities · ${sp.utilities.length} / 2 fitted`), el("span", "", sp.welcome ? "Buy after wave 5" : "Buy once this run · refit free")); shelf.append(shelfHead);
-  for (let i = 0; i < 2; i++) {
-    const id = sp.utilities[i], slot = el("span", id ? "fitted" : ""); if (id) slot.append(spillUtilityArt(id));
-    slot.append(el("span", "", id ? SPILL_UTILITIES[id].name : `Empty slot ${i + 1}`)); slots.append(slot);
-  }
-  shelf.append(slots);
-  const utilityGrid = el("div", "ac-workshop-utilitygrid");
-  for (const id of SPILL_UTILITY_IDS) {
-    const u = SPILL_UTILITIES[id], fitted = sp.utilities.includes(id), owned = sp.ownedUtilities.includes(id);
-    const card = el("article", `ac-workshop-utility${fitted ? " fitted" : ""}`), name = el("div", "ac-workshop-utilityname");
-    card.title = u.detail; name.append(spillUtilityArt(id), el("h4", "", u.name)); card.append(name, el("p", "", u.desc));
-    if (id === "capacitor" && !sp.up.pulse) card.append(el("small", "ac-workshop-requirement", "Needs Impact pulse"));
-    const buy = el("button", `ac-workshop-buy${fitted ? " fitted" : ""}`); buy.dataset.spillControl = id;
-    buy.disabled = arming || !!sp.welcome || (!fitted && !owned && sp.ore < u.price);
-    buy.setAttribute("aria-label", `${fitted ? "Remove" : "Fit"} ${u.name}${!owned ? ` for ${u.price} Acorn Coins` : ""}`);
-    buy.append(el("span", "", sp.welcome ? fitted ? "Starting utility" : "Next stop" : fitted ? "✓ Fitted · remove" : sp.utilities.length === 2 ? "Swap" : "Fit"));
-    if (!sp.welcome && !owned) buy.append(coin(), el("span", "", String(u.price)));
-    else if (!sp.welcome && owned && !fitted) buy.append(el("span", "", "Free"));
-    buy.onclick = () => {
-      if (!fitted && sp.utilities.length === 2) {
-        view.swap = id; rerender(); document.querySelector<HTMLElement>(".ac-workshop-swap button")?.focus(); return;
-      }
-      feedback(`${u.name} ${fitted ? "removed · refit free this run" : "fitted"}`); engine.spillUtility(id);
-    }; card.append(buy); utilityGrid.append(card);
-  }
-  shelf.append(utilityGrid);
-  if (view.swap) {
-    const swapId = view.swap, swap = el("div", "ac-workshop-swap"); swap.setAttribute("role", "group");
-    swap.append(el("p", "", `Replace which utility with ${SPILL_UTILITIES[swapId].name.toLowerCase()}?`));
-    for (const id of sp.utilities) {
-      const b = el("button", "ac-ghost ac-workshop-secondary", SPILL_UTILITIES[id].name); b.dataset.spillControl = `replace-${id}`; b.disabled = arming;
-      b.onclick = () => {
-        view.swap = null; feedback(`${SPILL_UTILITIES[swapId].name} fitted`); engine.spillUtility(swapId, id);
-        document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
-      }; swap.append(b);
+  // The opening Depot offers only the four core upgrades. Utilities arrive after wave 5.
+  if (!sp.welcome) {
+    const shelf = el("section", "ac-workshop-utilities"), shelfHead = el("div", "ac-workshop-sectionhead"), slots = el("div", "ac-workshop-slots");
+    shelfHead.append(el("h3", "", `Utilities · ${sp.utilities.length} / 2 fitted`), el("span", "", sp.welcome ? "Buy after wave 5" : "Buy once this run · refit free")); shelf.append(shelfHead);
+    for (let i = 0; i < 2; i++) {
+      const id = sp.utilities[i], slot = el("span", id ? "fitted" : ""); if (id) slot.append(spillUtilityArt(id));
+      slot.append(el("span", "", id ? SPILL_UTILITIES[id].name : `Empty slot ${i + 1}`)); slots.append(slot);
     }
-    const cancel = el("button", "ac-ghost ac-workshop-exit", "CANCEL"); cancel.dataset.spillControl = "cancel-swap";
-    cancel.onclick = () => {
-      view.swap = null; rerender(); document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
-    }; swap.append(cancel); shelf.append(swap);
+    shelf.append(slots);
+    const utilityGrid = el("div", "ac-workshop-utilitygrid");
+    for (const id of SPILL_UTILITY_IDS) {
+      const u = SPILL_UTILITIES[id], fitted = sp.utilities.includes(id), owned = sp.ownedUtilities.includes(id);
+      const card = el("article", `ac-workshop-utility${fitted ? " fitted" : ""}`), name = el("div", "ac-workshop-utilityname");
+      card.title = u.detail; name.append(spillUtilityArt(id), el("h4", "", u.name)); card.append(name, el("p", "", u.desc));
+      if (id === "capacitor" && !sp.up.pulse) card.append(el("small", "ac-workshop-requirement", "Needs Impact pulse"));
+      const buy = el("button", `ac-workshop-buy${fitted ? " fitted" : ""}`); buy.dataset.spillControl = id;
+      buy.disabled = arming || !!sp.welcome || (!fitted && !owned && sp.ore < u.price);
+      buy.setAttribute("aria-label", `${fitted ? "Remove" : "Fit"} ${u.name}${!owned ? ` for ${u.price} Acorn Coins` : ""}`);
+      buy.append(el("span", "", sp.welcome ? fitted ? "Starting utility" : "Next stop" : fitted ? "✓ Fitted · remove" : sp.utilities.length === 2 ? "Swap" : "Fit"));
+      if (!sp.welcome && !owned) buy.append(coin(), el("span", "", String(u.price)));
+      else if (!sp.welcome && owned && !fitted) buy.append(el("span", "", "Free"));
+      buy.onclick = () => {
+        if (!fitted && sp.utilities.length === 2) {
+          view.swap = id; rerender(); document.querySelector<HTMLElement>(".ac-workshop-swap button")?.focus(); return;
+        }
+        feedback(`${u.name} ${fitted ? "removed · refit free this run" : "fitted"}`); engine.spillUtility(id);
+      }; card.append(buy); utilityGrid.append(card);
+    }
+    shelf.append(utilityGrid);
+    if (view.swap) {
+      const swapId = view.swap, swap = el("div", "ac-workshop-swap"); swap.setAttribute("role", "group");
+      swap.append(el("p", "", `Replace which utility with ${SPILL_UTILITIES[swapId].name.toLowerCase()}?`));
+      for (const id of sp.utilities) {
+        const b = el("button", "ac-ghost ac-workshop-secondary", SPILL_UTILITIES[id].name); b.dataset.spillControl = `replace-${id}`; b.disabled = arming;
+        b.onclick = () => {
+          view.swap = null; feedback(`${SPILL_UTILITIES[swapId].name} fitted`); engine.spillUtility(swapId, id);
+          document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
+        }; swap.append(b);
+      }
+      const cancel = el("button", "ac-ghost ac-workshop-exit", "CANCEL"); cancel.dataset.spillControl = "cancel-swap";
+      cancel.onclick = () => {
+        view.swap = null; rerender(); document.querySelector<HTMLElement>(`[data-spill-control="${swapId}"]`)?.focus({ preventScroll: true });
+      }; swap.append(cancel); shelf.append(swap);
+    }
+    sheet.append(shelf);
   }
-  sheet.append(shelf);
   if (!sp.welcome) {
     const extras = el("details", "ac-workshop-extras"); extras.open = view.extras; extras.append(el("summary", "", "Extra life & bonus goals"));
     extras.ontoggle = () => { if (extras.isConnected) view.extras = extras.open; };

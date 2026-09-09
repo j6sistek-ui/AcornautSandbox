@@ -1,0 +1,36 @@
+/** Vector flight pads. Geometry is shared with the mounted hit targets and QA render. */
+export type SpillControl = "dive" | "throttle" | "lunge";
+export const SPILL_CONTROL_LAYOUT = {
+  width: 360, height: 112,
+  dive: { x: 0, y: 16, width: 144, height: 80 },
+  throttle: { x: 130, y: 6, width: 100, height: 100 },
+  lunge: { x: 216, y: 16, width: 144, height: 80 },
+};
+export function spillControlArt(kind: SpillControl) {
+  const center = kind === "throttle", right = kind === "lunge";
+  const id = `ac-flight-${kind}`, w = center ? 100 : 144, h = center ? 100 : 80;
+  const light = center ? "#bdffe4" : right ? "#b4edff" : "#ffcead";
+  const edge = center ? "#559e90" : right ? "#559fc1" : "#c58366";
+  const top = center ? "#315956" : right ? "#2e4254" : "#413b45";
+  const base = center ? "#112e2d" : "#0c1422";
+  // The inner arc follows the central disc with a 7px gutter. Each wing's
+  // content centers in its remaining pad (x=63), not its full 144px box.
+  const wing = "M28 3H113Q125 3 133 8A57 57 0 0 0 133 72Q125 77 113 77H28Q3 77 3 52V28Q3 3 28 3Z";
+  const shape = center ? '<circle cx="50" cy="50" r="47"/>' : `<path d="${wing}"${right ? ' transform="translate(144 0) scale(-1 1)"' : ""}/>`;
+  const x = right ? 81 : 63;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="${id}-face" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0" stop-color="${top}"/><stop offset=".56" stop-color="${base}"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
+      <linearGradient id="${id}-edge" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0" stop-color="${light}"/><stop offset="1" stop-color="${edge}"/></linearGradient>
+      <clipPath id="${id}-clip">${shape}</clipPath>
+    </defs>
+    <g class="ac-pad-face" fill="url(#${id}-face)" stroke="url(#${id}-edge)" stroke-width="2.6">${shape}</g>
+    <g clip-path="url(#${id}-clip)">
+      <ellipse cx="${center ? 40 : 60}" cy="${center ? 13 : 0}" rx="${center ? 58 : 88}" ry="${center ? 41 : 40}" fill="#ffffff" opacity="0.08"/>
+      ${center ? '<circle cx="50" cy="50" r="42.5" fill="none" stroke="#d6fff0" stroke-opacity=".14"/>' : '<path d="M8 69H136" stroke="#000" stroke-opacity=".35" stroke-width="3"/>'}
+    </g>
+    ${center
+      ? `<path d="M50 29 32 53H68Z" fill="${light}"/><path d="M40 65H60" stroke="${light}" stroke-opacity=".7" stroke-width="3.5" stroke-linecap="round"/>`
+      : `<path d="${right ? "M74 20 90 30 74 40 78 30Z" : "M49 21H77L63 38Z"}" fill="${light}"/><text x="${x}" y="61" text-anchor="middle" fill="${light}" font-family="Figtree, sans-serif" font-size="11" font-weight="800" letter-spacing=".7">${right ? "LUNGE" : "DIVE"}</text>`}
+  </svg>`;
+}
