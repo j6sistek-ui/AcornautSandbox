@@ -4398,11 +4398,35 @@ export const POSE_DIVE_DEPTH = 1;
 // whose dive frames "barely do work" are held to the shallow end until
 // their art is regenerated.
 export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
-  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat"] as const;
+  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat",
+  // ADDED 9 Sep 2026: "verdant and cryostar now exactly match eclipse and
+  // can be locked". They were the two the same review wanted held against
+  // Eclipse - "I want them to match Eclipse ... the deep tail movement of
+  // eclipse drives its power and feel" - and they now do, so they inherit
+  // Eclipse's dial rather than the shallow holding value they were parked at.
+  "cryostar", "verdant"] as const;
+
+// A FLIGHT PATTERN IS A FAMILY TRAIT (owner, 9 Sep 2026: "unique flight
+// pattern by family"). Suits that read as one family fly one ramp, and the
+// family is the unit that gets approved, frozen and tuned - not the suit.
+// Naming them keeps a later tweak from splitting a set that was signed off
+// together, and keeps a new member honest: it joins by matching the
+// family's flight, not by being added to a list.
+export const FLIGHT_FAMILIES: Record<string, readonly string[]> = {
+  // the deep-tail ramp; Eclipse is the reference the other two were held to
+  eclipse: ["eclipse", "cryostar", "verdant"],
+  // "The High orbit class is ok, dives a bit too steep visually, over
+  // rotates but tail doesn't do enough on the way up" - reviewed as a class
+  // and shipped as one, so they are tuned as one. Not frozen: the review
+  // called them ok, not finished.
+  cinderforge: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"],
+};
 
 export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // ---- FROZEN: approved 9 Sep 2026, do not touch ----
   flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
+  // the Eclipse family, locked together on Eclipse's own ramp
+  cryostar: 1, verdant: 1,
 
   // ---- tunable ----
   // "dives a bit too steep visually, over rotates but tail doesn't do
@@ -4412,10 +4436,6 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   iontrim: 0.7, copper: 0.7,
   // "deep dive, a little drift between frames but not too noticeable"
   leviathan: 0.7,
-  // "I want them to match Eclipse ... the deep tail movement of eclipse
-  // drives its power and feel" - that is an ART note, not a dial; this only
-  // keeps them off the steep end meanwhile
-  cryostar: 0.7, verdant: 0.7,
   // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
   // teetering effect otherwise good" - and the game's own dome anchors say
   // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at

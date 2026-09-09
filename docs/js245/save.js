@@ -1,11 +1,11 @@
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=241";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=241";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=241";
-import { restoreSpill } from "./spill.js?v=241";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=241";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=245";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=245";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=245";
+import { restoreSpill } from "./spill.js?v=245";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=245";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=241";
-import { platform } from "./platform.js?v=241";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=245";
+import { platform } from "./platform.js?v=245";
 export function defaultSave() {
     return {
         highScore: 0,
@@ -125,7 +125,20 @@ export function bankSpill(save, s, end = false) {
 function readRaw(key) {
     try {
         const raw = platform.storage.get(key);
-        return raw ? JSON.parse(raw) : null;
+        if (!raw)
+            return null;
+        // A SAVE HAS TO BE AN OBJECT (App Store prep audit, section 2). JSON.parse
+        // only throws on malformed text: `5`, `"abc"` and `[1,2]` all parse, all
+        // come back truthy, and all used to be handed on as a save. Spreading a
+        // string into the defaults pastes its characters on as numbered keys, and
+        // worse, loadSave takes the FIRST key that reads truthy - so one corrupt
+        // byte in the live slot would shadow a perfectly good legacy save behind
+        // it. Anything that is not a plain object is not a save; say so, and the
+        // next key in the list gets its turn.
+        const value = JSON.parse(raw);
+        if (typeof value !== "object" || value === null || Array.isArray(value))
+            return null;
+        return value;
     }
     catch {
         return null;
@@ -252,12 +265,13 @@ export function loadSave() {
                 s.suitPitch[id] = Math.max(SUIT_PITCH_MIN, Math.min(SUIT_PITCH_MAX, Math.round(v)));
         }
     }
-    // ACORNUT IS EARNED (owner, 6 Sep 2026): 500 stars on the road, or the
+    if (!Array.isArray(s.unlockedSuits))
+        s.unlockedSuits = ["flight"];
+    // ACORNUT IS EARNED (owner, 6 Sep 2026): 570 stars on the road, or the
     // tutorial's borrowed flight. A beta grant or an old free unlock in the
-    // list does not count; the star gate in suitRevealed does.
-    s.unlockedSuits = (s.unlockedSuits ?? []).filter((id) => id !== TUTORIAL_SUIT);
-    // The check that this suit is EARNED now runs below, after
-    // migrateCampaign: see "ACORNUT'S GATE READS THE LEDGER".
+    // list does not count. Both the strip and the equipped check need the
+    // star total, so both now run below, after migrateCampaign: see
+    // "ACORNUT'S GATE READS THE LEDGER".
     // an old save has no lean table, and a corrupted one must not be able to
     // tip every suit sideways - anything that is not two finite numbers in
     // range is dropped rather than trusted
@@ -393,6 +407,15 @@ export function loadSave() {
     // asks (purchased, the ledger's star total, the beta). It must run AFTER
     // migrateCampaign: that call caches on first use, and an earlier starsOf()
     // would build the ledger without the cross-page ambiguity flag.
+    // COLLECTING ACORNUT STICKS (owner, 8 Sep 2026: "i still have to collect
+    // acornut everytime i load in"). This strip used to be unconditional, so
+    // the entry the collect tap writes was torn back out on the next load:
+    // the shelf saw a revealed, unowned, free suit and printed COLLECT REWARD
+    // again, forever. It only ever existed to refuse an entry nobody earned,
+    // so it asks that question now - and it cannot ask suitRevealed, which
+    // says yes BECAUSE of the entry being judged.
+    if (!tutorialSuitEarned(s))
+        s.unlockedSuits = s.unlockedSuits.filter((id) => id !== TUTORIAL_SUIT);
     if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT))
         s.equippedSuit = "flight";
     if (IS_BETA && !s.betaSampleCreditImported) {
@@ -442,7 +465,10 @@ export function grantTutorialKit(s) {
     // graduation locks him behind his 500 stars and seats the pilot in
     // Flight, so the shelf shows a worn suit while the coach walks them to
     // the Ion kit.
-    s.unlockedSuits = s.unlockedSuits.filter(id => id !== TUTORIAL_SUIT);
+    // ...unless the 570 stars are already in, in which case he is the
+    // pilot's outright and graduation has nothing to take back.
+    if (!tutorialSuitEarned(s))
+        s.unlockedSuits = s.unlockedSuits.filter(id => id !== TUTORIAL_SUIT);
     if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT))
         s.equippedSuit = "flight";
 }
@@ -506,6 +532,20 @@ export function trailUnlocked(s, id) {
     if (STAR_UNLOCKS.trails[id] === undefined)
         return true;
     return BETA_UNLOCK_GATES || starsOf(s) >= STAR_UNLOCKS.trails[id] || s.unlockedTrails.includes(id);
+}
+/** IS ACORNUT EARNED, judged WITHOUT the unlockedSuits entry. suitRevealed
+ *  answers "does the pilot have him", and one of the ways it says yes is
+ *  that his id is sitting in unlockedSuits - so it can never be asked
+ *  whether that entry deserves to be there. This asks the question the
+ *  entry cannot answer about itself: bought, or 570 stars on the road, or
+ *  the beta, which opens every gate. */
+export function tutorialSuitEarned(s) {
+    if ((s.purchased || []).includes(TUTORIAL_SUIT))
+        return true;
+    if (BETA_UNLOCK_GATES)
+        return true;
+    const gate = STAR_UNLOCKS.suits[TUTORIAL_SUIT];
+    return gate !== undefined && starsOf(s) >= gate;
 }
 export function suitRevealed(s, id) {
     // anyone who BOUGHT a suit keeps it, even one that has since moved off

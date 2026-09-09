@@ -1,19 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=241";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=241";
-import { trailWornBy } from "./catalog.js?v=241";
-import { missionRandom } from "./mission-rng.js?v=241";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=241";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=241";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=241";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=241";
-import { platform } from "./platform.js?v=241";
-import { TUTORIAL_SUIT } from "./catalog.js?v=241";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=241";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=241";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=241";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=241";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=241";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=241";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=245";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=245";
+import { trailWornBy } from "./catalog.js?v=245";
+import { missionRandom } from "./mission-rng.js?v=245";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=245";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=245";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=245";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=245";
+import { platform } from "./platform.js?v=245";
+import { TUTORIAL_SUIT } from "./catalog.js?v=245";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=245";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=245";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=245";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=245";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=245";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=245";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2957,6 +2957,14 @@ export function settleLevel(w, save, finished) {
         const bestFinishTicks = newBestTime ? finishTicks : priorTicks;
         const bestAcorns = Math.max(priorAcorns, lvl.stats.acorns);
         records[def.raceEventId ?? def.id] = { bestFinishTicks, bestAcorns };
+        // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
+        // "hyper" board has been declared and configured since the shell landed
+        // and nothing ever posted to it. A race is scored on TIME, so this posts
+        // ticks and the board has to be set Low to High - app.config.json says so
+        // beside the id, and check.mjs repeats it, because a board configured the
+        // usual way would rank the slowest pilot first.
+        if (finished && finishTicks > 0)
+            platform.submitScore("hyper", finishTicks);
         // DEBRIS FIELD. A finish inside the time clears the gate the pilot is
         // actually standing at - the first uncleared one - and only that one.
         // Beating 1:42 at the very first field does not silently bank all

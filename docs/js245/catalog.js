@@ -1,19 +1,28 @@
-import { platform } from "./platform.js?v=241";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=241";
+import { platform } from "./platform.js?v=245";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=245";
 // THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
 // launch-readiness stretch. The art stamp below is a cache key, not a
 // version, and is no longer shown. QuarterDrop Games is a reserved name,
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "241";
+export const ART_VER = "245";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
 // gets the open TEST build: gates open, premium handed over, prototype
 // doors on the Help sheet — and its own save slot, so an open-gate save
 // can never leak into the production one.
+// NEVER ON A STORE BUILD (App Store prep audit, section 2). The flag is a
+// bare global, so anything that can get that global set - a stray script, a
+// page loaded inside the shell, a future webDir slip - would hand a shipped
+// app the open TEST build: every gate down, premium granted, a 10,000-acorn
+// floor and free dust packs. The beta page is already outside shell/www, so
+// this is the second lock rather than the first, and it is the one that
+// cannot be undone by a packaging mistake. platform.native is set by the
+// native adapter before the bundle boots.
 export const IS_BETA = typeof window !== "undefined" &&
+    !platform.native &&
     window.__ACORNAUT_BETA__ === true;
 /** Beta itself is the 260-mission playtest. Retained name for cosmetic previews. */
 export const STAR_MAP_PREVIEW = IS_BETA;
@@ -42,7 +51,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-08 20:33 UTC";
+export const BUILD_TIME = "2026-09-09 03:20 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
@@ -104,7 +113,7 @@ export const PHYS = {
     squirrelR: 16,
 };
 export const NEWS = [
-    "THE STAR CHART: a hundred levels, three stars each.",
+    "THE STAR CHART: 260 missions, three stars each.",
     "Stars unlock pals, mods, suits and modes.",
     "Golden acorns still bounce off planets. Debris phases.",
     "Debris kills. Planets bounce. Swipe cancels a bounce.",

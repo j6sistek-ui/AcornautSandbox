@@ -32,10 +32,12 @@ const Cat=await import('../docs/js/catalog.js');
 
 const ids=new Set(Cat.SUITS.map(u=>u.id));
 for(const id of D.FROZEN_SUITS) assert(ids.has(id),`frozen roster names a real suit: ${id}`);
-assert.equal(D.FROZEN_SUITS.length,12,'the owner froze twelve suits');
+assert.equal(D.FROZEN_SUITS.length,14,'the owner froze fourteen suits');
 
 // --- the six that ride the dial, pinned at the approved value -----------
-const PINNED={flight:1,alien:1,cyber:1,eclipse:1,seraph:1,briellacat:1};
+const PINNED={flight:1,alien:1,cyber:1,eclipse:1,seraph:1,briellacat:1,
+  // "verdant and cryostar now exactly match eclipse and can be locked"
+  cryostar:1,verdant:1};
 for(const [id,want] of Object.entries(PINNED)){
   assert(D.FROZEN_SUITS.includes(id),`${id} is on the frozen roster`);
   assert.equal(D.diveDepthFor(id),want,
@@ -59,6 +61,24 @@ for(const id of ['voidsuit','ember','frost','sammie','gemmie','ghost'])
   assert(D.diveDepthFor(id)<=0.5,`${id} is held to the shallow end pending regenerated art`);
 for(const id of ['iontrim','copper','leviathan','cinderforge','groveguard','cosmic','sunforged','abyssal'])
   assert(D.diveDepthFor(id)<1,`${id} was called too steep on the dive and is dialled back`);
+
+// --- a family flies ONE ramp -------------------------------------------
+// Owner, 9 Sep 2026: "unique flight pattern by family". The family is the
+// unit that was approved, so a later tweak must not be able to split it -
+// which is exactly what would happen if someone dialled one member back
+// and left the others. Every member flies the reference's depth, and every
+// member is frozen if the reference is.
+for(const [ref,members] of Object.entries(D.FLIGHT_FAMILIES)){
+  assert(members.includes(ref),`${ref} family includes its own reference`);
+  const depth=D.diveDepthFor(ref);
+  for(const id of members){
+    assert(ids.has(id),`${ref} family names a real suit: ${id}`);
+    assert.equal(D.diveDepthFor(id),depth,
+      `FAMILY: ${id} flies the same ramp as ${ref} (${depth}) - the family was approved together and cannot be split`);
+    assert.equal(D.FROZEN_SUITS.includes(id),D.FROZEN_SUITS.includes(ref),
+      `FAMILY: ${id} and ${ref} are frozen together`);
+  }
+}
 
 // --- an unlisted suit falls through to the default ----------------------
 assert.equal(D.diveDepthFor('no-such-suit'),D.POSE_DIVE_DEPTH,'an unlisted suit flies the default');

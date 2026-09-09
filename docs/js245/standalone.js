@@ -1,25 +1,25 @@
-import { suitPitchFor } from "./save.js?v=241";
-import { platform } from "./platform.js?v=241";
-import { spillAppearance } from "./spill-appearance.js?v=241";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=241";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=241";
-import { addChartScenery } from "./star-map-view.js?v=241";
-import { mapDebrisIndex } from "./zone-visuals.js?v=241";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=241";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=241";
-import { suitLean } from "./control-constants.js?v=241";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=241";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=241";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=241";
-import { drawSprite as drawSpriteOn } from "./art.js?v=241";
-import { createEngine } from "./engine.js?v=241";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=241";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=241";
-import { formatRaceTicks } from "./race.js?v=241";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=241";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=241";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker } from "./spill-workshop.js?v=241";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=241";
+import { suitPitchFor } from "./save.js?v=245";
+import { platform } from "./platform.js?v=245";
+import { spillAppearance } from "./spill-appearance.js?v=245";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=245";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=245";
+import { addChartScenery } from "./star-map-view.js?v=245";
+import { mapDebrisIndex } from "./zone-visuals.js?v=245";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=245";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=245";
+import { suitLean } from "./control-constants.js?v=245";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=245";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=245";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=245";
+import { drawSprite as drawSpriteOn } from "./art.js?v=245";
+import { createEngine } from "./engine.js?v=245";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=245";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=245";
+import { formatRaceTicks } from "./race.js?v=245";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=245";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=245";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=245";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=245";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -381,6 +381,8 @@ export async function bootStandalone(root) {
         const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
             : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
         const depotFocus = document.activeElement?.dataset.spillControl;
+        if (snap.screen !== "help" && !(snap.screen === "play" && engine.world.spill?.phase === "ready"))
+            spillHelpOpen = false;
         // the same trick the Depot has always used, for the Loadout: the card
         // that was just used gets the keyboard back after the rebuild
         cardFocus = document.activeElement?.dataset.focus ?? "";
@@ -457,6 +459,8 @@ export async function bootStandalone(root) {
                     setup.scrollTop = setupScroll;
                     if (setupFocus)
                         setup.querySelector(setupFocus)?.focus({ preventScroll: true });
+                    if (spillHelpOpen)
+                        overlay.append(spillHelpSheet());
                     return;
                 }
                 if (sp.phase === "docking")
@@ -475,7 +479,7 @@ export async function bootStandalone(root) {
             if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill)
                 sheet.append(flightLab());
             sheet.append(el("h2", "", "PAUSED"), el("p", "ac-sub", engine.world.race ? `TIME ${formatRaceTicks(engine.world.race.tick)}`
-                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} COINS`
+                : engine.world.spill ? `WAVE ${engine.world.spill.wave} · ${engine.world.spill.ore} ACORN COINS`
                     : `Score ${engine.world.score}`));
             if (engine.world.spill) {
                 const settings = el("section", "ac-spillsettings");
@@ -717,6 +721,11 @@ export async function bootStandalone(root) {
         }
         if (snap.screen === "help") {
             overlay.append(drawHelp());
+            const sc = overlay.querySelector(".ac-sheet-scroll");
+            if (sc && keptScrollKey === scrollKey)
+                sc.scrollTop = keptScroll;
+            if (spillHelpOpen)
+                overlay.append(spillHelpSheet());
         }
     };
     /** WHAT HAS TO HOLD ACROSS THE REBUILD (audit, Sep 2026). The overlay is
@@ -730,7 +739,7 @@ export async function bootStandalone(root) {
     const settle = () => {
         // the Depot wears the same sheet class but IS the screen while a run
         // is paused in it, and it already places its own focus - leave it be
-        const sheets = overlay.querySelectorAll(".ac-lvlsheet:not(.ac-depotwrap)");
+        const sheets = overlay.querySelectorAll(".ac-lvlsheet:not(.ac-depotwrap), .ac-spillhelpwrap");
         const top = sheets[sheets.length - 1];
         if (!top) {
             if (cardFocus)
@@ -1250,6 +1259,7 @@ export async function bootStandalone(root) {
     // An inspected Depot build stays local. Only the starting utility and engine color are equipped.
     let shipPlan = null;
     const depotView = createDepotView();
+    let spillHelpOpen = false;
     function nextStarReward(stars) {
         // "stage" rows opened a chapter, and chapters are gone - the chart is
         // one linear road now. They remain in the compatibility table,
@@ -1675,7 +1685,16 @@ export async function bootStandalone(root) {
         return gift;
     }
     // Shared workshop surfaces keep launch choices and the live Depot consistent.
-    function drawSpillPrep() { return drawSpillLaunchSetup(engine); }
+    function openSpillHelp() { spillHelpOpen = true; render(); }
+    function closeSpillHelp() {
+        spillHelpOpen = false;
+        render();
+        overlay.querySelector('[data-spill-control="setup-guide"], [data-spill-briefing]')?.focus({ preventScroll: true });
+    }
+    function spillHelpSheet() {
+        return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO SHIP");
+    }
+    function drawSpillPrep() { return drawSpillLaunchSetup(engine, openSpillHelp); }
     function drawDepot(_sp) { return drawDepotWorkshop(engine, depotView, render); }
     function miniCanvas(w, h) {
         const c = document.createElement("canvas");
@@ -2313,6 +2332,7 @@ export async function bootStandalone(root) {
                 grid.append(palCardOf(p));
         }
         else if (engine.shopTab === "ship") {
+            box.classList.add("ac-shipmenu");
             grid.classList.add("ac-shelfcol", "ac-shipworkshop");
             if (STAR_MAP_PREVIEW) {
                 const look = el("section", "ac-shiplaunch");
@@ -2372,7 +2392,7 @@ export async function bootStandalone(root) {
                         : isShield ? "A charge absorbs a hit. The fitted canopy remains after use." : shop.levels[tier - 1];
                     txt.append(el("p", "ac-shiptier", tier ? `TIER ${tier}` : "BASELINE"), el("p", "ac-modname", name), el("p", "ac-sub", effect));
                     const price = !tier ? 0 : isShield ? shop.prices[0] * tier : shop.prices[tier - 1];
-                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} COINS FOR ${tier}` : `${price} COINS · STEP ${tier}`));
+                    b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} ACORN COINS FOR ${tier}` : `${price} ACORN COINS · STEP ${tier}`));
                     b.onclick = () => { shipPlan = pick; render(); };
                     row.append(b);
                 }
@@ -2381,9 +2401,10 @@ export async function bootStandalone(root) {
                     const specs = el("div", "ac-spilloptions ac-shipspecs");
                     for (const [id, spec] of Object.entries(SPILL_SPECIALTIES).filter(([, spec]) => spec.axis === axis)) {
                         const selected = previewShip.specialties[axis] === id;
-                        const b = el("button", `ac-spilloption${selected ? " selected" : ""}`);
+                        const b = el("button", `ac-spilloption${selected ? " on" : ""}`);
                         b.disabled = shipPick[axis] < 2;
                         b.dataset.shipSpec = id;
+                        b.setAttribute("aria-pressed", String(selected));
                         b.append(el("b", "", spec.name), el("span", "", spec.desc), el("strong", "", shipPick[axis] < 2 ? "REQUIRES TIER II" : selected ? "PREVIEW FITTED · FREE AT DEPOT" : "PREVIEW · FREE AT DEPOT"));
                         b.onclick = () => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); };
                         specs.append(b);
@@ -2393,7 +2414,7 @@ export async function bootStandalone(root) {
             }
             // The utility shelf that sat here duplicated the Starting utility picker
             // above (owner, 7 Sep 2026); the plan previews the starter you chose.
-            grid.append(el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 coins · Extra life: 150 coins, once per run."));
+            grid.append(el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 Acorn Coins · Extra life: 150 Acorn Coins, once per run."));
         }
         scroll.append(grid);
         // Premium left these shelves, so something has to say where it went -
@@ -3317,12 +3338,37 @@ export async function bootStandalone(root) {
             render();
         };
         back.onclick = close;
-        sheet.append(fly);
+        if (raceBriefing) {
+            const head = el("header", "ac-briefhead"), title = el("div");
+            title.append(sheet.querySelector(".ac-kicker"), sheet.querySelector(".ac-lvlname"));
+            back.className = "ac-backbtn";
+            back.textContent = "";
+            back.append(icon(I_BACK));
+            back.setAttribute("aria-label", origin === "modes" ? "Back to Modes" : "Back to Star Chart");
+            const help = el("button", "ac-helpdot", "?");
+            help.setAttribute("aria-label", "Hyper Run instructions");
+            help.onclick = () => {
+                const briefing = sheet.querySelector(".ac-racebrief");
+                if (briefing) {
+                    briefing.tabIndex = -1;
+                    briefing.focus({ preventScroll: true });
+                    briefing.scrollIntoView({ block: "start" });
+                }
+            };
+            head.append(back, title, help);
+            sheet.prepend(head);
+            const actions = el("div", "ac-raceactions");
+            actions.append(fly);
+            sheet.append(actions);
+        }
+        else
+            sheet.append(fly);
         if (skip)
             sheet.append(skip);
         if (boostNote && skip)
             sheet.append(el("p", "ac-deny on ac-boostnote", boostNote));
-        sheet.append(back);
+        if (!raceBriefing)
+            sheet.append(back);
         wrap.append(sheet);
         wrap.onclick = (e) => { if (e.target === wrap)
             close(); };
@@ -4538,6 +4584,14 @@ export async function bootStandalone(root) {
         // music moved here from the Profile — settings and help share the
         // hub's gear button
         scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
+        const spillHelp = drawSpillFlightHelp();
+        const briefing = el("button", "ac-ghost ac-replay", "DEBRIS FIELD BRIEFING");
+        briefing.dataset.spillBriefing = "";
+        briefing.onclick = openSpillHelp;
+        spillHelp.append(briefing);
+        const fieldSelected = MODES[selectedMode]?.id === "spill";
+        if (fieldSelected)
+            scroll.append(spillHelp);
         scroll.append(el("p", "ac-kicker ac-secthead", "How to fly"));
         // the two controls, as two SEPARATE cards — tap and swipe must never
         // read as one combined instruction
@@ -4556,6 +4610,8 @@ export async function bootStandalone(root) {
         scroll.append(controls);
         scroll.append(el("p", "ac-sub ac-mid", "Glide through the gaps between planets."));
         scroll.append(el("p", "ac-sub ac-mid", "Planets bounce you \u2014 debris ends the run."));
+        if (!fieldSelected)
+            scroll.append(spillHelp);
         const item = (art, name, desc) => {
             const row = el("div", "ac-helprow");
             row.append(art);
@@ -4574,9 +4630,7 @@ export async function bootStandalone(root) {
         const spr = (bank) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[bank]?.[0] ?? null, px / 2, px / 2, px * 0.92);
         const one = (pick) => (ctx, px) => drawSpriteOn(ctx, engine.art?.[pick] ?? null, px / 2, px / 2, px * 0.92);
         item(pic(spr("acorn")), "ACORN", "Fly to earn. Spend in the Loadout.");
-        // TWO currencies, and the difference is the whole point: one is flown
-        // for, one is bought. Saying so here is cheaper than letting a pilot
-        // work it out from a price they cannot pay.
+        // Keep all three currencies together, before temporary pickups.
         item(pic((ctx, px) => {
             // the help sheet paints to canvas, so the glyph is drawn by hand here
             // from the same proportions as I_DUST rather than inlining an <svg>
@@ -4597,10 +4651,10 @@ export async function bootStandalone(root) {
             ctx.fill();
             ctx.restore();
         }), "STAR DUST", "Premium currency. 5 free every day, +25 on day 7.");
+        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "ACORN COINS", "Debris Field's run-only currency. Spend it at the Depot; it resets each run.");
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
-        item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "COINS", "Debris Field's currency. Spend it at the Depot.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");
@@ -4653,7 +4707,11 @@ export async function bootStandalone(root) {
      *  back onto the chart re-opened the very same sheet. The topmost sheet
      *  closes the way its own BACK closes it, one press at a time. */
     const closeTopSheet = () => {
-        if (spendAsk)
+        if (spillHelpOpen) {
+            closeSpillHelp();
+            return true;
+        }
+        else if (spendAsk)
             spendAsk = null;
         else if (dailyToast)
             dailyToast = null;
@@ -4699,7 +4757,7 @@ export async function bootStandalone(root) {
         // a text field owns its own Escape (the pilot name is edited in one)
         if (on && (on.tagName === "INPUT" || on.tagName === "TEXTAREA"))
             return;
-        if (!overlay.querySelector(".ac-lvlsheet:not(.ac-depotwrap)"))
+        if (!overlay.querySelector(".ac-lvlsheet:not(.ac-depotwrap), .ac-spillhelpwrap"))
             return;
         if (!closeTopSheet())
             return;
