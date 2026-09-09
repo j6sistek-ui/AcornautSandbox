@@ -2,6 +2,9 @@
 
 Validated 9 September 2026 against unchanged main
 `5aeb37c6480e3434fe84830306d50911127e9804`. Shipping art stamp: 253.
+Implementation commit: `336afd2257d13ac441d0b5e9408e1f235732fdc4`.
+The subsequent receipt commit only pins this implementation in the Studio
+manifest and this report; it does not alter any painter, motion or artwork.
 
 ## Scope and evidence
 
