@@ -7,7 +7,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // not yet an LLC - no suffix until it is registered.
 export const GAME_VERSION = "V1.0.12";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "245";
+export const ART_VER = "247";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -97,7 +97,7 @@ export const TUTORIAL_SUIT = "vanguard";
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
 // owner, 7 Sep 2026: Eclipse leans 5 forward, Volt 25
-export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12, arcflash: 0, eclipse: 5, volt: 25 };
+export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12, arcflash: 0, eclipse: 5, cryostar: 5, verdant: 5, volt: 25 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id: string) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";

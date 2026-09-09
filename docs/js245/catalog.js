@@ -51,7 +51,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 03:20 UTC";
+export const BUILD_TIME = "2026-09-09 02:44 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
@@ -86,7 +86,7 @@ export const TUTORIAL_SUIT = "vanguard";
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
 // owner, 7 Sep 2026: Eclipse leans 5 forward, Volt 25
-export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0, eclipse: 5, volt: 25 };
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0, eclipse: 5, cryostar: 5, verdant: 5, volt: 25 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";

@@ -92,3 +92,7 @@ generated file, and leave `__CACHE_VERSION__` alone.
 
 The page's Play controls point at `https://acornaut.app`, which is this repo's
 `docs/` — the two sites stay independent.
+
+## Approved September redesign
+
+The page lives in `parts/page.html`, `parts/styles.css`, `parts/app.js`, and `parts/demo.js`. Both build modes resolve the same assets and interactions. The two scrolling suit rows include all 31 catalogue entries with a larger selectable preview. The six gameplay modes use real recordings; three new desktop captures are temporary review footage pending matched-format recordings. Hero, worlds, and crew cinematic phone videos remain. Store releases are planned for Apple App Store, Google Play, Steam, and Windows as free-to-play with optional in-app purchases. The FAQ distinguishes the current browser preview from future launches.

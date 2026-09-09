@@ -1,3 +1,4 @@
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art";
 import { suitPitchFor, type SaveData } from "./save";
 import { platform } from "./platform";
 import { spillAppearance } from "./spill-appearance";
@@ -249,10 +250,16 @@ export async function bootStandalone(root: HTMLElement) {
   const throttle = el("button", "ac-throttle");
   const diveButton = el("button", "ac-dive");
   const lungeButton = el("button", "ac-lunge");
-  throttle.append(el("b", "", "▲ THROTTLE"), el("span", "", "HOLD TO RISE"));
-  diveButton.append(el("b", "", "▼ DIVE"), el("span", "", "TAP TO DESCEND"));
-  const lungeStatus = el("span");
-  lungeButton.append(el("b", "", "▶ LUNGE"), el("span", "", "FORWARD DASH"), lungeStatus);
+  for (const [kind, button] of [["dive", diveButton], ["throttle", throttle], ["lunge", lungeButton]] as const) {
+    button.innerHTML = spillControlArt(kind);
+    const box = SPILL_CONTROL_LAYOUT[kind];
+    button.style.left = `${box.x / SPILL_CONTROL_LAYOUT.width * 100}%`;
+    button.style.top = `${box.y / SPILL_CONTROL_LAYOUT.height * 100}%`;
+    button.style.width = `${box.width / SPILL_CONTROL_LAYOUT.width * 100}%`;
+    button.style.height = `${box.height / SPILL_CONTROL_LAYOUT.height * 100}%`;
+  }
+  const lungeStatus = el("span", "ac-control-status");
+  lungeButton.append(lungeStatus);
   throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
   diveButton.setAttribute("aria-label", "Dive: downward burst");
   for (const b of [throttle, diveButton, lungeButton]) {
@@ -291,7 +298,7 @@ export async function bootStandalone(root: HTMLElement) {
   } };
   diveButton.onclick = () => engine.spillDive();
   lungeButton.onclick = () => engine.spillLunge();
-  spillControls.append(throttle, diveButton, lungeButton);
+  spillControls.append(diveButton, throttle, lungeButton);
   function updateSpillControls() {
     const sp = engine.world.spill;
     const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
@@ -331,7 +338,7 @@ export async function bootStandalone(root: HTMLElement) {
     keepShelves();
     const oldGuide = !!overlay.querySelector(".ac-depotguidecard");
     const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
-    const setupScroll = overlay.querySelector(".ac-spillsetup")?.scrollTop ?? 0;
+    const setupScroll = overlay.querySelector(".ac-setup-body")?.scrollTop ?? 0;
     const setupActive = document.activeElement as HTMLElement;
     const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
       : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
@@ -400,7 +407,7 @@ export async function bootStandalone(root: HTMLElement) {
           return;
         }
         if (sp.phase === "ready" && !sp.target) {
-          const setup = drawSpillPrep(); overlay.append(setup); setup.scrollTop = setupScroll;
+          const setup = drawSpillPrep(); overlay.append(setup); const body = setup.querySelector(".ac-setup-body"); if (body) body.scrollTop = setupScroll;
           if (setupFocus) setup.querySelector<HTMLElement>(setupFocus)?.focus({ preventScroll: true });
           if (spillHelpOpen) overlay.append(spillHelpSheet());
           return;
