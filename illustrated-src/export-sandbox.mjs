@@ -128,6 +128,11 @@ shell = shell.includes('<style id="ac-spill-workshop-css">')
 shell = shell.includes('<style id="ac-star-map-css">')
   ? shell.replace(/<style id="ac-star-map-css">[\s\S]*?<\/style>/, zoneStyle)
   : shell.replace("</head>", `${zoneStyle}\n</head>`);
+// Loadout-only appearance is shared by production and beta.
+const loadoutStyle = `<style id="ac-loadout-css">${readFileSync(join(root, "illustrated-src/loadout.css"), "utf8")}</style>`;
+shell = shell.includes('<style id="ac-loadout-css">')
+  ? shell.replace(/<style id="ac-loadout-css">[\s\S]*?<\/style>/, loadoutStyle)
+  : shell.replace("</head>", `${loadoutStyle}\n</head>`);
 writeFileSync(idx, shell);
 writeFileSync(idx, readFileSync(idx, "utf8")
   .replace(/\.\/js\d+\/standalone\.js/g, `./js${ver}/standalone.js`));

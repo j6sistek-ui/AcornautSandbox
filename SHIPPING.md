@@ -133,7 +133,7 @@ fail the build. Keep source masters, exact briefs and export hashes in
 The [kit pricing rule](illustrated-src/design/shop-refresh/PRICING.md) explains
 full individual ownership credit and explicit zero-cost bundle completion.
 `verify-art.py` fails when a catalog id has no art, so a card can never
-point at nothing. At art stamp 255, `docs/art` totals 149.9 MiB, including
+point at nothing. At art stamp 257, `docs/art` totals 149.9 MiB, including
 9.59 MiB of Shop graphics. An app bundle ships this art locally; the
 historical transfer measurements above describe web loading, not the
 current packaged app size.

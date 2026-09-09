@@ -1,0 +1,4306 @@
+{
+  "profile": "isolated Playwright browser, synthetic owned wardrobe; no installed save accessed",
+  "baseline": true,
+  "baselineCommit": "d296e6bc404aaec14221a8b79186132fb4426dea",
+  "builds": [
+    {
+      "address": "http://127.0.0.1:8782/baseline/",
+      "catalogUrl": "http://127.0.0.1:8782/baseline/js254/catalog.js"
+    }
+  ],
+  "inventory": {
+    "catalog": {
+      "suits": [
+        {
+          "id": "flight",
+          "name": "Flight",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#a8641f",
+          "belly": "#f7e0bb",
+          "suit": "#c8762c",
+          "suitLite": "#eda85a",
+          "suitDark": "#8a4c14",
+          "trim": "#f6cf8a",
+          "glow": null,
+          "dust": null
+        },
+        {
+          "id": "vanguard",
+          "name": "AcorNut",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#c4783e",
+          "furDark": "#593b28",
+          "belly": "#f6e7d1",
+          "suit": "#dcdedb",
+          "suitLite": "#fff8e8",
+          "suitDark": "#28303b",
+          "trim": "#d6ae63",
+          "glow": "#85edff",
+          "dust": null
+        },
+        {
+          "id": "arcflash",
+          "name": "Arcflash",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#c9702f",
+          "furDark": "#693715",
+          "belly": "#f4d4a4",
+          "suit": "#151c28",
+          "suitLite": "#536174",
+          "suitDark": "#080d16",
+          "trim": "#2587ff",
+          "glow": "#38caff",
+          "dust": null
+        },
+        {
+          "id": "porcelain",
+          "name": "Porcelain Paragon",
+          "cost": 0,
+          "ownHead": true,
+          "headPolicy": "integrated",
+          "fixedHelmet": "Sovereign Shell",
+          "fur": "#c7ccd3",
+          "furDark": "#767e8d",
+          "belly": "#fff8e9",
+          "suit": "#efe8d7",
+          "suitLite": "#fffdf3",
+          "suitDark": "#38567b",
+          "trim": "#466bb4",
+          "glow": "#b9d8ff",
+          "dust": null
+        },
+        {
+          "id": "nacre",
+          "name": "Nacre Envoy",
+          "cost": 0,
+          "ownHead": true,
+          "headPolicy": "helmetless",
+          "fur": "#cfb1df",
+          "furDark": "#8e709f",
+          "belly": "#f5d8dc",
+          "suit": "#e4d6dc",
+          "suitLite": "#fff0df",
+          "suitDark": "#4a315d",
+          "trim": "#d4a2d8",
+          "glow": "#e5a8ed",
+          "dust": null
+        },
+        {
+          "id": "origamist",
+          "name": "Foldspace Origamist",
+          "cost": 0,
+          "ownHead": true,
+          "headPolicy": "integrated",
+          "fixedHelmet": "Facet Shell",
+          "fur": "#d5b99a",
+          "furDark": "#927555",
+          "belly": "#fff0d6",
+          "suit": "#eadcc5",
+          "suitLite": "#fff4dc",
+          "suitDark": "#444767",
+          "trim": "#d99a59",
+          "glow": "#f5bb75",
+          "dust": null
+        },
+        {
+          "id": "iontrim",
+          "name": "Ion",
+          "cost": 140,
+          "fur": "#d98f3d",
+          "furDark": "#a8641f",
+          "belly": "#f7e0bb",
+          "suit": "#1b3f5c",
+          "suitLite": "#3d7fa8",
+          "suitDark": "#0e2436",
+          "trim": "#4ad8ff",
+          "glow": "#4ad8ff",
+          "dust": "#8fe9ff"
+        },
+        {
+          "id": "copper",
+          "name": "Copper",
+          "cost": 50,
+          "fur": "#a85f28",
+          "furDark": "#663409",
+          "belly": "#e6bd83",
+          "suit": "#8c4718",
+          "suitLite": "#f2ab62",
+          "suitDark": "#421f06",
+          "trim": "#ffdda8",
+          "glow": "#ff8a2a",
+          "dust": "#ffb45c"
+        },
+        {
+          "id": "frost",
+          "name": "Frost",
+          "cost": 380,
+          "fur": "#e2ecf6",
+          "furDark": "#a9bccf",
+          "belly": "#ffffff",
+          "suit": "#6f9dc4",
+          "suitLite": "#a9d4ef",
+          "suitDark": "#40688a",
+          "trim": "#eaf7ff",
+          "glow": "#9fe4ff",
+          "dust": "#dff5ff"
+        },
+        {
+          "id": "voidsuit",
+          "name": "Void",
+          "cost": 240,
+          "fur": "#544a63",
+          "furDark": "#312a3d",
+          "belly": "#8d7fa0",
+          "suit": "#241d33",
+          "suitLite": "#4f4270",
+          "suitDark": "#100c18",
+          "trim": "#d4af37",
+          "glow": "#b45cff",
+          "dust": "#e7b6ff"
+        },
+        {
+          "id": "ember",
+          "name": "Ember",
+          "cost": 90,
+          "fur": "#b5722f",
+          "furDark": "#7c481a",
+          "belly": "#eccb96",
+          "suit": "#3a2a26",
+          "suitLite": "#7a4a3a",
+          "suitDark": "#1e1412",
+          "trim": "#ff7a2e",
+          "glow": "#ff5a1e",
+          "dust": "#ffb066"
+        },
+        {
+          "id": "robo",
+          "name": "Robo",
+          "cost": 0,
+          "robo": true,
+          "fur": "#9aa6b4",
+          "furDark": "#525d6c",
+          "belly": "#cfd8e2",
+          "suit": "#37414f",
+          "suitLite": "#7f93a6",
+          "suitDark": "#1d242e",
+          "trim": "#35e0ff",
+          "glow": "#35e0ff",
+          "dust": "#9be8ff"
+        },
+        {
+          "id": "alien",
+          "name": "Alien",
+          "cost": 0,
+          "alien": true,
+          "ownHead": true,
+          "fur": "#7ed957",
+          "furDark": "#3e8a2a",
+          "belly": "#d6f7b0",
+          "suit": "#2e6b5a",
+          "suitLite": "#57b09a",
+          "suitDark": "#173a2e",
+          "trim": "#c8ff6a",
+          "glow": "#7dff4d",
+          "dust": "#b6ff8a"
+        },
+        {
+          "id": "ghost",
+          "name": "Ghost",
+          "cost": 0,
+          "ghost": true,
+          "fur": "#dfe9f5",
+          "furDark": "#9fb4cf",
+          "belly": "#ffffff",
+          "suit": "#b9c8e0",
+          "suitLite": "#e8f0fb",
+          "suitDark": "#7f93b3",
+          "trim": "#bfe9ff",
+          "glow": "#9fd8ff",
+          "dust": "#dff2ff"
+        },
+        {
+          "id": "bigbooty",
+          "name": "Big Booty",
+          "cost": 0,
+          "booty": true,
+          "fur": "#e09a45",
+          "furDark": "#a86a1f",
+          "belly": "#ffe9c4",
+          "suit": "#8a3fd4",
+          "suitLite": "#b876ff",
+          "suitDark": "#54258c",
+          "trim": "#ffd23f",
+          "glow": "#ffb84d",
+          "dust": "#ffe08a"
+        },
+        {
+          "id": "catsuit",
+          "name": "Cat",
+          "cost": 0,
+          "cat": true,
+          "fur": "#e0863a",
+          "furDark": "#a85a1f",
+          "belly": "#f3d5a8",
+          "suit": "#d1712a",
+          "suitLite": "#f0a256",
+          "suitDark": "#8a4413",
+          "trim": "#cfd8e0",
+          "glow": null,
+          "dust": null
+        },
+        {
+          "id": "raccoon",
+          "name": "Bandit",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#8f8a86",
+          "furDark": "#3a3532",
+          "belly": "#e8e2da",
+          "suit": "#d7dde3",
+          "suitLite": "#ffffff",
+          "suitDark": "#5c6672",
+          "trim": "#33c8ff",
+          "glow": "#38d0ff",
+          "dust": "#a8ecff"
+        },
+        {
+          "id": "ferret",
+          "name": "Noodle",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#6b4a3a",
+          "furDark": "#3b2418",
+          "belly": "#f1e6d6",
+          "suit": "#f2b21c",
+          "suitLite": "#ffd75a",
+          "suitDark": "#8a5f0a",
+          "trim": "#2b2b2b",
+          "glow": "#ffc83a",
+          "dust": "#ffe08a"
+        },
+        {
+          "id": "hedgehog",
+          "name": "Quill",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#8a6a48",
+          "furDark": "#3f2b18",
+          "belly": "#e9d6bd",
+          "suit": "#6f8f4a",
+          "suitLite": "#a8c46e",
+          "suitDark": "#37502a",
+          "trim": "#ff9a2a",
+          "glow": "#ffa53a",
+          "dust": "#ffd28a"
+        },
+        {
+          "id": "gemmie",
+          "name": "Gemmie",
+          "cost": 0,
+          "fur": "#e6cdf2",
+          "furDark": "#a98cc4",
+          "belly": "#ffffff",
+          "suit": "#d9c3ea",
+          "suitLite": "#ffffff",
+          "suitDark": "#8f7aa8",
+          "trim": "#a8e6ff",
+          "glow": "#ffb8f0",
+          "dust": "#d8f4ff"
+        },
+        {
+          "id": "sammie",
+          "name": "Sammie",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#a8641f",
+          "belly": "#f7e0bb",
+          "suit": "#5e1418",
+          "suitLite": "#a83a2e",
+          "suitDark": "#2a080a",
+          "trim": "#d4af37",
+          "glow": null,
+          "dust": null
+        },
+        {
+          "id": "seraph",
+          "name": "Seraph",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#a8641f",
+          "belly": "#fff6e2",
+          "suit": "#f2ead8",
+          "suitLite": "#ffffff",
+          "suitDark": "#b8a882",
+          "trim": "#e8c66a",
+          "glow": "#ffe9a8",
+          "dust": "#fff4cf"
+        },
+        {
+          "id": "leviathan",
+          "name": "Leviathan",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#a8641f",
+          "belly": "#f2e0c0",
+          "suit": "#127f7d",
+          "suitLite": "#3fd8cf",
+          "suitDark": "#06413f",
+          "trim": "#5ce6dc",
+          "glow": "#4fe8dd",
+          "dust": "#a8fff6"
+        },
+        {
+          "id": "verdant",
+          "name": "Verdant",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#0c6844",
+          "suitLite": "#45b977",
+          "suitDark": "#063e2a",
+          "trim": "#d7b85a",
+          "glow": "#38ff9a",
+          "dust": "#a8ffd1"
+        },
+        {
+          "id": "cryostar",
+          "name": "Cryostar",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#eaf6ff",
+          "suitLite": "#ffffff",
+          "suitDark": "#2f86ba",
+          "trim": "#56ceff",
+          "glow": "#54d8ff",
+          "dust": "#d8f8ff"
+        },
+        {
+          "id": "eclipse",
+          "name": "Eclipse",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#171126",
+          "suitLite": "#503274",
+          "suitDark": "#090611",
+          "trim": "#c98a72",
+          "glow": "#b552ff",
+          "dust": "#e2b5ff"
+        },
+        {
+          "id": "volt",
+          "name": "Volt",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#8a7434",
+          "furDark": "#4a3f14",
+          "belly": "#c9b06a",
+          "suit": "#46421a",
+          "suitLite": "#6f6220",
+          "suitDark": "#1d1d04",
+          "trim": "#6eab3c",
+          "glow": "#54ff2e",
+          "dust": "#a8ff7a"
+        },
+        {
+          "id": "cinderforge",
+          "name": "Cinderforge",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#2a1114",
+          "suitLite": "#7e2f27",
+          "suitDark": "#12080a",
+          "trim": "#ff4b2f",
+          "glow": "#ff3b22",
+          "dust": "#ff9470"
+        },
+        {
+          "id": "groveguard",
+          "name": "Groveguard",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#2e5e2d",
+          "suitLite": "#719452",
+          "suitDark": "#18351c",
+          "trim": "#c6a75d",
+          "glow": "#65dca1",
+          "dust": "#bff0ac"
+        },
+        {
+          "id": "cosmic",
+          "name": "Cosmic",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#6b4b91",
+          "suitLite": "#b978d3",
+          "suitDark": "#30214d",
+          "trim": "#e4b8ff",
+          "glow": "#d687ff",
+          "dust": "#f0cfff"
+        },
+        {
+          "id": "briellacat",
+          "name": "Briella's Cat",
+          "cost": 999,
+          "ownHead": true,
+          "fur": "#f4f3f0",
+          "furDark": "#b8b6b2",
+          "belly": "#ffffff",
+          "suit": "#ecebe8",
+          "suitLite": "#ffffff",
+          "suitDark": "#8c8a86",
+          "trim": "#2a2a2a",
+          "glow": null,
+          "dust": null
+        },
+        {
+          "id": "sunforged",
+          "name": "Sunforged",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#5b4021",
+          "suitLite": "#b17b35",
+          "suitDark": "#2a1d11",
+          "trim": "#ffb83e",
+          "glow": "#ffad2b",
+          "dust": "#ffd88a"
+        },
+        {
+          "id": "abyssal",
+          "name": "Abyssal",
+          "cost": 0,
+          "fur": "#d98f3d",
+          "furDark": "#9e5719",
+          "belly": "#f8e4bd",
+          "suit": "#0c4d76",
+          "suitLite": "#178eb4",
+          "suitDark": "#06263e",
+          "trim": "#48d9ff",
+          "glow": "#39dcff",
+          "dust": "#a8f2ff"
+        },
+        {
+          "id": "cyber",
+          "name": "Cyber",
+          "cost": 0,
+          "ownHead": true,
+          "fur": "#9b3beb",
+          "furDark": "#2511aa",
+          "belly": "#e2cff3",
+          "suit": "#4e29b6",
+          "suitLite": "#d2a7f2",
+          "suitDark": "#0f0646",
+          "trim": "#ff3df0",
+          "glow": "#7030df",
+          "dust": "#c8a8ff"
+        }
+      ],
+      "helmets": [
+        {
+          "id": "clear",
+          "name": "Clear",
+          "cost": 0,
+          "visor": "#bcd8f4",
+          "tint": 0.16,
+          "rim": "#cfd8e4",
+          "trim": "#8fa0b4",
+          "glow": null
+        },
+        {
+          "id": "ion",
+          "name": "Ion",
+          "cost": 15,
+          "visor": "#4ad8ff",
+          "tint": 0.2,
+          "rim": "#4ad8ff",
+          "trim": "#1b6f92",
+          "glow": "#4ad8ff"
+        },
+        {
+          "id": "solar",
+          "name": "Solar",
+          "cost": 30,
+          "visor": "#ffc46b",
+          "tint": 0.2,
+          "rim": "#ffb040",
+          "trim": "#a86a18",
+          "glow": "#ffa32e"
+        },
+        {
+          "id": "nebula",
+          "name": "Nebula",
+          "cost": 50,
+          "visor": "#c86bff",
+          "tint": 0.22,
+          "rim": "#e070ff",
+          "trim": "#6a2a9a",
+          "glow": "#c060ff"
+        },
+        {
+          "id": "lunar",
+          "name": "Lunar",
+          "cost": 70,
+          "visor": "#d8e2f0",
+          "tint": 0.18,
+          "rim": "#b6c2d4",
+          "trim": "#6f7c8e",
+          "glow": "#cfe0ff"
+        },
+        {
+          "id": "void",
+          "name": "Void",
+          "cost": 90,
+          "visor": "#2a2438",
+          "tint": 0.3,
+          "rim": "#d4af37",
+          "trim": "#1a1622",
+          "glow": "#a855f7"
+        },
+        {
+          "id": "comet",
+          "name": "Comet",
+          "cost": 120,
+          "visor": "#ff8a4a",
+          "tint": 0.2,
+          "rim": "#ff6a28",
+          "trim": "#8a2f0c",
+          "glow": "#ff7a30"
+        },
+        {
+          "id": "cherry",
+          "name": "Cherry",
+          "cost": 150,
+          "visor": "#ff9ec4",
+          "tint": 0.2,
+          "rim": "#ff8ab0",
+          "trim": "#a83a68",
+          "glow": "#ff7ab0"
+        },
+        {
+          "id": "royal",
+          "name": "Royal",
+          "cost": 200,
+          "visor": "#7fe0cf",
+          "tint": 0.18,
+          "rim": "#d4af37",
+          "trim": "#8a6a12",
+          "glow": "#ffd76a"
+        },
+        {
+          "id": "aurora",
+          "name": "Aurora",
+          "cost": 300,
+          "visor": "#4de8b8",
+          "tint": 0.18,
+          "rim": "#57e6c2",
+          "trim": "#1c7a5e",
+          "glow": "#5dffd0"
+        },
+        {
+          "id": "meteor",
+          "name": "Meteor",
+          "cost": 400,
+          "visor": "#c98a4e",
+          "tint": 0.2,
+          "rim": "#b5713a",
+          "trim": "#6e3f18",
+          "glow": "#ff9d47"
+        },
+        {
+          "id": "chrono",
+          "name": "Chrono",
+          "cost": 500,
+          "visor": "#e8d9a8",
+          "tint": 0.16,
+          "rim": "#c9a94f",
+          "trim": "#7a6428",
+          "glow": "#ffe27a"
+        },
+        {
+          "id": "gemmie",
+          "name": "Opal",
+          "cost": 0,
+          "visor": "#eddcff",
+          "tint": 0.16,
+          "rim": "#e0c8ff",
+          "trim": "#9a86b8",
+          "glow": "#ffb8f0"
+        },
+        {
+          "id": "phoenix",
+          "name": "Phoenix",
+          "cost": 175,
+          "visor": "#ffd2b0",
+          "tint": 0.18,
+          "rim": "#c4362a",
+          "trim": "#7a1d14",
+          "glow": "#ff6a1e"
+        },
+        {
+          "id": "sammie",
+          "name": "Samurai",
+          "cost": 0,
+          "visor": "#e6dccf",
+          "tint": 0.18,
+          "rim": "#7d1b20",
+          "trim": "#d4af37",
+          "glow": null
+        },
+        {
+          "id": "seraph",
+          "name": "Seraph",
+          "cost": 0,
+          "visor": "#fff4d8",
+          "tint": 0.14,
+          "rim": "#e8c66a",
+          "trim": "#a8853a",
+          "glow": "#ffe9a8"
+        },
+        {
+          "id": "chronarch",
+          "name": "Chronarch",
+          "cost": 0,
+          "visor": "#f0e6d2",
+          "tint": 0.16,
+          "rim": "#8a5a2a",
+          "trim": "#d4af37",
+          "glow": null
+        },
+        {
+          "id": "leviathan",
+          "suitOnly": "leviathan",
+          "name": "Leviathan",
+          "cost": 0,
+          "visor": "#d6fbff",
+          "tint": 0.18,
+          "rim": "#1c8f96",
+          "trim": "#0d5257",
+          "glow": "#3fe8f0"
+        },
+        {
+          "id": "princess",
+          "name": "Rose",
+          "cost": 350,
+          "visor": "#fdeef6",
+          "tint": 0.16,
+          "rim": "#6b3f9e",
+          "trim": "#c0348a",
+          "glow": "#ff8ad0"
+        },
+        {
+          "id": "verdant",
+          "name": "Verdant",
+          "cost": 0,
+          "visor": "#d8fff3",
+          "tint": 0.14,
+          "rim": "#d7b85a",
+          "trim": "#087a50",
+          "glow": "#38ff9a"
+        },
+        {
+          "id": "cryostar",
+          "name": "Cryostar",
+          "cost": 0,
+          "visor": "#dff8ff",
+          "tint": 0.15,
+          "rim": "#dcecf7",
+          "trim": "#168bd1",
+          "glow": "#54d8ff"
+        },
+        {
+          "id": "eclipse",
+          "name": "Eclipse",
+          "cost": 0,
+          "visor": "#eee6ff",
+          "tint": 0.17,
+          "rim": "#c98a72",
+          "trim": "#43206f",
+          "glow": "#b552ff"
+        },
+        {
+          "id": "cinderforge",
+          "name": "Cinderforge",
+          "cost": 0,
+          "visor": "#ff4a27",
+          "tint": 0.28,
+          "rim": "#8d211d",
+          "trim": "#2c1012",
+          "glow": "#ff3a20"
+        },
+        {
+          "id": "groveguard",
+          "suitOnly": "groveguard",
+          "opaqueVisor": true,
+          "name": "Groveguard",
+          "cost": 0,
+          "visor": "#7de5d3",
+          "tint": 0.18,
+          "rim": "#b89b58",
+          "trim": "#3e5b3d",
+          "glow": "#63e6d1"
+        },
+        {
+          "id": "cosmic",
+          "name": "Cosmic",
+          "cost": 0,
+          "visor": "#c8a7ff",
+          "tint": 0.2,
+          "rim": "#e0c8ff",
+          "trim": "#9c78bb",
+          "glow": "#c87dff"
+        },
+        {
+          "id": "sunforged",
+          "suitOnly": "sunforged",
+          "opaqueVisor": true,
+          "name": "Sunforged",
+          "cost": 0,
+          "visor": "#ffbf36",
+          "tint": 0.22,
+          "rim": "#c08a33",
+          "trim": "#4c351d",
+          "glow": "#ffb52e"
+        },
+        {
+          "id": "abyssal",
+          "name": "Abyssal",
+          "cost": 0,
+          "visor": "#4de8ff",
+          "tint": 0.24,
+          "rim": "#50cde8",
+          "trim": "#184c66",
+          "glow": "#39dcff"
+        },
+        {
+          "id": "amethyst",
+          "name": "Amethyst",
+          "cost": 0,
+          "visor": "#d8b5ff",
+          "tint": 0.2,
+          "rim": "#d3a94e",
+          "trim": "#4a2a76",
+          "glow": "#bf66ff"
+        },
+        {
+          "id": "ivoryguard",
+          "name": "Ivoryguard",
+          "cost": 0,
+          "visor": "#d9f4ff",
+          "tint": 0.17,
+          "rim": "#d8e9f1",
+          "trim": "#8a9ba8",
+          "glow": "#79d9ff"
+        },
+        {
+          "id": "reactor",
+          "name": "Reactor",
+          "cost": 0,
+          "visor": "#68ff4a",
+          "tint": 0.22,
+          "rim": "#b6ff5c",
+          "trim": "#6d7e28",
+          "glow": "#66ff32"
+        }
+      ],
+      "trails": [
+        {
+          "id": "sparks",
+          "name": "Rocket Sparks",
+          "cost": 0,
+          "colors": [
+            "#ffe080",
+            "#ff8030",
+            "#ff4020"
+          ]
+        },
+        {
+          "id": "vanguardwake",
+          "name": "AcorNut Wake",
+          "cost": 0,
+          "colors": [
+            "#85edff",
+            "#edc780",
+            "#fff1d0"
+          ]
+        },
+        {
+          "id": "arcflashwake",
+          "name": "Arcflash Wake",
+          "cost": 0,
+          "colors": [
+            "#dcfaff",
+            "#36c8ff",
+            "#155cff"
+          ]
+        },
+        {
+          "id": "cinderforgewake",
+          "name": "Molten Mantle",
+          "cost": 0,
+          "colors": [
+            "#fff4bb",
+            "#ff951f",
+            "#cb2718"
+          ]
+        },
+        {
+          "id": "groveguardwake",
+          "name": "Verdant Slipstream",
+          "cost": 0,
+          "colors": [
+            "#fff5b4",
+            "#91e89c",
+            "#247c55"
+          ]
+        },
+        {
+          "id": "cosmicwake",
+          "name": "Astral Veil",
+          "cost": 0,
+          "colors": [
+            "#f3d9ff",
+            "#b382ed",
+            "#556dec"
+          ]
+        },
+        {
+          "id": "sunforgedwake",
+          "name": "Solar Corona",
+          "cost": 0,
+          "colors": [
+            "#fff8d1",
+            "#ffd06c",
+            "#e68521"
+          ]
+        },
+        {
+          "id": "abyssalwake",
+          "name": "Abyssal Current",
+          "cost": 0,
+          "colors": [
+            "#d8ffff",
+            "#58dfe9",
+            "#1676a1"
+          ]
+        },
+        {
+          "id": "porcelainwake",
+          "name": "Cobalt Filigree",
+          "cost": 0,
+          "colors": [
+            "#fff9ef",
+            "#b9d8ff",
+            "#325cba"
+          ]
+        },
+        {
+          "id": "nacrewake",
+          "name": "Pearl Tide",
+          "cost": 0,
+          "colors": [
+            "#fff0df",
+            "#e5a8ed",
+            "#7771c7"
+          ]
+        },
+        {
+          "id": "origamistwake",
+          "name": "Foldspace Ribbon",
+          "cost": 0,
+          "colors": [
+            "#fff4dc",
+            "#f5bb75",
+            "#717aca"
+          ]
+        },
+        {
+          "id": "ion",
+          "name": "Ion Stream",
+          "cost": 0,
+          "colors": [
+            "#b8f4ff",
+            "#4ad8ff",
+            "#1b6f92"
+          ]
+        },
+        {
+          "id": "bubble",
+          "name": "Bubble Jets",
+          "cost": 0,
+          "colors": [
+            "#d8f6ff",
+            "#7ad8ff",
+            "#3aa0c8"
+          ]
+        },
+        {
+          "id": "bloom",
+          "name": "Nebula Bloom",
+          "cost": 0,
+          "colors": [
+            "#ffb0ff",
+            "#c060ff",
+            "#6a2a9a"
+          ]
+        },
+        {
+          "id": "comet",
+          "name": "Comet Booster",
+          "cost": 0,
+          "colors": [
+            "#ffd060",
+            "#ff6a28",
+            "#8a2f0c"
+          ]
+        },
+        {
+          "id": "prism",
+          "name": "Prism Shards",
+          "cost": 0,
+          "colors": [
+            "#ff6ad2",
+            "#6affd2",
+            "#6ad2ff"
+          ]
+        },
+        {
+          "id": "plasma",
+          "name": "Plasma Arc",
+          "cost": 0,
+          "colors": [
+            "#f4e8ff",
+            "#b45cff",
+            "#4a2080"
+          ]
+        },
+        {
+          "id": "galaxy",
+          "name": "Galaxy Dust",
+          "cost": 0,
+          "colors": [
+            "#fff3b8",
+            "#8fb8ff",
+            "#3d4fa8"
+          ]
+        },
+        {
+          "id": "aurora",
+          "name": "Aurora Ribbon",
+          "cost": 0,
+          "colors": [
+            "#5dffd0",
+            "#7fe0cf",
+            "#c86bff"
+          ]
+        },
+        {
+          "id": "frost",
+          "name": "Frostbite",
+          "cost": 0,
+          "colors": [
+            "#eaf7ff",
+            "#9fe4ff",
+            "#6f9dc4"
+          ]
+        },
+        {
+          "id": "voidsmoke",
+          "name": "Void Smoke",
+          "cost": 0,
+          "colors": [
+            "#c8b8e0",
+            "#4f4270",
+            "#241d33"
+          ]
+        },
+        {
+          "id": "supernova",
+          "name": "Supernova",
+          "cost": 0,
+          "colors": [
+            "#fff8d0",
+            "#ff9d47",
+            "#ff4020"
+          ]
+        },
+        {
+          "id": "opalfeather",
+          "name": "Opal Feather",
+          "cost": 0,
+          "colors": [
+            "#fff5ef",
+            "#7fffe0",
+            "#8fb8ff"
+          ]
+        },
+        {
+          "id": "clockwork",
+          "name": "Clockwork Wake",
+          "cost": 0,
+          "colors": [
+            "#fff0b8",
+            "#d89a3a",
+            "#7a4a18"
+          ]
+        },
+        {
+          "id": "celestialtide",
+          "name": "Celestial Tide",
+          "cost": 0,
+          "colors": [
+            "#e8f4ff",
+            "#75caff",
+            "#745cff"
+          ]
+        },
+        {
+          "id": "phoenixplume",
+          "name": "Phoenix Plumage",
+          "cost": 0,
+          "colors": [
+            "#fff2a8",
+            "#ff9b42",
+            "#d9366e"
+          ]
+        },
+        {
+          "id": "verdantflourish",
+          "name": "Verdant Flourish",
+          "cost": 0,
+          "colors": [
+            "#e7ffd5",
+            "#55e89d",
+            "#16866a"
+          ]
+        },
+        {
+          "id": "eclipseglyph",
+          "name": "Eclipse Sigils",
+          "cost": 0,
+          "colors": [
+            "#ffe2bd",
+            "#c77dff",
+            "#35204f"
+          ]
+        }
+      ],
+      "pals": [
+        {
+          "id": "none",
+          "name": "None",
+          "tag": "SOLO",
+          "desc": "Fly solo. The classic run."
+        },
+        {
+          "id": "switchback",
+          "name": "Stopwatch",
+          "tag": "COMPANION",
+          "desc": "Tap Toggles Scroll Speed",
+          "art": "switchback"
+        },
+        {
+          "id": "bee",
+          "name": "Astrolobee",
+          "tag": "VANILLA",
+          "desc": "Powerup/Acorns Disabled",
+          "art": "bee"
+        },
+        {
+          "id": "buddy",
+          "name": "Acorn",
+          "tag": "MAGNET",
+          "desc": "Magnet Effect",
+          "art": "buddy"
+        },
+        {
+          "id": "voidjelly",
+          "name": "Jelly",
+          "tag": "SOFT BOUNCE",
+          "desc": "Bounce Softer",
+          "art": "voidjelly"
+        },
+        {
+          "id": "cometsprite",
+          "name": "Comet",
+          "tag": "LONG SLOW",
+          "desc": "2x Freeze Duration",
+          "art": "cometsprite"
+        },
+        {
+          "id": "meteorcore",
+          "name": "Meteor Core",
+          "tag": "2X SPECIALS",
+          "desc": "2x Power Ups",
+          "art": "meteorcore"
+        },
+        {
+          "id": "pocketmoon",
+          "name": "Moon",
+          "tag": "LOW GRAV",
+          "desc": "Lower Gravity",
+          "art": "pocketmoon"
+        },
+        {
+          "id": "ufo",
+          "name": "UFO",
+          "tag": "SHIELD UP",
+          "desc": "Start with Shield",
+          "art": "ufo"
+        },
+        {
+          "id": "nutsack",
+          "name": "Nut-Sack",
+          "tag": "2X NUTS",
+          "desc": "2x Acorns but the sack is heavy",
+          "art": "nutsack"
+        },
+        {
+          "id": "starpup",
+          "name": "Star Child",
+          "tag": "LONG GOLD",
+          "desc": "Double Golden Effect",
+          "art": "starpup"
+        },
+        {
+          "id": "tinbot",
+          "name": "TinTin",
+          "tag": "NO HOLES",
+          "desc": "Disables Blackholes",
+          "art": "tinbot"
+        },
+        {
+          "id": "wisp",
+          "name": "Wisp",
+          "tag": "GATE DRIFT",
+          "desc": "More gate movement",
+          "art": "wisp"
+        },
+        {
+          "id": "prismwing",
+          "name": "Prismwing",
+          "tag": "HUE SHIFT",
+          "desc": "Planet Bounces Repaint Sky",
+          "art": "prismwing"
+        },
+        {
+          "id": "clockling",
+          "name": "TurClock",
+          "tag": "TIME SLIP",
+          "desc": "Scroll Speed Drift",
+          "art": "clockling"
+        },
+        {
+          "id": "nightglider",
+          "name": "Nightglider",
+          "tag": "STEADY GATES",
+          "desc": "Gate Drift Off",
+          "art": "nightglider"
+        },
+        {
+          "id": "magnetar",
+          "name": "Magnetar",
+          "tag": "FLIPPED",
+          "desc": "Upside Down World",
+          "art": "magnetar"
+        },
+        {
+          "id": "babyalien",
+          "name": "Baby Alien",
+          "tag": "MINI GAPS",
+          "desc": "Mini Gaps",
+          "art": "babyalien"
+        },
+        {
+          "id": "satellite",
+          "name": "Satellite",
+          "tag": "FOG 100%",
+          "desc": "Visibility Reduced",
+          "art": "satellite"
+        },
+        {
+          "id": "astrafox",
+          "name": "AstraFox",
+          "tag": "WILD GATES",
+          "desc": "Wild Gate Sway",
+          "art": "astrafox"
+        },
+        {
+          "id": "spacepuppy",
+          "name": "Space Puppy",
+          "tag": "BOUNCE HOUSE",
+          "desc": "Bounce House",
+          "art": "spacepuppy"
+        }
+      ]
+    },
+    "tabs": {
+      "suits": [
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "Back to home",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"title\")"
+        },
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "How to fly",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"help\")"
+        },
+        {
+          "focus": "",
+          "text": "▴",
+          "ariaLabel": "Shrink the preview",
+          "title": "Double-tap the case, or tap here",
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); }"
+        },
+        {
+          "focus": "",
+          "text": "◈SHIELD NEXT RUN · 25",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); spend(arm, \"a shield for your next run\", MOD_SHIELD_COST, false, () => engine.toggleMod(\"shield\"), \"arm\"); }"
+        },
+        {
+          "focus": "tab:suits",
+          "text": "SUITS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:helmets",
+          "text": "HELMETS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:trails",
+          "text": "TRAILS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:pals",
+          "text": "PALS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:ship",
+          "text": "SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "",
+          "text": "≡",
+          "ariaLabel": null,
+          "title": "Side-scrolling rows",
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { engine.setShelfGrid(grid); render(); }"
+        },
+        {
+          "focus": "",
+          "text": "▦",
+          "ariaLabel": null,
+          "title": "Grid",
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { engine.setShelfGrid(grid); render(); }"
+        },
+        {
+          "focus": "suit:vanguard",
+          "text": "AcorNut OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:flight",
+          "text": "Flight OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:iontrim",
+          "text": "Ion OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:copper",
+          "text": "Copper OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:frost",
+          "text": "Frost OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:voidsuit",
+          "text": "Void OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:ember",
+          "text": "Ember OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:ghost",
+          "text": "Ghost OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:robo",
+          "text": "Robo OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:alien",
+          "text": "Alien OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:bigbooty",
+          "text": "Big Booty OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:volt",
+          "text": "Volt OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:cyber",
+          "text": "Cyber OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:cryostar",
+          "text": "Cryostar OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:verdant",
+          "text": "Verdant OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:eclipse",
+          "text": "Eclipse OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:gemmie",
+          "text": "Gemmie OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:sammie",
+          "text": "Sammie OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:seraph",
+          "text": "Seraph OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:leviathan",
+          "text": "Leviathan OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:arcflash",
+          "text": "Arcflash OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:catsuit",
+          "text": "Cat OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:briellacat",
+          "text": "Briella's Cat OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:raccoon",
+          "text": "Bandit OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:ferret",
+          "text": "Noodle OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:hedgehog",
+          "text": "Quill OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:cinderforge",
+          "text": "Cinderforge OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:groveguard",
+          "text": "Groveguard OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:cosmic",
+          "text": "Cosmic OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:sunforged",
+          "text": "Sunforged OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:abyssal",
+          "text": "Abyssal OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:porcelain",
+          "text": "Porcelain Paragon OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:nacre",
+          "text": "Nacre Envoy OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "suit:origamist",
+          "text": "Foldspace Origamist OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!premium || owned) spend(b, u.name, u.cost, owned, () => engine.buySuit(u.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "",
+          "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"shop\")"
+        }
+      ],
+      "helmets": [
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "Back to home",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"title\")"
+        },
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "How to fly",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"help\")"
+        },
+        {
+          "focus": "",
+          "text": "▴",
+          "ariaLabel": "Shrink the preview",
+          "title": "Double-tap the case, or tap here",
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); }"
+        },
+        {
+          "focus": "",
+          "text": "◈SHIELD NEXT RUN · 25",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); spend(arm, \"a shield for your next run\", MOD_SHIELD_COST, false, () => engine.toggleMod(\"shield\"), \"arm\"); }"
+        },
+        {
+          "focus": "tab:suits",
+          "text": "SUITS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:helmets",
+          "text": "HELMETS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:trails",
+          "text": "TRAILS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:pals",
+          "text": "PALS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:ship",
+          "text": "SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "",
+          "text": "≡",
+          "ariaLabel": null,
+          "title": "Side-scrolling rows",
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { engine.setShelfGrid(grid); render(); }"
+        },
+        {
+          "focus": "",
+          "text": "▦",
+          "ariaLabel": null,
+          "title": "Grid",
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { engine.setShelfGrid(grid); render(); }"
+        },
+        {
+          "focus": "helm:clear",
+          "text": "Clear OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:lunar",
+          "text": "Lunar OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:gemmie",
+          "text": "Opal OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:phoenix",
+          "text": "Phoenix OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:sammie",
+          "text": "Samurai OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:seraph",
+          "text": "Seraph OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:chronarch",
+          "text": "Chronarch OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:ion",
+          "text": "Ion OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:solar",
+          "text": "Solar OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:void",
+          "text": "Void OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:comet",
+          "text": "Comet OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:cherry",
+          "text": "Cherry OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:meteor",
+          "text": "Meteor OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:chrono",
+          "text": "Chrono OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:amethyst",
+          "text": "Amethyst OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:reactor",
+          "text": "Reactor OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:nebula",
+          "text": "Nebula OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:royal",
+          "text": "Royal OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:aurora",
+          "text": "Aurora OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:princess",
+          "text": "Rose OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:verdant",
+          "text": "Verdant OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:cryostar",
+          "text": "Cryostar OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:eclipse",
+          "text": "Eclipse OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:cinderforge",
+          "text": "Cinderforge OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:cosmic",
+          "text": "Cosmic OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:abyssal",
+          "text": "Abyssal OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "helm:ivoryguard",
+          "text": "Ivoryguard OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (!locked && open && (!premium || owned)) spend(b, h.name, h.cost, owned, () => engine.buyHelmet(h.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "",
+          "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"shop\")"
+        }
+      ],
+      "trails": [
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "Back to home",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"title\")"
+        },
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "How to fly",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"help\")"
+        },
+        {
+          "focus": "",
+          "text": "▴",
+          "ariaLabel": "Shrink the preview",
+          "title": "Double-tap the case, or tap here",
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); }"
+        },
+        {
+          "focus": "",
+          "text": "◈SHIELD NEXT RUN · 25",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); spend(arm, \"a shield for your next run\", MOD_SHIELD_COST, false, () => engine.toggleMod(\"shield\"), \"arm\"); }"
+        },
+        {
+          "focus": "tab:suits",
+          "text": "SUITS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:helmets",
+          "text": "HELMETS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:trails",
+          "text": "TRAILS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:pals",
+          "text": "PALS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:ship",
+          "text": "SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "trail:sparks",
+          "text": "Rocket Sparks OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:ion",
+          "text": "Ion Stream OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:bubble",
+          "text": "Bubble Jets OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:bloom",
+          "text": "Nebula Bloom OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:comet",
+          "text": "Comet Booster OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:prism",
+          "text": "Prism Shards OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:plasma",
+          "text": "Plasma Arc OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:galaxy",
+          "text": "Galaxy Dust OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:aurora",
+          "text": "Aurora Ribbon OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:frost",
+          "text": "Frostbite OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:voidsmoke",
+          "text": "Void Smoke OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:supernova",
+          "text": "Supernova OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:opalfeather",
+          "text": "Opal Feather OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:clockwork",
+          "text": "Clockwork Wake OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:celestialtide",
+          "text": "Celestial Tide OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:phoenixplume",
+          "text": "Phoenix Plumage OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:verdantflourish",
+          "text": "Verdant Flourish OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "trail:eclipseglyph",
+          "text": "Eclipse Sigils OWNED☆",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open && compatible) tx(b, () => engine.buyTrail(t.id), t.cost); }"
+        },
+        {
+          "focus": "",
+          "text": "☆",
+          "ariaLabel": "Add to favourites",
+          "title": null,
+          "disabled": false,
+          "role": "button",
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": null
+        },
+        {
+          "focus": "",
+          "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"shop\")"
+        }
+      ],
+      "pals": [
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "Back to home",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"title\")"
+        },
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "How to fly",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"help\")"
+        },
+        {
+          "focus": "",
+          "text": "▴",
+          "ariaLabel": "Shrink the preview",
+          "title": "Double-tap the case, or tap here",
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); }"
+        },
+        {
+          "focus": "",
+          "text": "◈SHIELD NEXT RUN · 25",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); spend(arm, \"a shield for your next run\", MOD_SHIELD_COST, false, () => engine.toggleMod(\"shield\"), \"arm\"); }"
+        },
+        {
+          "focus": "tab:suits",
+          "text": "SUITS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:helmets",
+          "text": "HELMETS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:trails",
+          "text": "TRAILS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:pals",
+          "text": "PALS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:ship",
+          "text": "SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "mod:noPalFx",
+          "text": "Pal Effects OffFly with any companion for the look alone - none of its effect.",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": "switch",
+          "pressed": null,
+          "checked": "false",
+          "clickHandler": "() => { engine.setMod(\"noPalFx\"); fx.setAttribute(\"aria-checked\", String(!!engine.save.noPalFx)); }"
+        },
+        {
+          "focus": "pal:none",
+          "text": "NoneFly solo. The classic run.",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:switchback",
+          "text": "StopwatchTap Toggles Scroll SpeedOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:bee",
+          "text": "AstrolobeePowerup/Acorns Disabled",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:buddy",
+          "text": "AcornMagnet Effect",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:voidjelly",
+          "text": "JellyBounce Softer",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:cometsprite",
+          "text": "Comet2x Freeze Duration",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:meteorcore",
+          "text": "Meteor Core2x Power Ups",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:pocketmoon",
+          "text": "MoonLower Gravity",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:ufo",
+          "text": "UFOStart with Shield",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:nutsack",
+          "text": "Nut-Sack2x Acorns but the sack is heavy",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:starpup",
+          "text": "Star ChildDouble Golden Effect",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:tinbot",
+          "text": "TinTinDisables Blackholes",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:wisp",
+          "text": "WispMore gate movement",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:prismwing",
+          "text": "PrismwingPlanet Bounces Repaint SkyOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:clockling",
+          "text": "TurClockScroll Speed DriftOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:nightglider",
+          "text": "NightgliderGate Drift OffOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:magnetar",
+          "text": "MagnetarUpside Down WorldOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:babyalien",
+          "text": "Baby AlienMini GapsOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:satellite",
+          "text": "SatelliteVisibility ReducedOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:astrafox",
+          "text": "AstraFoxWild Gate SwayOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "pal:spacepuppy",
+          "text": "Space PuppyBounce HouseOWNED",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { if (open) tx(b, () => engine.equipPal(pl.id)); }"
+        },
+        {
+          "focus": "",
+          "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"shop\")"
+        }
+      ],
+      "ship": [
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "Back to home",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"title\")"
+        },
+        {
+          "focus": "",
+          "text": "",
+          "ariaLabel": "How to fly",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"help\")"
+        },
+        {
+          "focus": "",
+          "text": "▴",
+          "ariaLabel": "Shrink the preview",
+          "title": "Double-tap the case, or tap here",
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "(e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); }"
+        },
+        {
+          "focus": "tab:suits",
+          "text": "SUITS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:helmets",
+          "text": "HELMETS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:trails",
+          "text": "TRAILS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:pals",
+          "text": "PALS",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "tab:ship",
+          "text": "SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setShopTab(t)"
+        },
+        {
+          "focus": "",
+          "text": "✓ No starting utility",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { onPick(); engine.spillStarter(null); }"
+        },
+        {
+          "focus": "",
+          "text": "Salvage MagnetPulls in nearby Acorn Coins and gold.Clear wave 5",
+          "ariaLabel": null,
+          "title": "Health pickups still need a direct hit.",
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { onPick(); engine.spillStarter(id); }"
+        },
+        {
+          "focus": "",
+          "text": "Debris ScannerShows incoming debris sooner.Clear wave 10",
+          "ariaLabel": null,
+          "title": "Keeps debris outlines visible in Blackout.",
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { onPick(); engine.spillStarter(id); }"
+        },
+        {
+          "focus": "",
+          "text": "Emergency BrakeHelps recover near the edges.Clear wave 10",
+          "ariaLabel": null,
+          "title": "Automatic recovery every 12 seconds. Dashing also slows a fast dive.",
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { onPick(); engine.spillStarter(id); }"
+        },
+        {
+          "focus": "",
+          "text": "Pulse BatteryExtra Pulse charge · needs Impact pulse.Clear wave 20",
+          "ariaLabel": null,
+          "title": "Needs the Impact pulse upgrade. Collect gold to charge it.",
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { onPick(); engine.spillStarter(id); }"
+        },
+        {
+          "focus": "",
+          "text": "Purple✓ Selected",
+          "ariaLabel": "Purple, selected",
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => engine.setSpillEngineColor(color.id)"
+        },
+        {
+          "focus": "",
+          "text": "CopperWave 5",
+          "ariaLabel": "Copper, clear wave 5 to unlock",
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setSpillEngineColor(color.id)"
+        },
+        {
+          "focus": "",
+          "text": "BlueWave 10",
+          "ariaLabel": "Blue, clear wave 10 to unlock",
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setSpillEngineColor(color.id)"
+        },
+        {
+          "focus": "",
+          "text": "GoldWave 20",
+          "ariaLabel": "Gold, clear wave 20 to unlock",
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setSpillEngineColor(color.id)"
+        },
+        {
+          "focus": "",
+          "text": "Soft violetWave 30",
+          "ariaLabel": "Soft violet, clear wave 30 to unlock",
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => engine.setSpillEngineColor(color.id)"
+        },
+        {
+          "focus": "",
+          "text": "SHOW LAUNCH SHIP",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => { shipPlan = null; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "BASELINEStock3 health.STOCK",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 1Health IMax health 3 → 460 ACORN COINS · STEP 1",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 2Health IIMax health 4 → 5110 ACORN COINS · STEP 2",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 3Health IIIMax health 5 → 6180 ACORN COINS · STEP 3",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Impact BracingHalf the knockback; 0.4 seconds more protection after a hit.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Salvage ArmorCollect 30 Acorn Coins to restore 1 health, at most twice per wave.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "BASELINEStockOne dash charge.STOCK",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 1Thrusters I15% stronger bursts50 ACORN COINS · STEP 1",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 2Thrusters IICarry 2 dash charges100 ACORN COINS · STEP 2",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 3Thrusters IIIDashes break small debris170 ACORN COINS · STEP 3",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Precision JetsLunges brake vertical motion; burst strength stays at tier I.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Wide SweepLunges clear shards in a wider path, including at tier II.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "BASELINEStockGold charges the ship; add Pulse I to fire it.STOCK",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 1Impact pulse IBreaks debris on a charged hit60 ACORN COINS · STEP 1",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 2Impact pulse IISecond blast readies after 5 seconds110 ACORN COINS · STEP 2",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 3Impact pulse IIIWider blast · debris drops Acorn Coins170 ACORN COINS · STEP 3",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Efficient CoilGold charges 65% of a Pulse instead of 50%.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "Salvage CoilShattered debris yields Acorn Coins at tier II; tier III yields double.REQUIRES TIER II",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": true,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id } }; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "BASELINEStockOpen cockpit · no charges.STOCK",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "true",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 11 shield chargeA charge absorbs a hit. The fitted canopy remains after use.35 ACORN COINS FOR 1",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "TIER 22 shield chargesA charge absorbs a hit. The fitted canopy remains after use.70 ACORN COINS FOR 2",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": "false",
+          "checked": null,
+          "clickHandler": "() => { shipPlan = pick; render(); }"
+        },
+        {
+          "focus": "",
+          "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+          "ariaLabel": null,
+          "title": null,
+          "disabled": false,
+          "role": null,
+          "pressed": null,
+          "checked": null,
+          "clickHandler": "() => engine.open(\"shop\")"
+        }
+      ]
+    }
+  },
+  "receipts": [
+    {
+      "label": "baseline-mobile390-expanded",
+      "file": "baseline-mobile390-expanded.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 346.546875,
+        "bottom": 418.546875,
+        "right": 390
+      },
+      "canvas": {
+        "x": 23,
+        "y": 83,
+        "width": 344,
+        "height": 236,
+        "bottom": 319,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 526.546875,
+        "width": 390,
+        "height": 317.453125,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 1665,
+        "clientHeight": 317
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "1px",
+      "stageShadow": "rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset, color(srgb 0.709804 0.321569 1 / 0.7) 0px 14px 34px -18px, rgba(0, 0, 0, 0.6) 0px 3px 14px 0px",
+      "stageBackground": "radial-gradient(90% 70% at 50% -10%, color(srgb 0.709804 0.321569 1 / 0.26), rgba(0, 0, 0, 0) 68%), linear-gradient(color(srgb 0.102667 0.064549 0.197961), rgb(11, 7, 32) 72%)",
+      "background": "none",
+      "backgroundFilter": "none",
+      "glow": "",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 20765,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "baseline-mobile390-compact",
+      "file": "baseline-mobile390-compact.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 183.09375,
+        "bottom": 255.09375,
+        "right": 390
+      },
+      "canvas": {
+        "x": 115,
+        "y": 75,
+        "width": 160,
+        "height": 110,
+        "bottom": 185,
+        "right": 275
+      },
+      "scroll": {
+        "x": 0,
+        "y": 363.09375,
+        "width": 390,
+        "height": 480.90625,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 1665,
+        "clientHeight": 481
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "1px",
+      "stageShadow": "rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset, color(srgb 0.709804 0.321569 1 / 0.7) 0px 14px 34px -18px, rgba(0, 0, 0, 0.6) 0px 3px 14px 0px",
+      "stageBackground": "radial-gradient(90% 70% at 50% -10%, color(srgb 0.709804 0.321569 1 / 0.26), rgba(0, 0, 0, 0) 68%), linear-gradient(color(srgb 0.102667 0.064549 0.197961), rgb(11, 7, 32) 72%)",
+      "background": "none",
+      "backgroundFilter": "none",
+      "glow": "",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 20767,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    }
+  ],
+  "interactions": [],
+  "errors": [],
+  "failedArt": []
+}
