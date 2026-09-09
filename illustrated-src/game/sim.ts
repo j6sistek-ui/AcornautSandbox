@@ -1,6 +1,6 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
-import { createHighOrbitMotion, stepHighOrbit, type HighOrbitMotion } from "./high-orbit-motion";
+import { createHighOrbitMotion, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config";
 import { trailWornBy } from "./catalog";
 import { missionRandom } from "./mission-rng";
@@ -1692,7 +1692,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.tapAnimT = -1;
   w.vanguard = createVanguardMotion();
   w.arcflash = createArcflashMotion();
-  w.highOrbit = createHighOrbitMotion();
+  w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
   w.tapAnimDir = 1;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -2933,6 +2933,7 @@ function tutGesture(w: World, save: SaveData, kind: "tap" | "swipe"): boolean {
       w.tapAnimDir = 1;
       if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,tutorialImpulse);
       if (pilotSuitId(w, save) === "arcflash") arcflashTap(w.arcflash, tutorialImpulse);
+      if (isHighOrbit(pilotSuitId(w, save))) highOrbitTap(w.highOrbit, tutorialImpulse);
       break;
     case "doDive":
       t.hold = false;
@@ -3064,6 +3065,7 @@ export function flap(w: World, save: SaveData) {
     w.squirrel.vy = flapOf(save, w);
     if (pilotSuitId(w, save) === "vanguard") vanguardTap(w.vanguard,impulse);
     if (pilotSuitId(w, save) === "arcflash") arcflashTap(w.arcflash, impulse);
+    if (isHighOrbit(pilotSuitId(w, save))) highOrbitTap(w.highOrbit, impulse);
   }
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
@@ -3807,8 +3809,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     }
     const orbitRaceSuit=pilotSuitId(w,save);
     if (isHighOrbit(orbitRaceSuit) && w.race.tick>priorRaceTick && !w.tut?.hold
-      && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck)
+      && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck) {
+      if(w.race.phase==='normal'&&w.race.held&&(!priorHeld||(w.race.boost&&!priorBoost)))
+        highOrbitTap(w.highOrbit,Math.max(1,priorRaceVy-w.race.vy));
       stepHighOrbit(w.highOrbit,orbitRaceSuit,RACE_DT,w.race.vy);
+    }
     w.speed = w.race.speed;
     w.distance = w.race.coursePosition;
     w.runAcorns = w.race.acorns;

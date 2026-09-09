@@ -1,5 +1,5 @@
-import { ENVS } from "./catalog.js?v=249";
-import { artUrl } from "./art.js?v=249";
+import { ENVS } from "./catalog.js?v=253";
+import { artUrl } from "./art.js?v=253";
 export const ZONE_VISUALS = [
     {
         "id": "deep-space",
@@ -219,7 +219,9 @@ export function visualHash(id) {
 }
 export function mapPlanetIndex(def) {
     const family = ENVS[def.fx.env ?? 0].planetBias;
-    return family[visualHash(def.id) % family.length];
+    // The mission's stable local slot shows all five worlds twice per zone.
+    // Display-order changes cannot swap its art.
+    return family[Math.max(0, def.n - 1) % family.length];
 }
 export function mapDebrisIndex(env, salt) {
     const family = ENVS[env].debrisBias;

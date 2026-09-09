@@ -3,6 +3,7 @@ import {HIGH_ORBIT_PARTS} from './high-orbit-parts';
 import {HIGH_ORBIT_HEAD_RADIUS,HIGH_ORBIT_DISPLAY_SPAN,type HighOrbitId} from './high-orbit-config';
 import {createHighOrbitMotion,type HighOrbitMotion,type HighOrbitPose} from './high-orbit-motion';
 import {paintHighOrbitEffect,type HighOrbitTravel} from './high-orbit-effects';
+import {rigLimbFit,rigPartMatrix} from './rig-limb-fit';
 
 export type OrbitPoint=readonly [number,number];
 const DEG=Math.PI/180;
@@ -14,7 +15,7 @@ export const HIGH_ORBIT_ANATOMY={headRadius:HIGH_ORBIT_HEAD_RADIUS,displaySpan:H
 const NS:OrbitPoint=[-19,18],FS:OrbitPoint=[13,14],NH:OrbitPoint=[-12,56],FH:OrbitPoint=[12,51],TAIL:OrbitPoint=[-26,57];
 const skull:OrbitPoint=[181,88];
 /** The skull center is registered independently of the torso. The neck follows
- * the underside of the fixed-size head; no stretchy neck or fitting by alpha. */
+ * the underside of the fixed-size head as it nods; no stretchy neck or fitting by alpha. */
 export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
  const h=HIGH_ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/h.skull[2];
  const head:OrbitPoint=[skull[0],skull[1]+p.heave];
@@ -29,10 +30,9 @@ export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
  return Object.fromEntries(Object.entries(raw).map(([k,q])=>[k,add([128,128],rotate([q[0]-128,q[1]-128],pitch/DEG))])) as typeof raw;
 }
 function part(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitId,index:number,a:OrbitPoint,b:OrbitPoint){
- const spec=HIGH_ORBIT_PARTS[id][index],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1];
- const tx=b[0]-a[0],ty=b[1]-a[1],scale=Math.hypot(tx,ty)/Math.hypot(dx,dy);
- ctx.save();ctx.translate(...a);ctx.rotate(Math.atan2(ty,tx)-Math.atan2(dy,dx));ctx.scale(scale,scale);
- ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,-spec.a[0],-spec.a[1],256,256);ctx.restore();
+ const spec=HIGH_ORBIT_PARTS[id][index],fit=rigLimbFit(id,index);
+ ctx.save();ctx.transform(...rigPartMatrix(spec,a,b,fit.breadth,fit.facing));
+ ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,0,0,256,256);ctx.restore();
 }
 export const HIGH_ORBIT_TAIL_TRIANGLES:number[][]=[];
 for(let y=0;y<6;y++)for(let x=0;x<4;x++){const a=y*5+x;HIGH_ORBIT_TAIL_TRIANGLES.push([a,a+1,a+6],[a,a+6,a+5]);}
@@ -76,7 +76,7 @@ export type HighOrbitHelmet=(x:number,y:number,r:number,angle:number)=>void;
 /** Shared live/preview/portrait painter. size is a 192px body reference, not
  * this pose's alpha bounds. Each named skull is exactly 36px in that space. */
 export function paintHighOrbit(ctx:CanvasRenderingContext2D,art:ArtBank|null|undefined,id:HighOrbitId,
- x:number,y:number,size:number,state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0,helmet?:HighOrbitHelmet){
+ x:number,y:number,size:number,state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0,helmet?:HighOrbitHelmet,sealedHead=false){
  const s=state??highOrbitStill(id),p=s.pose,j=highOrbitLandmarks(id,p,pitch),unit=size/HIGH_ORBIT_DISPLAY_SPAN;
  const atlas=art?.highOrbit?.[id];
  ctx.save();ctx.translate(x,y);
@@ -90,8 +90,12 @@ export function paintHighOrbit(ctx:CanvasRenderingContext2D,art:ArtBank|null|und
    part(ctx,atlas,id,6,j.nearHip,j.nearKnee);part(ctx,atlas,id,7,j.nearKnee,j.nearBoot);
    part(ctx,atlas,id,2,j.nearShoulder,j.nearElbow);part(ctx,atlas,id,3,j.nearElbow,j.nearWrist);
    const head=HIGH_ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/head.skull[2];
-   ctx.save();ctx.translate(...j.head);ctx.rotate(p.head*DEG+pitch);ctx.scale(scale,scale);
-   ctx.drawImage(atlas,0,0,256,256,-head.skull[0],-head.skull[1],256,256);ctx.restore();
+   // A complete opaque helmet replaces the bare head. Drawing both leaves
+   // ear tips peeking through the helmet's transparent exterior corners.
+   if(!sealedHead){
+     ctx.save();ctx.translate(...j.head);ctx.rotate(p.head*DEG+pitch);ctx.scale(scale,scale);
+     ctx.drawImage(atlas,0,0,256,256,-head.skull[0],-head.skull[1],256,256);ctx.restore();
+   }
    helmet?.(j.head[0],j.head[1],HIGH_ORBIT_HEAD_RADIUS,p.head+pitch/DEG);
  }else{
    const fallback=art?.suits?.[id];

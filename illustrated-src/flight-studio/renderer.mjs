@@ -40,7 +40,8 @@ export class StudioRenderer{
     if(model.family==='high-orbit'){
       if(!atlas)return;
       paintHighOrbit(ctx,{highOrbit:{[model.id]:atlas}},model.id,x,y,size,s.output,
-        {x,y,travel:simulation.time*200},view.effects,pitch,view.helmet==='none'?undefined:(...a)=>this.helmet(ctx,helm,...a));
+        {x,y,travel:simulation.time*200},view.effects,pitch,view.helmet==='none'?undefined:(...a)=>this.helmet(ctx,helm,...a),
+        view.helmet!=='none'&&h?.id===helm&&h.opaqueVisor===true&&!!this.image(h.file));
       if(view.guides){const j=highOrbitLandmarks(model.id,s.output.pose,pitch),u=size/192;
         ctx.save();ctx.translate(x-128*u,y-128*u);ctx.scale(u,u);ctx.strokeStyle='#74f3cf';ctx.lineWidth=1;ctx.beginPath();ctx.arc(...j.head,36,0,Math.PI*2);ctx.stroke();
         for(const q of Object.values(j)){ctx.fillStyle='#ffc869';ctx.beginPath();ctx.arc(...q,2,0,Math.PI*2);ctx.fill();}ctx.restore();}

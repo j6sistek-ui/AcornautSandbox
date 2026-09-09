@@ -1,5 +1,6 @@
-import { ARCFLASH_PARTS } from './arcflash-parts.js?v=249';
-import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=249';
+import { ARCFLASH_PARTS } from './arcflash-parts.js?v=253';
+import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=253';
+import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=253';
 const DEG = Math.PI / 180;
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const mix = (a, b, t) => a + (b - a) * t;
@@ -29,13 +30,10 @@ export function arcflashNozzles(s, pitch = 0) {
         nozzle(j.farWrist, p.body + 90 - p.farArm - .15 * p.farElbow), nozzle(j.nearWrist, p.body + 90 - p.nearArm - .15 * p.nearElbow)];
 }
 function part(ctx, atlas, index, a, b) {
-    const spec = ARCFLASH_PARTS[index], dx = spec.b[0] - spec.a[0], dy = spec.b[1] - spec.a[1];
-    const tx = b[0] - a[0], ty = b[1] - a[1], scale = Math.hypot(tx, ty) / Math.hypot(dx, dy);
+    const spec = ARCFLASH_PARTS[index], fit = rigLimbFit('arcflash', index);
     ctx.save();
-    ctx.translate(a[0], a[1]);
-    ctx.rotate(Math.atan2(ty, tx) - Math.atan2(dy, dx));
-    ctx.scale(scale, scale);
-    ctx.drawImage(atlas, index % 4 * 256, Math.floor(index / 4) * 256, 256, 256, -spec.a[0], -spec.a[1], 256, 256);
+    ctx.transform(...rigPartMatrix(spec, a, b, fit.breadth, fit.facing));
+    ctx.drawImage(atlas, index % 4 * 256, Math.floor(index / 4) * 256, 256, 256, 0, 0, 256, 256);
     ctx.restore();
 }
 const tailSource = [], triangles = [];

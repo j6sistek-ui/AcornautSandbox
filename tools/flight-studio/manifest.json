@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "252",
-  "sourceCommit": "77d1459cb627d3624246b4a2844a352e387d45ac",
+  "artVer": "253",
+  "sourceCommit": "5aeb37c6480e3434fe84830306d50911127e9804",
   "models": [
     {
       "id": "flight",
@@ -128,7 +128,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/arcflash/body.png": "1dcf92e77fb99a3eccfd70e8e2ae2f8b09feb2666caa650e7a671fd1ed6c8c30",
+        "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },
@@ -1434,7 +1434,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/cinderforge.png": "6ad028c97431469bb9af3ec3204b94fe9c37b6cdc53beb0ed15ccb10a72a422e",
+        "suits/cinderforge.png": "2d0b9b804520b4381423d2c4f63463f8704c999f1d0c95d693a34f1ad5fece7a",
         "suits/cinderforge/parts.png": "2668a05d96928c0f7e39a13e52fc667eb3f5d7464441c7260daca2955935c8af"
       }
     },
@@ -1460,7 +1460,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/groveguard.png": "5bcd952c0c77271da95e6c295d0a057e5da7949ec39d49f9e7dd10e814e2fb36",
+        "suits/groveguard.png": "9b4f6c635f23a027f5605d3c9c259f89c8cf7a3fd39f2dc85d6a3aae85ddaab0",
         "suits/groveguard/parts.png": "115fe0bd2d6ae0e8b73fce528badbc7ed8278c3f602580d45201b1b0c3dcddcc"
       }
     },
@@ -1486,7 +1486,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/cosmic.png": "94dbca1f4b1fc77a08c32f7809dd14c67d7ef98c1f4c47a038da11e1fc8eb5e4",
+        "suits/cosmic.png": "8896e54bcdb971769c887123119873b076bccbcf140a9bcd9f06ece6c5b417ec",
         "suits/cosmic/parts.png": "06a2cdf2d3a63ff1df2b5f82a2f360a62e79520f7083a2c89799abc65f0c9a13"
       }
     },
@@ -1561,7 +1561,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/sunforged.png": "f24212ca5897ada7650d0c5b84bd72ea9220a67c35defbbd97dfc92c372fa10c",
+        "suits/sunforged.png": "4b6dbeb1bd0911c3a59c00f8d201dda2ca4a9cdaa0cfeac1e9ffa36c4215aaa9",
         "suits/sunforged/parts.png": "f68a8b9d56fbd4c8b48f65f782653cd8ba7039a80e3a88217c30e3566edbe2a1"
       }
     },
@@ -1587,7 +1587,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/abyssal.png": "16b728b2b83ae9278f7c7c6e852e20a4c9c80f24919810eb7e35774f45cfb74a",
+        "suits/abyssal.png": "58bd24ac7c7011931f1687a0f33fe9b0309ba9e998b64332439f56ab3f8a4bd1",
         "suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
       }
     },
@@ -4799,16 +4799,17 @@
     ]
   },
   "painterHashes": {
-    "arcflash": "bb2b9fbef942d21e361d96cdc3e78990598e791ff51e901b72df76a7935758d2",
-    "arcflash-motion": "49fb085e85e1f7c9640acb017372e1e4dbad42259fc65274d86fd39ee771377a",
+    "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
+    "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
     "control-constants": "a346419f306531eaa59aa89a57a7f20a6f880781276fb112ea02c6a05eeb6523",
     "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
-    "high-orbit": "c69dbb9ef89642da2c048c6da8b26e794bb0390464826d06e14855ffe6aad0a7",
+    "high-orbit": "e8596c26247f6ddc00845fbb4706e9666b0ba7e57f236eeecfcdd43bacf29019",
     "high-orbit-config": "a5f6b63612fb4312b140ce062c631adddd513fa9ee22b58484f4c34b66346da2",
     "high-orbit-effects": "02c9aab5fb03bfb42bba2bab27cf330ffcdddfc4a6d6cf7078a4abb13f938b42",
-    "high-orbit-motion": "b09335d7e12fa4eff5886a8625f0fa188229252a618195b07ccfb7a3ebb3f778",
+    "high-orbit-motion": "e37f2eaa6a8845b348d642483eb5414f34dad9195f108b0d1e000b1a69b35580",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+    "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",
     "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
     "vanguard-parts": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324"
   }

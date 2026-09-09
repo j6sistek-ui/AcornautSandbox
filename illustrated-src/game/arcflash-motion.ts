@@ -46,17 +46,17 @@ const poseKeys: (keyof ArcflashPose)[] = ['body', 'head', 'heave', 'nearArm',
 const CRUISE: ArcflashPose = {
   body: 54, head: 0, heave: 0,
   nearArm: 34, nearElbow: 72, farArm: 44, farElbow: 84,
-  nearThigh: -9, nearKnee: 15, farThigh: -15, farKnee: 19,
+  nearThigh: 12, nearKnee: -24, farThigh: 6, farKnee: -18,
 };
 const CLIMB: ArcflashPose = {
   body: 12, head: 23.1, heave: -2,
   nearArm: 7, nearElbow: 9, farArm: 3, farElbow: 13,
-  nearThigh: -5, nearKnee: 3, farThigh: -10, farKnee: 6,
+  nearThigh: 18, nearKnee: -32, farThigh: 12, farKnee: -26,
 };
 const FALL: ArcflashPose = {
   body: 74, head: -11, heave: 1,
   nearArm: 48, nearElbow: 74, farArm: 56, farElbow: 94,
-  nearThigh: -15, nearKnee: 20, farThigh: -20, farKnee: 25,
+  nearThigh: 6, nearKnee: -16, farThigh: 0, farKnee: -12,
 };
 
 export function createArcflashMotion(): ArcflashMotion {

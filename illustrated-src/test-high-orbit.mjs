@@ -56,13 +56,14 @@ for(const [column,id] of ids.entries()){
  assert.deepEqual(rgba(fallback),rgba(still),id+' fallback equals rig pixels at canonical size');
  const state=M.createHighOrbitMotion(id),canvas=createCanvas(256,256),ctx=canvas.getContext('2d'),tail=createCanvas(256,256),tg=tail.getContext('2d');
  let maxStep=0,maxStray=0,minHeadGap=Infinity,minJoint=1,minAreaRatio=Infinity,maxAreaRatio=0,minBody=Infinity,maxBody=-Infinity,minTail=Infinity,maxTail=-Infinity;
- let before=structuredClone(state.pose),vy=0;
+ let before=structuredClone(state.pose),vy=0,minHead=Infinity,maxHead=-Infinity;
  for(let tick=0;tick<960;tick++){
    const time=tick/120;
    if(time<4&&tick%22===0)vy=-450;else if(tick===700)vy=610;else vy=Math.min(610,vy+1100/120);
    M.stepHighOrbit(state,id,1/120,vy);
    for(const [key,value] of Object.entries(state.pose)){assert(Number.isFinite(value));maxStep=Math.max(maxStep,Math.abs(value-before[key]));}
-   assert(Math.abs(state.pose.head)<4,id+' stabilized head attitude');
+   assert(Math.abs(state.pose.head)<16,id+' bounded neck nod without head spinning');
+   minHead=Math.min(minHead,state.pose.head);maxHead=Math.max(maxHead,state.pose.head);
    minBody=Math.min(minBody,state.pose.body);maxBody=Math.max(maxBody,state.pose.body);
    minTail=Math.min(minTail,state.pose.tailTip);maxTail=Math.max(maxTail,state.pose.tailTip);
    const j=R.highOrbitLandmarks(id,state.pose),mesh=R.highOrbitTailMesh(id,state.pose),spec=parts[10];
@@ -95,6 +96,7 @@ for(const [column,id] of ids.entries()){
  }
  assert(maxStep<2.5,id+' no joint snap under repeated taps');
  assert(maxBody-minBody>20,id+' meaningful climb/dive body response');
+ assert(maxHead-minHead>16,id+' head visibly follows tap/release, rather than being locked level');
  assert(maxTail-minTail>30,id+' expressive tail motion');
  const saved=structuredClone(state);for(const [dt,v] of [[0,0],[-1,0],[NaN,0],[.01,NaN]])M.stepHighOrbit(state,id,dt,v);
  assert.deepEqual(state,saved,id+' invalid input/pause does not advance');
@@ -108,8 +110,19 @@ for(const [column,id] of ids.entries()){
  // Every compatible helmet is actually composited by the shipping preview.
  const suit=Cat.SUITS.find(s=>s.id===id);
  for(const h of Cat.HELMETS.filter(h=>!h.suitOnly||h.suitOnly===id)){
-   ctx.clearRect(0,0,256,256);D.paintFlightPreview(ctx,art,suit,h,128,128,192,0);
+   let headPaints=0,helmetPaints=0;
+   const measured=new Proxy(ctx,{get(target,key){
+     if(key==='drawImage')return (img,...args)=>{
+       if(img===atlas&&args.length===8&&args[0]===0&&args[1]===0)headPaints++;
+       if(img!==atlas)helmetPaints++;
+       return target.drawImage(img,...args);
+     };
+     const value=target[key];return typeof value==='function'?value.bind(target):value;
+   },set(target,key,value){target[key]=value;return true;}});
+   ctx.clearRect(0,0,256,256);D.paintFlightPreview(measured,art,suit,h,128,128,192,0);
    assert(connected(rgba(canvas),256,256)[0]>8000,id+' rendered with '+h.id);
+   assert(helmetPaints>0,id+' helmet is actually painted, not merely catalogued');
+   assert.equal(headPaints,h.opaqueVisor?0:1,id+' opaque helmet replaces ears; transparent glass retains head');
  }
  for(let row=0;row<3;row++){
    const h=Cat.HELMETS.find(h=>h.id===(row===0?'clear':row===1?id:'ion'));
@@ -122,7 +135,12 @@ for(const [column,id] of ids.entries()){
  for(const other of Cat.SUITS)assert.equal(Cat.canWearTrail(trail,other.id),other.id===id);
  assert(!Cat.IAP_ITEMS.includes(trail),'built-in wake has no shop price');
  save.unlockedSuits.push(id);assert(S.trailUnlocked(save,trail));save.equippedSuit=id;save.tutorialDone=true;save.guide='done';
- const world=Sim.makeWorld(390,5000);Sim.resetRun(world,save,'fly',false);Sim.updateWorld(world,save,1/60);
+ const world=Sim.makeWorld(390,5000);Sim.resetRun(world,save,'fly',false);
+ assert.equal(world.highOrbit.id,id,id+' starts with the selected rig before the first visual tick');
+ const cold=Sim.makeWorld(390,5000);Sim.resetRun(cold,save,'fly',false);cold.squirrel.vy=-410;
+ assert.equal(Sim.flap(cold,save),'flap');assert(cold.highOrbit.recoil>.5,id+' first small accepted tap reaches recoil');
+ Sim.updateWorld(cold,save,1/120);assert(cold.highOrbit.recoil>0,id+' first visual tick retains tap recoil');
+ Sim.updateWorld(world,save,1/60);
  assert(world.highOrbit.time>0,id+' live READY pose advances');
  const random=Math.random;let rng=0;Math.random=()=>{rng++;return .5;};
  try{Sim.spawnTrail(world,save,.5);}finally{Math.random=random;}
@@ -144,7 +162,7 @@ for(const [column,id] of ids.entries()){
  assert(small.highOrbit.time>0);
  const trailImage=createCanvas(80,40),tc=trailImage.getContext('2d');E.paintHighOrbitWake(tc,id,40,20,0);
  assert(rgba(trailImage).some((n,i)=>i%4===3&&n>100),id+' first-paint trail preview is visible');
- results.push({id,maxJointStep:maxStep,minHeadGap,minJointCoverage:minJoint,maxDetachedPixels:maxStray,minTailAreaRatio:minAreaRatio,maxTailAreaRatio:maxAreaRatio,bodyRange:maxBody-minBody,tailRange:maxTail-minTail});
+ results.push({id,maxJointStep:maxStep,minHeadGap,minJointCoverage:minJoint,maxDetachedPixels:maxStray,minTailAreaRatio:minAreaRatio,maxTailAreaRatio:maxAreaRatio,headRange:maxHead-minHead,bodyRange:maxBody-minBody,tailRange:maxTail-minTail});
 }
 mkdirSync(root+'illustrated-src/design/high-orbit',{recursive:true});
 writeFileSync(root+'illustrated-src/design/high-orbit/helmet-review.png',contact.toBuffer('image/png'));
