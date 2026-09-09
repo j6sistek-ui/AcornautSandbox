@@ -1,5 +1,23 @@
 # Acornaut motion spec — how a suit flies
 
+## Natural standard series and approved companions — 9 Sep 2026
+
+The owner requested Ion, Copper, Void, Sammie, Gemmie, Leviathan, Ember,
+Frost and Ghost to share natural tail-led flight, using the new Gemmie whip
+as guidance without copying Eclipse. Their regenerated 8/8 banks use a
+rate-limited pose follower, a common 192px presentation reference and actual
+head registration to a 36px radius. Matching neutral portraits prevent
+loading/portrait helmet-fit changes. All eight descent poses are enabled.
+Their obsolete split rigs are retired; no physics or input timing changes.
+
+Quill, Noodle and Bandit retain their separate 16-frame loop route. The owner
+approved a combined sheet's exact motion and explicitly excluded its panda.
+Those three are cut from the supplied sheet with fixed scale and margins;
+only Quill's erroneous long tail receives a localized generated repair.
+See `art-src/natural-flight/README.md` for sources, export, pixel boundaries,
+all-helmet coverage and the review record. This supersedes these twelve
+characters' earlier art instructions below, not the other frozen suits.
+
 ## Cryostar and Verdant — explicit owner grant, 8 Sep 2026
 
 The owner requested these two suits to receive Eclipse's exact motion-frame

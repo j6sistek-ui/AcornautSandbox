@@ -53,11 +53,11 @@ assert.deepEqual([...D.FROZEN_SUITS].sort(),
   'every frozen suit is accounted for by exactly one of the three routes');
 
 // --- and the review's complaints are actually in the table --------------
-// "Awful and needs correction before shipping" / "over dive". If these
-// resolve to the full ramp, the per-suit table is doing nothing.
-for(const id of ['voidsuit','ember','frost','sammie','gemmie','ghost'])
-  assert(D.diveDepthFor(id)<=0.5,`${id} is held to the shallow end pending regenerated art`);
-for(const id of ['iontrim','copper','leviathan','cinderforge','groveguard','cosmic','sunforged','abyssal'])
+// The nine requested replacements now carry shallow pitch and a full tail
+// whip in their new paintings. Only their temporary caps are retired.
+for(const id of ['iontrim','copper','leviathan','voidsuit','ember','frost','sammie','gemmie','ghost'])
+  assert.equal(D.diveDepthFor(id),1,`${id} reaches every regenerated pose`);
+for(const id of ['cinderforge','groveguard','cosmic','sunforged','abyssal'])
   assert(D.diveDepthFor(id)<1,`${id} was called too steep on the dive and is dialled back`);
 
 // --- an unlisted suit falls through to the default ----------------------
