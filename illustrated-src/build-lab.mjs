@@ -4,7 +4,7 @@
 //
 //   node illustrated-src/build-lab.mjs
 import { execFileSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, cpSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeTables } from "./lab/rig-tables.mjs";
@@ -38,6 +38,8 @@ tsc("illustrated-src/lab/ship.ts", join(root, "docs/lab/ship/js"));
 // The rig editor opens on the shipping numbers, read straight out of
 // draw.ts at build time.
 const t = writeTables(root, join(root, "docs/lab/rig"));
+mkdirSync(join(root,"docs/lab/high-orbit"),{recursive:true});
+cpSync(join(root,"illustrated-src/lab/high-orbit.html"),join(root,"docs/lab/high-orbit/index.html"));
 console.log(
   "built lab: docs/lab/rig/js, docs/lab/skytest/js, docs/lab/ship/js " +
     `(${t.suits.length} heads, ${t.helmets.length} helmets, art v${t.artVer})`,

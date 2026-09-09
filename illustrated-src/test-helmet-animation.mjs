@@ -102,6 +102,7 @@ try {
   const TRANSFERRED=['cryostar','verdant'];
   const transferred=suits.filter(suit=>TRANSFERRED.includes(suit.id));
   const transferHashes=JSON.parse(readFileSync(join(root,'art-src/eclipse-motion-transfer/frame-hashes.json'),'utf8'));
+  const orbitHashes=JSON.parse(readFileSync(join(root,'art-src/high-orbit/shipping-hashes.json'),'utf8'));
   const NATURAL=['iontrim','copper','voidsuit','sammie','gemmie','leviathan','ember','frost','ghost'];
   const natural=suits.filter(suit=>NATURAL.includes(suit.id));
   const naturalHashes=JSON.parse(readFileSync(join(root,'art-src/natural-flight/frame-hashes.json'),'utf8'));
@@ -122,8 +123,8 @@ try {
     assert.deepEqual(withoutHighOrbit(NewArt[name]),old,`${name}: only the natural-flight split rigs retire`);
   }
   for(const id of HIGH_ORBIT) {
-    assert.equal(NewArt.ASC_BANKS[id],8,`${id}: HIGH ORBIT ascent bank is the shipped 8/8 sheet`);
-    assert.equal(NewArt.DESC_BANKS[id],8,`${id}: HIGH ORBIT descent bank is the shipped 8/8 sheet`);
+    assert.equal(NewArt.ASC_BANKS[id],undefined,`${id}: old ascent repaint bank is retired`);
+    assert.equal(NewArt.DESC_BANKS[id],undefined,`${id}: old descent repaint bank is retired`);
     for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])
       assert(!(Array.isArray(NewArt[name]) ? NewArt[name].includes(id) : id in NewArt[name]),
         `${id}: the obsolete ${name} rig stays retired`);
@@ -159,6 +160,8 @@ try {
         }
       } else if(/^suits\/(cryostar|verdant)-(asc|desc)-[1-8]\.png$/.test(path)) {
         assert.equal(hash,transferHashes[path],`${path}: reviewed Eclipse transfer art`);
+      } else if(orbitHashes[full]) {
+        assert.equal(createHash('sha256').update(bytes).digest('hex'),orbitHashes[full],`${path}: High Orbit cut-rig art receipt`);
       } else if(naturalHashes[path]) {
         assert.equal(hash,naturalHashes[path],`${path}: reviewed natural-flight replacement`);
       } else {
@@ -187,6 +190,7 @@ try {
   for(const suit of suits) {
     const id=suit.id;
     art.suits[id]=await sprite(`suits/${id}.png`);
+    if(HIGH_ORBIT.includes(id))(art.highOrbit??={})[id]=await sprite(`suits/${id}/parts.png`);
     if(NewArt.RIGGED_SUITS.includes(id)) {
       art.suitTail[id]=await sprite(`suits/${id}-tail.png`);
       art.suitBody[id]=await sprite(`suits/${id}-body.png`);
@@ -360,7 +364,7 @@ try {
     const id=suit.id;
     for(const [property,bank,sign] of [['suitAsc','asc',-1],['suitDesc','desc',1]]) {
       const n=art[property][id]?.length || 0;
-      assert.equal(n,8,`${id}: the shipped ${bank} sheet loads all eight frames`);
+      assert.equal(n,HIGH_ORBIT.includes(id)?0:8,`${id}: only active painted banks load frames`);
       for(let i=0;i<n;i++) for(const size of [52,256]) {
         const pose=i===0 && sign>0 ? 1e-6 : sign*i/Math.max(1,n-1);
         solo(`${id} ${bank}-${i+1} size ${size}`,(renderer,ctx)=>illustrated(renderer,ctx,suit,art,
@@ -368,7 +372,7 @@ try {
         counts.motionFrames++;
       }
     }
-    const loading={...art,suitTail:{},suitBody:{},suitAsc:{},suitDesc:{},suitTap:{}};
+    const loading={...art,highOrbit:{},suitTail:{},suitBody:{},suitAsc:{},suitDesc:{},suitTap:{}};
     solo(`${id} static loading fallback`,(renderer,ctx)=>illustrated(renderer,ctx,suit,loading));
     for(let tick=0;tick<96;tick++) {
       const time=tick/15;

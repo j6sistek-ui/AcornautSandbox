@@ -210,7 +210,9 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        if rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"}:
+        if rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
+            r"suits/(cinderforge|groveguard|cosmic|sunforged|abyssal)/parts\.png", rel
+        ):
             expected = (1024, 768)  # twelve isolated 256px puppet-part cells
         else:
             expected = (512, 512) if flagship else (256, 256)
@@ -1098,8 +1100,8 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
-    # Explicit owner request, 7 Sep 2026: replace these five obsolete flights
-    # with fresh sheets derived from their loadout portraits.
+    # Owner remaster, 9 Sep 2026: eleven painted cut parts and a separate
+    # continuous controller now replace these five historical 8/8 banks.
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
     "arcflash",   # explicit owner grant, 6 Sep 2026: video-led articulated rig
     "vanguard",   # owner grant, 5 Sep 2026: dedicated whole-character backend

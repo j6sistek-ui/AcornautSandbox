@@ -1,4 +1,4 @@
-import { canWearTrail, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
@@ -819,7 +819,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // an open trail simply equips.
     if (!canWearTrail(id, save.equippedSuit) || !trailUnlocked(save, id)) return "locked";
     // Fixed wake is presentation, not a replacement for the previous trail.
-    if (id === "vanguardwake" || id === "arcflashwake") return "equip";
+    if (builtInTrailSuit(id)) return "equip";
     save.equippedTrail = id;
     if (!save.unlockedTrails.includes(id)) save.unlockedTrails.push(id);
     writeSave(save);

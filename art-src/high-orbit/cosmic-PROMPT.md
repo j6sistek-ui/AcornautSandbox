@@ -1,0 +1,15 @@
+Use case: identity-preserve.
+Asset type: premium game character cutout animation parts master, production raster artwork.
+Input image is the EXISTING CHARACTER AND COSTUME REFERENCE. Remaster this exact character with materially higher detail and cleaner painting. Preserve all colors, markings, fasteners, plates and materials. This is ONE character disassembled into consistent painted parts for a skeletal animation rig, not a frame sequence.
+
+Make a precise THREE COLUMNS by FOUR ROWS atlas on a solid flat pure magenta (#FF00FF) production key background. Each of twelve equally sized cells has generous empty margins, pieces never cross cell boundaries, no labels, no text, no grids, no cast shadows. Tall canvas. All pieces use the same 3/4 camera facing RIGHT, same lighting from upper left, same scale/detail language. Anatomically complete shapes with small hidden-joint overlap allowance, smooth rounded joint caps; no torn edges. No duplicate body pieces or spare buttons.
+
+Exact cell order, left to right then down:
+Row1: (1) bare HEAD with two normal ears, two eyes and muzzle, neck connector at bottom, NO helmet and NO torso, NO tail fur near head; (2) complete rounded TORSO from neck socket to pelvis including continuous back, closed chest and all fixed costume panels, NO head/arms/legs/tail; (3) NEAR upper arm, complete shoulder armor to elbow.
+Row2: (4) NEAR forearm from elbow through wrist and complete brown-furred squirrel hand; (5) FAR upper arm, matching far-side shoulder to elbow; (6) FAR forearm and complete matching hand.
+Row3: (7) NEAR thigh from hip to knee, sturdy armor; (8) NEAR shin from knee to ankle with complete squirrel foot/boot as in reference, normal calf volume; (9) FAR thigh matching the costume, hip to knee.
+Row4: (10) FAR shin and complete foot matching the near leg; (11) exactly ONE large orange furry squirrel TAIL, elegant curved plume with its attachment root at LOWER RIGHT and curled tip toward UPPER LEFT; (12) entirely EMPTY solid magenta cell.
+
+All arm/leg pieces hang roughly downward in their own cells so upper joints are above lower joints. Head faces right with upright ears. Torso upright. Head/torso/limbs preserve the reference's cute substantial proportions; don't make thin stick legs. Each piece can occupy its cell independently for sharpness; rig export will restore relative scale. Head is a single fixed painting to prevent animation drift. Tail has no armor, no second root, no stray fur fragments. No electrical effects on the character; unique trails will be built separately. Rich polished hand-painted 3D game rendering, crisp fur strands, readable bevels, detailed materials, high quality clean edges. Improve resolution/detail, do not redesign.
+
+Character: Cosmic: orange-furred squirrel, lilac/violet fitted space armor with iridescent pink/blue nebula swirls and soft starlight points embedded in smooth rounded plates; pearl-lavender collar and seam edging. Preserve the exact rounded panels, same chest closure and magical galaxy material.

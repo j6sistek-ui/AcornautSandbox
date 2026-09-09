@@ -4,6 +4,10 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
+import {isHighOrbit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
+import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
+import {highOrbitPreview,type HighOrbitMotion} from "./high-orbit-motion";
+import {paintHighOrbitWake,type HighOrbitTravel} from "./high-orbit-effects";
 import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
@@ -1855,6 +1859,10 @@ function spillCanopyFrame(sp: Sprite) {
 
 function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveData, hole: SpillHole) {
   const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
+  if(isHighOrbit(suit.id)){
+    paintHighOrbitCockpit(ctx,art,suit.id,hole.cx,hole.cy,hole.rx,hole.ry);
+    return;
+  }
   if (suit.id === "arcflash") {
     paintArcflashCockpit(ctx,art,hole.cx,hole.cy,hole.rx,hole.ry);
     return;
@@ -3598,11 +3606,11 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:verdant": [196, 92, 45, 0],
   "suit:cryostar": [198, 93, 45, 0],
   "suit:eclipse": [204, 89, 58, -5],
-  "suit:cinderforge": [183, 93, 44],
-  "suit:groveguard": [183, 93, 44],
-  "suit:cosmic": [183, 93, 44],
-  "suit:sunforged": [183, 89, 42],
-  "suit:abyssal": [183, 93, 44],
+  "suit:cinderforge": [181, 88, 36],
+  "suit:groveguard": [181, 88, 36],
+  "suit:cosmic": [181, 88, 36],
+  "suit:sunforged": [181, 88, 36],
+  "suit:abyssal": [181, 88, 36],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [190, 100, 45, 0],
   "robo-tap-2": [190, 100, 45, 0],
@@ -4279,6 +4287,13 @@ function paintDome(
   const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
   const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
   const r = a[2] * scale;
+  paintRegisteredDome(ctx,helmet,hx,hy,r,a[3]||0,art);
+}
+
+/** Both measured frame banks and articulated skulls use the same helmet art
+ * and glass opening. A rig supplies its actual head transform directly. */
+function paintRegisteredDome(ctx:CanvasRenderingContext2D,helmet:(typeof HELMETS)[number],
+ hx:number,hy:number,r:number,headAngle:number,art?:ArtBank|null) {
   // the REAL helmet render sits on the head — scaled so its glass circle
   // matches the painted dome exactly
   const helmSpr = art?.helms?.[helmet.id];
@@ -4292,7 +4307,7 @@ function paintDome(
       // the POSE's head pitch - a motion frame whose head dives 55 degrees
       // carries that in its own dome anchor, so the rim and neck ring
       // follow the head instead of staying level through the dive.
-      const rot = (g[3] || 0) + (a[3] || 0);
+      const rot = (g[3] || 0) + headAngle;
       if (rot) {
         ctx.save();
         ctx.translate(hx, hy);
@@ -4326,6 +4341,12 @@ function paintDome(
   ctx.arc(hx, hy, r * 0.97, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
+}
+
+export function paintOrbitPilot(ctx:CanvasRenderingContext2D,art:ArtBank|null|undefined,id:HighOrbitId,
+ x:number,y:number,size:number,helmet:(typeof HELMETS)[number],state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0){
+  paintHighOrbit(ctx,art,id,x,y,size,state,travel,effects,pitch,
+    (hx,hy,r,angle)=>paintRegisteredDome(ctx,helmet,hx,hy,r,angle,art));
 }
 
 // presentation-only smoothing for the physics-pose banks: one shared clock
@@ -4730,6 +4751,10 @@ function paintIllustrated(
     paintArcflash(ctx, art, x, y, size);
     return;
   }
+  if (isHighOrbit(suit.id)) {
+    paintOrbitPilot(ctx,art,suit.id,x,y,size,helmet);
+    return;
+  }
   const suited = art?.suits?.[suit.id] ?? null;
   const body = suited ?? spr;
   if (!body) return;
@@ -5037,7 +5062,8 @@ function drawPilot(
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
   const arcflash = suit.id === "arcflash";
-  const independentRig = flagship || arcflash;
+  const orbit = isHighOrbit(suit.id);
+  const independentRig = flagship || arcflash || orbit;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
   const articulatedTap = independentRig || (NATURAL_FLIGHT_SUITS.has(suit.id) || !!art.suitBody?.[suit.id]) && w.tapAnimT >= 0;
   const eclipseImpact = ECLIPSE_FLIGHT_SUITS.has(suit.id) && w.bounceAnimT >= 0;
@@ -5085,6 +5111,9 @@ function drawPilot(
   else if (arcflash) paintArcflash(ctx, art, 0, 2, 52, w.arcflash,
     { x: x/localScale, y: y/localScale, travel: w.distance/localScale }, true,
     (suitPitchFor(save, suit.id) * Math.PI) / 180);
+  else if (isHighOrbit(suit.id)) paintOrbitPilot(ctx,art,suit.id,0,2,52,helm,w.highOrbit,
+    {x:x/localScale,y:(y+2*localScale)/localScale,travel:w.distance/localScale},true,
+    (suitPitchFor(save,suit.id)*Math.PI)/180);
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
@@ -5172,6 +5201,10 @@ export function paintPortrait(
   size: number,
   _t = 0,
 ) {
+  if(isHighOrbit(suit.id)){
+    paintOrbitPilot(ctx,art,suit.id,cx,cy+2,size,helmet,undefined,undefined,false);
+    return;
+  }
   // Always paint the PILOT wearing the helmet. Helmet-only art belongs
   // on the helmet cards, which have their own path — short-circuiting
   // here left the Flight suit showing a floating helmet and no squirrel.
@@ -5297,6 +5330,10 @@ export function paintFlightPreview(
   if (!art) return;
   if (suit.id === "arcflash") {
     paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx,t), undefined, true, pitch);
+    return;
+  }
+  if (isHighOrbit(suit.id)) {
+    paintOrbitPilot(ctx,art,suit.id,cx,cy,size,helmet,highOrbitPreview(ctx,suit.id,t),undefined,true,pitch);
     return;
   }
   if (suit.id === "vanguard") {
@@ -5452,6 +5489,7 @@ export function paintTrailPreview(
 ) {
   if (trail.id === "vanguardwake") paintVanguardWake(ctx, cx, cy, t);
   else if (trail.id === "arcflashwake") paintArcflashWake(ctx, cx, cy, t);
+  else if (highOrbitTrailSuit(trail.id)) paintHighOrbitWake(ctx,highOrbitTrailSuit(trail.id)!,cx,cy,t);
   else drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }
 
