@@ -46,8 +46,12 @@ ship('tier','thrusters-3').click();ship('tier','pulse-2').click();ship('spec','e
 ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.equal(JSON.stringify(engine.save),savedLaunch,'planning changes no save fields');
 button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
 engine.fly('spill');assert(app.querySelector('.ac-spillsetup'));assert(app.textContent.includes('Your next ship'));
-const setup=app.querySelector('.ac-spillsetup');setup.scrollTop=250;ship('starter','scanner').focus();ship('starter','scanner').click();assert.equal(app.querySelector('.ac-spillsetup').scrollTop,250);assert.equal(document.activeElement.dataset.shipStarter,'scanner');assert.deepEqual(engine.world.spill.utilities,['scanner']);ship('starter','magnet').click();
-assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true');
+assert(!app.querySelector('[data-ship-starter]'),'the entrance has no utility choices');
+assert(!app.querySelector('[data-ship-color]'),'appearance choices stay in Loadout');
+assert(!app.querySelector('[data-spill-upgrade]'),'upgrades are chosen at the Depot after landing');
+assert(!app.querySelector('.ac-setup-body [data-spill-control="land"]'),'Start stays outside the scrolling body');
+assert.equal(control('land').textContent,'START RUN');
+assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(engine.save.spillEngineColor,'copper');
 const beforeBriefing=JSON.stringify(engine.world.spill);
 control('setup-guide').click();assert(app.querySelector('.ac-spillhelpwrap'));
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true}));
@@ -61,6 +65,9 @@ control('land').click();assert.equal(engine.world.spill.phase,'docking');tick(20
 assert.equal(engine.world.spill.depotVisits,0);assert(app.querySelector('.ac-depotguidecard'));assert(!app.querySelector('[data-spill-control="plating"]'));
 const guidedState=JSON.stringify(engine.world.spill);control('enter-depot').click();assert.equal(Save.loadSave().spillDepotGuideSeen,true);
 assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
+assert.equal(app.querySelectorAll('.ac-workshop-system').length,4,'the opening Depot offers the four core upgrades');
+assert(!app.querySelector('.ac-workshop-utilities'),'utilities do not appear in the opening Depot');
+for(const id of ['magnet','scanner','brake','capacitor']) assert(!app.querySelector(`[data-spill-control="${id}"]`));
 control('guide').click();assert(app.textContent.includes('Unlocks stay'));control('enter-depot').click();assert.equal(JSON.stringify(engine.world.spill),guidedState);
 control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
 assert.equal(control('launch').textContent,'LAUNCH WAVE 1');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
@@ -96,7 +103,7 @@ control('inspect-pulse').click();assert.equal(s.ore,initial,'inspecting a system
 control('plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);
 control('plating').click();assert(button('Impact Bracing'));control('brace').click();assert.equal(s.specialties.plating,'brace');
 control('inspect-shield').click();control('shield').click();assert.equal(s.canopyLevel,1);assert.equal(s.shield,1);
-assert.equal(app.querySelectorAll('.ac-workshop-utility').length,4,'all utilities are visible without a tab');const card=app.querySelector('.ac-depotcard');card.scrollTop=820;control('magnet').focus();control('magnet').click();
+assert.equal(app.querySelectorAll('.ac-workshop-utility').length,4,'all four utilities appear at the wave 5 Depot');const card=app.querySelector('.ac-depotcard');card.scrollTop=820;control('magnet').focus();control('magnet').click();
 assert.equal(app.querySelector('.ac-depotcard').scrollTop,820);assert.equal(document.activeElement.dataset.spillControl,'magnet');control('scanner').click();assert(app.querySelector('.ac-workshop-utilities').textContent.includes('2 / 2 fitted'),'the live utility shelf is capped at two slots');assert(control('brake').textContent.includes('Swap'),'a third utility at the cap offers a swap, never a third slot');assert(!control('brake').disabled);control('brake').click();assert(app.querySelector('.ac-workshop-swap'),'the cap opens the replace prompt instead of fitting a third');assert.deepEqual(s.utilities,['magnet','scanner']);
 control('cancel-swap').click();assert.deepEqual(s.utilities,['magnet','scanner']);control('brake').click();control('replace-magnet').click();assert.deepEqual(s.utilities,['brake','scanner']);
 const swapOre=s.ore;control('scanner').click();control('magnet').click();assert.equal(s.ore,swapOre,'owned utilities refit free');assert.deepEqual(s.utilities,['brake','magnet']);
@@ -112,8 +119,8 @@ const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.include
 // A rematch always returns to an explicit, editable starting ship; guide is shown once.
 engine.world.spill.phase='over';engine.world.spill.hull=0;engine.world.spill.cause='impact';engine.world.spill.cues=['dead'];tick();
 button('CHOOSE SHIP & FLY AGAIN').click();assert(app.querySelector('.ac-spillsetup'));assert.equal(engine.world.spill.hull,3);assert.equal(engine.world.spill.ore,0);
-assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0});assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true');
-ship('starter','magnet').click();control('land').click();tick(200);assert(!app.querySelector('.ac-depotguidecard'));assert(control('launch').disabled);
+assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0});assert.equal(engine.save.spillEngineColor,'copper');
+assert(!app.querySelector('[data-ship-starter]'));control('land').click();tick(200);assert(!app.querySelector('.ac-depotguidecard'));assert(control('launch').disabled);
 // High-refresh displays keep 60 simulation steps and approximately 60 paints.
 Object.defineProperty(win,"devicePixelRatio",{value:3,configurable:true});
 for(const hz of [120,90,144]) {

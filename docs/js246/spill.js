@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=242";
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=246";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -28,8 +28,8 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=242";
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=242";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=242";
+import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=246";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=246";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -227,7 +227,7 @@ export const SPILL_SHOP = {
     pulse: {
         name: "Impact pulse",
         prices: [60, 110, 170],
-        levels: ["Breaks debris on a charged hit", "Second blast readies after 5 seconds", "Wider blast · debris drops coins"],
+        levels: ["Breaks debris on a charged hit", "Second blast readies after 5 seconds", "Wider blast · debris drops Acorn Coins"],
     },
     shield: {
         name: "Shields",
@@ -930,7 +930,7 @@ function settleContract(s) {
         s.contractsDone++;
         s.score += 500;
     }
-    s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} COINS` : "CONTRACT MISSED · choose another";
+    s.contractMessage = won ? `CONTRACT COMPLETE · +${c.reward} ACORN COINS` : "CONTRACT MISSED · choose another";
     s.contract = null;
     cue(s, "contract");
 }

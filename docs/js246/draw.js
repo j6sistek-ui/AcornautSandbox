@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=242";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=242";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=242";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=242";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=242";
-import { arcflashPreview } from "./arcflash-motion.js?v=242";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=242";
-import { spillAppearance } from "./spill-appearance.js?v=242";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=242";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=242";
-import { goalHud } from "./campaign.js?v=242";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=242";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=242";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=242";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=242";
-import { suitPitchFor } from "./save.js?v=242";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=242";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=242";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=242";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=242";
-import { spillEngineColor } from "./spill-content.js?v=242";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=242";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=242";
+import { spillDockTravelDuration } from "./spill.js?v=246";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=246";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=246";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=246";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=246";
+import { arcflashPreview } from "./arcflash-motion.js?v=246";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=246";
+import { spillAppearance } from "./spill-appearance.js?v=246";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=246";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=246";
+import { goalHud } from "./campaign.js?v=246";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=246";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=246";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=246";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=246";
+import { suitPitchFor } from "./save.js?v=246";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=246";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=246";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=246";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=246";
+import { spillEngineColor } from "./spill-content.js?v=246";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=246";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=246";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2446,9 +2446,9 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         // on a phone a long line pushed the sprites off the panel's edge.
         const lines = [
             "SURVIVE THE WAVES",
-            "COLLECT COINS",
+            "COLLECT ACORN COINS",
             compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
-                : "EVERY 5 WAVES: DEPOT · SPEND COINS · UPGRADE THE SHIP",
+                : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
             compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
                 : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
             "PRESS TO LAUNCH",
@@ -3734,39 +3734,39 @@ const DOME = {
     "ember-desc-7": [174, 150, 40, 35],
     "ember-desc-8": [167, 151, 40, 40],
     // cryostar — pose-specific head and collar registration.
-    "cryostar-asc-1": [186.12, 100.98, 29.4, 6.56],
-    "cryostar-asc-2": [182.71, 97.05, 29.4, 11.37],
-    "cryostar-asc-3": [175.62, 96.11, 29.4, 16.59],
-    "cryostar-asc-4": [169.77, 94.99, 29.4, 27.30],
-    "cryostar-asc-5": [173.87, 84.28, 29.4, -8.71],
-    "cryostar-asc-6": [173.33, 76.83, 29.4, -4.66],
-    "cryostar-asc-7": [168.96, 73.36, 29.4, 3.64],
-    "cryostar-asc-8": [166.41, 66.93, 29.4, 9.99],
-    "cryostar-desc-1": [186.12, 100.98, 29.4, 6.56],
-    "cryostar-desc-2": [188.27, 112.56, 29.4, 12.09],
-    "cryostar-desc-3": [182.56, 125.13, 29.4, 22.89],
-    "cryostar-desc-4": [172.66, 135.34, 29.4, 37.19],
-    "cryostar-desc-5": [189.38, 145.08, 29.4, 25.51],
-    "cryostar-desc-6": [184.1, 154.64, 29.4, 32.11],
-    "cryostar-desc-7": [164.13, 156.76, 29.4, 41.11],
-    "cryostar-desc-8": [149.07, 155.58, 29.4, 47.66],
+    "cryostar-asc-1": [189, 81, 56, -5],
+    "cryostar-asc-2": [189.5, 79.5, 56, -5],
+    "cryostar-asc-3": [188, 78.5, 56, -5],
+    "cryostar-asc-4": [188.5, 77.5, 56, -5],
+    "cryostar-asc-5": [188.5, 79, 56, -5],
+    "cryostar-asc-6": [193.5, 74.5, 56, -5],
+    "cryostar-asc-7": [195.5, 79.5, 56, -5],
+    "cryostar-asc-8": [196, 87, 56, -5],
+    "cryostar-desc-1": [202.5, 87, 56, 0],
+    "cryostar-desc-2": [201, 104, 56, 5],
+    "cryostar-desc-3": [188, 126.5, 56, 15],
+    "cryostar-desc-4": [186.5, 137, 56, 20],
+    "cryostar-desc-5": [186.5, 147, 56, 25],
+    "cryostar-desc-6": [185, 157.5, 56, 30],
+    "cryostar-desc-7": [184.5, 163.5, 56, 35],
+    "cryostar-desc-8": [185.5, 163.5, 56, 35],
     // verdant — pose-specific head and collar registration.
-    "verdant-asc-1": [184.91, 101.68, 29.4, 6.77],
-    "verdant-asc-2": [183.86, 96.27, 29.4, 1.65],
-    "verdant-asc-3": [180.02, 92.67, 29.4, -1.80],
-    "verdant-asc-4": [172.38, 92.64, 29.4, 15.17],
-    "verdant-asc-5": [178.04, 79.97, 29.4, -4.08],
-    "verdant-asc-6": [181.59, 66.99, 29.4, -6.07],
-    "verdant-asc-7": [179.68, 58.61, 29.4, -0.37],
-    "verdant-asc-8": [173.21, 56.05, 29.4, 6.78],
-    "verdant-desc-1": [184.91, 101.68, 29.4, 6.77],
-    "verdant-desc-2": [182.48, 114.78, 29.4, 10.00],
-    "verdant-desc-3": [181.86, 125.28, 29.4, 12.55],
-    "verdant-desc-4": [170.06, 135.48, 29.4, 11.30],
-    "verdant-desc-5": [186.56, 144.79, 29.4, 15.40],
-    "verdant-desc-6": [178.26, 153.07, 29.4, 15.28],
-    "verdant-desc-7": [170.08, 159.41, 29.4, 13.73],
-    "verdant-desc-8": [160.12, 162.75, 29.4, 14.57],
+    "verdant-asc-1": [187, 82.5, 56, -5],
+    "verdant-asc-2": [189.5, 80.5, 56, -5],
+    "verdant-asc-3": [186, 79.5, 56, -5],
+    "verdant-asc-4": [189, 78.5, 56, -5],
+    "verdant-asc-5": [188.5, 79, 56, -5],
+    "verdant-asc-6": [193.5, 75, 56, -5],
+    "verdant-asc-7": [195.5, 80, 56, -5],
+    "verdant-asc-8": [196, 88, 56, -5],
+    "verdant-desc-1": [203.5, 87, 56, 0],
+    "verdant-desc-2": [203, 104, 56, 5],
+    "verdant-desc-3": [187.5, 127, 56, 15],
+    "verdant-desc-4": [187.5, 137, 56, 20],
+    "verdant-desc-5": [185.5, 148.5, 56, 25],
+    "verdant-desc-6": [185.5, 158, 56, 30],
+    "verdant-desc-7": [185, 164.5, 56, 35],
+    "verdant-desc-8": [186.5, 165, 56, 35],
     // gemmie — pose-specific head and collar registration.
     "gemmie-asc-1": [180.26, 104.36, 30.8, 4.34],
     "gemmie-asc-2": [180.68, 98.42, 30.8, 5.01],
@@ -4225,7 +4225,12 @@ let motionVyClock = -1;
 // 9/s a tap's -450 impulse crossed zero in about four frames, so the
 // neutral pose flashed by unseen. 5.5/s puts the level frame on screen
 // for ~150ms on the way through, in both directions.
-const POSE_SMOOTH = 5.5;
+// HOW FAST THE POSE FOLLOWS THE CLIMB (owner, 8 Sep 2026: "it had a visual
+// animation"). At 5.5 the smoother ate the tap spike whole: measured over a
+// real run at the owner's own cadence (31 taps in 20s), the pose reached
+// three of eight frames and changed on 2% of frames - a still with a twitch.
+// See POSE_CLIMB_SPAN below for the other half of the fix.
+const POSE_SMOOTH = 24;
 function smoothMotionVy(t, vy) {
     const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
     motionVyClock = t;
@@ -4240,14 +4245,107 @@ function smoothMotionVy(t, vy) {
 // linear and more hyperbolic". Applied to both ramps so a climb stays
 // symmetrical.
 export const POSE_CURVE = 1.7;
-// THE DIVE IS SHALLOW, FOR EVERY SUIT (owner, 2 Sep 2026: "shallow is the
-// dive answer across the board", "full frames not ascent only"). The two
-// pause-sheet dials that let this be judged mid-run are gone; what they
-// settled on is fixed here. The dive half of the range is halved before
-// the pose curve, so a dive reaches the first THREE frames of its ramp
-// and no deeper (0.5^1.7 = 0.31 of an eight-frame ramp); every frame of
-// the climb flies. The loadout case sweeps exactly this reach.
-export const POSE_DIVE_DEPTH = 0.5;
+// THE DIVE FLIES ITS WHOLE RAMP (owner, 8 Sep 2026: "as long as the frames
+// are there.. then the codes broken", "let me see how it FEELS").
+//
+// This was 0.5, from 2 Sep: "shallow is the dive answer across the board".
+// The complaint behind that ruling was that a MILD dive already sat three
+// frames deep - "pitch at 0 ... is aggressive" - and TWO fixes landed for
+// it on the same day: POSE_CURVE, which holds gentle attitudes in the first
+// frames, and this cap on top of it. The curve alone does the job. The cap
+// was belt and braces, and it cost five of every eight dive frames:
+//
+//   fall px/s      100     200     300     400     500    620+
+//   cap at 0.5     desc-1  desc-1  desc-2  desc-2  desc-2  desc-3
+//   no cap         desc-1  desc-2  desc-3  desc-4  desc-6  desc-8
+//
+// A light dive moves ONE frame. What comes back is the deep end - the
+// frames the sheets were drawn around and the game had never once painted,
+// on 22 suits. Nothing rotates: for a bank suit rigPitch is 0 in the
+// shipped motion mode, so this picks a painted frame and the attitude is
+// whatever the artist drew into it.
+//
+// This is the DEFAULT. Per-suit overrides live in SUIT_DIVE_DEPTH below,
+// because one global number could not survive the owner's roster review.
+export const POSE_DIVE_DEPTH = 1;
+// THE FROZEN ROSTER (owner, 9 Sep 2026, flying the whole thing after the
+// ramp landed: "ok honestly they all fly. it's much better").
+//
+// The review named twelve suits as finished and OFF LIMITS while the rest
+// are worked on - "there need to be frozen untouchable while tweaking other
+// suits" - and that is not something a comment can enforce. Six of them fly
+// an ascent/descent bank, so before this they shared ONE dive dial with
+// every suit the same review called awful. Tuning Ion moved Eclipse.
+//
+//   AcorNut     "Perfect"          Big Booty   "perfect"
+//   Flight      "just ok, but it's base level, introductory and free, good"
+//   Robo        "great for its character"
+//   Alien       "a bit odd, but it's an alien, keep it"
+//   Volt        "unique but looks fluid"
+//   Cyber       "more of a cruise but matches its character, the tail does
+//                almost all the work"
+//   Eclipse     "very good"        Seraph      "solid flier now"
+//   Arcflash    "beautiful but unique and shouldn't be copied"
+//   Cat         "amazing"
+//   Briella's   "the motion is incredible, honestly ideal for standard to
+//                replicate against"
+//
+// AcorNut, Arcflash, Robo, Big Booty, Volt and Cat reach no dial at all -
+// their own painters or 16-frame tap banks answer first - so freezing them
+// is a matter of not touching those paths. The six that DO ride this dial
+// are pinned here at the value they were approved on, and the harness
+// fails if any of them moves. Do not edit a frozen line without the owner
+// saying so in as many words.
+//
+// Everything else is tunable. The values below are the same review's own
+// complaints, in one word each: the over-divers come back, and the suits
+// whose dive frames "barely do work" are held to the shallow end until
+// their art is regenerated.
+export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
+    "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat"];
+export const SUIT_DIVE_DEPTH = {
+    // ---- FROZEN: approved 9 Sep 2026, do not touch ----
+    flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
+    // ---- tunable ----
+    // "dives a bit too steep visually, over rotates but tail doesn't do
+    // enough on the way up" - the High Orbit five
+    cinderforge: 0.7, groveguard: 0.7, cosmic: 0.7, sunforged: 0.7, abyssal: 0.7,
+    // "Ion is ok - a bit steep on the dive"; "Copper is ok: same dive"
+    iontrim: 0.7, copper: 0.7,
+    // "deep dive, a little drift between frames but not too noticeable"
+    leviathan: 0.7,
+    // Regenerated in Eclipse's full pose sequence; use its full dive range.
+    cryostar: 1, verdant: 1,
+    // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
+    // teetering effect otherwise good" - and the game's own dome anchors say
+    // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at
+    // [198, 129], a 65px head jump in a single step, by far the largest in
+    // any bank. 0.5 caps the dive at desc-3, so the jump cannot play at all.
+    // A real transitional frame replaces this; until then the teeter is gone
+    // and five dive frames are parked.
+    ghost: 0.5,
+    // "massive suit drift between frames and over dive, limited tail" /
+    // "twitchies and minimal motion" / "twitching a lot" / "frame to frame
+    // suit drift has it shifting looks". Held shallow so the frames that do
+    // the least are on screen the least, pending regenerated art.
+    voidsuit: 0.5, ember: 0.5, frost: 0.5, sammie: 0.5, gemmie: 0.5,
+};
+/** The dive dial this suit flies: its own if it has one, else the default. */
+export function diveDepthFor(id) {
+    const v = SUIT_DIVE_DEPTH[id];
+    return typeof v === "number" ? v : POSE_DIVE_DEPTH;
+}
+// THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
+// 470 px/s, and the game never gets there - a hard climb peaks near 428, so
+// even the best tap asked for 60% of the ramp, which POSE_CURVE then bent
+// down to about 30%. The deep frames of every ascent bank were unreachable
+// art. 260 is measured, not guessed: the pose walks all eight frames and
+// changes on 20% of frames, against the 22% of the spring tail that a motion
+// bank REPLACES (fullMotion suppresses the rig tail, so this ramp is the
+// whole animation for a suit that has one). The dive keeps its own 620 and
+// POSE_DIVE_DEPTH untouched - the shallow dive is the owner's call from
+// 2 Sep and this changes nothing about it.
+export const POSE_CLIMB_SPAN = 260;
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
 // The shipped mapping poses the body by INSTANTANEOUS vertical speed, and
@@ -4292,6 +4390,9 @@ export const POSE_DIVE_DEPTH = 0.5;
 // roughly 130 degrees on every hop, so eight frames of bank have to cover
 // that whole sweep and the frames turn over quickly.
 const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+// Owner-requested Eclipse motion transfer, 8 Sep 2026. These whole-character
+// banks share Eclipse's heading, preview arc and contact response.
+const ECLIPSE_FLIGHT_SUITS = new Set(["eclipse", "cryostar", "verdant"]);
 // Suits with no painted motion banks get the same flight from their RIG.
 // Measured off Eclipse's banks, its motion is mostly two rotations: the body
 // pitches about 19 degrees through the climb and about 40 through the dive,
@@ -4603,11 +4704,11 @@ poseOverride = NaN) {
                 }
                 else {
                     const sv = smoothMotionVy(_t, motionVy);
-                    v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+                    v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
                 }
                 // shape the attitude: the dive half shallowed, both halves curved
                 if (v > 0)
-                    v *= POSE_DIVE_DEPTH;
+                    v *= diveDepthFor(suit.id);
                 v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
             }
             const diving = v > 0;
@@ -4755,7 +4856,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     if (flagship)
         paintVanguardContacts(ctx, w.vanguard);
     const articulatedTap = independentRig || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
-    const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
+    const eclipseImpact = ECLIPSE_FLIGHT_SUITS.has(suit.id) && w.bounceAnimT >= 0;
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(localScale, localScale);
@@ -4804,11 +4905,9 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintArcflash(ctx, art, 0, 2, 52, w.arcflash, { x: x / localScale, y: y / localScale, travel: w.distance / localScale }, true, (suitPitchFor(save, suit.id) * Math.PI) / 180);
     else
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-        // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
-        // is only heading for eclipse. everything else stays as it was"). The
-        // switch that cycled Eclipse's three mappings is gone; Eclipse flies
-        // heading, every other suit flies the shipped pose-per-velocity curve.
-        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, suit.id === "eclipse" ? 2 : 0, w.speed, lean);
+        // Cryostar and Verdant now share Eclipse's heading mapping by owner
+        // request. All three use the same smoother, pose curve and frame index.
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
@@ -5068,7 +5167,7 @@ pitch = 0) {
     // Tap-bank suits keep the beat, because their tap IS the showcase.
     const ascN = art.suitAsc?.[suit.id]?.length ?? 0;
     const descN = art.suitDesc?.[suit.id]?.length ?? 0;
-    const swept = !sweep && ascN > 0 && descN > 0 && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
+    const swept = !sweep && !ECLIPSE_FLIGHT_SUITS.has(suit.id) && ascN > 0 && descN > 0 && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
     let sweptPose = NaN;
     let vy = -KICK + PULL * p;
     let rise = -KICK * p + (PULL * p * p) / 2; // zero at both ends of a beat
@@ -5085,7 +5184,8 @@ pitch = 0) {
     if (swept) {
         const STEP = 0.13; // seconds per frame
         const up = ascN - 1; // asc-1 .. asc-N
-        const reach = Math.round(Math.pow(POSE_DIVE_DEPTH, POSE_CURVE) * (descN - 1));
+        const dive = diveDepthFor(suit.id);
+        const reach = Math.round(Math.pow(dive, POSE_CURVE) * (descN - 1));
         const down = reach + 1; // asc-1 -> desc-1 .. desc-(reach+1)
         const SWEEP = 2 * STEP * (up + down);
         const x = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP;
@@ -5099,8 +5199,8 @@ pitch = 0) {
         // the lean and the bob follow the same arc: the velocity that would
         // have produced this attitude in play, the dive side at its shallow cap
         vy = sweptPose < 0
-            ? -470 * Math.pow(-sweptPose, 1 / POSE_CURVE)
-            : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / POSE_DIVE_DEPTH;
+            ? -POSE_CLIMB_SPAN * Math.pow(-sweptPose, 1 / POSE_CURVE)
+            : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / dive;
         rise = -70 * Math.sin(x * Math.PI * 2);
         rot = Math.max(-0.34, Math.min(0.6, vy / 900));
     }
@@ -5317,22 +5417,25 @@ function drawHudBody(ctx, w, art, save) {
             const compact = W < 520;
             const lineHeight = compact ? 20 : 21;
             const panelWidth = Math.min(W - 24, compact ? 430 : 560);
-            const panelHeight = readyLines.length * lineHeight + 28;
+            const panelHeight = readyLines.length * lineHeight + 40;
             const panelTop = Math.min(w.H - (w.insetTop || 0) - panelHeight - 12, Math.max(96, w.H * 0.66));
-            ctx.fillStyle = "rgba(4,8,20,.78)";
-            ctx.strokeStyle = "rgba(169,245,255,.34)";
+            ctx.fillStyle = "#101830";
+            ctx.strokeStyle = "#2a3454";
             ctx.lineWidth = 1;
-            round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 12);
+            round(ctx, W / 2 - panelWidth / 2, panelTop, panelWidth, panelHeight, 18);
             ctx.fill();
             ctx.stroke();
+            ctx.fillStyle = "#4ab4ff";
+            round(ctx, W / 2 - panelWidth / 2 + 10, panelTop + panelHeight - 44, panelWidth - 20, 34, 16);
+            ctx.fill();
             ctx.textAlign = "center";
             readyLines.forEach((line, i) => {
                 const isLaunch = i === readyLines.length - 1;
-                ctx.fillStyle = isLaunch ? "#ffe086" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
+                ctx.fillStyle = isLaunch ? "#0c1224" : i === 0 ? "#fff" : "rgba(215,230,247,.9)";
                 ctx.font = isLaunch
-                    ? "900 15px Figtree, system-ui"
+                    ? "800 18px Figtree, system-ui"
                     : i === 0 ? "900 14px Figtree, system-ui" : "800 14px Figtree, system-ui";
-                ctx.fillText(line, W / 2, panelTop + 21 + i * lineHeight);
+                ctx.fillText(line, W / 2, isLaunch ? panelTop + panelHeight - 19 : panelTop + 21 + i * lineHeight);
             });
         }
         return;
