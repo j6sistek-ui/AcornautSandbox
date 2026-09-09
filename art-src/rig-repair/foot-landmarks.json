@@ -1,0 +1,11 @@
+{
+  "description": "Manually inspected heel and toe points in the original 256px shin cells. Coordinates precede static registration; far toes on four atlases face left. All atlases remain byte-identical.",
+  "feet": {
+    "arcflash": [{"cell":7,"heel":[101,190],"toe":[165,231]}, {"cell":9,"heel":[147,185],"toe":[96,226]}],
+    "cinderforge": [{"cell":7,"heel":[101,205],"toe":[165,231]}, {"cell":9,"heel":[164,209],"toe":[93,231]}],
+    "groveguard": [{"cell":7,"heel":[105,200],"toe":[170,232]}, {"cell":9,"heel":[150,207],"toe":[98,231]}],
+    "cosmic": [{"cell":7,"heel":[105,195],"toe":[170,233]}, {"cell":9,"heel":[165,207],"toe":[101,231]}],
+    "sunforged": [{"cell":7,"heel":[107,210],"toe":[164,234]}, {"cell":9,"heel":[99,213],"toe":[154,235]}],
+    "abyssal": [{"cell":7,"heel":[101,202],"toe":[167,226]}, {"cell":9,"heel":[98,210],"toe":[164,232]}]
+  }
+}

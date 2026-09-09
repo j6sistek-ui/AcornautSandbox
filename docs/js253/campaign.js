@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=249";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=249";
-import { IS_BETA, PALS } from "./catalog.js?v=249";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=249";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=253";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=253";
+import { IS_BETA, PALS } from "./catalog.js?v=253";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=253";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [

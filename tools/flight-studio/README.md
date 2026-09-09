@@ -33,6 +33,14 @@ move the viewer into a separate window or use the button.
 
 ## Start tuning
 
+Art 253 includes the repaired Arcflash and High Orbit foot registration,
+fuller hind legs and tucked posture. High Orbit's native motion now includes
+head nods and stronger tap-driven tail recoil. The Body parts controls tune
+on top of that motion. Sunforged and Groveguard's sealed helmets replace the
+bare head when selected, so ears do not protrude around the metal shell.
+Older exported presets still import, with a source-change warning to prompt
+a fresh motion review. Their settings are not silently reset.
+
 1. Select a model. All 31 current catalog models are included. Seven use
    articulated cut rigs: AcorNut, Arcflash and the five High Orbit suits.
 2. Leave the pattern playing, or pause and scrub to a troublesome moment.

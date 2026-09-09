@@ -2,6 +2,7 @@ import { HIGH_ORBIT_PARTS } from './high-orbit-parts.mjs';
 import { HIGH_ORBIT_HEAD_RADIUS, HIGH_ORBIT_DISPLAY_SPAN } from './high-orbit-config.mjs';
 import { createHighOrbitMotion } from './high-orbit-motion.mjs';
 import { paintHighOrbitEffect } from './high-orbit-effects.mjs';
+import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.mjs';
 const DEG = Math.PI / 180;
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const rotate = (p, a) => [p[0] * Math.cos(a * DEG) - p[1] * Math.sin(a * DEG), p[0] * Math.sin(a * DEG) + p[1] * Math.cos(a * DEG)];
@@ -11,7 +12,7 @@ export const HIGH_ORBIT_ANATOMY = { headRadius: HIGH_ORBIT_HEAD_RADIUS, displayS
 const NS = [-19, 18], FS = [13, 14], NH = [-12, 56], FH = [12, 51], TAIL = [-26, 57];
 const skull = [181, 88];
 /** The skull center is registered independently of the torso. The neck follows
- * the underside of the fixed-size head; no stretchy neck or fitting by alpha. */
+ * the underside of the fixed-size head as it nods; no stretchy neck or fitting by alpha. */
 export function highOrbitLandmarks(id, p, pitch = 0) {
     const h = HIGH_ORBIT_PARTS[id][0], scale = HIGH_ORBIT_HEAD_RADIUS / h.skull[2];
     const head = [skull[0], skull[1] + p.heave];
@@ -26,13 +27,10 @@ export function highOrbitLandmarks(id, p, pitch = 0) {
     return Object.fromEntries(Object.entries(raw).map(([k, q]) => [k, add([128, 128], rotate([q[0] - 128, q[1] - 128], pitch / DEG))]));
 }
 function part(ctx, atlas, id, index, a, b) {
-    const spec = HIGH_ORBIT_PARTS[id][index], dx = spec.b[0] - spec.a[0], dy = spec.b[1] - spec.a[1];
-    const tx = b[0] - a[0], ty = b[1] - a[1], scale = Math.hypot(tx, ty) / Math.hypot(dx, dy);
+    const spec = HIGH_ORBIT_PARTS[id][index], fit = rigLimbFit(id, index);
     ctx.save();
-    ctx.translate(...a);
-    ctx.rotate(Math.atan2(ty, tx) - Math.atan2(dy, dx));
-    ctx.scale(scale, scale);
-    ctx.drawImage(atlas, index % 4 * 256, Math.floor(index / 4) * 256, 256, 256, -spec.a[0], -spec.a[1], 256, 256);
+    ctx.transform(...rigPartMatrix(spec, a, b, fit.breadth, fit.facing));
+    ctx.drawImage(atlas, index % 4 * 256, Math.floor(index / 4) * 256, 256, 256, 0, 0, 256, 256);
     ctx.restore();
 }
 export const HIGH_ORBIT_TAIL_TRIANGLES = [];
@@ -88,7 +86,7 @@ export function highOrbitStill(id) { let s = stills.get(id); if (!s) {
 } return s; }
 /** Shared live/preview/portrait painter. size is a 192px body reference, not
  * this pose's alpha bounds. Each named skull is exactly 36px in that space. */
-export function paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects = true, pitch = 0, helmet) {
+export function paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects = true, pitch = 0, helmet, sealedHead = false) {
     const s = state ?? highOrbitStill(id), p = s.pose, j = highOrbitLandmarks(id, p, pitch), unit = size / HIGH_ORBIT_DISPLAY_SPAN;
     const atlas = art?.highOrbit?.[id];
     ctx.save();
@@ -109,12 +107,16 @@ export function paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects 
         part(ctx, atlas, id, 2, j.nearShoulder, j.nearElbow);
         part(ctx, atlas, id, 3, j.nearElbow, j.nearWrist);
         const head = HIGH_ORBIT_PARTS[id][0], scale = HIGH_ORBIT_HEAD_RADIUS / head.skull[2];
-        ctx.save();
-        ctx.translate(...j.head);
-        ctx.rotate(p.head * DEG + pitch);
-        ctx.scale(scale, scale);
-        ctx.drawImage(atlas, 0, 0, 256, 256, -head.skull[0], -head.skull[1], 256, 256);
-        ctx.restore();
+        // A complete opaque helmet replaces the bare head. Drawing both leaves
+        // ear tips peeking through the helmet's transparent exterior corners.
+        if (!sealedHead) {
+            ctx.save();
+            ctx.translate(...j.head);
+            ctx.rotate(p.head * DEG + pitch);
+            ctx.scale(scale, scale);
+            ctx.drawImage(atlas, 0, 0, 256, 256, -head.skull[0], -head.skull[1], 256, 256);
+            ctx.restore();
+        }
         helmet?.(j.head[0], j.head[1], HIGH_ORBIT_HEAD_RADIUS, p.head + pitch / DEG);
     }
     else {

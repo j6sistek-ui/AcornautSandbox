@@ -4346,7 +4346,8 @@ function paintRegisteredDome(ctx:CanvasRenderingContext2D,helmet:(typeof HELMETS
 export function paintOrbitPilot(ctx:CanvasRenderingContext2D,art:ArtBank|null|undefined,id:HighOrbitId,
  x:number,y:number,size:number,helmet:(typeof HELMETS)[number],state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0){
   paintHighOrbit(ctx,art,id,x,y,size,state,travel,effects,pitch,
-    (hx,hy,r,angle)=>paintRegisteredDome(ctx,helmet,hx,hy,r,angle,art));
+    (hx,hy,r,angle)=>paintRegisteredDome(ctx,helmet,hx,hy,r,angle,art),
+    helmet.opaqueVisor===true&&!!art?.helms?.[helmet.id]);
 }
 
 // presentation-only smoothing for the physics-pose banks: one shared clock

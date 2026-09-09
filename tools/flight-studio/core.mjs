@@ -1,7 +1,7 @@
 // Pure, fixed-step studio runtime. No DOM, save storage, random numbers or I/O.
 // This module and the exported preset form the integration contract; game
 // simulation remains the authority when applying a tuned profile later.
-import {createHighOrbitMotion,stepHighOrbit} from './game/high-orbit-motion.mjs';
+import {createHighOrbitMotion,stepHighOrbit,highOrbitTap} from './game/high-orbit-motion.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
@@ -99,6 +99,7 @@ export function acceptTap(s,p){
   else if(p.retrigger==='queue')s.queued=true;
   s.downAge=0;s.diving=false;s.tapCount++;
   if(s.model.family==='arcflash')arcflashTap(s.native,450);
+  if(s.model.family==='high-orbit')highOrbitTap(s.native,450);
   if(s.model.family==='acornut')maneuverTap(s.native,450);
 }
 export function acceptDive(s){s.diving=true;if(s.model.family==='arcflash')arcflashDive(s.native);}

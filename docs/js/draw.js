@@ -1,31 +1,31 @@
-import { spillDockTravelDuration } from "./spill.js?v=252";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=252";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=252";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=252";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=252";
-import { arcflashPreview } from "./arcflash-motion.js?v=252";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=252";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=252";
-import { highOrbitPreview } from "./high-orbit-motion.js?v=252";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=252";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=252";
-import { spillAppearance } from "./spill-appearance.js?v=252";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=252";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=252";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=252";
-import { goalHud } from "./campaign.js?v=252";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=252";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=252";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=252";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=252";
-import { suitPitchFor } from "./save.js?v=252";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=252";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=252";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=252";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=252";
-import { spillEngineColor } from "./spill-content.js?v=252";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=252";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=252";
+import { spillDockTravelDuration } from "./spill.js?v=253";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=253";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=253";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=253";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=253";
+import { arcflashPreview } from "./arcflash-motion.js?v=253";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=253";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=253";
+import { highOrbitPreview } from "./high-orbit-motion.js?v=253";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=253";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=253";
+import { spillAppearance } from "./spill-appearance.js?v=253";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=253";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=253";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=253";
+import { goalHud } from "./campaign.js?v=253";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=253";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=253";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=253";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=253";
+import { suitPitchFor } from "./save.js?v=253";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=253";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=253";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=253";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=253";
+import { spillEngineColor } from "./spill-content.js?v=253";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=253";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=253";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4245,7 +4245,7 @@ function paintRegisteredDome(ctx, helmet, hx, hy, r, headAngle, art) {
     ctx.restore();
 }
 export function paintOrbitPilot(ctx, art, id, x, y, size, helmet, state, travel, effects = true, pitch = 0) {
-    paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects, pitch, (hx, hy, r, angle) => paintRegisteredDome(ctx, helmet, hx, hy, r, angle, art));
+    paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects, pitch, (hx, hy, r, angle) => paintRegisteredDome(ctx, helmet, hx, hy, r, angle, art), helmet.opaqueVisor === true && !!art?.helms?.[helmet.id]);
 }
 // presentation-only smoothing for the physics-pose banks: one shared clock
 // keyed on world time, so pause holds the pose and resume never jumps

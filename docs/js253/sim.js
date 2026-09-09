@@ -1,19 +1,22 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=249";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=249";
-import { trailWornBy } from "./catalog.js?v=249";
-import { missionRandom } from "./mission-rng.js?v=249";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=249";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=249";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=249";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=249";
-import { platform } from "./platform.js?v=249";
-import { TUTORIAL_SUIT } from "./catalog.js?v=249";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=249";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=249";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=249";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=249";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=249";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=249";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=253";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=253";
+import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=253";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=253";
+import { trailWornBy } from "./catalog.js?v=253";
+import { missionRandom } from "./mission-rng.js?v=253";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=253";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=253";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=253";
+import { nextFamilyPlanet } from "./planet-family.js?v=253";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=253";
+import { platform } from "./platform.js?v=253";
+import { TUTORIAL_SUIT } from "./catalog.js?v=253";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=253";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=253";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=253";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=253";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=253";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=253";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -67,6 +70,7 @@ export function makeWorld(W, H) {
         tapAnimT: -1,
         vanguard: createVanguardMotion(),
         arcflash: createArcflashMotion(),
+        highOrbit: createHighOrbitMotion(),
         tapAnimDir: 1,
         tapAnimFromRot: 0,
         bounceAnimT: -1,
@@ -451,27 +455,12 @@ function difficulty(w) {
     };
 }
 function pickKind(w) {
-    const idx = envIndexFor(w, w.score);
-    const env = ENVS[idx];
-    if (Math.random() < 0.55)
-        return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
-    // free pick, but never one that would vanish into this sky: reject
-    // planets whose luminance sits too close to the backdrop's
-    const sky = SKY_RGB[skyIdFor(w.flight, idx)];
-    for (let i = 0; i < 10; i++) {
-        const k = Math.floor(Math.random() * PLANET_COUNT);
-        if (sep(sky, PLANET_RGB[k]) >= MIN_SEP)
-            return k;
-    }
-    return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+    w.planetBag ?? (w.planetBag = { env: -1, remaining: [], last: -1 });
+    return nextFamilyPlanet(w.planetBag, envIndexFor(w, w.score), w.planetRng ?? Math.random);
 }
-// Debris follows the zone's palette, and never blends into its sky.
-// Debris comes ONLY from the zone's own three-rock family. Rolling the
-// whole pool put six materials on one screen and the eye had nowhere to
-// rest — a zone should read as one place. All 27 rocks still fly; they
-// are spread ACROSS the 26 zones instead of stacked inside each one.
+// Each zone owns two or three debris materials.
 function pickDebris(env) {
-    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
+    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)];
 }
 // Fully seal the corridor above the top gate and below the bottom one,
 // packed tight enough that the flight lane cannot be slipped around.
@@ -548,7 +537,7 @@ function sealBlockers(w, env, gapY, gap) {
         blockers.push({
             y,
             r: rr,
-            kind: pickKind(w),
+            kind: env.planetBias[0], // fallback only; rocks must not consume the gate bag
             xOff: ((n % 2) * 2 - 1) * (2 + (w.missionRng ?? Math.random)() * 5),
             // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
             // own clock - up to its own RADIUS either way, at its own speed, from
@@ -956,10 +945,7 @@ function spawnPair(w, save, x) {
         // object as far as the eye is concerned - a striped giant above and an
         // ice moon below reads as two things that happen to be near each other,
         // not as a gap through a place. Diversity lives ACROSS gates, which is
-        // what pickKind is already for: 55% from the zone's own family and 45%
-        // a free pick that will not vanish into the sky. This is the same rule
-        // pickDebris already follows, and for the same reason - a zone should
-        // read as one place.
+        // a shuffled five-planet family. No global picks cross zone boundaries.
         topKind: pairKind,
         botKind: pairKind,
         scored: false,
@@ -1127,6 +1113,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
+    w.planetRng = missionRandom(((level?.seed ?? 0x71ac0) ^ 0x5a17c9e3) >>> 0);
+    w.planetBag = { env: -1, remaining: [], last: -1 };
     // A campaign level is an ordinary run wearing a finish line. It is set
     // up FIRST because everything below (env order, spawn fx) reads it.
     // guarded on typeof: the tunnel test suite used to pass its SEED in this
@@ -1175,6 +1163,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         : null;
     w.spillCues = [];
     if (w.spill) {
+        w.spill.zoneEnv = level?.fx.env;
         const starter = save.spillStarter;
         if (!level && starter && SPILL_UTILITIES[starter] && save.spillBest >= SPILL_UTILITIES[starter].unlock) {
             w.spill.utilities = [starter];
@@ -1197,6 +1186,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.tapAnimT = -1;
     w.vanguard = createVanguardMotion();
     w.arcflash = createArcflashMotion();
+    w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit) ? save.equippedSuit : 'cinderforge');
     w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
@@ -1461,7 +1451,7 @@ function addTunnelHazard(w, node, lane, salt) {
         r: 19 + tunnelNoise(t.seed, node.index, salt) * 5,
         side: lane < (node.top + node.bottom) * 0.5 ? -1 : 1,
         kind: "debris",
-        art: Math.floor(tunnelNoise(t.seed, node.index, salt + 1) * DEBRIS_COUNT),
+        art: Math.floor(tunnelNoise(t.seed, node.index, salt + 1) * LEGACY_DEBRIS_COUNT),
         spin: (tunnelNoise(t.seed, node.index, salt + 2) < 0.5 ? -1 : 1) *
             (0.35 + tunnelNoise(t.seed, node.index, salt + 3) * 0.75),
         nearMissed: false,
@@ -2084,6 +2074,8 @@ export function spawnTrail(w, save, scale = 1) {
     // painter. Do not add the generic tail-origin particles or consume RNG.
     if (trail === "arcflashwake")
         return;
+    if (highOrbitTrailSuit(trail))
+        return;
     // the painted pilot's tail sweeps far to the left — emit behind it or
     // the whole plume is swallowed by the sprite
     const sx = pilotX(w) - 34;
@@ -2445,6 +2437,8 @@ function tutGesture(w, save, kind) {
                 vanguardTap(w.vanguard, tutorialImpulse);
             if (pilotSuitId(w, save) === "arcflash")
                 arcflashTap(w.arcflash, tutorialImpulse);
+            if (isHighOrbit(pilotSuitId(w, save)))
+                highOrbitTap(w.highOrbit, tutorialImpulse);
             break;
         case "doDive":
             t.hold = false;
@@ -2589,6 +2583,8 @@ export function flap(w, save) {
             vanguardTap(w.vanguard, impulse);
         if (pilotSuitId(w, save) === "arcflash")
             arcflashTap(w.arcflash, impulse);
+        if (isHighOrbit(pilotSuitId(w, save)))
+            highOrbitTap(w.highOrbit, impulse);
     }
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back
@@ -3349,6 +3345,13 @@ export function updateWorld(w, save, dt) {
             // keeps a phone and a large viewport in the same articulated pose.
             stepArcflash(w.arcflash, RACE_DT, w.race.vy);
         }
+        const orbitRaceSuit = pilotSuitId(w, save);
+        if (isHighOrbit(orbitRaceSuit) && w.race.tick > priorRaceTick && !w.tut?.hold
+            && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
+            if (w.race.phase === 'normal' && w.race.held && (!priorHeld || (w.race.boost && !priorBoost)))
+                highOrbitTap(w.highOrbit, Math.max(1, priorRaceVy - w.race.vy));
+            stepHighOrbit(w.highOrbit, orbitRaceSuit, RACE_DT, w.race.vy);
+        }
         w.speed = w.race.speed;
         w.distance = w.race.coursePosition;
         w.runAcorns = w.race.acorns;
@@ -3520,6 +3523,12 @@ export function updateWorld(w, save, dt) {
         const visualSlow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
         const visualDt = w.ready ? dt : dt * visualSlow * (w.shieldSlow > 0 ? .55 : 1) * paceOf(save, w);
         stepArcflash(w.arcflash, visualDt, w.squirrel.vy, w.ready);
+    }
+    const orbitSuit = pilotSuitId(w, save);
+    if (isHighOrbit(orbitSuit) && !w.tut?.hold && !w.spill && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
+        const slow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
+        const visualDt = w.ready ? dt : dt * slow * (w.shieldSlow > 0 ? .55 : 1) * paceOf(save, w);
+        stepHighOrbit(w.highOrbit, orbitSuit, visualDt, w.squirrel.vy, w.ready);
     }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)

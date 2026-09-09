@@ -1,27 +1,27 @@
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=252";
-import { suitPitchFor } from "./save.js?v=252";
-import { platform } from "./platform.js?v=252";
-import { spillAppearance } from "./spill-appearance.js?v=252";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=252";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=252";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=252";
-import { addChartScenery } from "./star-map-view.js?v=252";
-import { mapDebrisIndex } from "./zone-visuals.js?v=252";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=252";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=252";
-import { suitLean } from "./control-constants.js?v=252";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=252";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=252";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=252";
-import { drawSprite as drawSpriteOn } from "./art.js?v=252";
-import { createEngine } from "./engine.js?v=252";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=252";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=252";
-import { formatRaceTicks } from "./race.js?v=252";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=252";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=252";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=252";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=252";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=253";
+import { suitPitchFor } from "./save.js?v=253";
+import { platform } from "./platform.js?v=253";
+import { spillAppearance } from "./spill-appearance.js?v=253";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=253";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=253";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=253";
+import { addChartScenery } from "./star-map-view.js?v=253";
+import { mapDebrisIndex } from "./zone-visuals.js?v=253";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=253";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=253";
+import { suitLean } from "./control-constants.js?v=253";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=253";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=253";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=253";
+import { drawSprite as drawSpriteOn } from "./art.js?v=253";
+import { createEngine } from "./engine.js?v=253";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=253";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=253";
+import { formatRaceTicks } from "./race.js?v=253";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=253";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=253";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=253";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=253";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1767,7 +1767,12 @@ export async function bootStandalone(root) {
         // Fit the painted subject's measured bounds instead of shrinking its
         // whole source canvas (whose transparent margins vary from suit to suit).
         const { c, ctx } = miniCanvas(px, px);
-        if (ctx)
+        // The cut-rig fallback is bare so a selected helmet can be fitted once.
+        // A sealed costume must still show its helmet on the suit shelf.
+        const sealed = HELMETS.find(h => h.suitOnly === suit.id && h.opaqueVisor);
+        if (ctx && sealed)
+            paintPortrait(ctx, engine.art, sealed, suit, px * .44, px * .46, px * .68);
+        else if (ctx)
             drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
         return c;
     }

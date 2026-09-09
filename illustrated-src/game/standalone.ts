@@ -1704,7 +1704,11 @@ export async function bootStandalone(root: HTMLElement) {
     // Fit the painted subject's measured bounds instead of shrinking its
     // whole source canvas (whose transparent margins vary from suit to suit).
     const { c, ctx } = miniCanvas(px, px);
-    if (ctx) drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
+    // The cut-rig fallback is bare so a selected helmet can be fitted once.
+    // A sealed costume must still show its helmet on the suit shelf.
+    const sealed = HELMETS.find(h => h.suitOnly === suit.id && h.opaqueVisor);
+    if (ctx && sealed) paintPortrait(ctx, engine.art, sealed, suit, px * .44, px * .46, px * .68);
+    else if (ctx) drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
     return c;
   }
 

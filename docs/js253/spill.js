@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=249";
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=253";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -28,8 +28,8 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=249";
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
-import { DEBRIS_COUNT, PHYS } from "./catalog.js?v=249";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=249";
+import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=253";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=253";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -434,11 +434,15 @@ function surging(s) {
 const UNREADABLE = new Set([8, 12, 14, 22]);
 function readableSprite(s) {
     for (let i = 0; i < 24; i++) {
-        const n = Math.floor(rand(s) * DEBRIS_COUNT);
-        if (!UNREADABLE.has(n))
-            return n;
+        // Preserve the original rejection stream exactly: art expansion cannot
+        // change seeded rock positions, motion, events or rewards.
+        const n = Math.floor(rand(s) * LEGACY_DEBRIS_COUNT);
+        if (!UNREADABLE.has(n)) {
+            const family = s.zoneEnv == null ? null : ENVS[s.zoneEnv]?.debrisBias;
+            return family ? family[n % family.length] : n;
+        }
     }
-    return 0;
+    return s.zoneEnv == null ? 0 : ENVS[s.zoneEnv]?.debrisBias[0] ?? 0;
 }
 /** the rate a spinner weaves at, radians per second */
 const ARC_RATE = 1.6;

@@ -1,0 +1,14 @@
+{
+  "baseline": "5aeb37c6480e3434fe84830306d50911127e9804",
+  "atlases": {
+    "docs/art/suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa",
+    "docs/art/suits/cinderforge/parts.png": "2668a05d96928c0f7e39a13e52fc667eb3f5d7464441c7260daca2955935c8af",
+    "docs/art/suits/groveguard/parts.png": "115fe0bd2d6ae0e8b73fce528badbc7ed8278c3f602580d45201b1b0c3dcddcc",
+    "docs/art/suits/cosmic/parts.png": "06a2cdf2d3a63ff1df2b5f82a2f360a62e79520f7083a2c89799abc65f0c9a13",
+    "docs/art/suits/sunforged/parts.png": "f68a8b9d56fbd4c8b48f65f782653cd8ba7039a80e3a88217c30e3566edbe2a1",
+    "docs/art/suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
+  },
+  "highOrbitEffectSource": "02c9aab5fb03bfb42bba2bab27cf330ffcdddfc4a6d6cf7078a4abb13f938b42",
+  "arcflashWakeAndJets": "0ff4cf0c42694c1ffa7d4b1e0932de28d9655d37b81e78353a3d10573aa65965",
+  "allUnchanged": true
+}

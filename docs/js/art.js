@@ -1,8 +1,8 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=252";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=252";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=252";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=252";
-import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=252";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=253";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=253";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=253";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=253";
+import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=253";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
