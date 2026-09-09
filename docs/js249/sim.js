@@ -1,21 +1,19 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=251";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=251";
-import { createHighOrbitMotion, stepHighOrbit } from "./high-orbit-motion.js?v=251";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=251";
-import { trailWornBy } from "./catalog.js?v=251";
-import { missionRandom } from "./mission-rng.js?v=251";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=251";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=251";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=251";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=251";
-import { platform } from "./platform.js?v=251";
-import { TUTORIAL_SUIT } from "./catalog.js?v=251";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=251";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=251";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=251";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=251";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=251";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=251";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=249";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=249";
+import { trailWornBy } from "./catalog.js?v=249";
+import { missionRandom } from "./mission-rng.js?v=249";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=249";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=249";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=249";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=249";
+import { platform } from "./platform.js?v=249";
+import { TUTORIAL_SUIT } from "./catalog.js?v=249";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=249";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=249";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=249";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=249";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=249";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=249";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -69,7 +67,6 @@ export function makeWorld(W, H) {
         tapAnimT: -1,
         vanguard: createVanguardMotion(),
         arcflash: createArcflashMotion(),
-        highOrbit: createHighOrbitMotion(),
         tapAnimDir: 1,
         tapAnimFromRot: 0,
         bounceAnimT: -1,
@@ -1200,7 +1197,6 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.tapAnimT = -1;
     w.vanguard = createVanguardMotion();
     w.arcflash = createArcflashMotion();
-    w.highOrbit = createHighOrbitMotion();
     w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
@@ -2087,8 +2083,6 @@ export function spawnTrail(w, save, scale = 1) {
     // Arcflash emits from its moving wrist and boot nozzles in its own
     // painter. Do not add the generic tail-origin particles or consume RNG.
     if (trail === "arcflashwake")
-        return;
-    if (highOrbitTrailSuit(trail))
         return;
     // the painted pilot's tail sweeps far to the left — emit behind it or
     // the whole plume is swallowed by the sprite
@@ -3355,10 +3349,6 @@ export function updateWorld(w, save, dt) {
             // keeps a phone and a large viewport in the same articulated pose.
             stepArcflash(w.arcflash, RACE_DT, w.race.vy);
         }
-        const orbitRaceSuit = pilotSuitId(w, save);
-        if (isHighOrbit(orbitRaceSuit) && w.race.tick > priorRaceTick && !w.tut?.hold
-            && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck)
-            stepHighOrbit(w.highOrbit, orbitRaceSuit, RACE_DT, w.race.vy);
         w.speed = w.race.speed;
         w.distance = w.race.coursePosition;
         w.runAcorns = w.race.acorns;
@@ -3530,12 +3520,6 @@ export function updateWorld(w, save, dt) {
         const visualSlow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
         const visualDt = w.ready ? dt : dt * visualSlow * (w.shieldSlow > 0 ? .55 : 1) * paceOf(save, w);
         stepArcflash(w.arcflash, visualDt, w.squirrel.vy, w.ready);
-    }
-    const orbitSuit = pilotSuitId(w, save);
-    if (isHighOrbit(orbitSuit) && !w.tut?.hold && !w.spill && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
-        const slow = w.powerLeft > 0 || w.tapFrozen ? PHYS.slowFactor : 1;
-        const visualDt = w.ready ? dt : dt * slow * (w.shieldSlow > 0 ? .55 : 1) * paceOf(save, w);
-        stepHighOrbit(w.highOrbit, orbitSuit, visualDt, w.squirrel.vy, w.ready);
     }
     const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
     if (w.shieldFreeze > 0)
