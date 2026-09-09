@@ -1,5 +1,14 @@
 # Frame fixes: the motion banks, frame by frame
 
+## Eclipse transfer for Cryostar and Verdant (8 September 2026)
+
+The owner superseded these two suits' earlier refresh with Eclipse-matched
+eight-frame ascent/descent banks and the same heading-based flight mapping.
+Their original portraits remain the costume reference. See
+`art-src/eclipse-motion-transfer/README.md` for all-frame visual review and
+pose, colour, alpha, helmet and live-flight checks. The five-suit history below
+describes the preceding refresh, not the current Cryostar/Verdant motion.
+
 ## Fresh loadout-reference regeneration (September 2026)
 
 Copper, Cryostar, Verdant, Sammie and Gemmie now have fresh whole-character

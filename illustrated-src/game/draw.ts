@@ -3765,39 +3765,39 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "ember-desc-7": [174, 150, 40, 35],
   "ember-desc-8": [167, 151, 40, 40],
   // cryostar — pose-specific head and collar registration.
-  "cryostar-asc-1": [186.12, 100.98, 29.4, 6.56],
-  "cryostar-asc-2": [182.71, 97.05, 29.4, 11.37],
-  "cryostar-asc-3": [175.62, 96.11, 29.4, 16.59],
-  "cryostar-asc-4": [169.77, 94.99, 29.4, 27.30],
-  "cryostar-asc-5": [173.87, 84.28, 29.4, -8.71],
-  "cryostar-asc-6": [173.33, 76.83, 29.4, -4.66],
-  "cryostar-asc-7": [168.96, 73.36, 29.4, 3.64],
-  "cryostar-asc-8": [166.41, 66.93, 29.4, 9.99],
-  "cryostar-desc-1": [186.12, 100.98, 29.4, 6.56],
-  "cryostar-desc-2": [188.27, 112.56, 29.4, 12.09],
-  "cryostar-desc-3": [182.56, 125.13, 29.4, 22.89],
-  "cryostar-desc-4": [172.66, 135.34, 29.4, 37.19],
-  "cryostar-desc-5": [189.38, 145.08, 29.4, 25.51],
-  "cryostar-desc-6": [184.1, 154.64, 29.4, 32.11],
-  "cryostar-desc-7": [164.13, 156.76, 29.4, 41.11],
-  "cryostar-desc-8": [149.07, 155.58, 29.4, 47.66],
+  "cryostar-asc-1": [189, 81, 56, -5],
+  "cryostar-asc-2": [189.5, 79.5, 56, -5],
+  "cryostar-asc-3": [188, 78.5, 56, -5],
+  "cryostar-asc-4": [188.5, 77.5, 56, -5],
+  "cryostar-asc-5": [188.5, 79, 56, -5],
+  "cryostar-asc-6": [193.5, 74.5, 56, -5],
+  "cryostar-asc-7": [195.5, 79.5, 56, -5],
+  "cryostar-asc-8": [196, 87, 56, -5],
+  "cryostar-desc-1": [202.5, 87, 56, 0],
+  "cryostar-desc-2": [201, 104, 56, 5],
+  "cryostar-desc-3": [188, 126.5, 56, 15],
+  "cryostar-desc-4": [186.5, 137, 56, 20],
+  "cryostar-desc-5": [186.5, 147, 56, 25],
+  "cryostar-desc-6": [185, 157.5, 56, 30],
+  "cryostar-desc-7": [184.5, 163.5, 56, 35],
+  "cryostar-desc-8": [185.5, 163.5, 56, 35],
   // verdant — pose-specific head and collar registration.
-  "verdant-asc-1": [184.91, 101.68, 29.4, 6.77],
-  "verdant-asc-2": [183.86, 96.27, 29.4, 1.65],
-  "verdant-asc-3": [180.02, 92.67, 29.4, -1.80],
-  "verdant-asc-4": [172.38, 92.64, 29.4, 15.17],
-  "verdant-asc-5": [178.04, 79.97, 29.4, -4.08],
-  "verdant-asc-6": [181.59, 66.99, 29.4, -6.07],
-  "verdant-asc-7": [179.68, 58.61, 29.4, -0.37],
-  "verdant-asc-8": [173.21, 56.05, 29.4, 6.78],
-  "verdant-desc-1": [184.91, 101.68, 29.4, 6.77],
-  "verdant-desc-2": [182.48, 114.78, 29.4, 10.00],
-  "verdant-desc-3": [181.86, 125.28, 29.4, 12.55],
-  "verdant-desc-4": [170.06, 135.48, 29.4, 11.30],
-  "verdant-desc-5": [186.56, 144.79, 29.4, 15.40],
-  "verdant-desc-6": [178.26, 153.07, 29.4, 15.28],
-  "verdant-desc-7": [170.08, 159.41, 29.4, 13.73],
-  "verdant-desc-8": [160.12, 162.75, 29.4, 14.57],
+  "verdant-asc-1": [187, 82.5, 56, -5],
+  "verdant-asc-2": [189.5, 80.5, 56, -5],
+  "verdant-asc-3": [186, 79.5, 56, -5],
+  "verdant-asc-4": [189, 78.5, 56, -5],
+  "verdant-asc-5": [188.5, 79, 56, -5],
+  "verdant-asc-6": [193.5, 75, 56, -5],
+  "verdant-asc-7": [195.5, 80, 56, -5],
+  "verdant-asc-8": [196, 88, 56, -5],
+  "verdant-desc-1": [203.5, 87, 56, 0],
+  "verdant-desc-2": [203, 104, 56, 5],
+  "verdant-desc-3": [187.5, 127, 56, 15],
+  "verdant-desc-4": [187.5, 137, 56, 20],
+  "verdant-desc-5": [185.5, 148.5, 56, 25],
+  "verdant-desc-6": [185.5, 158, 56, 30],
+  "verdant-desc-7": [185, 164.5, 56, 35],
+  "verdant-desc-8": [186.5, 165, 56, 35],
   // gemmie — pose-specific head and collar registration.
   "gemmie-asc-1": [180.26, 104.36, 30.8, 4.34],
   "gemmie-asc-2": [180.68, 98.42, 30.8, 5.01],
@@ -4412,10 +4412,8 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   iontrim: 0.7, copper: 0.7,
   // "deep dive, a little drift between frames but not too noticeable"
   leviathan: 0.7,
-  // "I want them to match Eclipse ... the deep tail movement of eclipse
-  // drives its power and feel" - that is an ART note, not a dial; this only
-  // keeps them off the steep end meanwhile
-  cryostar: 0.7, verdant: 0.7,
+  // Regenerated in Eclipse's full pose sequence; use its full dive range.
+  cryostar: 1, verdant: 1,
   // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
   // teetering effect otherwise good" - and the game's own dome anchors say
   // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at
@@ -4493,6 +4491,10 @@ export const POSE_CLIMB_SPAN = 260;
 // roughly 130 degrees on every hop, so eight frames of bank have to cover
 // that whole sweep and the frames turn over quickly.
 const MOTION_HEADING_MAX = (55 * Math.PI) / 180;
+
+// Owner-requested Eclipse motion transfer, 8 Sep 2026. These whole-character
+// banks share Eclipse's heading, preview arc and contact response.
+const ECLIPSE_FLIGHT_SUITS = new Set(["eclipse", "cryostar", "verdant"]);
 
 // Suits with no painted motion banks get the same flight from their RIG.
 // Measured off Eclipse's banks, its motion is mostly two rotations: the body
@@ -4963,7 +4965,7 @@ function drawPilot(
   const independentRig = flagship || arcflash;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
   const articulatedTap = independentRig || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
-  const eclipseImpact = suit.id === "eclipse" && w.bounceAnimT >= 0;
+  const eclipseImpact = ECLIPSE_FLIGHT_SUITS.has(suit.id) && w.bounceAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(localScale, localScale);
@@ -5011,11 +5013,9 @@ function drawPilot(
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
     frames[nxt] ?? null, keyNext, blend,
     w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
-    // HEADING IS ECLIPSE'S, AND ONLY ECLIPSE'S (owner, 2 Sep 2026: "motion
-    // is only heading for eclipse. everything else stays as it was"). The
-    // switch that cycled Eclipse's three mappings is gone; Eclipse flies
-    // heading, every other suit flies the shipped pose-per-velocity curve.
-    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, suit.id === "eclipse" ? 2 : 0, w.speed,
+    // Cryostar and Verdant now share Eclipse's heading mapping by owner
+    // request. All three use the same smoother, pose curve and frame index.
+    w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
     lean);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
@@ -5298,7 +5298,7 @@ export function paintFlightPreview(
   // Tap-bank suits keep the beat, because their tap IS the showcase.
   const ascN = art.suitAsc?.[suit.id]?.length ?? 0;
   const descN = art.suitDesc?.[suit.id]?.length ?? 0;
-  const swept = !sweep && ascN > 0 && descN > 0 && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
+  const swept = !sweep && !ECLIPSE_FLIGHT_SUITS.has(suit.id) && ascN > 0 && descN > 0 && (art.suitTap?.[suit.id]?.length ?? 0) !== 16;
   let sweptPose = NaN;
   let vy = -KICK + PULL * p;
   let rise = -KICK * p + (PULL * p * p) / 2;   // zero at both ends of a beat

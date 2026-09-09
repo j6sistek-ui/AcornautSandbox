@@ -14,6 +14,9 @@ const output=process.env.FLIGHT_REFRESH_OUTPUT||root+'docs/art/suits/';
 mkdirSync(output,{recursive:true});
 const registration={};
 for(const [suit,cfg] of Object.entries(spec)) {
+  // These two banks were superseded by the owner-requested Eclipse transfer.
+  // Rebuild them with export-eclipse-motion-transfer.mjs, never the old master.
+  if(suit==='cryostar'||suit==='verdant')continue;
   const portrait=await loadImage(source+suit+'-reference.png');
   const pc=createCanvas(portrait.width,portrait.height),pg=pc.getContext('2d');pg.drawImage(portrait,0,0);
   const referenceHeads={copper:[184,100,50],cryostar:[198,93,45],verdant:[196,92,45],sammie:[193,96,46],gemmie:[198,93,52]};
@@ -60,4 +63,4 @@ for(const [suit,cfg] of Object.entries(spec)) {
   registration[suit]=frames;
 }
 writeFileSync(source+'registration.json',JSON.stringify(registration,null,2)+'\n');
-console.log('Exported 80 transparent whole-character frames.');
+console.log('Exported 48 transparent whole-character frames (Copper, Sammie, Gemmie).');

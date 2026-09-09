@@ -1,5 +1,24 @@
 # Acornaut motion spec — how a suit flies
 
+## Cryostar and Verdant — explicit owner grant, 8 Sep 2026
+
+The owner requested these two suits to receive Eclipse's exact motion-frame
+sequence and flight mechanics while keeping their own costume features and
+colours stable. This supersedes their previous `flight-refresh` banks and the
+Eclipse-only heading restriction for these two ids only.
+
+Both now have eight ascent and eight descent whole-character paintings matched
+cell by cell to Eclipse. They share its heading smoother, pose curve, frame
+indexing, preview arc, 5-degree default pitch and contact response. The existing
+physics is unchanged. No new tap, tail-tap, bounce bank or articulated rig is
+introduced. Eclipse's paintings remain unchanged.
+
+`art-src/eclipse-motion-transfer/README.md` records the original costume
+references, generation prompts, final masters, measured helmet registration,
+local colour checks, runtime comparisons and known baseline test failures.
+Rebuild these banks with `export-eclipse-motion-transfer.mjs`; the older
+`export-flight-refresh.mjs` no longer writes their files.
+
 ## Five unreleased suits — explicit owner grant, 7 Sep 2026
 
 Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal receive replacement

@@ -644,13 +644,13 @@
     ]
   },
   "larger_painted_heads": {
-    "note": "The oversized Gemmie and Sammie paintings have been replaced by fresh loadout-reference flight banks. These regenerated banks hold one radius per suit; no oversized-frame exception remains.",
+    "note": "The oversized Gemmie and Sammie paintings have been replaced by fresh loadout-reference flight banks. These regenerated banks hold one radius per suit; no oversized-frame exception remains. Cryostar and Verdant were superseded by the Eclipse motion transfer (art-src/eclipse-motion-transfer) and use its 56px radius, verified across all poses with matching and Clear helmets.",
     "bank_radii": {
       "sammie": 28,
       "gemmie": 30.8,
       "copper": 30.8,
-      "cryostar": 29.4,
-      "verdant": 29.4
+      "cryostar": 56,
+      "verdant": 56
     },
     "poses": {}
   }
