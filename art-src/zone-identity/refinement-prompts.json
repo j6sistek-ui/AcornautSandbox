@@ -1,0 +1,83 @@
+{
+  "reason": "Production contact-sheet review: separate material motifs and correct vent-basin instruction leakage.",
+  "assets": [
+    {
+      "id": "solar-furnace-planet-2",
+      "name": "Iron Cinder",
+      "brief": "oxidized iron globe with sparse hot pits",
+      "zone": "SOLAR FURNACE",
+      "env": 3,
+      "palette": "charcoal / copper / ember orange",
+      "identity": "Solid worlds forged by heat",
+      "refinement": "Separate Vent World from Magma Heart with three broad vent basins rather than another lava-crack network.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Acornaut production planet cutout Iron Cinder. Oxidized iron globe with a coarse rust-red metallic surface, a few tiny isolated pinhole vents, dense hammered iron texture and dark hemispheric shading. The hot pits are SMALL sparse pinpoints. No large volcanic basins, no lava crack network, no cloud bands. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 42
+    },
+    {
+      "id": "solar-furnace-planet-3",
+      "name": "Ashfall Moon",
+      "brief": "matte charcoal cratered sphere with ash-white rims",
+      "zone": "SOLAR FURNACE",
+      "env": 3,
+      "palette": "charcoal / copper / ember orange",
+      "identity": "Solid worlds forged by heat",
+      "refinement": "Separate Vent World from Magma Heart with three broad vent basins rather than another lava-crack network.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Acornaut production planet cutout Ashfall Moon. Matte charcoal moon densely covered with SMALL cold impact craters edged with ash-white powder, pale dust sweeping across one hemisphere. Completely non-emissive. No lava, no glowing orange, no large volcanic basins. Strong silver-white rims on black dusty rock. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 43
+    },
+    {
+      "id": "solar-furnace-planet-4",
+      "name": "Quenched Slag",
+      "brief": "blue-black glassy globe with dull copper scabs",
+      "zone": "SOLAR FURNACE",
+      "env": 3,
+      "palette": "charcoal / copper / ember orange",
+      "identity": "Solid worlds forged by heat",
+      "refinement": "Separate Vent World from Magma Heart with three broad vent basins rather than another lava-crack network.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Acornaut production planet cutout Quenched Slag. Smooth blue-black quenched volcanic glass globe with broad reflective obsidian patches and dull copper scabs welded across the surface. Solid cooled glass and metal. No glowing pits, no craters, no lava cracks, no cloud bands. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 44
+    },
+    {
+      "id": "sapphire-abyss-planet-3",
+      "name": "Ink Sea",
+      "brief": "near-black blue globe with sparse bioluminescent pinpricks",
+      "zone": "SAPPHIRE ABYSS",
+      "env": 9,
+      "palette": "midnight blue / indigo / silver foam",
+      "identity": "Deep ocean without a shoreline",
+      "refinement": "",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Acornaut production planet cutout Ink Sea. Near-black indigo ocean globe with sparse tiny cyan bioluminescent pinpricks, serene smooth dark water, a subtle navy limb and one very faint current. No white foam, no broad bright waves, no cloud bands, no large glowing cracks. Most of the surface stays midnight blue. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 48
+    },
+    {
+      "id": "sapphire-abyss-planet-5",
+      "name": "Pressure Reef",
+      "brief": "dark mineral seabed sphere with compact blue ridges and pale edge light",
+      "zone": "SAPPHIRE ABYSS",
+      "env": 9,
+      "palette": "midnight blue / indigo / silver foam",
+      "identity": "Deep ocean without a shoreline",
+      "refinement": "",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Acornaut production planet cutout Pressure Reef. Solid dark mineral seabed sphere, a rocky navy globe whose geological terraced ridges form compact cobalt blue reefs. Coarse matte stone and compressed sediment surfaces, pale glancing light on ridge edges. No water, no foam, no waves, no clouds. Keep the circular solid core clearly readable. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 50
+    },
+    {
+      "id": "crimson-storm-debris-1",
+      "name": "Hematite Shard",
+      "brief": "dark red metallic shard with a bright cut face",
+      "zone": "CRIMSON STORM",
+      "env": 8,
+      "palette": "burgundy / scarlet / storm grey",
+      "identity": "Atmospheric violence",
+      "refinement": "",
+      "type": "debris",
+      "prompt": "Use case: stylized-concept. Acornaut production debris cutout Hematite Shard. One dense opaque chunk of dark burgundy hematite metal with one broad flat polished silver-red cut face. Dense iron ore texture, blunt asymmetrical irregular outline, subtle red oxidation. No transparency, no glass, no jewel-like crystal spear. Tactile illustrated astronomical miniature, soft painted material detail matching the existing Acornaut sprites. Upper-left light, shaded lower-right. Single centered isolated object fills about 80 percent of square canvas. Genuinely transparent alpha background with generous clear padding. No external glow, no surrounding objects or particles, no text, no backdrop, no floor or shadow. Strong readable material and silhouette at 80 pixels.",
+      "index": 31
+    }
+  ]
+}

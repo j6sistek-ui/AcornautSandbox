@@ -45,7 +45,10 @@ const present = new Set();
 for (const o of OPTIONAL) {
   if (env[o.env] && existsSync(env[o.env])) { present.add(o.pkg); continue; }
   try {
-    env[o.env] = require_.resolve(o.entry);
+    // Locally installed packages resolve from the tests themselves. Injecting
+    // a C:\\ path breaks dynamic import on Windows (require accepts it).
+    require_.resolve(o.entry);
+    delete env[o.env];
     present.add(o.pkg);
   } catch { /* not installed: its tests will report SKIPPED */ }
 }

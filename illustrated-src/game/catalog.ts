@@ -1,3 +1,4 @@
+import { NEW_PLANET_RGB } from "./zone-planet-colors";
 import { platform } from "./platform";
 import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
@@ -17,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "251";
+export const ART_VER = "252";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -487,8 +488,10 @@ export function washScale(flight: string) {
   return flight === "deep" || flight === "lost" ? 0.45 : 1;
 }
 
-export const PLANET_COUNT = 33;
-export const DEBRIS_COUNT = 27;
+export const PLANET_COUNT = 134;
+export const DEBRIS_COUNT = 55;
+// Special-mode seeded art rolls retain their original range.
+export const LEGACY_DEBRIS_COUNT = 27;
 
 export const PLANET_RGB: RGB[] = [
   [0.34, 0.45, 0.47], [0.68, 0.49, 0.25], [0.63, 0.66, 0.68],
@@ -502,6 +505,7 @@ export const PLANET_RGB: RGB[] = [
   [0.78, 0.74, 0.66], [0.13, 0.16, 0.24], [0.92, 0.65, 0.74],
   [0.15, 0.11, 0.28], [0.24, 0.60, 0.81], [0.16, 0.21, 0.48],
   [0.43, 0.26, 0.64], [0.36, 0.58, 0.69], [0.30, 0.15, 0.09],
+  ...NEW_PLANET_RGB,
 ];
 
 /** Perceptual separation in a luma + opponent-colour space. Luminance
@@ -521,32 +525,32 @@ export function sep(a: RGB, b: RGB) {
 export const MIN_SEP = 0.3;
 
 export const ENVS: Env[] = [
-  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 2, 1, 5, 9, 4], debrisBias: [1, 21, 24], sky: "indigo" },
-  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 20, 28, 25, 15], debrisBias: [11, 2, 20], sky: "magenta" },
-  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [10, 8, 22, 26, 23, 30], debrisBias: [18, 19, 23], sky: "ice" },
-  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [29, 24, 31, 5], debrisBias: [7, 20, 14, 8], sky: "inferno" },
-  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [24, 2, 12, 6, 16, 18], debrisBias: [21, 0, 3], sky: "neon" },
-  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 21, 11, 25], debrisBias: [16, 20], sky: "verdant" },
-  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [19, 13, 15, 10], debrisBias: [18, 23, 19, 9, 6], sky: "mono" },
-  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [21, 30, 22, 19], debrisBias: [9, 13, 2, 6], sky: "verdant" },
-  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [15, 11, 17, 27, 10, 24], debrisBias: [15], sky: "inferno" },
-  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [26, 13, 23, 8], debrisBias: [9, 18], sky: "indigo" },
-  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 1, 14, 7], debrisBias: [8, 25], sky: "vortex" },
-  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [18, 16, 12, 24], debrisBias: [7, 5, 4], sky: "gold" },
-  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 3, 25, 21], debrisBias: [22, 16, 14, 25], sky: "gold" },
-  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [2, 5], debrisBias: [10, 3, 0], sky: "neon" },
-  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [12, 6, 26, 0], debrisBias: [5, 17], sky: "neon" },
-  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [8, 30, 21, 10, 9, 26, 13, 17, 23, 22], debrisBias: [24, 26, 5, 1], sky: "verdant" },
-  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [30, 27, 13, 19], debrisBias: [19, 11], sky: "verdant" },
-  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [4, 28, 20, 15], debrisBias: [13, 11, 16], sky: "magenta" },
-  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [7, 32, 31, 14], debrisBias: [22, 12, 14], sky: "gold" },
-  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [3, 21, 16, 14], debrisBias: [12, 14, 7], sky: "ice" },
-  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [25, 11, 20], sky: "mono" },
-  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 13, 23], sky: "verdant" },
-  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 19, 11], sky: "inferno" },
-  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 25, 11, 0], debrisBias: [17, 21], sky: "ghost" },
-  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [21, 26, 1, 10], sky: "neon" },
-  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 15, 19, 27, 25], debrisBias: [20, 22], sky: "vortex" },
+  { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 1, 2, 33, 34], debrisBias: [1, 21], sky: "indigo" },
+  { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 8, 35, 36, 37], debrisBias: [9, 27], sky: "magenta" },
+  { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [31, 38, 39, 40, 41], debrisBias: [11, 28], sky: "ice" },
+  { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [3, 42, 43, 44, 45], debrisBias: [12, 14], sky: "inferno" },
+  { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [28, 10, 51, 52, 53], debrisBias: [2, 6, 13], sky: "neon" },
+  { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [11, 106, 107, 108, 109], debrisBias: [48, 49], sky: "verdant" },
+  { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [5, 61, 62, 63, 64], debrisBias: [0, 3], sky: "mono" },
+  { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [87, 88, 89, 90, 91], debrisBias: [42, 43], sky: "verdant" },
+  { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [21, 54, 55, 56, 57], debrisBias: [31, 32], sky: "inferno" },
+  { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [46, 47, 48, 49, 50], debrisBias: [29, 30], sky: "indigo" },
+  { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [30, 27, 58, 59, 60], debrisBias: [33, 34], sky: "vortex" },
+  { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [74, 75, 76, 77, 78], debrisBias: [15, 25], sky: "gold" },
+  { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [79, 80, 81, 82, 83], debrisBias: [38, 39], sky: "gold" },
+  { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [13, 19, 65, 66, 67], debrisBias: [18, 35], sky: "neon" },
+  { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [25, 110, 111, 112, 113], debrisBias: [5, 50], sky: "neon" },
+  { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [9, 12, 22, 92, 93], debrisBias: [17, 44], sky: "verdant" },
+  { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [94, 95, 96, 97, 98], debrisBias: [24, 45], sky: "verdant" },
+  { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [23, 26, 84, 85, 86], debrisBias: [40, 41], sky: "magenta" },
+  { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [6, 24, 71, 72, 73], debrisBias: [20, 37], sky: "gold" },
+  { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [29, 102, 103, 104, 105], debrisBias: [16, 7, 47], sky: "ice" },
+  { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [124, 125, 126, 127, 128], debrisBias: [8, 10], sky: "mono" },
+  { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [15, 20, 99, 100, 101], debrisBias: [19, 46], sky: "verdant" },
+  { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [16, 18, 68, 69, 70], debrisBias: [26, 4, 36], sky: "inferno" },
+  { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [119, 120, 121, 122, 123], debrisBias: [52, 53], sky: "ghost" },
+  { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [114, 115, 116, 117, 118], debrisBias: [23, 51], sky: "neon" },
+  { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [129, 130, 131, 132, 133], debrisBias: [22, 54], sky: "vortex" },
 ];
 
 // The tail hinge. A damped spring, not a keyframe set: stiffness sets

@@ -99,6 +99,18 @@ The tiers that keep it there:
   tried on (`loadPalBank`); a suit's bank jumps the queue when equipped
   (`wantSuitArt`).
 
+At art stamp 252, zone planets also load on demand through `loadZoneArt`.
+Boot loads Deep Space's five planets; flight and visible Star Chart nodes
+request their zone's five planets and two or three debris sprites. The
+27 legacy debris sprites remain available for standalone special modes.
+The expanded catalog has 134 planet IDs (130 assigned) and 55 debris IDs.
+See the [zone production pipeline](art-src/zone-identity/README.md) for
+master provenance, deterministic export and the exact exclusive rosters.
+
+Arcflash's loading portrait is also a generated output. The source export
+runs `export-arcflash-portrait.mjs` after compiling the live rig, so the
+256px fallback stays pixel-identical to the renderer used by that build.
+
 New art follows the existing shape and the tiers pick it up: a pal is a
 still plus `<id>-N.png` frames and a `PAL_ANIM` count; a suit is a still
 plus `asc/desc` (or `tap`, `loop`) banks registered in `art.ts`.

@@ -1,0 +1,424 @@
+{
+  "approvedProposal": "illustrated-src/design/zone-identity-proposal/proposal.json",
+  "zones": [
+    {
+      "id": "deep-space",
+      "name": "DEEP SPACE",
+      "env": 0,
+      "planets": [
+        0,
+        1,
+        2,
+        33,
+        34
+      ],
+      "debris": [
+        1,
+        21
+      ]
+    },
+    {
+      "id": "nebula-nursery",
+      "name": "NEBULA NURSERY",
+      "env": 1,
+      "planets": [
+        4,
+        8,
+        35,
+        36,
+        37
+      ],
+      "debris": [
+        9,
+        27
+      ]
+    },
+    {
+      "id": "ice-moon",
+      "name": "ICE MOON",
+      "env": 2,
+      "planets": [
+        31,
+        38,
+        39,
+        40,
+        41
+      ],
+      "debris": [
+        11,
+        28
+      ]
+    },
+    {
+      "id": "solar-furnace",
+      "name": "SOLAR FURNACE",
+      "env": 3,
+      "planets": [
+        3,
+        42,
+        43,
+        44,
+        45
+      ],
+      "debris": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "sapphire-abyss",
+      "name": "SAPPHIRE ABYSS",
+      "env": 9,
+      "planets": [
+        46,
+        47,
+        48,
+        49,
+        50
+      ],
+      "debris": [
+        29,
+        30
+      ]
+    },
+    {
+      "id": "crystal-belt",
+      "name": "CRYSTAL BELT",
+      "env": 4,
+      "planets": [
+        28,
+        10,
+        51,
+        52,
+        53
+      ],
+      "debris": [
+        2,
+        6,
+        13
+      ]
+    },
+    {
+      "id": "crimson-storm",
+      "name": "CRIMSON STORM",
+      "env": 8,
+      "planets": [
+        21,
+        54,
+        55,
+        56,
+        57
+      ],
+      "debris": [
+        31,
+        32
+      ]
+    },
+    {
+      "id": "violet-realm",
+      "name": "VIOLET REALM",
+      "env": 10,
+      "planets": [
+        30,
+        27,
+        58,
+        59,
+        60
+      ],
+      "debris": [
+        33,
+        34
+      ]
+    },
+    {
+      "id": "monochrome-void",
+      "name": "MONOCHROME VOID",
+      "env": 6,
+      "planets": [
+        5,
+        61,
+        62,
+        63,
+        64
+      ],
+      "debris": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "hypervivid",
+      "name": "HYPERVIVID",
+      "env": 13,
+      "planets": [
+        13,
+        19,
+        65,
+        66,
+        67
+      ],
+      "debris": [
+        18,
+        35
+      ]
+    },
+    {
+      "id": "rust-belt",
+      "name": "RUST BELT",
+      "env": 22,
+      "planets": [
+        16,
+        18,
+        68,
+        69,
+        70
+      ],
+      "debris": [
+        26,
+        4,
+        36
+      ]
+    },
+    {
+      "id": "bone-desert",
+      "name": "BONE DESERT",
+      "env": 18,
+      "planets": [
+        6,
+        24,
+        71,
+        72,
+        73
+      ],
+      "debris": [
+        20,
+        37
+      ]
+    },
+    {
+      "id": "golden-hour",
+      "name": "GOLDEN HOUR",
+      "env": 11,
+      "planets": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "debris": [
+        15,
+        25
+      ]
+    },
+    {
+      "id": "solar-corona",
+      "name": "SOLAR CORONA",
+      "env": 12,
+      "planets": [
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "debris": [
+        38,
+        39
+      ]
+    },
+    {
+      "id": "coral-shallows",
+      "name": "CORAL SHALLOWS",
+      "env": 17,
+      "planets": [
+        23,
+        26,
+        84,
+        85,
+        86
+      ],
+      "debris": [
+        40,
+        41
+      ]
+    },
+    {
+      "id": "emerald-expanse",
+      "name": "EMERALD EXPANSE",
+      "env": 7,
+      "planets": [
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "debris": [
+        42,
+        43
+      ]
+    },
+    {
+      "id": "alien-jungle",
+      "name": "ALIEN JUNGLE",
+      "env": 15,
+      "planets": [
+        9,
+        12,
+        22,
+        92,
+        93
+      ],
+      "debris": [
+        17,
+        44
+      ]
+    },
+    {
+      "id": "acid-swamp",
+      "name": "ACID SWAMP",
+      "env": 16,
+      "planets": [
+        94,
+        95,
+        96,
+        97,
+        98
+      ],
+      "debris": [
+        24,
+        45
+      ]
+    },
+    {
+      "id": "aurora-crown",
+      "name": "AURORA CROWN",
+      "env": 21,
+      "planets": [
+        15,
+        20,
+        99,
+        100,
+        101
+      ],
+      "debris": [
+        19,
+        46
+      ]
+    },
+    {
+      "id": "pulsar-field",
+      "name": "PULSAR FIELD",
+      "env": 19,
+      "planets": [
+        29,
+        102,
+        103,
+        104,
+        105
+      ],
+      "debris": [
+        16,
+        7,
+        47
+      ]
+    },
+    {
+      "id": "time-fracture",
+      "name": "TIME FRACTURE",
+      "env": 5,
+      "planets": [
+        11,
+        106,
+        107,
+        108,
+        109
+      ],
+      "debris": [
+        48,
+        49
+      ]
+    },
+    {
+      "id": "neon-bazaar",
+      "name": "NEON BAZAAR",
+      "env": 14,
+      "planets": [
+        25,
+        110,
+        111,
+        112,
+        113
+      ],
+      "debris": [
+        5,
+        50
+      ]
+    },
+    {
+      "id": "prism-storm",
+      "name": "PRISM STORM",
+      "env": 24,
+      "planets": [
+        114,
+        115,
+        116,
+        117,
+        118
+      ],
+      "debris": [
+        23,
+        51
+      ]
+    },
+    {
+      "id": "ghost-nebula",
+      "name": "GHOST NEBULA",
+      "env": 23,
+      "planets": [
+        119,
+        120,
+        121,
+        122,
+        123
+      ],
+      "debris": [
+        52,
+        53
+      ]
+    },
+    {
+      "id": "blackout-zone",
+      "name": "BLACKOUT ZONE",
+      "env": 20,
+      "planets": [
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "debris": [
+        8,
+        10
+      ]
+    },
+    {
+      "id": "event-horizon",
+      "name": "EVENT HORIZON",
+      "env": 25,
+      "planets": [
+        129,
+        130,
+        131,
+        132,
+        133
+      ],
+      "debris": [
+        22,
+        54
+      ]
+    }
+  ]
+}

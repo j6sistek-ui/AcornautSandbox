@@ -16,6 +16,9 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// Zone planets/debris ship from transparent masters through the same build.
+// This is strict: an incomplete local production batch cannot be shipped.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-zone-art.mjs")], { cwd: root, stdio: "inherit" });
 // Ship the approved Depot artwork through the shared production/beta export.
 mkdirSync(join(pages, "art/spill-ship/utilities"), { recursive: true });
 for (const id of ["magnet", "scanner", "brake", "capacitor"]) {
@@ -78,6 +81,9 @@ for (const name of readdirSync(join(pages, "js"))) {
   ).replace("__BUILD_TIME__", buildTime).replace(/[ \t]+$/gm, "");
   writeFileSync(p, next);
 }
+
+// Keep the loading portrait registered pixel-for-pixel with this renderer.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-arcflash-portrait.mjs")], { cwd: root, stdio: "inherit" });
 
 // the cache-stamped copy the loader actually imports
 const stamped = join(pages, `js${ver}`);

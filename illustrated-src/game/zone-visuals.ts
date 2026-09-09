@@ -219,7 +219,9 @@ export function visualHash(id: string) {
 }
 export function mapPlanetIndex(def: LevelDef) {
   const family = ENVS[def.fx.env ?? 0].planetBias;
-  return family[visualHash(def.id) % family.length];
+  // The mission's stable local slot shows all five worlds twice per zone.
+  // Display-order changes cannot swap its art.
+  return family[Math.max(0, def.n - 1) % family.length];
 }
 export function mapDebrisIndex(env: number, salt: number) {
   const family = ENVS[env].debrisBias;

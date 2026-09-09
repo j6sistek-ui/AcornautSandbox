@@ -1,0 +1,39 @@
+{
+  "base": "85f30e60b8b7568cdd911a9cf888122b47833d83",
+  "protectedFiles": 1476,
+  "originalArtFiles": 1470,
+  "protectedSource": [
+    "illustrated-src/game/beta-campaign-manifest.ts",
+    "illustrated-src/game/campaign-manifest.ts",
+    "illustrated-src/game/campaign-progress.ts",
+    "illustrated-src/game/campaign.ts",
+    "illustrated-src/game/save.ts",
+    "illustrated-src/game/sky-gen.ts"
+  ],
+  "allByteIdentical": true,
+  "regeneratedDerivedArt": [
+    {
+      "path": "docs/art/suits/arcflash/body.png",
+      "baseSha256": "ef39dc9c62b2f4f678981d2debb875f2ae379950d5a65d21d3809f022a355574",
+      "currentSha256": "1dcf92e77fb99a3eccfd70e8e2ae2f8b09feb2666caa650e7a671fd1ed6c8c30"
+    }
+  ],
+  "arcflash": [
+    {
+      "name": "base",
+      "pixels": 25,
+      "bytes": 28,
+      "maxDelta": 3,
+      "rigRgbaSha256": "ea4c3f5a3dd24d9e1fdf63ed5ba1237ffdea9eb0702d3c10499f67fe505f1063",
+      "fallbackRgbaSha256": "e5ea8b65693f426b1db13658c5791edf5086521ca76162bdad8733cbaf3b407f"
+    },
+    {
+      "name": "zone-implementation",
+      "pixels": 0,
+      "bytes": 0,
+      "maxDelta": 0,
+      "rigRgbaSha256": "ea4c3f5a3dd24d9e1fdf63ed5ba1237ffdea9eb0702d3c10499f67fe505f1063",
+      "fallbackRgbaSha256": "ea4c3f5a3dd24d9e1fdf63ed5ba1237ffdea9eb0702d3c10499f67fe505f1063"
+    }
+  ]
+}

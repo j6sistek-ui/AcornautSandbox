@@ -1,0 +1,3230 @@
+{
+  "exporter": "illustrated-src/export-zone-art.mjs",
+  "assets": [
+    {
+      "id": "deep-space-planet-4",
+      "name": "Banded Giant",
+      "type": "planet",
+      "index": 33,
+      "zone": "DEEP SPACE",
+      "master": "art-src/zone-identity/deep-space-planet-4.png",
+      "output": "docs/art/planets/33.png",
+      "masterSha256": "fcec5e4e45b159e1dc5e4600b42b8a337966d8d01b36838cdacfd9b62f8486af",
+      "sha256": "621ef87d8af85b781f744940cfe0cc4dc9e1e0aafca9944066f73a4ef4799289",
+      "bytes": 96535,
+      "rgb": [
+        0.6631,
+        0.5136,
+        0.3462
+      ],
+      "solidPixels": 39143,
+      "transparentPixels": 25857,
+      "bounds": [
+        17,
+        15,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "deep-space-planet-5",
+      "name": "Red Frontier",
+      "type": "planet",
+      "index": 34,
+      "zone": "DEEP SPACE",
+      "master": "art-src/zone-identity/deep-space-planet-5.png",
+      "output": "docs/art/planets/34.png",
+      "masterSha256": "1f6987ce3d07ab3504a35eabe4a3f225da6f7ff3cdf0b9a94815b91fe8fcf2aa",
+      "sha256": "5a8ec9a7aa08720d1c2ecc1d42624dada4301f429d601e754f49f842be9212c2",
+      "bytes": 100017,
+      "rgb": [
+        0.5323,
+        0.2964,
+        0.2321
+      ],
+      "solidPixels": 38552,
+      "transparentPixels": 26480,
+      "bounds": [
+        17,
+        17,
+        238,
+        238
+      ]
+    },
+    {
+      "id": "nebula-nursery-planet-3",
+      "name": "Cloudseed",
+      "type": "planet",
+      "index": 35,
+      "zone": "NEBULA NURSERY",
+      "master": "art-src/zone-identity/nebula-nursery-planet-3.png",
+      "output": "docs/art/planets/35.png",
+      "masterSha256": "07211b1732ba4bbdbc8f9b8f7701a2d49904fa41c6fbdcf469a21b36bf600845",
+      "sha256": "7fdade88b9fa0689cbbbf5c1f99295f2e0bf79f1b7f27fc030f5fcc294e2bf55",
+      "bytes": 84989,
+      "rgb": [
+        0.57,
+        0.4244,
+        0.4737
+      ],
+      "solidPixels": 36205,
+      "transparentPixels": 28763,
+      "bounds": [
+        20,
+        21,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "nebula-nursery-planet-4",
+      "name": "Pearl Cocoon",
+      "type": "planet",
+      "index": 36,
+      "zone": "NEBULA NURSERY",
+      "master": "art-src/zone-identity/nebula-nursery-planet-4.png",
+      "output": "docs/art/planets/36.png",
+      "masterSha256": "9c8f5109ae0e16ed9e9c1cb18186259aa03dae2465a57535319c47b8a1bb2ffe",
+      "sha256": "60c29375c1560763e0bf8e8b91660e98379a7fbcf0aeb5653dbd6b81e7bfa73a",
+      "bytes": 90100,
+      "rgb": [
+        0.641,
+        0.6174,
+        0.6201
+      ],
+      "solidPixels": 31355,
+      "transparentPixels": 33596,
+      "bounds": [
+        28,
+        27,
+        228,
+        227
+      ]
+    },
+    {
+      "id": "nebula-nursery-planet-5",
+      "name": "Accretion Pearl",
+      "type": "planet",
+      "index": 37,
+      "zone": "NEBULA NURSERY",
+      "master": "art-src/zone-identity/nebula-nursery-planet-5.png",
+      "output": "docs/art/planets/37.png",
+      "masterSha256": "a07e59a2af0b4563c653c6890d9aac829e58f16a0cf2c57e8dd3c5b472547908",
+      "sha256": "3b09e857ef992fa427e30914250e659feba19da672ff7edeee925f19f35fc9de",
+      "bytes": 85912,
+      "rgb": [
+        0.625,
+        0.4994,
+        0.664
+      ],
+      "solidPixels": 30655,
+      "transparentPixels": 34431,
+      "bounds": [
+        29,
+        29,
+        226,
+        226
+      ]
+    },
+    {
+      "id": "nebula-nursery-debris-2",
+      "name": "Cloudglass Nodule",
+      "type": "debris",
+      "index": 27,
+      "zone": "NEBULA NURSERY",
+      "master": "art-src/zone-identity/nebula-nursery-debris-2.png",
+      "output": "docs/art/debris/27.png",
+      "masterSha256": "aeb7ff8fc2fd0862fd335c3f4aba4a7485b6c57cd807feef15473fdb71d34de8",
+      "sha256": "1326ef492985237e2cabed13baed71198ff8bc08d6cadc8e05c799b346b45913",
+      "bytes": 95575,
+      "rgb": [
+        0.5266,
+        0.5206,
+        0.5908
+      ],
+      "solidPixels": 31719,
+      "transparentPixels": 33218,
+      "bounds": [
+        21,
+        25,
+        237,
+        232
+      ]
+    },
+    {
+      "id": "ice-moon-planet-2",
+      "name": "Glacier Shelf",
+      "type": "planet",
+      "index": 38,
+      "zone": "ICE MOON",
+      "master": "art-src/zone-identity/ice-moon-planet-2.png",
+      "output": "docs/art/planets/38.png",
+      "masterSha256": "908174dffb5da5d2aae0f502a3f05663fe10ae26db67cdcb1590007a22dc5f84",
+      "sha256": "51e128dd08a99970f971c90788330bedd94886f0d0a0f4d276c3fbc5087a9544",
+      "bytes": 111459,
+      "rgb": [
+        0.3807,
+        0.5065,
+        0.6451
+      ],
+      "solidPixels": 37727,
+      "transparentPixels": 27130,
+      "bounds": [
+        18,
+        19,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "ice-moon-planet-3",
+      "name": "Frosted Basalt",
+      "type": "planet",
+      "index": 39,
+      "zone": "ICE MOON",
+      "master": "art-src/zone-identity/ice-moon-planet-3.png",
+      "output": "docs/art/planets/39.png",
+      "masterSha256": "35194cb66202b20f28c8116dd3661f8da2270c5664e00dd012e760667d7e5b60",
+      "sha256": "0233dec5002dee11b4b683a537219306edf67c3c6b930b059cbe60311540417b",
+      "bytes": 115618,
+      "rgb": [
+        0.3048,
+        0.3631,
+        0.4378
+      ],
+      "solidPixels": 36670,
+      "transparentPixels": 28122,
+      "bounds": [
+        20,
+        20,
+        235,
+        235
+      ]
+    },
+    {
+      "id": "ice-moon-planet-4",
+      "name": "Brine World",
+      "type": "planet",
+      "index": 40,
+      "zone": "ICE MOON",
+      "master": "art-src/zone-identity/ice-moon-planet-4.png",
+      "output": "docs/art/planets/40.png",
+      "masterSha256": "8598fca6d824be07e2d4e127f6d84640ac49599619a3d9cb4c9163a0a86081f6",
+      "sha256": "9628cc8bebd48e9333ea13fabeb8d602082828406780e4d7f2402880c5b7a926",
+      "bytes": 98606,
+      "rgb": [
+        0.3012,
+        0.4248,
+        0.5789
+      ],
+      "solidPixels": 32634,
+      "transparentPixels": 32438,
+      "bounds": [
+        26,
+        27,
+        230,
+        229
+      ]
+    },
+    {
+      "id": "ice-moon-planet-5",
+      "name": "Hail Giant",
+      "type": "planet",
+      "index": 41,
+      "zone": "ICE MOON",
+      "master": "art-src/zone-identity/ice-moon-planet-5.png",
+      "output": "docs/art/planets/41.png",
+      "masterSha256": "0668d266b1538b40b4ac8dcd247081f48240120e7ab58bcbc42bee214b8f4ed3",
+      "sha256": "47eec1cb97ff02549df0a0a3219d392ad158548ef8134e786d42d2db14e7d767",
+      "bytes": 101043,
+      "rgb": [
+        0.3557,
+        0.4481,
+        0.5752
+      ],
+      "solidPixels": 37451,
+      "transparentPixels": 27473,
+      "bounds": [
+        18,
+        19,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "ice-moon-debris-2",
+      "name": "Dark Froststone",
+      "type": "debris",
+      "index": 28,
+      "zone": "ICE MOON",
+      "master": "art-src/zone-identity/ice-moon-debris-2.png",
+      "output": "docs/art/debris/28.png",
+      "masterSha256": "d2abb28ddc82828b95a6efeff683dcb11295b408e9d4e2cf9514ce061ad7b5b3",
+      "sha256": "1e769817380b3f4218d833d55854fb87d31dd32ecc8ac8e31d77ec233aefe0df",
+      "bytes": 91903,
+      "rgb": [
+        0.4261,
+        0.5072,
+        0.5965
+      ],
+      "solidPixels": 28554,
+      "transparentPixels": 35947,
+      "bounds": [
+        29,
+        13,
+        234,
+        242
+      ]
+    },
+    {
+      "id": "solar-furnace-planet-2",
+      "name": "Iron Cinder",
+      "type": "planet",
+      "index": 42,
+      "zone": "SOLAR FURNACE",
+      "master": "art-src/zone-identity/solar-furnace-planet-2.png",
+      "output": "docs/art/planets/42.png",
+      "masterSha256": "386cdaf2b0bb6f9ad84aea2d8cdbe9758485abdf3f3c37a98904cdee83955918",
+      "sha256": "e4f6af32919b2eb0becf1880dbbaaeba9e7fe1cdf89c8e55fdbf1a756108d0cf",
+      "bytes": 107382,
+      "rgb": [
+        0.3356,
+        0.1631,
+        0.1061
+      ],
+      "solidPixels": 37278,
+      "transparentPixels": 27735,
+      "bounds": [
+        19,
+        19,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "solar-furnace-planet-3",
+      "name": "Ashfall Moon",
+      "type": "planet",
+      "index": 43,
+      "zone": "SOLAR FURNACE",
+      "master": "art-src/zone-identity/solar-furnace-planet-3.png",
+      "output": "docs/art/planets/43.png",
+      "masterSha256": "cec609df9a1930efd77a232d801cfee0bb9f99a00b5ce22d56bc806fad1687f0",
+      "sha256": "a2ad55a174be78f921240fab1e59928d597cd47a5523cb8c9bdb1027e74fbf2e",
+      "bytes": 112113,
+      "rgb": [
+        0.2829,
+        0.283,
+        0.2926
+      ],
+      "solidPixels": 37148,
+      "transparentPixels": 27804,
+      "bounds": [
+        19,
+        20,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "solar-furnace-planet-4",
+      "name": "Quenched Slag",
+      "type": "planet",
+      "index": 44,
+      "zone": "SOLAR FURNACE",
+      "master": "art-src/zone-identity/solar-furnace-planet-4.png",
+      "output": "docs/art/planets/44.png",
+      "masterSha256": "8c1868c020f4abc8da0d25c12155512f68c71d21d8627a81d8bfd33598174a61",
+      "sha256": "981798095c50e878187bc6624c251a5dafa98ff6bc3e013a04eafcd0a895bb99",
+      "bytes": 112339,
+      "rgb": [
+        0.2487,
+        0.2167,
+        0.2321
+      ],
+      "solidPixels": 40459,
+      "transparentPixels": 24439,
+      "bounds": [
+        14,
+        15,
+        242,
+        241
+      ]
+    },
+    {
+      "id": "solar-furnace-planet-5",
+      "name": "Vent World",
+      "type": "planet",
+      "index": 45,
+      "zone": "SOLAR FURNACE",
+      "master": "art-src/zone-identity/solar-furnace-planet-5.png",
+      "output": "docs/art/planets/45.png",
+      "masterSha256": "9edb340a4523e3243b77be27b0447987b9153e0c7ca37870934a8aea330bf2fe",
+      "sha256": "5e8385f50ed26de35823d06a6f16372f463c15a86cef4a640d7b15b4f1f37db0",
+      "bytes": 97951,
+      "rgb": [
+        0.3994,
+        0.237,
+        0.1678
+      ],
+      "solidPixels": 32549,
+      "transparentPixels": 32547,
+      "bounds": [
+        26,
+        26,
+        229,
+        229
+      ]
+    },
+    {
+      "id": "sapphire-abyss-planet-1",
+      "name": "Trench World",
+      "type": "planet",
+      "index": 46,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-planet-1.png",
+      "output": "docs/art/planets/46.png",
+      "masterSha256": "a32baa5572519d6b6635ee3eb3032a9b46a9e1755ed5b5a9def3f1f293f572e6",
+      "sha256": "288dea15ce1572b906d3132cb928033bafb3c3361039c8f6c1f79e3d20ba5a83",
+      "bytes": 102471,
+      "rgb": [
+        0.1356,
+        0.2444,
+        0.3858
+      ],
+      "solidPixels": 35558,
+      "transparentPixels": 29465,
+      "bounds": [
+        21,
+        23,
+        234,
+        234
+      ]
+    },
+    {
+      "id": "sapphire-abyss-planet-2",
+      "name": "Tidal Bands",
+      "type": "planet",
+      "index": 47,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-planet-2.png",
+      "output": "docs/art/planets/47.png",
+      "masterSha256": "28e2d7d6c3a93ebfbb575a07522fe90f20127ec7814b745e6d36f3e866c58d48",
+      "sha256": "9910598ddd3439a623cbb67a4adcd6fcedbf3e57169334d2519a8514002cd4af",
+      "bytes": 111122,
+      "rgb": [
+        0.1937,
+        0.3073,
+        0.4456
+      ],
+      "solidPixels": 39038,
+      "transparentPixels": 25972,
+      "bounds": [
+        16,
+        17,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "sapphire-abyss-planet-3",
+      "name": "Ink Sea",
+      "type": "planet",
+      "index": 48,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-planet-3.png",
+      "output": "docs/art/planets/48.png",
+      "masterSha256": "a476b755210bef267e99193f10b997aa5762895be1be84e3b7fa56795e816ad6",
+      "sha256": "68e816a8cdfd240a606af3fece32a62e01a6380188f85f88f51a2ad11e503116",
+      "bytes": 79054,
+      "rgb": [
+        0.0354,
+        0.0995,
+        0.1897
+      ],
+      "solidPixels": 39834,
+      "transparentPixels": 25021,
+      "bounds": [
+        15,
+        16,
+        241,
+        239
+      ]
+    },
+    {
+      "id": "sapphire-abyss-planet-4",
+      "name": "Whitecap Giant",
+      "type": "planet",
+      "index": 49,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-planet-4.png",
+      "output": "docs/art/planets/49.png",
+      "masterSha256": "b8538cb37e8fc39fce3e98ffcef3d900c34dbba4d2cd80c10ff9150ad372ec2e",
+      "sha256": "30752815d97927337e7da8131d067a311d5881f3fa26e79153c6b10749e38df3",
+      "bytes": 102904,
+      "rgb": [
+        0.2299,
+        0.34,
+        0.522
+      ],
+      "solidPixels": 39084,
+      "transparentPixels": 25934,
+      "bounds": [
+        16,
+        17,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "sapphire-abyss-planet-5",
+      "name": "Pressure Reef",
+      "type": "planet",
+      "index": 50,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-planet-5.png",
+      "output": "docs/art/planets/50.png",
+      "masterSha256": "e878bb309a2fec06b0928da14adc278248f3d66ca40e43e0f526a5a8a3d0b59e",
+      "sha256": "c0ddcd966b371b8c1639f984b01ed53c202e30a48c66fd24d7840d63b805310f",
+      "bytes": 110284,
+      "rgb": [
+        0.1176,
+        0.2263,
+        0.3842
+      ],
+      "solidPixels": 38522,
+      "transparentPixels": 26418,
+      "bounds": [
+        16,
+        18,
+        240,
+        239
+      ]
+    },
+    {
+      "id": "sapphire-abyss-debris-1",
+      "name": "Abyss Stone",
+      "type": "debris",
+      "index": 29,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-debris-1.png",
+      "output": "docs/art/debris/29.png",
+      "masterSha256": "c7d426187e03a903d6177cb3eb3ed8f8b3a827dfd8ed142cf5194db883a6d19b",
+      "sha256": "21e496f9a838fcc00ba1761f79684353c5a60a79bf20f9f61b68f8dd66871826",
+      "bytes": 88362,
+      "rgb": [
+        0.157,
+        0.2143,
+        0.3358
+      ],
+      "solidPixels": 30684,
+      "transparentPixels": 34377,
+      "bounds": [
+        29,
+        22,
+        229,
+        235
+      ]
+    },
+    {
+      "id": "sapphire-abyss-debris-2",
+      "name": "Pressure Glass",
+      "type": "debris",
+      "index": 30,
+      "zone": "SAPPHIRE ABYSS",
+      "master": "art-src/zone-identity/sapphire-abyss-debris-2.png",
+      "output": "docs/art/debris/30.png",
+      "masterSha256": "88f866812adc574d8b29901401cc9530ddbdcfc7f1081e1dc756e3a395d146ac",
+      "sha256": "47d793d2444f9f6b7a5446abbc25ad9326035c9709de98a9898109fb3e4a80c0",
+      "bytes": 71261,
+      "rgb": [
+        0.2323,
+        0.3521,
+        0.52
+      ],
+      "solidPixels": 23851,
+      "transparentPixels": 41129,
+      "bounds": [
+        46,
+        17,
+        219,
+        239
+      ]
+    },
+    {
+      "id": "crystal-belt-planet-3",
+      "name": "Quartz Mantle",
+      "type": "planet",
+      "index": 51,
+      "zone": "CRYSTAL BELT",
+      "master": "art-src/zone-identity/crystal-belt-planet-3.png",
+      "output": "docs/art/planets/51.png",
+      "masterSha256": "014696348531d843641365e510b0c17a47485db4d2b7011e99c27ef9a16f22af",
+      "sha256": "a62f1a9f190cebb867de3cb4e721fde391e85dc9633ee03da391fbf5d2e54e34",
+      "bytes": 113630,
+      "rgb": [
+        0.4817,
+        0.4853,
+        0.5411
+      ],
+      "solidPixels": 36777,
+      "transparentPixels": 28054,
+      "bounds": [
+        20,
+        19,
+        235,
+        236
+      ]
+    },
+    {
+      "id": "crystal-belt-planet-4",
+      "name": "Smoky Geode",
+      "type": "planet",
+      "index": 52,
+      "zone": "CRYSTAL BELT",
+      "master": "art-src/zone-identity/crystal-belt-planet-4.png",
+      "output": "docs/art/planets/52.png",
+      "masterSha256": "a6747d417bff52921f8d9ba59a638d09b3a7a88661d402ab75a68f763e6ec932",
+      "sha256": "4db8b358c27343246c0f1533dda2328146a22db420e67291a61029c055cb94aa",
+      "bytes": 104017,
+      "rgb": [
+        0.453,
+        0.4143,
+        0.4642
+      ],
+      "solidPixels": 32633,
+      "transparentPixels": 32387,
+      "bounds": [
+        25,
+        25,
+        230,
+        229
+      ]
+    },
+    {
+      "id": "crystal-belt-planet-5",
+      "name": "Tabular World",
+      "type": "planet",
+      "index": 53,
+      "zone": "CRYSTAL BELT",
+      "master": "art-src/zone-identity/crystal-belt-planet-5.png",
+      "output": "docs/art/planets/53.png",
+      "masterSha256": "dc77d0b755eaabac84af779123e208232f0ad8f8bbbef64c971fd39874d0aef5",
+      "sha256": "229e7284421980c12c42e61dbd3522e1bd87e823a9b09c0594490ea3677915e5",
+      "bytes": 101195,
+      "rgb": [
+        0.5607,
+        0.5349,
+        0.7094
+      ],
+      "solidPixels": 33065,
+      "transparentPixels": 31847,
+      "bounds": [
+        24,
+        29,
+        232,
+        232
+      ]
+    },
+    {
+      "id": "crimson-storm-planet-2",
+      "name": "Scarlet Bands",
+      "type": "planet",
+      "index": 54,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-planet-2.png",
+      "output": "docs/art/planets/54.png",
+      "masterSha256": "266a02bbd9dc5057e82f60ee51a327529b67ef5f6d4b2fc6df471f3156dff820",
+      "sha256": "e0aa1a31167507bf6862bec743148eb86ccfe51e707f7f642b59d6fbbb7cb98f",
+      "bytes": 93142,
+      "rgb": [
+        0.4491,
+        0.1453,
+        0.1576
+      ],
+      "solidPixels": 39474,
+      "transparentPixels": 25566,
+      "bounds": [
+        16,
+        16,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "crimson-storm-planet-3",
+      "name": "Ironcloud",
+      "type": "planet",
+      "index": 55,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-planet-3.png",
+      "output": "docs/art/planets/55.png",
+      "masterSha256": "c703d4bd73e0617d2e7cbdf8c6042356253925d6a936dcf002a8cbd27a290a0e",
+      "sha256": "c8ff05ac7b3032c344909e17e044e27b4054c9cd957c25f0b588b57d54e7d862",
+      "bytes": 93901,
+      "rgb": [
+        0.4211,
+        0.2052,
+        0.2119
+      ],
+      "solidPixels": 36386,
+      "transparentPixels": 28706,
+      "bounds": [
+        20,
+        20,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "crimson-storm-planet-4",
+      "name": "Pale Supercell",
+      "type": "planet",
+      "index": 56,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-planet-4.png",
+      "output": "docs/art/planets/56.png",
+      "masterSha256": "df4a0e426a9418164cfdf8554755b0524798e17ce20c4bc85b636094378a95dc",
+      "sha256": "4ff3913a4893ea64de1813964c4c6d311bd0762d3c3484265200c1be4a0301e8",
+      "bytes": 98614,
+      "rgb": [
+        0.4671,
+        0.3261,
+        0.3304
+      ],
+      "solidPixels": 36256,
+      "transparentPixels": 28830,
+      "bounds": [
+        20,
+        21,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "crimson-storm-planet-5",
+      "name": "Ember Squall",
+      "type": "planet",
+      "index": 57,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-planet-5.png",
+      "output": "docs/art/planets/57.png",
+      "masterSha256": "23f886cfda01aa21cff7bbb86ed247662cb7d99df38e745dbc08d008b7d500a9",
+      "sha256": "50e7b7fdd83db9e01bab7a2f96b1207161bac1f5d68f366c2d74d2ec78d4f838",
+      "bytes": 98895,
+      "rgb": [
+        0.2652,
+        0.1238,
+        0.1403
+      ],
+      "solidPixels": 38533,
+      "transparentPixels": 26517,
+      "bounds": [
+        17,
+        16,
+        238,
+        237
+      ]
+    },
+    {
+      "id": "crimson-storm-debris-1",
+      "name": "Hematite Shard",
+      "type": "debris",
+      "index": 31,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-debris-1.png",
+      "output": "docs/art/debris/31.png",
+      "masterSha256": "8b59f008c8215a2c50ab2eff4726f4a325a9afda139093f5afc9c75f8f46f666",
+      "sha256": "997e5b3f6f3acce49e6da9fbc8b323e52b198a25661d169ccc4cdafed9329bdf",
+      "bytes": 102120,
+      "rgb": [
+        0.369,
+        0.2433,
+        0.239
+      ],
+      "solidPixels": 34564,
+      "transparentPixels": 30525,
+      "bounds": [
+        16,
+        17,
+        241,
+        242
+      ]
+    },
+    {
+      "id": "crimson-storm-debris-2",
+      "name": "Stormglass",
+      "type": "debris",
+      "index": 32,
+      "zone": "CRIMSON STORM",
+      "master": "art-src/zone-identity/crimson-storm-debris-2.png",
+      "output": "docs/art/debris/32.png",
+      "masterSha256": "b94d9e067dfceb7cca2fc7aab3bf1a5a5bc0d77d609d020df4122e57c7f02c45",
+      "sha256": "dcd7d9c4a51a0cf892933b686c107b9f8c6a3e455eee5623a0b5ffa0bf346fb8",
+      "bytes": 74669,
+      "rgb": [
+        0.4589,
+        0.2003,
+        0.2067
+      ],
+      "solidPixels": 24924,
+      "transparentPixels": 40203,
+      "bounds": [
+        31,
+        16,
+        224,
+        239
+      ]
+    },
+    {
+      "id": "violet-realm-planet-3",
+      "name": "Lavender Dunes",
+      "type": "planet",
+      "index": 58,
+      "zone": "VIOLET REALM",
+      "master": "art-src/zone-identity/violet-realm-planet-3.png",
+      "output": "docs/art/planets/58.png",
+      "masterSha256": "25d33d42c23ccef1e928c8fa0cbe98c9199bfa7e0a6ecd2e3598b18e499c60ae",
+      "sha256": "2e9dfe5d1edfda731ab9522cae94ddf8fa12ed37fea5b772ec465f65d13988a5",
+      "bytes": 99934,
+      "rgb": [
+        0.5856,
+        0.4315,
+        0.5794
+      ],
+      "solidPixels": 36741,
+      "transparentPixels": 28324,
+      "bounds": [
+        19,
+        20,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "violet-realm-planet-4",
+      "name": "Plum Marble",
+      "type": "planet",
+      "index": 59,
+      "zone": "VIOLET REALM",
+      "master": "art-src/zone-identity/violet-realm-planet-4.png",
+      "output": "docs/art/planets/59.png",
+      "masterSha256": "ac55baf3069e1abbf9d1ba26fe8206b651b00178c5e0aca8f1f974a9d5c2189d",
+      "sha256": "b0bbb2b47438ed72733ffcb96cb9f97540d6276db11444db0dd3738f0b3e10e1",
+      "bytes": 115403,
+      "rgb": [
+        0.4911,
+        0.3262,
+        0.4429
+      ],
+      "solidPixels": 37034,
+      "transparentPixels": 27911,
+      "bounds": [
+        19,
+        20,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "violet-realm-planet-5",
+      "name": "Amethyst Moon",
+      "type": "planet",
+      "index": 60,
+      "zone": "VIOLET REALM",
+      "master": "art-src/zone-identity/violet-realm-planet-5.png",
+      "output": "docs/art/planets/60.png",
+      "masterSha256": "75e5f1ada9aafe895503d19ee1749164e268c1fc671c1baccfe45e7ce01f9b7d",
+      "sha256": "07a9fcfa996ebe9bf2518a6092b0d3e68fefad0257ff9307faf9c6ad1152cd33",
+      "bytes": 91152,
+      "rgb": [
+        0.334,
+        0.2195,
+        0.4186
+      ],
+      "solidPixels": 32536,
+      "transparentPixels": 32597,
+      "bounds": [
+        26,
+        26,
+        230,
+        228
+      ]
+    },
+    {
+      "id": "violet-realm-debris-1",
+      "name": "Violet Basalt",
+      "type": "debris",
+      "index": 33,
+      "zone": "VIOLET REALM",
+      "master": "art-src/zone-identity/violet-realm-debris-1.png",
+      "output": "docs/art/debris/33.png",
+      "masterSha256": "8d432eb0714f719358e3d103fbe185a569fa42ad0abfaa05de08e0e992eeeebb",
+      "sha256": "5ccc0273fa6a2361f7631854fc4fbd424383fd3e8ffc782ee5cd1b444d4e9fb3",
+      "bytes": 83513,
+      "rgb": [
+        0.4027,
+        0.2996,
+        0.3914
+      ],
+      "solidPixels": 28817,
+      "transparentPixels": 36289,
+      "bounds": [
+        23,
+        25,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "violet-realm-debris-2",
+      "name": "Veined Pebble",
+      "type": "debris",
+      "index": 34,
+      "zone": "VIOLET REALM",
+      "master": "art-src/zone-identity/violet-realm-debris-2.png",
+      "output": "docs/art/debris/34.png",
+      "masterSha256": "904d07394a3ca835d2f78bbea82259d9180d1c48609cc12a137a3502bbf0e953",
+      "sha256": "098b12c493d7d5592170d0d96d7a33d5e57d1ce34f205645c88638a6d6cf0870",
+      "bytes": 94696,
+      "rgb": [
+        0.5998,
+        0.4702,
+        0.585
+      ],
+      "solidPixels": 33724,
+      "transparentPixels": 31397,
+      "bounds": [
+        21,
+        26,
+        239,
+        236
+      ]
+    },
+    {
+      "id": "monochrome-void-planet-2",
+      "name": "Alabaster Fault",
+      "type": "planet",
+      "index": 61,
+      "zone": "MONOCHROME VOID",
+      "master": "art-src/zone-identity/monochrome-void-planet-2.png",
+      "output": "docs/art/planets/61.png",
+      "masterSha256": "0f79e03cd7f1ef21ff947bd2c6c243932b0b94826e9d9458fcb1c2af0b378442",
+      "sha256": "4a3083c6f82d58d21162d152761e8c76e5a3826c5466d83224a5605f2c2532c3",
+      "bytes": 112026,
+      "rgb": [
+        0.6144,
+        0.598,
+        0.5769
+      ],
+      "solidPixels": 39812,
+      "transparentPixels": 25164,
+      "bounds": [
+        15,
+        15,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "monochrome-void-planet-3",
+      "name": "Graphite Bands",
+      "type": "planet",
+      "index": 62,
+      "zone": "MONOCHROME VOID",
+      "master": "art-src/zone-identity/monochrome-void-planet-3.png",
+      "output": "docs/art/planets/62.png",
+      "masterSha256": "38cd957d9623bf8bb31d226416c62b844a8485e32a29c4484caa8d1df4d729f0",
+      "sha256": "91213f648d5ad7ab956fd2df19f4e2109b1df6750bfd80f5316375fa6aeef8e2",
+      "bytes": 84515,
+      "rgb": [
+        0.38,
+        0.3747,
+        0.3719
+      ],
+      "solidPixels": 36695,
+      "transparentPixels": 28331,
+      "bounds": [
+        20,
+        20,
+        235,
+        235
+      ]
+    },
+    {
+      "id": "monochrome-void-planet-4",
+      "name": "Iron Pearl",
+      "type": "planet",
+      "index": 63,
+      "zone": "MONOCHROME VOID",
+      "master": "art-src/zone-identity/monochrome-void-planet-4.png",
+      "output": "docs/art/planets/63.png",
+      "masterSha256": "602679e75c8d049d562c1a50329779622505cfc83783e40d6ffc81d7036657e4",
+      "sha256": "6c4f896d530530f06ea7f82a0187109dec15aa9a814965a8996a75c90cf7d61c",
+      "bytes": 116558,
+      "rgb": [
+        0.4546,
+        0.4396,
+        0.4379
+      ],
+      "solidPixels": 38337,
+      "transparentPixels": 26746,
+      "bounds": [
+        17,
+        18,
+        238,
+        238
+      ]
+    },
+    {
+      "id": "monochrome-void-planet-5",
+      "name": "Two-Tone Moon",
+      "type": "planet",
+      "index": 64,
+      "zone": "MONOCHROME VOID",
+      "master": "art-src/zone-identity/monochrome-void-planet-5.png",
+      "output": "docs/art/planets/64.png",
+      "masterSha256": "18437c25072c2bf18553768a6e988bb234361ede56b157fc6256a311110c8c5e",
+      "sha256": "8d81e62cdffaed363ece9f843ca928169d2243a7ccaa20d613d8db4a9a2a0032",
+      "bytes": 92577,
+      "rgb": [
+        0.4802,
+        0.4705,
+        0.4593
+      ],
+      "solidPixels": 31841,
+      "transparentPixels": 33199,
+      "bounds": [
+        27,
+        27,
+        228,
+        228
+      ]
+    },
+    {
+      "id": "hypervivid-planet-3",
+      "name": "Cyan Oil-Sheen",
+      "type": "planet",
+      "index": 65,
+      "zone": "HYPERVIVID",
+      "master": "art-src/zone-identity/hypervivid-planet-3.png",
+      "output": "docs/art/planets/65.png",
+      "masterSha256": "a55defa4a52cb43e66a172b472fbd45ca3c25a90a619dd9662c40fd87585a203",
+      "sha256": "dd79709d3ff38edc9a0fc0bd5e096c90743e90aead5dcf6d8118fc8d0bd1a4d6",
+      "bytes": 103145,
+      "rgb": [
+        0.3696,
+        0.4587,
+        0.5541
+      ],
+      "solidPixels": 35336,
+      "transparentPixels": 29613,
+      "bounds": [
+        21,
+        22,
+        234,
+        233
+      ]
+    },
+    {
+      "id": "hypervivid-planet-4",
+      "name": "Magenta Whorl",
+      "type": "planet",
+      "index": 66,
+      "zone": "HYPERVIVID",
+      "master": "art-src/zone-identity/hypervivid-planet-4.png",
+      "output": "docs/art/planets/66.png",
+      "masterSha256": "48a4b537bd0c3ddf5b0b47685fcd767aa4058df5b722244540e83039bd18b548",
+      "sha256": "1b5bd690f7dbef2cafcc432958e2fcdf06e840fb1ed8e447eb7923f8563a32f9",
+      "bytes": 100050,
+      "rgb": [
+        0.3599,
+        0.2184,
+        0.4223
+      ],
+      "solidPixels": 36053,
+      "transparentPixels": 29021,
+      "bounds": [
+        20,
+        21,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "hypervivid-planet-5",
+      "name": "Opal Ink",
+      "type": "planet",
+      "index": 67,
+      "zone": "HYPERVIVID",
+      "master": "art-src/zone-identity/hypervivid-planet-5.png",
+      "output": "docs/art/planets/67.png",
+      "masterSha256": "07e5a1734a263c8a25ff87cb0cbed02cd2e6f46e026cd774ca413fc719c1b551",
+      "sha256": "a8845321201e6bce99ec583adfa47f84cdc1f41cf0e5134c6c41044166e7d749",
+      "bytes": 103603,
+      "rgb": [
+        0.5281,
+        0.5689,
+        0.6714
+      ],
+      "solidPixels": 36192,
+      "transparentPixels": 28645,
+      "bounds": [
+        21,
+        21,
+        235,
+        235
+      ]
+    },
+    {
+      "id": "hypervivid-debris-2",
+      "name": "Lacquer Chip",
+      "type": "debris",
+      "index": 35,
+      "zone": "HYPERVIVID",
+      "master": "art-src/zone-identity/hypervivid-debris-2.png",
+      "output": "docs/art/debris/35.png",
+      "masterSha256": "2d597015788cfe95fdaf7a6f6554f30df5c2ccbb6b93289231b7f82a608d695b",
+      "sha256": "92ee43bdcd8a9a07cffc437e581b803f0d90c00df8973258dfa33709c7399e6e",
+      "bytes": 50487,
+      "rgb": [
+        0.2571,
+        0.5531,
+        0.6835
+      ],
+      "solidPixels": 19820,
+      "transparentPixels": 45186,
+      "bounds": [
+        25,
+        29,
+        230,
+        220
+      ]
+    },
+    {
+      "id": "rust-belt-planet-3",
+      "name": "Verdigris Shell",
+      "type": "planet",
+      "index": 68,
+      "zone": "RUST BELT",
+      "master": "art-src/zone-identity/rust-belt-planet-3.png",
+      "output": "docs/art/planets/68.png",
+      "masterSha256": "dfb5e9df1f0bcb776220597e49de7040c04b45e1ebc5edc57e69163c39c7f7cb",
+      "sha256": "16cf5a0f22c5f748f4aaa7076cde6af25244b1b98b71e4cec450c32b51a94754",
+      "bytes": 112782,
+      "rgb": [
+        0.3502,
+        0.3032,
+        0.221
+      ],
+      "solidPixels": 37470,
+      "transparentPixels": 27444,
+      "bounds": [
+        18,
+        19,
+        237,
+        237
+      ]
+    },
+    {
+      "id": "rust-belt-planet-4",
+      "name": "Bolted Moon",
+      "type": "planet",
+      "index": 69,
+      "zone": "RUST BELT",
+      "master": "art-src/zone-identity/rust-belt-planet-4.png",
+      "output": "docs/art/planets/69.png",
+      "masterSha256": "e3bba77d92c37b5ee10a2a4ffb83a7d4242742ebc7d15842d44516f47ecb5b90",
+      "sha256": "357e52f2495f2024ac06182ff3c6aedb1a8a1fda2e3de54c0a7c20f7e25a962c",
+      "bytes": 107113,
+      "rgb": [
+        0.3422,
+        0.2626,
+        0.2063
+      ],
+      "solidPixels": 35383,
+      "transparentPixels": 29703,
+      "bounds": [
+        21,
+        22,
+        234,
+        235
+      ]
+    },
+    {
+      "id": "rust-belt-planet-5",
+      "name": "Foundry Core",
+      "type": "planet",
+      "index": 70,
+      "zone": "RUST BELT",
+      "master": "art-src/zone-identity/rust-belt-planet-5.png",
+      "output": "docs/art/planets/70.png",
+      "masterSha256": "2d00814e96f13add18fcd263cc60ee5be7c5856e81b76720cfc5f22cc15ecac0",
+      "sha256": "f6a3b309fca5cdefe2923e3593517e3976be617aa73bbf184eb7c1bf629b0142",
+      "bytes": 107331,
+      "rgb": [
+        0.3165,
+        0.2191,
+        0.1569
+      ],
+      "solidPixels": 36018,
+      "transparentPixels": 29034,
+      "bounds": [
+        21,
+        18,
+        234,
+        235
+      ]
+    },
+    {
+      "id": "rust-belt-debris-3",
+      "name": "Broken Cog",
+      "type": "debris",
+      "index": 36,
+      "zone": "RUST BELT",
+      "master": "art-src/zone-identity/rust-belt-debris-3.png",
+      "output": "docs/art/debris/36.png",
+      "masterSha256": "e36c4354f842fc319b79c6b4e3f20d2d81d64e924ccbbf438044cc2241d1528d",
+      "sha256": "ac1bbbb1739e0bc4077c062e3c54d1a6af3470b69ee8a41a9c5f6ae7fcdc4a43",
+      "bytes": 95763,
+      "rgb": [
+        0.4106,
+        0.3043,
+        0.2375
+      ],
+      "solidPixels": 29592,
+      "transparentPixels": 34888,
+      "bounds": [
+        15,
+        15,
+        234,
+        241
+      ]
+    },
+    {
+      "id": "bone-desert-planet-3",
+      "name": "Fossil Seam",
+      "type": "planet",
+      "index": 71,
+      "zone": "BONE DESERT",
+      "master": "art-src/zone-identity/bone-desert-planet-3.png",
+      "output": "docs/art/planets/71.png",
+      "masterSha256": "2adfe9eb21d76ee86d1362a691382095cd28878cb1109bdca01edf9cf7f10dec",
+      "sha256": "30685ee0b282d66f4f9b50aea477e4477d6d024f645268b362d45d00ace8bf37",
+      "bytes": 108453,
+      "rgb": [
+        0.5666,
+        0.4187,
+        0.2954
+      ],
+      "solidPixels": 37042,
+      "transparentPixels": 27944,
+      "bounds": [
+        20,
+        18,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "bone-desert-planet-4",
+      "name": "Porous Bone",
+      "type": "planet",
+      "index": 72,
+      "zone": "BONE DESERT",
+      "master": "art-src/zone-identity/bone-desert-planet-4.png",
+      "output": "docs/art/planets/72.png",
+      "masterSha256": "f1912e681a284a18a16a7fcc2d7f0a9830aec32d34c042c72440087aa024dc7e",
+      "sha256": "fe9ce321fbd63e20886b45ccdf03a89980d4c876a426041d4b9156366af1c6e5",
+      "bytes": 108184,
+      "rgb": [
+        0.6324,
+        0.5494,
+        0.453
+      ],
+      "solidPixels": 36028,
+      "transparentPixels": 29028,
+      "bounds": [
+        21,
+        20,
+        235,
+        233
+      ]
+    },
+    {
+      "id": "bone-desert-planet-5",
+      "name": "Canyon Relic",
+      "type": "planet",
+      "index": 73,
+      "zone": "BONE DESERT",
+      "master": "art-src/zone-identity/bone-desert-planet-5.png",
+      "output": "docs/art/planets/73.png",
+      "masterSha256": "e6988e39667991dde73951ad8c75dfaf55d0b3a6532547177ba2efa021e7f12a",
+      "sha256": "ce8521cdccf0aed7b3aad8e0c61da997ca2d3398a1ec545cd9703e8e9f46b2c5",
+      "bytes": 105870,
+      "rgb": [
+        0.527,
+        0.3908,
+        0.2724
+      ],
+      "solidPixels": 36634,
+      "transparentPixels": 28364,
+      "bounds": [
+        20,
+        20,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "bone-desert-debris-2",
+      "name": "Fossil Slab",
+      "type": "debris",
+      "index": 37,
+      "zone": "BONE DESERT",
+      "master": "art-src/zone-identity/bone-desert-debris-2.png",
+      "output": "docs/art/debris/37.png",
+      "masterSha256": "df89f472448f080c9526bbe263dbb1c8e0aa785716fe19445375804016e09f51",
+      "sha256": "4d3cbf55ebe2e8844ca8687cef5db1a5772750fa2ad6591df1d3910825526ed3",
+      "bytes": 86077,
+      "rgb": [
+        0.7592,
+        0.6419,
+        0.5051
+      ],
+      "solidPixels": 27962,
+      "transparentPixels": 37115,
+      "bounds": [
+        19,
+        37,
+        235,
+        224
+      ]
+    },
+    {
+      "id": "golden-hour-planet-1",
+      "name": "Amber Globe",
+      "type": "planet",
+      "index": 74,
+      "zone": "GOLDEN HOUR",
+      "master": "art-src/zone-identity/golden-hour-planet-1.png",
+      "output": "docs/art/planets/74.png",
+      "masterSha256": "82cbb8dc44452b351f1353e7ad4689312661cd6a9428e0b4dc56065c4ebe4879",
+      "sha256": "a82470127f5bec7041a4cdd8d05c7cf3768e44451d72fcc57bdd22e5f04907c1",
+      "bytes": 92419,
+      "rgb": [
+        0.6847,
+        0.3855,
+        0.0791
+      ],
+      "solidPixels": 37068,
+      "transparentPixels": 27984,
+      "bounds": [
+        19,
+        18,
+        236,
+        234
+      ]
+    },
+    {
+      "id": "golden-hour-planet-2",
+      "name": "Dust Halo",
+      "type": "planet",
+      "index": 75,
+      "zone": "GOLDEN HOUR",
+      "master": "art-src/zone-identity/golden-hour-planet-2.png",
+      "output": "docs/art/planets/75.png",
+      "masterSha256": "d949e75c2d316fdbb3d94457f9bf4600f59bcb03d87ac93d2f10f25733deadbb",
+      "sha256": "8c6064d40050f167bf43cd08a7327ded96cc3e8f780cde66026060019affb483",
+      "bytes": 70005,
+      "rgb": [
+        0.6049,
+        0.4201,
+        0.2215
+      ],
+      "solidPixels": 26982,
+      "transparentPixels": 37181,
+      "bounds": [
+        8,
+        36,
+        249,
+        215
+      ]
+    },
+    {
+      "id": "golden-hour-planet-3",
+      "name": "Burnished Dunes",
+      "type": "planet",
+      "index": 76,
+      "zone": "GOLDEN HOUR",
+      "master": "art-src/zone-identity/golden-hour-planet-3.png",
+      "output": "docs/art/planets/76.png",
+      "masterSha256": "7b0f07d310568f80dd64dca097c7694492fa7541d7efcb384bbed2e728b8e84b",
+      "sha256": "49c96f8e6b5fd895f42665a70445553328979f10d7325810fc479690b5200eea",
+      "bytes": 91979,
+      "rgb": [
+        0.5953,
+        0.3986,
+        0.1945
+      ],
+      "solidPixels": 36161,
+      "transparentPixels": 28831,
+      "bounds": [
+        20,
+        21,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "golden-hour-planet-4",
+      "name": "Honeycomb World",
+      "type": "planet",
+      "index": 77,
+      "zone": "GOLDEN HOUR",
+      "master": "art-src/zone-identity/golden-hour-planet-4.png",
+      "output": "docs/art/planets/77.png",
+      "masterSha256": "f678feeaab2cbb7b07ecd8671c783a20960c1e95d6924f9bb0ac9bcf281e56f1",
+      "sha256": "bc3d02132235dcae0028c1b13b0793f9b770867edc0472f8ebb15efc1efae62b",
+      "bytes": 111578,
+      "rgb": [
+        0.5536,
+        0.3364,
+        0.1264
+      ],
+      "solidPixels": 38977,
+      "transparentPixels": 25978,
+      "bounds": [
+        16,
+        16,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "golden-hour-planet-5",
+      "name": "Smoked Gold",
+      "type": "planet",
+      "index": 78,
+      "zone": "GOLDEN HOUR",
+      "master": "art-src/zone-identity/golden-hour-planet-5.png",
+      "output": "docs/art/planets/78.png",
+      "masterSha256": "8444d0855d2236baaaa0079f0775a7a2eed89b24872c405a4422730eec250ce1",
+      "sha256": "266c36da872b1f0c1cdf2128ebfc31c68ba1bcf9a87f7237a0ae12ae35800613",
+      "bytes": 83260,
+      "rgb": [
+        0.4195,
+        0.2532,
+        0.1146
+      ],
+      "solidPixels": 36563,
+      "transparentPixels": 28560,
+      "bounds": [
+        20,
+        20,
+        235,
+        235
+      ]
+    },
+    {
+      "id": "solar-corona-planet-1",
+      "name": "Sunspot Shell",
+      "type": "planet",
+      "index": 79,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-planet-1.png",
+      "output": "docs/art/planets/79.png",
+      "masterSha256": "d67c3511f7328d97a484c2cfd9f75c28f8d1ac4cb2e1a670a5ad0b64991bb6f6",
+      "sha256": "0ac74f253ec5cf55c2c73520842b4065b79f9afb2db4da04b238b967933f2e03",
+      "bytes": 110338,
+      "rgb": [
+        0.507,
+        0.4205,
+        0.3428
+      ],
+      "solidPixels": 36019,
+      "transparentPixels": 29004,
+      "bounds": [
+        21,
+        20,
+        234,
+        234
+      ]
+    },
+    {
+      "id": "solar-corona-planet-2",
+      "name": "Corona Ceramic",
+      "type": "planet",
+      "index": 80,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-planet-2.png",
+      "output": "docs/art/planets/80.png",
+      "masterSha256": "ee5348feb036b3b2f71b1d75685055aef3aabdf7469e95f8ea58e46d24ac0fc5",
+      "sha256": "5e1333cbbf86677e89952ad7ccebfdcdddbc8a0fda62f5db77ff5ed8742a737d",
+      "bytes": 102432,
+      "rgb": [
+        0.5895,
+        0.5231,
+        0.4632
+      ],
+      "solidPixels": 39850,
+      "transparentPixels": 25017,
+      "bounds": [
+        16,
+        15,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "solar-corona-planet-3",
+      "name": "Copper Mirror",
+      "type": "planet",
+      "index": 81,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-planet-3.png",
+      "output": "docs/art/planets/81.png",
+      "masterSha256": "8d473c587ebc0cfaa91d985e85f29f8d9392a1715c48d44a92b3496c0eeb20a8",
+      "sha256": "474a9794b083bcff7d29bfb1ee5239eaaf2475e15ece2600bbb9f829eccac66b",
+      "bytes": 102202,
+      "rgb": [
+        0.4899,
+        0.2828,
+        0.1718
+      ],
+      "solidPixels": 37820,
+      "transparentPixels": 27225,
+      "bounds": [
+        18,
+        18,
+        237,
+        237
+      ]
+    },
+    {
+      "id": "solar-corona-planet-4",
+      "name": "Heat Bands",
+      "type": "planet",
+      "index": 82,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-planet-4.png",
+      "output": "docs/art/planets/82.png",
+      "masterSha256": "6599105f144ff5dfb58e5a7bd0fcf5c1d97d7183ed80248df64ee6a2a9166f55",
+      "sha256": "65e5222c80967375e1517b2ca7827e09d748a4a332a544c88dbfc9ddf99e5129",
+      "bytes": 90025,
+      "rgb": [
+        0.406,
+        0.3346,
+        0.2617
+      ],
+      "solidPixels": 36217,
+      "transparentPixels": 28799,
+      "bounds": [
+        20,
+        20,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "solar-corona-planet-5",
+      "name": "Dusk Scorch",
+      "type": "planet",
+      "index": 83,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-planet-5.png",
+      "output": "docs/art/planets/83.png",
+      "masterSha256": "24e086b2f71bf6f036a1d4efc7e38bc23858e0e6e8807cad0cf7065155e953e9",
+      "sha256": "49e62c2f9d26fdf37f979b9d5310398a16fb005574d9e971a2ff1bc0fe9e0099",
+      "bytes": 112048,
+      "rgb": [
+        0.3494,
+        0.2136,
+        0.1821
+      ],
+      "solidPixels": 39083,
+      "transparentPixels": 25892,
+      "bounds": [
+        17,
+        16,
+        238,
+        239
+      ]
+    },
+    {
+      "id": "solar-corona-debris-1",
+      "name": "Solar Clinker",
+      "type": "debris",
+      "index": 38,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-debris-1.png",
+      "output": "docs/art/debris/38.png",
+      "masterSha256": "35489932f2b50138de8228829024eaad5f930b105c7f973f088d4ec39529d110",
+      "sha256": "0652172c2ce52f2282bc6dae669bdc2baa61ab2dca44f87fef513588338661c0",
+      "bytes": 91876,
+      "rgb": [
+        0.4231,
+        0.3429,
+        0.2757
+      ],
+      "solidPixels": 28788,
+      "transparentPixels": 36101,
+      "bounds": [
+        19,
+        27,
+        236,
+        237
+      ]
+    },
+    {
+      "id": "solar-corona-debris-2",
+      "name": "Coronal Flake",
+      "type": "debris",
+      "index": 39,
+      "zone": "SOLAR CORONA",
+      "master": "art-src/zone-identity/solar-corona-debris-2.png",
+      "output": "docs/art/debris/39.png",
+      "masterSha256": "3ec99a0f0d1e5d7417eee7db63f85808942eae21b914958eb601c7d487e14421",
+      "sha256": "ab739ff9b3fa8787c0ad7e5c7580e9ef27dfa6ef73a77a405808f9a6444bc6a0",
+      "bytes": 67283,
+      "rgb": [
+        0.6204,
+        0.4061,
+        0.2752
+      ],
+      "solidPixels": 20913,
+      "transparentPixels": 44137,
+      "bounds": [
+        26,
+        16,
+        230,
+        239
+      ]
+    },
+    {
+      "id": "coral-shallows-planet-3",
+      "name": "Atoll Shell",
+      "type": "planet",
+      "index": 84,
+      "zone": "CORAL SHALLOWS",
+      "master": "art-src/zone-identity/coral-shallows-planet-3.png",
+      "output": "docs/art/planets/84.png",
+      "masterSha256": "4b72b670a75c6cefa39398610f806eed87f1eb68d36eb5ba419f72278e618afa",
+      "sha256": "b87b557b4598d8b784ddfad431c4c07eb587bba9a5460eb9fe78131ce01ec54a",
+      "bytes": 104908,
+      "rgb": [
+        0.311,
+        0.5661,
+        0.5802
+      ],
+      "solidPixels": 35227,
+      "transparentPixels": 29590,
+      "bounds": [
+        22,
+        22,
+        233,
+        233
+      ]
+    },
+    {
+      "id": "coral-shallows-planet-4",
+      "name": "Pearl Tide",
+      "type": "planet",
+      "index": 85,
+      "zone": "CORAL SHALLOWS",
+      "master": "art-src/zone-identity/coral-shallows-planet-4.png",
+      "output": "docs/art/planets/85.png",
+      "masterSha256": "74fbf32a959d2b6058411d4733b7dfe70e88c52d65bbf7c462ed77cfe5b455af",
+      "sha256": "2f75a051eedf432ea99431003d684334c91a3a00da8495405b88b2f6830adcec",
+      "bytes": 109136,
+      "rgb": [
+        0.5198,
+        0.5543,
+        0.5458
+      ],
+      "solidPixels": 41262,
+      "transparentPixels": 23540,
+      "bounds": [
+        13,
+        14,
+        242,
+        242
+      ]
+    },
+    {
+      "id": "coral-shallows-planet-5",
+      "name": "Kelp Lagoon",
+      "type": "planet",
+      "index": 86,
+      "zone": "CORAL SHALLOWS",
+      "master": "art-src/zone-identity/coral-shallows-planet-5.png",
+      "output": "docs/art/planets/86.png",
+      "masterSha256": "9be4956841365247e445977c71c883cd335189f0b99702f78e14a78a76c14ae1",
+      "sha256": "50b3e1a8be329e06fce397b0432156edca6bc721ac5c756e15b69cf00c3ad7f5",
+      "bytes": 97838,
+      "rgb": [
+        0.3238,
+        0.4564,
+        0.4395
+      ],
+      "solidPixels": 32065,
+      "transparentPixels": 32947,
+      "bounds": [
+        27,
+        26,
+        228,
+        228
+      ]
+    },
+    {
+      "id": "coral-shallows-debris-1",
+      "name": "Coral Fragment",
+      "type": "debris",
+      "index": 40,
+      "zone": "CORAL SHALLOWS",
+      "master": "art-src/zone-identity/coral-shallows-debris-1.png",
+      "output": "docs/art/debris/40.png",
+      "masterSha256": "9b36bc9a6d81e94ad48bb771cfc89821c757e4daef3c6141b78f217614a6aa19",
+      "sha256": "978c44a91fd7648df9bd86da7f4766509b39fbe8303bda98af65e159d06ef821",
+      "bytes": 72442,
+      "rgb": [
+        0.7676,
+        0.4407,
+        0.3929
+      ],
+      "solidPixels": 22765,
+      "transparentPixels": 41664,
+      "bounds": [
+        29,
+        13,
+        235,
+        240
+      ]
+    },
+    {
+      "id": "coral-shallows-debris-2",
+      "name": "Shell Shard",
+      "type": "debris",
+      "index": 41,
+      "zone": "CORAL SHALLOWS",
+      "master": "art-src/zone-identity/coral-shallows-debris-2.png",
+      "output": "docs/art/debris/41.png",
+      "masterSha256": "007dc6cff075eef064e314d9f7010dfa43d387361ac5143afa4cf82eed97ec8f",
+      "sha256": "e1f4f1d11574bcae2e6ebddccfc6b06abd81e37c9c8bb1e7c0b45a26dcb311b7",
+      "bytes": 76412,
+      "rgb": [
+        0.7487,
+        0.6324,
+        0.6004
+      ],
+      "solidPixels": 26000,
+      "transparentPixels": 38844,
+      "bounds": [
+        30,
+        17,
+        232,
+        239
+      ]
+    },
+    {
+      "id": "emerald-expanse-planet-1",
+      "name": "Jade Terraces",
+      "type": "planet",
+      "index": 87,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-planet-1.png",
+      "output": "docs/art/planets/87.png",
+      "masterSha256": "9b3389c2cf788ee7912db48d8583ae32ea2b0b7d4d73e3d6fa5fc7491d44e5b9",
+      "sha256": "4767d17fcbfe32ebfee396e6ec129bb4fdb18e7044d1ec08f5737082bc884bb3",
+      "bytes": 114103,
+      "rgb": [
+        0.3959,
+        0.4931,
+        0.4599
+      ],
+      "solidPixels": 37703,
+      "transparentPixels": 27205,
+      "bounds": [
+        18,
+        18,
+        237,
+        237
+      ]
+    },
+    {
+      "id": "emerald-expanse-planet-2",
+      "name": "Malachite World",
+      "type": "planet",
+      "index": 88,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-planet-2.png",
+      "output": "docs/art/planets/88.png",
+      "masterSha256": "0c7080ef6cbfaee7ec6c43ca487f12fbee00b3572e5794de9541d561a3b7d5c6",
+      "sha256": "dfebb48b0ed5d33b4cdeb8eb4d82808a5008bd07097e0fc1d2f378ff8a8531af",
+      "bytes": 108285,
+      "rgb": [
+        0.2731,
+        0.4226,
+        0.3393
+      ],
+      "solidPixels": 35820,
+      "transparentPixels": 29104,
+      "bounds": [
+        21,
+        21,
+        234,
+        234
+      ]
+    },
+    {
+      "id": "emerald-expanse-planet-3",
+      "name": "River Delta",
+      "type": "planet",
+      "index": 89,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-planet-3.png",
+      "output": "docs/art/planets/89.png",
+      "masterSha256": "bde7b84932e54f38fd3ddc29a88682f1ec69fe688545757b4565f640465a48b4",
+      "sha256": "10b2ad178c75c642cd31fbd9e911c90e2e8c41327af5099664bfb5133e6797b8",
+      "bytes": 102970,
+      "rgb": [
+        0.2799,
+        0.4447,
+        0.3929
+      ],
+      "solidPixels": 34080,
+      "transparentPixels": 30733,
+      "bounds": [
+        23,
+        24,
+        232,
+        230
+      ]
+    },
+    {
+      "id": "emerald-expanse-planet-4",
+      "name": "Olive Cloudlands",
+      "type": "planet",
+      "index": 90,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-planet-4.png",
+      "output": "docs/art/planets/90.png",
+      "masterSha256": "a890c540f4015029b1e3f15ec6113eb1a138000a684445a77ff5b1fa608228ad",
+      "sha256": "3c5402e2d91373d05197a5262fc70d137dbf8d7f1a3b8c2a9b0328bbdbde7abc",
+      "bytes": 96158,
+      "rgb": [
+        0.3377,
+        0.3759,
+        0.3034
+      ],
+      "solidPixels": 34223,
+      "transparentPixels": 30443,
+      "bounds": [
+        23,
+        25,
+        232,
+        231
+      ]
+    },
+    {
+      "id": "emerald-expanse-planet-5",
+      "name": "Moss Continents",
+      "type": "planet",
+      "index": 91,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-planet-5.png",
+      "output": "docs/art/planets/91.png",
+      "masterSha256": "3a7c34df6e43334de7bbf6cd58f0d43bdbf51c741979c3149f350b287151b133",
+      "sha256": "0dac3b05b7d4e65061bef9bb3e6c9a390ad509b42a531ddeb35326bacd9217d7",
+      "bytes": 112234,
+      "rgb": [
+        0.4423,
+        0.5093,
+        0.4075
+      ],
+      "solidPixels": 37118,
+      "transparentPixels": 27710,
+      "bounds": [
+        19,
+        20,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "emerald-expanse-debris-1",
+      "name": "Jade Chip",
+      "type": "debris",
+      "index": 42,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-debris-1.png",
+      "output": "docs/art/debris/42.png",
+      "masterSha256": "0e1bb5922f65eeab10130c92a4d154703fc5a3ea3bdd894809b7e89bbc4cc7e4",
+      "sha256": "4fc03c525c1cbb0f194f71c903bf5228a3a4e794253c37756c65213e003e0465",
+      "bytes": 82690,
+      "rgb": [
+        0.3823,
+        0.5073,
+        0.4203
+      ],
+      "solidPixels": 27600,
+      "transparentPixels": 37387,
+      "bounds": [
+        25,
+        14,
+        231,
+        244
+      ]
+    },
+    {
+      "id": "emerald-expanse-debris-2",
+      "name": "Riverstone",
+      "type": "debris",
+      "index": 43,
+      "zone": "EMERALD EXPANSE",
+      "master": "art-src/zone-identity/emerald-expanse-debris-2.png",
+      "output": "docs/art/debris/43.png",
+      "masterSha256": "c8677a14157cabe534555487eb2fd500656c812afebf269e6fd814a49da323f0",
+      "sha256": "75288df59b9f63e0b104ae785a0319bec601aed46ec44b00772f789e43e1f2e3",
+      "bytes": 104654,
+      "rgb": [
+        0.3921,
+        0.463,
+        0.4047
+      ],
+      "solidPixels": 35592,
+      "transparentPixels": 29349,
+      "bounds": [
+        13,
+        19,
+        247,
+        240
+      ]
+    },
+    {
+      "id": "alien-jungle-planet-4",
+      "name": "Rootbound",
+      "type": "planet",
+      "index": 92,
+      "zone": "ALIEN JUNGLE",
+      "master": "art-src/zone-identity/alien-jungle-planet-4.png",
+      "output": "docs/art/planets/92.png",
+      "masterSha256": "56c904d0ffe355b318fd43a85dc16bfd75f8e3856ac4802e9e95f81e542bf805",
+      "sha256": "65ef33d62ce8b2452cd9582f852eee85aac6340d9504d25b1452a799fece8d71",
+      "bytes": 109662,
+      "rgb": [
+        0.3245,
+        0.3248,
+        0.2527
+      ],
+      "solidPixels": 34373,
+      "transparentPixels": 30367,
+      "bounds": [
+        22,
+        23,
+        233,
+        234
+      ]
+    },
+    {
+      "id": "alien-jungle-planet-5",
+      "name": "Spore Mound",
+      "type": "planet",
+      "index": 93,
+      "zone": "ALIEN JUNGLE",
+      "master": "art-src/zone-identity/alien-jungle-planet-5.png",
+      "output": "docs/art/planets/93.png",
+      "masterSha256": "424d8e03097c6f172fed7e900f27ce9e6a954eb5eb00bddc21f5def8b74cc8f9",
+      "sha256": "5832ac0cbeb1fb9e0f631eb236686bdba17ae1041593ff50959fd24d1279f601",
+      "bytes": 113025,
+      "rgb": [
+        0.3863,
+        0.3729,
+        0.2531
+      ],
+      "solidPixels": 35905,
+      "transparentPixels": 28903,
+      "bounds": [
+        21,
+        17,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "alien-jungle-debris-2",
+      "name": "Root Knot",
+      "type": "debris",
+      "index": 44,
+      "zone": "ALIEN JUNGLE",
+      "master": "art-src/zone-identity/alien-jungle-debris-2.png",
+      "output": "docs/art/debris/44.png",
+      "masterSha256": "19354fe6a6d1cc75a32b151084436d64ad2c82756f499fb1e090aa1bee60b6b4",
+      "sha256": "2ac66412c118f14e5798e265761c20e2a49296496934f6905e98a14f6afac634",
+      "bytes": 101476,
+      "rgb": [
+        0.3427,
+        0.2926,
+        0.1829
+      ],
+      "solidPixels": 30906,
+      "transparentPixels": 33281,
+      "bounds": [
+        25,
+        17,
+        232,
+        241
+      ]
+    },
+    {
+      "id": "acid-swamp-planet-1",
+      "name": "Sulfur Flats",
+      "type": "planet",
+      "index": 94,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-planet-1.png",
+      "output": "docs/art/planets/94.png",
+      "masterSha256": "5423f4c6025a2bc6068cea28734571c8cac3e5740784ca68ed348bd2e18ad135",
+      "sha256": "acf18420ae21686db890e08fd2a04fd98e270603e8391cc5c6d6d12c16ae0359",
+      "bytes": 120770,
+      "rgb": [
+        0.4152,
+        0.4318,
+        0.2674
+      ],
+      "solidPixels": 40551,
+      "transparentPixels": 24308,
+      "bounds": [
+        15,
+        14,
+        241,
+        241
+      ]
+    },
+    {
+      "id": "acid-swamp-planet-2",
+      "name": "Tar Bubble",
+      "type": "planet",
+      "index": 95,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-planet-2.png",
+      "output": "docs/art/planets/95.png",
+      "masterSha256": "46b07d8c46cf5a8f6db7a2115c6dba0d7a4f6006445b6a5f95da0b76bdbb62fe",
+      "sha256": "92c49dd6faf1db18808ec51bbc258152ab4d616ff251e8f66aa2a67df936aa12",
+      "bytes": 109263,
+      "rgb": [
+        0.2342,
+        0.24,
+        0.1574
+      ],
+      "solidPixels": 38705,
+      "transparentPixels": 26197,
+      "bounds": [
+        16,
+        18,
+        239,
+        238
+      ]
+    },
+    {
+      "id": "acid-swamp-planet-3",
+      "name": "Lime Crust",
+      "type": "planet",
+      "index": 96,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-planet-3.png",
+      "output": "docs/art/planets/96.png",
+      "masterSha256": "da5b2a3688662cc62521e476d133ed08252586f943b2601622176b924e21b70a",
+      "sha256": "c90041cfcf71ef36a956d2403ddda7b4d45e2560293acd947bb5969546db2ac1",
+      "bytes": 123170,
+      "rgb": [
+        0.5069,
+        0.477,
+        0.2736
+      ],
+      "solidPixels": 39992,
+      "transparentPixels": 24901,
+      "bounds": [
+        15,
+        15,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "acid-swamp-planet-4",
+      "name": "Petrol Marsh",
+      "type": "planet",
+      "index": 97,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-planet-4.png",
+      "output": "docs/art/planets/97.png",
+      "masterSha256": "c666a2633dddf334a6d9912bea6af43cd3bc4a39115c57b3f4c90925f1e119de",
+      "sha256": "93dbba09259cfa2276a44495aacedf299fc882f61cd097c9ba372815481caa87",
+      "bytes": 123166,
+      "rgb": [
+        0.196,
+        0.2514,
+        0.2297
+      ],
+      "solidPixels": 40642,
+      "transparentPixels": 24034,
+      "bounds": [
+        14,
+        14,
+        241,
+        241
+      ]
+    },
+    {
+      "id": "acid-swamp-planet-5",
+      "name": "Acid Lagoon",
+      "type": "planet",
+      "index": 98,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-planet-5.png",
+      "output": "docs/art/planets/98.png",
+      "masterSha256": "833e42facb40381d7fe278c3534f07693e70e4588eb2974091f2b3d48c3e3636",
+      "sha256": "3d21d9afdce39861d605a7d1dca23f47dfeb125d70c44eed046b9e2251b5b7db",
+      "bytes": 125153,
+      "rgb": [
+        0.3765,
+        0.3792,
+        0.2298
+      ],
+      "solidPixels": 40717,
+      "transparentPixels": 24124,
+      "bounds": [
+        14,
+        15,
+        242,
+        243
+      ]
+    },
+    {
+      "id": "acid-swamp-debris-2",
+      "name": "Tar Shard",
+      "type": "debris",
+      "index": 45,
+      "zone": "ACID SWAMP",
+      "master": "art-src/zone-identity/acid-swamp-debris-2.png",
+      "output": "docs/art/debris/45.png",
+      "masterSha256": "a5a8a56b10167c26edaf923720d4ce886b2fa12fca71b25b4eded1a44494d2d6",
+      "sha256": "fd5f1325cc5e7d7b11fcffc4941fcd45ea0f41de61c6d338cbc6a3a74a3c8683",
+      "bytes": 83431,
+      "rgb": [
+        0.264,
+        0.2627,
+        0.2128
+      ],
+      "solidPixels": 27285,
+      "transparentPixels": 37775,
+      "bounds": [
+        39,
+        17,
+        237,
+        239
+      ]
+    },
+    {
+      "id": "aurora-crown-planet-3",
+      "name": "Boreal Dusk",
+      "type": "planet",
+      "index": 99,
+      "zone": "AURORA CROWN",
+      "master": "art-src/zone-identity/aurora-crown-planet-3.png",
+      "output": "docs/art/planets/99.png",
+      "masterSha256": "7bf4328a2e23d12f6e57b835f4589788fb1dcc39db6d04c362a60605b492b2b3",
+      "sha256": "2a8bb792edee20e4fc240785ae9252118f20db1551e5d087afd15bd3fff10cd5",
+      "bytes": 105425,
+      "rgb": [
+        0.2546,
+        0.3613,
+        0.5438
+      ],
+      "solidPixels": 37491,
+      "transparentPixels": 27409,
+      "bounds": [
+        18,
+        20,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "aurora-crown-planet-4",
+      "name": "Frosted Magnetosphere",
+      "type": "planet",
+      "index": 100,
+      "zone": "AURORA CROWN",
+      "master": "art-src/zone-identity/aurora-crown-planet-4.png",
+      "output": "docs/art/planets/100.png",
+      "masterSha256": "7edf08f2d296df80de86f8f64a16e5cb0a6359e0a642bb80a8880fe4b96b70d5",
+      "sha256": "910b26f1fb11aa48a2d465b24f0f834aec66e321af932b481c37cea078d6e4cb",
+      "bytes": 104698,
+      "rgb": [
+        0.3403,
+        0.4382,
+        0.5025
+      ],
+      "solidPixels": 35508,
+      "transparentPixels": 29384,
+      "bounds": [
+        22,
+        20,
+        233,
+        234
+      ]
+    },
+    {
+      "id": "aurora-crown-planet-5",
+      "name": "Polar Mirror",
+      "type": "planet",
+      "index": 101,
+      "zone": "AURORA CROWN",
+      "master": "art-src/zone-identity/aurora-crown-planet-5.png",
+      "output": "docs/art/planets/101.png",
+      "masterSha256": "66586cc9618fc20018cd1e8183fcc3d833d63775fb4db9702e0f1f1ba8e28941",
+      "sha256": "8c77a683f06b80e4e01e32d51d23e3a402a5021423052abd6dbe553cf5b90a0a",
+      "bytes": 109241,
+      "rgb": [
+        0.283,
+        0.4602,
+        0.5802
+      ],
+      "solidPixels": 36570,
+      "transparentPixels": 28351,
+      "bounds": [
+        19,
+        21,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "aurora-crown-debris-2",
+      "name": "Frostfoil",
+      "type": "debris",
+      "index": 46,
+      "zone": "AURORA CROWN",
+      "master": "art-src/zone-identity/aurora-crown-debris-2.png",
+      "output": "docs/art/debris/46.png",
+      "masterSha256": "81bdd2ca036a748c021832c8890958d672c5556ed9c412cf0f12afa3675385db",
+      "sha256": "aeaaa35129dd509e95afa06c90fac73547b9cd8cd0771e1c8bebc4c2b48b7101",
+      "bytes": 72660,
+      "rgb": [
+        0.4318,
+        0.5894,
+        0.7106
+      ],
+      "solidPixels": 22059,
+      "transparentPixels": 42990,
+      "bounds": [
+        44,
+        13,
+        216,
+        242
+      ]
+    },
+    {
+      "id": "pulsar-field-planet-2",
+      "name": "Magnetar Core",
+      "type": "planet",
+      "index": 102,
+      "zone": "PULSAR FIELD",
+      "master": "art-src/zone-identity/pulsar-field-planet-2.png",
+      "output": "docs/art/planets/102.png",
+      "masterSha256": "4f313647ad2071ac10c2b6ed0ef32b9c0b065a24f5f703ca217259da7c544063",
+      "sha256": "29d4b8fc17b483ad2569287e5c013295c317db419a1ec971aceb574d3ce38594",
+      "bytes": 104339,
+      "rgb": [
+        0.1247,
+        0.2364,
+        0.3764
+      ],
+      "solidPixels": 35093,
+      "transparentPixels": 29889,
+      "bounds": [
+        22,
+        23,
+        233,
+        234
+      ]
+    },
+    {
+      "id": "pulsar-field-planet-3",
+      "name": "Polar Ceramic",
+      "type": "planet",
+      "index": 103,
+      "zone": "PULSAR FIELD",
+      "master": "art-src/zone-identity/pulsar-field-planet-3.png",
+      "output": "docs/art/planets/103.png",
+      "masterSha256": "9b6b642dda9901d83831c0f18a314aacb7155c50be982e36b49fb921fe03a15f",
+      "sha256": "6cd20f8d95563ba373ff7e724b4bff57b9231809c664af9c36071b656daeed79",
+      "bytes": 100316,
+      "rgb": [
+        0.5263,
+        0.5693,
+        0.6036
+      ],
+      "solidPixels": 37258,
+      "transparentPixels": 27500,
+      "bounds": [
+        19,
+        19,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "pulsar-field-planet-4",
+      "name": "Charge Stripes",
+      "type": "planet",
+      "index": 104,
+      "zone": "PULSAR FIELD",
+      "master": "art-src/zone-identity/pulsar-field-planet-4.png",
+      "output": "docs/art/planets/104.png",
+      "masterSha256": "2dcddc804dcba6efad1f0ac5ba6ac4e1eeb28cba9d184a8f43f3b333eae6d49d",
+      "sha256": "a1fdd02daccf919e4d7d9adf0045b36485f6aecf8349106fb31b2d99c86e59de",
+      "bytes": 108243,
+      "rgb": [
+        0.2085,
+        0.2258,
+        0.2664
+      ],
+      "solidPixels": 37534,
+      "transparentPixels": 27259,
+      "bounds": [
+        18,
+        18,
+        237,
+        237
+      ]
+    },
+    {
+      "id": "pulsar-field-planet-5",
+      "name": "Iron Equator",
+      "type": "planet",
+      "index": 105,
+      "zone": "PULSAR FIELD",
+      "master": "art-src/zone-identity/pulsar-field-planet-5.png",
+      "output": "docs/art/planets/105.png",
+      "masterSha256": "60e18db217c3473d323200288cf591c30394f8f1af7d121d7a7588e77f9f280d",
+      "sha256": "47d7178e10a3f5ee3a2205c5e902308fe3491e8984bb9d5d0c59861fec923d48",
+      "bytes": 111983,
+      "rgb": [
+        0.194,
+        0.2403,
+        0.2946
+      ],
+      "solidPixels": 38320,
+      "transparentPixels": 26553,
+      "bounds": [
+        17,
+        18,
+        238,
+        238
+      ]
+    },
+    {
+      "id": "pulsar-field-debris-3",
+      "name": "Magnetic Slag",
+      "type": "debris",
+      "index": 47,
+      "zone": "PULSAR FIELD",
+      "master": "art-src/zone-identity/pulsar-field-debris-3.png",
+      "output": "docs/art/debris/47.png",
+      "masterSha256": "90dbef99d4a91c0da7f59421a7a4bd2fe740dddddf2e07a4e7d5eb3b818edffc",
+      "sha256": "dba59ad33065d65aa398e3b07bbad29a152b4dae99344d4ef618a9b8eb96dd57",
+      "bytes": 86372,
+      "rgb": [
+        0.1799,
+        0.2557,
+        0.3474
+      ],
+      "solidPixels": 27541,
+      "transparentPixels": 37447,
+      "bounds": [
+        34,
+        28,
+        230,
+        233
+      ]
+    },
+    {
+      "id": "time-fracture-planet-2",
+      "name": "Clockstone",
+      "type": "planet",
+      "index": 106,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-planet-2.png",
+      "output": "docs/art/planets/106.png",
+      "masterSha256": "e601de75902724a83132ab813445c9aacf651c40859400125d116e65a01d049e",
+      "sha256": "1fd3621cf19b1dbba821cd0799fb2220db1aaf9e8bbf775d34a39152c4b031bb",
+      "bytes": 117170,
+      "rgb": [
+        0.3863,
+        0.3253,
+        0.2365
+      ],
+      "solidPixels": 39268,
+      "transparentPixels": 25753,
+      "bounds": [
+        16,
+        16,
+        239,
+        240
+      ]
+    },
+    {
+      "id": "time-fracture-planet-3",
+      "name": "Offset Seam",
+      "type": "planet",
+      "index": 107,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-planet-3.png",
+      "output": "docs/art/planets/107.png",
+      "masterSha256": "2ed10904af8cd669f2ddd0890bed6590f1e1acea65909ca60ea16c0fb3eb839a",
+      "sha256": "f378c7a032dff3f5f4dc829f681ebe41ae3877b0cbc66897041107a2ae2d58a6",
+      "bytes": 123176,
+      "rgb": [
+        0.352,
+        0.3198,
+        0.2447
+      ],
+      "solidPixels": 39974,
+      "transparentPixels": 24915,
+      "bounds": [
+        15,
+        17,
+        240,
+        242
+      ]
+    },
+    {
+      "id": "time-fracture-planet-4",
+      "name": "Two Ages",
+      "type": "planet",
+      "index": 108,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-planet-4.png",
+      "output": "docs/art/planets/108.png",
+      "masterSha256": "bb72a140ac5c78b70723702994601baa8a3614ff7dab4352fc682195e441a121",
+      "sha256": "ed1a86cd4ef8cdb31d15d14f8b5d2914a912252a7299cf29d3252e45c263f916",
+      "bytes": 128116,
+      "rgb": [
+        0.4211,
+        0.3755,
+        0.298
+      ],
+      "solidPixels": 40251,
+      "transparentPixels": 24557,
+      "bounds": [
+        15,
+        14,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "time-fracture-planet-5",
+      "name": "Archive Shell",
+      "type": "planet",
+      "index": 109,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-planet-5.png",
+      "output": "docs/art/planets/109.png",
+      "masterSha256": "09d013f97047c2711de43dec4aa651430cbef81fa78b345b842e2cc57d0504c6",
+      "sha256": "f096ba31dc6507176f9bdb85f72e084d7b8d2a5fe61e7a18ccda54f9db73abab",
+      "bytes": 112345,
+      "rgb": [
+        0.3474,
+        0.3085,
+        0.2532
+      ],
+      "solidPixels": 37243,
+      "transparentPixels": 27770,
+      "bounds": [
+        19,
+        19,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "time-fracture-debris-1",
+      "name": "Time Stratum",
+      "type": "debris",
+      "index": 48,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-debris-1.png",
+      "output": "docs/art/debris/48.png",
+      "masterSha256": "b545cdd5c0cb67445511d91a2bb26948def5b0b1ce1e646540a0b75aded86ced",
+      "sha256": "1fe81eaca7aa4ce8e8165a4a5d88a673db3f18688e8d72d10f575b9fe902d37c",
+      "bytes": 87841,
+      "rgb": [
+        0.4033,
+        0.3442,
+        0.2506
+      ],
+      "solidPixels": 27667,
+      "transparentPixels": 37274,
+      "bounds": [
+        27,
+        13,
+        230,
+        241
+      ]
+    },
+    {
+      "id": "time-fracture-debris-2",
+      "name": "Archive Fragment",
+      "type": "debris",
+      "index": 49,
+      "zone": "TIME FRACTURE",
+      "master": "art-src/zone-identity/time-fracture-debris-2.png",
+      "output": "docs/art/debris/49.png",
+      "masterSha256": "c7dea6afd179a9f365e2307fcb7150c5f30d515277f129e17b08cef74f4b2aba",
+      "sha256": "bd8281c9d2b7a7fe24620e27fe9fa90d73334d969172a19a8c6de1872d4e93cb",
+      "bytes": 88371,
+      "rgb": [
+        0.3605,
+        0.3136,
+        0.2402
+      ],
+      "solidPixels": 27418,
+      "transparentPixels": 37562,
+      "bounds": [
+        27,
+        14,
+        228,
+        241
+      ]
+    },
+    {
+      "id": "neon-bazaar-planet-2",
+      "name": "Lantern Domes",
+      "type": "planet",
+      "index": 110,
+      "zone": "NEON BAZAAR",
+      "master": "art-src/zone-identity/neon-bazaar-planet-2.png",
+      "output": "docs/art/planets/110.png",
+      "masterSha256": "47799559e84d19202822e9e68a224f1675b9137645b87a6a73718700d91c7def",
+      "sha256": "21eef7c7e60364017e76ccae5f8cb9ba1a61ba5eeb886e7a45c716a115b88ab6",
+      "bytes": 111090,
+      "rgb": [
+        0.2906,
+        0.2503,
+        0.187
+      ],
+      "solidPixels": 38382,
+      "transparentPixels": 26531,
+      "bounds": [
+        17,
+        12,
+        238,
+        241
+      ]
+    },
+    {
+      "id": "neon-bazaar-planet-3",
+      "name": "Freight Mosaic",
+      "type": "planet",
+      "index": 111,
+      "zone": "NEON BAZAAR",
+      "master": "art-src/zone-identity/neon-bazaar-planet-3.png",
+      "output": "docs/art/planets/111.png",
+      "masterSha256": "5558463db94ff6fce9d4e185e5403ba584774eaf53283e8c439fcdce9ae5119e",
+      "sha256": "f7a3fc24e82e7dff3e6aa415d033e1e7b84886de535fff87e1c659090b53a108",
+      "bytes": 116941,
+      "rgb": [
+        0.5006,
+        0.4829,
+        0.3761
+      ],
+      "solidPixels": 40106,
+      "transparentPixels": 24826,
+      "bounds": [
+        14,
+        15,
+        241,
+        241
+      ]
+    },
+    {
+      "id": "neon-bazaar-planet-4",
+      "name": "Merchant Ceramic",
+      "type": "planet",
+      "index": 112,
+      "zone": "NEON BAZAAR",
+      "master": "art-src/zone-identity/neon-bazaar-planet-4.png",
+      "output": "docs/art/planets/112.png",
+      "masterSha256": "d4c510a30b20dffe28235caa1438f75e36c96da2bd2f105091f665953eb4653a",
+      "sha256": "2948eaa76eaba59e7e9fe55c6c1be0188b6376dcbd5b00a2d0695317d902871b",
+      "bytes": 95892,
+      "rgb": [
+        0.6425,
+        0.6065,
+        0.4681
+      ],
+      "solidPixels": 35609,
+      "transparentPixels": 29283,
+      "bounds": [
+        21,
+        21,
+        234,
+        234
+      ]
+    },
+    {
+      "id": "neon-bazaar-planet-5",
+      "name": "Tramline World",
+      "type": "planet",
+      "index": 113,
+      "zone": "NEON BAZAAR",
+      "master": "art-src/zone-identity/neon-bazaar-planet-5.png",
+      "output": "docs/art/planets/113.png",
+      "masterSha256": "7fb7994630200fd89ca2c2acac243a552105e10a9826615d7232148c0da4bd14",
+      "sha256": "8038807f73d605564fd9f1457054827a31838de071bcbfb197331323468ee229",
+      "bytes": 122139,
+      "rgb": [
+        0.4812,
+        0.4218,
+        0.2729
+      ],
+      "solidPixels": 38191,
+      "transparentPixels": 26465,
+      "bounds": [
+        16,
+        13,
+        239,
+        238
+      ]
+    },
+    {
+      "id": "neon-bazaar-debris-2",
+      "name": "Freight Crate",
+      "type": "debris",
+      "index": 50,
+      "zone": "NEON BAZAAR",
+      "master": "art-src/zone-identity/neon-bazaar-debris-2.png",
+      "output": "docs/art/debris/50.png",
+      "masterSha256": "8ecb4b1d641912ac6e416eefd517fd0fad4eff6b55fd0d925f34b7c6c2dd4f9c",
+      "sha256": "743dfed8287f7b77d91b49edcea3250588c66eccbb953bc13e707aecc212ec59",
+      "bytes": 107583,
+      "rgb": [
+        0.5481,
+        0.5034,
+        0.3599
+      ],
+      "solidPixels": 36052,
+      "transparentPixels": 28915,
+      "bounds": [
+        12,
+        23,
+        247,
+        234
+      ]
+    },
+    {
+      "id": "prism-storm-planet-1",
+      "name": "Gold Refraction",
+      "type": "planet",
+      "index": 114,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-planet-1.png",
+      "output": "docs/art/planets/114.png",
+      "masterSha256": "c6f7d884d59c4ad20ef33c23d7f860aa74a67a7626d4504e5920c9eee9eebc32",
+      "sha256": "a9a9746e5b859d5ba9ee0a3582af90ffa64d97711af17f28ae4cf94d450b2bbf",
+      "bytes": 108566,
+      "rgb": [
+        0.4168,
+        0.3531,
+        0.2454
+      ],
+      "solidPixels": 35700,
+      "transparentPixels": 29253,
+      "bounds": [
+        21,
+        22,
+        234,
+        233
+      ]
+    },
+    {
+      "id": "prism-storm-planet-2",
+      "name": "Smoked Mirror",
+      "type": "planet",
+      "index": 115,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-planet-2.png",
+      "output": "docs/art/planets/115.png",
+      "masterSha256": "b0ba4d0a027833f7f7c4c66d92c0a4119599d14913c650d95eb629afdb2eb08f",
+      "sha256": "f06fd7602fa57fcf78e8c94b7cd0d56c569e548bf10771cb13f3d5e948a94147",
+      "bytes": 96178,
+      "rgb": [
+        0.4481,
+        0.427,
+        0.3964
+      ],
+      "solidPixels": 35698,
+      "transparentPixels": 29253,
+      "bounds": [
+        22,
+        20,
+        234,
+        233
+      ]
+    },
+    {
+      "id": "prism-storm-planet-3",
+      "name": "Glass Mantle",
+      "type": "planet",
+      "index": 116,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-planet-3.png",
+      "output": "docs/art/planets/116.png",
+      "masterSha256": "8893c0b787245d8db3f7c7ef69a5d9b02e34a6df9ce57923fe4c8a270ae85fdf",
+      "sha256": "d2d993edabce0ace702437d77e1f3b245df2a2fdb7ea920d608569e2688ff7d7",
+      "bytes": 105005,
+      "rgb": [
+        0.4079,
+        0.4416,
+        0.4367
+      ],
+      "solidPixels": 35830,
+      "transparentPixels": 28982,
+      "bounds": [
+        21,
+        21,
+        234,
+        233
+      ]
+    },
+    {
+      "id": "prism-storm-planet-4",
+      "name": "Dichroic World",
+      "type": "planet",
+      "index": 117,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-planet-4.png",
+      "output": "docs/art/planets/117.png",
+      "masterSha256": "653cf114184090beacc57e05a5118d9aa658fdfc804209876246e445da6281e8",
+      "sha256": "8a20f358890146a1b6721d5346c0be4c3e1865f3bfcb7d03f3944ef7edf20c6f",
+      "bytes": 108123,
+      "rgb": [
+        0.4724,
+        0.4768,
+        0.4741
+      ],
+      "solidPixels": 35721,
+      "transparentPixels": 29158,
+      "bounds": [
+        21,
+        21,
+        233,
+        234
+      ]
+    },
+    {
+      "id": "prism-storm-planet-5",
+      "name": "Honey Lens",
+      "type": "planet",
+      "index": 118,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-planet-5.png",
+      "output": "docs/art/planets/118.png",
+      "masterSha256": "b4d8a191f98cd34e6c4a0391649f28e655baf550e1810d07aac7ed2691ae61f9",
+      "sha256": "2209a34af434e3e5c0c23810eb8f63bea4d29df05d2852abef2091a00e365c37",
+      "bytes": 102600,
+      "rgb": [
+        0.4638,
+        0.3241,
+        0.1797
+      ],
+      "solidPixels": 37649,
+      "transparentPixels": 27333,
+      "bounds": [
+        19,
+        17,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "prism-storm-debris-2",
+      "name": "Smoked Shard",
+      "type": "debris",
+      "index": 51,
+      "zone": "PRISM STORM",
+      "master": "art-src/zone-identity/prism-storm-debris-2.png",
+      "output": "docs/art/debris/51.png",
+      "masterSha256": "e727a52cfb2887177a3c70f5ef577026b50d007144c3327c207ed99987597f0f",
+      "sha256": "dc2db55bf357742dbef71d60a46e32c585cbd4c21db42af67195f8550e1521d5",
+      "bytes": 55873,
+      "rgb": [
+        0.4683,
+        0.4114,
+        0.3496
+      ],
+      "solidPixels": 18097,
+      "transparentPixels": 46757,
+      "bounds": [
+        24,
+        15,
+        233,
+        239
+      ]
+    },
+    {
+      "id": "ghost-nebula-planet-1",
+      "name": "Etched Relic",
+      "type": "planet",
+      "index": 119,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-planet-1.png",
+      "output": "docs/art/planets/119.png",
+      "masterSha256": "8b85f055be26162909400af59ebc6e17ba9a6a6c7901dfc7fbb5f48bbd57ccf3",
+      "sha256": "6a991da44697de6b909764a260557c0c5aff0fe1d34211be854bb7940b096a31",
+      "bytes": 117570,
+      "rgb": [
+        0.4913,
+        0.4814,
+        0.4655
+      ],
+      "solidPixels": 40075,
+      "transparentPixels": 24818,
+      "bounds": [
+        15,
+        15,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "ghost-nebula-planet-2",
+      "name": "Fogbound",
+      "type": "planet",
+      "index": 120,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-planet-2.png",
+      "output": "docs/art/planets/120.png",
+      "masterSha256": "2ad74c65ed296f00acae0159979f5744be213fca261e29697fedd0a3ebbff51c",
+      "sha256": "cc8754d27a5761ba59f2a3552cc680690186430a2e8bbcc28f1c452523a1c850",
+      "bytes": 105244,
+      "rgb": [
+        0.3452,
+        0.3504,
+        0.3614
+      ],
+      "solidPixels": 37059,
+      "transparentPixels": 27912,
+      "bounds": [
+        19,
+        19,
+        236,
+        236
+      ]
+    },
+    {
+      "id": "ghost-nebula-planet-3",
+      "name": "Drowned Lilac",
+      "type": "planet",
+      "index": 121,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-planet-3.png",
+      "output": "docs/art/planets/121.png",
+      "masterSha256": "92511fb448ff80a487a49874fc71a8972cdfbd1b00a966da80e369e697a048e3",
+      "sha256": "346755f3d175a5fa67485d82ecddc4a1be5d908166001cb6ddbd8dc31b40e95c",
+      "bytes": 110228,
+      "rgb": [
+        0.4779,
+        0.4517,
+        0.5298
+      ],
+      "solidPixels": 38932,
+      "transparentPixels": 26077,
+      "bounds": [
+        16,
+        17,
+        239,
+        238
+      ]
+    },
+    {
+      "id": "ghost-nebula-planet-4",
+      "name": "Ash Porcelain",
+      "type": "planet",
+      "index": 122,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-planet-4.png",
+      "output": "docs/art/planets/122.png",
+      "masterSha256": "f8f28ec6894640a2b271455b7c900e80f936b36f47745b28d3d7b3d43184de54",
+      "sha256": "e5cdf55184ffe3dbd0c0654b38d7469cc5818e869e06c8606273e9286e7e4cf4",
+      "bytes": 105762,
+      "rgb": [
+        0.4196,
+        0.4133,
+        0.4135
+      ],
+      "solidPixels": 37586,
+      "transparentPixels": 27371,
+      "bounds": [
+        18,
+        19,
+        237,
+        237
+      ]
+    },
+    {
+      "id": "ghost-nebula-planet-5",
+      "name": "Tarnished Halo",
+      "type": "planet",
+      "index": 123,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-planet-5.png",
+      "output": "docs/art/planets/123.png",
+      "masterSha256": "0ca3e00001cfa76f1fea3c0b16863af08bf7738b6408cfb0d11d515e04d203dc",
+      "sha256": "3cf89171157f306d67ee096468257ed09471211f591bd8cf93d9dedccb64bf89",
+      "bytes": 99883,
+      "rgb": [
+        0.3852,
+        0.3778,
+        0.3737
+      ],
+      "solidPixels": 32510,
+      "transparentPixels": 32355,
+      "bounds": [
+        8,
+        27,
+        248,
+        227
+      ]
+    },
+    {
+      "id": "ghost-nebula-debris-1",
+      "name": "Ash Ruin",
+      "type": "debris",
+      "index": 52,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-debris-1.png",
+      "output": "docs/art/debris/52.png",
+      "masterSha256": "0ff9e0181bd636e4e19a6408c4bdc098d4278cb118892f3abab945337535269b",
+      "sha256": "8b5f1211efb246b94e71dec260a331d996e5d3fb7dc9c083af14882688e89e71",
+      "bytes": 86905,
+      "rgb": [
+        0.3506,
+        0.3385,
+        0.3328
+      ],
+      "solidPixels": 26376,
+      "transparentPixels": 38539,
+      "bounds": [
+        32,
+        17,
+        233,
+        243
+      ]
+    },
+    {
+      "id": "ghost-nebula-debris-2",
+      "name": "Spectral Gravel",
+      "type": "debris",
+      "index": 53,
+      "zone": "GHOST NEBULA",
+      "master": "art-src/zone-identity/ghost-nebula-debris-2.png",
+      "output": "docs/art/debris/53.png",
+      "masterSha256": "572a81111516a2b71865755f5c9f20338a3de1b2d80a3c4e0c61e66d7fffd05e",
+      "sha256": "c29c6bee3a2f2991c2250d78ffedfef7bafbb4a5be4c0139d83a648d80b78e70",
+      "bytes": 97142,
+      "rgb": [
+        0.4304,
+        0.4192,
+        0.4153
+      ],
+      "solidPixels": 31546,
+      "transparentPixels": 33378,
+      "bounds": [
+        25,
+        16,
+        233,
+        239
+      ]
+    },
+    {
+      "id": "blackout-zone-planet-1",
+      "name": "Graphite Sentinel",
+      "type": "planet",
+      "index": 124,
+      "zone": "BLACKOUT ZONE",
+      "master": "art-src/zone-identity/blackout-zone-planet-1.png",
+      "output": "docs/art/planets/124.png",
+      "masterSha256": "0f7e62adc8b3617f12f7166204b489e264adf721140ea82fbfdae40cd6da6dc2",
+      "sha256": "adfe9f92a794563fef46356cc945a34964c6fbbcacc7b4cf6cba2e607001054d",
+      "bytes": 106291,
+      "rgb": [
+        0.2146,
+        0.2365,
+        0.2722
+      ],
+      "solidPixels": 37579,
+      "transparentPixels": 27443,
+      "bounds": [
+        18,
+        18,
+        237,
+        236
+      ]
+    },
+    {
+      "id": "blackout-zone-planet-2",
+      "name": "Scratched Iron",
+      "type": "planet",
+      "index": 125,
+      "zone": "BLACKOUT ZONE",
+      "master": "art-src/zone-identity/blackout-zone-planet-2.png",
+      "output": "docs/art/planets/125.png",
+      "masterSha256": "fa77db8fabdea23c5e93550e61350850b93b7ac3b8eabcd45c2447391ef688fe",
+      "sha256": "57536bbda118cd13b4963409ab2d6f0a6a9d411ffbd1b736211632f31a4763b8",
+      "bytes": 97427,
+      "rgb": [
+        0.2138,
+        0.2332,
+        0.269
+      ],
+      "solidPixels": 32355,
+      "transparentPixels": 32738,
+      "bounds": [
+        26,
+        28,
+        229,
+        229
+      ]
+    },
+    {
+      "id": "blackout-zone-planet-3",
+      "name": "Slate Basalt",
+      "type": "planet",
+      "index": 126,
+      "zone": "BLACKOUT ZONE",
+      "master": "art-src/zone-identity/blackout-zone-planet-3.png",
+      "output": "docs/art/planets/126.png",
+      "masterSha256": "467ea74e4ba46e83d6d2fbc21efd029fcb66715f545a7ea4690d4cb13149e8f9",
+      "sha256": "dbe6a4a7383ad9d5449421b515e6333fb0b4876e0fad3c08b409197c83d12590",
+      "bytes": 111672,
+      "rgb": [
+        0.208,
+        0.2302,
+        0.2696
+      ],
+      "solidPixels": 39623,
+      "transparentPixels": 25285,
+      "bounds": [
+        16,
+        16,
+        240,
+        240
+      ]
+    },
+    {
+      "id": "blackout-zone-planet-4",
+      "name": "Cobalt Fault",
+      "type": "planet",
+      "index": 127,
+      "zone": "BLACKOUT ZONE",
+      "master": "art-src/zone-identity/blackout-zone-planet-4.png",
+      "output": "docs/art/planets/127.png",
+      "masterSha256": "9132409fb5f4c7368c2bb3683f842fdacdd736c3b6740f1572c8a623347fe463",
+      "sha256": "9e1831bcd02a06904fb682b4b8811aa9d4cc46ed4c5fcc35a91ed39f789c0b5d",
+      "bytes": 102354,
+      "rgb": [
+        0.2015,
+        0.2455,
+        0.3102
+      ],
+      "solidPixels": 34208,
+      "transparentPixels": 30833,
+      "bounds": [
+        24,
+        24,
+        232,
+        232
+      ]
+    },
+    {
+      "id": "blackout-zone-planet-5",
+      "name": "Ash Poles",
+      "type": "planet",
+      "index": 128,
+      "zone": "BLACKOUT ZONE",
+      "master": "art-src/zone-identity/blackout-zone-planet-5.png",
+      "output": "docs/art/planets/128.png",
+      "masterSha256": "8b173c17c1c79d387d516bc8c07b7a807a74163b85f6e07f3e3bff41081a8a21",
+      "sha256": "21f4b42ac5e06975e2dac27cc4ae97ad30a552a38acde7ad752737365f25dff0",
+      "bytes": 102997,
+      "rgb": [
+        0.1874,
+        0.2148,
+        0.2624
+      ],
+      "solidPixels": 36424,
+      "transparentPixels": 28546,
+      "bounds": [
+        20,
+        19,
+        235,
+        234
+      ]
+    },
+    {
+      "id": "event-horizon-planet-1",
+      "name": "Accretion World",
+      "type": "planet",
+      "index": 129,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-planet-1.png",
+      "output": "docs/art/planets/129.png",
+      "masterSha256": "4255130550c24f1d5a4ab8ab5435994bec7a3e1eb9818f252fc4a255a51124e0",
+      "sha256": "d5bd4100a57aa7d9196852229f1e2d6beaddc21ae9e9a723344865e21e830169",
+      "bytes": 100806,
+      "rgb": [
+        0.1513,
+        0.1153,
+        0.1441
+      ],
+      "solidPixels": 39948,
+      "transparentPixels": 24900,
+      "bounds": [
+        15,
+        15,
+        240,
+        239
+      ]
+    },
+    {
+      "id": "event-horizon-planet-2",
+      "name": "Compressed Strata",
+      "type": "planet",
+      "index": 130,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-planet-2.png",
+      "output": "docs/art/planets/130.png",
+      "masterSha256": "d55df31b789e417ab734b0199793fb313d551c442301659fa5667ceec7486976",
+      "sha256": "41bd5bcb1bf3f8ebc53841dfca18c89a901d7e1dcdf31ed0ce5f17c93494a3fc",
+      "bytes": 117637,
+      "rgb": [
+        0.3676,
+        0.2299,
+        0.3172
+      ],
+      "solidPixels": 39050,
+      "transparentPixels": 25965,
+      "bounds": [
+        16,
+        17,
+        239,
+        239
+      ]
+    },
+    {
+      "id": "event-horizon-planet-3",
+      "name": "Last Light",
+      "type": "planet",
+      "index": 131,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-planet-3.png",
+      "output": "docs/art/planets/131.png",
+      "masterSha256": "2c68865c9e5f4f8fa4c5258d5a79494e605a41ffc53aa70db8b87b8b16de4ce0",
+      "sha256": "ef836208de0bbad299238ecadc14e3c45bfe58188fbf943b90e612e83d6a4324",
+      "bytes": 95554,
+      "rgb": [
+        0.2107,
+        0.1568,
+        0.1632
+      ],
+      "solidPixels": 32435,
+      "transparentPixels": 32580,
+      "bounds": [
+        26,
+        26,
+        229,
+        229
+      ]
+    },
+    {
+      "id": "event-horizon-planet-4",
+      "name": "Lens Scar",
+      "type": "planet",
+      "index": 132,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-planet-4.png",
+      "output": "docs/art/planets/132.png",
+      "masterSha256": "63b88140bee9b71f51a84e13b7a6ea495e6c26eff4b94e61fb433954d22c0d9a",
+      "sha256": "848725390faa0e89304fc5099bf30f89abbcbb2d298f78843d2d2ccd3d89d1fb",
+      "bytes": 111846,
+      "rgb": [
+        0.244,
+        0.1724,
+        0.2395
+      ],
+      "solidPixels": 39076,
+      "transparentPixels": 25988,
+      "bounds": [
+        16,
+        16,
+        239,
+        238
+      ]
+    },
+    {
+      "id": "event-horizon-planet-5",
+      "name": "Tidal Fold",
+      "type": "planet",
+      "index": 133,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-planet-5.png",
+      "output": "docs/art/planets/133.png",
+      "masterSha256": "c1a50dfabdfa2fe8cf9fada06f1c0f3d444b6331f75185c5f7cc5bdcb7218289",
+      "sha256": "2e74bea15ad26bb544784085590bc6d79767d7282c2bc597552ce202daa912cc",
+      "bytes": 110958,
+      "rgb": [
+        0.2885,
+        0.2724,
+        0.243
+      ],
+      "solidPixels": 36670,
+      "transparentPixels": 28190,
+      "bounds": [
+        19,
+        20,
+        236,
+        235
+      ]
+    },
+    {
+      "id": "event-horizon-debris-2",
+      "name": "Dense Arc",
+      "type": "debris",
+      "index": 54,
+      "zone": "EVENT HORIZON",
+      "master": "art-src/zone-identity/event-horizon-debris-2.png",
+      "output": "docs/art/debris/54.png",
+      "masterSha256": "2e194379421aa052c692339ab1af430201ae1f8370ee42154c337c3044334b2f",
+      "sha256": "bb5c212d74a47baf71c2321cbf921602677dd45b05b2df48aad31693d146b346",
+      "bytes": 86063,
+      "rgb": [
+        0.2573,
+        0.1953,
+        0.208
+      ],
+      "solidPixels": 28315,
+      "transparentPixels": 36683,
+      "bounds": [
+        15,
+        22,
+        240,
+        233
+      ]
+    }
+  ]
+}

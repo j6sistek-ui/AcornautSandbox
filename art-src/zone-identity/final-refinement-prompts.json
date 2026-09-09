@@ -1,0 +1,44 @@
+{
+  "reason": "Separate Pearl Tide from atoll patterns; reserve the oval basin motif for Lens Scar within Event Horizon.",
+  "assets": [
+    {
+      "id": "coral-shallows-planet-4",
+      "name": "Pearl Tide",
+      "brief": "pearl-grey globe with broad deep-teal channels and small coral ridges",
+      "zone": "CORAL SHALLOWS",
+      "env": 17,
+      "palette": "coral pink / lagoon teal / pearl",
+      "identity": "Living shallow-water worlds",
+      "refinement": "Keep coral ridges compact and measure any silhouette extensions around the solid collision core.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. One finished transparent Acornaut planet sprite, Pearl Tide. Pearl-grey solid globe, predominantly smooth pale pearlescent shell, divided by several broad winding deep-teal channels; tiny occasional peach coral ridges at their edges. Pale grey occupies most of the surface. No coral atolls, no isolated ring islands, no circular lagoons, no large crater-like holes. Tactile illustrated miniature with material detail, upper-left lighting and a dark lower-right hemisphere. Round planet centered in square image, occupying 80 percent of the canvas, transparent padding around every edge. Genuine transparent alpha background. No text, no detached particles, no surroundings, no external halo, no backdrop or ground shadow. Strong readable shape and material at game size, 80 pixels.",
+      "index": 85
+    },
+    {
+      "id": "event-horizon-planet-1",
+      "name": "Accretion World",
+      "brief": "solid black-plum sphere crossed by one narrow curved copper-gold seam",
+      "zone": "EVENT HORIZON",
+      "env": 25,
+      "palette": "black plum / violet / narrow copper gold",
+      "identity": "Gravity written into solid worlds",
+      "refinement": "Keep Lens Scar a solid oval basin rather than an open vortex; measure the dark debris boundary.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. One finished transparent Acornaut planet sprite, Accretion World. A solid black-plum spherical world with restrained smooth weathered crust crossed by exactly one narrow sweeping copper-gold mineral seam. Very dark surface, quiet plum shading, the one thin seam is its signature. No oval basin, no rings, no circular motifs, no vortex, no crater, no molten cracks. Tactile illustrated miniature with material detail, upper-left lighting and a dark lower-right hemisphere. Round planet centered in square image, occupying 80 percent of the canvas, transparent padding around every edge. Genuine transparent alpha background. No text, no detached particles, no surroundings, no external halo, no backdrop or ground shadow. Strong readable shape and material at game size, 80 pixels.",
+      "index": 129
+    },
+    {
+      "id": "event-horizon-planet-5",
+      "name": "Tidal Fold",
+      "brief": "solid graphite sphere with broad flowing folded crust highlighted in muted gold",
+      "zone": "EVENT HORIZON",
+      "env": 25,
+      "palette": "black plum / violet / narrow copper gold",
+      "identity": "Gravity written into solid worlds",
+      "refinement": "Keep Lens Scar a solid oval basin rather than an open vortex; measure the dark debris boundary.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. One finished transparent Acornaut planet sprite, Tidal Fold. Solid graphite spherical world with three broad flowing folds of thick crust, their crests highlighted in muted antique gold. Large parallel rippling ridges sweep diagonally across its entire face. No oval basin, no circular concentric pattern, no eye, no rings, no crater, no vortex. The core is completely solid. Tactile illustrated miniature with material detail, upper-left lighting and a dark lower-right hemisphere. Round planet centered in square image, occupying 80 percent of the canvas, transparent padding around every edge. Genuine transparent alpha background. No text, no detached particles, no surroundings, no external halo, no backdrop or ground shadow. Strong readable shape and material at game size, 80 pixels.",
+      "index": 133
+    }
+  ]
+}

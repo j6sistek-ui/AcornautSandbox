@@ -1,0 +1,2332 @@
+{
+  "stamp": "252",
+  "profile": "isolated browser; test-only completed route",
+  "screens": "Chart is actual UI; flight captures hold the game renderer at normal dimensions with the first gate positioned for inspection.",
+  "bootPlanets": [
+    0,
+    1,
+    2,
+    33,
+    34
+  ],
+  "receipts": [
+    {
+      "zone": "deep-space",
+      "chart": [
+        {
+          "id": "1-1",
+          "env": 0,
+          "kind": 0,
+          "expected": 0,
+          "pixels": 9502
+        },
+        {
+          "id": "1-2",
+          "env": 0,
+          "kind": 1,
+          "expected": 1,
+          "pixels": 4517
+        },
+        {
+          "id": "1-3",
+          "env": 0,
+          "kind": 2,
+          "expected": 2,
+          "pixels": 9528
+        },
+        {
+          "id": "1-4",
+          "env": 0,
+          "kind": 33,
+          "expected": 33,
+          "pixels": 9430
+        },
+        {
+          "id": "1-5",
+          "env": 0,
+          "kind": 34,
+          "expected": 34,
+          "pixels": 9497
+        },
+        {
+          "id": "1-6",
+          "env": 0,
+          "kind": 0,
+          "expected": 0,
+          "pixels": 9502
+        },
+        {
+          "id": "1-7",
+          "env": 0,
+          "kind": 1,
+          "expected": 1,
+          "pixels": 4517
+        },
+        {
+          "id": "1-8",
+          "env": 0,
+          "kind": 2,
+          "expected": 2,
+          "pixels": 9528
+        },
+        {
+          "id": "1-9",
+          "env": 0,
+          "kind": 33,
+          "expected": 33,
+          "pixels": 9430
+        },
+        {
+          "id": "1-10",
+          "env": 0,
+          "kind": 34,
+          "expected": 34,
+          "pixels": 9497
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 0,
+        "kind": 2,
+        "gap": 188.16000000000003,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "deep-space-flight.png"
+      }
+    },
+    {
+      "zone": "nebula-nursery",
+      "chart": [
+        {
+          "id": "2-1",
+          "env": 1,
+          "kind": 4,
+          "expected": 4,
+          "pixels": 5113
+        },
+        {
+          "id": "2-2",
+          "env": 1,
+          "kind": 8,
+          "expected": 8,
+          "pixels": 10903
+        },
+        {
+          "id": "2-3",
+          "env": 1,
+          "kind": 35,
+          "expected": 35,
+          "pixels": 9274
+        },
+        {
+          "id": "2-4",
+          "env": 1,
+          "kind": 36,
+          "expected": 36,
+          "pixels": 9216
+        },
+        {
+          "id": "2-5",
+          "env": 1,
+          "kind": 37,
+          "expected": 37,
+          "pixels": 9336
+        },
+        {
+          "id": "2-6",
+          "env": 1,
+          "kind": 4,
+          "expected": 4,
+          "pixels": 5113
+        },
+        {
+          "id": "2-7",
+          "env": 1,
+          "kind": 8,
+          "expected": 8,
+          "pixels": 10903
+        },
+        {
+          "id": "2-8",
+          "env": 1,
+          "kind": 35,
+          "expected": 35,
+          "pixels": 9274
+        },
+        {
+          "id": "2-9",
+          "env": 1,
+          "kind": 36,
+          "expected": 36,
+          "pixels": 9216
+        },
+        {
+          "id": "2-10",
+          "env": 1,
+          "kind": 37,
+          "expected": 37,
+          "pixels": 9336
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 1,
+        "kind": 35,
+        "gap": 198.23999999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "nebula-nursery-flight.png"
+      }
+    },
+    {
+      "zone": "ice-moon",
+      "chart": [
+        {
+          "id": "3-1",
+          "env": 2,
+          "kind": 31,
+          "expected": 31,
+          "pixels": 10434
+        },
+        {
+          "id": "3-2",
+          "env": 2,
+          "kind": 38,
+          "expected": 38,
+          "pixels": 9564
+        },
+        {
+          "id": "3-3",
+          "env": 2,
+          "kind": 39,
+          "expected": 39,
+          "pixels": 9436
+        },
+        {
+          "id": "3-4",
+          "env": 2,
+          "kind": 40,
+          "expected": 40,
+          "pixels": 9198
+        },
+        {
+          "id": "3-5",
+          "env": 2,
+          "kind": 41,
+          "expected": 41,
+          "pixels": 9499
+        },
+        {
+          "id": "3-6",
+          "env": 2,
+          "kind": 31,
+          "expected": 31,
+          "pixels": 10434
+        },
+        {
+          "id": "3-7",
+          "env": 2,
+          "kind": 38,
+          "expected": 38,
+          "pixels": 9564
+        },
+        {
+          "id": "3-8",
+          "env": 2,
+          "kind": 39,
+          "expected": 39,
+          "pixels": 9436
+        },
+        {
+          "id": "3-9",
+          "env": 2,
+          "kind": 40,
+          "expected": 40,
+          "pixels": 9198
+        },
+        {
+          "id": "3-10",
+          "env": 2,
+          "kind": 41,
+          "expected": 41,
+          "pixels": 9499
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 2,
+        "kind": 39,
+        "gap": 198.23999999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "ice-moon-flight.png"
+      }
+    },
+    {
+      "zone": "solar-furnace",
+      "chart": [
+        {
+          "id": "4-1",
+          "env": 3,
+          "kind": 3,
+          "expected": 3,
+          "pixels": 12302
+        },
+        {
+          "id": "4-2",
+          "env": 3,
+          "kind": 42,
+          "expected": 42,
+          "pixels": 12418
+        },
+        {
+          "id": "4-3",
+          "env": 3,
+          "kind": 43,
+          "expected": 43,
+          "pixels": 10203
+        },
+        {
+          "id": "4-4",
+          "env": 3,
+          "kind": 44,
+          "expected": 44,
+          "pixels": 11275
+        },
+        {
+          "id": "4-5",
+          "env": 3,
+          "kind": 45,
+          "expected": 45,
+          "pixels": 12524
+        },
+        {
+          "id": "4-6",
+          "env": 3,
+          "kind": 3,
+          "expected": 3,
+          "pixels": 12302
+        },
+        {
+          "id": "4-7",
+          "env": 3,
+          "kind": 42,
+          "expected": 42,
+          "pixels": 12418
+        },
+        {
+          "id": "4-8",
+          "env": 3,
+          "kind": 43,
+          "expected": 43,
+          "pixels": 10203
+        },
+        {
+          "id": "4-9",
+          "env": 3,
+          "kind": 44,
+          "expected": 44,
+          "pixels": 11275
+        },
+        {
+          "id": "4-10",
+          "env": 3,
+          "kind": 45,
+          "expected": 45,
+          "pixels": 12524
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 3,
+        "kind": 43,
+        "gap": 198.23999999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "solar-furnace-flight.png"
+      }
+    },
+    {
+      "zone": "sapphire-abyss",
+      "chart": [
+        {
+          "id": "5-1",
+          "env": 9,
+          "kind": 46,
+          "expected": 46,
+          "pixels": 12048
+        },
+        {
+          "id": "5-2",
+          "env": 9,
+          "kind": 47,
+          "expected": 47,
+          "pixels": 10811
+        },
+        {
+          "id": "5-3",
+          "env": 9,
+          "kind": 48,
+          "expected": 48,
+          "pixels": 12150
+        },
+        {
+          "id": "5-4",
+          "env": 9,
+          "kind": 49,
+          "expected": 49,
+          "pixels": 9523
+        },
+        {
+          "id": "5-5",
+          "env": 9,
+          "kind": 50,
+          "expected": 50,
+          "pixels": 12115
+        },
+        {
+          "id": "5-6",
+          "env": 9,
+          "kind": 46,
+          "expected": 46,
+          "pixels": 12048
+        },
+        {
+          "id": "5-7",
+          "env": 9,
+          "kind": 47,
+          "expected": 47,
+          "pixels": 10811
+        },
+        {
+          "id": "5-8",
+          "env": 9,
+          "kind": 48,
+          "expected": 48,
+          "pixels": 12150
+        },
+        {
+          "id": "5-9",
+          "env": 9,
+          "kind": 49,
+          "expected": 49,
+          "pixels": 9523
+        },
+        {
+          "id": "5-10",
+          "env": 9,
+          "kind": 50,
+          "expected": 50,
+          "pixels": 12115
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 9,
+        "kind": 48,
+        "gap": 198.23999999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "sapphire-abyss-flight.png"
+      }
+    },
+    {
+      "zone": "crystal-belt",
+      "chart": [
+        {
+          "id": "6-1",
+          "env": 4,
+          "kind": 28,
+          "expected": 28,
+          "pixels": 8453
+        },
+        {
+          "id": "6-2",
+          "env": 4,
+          "kind": 10,
+          "expected": 10,
+          "pixels": 11363
+        },
+        {
+          "id": "6-3",
+          "env": 4,
+          "kind": 51,
+          "expected": 51,
+          "pixels": 9435
+        },
+        {
+          "id": "6-4",
+          "env": 4,
+          "kind": 52,
+          "expected": 52,
+          "pixels": 9204
+        },
+        {
+          "id": "6-5",
+          "env": 4,
+          "kind": 53,
+          "expected": 53,
+          "pixels": 9081
+        },
+        {
+          "id": "6-6",
+          "env": 4,
+          "kind": 28,
+          "expected": 28,
+          "pixels": 8453
+        },
+        {
+          "id": "6-7",
+          "env": 4,
+          "kind": 10,
+          "expected": 10,
+          "pixels": 11363
+        },
+        {
+          "id": "6-8",
+          "env": 4,
+          "kind": 51,
+          "expected": 51,
+          "pixels": 9435
+        },
+        {
+          "id": "6-9",
+          "env": 4,
+          "kind": 52,
+          "expected": 52,
+          "pixels": 9204
+        },
+        {
+          "id": "6-10",
+          "env": 4,
+          "kind": 53,
+          "expected": 53,
+          "pixels": 9081
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 4,
+        "kind": 51,
+        "gap": 194.04,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "crystal-belt-flight.png"
+      }
+    },
+    {
+      "zone": "crimson-storm",
+      "chart": [
+        {
+          "id": "7-1",
+          "env": 8,
+          "kind": 21,
+          "expected": 21,
+          "pixels": 12004
+        },
+        {
+          "id": "7-2",
+          "env": 8,
+          "kind": 54,
+          "expected": 54,
+          "pixels": 12384
+        },
+        {
+          "id": "7-3",
+          "env": 8,
+          "kind": 55,
+          "expected": 55,
+          "pixels": 12484
+        },
+        {
+          "id": "7-4",
+          "env": 8,
+          "kind": 56,
+          "expected": 56,
+          "pixels": 10833
+        },
+        {
+          "id": "7-5",
+          "env": 8,
+          "kind": 57,
+          "expected": 57,
+          "pixels": 12014
+        },
+        {
+          "id": "7-6",
+          "env": 8,
+          "kind": 21,
+          "expected": 21,
+          "pixels": 12004
+        },
+        {
+          "id": "7-7",
+          "env": 8,
+          "kind": 54,
+          "expected": 54,
+          "pixels": 12384
+        },
+        {
+          "id": "7-8",
+          "env": 8,
+          "kind": 55,
+          "expected": 55,
+          "pixels": 12484
+        },
+        {
+          "id": "7-9",
+          "env": 8,
+          "kind": 56,
+          "expected": 56,
+          "pixels": 10833
+        },
+        {
+          "id": "7-10",
+          "env": 8,
+          "kind": 57,
+          "expected": 57,
+          "pixels": 12014
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 8,
+        "kind": 55,
+        "gap": 194.04,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.29999999701976776,
+        "file": "crimson-storm-flight.png"
+      }
+    },
+    {
+      "zone": "violet-realm",
+      "chart": [
+        {
+          "id": "8-1",
+          "env": 10,
+          "kind": 30,
+          "expected": 30,
+          "pixels": 9321
+        },
+        {
+          "id": "8-2",
+          "env": 10,
+          "kind": 27,
+          "expected": 27,
+          "pixels": 7202
+        },
+        {
+          "id": "8-3",
+          "env": 10,
+          "kind": 58,
+          "expected": 58,
+          "pixels": 9379
+        },
+        {
+          "id": "8-4",
+          "env": 10,
+          "kind": 59,
+          "expected": 59,
+          "pixels": 9463
+        },
+        {
+          "id": "8-5",
+          "env": 10,
+          "kind": 60,
+          "expected": 60,
+          "pixels": 9254
+        },
+        {
+          "id": "8-6",
+          "env": 10,
+          "kind": 30,
+          "expected": 30,
+          "pixels": 9321
+        },
+        {
+          "id": "8-7",
+          "env": 10,
+          "kind": 27,
+          "expected": 27,
+          "pixels": 7202
+        },
+        {
+          "id": "8-8",
+          "env": 10,
+          "kind": 58,
+          "expected": 58,
+          "pixels": 9379
+        },
+        {
+          "id": "8-9",
+          "env": 10,
+          "kind": 59,
+          "expected": 59,
+          "pixels": 9463
+        },
+        {
+          "id": "8-10",
+          "env": 10,
+          "kind": 60,
+          "expected": 60,
+          "pixels": 9254
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 10,
+        "kind": 58,
+        "gap": 194.04,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "violet-realm-flight.png"
+      }
+    },
+    {
+      "zone": "monochrome-void",
+      "chart": [
+        {
+          "id": "9-1",
+          "env": 6,
+          "kind": 5,
+          "expected": 5,
+          "pixels": 9308
+        },
+        {
+          "id": "9-2",
+          "env": 6,
+          "kind": 61,
+          "expected": 61,
+          "pixels": 9487
+        },
+        {
+          "id": "9-3",
+          "env": 6,
+          "kind": 62,
+          "expected": 62,
+          "pixels": 9388
+        },
+        {
+          "id": "9-4",
+          "env": 6,
+          "kind": 63,
+          "expected": 63,
+          "pixels": 9472
+        },
+        {
+          "id": "9-5",
+          "env": 6,
+          "kind": 64,
+          "expected": 64,
+          "pixels": 9335
+        },
+        {
+          "id": "9-6",
+          "env": 6,
+          "kind": 5,
+          "expected": 5,
+          "pixels": 9308
+        },
+        {
+          "id": "9-7",
+          "env": 6,
+          "kind": 61,
+          "expected": 61,
+          "pixels": 9487
+        },
+        {
+          "id": "9-8",
+          "env": 6,
+          "kind": 62,
+          "expected": 62,
+          "pixels": 9388
+        },
+        {
+          "id": "9-9",
+          "env": 6,
+          "kind": 63,
+          "expected": 63,
+          "pixels": 9472
+        },
+        {
+          "id": "9-10",
+          "env": 6,
+          "kind": 64,
+          "expected": 64,
+          "pixels": 9335
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 6,
+        "kind": 62,
+        "gap": 194.04,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "monochrome-void-flight.png"
+      }
+    },
+    {
+      "zone": "hypervivid",
+      "chart": [
+        {
+          "id": "10-1",
+          "env": 13,
+          "kind": 13,
+          "expected": 13,
+          "pixels": 9297
+        },
+        {
+          "id": "10-2",
+          "env": 13,
+          "kind": 19,
+          "expected": 19,
+          "pixels": 9326
+        },
+        {
+          "id": "10-3",
+          "env": 13,
+          "kind": 65,
+          "expected": 65,
+          "pixels": 9253
+        },
+        {
+          "id": "10-4",
+          "env": 13,
+          "kind": 66,
+          "expected": 66,
+          "pixels": 11970
+        },
+        {
+          "id": "10-5",
+          "env": 13,
+          "kind": 67,
+          "expected": 67,
+          "pixels": 9321
+        },
+        {
+          "id": "10-6",
+          "env": 13,
+          "kind": 13,
+          "expected": 13,
+          "pixels": 9297
+        },
+        {
+          "id": "10-7",
+          "env": 13,
+          "kind": 19,
+          "expected": 19,
+          "pixels": 9326
+        },
+        {
+          "id": "10-8",
+          "env": 13,
+          "kind": 65,
+          "expected": 65,
+          "pixels": 9253
+        },
+        {
+          "id": "10-9",
+          "env": 13,
+          "kind": 66,
+          "expected": 66,
+          "pixels": 11970
+        },
+        {
+          "id": "10-10",
+          "env": 13,
+          "kind": 67,
+          "expected": 67,
+          "pixels": 9321
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 13,
+        "kind": 65,
+        "gap": 194.04,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "hypervivid-flight.png"
+      }
+    },
+    {
+      "zone": "rust-belt",
+      "chart": [
+        {
+          "id": "sm-rust-belt-mooring-line",
+          "env": 22,
+          "kind": 16,
+          "expected": 16,
+          "pixels": 12250
+        },
+        {
+          "id": "sm-rust-belt-oxide-thread",
+          "env": 22,
+          "kind": 18,
+          "expected": 18,
+          "pixels": 11976
+        },
+        {
+          "id": "sm-rust-belt-copper-current",
+          "env": 22,
+          "kind": 68,
+          "expected": 68,
+          "pixels": 11489
+        },
+        {
+          "id": "sm-rust-belt-scrap-sprint",
+          "env": 22,
+          "kind": 69,
+          "expected": 69,
+          "pixels": 11956
+        },
+        {
+          "id": "sm-rust-belt-quiet-berth",
+          "env": 22,
+          "kind": 70,
+          "expected": 70,
+          "pixels": 12132
+        },
+        {
+          "id": "sm-rust-belt-rivet-gap",
+          "env": 22,
+          "kind": 16,
+          "expected": 16,
+          "pixels": 12250
+        },
+        {
+          "id": "sm-rust-belt-drifting-hulls",
+          "env": 22,
+          "kind": 18,
+          "expected": 18,
+          "pixels": 11976
+        },
+        {
+          "id": "sm-rust-belt-cargo-thread",
+          "env": 22,
+          "kind": 68,
+          "expected": 68,
+          "pixels": 11489
+        },
+        {
+          "id": "sm-rust-belt-amber-veil",
+          "env": 22,
+          "kind": 69,
+          "expected": 69,
+          "pixels": 11956
+        },
+        {
+          "id": "sm-rust-belt-riveted-exit",
+          "env": 22,
+          "kind": 70,
+          "expected": 70,
+          "pixels": 12132
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 22,
+        "kind": 68,
+        "gap": 184.8,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "rust-belt-flight.png"
+      }
+    },
+    {
+      "zone": "bone-desert",
+      "chart": [
+        {
+          "id": "sm-bone-desert-dry-landing",
+          "env": 18,
+          "kind": 6,
+          "expected": 6,
+          "pixels": 13273
+        },
+        {
+          "id": "sm-bone-desert-ivory-narrows",
+          "env": 18,
+          "kind": 24,
+          "expected": 24,
+          "pixels": 9446
+        },
+        {
+          "id": "sm-bone-desert-silt-drift",
+          "env": 18,
+          "kind": 71,
+          "expected": 71,
+          "pixels": 9668
+        },
+        {
+          "id": "sm-bone-desert-sunken-signal",
+          "env": 18,
+          "kind": 72,
+          "expected": 72,
+          "pixels": 9241
+        },
+        {
+          "id": "sm-bone-desert-bleached-orbit",
+          "env": 18,
+          "kind": 73,
+          "expected": 73,
+          "pixels": 9445
+        },
+        {
+          "id": "sm-bone-desert-dry-gold",
+          "env": 18,
+          "kind": 6,
+          "expected": 6,
+          "pixels": 13273
+        },
+        {
+          "id": "sm-bone-desert-fossil-line",
+          "env": 18,
+          "kind": 24,
+          "expected": 24,
+          "pixels": 9446
+        },
+        {
+          "id": "sm-bone-desert-dune-shelter",
+          "env": 18,
+          "kind": 71,
+          "expected": 71,
+          "pixels": 9668
+        },
+        {
+          "id": "sm-bone-desert-ribbed-passage",
+          "env": 18,
+          "kind": 72,
+          "expected": 72,
+          "pixels": 9241
+        },
+        {
+          "id": "sm-bone-desert-desert-wake",
+          "env": 18,
+          "kind": 73,
+          "expected": 73,
+          "pixels": 9445
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 18,
+        "kind": 71,
+        "gap": 181.104,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "bone-desert-flight.png"
+      }
+    },
+    {
+      "zone": "golden-hour",
+      "chart": [
+        {
+          "id": "sm-golden-hour-warm-welcome",
+          "env": 11,
+          "kind": 74,
+          "expected": 74,
+          "pixels": 13461
+        },
+        {
+          "id": "sm-golden-hour-gilded-line",
+          "env": 11,
+          "kind": 75,
+          "expected": 75,
+          "pixels": 8673
+        },
+        {
+          "id": "sm-golden-hour-sunlit-sway",
+          "env": 11,
+          "kind": 76,
+          "expected": 76,
+          "pixels": 12960
+        },
+        {
+          "id": "sm-golden-hour-evening-rush",
+          "env": 11,
+          "kind": 77,
+          "expected": 77,
+          "pixels": 9226
+        },
+        {
+          "id": "sm-golden-hour-honeyed-drift",
+          "env": 11,
+          "kind": 78,
+          "expected": 78,
+          "pixels": 9334
+        },
+        {
+          "id": "sm-golden-hour-gilt-edge",
+          "env": 11,
+          "kind": 74,
+          "expected": 74,
+          "pixels": 13461
+        },
+        {
+          "id": "sm-golden-hour-last-warmth",
+          "env": 11,
+          "kind": 75,
+          "expected": 75,
+          "pixels": 8673
+        },
+        {
+          "id": "sm-golden-hour-golden-signal",
+          "env": 11,
+          "kind": 76,
+          "expected": 76,
+          "pixels": 12960
+        },
+        {
+          "id": "sm-golden-hour-evening-current",
+          "env": 11,
+          "kind": 77,
+          "expected": 77,
+          "pixels": 9226
+        },
+        {
+          "id": "sm-golden-hour-afterglow",
+          "env": 11,
+          "kind": 78,
+          "expected": 78,
+          "pixels": 9334
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 11,
+        "kind": 76,
+        "gap": 177.40800000000002,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "golden-hour-flight.png"
+      }
+    },
+    {
+      "zone": "solar-corona",
+      "chart": [
+        {
+          "id": "sm-solar-corona-outer-halo",
+          "env": 12,
+          "kind": 79,
+          "expected": 79,
+          "pixels": 9217
+        },
+        {
+          "id": "sm-solar-corona-flare-line",
+          "env": 12,
+          "kind": 80,
+          "expected": 80,
+          "pixels": 9506
+        },
+        {
+          "id": "sm-solar-corona-coronal-gap",
+          "env": 12,
+          "kind": 81,
+          "expected": 81,
+          "pixels": 9583
+        },
+        {
+          "id": "sm-solar-corona-bright-wake",
+          "env": 12,
+          "kind": 82,
+          "expected": 82,
+          "pixels": 9263
+        },
+        {
+          "id": "sm-solar-corona-sheltered-arc",
+          "env": 12,
+          "kind": 83,
+          "expected": 83,
+          "pixels": 9525
+        },
+        {
+          "id": "sm-solar-corona-halo-drift",
+          "env": 12,
+          "kind": 79,
+          "expected": 79,
+          "pixels": 9217
+        },
+        {
+          "id": "sm-solar-corona-hot-sway",
+          "env": 12,
+          "kind": 80,
+          "expected": 80,
+          "pixels": 9506
+        },
+        {
+          "id": "sm-solar-corona-narrow-corona",
+          "env": 12,
+          "kind": 81,
+          "expected": 81,
+          "pixels": 9583
+        },
+        {
+          "id": "sm-solar-corona-solar-circuit",
+          "env": 12,
+          "kind": 82,
+          "expected": 82,
+          "pixels": 9263
+        },
+        {
+          "id": "sm-solar-corona-clear-of-the-sun",
+          "env": 12,
+          "kind": 83,
+          "expected": 83,
+          "pixels": 9525
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 12,
+        "kind": 81,
+        "gap": 173.54399999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "solar-corona-flight.png"
+      }
+    },
+    {
+      "zone": "coral-shallows",
+      "chart": [
+        {
+          "id": "sm-coral-shallows-coral-landing",
+          "env": 17,
+          "kind": 23,
+          "expected": 23,
+          "pixels": 9421
+        },
+        {
+          "id": "sm-coral-shallows-pink-channel",
+          "env": 17,
+          "kind": 26,
+          "expected": 26,
+          "pixels": 9097
+        },
+        {
+          "id": "sm-coral-shallows-reef-current",
+          "env": 17,
+          "kind": 84,
+          "expected": 84,
+          "pixels": 9326
+        },
+        {
+          "id": "sm-coral-shallows-salt-signal",
+          "env": 17,
+          "kind": 85,
+          "expected": 85,
+          "pixels": 9536
+        },
+        {
+          "id": "sm-coral-shallows-blue-pocket",
+          "env": 17,
+          "kind": 86,
+          "expected": 86,
+          "pixels": 9295
+        },
+        {
+          "id": "sm-coral-shallows-reef-narrows",
+          "env": 17,
+          "kind": 23,
+          "expected": 23,
+          "pixels": 9421
+        },
+        {
+          "id": "sm-coral-shallows-tidal-bearing",
+          "env": 17,
+          "kind": 26,
+          "expected": 26,
+          "pixels": 9097
+        },
+        {
+          "id": "sm-coral-shallows-coral-shimmer",
+          "env": 17,
+          "kind": 84,
+          "expected": 84,
+          "pixels": 9326
+        },
+        {
+          "id": "sm-coral-shallows-pearl-crossing",
+          "env": 17,
+          "kind": 85,
+          "expected": 85,
+          "pixels": 9536
+        },
+        {
+          "id": "sm-coral-shallows-beyond-the-reef",
+          "env": 17,
+          "kind": 86,
+          "expected": 86,
+          "pixels": 9295
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 17,
+        "kind": 84,
+        "gap": 169.84799999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "coral-shallows-flight.png"
+      }
+    },
+    {
+      "zone": "emerald-expanse",
+      "chart": [
+        {
+          "id": "sm-emerald-expanse-green-clearing",
+          "env": 7,
+          "kind": 87,
+          "expected": 87,
+          "pixels": 9427
+        },
+        {
+          "id": "sm-emerald-expanse-emerald-thread",
+          "env": 7,
+          "kind": 88,
+          "expected": 88,
+          "pixels": 11788
+        },
+        {
+          "id": "sm-emerald-expanse-leaf-current",
+          "env": 7,
+          "kind": 89,
+          "expected": 89,
+          "pixels": 11348
+        },
+        {
+          "id": "sm-emerald-expanse-old-growth",
+          "env": 7,
+          "kind": 90,
+          "expected": 90,
+          "pixels": 11336
+        },
+        {
+          "id": "sm-emerald-expanse-canopy-veil",
+          "env": 7,
+          "kind": 91,
+          "expected": 91,
+          "pixels": 9517
+        },
+        {
+          "id": "sm-emerald-expanse-verdant-bearing",
+          "env": 7,
+          "kind": 87,
+          "expected": 87,
+          "pixels": 9427
+        },
+        {
+          "id": "sm-emerald-expanse-green-narrows",
+          "env": 7,
+          "kind": 88,
+          "expected": 88,
+          "pixels": 11788
+        },
+        {
+          "id": "sm-emerald-expanse-quiet-bough",
+          "env": 7,
+          "kind": 89,
+          "expected": 89,
+          "pixels": 11348
+        },
+        {
+          "id": "sm-emerald-expanse-deep-roots",
+          "env": 7,
+          "kind": 90,
+          "expected": 90,
+          "pixels": 11336
+        },
+        {
+          "id": "sm-emerald-expanse-open-expanse",
+          "env": 7,
+          "kind": 91,
+          "expected": 91,
+          "pixels": 9517
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 7,
+        "kind": 89,
+        "gap": 166.152,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "emerald-expanse-flight.png"
+      }
+    },
+    {
+      "zone": "alien-jungle",
+      "chart": [
+        {
+          "id": "sm-alien-jungle-jungle-approach",
+          "env": 15,
+          "kind": 9,
+          "expected": 9,
+          "pixels": 11400
+        },
+        {
+          "id": "sm-alien-jungle-crooked-branch",
+          "env": 15,
+          "kind": 12,
+          "expected": 12,
+          "pixels": 8895
+        },
+        {
+          "id": "sm-alien-jungle-fern-narrows",
+          "env": 15,
+          "kind": 22,
+          "expected": 22,
+          "pixels": 9203
+        },
+        {
+          "id": "sm-alien-jungle-wild-current",
+          "env": 15,
+          "kind": 92,
+          "expected": 92,
+          "pixels": 11347
+        },
+        {
+          "id": "sm-alien-jungle-jungle-echo",
+          "env": 15,
+          "kind": 93,
+          "expected": 93,
+          "pixels": 9007
+        },
+        {
+          "id": "sm-alien-jungle-clearing-rest",
+          "env": 15,
+          "kind": 9,
+          "expected": 9,
+          "pixels": 11400
+        },
+        {
+          "id": "sm-alien-jungle-vine-thread",
+          "env": 15,
+          "kind": 12,
+          "expected": 12,
+          "pixels": 8895
+        },
+        {
+          "id": "sm-alien-jungle-lost-canopy",
+          "env": 15,
+          "kind": 22,
+          "expected": 22,
+          "pixels": 9203
+        },
+        {
+          "id": "sm-alien-jungle-jungle-signal",
+          "env": 15,
+          "kind": 92,
+          "expected": 92,
+          "pixels": 11347
+        },
+        {
+          "id": "sm-alien-jungle-out-of-the-canopy",
+          "env": 15,
+          "kind": 93,
+          "expected": 93,
+          "pixels": 9007
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 15,
+        "kind": 22,
+        "gap": 162.456,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "alien-jungle-flight.png"
+      }
+    },
+    {
+      "zone": "acid-swamp",
+      "chart": [
+        {
+          "id": "sm-acid-swamp-still-pool",
+          "env": 16,
+          "kind": 94,
+          "expected": 94,
+          "pixels": 9435
+        },
+        {
+          "id": "sm-acid-swamp-sour-channel",
+          "env": 16,
+          "kind": 95,
+          "expected": 95,
+          "pixels": 11434
+        },
+        {
+          "id": "sm-acid-swamp-slow-mire",
+          "env": 16,
+          "kind": 96,
+          "expected": 96,
+          "pixels": 9540
+        },
+        {
+          "id": "sm-acid-swamp-clear-patch",
+          "env": 16,
+          "kind": 97,
+          "expected": 97,
+          "pixels": 12017
+        },
+        {
+          "id": "sm-acid-swamp-swamp-bearing",
+          "env": 16,
+          "kind": 98,
+          "expected": 98,
+          "pixels": 9344
+        },
+        {
+          "id": "sm-acid-swamp-thin-bank",
+          "env": 16,
+          "kind": 94,
+          "expected": 94,
+          "pixels": 9435
+        },
+        {
+          "id": "sm-acid-swamp-quick-ripple",
+          "env": 16,
+          "kind": 95,
+          "expected": 95,
+          "pixels": 11434
+        },
+        {
+          "id": "sm-acid-swamp-moss-shelter",
+          "env": 16,
+          "kind": 96,
+          "expected": 96,
+          "pixels": 9540
+        },
+        {
+          "id": "sm-acid-swamp-deep-pool",
+          "env": 16,
+          "kind": 97,
+          "expected": 97,
+          "pixels": 12017
+        },
+        {
+          "id": "sm-acid-swamp-firm-ground",
+          "env": 16,
+          "kind": 98,
+          "expected": 98,
+          "pixels": 9344
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 16,
+        "kind": 96,
+        "gap": 158.59199999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "acid-swamp-flight.png"
+      }
+    },
+    {
+      "zone": "aurora-crown",
+      "chart": [
+        {
+          "id": "sm-aurora-crown-polar-approach",
+          "env": 21,
+          "kind": 15,
+          "expected": 15,
+          "pixels": 5148
+        },
+        {
+          "id": "sm-aurora-crown-crown-thread",
+          "env": 21,
+          "kind": 20,
+          "expected": 20,
+          "pixels": 12038
+        },
+        {
+          "id": "sm-aurora-crown-aurora-drift",
+          "env": 21,
+          "kind": 99,
+          "expected": 99,
+          "pixels": 11215
+        },
+        {
+          "id": "sm-aurora-crown-ribbon-sway",
+          "env": 21,
+          "kind": 100,
+          "expected": 100,
+          "pixels": 9201
+        },
+        {
+          "id": "sm-aurora-crown-polar-quiet",
+          "env": 21,
+          "kind": 101,
+          "expected": 101,
+          "pixels": 9344
+        },
+        {
+          "id": "sm-aurora-crown-crown-signal",
+          "env": 21,
+          "kind": 15,
+          "expected": 15,
+          "pixels": 5148
+        },
+        {
+          "id": "sm-aurora-crown-northern-fold",
+          "env": 21,
+          "kind": 20,
+          "expected": 20,
+          "pixels": 12038
+        },
+        {
+          "id": "sm-aurora-crown-ice-ribbon",
+          "env": 21,
+          "kind": 99,
+          "expected": 99,
+          "pixels": 11215
+        },
+        {
+          "id": "sm-aurora-crown-high-crown",
+          "env": 21,
+          "kind": 100,
+          "expected": 100,
+          "pixels": 9201
+        },
+        {
+          "id": "sm-aurora-crown-aurora-wake",
+          "env": 21,
+          "kind": 101,
+          "expected": 101,
+          "pixels": 9344
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 21,
+        "kind": 99,
+        "gap": 154.89600000000002,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "aurora-crown-flight.png"
+      }
+    },
+    {
+      "zone": "pulsar-field",
+      "chart": [
+        {
+          "id": "sm-pulsar-field-blue-bearing",
+          "env": 19,
+          "kind": 29,
+          "expected": 29,
+          "pixels": 9386
+        },
+        {
+          "id": "sm-pulsar-field-quick-beat",
+          "env": 19,
+          "kind": 102,
+          "expected": 102,
+          "pixels": 9348
+        },
+        {
+          "id": "sm-pulsar-field-long-beat",
+          "env": 19,
+          "kind": 103,
+          "expected": 103,
+          "pixels": 11423
+        },
+        {
+          "id": "sm-pulsar-field-pulsar-thread",
+          "env": 19,
+          "kind": 104,
+          "expected": 104,
+          "pixels": 9530
+        },
+        {
+          "id": "sm-pulsar-field-signal-rest",
+          "env": 19,
+          "kind": 105,
+          "expected": 105,
+          "pixels": 9480
+        },
+        {
+          "id": "sm-pulsar-field-timed-crossing",
+          "env": 19,
+          "kind": 29,
+          "expected": 29,
+          "pixels": 9386
+        },
+        {
+          "id": "sm-pulsar-field-blue-veil",
+          "env": 19,
+          "kind": 102,
+          "expected": 102,
+          "pixels": 9348
+        },
+        {
+          "id": "sm-pulsar-field-crossed-bearing",
+          "env": 19,
+          "kind": 103,
+          "expected": 103,
+          "pixels": 11423
+        },
+        {
+          "id": "sm-pulsar-field-rapid-arc",
+          "env": 19,
+          "kind": 104,
+          "expected": 104,
+          "pixels": 9530
+        },
+        {
+          "id": "sm-pulsar-field-beyond-the-beacon",
+          "env": 19,
+          "kind": 105,
+          "expected": 105,
+          "pixels": 9480
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 19,
+        "kind": 103,
+        "gap": 151.20000000000002,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "pulsar-field-flight.png"
+      }
+    },
+    {
+      "zone": "time-fracture",
+      "chart": [
+        {
+          "id": "sm-time-fracture-first-fold",
+          "env": 5,
+          "kind": 11,
+          "expected": 11,
+          "pixels": 11458
+        },
+        {
+          "id": "sm-time-fracture-straight-minute",
+          "env": 5,
+          "kind": 106,
+          "expected": 106,
+          "pixels": 9294
+        },
+        {
+          "id": "sm-time-fracture-old-signal",
+          "env": 5,
+          "kind": 107,
+          "expected": 107,
+          "pixels": 10772
+        },
+        {
+          "id": "sm-time-fracture-second-fold",
+          "env": 5,
+          "kind": 108,
+          "expected": 108,
+          "pixels": 9542
+        },
+        {
+          "id": "sm-time-fracture-quiet-interval",
+          "env": 5,
+          "kind": 109,
+          "expected": 109,
+          "pixels": 11014
+        },
+        {
+          "id": "sm-time-fracture-crooked-clock",
+          "env": 5,
+          "kind": 11,
+          "expected": 11,
+          "pixels": 11458
+        },
+        {
+          "id": "sm-time-fracture-fine-fracture",
+          "env": 5,
+          "kind": 106,
+          "expected": 106,
+          "pixels": 9294
+        },
+        {
+          "id": "sm-time-fracture-echo-circuit",
+          "env": 5,
+          "kind": 107,
+          "expected": 107,
+          "pixels": 10772
+        },
+        {
+          "id": "sm-time-fracture-last-fold",
+          "env": 5,
+          "kind": 108,
+          "expected": 108,
+          "pixels": 9542
+        },
+        {
+          "id": "sm-time-fracture-time-held",
+          "env": 5,
+          "kind": 109,
+          "expected": 109,
+          "pixels": 11014
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 5,
+        "kind": 107,
+        "gap": 149.52,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.29999999701976776,
+        "file": "time-fracture-flight.png"
+      }
+    },
+    {
+      "zone": "neon-bazaar",
+      "chart": [
+        {
+          "id": "sm-neon-bazaar-open-market",
+          "env": 14,
+          "kind": 25,
+          "expected": 25,
+          "pixels": 11129
+        },
+        {
+          "id": "sm-neon-bazaar-narrow-stall",
+          "env": 14,
+          "kind": 110,
+          "expected": 110,
+          "pixels": 8861
+        },
+        {
+          "id": "sm-neon-bazaar-market-rush",
+          "env": 14,
+          "kind": 111,
+          "expected": 111,
+          "pixels": 9437
+        },
+        {
+          "id": "sm-neon-bazaar-lantern-sway",
+          "env": 14,
+          "kind": 112,
+          "expected": 112,
+          "pixels": 9350
+        },
+        {
+          "id": "sm-neon-bazaar-quiet-alley",
+          "env": 14,
+          "kind": 113,
+          "expected": 113,
+          "pixels": 9097
+        },
+        {
+          "id": "sm-neon-bazaar-wrong-turn",
+          "env": 14,
+          "kind": 25,
+          "expected": 25,
+          "pixels": 11129
+        },
+        {
+          "id": "sm-neon-bazaar-neon-thread",
+          "env": 14,
+          "kind": 110,
+          "expected": 110,
+          "pixels": 8861
+        },
+        {
+          "id": "sm-neon-bazaar-deep-market",
+          "env": 14,
+          "kind": 111,
+          "expected": 111,
+          "pixels": 9437
+        },
+        {
+          "id": "sm-neon-bazaar-closing-rush",
+          "env": 14,
+          "kind": 112,
+          "expected": 112,
+          "pixels": 9350
+        },
+        {
+          "id": "sm-neon-bazaar-last-lantern",
+          "env": 14,
+          "kind": 113,
+          "expected": 113,
+          "pixels": 9097
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 14,
+        "kind": 111,
+        "gap": 147.84,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "neon-bazaar-flight.png"
+      }
+    },
+    {
+      "zone": "prism-storm",
+      "chart": [
+        {
+          "id": "sm-prism-storm-first-facet",
+          "env": 24,
+          "kind": 114,
+          "expected": 114,
+          "pixels": 9343
+        },
+        {
+          "id": "sm-prism-storm-broad-refraction",
+          "env": 24,
+          "kind": 115,
+          "expected": 115,
+          "pixels": 9342
+        },
+        {
+          "id": "sm-prism-storm-fine-facet",
+          "env": 24,
+          "kind": 116,
+          "expected": 116,
+          "pixels": 9400
+        },
+        {
+          "id": "sm-prism-storm-prism-signal",
+          "env": 24,
+          "kind": 117,
+          "expected": 117,
+          "pixels": 9365
+        },
+        {
+          "id": "sm-prism-storm-clouded-quartz",
+          "env": 24,
+          "kind": 118,
+          "expected": 118,
+          "pixels": 9464
+        },
+        {
+          "id": "sm-prism-storm-twisted-facet",
+          "env": 24,
+          "kind": 114,
+          "expected": 114,
+          "pixels": 9343
+        },
+        {
+          "id": "sm-prism-storm-quick-refraction",
+          "env": 24,
+          "kind": 115,
+          "expected": 115,
+          "pixels": 9342
+        },
+        {
+          "id": "sm-prism-storm-folded-light",
+          "env": 24,
+          "kind": 116,
+          "expected": 116,
+          "pixels": 9400
+        },
+        {
+          "id": "sm-prism-storm-prism-edge",
+          "env": 24,
+          "kind": 117,
+          "expected": 117,
+          "pixels": 9365
+        },
+        {
+          "id": "sm-prism-storm-storm-cut",
+          "env": 24,
+          "kind": 118,
+          "expected": 118,
+          "pixels": 9464
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 24,
+        "kind": 116,
+        "gap": 146.16,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.20000000298023224,
+        "file": "prism-storm-flight.png"
+      }
+    },
+    {
+      "zone": "ghost-nebula",
+      "chart": [
+        {
+          "id": "sm-ghost-nebula-pale-approach",
+          "env": 23,
+          "kind": 119,
+          "expected": 119,
+          "pixels": 9494
+        },
+        {
+          "id": "sm-ghost-nebula-ghost-thread",
+          "env": 23,
+          "kind": 120,
+          "expected": 120,
+          "pixels": 9488
+        },
+        {
+          "id": "sm-ghost-nebula-silent-current",
+          "env": 23,
+          "kind": 121,
+          "expected": 121,
+          "pixels": 9496
+        },
+        {
+          "id": "sm-ghost-nebula-old-transmission",
+          "env": 23,
+          "kind": 122,
+          "expected": 122,
+          "pixels": 9508
+        },
+        {
+          "id": "sm-ghost-nebula-pale-shelter",
+          "env": 23,
+          "kind": 123,
+          "expected": 123,
+          "pixels": 6930
+        },
+        {
+          "id": "sm-ghost-nebula-lost-signal",
+          "env": 23,
+          "kind": 119,
+          "expected": 119,
+          "pixels": 9494
+        },
+        {
+          "id": "sm-ghost-nebula-thin-presence",
+          "env": 23,
+          "kind": 120,
+          "expected": 120,
+          "pixels": 9488
+        },
+        {
+          "id": "sm-ghost-nebula-deep-echo",
+          "env": 23,
+          "kind": 121,
+          "expected": 121,
+          "pixels": 9496
+        },
+        {
+          "id": "sm-ghost-nebula-visible-trace",
+          "env": 23,
+          "kind": 122,
+          "expected": 122,
+          "pixels": 9508
+        },
+        {
+          "id": "sm-ghost-nebula-ghost-wake",
+          "env": 23,
+          "kind": 123,
+          "expected": 123,
+          "pixels": 6930
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 23,
+        "kind": 121,
+        "gap": 144.48,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.5,
+        "file": "ghost-nebula-flight.png"
+      }
+    },
+    {
+      "zone": "blackout-zone",
+      "chart": [
+        {
+          "id": "sm-blackout-zone-steady-beacon",
+          "env": 20,
+          "kind": 124,
+          "expected": 124,
+          "pixels": 12361
+        },
+        {
+          "id": "sm-blackout-zone-night-thread",
+          "env": 20,
+          "kind": 125,
+          "expected": 125,
+          "pixels": 12565
+        },
+        {
+          "id": "sm-blackout-zone-slow-shadow",
+          "env": 20,
+          "kind": 126,
+          "expected": 126,
+          "pixels": 12323
+        },
+        {
+          "id": "sm-blackout-zone-clear-bearing",
+          "env": 20,
+          "kind": 127,
+          "expected": 127,
+          "pixels": 12435
+        },
+        {
+          "id": "sm-blackout-zone-quiet-shelter",
+          "env": 20,
+          "kind": 128,
+          "expected": 128,
+          "pixels": 12491
+        },
+        {
+          "id": "sm-blackout-zone-thin-signal",
+          "env": 20,
+          "kind": 124,
+          "expected": 124,
+          "pixels": 12361
+        },
+        {
+          "id": "sm-blackout-zone-deep-lantern",
+          "env": 20,
+          "kind": 125,
+          "expected": 125,
+          "pixels": 12565
+        },
+        {
+          "id": "sm-blackout-zone-shadow-current",
+          "env": 20,
+          "kind": 126,
+          "expected": 126,
+          "pixels": 12323
+        },
+        {
+          "id": "sm-blackout-zone-last-bearing",
+          "env": 20,
+          "kind": 127,
+          "expected": 127,
+          "pixels": 12435
+        },
+        {
+          "id": "sm-blackout-zone-light-ahead",
+          "env": 20,
+          "kind": 128,
+          "expected": 128,
+          "pixels": 12491
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 20,
+        "kind": 126,
+        "gap": 142.79999999999998,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.19999999925494194,
+        "drawP95Ms": 0.30000000074505806,
+        "file": "blackout-zone-flight.png"
+      }
+    },
+    {
+      "zone": "event-horizon",
+      "chart": [
+        {
+          "id": "sm-event-horizon-outer-event",
+          "env": 25,
+          "kind": 129,
+          "expected": 129,
+          "pixels": 12357
+        },
+        {
+          "id": "sm-event-horizon-horizon-thread",
+          "env": 25,
+          "kind": 130,
+          "expected": 130,
+          "pixels": 9307
+        },
+        {
+          "id": "sm-event-horizon-last-timeline",
+          "env": 25,
+          "kind": 131,
+          "expected": 131,
+          "pixels": 12145
+        },
+        {
+          "id": "sm-event-horizon-far-fold",
+          "env": 25,
+          "kind": 132,
+          "expected": 132,
+          "pixels": 11564
+        },
+        {
+          "id": "sm-event-horizon-quiet-orbit",
+          "env": 25,
+          "kind": 133,
+          "expected": 133,
+          "pixels": 9385
+        },
+        {
+          "id": "sm-event-horizon-crooked-horizon",
+          "env": 25,
+          "kind": 129,
+          "expected": 129,
+          "pixels": 12357
+        },
+        {
+          "id": "sm-event-horizon-event-current",
+          "env": 25,
+          "kind": 130,
+          "expected": 130,
+          "pixels": 9307
+        },
+        {
+          "id": "sm-event-horizon-inner-fold",
+          "env": 25,
+          "kind": 131,
+          "expected": 131,
+          "pixels": 12145
+        },
+        {
+          "id": "sm-event-horizon-near-the-horizon",
+          "env": 25,
+          "kind": 132,
+          "expected": 132,
+          "pixels": 11564
+        },
+        {
+          "id": "sm-event-horizon-the-road-beyond",
+          "env": 25,
+          "kind": 133,
+          "expected": 133,
+          "pixels": 9385
+        }
+      ],
+      "flight": {
+        "launched": true,
+        "env": 25,
+        "kind": 131,
+        "gap": 141.12,
+        "radius": 42,
+        "width": 390,
+        "height": 844,
+        "loaded": true,
+        "drawMedianMs": 0.10000000149011612,
+        "drawP95Ms": 0.3999999985098839,
+        "file": "event-horizon-flight.png"
+      }
+    }
+  ],
+  "wide": [
+    {
+      "launched": true,
+      "env": 6,
+      "kind": 62,
+      "gap": 194.04,
+      "radius": 42,
+      "width": 844,
+      "height": 390,
+      "loaded": true,
+      "drawMedianMs": 0.10000000149011612,
+      "drawP95Ms": 0.20000000298023224,
+      "file": "monochrome-void-flight-844.png"
+    },
+    {
+      "launched": true,
+      "env": 6,
+      "kind": 62,
+      "gap": 194.04,
+      "radius": 42,
+      "width": 1440,
+      "height": 900,
+      "loaded": true,
+      "drawMedianMs": 0.19999999925494194,
+      "drawP95Ms": 0.6999999992549419,
+      "file": "monochrome-void-flight-1440.png"
+    }
+  ],
+  "errors": [],
+  "failedArt": []
+}

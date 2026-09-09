@@ -38,8 +38,8 @@ async function sprite(path){
   image.box={x,y,w:r-x+1,h:b-y+1};image.core=Math.max(image.box.w,image.box.h);image.coreX=x+image.box.w/2;image.coreY=y+image.box.h/2;return image;
 }
 const art=A.emptyArt();art.ready=true;
-for(let i=0;i<33;i++)art.planets.push(await sprite(`planets/${i}`));
-for(let i=0;i<27;i++)art.debris.push(await sprite(`debris/${i}`));
+// Use the same measured, zone-scoped banks as the live chart/flight loader.
+for(const env of reviewEnvs) await A.loadZoneArt(art,env);
 art.squirrelIdle=[await sprite('squirrel/idle-1')];art.squirrelFlap=art.squirrelIdle;
 art.suits.flight=await sprite('suits/flight');art.helms.clear=await sprite('helms/clear');art.acorn=[await sprite('acorn/1')];art.golden=[await sprite('golden/1')];
 for(const id of A.SPILL_SHIP_IDS)art.spillShip[id]=await sprite(`spill-ship/${id}`);
