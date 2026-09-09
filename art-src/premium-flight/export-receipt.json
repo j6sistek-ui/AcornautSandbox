@@ -1,317 +1,317 @@
 {
   "nacre": {
-    "masterSha256": "6a6791917450f222fb412ec3a79319841f055cc794a0c9a2e657284e6fd1f9df",
-    "originalSha256": "7e283cbbbce4338846273a08de6e632b17a97ccffceb498de202bef8043a8dd8",
-    "scale": 0.7115384615384616,
+    "masterSha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f",
+    "originalSha256": "ace482d21365ce2ce63a201d648661da4b67318f29b4950515a23635492db0c6",
+    "scale": 0.6967213114754098,
     "anchor": [
       180,
       84
     ],
-    "atlasSha256": "6330f172d069d1f9b734a128e2a5adb67977a2d0a842be7e87136eb53d72318b",
+    "atlasSha256": "ee3dc1286ece3aebd99e20bc4684dfc6f4e6bb481bccf26f844d31ec3e500ce4",
     "frames": [
       {
         "frame": 0,
         "sourceBounds": [
-          13,
-          52,
-          289,
-          273
+          9,
+          59,
+          293,
+          265
         ],
-        "sourceInk": 32615,
+        "sourceInk": 29783,
         "outputBounds": [
-          17,
-          38,
-          213,
-          195
+          11,
+          43,
+          208,
+          186
         ],
-        "despilled": 47,
+        "despilled": 29,
         "maxGreenExcess": 6,
-        "rgbaSha256": "2d1cc2b6fc985576a5ce1a212242720a31dd9c286780f560a844934416d9dd9b"
+        "rgbaSha256": "c8f83db497bac8b0fada9b06e9a5500173e0516e0b15108bad1158919fdc4047"
       },
       {
         "frame": 1,
         "sourceBounds": [
-          310,
-          52,
-          589,
-          273
+          312,
+          63,
+          597,
+          265
         ],
-        "sourceInk": 32564,
+        "sourceInk": 29507,
         "outputBounds": [
-          14,
-          37,
-          212,
-          194
+          11,
+          44,
+          209,
+          185
         ],
-        "despilled": 31,
+        "despilled": 33,
         "maxGreenExcess": 6,
-        "rgbaSha256": "81dd5b1e2b0497ad7f04e39dbf1e7831fe1ac2c115130eee14b7c298d8cd2cd3"
+        "rgbaSha256": "7d324b154c12e5d5d4693f03d61d06d4c48f2c6df2664229f40b3215124e955e"
       },
       {
         "frame": 2,
         "sourceBounds": [
-          614,
-          51,
-          888,
-          273
+          615,
+          65,
+          904,
+          265
         ],
-        "sourceInk": 32445,
+        "sourceInk": 29626,
         "outputBounds": [
-          16,
-          35,
-          211,
-          193
+          11,
+          41,
+          212,
+          180
         ],
-        "despilled": 25,
+        "despilled": 36,
         "maxGreenExcess": 6,
-        "rgbaSha256": "912332ca646d42f613430d96ae4c3ca2c57e7eaed15b615d608ad657668404fb"
+        "rgbaSha256": "7ee2e0734234ee3d49008ea5463ac6c21ea0e3e8247263fc5559aca0192475cb"
       },
       {
         "frame": 3,
         "sourceBounds": [
-          912,
-          52,
-          1190,
-          273
+          913,
+          24,
+          1194,
+          257
         ],
-        "sourceInk": 32455,
+        "sourceInk": 28142,
         "outputBounds": [
-          13,
-          35,
-          210,
-          192
+          10,
+          42,
+          205,
+          204
         ],
-        "despilled": 35,
+        "despilled": 29,
         "maxGreenExcess": 6,
-        "rgbaSha256": "075872a4f4ca594a5eda3585888d31fdd6c9eb6a32ad20ef4040e550e5f37441"
+        "rgbaSha256": "2a51a3e63719a00713a674df32666c676c28dd9382a80e4e757b84e22555c1b3"
       },
       {
         "frame": 4,
         "sourceBounds": [
-          16,
-          362,
-          287,
-          591
+          12,
+          326,
+          282,
+          570
         ],
-        "sourceInk": 31879,
+        "sourceInk": 23765,
         "outputBounds": [
           20,
-          32,
-          212,
-          195
+          48,
+          208,
+          217
         ],
-        "despilled": 39,
+        "despilled": 24,
         "maxGreenExcess": 6,
-        "rgbaSha256": "bc7a39f097f00039ec466bbf5367847e09a794b8046948fe1f094c42db491bec"
+        "rgbaSha256": "31b68390c6f6c22c927e0bc40e38ef215ca74a3ee24c9086c9c9341d9bc59847"
       },
       {
         "frame": 5,
         "sourceBounds": [
-          303,
-          343,
-          572,
-          592
+          335,
+          325,
+          582,
+          558
         ],
-        "sourceInk": 31736,
+        "sourceInk": 24774,
         "outputBounds": [
-          21,
-          36,
-          212,
+          37,
+          51,
+          209,
           213
         ],
-        "despilled": 44,
+        "despilled": 47,
         "maxGreenExcess": 6,
-        "rgbaSha256": "641fdaa9a984fbaa0d4a1e39a1940eafdd53afb113064386b9be68b9f55efee9"
+        "rgbaSha256": "8174dc1e747f8e132483ef8841f7a9df84c7ac130ffdeef7d42d01196fc47619"
       },
       {
         "frame": 6,
         "sourceBounds": [
-          611,
-          336,
-          862,
-          592
+          636,
+          325,
+          881,
+          553
         ],
-        "sourceInk": 30414,
+        "sourceInk": 26103,
         "outputBounds": [
-          33,
-          43,
-          211,
-          225
+          40,
+          51,
+          210,
+          209
         ],
-        "despilled": 36,
+        "despilled": 41,
         "maxGreenExcess": 6,
-        "rgbaSha256": "26901f46a4e8d640a34bdd5ba850534d0a9ea0d078f48d2aa781275a276fcc63"
+        "rgbaSha256": "bf8b6d909f7dcd4ce5689cc1fc76e1e934b24cba88431203756d441ef474c24c"
       },
       {
         "frame": 7,
         "sourceBounds": [
-          906,
-          333,
-          1160,
-          592
+          939,
+          325,
+          1184,
+          552
         ],
-        "sourceInk": 30351,
+        "sourceInk": 25905,
         "outputBounds": [
-          28,
-          44,
-          208,
-          228
+          41,
+          50,
+          212,
+          208
         ],
-        "despilled": 37,
+        "despilled": 30,
         "maxGreenExcess": 6,
-        "rgbaSha256": "d7efbb9d55f2603869624add65a65dd283a4c44e93c1b2e914d172200d97790c"
+        "rgbaSha256": "a0659b3634e30d0889b6d8cee6ac15286f0183f86cd799d42b86f1d515b3b014"
       },
       {
         "frame": 8,
         "sourceBounds": [
-          13,
-          655,
-          268,
-          918
+          17,
+          651,
+          277,
+          870
         ],
-        "sourceInk": 30803,
+        "sourceInk": 25535,
         "outputBounds": [
-          38,
-          46,
-          220,
-          232
+          24,
+          53,
+          205,
+          206
         ],
-        "despilled": 30,
+        "despilled": 32,
         "maxGreenExcess": 6,
-        "rgbaSha256": "dd2667241ecdf2db0eb57fdd2bdd8d53953c8fbbb474427df5b6dad7db6a4f9c"
+        "rgbaSha256": "6867f5a4801a8040e2f94d23dfa789dbb36d76afb45635a916092a936b037fc9"
       },
       {
         "frame": 9,
         "sourceBounds": [
-          303,
-          653,
-          572,
-          918
+          320,
+          652,
+          581,
+          875
         ],
-        "sourceInk": 30861,
+        "sourceInk": 26449,
         "outputBounds": [
-          25,
-          44,
-          216,
-          232
+          26,
+          54,
+          208,
+          209
         ],
-        "despilled": 27,
+        "despilled": 74,
         "maxGreenExcess": 6,
-        "rgbaSha256": "6cc0453069d52ad97d4837635b3832fdac1ed6779542eef003ebb4da3679be63"
+        "rgbaSha256": "51e214f72031032e708855a87fececb86310e4503d26309d52a175105593ef0a"
       },
       {
         "frame": 10,
         "sourceBounds": [
-          619,
-          696,
+          635,
+          653,
           884,
-          924
+          898
         ],
-        "sourceInk": 31345,
+        "sourceInk": 25925,
         "outputBounds": [
-          25,
-          46,
-          213,
-          208
+          35,
+          53,
+          208,
+          223
         ],
-        "despilled": 56,
+        "despilled": 60,
         "maxGreenExcess": 6,
-        "rgbaSha256": "0700c226dc78878a7098efacc2a889f88e2c3f496c35281f9cc9f204bf4214ea"
+        "rgbaSha256": "b78c47c29c49b94aa36e68ca95eb74aee33f4a2640ce05aafe4a83d180ef29b1"
       },
       {
         "frame": 11,
         "sourceBounds": [
-          920,
-          682,
-          1190,
-          926
+          926,
+          666,
+          1195,
+          870
         ],
-        "sourceInk": 32004,
+        "sourceInk": 26119,
         "outputBounds": [
-          17,
-          23,
-          209,
-          196
+          18,
+          46,
+          205,
+          188
         ],
-        "despilled": 40,
+        "despilled": 33,
         "maxGreenExcess": 6,
-        "rgbaSha256": "4c277e1cf0e891a178d4e3bf97a4cfc2e3d943fb714562efc694300b287aee4e"
+        "rgbaSha256": "100563fbf64d10c4ba149ca284f03c17ed7110b66ee590c46db6c50d1fdcfca8"
       },
       {
         "frame": 12,
         "sourceBounds": [
-          16,
-          998,
-          297,
-          1251
+          22,
+          993,
+          294,
+          1235
         ],
-        "sourceInk": 32978,
+        "sourceInk": 30621,
         "outputBounds": [
-          14,
-          11,
-          214,
-          191
+          20,
+          20,
+          209,
+          188
         ],
-        "despilled": 42,
+        "despilled": 32,
         "maxGreenExcess": 6,
-        "rgbaSha256": "35a42f13fe4a750dec12115bc31857d42695669f6719cfbca8574b1e50991958"
+        "rgbaSha256": "6b3c6f763ca0a36d0639b0eb8339181c5e269940183c6c9b8cc5a68ece9c10e3"
       },
       {
         "frame": 13,
         "sourceBounds": [
-          320,
-          995,
-          592,
-          1251
+          334,
+          1006,
+          598,
+          1235
         ],
-        "sourceInk": 33291,
+        "sourceInk": 30034,
         "outputBounds": [
-          21,
-          10,
-          214,
-          192
+          26,
+          30,
+          210,
+          190
         ],
-        "despilled": 43,
+        "despilled": 39,
         "maxGreenExcess": 6,
-        "rgbaSha256": "b923cc1225a381fbf54f0b5dca679db5eb9b30a8f06b3adbd1a6cb08d463b202"
+        "rgbaSha256": "817800a9395a1c358253fcfccb4be374a8978998dcd1eb9ab6d3abd4f1672cb5"
       },
       {
         "frame": 14,
         "sourceBounds": [
-          614,
-          1016,
-          888,
-          1251
+          620,
+          1024,
+          900,
+          1235
         ],
-        "sourceInk": 33109,
+        "sourceInk": 29557,
         "outputBounds": [
-          18,
-          29,
-          212,
-          195
+          14,
+          40,
+          209,
+          187
         ],
-        "despilled": 39,
+        "despilled": 41,
         "maxGreenExcess": 6,
-        "rgbaSha256": "5b5a3384f601aaaa76fd545858e9687d4376b6547ecf0f75003eca1df5157e64"
+        "rgbaSha256": "3f95f6f15891d04c816b14ae364f0ce5de00c2efc6e5652a98fc05f8e2639357"
       },
       {
         "frame": 15,
         "sourceBounds": [
-          911,
-          1019,
-          1187,
-          1251
+          918,
+          1028,
+          1201,
+          1235
         ],
-        "sourceInk": 33169,
+        "sourceInk": 29428,
         "outputBounds": [
           13,
-          33,
-          209,
-          198
+          47,
+          210,
+          191
         ],
-        "despilled": 51,
+        "despilled": 34,
         "maxGreenExcess": 6,
-        "rgbaSha256": "3ec2f38f9585a5291c742f6df2082b1a616c9174dafb800c211cf61fec2ad311"
+        "rgbaSha256": "8225f091221b9aa737f14e198f42cb4c6c0f7bc5cbaf2635fe42287c5dc6e62d"
       }
     ]
   },

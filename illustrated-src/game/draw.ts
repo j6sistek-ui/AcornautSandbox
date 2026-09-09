@@ -3625,7 +3625,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:sunforged": [181, 88, 36],
   "suit:abyssal": [181, 88, 36],
   "suit:porcelain": [180, 84, 35.3465],
-  "suit:nacre": [180, 84, 32.7308],
+  "suit:nacre": [180, 84, 32.0492],
   "suit:origamist": [180, 84, 35],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [190, 100, 45, 0],

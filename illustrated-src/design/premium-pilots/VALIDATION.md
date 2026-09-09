@@ -1,74 +1,93 @@
 # Premium pilot supplied-sheet release validation
 
-**New release verification is pending.** The owner authorized the supplied
-sixteen complete flight frames per suit, with cast shadows removed and
-Porcelain's surrounding boxes cleaned away. This supersedes the rejected
-cut-rig implementation and its posture proposals. Prior visual acceptance
-and old technical receipts do not validate this new release.
+The final character art passed the complete **54-test harness: 54 passed,
+0 failed, 0 skipped**. After the scoped phone layout correction for the
+Premium Pilot Trio card, builds and the affected checks passed again.
+The full-suite result precedes that CSS/class-only correction; the final
+focused results and file hashes are recorded in [verification.json](verification.json).
 
-The required head treatments remain Porcelain's always-worn Sovereign Shell
-(B), helmetless Nacre Envoy and Origamist's always-worn Facet Shell.
-The latest prices are **1,000 Stardust per suit** and **2,500 Stardust for
-Premium Pilot Trio**. Each includes its matching exclusive wake. The former
-2,500-per-suit decision is superseded.
+## Final candidate
 
-## Required current evidence
+The release uses sixteen complete supplied poses per suit. Porcelain's
+floating boxes and the three sheets' baked ground shadows were removed.
+Nacre uses the latest supplied reference, with two comparably sized tails
+from distinct adjacent rump roots. Both sweep, briefly cross/braid during
+the jump, and unwind into separate resting curls. This movement is authored
+in the complete frames.
 
-| Area | Required evidence | Status |
-| --- | --- | --- |
-| Source identity | All three supplied sheets retained, sixteen complete frames each, source/output hashes | Export receipt contains all 48 frames; raw masters and prompts retained |
-| Cleanup | Cast shadows and Porcelain boxes removed; full anatomy, costume and head treatment preserved | Final cleaned masters selected for QA; final playback/browser review pending |
-| Rendering | Complete-frame playback, source frame order, uniform scale, clean edges, fallback and cockpit crops | Pending |
-| Motion | Repeated taps and release cycle at normal/slow speed and actual flight size | Pending |
-| Envoy tails | Two comparably sized pearl tails with crossing/overlapping curves and offset authored shapes | Final master selected and static contact inspected; playback review pending |
-| Economy | 1,000 singles, 2,500 trio, original singleton ids retained, singles purchasable while trio is featured | Pass: actual production and beta Shop checkouts |
-| Ownership | All three suit/wake grants, partial-ownership credit, insufficient funds, repeated purchase and save/reload | Pass: production and beta, all eight ownership subsets |
-| Build and gates | Source export, lab/Flight Studio, TypeScript, whitespace, complete art gate, full unskipped harness and platform bridge | Pending final run |
-| Browser | Actual 390px production Shop, prices, previews, individual/trio checkout and fresh screenshots | Pending |
-| Publication | Final source identity, PR evidence and owner merge decision | Pending |
+Porcelain always wears Sovereign Shell B; Nacre is helmetless by design;
+Origamist always wears Facet Shell. Their respective Cobalt Filigree,
+Pearl Tide and Foldspace Ribbon wakes remain included. Prices are
+**1,000 Stardust individually / 2,500 for all three**. The trio and unowned
+singles remain available every day beside the separate daily featured pack.
 
-`test-premium-pricing.mjs` covers both production and beta through the real
-storefront and engine. It verifies the featured trio remains exactly 2,500
-when unowned, while each pinned single remains 1,000 and can be bought
-separately. The existing proportional ownership policy charges 1,670 for
-two missing suits or 830 for one; it never charges twice for an owned suit.
+## Evidence
 
-The focused pricing test passed against the completed stamp 254 production
-and beta builds. It used the real single-item cart and featured-pack checkout,
-confirmed all three wake entitlements, and verified save/reload and repeated
-purchase protection. The general Shop rotation/cross-pack pricing test also
-passed with zero failures. These passes do not claim the final full harness.
+| Area | Observed result |
+| --- | --- |
+| Artwork | All 48 cleaned poses inspected on light/dark contacts; no remaining Porcelain boxes, ground shadows, extraction clipping or obvious green fringe |
+| Registration | Every measured head is at (180,84), with one constant scale per character and two measured rear-paw emitters per frame |
+| Rendering | All 48 source crops, 30 helmet choices, fallback portraits, cockpit/preview routes and atomic atlas loading/retry pass |
+| Motion and wakes | Full cycles survive repeated taps; 2,160 finite wake samples and 6,000 unchanged legacy-controller states pass |
+| Economy | Production and beta pass four dates, daily rollover, singles and permanent trio checkout |
+| Ownership | All eight ownership subsets, suit/wake grants, partial credit, insufficient funds, duplicate purchase protection and save/reload pass |
+| Build | Source/production/beta export, lab and Flight Studio pass |
+| Gates | Full 54 suite; final TypeScript, 32 art groups, 51 bridge files, whitespace and seven affected suites pass |
+| Browser | Passed: all sixteen frames at Normal/Quarter, 52px and enlarged light/dark views, current 390px Shop and corrected trio card |
+| Preservation | All 1,600 existing shipping art files remain byte-identical to main 83628d2; exactly six new shipping art files |
 
-The [source/export record](../../../art-src/premium-flight/README.md) links the
-48-frame receipt. All frames use the same head anchor (180, 84), with one
-constant uniform scale per character. Connected-character extraction retains
-tails crossing the nominal source-grid margins. Output padding passes the
-8px safety bound; observed minimum margins are 30px for Porcelain, 10px for
-Nacre and 15px for Origamist. Maximum measured green excess is 6 in each bank.
+The final seven affected suites are premium pilots, premium pricing, Shop,
+bundle parity, Flight Studio, platform bridge and Switchback. TypeScript
+checks all game source files and `lab/rig.ts` using the repository's
+`--strict false` command. Flight Studio validates 34 models, 449 asset hashes,
+seven cut rigs and three complete-frame banks.
 
-## Historical evidence
+The [runtime receipt](regression.json), [export receipt](../../../art-src/premium-flight/export-receipt.json)
+and [preservation receipt](preservation.json) retain the measurable results.
+Independent verification also confirmed thirteen protected progression,
+simulation and background source files unchanged. Current main
+`83628d296692cd31713c61630ab901d498ad31a5` is integrated through merge 21d436d.
 
-The rejected cut-rig contacts, registration overlays, regression receipt,
-old browser screenshots and Arcflash baseline comparison were removed from
-this review folder. Their previous versions remain in Git history and are
-not evidence for the supplied-sheet release. The initial Arcflash failure
-was addressed on main by deterministic portrait generation; current results
-must come from the new full run.
+The final Nacre master is 1212×1297, with original/master/atlas hash prefixes
+`ace482d2 / 94fe0291 / ee3dc128`. Its constant scale is 0.6967213115.
+Minimum output margins are 30px Porcelain, 10px Nacre and 15px Origamist;
+maximum green excess is 6 in each bank. Complete hashes and all 48
+measurements are retained in the linked receipts.
 
-Fresh contacts and browser captures must identify this whole-frame candidate.
-Generation of a contact sheet is not visual acceptance; the author must
-inspect the actual cleaned assets and playback. Neither an old passing test
-nor a repeated art stamp establishes that this source/art state was tested.
+## Browser review
+
+Chrome review completed on 2026-09-09 at 22:17 UTC against the built production page and premium lab. All sixteen frame labels advanced at Normal and Quarter speeds. Both Envoy tails moved through separate curls, a brief braid and recovery; the three custom wakes appeared during playback. Frame seeking cleared old wake history. No warning/error logs were observed.
+
+The actual Shop was reviewed at 390×844 with each 1,000-Stardust single and the 2,500 trio. No purchases, equipment changes or flights occurred; the temporary cart was cleared. Details, screenshot dimensions and the browser timing limitation are recorded in [BROWSER-RECEIPT.md](BROWSER-RECEIPT.md).
+
+[Trio offer](trio-shop-390.png) · [Envoy card](nacre-shop-390.png) · [Frame 8 dark](browser-frame8-dark.png) · [Frame 8 light](browser-frame8-light.png) · [52px dark](browser-game52-dark.png) · [52px light](browser-game52-light.png)
+
+The owner subsequently requested shipping this character update first, followed by a separate graphical Shop enhancement. These receipts describe the character-release presentation; new marketing cards and the wider Shop redesign belong to that follow-up.
+
+The phone review found that the original trio card squeezed its description
+beside three thumbnails. The corrected card places those portraits on their
+own row, followed by the description and price. The change is scoped to the
+trio card; existing featured cards and transaction handlers are unchanged.
+
+## Preserved source details
+
+Origamist's supplied blur is intentionally preserved in frame 6 (row 2, column 2)
+for the body and frame 11 (row 3, column 3) for the tail, using one-based labels.
+The art gate retains 14 existing frame-spread advisories in legacy assets;
+none concerns the new trio. The earlier Arcflash fallback failure was fixed
+on main, and its current regression passes.
+
+The rejected cut-rig contacts and browser evidence are superseded. Historical
+masters remain as provenance only; production and Flight Studio load the
+current complete-frame atlases. The five other proposal cards remain
+byte-identical to the prior PR and add no production catalog entries.
 
 ## Execution and publication
 
-Follow [SHIPPING.md](../../../SHIPPING.md) and the repository container
-workflow. If Docker is unavailable, record use of the authorized existing-tool
-fallback and the actual tool versions; no host system packages may be
-installed. There is no separate lint script, so record TypeScript and
-whitespace checks alongside the art and test gates.
+Docker was unavailable. The repository-authorized existing-tool fallback
+used Node 24.19.0, Python 3.11.9, Pillow 11.3.0, NumPy 2.1.2 and SciPy 1.17.1,
+with no host installations. There is no separate lint script; TypeScript
+and whitespace checks accompany the art and test gates.
 
-Update the pending rows only with observed results for the final supplied-sheet
-candidate. Preserve prior purchase identifiers and saved ownership. Reusable
-cut kits and the five remaining concepts stay outside this production scope.
-No automatic merge is authorized.
+The PR remains subject to the owner's review and explicit merge decision.
+No merge or live deployment is claimed by these local checks.

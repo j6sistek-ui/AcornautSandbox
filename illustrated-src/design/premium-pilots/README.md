@@ -6,16 +6,21 @@ with cast shadows removed and Porcelain's surrounding boxes cleaned away.
 This supersedes the rejected cut-rig posture work. Further reusable cut kits
 remain off repo for later work.
 
-The latest Envoy direction requires two distinct pearl tails with offset
-motion authored into those complete frames. Verify both tail silhouettes
-and their separate motion through the sequence; do not describe this as a
-procedural independent-tail rig.
+The current Envoy candidate uses the latest owner-supplied replacement
+(attachment `0084A7E8`), preserved as `art-src/premium-flight/nacre-original.jpg`.
+The required sequence has two equally substantial pearl tails with distinct
+adjacent roots at the back of the rump. Both move: separate relaxed curls,
+a sweep into flight, a brief loose braid/crossing, then an unwind to separate
+curls. The earlier permanently braided master is superseded. Verify both
+roots and tips throughout playback; this is authored frame motion, not a
+procedural independent-tail rig. Completed checks are recorded in the release validation.
 
 Porcelain always wears Sovereign Shell (helmet B); Nacre remains helmetless
 by design; Origamist always wears Facet Shell. Individual suits cost
 **1,000 Stardust each**, or **2,500 Stardust for all three** in Premium Pilot
-Trio. Each suit includes its existing signature wake. The individual options
-remain purchasable when the trio pack is featured.
+Trio. Each suit includes its existing signature wake. The bundle and unowned
+individual options remain purchasable every day alongside the rotating
+featured pack.
 
 The [five remaining proposal cards](proposals/index.html) reuse existing
 artwork only. They add no production kits or catalog entries.
@@ -45,7 +50,7 @@ leaving visible halos.
 
 Check the actual production Shop at 390px width: each individual card must
 show 1,000 Stardust, the trio pack must show 2,500 when nothing is owned, and
-individual checkout must remain available while that pack is featured.
+individual and bundle checkout must remain available on different dates.
 Verify fallback portraits and cockpit crops as well as flight and preview
 playback.
 

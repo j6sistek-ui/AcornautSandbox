@@ -3518,7 +3518,7 @@ export async function bootStandalone(root) {
     // pieces that make it are bought underneath, and the featured pack sits
     // below as the bulk alternative.
     let devRollOpen = false;
-    let featureOpen = null; // the featured pack, opened
+    let featureOpen = null; // the featured or always-available pack, opened
     // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
     // chart: a held Level Skip lands on a mission from its sheet, a held Star
     // Unlock on a reward from the rail. Both are hold-to-confirm.
@@ -3553,10 +3553,11 @@ export async function bootStandalone(root) {
         const owns = (i) => ownsPremium(s, i);
         const day = shopDayIndex();
         // ONE featured pack, never one already owned outright
-        const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
+        const open = BUNDLES.filter((b) => !b.fixed && !b.alwaysAvailable && !bundleIds(b).every(owns));
         const feature = open.length ? open[day % open.length] : null;
-        // Most featured packs reserve their contents for the day. The premium
-        // trio explicitly keeps its 1,000-Stardust singles available alongside it.
+        const always = BUNDLES.filter((b) => b.alwaysAvailable && !bundleIds(b).every(owns));
+        // Most featured packs reserve their contents for the day. A pack can
+        // explicitly keep its singles available alongside it.
         const held = new Set(feature && !feature.keepSingles ? bundleIds(feature) : []);
         const shelfOf = (ids) => ids.filter((i) => !held.has(i) && !owns(i));
         const suitPool = shelfOf(SUITS.filter((u) => isIap(u.id)).map((u) => u.id));
@@ -3575,7 +3576,7 @@ export async function bootStandalone(root) {
         const pinned = suitPool.filter((i) => DUST_STICKER[i] !== undefined && !helms.includes(i));
         const suits = [...pinned, ...dealFrom(suitPool.filter((i) => !helms.includes(i) && !pinned.includes(i)), SHOP_CYCLE.suits, day * 7 + 1)];
         const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
-        return { day, feature, held, suits, helms, pals, owns };
+        return { day, feature, always, held, suits, helms, pals, owns };
     }
     /** the price of the look currently on the stage, minus anything owned */
     /** WHAT YOU TICKED IS WHAT YOU BUY.
@@ -3898,14 +3899,16 @@ export async function bootStandalone(root) {
             scroll.append(row);
         }
         scroll.append(el("p", "ac-fine", "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
-        // ---- THE FEATURED PACK.
-        if (cy.feature) {
-            const bn = cy.feature;
+        // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
+        for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
             const full = alaCarteTotal(bundleIds(bn), cy.owns);
             const due = featurePrice(bn, cy.owns);
             const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
-            scroll.append(el("p", "ac-shelfhead ac-featurehead", "FEATURED PACK"));
+            scroll.append(el("p", "ac-shelfhead ac-featurehead", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"));
             const card = el("button", "ac-card ac-featurecard");
+            if (bn.id === "bundle-premium-trio")
+                card.classList.add("ac-premiumtrio");
+            card.dataset.bundleId = bn.id;
             const strip = el("div", "ac-bundlestrip");
             const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);
             for (const it of faces) {
@@ -4002,10 +4005,9 @@ export async function bootStandalone(root) {
         // one. It stays rolled up to a single line until it is asked for, so
         // it costs a player who never opens it nothing but a row of small type.
         box.append(drawCycleRoll(cy));
-        // and the sheet only ever shows the pack TODAY is featuring: the
-        // featured price belongs to the cycle, not to whatever was open when
-        // the day rolled over (audit, Sep 2026)
-        if (featureOpen && featureOpen !== cy.feature?.id) {
+        // A daily feature closes when it rotates out. Always-available packs
+        // keep their sheet and sticker price across the date boundary.
+        if (featureOpen && featureOpen !== cy.feature?.id && !BUNDLES.find((b) => b.id === featureOpen)?.alwaysAvailable) {
             featureOpen = null;
             confirmBuy = false;
         }
@@ -4026,7 +4028,7 @@ export async function bootStandalone(root) {
         const full = alaCarteTotal(bundleIds(bn), owns);
         const due = featurePrice(bn, owns);
         const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
-        sheet.append(el("p", "ac-kicker", "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
+        sheet.append(el("p", "ac-kicker", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
         sheet.append(el("p", "ac-sub", bn.blurb));
         const group = (title, kind) => {
             const items = bn.items.filter((it) => it.kind === kind);

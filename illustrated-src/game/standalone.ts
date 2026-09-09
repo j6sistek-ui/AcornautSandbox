@@ -3721,6 +3721,7 @@ export async function bootStandalone(root: HTMLElement) {
       const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
       scroll.append(el("p", "ac-shelfhead ac-featurehead", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"));
       const card = el("button", "ac-card ac-featurecard");
+      if (bn.id === "bundle-premium-trio") card.classList.add("ac-premiumtrio");
       card.dataset.bundleId = bn.id;
       const strip = el("div", "ac-bundlestrip");
       const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);

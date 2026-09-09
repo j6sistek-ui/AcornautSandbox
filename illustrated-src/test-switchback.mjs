@@ -54,8 +54,8 @@ const swPack=Cat.BUNDLES.find(b=>b.id==='bundle-switchback');
 assert(swPack,'bundle-switchback has left the catalog');
 // NO DAY-0 SHELF ANY MORE. The storefront is the shop on both pages now
 // (drawShop returns drawShopBeta), and the storefront FEATURES ONE PACK A
-// DAY, stepping in order through the packs that are neither fixed-price nor
-// already owned; it does not deal three by hash the way the retired tabbed
+// DAY, stepping through packs that are neither fixed-price, always available,
+// nor already owned; it does not deal three by hash the retired tabbed
 // PACKS page did. So the day a pack is on the shelf is its place in that
 // rotation, and a pinned date rots the moment a pack joins the pool ahead of
 // it. Walk the rotation on the same screen the pilot sees and take the day it

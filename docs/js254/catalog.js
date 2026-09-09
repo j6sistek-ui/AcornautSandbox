@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 21:35 UTC";
+export const BUILD_TIME = "2026-09-09 22:07 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -478,7 +478,7 @@ export const BUNDLES = [
     { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
     { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
     { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
-    { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Porcelain Paragon, Nacre Envoy and Foldspace Origamist, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
+    { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Porcelain Paragon, Nacre Envoy and Foldspace Origamist, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
     { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
     { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
     { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },

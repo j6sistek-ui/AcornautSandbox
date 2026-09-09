@@ -1,0 +1,28 @@
+{
+  "baseline": "83628d296692cd31713c61630ab901d498ad31a5",
+  "existingArtFilesUnchanged": 1600,
+  "newArtFiles": [
+    "docs/art/suits/porcelain.png",
+    "docs/art/suits/porcelain/flight.png",
+    "docs/art/suits/nacre.png",
+    "docs/art/suits/nacre/flight.png",
+    "docs/art/suits/origamist.png",
+    "docs/art/suits/origamist/flight.png"
+  ],
+  "protectedSourceUnchanged": true,
+  "protectedSourceSha256": {
+    "illustrated-src/game/campaign.ts": "d193424830de46abfb41dfbc56c7a6505aeafe19791e754393e32bf3f42f415e",
+    "illustrated-src/game/campaign-manifest.ts": "f0ae1418899d87b9e4acb6859cd6dcd078a4b67bd67970f94a3762ccb1f559a3",
+    "illustrated-src/game/beta-campaign-manifest.ts": "b7871b9d028229b8565550d4feaa18654a11df5e0a1473d535fc26f2a30a2c75",
+    "illustrated-src/game/campaign-progress.ts": "d80b89a8e7d2456b3416f9c895834bd7fa7b100a32e739145c818f361f6bf6d4",
+    "illustrated-src/game/sim.ts": "4836a86c7b1fe9c2df26516402b5c8ae53cb8c7a6d1c8e8c847204a10e711d11",
+    "illustrated-src/game/race.ts": "17cdd2a8b935aa8b01d62b5825c0d672c57461894075473e28a54ee85c120d07",
+    "illustrated-src/game/mission-rng.ts": "eb14937ac978b97d238aeb5794226e3634d30f6571fba535567f6728fb6329a7",
+    "illustrated-src/game/sky-gen.ts": "f3e938f9186d71f84e6cd35107914393c9de24e47c3e1f9e120d8f36de97815f",
+    "illustrated-src/game/planet-contrast.ts": "421ec498ea1d79ef76c85ab8ca080deca651800515d593b093b15cfac086090d",
+    "illustrated-src/game/planet-family.ts": "8f219a4c8af03a7cfae87bcc2a311e3a39d69063d43678b3bc94bc99548ebe96",
+    "illustrated-src/game/zone-planet-colors.ts": "4e0037240c055e7f169f3ea69798c3ef6bda39eb4e9f860b47aa74df46c52b1a",
+    "illustrated-src/game/zone-visuals.ts": "86325e29f27fe7b5810d6fbefb6f734808916b0284a3ddc909e19a4234b37597",
+    "illustrated-src/game/retro.ts": "1c8221f7def256764a6d1de832e51c0583456301634c6d0e7672c73b8fe865c8"
+  }
+}

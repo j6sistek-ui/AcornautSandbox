@@ -41,10 +41,12 @@ approved figure, helmet, face, tail or costume. Packing may translate and
 uniformly scale a complete frame; it must not rebuild the body from cut
 limbs or reapply the rejected human-like proportions.
 
-The selected Envoy master contains two comparably sized pearl tails with
-crossing/overlapping curves and offset authored shapes across the sixteen
-whole-body poses. Verify their playback as well as the static silhouettes.
-This is frame-authored movement, not a procedural independent-tail rig.
+The current Envoy candidate uses the latest owner-supplied replacement,
+recorded in the [whole-frame source README](../premium-flight/README.md).
+Its two equally substantial tails must have distinct adjacent rump roots,
+move separately, briefly cross/loosely braid in flight, then unwind. The
+previous permanently braided master is superseded. Verify the complete cycle;
+this is frame-authored movement, not a procedural independent-tail rig.
 
 The current runtime uses `game/premium-flight.ts` and generated
 `game/premium-flight-frames.ts` to select complete poses and register the
@@ -58,18 +60,19 @@ inputs. The old `export-premium-pilots.mjs` now redirects to the whole-frame
 exporter. The shipping premium `parts.png` atlases and `premium-parts.ts`
 were retired; the active route cannot use them. Old cut-rig contacts were
 removed from the current review folder and remain in Git history. They do not
-establish the supplied sheet
-release's art quality or runtime behavior. Preserve original concept
+establish the supplied sheet release's art quality or runtime behavior.
+Preserve original concept
 boards in `references/` as design provenance. The final sheet export and
 review receipts must identify the retained supplied sources and generated
 outputs before release.
 
 ## Prices and ownership
 
-Singleton prices are pinned at 1,000 Stardust. The rotating trio pack uses its
-2,500-Stardust sticker even while featured; it does not receive the ordinary
-featured-pack 50% discount. Its three unowned suits remain available on the
-single shelf while the pack is featured.
+Singleton prices are pinned at 1,000 Stardust. Premium Pilot Trio is available
+every day under **Premium Pilot Bundle**, alongside those individual options
+and the regular rotating featured pack. Its 2,500-Stardust sticker does not
+receive the ordinary featured-pack 50% discount. The trio does not enter that
+rotation, and its unowned suits remain on the single shelf.
 
 Existing ownership receives the repository's normal proportional credit:
 2,500 for three unowned suits, 1,670 for two, 830 for one, and zero when all
@@ -85,8 +88,8 @@ completed sheet sources before running the full checks in
 [SHIPPING.md](../../SHIPPING.md).
 
 `test-premium-pricing.mjs` exercises the real production and beta Shop,
-including individual checkout while the trio pack is featured, the trio
-checkout, all ownership subsets, included wakes and save/reload. The
+including daily access to the trio and individual options, checkout across
+a date rollover, all ownership subsets, included wakes and save/reload. The
 full-frame render and playback checks must cover every supplied frame,
 transparent edges, cleanup, source order, proportions and fixed-head
 behavior. Previous cut-rig test results are not evidence for this release.

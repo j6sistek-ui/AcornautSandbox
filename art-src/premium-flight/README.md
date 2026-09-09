@@ -6,29 +6,38 @@ rejected cut-part rigs. Reusable cut kits remain outside this release.
 
 Porcelain always wears Sovereign Shell (helmet B); Nacre is helmetless by
 design; Origamist always wears Facet Shell. Each suit costs 1,000 Stardust,
-or all three cost 2,500 in Premium Pilot Trio. Each purchase includes its
-signature wake. See the [pricing and ownership contract](../premium-pilots/README.md).
+or all three cost 2,500 in Premium Pilot Trio. The bundle and unowned singles
+are available every day, independently of the rotating featured pack.
+Each purchase includes its signature wake. See the
+[pricing and ownership contract](../premium-pilots/README.md).
 
 ## Retained sources
 
-- `porcelain-original.jpg`, `nacre-original.jpg` and
-  `origamist-original.jpg` retain the supplied sixteen-frame sheets.
+- `porcelain-original.jpg` and `origamist-original.jpg` retain their supplied
+  sixteen-frame sheets. `nacre-original.jpg` is the latest owner-supplied
+  replacement (attachment `0084A7E8`), superseding the earlier Envoy source.
 - `porcelain-reference.jpg` is the supporting Porcelain identity reference.
-- Each `{id}-clean.png` is the final chroma-green master selected for export.
+- Each `{id}-clean.png` is the current chroma-green master selected for export.
   Creative cleanup removes cast ground shadows; Porcelain's detached boxes
   and boxes over the fur are removed while restoring the continuous tail.
 - [cleanup-prompts.json](cleanup-prompts.json) records the initial cleanup
-  briefs. The original character self-shading and source pose order are
-  retained; the green matte is removed during mechanical export.
-- Nacre's subsequent tail edits are recorded in
+  briefs. Nacre's active replacement brief is
+  [nacre-owner-replacement-prompt.txt](nacre-owner-replacement-prompt.txt).
+  Its current `nacre-clean.png` is **1212×1297**. The brief requires two
+  equally substantial pearl-lilac tails with distinct adjacent roots at the
+  back of the rump: relaxed separate curls, a sweep into flight, a brief loose
+  crossing/braid, then an unwind to separate curls. The braid must not remain
+  throughout the cycle. Motion is authored in whole frames, not a procedural
+  tail rig. Playback and browser findings are recorded in the release validation.
+- `nacre-initial-original.jpg` retains the first supplied Envoy sheet.
+  `nacre-permanent-braid-superseded.png` retains the previous exported master;
+  it is not the current candidate. Earlier tail edits are recorded in
   [nacre-twin-tail-prompt.txt](nacre-twin-tail-prompt.txt),
   [nacre-interwoven-tails-prompt.txt](nacre-interwoven-tails-prompt.txt) and
   [nacre-equal-crossing-tails-prompt.txt](nacre-equal-crossing-tails-prompt.txt).
-  The final `nacre-clean.png` contains two comparably sized pearl tails with
-  crossing/overlapping curves and offset shapes through the sixteen poses.
-  This motion is authored into whole frames, not a procedural tail rig.
 - `nacre-single-tail-clean.png` and `nacre-separated-tails-rejected.png`
-  retain earlier provenance only. Neither is read by the shipping exporter.
+  also retain earlier provenance only. The exporter reads only the current
+  `{id}-clean.png` masters; none of the superseded Nacre masters is shipped.
 
 ## Extraction and registration
 
@@ -65,11 +74,18 @@ is applied.
   `{id}-frame-registration.png`: alternating light/dark contacts and measured
   source overlays for review.
 
-The current receipt contains all **48 frames**. The constant scales are
-0.6930693069 for Porcelain, 0.7115384615 for Nacre and 0.7142857143 for
-Origamist. Their observed minimum output margins are 30px, 10px and 15px
-respectively; maximum measured green excess is 6 for all three. These are
-export measurements, not a substitute for appearance and playback review.
+The current receipt contains all **48 frames**:
+
+| Pilot | Constant scale | Minimum output margin | Maximum green excess |
+| --- | ---: | ---: | ---: |
+| Porcelain | 0.6930693069 | 30px | 6 |
+| Nacre, latest owner replacement | 0.6967213115 | 10px | 6 |
+| Origamist | 0.7142857143 | 15px | 6 |
+
+The Nacre receipt identifies original `ace482d2…`, cleaned master
+`94fe0291…` and atlas `ee3dc128…`; full SHA-256 values are in the linked
+receipt. These export measurements do not establish appearance acceptance
+or completion of playback and browser checks.
 
 ## Rebuild and review
 

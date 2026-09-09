@@ -3591,9 +3591,9 @@ const DOME = {
     "suit:cosmic": [181, 88, 36],
     "suit:sunforged": [181, 88, 36],
     "suit:abyssal": [181, 88, 36],
-    "suit:porcelain": [181, 88, 36],
-    "suit:nacre": [181, 88, 36],
-    "suit:origamist": [181, 88, 36],
+    "suit:porcelain": [180, 84, 35.3465],
+    "suit:nacre": [180, 84, 32.0492],
+    "suit:origamist": [180, 84, 35],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [190, 100, 45, 0],
     "robo-tap-2": [190, 100, 45, 0],

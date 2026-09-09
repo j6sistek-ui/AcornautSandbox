@@ -50,9 +50,9 @@
    "key": "suit:porcelain",
    "file": "suits/porcelain.png",
    "dome": [
-    181,
-    88,
-    36
+    180,
+    84,
+    35.3465
    ],
    "ownHead": true,
    "bakedDome": false,
@@ -64,9 +64,9 @@
    "key": "suit:nacre",
    "file": "suits/nacre.png",
    "dome": [
-    181,
-    88,
-    36
+    180,
+    84,
+    32.0492
    ],
    "ownHead": true,
    "bakedDome": false,
@@ -78,9 +78,9 @@
    "key": "suit:origamist",
    "file": "suits/origamist.png",
    "dome": [
-    181,
-    88,
-    36
+    180,
+    84,
+    35
    ],
    "ownHead": true,
    "bakedDome": false,
