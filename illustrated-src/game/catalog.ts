@@ -60,11 +60,23 @@ export const HYPER_RUN_ENABLED = true;
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
 export const BUILD_TIME = "__BUILD_TIME__";
-// the build time stays exported for tooling, and off the visible line
-// a store build wears the bare version: "Alpha" is a web-page word
+// THE BUILD NUMBER ROLLS ON EVERY PR (owner, 9 Sep 2026: "the beta version
+// hasn't changed since v1.0.12 it should be rolling at least the last
+// number every PR so i can verify it loaded"). A version that never moves
+// cannot answer the one question it is read for - is this the build I just
+// shipped. The owner loaded new art in a private window, saw the old
+// animations, and had no way to tell a stale deploy from a bad delivery.
+//
+// GAME_VERSION is the LABEL and is still in flux by design - Alpha and Beta
+// are the current names and the label is not frozen. So the build number
+// comes from ART_VER, which the shipping ritual already bumps on every PR,
+// rather than from a second number somebody has to remember to touch. That
+// is how the label went stale for twelve PRs. It also means the label can
+// change freely, including backwards, without costing build identity.
+export const BUILD_NO = ART_VER;
 export const BUILD = platform.native
-  ? `${STUDIO} · ${GAME_VERSION}`
-  : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
+  ? `${STUDIO} · ${GAME_VERSION} (${BUILD_NO})`
+  : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION} (${BUILD_NO})`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.
