@@ -4,6 +4,36 @@ import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+// PIXEL EQUALITY WITHOUT THE MEMORY BOMB.
+//
+// assert.deepEqual on two 262,144-element typed arrays is safe only while
+// they nearly match. When they diverge, Node builds a human-readable diff of
+// EVERY element, and the cost scales with how wrong the answer is - so the
+// worse the regression, the less able the test is to report it. With a dozen
+// stray bytes it failed in under a second; with a real rendering change it
+// allocated past six gigabytes and was OOM-killed by the kernel, printing
+// nothing at all. A test whose failure mode is a silent kill cannot do its
+// job.
+//
+// This compares the same bytes with the same strictness and reports the
+// delta instead: how many bytes differ, by how much, and where the first one
+// is. Same assertion, bounded cost, and a message that actually says what
+// went wrong.
+function samePixels(a,b,message){
+  assert.equal(a.length,b.length,message+' (different buffer sizes)');
+  let differing=0,maxDelta=0,firstAt=-1;
+  for(let i=0;i<a.length;i++){
+    if(a[i]===b[i])continue;
+    if(firstAt<0)firstAt=i;
+    differing++;
+    const d=Math.abs(a[i]-b[i]);
+    if(d>maxDelta)maxDelta=d;
+  }
+  assert.equal(differing,0,`${message} — ${differing} of ${a.length} bytes differ, `
+    +`max channel delta ${maxDelta}, first at byte ${firstAt} `
+    +`(pixel ${firstAt>=0?(firstAt/4)|0:-1}, channel ${firstAt>=0?'RGBA'[firstAt%4]:'-'})`);
+}
+
 const require=createRequire(import.meta.url),{createCanvas,loadImage,Image}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
 const root=fileURLToPath(new URL('../',import.meta.url));
 globalThis.Image=Image;globalThis.HTMLImageElement=Image;
@@ -53,7 +83,7 @@ for(const [column,id] of ids.entries()){
  const fallback=createCanvas(256,256),fg=fallback.getContext('2d');
  R.paintHighOrbit(fg,art,id,128,128,192,undefined,undefined,false);
  const still=createCanvas(256,256);still.getContext('2d').drawImage(art.suits[id],0,0);
- assert.deepEqual(rgba(fallback),rgba(still),id+' fallback equals rig pixels at canonical size');
+ samePixels(rgba(fallback),rgba(still),id+' fallback equals rig pixels at canonical size');
  const state=M.createHighOrbitMotion(id),canvas=createCanvas(256,256),ctx=canvas.getContext('2d'),tail=createCanvas(256,256),tg=tail.getContext('2d');
  let maxStep=0,maxStray=0,minHeadGap=Infinity,minJoint=1,minAreaRatio=Infinity,maxAreaRatio=0,minBody=Infinity,maxBody=-Infinity,minTail=Infinity,maxTail=-Infinity;
  let before=structuredClone(state.pose),vy=0,minHead=Infinity,maxHead=-Infinity;
