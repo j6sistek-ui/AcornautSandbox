@@ -210,8 +210,10 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        if rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
-            r"suits/(cinderforge|groveguard|cosmic|sunforged|abyssal)/parts\.png", rel
+        if re.fullmatch(r"suits/(porcelain|nacre|origamist)/flight\.png", rel):
+            expected = (1024, 1024)  # sixteen complete 256px character frames
+        elif rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
+            r"suits/(cinderforge|groveguard|cosmic|sunforged|abyssal|porcelain|nacre|origamist)/parts\.png", rel
         ):
             expected = (1024, 768)  # twelve isolated 256px puppet-part cells
         else:
@@ -230,7 +232,7 @@ def verify_sprite_dimensions(
 
 def array_body(source: str, name: str) -> str:
     match = re.search(
-        rf"\bconst\s+{re.escape(name)}(?:\s*:[^=]+)?\s*=\s*\[(.*?)\]\s*;",
+        rf"\bconst\s+{re.escape(name)}(?:\s*:[^=]+)?\s*=\s*\[(.*?)\]\s*(?:as\s+const\s*)?;",
         source,
         re.DOTALL,
     )
@@ -243,8 +245,54 @@ def object_ids(source: str, name: str) -> list[str]:
     return re.findall(r'\bid\s*:\s*"([^"]+)"', array_body(source, name))
 
 
-def string_ids(source: str, name: str) -> list[str]:
-    return re.findall(r'"([^"]+)"', array_body(source, name))
+def expanded_string_array(
+    source: str, name: str, source_path: Path | None = None,
+    active: tuple[tuple[Path | None, str], ...] = (),
+) -> str:
+    """Resolve literal array spreads from their actual local/imported source.
+
+    No TypeScript is executed. Unknown or cyclic named spreads fail the gate
+    instead of silently omitting runtime-loaded assets from the comparison.
+    """
+    key = (source_path, name)
+    if key in active:
+        raise ValueError(f"cyclic string-array spread: {name}")
+    source = re.sub(r"/\*.*?\*/|//[^\n]*", "", source, flags=re.S)
+    body = array_body(source, name)
+
+    def expand(match: re.Match[str]) -> str:
+        symbol = match.group(1)
+        try:
+            array_body(source, symbol)
+        except ValueError:
+            pass
+        else:
+            return expanded_string_array(source, symbol, source_path, active + (key,))
+        for bindings, module in re.findall(r'''\bimport\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]''', source):
+            for binding in bindings.split(","):
+                parts = binding.strip().split()
+                exported = parts[0] if parts else ""
+                local = parts[2] if len(parts) == 3 and parts[1] == "as" else exported
+                if local != symbol:
+                    continue
+                if source_path is None or not module.startswith("."):
+                    raise ValueError(f"cannot resolve source for array spread {symbol}")
+                imported_path = (source_path.parent / module).with_suffix(".ts").resolve()
+                if not imported_path.is_relative_to(ROOT):
+                    raise ValueError(f"array spread source is outside repository: {symbol}")
+                imported = imported_path.read_text(encoding="utf-8")
+                return expanded_string_array(imported, exported, imported_path, active + (key,))
+        raise ValueError(f"unresolved string-array spread: {symbol}")
+
+    return re.sub(r"\.\.\.([A-Za-z_$][\w$]*)", expand, body)
+
+
+def string_ids(source: str, name: str, source_path: Path | None = None, live: bool = False) -> list[str]:
+    body = expanded_string_array(source, name, source_path)
+    if live:
+        # Remove only the beta branch; the production branch is still checked.
+        body = re.sub(r"\.\.\.\(\s*IS_BETA\s*\?\s*\[.*?\]\s*:\s*\[(.*?)\]\s*\)", r"\1", body, flags=re.S)
+    return [value for _, value in re.findall(r'''(['"])([^'"]+)\1''', body)]
 
 
 def integer_constant(source: str, name: str) -> int:
@@ -263,10 +311,11 @@ def verify_catalog_assets(
         suits = object_ids(catalog, "SUITS")
         helmets = object_ids(catalog, "HELMETS")
         pals = [item for item in object_ids(catalog, "PALS") if item != "none"]
-        loaded_suits = string_ids(art_source, "suitIds")
-        loaded_helmets = string_ids(art_source, "helmIds")
-        loaded_pals = string_ids(art_source, "palIds")
-        rigged = string_ids(art_source, "RIGGED_SUITS")
+        loaded_suits = string_ids(art_source, "suitIds", ART_SOURCE)
+        loaded_suits_live = set(string_ids(art_source, "suitIds", ART_SOURCE, live=True))
+        loaded_helmets = string_ids(art_source, "helmIds", ART_SOURCE)
+        loaded_pals = string_ids(art_source, "palIds", ART_SOURCE)
+        rigged = string_ids(art_source, "RIGGED_SUITS", ART_SOURCE)
         planet_count = integer_constant(catalog, "PLANET_COUNT")
         debris_count = integer_constant(catalog, "DEBRIS_COUNT")
     except (OSError, ValueError) as exc:
@@ -285,23 +334,9 @@ def verify_catalog_assets(
     # two. Catching it here makes the next one a failed build rather than a
     # refund.
     trails = object_ids(catalog, "TRAILS")
-    # art.ts splits its id lists into an always-loaded head and an
-    # IS_BETA-only tail, and only the head reaches production.
-    suit_block = re.search(r"const suitIds = \[(.*?)\n  \];", art_source, re.S)
-    beta_only_art: set[str] = set()
-    if suit_block:
-        tail = re.search(r"\.\.\.\(IS_BETA \? \[(.*?)\]", suit_block.group(1), re.S)
-        beta_only_art = set(re.findall(r'"([^"]+)"', tail.group(1))) if tail else set()
-    # art.ts splits its id lists into an always-loaded head and an
-    # IS_BETA-only tail; only the head reaches production.
-    suit_block = re.search(r"const suitIds = \[(.*?)\n  \];", art_source, re.S)
-    beta_only_art: set[str] = set()
-    loaded_suits_live: set[str] = set()
-    if suit_block:
-        body = suit_block.group(1)
-        beta_tail = re.search(r"\.\.\.\(IS_BETA \? \[(.*?)\]", body, re.S)
-        beta_only_art = set(re.findall(r'"([^"]+)"', beta_tail.group(1))) if beta_tail else set()
-        loaded_suits_live = set(re.findall(r'"([^"]+)"', body)) - beta_only_art
+    # Resolve named spreads before comparing the full and production lists.
+    # An imported roster must not disappear from either half of this gate.
+    beta_only_art = set(loaded_suits) - loaded_suits_live
     beta_only = {
         item for item in re.findall(r'\{\s*id:\s*"([^"]+)"[^{}]*?\bbeta:\s*true', catalog)
     }

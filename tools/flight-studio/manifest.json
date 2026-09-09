@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "253",
-  "sourceCommit": "336afd2257d13ac441d0b5e9408e1f235732fdc4",
+  "artVer": "256",
+  "sourceCommit": "fe59f68b66d9eac0fba6bca115e93a0e7a6d003d",
   "models": [
     {
       "id": "flight",
@@ -130,6 +130,972 @@
       "hashes": {
         "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
+      }
+    },
+    {
+      "id": "porcelain",
+      "name": "Porcelain Paragon",
+      "key": "suit:porcelain",
+      "file": "suits/porcelain.png",
+      "dome": [
+        180,
+        84,
+        35.3465
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "premium-flight",
+      "atlas": "suits/porcelain/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                80.198,
+                168.5545
+              ],
+              [
+                120.396,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                88.5149,
+                190.0396
+              ],
+              [
+                125.2475,
+                188.6535
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                89.2079,
+                193.505
+              ],
+              [
+                126.6337,
+                192.1188
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                91.9802,
+                200.4356
+              ],
+              [
+                129.4059,
+                199.0495
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                91.9802,
+                203.2079
+              ],
+              [
+                130.7921,
+                201.8218
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                94.7525,
+                206.6733
+              ],
+              [
+                134.2574,
+                203.901
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                96.1386,
+                205.9802
+              ],
+              [
+                133.5644,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                97.5248,
+                205.9802
+              ],
+              [
+                134.2574,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                98.2178,
+                205.9802
+              ],
+              [
+                135.6436,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                86.4356,
+                182.4158
+              ],
+              [
+                126.6337,
+                179.6436
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                83.6634,
+                178.2574
+              ],
+              [
+                122.4752,
+                171.3267
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                81.5842,
+                176.8713
+              ],
+              [
+                120.396,
+                169.2475
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                81.5842,
+                167.8614
+              ],
+              [
+                120.396,
+                160.9307
+              ]
+            ]
+          }
+        ]
+      },
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png"
+        ]
+      },
+      "hashes": {
+        "suits/porcelain.png": "671ddf5e3672782760bb8faf98d07b05ce1aa30d437caceb50025cc9e5b848a9",
+        "suits/porcelain/flight.png": "7797a22ac8d0723ccf39b6738adb3253e2beb485ef07234b8073d10ad386b4fe"
+      }
+    },
+    {
+      "id": "nacre",
+      "name": "Nacre Envoy",
+      "key": "suit:nacre",
+      "file": "suits/nacre.png",
+      "dome": [
+        180,
+        84,
+        32.0492
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "premium-flight",
+      "atlas": "suits/nacre/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                178.0574
+              ],
+              [
+                120.082,
+                171.7869
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                176.6639
+              ],
+              [
+                120.082,
+                170.3934
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                172.4836
+              ],
+              [
+                119.3852,
+                166.9098
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                88.7295,
+                201.0492
+              ],
+              [
+                121.4754,
+                194.082
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                99.1803,
+                214.2869
+              ],
+              [
+                127.0492,
+                209.4098
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                99.877,
+                208.0164
+              ],
+              [
+                127.0492,
+                205.9262
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                104.0574,
+                204.5328
+              ],
+              [
+                129.8361,
+                201.0492
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                105.4508,
+                203.1393
+              ],
+              [
+                131.2295,
+                199.6557
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                97.7869,
+                199.6557
+              ],
+              [
+                124.2623,
+                197.5656
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                100.5738,
+                198.2623
+              ],
+              [
+                125.6557,
+                196.1721
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                103.3607,
+                196.8689
+              ],
+              [
+                128.4426,
+                194.082
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7459,
+            "emitters": [
+              [
+                99.1803,
+                184.3279
+              ],
+              [
+                128.4426,
+                180.1475
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                178.7541
+              ],
+              [
+                120.7787,
+                173.877
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                180.1475
+              ],
+              [
+                120.082,
+                175.2705
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                86.6393,
+                178.7541
+              ],
+              [
+                120.082,
+                173.877
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.0492,
+            "emitters": [
+              [
+                88.0328,
+                182.2377
+              ],
+              [
+                120.7787,
+                178.7541
+              ]
+            ]
+          }
+        ]
+      },
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png"
+        ]
+      },
+      "hashes": {
+        "suits/nacre.png": "8f20e380fb56fb8bf3bcd9da31516745dde21081dd68a4b0aa14c7d9055fc7b5",
+        "suits/nacre/flight.png": "ee3dc1286ece3aebd99e20bc4684dfc6f4e6bb481bccf26f844d31ec3e500ce4"
+      }
+    },
+    {
+      "id": "origamist",
+      "name": "Foldspace Origamist",
+      "key": "suit:origamist",
+      "file": "suits/origamist.png",
+      "dome": [
+        180,
+        84,
+        35
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "premium-flight",
+      "atlas": "suits/origamist/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                175.4286
+              ],
+              [
+                117.1429,
+                169.7143
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                175.4286
+              ],
+              [
+                117.1429,
+                169.7143
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                172.5714
+              ],
+              [
+                117.1429,
+                166.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                169.7143
+              ],
+              [
+                117.1429,
+                164
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                72.8571,
+                174
+              ],
+              [
+                115.7143,
+                168.2857
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                189
+              ],
+              [
+                117.1429,
+                183.2857
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                84.2857,
+                214.7143
+              ],
+              [
+                127.1429,
+                210.4286
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                84.2857,
+                216.1429
+              ],
+              [
+                127.1429,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                73.5714,
+                176.8571
+              ],
+              [
+                116.4286,
+                172.5714
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          }
+        ]
+      },
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png"
+        ]
+      },
+      "hashes": {
+        "suits/origamist.png": "89b99e8314caaddbb603a82bbb73780da1bcf7b0261688c78566bb09ab93d6eb",
+        "suits/origamist/flight.png": "d9e0f96b5ff99bd6424fc914835c4bac445c18a7a20158d1234505bf2e7d5936"
       }
     },
     {
@@ -2016,6 +2982,21 @@
       128,
       128,
       40
+    ],
+    "suit:porcelain": [
+      180,
+      84,
+      35.3465
+    ],
+    "suit:nacre": [
+      180,
+      84,
+      32.0492
+    ],
+    "suit:origamist": [
+      180,
+      84,
+      35
     ],
     "suit:iontrim": [
       206,
@@ -4802,13 +5783,15 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "a346419f306531eaa59aa89a57a7f20a6f880781276fb112ea02c6a05eeb6523",
+    "control-constants": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
     "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
-    "high-orbit": "e8596c26247f6ddc00845fbb4706e9666b0ba7e57f236eeecfcdd43bacf29019",
-    "high-orbit-config": "a5f6b63612fb4312b140ce062c631adddd513fa9ee22b58484f4c34b66346da2",
-    "high-orbit-effects": "02c9aab5fb03bfb42bba2bab27cf330ffcdddfc4a6d6cf7078a4abb13f938b42",
-    "high-orbit-motion": "e37f2eaa6a8845b348d642483eb5414f34dad9195f108b0d1e000b1a69b35580",
+    "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
+    "high-orbit-config": "f7cd482ab2be7e337db36d3376b1922fb1c37eb3d82b3e812e4f88dcc6107232",
+    "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
+    "high-orbit-motion": "e01e337504e596aa7acb3128dabdb8237d66273cd52b6cfd5246a605567878b0",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+    "premium-flight": "5e2b2f654cbdb06cefed4b6026bf99db7a1eb2f6a245647c620805221a52a4fb",
+    "premium-flight-frames": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
     "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",
     "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
     "vanguard-parts": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324"

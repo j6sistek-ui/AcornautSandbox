@@ -1,0 +1,11 @@
+Use case: precise-object-edit.
+Edit ONLY the TWO TAILS in this 4x4 Nacre Envoy sprite sheet. Preserve all 16 body poses, all heads, faces, eyes/blinks, paws, compact anatomy, costume and exact frame locations/sizes. Keep exactly sixteen frames, four columns/four rows, same order. Uniform pure RGB(0,255,0) background, no shadows.
+The owner correction: the two pearlescent lilac tails must be the SAME LENGTH AND FULLNESS. The prior second tail looks smaller. They should not actively avoid each other: let them cross over, overlap and loosely intertwine as they move.
+Paint two equally substantial long S-curved tails from two adjacent natural roots at the rump, with the same width/taper and comparable curved length. Both tails swing with an offset rhythm. Across the cycle:
+Frames1-3: relaxed broad paired curls, both equally long, lightly overlapping near their roots.
+Frames4-6: tails begin crossing once at mid-length, one passing in front of the other.
+Frames7-10: the equal-length tails loosely weave around each other, a graceful broad double-helix crossing, tips swinging to different heights.
+Frames11-13: tails uncross and cross the other way as the body recovers, with front/back overlap changing.
+Frames14-16: they relax back into broad paired curls that join the opening poses.
+These phase descriptions refer to LEFT TO RIGHT THEN DOWN. We need apparent independent flowing movement, not two identical synchronized copies. Allow natural overlap and gentle entanglement; DO NOT keep a strict gap between the tails. Show believable front/back occlusion at crossings, not cut-off tail segments or a fused lump. Preserve the shiny lilac/pink/ivory fibers and broad readable silhouette. Two tips should remain identifiable. Both tails remain flexible tails, not tentacles or ribbons.
+Tail roots and bodies stay exactly where they are. Curl the equal-size tails within each cell's available left-side space; no clipping or touching adjacent frames. Absolutely no change to body/head/feet/art style, no added limbs, no text, no new special effects. Output just the revised sheet.

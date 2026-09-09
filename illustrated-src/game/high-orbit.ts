@@ -1,9 +1,10 @@
 import type {ArtBank} from './art';
 import {HIGH_ORBIT_PARTS} from './high-orbit-parts';
-import {HIGH_ORBIT_HEAD_RADIUS,HIGH_ORBIT_DISPLAY_SPAN,type HighOrbitId} from './high-orbit-config';
+import {HIGH_ORBIT_HEAD_RADIUS,HIGH_ORBIT_DISPLAY_SPAN,isPremiumSuit,type HighOrbitId,type HighOrbitRigId} from './high-orbit-config';
 import {createHighOrbitMotion,type HighOrbitMotion,type HighOrbitPose} from './high-orbit-motion';
 import {paintHighOrbitEffect,type HighOrbitTravel} from './high-orbit-effects';
 import {rigLimbFit,rigPartMatrix} from './rig-limb-fit';
+import {paintPremiumFlight,paintPremiumFlightCockpit} from './premium-flight';
 
 export type OrbitPoint=readonly [number,number];
 const DEG=Math.PI/180;
@@ -16,7 +17,7 @@ const NS:OrbitPoint=[-19,18],FS:OrbitPoint=[13,14],NH:OrbitPoint=[-12,56],FH:Orb
 const skull:OrbitPoint=[181,88];
 /** The skull center is registered independently of the torso. The neck follows
  * the underside of the fixed-size head as it nods; no stretchy neck or fitting by alpha. */
-export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
+export function highOrbitLandmarks(id:HighOrbitRigId,p:HighOrbitPose,pitch=0){
  const h=HIGH_ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/h.skull[2];
  const head:OrbitPoint=[skull[0],skull[1]+p.heave];
  const neck=add(head,rotate([(h.a[0]-h.skull[0])*scale,(h.a[1]-h.skull[1])*scale],p.head));
@@ -29,7 +30,7 @@ export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
    farBoot:world(along(fk,28,p.farThigh+p.farKnee))};
  return Object.fromEntries(Object.entries(raw).map(([k,q])=>[k,add([128,128],rotate([q[0]-128,q[1]-128],pitch/DEG))])) as typeof raw;
 }
-function part(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitId,index:number,a:OrbitPoint,b:OrbitPoint){
+function part(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitRigId,index:number,a:OrbitPoint,b:OrbitPoint){
  const spec=HIGH_ORBIT_PARTS[id][index],fit=rigLimbFit(id,index);
  ctx.save();ctx.transform(...rigPartMatrix(spec,a,b,fit.breadth,fit.facing));
  ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,0,0,256,256);ctx.restore();
@@ -39,7 +40,7 @@ for(let y=0;y<6;y++)for(let x=0;x<4;x++){const a=y*5+x;HIGH_ORBIT_TAIL_TRIANGLES
 /** Bone-aligned strips retain their longitudinal position and width. Bending
  * adds only a lateral offset per strip, making every triangle area invariant:
  * no self-fold, volume pumping, discrete guard step, or repeated tail drawing. */
-export function highOrbitTailMesh(id:HighOrbitId,p:HighOrbitPose,pitch=0){
+export function highOrbitTailMesh(id:HighOrbitRigId,p:HighOrbitPose,pitch=0){
  const spec=HIGH_ORBIT_PARTS[id][10],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1],length=Math.hypot(dx,dy);
  const ux=dx/length,uy=dy/length,vx=-uy,vy=ux,scale=79/length;
  const projected=[[0,0],[256,0],[0,256],[256,256]].map(([x,y])=>[(x-spec.a[0])*ux+(y-spec.a[1])*uy,(x-spec.a[0])*vx+(y-spec.a[1])*vy]);
@@ -56,7 +57,7 @@ export function highOrbitTailMesh(id:HighOrbitId,p:HighOrbitPose,pitch=0){
  }
  return {source,points};
 }
-export function paintHighOrbitTail(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitId,p:HighOrbitPose,pitch=0){
+export function paintHighOrbitTail(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitRigId,p:HighOrbitPose,pitch=0){
  const {source,points}=highOrbitTailMesh(id,p,pitch);
  for(const [a,b,c] of HIGH_ORBIT_TAIL_TRIANGLES){
    const [sx,sy]=source[a],[bx,by]=source[b],[cx,cy]=source[c],[x0,y0]=points[a],[x1,y1]=points[b],[x2,y2]=points[c];
@@ -77,6 +78,10 @@ export type HighOrbitHelmet=(x:number,y:number,r:number,angle:number)=>void;
  * this pose's alpha bounds. Each named skull is exactly 36px in that space. */
 export function paintHighOrbit(ctx:CanvasRenderingContext2D,art:ArtBank|null|undefined,id:HighOrbitId,
  x:number,y:number,size:number,state?:HighOrbitMotion,travel?:HighOrbitTravel,effects=true,pitch=0,helmet?:HighOrbitHelmet,sealedHead=false){
+ if(isPremiumSuit(id)){
+   paintPremiumFlight(ctx,art,id,x,y,size,state,travel,effects,pitch);
+   return;
+ }
  const s=state??highOrbitStill(id),p=s.pose,j=highOrbitLandmarks(id,p,pitch),unit=size/HIGH_ORBIT_DISPLAY_SPAN;
  const atlas=art?.highOrbit?.[id];
  ctx.save();ctx.translate(x,y);
@@ -106,6 +111,10 @@ export function paintHighOrbit(ctx:CanvasRenderingContext2D,art:ArtBank|null|und
  ctx.restore();
 }
 export function paintHighOrbitCockpit(ctx:CanvasRenderingContext2D,art:ArtBank,id:HighOrbitId,x:number,y:number,rx:number,ry:number){
+ if(isPremiumSuit(id)){
+   paintPremiumFlightCockpit(ctx,art,id,x,y,rx,ry);
+   return;
+ }
  const atlas=art.highOrbit?.[id],image=atlas??art.suits[id];if(!image)return;
  const h=HIGH_ORBIT_PARTS[id][0],center=atlas?h.skull:[...skull,HIGH_ORBIT_HEAD_RADIUS],scale=rx*.96/center[2];
  ctx.save();ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.clip();

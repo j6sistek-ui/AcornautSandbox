@@ -14,9 +14,9 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const out = process.env.ACORNAUT_QA_OUTPUT || root + 'illustrated-src/design/loadout-neon/';
 const baseline = process.argv.includes('--baseline');
 const base = process.env.ACORNAUT_QA_URL || 'http://127.0.0.1:8782/';
+const baselineCommit = execFileSync('git', ['rev-parse', process.env.ACORNAUT_BASELINE || 'd296e6bc404aaec14221a8b79186132fb4426dea'], { cwd: root, encoding: 'utf8' }).trim();
 mkdirSync(out, { recursive: true });
 if (process.argv.includes('--serve')) {
-  const baselineCommit = execFileSync('git', ['rev-parse', process.env.ACORNAUT_BASELINE || '83628d296692cd31713c61630ab901d498ad31a5'], { cwd: root, encoding: 'utf8' }).trim();
   const cached = new Map();
   const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.mp4': 'video/mp4', '.webm': 'video/webm' };
   createServer((req, res) => {
@@ -106,6 +106,28 @@ if (process.argv.includes('--serve')) {
     receipts.push({ label, file, ...result });
     return result;
   }
+  async function semanticInventory(catalogUrl) {
+    const catalog = await page.evaluate(async url => {
+      const C = await import(url);
+      return JSON.parse(JSON.stringify({ suits: C.SUITS, helmets: C.HELMETS, trails: C.TRAILS, pals: C.PALS }));
+    }, catalogUrl);
+    const tabs = {};
+    for (const tab of ['suits', 'helmets', 'trails', 'pals', 'ship']) {
+      await page.locator(`[data-focus="tab:${tab}"]`).click();
+      tabs[tab] = await page.evaluate(() => {
+        const menu = document.querySelector('.ac-hangarcase').parentElement;
+        const clean = value => (value || '').replace(/\s+/g, ' ').trim();
+        return [...menu.querySelectorAll('button,[role="button"],[role="switch"]')].map(el => ({
+          focus: el.dataset.focus || '', text: clean(el.textContent), ariaLabel: el.getAttribute('aria-label'),
+          title: el.getAttribute('title'), disabled: !!el.disabled, role: el.getAttribute('role'),
+          pressed: el.getAttribute('aria-pressed'), checked: el.getAttribute('aria-checked'),
+          clickHandler: el.onclick ? clean(el.onclick.toString()) : null,
+        }));
+      });
+    }
+    await page.locator('[data-focus="tab:suits"]').click();
+    return { catalog, tabs };
+  }
   async function scrollToEnd(label) {
     await page.locator('.ac-shopbanner').scrollIntoViewIfNeeded();
     const result = await page.locator('.ac-shopbanner').evaluate(el => { const r = el.getBoundingClientRect(); return { text: el.textContent, top: r.top, bottom: r.bottom, viewport: innerHeight }; });
@@ -120,12 +142,17 @@ if (process.argv.includes('--serve')) {
     await page.waitForTimeout(450);
   }
   try {
-    await open();
+    const catalogUrl = await open();
+    const inventory = await semanticInventory(catalogUrl);
     if (baseline) {
       await measure('baseline-mobile390-expanded');
       await page.locator('.ac-casefold').click();
       await measure('baseline-mobile390-compact');
     } else {
+      const before = JSON.parse(readFileSync(out + 'baseline-verification.json', 'utf8'));
+      assert.equal(before.baselineCommit, baselineCommit, 'baseline receipt belongs to a different commit');
+      assert.deepEqual(inventory, before.inventory, 'current main catalog or existing menu control semantics changed');
+      interactions.push({ label: 'current-main-content-preserved', baselineCommit, catalogCounts: Object.fromEntries(Object.entries(inventory.catalog).map(([kind, items]) => [kind, items.length])), buttonCounts: Object.fromEntries(Object.entries(inventory.tabs).map(([tab, buttons]) => [tab, buttons.length])) });
       for (const [label, width, height] of [['mobile390', 390, 844], ['landscape844', 844, 390], ['desktop1440', 1440, 900], ['mobile320', 320, 568]]) {
         await page.setViewportSize({ width, height });
         await page.evaluate(() => { const e = window.__sandbox; e.setHeroExpanded(true); e.setShopTab('suits'); e.setShelfGrid(true); });
@@ -150,6 +177,37 @@ if (process.argv.includes('--serve')) {
       await page.waitForTimeout(160);
       const frame2 = await page.locator('.ac-hangarcase canvas').evaluate(c => c.toDataURL());
       assert.notEqual(frame1, frame2, 'preview animation stopped'); interactions.push({ label: 'pilot-animation', differentFrames: true });
+      for (const [id, headTag, trailName] of [
+        ['porcelain', 'SOVEREIGN SHELL · ALWAYS ON', 'Cobalt Filigree'],
+        ['nacre', 'HELMETLESS BY DESIGN', 'Pearl Tide'],
+        ['origamist', 'FACET SHELL · ALWAYS ON', 'Foldspace Ribbon'],
+      ]) {
+        await equip(id);
+        const image = await measure('mobile390-' + id);
+        assert.equal(await page.locator('.ac-casetag').textContent(), headTag);
+        const firstFrame = await page.locator('.ac-hangarcase canvas').evaluate(c => c.toDataURL());
+        await page.waitForTimeout(180);
+        const secondFrame = await page.locator('.ac-hangarcase canvas').evaluate(c => c.toDataURL());
+        assert.notEqual(firstFrame, secondFrame, `${id}: preview animation stopped`);
+        const beforeHelmet = await page.evaluate(() => window.__sandbox.save.equipped);
+        await page.locator('[data-focus="tab:helmets"]').click();
+        const helmetNote = await page.locator('.ac-lockednote').textContent();
+        assert(helmetNote.includes(id === 'nacre' ? 'Helmetless by design' : id === 'porcelain' ? 'Sovereign Shell' : 'Facet Shell'));
+        await page.locator('[data-focus="helm:ion"]').first().click();
+        assert.equal(await page.evaluate(() => window.__sandbox.save.equipped), beforeHelmet);
+        assert.equal(await page.locator('.ac-casetag').textContent(), headTag);
+        await page.locator('[data-focus="tab:trails"]').click();
+        const trail = page.locator('.ac-builtintrail');
+        assert.equal(await trail.count(), 1); assert(await trail.isDisabled());
+        assert((await trail.textContent()).includes(trailName));
+        assert(await page.locator('[data-focus="trail:ion"]').first().isDisabled());
+        const worn = await page.evaluate(async url => { const C = await import(url), s = window.__sandbox.save; return C.trailWornBy(s.equippedTrail, s.equippedSuit); }, catalogUrl);
+        assert.equal(worn, id + 'wake');
+        assert.equal(await page.evaluate(() => window.__sandbox.save.equippedTrail), 'sparks');
+        interactions.push({ label: 'merged-suit-' + id, glow: image.glow, paintedPixels: image.canvasPaintedPixels, animated: true, headTag, helmetNote, attemptedHelmetChangeIgnored: true, builtInTrail: worn, trailName, normalTrailDisabled: true, rememberedTrail: 'sparks' });
+      }
+      assert.equal(new Set(receipts.filter(x => /^mobile390-(porcelain|nacre|origamist)$/.test(x.label)).map(x => x.glow)).size, 3);
+      await equip('copper');
       await page.locator('.ac-casefold').click();
       await page.locator('[title="Side-scrolling rows"]').click();
       assert.equal(await page.locator('.ac-grid.ac-asgrid').count(), 0);
@@ -209,7 +267,7 @@ if (process.argv.includes('--serve')) {
       for (const tab of ['helmets', 'trails', 'pals', 'ship']) { await page.locator(`[data-focus="tab:${tab}"]`).click(); await scrollToEnd('beta-' + tab); }
     }
     assert.deepEqual(errors, []); assert.deepEqual(failedArt, []);
-    writeFileSync(out + (baseline ? 'baseline-verification.json' : 'browser-verification.json'), JSON.stringify({ profile: 'isolated Playwright browser, synthetic owned wardrobe; no installed save accessed', baseline, builds, receipts, interactions, errors, failedArt }, null, 2) + '\n');
+    writeFileSync(out + (baseline ? 'baseline-verification.json' : 'browser-verification.json'), JSON.stringify({ profile: 'isolated Playwright browser, synthetic owned wardrobe; no installed save accessed', baseline, baselineCommit, builds, inventory, receipts, interactions, errors, failedArt }, null, 2) + '\n');
     console.log(`${baseline ? 'Baseline' : 'Loadout'}: ${receipts.length} screenshots; ${interactions.length} interaction checks passed; no page errors or failed art`);
   } finally { await browser.close(); }
 }

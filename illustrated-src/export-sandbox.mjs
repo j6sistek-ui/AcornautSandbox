@@ -16,6 +16,8 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// The approved premium trio is one registered full-body sheet per suit.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-premium-flight.mjs")], { cwd: root, stdio: "inherit" });
 // Zone planets/debris ship from transparent masters through the same build.
 // This is strict: an incomplete local production batch cannot be shipped.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-zone-art.mjs")], { cwd: root, stdio: "inherit" });

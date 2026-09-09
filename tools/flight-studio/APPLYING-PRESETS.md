@@ -28,6 +28,14 @@ and `slot` select the original local image and the corresponding per-frame
 pitch offset. `StudioRenderer.paint` demonstrates the complete mapping without
 gameplay side effects. Never re-index the tap sequence by upward velocity.
 
+For the `premium-flight` family, `animation.frame` selects one complete 256px
+cell in the suit's sixteen-frame sheet. `animation.output` retains the High
+Orbit controller only for the custom wake and accepted-input lifecycle;
+its skeleton does not deform the painting. Use `paintPremiumFlightFrame`
+with the selected frame, whole-model pitch and that persistent output state.
+The painter uses the frame's measured emitters and preserves its fixed head.
+Premium presets have no body-part settings.
+
 When integrating, move/adapt the pure configuration runtime into the game's
 source pipeline and register the selected preset by suit. Do not load the
 whole editor or make the app depend on the loopback server. Confirm asset and

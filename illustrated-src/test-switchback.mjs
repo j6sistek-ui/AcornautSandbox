@@ -54,8 +54,8 @@ const swPack=Cat.BUNDLES.find(b=>b.id==='bundle-switchback');
 assert(swPack,'bundle-switchback has left the catalog');
 // NO DAY-0 SHELF ANY MORE. The storefront is the shop on both pages now
 // (drawShop returns drawShopBeta), and the storefront FEATURES ONE PACK A
-// DAY, stepping in order through the packs that are neither fixed-price nor
-// already owned; it does not deal three by hash the way the retired tabbed
+// DAY, stepping through packs that are neither fixed-price, always available,
+// nor already owned; it does not deal three by hash the retired tabbed
 // PACKS page did. So the day a pack is on the shelf is its place in that
 // rotation, and a pinned date rots the moment a pack joins the pool ahead of
 // it. Walk the rotation on the same screen the pilot sees and take the day it
@@ -72,7 +72,7 @@ assert(swDay>=0,`the ${swPack.name} pack never reaches the shop across ${Cat.BUN
 // and it got there by the ROTATION RULE rather than by luck: the featured day
 // is the pack's place among the packs the rotation cycles - a fixed-price
 // pack keeps its own shelf slot and sits out of that cycle.
-assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed).findIndex(b=>b.id===swPack.id));
+assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable).findIndex(b=>b.id===swPack.id));
 e.save.starDust=89;assert.equal(e.buyShopItem('switchback'),'poor');
 e.save.starDust=90;assert.equal(e.buyShopItem('switchback'),'ok');
 assert.equal(e.save.starDust,0);assert(S.palUnlocked(e.save,'switchback'));

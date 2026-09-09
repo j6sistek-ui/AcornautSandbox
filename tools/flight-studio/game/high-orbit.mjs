@@ -1,8 +1,9 @@
 import { HIGH_ORBIT_PARTS } from './high-orbit-parts.mjs';
-import { HIGH_ORBIT_HEAD_RADIUS, HIGH_ORBIT_DISPLAY_SPAN } from './high-orbit-config.mjs';
+import { HIGH_ORBIT_HEAD_RADIUS, HIGH_ORBIT_DISPLAY_SPAN, isPremiumSuit } from './high-orbit-config.mjs';
 import { createHighOrbitMotion } from './high-orbit-motion.mjs';
 import { paintHighOrbitEffect } from './high-orbit-effects.mjs';
 import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.mjs';
+import { paintPremiumFlight, paintPremiumFlightCockpit } from './premium-flight.mjs';
 const DEG = Math.PI / 180;
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const rotate = (p, a) => [p[0] * Math.cos(a * DEG) - p[1] * Math.sin(a * DEG), p[0] * Math.sin(a * DEG) + p[1] * Math.cos(a * DEG)];
@@ -87,6 +88,10 @@ export function highOrbitStill(id) { let s = stills.get(id); if (!s) {
 /** Shared live/preview/portrait painter. size is a 192px body reference, not
  * this pose's alpha bounds. Each named skull is exactly 36px in that space. */
 export function paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects = true, pitch = 0, helmet, sealedHead = false) {
+    if (isPremiumSuit(id)) {
+        paintPremiumFlight(ctx, art, id, x, y, size, state, travel, effects, pitch);
+        return;
+    }
     const s = state ?? highOrbitStill(id), p = s.pose, j = highOrbitLandmarks(id, p, pitch), unit = size / HIGH_ORBIT_DISPLAY_SPAN;
     const atlas = art?.highOrbit?.[id];
     ctx.save();
@@ -134,6 +139,10 @@ export function paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects 
     ctx.restore();
 }
 export function paintHighOrbitCockpit(ctx, art, id, x, y, rx, ry) {
+    if (isPremiumSuit(id)) {
+        paintPremiumFlightCockpit(ctx, art, id, x, y, rx, ry);
+        return;
+    }
     const atlas = art.highOrbit?.[id], image = atlas ?? art.suits[id];
     if (!image)
         return;
