@@ -154,7 +154,10 @@ for (const b of BUNDLES) {
     ok(due <= alaCarteTotal(ids, none),
       `${b.name} featured at ${due} must never cost more than buying it singly (${alaCarteTotal(ids, none)})`);
     ok(featurePrice(b, () => true) === 0, `${b.name} fully owned must be free`);
-    if (b.fixed) continue;
+    if (b.fixed || b.featuredAtSticker) {
+      ok(due === bundlePrice(b, none), `${b.name} must retain its owner-set pack price`);
+      continue;
+    }
     // HALF, written out as half rather than as FEATURE_DISCOUNT, so that
     // moving the constant is caught instead of being agreed with
     ok(due === Math.max(10, Math.round(weightSum(ids, none) / 2 / 10) * 10),

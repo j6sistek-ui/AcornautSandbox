@@ -1,6 +1,6 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=253";
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=253";
-import { createHighOrbitMotion, stepHighOrbit } from "./high-orbit-motion.js?v=253";
+import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=253";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=253";
 import { trailWornBy } from "./catalog.js?v=253";
 import { missionRandom } from "./mission-rng.js?v=253";
@@ -1186,7 +1186,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.tapAnimT = -1;
     w.vanguard = createVanguardMotion();
     w.arcflash = createArcflashMotion();
-    w.highOrbit = createHighOrbitMotion();
+    w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit) ? save.equippedSuit : 'cinderforge');
     w.tapAnimDir = 1;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
@@ -2437,6 +2437,8 @@ function tutGesture(w, save, kind) {
                 vanguardTap(w.vanguard, tutorialImpulse);
             if (pilotSuitId(w, save) === "arcflash")
                 arcflashTap(w.arcflash, tutorialImpulse);
+            if (isHighOrbit(pilotSuitId(w, save)))
+                highOrbitTap(w.highOrbit, tutorialImpulse);
             break;
         case "doDive":
             t.hold = false;
@@ -2581,6 +2583,8 @@ export function flap(w, save) {
             vanguardTap(w.vanguard, impulse);
         if (pilotSuitId(w, save) === "arcflash")
             arcflashTap(w.arcflash, impulse);
+        if (isHighOrbit(pilotSuitId(w, save)))
+            highOrbitTap(w.highOrbit, impulse);
     }
     w.flapBoost = 0.22;
     // the tail drags DOWN as the pilot shoots up, then whips back
@@ -3343,8 +3347,11 @@ export function updateWorld(w, save, dt) {
         }
         const orbitRaceSuit = pilotSuitId(w, save);
         if (isHighOrbit(orbitRaceSuit) && w.race.tick > priorRaceTick && !w.tut?.hold
-            && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck)
+            && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
+            if (w.race.phase === 'normal' && w.race.held && (!priorHeld || (w.race.boost && !priorBoost)))
+                highOrbitTap(w.highOrbit, Math.max(1, priorRaceVy - w.race.vy));
             stepHighOrbit(w.highOrbit, orbitRaceSuit, RACE_DT, w.race.vy);
+        }
         w.speed = w.race.speed;
         w.distance = w.race.coursePosition;
         w.runAcorns = w.race.acorns;

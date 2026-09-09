@@ -37,7 +37,7 @@ function leaf(ctx, x, y, angle, length, color) {
     ctx.stroke();
     ctx.restore();
 }
-/** Authored materials and silhouettes. These effects are painted from
+/** Five different materials and silhouettes. These effects are painted from
  * the suit's private retained wake, never emitted through shop trail particles. */
 function material(ctx, id, points, time, size, lane) {
     const [hot, mid, dark] = HIGH_ORBIT_PROFILES[id].colors, phase = time * 3 + lane * 2.8;
@@ -129,82 +129,6 @@ function material(ctx, id, points, time, size, lane) {
             glow(ctx, p.x, p.y, r, mid, .13 * fade);
         }
     }
-    else if (id === 'porcelain') {
-        // Fine cobalt scrollwork within a restrained porcelain-white slipstream.
-        for (let side = -1; side <= 1; side += 2) {
-            const ribbon = shape(p => side * Math.sin(p.u * 12 - phase * .55) * Math.sin(p.u * Math.PI) * size * .06);
-            for (let i = 1; i < ribbon.length; i++) {
-                const fade = (1 - points[i].u) ** 1.5;
-                line(ctx, [ribbon[i - 1], ribbon[i]], dark, size * .017 * fade, .24 * fade);
-                line(ctx, [ribbon[i - 1], ribbon[i]], side < 0 ? hot : mid, size * .004 * fade, .8 * fade);
-            }
-        }
-        for (let i = 4; i < points.length; i += 7) {
-            const p = points[i], fade = 1 - p.u, r = size * .018 * fade;
-            glow(ctx, p.x, p.y, size * .046 * fade, mid, .23 * fade);
-            ctx.globalAlpha = .85 * fade;
-            ctx.fillStyle = hot;
-            ctx.beginPath();
-            ctx.moveTo(p.x - r, p.y);
-            ctx.lineTo(p.x, p.y - r * 1.4);
-            ctx.lineTo(p.x + r, p.y);
-            ctx.lineTo(p.x, p.y + r * 1.4);
-            ctx.closePath();
-            ctx.fill();
-        }
-    }
-    else if (id === 'nacre') {
-        // Translucent nacre laminae drift through lilac and warm pearl light.
-        for (let i = points.length - 1; i >= 1; i -= 2) {
-            const p = points[i], fade = 1 - p.u, y = p.y + Math.sin(p.u * 9 - phase * .65) * size * .055 * p.u;
-            glow(ctx, p.x, y, size * (.035 + .07 * p.u), i % 4 ? mid : dark, .2 * fade);
-            // Either parity of retained samples must paint the pearl laminae.
-            if (i % 4 < 2) {
-                // A half-pixel rim keeps the shell shape readable on small shelf icons.
-                ctx.globalAlpha = .65 * fade;
-                ctx.strokeStyle = hot;
-                ctx.lineWidth = Math.max(.5, size * .004);
-                ctx.beginPath();
-                ctx.ellipse(p.x, y, size * .028 * fade, size * .05 * fade, Math.sin(phase * .3 + i) * .5, -Math.PI * .8, Math.PI * .35);
-                ctx.stroke();
-                glow(ctx, p.x - size * .009, y - size * .018 * fade, size * .009 * fade, hot, .6 * fade);
-            }
-        }
-        const thread = shape(p => Math.sin(p.u * 10 - phase * .65) * size * .036 * Math.sin(p.u * Math.PI));
-        for (let i = 1; i < thread.length; i++)
-            line(ctx, [thread[i - 1], thread[i]], mid, size * .004, (1 - points[i].u) ** 1.5 * .7);
-    }
-    else if (id === 'origamist') {
-        // Individually lit folded vanes and a fine angular crease line.
-        for (let i = 1; i < points.length; i++) {
-            const fade = (1 - points[i].u) ** 1.5;
-            line(ctx, [[points[i - 1].x, points[i - 1].y], [points[i].x, points[i].y]], dark, size * .018 * fade, .35 * fade);
-        }
-        for (let i = 3; i < points.length; i += 5) {
-            const p = points[i], fade = 1 - p.u, r = size * (.025 + .025 * p.u), side = (i + lane) % 2 ? 1 : -1;
-            const y = p.y + side * size * .05 * Math.sin(p.u * Math.PI);
-            ctx.save();
-            ctx.translate(p.x, y);
-            ctx.rotate(side * (.28 + Math.sin(phase * .4 + i) * .12));
-            ctx.globalAlpha = .8 * fade;
-            ctx.fillStyle = mid;
-            ctx.beginPath();
-            ctx.moveTo(-r, 0);
-            ctx.lineTo(r, -r * .65);
-            ctx.lineTo(r * .45, r * .55);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = dark;
-            ctx.beginPath();
-            ctx.moveTo(-r, 0);
-            ctx.lineTo(r * .45, r * .55);
-            ctx.lineTo(-r * .1, r * .8);
-            ctx.closePath();
-            ctx.fill();
-            line(ctx, [[-r, 0], [r * .45, r * .55]], hot, size * .004, .85 * fade);
-            ctx.restore();
-        }
-    }
     else {
         // Fine fluid currents weave around clear bubbles with crescent highlights.
         for (let strand = 0; strand < 4; strand++) {
@@ -260,10 +184,7 @@ export function paintHighOrbitEffect(ctx, id, s, size, boots, origin) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for (let lane = 0; lane < 2; lane++) {
-        // A repaint can occur before the next 1/125s emission sample. Expire the
-        // previous history at paint time too, before age produces a negative fade
-        // and a browser rejects the nacre shell's ellipse radius.
-        const points = h.lanes[lane].filter(p => s.time >= p.time && s.time - p.time < .65).map(p => { const age = s.time - p.time; return { x: p.x - origin.x - origin.travel - age * size * .6, y: p.y - origin.y + age * size * .24, u: age / .65, power: p.power }; });
+        const points = h.lanes[lane].map(p => { const age = s.time - p.time; return { x: p.x - origin.x - origin.travel - age * size * .6, y: p.y - origin.y + age * size * .24, u: age / .65, power: p.power }; });
         material(ctx, id, points, s.time, size, lane);
         const p = boots[lane], x = (p[0] - 128) * unit, y = (p[1] - 128) * unit, [hot, mid] = HIGH_ORBIT_PROFILES[id].colors;
         glow(ctx, x, y, size * (.025 + .025 * s.power), mid, .45 + s.power * .25);

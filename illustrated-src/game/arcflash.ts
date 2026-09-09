@@ -2,6 +2,7 @@ import type { ArtBank } from './art';
 import { ARCFLASH_PARTS } from './arcflash-parts';
 import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion';
 import type { ArcflashMotion, ArcflashPose } from './arcflash-motion';
+import {rigLimbFit,rigPartMatrix} from './rig-limb-fit';
 
 type Point = readonly [number, number];
 const DEG = Math.PI / 180;
@@ -36,10 +37,9 @@ export function arcflashNozzles(s:ArcflashMotion,pitch=0):Nozzle[] {
 }
 
 function part(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,index:number,a:Point,b:Point) {
-  const spec=ARCFLASH_PARTS[index],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1];
-  const tx=b[0]-a[0],ty=b[1]-a[1],scale=Math.hypot(tx,ty)/Math.hypot(dx,dy);
-  ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(Math.atan2(ty,tx)-Math.atan2(dy,dx));ctx.scale(scale,scale);
-  ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,-spec.a[0],-spec.a[1],256,256);ctx.restore();
+  const spec=ARCFLASH_PARTS[index],fit=rigLimbFit('arcflash',index);
+  ctx.save();ctx.transform(...rigPartMatrix(spec,a,b,fit.breadth,fit.facing));
+  ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,0,0,256,256);ctx.restore();
 }
 
 const tailSource:Point[]=[],triangles:number[][]=[];

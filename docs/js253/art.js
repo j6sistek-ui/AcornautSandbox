@@ -2,7 +2,7 @@ import { VANGUARD_FRAMES } from "./vanguard.js?v=253";
 import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=253";
 import { prepareDepotBear } from "./spill-depot-bear.js?v=253";
 import { SPILL_UTILITY_IDS } from "./spill-content.js?v=253";
-import { HIGH_ORBIT_RIG_IDS, PREMIUM_SUIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=253";
+import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=253";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -384,7 +384,7 @@ const LAZY_SUIT_IDS = [...new Set([
         // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
         // there too, or the suit flies as a flat body sticker off the live page.
         "arcflash",
-        ...HIGH_ORBIT_RIG_IDS,
+        ...HIGH_ORBIT_IDS,
         ...Object.keys(LOOP_BANKS),
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -634,7 +634,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "raccoon", "ferret", "hedgehog",
         // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
         "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-        ...PREMIUM_SUIT_IDS,
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",

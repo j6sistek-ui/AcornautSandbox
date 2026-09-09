@@ -1,6 +1,5 @@
 import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=253";
 import { platform } from "./platform.js?v=253";
-import { isPremiumSuit } from "./high-orbit-config.js?v=253";
 import { spillAppearance } from "./spill-appearance.js?v=253";
 import { routeMasks, rewardId } from "./campaign-progress.js?v=253";
 import { reachedGate } from "./campaign.js?v=253";
@@ -693,8 +692,6 @@ export async function createEngine(canvas) {
         const item = HELMETS.find((h) => h.id === id);
         if (!item)
             return "missing";
-        if (isPremiumSuit(save.equippedSuit))
-            return "fixedHead";
         // a matched-set helmet only goes on its own suit
         if (item.suitOnly && save.equippedSuit !== item.suitOnly)
             return "suitOnly";
@@ -761,9 +758,6 @@ export async function createEngine(canvas) {
     // dome or another suit's orphan is replaced; a helmet the pilot chose
     // on purpose stays.
     function dropOrphanedHelmet() {
-        // These pilots hide the previous visor without replacing its save choice.
-        if (isPremiumSuit(save.equippedSuit))
-            return;
         const h = HELMETS.find((x) => x.id === save.equipped);
         if (h?.suitOnly && h.suitOnly !== save.equippedSuit)
             save.equipped = "clear";

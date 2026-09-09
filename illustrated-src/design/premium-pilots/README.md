@@ -1,75 +1,74 @@
-# Premium pilot production review
+# Premium pilot release review
 
-The production selection is **Porcelain Paragon with Sovereign Shell (B),
-always worn; Nacre Envoy, helmetless by design; and Foldspace Origamist with
-Facet Shell, always worn**. The owner confirmed 2,500 Stardust for each fixed
-cosmetic kit. Each includes its matching wake: Cobalt Filigree, Pearl Tide
-and Foldspace Ribbon respectively.
+The owner authorized release of the supplied sixteen complete flight frames
+for each of **Porcelain Paragon**, **Nacre Envoy** and **Foldspace Origamist**,
+with cast shadows removed and Porcelain's surrounding boxes cleaned away.
+This supersedes the rejected cut-rig posture work. Further reusable cut kits
+remain off repo for later work.
+
+The latest Envoy direction requires two distinct pearl tails with offset
+motion authored into those complete frames. Verify both tail silhouettes
+and their separate motion through the sequence; do not describe this as a
+procedural independent-tail rig.
+
+Porcelain always wears Sovereign Shell (helmet B); Nacre remains helmetless
+by design; Origamist always wears Facet Shell. Individual suits cost
+**1,000 Stardust each**, or **2,500 Stardust for all three** in Premium Pilot
+Trio. Each suit includes its existing signature wake. The individual options
+remain purchasable when the trio pack is featured.
 
 The [five remaining proposal cards](proposals/index.html) reuse existing
-artwork only. They are not additional production kits or catalog entries.
+artwork only. They add no production kits or catalog entries.
 
-[Validation and browser evidence](VALIDATION.md) records the passing checks
-and the inherited Arcflash failure that keeps this PR in draft.
+## Current review boundary
 
-## Review surfaces
+The whole-frame lab is `docs/lab/premium-pilots/index.html`, generated from
+`illustrated-src/lab/premium-pilots.html`. It loads the production
+`art.premiumFlight` banks and paints through `paintPremiumFlightFrame`.
+Select any of the sixteen frames, or use Previous/Next to pause and inspect
+it. Play resumes; Tap or Space feeds the shared accepted-tap controller.
+Repeat taps queues complete cycles, preserving every authored frame. Normal
+and quarter speed, 52px game size, medium/enlarged views, wakes and light/dark
+backdrops are available. Each card reports its actual displayed frame and
+whether the next cycle is queued.
 
-- [Pose contact](pose-review.png): climb, glide and dive at the 192px canonical
-  reference, plus each character at the 52px flight reference.
-- [Production contact](production-review.png): the same flight attitudes,
-  small-scale views, fallback portraits, cockpit heads and fixed-head labels.
-- [Browser flight review](trio-browser.png): the three loaded shipping rigs
-  and their wakes in the interactive lab.
-- [Porcelain registration](porcelain-registration.png),
-  [Nacre registration](nacre-registration.png) and
-  [Origamist registration](origamist-registration.png): source joint axes and
-  the complete measured head circles over the retained chroma masters.
-- [Render regression receipt](regression.json): scoped geometric and renderer
-  results emitted by `test-premium-pilots.mjs render`; this is not a receipt
-  for the full application suite or human visual approval.
-- Interactive lab: `docs/lab/premium-pilots/index.html`, generated from
-  `illustrated-src/lab/premium-pilots.html`. It uses the shipping atlases,
-  painter and motion controller, with size, speed, pose, wake and backdrop
-  controls.
+A direct frame seek clears the previous pose's emitted wake history while
+keeping the current review time. Ordinary Pause preserves the actual trail
+history so an in-flight result can still be inspected without changing it.
 
-## Static visual review, 9 September 2026
+The supplied full-body frames must retain their pose order, squirrel or alien
+identity, body proportions, costume and selected head treatment. Inspect all
+sixteen cleaned frames per suit at close range and flight size, then inspect
+playback through repeated taps and the complete release cycle. Confirm that
+shadows and framing boxes are removed without cutting away anatomy or
+leaving visible halos.
 
-The three source masters and both rendered contacts were inspected against
-the original concept boards. Porcelain retains its ivory/cobalt ceramic,
-closed blue visor and silver fur tail. Nacre retains the bare lilac face,
-indigo eyes, compact fins, aubergine/nacre armor and luminous-looking fin-tail.
-Origamist retains the closed angular shell and cream/vermilion/indigo folds.
-No obvious missing part, clipped silhouette, visible green rim or unintended
-helmet overlay was identified in these contacts.
+Check the actual production Shop at 390px width: each individual card must
+show 1,000 Stardust, the trio pack must show 2,500 when nothing is owned, and
+individual checkout must remain available while that pack is featured.
+Verify fallback portraits and cockpit crops as well as flight and preview
+playback.
 
-The shared anatomy makes the assembled characters more compact than their
-standing concept illustrations. Origamist's face area reads slightly smaller
-because its ear peaks count within the same fixed 36px head radius. At 52px,
-fine inlay and weave detail largely collapses; the blue visor/silver tail,
-lilac face/fin and angular folded fan provide the more legible distinctions.
-Review their material detail in the hangar as well as their silhouette in
-flight. Still images cannot establish smooth motion or readability across
-every zone; the interactive and production-page review remains separate.
+[VALIDATION.md](VALIDATION.md) tracks the new release evidence. Implementation
+authorization does not by itself certify a generated output or a passing
+release gate. No new visual acceptance is recorded until the cleaned
+whole-frame assets and their actual playback have been reviewed.
 
-## Reproduction and acceptance boundary
+## Historical cut-rig evidence
 
-The [source README](../../../art-src/premium-pilots/README.md) records all raw
-masters, prompts, measured attachments, shared bone dimensions and deterministic
-extraction/portrait commands. Rebuild the lab after the source export and
-open its premium-pilot page through a local server. Run:
+Earlier static contacts, registration diagrams, browser captures and
+the cut-rig regression receipt were removed from the current review folder;
+their previous versions remain in Git history. The initial
+visual acceptance and subsequent posture assessments were superseded by the
+owner's rejection of inward feet, cramped or spread arms and human-like
+proportions. They must not be presented as acceptance evidence for the
+supplied full-body release.
 
-```sh
-node illustrated-src/test-premium-pilots.mjs
-```
+The reusable cut-master files are historical provenance. Current
+production must not load those atlases or apply their limb transforms to the
+supplied complete characters. The [source README](../../../art-src/premium-pilots/README.md)
+records the current production and pricing boundaries.
 
-The focused script exercises 960 controller ticks per suit, fixed bones and
-head scale, joint coverage, tail clearance/area, Origamist's rigid tail,
-frame-rate behavior, atlas fallback, helmet suppression, cockpit extraction,
-and production/beta shop, purchase, equip, save/reload and hold-state paths.
-Its all-mode successful exit is required in addition to the render receipt.
-
-Complete [SHIPPING.md](../../../SHIPPING.md) at the final PR commit, including
-the full harness and a 390px production-page check. This document records
-the scope and static art review; it does not assert that all shipping gates
-have passed. Owner review of the finished appearance remains distinct from
-the mechanical assertions.
+Complete the source export, lab/Flight Studio builds and
+[SHIPPING.md](../../../SHIPPING.md) checks before updating the PR with fresh
+receipts. The PR must remain unmerged until the owner authorizes merging.

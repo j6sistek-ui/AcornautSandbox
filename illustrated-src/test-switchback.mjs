@@ -72,7 +72,7 @@ assert(swDay>=0,`the ${swPack.name} pack never reaches the shop across ${Cat.BUN
 // and it got there by the ROTATION RULE rather than by luck: the featured day
 // is the pack's place among the packs the rotation cycles - a fixed-price
 // pack keeps its own shelf slot and sits out of that cycle.
-assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed).findIndex(b=>b.id===swPack.id));
+assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable).findIndex(b=>b.id===swPack.id));
 e.save.starDust=89;assert.equal(e.buyShopItem('switchback'),'poor');
 e.save.starDust=90;assert.equal(e.buyShopItem('switchback'),'ok');
 assert.equal(e.save.starDust,0);assert(S.palUnlocked(e.save,'switchback'));

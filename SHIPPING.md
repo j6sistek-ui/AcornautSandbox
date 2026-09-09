@@ -115,11 +115,14 @@ New art follows the existing shape and the tiers pick it up: a pal is a
 still plus `<id>-N.png` frames and a `PAL_ANIM` count; a suit is a still
 plus `asc/desc` (or `tap`, `loop`) banks registered in `art.ts`.
 Owner-authorized articulated kits use their registered atlas and a portrait
-rendered by the same painter. For the three premium pilots, source/master or
-attachment changes require `export-premium-pilots.mjs`, the sandbox export,
-then `review-premium-pilots.mjs` before the lab/Flight Studio builds and gates.
-The exact order and retained source receipts are in
-[`art-src/premium-pilots/README.md`](art-src/premium-pilots/README.md).
+rendered by the same painter. The three premium pilots instead use the
+owner-supplied sixteen complete frames per suit. Their sandbox export runs
+`export-premium-flight.mjs` to cleanly pack the whole-frame bank, generate
+head/wake registration and retain frame zero as the fallback portrait.
+Rebuild the lab and Flight Studio, then run the full gates and inspect every
+cleaned frame and its playback; old cut-rig receipts cannot validate this route.
+The production boundaries and retained source receipts are in
+[`art-src/premium-flight/README.md`](art-src/premium-flight/README.md).
 `verify-art.py` fails when a catalog id has no art, so a card can never
 point at nothing. The whole `docs/art` tree is 116 MB; an app bundle
 ships all of it locally, so the budget above is a web concern and the

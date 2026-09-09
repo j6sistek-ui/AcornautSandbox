@@ -1,4 +1,5 @@
 import {paintHighOrbit,highOrbitLandmarks} from './game/high-orbit.mjs';
+import {paintPremiumFlightFrame} from './game/premium-flight.mjs';
 import {paintArcflash} from './game/arcflash.mjs';
 import {paintManeuver} from './game/vanguard-maneuver.mjs';
 import {clearHelmetRearCollar} from './game/helmet-openings.mjs';
@@ -15,7 +16,7 @@ export class StudioRenderer{
     this.inflight.set(path,task);try{return await task;}finally{this.inflight.delete(path);}
   }
   async loadModel(model,helmet){
-    const files=model.family==='bank'?[model.file,...Object.values(model.banks).flat()]:[model.atlas];
+    const files=model.family==='bank'?[model.file,...Object.values(model.banks).flat()]:model.family==='premium-flight'?[model.file,model.atlas]:[model.atlas];
     const h=this.manifest.helmets.find(h=>h.id===helmet);
     if(h&&!model.ownHead&&model.family!=='arcflash'&&model.family!=='acornut')files.push(h.file);
     await Promise.all(files.map(p=>this.load(p)));
@@ -37,10 +38,20 @@ export class StudioRenderer{
     const s=simulation.animation,p=project.profile,view=project.view,atlas=this.image(model.atlas),pitch=s.pitch*DEG;
     const h=this.manifest.helmets.find(h=>h.id===view.helmet);
     const helm=h&&(!h.suitOnly||h.suitOnly===model.id)?h.id:'clear';
-    if(model.family==='high-orbit'){
+    if(model.family==='premium-flight'){
+      const frame=s.bank==='still'?model.sheet.fallbackFrame:s.frame;
+      const extra=(s.bank==='desc'?p.descOffsets:p.tapOffsets)[s.slot]||0,angle=pitch+extra*DEG;
+      paintPremiumFlightFrame(ctx,{premiumFlight:{[model.id]:atlas},suits:{[model.id]:this.image(model.file)}},
+        model.id,x,y,size,frame,s.output,{x,y,travel:simulation.time*200},view.effects,angle);
+      if(view.guides){const registration=model.sheet.frames[atlas?frame:model.sheet.fallbackFrame],half=model.sheet.cellSize/2;
+        ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(size/192,size/192);ctx.lineWidth=1;ctx.strokeStyle='#74f3cf';
+        ctx.strokeRect(-half,-half,model.sheet.cellSize,model.sheet.cellSize);ctx.beginPath();ctx.arc(registration.head[0]-half,registration.head[1]-half,registration.radius,0,Math.PI*2);ctx.stroke();
+        for(const [ex,ey] of registration.emitters){ctx.fillStyle='#ffc869';ctx.beginPath();ctx.arc(ex-half,ey-half,2,0,Math.PI*2);ctx.fill();}ctx.restore();}
+    }else if(model.family==='high-orbit'){
       if(!atlas)return;
       paintHighOrbit(ctx,{highOrbit:{[model.id]:atlas}},model.id,x,y,size,s.output,
-        {x,y,travel:simulation.time*200},view.effects,pitch,view.helmet==='none'?undefined:(...a)=>this.helmet(ctx,helm,...a));
+        {x,y,travel:simulation.time*200},view.effects,pitch,view.helmet==='none'?undefined:(...a)=>this.helmet(ctx,helm,...a),
+        view.helmet!=='none'&&h?.id===helm&&h.opaqueVisor===true&&!!this.image(h.file));
       if(view.guides){const j=highOrbitLandmarks(model.id,s.output.pose,pitch),u=size/192;
         ctx.save();ctx.translate(x-128*u,y-128*u);ctx.scale(u,u);ctx.strokeStyle='#74f3cf';ctx.lineWidth=1;ctx.beginPath();ctx.arc(...j.head,36,0,Math.PI*2);ctx.stroke();
         for(const q of Object.values(j)){ctx.fillStyle='#ffc869';ctx.beginPath();ctx.arc(...q,2,0,Math.PI*2);ctx.fill();}ctx.restore();}

@@ -210,7 +210,9 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        if rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
+        if re.fullmatch(r"suits/(porcelain|nacre|origamist)/flight\.png", rel):
+            expected = (1024, 1024)  # sixteen complete 256px character frames
+        elif rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
             r"suits/(cinderforge|groveguard|cosmic|sunforged|abyssal|porcelain|nacre|origamist)/parts\.png", rel
         ):
             expected = (1024, 768)  # twelve isolated 256px puppet-part cells

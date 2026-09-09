@@ -1,84 +1,106 @@
-# Premium pilot production sources
+# Premium pilot release sources
 
-The owner selected exactly three concepts for production on 9 September 2026,
-then confirmed **2,500 Stardust per complete cosmetic kit**. These are fixed
-single-suit bundles with their own included wakes; no real-money price is
-encoded here.
+The current release uses the owner's supplied **sixteen complete flight
+frames per suit**. The [whole-frame source README](../premium-flight/README.md)
+records the active masters, cleanup provenance and deterministic export.
+These replace the rejected cut-part assemblies. Reusable
+cut kits and further posture proposals remain off repo for later work.
 
-| Runtime id | Character | Required head treatment | Included wake |
-| --- | --- | --- | --- |
-| `porcelain` | Porcelain Paragon | Sovereign Shell, concept helmet B; always worn | Cobalt Filigree |
-| `nacre` | Nacre Envoy | Helmetless by design; no helmet or glass overlay | Pearl Tide |
-| `origamist` | Foldspace Origamist | Facet Shell; always worn | Foldspace Ribbon |
+The latest prices supersede the former 2,500-per-suit proposal:
+
+| Runtime id | Character | Required head treatment | Included wake | Individual price |
+| --- | --- | --- | --- | --- |
+| `porcelain` | Porcelain Paragon | Sovereign Shell, concept helmet B; always worn | Cobalt Filigree | 1,000 Stardust |
+| `nacre` | Nacre Envoy | Helmetless by design | Pearl Tide | 1,000 Stardust |
+| `origamist` | Foldspace Origamist | Facet Shell; always worn | Foldspace Ribbon | 1,000 Stardust |
+
+**Premium Pilot Trio** (`bundle-premium-trio`) contains all three for
+**2,500 Stardust**. The original singleton ids `bundle-porcelain`,
+`bundle-nacre` and `bundle-origamist` remain valid. Buying a suit includes
+its exclusive wake; the wake is not a separate paid item. Real-money
+prices continue to come from the store bridge.
+
+## Whole-frame production boundary
+
+The retained sheet inputs are:
+
+- `art-src/premium-flight/{id}-original.jpg`: supplied original sheets;
+- `art-src/premium-flight/{id}-clean.png`: cleaned chroma-green masters;
+- `art-src/premium-flight/porcelain-reference.jpg`: the Porcelain cleanup reference.
+
+`illustrated-src/export-premium-flight.mjs` packs each sixteen-frame sheet
+into `docs/art/suits/{id}/flight.png`, a 1024×1024 atlas with sixteen
+256px cells in source order. `docs/art/suits/{id}.png` is exactly frame zero.
+The source `art-src/premium-flight/registration.json` records measured heads,
+wake emitters and a constant per-character scale. The exporter generates
+`game/premium-flight-frames.ts`; rebuild those outputs from source.
+
+Preserve each supplied pose as a complete character. Background cleanup must
+remove cast shadows and Porcelain's surrounding boxes without changing the
+approved figure, helmet, face, tail or costume. Packing may translate and
+uniformly scale a complete frame; it must not rebuild the body from cut
+limbs or reapply the rejected human-like proportions.
+
+The selected Envoy master contains two comparably sized pearl tails with
+crossing/overlapping curves and offset authored shapes across the sixteen
+whole-body poses. Verify their playback as well as the static silhouettes.
+This is frame-authored movement, not a procedural independent-tail rig.
+
+The current runtime uses `game/premium-flight.ts` and generated
+`game/premium-flight-frames.ts` to select complete poses and register the
+head and wake emitters. The standard High Orbit five retain their separate
+cut-rig route. The trio's fixed-head policies still apply in flight,
+previews, fallback portraits and cockpit crops, and the player's previous
+helmet selection remains stored for another suit.
+
+The `*-parts-master.png` and old attachment/registration files are historical
+inputs. The old `export-premium-pilots.mjs` now redirects to the whole-frame
+exporter. The shipping premium `parts.png` atlases and `premium-parts.ts`
+were retired; the active route cannot use them. Old cut-rig contacts were
+removed from the current review folder and remain in Git history. They do not
+establish the supplied sheet
+release's art quality or runtime behavior. Preserve original concept
+boards in `references/` as design provenance. The final sheet export and
+review receipts must identify the retained supplied sources and generated
+outputs before release.
+
+## Prices and ownership
+
+Singleton prices are pinned at 1,000 Stardust. The rotating trio pack uses its
+2,500-Stardust sticker even while featured; it does not receive the ordinary
+featured-pack 50% discount. Its three unowned suits remain available on the
+single shelf while the pack is featured.
+
+Existing ownership receives the repository's normal proportional credit:
+2,500 for three unowned suits, 1,670 for two, 830 for one, and zero when all
+are owned. Repeated purchases do not charge again. No new save fields or
+ownership migration are required.
+
+## Rebuild and verification
+
+Use the container workflow in [AGENTS.md](../../AGENTS.md), or its documented
+existing-tool fallback when Docker is unavailable. Do not install host
+system packages. Rebuild the source export, lab and Flight Studio from the
+completed sheet sources before running the full checks in
+[SHIPPING.md](../../SHIPPING.md).
+
+`test-premium-pricing.mjs` exercises the real production and beta Shop,
+including individual checkout while the trio pack is featured, the trio
+checkout, all ownership subsets, included wakes and save/reload. The
+full-frame render and playback checks must cover every supplied frame,
+transparent edges, cleanup, source order, proportions and fixed-head
+behavior. Previous cut-rig test results are not evidence for this release.
+
+Current visual and complete-gate status is recorded in the
+[validation record](../../illustrated-src/design/premium-pilots/VALIDATION.md).
+Do not claim acceptance until the new outputs have been inspected.
+
+The generated premium flight lab loads the whole-frame banks and supports
+all sixteen direct frame choices, Previous/Next, Play/Pause, manual and
+repeated taps, normal/quarter speed, exact 52px display scale and larger
+views, light/dark backdrops and wakes. Its frame counter follows the same
+shared playback selector used by the game.
 
 Nocturne Atelier, Calibre Meridian, Wayfarer Atlas, Velvet Navigator and
 Rivet & Ribbon remain [proposal cards](../../illustrated-src/design/premium-pilots/proposals/README.md)
 only. No new production art is authored for those five.
-
-## Retained inputs and deterministic outputs
-
-- `references/` preserves the original concept boards. Alternative helmets
-  and the other characters on the shared bonus board are historical context;
-  the table above is the production selection.
-- `*-PROMPT.md` records each cut-master generation brief. The raw
-  `*-parts-master.png` files retain the 1086×1448 chroma-green source paintings,
-  before extraction, resampling or registration marks. Retaining them permits
-  an extraction correction without regenerating character art.
-- `attachments.json` holds the authored source-space joint endpoints and head
-  centers. These measurements are retained separately from generated packing
-  coordinates so the rig can be rebuilt and its attachment choices reviewed.
-- `registration.json` records each master hash, component bounds, packing
-  scales, source joints and complete head circle. `atlas-hashes.json` and
-  `shipping-hashes.json` record atlas and final portrait bytes respectively.
-
-`illustrated-src/export-premium-pilots.mjs` removes background-connected
-chroma green, decontaminates its connected antialias fringe, isolates eleven
-painted components and packs a 1024×768 RGBA atlas. Its twelfth 256px cell is
-empty. It does not impose the older warm-fur palette mask on silver fur or
-lilac skin. The same pass generates `game/premium-parts.ts` and annotated
-registration images; these outputs are rebuilt, not hand-edited.
-
-## Shared anatomy and authored heads
-
-Each kit uses the existing High Orbit eleven-part painter: head, torso, two
-upper arms, two forearms with hands, two thighs, two shins with boots and one
-tail. Parts retain their painted texture and uniform scale between poses.
-At the common 192px display reference, the entire head silhouette has radius
-36px; shell ear peaks and Nacre's fins count inside that envelope. The fixed
-neck-to-hip axis is 62px, near/far arms are 25+23/24+22px, near/far legs are
-28+29/27+28px, and the tail attachment axis is 79px.
-
-The Sovereign Shell and Facet Shell are baked into their head paintings.
-Nacre's painting is bare. Catalog head policies suppress interchangeable
-helmet overlays in flight, previews, fallback portraits and cockpit crops;
-the player's prior helmet selection remains stored for another suit.
-Porcelain and Nacre use the shared tail deformation. Origamist rotates its
-folded tail as one rigid painted surface, preserving its facet geometry.
-
-## Rebuild and review
-
-Use the container workflow in [AGENTS.md](../../AGENTS.md). If Docker is
-unavailable, use its documented existing-tool fallback; the exporter and
-review scripts accept `ACORNAUT_CANVAS` for the installed canvas entry point.
-From the repository root, run these in order when masters or attachments change:
-
-```sh
-node illustrated-src/export-premium-pilots.mjs
-node illustrated-src/export-sandbox.mjs
-node illustrated-src/review-premium-pilots.mjs
-node illustrated-src/build-lab.mjs
-node illustrated-src/build-flight-studio.mjs
-node illustrated-src/test-premium-pilots.mjs
-```
-
-The review command always writes all three 256×256 fallback portraits from
-the shipping painter, their hashes and `pose-review.png`; it does not generate
-new paintings. The focused test runs render, production and beta modes. It
-also writes `production-review.png` and `regression.json` for the render mode.
-It supplements the full checks in [SHIPPING.md](../../SHIPPING.md).
-
-Inspect `docs/lab/premium-pilots/index.html` through the local web server at
-close-up and 52px flight reference, in natural/climb/glide/dive motion, with
-wakes and both backdrops. See the [production review notes](../../illustrated-src/design/premium-pilots/README.md).
-Numerical geometry and transaction checks do not establish artistic approval
-or completion of the full shipping gates.

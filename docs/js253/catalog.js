@@ -1,6 +1,6 @@
 import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=253";
 import { platform } from "./platform.js?v=253";
-import { HIGH_ORBIT_RIG_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=253";
+import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=253";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=253";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 19:03 UTC";
+export const BUILD_TIME = "2026-09-09 18:55 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -204,9 +204,6 @@ export const SUITS = [
     // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
     // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
     { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
-    { id: "porcelain", name: "Porcelain Paragon", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
-    { id: "nacre", name: "Nacre Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-    { id: "origamist", name: "Foldspace Origamist", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -258,7 +255,7 @@ if (!IS_BETA) {
 }
 const SUIT_BUILT_IN_TRAILS = {
     vanguard: "vanguardwake", arcflash: "arcflashwake",
-    ...Object.fromEntries(HIGH_ORBIT_RIG_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
+    ...Object.fromEntries(HIGH_ORBIT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
 };
 export const builtInTrailSuit = (trail) => Object.keys(SUIT_BUILT_IN_TRAILS).find(id => SUIT_BUILT_IN_TRAILS[id] === trail);
 export function trailWornBy(equippedTrail, equippedSuit) {
@@ -271,7 +268,7 @@ export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
     { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
     { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
-    ...HIGH_ORBIT_RIG_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
+    ...HIGH_ORBIT_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -471,12 +468,6 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
-    // One authored pilot and its signature wake per purchase. The selected head
-    // design is inseparable; these packs never advertise a removable helmet.
-    // Owner price, 9 Sep 2026: 2,500 Stardust for each complete pilot.
-    { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-    { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-    { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite, an articulated facet tail and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
     { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
     { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
     { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
@@ -599,27 +590,6 @@ export function bundlePrice(b, owns) {
  *  character was drawn with one. One phrasing, in one place. */
 export const OWN_HEAD_TAG = "CUSTOM HELMET \u00b7 CANNOT CHANGE";
 export const OWN_HEAD_LINE = "Custom helmet: cannot change";
-export function fixedHeadTag(suit) {
-    if (suit.headPolicy === "helmetless")
-        return "HELMETLESS BY DESIGN";
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet.toUpperCase()} · ALWAYS ON`;
-    return suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG;
-}
-export function fixedHeadLine(suit) {
-    if (suit.headPolicy === "helmetless")
-        return "Helmetless by design";
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet}: always on`;
-    return suit.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
-}
-export function fixedHeadDescription(suit) {
-    if (suit.headPolicy === "helmetless")
-        return `${suit.name} always flies without a helmet. Equip another suit to change helmets.`;
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet} is part of ${suit.name} and always stays on. Equip another suit to change helmets.`;
-    return suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets.";
-}
 /** THE LEAD-IN: open, straight, empty corridor at the mouth of a wormhole.
  *  A Lost in Space pilot is thrown in mid-flight with no READY screen, at a
  *  distance scaled to their gate - so the walls were already narrow and
@@ -703,8 +673,9 @@ export function idWeight(id) {
         w += ITEM_WEIGHT.trail;
     return w;
 }
-/** Explicit premium sticker prices replace the catalog's generic weight rate. */
-export const DUST_STICKER = { arcflash: 1850, porcelain: 2500, nacre: 2500, origamist: 2500 };
+/** STICKER PRICES. An id here sells singly at this number instead of the
+ *  weight rate - for a suit whose price was set by the owner, not derived. */
+export const DUST_STICKER = { arcflash: 1850 };
 export function idDust(id) {
     if (DUST_STICKER[id] !== undefined)
         return DUST_STICKER[id];
@@ -824,7 +795,6 @@ export const SUIT_SHELF = [
     // rewards where gaps are missing... all tap animations fixed so they can
     // go live now"): the five former beta suits fill the ladder above 300.
     { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-    { title: "PREMIUM ATELIER", ids: [...PREMIUM_SUIT_IDS], shop: true },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:

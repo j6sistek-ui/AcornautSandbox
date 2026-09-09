@@ -3591,9 +3591,6 @@ const DOME = {
     "suit:cosmic": [181, 88, 36],
     "suit:sunforged": [181, 88, 36],
     "suit:abyssal": [181, 88, 36],
-    "suit:porcelain": [181, 88, 36],
-    "suit:nacre": [181, 88, 36],
-    "suit:origamist": [181, 88, 36],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [190, 100, 45, 0],
     "robo-tap-2": [190, 100, 45, 0],
@@ -4248,7 +4245,7 @@ function paintRegisteredDome(ctx, helmet, hx, hy, r, headAngle, art) {
     ctx.restore();
 }
 export function paintOrbitPilot(ctx, art, id, x, y, size, helmet, state, travel, effects = true, pitch = 0) {
-    paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects, pitch, (hx, hy, r, angle) => paintRegisteredDome(ctx, helmet, hx, hy, r, angle, art));
+    paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects, pitch, (hx, hy, r, angle) => paintRegisteredDome(ctx, helmet, hx, hy, r, angle, art), helmet.opaqueVisor === true && !!art?.helms?.[helmet.id]);
 }
 // presentation-only smoothing for the physics-pose banks: one shared clock
 // keyed on world time, so pause holds the pose and resume never jumps

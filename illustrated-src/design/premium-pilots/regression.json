@@ -1,102 +1,474 @@
 {
   "passed": true,
-  "scope": "Shipping atlas, rig, live/preview/fallback/cockpit fixed-head behavior; visual quality requires human review",
+  "scope": "Owner full-body frames, registered playback, fixed authored heads, actual frame emitters, and legacy motion preservation; visual cleanup requires image review",
+  "originalMotionBaseline": "db92f7c79ff0576f7f5ab242e59b31db396caaee",
   "results": [
     {
       "id": "porcelain",
-      "partInk": [
-        38434,
-        32172,
-        21880,
-        16031,
-        23238,
-        15758,
-        21084,
-        21073,
-        20484,
-        18306,
-        29460
+      "frames": 16,
+      "frameHashes": [
+        "25b610cd8734875b67abae64815ee2fd57e059509b444ca1b946225735b10c50",
+        "6e663193aa2249b23884cd09627ff16a69ded24ae1add7fce16c9537cd2c243d",
+        "db32d45f34af98bb7c205f50681fee0d70d0937bc7ccbda8fe4a7fb25bc4b47a",
+        "ffb3548d8ad494e651535b433b37f320d1883e1da96310287882e3179f266ea3",
+        "1be0e1bafbf71c8dd0bf3bcbecbb45ee249d10d3bb65274c1df879dcdd8820f5",
+        "367660d174fc4992012e10efd6036abc0834a927b5452e2b0fed3ecad53ca044",
+        "2094f053b6bac5be8549b6b723dd1d76b85570beffe6914a0e5936f2fa361f1b",
+        "54785230b3f541ee49936579c69d50692e6acbea44d8fbfe09f7e9ea3373b7af",
+        "fce2e90f865a02974ebe8050478227dbc3466b785d4c93268507bf0fe5f222e7",
+        "2da2286420eb9ec5ba185e8d53d4acca772c41cca8700c1bcfa89a3c5cdb6704",
+        "915a932ea6797634a7c18b7d79c30f6ef976fe4f22c7e39c48a757a23f1fd1b3",
+        "341386e2c55eeaca3c1daf09e95166338c03003e6832e4786cc9643e9dc303a5",
+        "29bf372c36688f3c8561a4610c0c75f64d20716c4b7a4580c0f2bd5d79f6971f",
+        "4b23c4b074e21954e9ccebbcfc609083f17225b20213a9a3c07066da6e1a7cf5",
+        "5bf4b00931517bb205ae1a8dccc2f1d4f578ee7ea24652394267f22ff70e08e5",
+        "73bf413914923c80df14b93f82284154bf92d4d93439c16caa1db41e4e424454"
       ],
-      "ticks": 960,
-      "paintedSamples": 80,
-      "maxGreenExcess": 22,
-      "browserWakeSamples": 720,
-      "maxJointStep": 1.1682953567671248,
-      "minJointCoverage": 1,
-      "maxDetachedPixels": 2,
-      "minHeadTailGap": 28.826721109232963,
-      "bodyRange": 30.995440571688178,
-      "tailRootRange": 29.545165770267737,
-      "tailAreaRatio": [
-        0.9999999999999972,
-        1.0000000000000029
+      "bounds": [
+        {
+          "frame": 0,
+          "ink": 15084,
+          "left": 40,
+          "top": 38,
+          "right": 213,
+          "bottom": 179
+        },
+        {
+          "frame": 1,
+          "ink": 14954,
+          "left": 40,
+          "top": 39,
+          "right": 213,
+          "bottom": 180
+        },
+        {
+          "frame": 2,
+          "ink": 14963,
+          "left": 40,
+          "top": 38,
+          "right": 214,
+          "bottom": 179
+        },
+        {
+          "frame": 3,
+          "ink": 15020,
+          "left": 41,
+          "top": 36,
+          "right": 215,
+          "bottom": 179
+        },
+        {
+          "frame": 4,
+          "ink": 15880,
+          "left": 51,
+          "top": 40,
+          "right": 214,
+          "bottom": 199
+        },
+        {
+          "frame": 5,
+          "ink": 15655,
+          "left": 56,
+          "top": 37,
+          "right": 212,
+          "bottom": 203
+        },
+        {
+          "frame": 6,
+          "ink": 15939,
+          "left": 54,
+          "top": 39,
+          "right": 212,
+          "bottom": 210
+        },
+        {
+          "frame": 7,
+          "ink": 15489,
+          "left": 60,
+          "top": 40,
+          "right": 211,
+          "bottom": 212
+        },
+        {
+          "frame": 8,
+          "ink": 15085,
+          "left": 51,
+          "top": 42,
+          "right": 213,
+          "bottom": 216
+        },
+        {
+          "frame": 9,
+          "ink": 14788,
+          "left": 52,
+          "top": 42,
+          "right": 214,
+          "bottom": 215
+        },
+        {
+          "frame": 10,
+          "ink": 14925,
+          "left": 47,
+          "top": 42,
+          "right": 214,
+          "bottom": 215
+        },
+        {
+          "frame": 11,
+          "ink": 14914,
+          "left": 48,
+          "top": 42,
+          "right": 217,
+          "bottom": 215
+        },
+        {
+          "frame": 12,
+          "ink": 14068,
+          "left": 30,
+          "top": 43,
+          "right": 213,
+          "bottom": 191
+        },
+        {
+          "frame": 13,
+          "ink": 15084,
+          "left": 35,
+          "top": 43,
+          "right": 214,
+          "bottom": 189
+        },
+        {
+          "frame": 14,
+          "ink": 14999,
+          "left": 35,
+          "top": 42,
+          "right": 213,
+          "bottom": 185
+        },
+        {
+          "frame": 15,
+          "ink": 15070,
+          "left": 40,
+          "top": 39,
+          "right": 213,
+          "bottom": 181
+        }
       ],
+      "rapidTapAllFrames": true,
       "helmetsChecked": 30,
+      "wakeSamples": 720,
       "headPolicy": "integrated"
     },
     {
       "id": "nacre",
-      "partInk": [
-        30752,
-        25576,
-        18402,
-        13565,
-        18575,
-        13419,
-        21999,
-        20765,
-        21537,
-        20489,
-        19404
+      "frames": 16,
+      "frameHashes": [
+        "2d1cc2b6fc985576a5ce1a212242720a31dd9c286780f560a844934416d9dd9b",
+        "81dd5b1e2b0497ad7f04e39dbf1e7831fe1ac2c115130eee14b7c298d8cd2cd3",
+        "912332ca646d42f613430d96ae4c3ca2c57e7eaed15b615d608ad657668404fb",
+        "075872a4f4ca594a5eda3585888d31fdd6c9eb6a32ad20ef4040e550e5f37441",
+        "bc7a39f097f00039ec466bbf5367847e09a794b8046948fe1f094c42db491bec",
+        "641fdaa9a984fbaa0d4a1e39a1940eafdd53afb113064386b9be68b9f55efee9",
+        "26901f46a4e8d640a34bdd5ba850534d0a9ea0d078f48d2aa781275a276fcc63",
+        "d7efbb9d55f2603869624add65a65dd283a4c44e93c1b2e914d172200d97790c",
+        "dd2667241ecdf2db0eb57fdd2bdd8d53953c8fbbb474427df5b6dad7db6a4f9c",
+        "6cc0453069d52ad97d4837635b3832fdac1ed6779542eef003ebb4da3679be63",
+        "0700c226dc78878a7098efacc2a889f88e2c3f496c35281f9cc9f204bf4214ea",
+        "4c277e1cf0e891a178d4e3bf97a4cfc2e3d943fb714562efc694300b287aee4e",
+        "35a42f13fe4a750dec12115bc31857d42695669f6719cfbca8574b1e50991958",
+        "b923cc1225a381fbf54f0b5dca679db5eb9b30a8f06b3adbd1a6cb08d463b202",
+        "5b5a3384f601aaaa76fd545858e9687d4376b6547ecf0f75003eca1df5157e64",
+        "3ec2f38f9585a5291c742f6df2082b1a616c9174dafb800c211cf61fec2ad311"
       ],
-      "ticks": 960,
-      "paintedSamples": 80,
-      "maxGreenExcess": 10,
-      "browserWakeSamples": 720,
-      "maxJointStep": 1.2518962133644465,
-      "minJointCoverage": 1,
-      "maxDetachedPixels": 0,
-      "minHeadTailGap": 21.817195772670438,
-      "bodyRange": 31.023487559058413,
-      "tailRootRange": 38.43404905364074,
-      "tailAreaRatio": [
-        0.9999999999999966,
-        1.0000000000000029
+      "bounds": [
+        {
+          "frame": 0,
+          "ink": 16276,
+          "left": 17,
+          "top": 38,
+          "right": 212,
+          "bottom": 195
+        },
+        {
+          "frame": 1,
+          "ink": 16272,
+          "left": 14,
+          "top": 37,
+          "right": 211,
+          "bottom": 194
+        },
+        {
+          "frame": 2,
+          "ink": 16216,
+          "left": 16,
+          "top": 35,
+          "right": 211,
+          "bottom": 192
+        },
+        {
+          "frame": 3,
+          "ink": 16226,
+          "left": 13,
+          "top": 35,
+          "right": 210,
+          "bottom": 191
+        },
+        {
+          "frame": 4,
+          "ink": 15922,
+          "left": 20,
+          "top": 32,
+          "right": 212,
+          "bottom": 195
+        },
+        {
+          "frame": 5,
+          "ink": 15870,
+          "left": 21,
+          "top": 36,
+          "right": 212,
+          "bottom": 212
+        },
+        {
+          "frame": 6,
+          "ink": 15193,
+          "left": 33,
+          "top": 43,
+          "right": 211,
+          "bottom": 224
+        },
+        {
+          "frame": 7,
+          "ink": 15172,
+          "left": 28,
+          "top": 44,
+          "right": 208,
+          "bottom": 228
+        },
+        {
+          "frame": 8,
+          "ink": 15396,
+          "left": 38,
+          "top": 46,
+          "right": 219,
+          "bottom": 232
+        },
+        {
+          "frame": 9,
+          "ink": 15333,
+          "left": 25,
+          "top": 44,
+          "right": 216,
+          "bottom": 232
+        },
+        {
+          "frame": 10,
+          "ink": 15560,
+          "left": 25,
+          "top": 46,
+          "right": 213,
+          "bottom": 207
+        },
+        {
+          "frame": 11,
+          "ink": 15970,
+          "left": 17,
+          "top": 23,
+          "right": 209,
+          "bottom": 196
+        },
+        {
+          "frame": 12,
+          "ink": 16466,
+          "left": 14,
+          "top": 12,
+          "right": 213,
+          "bottom": 191
+        },
+        {
+          "frame": 13,
+          "ink": 16623,
+          "left": 21,
+          "top": 10,
+          "right": 214,
+          "bottom": 192
+        },
+        {
+          "frame": 14,
+          "ink": 16572,
+          "left": 18,
+          "top": 29,
+          "right": 212,
+          "bottom": 195
+        },
+        {
+          "frame": 15,
+          "ink": 16560,
+          "left": 13,
+          "top": 34,
+          "right": 208,
+          "bottom": 198
+        }
       ],
+      "rapidTapAllFrames": true,
       "helmetsChecked": 30,
+      "wakeSamples": 720,
       "headPolicy": "helmetless"
     },
     {
       "id": "origamist",
-      "partInk": [
-        30779,
-        29980,
-        15584,
-        14480,
-        17033,
-        13854,
-        23903,
-        21043,
-        23739,
-        18660,
-        29625
+      "frames": 16,
+      "frameHashes": [
+        "0c0fd02baf71196e282078d3e6e1cd9786049aa9d91d49682cfa02eab543224a",
+        "db82c1feca4b52537b1d62298331d6b3d4677743865cdaebc4d6d43fd8c7e246",
+        "b7ae95024f471d6ea1a338183c4eb873afab52bfd2c1e15505921154cf46041c",
+        "34dbc04853662a25c90df86dc11f7f541d2690a7de23d32095d848931f4cd4fd",
+        "6194fa878f1a621bfa05a2a39a7fc133246386b355fe7f60123547694b03b381",
+        "3589fb34237adf0239533a09213080ed5418e0b7e43aca7101698e2f3a5b7abe",
+        "c1144d014e1e5228785676c0fd25323f154efbd49ecb82acd8ef26c83a9af651",
+        "bfbd35348f3f0cdfcb939c48b8785dd05a7ee4da3eb6a32abed9d24a880c10f3",
+        "e3b5149024335cbe525ad2203cfb6eded3d4893c9b263ce9b9d3a63f6e200826",
+        "662dd71b4a17b4bf6dba377f5d402e531eb998ed59ac223fd04bcd4247b92afb",
+        "a4e29d84d4c4d3eab0c7b6d551b1e09baf1108218963c25d172355dfa88dbc3b",
+        "ce8727f8b64d5ca7543a387b5c81a6b95ea41b7e45d9724346b782a12278f4cf",
+        "3c46cf843a96c8e4cb1826462617264652b8ce9e495b663da0555257343306e9",
+        "218404ef07844fc44f4800460cb3a0dabc51477f63f46f70038792ba1f39551c",
+        "66502ceb25eda4d73a60828619b1e2f04efa6a4ea5eb2e5ba48c110cc67ec446",
+        "245631e60b56d42a6e93165a89574a52c66830d4562f9bf8764f2288b530554e"
       ],
-      "ticks": 960,
-      "paintedSamples": 80,
-      "maxGreenExcess": 18,
-      "browserWakeSamples": 720,
-      "maxJointStep": 1.20920110298416,
-      "minJointCoverage": 1,
-      "maxDetachedPixels": 0,
-      "minHeadTailGap": 21.388724466960042,
-      "bodyRange": 30.99606609600529,
-      "tailRootRange": 21.820477803748737,
-      "tailAreaRatio": [
-        0.9999999999999972,
-        1.0000000000000027
+      "bounds": [
+        {
+          "frame": 0,
+          "ink": 17362,
+          "left": 28,
+          "top": 29,
+          "right": 214,
+          "bottom": 189
+        },
+        {
+          "frame": 1,
+          "ink": 17288,
+          "left": 29,
+          "top": 29,
+          "right": 214,
+          "bottom": 189
+        },
+        {
+          "frame": 2,
+          "ink": 17029,
+          "left": 28,
+          "top": 29,
+          "right": 214,
+          "bottom": 186
+        },
+        {
+          "frame": 3,
+          "ink": 16891,
+          "left": 27,
+          "top": 28,
+          "right": 215,
+          "bottom": 183
+        },
+        {
+          "frame": 4,
+          "ink": 17194,
+          "left": 25,
+          "top": 32,
+          "right": 214,
+          "bottom": 187
+        },
+        {
+          "frame": 5,
+          "ink": 17046,
+          "left": 20,
+          "top": 35,
+          "right": 210,
+          "bottom": 198
+        },
+        {
+          "frame": 6,
+          "ink": 15454,
+          "left": 28,
+          "top": 37,
+          "right": 217,
+          "bottom": 223
+        },
+        {
+          "frame": 7,
+          "ink": 15304,
+          "left": 31,
+          "top": 37,
+          "right": 220,
+          "bottom": 225
+        },
+        {
+          "frame": 8,
+          "ink": 15373,
+          "left": 31,
+          "top": 37,
+          "right": 222,
+          "bottom": 225
+        },
+        {
+          "frame": 9,
+          "ink": 15293,
+          "left": 31,
+          "top": 37,
+          "right": 222,
+          "bottom": 225
+        },
+        {
+          "frame": 10,
+          "ink": 15655,
+          "left": 29,
+          "top": 39,
+          "right": 223,
+          "bottom": 225
+        },
+        {
+          "frame": 11,
+          "ink": 17610,
+          "left": 43,
+          "top": 19,
+          "right": 212,
+          "bottom": 191
+        },
+        {
+          "frame": 12,
+          "ink": 17509,
+          "left": 47,
+          "top": 15,
+          "right": 214,
+          "bottom": 184
+        },
+        {
+          "frame": 13,
+          "ink": 17429,
+          "left": 45,
+          "top": 16,
+          "right": 214,
+          "bottom": 184
+        },
+        {
+          "frame": 14,
+          "ink": 17342,
+          "left": 42,
+          "top": 17,
+          "right": 214,
+          "bottom": 184
+        },
+        {
+          "frame": 15,
+          "ink": 17240,
+          "left": 30,
+          "top": 23,
+          "right": 214,
+          "bottom": 184
+        }
       ],
-      "maxRigidTailDistanceError": 1.1368683772161603e-13,
+      "rapidTapAllFrames": true,
       "helmetsChecked": 30,
+      "wakeSamples": 720,
       "headPolicy": "integrated"
     }
   ]

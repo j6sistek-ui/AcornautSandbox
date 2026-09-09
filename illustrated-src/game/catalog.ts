@@ -1,6 +1,6 @@
 import { NEW_PLANET_RGB } from "./zone-planet-colors";
 import { platform } from "./platform";
-import { HIGH_ORBIT_RIG_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "253";
+export const ART_VER = "254";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -326,7 +326,7 @@ export type Trail = { id: string; name: string; cost: number; colors: string[] }
 
 const SUIT_BUILT_IN_TRAILS: Record<string,string> = {
   vanguard:"vanguardwake", arcflash:"arcflashwake",
-  ...Object.fromEntries(HIGH_ORBIT_RIG_IDS.map(id=>[id,HIGH_ORBIT_PROFILES[id].trail])),
+  ...Object.fromEntries(ORBIT_PILOT_IDS.map(id=>[id,HIGH_ORBIT_PROFILES[id].trail])),
 };
 export const builtInTrailSuit = (trail:string):string|undefined =>
   Object.keys(SUIT_BUILT_IN_TRAILS).find(id=>SUIT_BUILT_IN_TRAILS[id]===trail);
@@ -342,7 +342,7 @@ export const TRAILS: Trail[] = [
   { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
   { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
   { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
-  ...HIGH_ORBIT_RIG_IDS.map(id=>({id:HIGH_ORBIT_PROFILES[id].trail,name:HIGH_ORBIT_PROFILES[id].wake,cost:0,colors:[...HIGH_ORBIT_PROFILES[id].colors]})),
+  ...ORBIT_PILOT_IDS.map(id=>({id:HIGH_ORBIT_PROFILES[id].trail,name:HIGH_ORBIT_PROFILES[id].wake,cost:0,colors:[...HIGH_ORBIT_PROFILES[id].colors]})),
   { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
   { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
   { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -610,6 +610,13 @@ export const BUNDLES: {
   /** a sticker price the shop never discounts: kept out of the featured
    *  rotation, and sold singly at the same number (DUST_STICKER) */
   fixed?: boolean;
+  /** A pack with an owner-set price uses its prorated sticker,
+   *  rather than the usual featured discount. */
+  featuredAtSticker?: boolean;
+  /** Offered every day on its own card, outside the featured rotation. */
+  alwaysAvailable?: boolean;
+  /** Its unowned contents remain purchasable singly while featured. */
+  keepSingles?: boolean;
 }[] = [
   // ARCFLASH (owner, 7 Sep 2026): one suit, one price, its wake included.
   // The wake is not an item - it is the only trail Arcflash can wear and it
@@ -617,10 +624,12 @@ export const BUNDLES: {
   { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
   // One authored pilot and its signature wake per purchase. The selected head
   // design is inseparable; these packs never advertise a removable helmet.
-  // Owner price, 9 Sep 2026: 2,500 Stardust for each complete pilot.
-  { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-  { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-  { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite, an articulated facet tail and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
+  // Latest owner price: 1,000 each, or all three for 2,500 Stardust.
+  // Preserve the existing singleton ids for purchase compatibility.
+  { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
+  { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
+  { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
+  { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Porcelain Paragon, Nacre Envoy and Foldspace Origamist, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
   { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
   { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
   { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
@@ -863,7 +872,7 @@ export function idWeight(id: string) {
   return w;
 }
 /** Explicit premium sticker prices replace the catalog's generic weight rate. */
-export const DUST_STICKER: Record<string, number> = { arcflash: 1850, porcelain: 2500, nacre: 2500, origamist: 2500 };
+export const DUST_STICKER: Record<string, number> = { arcflash: 1850, porcelain: 1000, nacre: 1000, origamist: 1000 };
 export function idDust(id: string) {
   if (DUST_STICKER[id] !== undefined) return DUST_STICKER[id];
   return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 10) * 10);
@@ -926,7 +935,7 @@ export function featurePrice(
   b: (typeof BUNDLES)[number],
   owns: (id: string) => boolean,
 ) {
-  if (b.fixed) return bundlePrice(b, owns);
+  if (b.fixed || b.featuredAtSticker) return bundlePrice(b, owns);
   const due = weightTotal(bundleIds(b), owns);
   if (due <= 0) return 0;
   return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);

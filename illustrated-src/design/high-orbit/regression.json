@@ -3,58 +3,63 @@
   "results": [
     {
       "id": "cinderforge",
-      "maxJointStep": 1.1712458739117722,
-      "minHeadGap": 9.875829727087854,
+      "maxJointStep": 1.2053581874190016,
+      "minHeadGap": 12.743852139200463,
       "minJointCoverage": 1,
       "maxDetachedPixels": 4,
-      "minTailAreaRatio": 0.9999999999999971,
+      "minTailAreaRatio": 0.9999999999999976,
       "maxTailAreaRatio": 1.0000000000000027,
+      "headRange": 22.98666769956877,
       "bodyRange": 30.97927657007406,
-      "tailRange": 62.71013923216657
+      "tailRange": 88.93742360220534
     },
     {
       "id": "groveguard",
-      "maxJointStep": 1.2904772460743885,
-      "minHeadGap": 12.757463931807578,
+      "maxJointStep": 1.394152935620295,
+      "minHeadGap": 15.474442129797502,
       "minJointCoverage": 1,
       "maxDetachedPixels": 6,
-      "minTailAreaRatio": 0.9999999999999958,
-      "maxTailAreaRatio": 1.0000000000000036,
+      "minTailAreaRatio": 0.999999999999997,
+      "maxTailAreaRatio": 1.000000000000003,
+      "headRange": 23.038987599782928,
       "bodyRange": 31.02520526434073,
-      "tailRange": 65.26873754430355
+      "tailRange": 92.51442427248611
     },
     {
       "id": "cosmic",
-      "maxJointStep": 1.2071504504394497,
-      "minHeadGap": 10.287025687253333,
+      "maxJointStep": 1.2646412313423223,
+      "minHeadGap": 13.925538739145551,
       "minJointCoverage": 1,
       "maxDetachedPixels": 3,
-      "minTailAreaRatio": 0.9999999999999972,
-      "maxTailAreaRatio": 1.0000000000000029,
+      "minTailAreaRatio": 0.9999999999999973,
+      "maxTailAreaRatio": 1.000000000000003,
+      "headRange": 22.979070025914666,
       "bodyRange": 30.984687617222953,
-      "tailRange": 62.98663835406357
+      "tailRange": 89.09435926968999
     },
     {
       "id": "sunforged",
-      "maxJointStep": 1.1341165457831153,
-      "minHeadGap": 14.691417413789985,
+      "maxJointStep": 1.1447920283235185,
+      "minHeadGap": 18.331337854217132,
       "minJointCoverage": 1,
       "maxDetachedPixels": 4,
-      "minTailAreaRatio": 0.9999999999999973,
-      "maxTailAreaRatio": 1.0000000000000036,
+      "minTailAreaRatio": 0.9999999999999971,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "headRange": 22.990781016107793,
       "bodyRange": 30.968339893422407,
-      "tailRange": 59.75897157595573
+      "tailRange": 84.71459075419028
     },
     {
       "id": "abyssal",
-      "maxJointStep": 1.2472885623820318,
-      "minHeadGap": 12.669867402425105,
+      "maxJointStep": 1.4300032823286646,
+      "minHeadGap": 14.670595129084248,
       "minJointCoverage": 1,
-      "maxDetachedPixels": 5,
-      "minTailAreaRatio": 0.9999999999999969,
-      "maxTailAreaRatio": 1.0000000000000029,
+      "maxDetachedPixels": 4,
+      "minTailAreaRatio": 0.9999999999999966,
+      "maxTailAreaRatio": 1.000000000000003,
+      "headRange": 23.036383074581508,
       "bodyRange": 31.006644478322443,
-      "tailRange": 69.06999542319353
+      "tailRange": 97.82708017148829
     }
   ]
 }

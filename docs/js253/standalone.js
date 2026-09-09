@@ -11,7 +11,7 @@ import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-pr
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=253";
 import { suitLean } from "./control-constants.js?v=253";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=253";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=253";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=253";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=253";
 import { drawSprite as drawSpriteOn } from "./art.js?v=253";
 import { createEngine } from "./engine.js?v=253";
@@ -1767,7 +1767,12 @@ export async function bootStandalone(root) {
         // Fit the painted subject's measured bounds instead of shrinking its
         // whole source canvas (whose transparent margins vary from suit to suit).
         const { c, ctx } = miniCanvas(px, px);
-        if (ctx)
+        // The cut-rig fallback is bare so a selected helmet can be fitted once.
+        // A sealed costume must still show its helmet on the suit shelf.
+        const sealed = HELMETS.find(h => h.suitOnly === suit.id && h.opaqueVisor);
+        if (ctx && sealed)
+            paintPortrait(ctx, engine.art, sealed, suit, px * .44, px * .46, px * .68);
+        else if (ctx)
             drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
         return c;
     }
@@ -1876,7 +1881,6 @@ export async function bootStandalone(root) {
         },
         locked: () => "Locked. Earn more stars to open this.",
         suitOnly: () => "This one belongs to another suit.",
-        fixedHead: () => "This pilot's head design stays as shown. Equip another suit to change helmets.",
         missing: () => "That item is not in this build.",
         unknown: () => "That item is not in this build.",
         owned: () => "Already yours.",
@@ -1991,7 +1995,7 @@ export async function bootStandalone(root) {
                 pane.append(el("i", `ac-casecorner ac-c-${corner}`));
             }
             if (ownHead)
-                pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(wornSuit)));
+                pane.append(el("span", "ac-tonohelm ac-casetag", wornSuit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
             stage.append(pane);
             const plate = el("div", "ac-caseplate");
             const fold = el("button", "ac-casefold", s.heroExpanded ? "\u25B4" : "\u25BE");
@@ -2084,7 +2088,7 @@ export async function bootStandalone(root) {
             const locked = wearsOwnHead(suit);
             if (locked) {
                 const note = el("div", "ac-lockednote");
-                note.append(el("p", "ac-lockedhead", `${suit.name}: ${fixedHeadLine(suit)}`), el("p", "ac-sub", fixedHeadDescription(suit)));
+                note.append(el("p", "ac-lockedhead", `${suit.name}: ${suit.id === "arcflash" ? "integrated look" : OWN_HEAD_LINE}`), el("p", "ac-sub", suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets."));
                 scroll.append(note);
             }
             // grouped by what the GLASS does. A suit-locked helmet is not listed
@@ -2182,7 +2186,7 @@ export async function bootStandalone(root) {
                 // a fixed head takes no helmet; the card says so up front
                 if (wearsOwnHead(u)) {
                     const nh = el("span", "ac-nohelm");
-                    nh.title = fixedHeadLine(u);
+                    nh.title = u.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
                     b.append(nh);
                 }
                 // owned premium keeps its bloom; unowned premium never reaches here
@@ -3661,7 +3665,7 @@ export async function bootStandalone(root) {
             pane.append(el("i", `ac-casecorner ac-c-${corner}`));
         }
         if (ownHead)
-            pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(suit)));
+            pane.append(el("span", "ac-tonohelm ac-casetag", suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
         stage.append(pane);
         const plate = el("div", "ac-caseplate");
         plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));

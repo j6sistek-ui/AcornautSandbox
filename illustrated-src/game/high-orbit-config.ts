@@ -3,9 +3,14 @@ export const HIGH_ORBIT_IDS = ['cinderforge','groveguard','cosmic','sunforged','
 export const PREMIUM_SUIT_IDS = ['porcelain','nacre','origamist'] as const;
 export type PremiumSuitId = typeof PREMIUM_SUIT_IDS[number];
 export const isPremiumSuit = (id:string): id is PremiumSuitId => (PREMIUM_SUIT_IDS as readonly string[]).includes(id);
-export const HIGH_ORBIT_RIG_IDS = [...HIGH_ORBIT_IDS,...PREMIUM_SUIT_IDS] as const;
-export type HighOrbitId = typeof HIGH_ORBIT_RIG_IDS[number];
-export const isHighOrbit = (id:string): id is HighOrbitId => (HIGH_ORBIT_RIG_IDS as readonly string[]).includes(id);
+/** Only these five use cut-part articulation. The premium trio use whole frames. */
+export const HIGH_ORBIT_RIG_IDS = HIGH_ORBIT_IDS;
+export type HighOrbitRigId = typeof HIGH_ORBIT_RIG_IDS[number];
+export const ORBIT_PILOT_IDS = [...HIGH_ORBIT_IDS,...PREMIUM_SUIT_IDS] as const;
+/** Shared cosmetic clock/wake identity; this type does not imply a cut rig. */
+export type HighOrbitId = typeof ORBIT_PILOT_IDS[number];
+export const isHighOrbit = (id:string): id is HighOrbitId => (ORBIT_PILOT_IDS as readonly string[]).includes(id);
+export const isHighOrbitRig = (id:string): id is HighOrbitRigId => (HIGH_ORBIT_RIG_IDS as readonly string[]).includes(id);
 export const HIGH_ORBIT_HEAD_RADIUS = 36;
 export const HIGH_ORBIT_DISPLAY_SPAN = 192;
 export const HIGH_ORBIT_PROFILES = {
@@ -19,4 +24,4 @@ export const HIGH_ORBIT_PROFILES = {
   origamist: {name:'Foldspace Origamist',trail:'origamistwake',wake:'Foldspace Ribbon',colors:['#fff4dc','#f5bb75','#717aca'],period:1.94,inertia:1.07,whip:.62,seed:8.0},
 } as const;
 export const highOrbitTrailSuit = (trail:string): HighOrbitId|undefined =>
-  HIGH_ORBIT_RIG_IDS.find(id=>HIGH_ORBIT_PROFILES[id].trail===trail);
+  ORBIT_PILOT_IDS.find(id=>HIGH_ORBIT_PROFILES[id].trail===trail);

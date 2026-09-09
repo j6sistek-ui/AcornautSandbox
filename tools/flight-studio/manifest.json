@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "252",
-  "sourceCommit": "85f30e60b8b7568cdd911a9cf888122b47833d83",
+  "artVer": "254",
+  "sourceCommit": "07e646877f7234367d3a10d9a8cf5631514cd804",
   "models": [
     {
       "id": "flight",
@@ -128,7 +128,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/arcflash/body.png": "ef39dc9c62b2f4f678981d2debb875f2ae379950d5a65d21d3809f022a355574",
+        "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },
@@ -145,17 +145,313 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "high-orbit",
-      "atlas": "suits/porcelain/parts.png",
+      "family": "premium-flight",
+      "atlas": "suits/porcelain/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                79.505,
+                168.5545
+              ],
+              [
+                119.703,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                80.198,
+                168.5545
+              ],
+              [
+                120.396,
+                164.396
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                88.5149,
+                190.0396
+              ],
+              [
+                125.2475,
+                188.6535
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                89.2079,
+                193.505
+              ],
+              [
+                126.6337,
+                192.1188
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                91.9802,
+                200.4356
+              ],
+              [
+                129.4059,
+                199.0495
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35.3465,
+            "emitters": [
+              [
+                91.9802,
+                203.2079
+              ],
+              [
+                130.7921,
+                201.8218
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                94.7525,
+                206.6733
+              ],
+              [
+                134.2574,
+                203.901
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                96.1386,
+                205.9802
+              ],
+              [
+                133.5644,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                97.5248,
+                205.9802
+              ],
+              [
+                134.2574,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.9604,
+            "emitters": [
+              [
+                98.2178,
+                205.9802
+              ],
+              [
+                135.6436,
+                203.2079
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                86.4356,
+                182.4158
+              ],
+              [
+                126.6337,
+                179.6436
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                83.6634,
+                178.2574
+              ],
+              [
+                122.4752,
+                171.3267
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                81.5842,
+                176.8713
+              ],
+              [
+                120.396,
+                169.2475
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 34.6535,
+            "emitters": [
+              [
+                81.5842,
+                167.8614
+              ],
+              [
+                120.396,
+                160.9307
+              ]
+            ]
+          }
+        ]
+      },
       "banks": {
         "tap": [],
         "asc": [],
         "desc": [],
-        "loop": []
+        "loop": [
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png",
+          "suits/porcelain/flight.png"
+        ]
       },
       "hashes": {
-        "suits/porcelain.png": "f35533b431553f395a58e30e6af97c2f12bd8d03b7db48f8cd101ffc20caf8c4",
-        "suits/porcelain/parts.png": "66b43249a05e7eb51ec78fef29ecd1bdfa77de3141da4ab90e496069ad624023"
+        "suits/porcelain.png": "671ddf5e3672782760bb8faf98d07b05ce1aa30d437caceb50025cc9e5b848a9",
+        "suits/porcelain/flight.png": "7797a22ac8d0723ccf39b6738adb3253e2beb485ef07234b8073d10ad386b4fe"
       }
     },
     {
@@ -171,17 +467,313 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "high-orbit",
-      "atlas": "suits/nacre/parts.png",
+      "family": "premium-flight",
+      "atlas": "suits/nacre/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                73.9808,
+                179.3462
+              ],
+              [
+                113.1154,
+                174.3654
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                72.5577,
+                178.6346
+              ],
+              [
+                111.6923,
+                173.6538
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                72.5577,
+                177.2115
+              ],
+              [
+                111.6923,
+                172.2308
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                70.4231,
+                176.5
+              ],
+              [
+                109.5577,
+                171.5192
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                81.0962,
+                186.4615
+              ],
+              [
+                115.25,
+                180.7692
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                93.9038,
+                202.8269
+              ],
+              [
+                127.3462,
+                197.1346
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                99.5962,
+                214.9231
+              ],
+              [
+                133.0385,
+                209.2308
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                98.1731,
+                218.4808
+              ],
+              [
+                131.6154,
+                212.7885
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                103.8654,
+                224.1731
+              ],
+              [
+                136.5962,
+                219.9038
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                97.4615,
+                224.1731
+              ],
+              [
+                130.1923,
+                219.9038
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                78.9615,
+                181.4808
+              ],
+              [
+                109.5577,
+                174.3654
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                76.1154,
+                170.0962
+              ],
+              [
+                110.2692,
+                166.5385
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                76.8269,
+                170.0962
+              ],
+              [
+                113.8269,
+                167.25
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                73.2692,
+                177.2115
+              ],
+              [
+                113.8269,
+                170.8077
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                75.4038,
+                180.7692
+              ],
+              [
+                115.9615,
+                174.3654
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 32.7308,
+            "emitters": [
+              [
+                72.5577,
+                183.6154
+              ],
+              [
+                113.1154,
+                177.2115
+              ]
+            ]
+          }
+        ]
+      },
       "banks": {
         "tap": [],
         "asc": [],
         "desc": [],
-        "loop": []
+        "loop": [
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png",
+          "suits/nacre/flight.png"
+        ]
       },
       "hashes": {
-        "suits/nacre.png": "138fb1a7a053215978605a97fec0d5499ae5d39f93fed0481bbc4a22575818a4",
-        "suits/nacre/parts.png": "d7fc0a627f95652b35f8e22fdb72b14c5b84961073806258461f40f882104819"
+        "suits/nacre.png": "460fa37e558ace3870d8d5e821720f39593221caa10ab82533b1dd441372431d",
+        "suits/nacre/flight.png": "6330f172d069d1f9b734a128e2a5adb67977a2d0a842be7e87136eb53d72318b"
       }
     },
     {
@@ -197,17 +789,313 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "high-orbit",
-      "atlas": "suits/origamist/parts.png",
+      "family": "premium-flight",
+      "atlas": "suits/origamist/flight.png",
+      "sheet": {
+        "frameCount": 16,
+        "cellSize": 256,
+        "fallbackFrame": 0,
+        "frames": [
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                175.4286
+              ],
+              [
+                117.1429,
+                169.7143
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                175.4286
+              ],
+              [
+                117.1429,
+                169.7143
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                172.5714
+              ],
+              [
+                117.1429,
+                166.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                169.7143
+              ],
+              [
+                117.1429,
+                164
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                72.8571,
+                174
+              ],
+              [
+                115.7143,
+                168.2857
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                189
+              ],
+              [
+                117.1429,
+                183.2857
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                84.2857,
+                214.7143
+              ],
+              [
+                127.1429,
+                210.4286
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                86.4286,
+                216.1429
+              ],
+              [
+                129.2857,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 33.5714,
+            "emitters": [
+              [
+                84.2857,
+                216.1429
+              ],
+              [
+                127.1429,
+                211.8571
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                73.5714,
+                176.8571
+              ],
+              [
+                116.4286,
+                172.5714
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          },
+          {
+            "head": [
+              180,
+              84
+            ],
+            "radius": 35,
+            "emitters": [
+              [
+                74.2857,
+                170.4286
+              ],
+              [
+                117.1429,
+                166.1429
+              ]
+            ]
+          }
+        ]
+      },
       "banks": {
         "tap": [],
         "asc": [],
         "desc": [],
-        "loop": []
+        "loop": [
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png",
+          "suits/origamist/flight.png"
+        ]
       },
       "hashes": {
-        "suits/origamist.png": "10ac98f8fb352271dba9be2ac799488683bfe099bb2c674629a31dc16c6dc8da",
-        "suits/origamist/parts.png": "f914761fd149fbed0f6c01f271af0afe354a0b9df79002a582f6f3767912260b"
+        "suits/origamist.png": "89b99e8314caaddbb603a82bbb73780da1bcf7b0261688c78566bb09ab93d6eb",
+        "suits/origamist/flight.png": "d9e0f96b5ff99bd6424fc914835c4bac445c18a7a20158d1234505bf2e7d5936"
       }
     },
     {
@@ -1512,7 +2400,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/cinderforge.png": "6ad028c97431469bb9af3ec3204b94fe9c37b6cdc53beb0ed15ccb10a72a422e",
+        "suits/cinderforge.png": "2d0b9b804520b4381423d2c4f63463f8704c999f1d0c95d693a34f1ad5fece7a",
         "suits/cinderforge/parts.png": "2668a05d96928c0f7e39a13e52fc667eb3f5d7464441c7260daca2955935c8af"
       }
     },
@@ -1538,7 +2426,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/groveguard.png": "5bcd952c0c77271da95e6c295d0a057e5da7949ec39d49f9e7dd10e814e2fb36",
+        "suits/groveguard.png": "9b4f6c635f23a027f5605d3c9c259f89c8cf7a3fd39f2dc85d6a3aae85ddaab0",
         "suits/groveguard/parts.png": "115fe0bd2d6ae0e8b73fce528badbc7ed8278c3f602580d45201b1b0c3dcddcc"
       }
     },
@@ -1564,7 +2452,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/cosmic.png": "94dbca1f4b1fc77a08c32f7809dd14c67d7ef98c1f4c47a038da11e1fc8eb5e4",
+        "suits/cosmic.png": "8896e54bcdb971769c887123119873b076bccbcf140a9bcd9f06ece6c5b417ec",
         "suits/cosmic/parts.png": "06a2cdf2d3a63ff1df2b5f82a2f360a62e79520f7083a2c89799abc65f0c9a13"
       }
     },
@@ -1639,7 +2527,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/sunforged.png": "f24212ca5897ada7650d0c5b84bd72ea9220a67c35defbbd97dfc92c372fa10c",
+        "suits/sunforged.png": "4b6dbeb1bd0911c3a59c00f8d201dda2ca4a9cdaa0cfeac1e9ffa36c4215aaa9",
         "suits/sunforged/parts.png": "f68a8b9d56fbd4c8b48f65f782653cd8ba7039a80e3a88217c30e3566edbe2a1"
       }
     },
@@ -1665,7 +2553,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/abyssal.png": "16b728b2b83ae9278f7c7c6e852e20a4c9c80f24919810eb7e35774f45cfb74a",
+        "suits/abyssal.png": "58bd24ac7c7011931f1687a0f33fe9b0309ba9e998b64332439f56ab3f8a4bd1",
         "suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
       }
     },
@@ -4892,17 +5780,19 @@
     ]
   },
   "painterHashes": {
-    "arcflash": "bb2b9fbef942d21e361d96cdc3e78990598e791ff51e901b72df76a7935758d2",
-    "arcflash-motion": "49fb085e85e1f7c9640acb017372e1e4dbad42259fc65274d86fd39ee771377a",
+    "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
+    "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
     "control-constants": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
     "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
-    "high-orbit": "eda9d37c4dbfb315f1c65f73e4855c7f74f5242255db1e5b90415a8f64bb73a2",
-    "high-orbit-config": "475b2926093c17372c05d779adf6f293ac69f1736bbf8e91fa577b2e70973361",
+    "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
+    "high-orbit-config": "f7cd482ab2be7e337db36d3376b1922fb1c37eb3d82b3e812e4f88dcc6107232",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
-    "high-orbit-motion": "b09335d7e12fa4eff5886a8625f0fa188229252a618195b07ccfb7a3ebb3f778",
+    "high-orbit-motion": "e01e337504e596aa7acb3128dabdb8237d66273cd52b6cfd5246a605567878b0",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
-    "premium-parts": "92373fc1793f7f6740fa23537d2ca562de1d4fb3a35c5ed25df8ade7295755be",
+    "premium-flight": "5e2b2f654cbdb06cefed4b6026bf99db7a1eb2f6a245647c620805221a52a4fb",
+    "premium-flight-frames": "9e4b4b87be315769575b59908db5743c32c520af99b623eec7e373e01b865cda",
+    "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",
     "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
     "vanguard-parts": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324"
   }

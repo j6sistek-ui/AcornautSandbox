@@ -1,7 +1,7 @@
 // Pure, fixed-step studio runtime. No DOM, save storage, random numbers or I/O.
 // This module and the exported preset form the integration contract; game
 // simulation remains the authority when applying a tuned profile later.
-import {createHighOrbitMotion,stepHighOrbit} from './game/high-orbit-motion.mjs';
+import {createHighOrbitMotion,stepHighOrbit,highOrbitTap,PREMIUM_FLIGHT_DURATION} from './game/high-orbit-motion.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
@@ -20,12 +20,13 @@ export function defaultPattern(){return {duration:13.5,gravity:300,lift:300,maxF
 export function defaultProfile(model){
   const tapSource=model.banks.tap.length?'tap':model.banks.asc.length?'asc':model.banks.loop.length?'loop':'still';
   const n=tapSource==='still'?1:model.banks[tapSource].length;
-  return {basePitch:model.family==='acornut'?12:0,tapPitch:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
-    tapSeconds:1,tapEase:1,retrigger:'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
+  const premium=model.family==='premium-flight';
+  return {basePitch:model.family==='acornut'?12:0,tapPitch:premium?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
+    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:1,retrigger:premium?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
     descentFull:500,descentDelay:.08,descentSeconds:.55,descentEase:1,rigSpeed:1,
     tapSource,tapOrder:Array.from({length:n},(_,i)=>i),tapWeights:Array(n).fill(1),tapOffsets:Array(n).fill(0),
     descOrder:Array.from({length:model.banks.desc.length},(_,i)=>i),descOffsets:Array(model.banks.desc.length).fill(0),
-    parts:Object.fromEntries(Object.keys(PARTS).map(k=>[k,{offset:0,motion:1,rise:0,fall:0,
+    parts:model.family==='premium-flight'?{}:Object.fromEntries(Object.keys(PARTS).map(k=>[k,{offset:0,motion:1,rise:0,fall:0,
       tap:[0,0,0,0,0],velocity:[0,0,0,0,0],lag:0,response:0}]))};
 }
 export function makeProject(manifest,model){return {schema:'acornaut-flight-studio',version:VERSION,
@@ -62,7 +63,8 @@ export function validateProject(value,manifest){
   sequence(p.tapOrder,p.tapOffsets,count,'tap');sequence(p.descOrder,p.descOffsets,model.banks.desc.length,'descent');
   if(!Array.isArray(p.tapWeights)||p.tapWeights.length!==p.tapOrder.length)fail('Frame holds do not match the tap sequence.');
   p.tapWeights.forEach(x=>number(x,.1,10,'Frame hold'));
-  for(const k of Object.keys(PARTS)){
+  if(model.family==='premium-flight'&&(!p.parts||typeof p.parts!=='object'||Array.isArray(p.parts)||Object.keys(p.parts).length))fail('Full-body sheets do not have editable body parts.');
+  for(const k of model.family==='premium-flight'?[]:Object.keys(PARTS)){
     const part=p.parts?.[k];if(!part)fail(`Missing ${PARTS[k]} settings.`);
     for(const [f,a,b] of [['offset',-90,90],['motion',0,2],['rise',-90,90],['fall',-90,90],['lag',0,1],['response',0,1]])number(part[f],a,b,PARTS[k]+' '+f);
     points(part.tap,PARTS[k]+' tap curve');
@@ -83,9 +85,9 @@ export function validateProject(value,manifest){
   return {project:clone(value),model,warnings};
 }
 export function serializeProject(project,manifest){validateProject(project,manifest);return JSON.stringify(project,null,2)+'\n';}
-function nativeState(model){return model.family==='high-orbit'?createHighOrbitMotion(model.id):model.family==='arcflash'?createArcflashMotion():model.family==='acornut'?createManeuverMotion(false):null;}
+function nativeState(model){return ['high-orbit','premium-flight'].includes(model.family)?createHighOrbitMotion(model.id):model.family==='arcflash'?createArcflashMotion():model.family==='acornut'?createManeuverMotion(false):null;}
 function poseOf(model,s){
-  if(!s)return {};
+  if(!s||model.family==='premium-flight')return {};
   return {...s.pose,...(model.family==='arcflash'?{tailRoot:s.tailRoot,tailMid:s.tailMid,tailTip:s.tailTip}:
     model.family==='acornut'?{tailRoot:s.tailBase,tailMid:s.tailBend,tailTip:s.tailTip}:{})};
 }
@@ -99,6 +101,7 @@ export function acceptTap(s,p){
   else if(p.retrigger==='queue')s.queued=true;
   s.downAge=0;s.diving=false;s.tapCount++;
   if(s.model.family==='arcflash')arcflashTap(s.native,450);
+  if(['high-orbit','premium-flight'].includes(s.model.family))highOrbitTap(s.native,450);
   if(s.model.family==='acornut')maneuverTap(s.native,450);
 }
 export function acceptDive(s){s.diving=true;if(s.model.family==='arcflash')arcflashDive(s.native);}
@@ -106,7 +109,19 @@ function follow(a,b,dt,tau){return tau<=0?b:a+(b-a)*(1-Math.exp(-dt/tau));}
 export function stepAnimation(s,p,dt,vy){
   if(!Number.isFinite(dt)||!Number.isFinite(vy)||dt<=0)return s;
   s.time+=dt;s.tapAge+=dt;
-  if(s.queued&&s.tapAge>=p.tapSeconds){s.tapAge=0;s.queued=false;}
+  const premium=s.model.family==='premium-flight',end=p.tapSeconds-(premium?1e-10:0);
+  if(s.queued&&s.tapAge>=end){s.tapAge=premium?Math.max(0,s.tapAge-p.tapSeconds):0;s.queued=false;}
+  if(premium){
+    // Keep the shared wake state persistent. Its unused skeleton never
+    // deforms the painting. Default playback uses the shipping clock itself,
+    // avoiding a one-frame disagreement from separately accumulated time.
+    stepHighOrbit(s.native,s.model.id,dt,vy);
+    Object.assign(s.output,s.native);s.output.pose={...s.native.pose};
+    if(p.tapSeconds===PREMIUM_FLIGHT_DURATION&&p.retrigger==='queue'){
+      s.tapAge=s.native.frames.active?s.native.frames.age:p.tapSeconds;
+      s.queued=s.native.frames.queued;
+    }
+  }
   s.filteredVy=follow(s.filteredVy,vy,dt,p.velocityFilter);
   const lift=smooth(-s.filteredVy/450);
   s.downAge=s.filteredVy>p.descentThreshold?s.downAge+dt:0;
@@ -119,7 +134,7 @@ export function stepAnimation(s,p,dt,vy){
   const tapT=Math.pow(clamp(s.tapAge/p.tapSeconds,0,1),p.tapEase);
   const targetPitch=p.basePitch+curve(p.tapPitch,tapT)+p.risePitch*lift+p.fallPitch*s.fall;
   s.pitch=follow(s.pitch,targetPitch,dt,p.pitchResponse);
-  if(s.native){
+  if(s.native&&s.model.family!=='premium-flight'){
     const effectiveVy=s.filteredVy<0?s.filteredVy:s.fall*p.descentFull;
     const h=dt*p.rigSpeed;
     if(s.model.family==='high-orbit')stepHighOrbit(s.native,s.model.id,h,effectiveVy);
@@ -141,7 +156,7 @@ export function stepAnimation(s,p,dt,vy){
     if(eligible&&p.descOrder.length){s.bank='desc';s.slot=Math.min(p.descOrder.length-1,Math.floor(s.fall*p.descOrder.length));s.frame=p.descOrder[s.slot];}
     else {
       s.bank=p.tapSource;let phase=tapT;
-      if(p.tapSource==='loop')phase=p.loopContinuous?(s.time/p.tapSeconds)%1:(s.tapAge>=p.tapSeconds?0:tapT);
+      if(p.tapSource==='loop')phase=p.loopContinuous?(s.time/p.tapSeconds)%1:(s.tapAge>=end?0:tapT);
       if(p.tapPath==='out-back')phase=phase<=p.returnAt?phase/p.returnAt:1-(phase-p.returnAt)/(1-p.returnAt);
       const total=p.tapWeights.reduce((a,b)=>a+b,0);let at=phase*total,i=0;
       while(i<p.tapWeights.length-1&&at>=p.tapWeights[i])at-=p.tapWeights[i++];

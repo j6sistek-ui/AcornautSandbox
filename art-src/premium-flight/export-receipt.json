@@ -1,0 +1,950 @@
+{
+  "nacre": {
+    "masterSha256": "6a6791917450f222fb412ec3a79319841f055cc794a0c9a2e657284e6fd1f9df",
+    "originalSha256": "7e283cbbbce4338846273a08de6e632b17a97ccffceb498de202bef8043a8dd8",
+    "scale": 0.7115384615384616,
+    "anchor": [
+      180,
+      84
+    ],
+    "atlasSha256": "6330f172d069d1f9b734a128e2a5adb67977a2d0a842be7e87136eb53d72318b",
+    "frames": [
+      {
+        "frame": 0,
+        "sourceBounds": [
+          13,
+          52,
+          289,
+          273
+        ],
+        "sourceInk": 32615,
+        "outputBounds": [
+          17,
+          38,
+          213,
+          195
+        ],
+        "despilled": 47,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "2d1cc2b6fc985576a5ce1a212242720a31dd9c286780f560a844934416d9dd9b"
+      },
+      {
+        "frame": 1,
+        "sourceBounds": [
+          310,
+          52,
+          589,
+          273
+        ],
+        "sourceInk": 32564,
+        "outputBounds": [
+          14,
+          37,
+          212,
+          194
+        ],
+        "despilled": 31,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "81dd5b1e2b0497ad7f04e39dbf1e7831fe1ac2c115130eee14b7c298d8cd2cd3"
+      },
+      {
+        "frame": 2,
+        "sourceBounds": [
+          614,
+          51,
+          888,
+          273
+        ],
+        "sourceInk": 32445,
+        "outputBounds": [
+          16,
+          35,
+          211,
+          193
+        ],
+        "despilled": 25,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "912332ca646d42f613430d96ae4c3ca2c57e7eaed15b615d608ad657668404fb"
+      },
+      {
+        "frame": 3,
+        "sourceBounds": [
+          912,
+          52,
+          1190,
+          273
+        ],
+        "sourceInk": 32455,
+        "outputBounds": [
+          13,
+          35,
+          210,
+          192
+        ],
+        "despilled": 35,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "075872a4f4ca594a5eda3585888d31fdd6c9eb6a32ad20ef4040e550e5f37441"
+      },
+      {
+        "frame": 4,
+        "sourceBounds": [
+          16,
+          362,
+          287,
+          591
+        ],
+        "sourceInk": 31879,
+        "outputBounds": [
+          20,
+          32,
+          212,
+          195
+        ],
+        "despilled": 39,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "bc7a39f097f00039ec466bbf5367847e09a794b8046948fe1f094c42db491bec"
+      },
+      {
+        "frame": 5,
+        "sourceBounds": [
+          303,
+          343,
+          572,
+          592
+        ],
+        "sourceInk": 31736,
+        "outputBounds": [
+          21,
+          36,
+          212,
+          213
+        ],
+        "despilled": 44,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "641fdaa9a984fbaa0d4a1e39a1940eafdd53afb113064386b9be68b9f55efee9"
+      },
+      {
+        "frame": 6,
+        "sourceBounds": [
+          611,
+          336,
+          862,
+          592
+        ],
+        "sourceInk": 30414,
+        "outputBounds": [
+          33,
+          43,
+          211,
+          225
+        ],
+        "despilled": 36,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "26901f46a4e8d640a34bdd5ba850534d0a9ea0d078f48d2aa781275a276fcc63"
+      },
+      {
+        "frame": 7,
+        "sourceBounds": [
+          906,
+          333,
+          1160,
+          592
+        ],
+        "sourceInk": 30351,
+        "outputBounds": [
+          28,
+          44,
+          208,
+          228
+        ],
+        "despilled": 37,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "d7efbb9d55f2603869624add65a65dd283a4c44e93c1b2e914d172200d97790c"
+      },
+      {
+        "frame": 8,
+        "sourceBounds": [
+          13,
+          655,
+          268,
+          918
+        ],
+        "sourceInk": 30803,
+        "outputBounds": [
+          38,
+          46,
+          220,
+          232
+        ],
+        "despilled": 30,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "dd2667241ecdf2db0eb57fdd2bdd8d53953c8fbbb474427df5b6dad7db6a4f9c"
+      },
+      {
+        "frame": 9,
+        "sourceBounds": [
+          303,
+          653,
+          572,
+          918
+        ],
+        "sourceInk": 30861,
+        "outputBounds": [
+          25,
+          44,
+          216,
+          232
+        ],
+        "despilled": 27,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "6cc0453069d52ad97d4837635b3832fdac1ed6779542eef003ebb4da3679be63"
+      },
+      {
+        "frame": 10,
+        "sourceBounds": [
+          619,
+          696,
+          884,
+          924
+        ],
+        "sourceInk": 31345,
+        "outputBounds": [
+          25,
+          46,
+          213,
+          208
+        ],
+        "despilled": 56,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "0700c226dc78878a7098efacc2a889f88e2c3f496c35281f9cc9f204bf4214ea"
+      },
+      {
+        "frame": 11,
+        "sourceBounds": [
+          920,
+          682,
+          1190,
+          926
+        ],
+        "sourceInk": 32004,
+        "outputBounds": [
+          17,
+          23,
+          209,
+          196
+        ],
+        "despilled": 40,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "4c277e1cf0e891a178d4e3bf97a4cfc2e3d943fb714562efc694300b287aee4e"
+      },
+      {
+        "frame": 12,
+        "sourceBounds": [
+          16,
+          998,
+          297,
+          1251
+        ],
+        "sourceInk": 32978,
+        "outputBounds": [
+          14,
+          11,
+          214,
+          191
+        ],
+        "despilled": 42,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "35a42f13fe4a750dec12115bc31857d42695669f6719cfbca8574b1e50991958"
+      },
+      {
+        "frame": 13,
+        "sourceBounds": [
+          320,
+          995,
+          592,
+          1251
+        ],
+        "sourceInk": 33291,
+        "outputBounds": [
+          21,
+          10,
+          214,
+          192
+        ],
+        "despilled": 43,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "b923cc1225a381fbf54f0b5dca679db5eb9b30a8f06b3adbd1a6cb08d463b202"
+      },
+      {
+        "frame": 14,
+        "sourceBounds": [
+          614,
+          1016,
+          888,
+          1251
+        ],
+        "sourceInk": 33109,
+        "outputBounds": [
+          18,
+          29,
+          212,
+          195
+        ],
+        "despilled": 39,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "5b5a3384f601aaaa76fd545858e9687d4376b6547ecf0f75003eca1df5157e64"
+      },
+      {
+        "frame": 15,
+        "sourceBounds": [
+          911,
+          1019,
+          1187,
+          1251
+        ],
+        "sourceInk": 33169,
+        "outputBounds": [
+          13,
+          33,
+          209,
+          198
+        ],
+        "despilled": 51,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "3ec2f38f9585a5291c742f6df2082b1a616c9174dafb800c211cf61fec2ad311"
+      }
+    ]
+  },
+  "porcelain": {
+    "masterSha256": "3229bf6cc1c5625f4b579d7d671228efcc3505f40e6c9b12d6e12e9ac1fbbca1",
+    "originalSha256": "9c783fd5a71232af64b642cda8ce23c2e715782fc1e13666015f887619eddd94",
+    "scale": 0.693069306930693,
+    "anchor": [
+      180,
+      84
+    ],
+    "atlasSha256": "7797a22ac8d0723ccf39b6738adb3253e2beb485ef07234b8073d10ad386b4fe",
+    "frames": [
+      {
+        "frame": 0,
+        "sourceBounds": [
+          33,
+          53,
+          285,
+          259
+        ],
+        "sourceInk": 31937,
+        "outputBounds": [
+          39,
+          37,
+          214,
+          179
+        ],
+        "despilled": 103,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "25b610cd8734875b67abae64815ee2fd57e059509b444ca1b946225735b10c50"
+      },
+      {
+        "frame": 1,
+        "sourceBounds": [
+          350,
+          55,
+          602,
+          260
+        ],
+        "sourceInk": 31691,
+        "outputBounds": [
+          39,
+          38,
+          214,
+          180
+        ],
+        "despilled": 79,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "6e663193aa2249b23884cd09627ff16a69ded24ae1add7fce16c9537cd2c243d"
+      },
+      {
+        "frame": 2,
+        "sourceBounds": [
+          667,
+          54,
+          920,
+          259
+        ],
+        "sourceInk": 31690,
+        "outputBounds": [
+          39,
+          38,
+          214,
+          179
+        ],
+        "despilled": 91,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "db32d45f34af98bb7c205f50681fee0d70d0937bc7ccbda8fe4a7fb25bc4b47a"
+      },
+      {
+        "frame": 3,
+        "sourceBounds": [
+          985,
+          51,
+          1237,
+          259
+        ],
+        "sourceInk": 31786,
+        "outputBounds": [
+          41,
+          35,
+          215,
+          179
+        ],
+        "despilled": 108,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "ffb3548d8ad494e651535b433b37f320d1883e1da96310287882e3179f266ea3"
+      },
+      {
+        "frame": 4,
+        "sourceBounds": [
+          40,
+          333,
+          277,
+          564
+        ],
+        "sourceInk": 33600,
+        "outputBounds": [
+          50,
+          40,
+          214,
+          199
+        ],
+        "despilled": 112,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "1be0e1bafbf71c8dd0bf3bcbecbb45ee249d10d3bb65274c1df879dcdd8820f5"
+      },
+      {
+        "frame": 5,
+        "sourceBounds": [
+          362,
+          324,
+          588,
+          564
+        ],
+        "sourceInk": 33131,
+        "outputBounds": [
+          55,
+          37,
+          212,
+          203
+        ],
+        "despilled": 96,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "367660d174fc4992012e10efd6036abc0834a927b5452e2b0fed3ecad53ca044"
+      },
+      {
+        "frame": 6,
+        "sourceBounds": [
+          672,
+          316,
+          902,
+          564
+        ],
+        "sourceInk": 33676,
+        "outputBounds": [
+          53,
+          38,
+          212,
+          210
+        ],
+        "despilled": 85,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "2094f053b6bac5be8549b6b723dd1d76b85570beffe6914a0e5936f2fa361f1b"
+      },
+      {
+        "frame": 7,
+        "sourceBounds": [
+          996,
+          314,
+          1216,
+          564
+        ],
+        "sourceInk": 32775,
+        "outputBounds": [
+          59,
+          40,
+          212,
+          213
+        ],
+        "despilled": 102,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "54785230b3f541ee49936579c69d50692e6acbea44d8fbfe09f7e9ea3373b7af"
+      },
+      {
+        "frame": 8,
+        "sourceBounds": [
+          30,
+          623,
+          264,
+          875
+        ],
+        "sourceInk": 31988,
+        "outputBounds": [
+          51,
+          42,
+          213,
+          216
+        ],
+        "despilled": 96,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "fce2e90f865a02974ebe8050478227dbc3466b785d4c93268507bf0fe5f222e7"
+      },
+      {
+        "frame": 9,
+        "sourceBounds": [
+          346,
+          624,
+          580,
+          875
+        ],
+        "sourceInk": 31326,
+        "outputBounds": [
+          52,
+          42,
+          214,
+          215
+        ],
+        "despilled": 78,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "2da2286420eb9ec5ba185e8d53d4acca772c41cca8700c1bcfa89a3c5cdb6704"
+      },
+      {
+        "frame": 10,
+        "sourceBounds": [
+          655,
+          624,
+          898,
+          875
+        ],
+        "sourceInk": 31600,
+        "outputBounds": [
+          46,
+          42,
+          214,
+          215
+        ],
+        "despilled": 56,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "915a932ea6797634a7c18b7d79c30f6ef976fe4f22c7e39c48a757a23f1fd1b3"
+      },
+      {
+        "frame": 11,
+        "sourceBounds": [
+          975,
+          624,
+          1219,
+          875
+        ],
+        "sourceInk": 31565,
+        "outputBounds": [
+          48,
+          42,
+          217,
+          215
+        ],
+        "despilled": 97,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "341386e2c55eeaca3c1daf09e95166338c03003e6832e4786cc9643e9dc303a5"
+      },
+      {
+        "frame": 12,
+        "sourceBounds": [
+          10,
+          948,
+          275,
+          1164
+        ],
+        "sourceInk": 29743,
+        "outputBounds": [
+          30,
+          42,
+          213,
+          192
+        ],
+        "despilled": 106,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "29bf372c36688f3c8561a4610c0c75f64d20716c4b7a4580c0f2bd5d79f6971f"
+      },
+      {
+        "frame": 13,
+        "sourceBounds": [
+          338,
+          949,
+          598,
+          1160
+        ],
+        "sourceInk": 31953,
+        "outputBounds": [
+          34,
+          43,
+          214,
+          189
+        ],
+        "despilled": 99,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "4b23c4b074e21954e9ccebbcfc609083f17225b20213a9a3c07066da6e1a7cf5"
+      },
+      {
+        "frame": 14,
+        "sourceBounds": [
+          658,
+          953,
+          917,
+          1160
+        ],
+        "sourceInk": 31733,
+        "outputBounds": [
+          34,
+          42,
+          214,
+          185
+        ],
+        "despilled": 118,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "5bf4b00931517bb205ae1a8dccc2f1d4f578ee7ea24652394267f22ff70e08e5"
+      },
+      {
+        "frame": 15,
+        "sourceBounds": [
+          983,
+          954,
+          1235,
+          1160
+        ],
+        "sourceInk": 31930,
+        "outputBounds": [
+          39,
+          39,
+          214,
+          181
+        ],
+        "despilled": 98,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "73bf413914923c80df14b93f82284154bf92d4d93439c16caa1db41e4e424454"
+      }
+    ]
+  },
+  "origamist": {
+    "masterSha256": "437e346bb7cf5d648fb8c312516c3050d287e7c8b09fec6ceff0df1de2195b18",
+    "originalSha256": "636fb3c616c0b8897086908a9843d56541cc3e90cbaab3cef13a2469746a7d7c",
+    "scale": 0.7142857142857143,
+    "anchor": [
+      180,
+      84
+    ],
+    "atlasSha256": "d9e0f96b5ff99bd6424fc914835c4bac445c18a7a20158d1234505bf2e7d5936",
+    "frames": [
+      {
+        "frame": 0,
+        "sourceBounds": [
+          19,
+          51,
+          280,
+          276
+        ],
+        "sourceInk": 34339,
+        "outputBounds": [
+          28,
+          29,
+          214,
+          189
+        ],
+        "despilled": 29,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "0c0fd02baf71196e282078d3e6e1cd9786049aa9d91d49682cfa02eab543224a"
+      },
+      {
+        "frame": 1,
+        "sourceBounds": [
+          320,
+          51,
+          580,
+          276
+        ],
+        "sourceInk": 34175,
+        "outputBounds": [
+          29,
+          29,
+          214,
+          189
+        ],
+        "despilled": 38,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "db82c1feca4b52537b1d62298331d6b3d4677743865cdaebc4d6d43fd8c7e246"
+      },
+      {
+        "frame": 2,
+        "sourceBounds": [
+          619,
+          55,
+          880,
+          276
+        ],
+        "sourceInk": 33683,
+        "outputBounds": [
+          28,
+          29,
+          214,
+          187
+        ],
+        "despilled": 31,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "b7ae95024f471d6ea1a338183c4eb873afab52bfd2c1e15505921154cf46041c"
+      },
+      {
+        "frame": 3,
+        "sourceBounds": [
+          918,
+          57,
+          1181,
+          276
+        ],
+        "sourceInk": 33474,
+        "outputBounds": [
+          27,
+          28,
+          215,
+          184
+        ],
+        "despilled": 45,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "34dbc04853662a25c90df86dc11f7f541d2690a7de23d32095d848931f4cd4fd"
+      },
+      {
+        "frame": 4,
+        "sourceBounds": [
+          16,
+          385,
+          282,
+          603
+        ],
+        "sourceInk": 34025,
+        "outputBounds": [
+          24,
+          32,
+          214,
+          187
+        ],
+        "despilled": 38,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "6194fa878f1a621bfa05a2a39a7fc133246386b355fe7f60123547694b03b381"
+      },
+      {
+        "frame": 5,
+        "sourceBounds": [
+          307,
+          365,
+          575,
+          595
+        ],
+        "sourceInk": 33766,
+        "outputBounds": [
+          19,
+          34,
+          210,
+          198
+        ],
+        "despilled": 42,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "3589fb34237adf0239533a09213080ed5418e0b7e43aca7101698e2f3a5b7abe"
+      },
+      {
+        "frame": 6,
+        "sourceBounds": [
+          605,
+          333,
+          870,
+          595
+        ],
+        "sourceInk": 30619,
+        "outputBounds": [
+          28,
+          37,
+          217,
+          224
+        ],
+        "despilled": 24,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "c1144d014e1e5228785676c0fd25323f154efbd49ecb82acd8ef26c83a9af651"
+      },
+      {
+        "frame": 7,
+        "sourceBounds": [
+          906,
+          331,
+          1172,
+          595
+        ],
+        "sourceInk": 30308,
+        "outputBounds": [
+          31,
+          37,
+          220,
+          225
+        ],
+        "despilled": 26,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "bfbd35348f3f0cdfcb939c48b8785dd05a7ee4da3eb6a32abed9d24a880c10f3"
+      },
+      {
+        "frame": 8,
+        "sourceBounds": [
+          6,
+          658,
+          274,
+          922
+        ],
+        "sourceInk": 30426,
+        "outputBounds": [
+          31,
+          37,
+          222,
+          225
+        ],
+        "despilled": 34,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "e3b5149024335cbe525ad2203cfb6eded3d4893c9b263ce9b9d3a63f6e200826"
+      },
+      {
+        "frame": 9,
+        "sourceBounds": [
+          306,
+          658,
+          575,
+          922
+        ],
+        "sourceInk": 30269,
+        "outputBounds": [
+          31,
+          37,
+          223,
+          225
+        ],
+        "despilled": 31,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "662dd71b4a17b4bf6dba377f5d402e531eb998ed59ac223fd04bcd4247b92afb"
+      },
+      {
+        "frame": 10,
+        "sourceBounds": [
+          607,
+          661,
+          879,
+          922
+        ],
+        "sourceInk": 30999,
+        "outputBounds": [
+          29,
+          39,
+          223,
+          225
+        ],
+        "despilled": 36,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "a4e29d84d4c4d3eab0c7b6d551b1e09baf1108218963c25d172355dfa88dbc3b"
+      },
+      {
+        "frame": 11,
+        "sourceBounds": [
+          941,
+          688,
+          1179,
+          930
+        ],
+        "sourceInk": 34809,
+        "outputBounds": [
+          43,
+          19,
+          213,
+          192
+        ],
+        "despilled": 35,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "ce8727f8b64d5ca7543a387b5c81a6b95ea41b7e45d9724346b782a12278f4cf"
+      },
+      {
+        "frame": 12,
+        "sourceBounds": [
+          46,
+          1020,
+          280,
+          1258
+        ],
+        "sourceInk": 34640,
+        "outputBounds": [
+          47,
+          15,
+          214,
+          184
+        ],
+        "despilled": 29,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "3c46cf843a96c8e4cb1826462617264652b8ce9e495b663da0555257343306e9"
+      },
+      {
+        "frame": 13,
+        "sourceBounds": [
+          342,
+          1022,
+          581,
+          1258
+        ],
+        "sourceInk": 34485,
+        "outputBounds": [
+          44,
+          16,
+          215,
+          184
+        ],
+        "despilled": 34,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "218404ef07844fc44f4800460cb3a0dabc51477f63f46f70038792ba1f39551c"
+      },
+      {
+        "frame": 14,
+        "sourceBounds": [
+          638,
+          1023,
+          880,
+          1258
+        ],
+        "sourceInk": 34332,
+        "outputBounds": [
+          41,
+          17,
+          214,
+          184
+        ],
+        "despilled": 31,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "66502ceb25eda4d73a60828619b1e2f04efa6a4ea5eb2e5ba48c110cc67ec446"
+      },
+      {
+        "frame": 15,
+        "sourceBounds": [
+          922,
+          1031,
+          1181,
+          1258
+        ],
+        "sourceInk": 34186,
+        "outputBounds": [
+          30,
+          23,
+          215,
+          184
+        ],
+        "despilled": 40,
+        "maxGreenExcess": 6,
+        "rgbaSha256": "245631e60b56d42a6e93165a89574a52c66830d4562f9bf8764f2288b530554e"
+      }
+    ]
+  }
+}

@@ -37,7 +37,10 @@ moving head transform through the same helper as the rest of the game.
 
 Every frame uses these same painted parts. Limb lengths and part scale
 are constant; panels, fasteners, fur markings and colors are never repainted,
-blended between alternative heads, mirrored or resized per pose. Remastering
+blended between alternative heads, mirrored or resized per pose. Static
+`rig-limb-fit.ts` registration corrects three backwards far boots and gives
+both hind legs fixed extra breadth. This calibration does not change bone
+lengths or introduce animated scaling. Remastering
 changes the source painting once; the resulting design is then fixed.
 
 The tail is one painted surface, with bone-aligned strips receiving delayed
@@ -49,9 +52,12 @@ The tail root is registered at the pelvis, with its ink clear of the skull.
 
 `high-orbit-motion.ts` is a separate presentation controller. It observes
 accepted vertical velocity, keeps a continuous paddling phase, and adds a
-bounded accent after a large upward velocity change. A tap does not reset
+bounded accent after an accepted tap, including small refresh impulses. A tap does not reset
 the phase or a joint. The chest settles more firmly than the tail; forearms
 recover with a small delay. Five bounded profiles vary timing and inertia.
+The head nods through the arc at a fixed 36px size, the hind legs tuck, and
+the tail rocks aft on a tap before its delayed sections recover. The recoil
+channel is separate from the existing jet-power channel.
 It imports neither AcorNut nor Arcflash motion.
 
 The controller is stepped by normal flight and Hyper Run's respective clocks.
@@ -99,3 +105,7 @@ contacts, browser-rendered comparison, numerical regression receipt and
 validation report. The art was inspected in those contacts and in Chrome
 at 390px width. Visual approval of the remastered style remains the owner's
 decision; numerical checks do not substitute for that review.
+
+The later foot/proportion/helmet repair is documented in
+[`../rig-repair/README.md`](../rig-repair/README.md). Its measurements supersede
+the initial head and tail motion ranges; the original atlas pixels remain intact.

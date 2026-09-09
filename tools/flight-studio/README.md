@@ -33,8 +33,18 @@ move the viewer into a separate window or use the button.
 
 ## Start tuning
 
-1. Select a model. All 31 current catalog models are included. Seven use
+Art 253 includes the repaired Arcflash and High Orbit foot registration,
+fuller hind legs and tucked posture. High Orbit's native motion now includes
+head nods and stronger tap-driven tail recoil. The Body parts controls tune
+on top of that motion. Sunforged and Groveguard's sealed helmets replace the
+bare head when selected, so ears do not protrude around the metal shell.
+Older presets for these seven rigs still import, with a source-change warning
+to prompt a fresh motion review. Their settings are not silently reset.
+
+1. Select a model. All 34 current catalog models are included. Seven use
    articulated cut rigs: AcorNut, Arcflash and the five High Orbit suits.
+   Porcelain Paragon, Nacre Envoy and Foldspace Origamist each use a new
+   sixteen-frame full-body sheet bank.
 2. Leave the pattern playing, or pause and scrub to a troublesome moment.
    Changes appear in both windows, including when paused. Step advances 1/60 s;
    playback also offers half and quarter speed.
@@ -104,6 +114,16 @@ first frame afterward. A separate continuous-play option is available for
 comparison. They also have whole-model tap/velocity pitch controls. Every image is drawn with fixed
 canvas registration; the tool does not fit each moving frame to its bounds.
 
+The three premium pilots use sixteen complete 256px paintings on a 1024px
+sheet. Their defaults match the shipping one-second clip: a rapid tap queues
+one following cycle, and completed playback returns to frame zero. Frame
+order, holds, timing and whole-model pitch are editable; **Body parts** is
+disabled. No head, limb or tail is separately assembled or deformed. Porcelain
+keeps its Sovereign Shell, Nacre stays helmetless, and Origamist keeps its
+Facet Shell. The shared game painter also draws each suit's custom wake from
+the selected frame's measured emitters. Registration guides show that frame's
+head and emitter measurements.
+
 ## The tap pattern
 
 The default is 13.5 seconds: taps at 0, 1.5, 3.0, then a long fall before taps
@@ -139,6 +159,9 @@ painter and asset hashes, all tuning values, frame sequences/holds/pitch, the
 complete timed pattern and view. Imports validate finite numeric ranges,
 available frames and ordered event times. Changed art/painter hashes produce
 an explicit review notice. Invalid imports leave the current session intact.
+The obsolete premium cut-rig presets have a different model family and are
+rejected; joint settings cannot be applied to these complete paintings. This
+does not change preset compatibility for the original 31 models.
 
 **Export creates a tuning preset, not a replacement sprite sheet or an
 automatic game patch.** See [APPLYING-PRESETS.md](APPLYING-PRESETS.md) for the
@@ -159,10 +182,13 @@ extracts model banks/head registrations into a manifest with asset hashes.
 It does not build or modify `docs/js*`, artwork or game sources. Rebuild the
 tool after relevant art/rig/bank changes, and reload both windows.
 
-The test checks 31 models/443 asset references, deterministic replay at
+The test checks all 34 models, seven cut rigs, three full-body sheet banks and
+their asset hashes; deterministic replay at
 30/60/144 Hz, pause/loop behavior, velocity-independent tap timing, descent
 gates, rapid-tap policies, frame holds, rig tuning, export/import, malformed
-presets, actual local-image rendering and the read-only loopback host.
+presets, actual local-image rendering and the read-only loopback host. Every
+premium frame is compared pixel for pixel with the shared game painter, with
+and without its wake, including the absence of an added helmet or body parts.
 `--write-review` also produces the contact sheet in
 `illustrated-src/design/flight-studio/`. Use the repository container checks
 by default; the documented workspace fallback applies if Docker is unavailable.
