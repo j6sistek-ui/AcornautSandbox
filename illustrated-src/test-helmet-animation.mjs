@@ -99,12 +99,18 @@ try {
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,21,'all twenty-one production suits with wearable helmets are covered');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id));
+  const TRANSFERRED=['cryostar','verdant'];
+  const transferred=suits.filter(suit=>TRANSFERRED.includes(suit.id));
+  const transferHashes=JSON.parse(readFileSync(join(root,'art-src/eclipse-motion-transfer/frame-hashes.json'),'utf8'));
   // e8bf123 replaced these five suits' flights outright and gave them brand new
   // dome anchors, so there is no pre-repair rendering of them to diff against:
   // the old-vs-new comparisons below run over `legacy`, and `promoted` flies its
   // own single-renderer pass so the five are still flown, not merely loaded.
-  const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id));
-  assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)),'helmet fitting does not change the pre-existing suit roster');
+  // The owner-requested Eclipse transfers now have different art and flight
+  // mapping. Exercise them on the current painter; the dedicated transfer test
+  // compares their live frame/transform trace directly against Eclipse.
+  const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id));
+  assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
   assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
   const withoutHighOrbit=table=>Array.isArray(table) ? table.filter(id=>!HIGH_ORBIT.includes(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!HIGH_ORBIT.includes(id)));
@@ -146,6 +152,8 @@ try {
           const x=p/4%256,y=Math.floor(p/4/256);
           if(x<60||x>205||y<150||y>224)assert.deepEqual(a.slice(p,p+4),b.slice(p,p+4),'helmet exterior is protected');
         }
+      } else if(/^suits\/(cryostar|verdant)-(asc|desc)-[1-8]\.png$/.test(path)) {
+        assert.equal(hash,transferHashes[path],`${path}: reviewed Eclipse transfer art`);
       } else {
         const pinned=blobs.get(full) ?? shipped.get(full);
         assert(pinned,`${path}: no pinned revision covers this artwork`);
@@ -248,8 +256,8 @@ try {
   // a76c23e dialled Eclipse to 5 degrees forward and Volt to 25; no other
   // suit's flight lean moved, and every suit flown below is flown at its own
   // resolved lean so the two renderers never disagree about the attitude.
-  assert.deepEqual(NewCat.SUIT_PITCH_DEFAULTS,{...OldCat.SUIT_PITCH_DEFAULTS,eclipse:5,volt:25},
-    'suit lean defaults changed only by the dialled Eclipse/Volt rungs');
+  assert.deepEqual(NewCat.SUIT_PITCH_DEFAULTS,{...OldCat.SUIT_PITCH_DEFAULTS,eclipse:5,cryostar:5,verdant:5,volt:25},
+    'suit lean defaults include the two owner-requested Eclipse transfers');
   function illustrated(renderer,ctx,suit,bank,{pose=NaN,tap=-1,time=0,size=256,pitch=0,vy=0}={}) {
     ctx.translate(dimensions/2,dimensions/2);ctx.rotate(pitch);
     renderer.paintIllustrated(ctx,art.squirrelIdle[0],0,0,size,helmet,suit,time,bank,'idle-1',
@@ -341,7 +349,7 @@ try {
   // its whole 8/8 ascent and descent, land the frame the pose asks for, keep a
   // body on screen at both scales and wear exactly one helmet - loading art for
   // them is not enough, a bare-headed or non-rendering promotion fails here.
-  for(const suit of promoted) {
+  for(const suit of [...promoted,...transferred]) {
     const id=suit.id;
     for(const [property,bank,sign] of [['suitAsc','asc',-1],['suitDesc','desc',1]]) {
       const n=art[property][id]?.length || 0;
@@ -402,7 +410,7 @@ try {
   // The five promoted suits also have to survive a real flight on the shipped
   // sim: taps accepted, a dive taken, and a pilot painted with one helmet on
   // every frame of the run - the gameplay path the legacy loop above covers.
-  for(const suit of promoted) {
+  for(const suit of [...promoted,...transferred]) {
     const run=makeRun(NewSim,NewSave,suit.id);
     const taps=new Set([0,11,22,33,44]);
     for(let tick=0;tick<120;tick++) {
@@ -417,7 +425,8 @@ try {
   }
   console.log(JSON.stringify({passed:true,baseline,build:NewCat.ART_VER,productionWearableSuits:suits.map(s=>s.id),
     highOrbitPromotions:promoted.map(s=>s.id),
-    sourceImagesChecked:loaded.size,sourceImagesUnchanged:loaded.size-glassRepairs.size,
+    sourceImagesChecked:loaded.size,sourceImagesUnchanged:loaded.size-glassRepairs.size-Object.keys(transferHashes).length,
+    eclipseTransfers:transferred.map(s=>s.id),
     repaintedGlass:[...glassRepairs],...counts,limitation:'Native Canvas regression proves unchanged body animation; helmet fit still requires visual review.'},null,2));
 } finally {
   rmSync(scratch,{recursive:true,force:true});

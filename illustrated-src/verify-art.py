@@ -675,7 +675,9 @@ def verify_repaired_tail_continuity(qa: QA) -> None:
 
     asc = bank_counts("ASC_BANKS")
     desc = bank_counts("DESC_BANKS")
-    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper", "cryostar", "verdant", "gemmie")
+    # Cryostar/Verdant now use Eclipse's deliberately changing tail silhouette;
+    # their 32 pose matches and local costume colours have a separate gate below.
+    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper", "gemmie")
     hue_limit = 0.004
     saturation_limit = 0.035
     value_limit = 0.055
@@ -800,7 +802,6 @@ def verify_repaired_suit_material_continuity(qa: QA) -> None:
 
     specs = {
         "iontrim": ((0.48, 0.72), 0.025, 0.035),
-        "verdant": ((0.23, 0.46), 0.025, 0.035),
     }
     problems: list[str] = []
     summaries: list[str] = []
@@ -2060,6 +2061,12 @@ def main() -> int:
     verify_bank_frame_spread(qa)
     verify_repaired_tail_continuity(qa)
     verify_repaired_suit_material_continuity(qa)
+    result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/verify-eclipse-motion-transfer.py')],
+                            capture_output=True, text=True)
+    if result.returncode:
+        qa.fail('Eclipse motion transfer: ' + result.stdout.strip() + result.stderr.strip())
+    else:
+        qa.ok(result.stdout.strip())
     run_edge_audit(qa)
     run_rig_audit(qa, rigged)
     return qa.finish()

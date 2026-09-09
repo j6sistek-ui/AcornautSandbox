@@ -1,0 +1,5 @@
+{
+  "note": "Manually located armor plates in exported 256px cells; radii cover perspective changes without sampling another body location. Ordered asc-1..8, desc-1..8. Chest is visually reviewed because the hands/helmet occlude it in deep poses.",
+  "shoulder": [[154,124],[153,123],[152,124],[153,122],[154,122],[157,126],[160,130],[162,136],[167,136],[160,153],[145,169],[140,179],[135,183],[130,186],[129,190],[126,192]],
+  "hip": [[109,164],[109,162],[111,162],[110,161],[112,164],[116,169],[119,170],[121,173],[125,177],[112,194],[94,206],[83,205],[80,209],[77,211],[74,204],[72,195]]
+}
