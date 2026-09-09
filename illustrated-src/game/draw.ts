@@ -4358,9 +4358,84 @@ export const POSE_CURVE = 1.7;
 // frames the sheets were drawn around and the game had never once painted,
 // on 22 suits. Nothing rotates: for a bank suit rigPitch is 0 in the
 // shipped motion mode, so this picks a painted frame and the attitude is
-// whatever the artist drew into it. Raise this back toward 0.5 to shallow
-// the dive again; the loadout case reads the same constant and follows.
+// whatever the artist drew into it.
+//
+// This is the DEFAULT. Per-suit overrides live in SUIT_DIVE_DEPTH below,
+// because one global number could not survive the owner's roster review.
 export const POSE_DIVE_DEPTH = 1;
+
+// THE FROZEN ROSTER (owner, 9 Sep 2026, flying the whole thing after the
+// ramp landed: "ok honestly they all fly. it's much better").
+//
+// The review named twelve suits as finished and OFF LIMITS while the rest
+// are worked on - "there need to be frozen untouchable while tweaking other
+// suits" - and that is not something a comment can enforce. Six of them fly
+// an ascent/descent bank, so before this they shared ONE dive dial with
+// every suit the same review called awful. Tuning Ion moved Eclipse.
+//
+//   AcorNut     "Perfect"          Big Booty   "perfect"
+//   Flight      "just ok, but it's base level, introductory and free, good"
+//   Robo        "great for its character"
+//   Alien       "a bit odd, but it's an alien, keep it"
+//   Volt        "unique but looks fluid"
+//   Cyber       "more of a cruise but matches its character, the tail does
+//                almost all the work"
+//   Eclipse     "very good"        Seraph      "solid flier now"
+//   Arcflash    "beautiful but unique and shouldn't be copied"
+//   Cat         "amazing"
+//   Briella's   "the motion is incredible, honestly ideal for standard to
+//                replicate against"
+//
+// AcorNut, Arcflash, Robo, Big Booty, Volt and Cat reach no dial at all -
+// their own painters or 16-frame tap banks answer first - so freezing them
+// is a matter of not touching those paths. The six that DO ride this dial
+// are pinned here at the value they were approved on, and the harness
+// fails if any of them moves. Do not edit a frozen line without the owner
+// saying so in as many words.
+//
+// Everything else is tunable. The values below are the same review's own
+// complaints, in one word each: the over-divers come back, and the suits
+// whose dive frames "barely do work" are held to the shallow end until
+// their art is regenerated.
+export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
+  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat"] as const;
+
+export const SUIT_DIVE_DEPTH: Record<string, number> = {
+  // ---- FROZEN: approved 9 Sep 2026, do not touch ----
+  flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
+
+  // ---- tunable ----
+  // "dives a bit too steep visually, over rotates but tail doesn't do
+  // enough on the way up" - the High Orbit five
+  cinderforge: 0.7, groveguard: 0.7, cosmic: 0.7, sunforged: 0.7, abyssal: 0.7,
+  // "Ion is ok - a bit steep on the dive"; "Copper is ok: same dive"
+  iontrim: 0.7, copper: 0.7,
+  // "deep dive, a little drift between frames but not too noticeable"
+  leviathan: 0.7,
+  // "I want them to match Eclipse ... the deep tail movement of eclipse
+  // drives its power and feel" - that is an ART note, not a dial; this only
+  // keeps them off the steep end meanwhile
+  cryostar: 0.7, verdant: 0.7,
+  // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
+  // teetering effect otherwise good" - and the game's own dome anchors say
+  // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at
+  // [198, 129], a 65px head jump in a single step, by far the largest in
+  // any bank. 0.5 caps the dive at desc-3, so the jump cannot play at all.
+  // A real transitional frame replaces this; until then the teeter is gone
+  // and five dive frames are parked.
+  ghost: 0.5,
+  // "massive suit drift between frames and over dive, limited tail" /
+  // "twitchies and minimal motion" / "twitching a lot" / "frame to frame
+  // suit drift has it shifting looks". Held shallow so the frames that do
+  // the least are on screen the least, pending regenerated art.
+  voidsuit: 0.5, ember: 0.5, frost: 0.5, sammie: 0.5, gemmie: 0.5,
+};
+
+/** The dive dial this suit flies: its own if it has one, else the default. */
+export function diveDepthFor(id: string) {
+  const v = SUIT_DIVE_DEPTH[id];
+  return typeof v === "number" ? v : POSE_DIVE_DEPTH;
+}
 
 // THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
 // 470 px/s, and the game never gets there - a hard climb peaks near 428, so
@@ -4742,7 +4817,7 @@ function paintIllustrated(
           v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
         }
         // shape the attitude: the dive half shallowed, both halves curved
-        if (v > 0) v *= POSE_DIVE_DEPTH;
+        if (v > 0) v *= diveDepthFor(suit.id);
         v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
       }
       const diving = v > 0;
@@ -5240,7 +5315,8 @@ export function paintFlightPreview(
   if (swept) {
     const STEP = 0.13;                    // seconds per frame
     const up = ascN - 1;                  // asc-1 .. asc-N
-    const reach = Math.round(Math.pow(POSE_DIVE_DEPTH, POSE_CURVE) * (descN - 1));
+    const dive = diveDepthFor(suit.id);
+    const reach = Math.round(Math.pow(dive, POSE_CURVE) * (descN - 1));
     const down = reach + 1;               // asc-1 -> desc-1 .. desc-(reach+1)
     const SWEEP = 2 * STEP * (up + down);
     const x = (((t % SWEEP) + SWEEP) % SWEEP) / SWEEP;
@@ -5255,7 +5331,7 @@ export function paintFlightPreview(
     // have produced this attitude in play, the dive side at its shallow cap
     vy = sweptPose < 0
       ? -POSE_CLIMB_SPAN * Math.pow(-sweptPose, 1 / POSE_CURVE)
-      : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / POSE_DIVE_DEPTH;
+      : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / dive;
     rise = -70 * Math.sin(x * Math.PI * 2);
     rot = Math.max(-0.34, Math.min(0.6, vy / 900));
   }

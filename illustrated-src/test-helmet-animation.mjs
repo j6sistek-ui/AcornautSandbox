@@ -312,6 +312,13 @@ try {
       counts.previewFrames++;
     }
     const ascN=art.suitAsc?.[id]?.length??0, descN=art.suitDesc?.[id]?.length??0;
+    // THE SWEEP MUST REACH EXACTLY WHAT THE SUIT'S OWN DIAL REACHES. The dive
+    // dial went per-suit on 9 Sep 2026 (the owner's roster review froze twelve
+    // suits and held the rest shallow), so "every descent frame" is only the
+    // right expectation for a suit at full depth. The reach is the painter's
+    // own formula, read from the shipped renderer's table.
+    const dive=After.diveDepthFor(id);
+    const reachN=Math.min(descN, Math.round(Math.pow(dive,After.POSE_CURVE)*(descN-1))+1);
     // A SIXTEEN-FRAME TAP BANK OUTRANKS THE SWEEP, by design: paintFlightPreview
     // only sweeps when `(suitTap[id]?.length ?? 0) !== 16`, because for those
     // suits the tap IS the showcase and it keeps the beat instead. Flight is
@@ -320,9 +327,13 @@ try {
     const tapN=art.suitTap?.[id]?.length??0;
     if(ascN && descN && tapN!==16) {
       const missAsc=[...Array(ascN).keys()].map(i=>i+1).filter(i=>!seenAsc.has(i));
-      const missDesc=[...Array(descN).keys()].map(i=>i+1).filter(i=>!seenDesc.has(i));
+      const missDesc=[...Array(reachN).keys()].map(i=>i+1).filter(i=>!seenDesc.has(i));
       assert.deepEqual(missAsc,[],`${id} loadout: every ascent frame is swept (missing asc ${missAsc.join(',')})`);
-      assert.deepEqual(missDesc,[],`${id} loadout: every descent frame is swept (missing desc ${missDesc.join(',')})`);
+      assert.deepEqual(missDesc,[],`${id} loadout: every descent frame its dial reaches is swept (missing desc ${missDesc.join(',')})`);
+      // and NOT past it - a suit held shallow must not be showing the frames
+      // it was held back from
+      const over=[...seenDesc].filter(i=>i>reachN);
+      assert.deepEqual(over,[],`${id} loadout: sweeps no deeper than its dial (dive ${dive} reaches desc-${reachN}, saw desc ${over.join(',')})`);
     }
   }
 
