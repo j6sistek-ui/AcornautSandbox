@@ -4398,11 +4398,65 @@ export const POSE_DIVE_DEPTH = 1;
 // whose dive frames "barely do work" are held to the shallow end until
 // their art is regenerated.
 export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
-  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat"] as const;
+  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat",
+  // ADDED 9 Sep 2026: "verdant and cryostar now exactly match eclipse and
+  // can be locked". They were the two the same review wanted held against
+  // Eclipse - "I want them to match Eclipse ... the deep tail movement of
+  // eclipse drives its power and feel" - and they now do, so they inherit
+  // Eclipse's dial rather than the shallow holding value they were parked at.
+  "cryostar", "verdant"] as const;
+
+// FLIGHT PATTERNS GROUP BY FAMILY (owner, 9 Sep 2026: "unique flight
+// pattern by family"; then "Loosely on the family thing. not a rule ...
+// there may be exceptions like acornaut. as close as possible these
+// groupings should align").
+//
+// So: alignment is the DEFAULT and divergence is allowed, but a suit that
+// flies apart from its group has to be NAMED as flying apart. The failure
+// this prevents is nobody's decision - a member quietly drifting off its
+// group because someone tuned one suit and forgot the other four.
+//
+// SUIT_SHELF in catalog.ts is the grouping the pilot actually sees, and
+// these mirror it; the harness checks they have not drifted apart. The
+// owner's plan, 9 Sep: exotic its own pattern, high orbit its own (and
+// shipping LAST), standard its own, AcorNut its own apart from standard,
+// and Quill / Noodle / Bandit standardised together.
+//
+// `settled` is the honest part. A family is only held to alignment once its
+// art is IN. Most of the roster is being regenerated right now and does not
+// align yet - asserting that it does would be asserting something false.
+// Flip a family to settled when its art lands and the alignment becomes
+// real; the harness starts holding it to that from then on.
+export const FLIGHT_FAMILIES: { name: string; members: readonly string[]; settled: boolean }[] = [
+  // Eclipse's motion, transferred to the other two by #242 and confirmed by
+  // the owner ("those three yes"). Art is in, all three frozen.
+  { name: "eclipse", members: ["eclipse", "cryostar", "verdant"], settled: true },
+  // "i'm standardizing quill noodle and rocket" - Bandit is the raccoon;
+  // the owner said "rocket" for it, so the NAME may be changing. Art in
+  // progress.
+  { name: "critters", members: ["raccoon", "ferret", "hedgehog"], settled: false },
+  // "all standard will have their own (except acornut - it'll have its own)"
+  { name: "standard", members: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"], settled: false },
+  // "all exotic have their own unique"
+  { name: "exotic", members: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"], settled: false },
+  // "all high orbit will have their own ... they'll go last"
+  { name: "highorbit", members: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"], settled: false },
+];
+
+/** Suits that deliberately fly apart from the group they sit in. An
+ *  exception is fine - "there may be exceptions like acornaut" - but it is
+ *  declared here rather than discovered later as a suit that drifted. */
+export const FLIES_APART: readonly string[] = [
+  // "except acornut - it'll have its own". It sits on the STANDARD shelf and
+  // shares nothing else with it: its own painter, its own free-running cycle.
+  "vanguard",
+];
 
 export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // ---- FROZEN: approved 9 Sep 2026, do not touch ----
   flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
+  // the Eclipse family, locked together on Eclipse's own ramp
+  cryostar: 1, verdant: 1,
 
   // ---- tunable ----
   // "dives a bit too steep visually, over rotates but tail doesn't do
@@ -4412,8 +4466,6 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   iontrim: 0.7, copper: 0.7,
   // "deep dive, a little drift between frames but not too noticeable"
   leviathan: 0.7,
-  // Regenerated in Eclipse's full pose sequence; use its full dive range.
-  cryostar: 1, verdant: 1,
   // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
   // teetering effect otherwise good" - and the game's own dome anchors say
   // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at

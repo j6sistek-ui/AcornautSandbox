@@ -1,26 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=246";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=246";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=246";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=246";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=246";
-import { arcflashPreview } from "./arcflash-motion.js?v=246";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=246";
-import { spillAppearance } from "./spill-appearance.js?v=246";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=246";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=246";
-import { goalHud } from "./campaign.js?v=246";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=246";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=246";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=246";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=246";
-import { suitPitchFor } from "./save.js?v=246";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=246";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=246";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=246";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=246";
-import { spillEngineColor } from "./spill-content.js?v=246";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=246";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=246";
+import { spillDockTravelDuration } from "./spill.js?v=247";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=247";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=247";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=247";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=247";
+import { arcflashPreview } from "./arcflash-motion.js?v=247";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=247";
+import { spillAppearance } from "./spill-appearance.js?v=247";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=247";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=247";
+import { goalHud } from "./campaign.js?v=247";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=247";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=247";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=247";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=247";
+import { suitPitchFor } from "./save.js?v=247";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=247";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=247";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=247";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=247";
+import { spillEngineColor } from "./spill-content.js?v=247";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=247";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=247";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4302,10 +4302,62 @@ export const POSE_DIVE_DEPTH = 1;
 // whose dive frames "barely do work" are held to the shallow end until
 // their art is regenerated.
 export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
-    "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat"];
+    "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat",
+    // ADDED 9 Sep 2026: "verdant and cryostar now exactly match eclipse and
+    // can be locked". They were the two the same review wanted held against
+    // Eclipse - "I want them to match Eclipse ... the deep tail movement of
+    // eclipse drives its power and feel" - and they now do, so they inherit
+    // Eclipse's dial rather than the shallow holding value they were parked at.
+    "cryostar", "verdant"];
+// FLIGHT PATTERNS GROUP BY FAMILY (owner, 9 Sep 2026: "unique flight
+// pattern by family"; then "Loosely on the family thing. not a rule ...
+// there may be exceptions like acornaut. as close as possible these
+// groupings should align").
+//
+// So: alignment is the DEFAULT and divergence is allowed, but a suit that
+// flies apart from its group has to be NAMED as flying apart. The failure
+// this prevents is nobody's decision - a member quietly drifting off its
+// group because someone tuned one suit and forgot the other four.
+//
+// SUIT_SHELF in catalog.ts is the grouping the pilot actually sees, and
+// these mirror it; the harness checks they have not drifted apart. The
+// owner's plan, 9 Sep: exotic its own pattern, high orbit its own (and
+// shipping LAST), standard its own, AcorNut its own apart from standard,
+// and Quill / Noodle / Bandit standardised together.
+//
+// `settled` is the honest part. A family is only held to alignment once its
+// art is IN. Most of the roster is being regenerated right now and does not
+// align yet - asserting that it does would be asserting something false.
+// Flip a family to settled when its art lands and the alignment becomes
+// real; the harness starts holding it to that from then on.
+export const FLIGHT_FAMILIES = [
+    // Eclipse's motion, transferred to the other two by #242 and confirmed by
+    // the owner ("those three yes"). Art is in, all three frozen.
+    { name: "eclipse", members: ["eclipse", "cryostar", "verdant"], settled: true },
+    // "i'm standardizing quill noodle and rocket" - Bandit is the raccoon;
+    // the owner said "rocket" for it, so the NAME may be changing. Art in
+    // progress.
+    { name: "critters", members: ["raccoon", "ferret", "hedgehog"], settled: false },
+    // "all standard will have their own (except acornut - it'll have its own)"
+    { name: "standard", members: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"], settled: false },
+    // "all exotic have their own unique"
+    { name: "exotic", members: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"], settled: false },
+    // "all high orbit will have their own ... they'll go last"
+    { name: "highorbit", members: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"], settled: false },
+];
+/** Suits that deliberately fly apart from the group they sit in. An
+ *  exception is fine - "there may be exceptions like acornaut" - but it is
+ *  declared here rather than discovered later as a suit that drifted. */
+export const FLIES_APART = [
+    // "except acornut - it'll have its own". It sits on the STANDARD shelf and
+    // shares nothing else with it: its own painter, its own free-running cycle.
+    "vanguard",
+];
 export const SUIT_DIVE_DEPTH = {
     // ---- FROZEN: approved 9 Sep 2026, do not touch ----
     flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
+    // the Eclipse family, locked together on Eclipse's own ramp
+    cryostar: 1, verdant: 1,
     // ---- tunable ----
     // "dives a bit too steep visually, over rotates but tail doesn't do
     // enough on the way up" - the High Orbit five
@@ -4314,8 +4366,6 @@ export const SUIT_DIVE_DEPTH = {
     iontrim: 0.7, copper: 0.7,
     // "deep dive, a little drift between frames but not too noticeable"
     leviathan: 0.7,
-    // Regenerated in Eclipse's full pose sequence; use its full dive range.
-    cryostar: 1, verdant: 1,
     // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
     // teetering effect otherwise good" - and the game's own dome anchors say
     // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at

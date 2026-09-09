@@ -1,25 +1,26 @@
-import { suitPitchFor } from "./save.js?v=243";
-import { platform } from "./platform.js?v=243";
-import { spillAppearance } from "./spill-appearance.js?v=243";
-import { trailWornBy, canWearTrail } from "./catalog.js?v=243";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=243";
-import { addChartScenery } from "./star-map-view.js?v=243";
-import { mapDebrisIndex } from "./zone-visuals.js?v=243";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=243";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=243";
-import { suitLean } from "./control-constants.js?v=243";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=243";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=243";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=243";
-import { drawSprite as drawSpriteOn } from "./art.js?v=243";
-import { createEngine } from "./engine.js?v=243";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=243";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=243";
-import { formatRaceTicks } from "./race.js?v=243";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=243";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=243";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=243";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=243";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=247";
+import { suitPitchFor } from "./save.js?v=247";
+import { platform } from "./platform.js?v=247";
+import { spillAppearance } from "./spill-appearance.js?v=247";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=247";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=247";
+import { addChartScenery } from "./star-map-view.js?v=247";
+import { mapDebrisIndex } from "./zone-visuals.js?v=247";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=247";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=247";
+import { suitLean } from "./control-constants.js?v=247";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=247";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=247";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=247";
+import { drawSprite as drawSpriteOn } from "./art.js?v=247";
+import { createEngine } from "./engine.js?v=247";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=247";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=247";
+import { formatRaceTicks } from "./race.js?v=247";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=247";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=247";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=247";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=247";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -254,10 +255,16 @@ export async function bootStandalone(root) {
     const throttle = el("button", "ac-throttle");
     const diveButton = el("button", "ac-dive");
     const lungeButton = el("button", "ac-lunge");
-    throttle.append(el("b", "", "▲ THROTTLE"), el("span", "", "HOLD TO RISE"));
-    diveButton.append(el("b", "", "▼ DIVE"), el("span", "", "TAP TO DESCEND"));
-    const lungeStatus = el("span");
-    lungeButton.append(el("b", "", "▶ LUNGE"), el("span", "", "FORWARD DASH"), lungeStatus);
+    for (const [kind, button] of [["dive", diveButton], ["throttle", throttle], ["lunge", lungeButton]]) {
+        button.innerHTML = spillControlArt(kind);
+        const box = SPILL_CONTROL_LAYOUT[kind];
+        button.style.left = `${box.x / SPILL_CONTROL_LAYOUT.width * 100}%`;
+        button.style.top = `${box.y / SPILL_CONTROL_LAYOUT.height * 100}%`;
+        button.style.width = `${box.width / SPILL_CONTROL_LAYOUT.width * 100}%`;
+        button.style.height = `${box.height / SPILL_CONTROL_LAYOUT.height * 100}%`;
+    }
+    const lungeStatus = el("span", "ac-control-status");
+    lungeButton.append(lungeStatus);
     throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
     diveButton.setAttribute("aria-label", "Dive: downward burst");
     for (const b of [throttle, diveButton, lungeButton]) {
@@ -326,7 +333,7 @@ export async function bootStandalone(root) {
     };
     diveButton.onclick = () => engine.spillDive();
     lungeButton.onclick = () => engine.spillLunge();
-    spillControls.append(throttle, diveButton, lungeButton);
+    spillControls.append(diveButton, throttle, lungeButton);
     function updateSpillControls() {
         const sp = engine.world.spill;
         const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
@@ -376,7 +383,7 @@ export async function bootStandalone(root) {
         keepShelves();
         const oldGuide = !!overlay.querySelector(".ac-depotguidecard");
         const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
-        const setupScroll = overlay.querySelector(".ac-spillsetup")?.scrollTop ?? 0;
+        const setupScroll = overlay.querySelector(".ac-setup-body")?.scrollTop ?? 0;
         const setupActive = document.activeElement;
         const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
             : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
@@ -456,7 +463,9 @@ export async function bootStandalone(root) {
                 if (sp.phase === "ready" && !sp.target) {
                     const setup = drawSpillPrep();
                     overlay.append(setup);
-                    setup.scrollTop = setupScroll;
+                    const body = setup.querySelector(".ac-setup-body");
+                    if (body)
+                        body.scrollTop = setupScroll;
                     if (setupFocus)
                         setup.querySelector(setupFocus)?.focus({ preventScroll: true });
                     if (spillHelpOpen)
