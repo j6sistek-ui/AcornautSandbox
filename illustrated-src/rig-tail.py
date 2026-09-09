@@ -354,7 +354,7 @@ def warp(mask, s, _dx, _dy, ca, cb, shape):
     return np.asarray(out) > 127
 
 
-def audit(folder, limit=1.0):
+def audit(folder, limit=1.0, suits=None):
     """Is any of the SWINGING tail still held in the body layer?
 
     This used to count only blobs disconnected from the body, and so it
@@ -368,7 +368,8 @@ def audit(folder, limit=1.0):
     """
     bad = 0
     print("  %-12s %8s %8s %7s %7s" % ("suit", "tailfar", "held", "pct", "lost"))
-    for p in sorted(glob.glob(os.path.join(folder, "*-body.png"))):
+    paths = [os.path.join(folder, suit + "-body.png") for suit in suits] if suits is not None else glob.glob(os.path.join(folder, "*-body.png"))
+    for p in sorted(paths):
         stem = p[:-9]
         ta = np.asarray(Image.open(stem + "-tail.png").convert("RGBA"))[:, :, 3]
         ba = np.asarray(Image.open(p).convert("RGBA"))[:, :, 3]
@@ -400,7 +401,7 @@ def main():
         old = sys.argv[2]
         transfer(old, old[:-4] + "-tail.png", sys.argv[3])
         return
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3 or (len(sys.argv) != 3 and sys.argv[1] != "audit"):
         sys.exit(__doc__)
     mode, target = sys.argv[1], sys.argv[2]
     if mode == "cut":
@@ -433,7 +434,7 @@ def main():
         print("reseated %d pairs" % len([r for r in rows if not r.get("skipped")]))
         return
     if mode == "audit":
-        sys.exit(0 if audit(target) else 1)
+        sys.exit(0 if audit(target, suits=sys.argv[3:] or None) else 1)
     sys.exit(__doc__)
 
 

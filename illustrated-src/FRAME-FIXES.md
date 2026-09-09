@@ -1,5 +1,34 @@
 # Frame fixes: the motion banks, frame by frame
 
+## High Orbit remaster (9 September 2026)
+
+Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now animate fixed painted
+cut parts instead of repainting a frame bank. The same head, buttons, panels,
+colors and tail surface persist throughout the cycle. Full-head registration
+fits the existing helmet glass, and the tail root stays at the pelvis.
+Each has its own exclusive material-specific wake. See
+`art-src/high-orbit/README.md` and the interactive `docs/lab/high-orbit/` review.
+
+## Natural flight and companion sheet repair (9 September 2026)
+
+Ion, Copper, Void, Sammie, Gemmie, Leviathan, Ember, Frost and Ghost now
+have replacement 8/8 banks, normalized painted skulls and shared smooth
+pose selection. The initial review missed duplicated crown plumes in Void
+and Copper ascent 8; both are now repaired with localized generated alpha.
+The anatomy regression retains both actual defective frames and proves
+that the crown guard rejects them. This guard does not establish complete
+anatomy or costume continuity; see the dated audit in art-src/natural-flight.
+Leviathan additionally holds one generated head painting with
+a collar blend to remove residual shimmer. The standard tail-work and head
+boundaries are enforced by `verify-natural-flight.py`.
+
+Quill, Noodle and Bandit use the owner's approved sheet motion, exported to
+48 individual 256px RGBA frames. Quill's spurious long tail is removed using
+the generated repair's alpha only inside five bounded tail regions; the
+original faces, clothing, limbs and body poses remain. No panda is exported.
+The earlier refreshes below are historical for these twelve characters.
+See `art-src/natural-flight/README.md` for reproducibility and verification.
+
 ## Eclipse transfer for Cryostar and Verdant (8 September 2026)
 
 The owner superseded these two suits' earlier refresh with Eclipse-matched

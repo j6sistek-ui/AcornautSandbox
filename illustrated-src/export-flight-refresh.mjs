@@ -11,6 +11,9 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const source=root+'art-src/flight-refresh/';
 const spec=JSON.parse(readFileSync(source+'landmarks.json','utf8'));
 const output=process.env.FLIGHT_REFRESH_OUTPUT||root+'docs/art/suits/';
+if(!process.env.FLIGHT_REFRESH_OUTPUT) {
+  throw new Error('Historical refresh retired. Use export-natural-flight.mjs for Copper/Sammie/Gemmie and export-eclipse-motion-transfer.mjs for Cryostar/Verdant. Set FLIGHT_REFRESH_OUTPUT only for an isolated historical review.');
+}
 mkdirSync(output,{recursive:true});
 const registration={};
 for(const [suit,cfg] of Object.entries(spec)) {

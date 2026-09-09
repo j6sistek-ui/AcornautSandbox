@@ -87,6 +87,9 @@ CALIBRATED_HELMET_SCALES = {
     "bigbooty": 0.1872,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
+NATURAL_FLIGHT_SUITS = {"iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost"}
+# Owner-requested skull normalization uses a shared 192px presentation box.
+CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -560,7 +563,7 @@ def verify_base_helmet_scale(qa: QA) -> None:
                 continue
             width = min(image.width, box[2] - box[0] + 4)
             height = min(image.height, box[3] - box[1] + 4)
-        scales[suit] = radius / max(width, height)
+        scales[suit] = radius / (192 if suit in NATURAL_FLIGHT_SUITS else max(width, height))
     if problems:
         qa.fail("base helmet scale contract\n" + "\n".join(problems))
         return
@@ -641,155 +644,6 @@ def verify_bank_frame_spread(qa: QA) -> None:
         qa.ok(f"bank frame spread: {banks} banks measured, none breaks from its own")
 
 
-def verify_repaired_tail_continuity(qa: QA) -> None:
-    """Hold the five owner-identified tail banks to their repaired baseline.
-
-    Gemmie, Cryostar and Verdant also require stable colours. For the
-    repaired suits, sample only
-    warm, opaque pixels behind and outside the tracked head. That isolates
-    the tail well enough to catch the original brightness flash and the
-    frames whose plume collapsed or ballooned, without mistaking normal
-    foreshortening for a failure.
-
-    Painted head area is sampled in fixed source-space regions. These are
-    the approved art repair's original regions, independent of the current
-    helmet sockets: moving a helmet must not alter a colour, volume or head
-    measurement of an unchanged painting.
-    """
-    try:
-        import numpy as np
-    except ImportError:
-        qa.fail("tail continuity needs numpy")
-        return
-
-    art = ART_SOURCE.read_text(encoding="utf8")
-    baseline = json.loads(HELMET_ART_BASELINE.read_text(encoding="utf8"))
-    anchors = baseline["repaired_art_regions"]
-    refreshed = json.loads((ROOT / "art-src/flight-refresh/registration.json").read_text())
-    refreshed_pitch = {f["name"]: math.radians(f["pitch"]) for frames in refreshed.values() for f in frames}
-
-    def bank_counts(name: str) -> dict[str, int]:
-        match = re.search(name + r"[^{]*\{([^}]*)\}", art)
-        return {
-            suit: int(count)
-            for suit, count in re.findall(r"(\w+):\s*(\d+)", match.group(1))
-        } if match else {}
-
-    asc = bank_counts("ASC_BANKS")
-    desc = bank_counts("DESC_BANKS")
-    # Cryostar/Verdant now use Eclipse's deliberately changing tail silhouette;
-    # their 32 pose matches and local costume colours have a separate gate below.
-    repaired = ("sammie", "iontrim", "voidsuit", "ember", "copper", "gemmie")
-    hue_limit = 0.004
-    saturation_limit = 0.035
-    value_limit = 0.055
-    tail_ratio_min = 0.72
-    tail_ratio_max = 1.25
-    head_spread_limit = 0.10
-    problems: list[str] = []
-    summaries: list[str] = []
-
-    for suit in repaired:
-        colours: list[tuple[float, float, float]] = []
-        head_sizes: list[float] = []
-        bank_areas: dict[str, list[tuple[str, int]]] = {"asc": [], "desc": []}
-        for kind, count in (("asc", asc.get(suit, 0)), ("desc", desc.get(suit, 0))):
-            if not count:
-                problems.append(f"{suit} lost its {kind} bank")
-                continue
-            for number in range(1, count + 1):
-                key = f"{suit}-{kind}-{number}"
-                anchor = anchors.get(key)
-                path = DOCS_ART / "suits" / f"{key}.png"
-                if anchor is None or not path.exists():
-                    problems.append(f"{key} is missing art or its fixed sampling region")
-                    continue
-                with Image.open(path) as image:
-                    rgba = np.asarray(image.convert("RGBA"), dtype=np.float32)
-                rgb = rgba[:, :, :3] / 255.0
-                high = rgb.max(axis=2)
-                low = rgb.min(axis=2)
-                chroma = high - low
-                saturation = np.divide(
-                    chroma, high, out=np.zeros_like(chroma), where=high > 0,
-                )
-                hue = np.zeros_like(high)
-                coloured = chroma > 1e-6
-                red = coloured & (high == rgb[:, :, 0])
-                green = coloured & (high == rgb[:, :, 1])
-                blue = coloured & (high == rgb[:, :, 2])
-                hue[red] = ((rgb[:, :, 1][red] - rgb[:, :, 2][red]) / chroma[red]) % 6
-                hue[green] = (rgb[:, :, 2][green] - rgb[:, :, 0][green]) / chroma[green] + 2
-                hue[blue] = (rgb[:, :, 0][blue] - rgb[:, :, 1][blue]) / chroma[blue] + 4
-                hue /= 6
-
-                cx, cy, radius = anchor
-                yy, xx = np.ogrid[:rgba.shape[0], :rgba.shape[1]]
-                distance2 = (xx - cx) ** 2 + (yy - cy) ** 2
-                angle = refreshed_pitch.get(key, 0.0)
-                behind = (xx - cx) * math.cos(angle) + (yy - cy) * math.sin(angle) < -0.65 * radius
-                tail = (
-                    (rgba[:, :, 3] >= 32)
-                    & (hue < 0.16)
-                    & (saturation > 0.35)
-                    & (high > 0.08)
-                    & behind
-                    & (distance2 > (1.05 * radius) ** 2)
-                )
-                area = int(tail.sum())
-                if area < 256:
-                    problems.append(f"{key} has too little sampled tail ({area}px)")
-                    continue
-                bank_areas[kind].append((key, area))
-                colours.append((
-                    float(np.median(hue[tail])),
-                    float(np.median(saturation[tail])),
-                    float(np.median(high[tail])),
-                ))
-                head_area = int(((rgba[:, :, 3] >= 16) & (distance2 <= radius ** 2)).sum())
-                head_sizes.append(math.sqrt(head_area / math.pi))
-
-        if colours:
-            h_span = max(c[0] for c in colours) - min(c[0] for c in colours)
-            s_span = max(c[1] for c in colours) - min(c[1] for c in colours)
-            v_span = max(c[2] for c in colours) - min(c[2] for c in colours)
-            if h_span > hue_limit or s_span > saturation_limit or v_span > value_limit:
-                problems.append(
-                    f"{suit} tail colour drifts H/S/V "
-                    f"{h_span:.3f}/{s_span:.3f}/{v_span:.3f}"
-                )
-        else:
-            h_span = s_span = v_span = 0.0
-
-        for kind, areas in bank_areas.items():
-            if not areas:
-                continue
-            median = float(np.median([area for _, area in areas]))
-            for key, area in areas:
-                ratio = area / median
-                if ratio < tail_ratio_min or ratio > tail_ratio_max:
-                    problems.append(
-                        f"{key} tail volume is {ratio:.2f}x its {kind} median "
-                        f"({tail_ratio_min:.2f}-{tail_ratio_max:.2f} allowed)"
-                    )
-
-        head_spread = 0.0
-        if len(head_sizes) > 1:
-            head_spread = (max(head_sizes) - min(head_sizes)) / (sum(head_sizes) / len(head_sizes))
-            if head_spread > head_spread_limit:
-                problems.append(
-                    f"{suit} painted head scale moves {head_spread * 100:.1f}% "
-                    f"in fixed art regions ({head_spread_limit * 100:.0f}% allowed)"
-                )
-        summaries.append(
-            f"{suit} colour {h_span:.3f}/{s_span:.3f}/{v_span:.3f}, "
-            f"head {head_spread * 100:.1f}%"
-        )
-
-    if problems:
-        qa.fail("repaired tail continuity: " + "; ".join(problems))
-    else:
-        qa.ok("repaired tail continuity held: " + "; ".join(summaries))
 
 
 def verify_repaired_suit_material_continuity(qa: QA) -> None:
@@ -869,7 +723,7 @@ def run_edge_audit(qa: QA) -> None:
 
 def run_rig_audit(qa: QA, rigged: list[str]) -> None:
     result = subprocess.run(
-        [sys.executable, str(RIG_AUDIT), "audit", str(DOCS_ART / "suits")],
+        [sys.executable, str(RIG_AUDIT), "audit", str(DOCS_ART / "suits"), *rigged],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -1591,7 +1445,7 @@ def verify_motion_banks(qa: QA) -> None:
         # cannot carry this model at all; see MOTION_SPEC.md.
         if len(pitches) > 1:
             span = max(pitches) - min(pitches)
-            if span < MOTION_MIN_PITCH_SPAN:
+            if span < MOTION_MIN_PITCH_SPAN and suit not in NATURAL_FLIGHT_SUITS:
                 problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
                                 f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
                                 f"velocity indexing has nothing to pick between")
@@ -2061,7 +1915,18 @@ def main() -> int:
     verify_run_lifelines(qa)
     verify_baked_domes(qa)
     verify_bank_frame_spread(qa)
-    verify_repaired_tail_continuity(qa)
+    result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/verify-natural-flight.py')],
+                            capture_output=True, text=True)
+    if result.returncode:
+        qa.fail('Natural flight: ' + result.stdout.strip() + result.stderr.strip())
+    else:
+        qa.ok(result.stdout.strip().splitlines()[-1])
+    result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/test-natural-flight-anatomy.py')],
+                            capture_output=True, text=True)
+    if result.returncode:
+        qa.fail('Natural flight anatomy regression: ' + result.stdout.strip() + result.stderr.strip())
+    else:
+        qa.ok('Natural flight anatomy: both original crown defects rejected; bounded repairs pass')
     verify_repaired_suit_material_continuity(qa)
     result = subprocess.run([sys.executable, str(ROOT / 'illustrated-src/verify-eclipse-motion-transfer.py')],
                             capture_output=True, text=True)

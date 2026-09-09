@@ -2,13 +2,22 @@ import { platform } from "./platform";
 import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 
-// THE VERSION PLAYERS SEE (owner, 7 Sep 2026): reset for the polish and
-// launch-readiness stretch. The art stamp below is a cache key, not a
-// version, and is no longer shown. QuarterDrop Games is a reserved name,
-// not yet an LLC - no suffix until it is registered.
-export const GAME_VERSION = "V1.0.12";
+// TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
+// intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
+// we are building v1 production version, and keep a dev stamp, that gets
+// removed on packaging."
+//
+// GAME_VERSION is what we are BUILDING - the production label, and the only
+// one a packaged build wears. It does not move while the v1 stretch is on.
+// DEV_STAMP rides alongside it on the web pages and disappears the moment
+// platform.native is true, so packaging drops it without anyone editing a
+// string.
+//
+// QuarterDrop Games is a reserved name, not yet an LLC - no suffix until it
+// is registered.
+export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "249";
+export const ART_VER = "250";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -61,11 +70,22 @@ export const HYPER_RUN_ENABLED = true;
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
 export const BUILD_TIME = "__BUILD_TIME__";
-// the build time stays exported for tooling, and off the visible line
-// a store build wears the bare version: "Alpha" is a web-page word
+// THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
+// A version that never moves cannot answer the only question it is read
+// for, which is the hour the owner just lost: new art loaded in a private
+// window, old animations on screen, no way to tell a stale deploy from a
+// bad delivery.
+//
+// The rolling part is ART_VER, which the shipping ritual already bumps on
+// every PR - not a second number somebody has to remember to touch, which
+// is exactly how the old label sat at 1.0.12 for twelve PRs. The 1.0.12
+// base is the owner's to move whenever they want; the tail moves by
+// itself.
+export const DEV_STAMP = `1.0.12.${ART_VER}`;
 export const BUILD = platform.native
+  // packaged: the production label alone, no dev stamp
   ? `${STUDIO} · ${GAME_VERSION}`
-  : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION}`;
+  : `${STUDIO} · ${IS_BETA ? "Beta" : "Alpha"} ${GAME_VERSION} · dev ${DEV_STAMP}`;
 // The production key predates the split and keeps every player's save.
 // The beta seeds ITS key from the production save on first visit (so
 // testers keep their progress) but writes only to its own slot after.

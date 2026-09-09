@@ -1872,7 +1872,7 @@ function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveD
   const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
   const anchor = DOME[key] ?? DOME["suit:flight"];
   const helmet = helmetWornBy(save.equipped, suit.id);
-  const b = body.box;
+  const b = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX : body.box;
   const scale = hole.rx * 0.94 / anchor[2];
   const x = hole.cx - (anchor[0] - b.x - b.w / 2) * scale;
   const y = hole.cy - (anchor[1] - b.y - b.h / 2) * scale;
@@ -3589,20 +3589,20 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "abyssal-desc-7": [181.38, 164.44, 30.8, 61.64],
   "abyssal-desc-8": [176.51, 173.4, 30.8, 70.44],
   "suit:flight": [185, 88, 48, 0],
-  "suit:iontrim": [187, 101, 44, 0],
-  "suit:copper": [184, 100, 50, 5],
-  "suit:frost": [175, 108, 39],
-  "suit:voidsuit": [183, 105, 46, 0],
-  "suit:ember": [169, 100, 40, 0],
+  "suit:iontrim": [206, 106, 36, 0],
+  "suit:copper": [206, 106, 36, 0],
+  "suit:frost": [206, 106, 36, 0],
+  "suit:voidsuit": [206, 106, 36, 0],
+  "suit:ember": [206, 106, 36, 0],
   "suit:robo": [181, 96, 43, 0],
-  "suit:ghost": [180, 65, 49],
+  "suit:ghost": [206, 106, 36, 0],
   "suit:bigbooty": [183, 104, 35, 10],
   "suit:catsuit": [212, 86, 50],
-  "suit:gemmie": [195, 94, 52],
+  "suit:gemmie": [206, 106, 36, 0],
   "suit:phoenix": [207, 92, 41],
-  "suit:sammie": [193, 96, 46],
+  "suit:sammie": [206, 106, 36, 0],
   "suit:seraph": [204, 126, 38, 0],
-  "suit:leviathan": [174, 100, 36, 0],
+  "suit:leviathan": [206, 106, 36, 0],
   "suit:verdant": [196, 92, 45, 0],
   "suit:cryostar": [198, 93, 45, 0],
   "suit:eclipse": [204, 89, 58, -5],
@@ -3705,73 +3705,73 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "seraph-desc-7": [204, 157, 38, 52],
   "seraph-desc-8": [202, 162, 38, 60],
   // iontrim — pose-specific head and collar registration.
-  "iontrim-asc-1": [187, 101, 44, 0],
-  "iontrim-asc-2": [187, 97, 44, 0],
-  "iontrim-asc-3": [192, 101, 44, 0],
-  "iontrim-asc-4": [189, 97, 44, 0],
-  "iontrim-asc-5": [180, 84, 44, -5],
-  "iontrim-asc-6": [183, 79, 44, -10],
-  "iontrim-asc-7": [183, 83, 44, -5],
-  "iontrim-asc-8": [174, 73, 44, -15],
-  "iontrim-desc-1": [187, 101, 44, 0],
-  "iontrim-desc-2": [199, 111, 44, 0],
-  "iontrim-desc-3": [188, 139, 44, 25],
-  "iontrim-desc-4": [190, 154, 44, 30],
-  "iontrim-desc-5": [190, 148, 44, 25],
-  "iontrim-desc-6": [182, 160, 44, 40],
-  "iontrim-desc-7": [183, 157, 44, 35],
-  "iontrim-desc-8": [180, 166, 44, 40],
+  "iontrim-asc-1": [206, 106, 36, 0],
+  "iontrim-asc-2": [206, 105.3, 36, 0],
+  "iontrim-asc-3": [206, 104.5, 36, -5],
+  "iontrim-asc-4": [206, 103.6, 36, -5],
+  "iontrim-asc-5": [206, 102.5, 36, -5],
+  "iontrim-asc-6": [206, 101.3, 36, -5],
+  "iontrim-asc-7": [206, 100, 36, -5],
+  "iontrim-asc-8": [206, 99, 36, -10],
+  "iontrim-desc-1": [206, 106, 36, 0],
+  "iontrim-desc-2": [206, 106.8, 36, -5],
+  "iontrim-desc-3": [206, 107.8, 36, 0],
+  "iontrim-desc-4": [206, 109, 36, 5],
+  "iontrim-desc-5": [206, 110.2, 36, 0],
+  "iontrim-desc-6": [206, 111.6, 36, 5],
+  "iontrim-desc-7": [206, 113, 36, 5],
+  "iontrim-desc-8": [206, 114, 36, 10],
   // copper — pose-specific head and collar registration.
-  "copper-asc-1": [182.33, 103.17, 30.8, 8.59],
-  "copper-asc-2": [178.1, 100.16, 30.8, 11.00],
-  "copper-asc-3": [176.54, 95.39, 30.8, 15.64],
-  "copper-asc-4": [175.66, 89.69, 30.8, 26.74],
-  "copper-asc-5": [176.67, 81.39, 30.8, 2.61],
-  "copper-asc-6": [174.61, 75.31, 30.8, 8.11],
-  "copper-asc-7": [169.97, 71.97, 30.8, 15.08],
-  "copper-asc-8": [165.36, 68.62, 30.8, 21.44],
-  "copper-desc-1": [182.33, 103.17, 30.8, 8.59],
-  "copper-desc-2": [186.14, 113.38, 30.8, 16.18],
-  "copper-desc-3": [175.7, 126.58, 30.8, 11.41],
-  "copper-desc-4": [161.19, 135.95, 30.8, 9.68],
-  "copper-desc-5": [185.44, 144.67, 30.8, 29.18],
-  "copper-desc-6": [174.46, 152.06, 30.8, 29.46],
-  "copper-desc-7": [166.72, 157.91, 30.8, 33.14],
-  "copper-desc-8": [155.63, 159.84, 30.8, 41.66],
+  "copper-asc-1": [206, 106, 36, 0],
+  "copper-asc-2": [206, 105.3, 36, 0],
+  "copper-asc-3": [206, 104.5, 36, -5],
+  "copper-asc-4": [206, 103.6, 36, 0],
+  "copper-asc-5": [206, 102.5, 36, 0],
+  "copper-asc-6": [206, 101.3, 36, 0],
+  "copper-asc-7": [206, 100, 36, -5],
+  "copper-asc-8": [206, 99, 36, 0],
+  "copper-desc-1": [206, 106, 36, 0],
+  "copper-desc-2": [206, 106.8, 36, 0],
+  "copper-desc-3": [206, 107.8, 36, 0],
+  "copper-desc-4": [206, 109, 36, 5],
+  "copper-desc-5": [206, 110.2, 36, 0],
+  "copper-desc-6": [206, 111.6, 36, 0],
+  "copper-desc-7": [206, 113, 36, 0],
+  "copper-desc-8": [206, 114, 36, 0],
   // voidsuit — pose-specific head and collar registration.
-  "voidsuit-asc-1": [183, 105, 46, 0],
-  "voidsuit-asc-2": [184, 105, 46, 0],
-  "voidsuit-asc-3": [184, 102, 46, 0],
-  "voidsuit-asc-4": [184, 98, 46, 0],
-  "voidsuit-asc-5": [182, 88, 46, -5],
-  "voidsuit-asc-6": [175, 79, 46, -10],
-  "voidsuit-asc-7": [172, 87, 46, -5],
-  "voidsuit-asc-8": [164, 78, 46, -10],
-  "voidsuit-desc-1": [183, 105, 46, 0],
-  "voidsuit-desc-2": [189, 141, 46, 15],
-  "voidsuit-desc-3": [178, 148, 46, 25],
-  "voidsuit-desc-4": [179, 155, 46, 30],
-  "voidsuit-desc-5": [178, 154, 46, 30],
-  "voidsuit-desc-6": [172, 162, 46, 35],
-  "voidsuit-desc-7": [180, 159, 46, 30],
-  "voidsuit-desc-8": [173, 165, 46, 40],
+  "voidsuit-asc-1": [206, 106, 36, 0],
+  "voidsuit-asc-2": [206, 105.3, 36, 0],
+  "voidsuit-asc-3": [206, 104.5, 36, 0],
+  "voidsuit-asc-4": [206, 103.6, 36, 0],
+  "voidsuit-asc-5": [206, 102.5, 36, 0],
+  "voidsuit-asc-6": [206, 101.3, 36, -5],
+  "voidsuit-asc-7": [206, 100, 36, -5],
+  "voidsuit-asc-8": [206, 99, 36, -5],
+  "voidsuit-desc-1": [206, 106, 36, 0],
+  "voidsuit-desc-2": [206, 106.8, 36, 0],
+  "voidsuit-desc-3": [206, 107.8, 36, 0],
+  "voidsuit-desc-4": [206, 109, 36, 0],
+  "voidsuit-desc-5": [206, 110.2, 36, 0],
+  "voidsuit-desc-6": [206, 111.6, 36, 0],
+  "voidsuit-desc-7": [206, 113, 36, 5],
+  "voidsuit-desc-8": [206, 114, 36, 0],
   // ember — pose-specific head and collar registration.
-  "ember-asc-1": [169, 100, 40, 0],
-  "ember-asc-2": [176, 97, 40, 0],
-  "ember-asc-3": [173, 90, 40, -5],
-  "ember-asc-4": [174, 98, 40, 0],
-  "ember-asc-5": [173, 94, 40, 0],
-  "ember-asc-6": [167, 77, 40, -5],
-  "ember-asc-7": [169, 83, 40, -5],
-  "ember-asc-8": [165, 73, 40, -5],
-  "ember-desc-1": [169, 100, 40, 0],
-  "ember-desc-2": [181, 131, 40, 25],
-  "ember-desc-3": [179, 136, 40, 25],
-  "ember-desc-4": [177, 139, 40, 30],
-  "ember-desc-5": [179, 141, 40, 30],
-  "ember-desc-6": [172, 146, 40, 35],
-  "ember-desc-7": [174, 150, 40, 35],
-  "ember-desc-8": [167, 151, 40, 40],
+  "ember-asc-1": [206, 106, 36, 0],
+  "ember-asc-2": [206, 105.3, 36, -5],
+  "ember-asc-3": [206, 104.5, 36, -5],
+  "ember-asc-4": [206, 103.6, 36, -5],
+  "ember-asc-5": [206, 102.5, 36, -5],
+  "ember-asc-6": [206, 101.3, 36, -10],
+  "ember-asc-7": [206, 100, 36, -5],
+  "ember-asc-8": [206, 99, 36, -10],
+  "ember-desc-1": [206, 106, 36, 0],
+  "ember-desc-2": [206, 106.8, 36, -5],
+  "ember-desc-3": [206, 107.8, 36, 0],
+  "ember-desc-4": [206, 109, 36, 0],
+  "ember-desc-5": [206, 110.2, 36, 0],
+  "ember-desc-6": [206, 111.6, 36, 0],
+  "ember-desc-7": [206, 113, 36, 5],
+  "ember-desc-8": [206, 114, 36, 5],
   // cryostar — pose-specific head and collar registration.
   "cryostar-asc-1": [189, 81, 56, -5],
   "cryostar-asc-2": [189.5, 79.5, 56, -5],
@@ -3807,90 +3807,90 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "verdant-desc-7": [185, 164.5, 56, 35],
   "verdant-desc-8": [186.5, 165, 56, 35],
   // gemmie — pose-specific head and collar registration.
-  "gemmie-asc-1": [180.26, 104.36, 30.8, 4.34],
-  "gemmie-asc-2": [180.68, 98.42, 30.8, 5.01],
-  "gemmie-asc-3": [177.05, 94.99, 30.8, 11.79],
-  "gemmie-asc-4": [174.16, 91.03, 30.8, 16.16],
-  "gemmie-asc-5": [180.73, 77.18, 30.8, 2.43],
-  "gemmie-asc-6": [180.46, 68.33, 30.8, 0.96],
-  "gemmie-asc-7": [175.34, 64.58, 30.8, 4.05],
-  "gemmie-asc-8": [170.08, 61.06, 30.8, 13.17],
-  "gemmie-desc-1": [180.26, 104.36, 30.8, 4.34],
-  "gemmie-desc-2": [181.26, 115.25, 30.8, 6.90],
-  "gemmie-desc-3": [171.36, 127.51, 30.8, 9.02],
-  "gemmie-desc-4": [161.9, 135.91, 30.8, -3.06],
-  "gemmie-desc-5": [182.68, 144.38, 30.8, 7.98],
-  "gemmie-desc-6": [173.2, 151.72, 30.8, 12.05],
-  "gemmie-desc-7": [164.79, 157.05, 30.8, 12.89],
-  "gemmie-desc-8": [153.08, 158.19, 30.8, 5.81],
+  "gemmie-asc-1": [206, 106, 36, 0],
+  "gemmie-asc-2": [206, 105.3, 36, 0],
+  "gemmie-asc-3": [206, 104.5, 36, 0],
+  "gemmie-asc-4": [206, 103.6, 36, 0],
+  "gemmie-asc-5": [206, 102.5, 36, 0],
+  "gemmie-asc-6": [206, 101.3, 36, 0],
+  "gemmie-asc-7": [206, 100, 36, -5],
+  "gemmie-asc-8": [206, 99, 36, -15],
+  "gemmie-desc-1": [206, 106, 36, 0],
+  "gemmie-desc-2": [206, 106.8, 36, 0],
+  "gemmie-desc-3": [206, 107.8, 36, 0],
+  "gemmie-desc-4": [206, 109, 36, 5],
+  "gemmie-desc-5": [206, 110.2, 36, 5],
+  "gemmie-desc-6": [206, 111.6, 36, 5],
+  "gemmie-desc-7": [206, 113, 36, 5],
+  "gemmie-desc-8": [206, 114, 36, 5],
   // sammie — pose-specific head and collar registration.
-  "sammie-asc-1": [183.84, 102.3, 28, 5.15],
-  "sammie-asc-2": [182.98, 96.87, 28, 1.11],
-  "sammie-asc-3": [178.45, 93.89, 28, 0.59],
-  "sammie-asc-4": [170.58, 94.26, 28, 7.84],
-  "sammie-asc-5": [175.04, 83.07, 28, -6.80],
-  "sammie-asc-6": [177.33, 72.05, 28, -9.06],
-  "sammie-asc-7": [172.34, 68.72, 28, -5.45],
-  "sammie-asc-8": [165.1, 69.02, 28, -1.69],
-  "sammie-desc-1": [183.84, 102.3, 28, 5.15],
-  "sammie-desc-2": [188.5, 112.47, 28, 11.36],
-  "sammie-desc-3": [185.07, 124.59, 28, 19.78],
-  "sammie-desc-4": [172.46, 135.36, 28, 24.62],
-  "sammie-desc-5": [189.81, 145.13, 28, 37.65],
-  "sammie-desc-6": [194.43, 157.41, 28, 47.00],
-  "sammie-desc-7": [176.74, 162.37, 28, 38.77],
-  "sammie-desc-8": [154.91, 159.37, 28, 28.75],
+  "sammie-asc-1": [206, 106, 36, 0],
+  "sammie-asc-2": [206, 105.3, 36, 0],
+  "sammie-asc-3": [206, 104.5, 36, 0],
+  "sammie-asc-4": [206, 103.6, 36, -5],
+  "sammie-asc-5": [206, 102.5, 36, -5],
+  "sammie-asc-6": [206, 101.3, 36, -5],
+  "sammie-asc-7": [206, 100, 36, -5],
+  "sammie-asc-8": [206, 99, 36, -5],
+  "sammie-desc-1": [206, 106, 36, 0],
+  "sammie-desc-2": [206, 106.8, 36, 0],
+  "sammie-desc-3": [206, 107.8, 36, 0],
+  "sammie-desc-4": [206, 109, 36, 0],
+  "sammie-desc-5": [206, 110.2, 36, 0],
+  "sammie-desc-6": [206, 111.6, 36, 5],
+  "sammie-desc-7": [206, 113, 36, 5],
+  "sammie-desc-8": [206, 114, 36, 5],
   // frost — pose-specific head and collar registration.
-  "frost-asc-1": [175, 108, 39],
-  "frost-asc-2": [176, 103, 39],
-  "frost-asc-3": [171, 94, 39, -10],
-  "frost-asc-4": [174, 90, 39, -20],
-  "frost-asc-5": [172, 90, 39, -15],
-  "frost-asc-6": [169, 87, 39, -25],
-  "frost-asc-7": [173, 96, 39, -15],
-  "frost-asc-8": [174, 92, 39, -20],
-  "frost-desc-1": [175, 108, 39],
-  "frost-desc-2": [178, 130, 39, 20],
-  "frost-desc-3": [177, 137, 39, 25],
-  "frost-desc-4": [175, 143, 39, 30],
-  "frost-desc-5": [173, 148, 39, 35],
-  "frost-desc-6": [172, 144, 39, 30],
-  "frost-desc-7": [170, 149, 39, 35],
-  "frost-desc-8": [172, 148, 39, 30],
+  "frost-asc-1": [206, 106, 36, 0],
+  "frost-asc-2": [206, 105.3, 36, 0],
+  "frost-asc-3": [206, 104.5, 36, 0],
+  "frost-asc-4": [206, 103.6, 36, 0],
+  "frost-asc-5": [206, 102.5, 36, 0],
+  "frost-asc-6": [206, 101.3, 36, 0],
+  "frost-asc-7": [206, 100, 36, -5],
+  "frost-asc-8": [206, 99, 36, -5],
+  "frost-desc-1": [206, 106, 36, 0],
+  "frost-desc-2": [206, 106.8, 36, 0],
+  "frost-desc-3": [206, 107.8, 36, 0],
+  "frost-desc-4": [206, 109, 36, 0],
+  "frost-desc-5": [206, 110.2, 36, 0],
+  "frost-desc-6": [206, 111.6, 36, 0],
+  "frost-desc-7": [206, 113, 36, 0],
+  "frost-desc-8": [206, 114, 36, 0],
   // ghost — pose-specific head and collar registration.
-  "ghost-asc-1": [180, 65, 49],
-  "ghost-asc-2": [176, 61, 49],
-  "ghost-asc-3": [173, 58, 49],
-  "ghost-asc-4": [172, 58, 49],
-  "ghost-asc-5": [180, 63, 49],
-  "ghost-asc-6": [165, 57, 49, -10],
-  "ghost-asc-7": [165, 57, 49, -10],
-  "ghost-asc-8": [167, 58, 49, -10],
-  "ghost-desc-1": [180, 65, 49],
-  "ghost-desc-2": [181, 65, 49],
-  "ghost-desc-3": [180, 66, 49],
-  "ghost-desc-4": [198, 129, 49, 55],
-  "ghost-desc-5": [198, 131, 49, 60],
-  "ghost-desc-6": [195, 131, 49, 60],
-  "ghost-desc-7": [192, 131, 49, 60],
-  "ghost-desc-8": [191, 99, 49, 30],
+  "ghost-asc-1": [206, 106, 36, 0],
+  "ghost-asc-2": [206, 105.3, 36, -5],
+  "ghost-asc-3": [206, 104.5, 36, -10],
+  "ghost-asc-4": [206, 103.6, 36, -10],
+  "ghost-asc-5": [206, 102.5, 36, -10],
+  "ghost-asc-6": [206, 101.3, 36, -10],
+  "ghost-asc-7": [206, 100, 36, -15],
+  "ghost-asc-8": [206, 99, 36, -20],
+  "ghost-desc-1": [206, 106, 36, 0],
+  "ghost-desc-2": [206, 106.8, 36, 0],
+  "ghost-desc-3": [206, 107.8, 36, -5],
+  "ghost-desc-4": [206, 109, 36, -5],
+  "ghost-desc-5": [206, 110.2, 36, 0],
+  "ghost-desc-6": [206, 111.6, 36, 5],
+  "ghost-desc-7": [206, 113, 36, 5],
+  "ghost-desc-8": [206, 114, 36, 5],
   // leviathan — pose-specific head and collar registration.
-  "leviathan-asc-1": [174, 100, 36, 0],
-  "leviathan-asc-2": [173, 96, 36, 0],
-  "leviathan-asc-3": [167, 88, 36, -10],
-  "leviathan-asc-4": [164, 84, 36, -12],
-  "leviathan-asc-5": [160, 77, 36, -16],
-  "leviathan-asc-6": [160, 80, 36, -16],
-  "leviathan-asc-7": [163, 78, 36, -14],
-  "leviathan-asc-8": [154, 82, 36, -18],
-  "leviathan-desc-1": [174, 100, 36, 0],
-  "leviathan-desc-2": [178, 118, 36, 14],
-  "leviathan-desc-3": [168, 129, 36, 31],
-  "leviathan-desc-4": [172, 129, 36, 32],
-  "leviathan-desc-5": [171, 132, 36, 33],
-  "leviathan-desc-6": [175, 136, 36, 34],
-  "leviathan-desc-7": [174, 135, 36, 34],
-  "leviathan-desc-8": [173, 138, 36, 36],
+  "leviathan-asc-1": [206, 106, 36, 0],
+  "leviathan-asc-2": [206, 105.3, 36, 0],
+  "leviathan-asc-3": [206, 104.5, 36, 0],
+  "leviathan-asc-4": [206, 103.6, 36, 0],
+  "leviathan-asc-5": [206, 102.5, 36, 0],
+  "leviathan-asc-6": [206, 101.3, 36, 0],
+  "leviathan-asc-7": [206, 100, 36, 0],
+  "leviathan-asc-8": [206, 99, 36, 0],
+  "leviathan-desc-1": [206, 106, 36, 0],
+  "leviathan-desc-2": [206, 106.8, 36, 0],
+  "leviathan-desc-3": [206, 107.8, 36, 0],
+  "leviathan-desc-4": [206, 109, 36, 0],
+  "leviathan-desc-5": [206, 110.2, 36, 0],
+  "leviathan-desc-6": [206, 111.6, 36, 0],
+  "leviathan-desc-7": [206, 113, 36, 0],
+  "leviathan-desc-8": [206, 114, 36, 0],
 };
 
 // Where the GLASS circle sits inside each helmet-only render (x, y, r).
@@ -4239,6 +4239,30 @@ function bakedDome(key: string) {
   return SUITS.some((u) => u.id === id && u.bakedDome === true);
 }
 
+// The owner's regenerated standard series shares one painted skull diameter
+// and one presentation box. Alpha-box fitting would undo the normalization
+// whenever a tail was longer, making the same helmet a different size.
+export const NATURAL_FLIGHT_SUITS = new Set([
+  "iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost",
+]);
+const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
+function naturalFlightKey(key: string) {
+  return NATURAL_FLIGHT_SUITS.has(key.replace(/^suit:/, "").replace(/-(asc|desc)-\d+$/, ""));
+}
+const naturalFlightState = new Map<string, { t: number; pose: number }>();
+function trackNaturalFlight(id: string, t: number, target: number) {
+  let state = naturalFlightState.get(id);
+  if (!state || t < state.t) state = { t: t - 1 / 60, pose: 0 };
+  const dt = Math.max(0, Math.min(0.05, t - state.t));
+  // Sixteen painted steps per second carries the tail through its intervening
+  // poses after a tap; a velocity impulse cannot skip straight across the arc.
+  const step = dt * 16 / 7;
+  state.pose += Math.max(-step, Math.min(step, target - state.pose));
+  state.t = t;
+  naturalFlightState.set(id, state);
+  return state.pose;
+}
+
 function paintDome(
   ctx: CanvasRenderingContext2D,
   body: Sprite | HTMLImageElement,
@@ -4257,7 +4281,8 @@ function paintDome(
   if (helmet.id === "clear" && bakedDome(key)) return;
   const a = DOME[key];
   if (!a) return;
-  const box = (body as Sprite).box ?? { x: 0, y: 0, w: body.width, h: body.height };
+  const box = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX
+    : (body as Sprite).box ?? { x: 0, y: 0, w: body.width, h: body.height };
   const scale = size / Math.max(1, Math.max(box.w, box.h));
   const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
   const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
@@ -4483,23 +4508,10 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // "dives a bit too steep visually, over rotates but tail doesn't do
   // enough on the way up" - the High Orbit five
   cinderforge: 0.7, groveguard: 0.7, cosmic: 0.7, sunforged: 0.7, abyssal: 0.7,
-  // "Ion is ok - a bit steep on the dive"; "Copper is ok: same dive"
-  iontrim: 0.7, copper: 0.7,
-  // "deep dive, a little drift between frames but not too noticeable"
-  leviathan: 0.7,
-  // GHOST'S TEETER IS ONE FRAME. "needs transitional frame from up to down,
-  // teetering effect otherwise good" - and the game's own dome anchors say
-  // exactly where: ghost-desc-3 sits at [180, 66] and ghost-desc-4 at
-  // [198, 129], a 65px head jump in a single step, by far the largest in
-  // any bank. 0.5 caps the dive at desc-3, so the jump cannot play at all.
-  // A real transitional frame replaces this; until then the teeter is gone
-  // and five dive frames are parked.
-  ghost: 0.5,
-  // "massive suit drift between frames and over dive, limited tail" /
-  // "twitchies and minimal motion" / "twitching a lot" / "frame to frame
-  // suit drift has it shifting looks". Held shallow so the frames that do
-  // the least are on screen the least, pending regenerated art.
-  voidsuit: 0.5, ember: 0.5, frost: 0.5, sammie: 0.5, gemmie: 0.5,
+  // Fresh natural banks carry the shallow body pitch in the art and use
+  // every tail-whip pose. The temporary limits on obsolete art are retired.
+  iontrim: 1, copper: 1, leviathan: 1,
+  ghost: 1, voidsuit: 1, ember: 1, frost: 1, sammie: 1, gemmie: 1,
 };
 
 /** The dive dial this suit flies: its own if it has one, else the default. */
@@ -4766,6 +4778,13 @@ function paintIllustrated(
     ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
       || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
     : false;
+  // The regenerated neutral is the exact first frame. While the banks load,
+  // keep its normalized head/helmet fit instead of flashing the old split rig.
+  if (suited && NATURAL_FLIGHT_SUITS.has(suit.id) && !bankReady) {
+    drawRigLayer(ctx, suited, NATURAL_FLIGHT_BOX, x, y, size, 0, undefined, halo);
+    paintDome(ctx, suited, "suit:" + suit.id, helmet, x, y, size, art);
+    return;
+  }
   if (suited && ((rigT && rigB) || bankReady)) {
     // Rig-driven heading flight: the whole character pitches to point along
     // its flight path, and the tail trails that pitch instead of following it
@@ -4891,6 +4910,9 @@ function paintIllustrated(
           cycle = r.cycle;
         } else if (motionMode === 2) {
           v = trackHeadingMotion(_t, motionVy, motionVx);
+        } else if (NATURAL_FLIGHT_SUITS.has(suit.id)) {
+          // The per-suit pose follower below owns smoothing for this group.
+          v = motionVy < 0 ? -Math.min(1, -motionVy / POSE_CLIMB_SPAN) : Math.min(1, motionVy / 620);
         } else {
           const sv = smoothMotionVy(_t, motionVy);
           v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
@@ -4898,6 +4920,7 @@ function paintIllustrated(
         // shape the attitude: the dive half shallowed, both halves curved
         if (v > 0) v *= diveDepthFor(suit.id);
         v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
+        if (NATURAL_FLIGHT_SUITS.has(suit.id)) v = trackNaturalFlight(suit.id, _t, v);
       }
       const diving = v > 0;
       const bank = diving ? descFrames : ascFrames;
@@ -4910,7 +4933,7 @@ function paintIllustrated(
       // Read-only, one object write per frame, never read by the game.
       (window as unknown as { __acornautPose?: unknown }).__acornautPose =
         { suit: suit.id, bank: diving ? "desc" : "asc", idx: idxM + 1, v };
-      const refM = (ascFrames[0] as Sprite).box ?? ref;
+      const refM = NATURAL_FLIGHT_SUITS.has(suit.id) ? NATURAL_FLIGHT_BOX : (ascFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
       // the helmet rides the HEAD, which these frames move with the
       // attitude - each frame carries its own dome anchor. The anchor is
@@ -5042,7 +5065,7 @@ function drawPilot(
   const orbit = isHighOrbit(suit.id);
   const independentRig = flagship || arcflash || orbit;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
-  const articulatedTap = independentRig || !!art.suitBody?.[suit.id] && w.tapAnimT >= 0;
+  const articulatedTap = independentRig || (NATURAL_FLIGHT_SUITS.has(suit.id) || !!art.suitBody?.[suit.id]) && w.tapAnimT >= 0;
   const eclipseImpact = ECLIPSE_FLIGHT_SUITS.has(suit.id) && w.bounceAnimT >= 0;
   ctx.save();
   ctx.translate(x, y);
@@ -5187,8 +5210,9 @@ export function paintPortrait(
   // here left the Flight suit showing a floating helmet and no squirrel.
   const body = art?.suits?.[suit.id] ?? art?.squirrelIdle?.[0];
   if (!body) return;
-  drawSprite(ctx, body, cx, cy + 2, size);
   const key = art?.suits?.[suit.id] ? "suit:" + suit.id : "idle-1";
+  if (naturalFlightKey(key)) drawRigLayer(ctx, body, NATURAL_FLIGHT_BOX, cx, cy + 2, size);
+  else drawSprite(ctx, body, cx, cy + 2, size);
   if (!wearsOwnHead(suit)) paintDome(ctx, body, key, helmet, cx, cy + 2, size, art);
 }
 

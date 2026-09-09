@@ -1,0 +1,11 @@
+{
+  "auditedCommit": "a966b9e16b58c96305bbfff785f77b62157100c1",
+  "changedShippingFiles": [
+    "suits/copper-asc-8.png",
+    "suits/voidsuit-asc-8.png"
+  ],
+  "unchangedShippingFiles": 202,
+  "unchangedMotionFrames": 190,
+  "scope": "Nine standard suits plus Quill, Noodle and Bandit. Panda excluded.",
+  "limitations": "Crown regression catches the two observed extra plumes. Numeric metrics do not prove complete anatomy or costume continuity."
+}
