@@ -6,7 +6,8 @@ import { trailWornBy } from "./catalog.js?v=252";
 import { missionRandom } from "./mission-rng.js?v=252";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=252";
 import { CHART_LEVELS, reachedGate } from "./campaign.js?v=252";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, MIN_SEP, sep, PLANET_RGB, SKY_RGB, BOUNCE_ANIM_DURATION, DEBRIS_COUNT, PLANET_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog.js?v=252";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=252";
+import { nextFamilyPlanet } from "./planet-family.js?v=252";
 import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=252";
 import { platform } from "./platform.js?v=252";
 import { TUTORIAL_SUIT } from "./catalog.js?v=252";
@@ -454,27 +455,12 @@ function difficulty(w) {
     };
 }
 function pickKind(w) {
-    const idx = envIndexFor(w, w.score);
-    const env = ENVS[idx];
-    if (Math.random() < 0.55)
-        return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
-    // free pick, but never one that would vanish into this sky: reject
-    // planets whose luminance sits too close to the backdrop's
-    const sky = SKY_RGB[skyIdFor(w.flight, idx)];
-    for (let i = 0; i < 10; i++) {
-        const k = Math.floor(Math.random() * PLANET_COUNT);
-        if (sep(sky, PLANET_RGB[k]) >= MIN_SEP)
-            return k;
-    }
-    return env.planetBias[Math.floor(Math.random() * env.planetBias.length)] % PLANET_COUNT;
+    w.planetBag ?? (w.planetBag = { env: -1, remaining: [], last: -1 });
+    return nextFamilyPlanet(w.planetBag, envIndexFor(w, w.score), w.planetRng ?? Math.random);
 }
-// Debris follows the zone's palette, and never blends into its sky.
-// Debris comes ONLY from the zone's own three-rock family. Rolling the
-// whole pool put six materials on one screen and the eye had nowhere to
-// rest — a zone should read as one place. All 27 rocks still fly; they
-// are spread ACROSS the 26 zones instead of stacked inside each one.
+// Each zone owns two or three debris materials.
 function pickDebris(env) {
-    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)] % DEBRIS_COUNT;
+    return env.debrisBias[Math.floor(Math.random() * env.debrisBias.length)];
 }
 // Fully seal the corridor above the top gate and below the bottom one,
 // packed tight enough that the flight lane cannot be slipped around.
@@ -551,7 +537,7 @@ function sealBlockers(w, env, gapY, gap) {
         blockers.push({
             y,
             r: rr,
-            kind: pickKind(w),
+            kind: env.planetBias[0], // fallback only; rocks must not consume the gate bag
             xOff: ((n % 2) * 2 - 1) * (2 + (w.missionRng ?? Math.random)() * 5),
             // A FIELD, NOT A FENCE. Each rock swings along the flight axis on its
             // own clock - up to its own RADIUS either way, at its own speed, from
@@ -959,10 +945,7 @@ function spawnPair(w, save, x) {
         // object as far as the eye is concerned - a striped giant above and an
         // ice moon below reads as two things that happen to be near each other,
         // not as a gap through a place. Diversity lives ACROSS gates, which is
-        // what pickKind is already for: 55% from the zone's own family and 45%
-        // a free pick that will not vanish into the sky. This is the same rule
-        // pickDebris already follows, and for the same reason - a zone should
-        // read as one place.
+        // a shuffled five-planet family. No global picks cross zone boundaries.
         topKind: pairKind,
         botKind: pairKind,
         scored: false,
@@ -1130,6 +1113,8 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.lab = IS_BETA && flight === "fly" && !tutorial && !level && save.lab ? { ...save.lab } : {};
     w.flight = flight;
     w.missionRng = level?.seedVersion === "flight-seeded-v1" && level.seed != null ? missionRandom(level.seed) : undefined;
+    w.planetRng = missionRandom(((level?.seed ?? 0x71ac0) ^ 0x5a17c9e3) >>> 0);
+    w.planetBag = { env: -1, remaining: [], last: -1 };
     // A campaign level is an ordinary run wearing a finish line. It is set
     // up FIRST because everything below (env order, spawn fx) reads it.
     // guarded on typeof: the tunnel test suite used to pass its SEED in this
@@ -1178,6 +1163,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
         : null;
     w.spillCues = [];
     if (w.spill) {
+        w.spill.zoneEnv = level?.fx.env;
         const starter = save.spillStarter;
         if (!level && starter && SPILL_UTILITIES[starter] && save.spillBest >= SPILL_UTILITIES[starter].unlock) {
             w.spill.utilities = [starter];
@@ -1465,7 +1451,7 @@ function addTunnelHazard(w, node, lane, salt) {
         r: 19 + tunnelNoise(t.seed, node.index, salt) * 5,
         side: lane < (node.top + node.bottom) * 0.5 ? -1 : 1,
         kind: "debris",
-        art: Math.floor(tunnelNoise(t.seed, node.index, salt + 1) * DEBRIS_COUNT),
+        art: Math.floor(tunnelNoise(t.seed, node.index, salt + 1) * LEGACY_DEBRIS_COUNT),
         spin: (tunnelNoise(t.seed, node.index, salt + 2) < 0.5 ? -1 : 1) *
             (0.35 + tunnelNoise(t.seed, node.index, salt + 3) * 0.75),
         nearMissed: false,

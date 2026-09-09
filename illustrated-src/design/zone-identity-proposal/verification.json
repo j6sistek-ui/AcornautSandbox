@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-09-09T15:28:03.193Z",
+  "auditedCommit": "4b15f97fbdfc0e53f60f2536dfe9f64c3a3fe4dd",
+  "zones": 26,
+  "levels": 260,
+  "planetSlots": 130,
+  "debrisSlots": 55,
+  "exactPlanetReuse": 0,
+  "exactDebrisReuse": 0,
+  "currentSpriteCopiesByteIdentical": 60,
+  "backgroundSourceHashesUnchanged": 26,
+  "allImagesDecoded": true,
+  "allLocalLinksResolved": true,
+  "zoneNavigationPassed": true,
+  "showAllPassed": true,
+  "mobileWidth": 390,
+  "desktopWidth": 1440,
+  "pageErrors": [],
+  "scope": "Proposal/data/reference/browser checks only; no game implementation or full gameplay acceptance test.",
+  "repositoryChecks": {
+    "typecheck": "PASS: all game TypeScript plus lab/rig.ts, --noEmit, TypeScript 5.9.2.",
+    "build": "ATTEMPTED / BLOCKED: scoped checkout omits art-src/spill-workshop/magnet.webp; export stopped before bundle generation.",
+    "platformBridge": "FAIL in unchanged checkout: engine.ts:263 and save.ts:583 are // comments ending in CR. The checker regex leaves these comments intact on CRLF; removing the trailing CR makes both matches disappear. No fix made in this proposal.",
+    "fullArtAndGameplayHarness": "NOT RUN: proposal only, scoped art checkout; no runtime or shipping art changes.",
+    "lint": "No repository lint script; proposal/browser validation and git diff --check used."
+  }
+}

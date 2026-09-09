@@ -1,4 +1,4 @@
-import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config.js?v=252";
+import { highOrbitTrailSuit } from "./high-orbit-config.js?v=252";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=252";
 import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=252";
 import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=252";
@@ -176,7 +176,7 @@ export function loadSave() {
     // existed, or edited by hand) comes off rather than half-fitting
     {
         const h = HELMETS.find((x) => x.id === s.equipped);
-        if (!isPremiumSuit(s.equippedSuit) && h?.suitOnly && h.suitOnly !== s.equippedSuit)
+        if (h?.suitOnly && h.suitOnly !== s.equippedSuit)
             s.equipped = "clear";
     }
     if (!SUITS.some((u) => u.id === s.equippedSuit))

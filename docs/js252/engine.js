@@ -1,10 +1,9 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, palsClash } from "./catalog.js?v=252";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=252";
 import { platform } from "./platform.js?v=252";
-import { isPremiumSuit } from "./high-orbit-config.js?v=252";
 import { spillAppearance } from "./spill-appearance.js?v=252";
 import { routeMasks, rewardId } from "./campaign-progress.js?v=252";
 import { reachedGate } from "./campaign.js?v=252";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks } from "./art.js?v=252";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=252";
 import { vanguardDepotEligible } from "./spill-depot-gag.js?v=252";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=252";
 import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=252";
@@ -12,7 +11,7 @@ import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=252";
 import { setVanguardPitchTrim } from "./vanguard.js?v=252";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=252";
 import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=252";
-import { dive, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=252";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=252";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=252";
 import { raceViewport } from "./race-viewport.js?v=252";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=252";
@@ -120,6 +119,7 @@ export async function createEngine(canvas) {
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
             resetRun(world, save, mode, needTut);
+            void loadZoneArt(engine.art, world.envB).then(notify);
             resize();
             if (mode === "spill") {
                 raceAccumulator = 0;
@@ -188,6 +188,7 @@ export async function createEngine(canvas) {
             // stored identity seed, so reordering cannot change its corridor.
             // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? def.seed ?? undefined : undefined);
+            void loadZoneArt(engine.art, def.fx.env ?? 0).then(notify);
             resize();
             if (def.base === "spill")
                 void loadSpillScene(engine.art, save.equippedSuit).then(notify);
@@ -691,8 +692,6 @@ export async function createEngine(canvas) {
         const item = HELMETS.find((h) => h.id === id);
         if (!item)
             return "missing";
-        if (isPremiumSuit(save.equippedSuit))
-            return "fixedHead";
         // a matched-set helmet only goes on its own suit
         if (item.suitOnly && save.equippedSuit !== item.suitOnly)
             return "suitOnly";
@@ -759,9 +758,6 @@ export async function createEngine(canvas) {
     // dome or another suit's orphan is replaced; a helmet the pilot chose
     // on purpose stays.
     function dropOrphanedHelmet() {
-        // These pilots hide the previous visor without replacing its save choice.
-        if (isPremiumSuit(save.equippedSuit))
-            return;
         const h = HELMETS.find((x) => x.id === save.equipped);
         if (h?.suitOnly && h.suitOnly !== save.equippedSuit)
             save.equipped = "clear";
@@ -1682,6 +1678,10 @@ export async function createEngine(canvas) {
         ctx.clearRect(0, 0, world.W, world.H);
         if (art) {
             if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
+                void loadZoneArt(art, world.envA);
+                void loadZoneArt(art, world.envB);
+                if (!world.lvl && !world.retro && !world.spill && !world.tunnel && !world.race)
+                    void loadZoneArt(art, envIndexFor(world, world.score + ENV_GATES));
                 drawWorld(ctx, world, save, art);
                 if (world.screen !== "pause")
                     drawHud(ctx, world, art, save);
@@ -1744,6 +1744,7 @@ export async function createEngine(canvas) {
         .then((bank) => {
         art = bank;
         engine.art = bank;
+        void loadZoneArt(bank, world.envB).then(notify);
         if (world.spill)
             void loadSpillScene(bank, save.equippedSuit).then(notify);
         notify();

@@ -1,8 +1,8 @@
 import { VANGUARD_FRAMES } from "./vanguard.js?v=252";
-import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=252";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=252";
 import { prepareDepotBear } from "./spill-depot-bear.js?v=252";
 import { SPILL_UTILITY_IDS } from "./spill-content.js?v=252";
-import { HIGH_ORBIT_RIG_IDS, PREMIUM_SUIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=252";
+import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=252";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -145,6 +145,51 @@ async function many(prefix, n, start = 1) {
             out.push(s);
     return out;
 }
+async function indexedSprites(folder, ids, count) {
+    const out = new Array(count).fill(null);
+    await Promise.all(ids.map(async (id) => {
+        try {
+            out[id] = asSprite(await loadImg(artUrl(`${folder}/${id}.png`)));
+        }
+        catch { /* preserve the slot: a missing image must never shift another ID */ }
+    }));
+    return out;
+}
+const zoneLoads = new WeakMap();
+/** Fetch only a visible/entered zone. Shared by flight and the Star Chart. */
+export function loadZoneArt(art, env) {
+    const family = ENVS[env];
+    if (!family)
+        return Promise.resolve();
+    let loads = zoneLoads.get(art);
+    if (!loads) {
+        loads = new Map();
+        zoneLoads.set(art, loads);
+    }
+    const pending = loads.get(env);
+    if (pending)
+        return pending;
+    const work = Promise.all([
+        ...family.planetBias.map(async (id) => {
+            if (art.planets[id])
+                return;
+            try {
+                art.planets[id] = asSprite(await loadImg(artUrl(`planets/${id}.png`)));
+            }
+            catch { }
+        }),
+        ...family.debrisBias.map(async (id) => {
+            if (art.debris[id])
+                return;
+            try {
+                art.debris[id] = asSprite(await loadImg(artUrl(`debris/${id}.png`)));
+            }
+            catch { }
+        }),
+    ]).then(() => { });
+    loads.set(env, work);
+    return work;
+}
 /** An empty bank the renderer can draw with immediately — every draw
  *  path already null-guards, so the game paints from the first frame
  *  instead of waiting on megabytes of panorama. */
@@ -181,8 +226,11 @@ const haloCache = new Map();
 export function spriteHalo(spr, mode) {
     const key = (spr.src || "") + "|" + mode;
     const hit = haloCache.get(key);
-    if (hit !== undefined)
+    if (hit !== undefined) {
+        haloCache.delete(key);
+        haloCache.set(key, hit);
         return hit;
+    }
     const c = document.createElement("canvas");
     c.width = spr.width + SPRITE_HALO_PAD * 2;
     c.height = spr.height + SPRITE_HALO_PAD * 2;
@@ -198,9 +246,13 @@ export function spriteHalo(spr, mode) {
     cc.shadowOffsetX = c.width * 2; // keep only the shadow
     cc.drawImage(spr, SPRITE_HALO_PAD - c.width * 2, SPRITE_HALO_PAD);
     haloCache.set(key, c);
+    // An expanded zone library must not retain a blur canvas for every
+    // visited planet forever. Forty-eight covers nearby gates and pilot art.
+    if (haloCache.size > 48)
+        haloCache.delete(haloCache.keys().next().value);
     return c;
 }
-export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
+export function drawSprite(ctx, spr, x, y, size, fit = "box", halo, haloOpacity = 1) {
     if (!spr)
         return;
     const box = spr.box ?? { x: 0, y: 0, w: spr.width, h: spr.height };
@@ -220,8 +272,11 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
     if (halo) {
         const h = spriteHalo(spr, halo);
         if (h) {
+            ctx.save();
+            ctx.globalAlpha *= haloOpacity;
             const m = SPRITE_HALO_PAD * scale;
             ctx.drawImage(h, box.x, box.y, box.w + SPRITE_HALO_PAD * 2, box.h + SPRITE_HALO_PAD * 2, dx - m, dy - m, dw + m * 2, dh + m * 2);
+            ctx.restore();
         }
     }
     ctx.drawImage(spr, box.x, box.y, box.w, box.h, dx, dy, dw, dh);
@@ -329,7 +384,7 @@ const LAZY_SUIT_IDS = [...new Set([
         // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
         // there too, or the suit flies as a flat body sticker off the live page.
         "arcflash",
-        ...HIGH_ORBIT_RIG_IDS,
+        ...HIGH_ORBIT_IDS,
         ...Object.keys(LOOP_BANKS),
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -579,7 +634,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "raccoon", "ferret", "hedgehog",
         // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
         "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-        ...PREMIUM_SUIT_IDS,
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",
@@ -613,8 +667,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         many(`${base}/acorn/`, 16),
         many(`${base}/golden/`, 16),
         many(`${base}/shield/`, 4),
-        many(`${base}/planets/`, PLANET_COUNT, 0),
-        many(`${base}/debris/`, DEBRIS_COUNT, 0),
+        indexedSprites("planets", ENVS[0].planetBias, PLANET_COUNT),
+        indexedSprites("debris", Array.from({ length: LEGACY_DEBRIS_COUNT }, (_, i) => i), DEBRIS_COUNT),
         optional(`${base}/sky.jpg`),
         named(palIds, "solo"),
         // No pal idle banks ride the boot load. The one the save wears is

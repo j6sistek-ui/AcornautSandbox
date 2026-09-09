@@ -1,5 +1,6 @@
-import { ENVS } from "./catalog.js?v=252";
-import { artUrl, drawSprite } from "./art.js?v=252";
+import { ENVS, SKY_RGB } from "./catalog.js?v=252";
+import { artUrl, drawSprite, loadZoneArt } from "./art.js?v=252";
+import { planetHalo } from "./planet-contrast.js?v=252";
 import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals.js?v=252";
 /** Scenery belongs to the same stable zone as the mission node. Four mission
  * spacings overlap at each transition; there are no chapter panels or seams. */
@@ -31,6 +32,7 @@ export function addChartScenery(map, levels, pos, step, art) {
     }
     const nodes = [...map.querySelectorAll(".ac-mapnode")];
     let stopped = false, frame = 0, sc = null;
+    const requested = new Set();
     const paint = () => {
         frame = 0;
         if (stopped || !map.isConnected || !sc)
@@ -47,17 +49,29 @@ export function addChartScenery(map, levels, pos, step, art) {
                 disc.querySelector("canvas")?.remove();
                 return;
             }
-            if (disc.querySelector("canvas"))
+            const env = levels[i].fx.env ?? 0;
+            if (!requested.has(env)) {
+                requested.add(env);
+                void loadZoneArt(art, env).then(() => { if (!stopped)
+                    schedule(); });
+            }
+            const existing = disc.querySelector("canvas");
+            if (existing?.dataset.ready === "true")
                 return;
             const size = node.classList.contains("cur") ? 84 : 62;
-            const c = document.createElement("canvas");
+            const c = existing ?? document.createElement("canvas");
             c.width = c.height = size * 2;
             c.style.width = c.style.height = `${size}px`;
             c.dataset.planet = String(mapPlanetIndex(levels[i]));
             const ctx = c.getContext("2d");
+            const kind = mapPlanetIndex(levels[i]);
+            const sprite = art.planets[kind];
+            const separation = planetHalo(kind, SKY_RGB[ENVS[env].sky]);
             if (ctx)
-                drawSprite(ctx, art.planets[mapPlanetIndex(levels[i])] ?? null, size, size, size * 1.88);
-            disc.prepend(c);
+                drawSprite(ctx, sprite, size, size, size * 1.78, "box", separation?.mode, separation?.opacity);
+            c.dataset.ready = String(!!sprite);
+            if (!existing)
+                disc.prepend(c);
         });
         for (const layer of layers) {
             const rect = layer.node.getBoundingClientRect();

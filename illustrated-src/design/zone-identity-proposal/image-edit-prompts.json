@@ -1,0 +1,10 @@
+[
+  {
+    "file": "concept-09-12.png",
+    "prompt": "Edit the supplied four-row Acornaut concept board. Preserve all twenty planets, every heading, the background and all other rows exactly. ONLY fix the small debris group at far right of row 11 RUST BELT: show THREE separate smaller objects, left-to-right rust sheet, compact boxy machine wreck with metal panels and short pipes, and broken cog. The current row omits the machine wreck. Fit all three fully inside that row's right margin with generous separation, scaling the group down as needed; keep all five planets untouched. Use the second reference only for machine-wreck style (D04). Do not add any text or change any other art."
+  },
+  {
+    "file": "concept-17-20.png",
+    "prompt": "Edit this four-row Acornaut concept board. Preserve all TWENTY planets, all four headings and the neutral background exactly. ONLY replace the debris area in the FAR RIGHT 20 percent of EACH row to show all intended debris types, as SMALL distinct objects fitting comfortably without overlap. ROW17 ALIEN JUNGLE: TWO debris, a small green overgrown rock (D17 style in second reference), and the woody root knot. ROW18 ACID SWAMP: TWO debris, a compact yellow-green sulfur ore lump (D24 style), and the dark tar shard with yellow deposit. ROW19 AURORA CROWN: TWO debris, a slender lavender-mint aurora shard (D19 style), and a small dark frosted slate fragment with teal iridescent face. ROW20 PULSAR FIELD: THREE debris, a small angular blue sapphire shard (D16 style), a narrow broken metal receiver antenna (D07 style), and the dark magnetic slag with one cyan seam. Make debris small enough that two or three separated silhouettes fit beside the five unchanged planets. No new text, no new planets, no changes elsewhere. Second input is a STYLE REFERENCE for numbered existing debris, not an edit target."
+  }
+]

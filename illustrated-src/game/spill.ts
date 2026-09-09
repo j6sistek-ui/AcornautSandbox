@@ -29,7 +29,7 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
 
-import { DEBRIS_COUNT, PHYS } from "./catalog";
+import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog";
 import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor,
   type SpillContract, type SpillContractKind, type SpillEvent, type SpillSpecialty, type SpillUtility } from "./spill-content";
 
@@ -336,6 +336,8 @@ export type SpillDepot = {
 };
 
 export type SpillState = {
+  /** Cosmetic mission family; absent in legacy/endless checkpoints. */
+  zoneEnv?: number;
   seed: number;
   rng: number;
   W: number;
@@ -653,10 +655,15 @@ const UNREADABLE = new Set([8, 12, 14, 22]);
 
 function readableSprite(s: SpillState) {
   for (let i = 0; i < 24; i++) {
-    const n = Math.floor(rand(s) * DEBRIS_COUNT);
-    if (!UNREADABLE.has(n)) return n;
+    // Preserve the original rejection stream exactly: art expansion cannot
+    // change seeded rock positions, motion, events or rewards.
+    const n = Math.floor(rand(s) * LEGACY_DEBRIS_COUNT);
+    if (!UNREADABLE.has(n)) {
+      const family = s.zoneEnv == null ? null : ENVS[s.zoneEnv]?.debrisBias;
+      return family ? family[n % family.length] : n;
+    }
   }
-  return 0;
+  return s.zoneEnv == null ? 0 : ENVS[s.zoneEnv]?.debrisBias[0] ?? 0;
 }
 
 /** the rate a spinner weaves at, radians per second */

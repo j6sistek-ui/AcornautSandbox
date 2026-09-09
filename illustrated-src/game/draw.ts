@@ -11,7 +11,8 @@ import {paintHighOrbitWake,type HighOrbitTravel} from "./high-orbit-effects";
 import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
-import {SKY_RGB,  BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import { samplePlanetBackdrop, type PlanetHalo } from "./planet-contrast";
+import {SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
@@ -2678,21 +2679,25 @@ export function drawWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveDat
     return;
   }
 
-  // Everything you can hit gets a separation halo keyed to the sky: a
-  // dark drop shadow on bright skies, a faint light rim on dark ones.
-  // Gates and debris then read as solid objects against any backdrop.
+  // Debris retains its safety rim. Planets get a faint edge only where
+  // their color blends with the locally painted background.
   const halo: "dark" | "light" = skyLuma(w) > 0.42 ? "dark" : "light";
+  const separationAt = samplePlanetBackdrop(ctx, `${w.envA}:${w.envB}:${w.flight}:${w.W}:${w.H}`, performance.now() / 1000);
+  const background = SKY_RGB[skyIdFor(w.flight, w.envB)];
   for (const p of w.planets) {
     const gy = liveGapY(p, w);
     // a bounce-house gate (Space Puppy) keeps one half; every other gate both
-    if (p.half !== "bot") drawPlanet(ctx, art, p.x, gy - p.gap / 2 - p.r, p.r, p.topKind, halo);
-    if (p.half !== "top") drawPlanet(ctx, art, p.x, gy + p.gap / 2 + p.r, p.r, p.botKind, halo);
+    const topY = gy - p.gap / 2 - p.r, botY = gy + p.gap / 2 + p.r;
+    if (p.half !== "bot") drawPlanet(ctx, art, p.x, topY, p.r, p.topKind,
+      separationAt(p.topKind, p.x, topY, p.r, background));
+    if (p.half !== "top") drawPlanet(ctx, art, p.x, botY, p.r, p.botKind,
+      separationAt(p.botKind, p.x, botY, p.r, background));
     for (const b of p.blockers) {
       const by = b.y + gateOffset(p, w);
       const bx = blockerX(p, b, w);
       const img = art.debris[b.debris];
       if (img) drawSprite(ctx, img, bx, by, b.r * 2, "core", halo);
-      else drawPlanet(ctx, art, bx, by, b.r, b.kind, halo);
+      else drawPlanet(ctx, art, bx, by, b.r, b.kind, { mode: halo, opacity: 1 });
     }
   }
 
@@ -3468,17 +3473,25 @@ function drawPlanet(
   y: number,
   r: number,
   kind: number,
-  halo?: "dark" | "light",
+  halo?: PlanetHalo,
 ) {
-  const img = art.planets[kind % art.planets.length];
+  const img = art.planets[kind];
   if (img) {
-    drawSprite(ctx, img, x, y, r * 2, "core", halo);
+    drawSprite(ctx, img, x, y, r * 2, "core", halo?.mode, halo?.opacity);
     return;
   }
-  ctx.fillStyle = "#3a6aa8";
+  const color = PLANET_RGB[kind] ?? [0.3, 0.3, 0.3];
+  ctx.fillStyle = `rgb(${color.map(c => Math.round(c * 255)).join(",")})`;
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
+  if (halo) {
+    ctx.save();
+    ctx.strokeStyle = halo.mode === "light" ? `rgba(190,205,220,${0.2 * halo.opacity})` : `rgba(8,12,20,${0.3 * halo.opacity})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+  }
 }
 
 function hexRgb(hex: string) {

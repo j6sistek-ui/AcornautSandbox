@@ -1,0 +1,305 @@
+{
+  "date": "2026-09-09",
+  "artVersion": "252",
+  "base": "85f30e60b8b7568cdd911a9cf888122b47833d83",
+  "gameSourceDigest": "445e38380eed78a201f85ac0f694a6f72b700d23edea1e5c8e35de9361d5c50a",
+  "build": {
+    "sourceExport": "passed",
+    "lab": "passed",
+    "flightStudio": "passed",
+    "typecheck": "passed",
+    "bundleModules": 48,
+    "bridge": "passed",
+    "diffWhitespace": "passed"
+  },
+  "artGate": {
+    "groups": 32,
+    "result": "passed"
+  },
+  "harness": {
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "total": 51,
+    "tests": [
+      {
+        "name": "test-acornut-collect.mjs",
+        "status": "ok",
+        "seconds": 0.2
+      },
+      {
+        "name": "test-arcflash-integration.mjs",
+        "status": "ok",
+        "seconds": 0.7
+      },
+      {
+        "name": "test-arcflash-motion.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-arcflash-render.mjs",
+        "status": "ok",
+        "seconds": 0.4
+      },
+      {
+        "name": "test-beta-campaign.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-boosts.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-bounce-impact.mjs",
+        "status": "ok",
+        "seconds": 0.3
+      },
+      {
+        "name": "test-bundle.mjs",
+        "status": "ok",
+        "seconds": 0.4
+      },
+      {
+        "name": "test-drift.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-eclipse-motion-transfer.mjs",
+        "status": "ok",
+        "seconds": 1.6
+      },
+      {
+        "name": "test-flight-studio.mjs",
+        "status": "ok",
+        "seconds": 1.0
+      },
+      {
+        "name": "test-frozen-roster.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-helmet-animation.mjs",
+        "status": "ok",
+        "seconds": 7.3
+      },
+      {
+        "name": "test-helmet-compatibility.mjs",
+        "status": "ok",
+        "seconds": 0.2
+      },
+      {
+        "name": "test-helmet-openings.mjs",
+        "status": "ok",
+        "seconds": 0.6
+      },
+      {
+        "name": "test-high-orbit-integration.mjs",
+        "status": "ok",
+        "seconds": 0.8
+      },
+      {
+        "name": "test-high-orbit.mjs",
+        "status": "ok",
+        "seconds": 2.1
+      },
+      {
+        "name": "test-hyper-run.mjs",
+        "status": "ok",
+        "seconds": 2.7
+      },
+      {
+        "name": "test-level-hud.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-mission-pals.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-natural-flight.mjs",
+        "status": "ok",
+        "seconds": 6.8
+      },
+      {
+        "name": "test-platform-bridge.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-receipts.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-shop.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-spill-progression.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-spill-render.mjs",
+        "status": "ok",
+        "seconds": 1.8
+      },
+      {
+        "name": "test-spill-ui.mjs",
+        "status": "ok",
+        "seconds": 16.1
+      },
+      {
+        "name": "test-spill-welcome.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-spill.mjs",
+        "status": "ok",
+        "seconds": 0.3
+      },
+      {
+        "name": "test-star-map-render.mjs",
+        "status": "ok",
+        "seconds": 2.9
+      },
+      {
+        "name": "test-star-map-ui.mjs",
+        "status": "ok",
+        "seconds": 48.9
+      },
+      {
+        "name": "test-star-map.mjs",
+        "status": "ok",
+        "seconds": 0.4
+      },
+      {
+        "name": "test-suit-lean.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-switchback-render.mjs",
+        "status": "ok",
+        "seconds": 0.3
+      },
+      {
+        "name": "test-switchback.mjs",
+        "status": "ok",
+        "seconds": 0.8
+      },
+      {
+        "name": "test-tap-recovery.mjs",
+        "status": "ok",
+        "seconds": 0.3
+      },
+      {
+        "name": "test-tunnel-controls.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-tunnel.mjs",
+        "status": "ok",
+        "seconds": 20.7
+      },
+      {
+        "name": "test-tutorial.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-vanguard-depot.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-vanguard-flight.mjs",
+        "status": "ok",
+        "seconds": 28.3
+      },
+      {
+        "name": "test-vanguard-inertia.mjs",
+        "status": "ok",
+        "seconds": 0.1
+      },
+      {
+        "name": "test-vanguard-maneuver.mjs",
+        "status": "ok",
+        "seconds": 0.8
+      },
+      {
+        "name": "test-vanguard-organic.mjs",
+        "status": "ok",
+        "seconds": 4.6
+      },
+      {
+        "name": "test-vanguard-render.mjs",
+        "status": "ok",
+        "seconds": 27.2
+      },
+      {
+        "name": "test-vanguard-rig.mjs",
+        "status": "ok",
+        "seconds": 0.4
+      },
+      {
+        "name": "test-vanguard.mjs",
+        "status": "ok",
+        "seconds": 1.0
+      },
+      {
+        "name": "test-warp.mjs",
+        "status": "ok",
+        "seconds": 67.0
+      },
+      {
+        "name": "test-wormhole-trip.mjs",
+        "status": "ok",
+        "seconds": 0.5
+      },
+      {
+        "name": "test-zone-art-loading.mjs",
+        "status": "ok",
+        "seconds": 0.0
+      },
+      {
+        "name": "test-zone-families.mjs",
+        "status": "ok",
+        "seconds": 0.2
+      }
+    ]
+  },
+  "releaseGate": "passed: Arcflash portrait rebuilt from unchanged live rig; exact-pixel and anatomy assertions retained",
+  "gallery": {
+    "zones": 26,
+    "images": 213,
+    "viewports": [
+      1440,
+      390
+    ],
+    "navigation": "passed",
+    "overflow": false
+  },
+  "browser": "See browser-verification.json; isolated profile, controlled scenes, no physical-phone performance claim.",
+  "integrity": "See integrity-verification.json: 1470 original artwork files and six protected sources byte-identical; only the derived Arcflash portrait regenerated, with zero live/fallback pixel differences.",
+  "environment": {
+    "docker": "unavailable: Docker Desktop engine pipe missing",
+    "fallback": "repo-authorized local Node and workspace dependencies; workspace-local SciPy; no host system packages installed"
+  },
+  "previousHarness": {
+    "passed": 50,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "inherited Arcflash fallback/live-rig pixel mismatch, fixed by normal-build portrait export"
+  }
+}

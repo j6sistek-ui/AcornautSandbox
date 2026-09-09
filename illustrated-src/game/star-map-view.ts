@@ -1,5 +1,6 @@
-import { ENVS } from "./catalog";
-import { artUrl, drawSprite, type ArtBank } from "./art";
+import { ENVS, SKY_RGB } from "./catalog";
+import { artUrl, drawSprite, loadZoneArt, type ArtBank } from "./art";
+import { planetHalo } from "./planet-contrast";
 import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals";
 import type { LevelDef } from "./campaign";
 
@@ -33,6 +34,7 @@ export function addChartScenery(map: HTMLElement, levels: readonly LevelDef[], p
   }
   const nodes = [...map.querySelectorAll<HTMLElement>(".ac-mapnode")];
   let stopped = false, frame = 0, sc: HTMLElement | null = null;
+  const requested = new Set<number>();
   const paint = () => {
     frame = 0;
     if (stopped || !map.isConnected || !sc) return;
@@ -45,14 +47,24 @@ export function addChartScenery(map: HTMLElement, levels: readonly LevelDef[], p
     nodes.forEach((node, i) => {
       const disc = node.querySelector<HTMLElement>(".ac-mapdisc")!;
       if (!visible.has(i)) { disc.querySelector("canvas")?.remove(); return; }
-      if (disc.querySelector("canvas")) return;
+      const env = levels[i].fx.env ?? 0;
+      if (!requested.has(env)) {
+        requested.add(env);
+        void loadZoneArt(art, env).then(() => { if (!stopped) schedule(); });
+      }
+      const existing = disc.querySelector<HTMLCanvasElement>("canvas");
+      if (existing?.dataset.ready === "true") return;
       const size = node.classList.contains("cur") ? 84 : 62;
-      const c = document.createElement("canvas"); c.width = c.height = size * 2;
+      const c = existing ?? document.createElement("canvas"); c.width = c.height = size * 2;
       c.style.width = c.style.height = `${size}px`;
       c.dataset.planet = String(mapPlanetIndex(levels[i]));
       const ctx = c.getContext("2d");
-      if (ctx) drawSprite(ctx, art.planets[mapPlanetIndex(levels[i])] ?? null, size, size, size * 1.88);
-      disc.prepend(c);
+      const kind = mapPlanetIndex(levels[i]);
+      const sprite = art.planets[kind];
+      const separation = planetHalo(kind, SKY_RGB[ENVS[env].sky]);
+      if (ctx) drawSprite(ctx, sprite, size, size, size * 1.78, "box", separation?.mode, separation?.opacity);
+      c.dataset.ready = String(!!sprite);
+      if (!existing) disc.prepend(c);
     });
     for (const layer of layers) {
       const rect = layer.node.getBoundingClientRect();

@@ -1,5 +1,6 @@
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=252";
 import { platform } from "./platform.js?v=252";
-import { HIGH_ORBIT_RIG_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=252";
+import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=252";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=252";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
@@ -61,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 17:12 UTC";
+export const BUILD_TIME = "2026-09-09 17:57 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -203,9 +204,6 @@ export const SUITS = [
     // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
     // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
     { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
-    { id: "porcelain", name: "Porcelain Paragon", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
-    { id: "nacre", name: "Nacre Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-    { id: "origamist", name: "Foldspace Origamist", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -257,7 +255,7 @@ if (!IS_BETA) {
 }
 const SUIT_BUILT_IN_TRAILS = {
     vanguard: "vanguardwake", arcflash: "arcflashwake",
-    ...Object.fromEntries(HIGH_ORBIT_RIG_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
+    ...Object.fromEntries(HIGH_ORBIT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
 };
 export const builtInTrailSuit = (trail) => Object.keys(SUIT_BUILT_IN_TRAILS).find(id => SUIT_BUILT_IN_TRAILS[id] === trail);
 export function trailWornBy(equippedTrail, equippedSuit) {
@@ -270,7 +268,7 @@ export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
     { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
     { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
-    ...HIGH_ORBIT_RIG_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
+    ...HIGH_ORBIT_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -384,8 +382,10 @@ export function skyIdFor(flight, envIdx) {
 export function washScale(flight) {
     return flight === "deep" || flight === "lost" ? 0.45 : 1;
 }
-export const PLANET_COUNT = 33;
-export const DEBRIS_COUNT = 27;
+export const PLANET_COUNT = 134;
+export const DEBRIS_COUNT = 55;
+// Special-mode seeded art rolls retain their original range.
+export const LEGACY_DEBRIS_COUNT = 27;
 export const PLANET_RGB = [
     [0.34, 0.45, 0.47], [0.68, 0.49, 0.25], [0.63, 0.66, 0.68],
     [0.35, 0.17, 0.12], [0.20, 0.51, 0.50], [0.46, 0.44, 0.43],
@@ -398,6 +398,7 @@ export const PLANET_RGB = [
     [0.78, 0.74, 0.66], [0.13, 0.16, 0.24], [0.92, 0.65, 0.74],
     [0.15, 0.11, 0.28], [0.24, 0.60, 0.81], [0.16, 0.21, 0.48],
     [0.43, 0.26, 0.64], [0.36, 0.58, 0.69], [0.30, 0.15, 0.09],
+    ...NEW_PLANET_RGB,
 ];
 /** Perceptual separation in a luma + opponent-colour space. Luminance
  *  is weighted heaviest because form reads by brightness first, but hue
@@ -415,32 +416,32 @@ export function sep(a, b) {
 }
 export const MIN_SEP = 0.3;
 export const ENVS = [
-    { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 2, 1, 5, 9, 4], debrisBias: [1, 21, 24], sky: "indigo" },
-    { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 20, 28, 25, 15], debrisBias: [11, 2, 20], sky: "magenta" },
-    { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [10, 8, 22, 26, 23, 30], debrisBias: [18, 19, 23], sky: "ice" },
-    { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [29, 24, 31, 5], debrisBias: [7, 20, 14, 8], sky: "inferno" },
-    { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [24, 2, 12, 6, 16, 18], debrisBias: [21, 0, 3], sky: "neon" },
-    { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [30, 21, 11, 25], debrisBias: [16, 20], sky: "verdant" },
-    { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [19, 13, 15, 10], debrisBias: [18, 23, 19, 9, 6], sky: "mono" },
-    { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [21, 30, 22, 19], debrisBias: [9, 13, 2, 6], sky: "verdant" },
-    { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [15, 11, 17, 27, 10, 24], debrisBias: [15], sky: "inferno" },
-    { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [26, 13, 23, 8], debrisBias: [9, 18], sky: "indigo" },
-    { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [20, 9, 1, 14, 7], debrisBias: [8, 25], sky: "vortex" },
-    { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [18, 16, 12, 24], debrisBias: [7, 5, 4], sky: "gold" },
-    { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [29, 3, 25, 21], debrisBias: [22, 16, 14, 25], sky: "gold" },
-    { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [2, 5], debrisBias: [10, 3, 0], sky: "neon" },
-    { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [12, 6, 26, 0], debrisBias: [5, 17], sky: "neon" },
-    { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [8, 30, 21, 10, 9, 26, 13, 17, 23, 22], debrisBias: [24, 26, 5, 1], sky: "verdant" },
-    { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [30, 27, 13, 19], debrisBias: [19, 11], sky: "verdant" },
-    { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [4, 28, 20, 15], debrisBias: [13, 11, 16], sky: "magenta" },
-    { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [7, 32, 31, 14], debrisBias: [22, 12, 14], sky: "gold" },
-    { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [3, 21, 16, 14], debrisBias: [12, 14, 7], sky: "ice" },
-    { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [19, 13, 28, 15], debrisBias: [25, 11, 20], sky: "mono" },
-    { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [8, 30, 21, 1], debrisBias: [9, 13, 23], sky: "verdant" },
-    { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [7, 29, 15, 4], debrisBias: [16, 19, 11], sky: "inferno" },
-    { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [27, 25, 11, 0], debrisBias: [17, 21], sky: "ghost" },
-    { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [24, 2, 12, 5], debrisBias: [21, 26, 1, 10], sky: "neon" },
-    { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [20, 15, 19, 27, 25], debrisBias: [20, 22], sky: "vortex" },
+    { name: "DEEP SPACE", wash: [40, 60, 110, 0.14], wash2: [70, 90, 160, 0.06], planetBias: [0, 1, 2, 33, 34], debrisBias: [1, 21], sky: "indigo" },
+    { name: "NEBULA NURSERY", wash: [150, 70, 210, 0.16], wash2: [255, 110, 180, 0.08], planetBias: [4, 8, 35, 36, 37], debrisBias: [9, 27], sky: "magenta" },
+    { name: "ICE MOON", wash: [90, 180, 220, 0.12], wash2: [160, 230, 255, 0.06], planetBias: [31, 38, 39, 40, 41], debrisBias: [11, 28], sky: "ice" },
+    { name: "SOLAR FURNACE", wash: [255, 120, 40, 0.12], wash2: [255, 80, 60, 0.07], planetBias: [3, 42, 43, 44, 45], debrisBias: [12, 14], sky: "inferno" },
+    { name: "CRYSTAL BELT", wash: [140, 220, 255, 0.12], wash2: [200, 140, 255, 0.07], planetBias: [28, 10, 51, 52, 53], debrisBias: [2, 6, 13], sky: "neon" },
+    { name: "TIME FRACTURE", wash: [90, 255, 180, 0.1], wash2: [200, 255, 120, 0.05], planetBias: [11, 106, 107, 108, 109], debrisBias: [48, 49], sky: "verdant" },
+    { name: "MONOCHROME VOID", wash: [255, 255, 255, 0.08], wash2: [140, 140, 150, 0.05], planetBias: [5, 61, 62, 63, 64], debrisBias: [0, 3], sky: "mono" },
+    { name: "EMERALD EXPANSE", wash: [40, 255, 120, 0.12], wash2: [140, 255, 80, 0.06], planetBias: [87, 88, 89, 90, 91], debrisBias: [42, 43], sky: "verdant" },
+    { name: "CRIMSON STORM", wash: [220, 40, 50, 0.14], wash2: [120, 10, 20, 0.08], planetBias: [21, 54, 55, 56, 57], debrisBias: [31, 32], sky: "inferno" },
+    { name: "SAPPHIRE ABYSS", wash: [20, 50, 180, 0.16], wash2: [10, 20, 80, 0.08], planetBias: [46, 47, 48, 49, 50], debrisBias: [29, 30], sky: "indigo" },
+    { name: "VIOLET REALM", wash: [140, 40, 220, 0.14], wash2: [80, 20, 140, 0.08], planetBias: [30, 27, 58, 59, 60], debrisBias: [33, 34], sky: "vortex" },
+    { name: "GOLDEN HOUR", wash: [255, 180, 60, 0.12], wash2: [220, 120, 40, 0.07], planetBias: [74, 75, 76, 77, 78], debrisBias: [15, 25], sky: "gold" },
+    { name: "SOLAR CORONA", wash: [255, 220, 80, 0.12], wash2: [255, 140, 40, 0.07], planetBias: [79, 80, 81, 82, 83], debrisBias: [38, 39], sky: "gold" },
+    { name: "HYPERVIVID", wash: [255, 40, 180, 0.12], wash2: [40, 220, 255, 0.1], planetBias: [13, 19, 65, 66, 67], debrisBias: [18, 35], sky: "neon" },
+    { name: "NEON BAZAAR", wash: [255, 40, 160, 0.12], wash2: [40, 255, 200, 0.08], planetBias: [25, 110, 111, 112, 113], debrisBias: [5, 50], sky: "neon" },
+    { name: "ALIEN JUNGLE", wash: [40, 160, 60, 0.14], wash2: [20, 80, 40, 0.08], planetBias: [9, 12, 22, 92, 93], debrisBias: [17, 44], sky: "verdant" },
+    { name: "ACID SWAMP", wash: [160, 220, 20, 0.12], wash2: [80, 120, 10, 0.07], planetBias: [94, 95, 96, 97, 98], debrisBias: [24, 45], sky: "verdant" },
+    { name: "CORAL SHALLOWS", wash: [255, 120, 140, 0.12], wash2: [80, 180, 200, 0.08], planetBias: [23, 26, 84, 85, 86], debrisBias: [40, 41], sky: "magenta" },
+    { name: "BONE DESERT", wash: [220, 190, 140, 0.1], wash2: [140, 100, 60, 0.07], planetBias: [6, 24, 71, 72, 73], debrisBias: [20, 37], sky: "gold" },
+    { name: "PULSAR FIELD", wash: [180, 210, 255, 0.14], wash2: [80, 90, 200, 0.08], planetBias: [29, 102, 103, 104, 105], debrisBias: [16, 7, 47], sky: "ice" },
+    { name: "BLACKOUT ZONE", wash: [60, 70, 110, 0.1], wash2: [30, 34, 60, 0.06], planetBias: [124, 125, 126, 127, 128], debrisBias: [8, 10], sky: "mono" },
+    { name: "AURORA CROWN", wash: [60, 255, 190, 0.14], wash2: [140, 120, 255, 0.08], planetBias: [15, 20, 99, 100, 101], debrisBias: [19, 46], sky: "verdant" },
+    { name: "RUST BELT", wash: [200, 110, 50, 0.12], wash2: [140, 70, 40, 0.07], planetBias: [16, 18, 68, 69, 70], debrisBias: [26, 4, 36], sky: "inferno" },
+    { name: "GHOST NEBULA", wash: [200, 210, 235, 0.09], wash2: [150, 160, 200, 0.06], planetBias: [119, 120, 121, 122, 123], debrisBias: [52, 53], sky: "ghost" },
+    { name: "PRISM STORM", wash: [255, 220, 0, 0.12], wash2: [0, 190, 255, 0.1], planetBias: [114, 115, 116, 117, 118], debrisBias: [23, 51], sky: "neon" },
+    { name: "EVENT HORIZON", wash: [140, 40, 255, 0.16], wash2: [40, 0, 80, 0.1], planetBias: [129, 130, 131, 132, 133], debrisBias: [22, 54], sky: "vortex" },
 ];
 // The tail hinge. A damped spring, not a keyframe set: stiffness sets
 // how fast it returns, damping how many times it rings on the way. At
@@ -467,12 +468,6 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
-    // One authored pilot and its signature wake per purchase. The selected head
-    // design is inseparable; these packs never advertise a removable helmet.
-    // Owner price, 9 Sep 2026: 2,500 Stardust for each complete pilot.
-    { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-    { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-    { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite, an articulated facet tail and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 2500, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
     { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
     { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
     { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
@@ -595,27 +590,6 @@ export function bundlePrice(b, owns) {
  *  character was drawn with one. One phrasing, in one place. */
 export const OWN_HEAD_TAG = "CUSTOM HELMET \u00b7 CANNOT CHANGE";
 export const OWN_HEAD_LINE = "Custom helmet: cannot change";
-export function fixedHeadTag(suit) {
-    if (suit.headPolicy === "helmetless")
-        return "HELMETLESS BY DESIGN";
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet.toUpperCase()} · ALWAYS ON`;
-    return suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG;
-}
-export function fixedHeadLine(suit) {
-    if (suit.headPolicy === "helmetless")
-        return "Helmetless by design";
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet}: always on`;
-    return suit.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
-}
-export function fixedHeadDescription(suit) {
-    if (suit.headPolicy === "helmetless")
-        return `${suit.name} always flies without a helmet. Equip another suit to change helmets.`;
-    if (suit.fixedHelmet)
-        return `${suit.fixedHelmet} is part of ${suit.name} and always stays on. Equip another suit to change helmets.`;
-    return suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets.";
-}
 /** THE LEAD-IN: open, straight, empty corridor at the mouth of a wormhole.
  *  A Lost in Space pilot is thrown in mid-flight with no READY screen, at a
  *  distance scaled to their gate - so the walls were already narrow and
@@ -699,8 +673,9 @@ export function idWeight(id) {
         w += ITEM_WEIGHT.trail;
     return w;
 }
-/** Explicit premium sticker prices replace the catalog's generic weight rate. */
-export const DUST_STICKER = { arcflash: 1850, porcelain: 2500, nacre: 2500, origamist: 2500 };
+/** STICKER PRICES. An id here sells singly at this number instead of the
+ *  weight rate - for a suit whose price was set by the owner, not derived. */
+export const DUST_STICKER = { arcflash: 1850 };
 export function idDust(id) {
     if (DUST_STICKER[id] !== undefined)
         return DUST_STICKER[id];
@@ -820,7 +795,6 @@ export const SUIT_SHELF = [
     // rewards where gaps are missing... all tap animations fixed so they can
     // go live now"): the five former beta suits fill the ladder above 300.
     { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-    { title: "PREMIUM ATELIER", ids: [...PREMIUM_SUIT_IDS], shop: true },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:

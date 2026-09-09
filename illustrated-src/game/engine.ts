@@ -1,10 +1,10 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, palsClash, type BoostId } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { isPremiumSuit } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, prefetchArtBanks, type ArtBank } from "./art";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
@@ -32,6 +32,7 @@ import {
 import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS} from "./campaign";
 import {
   dive,
+  envIndexFor,
   flap,
   initStars,
   makeWorld,
@@ -294,6 +295,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
+      void loadZoneArt(engine.art, world.envB).then(notify);
       resize();
       if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art, save.equippedSuit).then(notify); }
       resetInputTracking();
@@ -347,6 +349,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // A Spill mission does the same with its wave ladder (see resetRun).
       resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def,
         def.base === "tunnel" ? def.seed ?? undefined : undefined);
+      void loadZoneArt(engine.art, def.fx.env ?? 0).then(notify);
       resize();
       if (def.base === "spill") void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       resetInputTracking();
@@ -1609,6 +1612,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     ctx.clearRect(0, 0, world.W, world.H);
     if (art) {
       if (world.screen === "play" || world.screen === "dead" || world.screen === "pause") {
+        void loadZoneArt(art, world.envA);
+        void loadZoneArt(art, world.envB);
+        if (!world.lvl && !world.retro && !world.spill && !world.tunnel && !world.race)
+          void loadZoneArt(art, envIndexFor(world, world.score + ENV_GATES));
         drawWorld(ctx, world, save, art);
         if (world.screen !== "pause") drawHud(ctx, world, art, save);
       } else if (art.sky) {
@@ -1668,6 +1675,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     .then((bank) => {
       art = bank;
       engine.art = bank;
+      void loadZoneArt(bank, world.envB).then(notify);
       if (world.spill) void loadSpillScene(bank, save.equippedSuit).then(notify);
       notify();
       prefetchArtBanks(bank);
@@ -1678,4 +1686,3 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 }
 
 export { deepUnlocked, lostUnlocked } from "./save";
-

@@ -82,9 +82,6 @@ export const SUIT_LEAN = {
     cosmic: { up: 0.8, down: 0.3 },
     sunforged: { up: 0.8, down: 0.3 },
     abyssal: { up: 0.8, down: 0.3 },
-    porcelain: { up: 0.8, down: 0.3 },
-    nacre: { up: 0.8, down: 0.3 },
-    origamist: { up: 0.8, down: 0.3 },
     // --- custom ANIMATION suits. Their frames are the owner's and are not to
     //     be touched; their LEAN is a dial like everyone else's.
     eclipse: { up: 0.8, down: 0.3 },
