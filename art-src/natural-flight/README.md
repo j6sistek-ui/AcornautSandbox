@@ -89,7 +89,9 @@ eight descent frames are enabled. The body reference, helmet, loading
 fallback, portrait and Spill cockpit agree. Eight obsolete standard split
 rigs are retired; the rig audit receives the active roster explicitly.
 Companion loop loading and its existing clock are retained. Physics,
-controls, rewards and save schema are unchanged. Cache stamp 247 is rebuilt.
+controls, rewards and save schema are unchanged. Cache stamp 248 is rebuilt
+after integrating main 100ca6e, preserving its flight-family declarations
+and frozen Cryostar/Verdant behavior.
 
 ## Visual review
 
@@ -138,9 +140,10 @@ sheet approval rather than the standard squirrel choreography.
   48 companion poses, loop wrap/held clocks, 3,240 live simulation frames,
   2,160 preview frames and nine neutral loading/portrait comparisons.
 - Full harness: 41 pass, 5 fail, 0 skipped out of 46. All five also reproduce
-  on unchanged main b223820: Arcflash loading-pixel comparison, Hyper Run
+  on unchanged main 100ca6e: Arcflash loading-pixel comparison, Hyper Run
   keyboard-repeat resume, bridge comment scanner, and two Spill tests using
-  Windows C: paths as ESM URLs. No unrelated fixes are included.
+  Windows C: paths as ESM URLs. The integrated stamp-248 run also reports
+  41 pass/5 fail. No unrelated fixes are included.
 - Docker daemon unavailable; repo-authorized workspace Node/bundled Python
   fallback used. No host system packages installed.
 - Browser at 390×844: production starts with a 390×844 canvas; rig bench loads

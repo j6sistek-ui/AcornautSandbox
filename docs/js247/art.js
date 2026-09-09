@@ -238,19 +238,17 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo) {
 // still touches its plume in the source, but the guarded mainline cut is
 // safer than the earlier colour split and remains an active rig.
 const RIGGED_SUITS = [
-    "flight",
-    // The natural-flight nine use whole-frame banks and matching neutral
-    // portraits. Their historical split parts are no longer requested.
+    "flight", "iontrim", "copper", "frost", "voidsuit",
     // alien is NOT rigged any more: its new spiral-tail master has no neck
     // to cut (neck-cut.py itself refused the art), and the suit flies a full
     // 8/8 painted bank - the static master is the honest loading fallback.
     // ghost went bank-only with its spectral rebuild: the wisp tail has no
     // neck to cut, and a full bank needs no rig.
-    "robo", "bigbooty",
+    "ember", "robo", "bigbooty",
     // seraph left the rig list with the shelf-card promotion: its winged
     // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
     // full bank - the static master is its loading fallback, like alien.
-    "catsuit",
+    "catsuit", "gemmie", "sammie", "leviathan",
     "verdant", "cryostar", "eclipse", "volt",
     // Cyber is NOT beta-gated any more. It started beta-only, then the shop
     // overhaul sold it on production in two bundles - and its rig stayed
