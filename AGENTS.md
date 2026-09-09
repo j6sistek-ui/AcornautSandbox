@@ -17,3 +17,12 @@ package installation is needed. `ACORNAUT_TSC`, `ACORNAUT_CANVAS` and
 `ACORNAUT_HAPPY_DOM` may point to existing package entry files. Read
 `SHIPPING.md` for the complete required workflow. There is no lint script;
 use typecheck and `git diff --check` alongside the tests.
+
+Flight Studio is a separately launched offline tool under `tools/flight-studio`.
+Edit its UI/runtime in `illustrated-src/flight-studio`, then run
+`node illustrated-src/build-flight-studio.mjs`. Commit its generated modules
+and manifest so the launcher requires only existing Node, with no install or
+network. Game painters are generated from source, never edited in the tool.
+`node illustrated-src/test-flight-studio.mjs` verifies the standalone runtime,
+exports, all model assets and read-only host. The Docker workflow already runs
+every test file; use the same documented fallback when Docker is unavailable.
