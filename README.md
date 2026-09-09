@@ -34,6 +34,9 @@ will show source code.
 **Nothing under `docs/js*` is hand-written** — it is generated. Edit
 `illustrated-src/` and rebuild.
 
+The eight-bundle Shop refresh has a [pricing contract](illustrated-src/design/shop-refresh/PRICING.md)
+and [verification receipt with browser captures](illustrated-src/design/shop-refresh/VERIFICATION.md).
+
 There used to be a second tree, `sandbox_assets/`, holding a byte-identical
 copy of all of this. Nothing ever loaded from it — it was the output
 directory from before `docs/` became the Pages root, and it cost 85 MB, a

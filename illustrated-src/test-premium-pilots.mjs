@@ -173,31 +173,29 @@ async function integrationChecks(){
   }finally{Date.now=clock;}
   const results=[];
   for(const id of ids){
-    const suit=C.SUITS.find(s=>s.id===id),bundle=C.BUNDLES.find(b=>b.id==='bundle-'+id),trail=Config.HIGH_ORBIT_PROFILES[id].trail;
-    assert(suit&&bundle,id+' present on '+mode);assert(C.wearsOwnHead(suit),id+' never uses interchangeable helmets');
+    const suit=C.SUITS.find(s=>s.id===id),price=C.idDust(id),trail=Config.HIGH_ORBIT_PROFILES[id].trail;
+    assert(suit&&C.FIXED_SHOP_SUIT_IDS.includes(id),id+' present on '+mode);assert(C.wearsOwnHead(suit),id+' never uses interchangeable helmets');
     assert.equal(suit.headPolicy,id==='nacre'?'helmetless':'integrated');
     assert.equal(suit.fixedHelmet,id==='porcelain'?'Sovereign Shell':id==='origamist'?'Facet Shell':undefined);
-    assert(bundle.fixed,id+' fixed premium pack');assert.deepEqual(bundle.items,[{kind:'suit',id}]);assert.deepEqual(C.bundleIds(bundle),[id]);
     // Exact owner prices and the combined trio pack are covered by the
-    // pricing suite; this exercises the real single-kit transaction.
-    assert(bundle.dust>0&&Number.isInteger(bundle.dust),id+' valid kit sticker');
-    assert.equal(C.idDust(id),bundle.dust,id+' singleton and bundle agree');
+    // pricing suite; this exercises the real individual-pilot transaction.
+    assert(price>0&&Number.isInteger(price),id+' valid individual sticker');
     assert(C.IAP_ITEMS.includes(id));assert(!C.IAP_ITEMS.includes(trail),'wake is included, never sold separately');
     assert(!C.HELMETS.some(h=>h.id===id),id+' has no detachable helmet SKU');
     assert(!S.suitRevealed(e.save,id)&&!S.trailUnlocked(e.save,trail),id+' not freely owned on '+mode);
     assert.equal(e.buySuit(id),'locked');assert.equal(e.buyTrail(trail),'locked');
-    e.save.starDust=bundle.dust-1;const beforePoor=JSON.stringify(e.save);assert.equal(e.buyBundle(bundle.id),'poor');assert.equal(JSON.stringify(e.save),beforePoor,'unfunded purchase has no side effects');
+    e.save.starDust=price-1;const beforePoor=JSON.stringify(e.save);assert.equal(e.buyShopItem(id),'poor');assert.equal(JSON.stringify(e.save),beforePoor,'unfunded purchase has no side effects');
     // Exercise the real storefront card and cart button, then restore this
-    // synthetic fixture to independently exercise the bundle transaction.
-    const beforeShop=structuredClone(e.save);e.save.starDust=bundle.dust;e.open('shop');
+    // synthetic fixture to independently exercise the individual transaction.
+    const beforeShop=structuredClone(e.save);e.save.starDust=price;e.open('shop');
     const tile=[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===suit.name);assert(tile,id+' real shop tile');tile.click();
     assert(app.textContent.includes(C.fixedHeadTag(suit)),id+' shop preview states fixed head rule');
     assert.equal(e.save.equipped,'ion','trying a suit never overwrites selected helmet');
     const checkout=app.querySelector('.ac-combobuy');assert(checkout,id+' can be placed in cart');checkout.click();
     assert.equal(e.save.starDust,0,id+' actual storefront charges its advertised sticker');assert(S.suitRevealed(e.save,id)&&S.trailUnlocked(e.save,trail));
     Object.assign(e.save,beforeShop);
-    e.save.starDust=bundle.dust;assert.equal(e.buyBundle(bundle.id),'ok');assert.equal(e.save.starDust,0);
-    assert(S.suitRevealed(e.save,id)&&S.trailUnlocked(e.save,trail));assert.equal(e.buyBundle(bundle.id),'owned');assert.equal(e.save.starDust,0);
+    e.save.starDust=price;assert.equal(e.buyShopItem(id),'ok');assert.equal(e.save.starDust,0);
+    assert(S.suitRevealed(e.save,id)&&S.trailUnlocked(e.save,trail));assert.equal(e.buyShopItem(id),'owned');assert.equal(e.save.starDust,0);
     assert.equal(e.buySuit(id),'equip');assert.equal(e.save.equippedSuit,id);assert.equal(e.save.equipped,'ion','equipping fixed-head suit preserves previous selected helmet');
     for(const helmet of C.HELMETS){const before=JSON.stringify(e.save);assert.equal(e.buyHelmet(helmet.id),'fixedHead',id+' rejects '+helmet.id);assert.equal(JSON.stringify(e.save),before,'helmet attempt does not spend, unlock or change selection');}
     assert.equal(C.trailWornBy('ion',id),trail);assert.equal(e.buyTrail(trail),'equip');assert.equal(e.save.equippedTrail,'ion');
@@ -220,7 +218,7 @@ async function integrationChecks(){
     for(let i=0;i<20;i++){Sim.updateWorld(small,e.save,1/120);Sim.updateWorld(large,e.save,1/30);Race.stepRace(authority);}
     assert.deepEqual(small.race,authority,id+' cosmetic playback leaves race authority unchanged');assert.deepEqual(small.highOrbit,large.highOrbit,id+' race playback independent of viewport');
     assert(small.highOrbit.frames.active&&small.highOrbit.frames.age>0,id+' accepted race hold advances full-frame playback');
-    results.push({id,price:bundle.dust,headPolicy:suit.headPolicy,wake:trail});
+    results.push({id,price,headPolicy:suit.headPolicy,wake:trail});
   }
   // A previously selected matched helmet also survives a fixed-head detour.
   const matched=C.HELMETS.find(h=>h.suitOnly);assert(matched);
@@ -229,10 +227,11 @@ async function integrationChecks(){
   assert.equal(e.buySuit(matched.suitOnly),'equip');assert.equal(e.save.equipped,matched.id,'original outfit restores original matched helmet');
   e.save.equipped='ion';assert.equal(e.buySuit('flight'),'equip');assert.equal(e.save.equipped,'ion');assert.equal(e.save.equippedTrail,'ion');
   // Old saves need no premium fields. Existing progress/ownership must survive.
-  const premiumDust=C.BUNDLES.filter(b=>b.items.some(item=>ids.includes(item.id))).reduce((n,b)=>n+b.dust,0);
-  const old=S.defaultSave();Object.assign(old,{tutorialDone:true,guide:'done',equipped:'ion',unlocked:['clear','ion'],equippedSuit:'flight',acorns:14731,starDust:419,betaDustGrant:true,betaDustGrantTotal:C.BUNDLES.reduce((n,b)=>n+b.dust,0)-premiumDust,purchased:['arcflash'],receipts:['premium-regression-legacy']});
+  assert.equal(S.BETA_DUST_GRANT_FLOOR,12360);assert.equal(S.BETA_LEGACY_DUST_GRANT_TOTAL,7510);
+  const currentGrant=S.betaDustGrantTarget();assert.equal(currentGrant,12360,'regrouping preserves the existing beta grant');
+  const old=S.defaultSave();Object.assign(old,{tutorialDone:true,guide:'done',equipped:'ion',unlocked:['clear','ion'],equippedSuit:'flight',acorns:14731,starDust:419,betaDustGrant:true,betaDustGrantTotal:S.BETA_LEGACY_DUST_GRANT_TOTAL,purchased:['arcflash'],receipts:['premium-regression-legacy']});
   S.writeSave(old);const loaded=S.loadSave();for(const field of ['equipped','equippedSuit','acorns'])assert.equal(loaded[field],old[field],'old save preserves '+field);
-  assert.equal(loaded.starDust,old.starDust+(mode==='beta'?premiumDust:0),'existing beta testers receive only the new content top-up; production currency is unchanged');
+  assert.equal(loaded.starDust,old.starDust+(mode==='beta'?currentGrant-S.BETA_LEGACY_DUST_GRANT_TOTAL:0),'legacy beta receives only its preservation top-up; production currency is unchanged');
   assert(loaded.purchased.includes('arcflash'));assert(loaded.receipts.includes('premium-regression-legacy'));
   for(const id of ids)assert(!S.suitRevealed(loaded,id),'old save gains no unbought '+id);
   const pending=[],urls=[];globalThis.Image=class {naturalWidth=1024;naturalHeight=1024;set src(value){urls.push(value);pending.push(this);}};

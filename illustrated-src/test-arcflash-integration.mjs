@@ -57,11 +57,9 @@ if(mode==='production'){
  // Nothing is missing now; the gate moved from EXISTENCE to OWNERSHIP. An
  // unbought premium suit is 'locked' - on the shelf, not obtainable for free -
  // and its wake is locked with it.
- const pack=Cat.BUNDLES.find(b=>b.id==='bundle-arcflash');
- assert(pack&&pack.fixed,'a fixed-price pack: never featured, never discounted');
- assert.deepEqual(Cat.bundleIds(pack),['arcflash'],'the wake is not a listed item - it arrives with the suit');
- assert.equal(pack.dust,1850,'the owner set this sticker by hand, not by weight');
- assert.equal(Cat.idDust('arcflash'),pack.dust,'the singles shelf asks the same number');
+ assert(Cat.FIXED_SHOP_SUIT_IDS.includes('arcflash'),'a permanent individual pilot: never dependent on bundle rotation');
+ const price=Cat.idDust('arcflash');
+ assert.equal(price,1850,'the owner set this sticker by hand, not by weight');
  assert(Cat.IAP_ITEMS.includes('arcflash'),'production sells it');
  assert(!Cat.IAP_ITEMS.includes('arcflashwake'),'the wake is never priced separately');
  assert(!S.suitRevealed(e.save,'arcflash'),'unbought on a fresh production save');
@@ -70,26 +68,27 @@ if(mode==='production'){
  assert.equal(e.buyTrail('arcflashwake'),'locked');
  assert.notEqual(e.save.equippedSuit,'arcflash','a locked suit is not equipped by asking');
  // and it IS reachable - dust is the only route, at exactly the sticker.
- e.save.starDust=pack.dust-10;assert.equal(e.buyBundle('bundle-arcflash'),'poor');
- e.save.starDust=pack.dust;assert.equal(e.buyBundle('bundle-arcflash'),'ok');
- assert.equal(e.save.starDust,0,'the pack charges its whole sticker');
+ e.save.starDust=price-10;assert.equal(e.buyShopItem('arcflash'),'poor');
+ e.save.starDust=price;assert.equal(e.buyShopItem('arcflash'),'ok');
+ assert.equal(e.save.starDust,0,'the individual pilot charges its whole sticker');
  assert.equal(e.buySuit('arcflash'),'equip');assert.equal(e.save.equippedSuit,'arcflash');
  assert.equal(e.buyTrail('arcflashwake'),'equip','the wake comes with the suit, unpriced');
  assert.equal(Cat.trailWornBy(e.save.equippedTrail,'arcflash'),'arcflashwake','and it is the only wake Arcflash wears');
- assert.equal(e.buyBundle('bundle-arcflash'),'owned','a bought pack leaves the shelf');
+ assert.equal(e.buyShopItem('arcflash'),'owned','a bought pilot leaves the shelf');
  console.log('production: Arcflash sold, not absent - locked until bought, then suit+wake; trail exclusion/fallback correct');process.exit(0);
 }
 // PREMIUM IS OWNED ONLY BY PURCHASE, ON BOTH PAGES (v130, "Beta buys its packs
 // instead of being handed them"): iapOwned no longer short-circuits on
 // BETA_UNLOCK_GATES, so the beta cannot equip Arcflash for free either. The
-// tester is granted dust summed from BUNDLES instead and buys it like a player,
+// tester receives the preserved beta grant and buys it like a player,
 // which is the whole point - the shop path is what the beta is there to test.
-const pack=Cat.BUNDLES.find(b=>b.id==='bundle-arcflash');
+const price=Cat.idDust('arcflash');assert(Cat.FIXED_SHOP_SUIT_IDS.includes('arcflash'));
 assert.equal(e.buySuit('arcflash'),'locked','unbought premium is locked on the beta too');
-assert(e.save.starDust>=Cat.BUNDLES.reduce((n,b)=>n+b.dust,0),'the beta grant covers every pack at sticker price');
+assert.equal(S.BETA_DUST_GRANT_FLOOR,12360);assert.equal(S.betaDustGrantTarget(),12360);
+assert(e.save.starDust>=S.betaDustGrantTarget(),'the beta grant still covers bundles and permanent individual pilots');
 const dustBefore=e.save.starDust;
-assert.equal(e.buyBundle('bundle-arcflash'),'ok');
-assert.equal(dustBefore-e.save.starDust,pack.dust,'charged the pack sticker, nothing else');
+assert.equal(e.buyShopItem('arcflash'),'ok');
+assert.equal(dustBefore-e.save.starDust,price,'charged the individual sticker, nothing else');
 assert.equal(e.buySuit('arcflash'),'equip','bought, so the shelf equips it');
 assert.equal(S.suitPitchFor(e.save,'arcflash'),0,'Arcflash starts at its authored angle');
 assert.equal(S.suitPitchFor(e.save,'vanguard'),12,'latest AcorNut default survives integration');

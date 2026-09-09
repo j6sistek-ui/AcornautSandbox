@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-09T23:37:37.843Z",
+  "browser": "Chrome",
+  "sourceRevision": "8497029d56e98c188c62754d6850b7db20163f38",
+  "integratedMain": "95aefc52cb37d9451ade3db906f9ef97cb37479e",
+  "finalBuild": 257,
+  "fixtureProvenance": {
+    "build": 257,
+    "checkedAt": "2026-09-09T23:29:59.134Z",
+    "rows": [
+      {
+        "source": "docs/index.html",
+        "sourceSha256": "268872b1372c44409b43545c725cfcb8e9569c8b19869b579b5a5e9c65558592",
+        "fixture": "docs/.shop-qa-fixture.html",
+        "fixtureSha256": "6158e150e203060dacccdfdd3ec0bf885beb140ac5f7684a2f65efe1172d5dbc"
+      },
+      {
+        "source": "docs/beta/index.html",
+        "sourceSha256": "0ae7450097973bb2fd1d77d3b2cff4baad8f88fdb5c6d44cd1fa97d18594631c",
+        "fixture": "docs/beta/.shop-qa-fixture.html",
+        "fixtureSha256": "c675dbfccf77c834c7e6b98685a58857e00223ed610e767b5defcdd3f695fba5"
+      }
+    ]
+  },
+  "fixtures": "Canonical production/beta HTML plus deterministic UTC Date and in-memory platform storage; actual unchanged generated runtime and stylesheet. No real player data.",
+  "controls": [
+    "Tap to Start",
+    "Shop",
+    "review bundle",
+    "review included item",
+    "Back",
+    "Escape",
+    "Shift+Tab",
+    "Tab",
+    "scroll",
+    "viewport resize"
+  ],
+  "results": {
+    "productionCore": "PASS",
+    "betaCore": "PASS",
+    "trioSixActualContents": "PASS",
+    "fixedHeadLabels": "PASS at build255, unchanged runtime art",
+    "companionOnlyAndHelmetOnly": "PASS",
+    "mixedTwelveItems": "PASS",
+    "oneOwnedPrice": 1500,
+    "twoOwnedPrice": 500,
+    "keyboardEscapeAndFocusWrap": "PASS",
+    "consoleWarnings": [],
+    "consoleErrors": [],
+    "narrow320Fit": "PASS",
+    "wide1186Fit": "PASS"
+  },
+  "limits": [
+    "No native store transaction or physical mobile device tested.",
+    "Zero-due confirmation and full ownership subsets are covered by automated isolated engine/UI tests, not browser checkout.",
+    "Supplemental build255 details are labeled per image; final core and beta were refreshed at257.",
+    "No animation frame-rate claim; preview visual fit was inspected."
+  ],
+  "captureNotes": [
+    "Normal viewport captures only; no full-page stitching.",
+    "JPEG browser bytes encoded as PNG without resizing or cropping.",
+    "One CDP screenshot timeout and one optional selector timeout recovered with normal screenshots.",
+    "Initial newly-visible banner capture preceded image loading; later loaded capture replaced it."
+  ],
+  "stateBoundary": {
+    "realSaveRead": false,
+    "realSaveWritten": false,
+    "purchases": false,
+    "equipActions": false,
+    "cartSelection": false,
+    "launchOrProgressActions": false,
+    "syntheticStarDust": 0,
+    "betaSyntheticStartupAcorns": 10000
+  },
+  "cleanup": {
+    "fixturePaths": [
+      "docs/.shop-qa-fixture.html",
+      "docs/beta/.shop-qa-fixture.html"
+    ],
+    "fixturesRemoved": true,
+    "viewportReset": true,
+    "viewportAfterReset": {
+      "width": 1186,
+      "height": 778
+    },
+    "taskTabClosed": true
+  },
+  "screenshots": [
+    {
+      "name": "final-beta-offers-credit1500-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "93b7966aa24d2fa208a459894200a22323ad9201cae5e63becf9b1a2e7a2a38b",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-beta-shop-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "278fc0db76650776bf6c39b74d2f48288e164f2debbcc3817a3acda2ae7367d7",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-beta-starlight-included-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "e8f4cebc0a3f7a1e51135d699c8ea2a8399cde2cccb15b2b8d953d8524e24e17",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-beta-trio-320.png",
+      "width": 320,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "d403fe236a13bb7278ad1438ebc8c48bce80edcbea0d048ad2965f49d0af7703",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-beta-trio-credit1500-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "ffb7985cb6da2bdcf1a233f12fe264c26d4c318e628fda9184e00359601d5a51",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-beta-trio-wide.png",
+      "width": 1186,
+      "height": 723,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/beta/.shop-qa-fixture.html?day=5&owned=porcelain",
+      "sha256": "6009f0765f5bc5d835ba1388298258540057979d62b8690d59f31d4808e2c5da",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-amethyst-flight-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=6",
+      "sha256": "d84bc76386a68dad586e89077990252a09a653613a117ee618add35e1c31c577",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-cosmic-included-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=4",
+      "sha256": "c03aa28a60183ab8a8f8e72eee2d5b47a4f506fcb8e6739df23124077c61153f",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-cosmic-offer-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=4",
+      "sha256": "6ff870a9040b772ab61ff6e66be6fddd79eafd0e4d522db8b5c2f83ec78cdc64",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-nacre-detail-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "2ccfe0385bf020854e5c89a9c01e02a8d37d436aca164de28c6ecded96409a0b",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-offers-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "869f60b2d328bffe2b3c9e27da7659ace2da931466050f88987d89e456e11bfd",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-origamist-detail-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "c852316f02180e0d7a94eecef9e69d878d789e25d0cbdd64070dd4dcdbcd8b90",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-porcelain-detail-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "89450e7bbf8730b48fa325b267bc9aa0356214168041d80d3209b4663ca72f09",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-regalia-320.png",
+      "width": 320,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "9c5e19a57f1cb4dbd8bdd48db98e5915eaabe2cea7102bfd3ccc022a93894511",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-regalia-included-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "bc22508fe22f7669e18e6ac53ca79707f1ad4c114fac56cecb1bd7a48b54ac00",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-regalia-wide.png",
+      "width": 1186,
+      "height": 723,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "c1a9acf41cf039de0a5e3f791881526300ff4b733a87d6edc4a35ea2b7a28242",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-shop-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "3b92744195adaa59734064435984823dc9142971a71d4456f95d07e3281ef460",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-trio-credit500-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=6&owned=porcelain,nacre",
+      "sha256": "46fbe5f46ac9578d3615c383d136e0fe6575269d42aa62cdc0a82bf078e48cfc",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-trio-included-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 257,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "96d84e23421e150578c51cab995d1ee45e42b53b50dc3d9fd9c0de56808039ba",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-visors-included-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=6",
+      "sha256": "d9ce3ff12a96e6d5f8999268c1297764ff416e191c5af6c26796c4d60570f2cf",
+      "visuallyInspected": true,
+      "fullPage": false
+    },
+    {
+      "name": "final-production-wake-detail-390.png",
+      "width": 390,
+      "height": 844,
+      "build": 255,
+      "url": "http://127.0.0.1:8774/.shop-qa-fixture.html?day=1",
+      "sha256": "a0fc25e92893db0cb61e1231aa2de09f6de7e0a7e532600823c5ec044a090ea6",
+      "visuallyInspected": true,
+      "fullPage": false
+    }
+  ]
+}

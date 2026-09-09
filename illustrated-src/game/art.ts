@@ -678,7 +678,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "cryostar",
     "eclipse",
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-    ...(IS_BETA ? ["amethyst", "ivoryguard", "reactor"] : []),
+    "amethyst", "ivoryguard", "reactor",
   ];
   const suitIds = [
     "vanguard",

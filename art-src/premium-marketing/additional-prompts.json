@@ -1,0 +1,22 @@
+{
+  "mode": "built-in image generation",
+  "jobs": [
+    {
+      "id": "trio",
+      "references": [
+        "porcelain.png",
+        "nacre.png",
+        "origamist.png"
+      ],
+      "prompt": "Use case: ads-marketing. Supporting images 1, 2 and 3 are the EXACT character identities and material designs to preserve.\nCreate a coordinated WIDE LANDSCAPE 1536x768 promotional group portrait of these three characters together for a premium mobile game bundle. Porcelain Paragon on the left, Nacre Envoy in the center, Foldspace Origamist on the right. Three distinct charismatic pilots shoulder to shoulder, upper torso and head close-ups, balanced head sizes, every face or helmet fully visible with safe margins. The group fills 85% of the width and 80% of the height. Crop the chests at the lower edge; no legs or podium. Preserve compact animal proportions.\nPorcelain retains ivory ceramic with cobalt botanical filigree, CLOSED helmet with opaque blue visor, and silver fur ears/tail. Envoy retains smooth pearl-lilac skin, swept fin crest, large violet eyes, helmetless head, plum/pearl armor, and TWO substantial curled pearl tails attached at the rear rump. Origamist retains angular ivory/navy/rust-red armor, CLOSED helmet with opaque navy visor, and folded faceted tail.\nMatch the polished high-end stylized 3D materials and studio lighting of the three references. Use one cohesive dark midnight-purple/indigo cosmic background with subtle violet nebula and sparse gold pinpoints; keep corners quiet. Show all three clearly, without one obscuring another.\nNo additional characters, costume redesign, text, prices, titles, logos, watermarks, borders, buttons, icons, ground, platforms or floor shadows. This is a finished text-free image asset; real title and price will be rendered by the interface. Do not make three separate square tiles."
+    },
+    {
+      "id": "stardust-emblem",
+      "prompt": "Use case: ads-marketing. Create one SQUARE 1024x1024 premium mobile game Stardust currency emblem: a detailed violet FOUR-POINT STAR gemstone inside a rounded-square ornamental bezel.\nThe star has long top/bottom points and shorter left/right points. Use faceted translucent amethyst and lavender crystal, a luminous white-lilac core, and precise gleaming planes. The central four-point star occupies 65% of the image and reads clearly at 48px.\nThe bezel is polished dark-violet metal with thin warm-gold trim, delicate engraved filigree, tiny corner gems and beveled depth. Keep the ornament restrained. Straight-on product view against very dark midnight indigo-purple #100d25, with a subtle radial glow and no cast floor shadow.\nHigh-end stylized 3D game UI quality, sharp edges, violet illumination and warm champagne highlights. Exactly one four-point star. No five-point star, ordinary diamond silhouette, letters, numbers, prices, words, watermark, brand logo, button, coins, acorns, extra icons or scene."
+    },
+    {
+      "id": "shop-nebula",
+      "prompt": "Use case: ads-marketing. Create a WIDE LANDSCAPE 1536x1024 background texture for a premium mobile game Shop.\nUnderstated deep cosmic purple and indigo, with soft lavender nebula wisps along the outer edges, a few fine gold stardust points, and faint champagne-gold arcs only in the extreme corners. Keep the middle 75% very dark quiet navy-violet #0d0b20 for readable UI overlays.\nRich cinematic depth, restrained fantasy-cosmos atmosphere, extremely low contrast and no hard bright spots. This is a background asset, not a UI mockup.\nNo characters, planets, ships, coins, crystals, text, numbers, logos, watermarks, cards, borders, buttons, central ornament, podium or horizon."
+    }
+  ]
+}
