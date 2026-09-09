@@ -123,10 +123,25 @@ number that separates them is **head drift**, and it does so cleanly.
 
 ## Part 3 — scoring a delivered sheet
 
-Suits that wear their own head (Cat, Briella's Cat, AcorNut, Volt, Cyber,
-Arcflash) carry no `DOME` anchors, so the head measures do not apply to
-them. Judge those on costume delta and tail work only.
+`illustrated-src/measure-motion.py` scores a delivered sheet:
 
-The head measures need per-frame anchors, which are set by hand in the rig
-editor (`docs/lab/rig/`, reachable from Help). Costume delta and tail work
-can be read straight off the PNGs.
+```
+python3 illustrated-src/measure-motion.py frost ghost
+```
+
+It is a report, not a gate — it always exits 0 and never blocks anything.
+
+**Both numbers need the per-frame `DOME` anchors**, which are set by hand
+in the rig editor (`docs/lab/rig/`, reachable from Help). Head drift is
+measured on those anchors directly, and tail work needs them too — "far
+from the head" has no meaning without knowing where the head is. A sheet
+whose anchors are not set yet is reported as **unscorable** rather than
+scored: an earlier version guessed a circle around the ink's centre and
+the guess was worthless, putting Cyber at 0.07x and Quill at 11.31x.
+
+So the order is: deliver the sheet, set its anchors, then score it.
+
+Suits that wear their own head (Cat, Briella's Cat, AcorNut, Volt, Cyber,
+Arcflash) carry no anchors at all and cannot be scored by either measure.
+Judge those by eye, on costume consistency and on whether the tail carries
+the motion.

@@ -120,7 +120,6 @@ def score(sid: str, kind: str, dome) -> dict | None:
         # worse than no number, so the suit is reported as unscorable.
         return dict(kind=kind, n=len(fs), anchored=False)
     a = [np.asarray(Image.open(p).convert("RGBA")).astype(np.float64)[..., 3] for p in fs]
-    have = True
 
     near = far = 0.0
     H, W = a[0].shape
@@ -133,15 +132,11 @@ def score(sid: str, kind: str, dome) -> dict | None:
         far += d[~m].sum()
     tail = far / max(1.0, near)
 
-    drift = worst = None
-    where = ""
-    if have:
-        P = np.array([[v[0], v[1]] for v in anchors])
-        d2 = np.linalg.norm(P[:-2] - 2 * P[1:-1] + P[2:], axis=1)
-        drift, worst = float(np.median(d2)), float(np.max(d2))
-        where = fs[int(np.argmax(d2)) + 2].name
-    return dict(kind=kind, n=len(fs), tail=tail, drift=drift,
-                worst=worst, where=where, anchored=have)
+    P = np.array([[v[0], v[1]] for v in anchors])
+    d2 = np.linalg.norm(P[:-2] - 2 * P[1:-1] + P[2:], axis=1)
+    return dict(kind=kind, n=len(fs), tail=tail,
+                drift=float(np.median(d2)), worst=float(np.max(d2)),
+                where=fs[int(np.argmax(d2)) + 2].name, anchored=True)
 
 
 def main(argv: list[str]) -> int:
