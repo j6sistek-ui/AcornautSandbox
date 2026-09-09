@@ -54,33 +54,45 @@ assert.deepEqual([...D.FROZEN_SUITS].sort(),
   [...Object.keys(PINNED),...OWN_PATH,...TAP16].sort(),
   'every frozen suit is accounted for by exactly one of the three routes');
 
-// --- and the review's complaints are actually in the table --------------
-// "Awful and needs correction before shipping" / "over dive". If these
-// resolve to the full ramp, the per-suit table is doing nothing.
-for(const id of ['voidsuit','ember','frost','sammie','gemmie','ghost'])
-  assert(D.diveDepthFor(id)<=0.5,`${id} is held to the shallow end pending regenerated art`);
-for(const id of ['iontrim','copper','leviathan','cinderforge','groveguard','cosmic','sunforged','abyssal'])
-  assert(D.diveDepthFor(id)<1,`${id} was called too steep on the dive and is dialled back`);
+// NOTHING HERE GATES A SUIT THAT IS BEING WORKED ON (owner, 9 Sep 2026:
+// "be careful gating anything, they aren't changing any character i told
+// you to freeze").
+//
+// An earlier pass asserted that the dialled-back suits STAYED dialled back
+// - voidsuit/ember/frost/sammie/gemmie/ghost at <= 0.5, iontrim/copper/
+// leviathan and the High Orbit five under 1. Those are HOLDING values,
+// parked there only until the regenerated art lands, and the assertion
+// would have failed the moment someone released a hold to let the new
+// frames actually play. It would have blocked the fix it was waiting for.
+// Gone. The freeze above is the only thing this file locks, because the
+// freeze is the only thing the owner asked to be locked.
 
-// --- a family flies ONE ramp -------------------------------------------
-// Owner, 9 Sep 2026: "unique flight pattern by family". The family is the
-// unit that was approved, so a later tweak must not be able to split it -
-// which is exactly what would happen if someone dialled one member back
-// and left the others. Every member flies the reference's depth, and every
-// member is frozen if the reference is.
-for(const [ref,members] of Object.entries(D.FLIGHT_FAMILIES)){
-  assert(members.includes(ref),`${ref} family includes its own reference`);
-  const depth=D.diveDepthFor(ref);
-  for(const id of members){
-    assert(ids.has(id),`${ref} family names a real suit: ${id}`);
+// --- groupings align by default, exceptions are NAMED -----------------
+// Owner, 9 Sep 2026: "Loosely on the family thing. not a rule ... there may
+// be exceptions like acornaut. as close as possible these groupings should
+// align." So alignment is the default and divergence is allowed - but a
+// suit that flies apart from its group is declared in FLIES_APART rather
+// than discovered later as one somebody forgot to tune.
+//
+// Only SETTLED families are held to it. Most of the roster is mid-
+// regeneration and does not align yet; asserting that it does would be
+// asserting something false. A family is flipped to settled when its art
+// lands, and the harness starts holding it from then on.
+const apart=new Set(D.FLIES_APART);
+for(const id of apart) assert(ids.has(id),`FLIES_APART names a real suit: ${id}`);
+for(const fam of D.FLIGHT_FAMILIES){
+  for(const id of fam.members) assert(ids.has(id),`${fam.name} names a real suit: ${id}`);
+  const held=fam.members.filter(id=>!apart.has(id));
+  assert(held.length,`${fam.name} has at least one member that is not an exception`);
+  if(!fam.settled) continue;
+  const depth=D.diveDepthFor(held[0]);
+  for(const id of held)
     assert.equal(D.diveDepthFor(id),depth,
-      `FAMILY: ${id} flies the same ramp as ${ref} (${depth}) - the family was approved together and cannot be split`);
-    assert.equal(D.FROZEN_SUITS.includes(id),D.FROZEN_SUITS.includes(ref),
-      `FAMILY: ${id} and ${ref} are frozen together`);
-  }
+      `${fam.name} is SETTLED, so ${id} flies the family ramp (${depth}) - add it to FLIES_APART if that is deliberate`);
 }
+
 
 // --- an unlisted suit falls through to the default ----------------------
 assert.equal(D.diveDepthFor('no-such-suit'),D.POSE_DIVE_DEPTH,'an unlisted suit flies the default');
 
-console.log(`frozen roster: ${D.FROZEN_SUITS.length} suits held, ${Object.keys(PINNED).length} pinned on the dive dial, tunable suits dialled back — ok`);
+console.log(`frozen roster: ${D.FROZEN_SUITS.length} suits held, ${Object.keys(PINNED).length} pinned on the dive dial, nothing else gated — ok`);
