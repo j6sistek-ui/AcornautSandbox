@@ -71,16 +71,19 @@ for (const b of BUNDLES) {
   const b2 = shopBundles(t + 60_000, none).map((b) => b.id);
   ok(a.length === Math.min(SHOP_SLOTS, BUNDLES.length), `shelf should hold ${SHOP_SLOTS}, got ${a.length}`);
   ok(JSON.stringify(a) === JSON.stringify(b2), "the shelf must not change within a day");
-  // over a fortnight every pack should get a turn, and days must differ
+  // This legacy shelf hashes each date; it has no fourteen-day round-robin
+  // promise. Sample several catalog-length windows to catch an unreachable
+  // pack without treating an old roster's lucky fortnight as a product rule.
+  const observationDays = Math.max(14, BUNDLES.length * 4);
   const seen = new Set(); let changes = 0; let prev = null;
-  for (let d = 0; d < 14; d++) {
+  for (let d = 0; d < observationDays; d++) {
     const ids = shopBundles(t + d * DAY, none).map((x) => x.id);
     ids.forEach((i) => seen.add(i));
     if (prev && JSON.stringify(prev) !== JSON.stringify(ids)) changes++;
     prev = ids;
   }
-  ok(seen.size === BUNDLES.length, `every pack should appear within a fortnight, saw ${seen.size}/${BUNDLES.length}`);
-  ok(changes >= 7, `the shelf should turn over most days, changed ${changes}/13`);
+  ok(seen.size === BUNDLES.length, `legacy shelf sample missed a pack across ${observationDays} days, saw ${seen.size}/${BUNDLES.length}`);
+  ok(changes >= Math.floor(observationDays / 2), `the shelf should turn over most days, changed ${changes}/${observationDays - 1}`);
 }
 
 // ---- a bought pack leaves, and does not disturb the ones beside it ------
@@ -124,6 +127,19 @@ for (const b of BUNDLES) {
   // and a sticker price beats the rate wherever the owner set one
   ok(DUST_STICKER.arcflash === 1850 && idDust("arcflash") === 1850,
     `Arcflash is priced by hand at 1850, got ${idDust("arcflash")}`);
+
+  // Fixed pilots use the current storefront's daily pinned singles row.
+  // Their entitlement and full sticker must be available independently of
+  // whether their bundle happens to appear in the legacy hashed sample.
+  for (const b of BUNDLES.filter((pack) => pack.fixed)) {
+    ok(b.items.length === 1 && b.items[0].kind === "suit", `${b.name} must sell one complete pilot`);
+    const id = b.items[0]?.id;
+    ok(C.SUITS.some((suit) => suit.id === id && !suit.beta) && IAP_ITEMS.includes(id), `${b.name} must be a production premium suit`);
+    ok(DUST_STICKER[id] === b.dust && idDust(id) === b.dust, `${b.name} must carry its pinned single-item sticker`);
+    ok(featurePrice(b, none) === b.dust, `${b.name} must never discount its fixed sticker`);
+    ok(idGrants(id).includes(id), `${b.name} must grant its pilot entitlement`);
+    ok(C.SUIT_SHELF.some((shelf) => shelf.shop && shelf.ids.includes(id)), `${b.name} must have a Hangar shop entry`);
+  }
 
   // a set trail is never sold, it is handed over with the suit
   ok(idGrants("cryostar").includes("celestialtide"),

@@ -1,10 +1,13 @@
 import type {ArtBank} from './art';
 import {HIGH_ORBIT_PARTS} from './high-orbit-parts';
-import {HIGH_ORBIT_HEAD_RADIUS,HIGH_ORBIT_DISPLAY_SPAN,type HighOrbitId} from './high-orbit-config';
+import {PREMIUM_PARTS} from './premium-parts';
+import {HIGH_ORBIT_HEAD_RADIUS,HIGH_ORBIT_DISPLAY_SPAN,isPremiumSuit,type HighOrbitId} from './high-orbit-config';
 import {createHighOrbitMotion,type HighOrbitMotion,type HighOrbitPose} from './high-orbit-motion';
 import {paintHighOrbitEffect,type HighOrbitTravel} from './high-orbit-effects';
 
 export type OrbitPoint=readonly [number,number];
+/** Existing five paintings and the premium trio share the measured skeleton. */
+export const ORBIT_PARTS={...HIGH_ORBIT_PARTS,...PREMIUM_PARTS} as const;
 const DEG=Math.PI/180;
 const add=(a:OrbitPoint,b:OrbitPoint):OrbitPoint=>[a[0]+b[0],a[1]+b[1]];
 const rotate=(p:OrbitPoint,a:number):OrbitPoint=>[p[0]*Math.cos(a*DEG)-p[1]*Math.sin(a*DEG),p[0]*Math.sin(a*DEG)+p[1]*Math.cos(a*DEG)];
@@ -16,7 +19,7 @@ const skull:OrbitPoint=[181,88];
 /** The skull center is registered independently of the torso. The neck follows
  * the underside of the fixed-size head; no stretchy neck or fitting by alpha. */
 export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
- const h=HIGH_ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/h.skull[2];
+ const h=ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/h.skull[2];
  const head:OrbitPoint=[skull[0],skull[1]+p.heave];
  const neck=add(head,rotate([(h.a[0]-h.skull[0])*scale,(h.a[1]-h.skull[1])*scale],p.head));
  const world=(q:OrbitPoint)=>add(neck,rotate(q,p.body));
@@ -29,7 +32,7 @@ export function highOrbitLandmarks(id:HighOrbitId,p:HighOrbitPose,pitch=0){
  return Object.fromEntries(Object.entries(raw).map(([k,q])=>[k,add([128,128],rotate([q[0]-128,q[1]-128],pitch/DEG))])) as typeof raw;
 }
 function part(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitId,index:number,a:OrbitPoint,b:OrbitPoint){
- const spec=HIGH_ORBIT_PARTS[id][index],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1];
+ const spec=ORBIT_PARTS[id][index],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1];
  const tx=b[0]-a[0],ty=b[1]-a[1],scale=Math.hypot(tx,ty)/Math.hypot(dx,dy);
  ctx.save();ctx.translate(...a);ctx.rotate(Math.atan2(ty,tx)-Math.atan2(dy,dx));ctx.scale(scale,scale);
  ctx.drawImage(atlas,index%4*256,Math.floor(index/4)*256,256,256,-spec.a[0],-spec.a[1],256,256);ctx.restore();
@@ -40,7 +43,7 @@ for(let y=0;y<6;y++)for(let x=0;x<4;x++){const a=y*5+x;HIGH_ORBIT_TAIL_TRIANGLES
  * adds only a lateral offset per strip, making every triangle area invariant:
  * no self-fold, volume pumping, discrete guard step, or repeated tail drawing. */
 export function highOrbitTailMesh(id:HighOrbitId,p:HighOrbitPose,pitch=0){
- const spec=HIGH_ORBIT_PARTS[id][10],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1],length=Math.hypot(dx,dy);
+ const spec=ORBIT_PARTS[id][10],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1],length=Math.hypot(dx,dy);
  const ux=dx/length,uy=dy/length,vx=-uy,vy=ux,scale=79/length;
  const projected=[[0,0],[256,0],[0,256],[256,256]].map(([x,y])=>[(x-spec.a[0])*ux+(y-spec.a[1])*uy,(x-spec.a[0])*vx+(y-spec.a[1])*vy]);
  const lo=Math.min(...projected.map(q=>q[0])),hi=Math.max(...projected.map(q=>q[0]));
@@ -49,14 +52,22 @@ export function highOrbitTailMesh(id:HighOrbitId,p:HighOrbitPose,pitch=0){
  for(let y=0;y<=6;y++)for(let x=0;x<=4;x++){
    const u=lo+(hi-lo)*y/6,v=left+(right-left)*x/4;
    source.push([spec.a[0]+ux*u+vx*v,spec.a[1]+uy*u+vy*v]);
-   const t=Math.max(0,Math.min(1,u/length)),bend=(p.tailMid-p.tailRoot)*Math.sin(t*Math.PI/2)*.26+
-     (p.tailTip-p.tailMid)*t*t*.38;
+   // Folded composite has one articulated root; every facet keeps its shape.
+   const t=Math.max(0,Math.min(1,u/length)),bend=id==='origamist'?0:
+     (p.tailMid-p.tailRoot)*Math.sin(t*Math.PI/2)*.26+(p.tailTip-p.tailMid)*t*t*.38;
    const q=rotate([(ux*u+vx*(v+bend))*scale,(uy*u+vy*(v+bend))*scale],p.body-49+p.tailRoot*.8);
    const a=add(root,q);points.push(add([128,128],rotate([a[0]-128,a[1]-128],pitch/DEG)));
  }
  return {source,points};
 }
 export function paintHighOrbitTail(ctx:CanvasRenderingContext2D,atlas:CanvasImageSource,id:HighOrbitId,p:HighOrbitPose,pitch=0){
+ if(id==='origamist'){
+   // One rigid painting avoids triangle seams along the composite folds.
+   const spec=ORBIT_PARTS[id][10],dx=spec.b[0]-spec.a[0],dy=spec.b[1]-spec.a[1],scale=79/Math.hypot(dx,dy);
+   const root=highOrbitLandmarks(id,p,pitch).tail;
+   part(ctx,atlas,id,10,root,add(root,rotate([dx*scale,dy*scale],p.body-49+p.tailRoot*.8+pitch/DEG)));
+   return;
+ }
  const {source,points}=highOrbitTailMesh(id,p,pitch);
  for(const [a,b,c] of HIGH_ORBIT_TAIL_TRIANGLES){
    const [sx,sy]=source[a],[bx,by]=source[b],[cx,cy]=source[c],[x0,y0]=points[a],[x1,y1]=points[b],[x2,y2]=points[c];
@@ -89,21 +100,21 @@ export function paintHighOrbit(ctx:CanvasRenderingContext2D,art:ArtBank|null|und
    part(ctx,atlas,id,1,j.neck,j.hip);
    part(ctx,atlas,id,6,j.nearHip,j.nearKnee);part(ctx,atlas,id,7,j.nearKnee,j.nearBoot);
    part(ctx,atlas,id,2,j.nearShoulder,j.nearElbow);part(ctx,atlas,id,3,j.nearElbow,j.nearWrist);
-   const head=HIGH_ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/head.skull[2];
+   const head=ORBIT_PARTS[id][0],scale=HIGH_ORBIT_HEAD_RADIUS/head.skull[2];
    ctx.save();ctx.translate(...j.head);ctx.rotate(p.head*DEG+pitch);ctx.scale(scale,scale);
    ctx.drawImage(atlas,0,0,256,256,-head.skull[0],-head.skull[1],256,256);ctx.restore();
-   helmet?.(j.head[0],j.head[1],HIGH_ORBIT_HEAD_RADIUS,p.head+pitch/DEG);
+   if(!isPremiumSuit(id))helmet?.(j.head[0],j.head[1],HIGH_ORBIT_HEAD_RADIUS,p.head+pitch/DEG);
  }else{
    const fallback=art?.suits?.[id];
    if(fallback){ctx.save();ctx.translate(128,128);ctx.rotate(pitch);ctx.drawImage(fallback,-128,-128,256,256);ctx.restore();
      const center=add([128,128],rotate([skull[0]-128,skull[1]-128],pitch/DEG));
-     helmet?.(center[0],center[1],HIGH_ORBIT_HEAD_RADIUS,pitch/DEG);}
+     if(!isPremiumSuit(id))helmet?.(center[0],center[1],HIGH_ORBIT_HEAD_RADIUS,pitch/DEG);}
  }
  ctx.restore();
 }
 export function paintHighOrbitCockpit(ctx:CanvasRenderingContext2D,art:ArtBank,id:HighOrbitId,x:number,y:number,rx:number,ry:number){
  const atlas=art.highOrbit?.[id],image=atlas??art.suits[id];if(!image)return;
- const h=HIGH_ORBIT_PARTS[id][0],center=atlas?h.skull:[...skull,HIGH_ORBIT_HEAD_RADIUS],scale=rx*.96/center[2];
+ const h=ORBIT_PARTS[id][0],center=atlas?h.skull:[...skull,HIGH_ORBIT_HEAD_RADIUS],scale=rx*.96/center[2];
  ctx.save();ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.clip();
  ctx.drawImage(image,0,0,256,256,x-center[0]*scale,y-center[1]*scale,256*scale,256*scale);ctx.restore();
 }

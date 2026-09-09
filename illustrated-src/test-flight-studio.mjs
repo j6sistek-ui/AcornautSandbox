@@ -26,7 +26,8 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-assert.equal(manifest.models.length,31);assert.equal(manifest.models.filter(m=>m.family!=='bank').length,7);
+assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>m.family!=='bank');assert.equal(rigs.length,10);
+for(const id of ['porcelain','nacre','origamist'])assert(rigs.some(m=>m.id===id),'premium articulated model missing: '+id);
 const ion=manifest.models.find(m=>m.id==='iontrim'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
@@ -78,4 +79,4 @@ try{
   const again=await promisify(execFile)(process.execPath,[join(dir,'launch.mjs'),'--port',String(server.address().port),'--no-open']);
   assert.match(again.stdout,/already running/,'second launch should reopen the existing tool');
 }finally{await new Promise(r=>server.close(r));}
-console.log(`PASS Flight Studio: ${manifest.models.length} models, ${assetCount} asset hashes, 7 rigs, deterministic replay, tap-clock playback, descent gate, retriggers, weighted holds, export/import, invalid presets, all renderers, read-only offline host.`);
+console.log(`PASS Flight Studio: ${manifest.models.length} models, ${assetCount} asset hashes, ${rigs.length} rigs, deterministic replay, tap-clock playback, descent gate, retriggers, weighted holds, export/import, invalid presets, all renderers, read-only offline host.`);

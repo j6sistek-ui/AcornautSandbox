@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "scope": "Shipping atlas, rig, live/preview/fallback/cockpit fixed-head behavior; visual quality requires human review",
+  "results": [
+    {
+      "id": "porcelain",
+      "partInk": [
+        38434,
+        32172,
+        21880,
+        16031,
+        23238,
+        15758,
+        21084,
+        21073,
+        20484,
+        18306,
+        29460
+      ],
+      "ticks": 960,
+      "paintedSamples": 80,
+      "maxGreenExcess": 22,
+      "browserWakeSamples": 720,
+      "maxJointStep": 1.1682953567671248,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 2,
+      "minHeadTailGap": 28.826721109232963,
+      "bodyRange": 30.995440571688178,
+      "tailRootRange": 29.545165770267737,
+      "tailAreaRatio": [
+        0.9999999999999972,
+        1.0000000000000029
+      ],
+      "helmetsChecked": 30,
+      "headPolicy": "integrated"
+    },
+    {
+      "id": "nacre",
+      "partInk": [
+        30752,
+        25576,
+        18402,
+        13565,
+        18575,
+        13419,
+        21999,
+        20765,
+        21537,
+        20489,
+        19404
+      ],
+      "ticks": 960,
+      "paintedSamples": 80,
+      "maxGreenExcess": 10,
+      "browserWakeSamples": 720,
+      "maxJointStep": 1.2518962133644465,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 0,
+      "minHeadTailGap": 21.817195772670438,
+      "bodyRange": 31.023487559058413,
+      "tailRootRange": 38.43404905364074,
+      "tailAreaRatio": [
+        0.9999999999999966,
+        1.0000000000000029
+      ],
+      "helmetsChecked": 30,
+      "headPolicy": "helmetless"
+    },
+    {
+      "id": "origamist",
+      "partInk": [
+        30779,
+        29980,
+        15584,
+        14480,
+        17033,
+        13854,
+        23903,
+        21043,
+        23739,
+        18660,
+        29625
+      ],
+      "ticks": 960,
+      "paintedSamples": 80,
+      "maxGreenExcess": 18,
+      "browserWakeSamples": 720,
+      "maxJointStep": 1.20920110298416,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 0,
+      "minHeadTailGap": 21.388724466960042,
+      "bodyRange": 30.99606609600529,
+      "tailRootRange": 21.820477803748737,
+      "tailAreaRatio": [
+        0.9999999999999972,
+        1.0000000000000027
+      ],
+      "maxRigidTailDistanceError": 1.1368683772161603e-13,
+      "helmetsChecked": 30,
+      "headPolicy": "integrated"
+    }
+  ]
+}

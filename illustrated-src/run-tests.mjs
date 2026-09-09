@@ -23,7 +23,7 @@
  */
 import { readdirSync, existsSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { createRequire } from "node:module";
 
@@ -33,21 +33,28 @@ const argv = process.argv.slice(2);
 const has = (f) => argv.includes(f);
 const valueOf = (f) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : null; };
 
-// The two optional packages, and the env overrides the tests already read
+// The test packages, and the env overrides the tests already read
 // when they are installed somewhere else (a scratch dir, a global store).
 const OPTIONAL = [
-  { pkg: "happy-dom", env: "ACORNAUT_HAPPY_DOM", entry: "happy-dom/lib/index.js" },
+  { pkg: "happy-dom", env: "ACORNAUT_HAPPY_DOM", entry: "happy-dom/lib/index.js", esm: true },
   { pkg: "@napi-rs/canvas", env: "ACORNAUT_CANVAS", entry: "@napi-rs/canvas/index.js" },
+  { pkg: "typescript", env: "ACORNAUT_TSC", entry: "typescript/lib/tsc.js" },
 ];
 const require_ = createRequire(join(ROOT, "package.json"));
 const env = { ...process.env };
 const present = new Set();
 for (const o of OPTIONAL) {
-  if (env[o.env] && existsSync(env[o.env])) { present.add(o.pkg); continue; }
-  try {
-    env[o.env] = require_.resolve(o.entry);
-    present.add(o.pkg);
-  } catch { /* not installed: its tests will report SKIPPED */ }
+  const configured = env[o.env]?.startsWith("file:") ? fileURLToPath(env[o.env]) : env[o.env];
+  if (configured && existsSync(configured)) { env[o.env] = configured; present.add(o.pkg); }
+  else {
+    try {
+      env[o.env] = require_.resolve(o.entry);
+      present.add(o.pkg);
+    } catch { /* not installed: its tests will report SKIPPED */ }
+  }
+  // import() accepts file URLs on Windows, whereas require() and the Node
+  // executable need native paths. Keep each dependency in its caller's form.
+  if (o.esm && present.has(o.pkg)) env[o.env] = pathToFileURL(env[o.env]).href;
 }
 
 const only = valueOf("--only");

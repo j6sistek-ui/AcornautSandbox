@@ -29,7 +29,7 @@ function bank(name){
   return Object.fromEntries([...b[1].matchAll(/(\w+):\s*(\d+)/g)].map(m=>[m[1],Number(m[2])]));
 }
 const banks={tap:bank('TAP'),asc:bank('ASC'),desc:bank('DESC'),loop:bank('LOOP')};
-const orbit=['cinderforge','groveguard','cosmic','sunforged','abyssal'];
+const orbit=['cinderforge','groveguard','cosmic','sunforged','abyssal','porcelain','nacre','origamist'];
 const hash=path=>createHash('sha256').update(readFileSync(join(root,'docs/art',path))).digest('hex');
 const models=tables.suits.filter(s=>!s.frame).map(s=>{
   if(s.id==='arcflash')s={...s,file:'suits/arcflash/body.png'};

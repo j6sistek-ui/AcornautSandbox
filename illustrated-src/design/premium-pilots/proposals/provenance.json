@@ -1,0 +1,35 @@
+{
+  "original_concept_date": "2026-09-09",
+  "status": "Proposal only; existing artwork copied without modification",
+  "new_image_generation": false,
+  "production_asset_generation": false,
+  "original_generator": "Built-in image_gen.imagegen",
+  "original_review_source_commit": "4d55b82ae3f99adb2481f506530a51ada646d214",
+  "files": [
+    {
+      "file": "02-nocturne-atelier.png",
+      "sha256": "80a0458d0d1759c6e07cccac3fa8b26bd23546d07f6d77ceffaa84dfc5c37bff",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "file": "03-calibre-meridian.png",
+      "sha256": "ace93eb202f943d049fa95ec9ff5d8f6748d2190e8e9d09d7b042a7ebb8316b0",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "file": "04-wayfarer-atlas.png",
+      "sha256": "3256295962f3d0e6f630a73155095c69128c6f975bdd331273a489dc839f4297",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "file": "06-bonus-explorations.png",
+      "sha256": "cbc8ed44014c3bed518b126bfab57f2eec225147bfa1787398154a4152770736",
+      "width": 1536,
+      "height": 1024,
+      "context": "Origamist is selected production context only; Velvet Navigator and Rivet & Ribbon remain proposals."
+    }
+  ]
+}

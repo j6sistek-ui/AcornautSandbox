@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Premium pilot flight review</title><style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#080e1c;color:#e3edf7}body{margin:auto;padding:24px;max-width:1440px}h1{margin:0;font-size:30px}p{color:#b4c5d9;max-width:900px}nav{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:22px 0}button,select{font:inherit;color:#eef3ff;background:#18283e;border:1px solid #486080;border-radius:8px;padding:9px;cursor:pointer}label{display:flex;gap:7px;align-items:center}#grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}article{border:1px solid #30445f;border-radius:14px;background:#101c30;overflow:hidden}h2{font-size:21px;margin:15px 18px 3px}article p{font-size:14px;margin:6px 18px 15px}canvas{display:block;width:100%;height:auto;aspect-ratio:390/280}a{color:#a4caff}#status{font-size:13px}@media(max-width:480px){body{padding:14px}#grid{grid-template-columns:1fr}h1{font-size:25px}}
+</style></head><body><h1>Premium pilot flight review</h1>
+<p>Three complete cosmetic kits, 2,500 Stardust each. Porcelain wears Sovereign Shell; Nacre is helmetless by design; Origamist wears Facet Shell. These head treatments are fixed.</p>
+<nav><button id="play">Pause</button><label>Motion <select id="motion"><option value="natural">Natural flight</option><option value="climb">Climb</option><option value="glide">Glide</option><option value="dive">Dive</option></select></label><label>Scale <select id="size"><option value="184">Close-up</option><option value="104">Medium</option><option value="52">Flight reference</option></select></label><label>Speed <select id="rate"><option value="1">Normal</option><option value=".25">Quarter</option></select></label><label><input id="effects" type="checkbox" checked>Wakes</label><label><input id="light" type="checkbox">Light backdrop</label></nav>
+<p id="status">Loading three painted atlases…</p><main id="grid"></main><p><a href="../../">Open production game</a> · <a href="../../beta/">Open beta</a></p>
+<script type="module">
+import {PREMIUM_SUIT_IDS,HIGH_ORBIT_PROFILES} from '../../js/high-orbit-config.js';
+import {paintHighOrbit} from '../../js/high-orbit.js';
+import {createHighOrbitMotion,stepHighOrbit} from '../../js/high-orbit-motion.js';
+import {ART_VER} from '../../js/catalog.js';
+import {loadSuitBank,emptyArt} from '../../js/art.js';
+window.__ACORNAUT_ART__=new URL('../../art/',location.href).pathname.replace(/\/$/,'');
+const art=emptyArt(),head={porcelain:'Sovereign Shell · always worn',nacre:'Helmetless · by design',origamist:'Facet Shell · always worn'};
+await Promise.all(PREMIUM_SUIT_IDS.map(id=>loadSuitBank(art,id)));
+if(PREMIUM_SUIT_IDS.some(id=>!art.highOrbit?.[id]))throw Error('A production atlas did not load');
+const rows=PREMIUM_SUIT_IDS.map(id=>{
+ const card=document.createElement('article'),h=document.createElement('h2'),c=document.createElement('canvas'),p=document.createElement('p');
+ h.textContent=HIGH_ORBIT_PROFILES[id].name;p.textContent=head[id]+' · '+HIGH_ORBIT_PROFILES[id].wake;
+ c.width=780;c.height=560;c.setAttribute('aria-label',HIGH_ORBIT_PROFILES[id].name+' animated flight');
+ card.append(h,c,p);document.querySelector('#grid').append(card);
+ return {id,canvas:c,ctx:c.getContext('2d'),state:createHighOrbitMotion(id)};
+});
+let paused=false,time=0,last=performance.now();
+document.querySelector('#play').onclick=()=>{paused=!paused;document.querySelector('#play').textContent=paused?'Play':'Pause';};
+function frame(now){
+ const dt=Math.min(.04,(now-last)/1000)*Number(document.querySelector('#rate').value);last=now;if(!paused)time+=dt;
+ for(const row of rows){
+  const mode=document.querySelector('#motion').value,local=time%4.8,tapAge=local<1.44?local%.36:local-1.08;
+  const vy=mode==='climb'?-420:mode==='dive'?610:mode==='glide'?0:local>3.85?610:Math.min(590,-400+1100*tapAge);
+  if(!paused)stepHighOrbit(row.state,row.id,dt,vy);
+  const g=row.ctx;g.setTransform(2,0,0,2,0,0);g.fillStyle=document.querySelector('#light').checked?'#eee9df':'#101c30';g.fillRect(0,0,390,280);
+  paintHighOrbit(g,art,row.id,212,140,Number(document.querySelector('#size').value),row.state,{x:212,y:140,travel:time*360},document.querySelector('#effects').checked);
+ }
+ document.querySelector('#status').textContent=(paused?'Paused':'Playing')+' · 3 of 3 atlases loaded · art '+ART_VER+' · '+time.toFixed(1)+' seconds';
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script></body></html>

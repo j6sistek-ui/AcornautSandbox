@@ -1,5 +1,5 @@
 {
- "artVer": "251",
+ "artVer": "252",
  "suits": [
   {
    "id": "flight",
@@ -39,6 +39,48 @@
     128,
     128,
     40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "porcelain",
+   "name": "Porcelain Paragon",
+   "key": "suit:porcelain",
+   "file": "suits/porcelain.png",
+   "dome": [
+    181,
+    88,
+    36
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "nacre",
+   "name": "Nacre Envoy",
+   "key": "suit:nacre",
+   "file": "suits/nacre.png",
+   "dome": [
+    181,
+    88,
+    36
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "origamist",
+   "name": "Foldspace Origamist",
+   "key": "suit:origamist",
+   "file": "suits/origamist.png",
+   "dome": [
+    181,
+    88,
+    36
    ],
    "ownHead": true,
    "bakedDome": false,

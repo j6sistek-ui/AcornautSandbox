@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "251",
-  "sourceCommit": "4d55b82ae3f99adb2481f506530a51ada646d214",
+  "artVer": "252",
+  "sourceCommit": "85f30e60b8b7568cdd911a9cf888122b47833d83",
   "models": [
     {
       "id": "flight",
@@ -130,6 +130,84 @@
       "hashes": {
         "suits/arcflash/body.png": "ef39dc9c62b2f4f678981d2debb875f2ae379950d5a65d21d3809f022a355574",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
+      }
+    },
+    {
+      "id": "porcelain",
+      "name": "Porcelain Paragon",
+      "key": "suit:porcelain",
+      "file": "suits/porcelain.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/porcelain/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/porcelain.png": "f35533b431553f395a58e30e6af97c2f12bd8d03b7db48f8cd101ffc20caf8c4",
+        "suits/porcelain/parts.png": "66b43249a05e7eb51ec78fef29ecd1bdfa77de3141da4ab90e496069ad624023"
+      }
+    },
+    {
+      "id": "nacre",
+      "name": "Nacre Envoy",
+      "key": "suit:nacre",
+      "file": "suits/nacre.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/nacre/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/nacre.png": "138fb1a7a053215978605a97fec0d5499ae5d39f93fed0481bbc4a22575818a4",
+        "suits/nacre/parts.png": "d7fc0a627f95652b35f8e22fdb72b14c5b84961073806258461f40f882104819"
+      }
+    },
+    {
+      "id": "origamist",
+      "name": "Foldspace Origamist",
+      "key": "suit:origamist",
+      "file": "suits/origamist.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/origamist/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/origamist.png": "10ac98f8fb352271dba9be2ac799488683bfe099bb2c674629a31dc16c6dc8da",
+        "suits/origamist/parts.png": "f914761fd149fbed0f6c01f271af0afe354a0b9df79002a582f6f3767912260b"
       }
     },
     {
@@ -2016,6 +2094,21 @@
       128,
       128,
       40
+    ],
+    "suit:porcelain": [
+      181,
+      88,
+      36
+    ],
+    "suit:nacre": [
+      181,
+      88,
+      36
+    ],
+    "suit:origamist": [
+      181,
+      88,
+      36
     ],
     "suit:iontrim": [
       206,
@@ -4802,13 +4895,14 @@
     "arcflash": "bb2b9fbef942d21e361d96cdc3e78990598e791ff51e901b72df76a7935758d2",
     "arcflash-motion": "49fb085e85e1f7c9640acb017372e1e4dbad42259fc65274d86fd39ee771377a",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "a346419f306531eaa59aa89a57a7f20a6f880781276fb112ea02c6a05eeb6523",
+    "control-constants": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
     "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
-    "high-orbit": "c69dbb9ef89642da2c048c6da8b26e794bb0390464826d06e14855ffe6aad0a7",
-    "high-orbit-config": "a5f6b63612fb4312b140ce062c631adddd513fa9ee22b58484f4c34b66346da2",
-    "high-orbit-effects": "02c9aab5fb03bfb42bba2bab27cf330ffcdddfc4a6d6cf7078a4abb13f938b42",
+    "high-orbit": "eda9d37c4dbfb315f1c65f73e4855c7f74f5242255db1e5b90415a8f64bb73a2",
+    "high-orbit-config": "475b2926093c17372c05d779adf6f293ac69f1736bbf8e91fa577b2e70973361",
+    "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "b09335d7e12fa4eff5886a8625f0fa188229252a618195b07ccfb7a3ebb3f778",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+    "premium-parts": "92373fc1793f7f6740fa23537d2ca562de1d4fb3a35c5ed25df8ade7295755be",
     "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
     "vanguard-parts": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324"
   }

@@ -2,7 +2,7 @@ import { VANGUARD_FRAMES } from "./vanguard";
 import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog";
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 import { SPILL_UTILITY_IDS } from "./spill-content";
-import {HIGH_ORBIT_IDS,isHighOrbit,type HighOrbitId} from "./high-orbit-config";
+import {HIGH_ORBIT_RIG_IDS,PREMIUM_SUIT_IDS,isHighOrbit,type HighOrbitId} from "./high-orbit-config";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -431,7 +431,7 @@ const LAZY_SUIT_IDS = [...new Set([
   // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
   // there too, or the suit flies as a flat body sticker off the live page.
   "arcflash",
-  ...HIGH_ORBIT_IDS,
+  ...HIGH_ORBIT_RIG_IDS,
   ...Object.keys(LOOP_BANKS),
   ...RIGGED_SUITS,
   ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -659,6 +659,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     "raccoon", "ferret", "hedgehog",
     // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
+    ...PREMIUM_SUIT_IDS,
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",
