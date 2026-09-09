@@ -1,0 +1,1201 @@
+{
+  "profile": "isolated Playwright browser, synthetic owned wardrobe; no installed save accessed",
+  "baseline": false,
+  "builds": [
+    {
+      "address": "http://127.0.0.1:8782/",
+      "catalogUrl": "http://127.0.0.1:8782/js255/catalog.js"
+    },
+    {
+      "address": "http://127.0.0.1:8782/beta/",
+      "catalogUrl": "http://127.0.0.1:8782/js255/catalog.js"
+    }
+  ],
+  "receipts": [
+    {
+      "label": "mobile390-expanded",
+      "file": "mobile390-expanded.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 23952,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-compact",
+      "file": "mobile390-compact.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 189.515625,
+        "bottom": 255.515625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 115,
+        "y": 66,
+        "width": 160,
+        "height": 109.765625,
+        "bottom": 175.765625,
+        "right": 275
+      },
+      "scroll": {
+        "x": 0,
+        "y": 357.515625,
+        "width": 390,
+        "height": 486.484375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 486
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 20769,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "landscape844-expanded",
+      "file": "landscape844-expanded.png",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390,
+        "bottom": 390,
+        "right": 844
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 308,
+        "height": 258.5,
+        "bottom": 324.5,
+        "right": 320
+      },
+      "canvas": {
+        "x": 48,
+        "y": 66,
+        "width": 236,
+        "height": 161.90625,
+        "bottom": 227.90625,
+        "right": 284
+      },
+      "scroll": {
+        "x": 332,
+        "y": 160,
+        "width": 512,
+        "height": 230,
+        "bottom": 390,
+        "right": 844,
+        "scrollHeight": 2019,
+        "clientHeight": 230
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky-wide.jpg?v=255\"), linear-gradient(120deg, rgb(105, 68, 188), rgb(181, 82, 255), rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 844,
+      "canvasPaintedPixels": 23949,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "landscape844-compact",
+      "file": "landscape844-compact.png",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390,
+        "bottom": 390,
+        "right": 844
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 308,
+        "height": 241.65625,
+        "bottom": 307.65625,
+        "right": 320
+      },
+      "canvas": {
+        "x": 48,
+        "y": 66,
+        "width": 236,
+        "height": 161.90625,
+        "bottom": 227.90625,
+        "right": 284
+      },
+      "scroll": {
+        "x": 332,
+        "y": 160,
+        "width": 512,
+        "height": 230,
+        "bottom": 390,
+        "right": 844,
+        "scrollHeight": 2019,
+        "clientHeight": 230
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky-wide.jpg?v=255\"), linear-gradient(120deg, rgb(105, 68, 188), rgb(181, 82, 255), rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 844,
+      "canvasPaintedPixels": 20773,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "desktop1440-expanded",
+      "file": "desktop1440-expanded.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "bottom": 900,
+        "right": 1440
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 308,
+        "height": 285.546875,
+        "bottom": 351.546875,
+        "right": 320
+      },
+      "canvas": {
+        "x": 48,
+        "y": 66,
+        "width": 236,
+        "height": 161.90625,
+        "bottom": 227.90625,
+        "right": 284
+      },
+      "scroll": {
+        "x": 332,
+        "y": 160,
+        "width": 1108,
+        "height": 740,
+        "bottom": 900,
+        "right": 1440,
+        "scrollHeight": 2019,
+        "clientHeight": 740
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky-wide.jpg?v=255\"), linear-gradient(120deg, rgb(105, 68, 188), rgb(181, 82, 255), rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 1440,
+      "canvasPaintedPixels": 23950,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "desktop1440-compact",
+      "file": "desktop1440-compact.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "bottom": 900,
+        "right": 1440
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 308,
+        "height": 241.65625,
+        "bottom": 307.65625,
+        "right": 320
+      },
+      "canvas": {
+        "x": 48,
+        "y": 66,
+        "width": 236,
+        "height": 161.90625,
+        "bottom": 227.90625,
+        "right": 284
+      },
+      "scroll": {
+        "x": 332,
+        "y": 160,
+        "width": 1108,
+        "height": 740,
+        "bottom": 900,
+        "right": 1440,
+        "scrollHeight": 2019,
+        "clientHeight": 740
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky-wide.jpg?v=255\"), linear-gradient(120deg, rgb(105, 68, 188), rgb(181, 82, 255), rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 1440,
+      "canvasPaintedPixels": 20769,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile320-expanded",
+      "file": "mobile320-expanded.png",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "bottom": 568,
+        "right": 320
+      },
+      "stage": {
+        "x": 12,
+        "y": 98.09375,
+        "width": 296,
+        "height": 226.96875,
+        "bottom": 325.0625,
+        "right": 308
+      },
+      "canvas": {
+        "x": 68,
+        "y": 98.09375,
+        "width": 184,
+        "height": 126.21875,
+        "bottom": 224.3125,
+        "right": 252
+      },
+      "scroll": {
+        "x": 0,
+        "y": 427.0625,
+        "width": 320,
+        "height": 140.9375,
+        "bottom": 568,
+        "right": 320,
+        "scrollHeight": 2027,
+        "clientHeight": 141
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 320,
+      "canvasPaintedPixels": 23946,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile320-compact",
+      "file": "mobile320-compact.png",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "bottom": 568,
+        "right": 320
+      },
+      "stage": {
+        "x": 12,
+        "y": 98.09375,
+        "width": 296,
+        "height": 189.515625,
+        "bottom": 287.609375,
+        "right": 308
+      },
+      "canvas": {
+        "x": 80,
+        "y": 98.09375,
+        "width": 160,
+        "height": 109.765625,
+        "bottom": 207.859375,
+        "right": 240
+      },
+      "scroll": {
+        "x": 0,
+        "y": 389.609375,
+        "width": 320,
+        "height": 178.390625,
+        "bottom": 568,
+        "right": 320,
+        "scrollHeight": 2027,
+        "clientHeight": 178
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 320,
+      "canvasPaintedPixels": 20774,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-verdant",
+      "file": "mobile390-verdant.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(56, 255, 154) 48%, rgb(6, 62, 42))",
+      "backgroundFilter": "none",
+      "glow": "#38ff9a",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 23496,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-cryostar",
+      "file": "mobile390-cryostar.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(84, 216, 255) 48%, rgb(47, 134, 186))",
+      "backgroundFilter": "none",
+      "glow": "#54d8ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 23546,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-copper",
+      "file": "mobile390-copper.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(255, 138, 42) 48%, rgb(66, 31, 6))",
+      "backgroundFilter": "none",
+      "glow": "#ff8a2a",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 17328,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-shelf-rows",
+      "file": "mobile390-shelf-rows.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 189.515625,
+        "bottom": 255.515625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 115,
+        "y": 66,
+        "width": 160,
+        "height": 109.765625,
+        "bottom": 175.765625,
+        "right": 275
+      },
+      "scroll": {
+        "x": 0,
+        "y": 357.515625,
+        "width": 390,
+        "height": 486.484375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 1004,
+        "clientHeight": 486
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(255, 138, 42) 48%, rgb(66, 31, 6))",
+      "backgroundFilter": "none",
+      "glow": "#ff8a2a",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 19614,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile390-existing-favorites",
+      "file": "mobile390-existing-favorites.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2350,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 23953,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "mobile320-high-balances",
+      "file": "mobile320-high-balances.png",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "bottom": 568,
+        "right": 320
+      },
+      "stage": {
+        "x": 12,
+        "y": 98.09375,
+        "width": 296,
+        "height": 226.96875,
+        "bottom": 325.0625,
+        "right": 308
+      },
+      "canvas": {
+        "x": 68,
+        "y": 98.09375,
+        "width": 184,
+        "height": 126.21875,
+        "bottom": 224.3125,
+        "right": 252
+      },
+      "scroll": {
+        "x": 0,
+        "y": 427.0625,
+        "width": 320,
+        "height": 140.9375,
+        "bottom": 568,
+        "right": 320,
+        "scrollHeight": 2358,
+        "clientHeight": 141
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 320,
+      "canvasPaintedPixels": 20773,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "beta-mobile390-expanded",
+      "file": "beta-mobile390-expanded.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 359.640625,
+        "bottom": 425.640625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 23,
+        "y": 66,
+        "width": 344,
+        "height": 236,
+        "bottom": 302,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 527.640625,
+        "width": 390,
+        "height": 316.359375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 316
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 23944,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "beta-mobile390-compact",
+      "file": "beta-mobile390-compact.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 12,
+        "y": 66,
+        "width": 366,
+        "height": 189.515625,
+        "bottom": 255.515625,
+        "right": 378
+      },
+      "canvas": {
+        "x": 115,
+        "y": 66,
+        "width": 160,
+        "height": 109.765625,
+        "bottom": 175.765625,
+        "right": 275
+      },
+      "scroll": {
+        "x": 0,
+        "y": 357.515625,
+        "width": 390,
+        "height": 486.484375,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 2019,
+        "clientHeight": 486
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "0px",
+      "stageShadow": "none",
+      "stageBackground": "none",
+      "background": "url(\"http://127.0.0.1:8782/art/sky.jpg?v=255\"), linear-gradient(145deg, rgb(105, 68, 188), rgb(181, 82, 255) 48%, rgb(9, 6, 17))",
+      "backgroundFilter": "none",
+      "glow": "#b552ff",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 20768,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "label": "mobile390-expanded-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.640625,
+      "bottom": 823.640625,
+      "viewport": 844
+    },
+    {
+      "label": "mobile390-helmets-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.515625,
+      "bottom": 823.515625,
+      "viewport": 844
+    },
+    {
+      "label": "mobile390-trails-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.765625,
+      "bottom": 823.765625,
+      "viewport": 844
+    },
+    {
+      "label": "mobile390-pals-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.84375,
+      "bottom": 823.84375,
+      "viewport": 844
+    },
+    {
+      "label": "mobile390-ship-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 764.078125,
+      "bottom": 824.078125,
+      "viewport": 844
+    },
+    {
+      "label": "landscape844-expanded-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 310,
+      "bottom": 370,
+      "viewport": 390
+    },
+    {
+      "label": "landscape844-helmets-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 310,
+      "bottom": 370,
+      "viewport": 390
+    },
+    {
+      "label": "landscape844-trails-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 310,
+      "bottom": 370,
+      "viewport": 390
+    },
+    {
+      "label": "landscape844-pals-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 309.5625,
+      "bottom": 369.5625,
+      "viewport": 390
+    },
+    {
+      "label": "landscape844-ship-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 309.78125,
+      "bottom": 369.78125,
+      "viewport": 390
+    },
+    {
+      "label": "desktop1440-expanded-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 820,
+      "bottom": 880,
+      "viewport": 900
+    },
+    {
+      "label": "desktop1440-helmets-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 820,
+      "bottom": 880,
+      "viewport": 900
+    },
+    {
+      "label": "desktop1440-trails-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 789,
+      "bottom": 849,
+      "viewport": 900
+    },
+    {
+      "label": "desktop1440-pals-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 819.5625,
+      "bottom": 879.5625,
+      "viewport": 900
+    },
+    {
+      "label": "desktop1440-ship-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 819.5,
+      "bottom": 879.5,
+      "viewport": 900
+    },
+    {
+      "label": "mobile320-expanded-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 480.0625,
+      "bottom": 548.359375,
+      "viewport": 568
+    },
+    {
+      "label": "mobile320-helmets-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 479.609375,
+      "bottom": 547.90625,
+      "viewport": 568
+    },
+    {
+      "label": "mobile320-trails-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 479.609375,
+      "bottom": 547.90625,
+      "viewport": 568
+    },
+    {
+      "label": "mobile320-pals-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 479.390625,
+      "bottom": 547.6875,
+      "viewport": 568
+    },
+    {
+      "label": "mobile320-ship-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 479.703125,
+      "bottom": 548,
+      "viewport": 568
+    },
+    {
+      "label": "pilot-animation",
+      "differentFrames": true
+    },
+    {
+      "label": "existing-equip-controls",
+      "helmet": "ion",
+      "trail": "ion",
+      "pal": "wisp",
+      "palEffectsSwitch": "toggle and restore",
+      "shipPreview": "plating II and reset",
+      "acorns": 77
+    },
+    {
+      "label": "narrow-high-balances",
+      "titleBottom": 50.09375,
+      "balancesTop": 54.09375,
+      "titleRight": 308,
+      "balancesRight": 308,
+      "width": 320
+    },
+    {
+      "label": "keyboard-focus",
+      "focusedControl": "◈SHIELD NEXT RUN · 25",
+      "visible": true,
+      "outline": "solid",
+      "width": "2px",
+      "file": "mobile320-keyboard-focus.png"
+    },
+    {
+      "label": "shop-keeps-existing-case",
+      "border": "1px",
+      "shadow": "rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset, color(srgb 0.964706 0.811765 0.541176 / 0.7) 0px 14px 34px -18px, rgba(0, 0, 0, 0.6) 0px 3px 14px 0px",
+      "background": "radial-gradient(90% 70% at 50% -10%, color(srgb 0.964706 0.811765 0.541176 / 0.26), rgba(0, 0, 0, 0) 68%), linear-gradient(color(srgb 0.238118 0.166353 0.175529), rgb(11, 7, 32) 72%)",
+      "loadoutClass": false,
+      "file": "shop-existing-case.png"
+    },
+    {
+      "label": "beta-helmets-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.515625,
+      "bottom": 823.515625,
+      "viewport": 844
+    },
+    {
+      "label": "beta-trails-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.765625,
+      "bottom": 823.765625,
+      "viewport": 844
+    },
+    {
+      "label": "beta-pals-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 763.84375,
+      "bottom": 823.84375,
+      "viewport": 844
+    },
+    {
+      "label": "beta-ship-last-content",
+      "text": "UNLOCK PREMIUM SETSSuits, helmets, trails and pals — sold in packs.›",
+      "top": 764.265625,
+      "bottom": 824.265625,
+      "viewport": 844
+    }
+  ],
+  "errors": [],
+  "failedArt": []
+}

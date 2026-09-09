@@ -1,0 +1,137 @@
+{
+  "profile": "isolated Playwright browser, synthetic owned wardrobe; no installed save accessed",
+  "baseline": true,
+  "builds": [
+    {
+      "address": "http://127.0.0.1:8782/baseline/",
+      "catalogUrl": "http://127.0.0.1:8782/baseline/js253/catalog.js"
+    }
+  ],
+  "receipts": [
+    {
+      "label": "baseline-mobile390-expanded",
+      "file": "baseline-mobile390-expanded.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 346.546875,
+        "bottom": 418.546875,
+        "right": 390
+      },
+      "canvas": {
+        "x": 23,
+        "y": 83,
+        "width": 344,
+        "height": 236,
+        "bottom": 319,
+        "right": 367
+      },
+      "scroll": {
+        "x": 0,
+        "y": 526.546875,
+        "width": 390,
+        "height": 317.453125,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 1499,
+        "clientHeight": 317
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "1px",
+      "stageShadow": "rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset, color(srgb 0.709804 0.321569 1 / 0.7) 0px 14px 34px -18px, rgba(0, 0, 0, 0.6) 0px 3px 14px 0px",
+      "stageBackground": "radial-gradient(90% 70% at 50% -10%, color(srgb 0.709804 0.321569 1 / 0.26), rgba(0, 0, 0, 0) 68%), linear-gradient(color(srgb 0.102667 0.064549 0.197961), rgb(11, 7, 32) 72%)",
+      "background": "none",
+      "backgroundFilter": "none",
+      "glow": "",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 24864,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    },
+    {
+      "label": "baseline-mobile390-compact",
+      "file": "baseline-mobile390-compact.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "menu": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "bottom": 844,
+        "right": 390
+      },
+      "stage": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 183.09375,
+        "bottom": 255.09375,
+        "right": 390
+      },
+      "canvas": {
+        "x": 115,
+        "y": 75,
+        "width": 160,
+        "height": 110,
+        "bottom": 185,
+        "right": 275
+      },
+      "scroll": {
+        "x": 0,
+        "y": 363.09375,
+        "width": 390,
+        "height": 480.90625,
+        "bottom": 844,
+        "right": 390,
+        "scrollHeight": 1499,
+        "clientHeight": 481
+      },
+      "tabs": [
+        "SUITS",
+        "HELMETS",
+        "TRAILS",
+        "PALS",
+        "SHIP"
+      ],
+      "stageBorder": "1px",
+      "stageShadow": "rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset, color(srgb 0.709804 0.321569 1 / 0.7) 0px 14px 34px -18px, rgba(0, 0, 0, 0.6) 0px 3px 14px 0px",
+      "stageBackground": "radial-gradient(90% 70% at 50% -10%, color(srgb 0.709804 0.321569 1 / 0.26), rgba(0, 0, 0, 0) 68%), linear-gradient(color(srgb 0.102667 0.064549 0.197961), rgb(11, 7, 32) 72%)",
+      "background": "none",
+      "backgroundFilter": "none",
+      "glow": "",
+      "documentWidth": 390,
+      "canvasPaintedPixels": 20766,
+      "images": [],
+      "activeTabs": [
+        "SUITS"
+      ]
+    }
+  ],
+  "interactions": [],
+  "errors": [],
+  "failedArt": []
+}

@@ -1872,16 +1872,19 @@ export async function bootStandalone(root: HTMLElement) {
     const previewShip = spillPreviewState(shipPick);
     const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
     const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
-    const box = el("div", "ac-menu");
+    const box = el("div", "ac-menu ac-loadout");
+    // Recolor the existing galaxy artwork around the live pilot. These
+    // colors belong to the whole loadout, rather than a display case.
+    box.style.setProperty("--loadout-glow", suit.glow ?? suit.trim ?? "#c4a0ff");
+    box.style.setProperty("--loadout-lite", suit.suitLite ?? "#8a5ae4");
+    box.style.setProperty("--loadout-deep", suit.suitDark ?? "#160f34");
+    box.style.setProperty("--loadout-sky", `url("${artRootUrl()}/sky.jpg?v=${ART_VER}")`);
+    box.style.setProperty("--loadout-sky-wide", `url("${artRootUrl()}/sky-wide.jpg?v=${ART_VER}")`);
     box.append(header("Suits & gear", "Loadout", headAside(s.acorns)));
 
-    // ONE PILOT, AND IT MOVES. The loadout showed the equipped rig TWICE:
-    // a static portrait in a banner, then the animated stage right beneath
-    // it. Two pictures of the same squirrel, and the still one held the top
-    // of the screen - while the flap is the whole thing that tells two suits
-    // apart. So the banner goes and the animation takes the slot, wearing
-    // the shop's case: the pilot has already learned to read that frame
-    // there, and the name, helmet, trail and pal ride its plate.
+    // One live pilot, with the existing gear details and fold control.
+    // The loadout stylesheet opens this stage onto the surrounding sky;
+    // the shop retains its separate display-case treatment.
     {
       const wornSuit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
       const wornHelm = helmetWornBy(s.equipped, s.equippedSuit);
@@ -2035,7 +2038,7 @@ export async function bootStandalone(root: HTMLElement) {
           const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
             : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
             : owned ? "OWNED" : "";
-          b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+          b.append(helmCardOf(h, 88), document.createTextNode(`${h.name}\n${helmState}`));
           if (claim) b.append(collectTag());
           if (!premium && open && !owned && h.cost > 0) b.append(costTag(h.cost));
           if (premium) markPremium(b, h.glow);
@@ -2087,7 +2090,7 @@ export async function bootStandalone(root: HTMLElement) {
         b.dataset.focus = `suit:${u.id}`;
         const claim = !premium && open && !owned && u.cost <= 0;
         b.append(
-          suitCardOf(u, 64),
+          suitCardOf(u, 88),
           document.createTextNode(
             `${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
               : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
