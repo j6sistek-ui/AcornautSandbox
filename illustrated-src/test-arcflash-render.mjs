@@ -15,7 +15,25 @@ const art={suits:{arcflash:icon},arcflash:atlas};
 const a=createCanvas(256,256),b=createCanvas(256,256),ac=a.getContext('2d'),bc=b.getContext('2d');
 R.paintArcflash(ac,art,128,128,256,undefined,undefined,false);
 R.paintArcflash(bc,{suits:{arcflash:icon}},128,128,256,undefined,undefined,false);
-assert.deepEqual(ac.getImageData(0,0,256,256).data,bc.getImageData(0,0,256,256).data,'loading fallback matches live rig registration pixel for pixel');
+// See test-high-orbit for why this is not assert.deepEqual: on a quarter-
+// million-element typed array Node builds a diff of every element when the
+// two disagree, so the cost of REPORTING a failure scales with how bad the
+// failure is. A small drift printed fine; a real rendering change allocated
+// past six gigabytes and was OOM-killed, printing nothing at all.
+{
+  const a=ac.getImageData(0,0,256,256).data,b=bc.getImageData(0,0,256,256).data;
+  let differing=0,maxDelta=0,firstAt=-1;
+  for(let i=0;i<a.length;i++){
+    if(a[i]===b[i])continue;
+    if(firstAt<0)firstAt=i;
+    differing++;
+    const d=Math.abs(a[i]-b[i]);
+    if(d>maxDelta)maxDelta=d;
+  }
+  assert.equal(differing,0,`loading fallback matches live rig registration pixel for pixel `
+    +`— ${differing} of ${a.length} bytes differ, max channel delta ${maxDelta}, `
+    +`first at byte ${firstAt}`);
+}
 const source=createCanvas(1024,768),sc=source.getContext('2d');sc.drawImage(atlas,0,0);
 const pixels=sc.getImageData(0,0,1024,768).data;
 let matte=0,opaque=0;
