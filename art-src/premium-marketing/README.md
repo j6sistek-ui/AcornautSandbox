@@ -44,6 +44,6 @@ suit. The [kit pricing guide](../../illustrated-src/design/shop-refresh/PRICING.
 documents all eight prices, editing a discount, full individual ownership credit,
 and explicit zero-cost completion. The same rule is required in `AGENTS.md`.
 
-See [Shop QA](../../illustrated-src/design/shop-refresh/QAplan.md) for the
-baseline and verification criteria. Earlier screenshots are explicitly marked
-superseded; use the final verification receipt and browser captures for review.
+See the [final verification receipt and browser captures](../../illustrated-src/design/shop-refresh/VERIFICATION.md)
+for review, and [Shop QA](../../illustrated-src/design/shop-refresh/QAplan.md)
+for the baseline and verification criteria.

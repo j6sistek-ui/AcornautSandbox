@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-09T23:16:42.727Z",
+  "checkedAt": "2026-09-09T23:32:15.669Z",
   "baselineRevision": "d296e6bc404aaec14221a8b79186132fb4426dea",
   "baselineSha256": "b70f7d3d90d650ac65e07e8927fdfc327b71e76fe9a670fed77dc841da397ab2",
   "shippingArtChecked": 1606,
@@ -473,11 +473,11 @@
   "finalEditedSourceHashes": [
     {
       "path": "illustrated-src/game/catalog.ts",
-      "sha256": "dcdb6f0ec43c4e34847a35df1c1c9734d12275ff6edbabc889f0bb29406bc09d"
+      "sha256": "b02ead2ab8714e63a5a21aacaf2ff2b2d5def3e89a1cf733597e45da5b666762"
     },
     {
       "path": "illustrated-src/game/standalone.ts",
-      "sha256": "1040d8be9e75a7d88c6f139777a5127e087426d06c19037065586e11a1f26032"
+      "sha256": "e59111466afecec1170122243a3df9d9f21c437ac7a5d18cb595695c4b9eca8e"
     },
     {
       "path": "illustrated-src/game/art.ts",
@@ -493,19 +493,55 @@
     },
     {
       "path": "illustrated-src/export-sandbox.mjs",
-      "sha256": "f300bc1144ed1e21955297ebb42c3c27c0698a1314aee6551faa4473fbf9f6a0"
+      "sha256": "cdc31f81fb4855a91ed2a7344a78d5b3b666b869594eaa88619dc578247d3290"
     },
     {
       "path": "docs/index.html",
-      "sha256": "ca6ba4ec99a52c11b26b0cc46efa3520dd9f143a02df106b7047de834ae73988"
+      "sha256": "268872b1372c44409b43545c725cfcb8e9569c8b19869b579b5a5e9c65558592"
     },
     {
       "path": "docs/beta/index.html",
-      "sha256": "f563455909613e83d2cda470d776591d7371ac66d014dcaba9ed48da2bd99573"
+      "sha256": "0ae7450097973bb2fd1d77d3b2cff4baad8f88fdb5c6d44cd1fa97d18594631c"
     }
   ],
   "economy": {
-    "ownershipIds": 35,
+    "ownershipIds": [
+      "amethyst",
+      "arcflash",
+      "astrafox",
+      "babyalien",
+      "celestialtide",
+      "clockling",
+      "clockwork",
+      "cryostar",
+      "cyber",
+      "eclipse",
+      "eclipseglyph",
+      "ferret",
+      "gemmie",
+      "hedgehog",
+      "ivoryguard",
+      "leviathan",
+      "magnetar",
+      "nacre",
+      "nightglider",
+      "opalfeather",
+      "origamist",
+      "phoenixplume",
+      "porcelain",
+      "prismwing",
+      "raccoon",
+      "reactor",
+      "robo",
+      "sammie",
+      "satellite",
+      "seraph",
+      "spacepuppy",
+      "switchback",
+      "verdant",
+      "verdantflourish",
+      "volt"
+    ],
     "ownershipIdsUnchanged": true,
     "cashOffersUnchanged": true,
     "fixedSingles": [
@@ -701,5 +737,8 @@
     "shop-nebula.png",
     "stardust-emblem.png"
   ],
-  "result": "PASS"
+  "result": "PASS",
+  "integratedMainRevision": "95aefc52cb37d9451ade3db906f9ef97cb37479e",
+  "checkedWorkingHead": "8497029d56e98c188c62754d6850b7db20163f38",
+  "upstreamProtectedChanges": []
 }
