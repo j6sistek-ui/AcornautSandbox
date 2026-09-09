@@ -1,0 +1,4815 @@
+{
+  "version": 1,
+  "artVer": "251",
+  "sourceCommit": "4d55b82ae3f99adb2481f506530a51ada646d214",
+  "models": [
+    {
+      "id": "flight",
+      "name": "Flight",
+      "key": "suit:flight",
+      "file": "suits/flight.png",
+      "dome": [
+        185,
+        88,
+        48,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/flight-tap-1.png",
+          "suits/flight-tap-2.png",
+          "suits/flight-tap-3.png",
+          "suits/flight-tap-4.png",
+          "suits/flight-tap-5.png",
+          "suits/flight-tap-6.png",
+          "suits/flight-tap-7.png",
+          "suits/flight-tap-8.png",
+          "suits/flight-tap-9.png",
+          "suits/flight-tap-10.png",
+          "suits/flight-tap-11.png",
+          "suits/flight-tap-12.png",
+          "suits/flight-tap-13.png",
+          "suits/flight-tap-14.png",
+          "suits/flight-tap-15.png",
+          "suits/flight-tap-16.png"
+        ],
+        "asc": [
+          "suits/flight-asc-1.png",
+          "suits/flight-asc-2.png",
+          "suits/flight-asc-3.png"
+        ],
+        "desc": [
+          "suits/flight-desc-1.png",
+          "suits/flight-desc-2.png",
+          "suits/flight-desc-3.png",
+          "suits/flight-desc-4.png",
+          "suits/flight-desc-5.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/flight.png": "479293686ff8c33b00bd00664818c3413cc75de78e5a0dead9bf5a18dcdf3dc8",
+        "suits/flight-tap-1.png": "fcce88aae3e335a8b200595ef2d318142b90be66f35d66cdb03f8c132ac2e52b",
+        "suits/flight-tap-2.png": "ed29d2a98e1b8ce9ebf5b55b082ebb79bf66e26c004cc4c717ee34adad73fe08",
+        "suits/flight-tap-3.png": "1ce3972ed2bb6c87dd76a2bbce215541c1f5a808c26567076e2b16a26510a540",
+        "suits/flight-tap-4.png": "71b32cc1ad1660afe0fafc5220961ff045cf0b51d3944e2c8a6c1671b964d7c4",
+        "suits/flight-tap-5.png": "693eff6d7326cf56be6838e90bbf3bfc15e4c7ee30d6f1af6efb524a39218e66",
+        "suits/flight-tap-6.png": "e14493ea84852606c7ce8f699436b1899abb2fa8bdac590aa6bfd8e77c327161",
+        "suits/flight-tap-7.png": "93ac7bd98e2b2cb92e4f871a8e1ecc47f0d7ceb61e05acbd42376dd3b021f6d9",
+        "suits/flight-tap-8.png": "d82081f530f9987d071503e9428c39eed1d1d78b22a07705664faf18d6e4bd61",
+        "suits/flight-tap-9.png": "d63b9a6139c271c7b03cb42253214ed30a868cf45ab9d4f7b9fd932d3e73571c",
+        "suits/flight-tap-10.png": "25db492c6433846d2b49653087d3692ba39b2d0c69c3d8fa90c4d59cae9f4a19",
+        "suits/flight-tap-11.png": "432bee1f618f59e6dfeb86dc180333086e7f1ad2b8ed84ded4c62be3018c8b4a",
+        "suits/flight-tap-12.png": "76e799b8b6bb2faa931fdc1c296dea0815894d1cb6a907860ec44be9c6be6dde",
+        "suits/flight-tap-13.png": "fc9283dcd6ccc4232694c72db732b864d499043b6c0d852daa925c0921594fed",
+        "suits/flight-tap-14.png": "7bbd8eed2558f02392fc8c2dd6bd14713258f8a7a470bcd46bf8e50325d8fde5",
+        "suits/flight-tap-15.png": "c812531ff0599dd7d66d17ea9ce4aa391baa9f808baff10e6b292b7553623cb4",
+        "suits/flight-tap-16.png": "fcce88aae3e335a8b200595ef2d318142b90be66f35d66cdb03f8c132ac2e52b",
+        "suits/flight-asc-1.png": "d3ba1a697e154d17a01dc26b72acf31107180901087815ace1085e6c34191600",
+        "suits/flight-asc-2.png": "026d7b6f9dfac9d25206b6f26628c52abf2865770164b9e63fe33b3bdad382d7",
+        "suits/flight-asc-3.png": "7f3ca53d39a123699abb09f8ce15a23ceb492bb1b78a22c159ede6e46ba66814",
+        "suits/flight-desc-1.png": "cbe9b6a69ed045df56436307549f7d8ebaeab8220deb73cc797604e7233e43e1",
+        "suits/flight-desc-2.png": "324b9e55a19e9c6790f02536e124ff8a21d0ce59e0047dfc803a17c819ade500",
+        "suits/flight-desc-3.png": "141dc6a0fa04899446752cf3c354826785c7006e520c15d42beeb4d664f608a0",
+        "suits/flight-desc-4.png": "6ced1d13e6cf7ee09ed0d4b7ae56da7b4ed8747dbce857059e34a459cc82340c",
+        "suits/flight-desc-5.png": "009b37bef9be231ca2df2bf0474add8714e43bc63841fea95da9df36b50d2bde"
+      }
+    },
+    {
+      "id": "vanguard",
+      "name": "AcorNut",
+      "key": "suit:vanguard",
+      "file": "suits/vanguard.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "acornut",
+      "atlas": "suits/vanguard/maneuver-parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/vanguard.png": "acf500872b7ac352b32e4a1faf021dac89e1c92afcf076c2b5e2e57e6ca2695b",
+        "suits/vanguard/maneuver-parts.png": "341d98b324eea4c78a878bf3258c6493b9a6e264cc8b4b828cfec3f87dca4bb0"
+      }
+    },
+    {
+      "id": "arcflash",
+      "name": "Arcflash",
+      "key": "suit:arcflash",
+      "file": "suits/arcflash/body.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "arcflash",
+      "atlas": "suits/arcflash/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/arcflash/body.png": "ef39dc9c62b2f4f678981d2debb875f2ae379950d5a65d21d3809f022a355574",
+        "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
+      }
+    },
+    {
+      "id": "iontrim",
+      "name": "Ion",
+      "key": "suit:iontrim",
+      "file": "suits/iontrim.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/iontrim-asc-1.png",
+          "suits/iontrim-asc-2.png",
+          "suits/iontrim-asc-3.png",
+          "suits/iontrim-asc-4.png",
+          "suits/iontrim-asc-5.png",
+          "suits/iontrim-asc-6.png",
+          "suits/iontrim-asc-7.png",
+          "suits/iontrim-asc-8.png"
+        ],
+        "desc": [
+          "suits/iontrim-desc-1.png",
+          "suits/iontrim-desc-2.png",
+          "suits/iontrim-desc-3.png",
+          "suits/iontrim-desc-4.png",
+          "suits/iontrim-desc-5.png",
+          "suits/iontrim-desc-6.png",
+          "suits/iontrim-desc-7.png",
+          "suits/iontrim-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/iontrim.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
+        "suits/iontrim-asc-1.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
+        "suits/iontrim-asc-2.png": "cfe5d0771f7b1375f98a6f75ef59214403d1ecb6b2cb96edaedff76e33bf36e1",
+        "suits/iontrim-asc-3.png": "ae90279acfb5fa45517b1e4b28c3401f7b1ea9bd2c424fad65d60add1e0a0d70",
+        "suits/iontrim-asc-4.png": "3031c881c61af18d4fd6e9d2701da921d6b4c6b06c0500e39272d84af64ffe3f",
+        "suits/iontrim-asc-5.png": "f2d0f9ff50d24aa392aee90d116882903ca9fe0b43881925e9b9779b36e4d9e3",
+        "suits/iontrim-asc-6.png": "64828812f79941b0db5158d086a438caca52374fc4e971dc83d4d7b4bb9dd5f6",
+        "suits/iontrim-asc-7.png": "8a7e1afc01b2fad62dfb66eb6831d0e158aebffa1de7ff264202d251634d2f7d",
+        "suits/iontrim-asc-8.png": "ecee8d23a32541a31cc130187f78f95d36c5586f9729fbabf56c76a439498401",
+        "suits/iontrim-desc-1.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
+        "suits/iontrim-desc-2.png": "1aa135be089d62272f2f2557858cbb427752c30b59c713f00f1f964bde040e77",
+        "suits/iontrim-desc-3.png": "65f9225516fcc856702f957e603e3be59a18cc3e97e9a7037568877fafac5e9c",
+        "suits/iontrim-desc-4.png": "2f7a256ce77fca4fadcde48457e052827d5af00b9dafdb6a6559a68f6b915c17",
+        "suits/iontrim-desc-5.png": "43f428df01c568d2034e7002b36a503ab5e479b43412c334a8852d38ab5335f0",
+        "suits/iontrim-desc-6.png": "6fc5f044550f56bc7fa1c59bac2b494c52bf5b5f266a34dfe07ab78199c21b76",
+        "suits/iontrim-desc-7.png": "8245215c8d221189c2812a6846ee10b9873e0793f764a671055daf1745100fe0",
+        "suits/iontrim-desc-8.png": "43a48fa8ab7ecf15cf17bf292c24e7701034aa69178271484529e0eda57f9a36"
+      }
+    },
+    {
+      "id": "copper",
+      "name": "Copper",
+      "key": "suit:copper",
+      "file": "suits/copper.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/copper-asc-1.png",
+          "suits/copper-asc-2.png",
+          "suits/copper-asc-3.png",
+          "suits/copper-asc-4.png",
+          "suits/copper-asc-5.png",
+          "suits/copper-asc-6.png",
+          "suits/copper-asc-7.png",
+          "suits/copper-asc-8.png"
+        ],
+        "desc": [
+          "suits/copper-desc-1.png",
+          "suits/copper-desc-2.png",
+          "suits/copper-desc-3.png",
+          "suits/copper-desc-4.png",
+          "suits/copper-desc-5.png",
+          "suits/copper-desc-6.png",
+          "suits/copper-desc-7.png",
+          "suits/copper-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/copper.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
+        "suits/copper-asc-1.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
+        "suits/copper-asc-2.png": "e3f6d3885e07cbae79852d4fa0a95a6fb56ce6c47487d02c1a88bc132c147f75",
+        "suits/copper-asc-3.png": "8c276190031ea88d1739d15a186c92c3bcbc448bf01742c0deee08f7b48d9c1d",
+        "suits/copper-asc-4.png": "b127cad0afa8e3fc7c0a4c577733039d0140174b1a948160f797674da70647cb",
+        "suits/copper-asc-5.png": "7292556f0412f6e97aca16d85f543651a5103dd1ce5632acba6576dead63bc43",
+        "suits/copper-asc-6.png": "649775a73447f1b5f714cbae28bc543bc7782c89b519a18bdb8b0574823b8d62",
+        "suits/copper-asc-7.png": "6d4b1c746dfb6788741181ea67f924ca983f78539ff09b715de73fde5210eec7",
+        "suits/copper-asc-8.png": "f3b447cba339a46676eab1766e27bb27757edc5b3b25aa16ef24baef96974a55",
+        "suits/copper-desc-1.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
+        "suits/copper-desc-2.png": "6236c70682a10695265b7e54928559c8edc2fc4eefefb2ce5e7b39e92b32b998",
+        "suits/copper-desc-3.png": "a10aef830d05788870a576b555e55683463cbc3cf4f9e7bc1b387e3af8f3f317",
+        "suits/copper-desc-4.png": "d0187a841a2f3dc8330beda1a986c2544b9213c84199359c4fd8865e76b75762",
+        "suits/copper-desc-5.png": "67903699a5e6e27fde09ecaae2538d5bacbf3ab4f92370641f736695a3878382",
+        "suits/copper-desc-6.png": "660e93c408d8bda54923871dcfd1ae8c4ad2dbfd7b113d86008620adfea6d82e",
+        "suits/copper-desc-7.png": "13f5d7b00257a3f991fdc80dc3d1f6c4921168d8f96f690bffe1860c5f3735bf",
+        "suits/copper-desc-8.png": "71614c2b24c39d7560826d0a2cf94fbc90cedbbe4b4358e0d23271dde73d047d"
+      }
+    },
+    {
+      "id": "frost",
+      "name": "Frost",
+      "key": "suit:frost",
+      "file": "suits/frost.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/frost-asc-1.png",
+          "suits/frost-asc-2.png",
+          "suits/frost-asc-3.png",
+          "suits/frost-asc-4.png",
+          "suits/frost-asc-5.png",
+          "suits/frost-asc-6.png",
+          "suits/frost-asc-7.png",
+          "suits/frost-asc-8.png"
+        ],
+        "desc": [
+          "suits/frost-desc-1.png",
+          "suits/frost-desc-2.png",
+          "suits/frost-desc-3.png",
+          "suits/frost-desc-4.png",
+          "suits/frost-desc-5.png",
+          "suits/frost-desc-6.png",
+          "suits/frost-desc-7.png",
+          "suits/frost-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/frost.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
+        "suits/frost-asc-1.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
+        "suits/frost-asc-2.png": "d635298773d65ab390237265a0796a528e4cb150e721e863093594f08d77c671",
+        "suits/frost-asc-3.png": "b3bbaeb28f40ab16f58b788f84e9c73b55fda4944d6eadaab0c9b633e7d9e658",
+        "suits/frost-asc-4.png": "4a832d18ae950fa50cc8adc971af3060f6d49a2eb8db76631025e720321a6f02",
+        "suits/frost-asc-5.png": "47d6b5c3891980050f795850a677e59cd1e878827691b3c8e66fdc3e4013138d",
+        "suits/frost-asc-6.png": "935cd10593187a2d03cf2a8198d786ac70a907b133911b63da9007054f26fb10",
+        "suits/frost-asc-7.png": "4f8571cc4152c66eb89418955fa349a868b6be3f9d4250c2ef58ac7e7442008a",
+        "suits/frost-asc-8.png": "6c98c204b36b1d51fe6a4e74c07482ece48dc7ff361b76ad506f1f4f06ac345f",
+        "suits/frost-desc-1.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
+        "suits/frost-desc-2.png": "cb6f7e41899564552c4c5a1308c3d5a46814d4fab0adf7ce4e5453ea00bdc1dc",
+        "suits/frost-desc-3.png": "420ae8bb7db44b16defcf114bfc0f712cf780982dfb679c0f1dd58703f59833b",
+        "suits/frost-desc-4.png": "4c672e1aa633cefb829fe88418eff4d0b4d258c1284c17177cfd678e455960ab",
+        "suits/frost-desc-5.png": "debd4d9f1e75f254f4a9d277d16267bb0db2bf4a167377b385b50e2f5a3eaa03",
+        "suits/frost-desc-6.png": "b0c265e0db23f551f93f90a7408344e0a5791887090efd4f72d02c684ac23fd6",
+        "suits/frost-desc-7.png": "be93d718c1b7e16a1da74f5b4f14df8a0e6c700134c9cabdb97e9e9e048e4e89",
+        "suits/frost-desc-8.png": "c090921326d9ae5a3f5e9650dd1737c0b72d57285afd3493b9828f04c83ddb04"
+      }
+    },
+    {
+      "id": "voidsuit",
+      "name": "Void",
+      "key": "suit:voidsuit",
+      "file": "suits/voidsuit.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/voidsuit-asc-1.png",
+          "suits/voidsuit-asc-2.png",
+          "suits/voidsuit-asc-3.png",
+          "suits/voidsuit-asc-4.png",
+          "suits/voidsuit-asc-5.png",
+          "suits/voidsuit-asc-6.png",
+          "suits/voidsuit-asc-7.png",
+          "suits/voidsuit-asc-8.png"
+        ],
+        "desc": [
+          "suits/voidsuit-desc-1.png",
+          "suits/voidsuit-desc-2.png",
+          "suits/voidsuit-desc-3.png",
+          "suits/voidsuit-desc-4.png",
+          "suits/voidsuit-desc-5.png",
+          "suits/voidsuit-desc-6.png",
+          "suits/voidsuit-desc-7.png",
+          "suits/voidsuit-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/voidsuit.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
+        "suits/voidsuit-asc-1.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
+        "suits/voidsuit-asc-2.png": "1aaac16e5cb696d8b633ec67bd27fe69bdc27adeed340157d49bbc9ad3d2ed18",
+        "suits/voidsuit-asc-3.png": "198292ce0055630c4a7e2533e6283e1e950ebb29b2a42341a85157d52a226577",
+        "suits/voidsuit-asc-4.png": "b5169986cc2e342756df83a7d048d0326743e51c05ab90cd26a97e34e4f5b67a",
+        "suits/voidsuit-asc-5.png": "3baef1d0fdb9a015a4fe565b6b53bf97106cc89cdfc4155f9c36473a55184276",
+        "suits/voidsuit-asc-6.png": "23a252bf44921d064a804440d72ec3512b2175eb8617474d33a23a9aaafc874d",
+        "suits/voidsuit-asc-7.png": "7128616f2c1b358deb32b795470101587516539c501abd0d814cd35ab69f9ad7",
+        "suits/voidsuit-asc-8.png": "55a5fbd52e7e0b0289573bd90b4131d5c2de574d3b57173957dc3c237d430863",
+        "suits/voidsuit-desc-1.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
+        "suits/voidsuit-desc-2.png": "b1fdb2a691dc3ff86973bddc4e992cab7b77cc102675b4040a734ff3f8e0c1ea",
+        "suits/voidsuit-desc-3.png": "ccfd6476d98dfc98712c3396ceb65ed09b4ddf0222c607c9df5c2faabeb91a1e",
+        "suits/voidsuit-desc-4.png": "093963b4a85cf3fbff2f63e4cf41f4df3402c97dee1fbc731704fd4b9e078299",
+        "suits/voidsuit-desc-5.png": "b801411d42851c1237000b8413aa1c5107c9ad7d98f2a76318605c8507cd6798",
+        "suits/voidsuit-desc-6.png": "1e12fae148c65ca9d352ca2fbb6246b1a74b437b767c3b4d669d982c138003a6",
+        "suits/voidsuit-desc-7.png": "1f14388eafe0e8624f82953d461abf67aecaeed14103ab221c50a87f5fb6016b",
+        "suits/voidsuit-desc-8.png": "95376cf934c69491eb6c86fc0e8605665a9bcfe9423065bde1ce667cdc224dd1"
+      }
+    },
+    {
+      "id": "ember",
+      "name": "Ember",
+      "key": "suit:ember",
+      "file": "suits/ember.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/ember-asc-1.png",
+          "suits/ember-asc-2.png",
+          "suits/ember-asc-3.png",
+          "suits/ember-asc-4.png",
+          "suits/ember-asc-5.png",
+          "suits/ember-asc-6.png",
+          "suits/ember-asc-7.png",
+          "suits/ember-asc-8.png"
+        ],
+        "desc": [
+          "suits/ember-desc-1.png",
+          "suits/ember-desc-2.png",
+          "suits/ember-desc-3.png",
+          "suits/ember-desc-4.png",
+          "suits/ember-desc-5.png",
+          "suits/ember-desc-6.png",
+          "suits/ember-desc-7.png",
+          "suits/ember-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/ember.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
+        "suits/ember-asc-1.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
+        "suits/ember-asc-2.png": "be43f2154c00bbfe0c5f3d12f131da11f5ba1390ebc445ab7e99ba5ce9f8fb35",
+        "suits/ember-asc-3.png": "3c3b4992bd5a6339dd204169453c044ceee92e3f568a87a1668661ec9798920b",
+        "suits/ember-asc-4.png": "e7bb10098299a47853731ab06a98d7f5fb6f267dc84c1278b7672a1e818fbd65",
+        "suits/ember-asc-5.png": "b0ae82283a943d2ba2dc37debdb96f78bf7f5c1f4ad860630240f7af9806d5ab",
+        "suits/ember-asc-6.png": "aceab268c08f3de9c46a40ba99055cfabed82aea7b79af0586438004335f4247",
+        "suits/ember-asc-7.png": "fad13b422a7adce0776c776df6bc855b8b4f8c5214df3f634f3133e6dd55c3fa",
+        "suits/ember-asc-8.png": "36fb3fed5ad5dec96b0bbd12dc6e9f6608420fe1a5f4a4e12848f228df21fde7",
+        "suits/ember-desc-1.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
+        "suits/ember-desc-2.png": "75fed219d40ab30f7f4380bcb07d090e66ccb8123994c45fa19d2aafe95807af",
+        "suits/ember-desc-3.png": "5011ba9961fe670a010f925b6971e2cfa56e6125361e682e28d1ebc6557da636",
+        "suits/ember-desc-4.png": "a65564b4725a871c2e6446e8c70d6cc8837b01e1de4de8217fc3476b0dd4686b",
+        "suits/ember-desc-5.png": "62f0cd952d10f91e560f3b93f333cdacf3b1048f90836b27bf5bb9d5e1ceae34",
+        "suits/ember-desc-6.png": "5b8f58b21ce7441843a27423484defc2c949d27c5d6eaf726e4da16247925da5",
+        "suits/ember-desc-7.png": "ee80136d94b91a25ca70c377d2eb9f06c65b603d1f8b30c9dc0f5865bc1ec90b",
+        "suits/ember-desc-8.png": "0998a89ac39d6059355fe33b525d12fe246e2b5533dd0abc6813585441fa9d13"
+      }
+    },
+    {
+      "id": "robo",
+      "name": "Robo",
+      "key": "suit:robo",
+      "file": "suits/robo.png",
+      "dome": [
+        181,
+        96,
+        43,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/robo-tap-1.png",
+          "suits/robo-tap-2.png",
+          "suits/robo-tap-3.png",
+          "suits/robo-tap-4.png",
+          "suits/robo-tap-5.png",
+          "suits/robo-tap-6.png",
+          "suits/robo-tap-7.png",
+          "suits/robo-tap-8.png",
+          "suits/robo-tap-9.png",
+          "suits/robo-tap-10.png",
+          "suits/robo-tap-11.png",
+          "suits/robo-tap-12.png",
+          "suits/robo-tap-13.png",
+          "suits/robo-tap-14.png",
+          "suits/robo-tap-15.png",
+          "suits/robo-tap-16.png"
+        ],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/robo.png": "16a8ae8050efffeced6d57b51b3110129a3a6f9e34a3e7bc543ddfe77c64b459",
+        "suits/robo-tap-1.png": "e4176e333065e85c49303197f6db29019154566f06ec8e948d5545f68d1247e8",
+        "suits/robo-tap-2.png": "e835bfe1f62fa396ff72fd7fd153009a11e35c84d340074fc66d67716975f845",
+        "suits/robo-tap-3.png": "f34b0fd52cb8ffc7ab5fb6d2b177923ef6e06ff6160ace9aa434e1786f6a62da",
+        "suits/robo-tap-4.png": "b3192623a0e1ebd0cb821150d099a433609c08026c24833ca489fbee89bdeaff",
+        "suits/robo-tap-5.png": "2476ef038abcf46f2b4badc6d77c0421cd62bce33bb2c2f7fc7cdd6300d3b727",
+        "suits/robo-tap-6.png": "4b56966c9dc520acdc3f1ba3a306cc34e3977f507f67ebdadd8fa061e961fd68",
+        "suits/robo-tap-7.png": "1287008426ab47ad4c62659e50112d46cdedcbeb7a3e42bb06edc9bd0c2f7621",
+        "suits/robo-tap-8.png": "51492c4abb44d3d11394a40a418c4820d95cd8b90910bf7ff42625e8300a394b",
+        "suits/robo-tap-9.png": "390bef5687ef31ad9d600d2c4ff212f82bec43dbd3abe58ea2e889303c6f7df9",
+        "suits/robo-tap-10.png": "7a6187b19947cb9ceec2bff0a948e71743097c44c039d46728f1992773fb5c14",
+        "suits/robo-tap-11.png": "e86f3abfe2cb4c47a7a063a49c5c0e7fe1b7476624e7c1422c3f5a682575e75e",
+        "suits/robo-tap-12.png": "72d89f405fb2b625057f0f1a57ab4e635388332885f5d34f4c688b9901dfbe67",
+        "suits/robo-tap-13.png": "25558df5ecd22c53c059a92fcdb26f30aaa7c352a61c9d386db059db4e3d5235",
+        "suits/robo-tap-14.png": "c82fab692fa98c38864ed9eea4b8ecf1d8b6235d4eee32ebda52e7f2c167032c",
+        "suits/robo-tap-15.png": "f8986b81070deedc9bd8e300e4318c5ce342e6bb642dba0b545622640b064f66",
+        "suits/robo-tap-16.png": "ad6958037dd55f6da0112ede9759efdfc6468e4ec9b25310b8962161f0cfda98"
+      }
+    },
+    {
+      "id": "alien",
+      "name": "Alien",
+      "key": "suit:alien",
+      "file": "suits/alien.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/alien-asc-1.png",
+          "suits/alien-asc-2.png",
+          "suits/alien-asc-3.png",
+          "suits/alien-asc-4.png",
+          "suits/alien-asc-5.png",
+          "suits/alien-asc-6.png",
+          "suits/alien-asc-7.png",
+          "suits/alien-asc-8.png"
+        ],
+        "desc": [
+          "suits/alien-desc-1.png",
+          "suits/alien-desc-2.png",
+          "suits/alien-desc-3.png",
+          "suits/alien-desc-4.png",
+          "suits/alien-desc-5.png",
+          "suits/alien-desc-6.png",
+          "suits/alien-desc-7.png",
+          "suits/alien-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/alien.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
+        "suits/alien-asc-1.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
+        "suits/alien-asc-2.png": "7686f92138ebe9d5db326a4c3062f72897db71b98502484efc2729121c58e98c",
+        "suits/alien-asc-3.png": "58aafde0b0ba39e5ddb68a329dc8e293d80d89229fb74b619c74c71ace1105d7",
+        "suits/alien-asc-4.png": "ea6eb77100ccf5cba196d6fc4020d2fcdc717b99630c20b488394500e69cce61",
+        "suits/alien-asc-5.png": "2a2cfd1438bd729cf8ba467ef1cf78d9295584485c8afe1b7d68d3d987197556",
+        "suits/alien-asc-6.png": "42e5582ebb29a41b75f8f2a4686a45e5d2cb95de3eb53e85c70b3dd454f92ae8",
+        "suits/alien-asc-7.png": "467b1b38dd1721ae978b40a0aaae7ca0d978fc6c75fe748ae0f613891218bb8b",
+        "suits/alien-asc-8.png": "1698de81241c629bc91e63cc74985b8ce6f88b855eb68bf64d1f22f3cf6ef7eb",
+        "suits/alien-desc-1.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
+        "suits/alien-desc-2.png": "9d7e44eae4091cf5ef518240bcdb8f10f9b3951e0715c0c1d9e16490b0e97ce9",
+        "suits/alien-desc-3.png": "34fd40eb536928a04640ce71700e17e7504737a7e0aa6422e69b95b92234297a",
+        "suits/alien-desc-4.png": "20ebafd3e7537775e79b1efe4884536f4e41c8c49da1fac6dbe27dfc34fb66b7",
+        "suits/alien-desc-5.png": "5a014bdd1a47582fa1c4a5dae522e91f29003d4a969d143af0457067b8c083d2",
+        "suits/alien-desc-6.png": "4e01cd5f7b5c2e5f674e0602a919c8061f01cec796c2ac1711976ccd42e75a8f",
+        "suits/alien-desc-7.png": "96eb6638a6a00195b76fb3ec6b513e920eb1aebf5be140e134f13dd7da68c86a",
+        "suits/alien-desc-8.png": "6df88299f86e3aabff010c73deebccce9c144b013efec87cfc93356dff41bac5"
+      }
+    },
+    {
+      "id": "ghost",
+      "name": "Ghost",
+      "key": "suit:ghost",
+      "file": "suits/ghost.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/ghost-asc-1.png",
+          "suits/ghost-asc-2.png",
+          "suits/ghost-asc-3.png",
+          "suits/ghost-asc-4.png",
+          "suits/ghost-asc-5.png",
+          "suits/ghost-asc-6.png",
+          "suits/ghost-asc-7.png",
+          "suits/ghost-asc-8.png"
+        ],
+        "desc": [
+          "suits/ghost-desc-1.png",
+          "suits/ghost-desc-2.png",
+          "suits/ghost-desc-3.png",
+          "suits/ghost-desc-4.png",
+          "suits/ghost-desc-5.png",
+          "suits/ghost-desc-6.png",
+          "suits/ghost-desc-7.png",
+          "suits/ghost-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/ghost.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
+        "suits/ghost-asc-1.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
+        "suits/ghost-asc-2.png": "2aa66169b6a94f8f252bd18cfbaf9a29612628e360e43a5c8ab94c521e842655",
+        "suits/ghost-asc-3.png": "6da07e01036567263250cf4a4bff18aa309c7c4e21676149857b003368860cd4",
+        "suits/ghost-asc-4.png": "424ca9a399ebc12d541c991cb6959d258612b808e48d555b22975113a59d49af",
+        "suits/ghost-asc-5.png": "b0dc27842a5e32e907d299a0c258dbaaceb67e2a3155f76f166da4aa59728562",
+        "suits/ghost-asc-6.png": "894d528b341bfe3eaa9e12208d06df2f7ce890c7e0985ceed6c4ddfe582c477b",
+        "suits/ghost-asc-7.png": "04cc559cce6a016305eb34a76afad4e79c2f1f7b9f3c303888c277c4b94d96c3",
+        "suits/ghost-asc-8.png": "dcb38fee3e13355504c404cb2beed49319600d4f9687549e4755053930b5a0b7",
+        "suits/ghost-desc-1.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
+        "suits/ghost-desc-2.png": "b833b4fbde84b2284bc6028f6cec5c224c574cd6083cb5491d7cda9fffe594a6",
+        "suits/ghost-desc-3.png": "5dda3c02aa6ffcbe13dc0aba01a75f84216514e89854a226dd164ca22ca42dc3",
+        "suits/ghost-desc-4.png": "50134d31dd0074ed5d8c88510b063eed18f008461629cd622890cbc26e110ec8",
+        "suits/ghost-desc-5.png": "42d5debd2438c218728f143c596ca15a834fc24fe58957f4d6476e1eaeaa0ae1",
+        "suits/ghost-desc-6.png": "63b241855e7c901b6e54e59206ba04560da0190d77bf4ff7f951ac9cf255488f",
+        "suits/ghost-desc-7.png": "7f593cabe801b10833b7da9b4ce8e4a207387ba94760d22b209a04e86fb81bff",
+        "suits/ghost-desc-8.png": "b988321733ff84a534b04b943ccc65b492eaa7d24db66cb925bf94da57d47287"
+      }
+    },
+    {
+      "id": "bigbooty",
+      "name": "Big Booty",
+      "key": "suit:bigbooty",
+      "file": "suits/bigbooty.png",
+      "dome": [
+        183,
+        104,
+        35,
+        10
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/bigbooty-tap-1.png",
+          "suits/bigbooty-tap-2.png",
+          "suits/bigbooty-tap-3.png",
+          "suits/bigbooty-tap-4.png",
+          "suits/bigbooty-tap-5.png",
+          "suits/bigbooty-tap-6.png",
+          "suits/bigbooty-tap-7.png",
+          "suits/bigbooty-tap-8.png",
+          "suits/bigbooty-tap-9.png",
+          "suits/bigbooty-tap-10.png",
+          "suits/bigbooty-tap-11.png",
+          "suits/bigbooty-tap-12.png",
+          "suits/bigbooty-tap-13.png",
+          "suits/bigbooty-tap-14.png",
+          "suits/bigbooty-tap-15.png",
+          "suits/bigbooty-tap-16.png"
+        ],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/bigbooty.png": "2de6f064f1633eb9ef2740e08939ad30ba9539296bfb43c37f37dca345ef618f",
+        "suits/bigbooty-tap-1.png": "b2bf796ad7d03e95b6715e0c3738cbca1de39d12a3d8e2a7fcb71d04f78f7145",
+        "suits/bigbooty-tap-2.png": "65d86b2b8797c037a0b14b691f5d84f573d8d9ff196143b3102654b5cea32999",
+        "suits/bigbooty-tap-3.png": "fae8462436443cb26ba44b764dced096a527fab812642f89c1eea39e933c6735",
+        "suits/bigbooty-tap-4.png": "e7734c65c8e36775f572536449f4d6009038585cf11e45554bcda30ed871fcff",
+        "suits/bigbooty-tap-5.png": "e60dcc5f55432d515a758bbd363a457a5bd9b0173ad02bbe21a129eac0a51055",
+        "suits/bigbooty-tap-6.png": "4fdb0d63293b9511423dd52744fab1dfd89097c638a07133833f50b41c865587",
+        "suits/bigbooty-tap-7.png": "91f387df0d2813ba1613682cb38a4d24079f04f1e07018f8eb64840a8ea7590d",
+        "suits/bigbooty-tap-8.png": "49261c8f6de8f2860983f467c7ead0225896faf9fe63c60d1aa78a0b2c83fa5d",
+        "suits/bigbooty-tap-9.png": "ec3c1146b79102059e8dbeca69b9fdffd5c56dfecdd5c9e0b81e488dd8cf5fb9",
+        "suits/bigbooty-tap-10.png": "0bb28ec032e0c64c9fb6327bdfee14c14a216daf7d3ba7e0f3e6033f3e8842f0",
+        "suits/bigbooty-tap-11.png": "9877e2b9559b5b3617c57c664c2fd8a48eb39161da930346ceb0b9454f5ea370",
+        "suits/bigbooty-tap-12.png": "1ea154333b73aebc921c2398a3647fe8d5c04f9e786d4694adef75c3f8ffbe73",
+        "suits/bigbooty-tap-13.png": "da21d76b298b689c0b476ef1cc800efa20467098506985238cf194f0e7d68716",
+        "suits/bigbooty-tap-14.png": "ab72b3a32eefd437234d6cda9cc8d078e98ca2530e4adf8aadaf528903287f1c",
+        "suits/bigbooty-tap-15.png": "45062630d3f95df89b4288055316b2a60dbdaf37165420ee66b8c2b28c8793d6",
+        "suits/bigbooty-tap-16.png": "fa63512b8c88d5b0d190235301defb36caea47669aa84c6d6f9123de14df595b"
+      }
+    },
+    {
+      "id": "catsuit",
+      "name": "Cat",
+      "key": "suit:catsuit",
+      "file": "suits/catsuit.png",
+      "dome": [
+        212,
+        86,
+        50
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/catsuit-tap-1.png",
+          "suits/catsuit-tap-2.png",
+          "suits/catsuit-tap-3.png",
+          "suits/catsuit-tap-4.png",
+          "suits/catsuit-tap-5.png",
+          "suits/catsuit-tap-6.png",
+          "suits/catsuit-tap-7.png",
+          "suits/catsuit-tap-8.png",
+          "suits/catsuit-tap-9.png",
+          "suits/catsuit-tap-10.png",
+          "suits/catsuit-tap-11.png",
+          "suits/catsuit-tap-12.png",
+          "suits/catsuit-tap-13.png",
+          "suits/catsuit-tap-14.png",
+          "suits/catsuit-tap-15.png",
+          "suits/catsuit-tap-16.png"
+        ],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/catsuit.png": "aa7696b085bfd1cbf5d15ecc3fa44ed7ba472ad46daa409e868cf5707c5564a8",
+        "suits/catsuit-tap-1.png": "d96aa7cf8c38e97247765cf6e82cf5fe8b1e8f2b7989f7492976c1d7f58ea0fb",
+        "suits/catsuit-tap-2.png": "4e5566ef321511e405f7a3c4c65d8c1e497bfcefff9e99546c8b84f5f9996ea8",
+        "suits/catsuit-tap-3.png": "3636914047d7a1362871a00c94794e8d79458cf0242316d75fbceed384ea8972",
+        "suits/catsuit-tap-4.png": "64e4e5181264dc945835c5acf967037c6ec3c44c5ba3604b93e73b59d5e44fc0",
+        "suits/catsuit-tap-5.png": "537fe0329d1c02a385a1f6c4a5da7239076279a21de3b0f95348881b84491d23",
+        "suits/catsuit-tap-6.png": "b8d2ac56b419c9ed9667dbaeccc3e2bbb651cd47c0394e60a8387ffc42e35242",
+        "suits/catsuit-tap-7.png": "0c8a239bd60a8a717f44a7ccac0cd9d16b6aa01a7261472c76756b7161a98c19",
+        "suits/catsuit-tap-8.png": "b21cf3486cf7765efc31378ad960d4588014a10ab5aabfdd36fe8f77459d6bea",
+        "suits/catsuit-tap-9.png": "0ca41babcf4c84d6879c5a605b2d50ea235b4188c9d4897265c7017031971097",
+        "suits/catsuit-tap-10.png": "157bfd83f96254bcc50564cc5bcc60bd29df39f3eed058f9e341ec541d79927a",
+        "suits/catsuit-tap-11.png": "b1cd796c25d7def22008136e23fdf13ea39355e063f547782daeac3a980c802d",
+        "suits/catsuit-tap-12.png": "48aef2437b6d2ff80bf371c39ca69d118692915d0815c369d1cc3b2939a6628a",
+        "suits/catsuit-tap-13.png": "df3c4b67305cd5fb30582d184b6eed96b0aedd4a87cb4928fa9e50b0b235e45e",
+        "suits/catsuit-tap-14.png": "f7e1ed1477f56d6dd8775047abf0426cbc6367b50c9269b25d2f6abb3bd7b3d3",
+        "suits/catsuit-tap-15.png": "57a2bb8cf6d4440f4a1a09e9d0c45266bcc994c7f6a866fa32b718d09cfe1bcc",
+        "suits/catsuit-tap-16.png": "a909f8e8d49108809821ce9af5335fcee1fbc28e6804c9ddd312a5d82c519f35"
+      }
+    },
+    {
+      "id": "raccoon",
+      "name": "Bandit",
+      "key": "suit:raccoon",
+      "file": "suits/raccoon.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/raccoon-loop-1.png",
+          "suits/raccoon-loop-2.png",
+          "suits/raccoon-loop-3.png",
+          "suits/raccoon-loop-4.png",
+          "suits/raccoon-loop-5.png",
+          "suits/raccoon-loop-6.png",
+          "suits/raccoon-loop-7.png",
+          "suits/raccoon-loop-8.png",
+          "suits/raccoon-loop-9.png",
+          "suits/raccoon-loop-10.png",
+          "suits/raccoon-loop-11.png",
+          "suits/raccoon-loop-12.png",
+          "suits/raccoon-loop-13.png",
+          "suits/raccoon-loop-14.png",
+          "suits/raccoon-loop-15.png",
+          "suits/raccoon-loop-16.png"
+        ]
+      },
+      "hashes": {
+        "suits/raccoon.png": "f497424777bb7a14a4d8fac3c8ed16ff5e9e01020c99cbecb8f70d88d2c3c2b6",
+        "suits/raccoon-loop-1.png": "f497424777bb7a14a4d8fac3c8ed16ff5e9e01020c99cbecb8f70d88d2c3c2b6",
+        "suits/raccoon-loop-2.png": "ab3ebf40a619012ec61be036faeae9fc4268fc52eac5cba52d0719b3c45ec93b",
+        "suits/raccoon-loop-3.png": "7ac0552cafec4d68ce5431cc93d595fedb551b7ff33e91f4c9776eda180b3124",
+        "suits/raccoon-loop-4.png": "8cdbc4166ff0df6927ac6455b03c32dff964aa3aadafb496f99f591e670a9846",
+        "suits/raccoon-loop-5.png": "0ea70fe8a60044930b05939b9e5ef00f9f3d9c684796985f759b3ab0565be7b3",
+        "suits/raccoon-loop-6.png": "5171fc3a397b7bb6491e7945e38420082b65c63d5a1f7d096b95172002524005",
+        "suits/raccoon-loop-7.png": "d7f60c090534cef5d5bbc4915c4275aeea7f36361c0c86e73acfda80fba30437",
+        "suits/raccoon-loop-8.png": "cb68ad67450553d899eaba18bd5765a56640624bf346e364db07f634b301a607",
+        "suits/raccoon-loop-9.png": "849b2a7974f640359fbe8469c69478a301314d6d28fcd3ae839afdd5f2828fa3",
+        "suits/raccoon-loop-10.png": "b7afd2aeb7020d03397916ac081d01e9a931dbb49a71f0c3d9414f5331a6b028",
+        "suits/raccoon-loop-11.png": "cbe4c0e625a92585324b0087ddd2995f5d4456a0ac6cc8ab3bd515789611b961",
+        "suits/raccoon-loop-12.png": "5cbded4d1cda6bb22dc6397439e7b53472450ff1eed347557f5eb68d581858b6",
+        "suits/raccoon-loop-13.png": "6affa3efbf05337ce817ac324e86985cfbca0637651d2c57d1b1cf110a62b6b7",
+        "suits/raccoon-loop-14.png": "2a16dc4cddcc4b7f629344d5175e4fec28a9c7088be9b00b44dfb6a526f241a4",
+        "suits/raccoon-loop-15.png": "61a6a0c6db65dab60e9c6e5272709488d8d28cb1da4b764cb9ae100248c36555",
+        "suits/raccoon-loop-16.png": "207b259c5a61d706262d7cebef3e3d6412e3720053690e422a0a7f16b45bf545"
+      }
+    },
+    {
+      "id": "ferret",
+      "name": "Noodle",
+      "key": "suit:ferret",
+      "file": "suits/ferret.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/ferret-loop-1.png",
+          "suits/ferret-loop-2.png",
+          "suits/ferret-loop-3.png",
+          "suits/ferret-loop-4.png",
+          "suits/ferret-loop-5.png",
+          "suits/ferret-loop-6.png",
+          "suits/ferret-loop-7.png",
+          "suits/ferret-loop-8.png",
+          "suits/ferret-loop-9.png",
+          "suits/ferret-loop-10.png",
+          "suits/ferret-loop-11.png",
+          "suits/ferret-loop-12.png",
+          "suits/ferret-loop-13.png",
+          "suits/ferret-loop-14.png",
+          "suits/ferret-loop-15.png",
+          "suits/ferret-loop-16.png"
+        ]
+      },
+      "hashes": {
+        "suits/ferret.png": "23c6c248487900d2d89fb91c38aa3fc2a82c1ce073a8ef269c3443bbfff68518",
+        "suits/ferret-loop-1.png": "23c6c248487900d2d89fb91c38aa3fc2a82c1ce073a8ef269c3443bbfff68518",
+        "suits/ferret-loop-2.png": "3efd8309889e894bec0f5dc0f164ad3ca60c1be6a72752c00fee8d3e662ad123",
+        "suits/ferret-loop-3.png": "97046a09d0a17933d13388599061f99a28d8b7c0cf9a6708933e8dd760faa02b",
+        "suits/ferret-loop-4.png": "6991fb1f427c543f5b7a21f1e2ea7e1339bbadb92dbc778bb4af0152d900b694",
+        "suits/ferret-loop-5.png": "d72d0fe6418019b548c5e6fb5859a5cfff9eb18cb6632982df69f59f4c13abba",
+        "suits/ferret-loop-6.png": "d9b8abc701454033101b2e5deb106cf9ab664c743b4094385c6716aa8ccbd0bb",
+        "suits/ferret-loop-7.png": "d54e37a61c6d2257431e4278d3c790431351a76bc4b5c0b2dbe24eccc3e5227a",
+        "suits/ferret-loop-8.png": "326bfc24192df5995a949c337aab296d6a3990bef5ed5531603d4942eeab1342",
+        "suits/ferret-loop-9.png": "0c0b3075e19a07c5dc6b3e6eb6bc2d9b75e5940ccd214436ea51223188e2481e",
+        "suits/ferret-loop-10.png": "7b96d9ff63c09008ad497d9e1c097d46fca30adccc181330f81aba126438bf68",
+        "suits/ferret-loop-11.png": "42e1683ec4183452ef2b072178c83227cb884e4ba1c280ba458b50793be3c2e7",
+        "suits/ferret-loop-12.png": "7000f98d5dd67c313f4fc81a31df6f386f0244729efc26467d830bf0d1336a07",
+        "suits/ferret-loop-13.png": "973ba42c73f44b163448db38f5a4099793c7d72db27d31dd75a30308dac5bab3",
+        "suits/ferret-loop-14.png": "5e845c2ba892c1123e5f14f665405018ecd4f7e86403bc7724f60c5143f5e7c8",
+        "suits/ferret-loop-15.png": "110a4e29fabe22be87a978d93a7d1ebe9c582054c96135c283604342829f1eb5",
+        "suits/ferret-loop-16.png": "1ece74ff8402db70ecb0488e4c14027dab33865e66817fb121e67b6cfc15460a"
+      }
+    },
+    {
+      "id": "hedgehog",
+      "name": "Quill",
+      "key": "suit:hedgehog",
+      "file": "suits/hedgehog.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": [
+          "suits/hedgehog-loop-1.png",
+          "suits/hedgehog-loop-2.png",
+          "suits/hedgehog-loop-3.png",
+          "suits/hedgehog-loop-4.png",
+          "suits/hedgehog-loop-5.png",
+          "suits/hedgehog-loop-6.png",
+          "suits/hedgehog-loop-7.png",
+          "suits/hedgehog-loop-8.png",
+          "suits/hedgehog-loop-9.png",
+          "suits/hedgehog-loop-10.png",
+          "suits/hedgehog-loop-11.png",
+          "suits/hedgehog-loop-12.png",
+          "suits/hedgehog-loop-13.png",
+          "suits/hedgehog-loop-14.png",
+          "suits/hedgehog-loop-15.png",
+          "suits/hedgehog-loop-16.png"
+        ]
+      },
+      "hashes": {
+        "suits/hedgehog.png": "263e77a6f2f892dc590ab7e8ec54b907bcf99e6a6ea534e77bd78e27bd38304f",
+        "suits/hedgehog-loop-1.png": "263e77a6f2f892dc590ab7e8ec54b907bcf99e6a6ea534e77bd78e27bd38304f",
+        "suits/hedgehog-loop-2.png": "fa23424b8002e49e19edd9ebbb8eb06983abf5aed8eaa0bfb1c06101b74523c2",
+        "suits/hedgehog-loop-3.png": "866c395a295cf71a704cb118d80edf24131dfb0d95207247003b3d88dc51d4cb",
+        "suits/hedgehog-loop-4.png": "29ac46b879b256a135666ef12a62708bb94904646765dcdddd41149c274cd3f8",
+        "suits/hedgehog-loop-5.png": "a8f16dd3593d9f15e935071ceec84fb32e206796bdc2e39f698d4e029378c10c",
+        "suits/hedgehog-loop-6.png": "3ce22b6589e5e4093921991a49d1745d719da68d2cdca77dbe3b4dfcff0a3469",
+        "suits/hedgehog-loop-7.png": "982d413b8d15ea6d2dc34d6c8eb296ced0e8aba36fa78b301b443e0642eefdb5",
+        "suits/hedgehog-loop-8.png": "abec9814756db85907f8387c4abb0c50c1e30a8307907d4314e6fbfcebaf508f",
+        "suits/hedgehog-loop-9.png": "0013f98fef926684cc299f4faa10ef9b44ade2fa70de108bf33282d6f687ae09",
+        "suits/hedgehog-loop-10.png": "f12d121093c63ea912967c1884ee5782de890d490aa146d61ab3266017c6f499",
+        "suits/hedgehog-loop-11.png": "0e4627ba6ab43b0852c16321749abeaacba2ee4299efa2f6f098831ffc7f0673",
+        "suits/hedgehog-loop-12.png": "c48a78218e309097dc24425eb3a51bd0b03f8d547e650e4555c950c639efcca6",
+        "suits/hedgehog-loop-13.png": "13b4ccf61004cd232353b202d2d86d596a3a8d08f0fabf609e82a87b28c79f50",
+        "suits/hedgehog-loop-14.png": "af27cf042a4d3f9458eebd5be9261621cefec8990ec70ab786c57633adaa0102",
+        "suits/hedgehog-loop-15.png": "684da0f808674bc72173eb19525f16bdc556368655652e309072592a26a86fa4",
+        "suits/hedgehog-loop-16.png": "18f0da45646628264710262d023ac312809d5460f2ec9c23feb509cb382afcd7"
+      }
+    },
+    {
+      "id": "gemmie",
+      "name": "Gemmie",
+      "key": "suit:gemmie",
+      "file": "suits/gemmie.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/gemmie-asc-1.png",
+          "suits/gemmie-asc-2.png",
+          "suits/gemmie-asc-3.png",
+          "suits/gemmie-asc-4.png",
+          "suits/gemmie-asc-5.png",
+          "suits/gemmie-asc-6.png",
+          "suits/gemmie-asc-7.png",
+          "suits/gemmie-asc-8.png"
+        ],
+        "desc": [
+          "suits/gemmie-desc-1.png",
+          "suits/gemmie-desc-2.png",
+          "suits/gemmie-desc-3.png",
+          "suits/gemmie-desc-4.png",
+          "suits/gemmie-desc-5.png",
+          "suits/gemmie-desc-6.png",
+          "suits/gemmie-desc-7.png",
+          "suits/gemmie-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/gemmie.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
+        "suits/gemmie-asc-1.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
+        "suits/gemmie-asc-2.png": "ede03771f7d53cff6ff09049fc4e560ccf7ddf1903911c48b388b4d0486dd729",
+        "suits/gemmie-asc-3.png": "b88c6273679de948e6f8076437c266eaf7232a2480c5888007ffc70d8755d72c",
+        "suits/gemmie-asc-4.png": "83b09202fe7195ee23df38698b15d0968073f0246683b48a381b08da96e6ddcf",
+        "suits/gemmie-asc-5.png": "e962065bfec137643e676b8d7347f42bea9aadd7c865aa118009a58f4ce063ad",
+        "suits/gemmie-asc-6.png": "2506a6707d1f1ecd9b6ee453f82c4da432265d98b7e19a50fb1774f1fbb95053",
+        "suits/gemmie-asc-7.png": "7bba680752e104852f75e6ad1fdb5bdd1be9244939ceed6f8e772d9ef2559eb1",
+        "suits/gemmie-asc-8.png": "cd35c06514781abe8298baa0c30434cd96585767f1f4a4003a847d77c9ae731f",
+        "suits/gemmie-desc-1.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
+        "suits/gemmie-desc-2.png": "1f835cae53160f082117a1b32dde0343d4c7373942682d6105b33599ad764f99",
+        "suits/gemmie-desc-3.png": "c362b77fdb7ca51005c7c644f0911d4160d91fc099ef71bee635d404ca99c4aa",
+        "suits/gemmie-desc-4.png": "f7c2ecfa50527ccc4adf9222dac04570002716795fe5010174e1814187ec1670",
+        "suits/gemmie-desc-5.png": "8e68639fe256f1f27a442f752f9131df11a60e1ec3616758447a471de9644739",
+        "suits/gemmie-desc-6.png": "05a47cf9e6390a3c1887c168964272b07671d2459863da6f9bdad622fca8de1f",
+        "suits/gemmie-desc-7.png": "8e19bc9ae625f8b632965b8bc8fc1c048ce424306ffbe5bd21607cbd35a4edc7",
+        "suits/gemmie-desc-8.png": "e67ad5f8f371ec14e4ccb077a5c90480a76a771fed47b63204148097e165d872"
+      }
+    },
+    {
+      "id": "sammie",
+      "name": "Sammie",
+      "key": "suit:sammie",
+      "file": "suits/sammie.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/sammie-asc-1.png",
+          "suits/sammie-asc-2.png",
+          "suits/sammie-asc-3.png",
+          "suits/sammie-asc-4.png",
+          "suits/sammie-asc-5.png",
+          "suits/sammie-asc-6.png",
+          "suits/sammie-asc-7.png",
+          "suits/sammie-asc-8.png"
+        ],
+        "desc": [
+          "suits/sammie-desc-1.png",
+          "suits/sammie-desc-2.png",
+          "suits/sammie-desc-3.png",
+          "suits/sammie-desc-4.png",
+          "suits/sammie-desc-5.png",
+          "suits/sammie-desc-6.png",
+          "suits/sammie-desc-7.png",
+          "suits/sammie-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/sammie.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
+        "suits/sammie-asc-1.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
+        "suits/sammie-asc-2.png": "7ef78092caddfc39dfdbf88fb07c2b58c7fd259d3d8d682f5c73dd235dd83f47",
+        "suits/sammie-asc-3.png": "cf7cb85d120441d4355f79cc4f6e88d886cd40ae47461272a46e53170017b19c",
+        "suits/sammie-asc-4.png": "d0e66fcc16f27fac2d2642cd1fe356e312074117b86f7565a6dc543864f0622a",
+        "suits/sammie-asc-5.png": "26f799bed69f16f5adf79f1760e6606e7a32e322543194dbf9d6206209b20a5c",
+        "suits/sammie-asc-6.png": "3e909ff6d0b35702ae130f383904ed185400c3e2a1617f3a525e257d0b243058",
+        "suits/sammie-asc-7.png": "e97b09360e3807ee8645d63f46cd7d93fb55be78f6f6357f5433f14ab2212ad4",
+        "suits/sammie-asc-8.png": "90f8e43c280175ed8f6e821a8f51831b6bcd8f723dbfe7c2e246191cf52046b2",
+        "suits/sammie-desc-1.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
+        "suits/sammie-desc-2.png": "27ed63a44aa25d884cb2f7ad109085698be30fbbe83b70a685d7c4fbee5c1562",
+        "suits/sammie-desc-3.png": "9c851bd4dc5ea491af80fd82eb25ab69fe266bf92fabd02ed097fc140d7acd30",
+        "suits/sammie-desc-4.png": "24c7bbf289c96657aafae5cd8cf7f00b444d75358be246bb17b70b7b75acca96",
+        "suits/sammie-desc-5.png": "924a1fbba1276003c5d2bb2144ac93251f0cf6bbd6f2fd5f6a4b6b53b2711dd1",
+        "suits/sammie-desc-6.png": "c2e34ab0659451d84379e49d1fcfed0937144c261da78183cfef35aae1f6cfd3",
+        "suits/sammie-desc-7.png": "aeb4489e37a71470a118e47763e9cae06bf02a58de8cd1d9f6382641266f1135",
+        "suits/sammie-desc-8.png": "cee7ad2efb23af4a96b87de932572976606fd4247d17c8b35d18fb90b9185c40"
+      }
+    },
+    {
+      "id": "seraph",
+      "name": "Seraph",
+      "key": "suit:seraph",
+      "file": "suits/seraph.png",
+      "dome": [
+        204,
+        126,
+        38,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/seraph-asc-1.png",
+          "suits/seraph-asc-2.png",
+          "suits/seraph-asc-3.png",
+          "suits/seraph-asc-4.png",
+          "suits/seraph-asc-5.png",
+          "suits/seraph-asc-6.png",
+          "suits/seraph-asc-7.png",
+          "suits/seraph-asc-8.png"
+        ],
+        "desc": [
+          "suits/seraph-desc-1.png",
+          "suits/seraph-desc-2.png",
+          "suits/seraph-desc-3.png",
+          "suits/seraph-desc-4.png",
+          "suits/seraph-desc-5.png",
+          "suits/seraph-desc-6.png",
+          "suits/seraph-desc-7.png",
+          "suits/seraph-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/seraph.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
+        "suits/seraph-asc-1.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
+        "suits/seraph-asc-2.png": "2541b1f89b764ca64ccc5ec462cf5b8a7d0430d3062d9c6c96611148f350dbbf",
+        "suits/seraph-asc-3.png": "704620b38c080da563136f04a065bcc5dff26fa3e0232d05bd59c46039f297dd",
+        "suits/seraph-asc-4.png": "f9ba5f7b8f270f315b62c869fd131dc0fa911b43a33ec0d06d09833f2761a1c5",
+        "suits/seraph-asc-5.png": "97f615d99e166d3873037bb01ab3387de4a09ab3e085f3accbf12c4e88d28e3a",
+        "suits/seraph-asc-6.png": "4e9384d01d0b171b25e761efe7dc7803ce21febc016c70264f0a69fac750bbc3",
+        "suits/seraph-asc-7.png": "66514c081975e69e317b039fe4165a51d3003916e128f0509c9b87d12f9cac99",
+        "suits/seraph-asc-8.png": "952e442efdfe94535a50c057c71a301df136458626bcedc778ba6828825bc3c0",
+        "suits/seraph-desc-1.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
+        "suits/seraph-desc-2.png": "ff5c16d45123626c7aca92d08a24c517af73c52e5fd1f62f1aa1d25208ec33f4",
+        "suits/seraph-desc-3.png": "8de91ea1fe4de5e22bde180ee9b7a23591a72529691893a03c2af17158d6594c",
+        "suits/seraph-desc-4.png": "34cef6c3118be7c5d5d21222db2bebba68cc3118783f973f8be14de85c217eef",
+        "suits/seraph-desc-5.png": "5f749893bcb3685a997c7408471eef28df63a93ba8e49fd2b8837350cf68e573",
+        "suits/seraph-desc-6.png": "51a0750d893235789f25d3876de249df6d877d6b8120ac1f66d0f3d4cbe531a7",
+        "suits/seraph-desc-7.png": "84ed42036200b064884785bd906a9eb77ea177c5817c68deadcdc76deb22cfec",
+        "suits/seraph-desc-8.png": "21f6a54568944c9fed106e0587bace5e189a963d2e061bd1d80dfce4639c18e4"
+      }
+    },
+    {
+      "id": "leviathan",
+      "name": "Leviathan",
+      "key": "suit:leviathan",
+      "file": "suits/leviathan.png",
+      "dome": [
+        206,
+        106,
+        36,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/leviathan-asc-1.png",
+          "suits/leviathan-asc-2.png",
+          "suits/leviathan-asc-3.png",
+          "suits/leviathan-asc-4.png",
+          "suits/leviathan-asc-5.png",
+          "suits/leviathan-asc-6.png",
+          "suits/leviathan-asc-7.png",
+          "suits/leviathan-asc-8.png"
+        ],
+        "desc": [
+          "suits/leviathan-desc-1.png",
+          "suits/leviathan-desc-2.png",
+          "suits/leviathan-desc-3.png",
+          "suits/leviathan-desc-4.png",
+          "suits/leviathan-desc-5.png",
+          "suits/leviathan-desc-6.png",
+          "suits/leviathan-desc-7.png",
+          "suits/leviathan-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/leviathan.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
+        "suits/leviathan-asc-1.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
+        "suits/leviathan-asc-2.png": "234111bc8cdbe9d018b49bda7dbac2d478e726ade2f04e403b672e0fec75d614",
+        "suits/leviathan-asc-3.png": "4b09a01ad1046e21ce42748e7f272f39d4e8ac374baeb1d7ec4f7ec702371b4e",
+        "suits/leviathan-asc-4.png": "e870fbaf17909d9ea2edd94d19e52c39ced81939ba06e7decc59e82cc0723dfc",
+        "suits/leviathan-asc-5.png": "a3c10868bcce90162f1255ee3debccfa3b220da48ea2dac7ab4c73915e620558",
+        "suits/leviathan-asc-6.png": "ab6ec482b25dff755c25e149f719f99041b12ff3735365c859f3961db1389318",
+        "suits/leviathan-asc-7.png": "2c3e5a2383d47730be4b50cb778fd8c0adfc8be848f8f2bed77ef469e5362237",
+        "suits/leviathan-asc-8.png": "79090b8708d1bfe65a43f21319be6413d08e314139d62f596384019f61550444",
+        "suits/leviathan-desc-1.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
+        "suits/leviathan-desc-2.png": "a59d17eac830eae1b553ddce3dc28cde5e39a057031ce1a6f6c3dbcd7f04e91e",
+        "suits/leviathan-desc-3.png": "a19ac822b5f06cdd556fb4b40d717eaee88bac1603d91b4c25ac3d5cdd211db2",
+        "suits/leviathan-desc-4.png": "c061ce139b770b54725bd5cec8cda2131e4382338c5afead88ee16e2cac0d167",
+        "suits/leviathan-desc-5.png": "a72814a898e91b4bf0d8e1e0527aa8d3e53fee3b0a68518a2cce55f4353e0062",
+        "suits/leviathan-desc-6.png": "267818d7c2b0af1d66abbe7783d5875973b15838b2fb8f4d6472ad661f525272",
+        "suits/leviathan-desc-7.png": "083b78b37fd02f47af5a4c241e4ced91135fa39cdeb9ba701d4e9d7f59ec981c",
+        "suits/leviathan-desc-8.png": "e2da4ff99a57cc84cdc1d8104d5b787e78c3797c2be8a9611c79a56cc87598b6"
+      }
+    },
+    {
+      "id": "verdant",
+      "name": "Verdant",
+      "key": "suit:verdant",
+      "file": "suits/verdant.png",
+      "dome": [
+        196,
+        92,
+        45,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/verdant-asc-1.png",
+          "suits/verdant-asc-2.png",
+          "suits/verdant-asc-3.png",
+          "suits/verdant-asc-4.png",
+          "suits/verdant-asc-5.png",
+          "suits/verdant-asc-6.png",
+          "suits/verdant-asc-7.png",
+          "suits/verdant-asc-8.png"
+        ],
+        "desc": [
+          "suits/verdant-desc-1.png",
+          "suits/verdant-desc-2.png",
+          "suits/verdant-desc-3.png",
+          "suits/verdant-desc-4.png",
+          "suits/verdant-desc-5.png",
+          "suits/verdant-desc-6.png",
+          "suits/verdant-desc-7.png",
+          "suits/verdant-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/verdant.png": "b775bf6f8f2b62e89a77fbedf96fbe82874809c7762b7a6f9ea549d39207cf14",
+        "suits/verdant-asc-1.png": "262881cb30406c3a6d78e8d4e8681aa564b6e12eea4255447c295108198ef111",
+        "suits/verdant-asc-2.png": "77f03d1b7a5f4e9fc44e2499001b53ff6197594f92543b21a4e0a96ab27e5caa",
+        "suits/verdant-asc-3.png": "a03a858e3008ae8464a61e25987408a5c1b50d8e6285eb6bcc5bf35610c0d984",
+        "suits/verdant-asc-4.png": "ab1677561db71154ae95894932e9c6b3de74e29f39758e7c3d43c951284cb826",
+        "suits/verdant-asc-5.png": "ef9062815959f4a7e25e8df7949fcbe7e0d923d6984cb2b6c70b4a60213648fb",
+        "suits/verdant-asc-6.png": "6eed5503bf79cfecff4d7a7c325efc6931dc5935351b5930fa663592f4155e1f",
+        "suits/verdant-asc-7.png": "d3f5f20a3ac1af6b7b1df9f5f2a2238aaa5702e47354c1339f11a2fed0258813",
+        "suits/verdant-asc-8.png": "7e57b4076e9a33a7ece64e6bc2ec75d6bf0c409e1c71798f67acd8555759d5fe",
+        "suits/verdant-desc-1.png": "cc8983e82d98d692aee7b2bfab1b34499f831a0affb1052a58d09041f7aea902",
+        "suits/verdant-desc-2.png": "549bf014136823944fb98c8336bec9e5dde4e05454f153b5796cc64aba61eacc",
+        "suits/verdant-desc-3.png": "c30fd5a54314f2bc0ba5a6c8c6fa8263b2ed2dd1857ba02bd5a1e1d94db28297",
+        "suits/verdant-desc-4.png": "3ff001f40fa4d0a21a0edb62f6c692fa1e0ed722d118cacf9121b15c0ceab30d",
+        "suits/verdant-desc-5.png": "f2d1a728a89fbeda3b0635ce266702083473a05f890e1097b31578f573cf8ea1",
+        "suits/verdant-desc-6.png": "a0110612fedd23d0c281f052d2ebacc8b394d4719b3d9799ef430ac2e17f8d8a",
+        "suits/verdant-desc-7.png": "3249cf4f406943f3d0359a4d1116b4b04f89c1c193dcdde399fbc582261c97a4",
+        "suits/verdant-desc-8.png": "6bf4d9eca0d3728661bae17d57394588dd4536d1807da121adcb8b733fb9a04d"
+      }
+    },
+    {
+      "id": "cryostar",
+      "name": "Cryostar",
+      "key": "suit:cryostar",
+      "file": "suits/cryostar.png",
+      "dome": [
+        198,
+        93,
+        45,
+        0
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/cryostar-asc-1.png",
+          "suits/cryostar-asc-2.png",
+          "suits/cryostar-asc-3.png",
+          "suits/cryostar-asc-4.png",
+          "suits/cryostar-asc-5.png",
+          "suits/cryostar-asc-6.png",
+          "suits/cryostar-asc-7.png",
+          "suits/cryostar-asc-8.png"
+        ],
+        "desc": [
+          "suits/cryostar-desc-1.png",
+          "suits/cryostar-desc-2.png",
+          "suits/cryostar-desc-3.png",
+          "suits/cryostar-desc-4.png",
+          "suits/cryostar-desc-5.png",
+          "suits/cryostar-desc-6.png",
+          "suits/cryostar-desc-7.png",
+          "suits/cryostar-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/cryostar.png": "0c8c5fb982b13f3a970ea8ec00ed4679ca5dd6557b4396b4372818a0ff16391c",
+        "suits/cryostar-asc-1.png": "975663dcc1c443ab487f0514bf8d5388e9601d6f8e7a074e2dff89f50eb83608",
+        "suits/cryostar-asc-2.png": "2a21a0c774f7c0c14e348918aeb1e0d81bb5f5c81832b634b76db97c5f9fd174",
+        "suits/cryostar-asc-3.png": "778026890553aaa33cdc7b9efd9610001b0c1bc420e2fafeeeacca4cf93d1fbb",
+        "suits/cryostar-asc-4.png": "522a9ac30d4719e5499f28efa83c1ea6f4342de4fca849f4a5e18ae10cd4f0d6",
+        "suits/cryostar-asc-5.png": "b7effb6dcdcdd9c23853214e5037e8db35ad11d9234b899c9e175082c078c844",
+        "suits/cryostar-asc-6.png": "8b3da00cb75dd7c1dc2fff2e4d36b0ea2632c1762a5f4591e4bfa29a56de3183",
+        "suits/cryostar-asc-7.png": "698f64d0573ac1be28dfbc5023d010ea31362a367ceb24f6dd2c28e2fa45d318",
+        "suits/cryostar-asc-8.png": "5fc657d456c51e6fd85a14036c337682a19c9b607402869d0c39ff7e24672ea9",
+        "suits/cryostar-desc-1.png": "f017137edb608d99cf777505973dbb713b7a4977eefa86de6ea7ace267ae57ed",
+        "suits/cryostar-desc-2.png": "22796c3429dd4831f45eb3a8dccb31d7793718338fb24c8f2367635378e49d94",
+        "suits/cryostar-desc-3.png": "2447f09dfb819d382d2e136f724245bcf601973c68d9aa3e32a141f5eda53222",
+        "suits/cryostar-desc-4.png": "2df3f01909ecc2f727c3584e0b9ddaf131de2d956ab9182a11dde69c59856464",
+        "suits/cryostar-desc-5.png": "ffdf9413d0eb3c9673fdccdf3d13ae4377732fa1943713ec0219e23754327893",
+        "suits/cryostar-desc-6.png": "55d08d40c079435073ba5aa0bf19aeeb463fac3d7a4601884e0582069913d95a",
+        "suits/cryostar-desc-7.png": "0985d0b412c85c30cba882e55248784851a0d88eec630af7be4cda3262593e54",
+        "suits/cryostar-desc-8.png": "fccab883ab06989426a68127c6bd37df91fb2bab52cfb9dee85717ebd9cd342a"
+      }
+    },
+    {
+      "id": "eclipse",
+      "name": "Eclipse",
+      "key": "suit:eclipse",
+      "file": "suits/eclipse.png",
+      "dome": [
+        204,
+        89,
+        58,
+        -5
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/eclipse-tap-1.png",
+          "suits/eclipse-tap-2.png",
+          "suits/eclipse-tap-3.png",
+          "suits/eclipse-tap-4.png",
+          "suits/eclipse-tap-5.png",
+          "suits/eclipse-tap-6.png",
+          "suits/eclipse-tap-7.png",
+          "suits/eclipse-tap-8.png",
+          "suits/eclipse-tap-9.png",
+          "suits/eclipse-tap-10.png",
+          "suits/eclipse-tap-11.png",
+          "suits/eclipse-tap-12.png",
+          "suits/eclipse-tap-13.png",
+          "suits/eclipse-tap-14.png",
+          "suits/eclipse-tap-15.png",
+          "suits/eclipse-tap-16.png"
+        ],
+        "asc": [
+          "suits/eclipse-asc-1.png",
+          "suits/eclipse-asc-2.png",
+          "suits/eclipse-asc-3.png",
+          "suits/eclipse-asc-4.png",
+          "suits/eclipse-asc-5.png",
+          "suits/eclipse-asc-6.png",
+          "suits/eclipse-asc-7.png",
+          "suits/eclipse-asc-8.png"
+        ],
+        "desc": [
+          "suits/eclipse-desc-1.png",
+          "suits/eclipse-desc-2.png",
+          "suits/eclipse-desc-3.png",
+          "suits/eclipse-desc-4.png",
+          "suits/eclipse-desc-5.png",
+          "suits/eclipse-desc-6.png",
+          "suits/eclipse-desc-7.png",
+          "suits/eclipse-desc-8.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/eclipse.png": "210b1c50664eaf794f775b139acee76b8d04b87753553c37ad64db515f7a7eda",
+        "suits/eclipse-tap-1.png": "5b9164c0d313afd7eae9f80c55b83e13bf7539d10ceafee19f41d83214cbb5c1",
+        "suits/eclipse-tap-2.png": "abc00924287309bbb6dd2882067083168bc17af3cee3fb85ada2f4af973b7a88",
+        "suits/eclipse-tap-3.png": "38745afbfda361ec9559ac18c14f7c55fcda6992d6856854e7e872ea7cbd337d",
+        "suits/eclipse-tap-4.png": "97cfd5f250f9951c841c8a7e4c4cf6a6c8f727f4b3e715333fe9511e05bb74b3",
+        "suits/eclipse-tap-5.png": "f881a0f0ce6cc4fbc5e1b045d999757336cd201cfa4b9af4bf118bd7aaa6405c",
+        "suits/eclipse-tap-6.png": "c4235afd82bef9e473b79f2f1ecc88575487a10cbf45e41bace1225e48cf0f12",
+        "suits/eclipse-tap-7.png": "3bba92e2656acab8a4982168a2f7de3fbe77a906fd6d51b997141daf5e92a7e1",
+        "suits/eclipse-tap-8.png": "882025441c61922af127917c9ab23a3b98140d6de97530e182ffbf51d33de564",
+        "suits/eclipse-tap-9.png": "8c7e02a28c58a807fe76d2014279fce15f7747913ae0960efd2da355cf08a711",
+        "suits/eclipse-tap-10.png": "d494f681a6699e8210340cbf0d43237a16762a3035249aa3ebd35350edc517ee",
+        "suits/eclipse-tap-11.png": "bc2dd148759e863cd9a0bd58107ab210629f4a6b4a552b69ad76f8cd560f9cb6",
+        "suits/eclipse-tap-12.png": "5e82ead8f9bb77096e068587da12e8ce8d1d62b790f7b78efbc1a56cd2404d02",
+        "suits/eclipse-tap-13.png": "0f13cde7b84ef7e42617b932282f8facc07fc0142785fb06318170f49afe9e4f",
+        "suits/eclipse-tap-14.png": "e5f87e33fb1943bee5120662f2a5785102b0cacf2e925e4e1c0828c7d903a15b",
+        "suits/eclipse-tap-15.png": "42e844182a84b544d2ab5a88b3e1784cccacc0284bf6abd4bb0be7f92a4b10dc",
+        "suits/eclipse-tap-16.png": "dd3eae2b7bdabac8fd33d7a2825ad9d8cdc6e673fe1b042ed8a2cf37d35b3461",
+        "suits/eclipse-asc-1.png": "295fb8fb7a3ed3f7e02bf04365f9ead6fed3fe78e09d8a737a3d832972a5e38a",
+        "suits/eclipse-asc-2.png": "43e2d8f2f52087166c10fb2b80518d3550eb2c786dbbabecd54f8e97c65dfce3",
+        "suits/eclipse-asc-3.png": "684e7fd264ed709cebddef8b9b5e8913a7e7e5ee03640f8f3a06da0a830e4a1b",
+        "suits/eclipse-asc-4.png": "8bddd15d29366ec6d59e035b294542860043ba827a19f9d1feac37d761e4ebe0",
+        "suits/eclipse-asc-5.png": "73986d1fb425e0a57e41ec0a026296f461c9b93716d73e76fc07cd43dc5f7b65",
+        "suits/eclipse-asc-6.png": "33b4de196f3c4cd358bc9e7ce87071ee4883802a56ed057d5f4757c1365375d4",
+        "suits/eclipse-asc-7.png": "91680c734dca3a22af50c57b20dd68ba99c9cca9354d6c44f5e2ef6ac7a126b9",
+        "suits/eclipse-asc-8.png": "5ad38bef11a4b1b8db1385643d2b64fad94b8ce875137fdcffeddab67c126005",
+        "suits/eclipse-desc-1.png": "6295a1f61b2e982b3c57160e5e377d455053e0adb327483297208b2a22c2523d",
+        "suits/eclipse-desc-2.png": "9dbd67a244557ee871f3f33b451b8faa6f95ad2700427381837471de2046feb7",
+        "suits/eclipse-desc-3.png": "fec3eb4f5a754cacfd9b2d3c083df33b4df48bfd1aac9f1a6ea2a3ad30465520",
+        "suits/eclipse-desc-4.png": "d1176eab1a288a1ef4e3ed1ab91c9cea52529633014bd00518105dead8575911",
+        "suits/eclipse-desc-5.png": "03d75117b7353a3fc9055d539479f8809aa06de5bb7cf9873844e2b490489b75",
+        "suits/eclipse-desc-6.png": "4a37009afba859cbdc48241c8ca5db81443fb52d98298c0beb0539174b222333",
+        "suits/eclipse-desc-7.png": "c440d6710efb4a3282108039b75d8d1f8ee39345a073fc29dad8fa380b114139",
+        "suits/eclipse-desc-8.png": "148bff042b24407aa665f7bc96e362ced17f600d2f96477fe27248b562b7a2b2"
+      }
+    },
+    {
+      "id": "volt",
+      "name": "Volt",
+      "key": "suit:volt",
+      "file": "suits/volt.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/volt-tap-1.png",
+          "suits/volt-tap-2.png",
+          "suits/volt-tap-3.png",
+          "suits/volt-tap-4.png",
+          "suits/volt-tap-5.png",
+          "suits/volt-tap-6.png",
+          "suits/volt-tap-7.png",
+          "suits/volt-tap-8.png",
+          "suits/volt-tap-9.png",
+          "suits/volt-tap-10.png",
+          "suits/volt-tap-11.png",
+          "suits/volt-tap-12.png",
+          "suits/volt-tap-13.png",
+          "suits/volt-tap-14.png",
+          "suits/volt-tap-15.png",
+          "suits/volt-tap-16.png"
+        ],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/volt.png": "f25e4a64839f4ed9aeb3fe6b1a055ef24598015dbd698b34ef1de5640d7651fb",
+        "suits/volt-tap-1.png": "74a0000f870f1468ee540fbd5fbdd97f67d39e927321d15eaa2356c1be5509fd",
+        "suits/volt-tap-2.png": "222fc8d3d6d43e49c9dd384e32ab96b333bbb7d470cb19e3bc0e666469d7763c",
+        "suits/volt-tap-3.png": "e2966a0ddd592a07d311e4348281d9466b94c80a2bd3ee4e087f89d4fdd64a41",
+        "suits/volt-tap-4.png": "16a19a799c42f24819a27a60536982a05f1d6fcc2616fcd5a91b755d047c8d10",
+        "suits/volt-tap-5.png": "5d9b1568b5d3eb85f7a9daae419dc81e9d1abac1ad38e9246a47a04e62aab38c",
+        "suits/volt-tap-6.png": "8f988ef419efd830e54c552b3d1372ee29a1de2249cbf1b83cfa155228f8ca0f",
+        "suits/volt-tap-7.png": "d33e9a6ba2945dd43e43da93441e3d5a7fcd4403f5e7438d683bc1a8816d7bb5",
+        "suits/volt-tap-8.png": "2b64dc5bfb0385b755199d24d00ea556206cfce278cb9dda56e16a363afabfc9",
+        "suits/volt-tap-9.png": "9b5f571e99ec99aae38f640f776c559a74ed47ae94378e3b7d4f9701118fa970",
+        "suits/volt-tap-10.png": "c4020f843616b61674edce3c38cb7b1b9a11f754ba472372b187f3916ce3259f",
+        "suits/volt-tap-11.png": "38bd9f6a46dac6a08f0a89193e0fa762ed372c819480ae57b63d186d47cb0820",
+        "suits/volt-tap-12.png": "25e8f30c973c2deddb3b3363edec0b7435176566f6d65714d88f31770cf54fe2",
+        "suits/volt-tap-13.png": "b17f22410c69ae7de085938a3400d600805cac331bbc5bc1890a968e1fbb1e8d",
+        "suits/volt-tap-14.png": "089c69f60b725e548f9573e49354c7e922e5bb63326a38cdcb61364ffe02b2d8",
+        "suits/volt-tap-15.png": "2c2d25d3b46e6253753f701a65e6678c7f10e0ee4ddcb8fdd0ee39a3ae1ae796",
+        "suits/volt-tap-16.png": "6699c71b878463da0eafa54fccdb4a717ac15b1ed04eedede6f8a001b7a26558"
+      }
+    },
+    {
+      "id": "cinderforge",
+      "name": "Cinderforge",
+      "key": "suit:cinderforge",
+      "file": "suits/cinderforge.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/cinderforge/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/cinderforge.png": "6ad028c97431469bb9af3ec3204b94fe9c37b6cdc53beb0ed15ccb10a72a422e",
+        "suits/cinderforge/parts.png": "2668a05d96928c0f7e39a13e52fc667eb3f5d7464441c7260daca2955935c8af"
+      }
+    },
+    {
+      "id": "groveguard",
+      "name": "Groveguard",
+      "key": "suit:groveguard",
+      "file": "suits/groveguard.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/groveguard/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/groveguard.png": "5bcd952c0c77271da95e6c295d0a057e5da7949ec39d49f9e7dd10e814e2fb36",
+        "suits/groveguard/parts.png": "115fe0bd2d6ae0e8b73fce528badbc7ed8278c3f602580d45201b1b0c3dcddcc"
+      }
+    },
+    {
+      "id": "cosmic",
+      "name": "Cosmic",
+      "key": "suit:cosmic",
+      "file": "suits/cosmic.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/cosmic/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/cosmic.png": "94dbca1f4b1fc77a08c32f7809dd14c67d7ef98c1f4c47a038da11e1fc8eb5e4",
+        "suits/cosmic/parts.png": "06a2cdf2d3a63ff1df2b5f82a2f360a62e79520f7083a2c89799abc65f0c9a13"
+      }
+    },
+    {
+      "id": "briellacat",
+      "name": "Briella's Cat",
+      "key": "suit:briellacat",
+      "file": "suits/briellacat.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/briellacat-asc-1.png",
+          "suits/briellacat-asc-2.png",
+          "suits/briellacat-asc-3.png",
+          "suits/briellacat-asc-4.png",
+          "suits/briellacat-asc-5.png",
+          "suits/briellacat-asc-6.png",
+          "suits/briellacat-asc-7.png"
+        ],
+        "desc": [
+          "suits/briellacat-desc-1.png",
+          "suits/briellacat-desc-2.png",
+          "suits/briellacat-desc-3.png",
+          "suits/briellacat-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/briellacat.png": "11a68071a74e14b723c6a06faf168ace53069e6b3d99c522290159b4b597c0dd",
+        "suits/briellacat-asc-1.png": "e7ccbae17ab51892d57145d9d831dfd23633aaf7336d8913173db8356d948c9b",
+        "suits/briellacat-asc-2.png": "efaa37ab2f36e6961660d3d3590056ff26cd026dfb0a9c83d06da7ddb1a4ab8a",
+        "suits/briellacat-asc-3.png": "7cc88f4a6147077cb3b4409c95c38099bdf3046fd58602c39e85e580711e324e",
+        "suits/briellacat-asc-4.png": "c9c3909a983dee40faf8e1e5014efc0c4449bbc8c76d2fa9385ebf9f548ff493",
+        "suits/briellacat-asc-5.png": "a9f1bde51aea5bd28f32058695a1a1caac93b8953bcf0d76b3f498caa2eb577b",
+        "suits/briellacat-asc-6.png": "465a82dd844b53c7c569c1e6ef9c98397c969fe10da8f261140f25d0b3a15a19",
+        "suits/briellacat-asc-7.png": "58b5d1ea82ff2c773b2f95ca70013a31b8de4c10dfee038e371a674f30c730e8",
+        "suits/briellacat-desc-1.png": "038c6df30f906e43650ff8b6f8cd4e6dcf3df57df3c3564e877090e8cd9225e1",
+        "suits/briellacat-desc-2.png": "d48efe2edaec4c9b66a1c8021fd11edd20aba556c9492efd40121d7086456cbc",
+        "suits/briellacat-desc-3.png": "3865a363462dcce034be6d98fb922faf208ffea4d910abcb0ae51934dfc57569",
+        "suits/briellacat-desc-4.png": "f109b2f1a71b8d01e0c50e2e43fad569d29c29d5cc99c7172606f06a2547f758"
+      }
+    },
+    {
+      "id": "sunforged",
+      "name": "Sunforged",
+      "key": "suit:sunforged",
+      "file": "suits/sunforged.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/sunforged/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/sunforged.png": "f24212ca5897ada7650d0c5b84bd72ea9220a67c35defbbd97dfc92c372fa10c",
+        "suits/sunforged/parts.png": "f68a8b9d56fbd4c8b48f65f782653cd8ba7039a80e3a88217c30e3566edbe2a1"
+      }
+    },
+    {
+      "id": "abyssal",
+      "name": "Abyssal",
+      "key": "suit:abyssal",
+      "file": "suits/abyssal.png",
+      "dome": [
+        181,
+        88,
+        36
+      ],
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "high-orbit",
+      "atlas": "suits/abyssal/parts.png",
+      "banks": {
+        "tap": [],
+        "asc": [],
+        "desc": [],
+        "loop": []
+      },
+      "hashes": {
+        "suits/abyssal.png": "16b728b2b83ae9278f7c7c6e852e20a4c9c80f24919810eb7e35774f45cfb74a",
+        "suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
+      }
+    },
+    {
+      "id": "cyber",
+      "name": "Cyber",
+      "key": "suit:cyber",
+      "file": "suits/cyber.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [],
+        "asc": [
+          "suits/cyber-asc-1.png",
+          "suits/cyber-asc-2.png",
+          "suits/cyber-asc-3.png",
+          "suits/cyber-asc-4.png",
+          "suits/cyber-asc-5.png",
+          "suits/cyber-asc-6.png",
+          "suits/cyber-asc-7.png",
+          "suits/cyber-asc-8.png",
+          "suits/cyber-asc-9.png"
+        ],
+        "desc": [
+          "suits/cyber-desc-1.png",
+          "suits/cyber-desc-2.png",
+          "suits/cyber-desc-3.png",
+          "suits/cyber-desc-4.png",
+          "suits/cyber-desc-5.png",
+          "suits/cyber-desc-6.png",
+          "suits/cyber-desc-7.png",
+          "suits/cyber-desc-8.png",
+          "suits/cyber-desc-9.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/cyber.png": "8959b90e4f34bb275bae9af5370d6d7bb7e716cfa2a0a6921d8f693f5aeb51e2",
+        "suits/cyber-asc-1.png": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49",
+        "suits/cyber-asc-2.png": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523",
+        "suits/cyber-asc-3.png": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86",
+        "suits/cyber-asc-4.png": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788",
+        "suits/cyber-asc-5.png": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648",
+        "suits/cyber-asc-6.png": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0",
+        "suits/cyber-asc-7.png": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986",
+        "suits/cyber-asc-8.png": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e",
+        "suits/cyber-asc-9.png": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808",
+        "suits/cyber-desc-1.png": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e",
+        "suits/cyber-desc-2.png": "a72db815fc994493fd5718ca31c3e21fd262442e686896ddc99bce67a632b178",
+        "suits/cyber-desc-3.png": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1",
+        "suits/cyber-desc-4.png": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6",
+        "suits/cyber-desc-5.png": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b",
+        "suits/cyber-desc-6.png": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656",
+        "suits/cyber-desc-7.png": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9",
+        "suits/cyber-desc-8.png": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c",
+        "suits/cyber-desc-9.png": "cc78e3481ed3801888db55a47a4a7fe7d4ab9ef31791cc4c772059bc5d6d67d2"
+      }
+    }
+  ],
+  "helmets": [
+    {
+      "id": "clear",
+      "name": "Clear",
+      "file": "helms/clear.png",
+      "glass": [
+        129,
+        128,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "ion",
+      "name": "Ion",
+      "file": "helms/ion.png",
+      "glass": [
+        129,
+        128,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "solar",
+      "name": "Solar",
+      "file": "helms/solar.png",
+      "glass": [
+        128,
+        128,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "nebula",
+      "name": "Nebula",
+      "file": "helms/nebula.png",
+      "glass": [
+        129,
+        129,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "lunar",
+      "name": "Lunar",
+      "file": "helms/lunar.png",
+      "glass": [
+        129,
+        126,
+        125,
+        -4
+      ]
+    },
+    {
+      "id": "void",
+      "name": "Void",
+      "file": "helms/void.png",
+      "glass": [
+        125,
+        128,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "comet",
+      "name": "Comet",
+      "file": "helms/comet.png",
+      "glass": [
+        129,
+        129,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "cherry",
+      "name": "Cherry",
+      "file": "helms/cherry.png",
+      "glass": [
+        126,
+        128,
+        125,
+        0
+      ]
+    },
+    {
+      "id": "royal",
+      "name": "Royal",
+      "file": "helms/royal.png",
+      "glass": [
+        124,
+        156,
+        98,
+        0
+      ]
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "file": "helms/aurora.png",
+      "glass": [
+        128,
+        127,
+        127.5,
+        0
+      ]
+    },
+    {
+      "id": "meteor",
+      "name": "Meteor",
+      "file": "helms/meteor.png",
+      "glass": [
+        128,
+        127,
+        127.5,
+        0
+      ]
+    },
+    {
+      "id": "chrono",
+      "name": "Chrono",
+      "file": "helms/chrono.png",
+      "glass": [
+        132,
+        126,
+        127.5,
+        0
+      ]
+    },
+    {
+      "id": "gemmie",
+      "name": "Opal",
+      "file": "helms/gemmie.png",
+      "glass": [
+        128,
+        128,
+        131.9,
+        0
+      ]
+    },
+    {
+      "id": "phoenix",
+      "name": "Phoenix",
+      "file": "helms/phoenix.png",
+      "glass": [
+        130,
+        116,
+        129.2,
+        -2
+      ]
+    },
+    {
+      "id": "sammie",
+      "name": "Samurai",
+      "file": "helms/sammie.png",
+      "glass": [
+        138,
+        103,
+        108.2,
+        0
+      ]
+    },
+    {
+      "id": "seraph",
+      "name": "Seraph",
+      "file": "helms/seraph.png",
+      "glass": [
+        125,
+        151,
+        110,
+        0
+      ]
+    },
+    {
+      "id": "chronarch",
+      "name": "Chronarch",
+      "file": "helms/chronarch.png",
+      "glass": [
+        127.1,
+        120.5,
+        125.6,
+        0
+      ]
+    },
+    {
+      "id": "leviathan",
+      "name": "Leviathan",
+      "file": "helms/leviathan.png",
+      "glass": [
+        129.8,
+        110.6,
+        103.6,
+        12
+      ],
+      "suitOnly": "leviathan"
+    },
+    {
+      "id": "princess",
+      "name": "Rose",
+      "file": "helms/princess.png",
+      "glass": [
+        127.3,
+        96.8,
+        126,
+        0
+      ]
+    },
+    {
+      "id": "verdant",
+      "name": "Verdant",
+      "file": "helms/verdant.png",
+      "glass": [
+        141,
+        116,
+        126.6,
+        0
+      ]
+    },
+    {
+      "id": "cryostar",
+      "name": "Cryostar",
+      "file": "helms/cryostar.png",
+      "glass": [
+        126,
+        121,
+        134.6,
+        0
+      ]
+    },
+    {
+      "id": "eclipse",
+      "name": "Eclipse",
+      "file": "helms/eclipse.png",
+      "glass": [
+        127,
+        129,
+        138.4,
+        0
+      ]
+    },
+    {
+      "id": "cinderforge",
+      "name": "Cinderforge",
+      "file": "helms/cinderforge.png",
+      "glass": [
+        128,
+        125,
+        115.9,
+        0
+      ]
+    },
+    {
+      "id": "groveguard",
+      "name": "Groveguard",
+      "file": "helms/groveguard.png",
+      "glass": [
+        130,
+        124,
+        106,
+        0
+      ],
+      "suitOnly": "groveguard",
+      "opaqueVisor": true
+    },
+    {
+      "id": "cosmic",
+      "name": "Cosmic",
+      "file": "helms/cosmic.png",
+      "glass": [
+        134,
+        119,
+        124.2,
+        0
+      ]
+    },
+    {
+      "id": "sunforged",
+      "name": "Sunforged",
+      "file": "helms/sunforged.png",
+      "glass": [
+        123,
+        128,
+        129,
+        0
+      ],
+      "suitOnly": "sunforged",
+      "opaqueVisor": true
+    },
+    {
+      "id": "abyssal",
+      "name": "Abyssal",
+      "file": "helms/abyssal.png",
+      "glass": [
+        125,
+        131,
+        128.8,
+        0
+      ]
+    },
+    {
+      "id": "amethyst",
+      "name": "Amethyst",
+      "file": "helms/amethyst.png",
+      "glass": [
+        127,
+        128,
+        126.3,
+        0
+      ]
+    },
+    {
+      "id": "ivoryguard",
+      "name": "Ivoryguard",
+      "file": "helms/ivoryguard.png",
+      "glass": [
+        127,
+        126,
+        130.6,
+        0
+      ]
+    },
+    {
+      "id": "reactor",
+      "name": "Reactor",
+      "file": "helms/reactor.png",
+      "glass": [
+        140,
+        110,
+        96.2,
+        0
+      ]
+    }
+  ],
+  "lightOpaqueVisors": [
+    "gemmie",
+    "phoenix",
+    "sammie",
+    "seraph",
+    "chronarch",
+    "princess"
+  ],
+  "anchors": {
+    "suit:flight": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "suit:vanguard": [
+      128,
+      128,
+      40
+    ],
+    "suit:arcflash": [
+      128,
+      128,
+      40
+    ],
+    "suit:iontrim": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:copper": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:frost": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:voidsuit": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:ember": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:robo": [
+      181,
+      96,
+      43,
+      0
+    ],
+    "suit:alien": [
+      128,
+      128,
+      40
+    ],
+    "suit:ghost": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:bigbooty": [
+      183,
+      104,
+      35,
+      10
+    ],
+    "suit:catsuit": [
+      212,
+      86,
+      50
+    ],
+    "suit:raccoon": [
+      128,
+      128,
+      40
+    ],
+    "suit:ferret": [
+      128,
+      128,
+      40
+    ],
+    "suit:hedgehog": [
+      128,
+      128,
+      40
+    ],
+    "suit:gemmie": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:sammie": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:seraph": [
+      204,
+      126,
+      38,
+      0
+    ],
+    "suit:leviathan": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "suit:verdant": [
+      196,
+      92,
+      45,
+      0
+    ],
+    "suit:cryostar": [
+      198,
+      93,
+      45,
+      0
+    ],
+    "suit:eclipse": [
+      204,
+      89,
+      58,
+      -5
+    ],
+    "suit:volt": [
+      128,
+      128,
+      40
+    ],
+    "suit:cinderforge": [
+      181,
+      88,
+      36
+    ],
+    "suit:groveguard": [
+      181,
+      88,
+      36
+    ],
+    "suit:cosmic": [
+      181,
+      88,
+      36
+    ],
+    "suit:briellacat": [
+      128,
+      128,
+      40
+    ],
+    "suit:sunforged": [
+      181,
+      88,
+      36
+    ],
+    "suit:abyssal": [
+      181,
+      88,
+      36
+    ],
+    "suit:cyber": [
+      128,
+      128,
+      40
+    ],
+    "abyssal-asc-1": [
+      178.29,
+      105.5,
+      30.8,
+      7.22
+    ],
+    "abyssal-asc-2": [
+      175.89,
+      101.65,
+      30.8,
+      7.36
+    ],
+    "abyssal-asc-3": [
+      173.22,
+      97.98,
+      30.8,
+      4.34
+    ],
+    "abyssal-asc-4": [
+      170.3,
+      94.51,
+      30.8,
+      7.77
+    ],
+    "abyssal-asc-5": [
+      167.15,
+      91.24,
+      30.8,
+      0.16
+    ],
+    "abyssal-asc-6": [
+      163.78,
+      88.21,
+      30.8,
+      -6.79
+    ],
+    "abyssal-asc-7": [
+      160.21,
+      85.41,
+      30.8,
+      -11.57
+    ],
+    "abyssal-asc-8": [
+      156.44,
+      82.88,
+      30.8,
+      -8.27
+    ],
+    "abyssal-desc-1": [
+      178.29,
+      105.5,
+      30.8,
+      7.22
+    ],
+    "abyssal-desc-2": [
+      182.68,
+      114.71,
+      30.8,
+      16.16
+    ],
+    "abyssal-desc-3": [
+      185.58,
+      124.49,
+      30.8,
+      27.23
+    ],
+    "abyssal-desc-4": [
+      186.91,
+      134.6,
+      30.8,
+      37.23
+    ],
+    "abyssal-desc-5": [
+      186.64,
+      144.79,
+      30.8,
+      43.71
+    ],
+    "abyssal-desc-6": [
+      184.79,
+      154.82,
+      30.8,
+      47.05
+    ],
+    "abyssal-desc-7": [
+      181.38,
+      164.44,
+      30.8,
+      61.64
+    ],
+    "abyssal-desc-8": [
+      176.51,
+      173.4,
+      30.8,
+      70.44
+    ],
+    "bigbooty-tap-1": [
+      206,
+      86,
+      41,
+      10
+    ],
+    "bigbooty-tap-2": [
+      206,
+      87,
+      41,
+      10
+    ],
+    "bigbooty-tap-3": [
+      206,
+      84,
+      41,
+      10
+    ],
+    "bigbooty-tap-4": [
+      206,
+      77,
+      41,
+      10
+    ],
+    "bigbooty-tap-5": [
+      207,
+      70,
+      41,
+      10
+    ],
+    "bigbooty-tap-6": [
+      208,
+      69,
+      41,
+      10
+    ],
+    "bigbooty-tap-7": [
+      206,
+      75,
+      41,
+      10
+    ],
+    "bigbooty-tap-8": [
+      202,
+      85,
+      41,
+      10
+    ],
+    "bigbooty-tap-9": [
+      203,
+      85,
+      41,
+      10
+    ],
+    "bigbooty-tap-10": [
+      209,
+      76,
+      41,
+      10
+    ],
+    "bigbooty-tap-11": [
+      213,
+      72,
+      41,
+      10
+    ],
+    "bigbooty-tap-12": [
+      209,
+      77,
+      41,
+      10
+    ],
+    "bigbooty-tap-13": [
+      203,
+      85,
+      41,
+      10
+    ],
+    "bigbooty-tap-14": [
+      200,
+      88,
+      41,
+      10
+    ],
+    "bigbooty-tap-15": [
+      202,
+      83,
+      41,
+      10
+    ],
+    "bigbooty-tap-16": [
+      206,
+      78,
+      41,
+      10
+    ],
+    "cinderforge-asc-1": [
+      178.29,
+      105.5,
+      30.8,
+      13.45
+    ],
+    "cinderforge-asc-2": [
+      175.89,
+      101.65,
+      30.8,
+      12.32
+    ],
+    "cinderforge-asc-3": [
+      173.22,
+      97.98,
+      30.8,
+      16.51
+    ],
+    "cinderforge-asc-4": [
+      170.3,
+      94.51,
+      30.8,
+      17.33
+    ],
+    "cinderforge-asc-5": [
+      167.15,
+      91.24,
+      30.8,
+      1.61
+    ],
+    "cinderforge-asc-6": [
+      163.78,
+      88.21,
+      30.8,
+      9.49
+    ],
+    "cinderforge-asc-7": [
+      160.21,
+      85.41,
+      30.8,
+      4.87
+    ],
+    "cinderforge-asc-8": [
+      156.44,
+      82.88,
+      30.8,
+      17.28
+    ],
+    "cinderforge-desc-1": [
+      178.29,
+      105.5,
+      30.8,
+      13.45
+    ],
+    "cinderforge-desc-2": [
+      182.68,
+      114.71,
+      30.8,
+      10.81
+    ],
+    "cinderforge-desc-3": [
+      185.58,
+      124.49,
+      30.8,
+      3.92
+    ],
+    "cinderforge-desc-4": [
+      186.91,
+      134.6,
+      30.8,
+      7.56
+    ],
+    "cinderforge-desc-5": [
+      186.64,
+      144.79,
+      30.8,
+      36.98
+    ],
+    "cinderforge-desc-6": [
+      184.79,
+      154.82,
+      30.8,
+      36.08
+    ],
+    "cinderforge-desc-7": [
+      181.38,
+      164.44,
+      30.8,
+      41.04
+    ],
+    "cinderforge-desc-8": [
+      176.51,
+      173.4,
+      30.8,
+      43.9
+    ],
+    "copper-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "copper-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "copper-asc-3": [
+      206,
+      104.5,
+      36,
+      -5
+    ],
+    "copper-asc-4": [
+      206,
+      103.6,
+      36,
+      0
+    ],
+    "copper-asc-5": [
+      206,
+      102.5,
+      36,
+      0
+    ],
+    "copper-asc-6": [
+      206,
+      101.3,
+      36,
+      0
+    ],
+    "copper-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "copper-asc-8": [
+      206,
+      99,
+      36,
+      0
+    ],
+    "copper-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "copper-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "copper-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "copper-desc-4": [
+      206,
+      109,
+      36,
+      5
+    ],
+    "copper-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "copper-desc-6": [
+      206,
+      111.6,
+      36,
+      0
+    ],
+    "copper-desc-7": [
+      206,
+      113,
+      36,
+      0
+    ],
+    "copper-desc-8": [
+      206,
+      114,
+      36,
+      0
+    ],
+    "cosmic-asc-1": [
+      178.29,
+      105.5,
+      30.8,
+      11.19
+    ],
+    "cosmic-asc-2": [
+      175.89,
+      101.65,
+      30.8,
+      5.83
+    ],
+    "cosmic-asc-3": [
+      173.22,
+      97.98,
+      30.8,
+      8.42
+    ],
+    "cosmic-asc-4": [
+      170.3,
+      94.51,
+      30.8,
+      21.33
+    ],
+    "cosmic-asc-5": [
+      167.15,
+      91.24,
+      30.8,
+      0.84
+    ],
+    "cosmic-asc-6": [
+      163.78,
+      88.21,
+      30.8,
+      -4.27
+    ],
+    "cosmic-asc-7": [
+      160.21,
+      85.41,
+      30.8,
+      4.56
+    ],
+    "cosmic-asc-8": [
+      156.44,
+      82.88,
+      30.8,
+      13.32
+    ],
+    "cosmic-desc-1": [
+      178.29,
+      105.5,
+      30.8,
+      11.19
+    ],
+    "cosmic-desc-2": [
+      182.68,
+      114.71,
+      30.8,
+      27.3
+    ],
+    "cosmic-desc-3": [
+      185.58,
+      124.49,
+      30.8,
+      22.96
+    ],
+    "cosmic-desc-4": [
+      186.91,
+      134.6,
+      30.8,
+      11.65
+    ],
+    "cosmic-desc-5": [
+      186.64,
+      144.79,
+      30.8,
+      29.25
+    ],
+    "cosmic-desc-6": [
+      184.79,
+      154.82,
+      30.8,
+      29.96
+    ],
+    "cosmic-desc-7": [
+      181.38,
+      164.44,
+      30.8,
+      33.78
+    ],
+    "cosmic-desc-8": [
+      176.51,
+      173.4,
+      30.8,
+      34.1
+    ],
+    "cryostar-asc-1": [
+      189,
+      81,
+      56,
+      -5
+    ],
+    "cryostar-asc-2": [
+      189.5,
+      79.5,
+      56,
+      -5
+    ],
+    "cryostar-asc-3": [
+      188,
+      78.5,
+      56,
+      -5
+    ],
+    "cryostar-asc-4": [
+      188.5,
+      77.5,
+      56,
+      -5
+    ],
+    "cryostar-asc-5": [
+      188.5,
+      79,
+      56,
+      -5
+    ],
+    "cryostar-asc-6": [
+      193.5,
+      74.5,
+      56,
+      -5
+    ],
+    "cryostar-asc-7": [
+      195.5,
+      79.5,
+      56,
+      -5
+    ],
+    "cryostar-asc-8": [
+      196,
+      87,
+      56,
+      -5
+    ],
+    "cryostar-desc-1": [
+      202.5,
+      87,
+      56,
+      0
+    ],
+    "cryostar-desc-2": [
+      201,
+      104,
+      56,
+      5
+    ],
+    "cryostar-desc-3": [
+      188,
+      126.5,
+      56,
+      15
+    ],
+    "cryostar-desc-4": [
+      186.5,
+      137,
+      56,
+      20
+    ],
+    "cryostar-desc-5": [
+      186.5,
+      147,
+      56,
+      25
+    ],
+    "cryostar-desc-6": [
+      185,
+      157.5,
+      56,
+      30
+    ],
+    "cryostar-desc-7": [
+      184.5,
+      163.5,
+      56,
+      35
+    ],
+    "cryostar-desc-8": [
+      185.5,
+      163.5,
+      56,
+      35
+    ],
+    "eclipse-asc-1": [
+      186,
+      82,
+      56,
+      -5
+    ],
+    "eclipse-asc-2": [
+      185,
+      80,
+      56,
+      -5
+    ],
+    "eclipse-asc-3": [
+      185,
+      79,
+      56,
+      -5
+    ],
+    "eclipse-asc-4": [
+      187,
+      78,
+      56,
+      -5
+    ],
+    "eclipse-asc-5": [
+      188,
+      79,
+      56,
+      -5
+    ],
+    "eclipse-asc-6": [
+      191,
+      75,
+      56,
+      -5
+    ],
+    "eclipse-asc-7": [
+      193,
+      80,
+      56,
+      -5
+    ],
+    "eclipse-asc-8": [
+      195,
+      88,
+      56,
+      -5
+    ],
+    "eclipse-desc-1": [
+      201,
+      87,
+      56,
+      0
+    ],
+    "eclipse-desc-2": [
+      199,
+      104,
+      56,
+      5
+    ],
+    "eclipse-desc-3": [
+      187,
+      128,
+      56,
+      15
+    ],
+    "eclipse-desc-4": [
+      186,
+      138,
+      56,
+      20
+    ],
+    "eclipse-desc-5": [
+      185,
+      149,
+      56,
+      25
+    ],
+    "eclipse-desc-6": [
+      184,
+      159,
+      56,
+      30
+    ],
+    "eclipse-desc-7": [
+      184,
+      166,
+      56,
+      35
+    ],
+    "eclipse-desc-8": [
+      184,
+      166,
+      56,
+      35
+    ],
+    "eclipse-tap-1": [
+      196,
+      92,
+      53,
+      -5
+    ],
+    "eclipse-tap-2": [
+      196,
+      90,
+      53,
+      -5
+    ],
+    "eclipse-tap-3": [
+      194,
+      84,
+      53,
+      -5
+    ],
+    "eclipse-tap-4": [
+      190,
+      76,
+      53,
+      -5
+    ],
+    "eclipse-tap-5": [
+      186,
+      69,
+      53,
+      -5
+    ],
+    "eclipse-tap-6": [
+      183,
+      63,
+      53,
+      -5
+    ],
+    "eclipse-tap-7": [
+      182,
+      62,
+      53,
+      -5
+    ],
+    "eclipse-tap-8": [
+      183,
+      64,
+      53,
+      -5
+    ],
+    "eclipse-tap-9": [
+      186,
+      70,
+      53,
+      -5
+    ],
+    "eclipse-tap-10": [
+      191,
+      79,
+      53,
+      -5
+    ],
+    "eclipse-tap-11": [
+      195,
+      85,
+      53,
+      -5
+    ],
+    "eclipse-tap-12": [
+      197,
+      88,
+      53,
+      -5
+    ],
+    "eclipse-tap-13": [
+      198,
+      90,
+      53,
+      -5
+    ],
+    "eclipse-tap-14": [
+      198,
+      91,
+      53,
+      -5
+    ],
+    "eclipse-tap-15": [
+      198,
+      91,
+      53,
+      -5
+    ],
+    "eclipse-tap-16": [
+      198,
+      91,
+      53,
+      -5
+    ],
+    "ember-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "ember-asc-2": [
+      206,
+      105.3,
+      36,
+      -5
+    ],
+    "ember-asc-3": [
+      206,
+      104.5,
+      36,
+      -5
+    ],
+    "ember-asc-4": [
+      206,
+      103.6,
+      36,
+      -5
+    ],
+    "ember-asc-5": [
+      206,
+      102.5,
+      36,
+      -5
+    ],
+    "ember-asc-6": [
+      206,
+      101.3,
+      36,
+      -10
+    ],
+    "ember-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "ember-asc-8": [
+      206,
+      99,
+      36,
+      -10
+    ],
+    "ember-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "ember-desc-2": [
+      206,
+      106.8,
+      36,
+      -5
+    ],
+    "ember-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "ember-desc-4": [
+      206,
+      109,
+      36,
+      0
+    ],
+    "ember-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "ember-desc-6": [
+      206,
+      111.6,
+      36,
+      0
+    ],
+    "ember-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "ember-desc-8": [
+      206,
+      114,
+      36,
+      5
+    ],
+    "flight-asc-1": [
+      174.1,
+      94.5,
+      42,
+      0
+    ],
+    "flight-asc-2": [
+      174.6,
+      96.6,
+      42,
+      0
+    ],
+    "flight-asc-3": [
+      174.1,
+      95.1,
+      42,
+      0
+    ],
+    "flight-desc-1": [
+      179,
+      99,
+      42,
+      0
+    ],
+    "flight-desc-2": [
+      178.4,
+      101.6,
+      42,
+      0
+    ],
+    "flight-desc-3": [
+      173.9,
+      116.8,
+      42,
+      3
+    ],
+    "flight-desc-4": [
+      171.8,
+      119.7,
+      42,
+      3
+    ],
+    "flight-desc-5": [
+      164.2,
+      144.4,
+      42,
+      12
+    ],
+    "frost-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "frost-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "frost-asc-3": [
+      206,
+      104.5,
+      36,
+      0
+    ],
+    "frost-asc-4": [
+      206,
+      103.6,
+      36,
+      0
+    ],
+    "frost-asc-5": [
+      206,
+      102.5,
+      36,
+      0
+    ],
+    "frost-asc-6": [
+      206,
+      101.3,
+      36,
+      0
+    ],
+    "frost-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "frost-asc-8": [
+      206,
+      99,
+      36,
+      -5
+    ],
+    "frost-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "frost-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "frost-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "frost-desc-4": [
+      206,
+      109,
+      36,
+      0
+    ],
+    "frost-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "frost-desc-6": [
+      206,
+      111.6,
+      36,
+      0
+    ],
+    "frost-desc-7": [
+      206,
+      113,
+      36,
+      0
+    ],
+    "frost-desc-8": [
+      206,
+      114,
+      36,
+      0
+    ],
+    "gemmie-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "gemmie-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "gemmie-asc-3": [
+      206,
+      104.5,
+      36,
+      0
+    ],
+    "gemmie-asc-4": [
+      206,
+      103.6,
+      36,
+      0
+    ],
+    "gemmie-asc-5": [
+      206,
+      102.5,
+      36,
+      0
+    ],
+    "gemmie-asc-6": [
+      206,
+      101.3,
+      36,
+      0
+    ],
+    "gemmie-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "gemmie-asc-8": [
+      206,
+      99,
+      36,
+      -15
+    ],
+    "gemmie-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "gemmie-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "gemmie-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "gemmie-desc-4": [
+      206,
+      109,
+      36,
+      5
+    ],
+    "gemmie-desc-5": [
+      206,
+      110.2,
+      36,
+      5
+    ],
+    "gemmie-desc-6": [
+      206,
+      111.6,
+      36,
+      5
+    ],
+    "gemmie-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "gemmie-desc-8": [
+      206,
+      114,
+      36,
+      5
+    ],
+    "ghost-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "ghost-asc-2": [
+      206,
+      105.3,
+      36,
+      -5
+    ],
+    "ghost-asc-3": [
+      206,
+      104.5,
+      36,
+      -10
+    ],
+    "ghost-asc-4": [
+      206,
+      103.6,
+      36,
+      -10
+    ],
+    "ghost-asc-5": [
+      206,
+      102.5,
+      36,
+      -10
+    ],
+    "ghost-asc-6": [
+      206,
+      101.3,
+      36,
+      -10
+    ],
+    "ghost-asc-7": [
+      206,
+      100,
+      36,
+      -15
+    ],
+    "ghost-asc-8": [
+      206,
+      99,
+      36,
+      -20
+    ],
+    "ghost-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "ghost-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "ghost-desc-3": [
+      206,
+      107.8,
+      36,
+      -5
+    ],
+    "ghost-desc-4": [
+      206,
+      109,
+      36,
+      -5
+    ],
+    "ghost-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "ghost-desc-6": [
+      206,
+      111.6,
+      36,
+      5
+    ],
+    "ghost-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "ghost-desc-8": [
+      206,
+      114,
+      36,
+      5
+    ],
+    "groveguard-asc-1": [
+      178.29,
+      105.5,
+      30.8,
+      17.37
+    ],
+    "groveguard-asc-2": [
+      175.89,
+      101.65,
+      30.8,
+      31.35
+    ],
+    "groveguard-asc-3": [
+      173.22,
+      97.98,
+      30.8,
+      5.28
+    ],
+    "groveguard-asc-4": [
+      170.3,
+      94.51,
+      30.8,
+      13.06
+    ],
+    "groveguard-asc-5": [
+      167.15,
+      91.24,
+      30.8,
+      -0.69
+    ],
+    "groveguard-asc-6": [
+      163.78,
+      88.21,
+      30.8,
+      -8.76
+    ],
+    "groveguard-asc-7": [
+      160.21,
+      85.41,
+      30.8,
+      -22.61
+    ],
+    "groveguard-asc-8": [
+      156.44,
+      82.88,
+      30.8,
+      -14.15
+    ],
+    "groveguard-desc-1": [
+      178.29,
+      105.5,
+      30.8,
+      17.37
+    ],
+    "groveguard-desc-2": [
+      182.68,
+      114.71,
+      30.8,
+      7.93
+    ],
+    "groveguard-desc-3": [
+      185.58,
+      124.49,
+      30.8,
+      -7.72
+    ],
+    "groveguard-desc-4": [
+      186.91,
+      134.6,
+      30.8,
+      -2.75
+    ],
+    "groveguard-desc-5": [
+      186.64,
+      144.79,
+      30.8,
+      24.89
+    ],
+    "groveguard-desc-6": [
+      184.79,
+      154.82,
+      30.8,
+      28.98
+    ],
+    "groveguard-desc-7": [
+      181.38,
+      164.44,
+      30.8,
+      35.05
+    ],
+    "groveguard-desc-8": [
+      176.51,
+      173.4,
+      30.8,
+      49.26
+    ],
+    "iontrim-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "iontrim-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "iontrim-asc-3": [
+      206,
+      104.5,
+      36,
+      -5
+    ],
+    "iontrim-asc-4": [
+      206,
+      103.6,
+      36,
+      -5
+    ],
+    "iontrim-asc-5": [
+      206,
+      102.5,
+      36,
+      -5
+    ],
+    "iontrim-asc-6": [
+      206,
+      101.3,
+      36,
+      -5
+    ],
+    "iontrim-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "iontrim-asc-8": [
+      206,
+      99,
+      36,
+      -10
+    ],
+    "iontrim-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "iontrim-desc-2": [
+      206,
+      106.8,
+      36,
+      -5
+    ],
+    "iontrim-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "iontrim-desc-4": [
+      206,
+      109,
+      36,
+      5
+    ],
+    "iontrim-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "iontrim-desc-6": [
+      206,
+      111.6,
+      36,
+      5
+    ],
+    "iontrim-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "iontrim-desc-8": [
+      206,
+      114,
+      36,
+      10
+    ],
+    "leviathan-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "leviathan-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "leviathan-asc-3": [
+      206,
+      104.5,
+      36,
+      0
+    ],
+    "leviathan-asc-4": [
+      206,
+      103.6,
+      36,
+      0
+    ],
+    "leviathan-asc-5": [
+      206,
+      102.5,
+      36,
+      0
+    ],
+    "leviathan-asc-6": [
+      206,
+      101.3,
+      36,
+      0
+    ],
+    "leviathan-asc-7": [
+      206,
+      100,
+      36,
+      0
+    ],
+    "leviathan-asc-8": [
+      206,
+      99,
+      36,
+      0
+    ],
+    "leviathan-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "leviathan-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "leviathan-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "leviathan-desc-4": [
+      206,
+      109,
+      36,
+      0
+    ],
+    "leviathan-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "leviathan-desc-6": [
+      206,
+      111.6,
+      36,
+      0
+    ],
+    "leviathan-desc-7": [
+      206,
+      113,
+      36,
+      0
+    ],
+    "leviathan-desc-8": [
+      206,
+      114,
+      36,
+      0
+    ],
+    "robo-tap-1": [
+      190,
+      100,
+      45,
+      0
+    ],
+    "robo-tap-2": [
+      190,
+      100,
+      45,
+      0
+    ],
+    "robo-tap-3": [
+      190,
+      98,
+      45,
+      0
+    ],
+    "robo-tap-4": [
+      191,
+      93,
+      45,
+      0
+    ],
+    "robo-tap-5": [
+      191,
+      85,
+      45,
+      0
+    ],
+    "robo-tap-6": [
+      192,
+      79,
+      45,
+      0
+    ],
+    "robo-tap-7": [
+      192,
+      77,
+      45,
+      0
+    ],
+    "robo-tap-8": [
+      191,
+      81,
+      45,
+      0
+    ],
+    "robo-tap-9": [
+      190,
+      90,
+      45,
+      0
+    ],
+    "robo-tap-10": [
+      189,
+      100,
+      45,
+      0
+    ],
+    "robo-tap-11": [
+      189,
+      107,
+      45,
+      0
+    ],
+    "robo-tap-12": [
+      190,
+      108,
+      45,
+      0
+    ],
+    "robo-tap-13": [
+      191,
+      107,
+      45,
+      0
+    ],
+    "robo-tap-14": [
+      192,
+      104,
+      45,
+      0
+    ],
+    "robo-tap-15": [
+      191,
+      101,
+      45,
+      0
+    ],
+    "robo-tap-16": [
+      191,
+      97,
+      45,
+      0
+    ],
+    "sammie-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "sammie-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "sammie-asc-3": [
+      206,
+      104.5,
+      36,
+      0
+    ],
+    "sammie-asc-4": [
+      206,
+      103.6,
+      36,
+      -5
+    ],
+    "sammie-asc-5": [
+      206,
+      102.5,
+      36,
+      -5
+    ],
+    "sammie-asc-6": [
+      206,
+      101.3,
+      36,
+      -5
+    ],
+    "sammie-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "sammie-asc-8": [
+      206,
+      99,
+      36,
+      -5
+    ],
+    "sammie-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "sammie-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "sammie-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "sammie-desc-4": [
+      206,
+      109,
+      36,
+      0
+    ],
+    "sammie-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "sammie-desc-6": [
+      206,
+      111.6,
+      36,
+      5
+    ],
+    "sammie-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "sammie-desc-8": [
+      206,
+      114,
+      36,
+      5
+    ],
+    "seraph-asc-1": [
+      204,
+      126,
+      38,
+      0
+    ],
+    "seraph-asc-2": [
+      204,
+      124,
+      38,
+      0
+    ],
+    "seraph-asc-3": [
+      204,
+      122,
+      38,
+      0
+    ],
+    "seraph-asc-4": [
+      204,
+      129,
+      38,
+      0
+    ],
+    "seraph-asc-5": [
+      204,
+      127,
+      38,
+      0
+    ],
+    "seraph-asc-6": [
+      204,
+      125,
+      38,
+      -3
+    ],
+    "seraph-asc-7": [
+      204,
+      123,
+      38,
+      -6
+    ],
+    "seraph-asc-8": [
+      204,
+      121,
+      38,
+      -10
+    ],
+    "seraph-desc-1": [
+      204,
+      126,
+      38,
+      0
+    ],
+    "seraph-desc-2": [
+      204,
+      129,
+      38,
+      0
+    ],
+    "seraph-desc-3": [
+      204,
+      132,
+      38,
+      2
+    ],
+    "seraph-desc-4": [
+      204,
+      136,
+      38,
+      10
+    ],
+    "seraph-desc-5": [
+      203,
+      140,
+      38,
+      17
+    ],
+    "seraph-desc-6": [
+      202,
+      143,
+      38,
+      21
+    ],
+    "seraph-desc-7": [
+      204,
+      157,
+      38,
+      52
+    ],
+    "seraph-desc-8": [
+      202,
+      162,
+      38,
+      60
+    ],
+    "sunforged-asc-1": [
+      178.29,
+      105.5,
+      29.4,
+      15.64
+    ],
+    "sunforged-asc-2": [
+      175.89,
+      101.65,
+      29.4,
+      13.37
+    ],
+    "sunforged-asc-3": [
+      173.22,
+      97.98,
+      29.4,
+      21.61
+    ],
+    "sunforged-asc-4": [
+      170.3,
+      94.51,
+      29.4,
+      28.47
+    ],
+    "sunforged-asc-5": [
+      167.15,
+      91.24,
+      29.4,
+      17
+    ],
+    "sunforged-asc-6": [
+      163.78,
+      88.21,
+      29.4,
+      11.48
+    ],
+    "sunforged-asc-7": [
+      160.21,
+      85.41,
+      29.4,
+      15
+    ],
+    "sunforged-asc-8": [
+      156.44,
+      82.88,
+      29.4,
+      15.93
+    ],
+    "sunforged-desc-1": [
+      178.29,
+      105.5,
+      29.4,
+      15.64
+    ],
+    "sunforged-desc-2": [
+      182.68,
+      114.71,
+      29.4,
+      27.97
+    ],
+    "sunforged-desc-3": [
+      185.58,
+      124.49,
+      29.4,
+      24.72
+    ],
+    "sunforged-desc-4": [
+      186.91,
+      134.6,
+      29.4,
+      36.86
+    ],
+    "sunforged-desc-5": [
+      186.64,
+      144.79,
+      29.4,
+      42.41
+    ],
+    "sunforged-desc-6": [
+      184.79,
+      154.82,
+      29.4,
+      51.15
+    ],
+    "sunforged-desc-7": [
+      181.38,
+      164.44,
+      29.4,
+      52.72
+    ],
+    "sunforged-desc-8": [
+      176.51,
+      173.4,
+      29.4,
+      58.01
+    ],
+    "verdant-asc-1": [
+      187,
+      82.5,
+      56,
+      -5
+    ],
+    "verdant-asc-2": [
+      189.5,
+      80.5,
+      56,
+      -5
+    ],
+    "verdant-asc-3": [
+      186,
+      79.5,
+      56,
+      -5
+    ],
+    "verdant-asc-4": [
+      189,
+      78.5,
+      56,
+      -5
+    ],
+    "verdant-asc-5": [
+      188.5,
+      79,
+      56,
+      -5
+    ],
+    "verdant-asc-6": [
+      193.5,
+      75,
+      56,
+      -5
+    ],
+    "verdant-asc-7": [
+      195.5,
+      80,
+      56,
+      -5
+    ],
+    "verdant-asc-8": [
+      196,
+      88,
+      56,
+      -5
+    ],
+    "verdant-desc-1": [
+      203.5,
+      87,
+      56,
+      0
+    ],
+    "verdant-desc-2": [
+      203,
+      104,
+      56,
+      5
+    ],
+    "verdant-desc-3": [
+      187.5,
+      127,
+      56,
+      15
+    ],
+    "verdant-desc-4": [
+      187.5,
+      137,
+      56,
+      20
+    ],
+    "verdant-desc-5": [
+      185.5,
+      148.5,
+      56,
+      25
+    ],
+    "verdant-desc-6": [
+      185.5,
+      158,
+      56,
+      30
+    ],
+    "verdant-desc-7": [
+      185,
+      164.5,
+      56,
+      35
+    ],
+    "verdant-desc-8": [
+      186.5,
+      165,
+      56,
+      35
+    ],
+    "voidsuit-asc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "voidsuit-asc-2": [
+      206,
+      105.3,
+      36,
+      0
+    ],
+    "voidsuit-asc-3": [
+      206,
+      104.5,
+      36,
+      0
+    ],
+    "voidsuit-asc-4": [
+      206,
+      103.6,
+      36,
+      0
+    ],
+    "voidsuit-asc-5": [
+      206,
+      102.5,
+      36,
+      0
+    ],
+    "voidsuit-asc-6": [
+      206,
+      101.3,
+      36,
+      -5
+    ],
+    "voidsuit-asc-7": [
+      206,
+      100,
+      36,
+      -5
+    ],
+    "voidsuit-asc-8": [
+      206,
+      99,
+      36,
+      -5
+    ],
+    "voidsuit-desc-1": [
+      206,
+      106,
+      36,
+      0
+    ],
+    "voidsuit-desc-2": [
+      206,
+      106.8,
+      36,
+      0
+    ],
+    "voidsuit-desc-3": [
+      206,
+      107.8,
+      36,
+      0
+    ],
+    "voidsuit-desc-4": [
+      206,
+      109,
+      36,
+      0
+    ],
+    "voidsuit-desc-5": [
+      206,
+      110.2,
+      36,
+      0
+    ],
+    "voidsuit-desc-6": [
+      206,
+      111.6,
+      36,
+      0
+    ],
+    "voidsuit-desc-7": [
+      206,
+      113,
+      36,
+      5
+    ],
+    "voidsuit-desc-8": [
+      206,
+      114,
+      36,
+      0
+    ],
+    "alien-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "alien-asc-8": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-5": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-6": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-7": [
+      128,
+      128,
+      40
+    ],
+    "alien-desc-8": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "briellacat-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-8": [
+      128,
+      128,
+      40
+    ],
+    "cyber-asc-9": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-5": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-6": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-7": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-8": [
+      128,
+      128,
+      40
+    ],
+    "cyber-desc-9": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-12": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-13": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-14": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-15": [
+      128,
+      128,
+      40
+    ],
+    "catsuit-tap-16": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-12": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-13": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-14": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-15": [
+      128,
+      128,
+      40
+    ],
+    "volt-tap-16": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-1": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-2": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-3": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-4": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-5": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-6": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-7": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-8": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-9": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-10": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-11": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-12": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-13": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-14": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-15": [
+      128,
+      128,
+      40
+    ],
+    "volt-bounce-16": [
+      128,
+      128,
+      40
+    ],
+    "flight-tap-1": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-2": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-3": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-4": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-5": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-6": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-7": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-8": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-9": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-10": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-11": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-12": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-13": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-14": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-15": [
+      185,
+      88,
+      48,
+      0
+    ],
+    "flight-tap-16": [
+      185,
+      88,
+      48,
+      0
+    ]
+  },
+  "painterHashes": {
+    "arcflash": "bb2b9fbef942d21e361d96cdc3e78990598e791ff51e901b72df76a7935758d2",
+    "arcflash-motion": "49fb085e85e1f7c9640acb017372e1e4dbad42259fc65274d86fd39ee771377a",
+    "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
+    "control-constants": "a346419f306531eaa59aa89a57a7f20a6f880781276fb112ea02c6a05eeb6523",
+    "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
+    "high-orbit": "c69dbb9ef89642da2c048c6da8b26e794bb0390464826d06e14855ffe6aad0a7",
+    "high-orbit-config": "a5f6b63612fb4312b140ce062c631adddd513fa9ee22b58484f4c34b66346da2",
+    "high-orbit-effects": "02c9aab5fb03bfb42bba2bab27cf330ffcdddfc4a6d6cf7078a4abb13f938b42",
+    "high-orbit-motion": "b09335d7e12fa4eff5886a8625f0fa188229252a618195b07ccfb7a3ebb3f778",
+    "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+    "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
+    "vanguard-parts": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324"
+  }
+}
