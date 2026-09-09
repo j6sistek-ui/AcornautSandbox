@@ -1,20 +1,6 @@
-<script>
-/* ============================================================
-   THE ONE RULE - a real flight, not a video.
-
-   Physics and rules are the game's own, from sim.ts / catalog.ts:
-     FLIGHT_GRAVITY 1300, flap -450, baseSpeed 165, gapBase 168, planetR 42
-     PLANETS BOUNCE. They are not lethal - bounceOff() throws you off them
-       and the run counts it. Only debris and the floor kill, and this strip
-       carries no debris, so the floor is the only way down.
-     THE CEILING BOUNCES you back down too: vy = |vy| * 0.45 + 90.
-
-   The squirrel is ECLIPSE, flying on its MOTION BANK: eight authored climb
-   attitudes and eight dive attitudes, indexed by smoothed vertical speed
-   exactly as draw.ts does it - and drawn with ZERO rotation, because the
-   pose is the pitch. The helmet dome the engine composites per frame is the
-   one thing not reproduced here.
-   ============================================================ */
+window.__ASC__=["assets/asc-1.webp", "assets/asc-2.webp", "assets/asc-3.webp", "assets/asc-4.webp", "assets/asc-5.webp", "assets/asc-6.webp", "assets/asc-7.webp", "assets/asc-8.webp"];
+window.__DESC__=["assets/desc-1.webp", "assets/desc-2.webp", "assets/desc-3.webp", "assets/desc-4.webp", "assets/desc-5.webp", "assets/desc-6.webp", "assets/desc-7.webp", "assets/desc-8.webp"];
+window.__PLANETS__=["assets/p-3.webp", "assets/p-7.webp", "assets/p-12.webp", "assets/p-18.webp", "assets/p-24.webp", "assets/p-29.webp"];
 (function(){
 "use strict";
 var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23,29 +9,12 @@ if(!host || !cv) return;
 
 var ASC = window.__ASC__ || [], DESC = window.__DESC__ || [], PLANETS = window.__PLANETS__ || [];
 
-/* Reduced motion gets the ramp laid out flat - sixteen attitudes side by
-   side is arguably the better proof anyway. */
-if(RM){
-  var sheet = document.createElement("div");
-  sheet.className = "sheet";
-  ASC.slice().reverse().concat(DESC).forEach(function(src,i){
-    var im = document.createElement("img"); im.src = src; im.loading = "lazy";
-    im.alt = i === 0 ? "Eclipse's sixteen painted flight attitudes, steepest climb to steepest dive" : "";
-    sheet.appendChild(im);
-  });
-  host.replaceWith(sheet);
-  var cr = document.getElementById("craft");
-  if(cr){ cr.classList.add("on");
-    cr.textContent = "Sixteen painted attitudes: eight climbing, eight diving. The pose is the pitch."; }
-  return;
-}
-
 var ctx = cv.getContext("2d"), DPR = Math.min(devicePixelRatio || 1, 2);
 var W = 0, H = 0, S = 1;
 var asc = [], desc = [], planets = [];
-ASC.forEach(function(src,i){ var im = new Image(); im.src = src; asc[i] = im; });
-DESC.forEach(function(src,i){ var im = new Image(); im.src = src; desc[i] = im; });
-PLANETS.forEach(function(src,i){ var im = new Image(); im.src = src; planets[i] = im; });
+ASC.forEach(function(src,i){ var im = new Image(); im.addEventListener("load",function(){ if(W && !running) paint(); }); im.src = src; asc[i] = im; });
+DESC.forEach(function(src,i){ var im = new Image(); im.addEventListener("load",function(){ if(W && !running) paint(); }); im.src = src; desc[i] = im; });
+PLANETS.forEach(function(src,i){ var im = new Image(); im.addEventListener("load",function(){ if(W && !running) paint(); }); im.src = src; planets[i] = im; });
 
 var stars = [], gates = [], drift = [];
 var y, vy, alive, dead, score, bounces, best, shake, started, cool, smoothVy;
@@ -88,9 +57,10 @@ function spawn(x){
 var startEl = document.getElementById("start"), everFlew = false;
 function idle(){
   startEl.classList.remove("gone");
-  startEl.querySelector("b").textContent = everFlew ? "Fly it again" : "Tap to flap";
+  startEl.querySelector("b").textContent = everFlew ? "Try another flight" : "Tap to take off";
 }
 function flap(){
+  if(userPaused) return;
   if(!started){
     started = true; everFlew = true;
     startEl.classList.add("gone");
@@ -98,18 +68,30 @@ function flap(){
   }
   if(!alive) return;
   vy = -450*S;
+  syncLoop();
 }
-host.addEventListener("pointerdown", function(e){ e.preventDefault(); flap(); });
+host.addEventListener("pointerdown", function(e){ e.preventDefault(); host.focus({preventScroll:true}); flap(); });
 host.addEventListener("keydown", function(e){
   if(e.key === " " || e.key === "Enter"){ e.preventDefault(); flap(); }
 });
 
-var last = 0, running = false;
+host.addEventListener("click", function(e){ if(e.detail === 0) flap(); });
+
+var last = 0, running = false, userPaused = false, inViewport = false, rafId = null;
+function canRun(){ return inViewport && !document.hidden && !userPaused && (started || !RM); }
+function syncLoop(){
+  if(canRun()){
+    if(!running){ running=true; last=performance.now(); rafId=requestAnimationFrame(frame); }
+  } else {
+    running=false; if(rafId !== null) cancelAnimationFrame(rafId); rafId=null;
+  }
+}
 function frame(t){
-  if(!running) return;
+  rafId=null;
+  if(!canRun()){ running = false; return; }
   var dt = Math.min((t - last)/1000 || 0, .05); last = t;
   step(dt); paint();
-  requestAnimationFrame(frame);
+  rafId=requestAnimationFrame(frame);
 }
 
 /* THE POSE. draw.ts: a light exponential smooth on vy, normalised over
@@ -126,10 +108,10 @@ function poseFrame(dt){
 }
 
 function step(dt){
-  if(!started){                                  /* attract: gentle bob, no gates */
-    y = H*0.44 + Math.sin(performance.now()/900)*10*S;
-    vy = Math.cos(performance.now()/900)*40*S;
-    drape(dt);
+  if(!started){                                  /* attract */
+    y = H*0.44 + (RM ? 0 : Math.sin(performance.now()/900)*10*S);
+    vy = RM ? 0 : Math.cos(performance.now()/900)*40*S;
+    if(!RM) drape(dt);
     pose = poseFrame(dt) || pose;
     return;
   }
@@ -222,7 +204,7 @@ function paint(){
   ctx.globalAlpha = 1;
 
   drift.forEach(function(d){
-    var im = planets[d.k]; if(!im || !im.complete) return;
+    var im = planets[d.k]; if(!im || (!im.complete || !im.naturalWidth)) return;
     var sz = 190*S*d.sc; ctx.globalAlpha = d.a;
     ctx.drawImage(im, d.x - sz/2, d.y - sz/2, sz, sz);
   });
@@ -232,13 +214,13 @@ function paint(){
     gates.forEach(function(gt){
       var t = planets[gt.kt], b = planets[gt.kb], d = gt.r*2.35;
       var ty = gt.cy - gt.gap/2 - gt.r, by = gt.cy + gt.gap/2 + gt.r;
-      if(t && t.complete) ring(t, gt.x, ty, d, gt.spin);
-      if(b && b.complete) ring(b, gt.x, by, d, -gt.spin);
+      if(t && t.complete && t.naturalWidth) ring(t, gt.x, ty, d, gt.spin);
+      if(b && b.complete && b.naturalWidth) ring(b, gt.x, by, d, -gt.spin);
     });
   }
 
   var im = pose;
-  if(im && im.complete){
+  if(im && im.complete && im.naturalWidth){
     var sz = 132*S, sx = W*0.26;
     ctx.save();
     ctx.translate(sx, y);
@@ -255,26 +237,42 @@ function ring(im, x, cy, d, spin){
   ctx.restore();
 }
 
+
+var pauseButton = document.getElementById("demoPause");
+pauseButton.addEventListener("click", function(){
+  userPaused = !userPaused;
+  pauseButton.textContent = userPaused ? "Resume" : "Pause";
+  pauseButton.setAttribute("aria-pressed", String(userPaused));
+  syncLoop();
+});
+document.addEventListener("visibilitychange",function(){
+  syncLoop();
+});
+
 function boot(){
   resize(); reset(true); started = false;
   pose = desc[0] || asc[0] || null;
-  running = true; last = performance.now();
-  requestAnimationFrame(frame);
+  var bounds=host.getBoundingClientRect(); inViewport=bounds.bottom>0 && bounds.top<innerHeight;
+  paint(); syncLoop();
 }
 addEventListener("resize", function(){
-  var s = score, b = bounces, st = started;
-  resize(); reset(true); score = s; bounces = b; started = st; hud();
+  var oldW=W, oldH=H;
+  resize();
+  if(oldW && oldH){
+    var xs=W/oldW, ys=H/oldH;
+    y*=ys; vy*=ys; smoothVy*=ys;
+    gates.forEach(function(g){g.x*=xs;g.cy*=ys;g.gap*=ys;g.r*=ys;});
+  } else reset(true);
+  paint();
 });
 
 /* only run the loop while the strip is on screen */
 if("IntersectionObserver" in window){
   new IntersectionObserver(function(es){
     es.forEach(function(e){
-      if(e.isIntersecting){ if(!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } }
-      else running = false;
+      inViewport=e.isIntersecting; syncLoop();
     });
   },{threshold:.12}).observe(host);
 }
 if(document.readyState !== "loading") boot(); else addEventListener("DOMContentLoaded", boot);
 })();
-</script>

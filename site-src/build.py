@@ -27,8 +27,8 @@ CLIP_NAMES = ["hero.mp4", "worlds.mp4", "mode-fly.mp4", "mode-arcade.mp4",
 
 SITE_URL = "https://acornaut.io"
 PLAY_URL = "https://acornaut.app"
-DESCRIPTION = ("Fly a squirrel in a spacesuit through the gaps between hand-painted planets. "
-               "Tap to flap is the whole control. Free in your browser — no install, no account.")
+DESCRIPTION = ("A free-to-play space adventure with optional in-app purchases, planned for "
+               "Apple App Store, Google Play, Steam, and Windows. Try the browser preview.")
 
 
 def part(n):
@@ -81,14 +81,14 @@ HEAD_META = """<meta charset="utf-8">
 <link rel="canonical" href="{site}/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Acornaut">
-<meta property="og:title" content="Acornaut — one tap, thirty-one suits, 260 missions">
+<meta property="og:title" content="Acornaut — A little squirrel. A whole universe.">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{site}/">
 <meta property="og:image" content="{site}/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Acornaut — one tap, thirty-one suits, 260 missions">
+<meta name="twitter:title" content="Acornaut — A little squirrel. A whole universe.">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{site}/assets/og.jpg">
 <meta name="theme-color" content="#080c18">
@@ -138,46 +138,39 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     em = Emitter(args.mode, out_dir)
 
-    body = part("body1.part") + part("body2.part")
-    body = re.sub(r"\{\{A:([^}]+)\}\}", lambda m: em.asset(m.group(1)), body)
-    body = re.sub(r"\{\{V:([^}]+)\}\}", lambda m: m.group(1), body)
+    def resolve(name):
+        return em.clip(name) if name.endswith(".mp4") else em.asset(name)
 
-    suits = []
-    for s in json.load(open(os.path.join(ASSETS, "suits.json"), encoding="utf-8")):
-        if os.path.exists(os.path.join(ASSETS, "s-%s.webp" % s["id"])):
-            suits.append({"id": s["id"], "name": s["name"], "glow": s["glow"] or "#c9b6ff",
-                          "beta": bool(s.get("beta")),
-                          "src": em.asset("s-%s.webp" % s["id"])})
-    asc = [em.asset("asc-%d.webp" % i) for i in range(1, 9)]
-    desc = [em.asset("desc-%d.webp" % i) for i in range(1, 9)]
-    planets = [em.asset("p-%d.webp" % i) for i in (3, 7, 12, 18, 24, 29)]
-    clips = {c: em.clip(c) for c in CLIP_NAMES}
-
-    data = ("<script>window.__SUITS__=%s;window.__ASC__=%s;window.__DESC__=%s;window.__PLANETS__=%s;window.__CLIPS__=%s;</script>"
-            % (json.dumps(suits), json.dumps(asc), json.dumps(desc), json.dumps(planets), json.dumps(clips)))
-
-    head = "\n".join([part("head.part"), part("head2.part"), part("head3.part")])
-    page = "\n".join([head, body, data, part("js.part"), part("toy.part")])
-
+    page, css, demo, app = (part(n) for n in ("page.html", "styles.css", "demo.js", "app.js"))
+    css = re.sub(r"assets/([\w.-]+)", lambda m: resolve(m.group(1)), css)
+    demo = re.sub(r'"assets/([^" ]+)"', lambda m: json.dumps(resolve(m.group(1))), demo)
+    # Preserve lazy video data-src names for the in-view loader.
+    page = re.sub(r'(?<![\w-])(src|poster|srcset|href)="assets/([^" ]+)"',
+                  lambda m: m.group(1) + '="' + resolve(m.group(2)) + '"', page)
+    dynamic = re.findall(r"(?:video|poster):'([^']+)'", app)
+    dynamic += ["hero.mp4", "worlds.mp4", "squad.mp4"]
+    dynamic += re.findall(r'"id": "([^" ]+)"', app)
+    dynamic = ["preview-%s.webp" % n if not "." in n else n for n in dynamic]
+    media = {name: resolve(name) for name in sorted(set(dynamic))}
+    scripts = '<script>window.__ACORNAUT_ASSETS__=' + json.dumps(media) + ';</script>'
+    scripts += '<script>' + app + '</script><script>' + demo + '</script>'
+    meta = HEAD_META.format(desc=DESCRIPTION, site=SITE_URL)
+    if args.mode == "files":
+        meta += ('<link rel="manifest" href="manifest.webmanifest">'
+                 '<script>(function(){try{'
+                 'if(matchMedia("(display-mode: standalone)").matches||navigator.standalone){'
+                 'location.replace("./arcade/");}'
+                 '}catch(e){}})();</script>')
+    page = page.replace("__SITE_CSS__", css).replace("__SITE_META__", meta).replace("__SITE_SCRIPTS__", scripts)
     if args.mode == "inline":
-        # the Artifact wrapper supplies <!doctype>/<head>/<body>
+        page = re.sub(r'(?<![\w-])(href|src)="assets/([^" ]+)"',
+                      lambda m: m.group(1) + '="' + resolve(m.group(2)) + '"', page)
         dst = args.out
-        open(dst, "w", encoding="utf-8").write(page)
     else:
-        meta = HEAD_META.format(desc=DESCRIPTION, site=SITE_URL)
-        # Runs before anything paints. An installed icon whose start_url is
-        # still "/" (every iOS install predating the move) lands on the game.
-        standalone = (
-            '<script>(function(){try{'
-            'if(matchMedia("(display-mode: standalone)").matches||navigator.standalone){'
-            'location.replace("./arcade/");}'
-            '}catch(e){}})();</script>\n')
-        meta = meta + standalone
-        head_end = page.rfind("</style>") + len("</style>")
         dst = os.path.join(out_dir, "index.html")
-        open(dst, "w", encoding="utf-8").write(
-            '<!doctype html>\n<html lang="en">\n<head>\n' + meta + page[:head_end]
-            + '\n</head>\n<body>\n' + page[head_end:] + '\n</body>\n</html>\n')
+    open(dst, "w", encoding="utf-8").write(page)
+
+    if args.mode == "files":
         open(os.path.join(out_dir, "robots.txt"), "w").write(
             "User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n" % SITE_URL)
         open(os.path.join(out_dir, "sitemap.xml"), "w").write(
@@ -196,7 +189,7 @@ def main():
 
     size = os.path.getsize(dst)
     print("%s -> %s (%.2f MB)" % (args.mode, dst, size / 1048576))
-    print("suits %d  motion %d  planets %d  clips %d" % (len(suits), len(asc) + len(desc), len(planets), len(clips)))
+    print("31 selectable suits, 6 gameplay modes, 3 cinematic films")
     if args.mode == "files":
         total = sum(os.path.getsize(os.path.join(r, f))
                     for r, _, fs in os.walk(out_dir) for f in fs)
