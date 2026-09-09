@@ -1,30 +1,26 @@
-import { spillDockTravelDuration } from "./spill.js?v=251";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=251";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=251";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=251";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=251";
-import { arcflashPreview } from "./arcflash-motion.js?v=251";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=251";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=251";
-import { highOrbitPreview } from "./high-orbit-motion.js?v=251";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=251";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=251";
-import { spillAppearance } from "./spill-appearance.js?v=251";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=251";
-import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=251";
-import { goalHud } from "./campaign.js?v=251";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=251";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=251";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=251";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=251";
-import { suitPitchFor } from "./save.js?v=251";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=251";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=251";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=251";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=251";
-import { spillEngineColor } from "./spill-content.js?v=251";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=251";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=251";
+import { spillDockTravelDuration } from "./spill.js?v=249";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=249";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=249";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=249";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=249";
+import { arcflashPreview } from "./arcflash-motion.js?v=249";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=249";
+import { spillAppearance } from "./spill-appearance.js?v=249";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=249";
+import { SKY_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=249";
+import { goalHud } from "./campaign.js?v=249";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=249";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=249";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=249";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=249";
+import { suitPitchFor } from "./save.js?v=249";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=249";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=249";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=249";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=249";
+import { spillEngineColor } from "./spill-content.js?v=249";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=249";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=249";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1685,10 +1681,6 @@ function spillCanopyFrame(sp) {
 }
 function paintSpillHead(ctx, art, save, hole) {
     const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
-    if (isHighOrbit(suit.id)) {
-        paintHighOrbitCockpit(ctx, art, suit.id, hole.cx, hole.cy, hole.rx, hole.ry);
-        return;
-    }
     if (suit.id === "arcflash") {
         paintArcflashCockpit(ctx, art, hole.cx, hole.cy, hole.rx, hole.ry);
         return;
@@ -3575,11 +3567,11 @@ const DOME = {
     "suit:verdant": [196, 92, 45, 0],
     "suit:cryostar": [198, 93, 45, 0],
     "suit:eclipse": [204, 89, 58, -5],
-    "suit:cinderforge": [181, 88, 36],
-    "suit:groveguard": [181, 88, 36],
-    "suit:cosmic": [181, 88, 36],
-    "suit:sunforged": [181, 88, 36],
-    "suit:abyssal": [181, 88, 36],
+    "suit:cinderforge": [183, 93, 44],
+    "suit:groveguard": [183, 93, 44],
+    "suit:cosmic": [183, 93, 44],
+    "suit:sunforged": [183, 89, 42],
+    "suit:abyssal": [183, 93, 44],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [190, 100, 45, 0],
     "robo-tap-2": [190, 100, 45, 0],
@@ -4180,11 +4172,6 @@ function paintDome(ctx, body, key, helmet, x, y, size, art) {
     const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
     const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
     const r = a[2] * scale;
-    paintRegisteredDome(ctx, helmet, hx, hy, r, a[3] || 0, art);
-}
-/** Both measured frame banks and articulated skulls use the same helmet art
- * and glass opening. A rig supplies its actual head transform directly. */
-function paintRegisteredDome(ctx, helmet, hx, hy, r, headAngle, art) {
     // the REAL helmet render sits on the head — scaled so its glass circle
     // matches the painted dome exactly
     const helmSpr = art?.helms?.[helmet.id];
@@ -4198,7 +4185,7 @@ function paintRegisteredDome(ctx, helmet, hx, hy, r, headAngle, art) {
             // the POSE's head pitch - a motion frame whose head dives 55 degrees
             // carries that in its own dome anchor, so the rim and neck ring
             // follow the head instead of staying level through the dive.
-            const rot = (g[3] || 0) + headAngle;
+            const rot = (g[3] || 0) + (a[3] || 0);
             if (rot) {
                 ctx.save();
                 ctx.translate(hx, hy);
@@ -4232,9 +4219,6 @@ function paintRegisteredDome(ctx, helmet, hx, hy, r, headAngle, art) {
     ctx.arc(hx, hy, r * 0.97, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
-}
-export function paintOrbitPilot(ctx, art, id, x, y, size, helmet, state, travel, effects = true, pitch = 0) {
-    paintHighOrbit(ctx, art, id, x, y, size, state, travel, effects, pitch, (hx, hy, r, angle) => paintRegisteredDome(ctx, helmet, hx, hy, r, angle, art));
 }
 // presentation-only smoothing for the physics-pose banks: one shared clock
 // keyed on world time, so pause holds the pose and resume never jumps
@@ -4630,10 +4614,6 @@ poseOverride = NaN) {
         paintArcflash(ctx, art, x, y, size);
         return;
     }
-    if (isHighOrbit(suit.id)) {
-        paintOrbitPilot(ctx, art, suit.id, x, y, size, helmet);
-        return;
-    }
     const suited = art?.suits?.[suit.id] ?? null;
     const body = suited ?? spr;
     if (!body)
@@ -4897,25 +4877,9 @@ poseOverride = NaN) {
             }
         }
         else if (fullLoop) {
-            // THE TAP TRIGGERS IT, NOT A CLOCK (owner, 9 Sep 2026: "the critters
-            // still should activate on tap, not a clock. even if it's not a ascent
-            // bank or descent bank.. it's an animation triggered by the tap").
-            //
-            // Quill, Noodle and Bandit carry a sixteen-frame cycle and no ascent
-            // or descent bank at all, so they were the one group the tap could not
-            // reach: the cycle ran free on the world clock and a tap changed
-            // nothing about the picture. That is the unresponsive feel exactly -
-            // the pilot presses and the character does not answer.
-            //
-            // So the cycle plays across the tap, the same way every other painted
-            // bank now does, and the sim's rewind on a repeat tap replays it. With
-            // no tap running the character rests on its first frame, which is what
-            // a bank with no dive half can honestly show. The world clock stays
-            // for the hangar and any caller with no tap of its own, so a shelf
-            // card still breathes.
-            const idx = tapAnimT >= 0
-                ? Math.min(loopFrames.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * loopFrames.length))
-                : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+            // the cycle runs on the world clock, so it never restarts on a tap and
+            // reads the same in the hangar case and in flight
+            const idx = Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
             const refL = loopFrames[0].box ?? ref;
             drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
         }
@@ -5032,8 +4996,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     const flagship = suit.id === "vanguard";
     const arcflash = suit.id === "arcflash";
-    const orbit = isHighOrbit(suit.id);
-    const independentRig = flagship || arcflash || orbit;
+    const independentRig = flagship || arcflash;
     if (flagship)
         paintVanguardContacts(ctx, w.vanguard);
     const articulatedTap = independentRig || (NATURAL_FLIGHT_SUITS.has(suit.id) || !!art.suitBody?.[suit.id]) && w.tapAnimT >= 0;
@@ -5084,8 +5047,6 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintVanguard(ctx, art, 0, 2, 52, w.vanguard);
     else if (arcflash)
         paintArcflash(ctx, art, 0, 2, 52, w.arcflash, { x: x / localScale, y: y / localScale, travel: w.distance / localScale }, true, (suitPitchFor(save, suit.id) * Math.PI) / 180);
-    else if (isHighOrbit(suit.id))
-        paintOrbitPilot(ctx, art, suit.id, 0, 2, 52, helm, w.highOrbit, { x: x / localScale, y: (y + 2 * localScale) / localScale, travel: w.distance / localScale }, true, (suitPitchFor(save, suit.id) * Math.PI) / 180);
     else
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // Cryostar and Verdant now share Eclipse's heading mapping by owner
@@ -5152,10 +5113,6 @@ function paintPal(ctx, art, id, x, y, size, time = 0) {
     }
 }
 export function paintPortrait(ctx, art, helmet, suit, cx, cy, size, _t = 0) {
-    if (isHighOrbit(suit.id)) {
-        paintOrbitPilot(ctx, art, suit.id, cx, cy + 2, size, helmet, undefined, undefined, false);
-        return;
-    }
     // Always paint the PILOT wearing the helmet. Helmet-only art belongs
     // on the helmet cards, which have their own path — short-circuiting
     // here left the Flight suit showing a floating helmet and no squirrel.
@@ -5280,10 +5237,6 @@ pitch = 0) {
         return;
     if (suit.id === "arcflash") {
         paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx, t), undefined, true, pitch);
-        return;
-    }
-    if (isHighOrbit(suit.id)) {
-        paintOrbitPilot(ctx, art, suit.id, cx, cy, size, helmet, highOrbitPreview(ctx, suit.id, t), undefined, true, pitch);
         return;
     }
     if (suit.id === "vanguard") {
@@ -5422,8 +5375,6 @@ export function paintTrailPreview(ctx, trail, cx, cy, t = 0) {
         paintVanguardWake(ctx, cx, cy, t);
     else if (trail.id === "arcflashwake")
         paintArcflashWake(ctx, cx, cy, t);
-    else if (highOrbitTrailSuit(trail.id))
-        paintHighOrbitWake(ctx, highOrbitTrailSuit(trail.id), cx, cy, t);
     else
         drawTrailPreviewOn(ctx, trail.id, cx, cy, t);
 }

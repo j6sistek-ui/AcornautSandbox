@@ -1,6 +1,5 @@
-import { platform } from "./platform.js?v=251";
-import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=251";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=251";
+import { platform } from "./platform.js?v=249";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=249";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -16,7 +15,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=251";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "251";
+export const ART_VER = "249";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -61,7 +60,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 15:55 UTC";
+export const BUILD_TIME = "2026-09-09 15:39 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -252,22 +251,24 @@ if (!IS_BETA) {
             SUITS.splice(i, 1);
     }
 }
-const SUIT_BUILT_IN_TRAILS = {
-    vanguard: "vanguardwake", arcflash: "arcflashwake",
-    ...Object.fromEntries(HIGH_ORBIT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
-};
-export const builtInTrailSuit = (trail) => Object.keys(SUIT_BUILT_IN_TRAILS).find(id => SUIT_BUILT_IN_TRAILS[id] === trail);
 export function trailWornBy(equippedTrail, equippedSuit) {
-    return SUIT_BUILT_IN_TRAILS[equippedSuit] || (builtInTrailSuit(equippedTrail) ? "sparks" : equippedTrail);
+    if (equippedSuit === "vanguard")
+        return "vanguardwake";
+    if (equippedSuit === "arcflash")
+        return "arcflashwake";
+    return equippedTrail === "vanguardwake" || equippedTrail === "arcflashwake" ? "sparks" : equippedTrail;
 }
 export function canWearTrail(id, suit) {
-    return SUIT_BUILT_IN_TRAILS[suit] ? id === SUIT_BUILT_IN_TRAILS[suit] : !builtInTrailSuit(id);
+    if (suit === "vanguard")
+        return id === "vanguardwake";
+    if (suit === "arcflash")
+        return id === "arcflashwake";
+    return id !== "vanguardwake" && id !== "arcflashwake";
 }
 export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
     { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
     { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
-    ...HIGH_ORBIT_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },

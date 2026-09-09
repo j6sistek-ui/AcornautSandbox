@@ -1,27 +1,26 @@
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=251";
-import { suitPitchFor } from "./save.js?v=251";
-import { platform } from "./platform.js?v=251";
-import { spillAppearance } from "./spill-appearance.js?v=251";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=251";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=251";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=251";
-import { addChartScenery } from "./star-map-view.js?v=251";
-import { mapDebrisIndex } from "./zone-visuals.js?v=251";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=251";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=251";
-import { suitLean } from "./control-constants.js?v=251";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=251";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=251";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=251";
-import { drawSprite as drawSpriteOn } from "./art.js?v=251";
-import { createEngine } from "./engine.js?v=251";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=251";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=251";
-import { formatRaceTicks } from "./race.js?v=251";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=251";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=251";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=251";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=251";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=249";
+import { suitPitchFor } from "./save.js?v=249";
+import { platform } from "./platform.js?v=249";
+import { spillAppearance } from "./spill-appearance.js?v=249";
+import { trailWornBy, canWearTrail } from "./catalog.js?v=249";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=249";
+import { addChartScenery } from "./star-map-view.js?v=249";
+import { mapDebrisIndex } from "./zone-visuals.js?v=249";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=249";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=249";
+import { suitLean } from "./control-constants.js?v=249";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=249";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=249";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=249";
+import { drawSprite as drawSpriteOn } from "./art.js?v=249";
+import { createEngine } from "./engine.js?v=249";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=249";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=249";
+import { formatRaceTicks } from "./race.js?v=249";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=249";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=249";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=249";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=249";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -2241,13 +2240,11 @@ export async function bootStandalone(root) {
                 grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
             if (s.equippedSuit === "arcflash")
                 grid.append(el("p", "ac-sub", "Arcflash carries its own blue electrical wake. Your previous trail returns when you change suits."));
-            if (isHighOrbit(s.equippedSuit))
-                grid.append(el("p", "ac-sub", `${HIGH_ORBIT_PROFILES[s.equippedSuit].wake} belongs to ${HIGH_ORBIT_PROFILES[s.equippedSuit].name}. Your previous trail returns when you change suits.`));
             // BUILT-IN WAKES (owner, 7 Sep 2026): AcorNut's and Arcflash's trails
             // are part of the character - no other suit can wear them and they
             // cannot be taken off - so they are listed only while that suit is
             // worn, as one fixed card, and never as a choice for anyone else.
-            const builtInOf = builtInTrailSuit;
+            const builtInOf = (id) => id === "vanguardwake" ? "vanguard" : id === "arcflashwake" ? "arcflash" : null;
             const trailCard = (t) => {
                 const premium = isIap(t.id);
                 const open = trailUnlocked(s, t.id);

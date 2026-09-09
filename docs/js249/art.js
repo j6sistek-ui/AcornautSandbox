@@ -1,8 +1,7 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=251";
-import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=251";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=251";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=251";
-import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=251";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=249";
+import { PAL_ANIM, DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=249";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=249";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=249";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -258,7 +257,8 @@ const RIGGED_SUITS = [
     // behind this flag, so a pilot who bought it flew a flat sticker while
     // the beta page flew the animation. A suit's art must follow the suit.
     "cyber",
-    // High Orbit uses its own eleven-part atlases below.
+    // Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now fly whole
+    // ascent/descent paintings; their static portraits are the loading fallback.
 ];
 const TAP_BANKS = {
     // The Robo-timing rollout is DONE: it was beta-only while the owner flew
@@ -313,14 +313,15 @@ const ASC_BANKS = { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copp
     sammie: 8, frost: 8, ghost: 8, leviathan: 8,
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
-};
+    // HIGH ORBIT (owner, 7 Sep 2026): the five go live with their 8/8 sheets
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
 const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
     voidsuit: 8, alien: 8,
     ember: 8,
     cryostar: 8, verdant: 8, gemmie: 8,
     sammie: 8, frost: 8, ghost: 8, leviathan: 8,
     briellacat: 4,
-};
+    cinderforge: 8, groveguard: 8, cosmic: 8, sunforged: 8, abyssal: 8 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
 const LOOP_BANKS = { raccoon: 16, ferret: 16, hedgehog: 16 };
@@ -329,7 +330,6 @@ const LAZY_SUIT_IDS = [...new Set([
         // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
         // there too, or the suit flies as a flat body sticker off the live page.
         "arcflash",
-        ...HIGH_ORBIT_IDS,
         ...Object.keys(LOOP_BANKS),
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -345,18 +345,6 @@ export function loadSuitBank(bank, id) {
     const base = artBase();
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
-        if (isHighOrbit(id)) {
-            try {
-                const atlas = await loadImg(`${base}/suits/${id}/parts.png?v=${ART_VER}`);
-                if (atlas.naturalWidth !== 1024 || atlas.naturalHeight !== 768)
-                    throw new Error("Invalid High Orbit parts atlas");
-                (bank.highOrbit ?? (bank.highOrbit = {}))[id] = atlas;
-            }
-            catch {
-                suitBankLoads.delete(id);
-            }
-            return;
-        }
         if (id === "arcflash") {
             try {
                 const atlas = await loadImg(`${base}/suits/arcflash/parts.png?v=${ART_VER}`);

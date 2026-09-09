@@ -54,7 +54,7 @@ function material(ctx:CanvasRenderingContext2D,id:HighOrbitId,points:PlumePoint[
        line(ctx,[stem[i-1],stem[i]],dark,size*.035*fade,.25*fade);
        line(ctx,[stem[i-1],stem[i]],mid,size*.008*fade,.7*fade);
        if(i%6===3){
-         const p=points[i],side=(i+strand)%2?1:-1,dy=side*size*.034;
+         const side=(i+strand)%2?1:-1,dy=side*size*.034;
          line(ctx,[stem[i],[stem[i][0]-size*.02,stem[i][1]+dy]],mid,size*.003,.7*fade);
          glow(ctx,stem[i][0],stem[i][1]+dy,size*.065,mid,.12*fade);
          ctx.globalAlpha=.9*fade;leaf(ctx,stem[i][0]-size*.02,stem[i][1]+dy,side*.7+Math.sin(phase+i)*.25,size*.047*(.4+.6*fade),mid);
