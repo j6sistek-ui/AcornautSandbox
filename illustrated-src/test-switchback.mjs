@@ -50,8 +50,8 @@ assert(!S.palUnlocked(e.save,'switchback'));assert.equal(e.equipPal('switchback'
 // Read the pack's name from the catalog rather than pinning the display
 // string: the companion was renamed Switchback -> Stopwatch, and the
 // assertion that matters is that its pack reaches the shelf, not its wording.
-const swPack=Cat.BUNDLES.find(b=>b.id==='bundle-switchback');
-assert(swPack,'bundle-switchback has left the catalog');
+const swPack=Cat.BUNDLES.find(b=>b.items.some(item=>item.kind==='pal'&&item.id==='switchback'));
+assert(swPack,'Stopwatch is included in a companion bundle');
 // NO DAY-0 SHELF ANY MORE. The storefront is the shop on both pages now
 // (drawShop returns drawShopBeta), and the storefront FEATURES ONE PACK A
 // DAY, stepping through packs that are neither fixed-price, always available,

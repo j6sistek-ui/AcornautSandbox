@@ -1,0 +1,33 @@
+{
+  "mode": "built-in image generation",
+  "scope": "True three-product bundle banners; supersedes single-item banner drafts",
+  "jobs": [
+    {
+      "id": "bundle-cosmic-companions",
+      "refs": [
+        "docs/art/solo/magnetar.png",
+        "docs/art/solo/babyalien.png",
+        "docs/art/solo/satellite.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create a premium mobile-game BUNDLE BANNER, wide landscape exactly2:1, 1024x512 target. This banner must feature ALL THREE distinct products below together, based on the three reference images in order; no solo poster. Preserve each exact identity, materials, species, costume and shape. Compose as a balanced visually rich group with all3clearly readable at340x170; fullheads/ears/wingsvisible,safeedges. Premium polished stylized3D rendering, detailedmaterials, midnightindigo/violet cosmic background, subtle goldstararcs and coloredrimlighting. Text-free, noletters/numbers/prices/logos/badges/UI/borders/platforms. Noextracharacters orinventedaccessories. Subjects: ONE blue/violet spherical plasma Magnetar companion with two starryeyes, orbital rings and verticalplumes; ONE small lime-green BabyAlien with bigtealeyes,pointedears,smallcrest and silver/cyan spacesuit; ONE white/silver/gold satellite drone with one bluecameraeye,two blue solar panelwings and topgold dish. Arrangeallthree equallyprominent togetherfloatingthrough an elegant electricblueandvioletnebula. Exactlythree products, eachfullyrecognizable, no squirrel."
+    },
+    {
+      "id": "bundle-starlight-companions",
+      "refs": [
+        "docs/art/solo/spacepuppy.png",
+        "docs/art/solo/astrafox.png",
+        "docs/art/solo/switchback.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create a premium mobile-game BUNDLE BANNER, wide landscape exactly2:1, 1024x512 target. This banner must feature ALL THREE distinct products below together, based on the three reference images in order; no solo poster. Preserve each exact identity, materials, species, costume and shape. Compose as a balanced visually rich group with all3clearly readable at340x170; fullheads/ears/wingsvisible,safeedges. Premium polished stylized3D rendering, detailedmaterials, midnightindigo/violet cosmic background, subtle goldstararcs and coloredrimlighting. Text-free, noletters/numbers/prices/logos/badges/UI/borders/platforms. Noextracharacters orinventedaccessories. Subjects: ONE pink axolotl SpacePuppy with coralpinkfeathery externalgills,smilingface,blackeyes and silver/blue spaceharness; ONE smallcream-white AstraFox with blueeyes,cyan ears,bluegemcollar and largeblue/violet starryfluffytail; ONE brass/brown acorn-shaped Switchback clockwork drone with scallopedgoldcap,singlecyanlenseye andcurvedteal/goldfins. Arrangeallthree beside eachother, equal visualimportance, violet/gold/silverypinkstarlight. Exactlythreeproducts, noredesigns."
+    },
+    {
+      "id": "bundle-visor-collection",
+      "refs": [
+        "docs/art/helms/amethyst.png",
+        "docs/art/helms/ivoryguard.png",
+        "docs/art/helms/reactor.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create a premium mobile-game BUNDLE BANNER, wide landscape exactly2:1, 1024x512 target. This banner must feature ALL THREE distinct products below together, based on the three reference images in order; no solo poster. Preserve each exact identity, materials, species, costume and shape. Compose as a balanced visually rich group with all3clearly readable at340x170; fullheads/ears/wingsvisible,safeedges. Premium polished stylized3D rendering, detailedmaterials, midnightindigo/violet cosmic background, subtle goldstararcs and coloredrimlighting. Text-free, noletters/numbers/prices/logos/badges/UI/borders/platforms. Noextracharacters orinventedaccessories. Subjects: THREE empty premium helmet products in a horizontal collection: left AMETHYST deepvioletshell,goldrim,black/violetvisor,circularvioletfitting; center IVORYGUARD icy-blue shell with frost-cracked blueglass and silvertrim; right REACTOR olive/chartreuse shell,luminousgreenglass and gold/greenfitting. Preserveallthreeexacthelmetdesigns andmakeeachsamevisuallylargeproductsize. Noanimal,pilot,face,headorperson insideanyhelmet. Richcosmicpurple studio,eachvisorreflecting itsspecificcolor,sharp coherentpremiumedge detail. Exactlythreehelmets."
+    }
+  ]
+}

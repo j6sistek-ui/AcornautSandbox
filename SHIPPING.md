@@ -74,7 +74,7 @@ later shell expensive, so the test fails the build instead.
    `node illustrated-src/build-lab.mjs`.
 3. Gate, all four, before pushing:
    - `npx tsc illustrated-src/game/*.ts illustrated-src/lab/rig.ts --noEmit --module es2015 --target es2020 --skipLibCheck --moduleResolution bundler --strict false`
-   - `python3 illustrated-src/verify-art.py` (30 groups; every catalog id must have its still and banks)
+   - `python3 illustrated-src/verify-art.py` (32 groups; every catalog id must have its still and banks)
    - the harness: `node illustrated-src/run-tests.mjs` (or `npm test`), which runs every `illustrated-src/test-*.mjs` with no skip list. Sixteen of them need `happy-dom` or `@napi-rs/canvas`: `npm install` at the repo root, or the runner reports them SKIPPED and fails. `test-warp` needs about four minutes.
    - `node illustrated-src/test-platform-bridge.mjs`
 4. Prove it in the browser once, at 390 wide, on the page it changes
@@ -123,10 +123,20 @@ Rebuild the lab and Flight Studio, then run the full gates and inspect every
 cleaned frame and its playback; old cut-rig receipts cannot validate this route.
 The production boundaries and retained source receipts are in
 [`art-src/premium-flight/README.md`](art-src/premium-flight/README.md).
+Every Shop bundle requires a dedicated banner and editable kit discount.
+`export-shop-art.mjs` runs after compilation, validates the current kit
+registry, and exports all eight banners plus the Stardust emblem and backdrop
+under `docs/art/shop`. The Shop requests banners for its current offers; individual
+cards retain actual runtime assets. Missing banners or invalid discounts
+fail the build. Keep source masters, exact briefs and export hashes in
+[`art-src/premium-marketing/README.md`](art-src/premium-marketing/README.md).
+The [kit pricing rule](illustrated-src/design/shop-refresh/PRICING.md) explains
+full individual ownership credit and explicit zero-cost bundle completion.
 `verify-art.py` fails when a catalog id has no art, so a card can never
-point at nothing. The whole `docs/art` tree is 116 MB; an app bundle
-ships all of it locally, so the budget above is a web concern and the
-app's concern is the 200 MB cellular download line.
+point at nothing. At art stamp 255, `docs/art` totals 149.9 MiB, including
+9.59 MiB of Shop graphics. An app bundle ships this art locally; the
+historical transfer measurements above describe web loading, not the
+current packaged app size.
 
 ## 5. Store builds
 

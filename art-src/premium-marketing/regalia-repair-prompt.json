@@ -1,0 +1,5 @@
+{
+  "reason": "Visual review rejected an exposed Leviathan face; shipped matching helmet is closed.",
+  "prompt": "Edit the first banner ONLY to correct the far-right teal Leviathan pilot's helmet. Use the second image as the exact helmet reference: fully closed dark opaque teal glass visor, teal scaled rim, blue/cyan circuit lines and lower solid teal mouth/chin guard. NO visible eyes, face, muzzle, mouth or teeth through this visor. Keep the entire first banner otherwise unchanged: same four pilots, the other three transparent helmets with visible orange squirrel faces, all armor/tails and Clockling turtle, identical composition, violet/gold cosmic background, lighting, wide 2:1 dimensions and no text. The correction is a single faithful closed-helmet replacement on the far-right teal pilot, no redesign of any other character.",
+  "referenceHelmet": "docs/art/helms/leviathan.png"
+}

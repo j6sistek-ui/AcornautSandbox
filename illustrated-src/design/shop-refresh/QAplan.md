@@ -1,0 +1,28 @@
+# Shop visual refresh QA plan
+
+Baseline: `d296e6bc404aaec14221a8b79186132fb4426dea`, the owner-merged PR252. The adjacent `baseline.json` was read from immutable Git blobs at that revision, independently of the working files being edited. Local `main` is an older saved branch; it was not used as the baseline.
+
+The snapshot contains 20 bundles, 35 individual ownership IDs, four Stardust offers, two boosts, all 450 ownership subsets for bundle pricing, 282 synthetic purchase cases, 60 UTC shelf/cart cases, and all 34 suit head/wake mappings. It also records Git object IDs, SHA-256 hashes and lengths for all 1,606 existing shipping art files and 76 protected game/flight/provenance files. These are baseline fixtures, not a claim that the refreshed UI has passed QA.
+
+**Scope update, 2026-09-09 [USER]:** Later owner instructions supersede preservation of bundle membership/count and proportional ownership pricing below. Final scope is five retained bundles plus three new collections; singletons and duos are retired, all products remain owned/sellable, and full individual retail credit applies. Individual cards use actual game art; marketing images belong only on the eight real bundles. See [PRICING.md](PRICING.md) for the exact authorized deltas. The historical `baseline.json` remains unchanged. The old screenshots are marked superseded in [PRIOR-ITERATION-QA.md](PRIOR-ITERATION-QA.md).
+
+## Compare the finished change
+
+- Keep product IDs, bundle items and flags, weights, prices, grants, boost costs, daily rewards, ownership rules and rotation results equal to the snapshot. Titles and explanatory copy may be shortened. `ART_VER` may change from 254 for cache invalidation.
+- Re-evaluate the catalog against every `ownershipPricing` row and `purchaseFixtures` case. Partial ownership includes earned entitlements, not only purchases. Preserve duplicate-ID handling for matching suits/helmets and the free trails in `idGrants`.
+- Compare the actual `standalone.ts` cycle with `shopRotationFixtures`: fixed singles are pinned; ordinary featured contents leave the singles shelf; the always-available 2,500 trio keeps its 1,000 singles; owned items disappear; UTC midnight remains the boundary. `catalog.shopBundles` is a separate helper and cannot substitute for the displayed cycle.
+- Compare every `protectedShippingArt` and `protectedSourceFiles` entry with final Git blob content. Allow new marketing assets, but require all existing paths to remain byte-identical. Use Git-normalized text when the Windows checkout has CRLF. Source hashes are preservation checks; the catalog and standalone function hashes are references for semantic comparison because those two files are intentionally edited.
+- Confirm all three fixed head policies and built-in wakes remain unchanged. Marketing portraits must not replace flight sheets, cockpit/head sampling, registration metadata, animation, or gameplay assets.
+
+## Focused UI and state checks after the final build
+
+- At verified CSS viewports of 390 × 844 and a normal desktop size, inspect the stage, suits, helmets, pals, boosts, every bundle design, four Stardust cards, cart controls and included-item review. Titles, art and prices must fit without clipped digits, overlapping art, inaccessible controls or horizontal page overflow. Record the actual viewport and screenshot dimensions.
+- Open the trio and the daily featured pack; review all included categories, ownership states and their previews; close with Back and the backdrop. Opening, previewing and closing must not purchase, equip, change currency or advance progress. The trio must remain available beside its singles, including across a date boundary in the isolated test harness.
+- Add/remove a temporary selection and Clear it. Preserve cart/preview separation, cheapest-first checkout, partial success with a visible refusal, and two-step pack/boost confirmation. Exercise transactions only with synthetic saves in the automated harness, never on the user's save.
+- Preserve native localized prices and the loading/pending disabled states for Stardust. No native USD fallback while a price is missing; no overlapping purchase requests; success/duplicate receipts, cancellation, failure, deferred delivery and restore keep existing grant behavior. The production web remains unavailable for cash purchases; beta's test grant remains explicit. Use isolated bridge mocks for these cases.
+- Use a task-owned browser tab/origin. Read existing storage before interaction when applicable; do not seed, reset, equip or buy in a real player profile. An engine boot/resume may claim the existing daily reward, so any storage delta must be reported separately from Shop actions. Restore viewport settings, clear temporary cart selections and close only task-owned tabs.
+- Save normal viewport captures without stitched full-page screenshots. Inspect the saved images, record URL/build/date/controls and any console errors, and distinguish visually reviewed states from automated checks. Earlier premium-release card screenshots do not prove this refreshed layout.
+
+## Verification handoff
+
+After art and source are stable, the build owner runs the standard exporter/typecheck and relevant existing Shop, pricing, premium-pilot, helmet and persistence/store tests, plus the new Shop-visual test, then the standard full suite as appropriate. No builds, browser sessions or live transactions were performed during this snapshot task. The final receipt must identify the exact tested revision and any remaining unverified native-store or device behavior; the PR remains unmerged until the owner decides.

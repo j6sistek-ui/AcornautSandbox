@@ -1,0 +1,705 @@
+{
+  "checkedAt": "2026-09-09T23:16:42.727Z",
+  "baselineRevision": "d296e6bc404aaec14221a8b79186132fb4426dea",
+  "baselineSha256": "b70f7d3d90d650ac65e07e8927fdfc327b71e76fe9a670fed77dc841da397ab2",
+  "shippingArtChecked": 1606,
+  "shippingArtChanged": [],
+  "missing": [],
+  "protectedSourcesChecked": 76,
+  "intentionalSourceChanges": [
+    "illustrated-src/game/art.ts",
+    "illustrated-src/game/engine.ts",
+    "illustrated-src/game/save.ts"
+  ],
+  "unexpectedSourceChanges": [],
+  "sourceHashes": [
+    {
+      "path": "art-src/premium-flight/README.md",
+      "gitBlob": "267e4ba4fd67419a8778ba06188ff25222ba675a",
+      "rawSha256": "d13e9fd313014b8f884f16319ecf5bf4c106043cee655318490888515987fee5",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/cleanup-prompts.json",
+      "gitBlob": "cb1647f99be1774a88ef1c7cd29bab7cce8b8621",
+      "rawSha256": "d596d8e3242b75d2f07ec234f680ec78ae325b334c683920a523d80b68380b19",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/export-receipt.json",
+      "gitBlob": "7c315cdd1802e43c0451bca48e0b5f5f1da18ce2",
+      "rawSha256": "ab96b28e95be5920eae0f64ff1c117dc1c727e98770073a499305fc792fe1820",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-clean.png",
+      "gitBlob": "d417734371b8ceac188abf32a18616036a3a8456",
+      "rawSha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-equal-crossing-tails-prompt.txt",
+      "gitBlob": "0945f0fcc9b89b5bb52ecbc50eef8684e7e91725",
+      "rawSha256": "f7afe0f591dd689b7fd6ef5bd8ebf6086fd5284e16f4e9a03f86048cbe431254",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-initial-original.jpg",
+      "gitBlob": "41620eb34ac90947fb33d8e1c25b1e0e2c01f487",
+      "rawSha256": "7e283cbbbce4338846273a08de6e632b17a97ccffceb498de202bef8043a8dd8",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-interwoven-tails-prompt.txt",
+      "gitBlob": "9cdd913e319dc854148b4b532ab99854c94660a0",
+      "rawSha256": "06d938d17a16706b612ce61e7f885170035a290f5e49af5ff054eeeeeff4dd5f",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-original.jpg",
+      "gitBlob": "a4259bfe967f88f42e83d1912cfb40229ca2f014",
+      "rawSha256": "ace482d21365ce2ce63a201d648661da4b67318f29b4950515a23635492db0c6",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-owner-replacement-prompt.txt",
+      "gitBlob": "611f27874e7e09cfa61da150107d874c47139df4",
+      "rawSha256": "a3cc2226d73311deecc2531646c255e82990a4afbdd2bca04aa6a6deadf6223e",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-permanent-braid-superseded.png",
+      "gitBlob": "2d6a81a6d29ced68920f1370316c919becee22f6",
+      "rawSha256": "6a6791917450f222fb412ec3a79319841f055cc794a0c9a2e657284e6fd1f9df",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-separated-tails-rejected.png",
+      "gitBlob": "5c2c1e56dfd8483cef9fc17aa3f455e027d88701",
+      "rawSha256": "666a89ba8315fecb8f7849bc9609c7a4ac2c56e29f58c69f6f3a7442fc8e8844",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-single-tail-clean.png",
+      "gitBlob": "8ff83f8cb681d415e48cce1ff6199772612d6a23",
+      "rawSha256": "e3b096ff9c1798688c336888ee83e8c5e95d4fcfa6cd06b9b289265e2c8b0f03",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/nacre-twin-tail-prompt.txt",
+      "gitBlob": "cae303f98dc8482c0ca1e7676bcafc8f3daa0fa3",
+      "rawSha256": "ae9d74c87172788d36c5bea18bce18ad7e3ab609bbe214d615e83b3d001913eb",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/origamist-clean.png",
+      "gitBlob": "fcb22947022d56db83fcad221276a9b33ec103bb",
+      "rawSha256": "437e346bb7cf5d648fb8c312516c3050d287e7c8b09fec6ceff0df1de2195b18",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/origamist-original.jpg",
+      "gitBlob": "47697520c1239313731c5b00f7c8d12547b6bc93",
+      "rawSha256": "636fb3c616c0b8897086908a9843d56541cc3e90cbaab3cef13a2469746a7d7c",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/porcelain-clean.png",
+      "gitBlob": "c717e85fa70426415156ad17199481817fbbdc81",
+      "rawSha256": "3229bf6cc1c5625f4b579d7d671228efcc3505f40e6c9b12d6e12e9ac1fbbca1",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/porcelain-original.jpg",
+      "gitBlob": "08b00e6d01a2f83e5f4bd890c0d626de8e8e0d1d",
+      "rawSha256": "9c783fd5a71232af64b642cda8ce23c2e715782fc1e13666015f887619eddd94",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/porcelain-reference.jpg",
+      "gitBlob": "3c914e6b0ca4ceb5fa09286b55592872936c25af",
+      "rawSha256": "15e2829f6b79a44898803721e1ea0d1f6515e2abee10e64dbc8a80303300c60c",
+      "unchanged": true
+    },
+    {
+      "path": "art-src/premium-flight/registration.json",
+      "gitBlob": "4f43a9029e2cae5e47e77257024cbe69e29c25c7",
+      "rawSha256": "9e79b1f4e4b2495b85c0e0f86916b12697d548a102f89c6606d004ca0fdfa850",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/build-flight-studio.mjs",
+      "gitBlob": "5b0cc15376c6b4338d4315165af2dcecdd1224fa",
+      "rawSha256": "94d174c6382755060d4af6d2ed458d813ca300859ed61d758500d3d78d974ab5",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/export-premium-flight.mjs",
+      "gitBlob": "5a6f63d3593268c7183ee19a65776f50ac4739c2",
+      "rawSha256": "bf5e8aa6c7f6135c2ff33710c4ed60f93edab968bda74246c95af32c0928fccc",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/export-premium-pilots.mjs",
+      "gitBlob": "a4cb7cee94e6a981cb02e3d3434c5a72c8f82421",
+      "rawSha256": "c2397253e25119cdca759093125293a6fadf91503ce482e4a00d51d8e9c4a573",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/flight-studio/app.mjs",
+      "gitBlob": "b6ec83509de380564aef7bf56c87c80ef72ca511",
+      "rawSha256": "9486ccf7427fb91cdb0e6112b2669e1ea125a7c5933b9aa0fa2df508172b3e7c",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/flight-studio/core.mjs",
+      "gitBlob": "b0be4db522acba296d7105e11d401bc039707ee4",
+      "rawSha256": "b538ed6fe1e5552b1f5aaac695c6abe33760c617f057a6362763729e128c2b58",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/flight-studio/index.html",
+      "gitBlob": "afa6fbfca7655c8fea815fa38ffca167f6d68a2d",
+      "rawSha256": "6e867138cd0edacc665ff409ce4cd66b364899525f2158deaae9700297dbab26",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/flight-studio/renderer.mjs",
+      "gitBlob": "bc7f698db7d658cefec04ddfacb91c6276740f5d",
+      "rawSha256": "44751c966eaffc5643096c6553a4556744d91510666311e67c33beb9f133f13a",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/flight-studio/styles.css",
+      "gitBlob": "e76a619ec4d07cbc02602268ad52588ea6a6384d",
+      "rawSha256": "10d64f6a5b7f57109d174cdec566f181bde67b2c3d82095d77b4baf74b8a80bb",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/arcflash-motion.ts",
+      "gitBlob": "904591ae1b38504cace68ffe22be76fbe88cb32a",
+      "rawSha256": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/arcflash-parts.ts",
+      "gitBlob": "4ba119cbe31113a865b54d5569d8427f57def9b9",
+      "rawSha256": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/arcflash.ts",
+      "gitBlob": "80fe548f231b5467cc920ad39b0ddd53abc33c2c",
+      "rawSha256": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/art.ts",
+      "gitBlob": "ad5aac8ae83f95a41d1cf3120b99168d817b7ab9",
+      "rawSha256": "e6b0a28d43fa967a5e23250f145984362c2ace68045d7cbf612930d0882d2b9f",
+      "unchanged": false
+    },
+    {
+      "path": "illustrated-src/game/audio.ts",
+      "gitBlob": "5d39ccd0015a2497a9f9dced4f00abccf5123d16",
+      "rawSha256": "03f32305602b1087247cb7e3f3ffcd456235e85f286d415f66bb80ec589e4466",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/beta-campaign-manifest.ts",
+      "gitBlob": "0d23a00a4ea52005ca1ae5d7e99bf2863d9b85da",
+      "rawSha256": "b7871b9d028229b8565550d4feaa18654a11df5e0a1473d535fc26f2a30a2c75",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/campaign-manifest.ts",
+      "gitBlob": "b4fa072d92d9417712da100206784beb172b851f",
+      "rawSha256": "f0ae1418899d87b9e4acb6859cd6dcd078a4b67bd67970f94a3762ccb1f559a3",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/campaign-progress.ts",
+      "gitBlob": "b7359c686c974e036f8a7e04c26cbbe9ed673165",
+      "rawSha256": "d80b89a8e7d2456b3416f9c895834bd7fa7b100a32e739145c818f361f6bf6d4",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/campaign.ts",
+      "gitBlob": "dc51b93df8fe30eaa44bde08cb8a41a5b9ddda71",
+      "rawSha256": "d193424830de46abfb41dfbc56c7a6505aeafe19791e754393e32bf3f42f415e",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/control-constants.ts",
+      "gitBlob": "1a4835f692f1a15ed3af5c03f17a56335b5c6410",
+      "rawSha256": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/cosmetics.ts",
+      "gitBlob": "5dbf49cf84f980f946d58912a5256b68c96e8be1",
+      "rawSha256": "c00e22903c5e13dc22ea72b5fd9ffea8d1689df63b0de93f08a7c55fb1549e5b",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/draw.ts",
+      "gitBlob": "058221dad268df6eb7751bf641261a9f97899b0d",
+      "rawSha256": "d08647b366de8b46469c71729e027b07109ac8662e1e87a656edcc655d676dcb",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/engine.ts",
+      "gitBlob": "dee5a353098e10933aadec64480bcd6329ea14c5",
+      "rawSha256": "45cc4820e72294f98d9641c26f18bb89809bb2ba528946a970881f9f92419ced",
+      "unchanged": false
+    },
+    {
+      "path": "illustrated-src/game/helmet-openings.ts",
+      "gitBlob": "ab9ca83e5fa8093dd3da713516eaf303afc5bd5d",
+      "rawSha256": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/high-orbit-config.ts",
+      "gitBlob": "a283270e9574dd20ce976dc31366431ee02ddaba",
+      "rawSha256": "f7cd482ab2be7e337db36d3376b1922fb1c37eb3d82b3e812e4f88dcc6107232",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/high-orbit-effects.ts",
+      "gitBlob": "ac84bd8c7ec018944dc57fd30af925cbb51f2d39",
+      "rawSha256": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/high-orbit-motion.ts",
+      "gitBlob": "151cdfeffd9b21d509cb196b034c593683e94ab0",
+      "rawSha256": "e01e337504e596aa7acb3128dabdb8237d66273cd52b6cfd5246a605567878b0",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/high-orbit-parts.ts",
+      "gitBlob": "2058a51daf7fd7b41c742e1e77d4f807255e37b9",
+      "rawSha256": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/high-orbit.ts",
+      "gitBlob": "aed3f0051ef9421f98ec00d5f233d3b9d4acf8bc",
+      "rawSha256": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/mission-rng.ts",
+      "gitBlob": "b5688866caaa399a9d214066621ff006ddd00225",
+      "rawSha256": "eb14937ac978b97d238aeb5794226e3634d30f6571fba535567f6728fb6329a7",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/planet-contrast.ts",
+      "gitBlob": "4471fe6e7f8b0421e7da23f7a0c19b6e6efadafe",
+      "rawSha256": "421ec498ea1d79ef76c85ab8ca080deca651800515d593b093b15cfac086090d",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/planet-family.ts",
+      "gitBlob": "bde6f24611b1b9761607d159c951beda5031510e",
+      "rawSha256": "8f219a4c8af03a7cfae87bcc2a311e3a39d69063d43678b3bc94bc99548ebe96",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/platform.ts",
+      "gitBlob": "eb58e309cbb84b3fc7ad8e90cdb2c1b1365a615e",
+      "rawSha256": "b1217dbdbd2f9f21cd3955ce181a612d90cb75d846bb159f09248dc408a260d7",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/premium-flight-frames.ts",
+      "gitBlob": "0e211f67b15c99952a1119fcf4560a99b5937776",
+      "rawSha256": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/premium-flight.ts",
+      "gitBlob": "a422a892e28ad022662d0b0d152e949f68c404c1",
+      "rawSha256": "5e2b2f654cbdb06cefed4b6026bf99db7a1eb2f6a245647c620805221a52a4fb",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/race-gesture.ts",
+      "gitBlob": "b5ee8dc70dd454f235ec3fbb0f292fafec8823b0",
+      "rawSha256": "2b6ed437f86cc6a7c82496c2b9cd0910aaf9cbf98e7f6b7eac85b4d3f79845e2",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/race-viewport.ts",
+      "gitBlob": "0eb97e0250ab17c7afc7f60da7aa8ea9b21f1cdb",
+      "rawSha256": "662183bce7ec9684124a1952afd248b4fbf5cdd87397c560da426fadd07b3d51",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/race.ts",
+      "gitBlob": "eed7a198955ceb7a1e1ee28cf6e770c0d8d3e162",
+      "rawSha256": "17cdd2a8b935aa8b01d62b5825c0d672c57461894075473e28a54ee85c120d07",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/retro.ts",
+      "gitBlob": "76c71ff30610591d00581912bbef7a62c86926cd",
+      "rawSha256": "1c8221f7def256764a6d1de832e51c0583456301634c6d0e7672c73b8fe865c8",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/rig-limb-fit.ts",
+      "gitBlob": "6d43c7e7ed22982a9bfca705b00c850f9791c931",
+      "rawSha256": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/save.ts",
+      "gitBlob": "9e70a7331d5cbd854821f733842dfa699e634fc0",
+      "rawSha256": "c87b5c4b725e9d829f3afb0e5aa047d3248a7ab54c03ad68175647c91ebfc745",
+      "unchanged": false
+    },
+    {
+      "path": "illustrated-src/game/sim.ts",
+      "gitBlob": "5e59c5918210597b4c262a2aeff8c6a42b87fb5f",
+      "rawSha256": "4836a86c7b1fe9c2df26516402b5c8ae53cb8c7a6d1c8e8c847204a10e711d11",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/sky-gen.ts",
+      "gitBlob": "aed580d5160c47539a5e518ebffd68c630a6509b",
+      "rawSha256": "f3e938f9186d71f84e6cd35107914393c9de24e47c3e1f9e120d8f36de97815f",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-appearance.ts",
+      "gitBlob": "74ec9a28be871c8a1e48364a9b9ab67db8aafb20",
+      "rawSha256": "fa2c0fb5fac0687591fed9053fcab1562897311e1791859debc649afd4a8c407",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-content.ts",
+      "gitBlob": "78669646778e32597adbf8da0cfd82d6763b1d2a",
+      "rawSha256": "eb0a9f34123011d701178c983e314d96850e16e17e848720c4cf6bf08547dd3a",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-control-art.ts",
+      "gitBlob": "c416b999d61c7c9b88d230048d4e71398b01a82e",
+      "rawSha256": "62411964c8853b5373fd5a53cf0c126cc7aea2eb49617493599b189727ee1913",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-depot-bear.ts",
+      "gitBlob": "a0ee63b0c1ae85cf2dd87097a14e749b7f91e7fa",
+      "rawSha256": "3aac30dba9e0e21848188d1b3e74f68c7fedd39aab9f503f4f9e0748bfb02bbe",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-depot-gag.ts",
+      "gitBlob": "4a8942901386aa03165294df6cb0db916fb85cfc",
+      "rawSha256": "e5899a33a6cb8981baa3dd1c6098bb426b27b903306f5ba87d1d4ad3a4ece172",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-presentation.ts",
+      "gitBlob": "5132b8290591071ff4347774a6759a61e2d53578",
+      "rawSha256": "5d63ec10df0b0507c2e2fb5406e84e9dfe57b127d2699ea95b239f80cbdca27c",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill-workshop.ts",
+      "gitBlob": "5059143ccea7db08000790dabbaed01238d1f5e7",
+      "rawSha256": "bd241e594a3b9ee188301764f6b2a036c40961b950b4f1a53583db05abc00d95",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/spill.ts",
+      "gitBlob": "751b9a1e2abe313486e693466c55ead25576d620",
+      "rawSha256": "22f30eb11ec5e6cbbf6b2191007493d6ff9dc73a57ad03c01515b20dd6304b7f",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/star-map-rewards.ts",
+      "gitBlob": "37cf0f0f3582f67942fde2d46268fc5fb8a888bd",
+      "rawSha256": "d63453d4a16f7f21c4b99b9b54206f6011d19085029197c0a055fdf8dd7a23a8",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/star-map-view.ts",
+      "gitBlob": "78729e87e66de445645017004d5f2be31d882967",
+      "rawSha256": "2372d0f7c05376d563fe35359bd89547a4b646a7e4f4bd8e1d5e683f1a84c401",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/vanguard-maneuver.ts",
+      "gitBlob": "dd7cf1101bdcd444b85a670c6af9d132fa523113",
+      "rawSha256": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/vanguard-parts.ts",
+      "gitBlob": "b8cf2831a0096f058b060b87b20e4c605a22b2b1",
+      "rawSha256": "4ebad2d4c5267e924db78a5133a43959d5a1c5867014d10be54347c57fd43324",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/vanguard-rig.ts",
+      "gitBlob": "2259543003fa46e0c006eca9a9db4e5851dc3d44",
+      "rawSha256": "1fdc7391707af2e5943a624bd1b0880cff187ba59c8d075bb4750d712c0ac929",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/vanguard.ts",
+      "gitBlob": "efeb4ba00f99f3427bcc4d2a52cd9a334f2a5e25",
+      "rawSha256": "21ace5a870bec551bd4e9b02c7aa37246092bb79026c594fcbb6802a92455876",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/zone-planet-colors.ts",
+      "gitBlob": "ecd45fe4efd8b558143b410afa17afc7b15516e0",
+      "rawSha256": "4e0037240c055e7f169f3ea69798c3ef6bda39eb4e9f860b47aa74df46c52b1a",
+      "unchanged": true
+    },
+    {
+      "path": "illustrated-src/game/zone-visuals.ts",
+      "gitBlob": "6fae6631938cd2d3fe9767446666372e1a77e2ef",
+      "rawSha256": "86325e29f27fe7b5810d6fbefb6f734808916b0284a3ddc909e19a4234b37597",
+      "unchanged": true
+    }
+  ],
+  "finalEditedSourceHashes": [
+    {
+      "path": "illustrated-src/game/catalog.ts",
+      "sha256": "dcdb6f0ec43c4e34847a35df1c1c9734d12275ff6edbabc889f0bb29406bc09d"
+    },
+    {
+      "path": "illustrated-src/game/standalone.ts",
+      "sha256": "1040d8be9e75a7d88c6f139777a5127e087426d06c19037065586e11a1f26032"
+    },
+    {
+      "path": "illustrated-src/game/art.ts",
+      "sha256": "e6b0a28d43fa967a5e23250f145984362c2ace68045d7cbf612930d0882d2b9f"
+    },
+    {
+      "path": "illustrated-src/game/save.ts",
+      "sha256": "c87b5c4b725e9d829f3afb0e5aa047d3248a7ab54c03ad68175647c91ebfc745"
+    },
+    {
+      "path": "illustrated-src/game/engine.ts",
+      "sha256": "45cc4820e72294f98d9641c26f18bb89809bb2ba528946a970881f9f92419ced"
+    },
+    {
+      "path": "illustrated-src/export-sandbox.mjs",
+      "sha256": "f300bc1144ed1e21955297ebb42c3c27c0698a1314aee6551faa4473fbf9f6a0"
+    },
+    {
+      "path": "docs/index.html",
+      "sha256": "ca6ba4ec99a52c11b26b0cc46efa3520dd9f143a02df106b7047de834ae73988"
+    },
+    {
+      "path": "docs/beta/index.html",
+      "sha256": "f563455909613e83d2cda470d776591d7371ac66d014dcaba9ed48da2bd99573"
+    }
+  ],
+  "economy": {
+    "ownershipIds": 35,
+    "ownershipIdsUnchanged": true,
+    "cashOffersUnchanged": true,
+    "fixedSingles": [
+      {
+        "id": "arcflash",
+        "dust": 1850
+      },
+      {
+        "id": "porcelain",
+        "dust": 1000
+      },
+      {
+        "id": "nacre",
+        "dust": 1000
+      },
+      {
+        "id": "origamist",
+        "dust": 1000
+      }
+    ],
+    "retainedOffers": [
+      {
+        "id": "bundle-premium-trio",
+        "before": 2500,
+        "after": 2500
+      },
+      {
+        "id": "bundle-aurora",
+        "before": 720,
+        "after": 720
+      },
+      {
+        "id": "bundle-regalia",
+        "before": 900,
+        "after": 900
+      },
+      {
+        "id": "bundle-circuit",
+        "before": 450,
+        "after": 450
+      },
+      {
+        "id": "bundle-critters",
+        "before": 410,
+        "after": 410
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle-premium-trio",
+        "products": [
+          "porcelain",
+          "nacre",
+          "origamist"
+        ],
+        "quote": {
+          "retail": 3000,
+          "offer": 2500,
+          "credit": 0,
+          "due": 2500,
+          "savings": 500,
+          "discountPercent": 16.7
+        }
+      },
+      {
+        "id": "bundle-aurora",
+        "products": [
+          "cryostar",
+          "verdant",
+          "eclipse",
+          "prismwing"
+        ],
+        "quote": {
+          "retail": 1170,
+          "offer": 720,
+          "credit": 0,
+          "due": 720,
+          "savings": 450,
+          "discountPercent": 38.5
+        }
+      },
+      {
+        "id": "bundle-regalia",
+        "products": [
+          "gemmie",
+          "sammie",
+          "seraph",
+          "leviathan",
+          "clockwork",
+          "clockling"
+        ],
+        "quote": {
+          "retail": 1620,
+          "offer": 900,
+          "credit": 0,
+          "due": 900,
+          "savings": 720,
+          "discountPercent": 44.4
+        }
+      },
+      {
+        "id": "bundle-circuit",
+        "products": [
+          "cyber",
+          "volt",
+          "robo",
+          "nightglider"
+        ],
+        "quote": {
+          "retail": 900,
+          "offer": 450,
+          "credit": 0,
+          "due": 450,
+          "savings": 450,
+          "discountPercent": 50
+        }
+      },
+      {
+        "id": "bundle-critters",
+        "products": [
+          "raccoon",
+          "ferret",
+          "hedgehog"
+        ],
+        "quote": {
+          "retail": 810,
+          "offer": 410,
+          "credit": 0,
+          "due": 410,
+          "savings": 400,
+          "discountPercent": 49.4
+        }
+      },
+      {
+        "id": "bundle-cosmic-companions",
+        "products": [
+          "magnetar",
+          "babyalien",
+          "satellite"
+        ],
+        "quote": {
+          "retail": 270,
+          "offer": 200,
+          "credit": 0,
+          "due": 200,
+          "savings": 70,
+          "discountPercent": 25.9
+        }
+      },
+      {
+        "id": "bundle-starlight-companions",
+        "products": [
+          "spacepuppy",
+          "astrafox",
+          "switchback"
+        ],
+        "quote": {
+          "retail": 270,
+          "offer": 200,
+          "credit": 0,
+          "due": 200,
+          "savings": 70,
+          "discountPercent": 25.9
+        }
+      },
+      {
+        "id": "bundle-visor-collection",
+        "products": [
+          "amethyst",
+          "ivoryguard",
+          "reactor"
+        ],
+        "quote": {
+          "retail": 270,
+          "offer": 200,
+          "credit": 0,
+          "due": 200,
+          "savings": 70,
+          "discountPercent": 25.9
+        }
+      }
+    ]
+  },
+  "shippingShopAssets": [
+    "bundle-aurora.png",
+    "bundle-circuit.png",
+    "bundle-cosmic-companions.png",
+    "bundle-critters.png",
+    "bundle-premium-trio.png",
+    "bundle-regalia.png",
+    "bundle-starlight-companions.png",
+    "bundle-visor-collection.png",
+    "shop-nebula.png",
+    "stardust-emblem.png"
+  ],
+  "result": "PASS"
+}

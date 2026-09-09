@@ -4,7 +4,7 @@
  *  Packs overlap on purpose, so what a pack costs depends on what the pilot
  *  already owns - and that is exactly the kind of arithmetic that looks
  *  right in a card and is wrong in the ledger. This proves the price the
- *  shelf shows, the weighting behind it, and that a day's shelf is a
+ *  shelf shows, full ownership credit, and that a day's shelf is a
  *  function of the DATE and nothing the pilot can touch.
  */
 globalThis.window = { location: { href: "http://local/" }, devicePixelRatio: 1,
@@ -15,7 +15,8 @@ globalThis.document = { createElement: () => ({ getContext: () => null, style: {
 const C = await import("../docs/js/catalog.js");
 const { BUNDLES, ITEM_WEIGHT, bundleIds, bundleWeight, bundlePrice, shopBundles,
         SHOP_SLOTS, SHOP_DAY_MS, IAP_ITEMS,
-        idDust, idGrants, alaCarteTotal, featurePrice, DUST_STICKER, SHOP_CYCLE } = C;
+        idDust, idGrants, alaCarteTotal, featurePrice, bundleQuote, bundleProductIds,
+        FIXED_SHOP_SUIT_IDS, DUST_STICKER, SHOP_CYCLE } = C;
 
 const fail = [];
 const ok = (c, m) => { if (!c) fail.push(m); };
@@ -24,44 +25,44 @@ const none = () => false;
 const byId = (id) => BUNDLES.find((b) => b.id === id);
 const DAY = SHOP_DAY_MS;
 
-// ---- weights and the sticker -------------------------------------------
+// ---- one kit quote for both purchase entry points ----------------------
 for (const b of BUNDLES) {
-  ok(b.items.length > 0, `${b.name} is empty`);
-  ok(bundlePrice(b, none) === b.dust,
-    `${b.name} with nothing owned should cost its sticker ${b.dust}, got ${bundlePrice(b, none)}`);
+  ok(bundleProductIds(b).length >= 3, `${b.name} needs at least three distinct products`);
+  ok(bundlePrice(b, none) === featurePrice(b, none),
+    `${b.name} direct checkout must charge the actual Shop offer`);
+  ok(bundlePrice(b, none) === bundleQuote(b, none).offer,
+    `${b.name} must charge its editable kit quote`);
   ok(bundlePrice(b, () => true) === 0, `${b.name} fully owned should cost nothing`);
   const w = b.items.reduce((n, i) => n + ITEM_WEIGHT[i.kind], 0);
   ok(bundleWeight(b) === w, `${b.name} weight mismatch`);
 }
 
-// ---- a suit is worth three of anything else ----------------------------
+// ---- shared ownership IDs and free trails are counted once -------------
 {
   const aurora = byId("bundle-aurora");
   const total = bundleWeight(aurora);
-  const suitOnly = bundlePrice(aurora, owner("cryostar"));      // suit AND helm share the id
+  const suitOnly = bundlePrice(aurora, owner(idGrants("cryostar")));
   const trailOnly = bundlePrice(aurora, owner("celestialtide"));
-  const offSuit = aurora.dust - suitOnly, offTrail = aurora.dust - trailOnly;
-  // cryostar clears a suit (3) and its helmet (1); celestialtide clears a trail (1)
-  ok(Math.abs(offSuit / offTrail - 4) < 0.35,
-    `a suit+helmet should take about 4x a trail off, got ${offSuit} vs ${offTrail}`);
-  ok(suitOnly < aurora.dust && suitOnly > 0, "a part-owned pack must still cost something");
+  const offer = bundlePrice(aurora, none);
+  ok(offer === 720 && suitOnly === 360,
+    `the 720 Aurora offer credits the full 360 Cryostar purchase, got ${suitOnly}`);
+  ok(trailOnly === offer, "a free trail must not be credited again while its granting suit is unowned");
   ok(total === 16, `Aurora should weigh 16 (3 suits, 3 helms, 3 trails, 1 pal), got ${total}`);
 }
 
 // ---- the cross-pack discount, which is the whole point ------------------
 {
   const circuit = byId("bundle-circuit");
-  const robo = byId("bundle-robo");
-  const cyber = byId("bundle-cyber");
-  const afterCircuit = owner(bundleIds(circuit));
-  ok(bundlePrice(robo, afterCircuit) === 0,
-    `Robo & Glider is entirely inside Circuit, so owning Circuit must make it free/gone`);
-  const cyberDue = bundlePrice(cyber, afterCircuit);
-  ok(cyberDue > 0 && cyberDue < cyber.dust,
-    `Cyber & Clockwork should be discounted, not free: got ${cyberDue} of ${cyber.dust}`);
-  // cyber suit (3) owned, clockwork trail (1) not -> a quarter of the weight left
-  ok(Math.abs(cyberDue - Math.round(cyber.dust / 4 / 10) * 10) < 1,
-    `Cyber & Clockwork should cost about a quarter, got ${cyberDue}`);
+  const afterCircuit = owner(bundleIds(circuit).flatMap(idGrants));
+  ok(afterCircuit("robo") && afterCircuit("nightglider") && afterCircuit("cyber") && afterCircuit("clockwork"),
+    "Circuit includes both retired duos, including Cyber's free Clockwork wake");
+  const twoSuitsOwned = owner("robo", "cyber", "clockwork");
+  ok(bundlePrice(circuit, twoSuitsOwned) === 0 && !bundleIds(circuit).every(twoSuitsOwned),
+    "full retail credit may cover a remaining item without making it already owned");
+  const companions = byId("bundle-cosmic-companions");
+  ok(bundlePrice(companions, none) === 200 && bundlePrice(companions, owner("magnetar")) === 110 &&
+    bundlePrice(companions, owner("magnetar", "babyalien")) === 20,
+    "new companion collections credit each 90-Stardust item at its complete retail value");
 }
 
 // ---- the shelf is the date's, not the pilot's --------------------------
@@ -108,15 +109,9 @@ for (const b of BUNDLES) {
 }
 
 // ---- and now the prices the storefront ACTUALLY charges -----------------
-// Everything above this line prices the old tabbed shop, and `drawShop` has
-// opened with `return drawShopBeta()` since the storefront shipped - so no
-// pilot has reached a single number it proves. The audit found the live
-// path with no test at all: the storefront prices singles with `idDust`
-// and packs with `featurePrice` struck off what the same ids cost one at a
-// time, and until this block FEATURE_DISCOUNT or DUST_PER_WEIGHT could be
-// changed to anything whatever and the suite still printed green. The
-// day's deal still lives in standalone.ts as `shopCycle`, out of a
-// harness's reach; these are the rules that can be imported.
+// Both purchase helpers now use the same kit quote. The old hashed shelf
+// above remains a compatibility helper; the UI regression separately
+// exercises the actual standalone shopCycle and real checkout events.
 {
   // the single-item rate, pinned at real numbers rather than restated as
   // its own formula: a suit on its own, a suit that carries its helmet on
@@ -131,14 +126,15 @@ for (const b of BUNDLES) {
   // Fixed pilots use the current storefront's daily pinned singles row.
   // Their entitlement and full sticker must be available independently of
   // whether their bundle happens to appear in the legacy hashed sample.
-  for (const b of BUNDLES.filter((pack) => pack.fixed)) {
-    ok(b.items.length === 1 && b.items[0].kind === "suit", `${b.name} must sell one complete pilot`);
-    const id = b.items[0]?.id;
-    ok(C.SUITS.some((suit) => suit.id === id && !suit.beta) && IAP_ITEMS.includes(id), `${b.name} must be a production premium suit`);
-    ok(DUST_STICKER[id] === b.dust && idDust(id) === b.dust, `${b.name} must carry its pinned single-item sticker`);
-    ok(featurePrice(b, none) === b.dust, `${b.name} must never discount its fixed sticker`);
-    ok(idGrants(id).includes(id), `${b.name} must grant its pilot entitlement`);
-    ok(C.SUIT_SHELF.some((shelf) => shelf.shop && shelf.ids.includes(id)), `${b.name} must have a Hangar shop entry`);
+  ok(JSON.stringify(FIXED_SHOP_SUIT_IDS) === JSON.stringify(["arcflash", "porcelain", "nacre", "origamist"]),
+    "the fixed-price pilots remain explicit individual offers");
+  for (const id of FIXED_SHOP_SUIT_IDS) {
+    const sticker = id === "arcflash" ? 1850 : 1000;
+    ok(C.SUITS.some((suit) => suit.id === id && !suit.beta) && IAP_ITEMS.includes(id), `${id} must be a production premium suit`);
+    ok(DUST_STICKER[id] === sticker && idDust(id) === sticker, `${id} must carry its pinned single-item sticker`);
+    ok(!byId(`bundle-${id}`), `${id} is a single item, never a pretend bundle`);
+    ok(idGrants(id).includes(id), `${id} must grant its pilot entitlement`);
+    ok(C.SUIT_SHELF.some((shelf) => shelf.shop && shelf.ids.includes(id)), `${id} must have a Hangar shop entry`);
   }
 
   // a set trail is never sold, it is handed over with the suit
@@ -146,7 +142,6 @@ for (const b of BUNDLES) {
     "buying Cryostar must hand over Celestial Tide with it");
   ok(SHOP_CYCLE.trails === 0, "the singles shelf must deal no trails: they come with the set");
 
-  const weightSum = (ids, owns) => ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
   for (const b of BUNDLES) {
     const ids = bundleIds(b);
     const due = featurePrice(b, none);
@@ -154,22 +149,19 @@ for (const b of BUNDLES) {
     ok(due <= alaCarteTotal(ids, none),
       `${b.name} featured at ${due} must never cost more than buying it singly (${alaCarteTotal(ids, none)})`);
     ok(featurePrice(b, () => true) === 0, `${b.name} fully owned must be free`);
-    if (b.fixed || b.featuredAtSticker) {
-      ok(due === bundlePrice(b, none), `${b.name} must retain its owner-set pack price`);
-      continue;
-    }
-    // HALF, written out as half rather than as FEATURE_DISCOUNT, so that
-    // moving the constant is caught instead of being agreed with
-    ok(due === Math.max(10, Math.round(weightSum(ids, none) / 2 / 10) * 10),
-      `${b.name} should feature at half its contents, got ${due} of ${weightSum(ids, none)}`);
+    ok(due === bundlePrice(b, none), `${b.name} must use the same price in both checkout paths`);
     ok(due > 0, `${b.name} still owes something, so it must never feature at nothing`);
   }
 
-  // half of what REMAINS: a pack whose suit is already in the wardrobe has
-  // to get cheaper, or the pilot pays for that suit twice
+  // The configured offer is preserved; ownership is credited afterward at
+  // full individual retail, without rounding or a negative cash refund.
   const aurora = byId("bundle-aurora");
   ok(featurePrice(aurora, owner("cryostar")) < featurePrice(aurora, none),
     "a part-owned pack must feature for less than the same pack untouched");
+  const trio = byId("bundle-premium-trio");
+  ok(featurePrice(trio, none) === 2500 && featurePrice(trio, owner("porcelain")) === 1500 &&
+    featurePrice(trio, owner("porcelain", "nacre")) === 500,
+    "trio ownership credits each complete 1000-Stardust pilot at full retail");
 }
 
 // ---- the first shelf a new pilot ever sees ------------------------------

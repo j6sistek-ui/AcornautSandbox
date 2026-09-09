@@ -86,6 +86,8 @@ for (const name of readdirSync(join(pages, "js"))) {
 
 // Keep the loading portrait registered pixel-for-pixel with this renderer.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-arcflash-portrait.mjs")], { cwd: root, stdio: "inherit" });
+// Read the freshly compiled bundle-kit registry, never a stale catalog.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-shop-art.mjs")], { cwd: root, stdio: "inherit" });
 
 // the cache-stamped copy the loader actually imports
 const stamped = join(pages, `js${ver}`);

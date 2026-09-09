@@ -1379,16 +1379,118 @@
       align-items: flex-end; gap: 1px; }
     .ac-card.ac-featurecard .ac-wasprice { margin: 0; }
     .ac-card.ac-featurecard .ac-bundlecount { position: static; align-self: flex-end; }
-    /* Three pilots need their own artwork row in the narrow Shop column. */
-    .ac-card.ac-featurecard.ac-premiumtrio { display: grid;
-      grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
-    .ac-card.ac-premiumtrio .ac-bundlestrip { grid-column: 1 / -1;
-      justify-self: start; max-width: none; gap: 4px; }
-    .ac-card.ac-premiumtrio .ac-bundlestrip img,
-    .ac-card.ac-premiumtrio .ac-bundlestrip canvas { width: 54px; height: 54px; }
-    .ac-card.ac-premiumtrio .ac-modtxt { grid-column: 1; align-self: start; }
-    .ac-card.ac-premiumtrio .ac-modprice { grid-column: 2; align-self: start; padding-top: 2px; }
-    .ac-card.ac-premiumtrio .ac-bundlecount { grid-column: 1 / -1; justify-self: end; }
+    /* Shop-only presentation. The Hangar and gameplay keep their existing chrome. */
+    .ac-menu.ac-shopbeta.ac-shopvisual { background:
+      linear-gradient(180deg, rgba(11,5,28,.78), rgba(10,5,23,.93)),
+      var(--shop-nebula) center top / cover, #100820; }
+    .ac-shopvisual .ac-menuhead { border-bottom: 1px solid rgba(232,193,113,.2); }
+    .ac-shopvisual .ac-menutitle { color: #ffe7a8; text-shadow: 0 2px 0 #593c13, 0 0 22px rgba(225,170,65,.26); }
+    .ac-shopvisual .ac-shopcase { border-color: rgba(220,178,102,.7);
+      background: radial-gradient(ellipse at 50% 12%, rgba(127,73,184,.35), transparent 65%), #160c2d;
+      box-shadow: inset 0 1px 1px rgba(255,226,165,.22), 0 10px 28px rgba(7,2,19,.5); }
+    .ac-shopvisual .ac-casecorner { border-color: #d8b477; }
+    .ac-shopvisual .ac-casebeam { background: radial-gradient(ellipse at 50% 0%, rgba(172,115,232,.29), transparent 70%); }
+    .ac-shopvisual .ac-casefloor { background: radial-gradient(ellipse, rgba(172,121,226,.4), transparent 70%); }
+    .ac-shopvisual .ac-caseplate { border-top-color: rgba(214,174,110,.32); background: linear-gradient(#211135, #110923); }
+    .ac-shopvisual .ac-caseplate b { color: #fff0ce; }
+    .ac-shopvisual .ac-caseeyebrow { color: #e6c58e; }
+    .ac-shopvisual .ac-casetag { color: #e1c9f5; border-color: rgba(220,180,115,.45); background: rgba(31,14,54,.88); }
+    .ac-shopvisual .ac-shelfhead { margin-top: 16px; color: #ead5a4; letter-spacing: .16em; }
+    .ac-shopvisual .ac-sub, .ac-shopvisual .ac-fine { color: #c1b6d7; }
+    .ac-shopvisual .ac-shelfrow { gap: 10px; padding: 4px 3px 12px; }
+    .ac-shopvisual .ac-card.ac-shoptile { flex: 0 0 116px; width: 116px; min-width: 0;
+      justify-content: flex-start; gap: 7px; padding: 10px 7px 9px; border-radius: 14px;
+      border: 1px solid rgba(221,188,126,.64);
+      background: linear-gradient(145deg, rgba(103,57,146,.55), rgba(22,12,45,.96) 52%, rgba(52,27,75,.9));
+      box-shadow: inset 0 1px 1px rgba(255,238,187,.34), inset 0 -2px 5px rgba(5,2,16,.8), 0 5px 12px rgba(0,0,0,.25);
+      text-shadow: none; }
+    .ac-shopvisual .ac-shoptile.ac-premium::after { content: none; }
+    .ac-shopvisual .ac-shoptile .ac-tilename { min-height: 2.4em; display: flex; align-items: center; justify-content: center;
+      width: 100%; color: #fff0ce; font-size: 11px; line-height: 1.2; }
+    .ac-shopvisual .ac-shoptile .ac-tileprice { margin-top: auto; min-height: 25px; width: 100%; border-radius: 8px;
+      color: #f0d7ff; background: rgba(8,3,24,.65); border-top: 1px solid rgba(196,156,251,.3); }
+    .ac-shopvisual .ac-shoptile .ac-tileprice.owned { color: #9eedc2; }
+    .ac-shopvisual .ac-shoptile .ac-tilebonus { display: none; }
+    .ac-shopvisual .ac-shoptile.on, .ac-shopvisual .ac-shoptile.ac-previewing { border-color: #ffe1a0;
+      box-shadow: 0 0 0 1px #b78639, inset 0 0 18px rgba(184,117,245,.25), 0 0 15px rgba(191,144,72,.25); }
+    .ac-shopvisual .ac-shopitemart { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1;
+      border-radius: 10px; overflow: hidden;
+      background: radial-gradient(ellipse at 50% 58%, rgba(162,105,224,.3), rgba(20,10,44,.28) 70%); }
+    .ac-shopvisual .ac-shopitemart canvas, .ac-shopvisual .ac-shopitemart img { display: block;
+      width: 100% !important; height: 100% !important; object-fit: contain; }
+    .ac-shopvisual .ac-card.ac-shopoffer { display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0 12px; padding: 0; overflow: hidden; border-radius: 18px; border: 1px solid #b68d51;
+      background: linear-gradient(130deg, #422465, #170d2e 55%, #2b1944);
+      box-shadow: inset 0 1px 0 rgba(255,230,169,.46), 0 8px 24px rgba(2,0,9,.4); }
+    .ac-shopvisual .ac-shopoffer > .ac-bundlebanner { grid-column: 1 / -1; display: block; width: 100%; height: auto; aspect-ratio: 2; object-fit: contain; }
+    .ac-shopvisual .ac-shopoffer > .ac-modname { margin: 0; padding: 14px 0 14px 14px;
+      color: #ffebbd; font: 800 18px/1.15 Fraunces, Georgia, serif; }
+    .ac-shopvisual .ac-shopoffer > .ac-modprice { display: inline-flex; flex-direction: row; align-items: center;
+      gap: 5px; padding: 9px 13px; margin: 9px 10px 9px 0; white-space: nowrap;
+      border: 1px solid rgba(210,157,255,.7); border-radius: 10px; color: #f3dcff;
+      font: 900 17px/1 Figtree, sans-serif; background: linear-gradient(#60318e, #2c1350);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.3), 0 0 12px rgba(176,91,255,.25); }
+    .ac-shopvisual .ac-offersavings { position: absolute; top: 10px; right: 10px; padding: 7px 10px;
+      color: #34200a; font: 900 11px/1 Figtree, sans-serif; letter-spacing: .04em; border-radius: 999px;
+      background: linear-gradient(#ffeab1, #e8b752); border: 1px solid #fff1c7; box-shadow: 0 2px 12px rgba(34,12,4,.45); }
+    .ac-shopvisual .ac-offercredit { grid-column: 1 / -1; margin: 0; color: #dbc5fa; font-size: 11px; text-align: center; }
+    .ac-shopvisual .ac-bundlesummary { margin: 0; color: #d9c9ed; font-size: 12px; line-height: 1.4; }
+    .ac-shopvisual .ac-card.ac-boostcard { border-color: rgba(207,175,115,.6); border-radius: 14px;
+      background: linear-gradient(120deg, rgba(77,41,112,.84), rgba(22,11,42,.96));
+      box-shadow: inset 0 1px 1px rgba(255,229,177,.24), 0 5px 14px rgba(3,0,10,.3); }
+    .ac-shopvisual .ac-boostcard .ac-modname { color: #fff0ce; }
+    .ac-shopvisual .ac-boostcard .ac-modprice { padding: 9px 8px; border-radius: 9px;
+      border: 1px solid rgba(211,162,250,.5); color: #f1dcff; background: rgba(38,15,66,.8); }
+    .ac-shopvisual .ac-boostcard.ac-confirming { border-color: #ffe1a0; }
+    .ac-shopvisual .ac-card.ac-dustrow { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto;
+      gap: 11px; min-height: 82px; padding: 10px; border-radius: 16px; border: 1px solid rgba(194,166,237,.76);
+      background: linear-gradient(105deg, rgba(74,44,110,.94), rgba(18,9,39,.94) 55%, rgba(54,27,82,.95));
+      box-shadow: inset 0 1px 2px rgba(239,215,255,.5), inset 0 -2px 5px rgba(4,1,16,.8), 0 5px 15px rgba(0,0,0,.3); }
+    .ac-shopvisual .ac-dustrow .ac-dustface { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; }
+    .ac-shopvisual .ac-stardust-emblem { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .ac-shopvisual .ac-dustrow .ac-modname { color: #faf0ff; font-size: 13px; }
+    .ac-shopvisual .ac-dustrow .ac-sub { font-size: 10px; line-height: 1.3; }
+    .ac-shopvisual .ac-dustrow .ac-cashprice { display: grid; place-items: center; min-height: 42px;
+      min-width: 72px; max-width: 115px; padding: 10px; border-radius: 13px; border: 1px solid #ffe9a9;
+      color: #311c09; background: linear-gradient(#ffe89b, #edb746 55%, #ca841d); font-size: 15px;
+      box-shadow: inset 0 1px 1px #fff9d8, 0 0 12px rgba(255,180,63,.28); overflow-wrap: anywhere; }
+    .ac-shopvisual .ac-dustrow .ac-cashprice.ac-waiting { font-size: 11px; font-weight: 700; }
+    .ac-shopvisual .ac-dustrow:disabled { opacity: .65; cursor: wait; }
+    .ac-shopvisual .ac-shopreviewsheet { width: min(560px, 100%); margin-inline: auto;
+      border: 1px solid rgba(221,188,126,.68); border-bottom: 0; background:
+      linear-gradient(rgba(23,11,44,.92), rgba(13,6,29,.96)), var(--shop-nebula) center / cover; }
+    .ac-shopvisual .ac-shopreviewsheet .ac-lvlname { color: #ffe9bc; font-size: 26px; line-height: 1.1; }
+    .ac-shopvisual .ac-shopincluded { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .ac-shopvisual .ac-shopincluded > .ac-card { width: 100%; min-width: 0; }
+    .ac-shopvisual .ac-shopincluded .ac-tilename { font-size: 10px; }
+    .ac-shopvisual .ac-featurepreview { padding: 12px 10px; border: 1px solid rgba(185,141,236,.4); border-radius: 16px;
+      background: radial-gradient(ellipse at 50% 45%, rgba(109,61,159,.3), rgba(9,4,25,.78)); text-align: center; }
+    .ac-shopvisual .ac-featurepreviewname { margin: 0; font: 800 18px/1.2 Fraunces, Georgia, serif; color: #ffedc8; }
+    .ac-shopvisual .ac-featurepreview canvas { display: block; width: 100% !important; height: auto !important; max-width: 304px; margin: auto; }
+    .ac-shopvisual .ac-featurepreview .ac-fine { margin: 4px 0 0; }
+    .ac-shopvisual .ac-feature-reviewback { padding: 10px 14px; margin-bottom: 2px; font-size: 12px; letter-spacing: .08em; }
+    .ac-shopvisual button.ac-primary, .ac-shopvisual button.ac-combobuy { min-height: 46px;
+      color: #fff1ff; border: 1px solid #d7a0ff; background: linear-gradient(#a760d8, #6a2aa0 48%, #421b6f);
+      box-shadow: inset 0 1px 1px rgba(255,233,255,.65), inset 0 -2px 2px rgba(30,2,54,.6), 0 0 16px rgba(167,78,244,.3);
+      text-shadow: 0 1px 2px #3e1555; }
+    .ac-shopvisual .ac-combobuy svg { fill: #edcaff; }
+    .ac-shopvisual .ac-featurebuy { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 15px; }
+    .ac-shopvisual button.ac-ghost, .ac-shopvisual button.ac-codeopen { min-height: 44px;
+      background: linear-gradient(rgba(64,34,91,.75), rgba(20,9,43,.92)); border: 1px solid rgba(200,168,237,.45); color: #e9ddfa; }
+    .ac-shopvisual .ac-combobar, .ac-shopvisual .ac-daily { border-color: rgba(207,175,115,.38);
+      background: linear-gradient(120deg, rgba(80,42,115,.48), rgba(14,6,32,.9)); }
+    .ac-shopvisual .ac-daily.done { opacity: 1; }
+    .ac-shopvisual .ac-devbar { border-top-color: rgba(224,184,104,.3); background: rgba(10,4,25,.94); }
+    .ac-shopvisual button:focus-visible { outline: 3px solid #ffe5a4; outline-offset: 3px; }
+    .ac-shopvisual button { transition: border-color .15s, box-shadow .15s; }
+    @media (max-width: 349px) {
+      .ac-shopvisual .ac-card.ac-dustrow { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 7px; padding: 8px; }
+      .ac-shopvisual .ac-dustrow .ac-dustface { width: 44px; height: 44px; }
+      .ac-shopvisual .ac-dustrow .ac-cashprice { min-width: 60px; max-width: 90px; padding: 8px; font-size: 13px; }
+      .ac-shopvisual .ac-shopincluded { gap: 6px; }
+      .ac-shopvisual .ac-shopincluded > .ac-card { padding: 9px 5px 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .ac-shopvisual button { transition: none; } }
     .ac-card.ac-dustrow { width: 100%; min-height: 0; flex-direction: row; align-items: center;
       justify-content: flex-start; gap: 12px; text-align: left; padding: 11px 14px; }
     .ac-card.ac-dustrow .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
@@ -1764,7 +1866,7 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js254/standalone.js")
+    import("../js255/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
