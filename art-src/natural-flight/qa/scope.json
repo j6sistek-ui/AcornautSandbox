@@ -1,0 +1,19 @@
+{
+  "base": "100ca6e",
+  "pandaExcluded": true,
+  "shippingFileCount": 204,
+  "counts": {
+    "copper": 17,
+    "ember": 17,
+    "ferret": 17,
+    "frost": 17,
+    "gemmie": 17,
+    "ghost": 17,
+    "hedgehog": 17,
+    "iontrim": 17,
+    "leviathan": 17,
+    "raccoon": 17,
+    "sammie": 17,
+    "voidsuit": 17
+  }
+}

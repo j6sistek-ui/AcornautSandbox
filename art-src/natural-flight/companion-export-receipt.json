@@ -1,0 +1,616 @@
+{
+  "source": "companions-owner-sheet.jpg",
+  "excluded": "panda",
+  "cell": 160,
+  "context": 8,
+  "output": 256,
+  "characters": {
+    "raccoon": [
+      {
+        "key": "raccoon-loop-1",
+        "sourceRect": [
+          -8,
+          -8,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-2",
+        "sourceRect": [
+          312,
+          -8,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-3",
+        "sourceRect": [
+          632,
+          -8,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-4",
+        "sourceRect": [
+          952,
+          -8,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-5",
+        "sourceRect": [
+          -8,
+          312,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-6",
+        "sourceRect": [
+          312,
+          312,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-7",
+        "sourceRect": [
+          632,
+          312,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-8",
+        "sourceRect": [
+          952,
+          312,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-9",
+        "sourceRect": [
+          -8,
+          632,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-10",
+        "sourceRect": [
+          312,
+          632,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-11",
+        "sourceRect": [
+          632,
+          632,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-12",
+        "sourceRect": [
+          952,
+          632,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-13",
+        "sourceRect": [
+          -8,
+          952,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-14",
+        "sourceRect": [
+          312,
+          952,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-15",
+        "sourceRect": [
+          632,
+          952,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "raccoon-loop-16",
+        "sourceRect": [
+          952,
+          952,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      }
+    ],
+    "hedgehog": [
+      {
+        "key": "hedgehog-loop-1",
+        "sourceRect": [
+          -8,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-2",
+        "sourceRect": [
+          312,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-3",
+        "sourceRect": [
+          632,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-4",
+        "sourceRect": [
+          952,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-5",
+        "sourceRect": [
+          -8,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-6",
+        "sourceRect": [
+          312,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-7",
+        "sourceRect": [
+          632,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-8",
+        "sourceRect": [
+          952,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": [
+          20,
+          98,
+          47,
+          133
+        ],
+        "changedSourceAlphaPixels": 331,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-9",
+        "sourceRect": [
+          -8,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": [
+          7,
+          90,
+          42,
+          132
+        ],
+        "changedSourceAlphaPixels": 525,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-10",
+        "sourceRect": [
+          312,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": [
+          4,
+          88,
+          43,
+          125
+        ],
+        "changedSourceAlphaPixels": 591,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-11",
+        "sourceRect": [
+          632,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": [
+          4,
+          87,
+          42,
+          123
+        ],
+        "changedSourceAlphaPixels": 525,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-12",
+        "sourceRect": [
+          952,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": [
+          3,
+          89,
+          40,
+          124
+        ],
+        "changedSourceAlphaPixels": 371,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-13",
+        "sourceRect": [
+          -8,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-14",
+        "sourceRect": [
+          312,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-15",
+        "sourceRect": [
+          632,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "hedgehog-loop-16",
+        "sourceRect": [
+          952,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      }
+    ],
+    "ferret": [
+      {
+        "key": "ferret-loop-1",
+        "sourceRect": [
+          152,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-2",
+        "sourceRect": [
+          472,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-3",
+        "sourceRect": [
+          792,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-4",
+        "sourceRect": [
+          1112,
+          152,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-5",
+        "sourceRect": [
+          152,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-6",
+        "sourceRect": [
+          472,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-7",
+        "sourceRect": [
+          792,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-8",
+        "sourceRect": [
+          1112,
+          472,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-9",
+        "sourceRect": [
+          152,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-10",
+        "sourceRect": [
+          472,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-11",
+        "sourceRect": [
+          792,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-12",
+        "sourceRect": [
+          1112,
+          792,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-13",
+        "sourceRect": [
+          152,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-14",
+        "sourceRect": [
+          472,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-15",
+        "sourceRect": [
+          792,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      },
+      {
+        "key": "ferret-loop-16",
+        "sourceRect": [
+          1112,
+          1112,
+          176,
+          176
+        ],
+        "tailRegion": null,
+        "changedSourceAlphaPixels": 0,
+        "outsideRepairChanges": 0
+      }
+    ]
+  }
+}

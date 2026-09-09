@@ -1,0 +1,186 @@
+{
+  "method": "Owner's exported-pixel boundaries for the natural-flight replacement.\n\nTail work is the total count of changed premultiplied RGBA pixels farther\nthan two head radii divided by that within 1.2 radii. A pixel changes when\nany channel changes by >24/255; count both empty/ink and painted detail.\nBank transitions use each bank's consecutive pairs; loops include 16 -> 1.\nThis is an explicit implementation of the brief, not a claim to reproduce\nthe unpublished implementation behind its example numbers.",
+  "suits": {
+    "iontrim": {
+      "tailWork": 3.243,
+      "nearChangedInk": 23718,
+      "farChangedInk": 76927,
+      "paintedHeadRadiusRange": [
+        30.46,
+        32.46
+      ],
+      "maxUnexpectedCrownPixels": 6,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        4.02,
+        3.306
+      ]
+    },
+    "copper": {
+      "tailWork": 3.053,
+      "nearChangedInk": 24529,
+      "farChangedInk": 74879,
+      "paintedHeadRadiusRange": [
+        32.42,
+        33.0
+      ],
+      "maxUnexpectedCrownPixels": 0,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.1,
+        1.737
+      ]
+    },
+    "voidsuit": {
+      "tailWork": 3.89,
+      "nearChangedInk": 22887,
+      "farChangedInk": 89027,
+      "paintedHeadRadiusRange": [
+        30.71,
+        32.49
+      ],
+      "maxUnexpectedCrownPixels": 0,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.535,
+        1.403
+      ]
+    },
+    "sammie": {
+      "tailWork": 3.583,
+      "nearChangedInk": 22808,
+      "farChangedInk": 81719,
+      "paintedHeadRadiusRange": [
+        32.12,
+        33.17
+      ],
+      "maxUnexpectedCrownPixels": 8,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.117,
+        2.228
+      ]
+    },
+    "gemmie": {
+      "tailWork": 3.898,
+      "nearChangedInk": 23196,
+      "farChangedInk": 90411,
+      "paintedHeadRadiusRange": [
+        31.69,
+        32.75
+      ],
+      "maxUnexpectedCrownPixels": 7,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        2.23,
+        4.076
+      ]
+    },
+    "leviathan": {
+      "tailWork": 2.986,
+      "nearChangedInk": 24363,
+      "farChangedInk": 72743,
+      "paintedHeadRadiusRange": [
+        32.23,
+        32.41
+      ],
+      "maxUnexpectedCrownPixels": 0,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.096,
+        0.257
+      ]
+    },
+    "ember": {
+      "tailWork": 4.216,
+      "nearChangedInk": 25229,
+      "farChangedInk": 106365,
+      "paintedHeadRadiusRange": [
+        32.52,
+        33.62
+      ],
+      "maxUnexpectedCrownPixels": 12,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.862,
+        3.46
+      ]
+    },
+    "frost": {
+      "tailWork": 3.452,
+      "nearChangedInk": 18577,
+      "farChangedInk": 64120,
+      "paintedHeadRadiusRange": [
+        32.46,
+        33.39
+      ],
+      "maxUnexpectedCrownPixels": 0,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        1.438,
+        1.693
+      ]
+    },
+    "ghost": {
+      "tailWork": 3.659,
+      "nearChangedInk": 15304,
+      "farChangedInk": 55990,
+      "paintedHeadRadiusRange": [
+        31.15,
+        31.77
+      ],
+      "maxUnexpectedCrownPixels": 1,
+      "headXSpan": 0.0,
+      "maxHeadStep": 1.4000000000000057,
+      "headDrift": 0.07500000000000284,
+      "pupilOffsetSpan": [
+        4.396,
+        3.329
+      ]
+    },
+    "raccoon": {
+      "tailWork": 1.577,
+      "nearChangedInk": 61730,
+      "farChangedInk": 97325,
+      "paintedHeadRadiusRange": [
+        40.84,
+        43.83
+      ]
+    },
+    "hedgehog": {
+      "tailWork": 1.41,
+      "nearChangedInk": 48298,
+      "farChangedInk": 68123,
+      "paintedHeadRadiusRange": [
+        38.42,
+        40.45
+      ]
+    },
+    "ferret": {
+      "tailWork": 2.322,
+      "nearChangedInk": 34161,
+      "farChangedInk": 79322,
+      "paintedHeadRadiusRange": [
+        27.33,
+        31.03
+      ]
+    }
+  },
+  "failures": []
+}

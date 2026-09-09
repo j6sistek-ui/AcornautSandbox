@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "baseline": "5acb81cc030480d87dc59ad59758b3c35168ae8a",
+  "build": "248",
+  "productionWearableSuits": [
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "robo",
+    "ghost",
+    "bigbooty",
+    "gemmie",
+    "sammie",
+    "seraph",
+    "leviathan",
+    "verdant",
+    "cryostar",
+    "eclipse",
+    "cinderforge",
+    "groveguard",
+    "cosmic",
+    "sunforged",
+    "abyssal"
+  ],
+  "highOrbitPromotions": [
+    "cinderforge",
+    "groveguard",
+    "cosmic",
+    "sunforged",
+    "abyssal"
+  ],
+  "sourceImagesChecked": 414,
+  "sourceImagesUnchanged": 228,
+  "eclipseTransfers": [
+    "verdant",
+    "cryostar"
+  ],
+  "naturalFlights": [
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "ghost",
+    "gemmie",
+    "sammie",
+    "leviathan"
+  ],
+  "repaintedGlass": [
+    "helms/clear.png"
+  ],
+  "comparisons": 2429,
+  "soloFrames": 3984,
+  "pixelComparisons": 149,
+  "motionFrames": 592,
+  "tapFrames": 64,
+  "acceptedTaps": 155,
+  "gameplayFrames": 3720,
+  "previewFrames": 2016,
+  "bodyDraws": 13182,
+  "helmetDraws": 6413,
+  "limitation": "Native Canvas regression proves unchanged body animation; helmet fit still requires visual review."
+}
