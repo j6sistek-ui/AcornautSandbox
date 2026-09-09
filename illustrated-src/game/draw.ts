@@ -4340,14 +4340,27 @@ function smoothMotionVy(t: number, vy: number) {
 // linear and more hyperbolic". Applied to both ramps so a climb stays
 // symmetrical.
 export const POSE_CURVE = 1.7;
-// THE DIVE IS SHALLOW, FOR EVERY SUIT (owner, 2 Sep 2026: "shallow is the
-// dive answer across the board", "full frames not ascent only"). The two
-// pause-sheet dials that let this be judged mid-run are gone; what they
-// settled on is fixed here. The dive half of the range is halved before
-// the pose curve, so a dive reaches the first THREE frames of its ramp
-// and no deeper (0.5^1.7 = 0.31 of an eight-frame ramp); every frame of
-// the climb flies. The loadout case sweeps exactly this reach.
-export const POSE_DIVE_DEPTH = 0.5;
+// THE DIVE FLIES ITS WHOLE RAMP (owner, 8 Sep 2026: "as long as the frames
+// are there.. then the codes broken", "let me see how it FEELS").
+//
+// This was 0.5, from 2 Sep: "shallow is the dive answer across the board".
+// The complaint behind that ruling was that a MILD dive already sat three
+// frames deep - "pitch at 0 ... is aggressive" - and TWO fixes landed for
+// it on the same day: POSE_CURVE, which holds gentle attitudes in the first
+// frames, and this cap on top of it. The curve alone does the job. The cap
+// was belt and braces, and it cost five of every eight dive frames:
+//
+//   fall px/s      100     200     300     400     500    620+
+//   cap at 0.5     desc-1  desc-1  desc-2  desc-2  desc-2  desc-3
+//   no cap         desc-1  desc-2  desc-3  desc-4  desc-6  desc-8
+//
+// A light dive moves ONE frame. What comes back is the deep end - the
+// frames the sheets were drawn around and the game had never once painted,
+// on 22 suits. Nothing rotates: for a bank suit rigPitch is 0 in the
+// shipped motion mode, so this picks a painted frame and the attitude is
+// whatever the artist drew into it. Raise this back toward 0.5 to shallow
+// the dive again; the loadout case reads the same constant and follows.
+export const POSE_DIVE_DEPTH = 1;
 
 // THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
 // 470 px/s, and the game never gets there - a hard climb peaks near 428, so
@@ -5241,7 +5254,7 @@ export function paintFlightPreview(
     // the lean and the bob follow the same arc: the velocity that would
     // have produced this attitude in play, the dive side at its shallow cap
     vy = sweptPose < 0
-      ? -470 * Math.pow(-sweptPose, 1 / POSE_CURVE)
+      ? -POSE_CLIMB_SPAN * Math.pow(-sweptPose, 1 / POSE_CURVE)
       : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / POSE_DIVE_DEPTH;
     rise = -70 * Math.sin(x * Math.PI * 2);
     rot = Math.max(-0.34, Math.min(0.6, vy / 900));

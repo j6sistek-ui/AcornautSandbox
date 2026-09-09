@@ -224,6 +224,7 @@ try {
       counts.pixelComparisons++;
     }
     counts.comparisons++; counts.bodyDraws+=outputs[1].body.length;counts.helmetDraws+=outputs[1].helmet.length;
+    return poses[1];
   }
   // The five HIGH ORBIT suits have no pre-repair rendering to diff against, so
   // they fly the shipped renderer alone: the body must actually paint and the
@@ -282,11 +283,46 @@ try {
     compare(`${id} static loading fallback`,(renderer,ctx)=>illustrated(renderer,ctx,suit,loading));
     // The actual loadout painter owns its bob, lean, pop, tap timing and
     // bank sweep; compare those transformations over its complete cycles.
+    // THE LOADOUT SWEEP IS NO LONGER COMPARABLE ACROSS VERSIONS, and the
+    // reason is arithmetic rather than tolerance. Its cycle length is
+    // DERIVED from the dive reach:
+    //
+    //   SWEEP = 2 * STEP * (up + down),  down = round(DIVE_DEPTH^CURVE*(N-1)) + 1
+    //
+    // The baseline bundle caps the dive at three frames, so it sweeps
+    // 2*0.13*(7+3) = 2.60s. This build flies the whole ramp, so it sweeps
+    // 2*0.13*(7+8) = 3.90s. Sampling the same wall-clock t therefore reads
+    // two DIFFERENT PHASES of two different-length cycles - the diff would
+    // be comparing unrelated moments and passing or failing by luck.
+    //
+    // So the cross-version diff is dropped HERE ONLY, and replaced with the
+    // property the sweep exists to provide, asserted on this build: it must
+    // actually visit every frame of both ramps. Registration is still
+    // guarded across versions by the FRAME-PINNED sweep above, which pins
+    // each bank and index explicitly and so does not depend on timing at
+    // all - it compares every bank, every frame and every size exactly.
+    const seenAsc=new Set(), seenDesc=new Set();
     for(let tick=0;tick<96;tick++) {
       const time=tick/15;
-      compare(`${id} loadout t=${time}`,(renderer,ctx)=>renderer.paintFlightPreview(ctx,art,suit,helmet,
-        dimensions/2,dimensions/2,256,time,lean,tick>=48,.2),{pixels:tick%4===0});
+      const pose=compare(`${id} loadout t=${time}`,(renderer,ctx)=>renderer.paintFlightPreview(ctx,art,suit,helmet,
+        dimensions/2,dimensions/2,256,time,lean,tick>=48,.2),{pixels:tick%4===0,crossVersion:false});
+      // the lean-editor half (tick>=48) rolls the sim's own clamps instead
+      // of the bank sweep, so only the first half carries the coverage
+      if(pose && tick<48) (pose.bank==='asc'?seenAsc:seenDesc).add(pose.idx);
       counts.previewFrames++;
+    }
+    const ascN=art.suitAsc?.[id]?.length??0, descN=art.suitDesc?.[id]?.length??0;
+    // A SIXTEEN-FRAME TAP BANK OUTRANKS THE SWEEP, by design: paintFlightPreview
+    // only sweeps when `(suitTap[id]?.length ?? 0) !== 16`, because for those
+    // suits the tap IS the showcase and it keeps the beat instead. Flight is
+    // the one suit that carries both, so it flies its tap bank here and has no
+    // sweep to be short of.
+    const tapN=art.suitTap?.[id]?.length??0;
+    if(ascN && descN && tapN!==16) {
+      const missAsc=[...Array(ascN).keys()].map(i=>i+1).filter(i=>!seenAsc.has(i));
+      const missDesc=[...Array(descN).keys()].map(i=>i+1).filter(i=>!seenDesc.has(i));
+      assert.deepEqual(missAsc,[],`${id} loadout: every ascent frame is swept (missing asc ${missAsc.join(',')})`);
+      assert.deepEqual(missDesc,[],`${id} loadout: every descent frame is swept (missing desc ${missDesc.join(',')})`);
     }
   }
 

@@ -51,7 +51,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-08 23:46 UTC";
+export const BUILD_TIME = "2026-09-09 00:20 UTC";
 // the build time stays exported for tooling, and off the visible line
 // a store build wears the bare version: "Alpha" is a web-page word
 export const BUILD = platform.native
