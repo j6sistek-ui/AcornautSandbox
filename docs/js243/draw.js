@@ -4225,7 +4225,12 @@ let motionVyClock = -1;
 // 9/s a tap's -450 impulse crossed zero in about four frames, so the
 // neutral pose flashed by unseen. 5.5/s puts the level frame on screen
 // for ~150ms on the way through, in both directions.
-const POSE_SMOOTH = 5.5;
+// HOW FAST THE POSE FOLLOWS THE CLIMB (owner, 8 Sep 2026: "it had a visual
+// animation"). At 5.5 the smoother ate the tap spike whole: measured over a
+// real run at the owner's own cadence (31 taps in 20s), the pose reached
+// three of eight frames and changed on 2% of frames - a still with a twitch.
+// See POSE_CLIMB_SPAN below for the other half of the fix.
+const POSE_SMOOTH = 24;
 function smoothMotionVy(t, vy) {
     const dt = motionVyClock < 0 || t < motionVyClock ? 0.016 : Math.min(0.05, t - motionVyClock);
     motionVyClock = t;
@@ -4240,14 +4245,38 @@ function smoothMotionVy(t, vy) {
 // linear and more hyperbolic". Applied to both ramps so a climb stays
 // symmetrical.
 export const POSE_CURVE = 1.7;
-// THE DIVE IS SHALLOW, FOR EVERY SUIT (owner, 2 Sep 2026: "shallow is the
-// dive answer across the board", "full frames not ascent only"). The two
-// pause-sheet dials that let this be judged mid-run are gone; what they
-// settled on is fixed here. The dive half of the range is halved before
-// the pose curve, so a dive reaches the first THREE frames of its ramp
-// and no deeper (0.5^1.7 = 0.31 of an eight-frame ramp); every frame of
-// the climb flies. The loadout case sweeps exactly this reach.
-export const POSE_DIVE_DEPTH = 0.5;
+// THE DIVE FLIES ITS WHOLE RAMP (owner, 8 Sep 2026: "as long as the frames
+// are there.. then the codes broken", "let me see how it FEELS").
+//
+// This was 0.5, from 2 Sep: "shallow is the dive answer across the board".
+// The complaint behind that ruling was that a MILD dive already sat three
+// frames deep - "pitch at 0 ... is aggressive" - and TWO fixes landed for
+// it on the same day: POSE_CURVE, which holds gentle attitudes in the first
+// frames, and this cap on top of it. The curve alone does the job. The cap
+// was belt and braces, and it cost five of every eight dive frames:
+//
+//   fall px/s      100     200     300     400     500    620+
+//   cap at 0.5     desc-1  desc-1  desc-2  desc-2  desc-2  desc-3
+//   no cap         desc-1  desc-2  desc-3  desc-4  desc-6  desc-8
+//
+// A light dive moves ONE frame. What comes back is the deep end - the
+// frames the sheets were drawn around and the game had never once painted,
+// on 22 suits. Nothing rotates: for a bank suit rigPitch is 0 in the
+// shipped motion mode, so this picks a painted frame and the attitude is
+// whatever the artist drew into it. Raise this back toward 0.5 to shallow
+// the dive again; the loadout case reads the same constant and follows.
+export const POSE_DIVE_DEPTH = 1;
+// THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
+// 470 px/s, and the game never gets there - a hard climb peaks near 428, so
+// even the best tap asked for 60% of the ramp, which POSE_CURVE then bent
+// down to about 30%. The deep frames of every ascent bank were unreachable
+// art. 260 is measured, not guessed: the pose walks all eight frames and
+// changes on 20% of frames, against the 22% of the spring tail that a motion
+// bank REPLACES (fullMotion suppresses the rig tail, so this ramp is the
+// whole animation for a suit that has one). The dive keeps its own 620 and
+// POSE_DIVE_DEPTH untouched - the shallow dive is the owner's call from
+// 2 Sep and this changes nothing about it.
+export const POSE_CLIMB_SPAN = 260;
 // The RATE-DRIVEN mapping (the hangar A/B switches this on).
 //
 // The shipped mapping poses the body by INSTANTANEOUS vertical speed, and
@@ -4603,7 +4632,7 @@ poseOverride = NaN) {
                 }
                 else {
                     const sv = smoothMotionVy(_t, motionVy);
-                    v = sv < 0 ? -Math.min(1, -sv / 470) : Math.min(1, sv / 620);
+                    v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
                 }
                 // shape the attitude: the dive half shallowed, both halves curved
                 if (v > 0)
@@ -5099,7 +5128,7 @@ pitch = 0) {
         // the lean and the bob follow the same arc: the velocity that would
         // have produced this attitude in play, the dive side at its shallow cap
         vy = sweptPose < 0
-            ? -470 * Math.pow(-sweptPose, 1 / POSE_CURVE)
+            ? -POSE_CLIMB_SPAN * Math.pow(-sweptPose, 1 / POSE_CURVE)
             : (620 * Math.pow(sweptPose, 1 / POSE_CURVE)) / POSE_DIVE_DEPTH;
         rise = -70 * Math.sin(x * Math.PI * 2);
         rot = Math.max(-0.34, Math.min(0.6, vy / 900));
