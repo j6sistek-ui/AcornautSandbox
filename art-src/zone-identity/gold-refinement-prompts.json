@@ -1,0 +1,44 @@
+{
+  "reason": "Keep cellular plates unique to Honeycomb World; remove that motif from amber, dust, and bronze-dune planets.",
+  "assets": [
+    {
+      "id": "golden-hour-planet-1",
+      "name": "Amber Globe",
+      "brief": "translucent-looking honey shell over a clearly solid dark round core",
+      "zone": "GOLDEN HOUR",
+      "env": 11,
+      "palette": "honey / bronze / amber / deep brown",
+      "identity": "Amber light trapped in worlds",
+      "refinement": "The amber/honeycomb illustration reads too molten. Final art should have non-emissive cellular plates and amber material rather than lava glow.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Single production planet cutout for Acornaut: Amber Globe. Smooth translucent amber globe with warm honey-colored resin layers, dark brown inclusions suspended inside, broad smooth surfaces and a subtle golden glint. No cracks or cellular pattern. Warm antique gold and amber palette. Tactile illustrated miniature, upper-left lighting, shaded lower-right hemisphere. Strong spherical core and legible silhouette at 80 pixels. Fill 80 percent of square canvas with generous transparent padding. Genuine transparent alpha background. No honeycomb, no hexagons, no cells, no cracked plates, no lava, no molten glow, no external glow, no background, no extra objects, no text or ground shadow.",
+      "index": 74
+    },
+    {
+      "id": "golden-hour-planet-2",
+      "name": "Dust Halo",
+      "brief": "bronze solid world with one thin pale gold dusty belt",
+      "zone": "GOLDEN HOUR",
+      "env": 11,
+      "palette": "honey / bronze / amber / deep brown",
+      "identity": "Amber light trapped in worlds",
+      "refinement": "The amber/honeycomb illustration reads too molten. Final art should have non-emissive cellular plates and amber material rather than lava glow.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Single production planet cutout for Acornaut: Dust Halo. Dusty ochre miniature planet with smooth fine sand and a delicate narrow equatorial dust ring, smoky brown pole and soft golden lighting. The planetary surface has sweeping dust plains, not rocky plates. Warm antique gold and amber palette. Tactile illustrated miniature, upper-left lighting, shaded lower-right hemisphere. Strong spherical core and legible silhouette at 80 pixels. Fill 80 percent of square canvas with generous transparent padding. Genuine transparent alpha background. No honeycomb, no hexagons, no cells, no cracked plates, no lava, no molten glow, no external glow, no background, no extra objects, no text or ground shadow.",
+      "index": 75
+    },
+    {
+      "id": "golden-hour-planet-3",
+      "name": "Burnished Dunes",
+      "brief": "dark ochre globe with silky bronze dune ridges",
+      "zone": "GOLDEN HOUR",
+      "env": 11,
+      "palette": "honey / bronze / amber / deep brown",
+      "identity": "Amber light trapped in worlds",
+      "refinement": "The amber/honeycomb illustration reads too molten. Final art should have non-emissive cellular plates and amber material rather than lava glow.",
+      "type": "planet",
+      "prompt": "Use case: stylized-concept. Single production planet cutout for Acornaut: Burnished Dunes. A burnished bronze-gold sphere with flowing satin dunes and broad smooth windswept ridges, subtle metallic highlights, a few darker brown valleys. Dunes dominate its surface. Warm antique gold and amber palette. Tactile illustrated miniature, upper-left lighting, shaded lower-right hemisphere. Strong spherical core and legible silhouette at 80 pixels. Fill 80 percent of square canvas with generous transparent padding. Genuine transparent alpha background. No honeycomb, no hexagons, no cells, no cracked plates, no lava, no molten glow, no external glow, no background, no extra objects, no text or ground shadow.",
+      "index": 76
+    }
+  ]
+}

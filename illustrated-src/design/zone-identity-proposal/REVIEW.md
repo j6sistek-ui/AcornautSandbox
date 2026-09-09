@@ -1,5 +1,10 @@
 # Acornaut: 26 distinct destinations
 
+> Historical proposal, approved on 9 September 2026. The implemented families,
+> browser images and current verification are in the
+> [production review](../zone-identity-implementation/README.md).
+> Findings below describe the original audited revision.
+
 **Proposal only Ã‚Â· 9 September 2026 Ã‚Â· audited source `4b15f97fbdfc0e53f60f2536dfe9f64c3a3fe4dd`**
 
 This is an illustrated proposal for all 26 Star Chart zones, not an implemented asset pack. The recommendation is five distinct planets per zone, two or three debris types, no exact cross-zone planet reuse, and a zone-only visual selector. All existing background files, procedural recipes, washes, pan settings, geometry, progression, rewards and saves remain unchanged.

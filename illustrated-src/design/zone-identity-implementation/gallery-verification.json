@@ -1,0 +1,36 @@
+{
+  "assets": {
+    "images": 213,
+    "links": [
+      {
+        "url": "http://127.0.0.1:8770/illustrated-src/design/zone-identity-implementation/README.md",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8770/art-src/zone-identity/roster.json",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8770/art-src/zone-identity/shipping-manifest.json",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8770/illustrated-src/design/zone-identity-implementation/monochrome-void-chart.png",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8770/illustrated-src/design/zone-identity-implementation/monochrome-void-flight.png",
+        "status": 200
+      }
+    ],
+    "sections": 26
+  },
+  "viewports": [
+    1440,
+    390
+  ],
+  "navigation": true,
+  "noOverflow": true,
+  "errors": [],
+  "bad": []
+}

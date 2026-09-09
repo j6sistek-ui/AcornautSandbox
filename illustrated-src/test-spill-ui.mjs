@@ -13,8 +13,8 @@ let clears=0;
 const ctx=new Proxy({canvas:null,clearRect(){clears++;},measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)}),getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0})},{get:(o,k)=>k in o?o[k]:()=>{}});
 win.HTMLCanvasElement.prototype.getContext=function(){const canvas=this;return new Proxy(ctx,{get:(o,k)=>k==='clearRect'?()=>{if(canvas.classList.contains('ac-canvas'))clears++;}:o[k]});};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
-const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=await import(`${root}/docs/js/save.js`),S=await import(`${root}/docs/js/spill.js`);const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';save.introOff=true;save.musicOff=true;save.sfxOff=true;save.spillBest=20;Save.writeSave(save);
-const {bootStandalone}=await import(`${root}/docs/js/standalone.js`);const app=win.document.createElement('main');win.document.body.append(app);await bootStandalone(app);const engine=win.__sandbox;assert(engine);
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=await import(new URL('../docs/js/save.js',import.meta.url).href),S=await import(new URL('../docs/js/spill.js',import.meta.url).href);const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';save.introOff=true;save.musicOff=true;save.sfxOff=true;save.spillBest=20;Save.writeSave(save);
+const {bootStandalone}=await import(new URL('../docs/js/standalone.js',import.meta.url).href);const app=win.document.createElement('main');win.document.body.append(app);await bootStandalone(app);const engine=win.__sandbox;assert(engine);
 function tick(n=1){for(let i=0;i<n;i++){now+=1000/60;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));}}
 function button(text){const b=[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));assert(b,`missing button ${text}: ${app.textContent.slice(0,2400)}`);return b;}
 function control(id){const b=app.querySelector(`[data-spill-control="${id}"]`);assert(b,`missing Depot control ${id}`);return b;}
@@ -89,7 +89,7 @@ const charges=engine.world.spill.lungeCharges;app.querySelector('.ac-lunge').cli
 engine.pause();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();assert.equal(Save.loadSave().spillButtonsOff,true);
 const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
 engine.resume();assert(controls.hidden);engine.spillThrottle(true);assert(!engine.world.spill.held,'hidden controls cannot acquire thrust');
-const Draw=await import(`${root}/docs/js/draw.js`);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
+const Draw=await import(new URL('../docs/js/draw.js',import.meta.url).href);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
 flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
 Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
 engine.pause();app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();engine.resume();assert(!controls.hidden);labels.length=0;Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(labels.includes('TEST INSTRUCTION'));
