@@ -1,4 +1,5 @@
 import type { SpillAppearance } from "./spill-appearance";
+import { highOrbitTrailSuit } from "./high-orbit-config";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
 import { STAR_UNLOCKS,
@@ -342,7 +343,7 @@ export function loadSave(): SaveData {
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";
   // A fixed suit wake never replaces the pilot's selectable trail. Old or
   // imported saves that stored this presentation effect use the starter.
-  if (s.equippedTrail === "arcflashwake") s.equippedTrail = "sparks";
+  if (s.equippedTrail === "arcflashwake" || highOrbitTrailSuit(s.equippedTrail)) s.equippedTrail = "sparks";
   if (!PALS.some((p) => p.id === s.equippedPal)) s.equippedPal = "none";
   if (s.equippedPal !== "none" && !palUnlocked(s, s.equippedPal)) s.equippedPal = "none";
   // the low slot: a real pal, open, not a twin of the high one, not one
@@ -630,6 +631,8 @@ export function trailUnlocked(s: SaveData, id: string) {
   if (id === "vanguardwake") return suitRevealed(s, "vanguard") || s.unlockedTrails.includes(id)
     || starsOf(s) >= (STAR_UNLOCKS.trails[id] ?? Infinity);
   if (id === "arcflashwake") return suitRevealed(s, "arcflash");
+  const orbitSuit=highOrbitTrailSuit(id);
+  if (orbitSuit) return suitRevealed(s, orbitSuit);
   if (STAR_UNLOCKS.trails[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.trails[id]) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.trails[id] === undefined) return true;

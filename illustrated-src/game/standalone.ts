@@ -2,7 +2,8 @@ import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art";
 import { suitPitchFor, type SaveData } from "./save";
 import { platform } from "./platform";
 import { spillAppearance } from "./spill-appearance";
-import { trailWornBy, canWearTrail } from "./catalog";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config";
 import { PLANNED_STAR_REWARDS } from "./star-map-rewards";
 import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
@@ -2146,11 +2147,12 @@ export async function bootStandalone(root: HTMLElement) {
     } else if (engine.shopTab === "trails") {
       if (s.equippedSuit === "vanguard") grid.append(el("p", "ac-sub", "AcorNut carries its own wake. Your previous trail returns when you change suits."));
       if (s.equippedSuit === "arcflash") grid.append(el("p", "ac-sub", "Arcflash carries its own blue electrical wake. Your previous trail returns when you change suits."));
+      if (isHighOrbit(s.equippedSuit)) grid.append(el("p", "ac-sub", `${HIGH_ORBIT_PROFILES[s.equippedSuit].wake} belongs to ${HIGH_ORBIT_PROFILES[s.equippedSuit].name}. Your previous trail returns when you change suits.`));
       // BUILT-IN WAKES (owner, 7 Sep 2026): AcorNut's and Arcflash's trails
       // are part of the character - no other suit can wear them and they
       // cannot be taken off - so they are listed only while that suit is
       // worn, as one fixed card, and never as a choice for anyone else.
-      const builtInOf = (id: string) => id === "vanguardwake" ? "vanguard" : id === "arcflashwake" ? "arcflash" : null;
+      const builtInOf = builtInTrailSuit;
       const trailCard = (t: (typeof TRAILS)[number]) => {
         const premium = isIap(t.id);
         const open = trailUnlocked(s, t.id);
