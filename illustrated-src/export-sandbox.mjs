@@ -135,6 +135,11 @@ const loadoutStyle = `<style id="ac-loadout-css">${readFileSync(join(root, "illu
 shell = shell.includes('<style id="ac-loadout-css">')
   ? shell.replace(/<style id="ac-loadout-css">[\s\S]*?<\/style>/, loadoutStyle)
   : shell.replace("</head>", `${loadoutStyle}\n</head>`);
+// The compact Shop viewer shares one scoped layout on both pages.
+const shopStyle = `<style id="ac-shop-layout-css">${readFileSync(join(root, "illustrated-src/shop-layout.css"), "utf8")}</style>`;
+shell = shell.includes('<style id="ac-shop-layout-css">')
+  ? shell.replace(/<style id="ac-shop-layout-css">[\s\S]*?<\/style>/, shopStyle)
+  : shell.replace("</head>", `${shopStyle}\n</head>`);
 writeFileSync(idx, shell);
 writeFileSync(idx, readFileSync(idx, "utf8")
   .replace(/\.\/js\d+\/standalone\.js/g, `./js${ver}/standalone.js`));

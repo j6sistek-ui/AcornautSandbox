@@ -1,0 +1,112 @@
+
+> acornaut@1.0.12 test
+> node illustrated-src/run-tests.mjs
+
+  ok    test-acornut-collect.mjs  (0.3s)
+  ok    test-arcflash-integration.mjs  (1.6s)
+  ok    test-arcflash-motion.mjs  (0.1s)
+  ok    test-arcflash-render.mjs  (0.4s)
+  ok    test-beta-campaign.mjs  (0.4s)
+  ok    test-boosts.mjs  (0.2s)
+  ok    test-bounce-impact.mjs  (0.2s)
+  ok    test-bundle-kits.mjs  (17.1s)
+  ok    test-bundle.mjs  (0.4s)
+  ok    test-drift.mjs  (0.2s)
+  ok    test-eclipse-motion-transfer.mjs  (2.2s)
+  ok    test-flight-studio.mjs  (3.7s)
+  ok    test-frozen-roster.mjs  (0.3s)
+  ok    test-helmet-animation.mjs  (11.4s)
+  ok    test-helmet-compatibility.mjs  (0.2s)
+  ok    test-helmet-openings.mjs  (0.2s)
+  ok    test-high-orbit-integration.mjs  (1.6s)
+  FAIL  test-high-orbit.mjs  (0.7s)
+  ok    test-hyper-run.mjs  (4.9s)
+  ok    test-level-hud.mjs  (0.2s)
+  ok    test-mission-pals.mjs  (0.3s)
+  ok    test-natural-flight.mjs  (7.5s)
+  ok    test-platform-bridge.mjs  (0.2s)
+  ok    test-premium-pilots.mjs  (8.0s)
+  FAIL  test-premium-pricing.mjs  (1.0s)
+  ok    test-receipts.mjs  (0.2s)
+  ok    test-rig-anatomy.mjs  (0.1s)
+  ok    test-shop-cycle.mjs  (0.3s)
+  ok    test-shop-visuals.mjs  (21.5s)
+  ok    test-shop.mjs  (0.2s)
+  ok    test-spill-progression.mjs  (0.4s)
+  ok    test-spill-render.mjs  (2.6s)
+  ok    test-spill-ui.mjs  (17.3s)
+  ok    test-spill-welcome.mjs  (0.1s)
+  ok    test-spill.mjs  (0.8s)
+  ok    test-star-map-render.mjs  (3.8s)
+  ok    test-star-map-ui.mjs  (52.5s)
+  ok    test-star-map.mjs  (0.9s)
+  ok    test-suit-lean.mjs  (0.0s)
+  ok    test-switchback-render.mjs  (0.5s)
+  ok    test-switchback.mjs  (1.6s)
+  ok    test-tap-recovery.mjs  (0.1s)
+  ok    test-tunnel-controls.mjs  (0.2s)
+  ok    test-tunnel.mjs  (31.5s)
+  ok    test-tutorial.mjs  (0.4s)
+  ok    test-vanguard-depot.mjs  (0.2s)
+  ok    test-vanguard-flight.mjs  (32.0s)
+  ok    test-vanguard-inertia.mjs  (0.1s)
+  ok    test-vanguard-maneuver.mjs  (1.1s)
+  ok    test-vanguard-organic.mjs  (5.3s)
+  ok    test-vanguard-render.mjs  (30.9s)
+  ok    test-vanguard-rig.mjs  (0.5s)
+  ok    test-vanguard.mjs  (2.1s)
+  ok    test-visor-continuity.mjs  (0.5s)
+  ok    test-warp.mjs  (94.1s)
+  ok    test-wormhole-trip.mjs  (0.9s)
+  ok    test-zone-art-loading.mjs  (0.1s)
+  ok    test-zone-families.mjs  (1.1s)
+
+56 passed, 2 failed, 0 skipped, of 58
+
+----- test-high-orbit.mjs
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: cinderforge fallback equals rig pixels at canonical size — 22 of 262144 bytes differ, max channel delta 28, first at byte 64900 (pixel 16225, channel R)
+
+22 !== 0
+
+    at samePixels (file:///app/illustrated-src/test-high-orbit.mjs:32:10)
+    at file:///app/illustrated-src/test-high-orbit.mjs:86:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 22,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.2
+
+----- test-premium-pricing.mjs
+}
+
+Node.js v22.23.2
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /usr/local/bin/node /app/illustrated-src/test-premium-pricing.mjs production
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execFileSync (node:child_process:952:15)
+    at file:///app/illustrated-src/test-premium-pricing.mjs:9:43
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 782,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v22.23.2

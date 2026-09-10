@@ -1,0 +1,238 @@
+CHECK test-shop.mjs
+{
+ "suite": "shop rotation and cross-pack pricing",
+ "packs": [
+  {
+   "id": "bundle-premium-trio",
+   "items": 3,
+   "weight": 9,
+   "dust": 2500,
+   "feature": 2500,
+   "singly": 3000
+  },
+  {
+   "id": "bundle-aurora",
+   "items": 10,
+   "weight": 16,
+   "dust": 900,
+   "feature": 720,
+   "singly": 1170
+  },
+  {
+   "id": "bundle-regalia",
+   "items": 12,
+   "weight": 20,
+   "dust": 1200,
+   "feature": 900,
+   "singly": 1620
+  },
+  {
+   "id": "bundle-circuit",
+   "items": 4,
+   "weight": 10,
+   "dust": 750,
+   "feature": 450,
+   "singly": 900
+  },
+  {
+   "id": "bundle-critters",
+   "items": 3,
+   "weight": 9,
+   "dust": 750,
+   "feature": 410,
+   "singly": 810
+  },
+  {
+   "id": "bundle-cosmic-companions",
+   "items": 3,
+   "weight": 3,
+   "dust": 200,
+   "feature": 200,
+   "singly": 270
+  },
+  {
+   "id": "bundle-starlight-companions",
+   "items": 3,
+   "weight": 3,
+   "dust": 200,
+   "feature": 200,
+   "singly": 270
+  },
+  {
+   "id": "bundle-visor-collection",
+   "items": 3,
+   "weight": 3,
+   "dust": 200,
+   "feature": 200,
+   "singly": 270
+  }
+ ],
+ "shelfToday": [
+  "bundle-starlight-companions",
+  "bundle-visor-collection",
+  "bundle-circuit"
+ ],
+ "shelfTomorrow": [
+  "bundle-critters",
+  "bundle-aurora",
+  "bundle-visor-collection"
+ ],
+ "failures": []
+}
+CHECK test-bundle-kits.mjs
+{"suite":"bundle regrouping beta grant compatibility","scenarios":5,"result":"PASS"}
+{"suite":"bundle kit quotes and full ownership credit","bundles":8,"quoteCases":440,"enginePurchaseCases":880,"zeroCompletions":282,"banners":"verified","result":"PASS"}
+CHECK test-premium-pricing.mjs
+CHECK test-premium-pilots.mjs production
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: porcelain remains separately available with partial ownership
+    at file:///work/illustrated-src/test-premium-pricing.mjs:95:50 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.23.2
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /usr/local/bin/node /work/illustrated-src/test-premium-pricing.mjs production
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execFileSync (node:child_process:952:15)
+    at file:///work/illustrated-src/test-premium-pricing.mjs:9:43
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 44,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v22.23.2
+{
+  "suite": "premium pilot production",
+  "passed": true,
+  "results": [
+    {
+      "id": "porcelain",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "porcelainwake"
+    },
+    {
+      "id": "nacre",
+      "price": 1000,
+      "headPolicy": "helmetless",
+      "wake": "nacrewake"
+    },
+    {
+      "id": "origamist",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "origamistwake"
+    }
+  ]
+}
+CHECK test-premium-pilots.mjs beta
+{
+  "suite": "premium pilot beta",
+  "passed": true,
+  "results": [
+    {
+      "id": "porcelain",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "porcelainwake"
+    },
+    {
+      "id": "nacre",
+      "price": 1000,
+      "headPolicy": "helmetless",
+      "wake": "nacrewake"
+    },
+    {
+      "id": "origamist",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "origamistwake"
+    }
+  ]
+}
+CHECK test-switchback.mjs
+Switchback production: premium store entry, price/payment/equip, saved ownership, legacy retention, the tap-toggled slow and its off switch passed
+Switchback beta: premium store entry, price/payment/equip, saved ownership, legacy retention, the tap-toggled slow and its off switch passed
+CHECK test-arcflash-integration.mjs
+production: Arcflash sold, not absent - locked until bought, then suit+wake; trail exclusion/fallback correct
+beta: equip/menu/trail preservation, no particle RNG, accepted input, phase, pause/freeze/warp/stuck, reset/tutorial isolation, Hyper Run hold/drop and authority isolation, atlas loading passed
+CHECK test-star-map-ui.mjs
+star map UI production: menu navigation, zone families, bounded canvases, engine access and progression passed
+star map UI beta: menu navigation, zone families, bounded canvases, engine access and progression passed
+star map UI sample: menu navigation, zone families, bounded canvases, engine access and progression passed
+CHECK test-spill-ui.mjs
+spill UI: one instructions sheet, guide by request only, all utility cards, atomic swap/refit, purchases, scroll/focus, earned engine colors/migration, rematch selection, save/resume, input/pause, paint budget and Vanguard landing passed
+{
+  "suite": "daily roster related integration",
+  "results": [
+    {
+      "file": "test-shop.mjs",
+      "args": [],
+      "exitCode": 0
+    },
+    {
+      "file": "test-bundle-kits.mjs",
+      "args": [],
+      "exitCode": 0
+    },
+    {
+      "file": "test-premium-pricing.mjs",
+      "args": [],
+      "exitCode": 1
+    },
+    {
+      "file": "test-premium-pilots.mjs",
+      "args": [
+        "production"
+      ],
+      "exitCode": 0
+    },
+    {
+      "file": "test-premium-pilots.mjs",
+      "args": [
+        "beta"
+      ],
+      "exitCode": 0
+    },
+    {
+      "file": "test-switchback.mjs",
+      "args": [],
+      "exitCode": 0
+    },
+    {
+      "file": "test-arcflash-integration.mjs",
+      "args": [],
+      "exitCode": 0
+    },
+    {
+      "file": "test-star-map-ui.mjs",
+      "args": [],
+      "exitCode": 0
+    },
+    {
+      "file": "test-spill-ui.mjs",
+      "args": [],
+      "exitCode": 0
+    }
+  ]
+}

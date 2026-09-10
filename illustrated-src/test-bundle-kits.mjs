@@ -84,7 +84,10 @@ assert.equal(retired.length,15,'thirteen singleton offers and two duos are retir
 assert.deepEqual(C.BUNDLES.map(b=>b.id),[...retained,...Object.keys(collections)],'only the five retained kits and three actual collections remain');
 assert.deepEqual(C.FIXED_SHOP_SUIT_IDS,['arcflash','porcelain','nacre','origamist']);
 assert.deepEqual(C.DUST_PACKS,snapshot.stardustOffers.map(({totalGrant,...pack})=>pack),'cash offers and grants remain unchanged');
-assert.deepEqual(C.SHOP_CYCLE,snapshot.economicConstants.SHOP_CYCLE,'rotation slot counts remain unchanged');
+// The owner replaced the old pinned shelf with a smaller daily roster.
+// Its selection rules are tested independently by test-shop-cycle.mjs;
+// this pricing regression still forbids separately sold bonus wakes.
+assert.equal(C.SHOP_CYCLE.trails,0,'daily stock never sells free set or signature wakes');
 assert.deepEqual([...C.IAP_ITEMS].sort(),snapshot.individualItems.map(item=>item.id).sort(),'all ownership atoms remain available after the bundle regrouping');
 for(const item of snapshot.individualItems){
   assert.equal(C.idDust(item.id),item.dust,item.id+' single price remains unchanged');

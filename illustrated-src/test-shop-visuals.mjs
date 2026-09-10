@@ -97,6 +97,8 @@ if(mode==='native')win.__acornautPlatform={kind:'ios',devDoors:false,store:{
   async restore(){restoreCalls++;},async pending(){return [];},
 }};
 const C=await import('../docs/js/catalog.js'),S=await import('../docs/js/save.js');
+const {selectShopCycle}=await import('../docs/js/shop-cycle.js');
+const {STAR_UNLOCKS}=await import('../docs/js/campaign.js');
 const initial=S.defaultSave();Object.assign(initial,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:false});S.writeSave(initial);
 const {bootStandalone}=await import('../docs/js/standalone.js'),app=document.createElement('main');document.body.append(app);await bootStandalone(app);
 const e=win.__sandbox;assert(e);await e.artReady;trace('shipping art loaded');const baseline=structuredClone(e.save);
@@ -141,6 +143,43 @@ function assertQuote(scope,bundle,owns){
 const itemKeys=nodes=>[...nodes].map(node=>`${node.dataset.shopItemKind}:${node.dataset.shopItemId}`).sort();
 const selected=()=>[...app.querySelectorAll('.ac-shopvisual > .ac-sheet-scroll .ac-shoptile[aria-pressed="true"]')].map(node=>node.textContent).sort();
 const cartState=()=>({text:app.querySelector('.ac-combobar')?.textContent,selected:selected()});
+const shopScroll=()=>app.querySelector('.ac-shopcompact > .ac-sheet-scroll');
+const rail=()=>app.querySelector('[data-shop-rail="items"]');
+const railItem=(kind,id)=>app.querySelector(`[data-shop-rail] button[data-shop-item-kind="${kind}"][data-shop-item-id="${id}"]`);
+const railOffsets=()=>({outer:shopScroll().scrollTop,items:rail().scrollLeft});
+const pickedRailIds=()=>[...app.querySelectorAll('[data-shop-rail] [aria-pressed="true"]')].map(n=>n.dataset.shopItemId).sort();
+function assertCompactStructure(){
+  const scroll=shopScroll(),viewer=app.querySelector('.ac-shopviewer');
+  assert(scroll&&viewer,'compact Shop has its own viewer inside the page scroller');
+  assert.equal(viewer.parentElement,scroll);
+  assert(viewer.contains(rail()),'the mixed item rail belongs to the viewer');
+  assert(viewer.contains(app.querySelector('.ac-caseplate')),'current preview details stay inside the viewer');
+  assert.equal(app.querySelectorAll('[data-shop-rail]').length,1,'all daily items share one scrolling row');
+  assert.equal(app.querySelectorAll('.ac-shopaccessoryrail,[data-shop-rail="accessories"],[data-shop-rail="suits"]').length,0,'no vertical or separate category rail remains');
+  assert.equal(viewer.querySelectorAll('[role="tab"],[data-shop-filter]').length,0,'the daily row has no category filter');
+  const suits=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')],accessories=[...rail().querySelectorAll('button[data-shop-item-kind]')].filter(n=>n.dataset.shopItemKind!=='suit');
+  assert(suits.every(n=>n.dataset.shopItemKind==='suit'),'the suit rail only contains suit choices');
+  assert(accessories.every(n=>['helm','pal'].includes(n.dataset.shopItemKind)),'helmets and optional pals share the gear rail');
+  const cycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id));
+  assert.deepEqual(suits.map(n=>n.dataset.shopItemId),cycle.suits,'the live suit rail follows the date/ownership roster');
+  assert.deepEqual(accessories.filter(n=>n.dataset.shopItemKind==='helm').map(n=>n.dataset.shopItemId),cycle.helms,'the live helmet rail follows the date/ownership roster');
+  assert.deepEqual(accessories.filter(n=>n.dataset.shopItemKind==='pal').map(n=>n.dataset.shopItemId),cycle.pals,'the optional live PAL follows the date/ownership roster');
+  assert.equal([...app.querySelectorAll('.ac-shopvisual > .ac-sheet-scroll .ac-shoptile')].length,suits.length+accessories.length,'no individual product is stranded outside the mixed row');
+  assert(suits.length+accessories.length<=4,'the daily row contains no more than four choices');
+  for(const tile of [...suits,...accessories])assert.equal(tile.dataset.focus,`shop:${tile.dataset.shopItemKind}:${tile.dataset.shopItemId}`,'each rail item has a stable keyboard identity');
+  const children=[...scroll.children],features=[...scroll.querySelectorAll('.ac-featurecard')],boosts=[...scroll.querySelectorAll('.ac-boostcard')],dust=[...scroll.querySelectorAll('.ac-dustrow')];
+  const at=n=>children.indexOf(n);
+  assert.equal(children[at(viewer)+1],scroll.querySelector('.ac-combobar'),'the cart immediately follows the viewer');
+  assert(features.length&&boosts.length&&dust.length,'bundles, boosts and Stardust remain accessible after the cart');
+  assert(at(scroll.querySelector('.ac-combobar'))<at(features[0])&&at(features.at(-1))<at(boosts[0])&&at(boosts.at(-1))<at(dust[0]),'reading order is viewer, cart, bundles, boosts, Stardust');
+  assert.deepEqual(boosts.map(row=>[row.querySelector('.ac-modname')?.textContent,row.querySelector('.ac-sub')?.textContent]),[
+    ['Level Skip','3 stars instantly on any mission.'],
+    ['Star Unlock','Instant unlock any Star Chart reward'],
+  ],'boost cards use the owner-requested concise descriptions');
+  const afterBoosts=boosts.at(-1).nextElementSibling;
+  assert(afterBoosts?.matches('.ac-shelfhead')&&afterBoosts.textContent==='STAR DUST','Stardust follows the boost cards without another explanatory paragraph');
+  assert.match(scroll.querySelector('.ac-daily .ac-sub')?.textContent??'',/^Day \d+ of 7\. Come back tomorrow\.?$/,'daily copy is limited to the counter and tomorrow cue');
+}
 function pixels(canvas){return surfaceOf(canvas).surface.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;}
 function ink(canvas){const rgba=pixels(canvas);let count=0;for(let i=3;i<rgba.length;i+=4)if(rgba[i]>24)count++;return count;}
 function hash(canvas){return createHash('sha256').update(pixels(canvas)).digest('hex');}
@@ -166,18 +205,24 @@ async function assertAnimation(canvas,label){
 }
 
 const clock=Date.now;let day=20000;Date.now=()=>day*C.SHOP_DAY_MS+3600000;
+function dateWith(predicate,save=baseline){
+  for(let d=20000;d<20366;d++)if(predicate(selectShopCycle(d,id=>S.ownsPremium(save,id))))return d;
+  assert.fail('requested test roster is unreachable across a year');
+}
 try{
   reset();await tick();assert(app.querySelector('.ac-shopvisual'),'visual treatment has a Shop-specific root');
+  assertCompactStructure();
   const nebula=app.querySelector('.ac-shopvisual').style.getPropertyValue('--shop-nebula');
   assert.equal(nebula,`url("/art/shop/shop-nebula.png?v=${C.ART_VER}")`,'Shop background uses the versioned local artwork');
   assert(localImage('/art/shop/shop-nebula.png').width>=512,'Shop background asset decodes at useful resolution');
   for(const id of ['porcelain','nacre','origamist']){
+    day=dateWith(cycle=>cycle.suits.includes(id));reset();await tick();assertCompactStructure();
     const tile=[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===C.SUITS.find(s=>s.id===id).name);
     assertItemArtwork(tile?.querySelector('canvas'),{kind:'suit',id});assert(!tile.querySelector('img'),'individual pilot cards use only actual in-game artwork');
     assert(tile.querySelector('.ac-tileprice')?.textContent.includes('1,000'));
   }
   const trio=C.BUNDLES.find(b=>b.id==='bundle-premium-trio');assert.equal(trio.name,'Premium Pilot Trio','catalog identity is preserved');
-  assert.equal(C.BUNDLES.length,8,'the Shop offers eight multi-item bundles');
+  assert.equal(C.BUNDLES.length,8,'the catalog retains eight multi-item bundles');
   assert(C.BUNDLES.every(bundle=>bundle.items.length>=3),'every bundle contains at least three actual product items');
   assert.equal(C.bundleQuote(trio,()=>false).discountPercent,16.7,'the 500 discount on 3000 retail is displayed as 16.7 percent');
   assert.equal(card(trio.id)?.querySelector('.ac-modname')?.textContent,'Premium Trio');
@@ -193,23 +238,106 @@ try{
   for(const row of app.querySelectorAll('.ac-dustrow'))assertShopImage(row.querySelector('img'),'stardust-emblem.png');
 
   if(mode!=='native'){
+    // DOM structure and state restoration complement real-browser geometry.
+    // These checks deliberately do not treat happy-dom rectangles as CSS proof.
+    trace('compact mixed row');
+    day=dateWith(cycle=>cycle.suits.includes('porcelain')&&cycle.helms.length>0&&cycle.pals.length>0);reset();await tick();
+    const fixedName=C.SUITS.find(s=>s.id==='porcelain').name;
+    const untouched=JSON.stringify(e.save),kept={outer:231,items:129};
+    shopScroll().scrollTop=kept.outer;rail().scrollLeft=kept.items;
+    async function choose(kind,id){
+      const tile=railItem(kind,id);assert(tile,`${kind}:${id} is reachable in its viewer rail`);tile.focus();tile.click();await tick();
+      assert.equal(document.activeElement,railItem(kind,id),`${kind}:${id} keeps keyboard focus after repaint`);
+      assert.deepEqual(railOffsets(),kept,`${kind}:${id} preserves the page and horizontal row offset`);
+      assert.equal(JSON.stringify(e.save),untouched,`${kind}:${id} only changes preview/cart, never equipment, currency or grants`);
+      assertCompactStructure();
+    }
+    await choose('suit','porcelain');
+    assert.deepEqual(pickedRailIds(),['porcelain']);
+    assert(app.querySelector('.ac-caseplate').textContent.includes(fixedName));
+    const porcelainPreview=app.querySelector('.ac-casecanvas');assertItemArtwork(porcelainPreview,{kind:'suit',id:'porcelain'});
+    assert(![...surfaceOf(porcelainPreview).sources].some(p=>p.startsWith('/art/helms/')),'fixed-head preview retains its integrated head');
+    // A second click removes only its cart selection; its preview remains.
+    await choose('suit','porcelain');assert.deepEqual(pickedRailIds(),[]);
+    assert(app.querySelector('.ac-caseplate').textContent.includes(fixedName));
+    const helmets=[...rail().querySelectorAll('button[data-shop-item-kind="helm"]')].map(n=>n.dataset.shopItemId);
+    for(const id of helmets){
+      // Return the stage to the fixed-head pilot without keeping it in cart.
+      if(!app.querySelector('.ac-caseplate').textContent.includes(fixedName)){await choose('suit','porcelain');await choose('suit','porcelain');}
+      await choose('helm',id);
+      assert.deepEqual(pickedRailIds(),[id],'previewing a compatible suit adds only the chosen helmet to the cart');
+      const preview=app.querySelector('.ac-casecanvas');assertItemArtwork(preview,{kind:'helm',id});
+      assert(!app.querySelector('.ac-caseplate').textContent.includes(fixedName),'a separate helmet gets a compatible preview body');
+      assert(app.querySelector('.ac-caseplate').textContent.includes(C.HELMETS.find(h=>h.id===id).name),'details identify the helmet actually being previewed');
+      await choose('helm',id);assert.deepEqual(pickedRailIds(),[]);
+    }
+    const pal=rail().querySelector('button[data-shop-item-kind="pal"]').dataset.shopItemId;
+    await choose('pal',pal);assert.deepEqual(pickedRailIds(),[pal]);
+    assert(app.querySelector('.ac-casesub').textContent.includes(C.PALS.find(p=>p.id===pal).name));
+    assertItemArtwork(app.querySelector('.ac-casecanvas'),{kind:'pal',id:pal});
+    const partner=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')].find(n=>n.dataset.shopItemId!=='porcelain').dataset.shopItemId;
+    await choose('suit',partner);assert.deepEqual(pickedRailIds(),[pal,partner].sort(),'suit and pal selections remain independent cart entries');
+    assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===partner).name));
+    assert(app.querySelector('.ac-combobar').textContent.includes('2 ITEMS SELECTED'));
+    const railCart=cartState();card(trio.id).click();await tick();close();
+    assert.deepEqual(railOffsets(),kept,'bundle review and return preserve the item row position');
+    assert.deepEqual(cartState(),railCart,'bundle review does not consume the rail cart');
+    app.querySelector('.ac-cartclear').click();await tick();assert.deepEqual(pickedRailIds(),[]);
+    assert.deepEqual(railOffsets(),kept,'Clear preserves the current view into the item row');
+    assert(app.querySelector('.ac-combobar').textContent.includes('NOTHING SELECTED'));
+    assert.equal(JSON.stringify(e.save),untouched);
+    // Zero is a saved position too. A taller three-item cart must not make
+    // Clear move the page away from its top while restoring the inner row.
+    kept.outer=0;shopScroll().scrollTop=0;
+    const extraSuit=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')]
+      .sort((a,b)=>b.textContent.length-a.textContent.length)[0].dataset.shopItemId;
+    const extraHelm=helmets.find(id=>id!==extraSuit&&id!==pal);assert(extraHelm);
+    await choose('suit',extraSuit);await choose('pal',pal);await choose('helm',extraHelm);
+    assert.equal(pickedRailIds().length,3,'three distinct items exercise the expanded cart');
+    app.querySelector('.ac-cartclear').click();await tick();
+    assert.deepEqual(pickedRailIds(),[]);assert.deepEqual(railOffsets(),kept,'Clear retains explicit outer zero and the inner row position');
+    assert.equal(document.activeElement?.dataset.focus,'shop:cart','Clear returns keyboard focus to the persistent cart');
+    assert.equal(JSON.stringify(e.save),untouched);
+    // A date without a companion must clear an unowned preview from the
+    // previous date, even when its suit remains today's valid selection.
+    const palDate=dateWith(cycle=>cycle.pals.length>0);day=palDate;reset();await tick();
+    const priorCycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id)),priorPal=priorCycle.pals[0],priorSuit=priorCycle.suits[0];
+    railItem('suit',priorSuit).click();railItem('pal',priorPal).click();await tick();
+    assert(app.querySelector('.ac-casesub')?.textContent.includes(C.PALS.find(p=>p.id===priorPal).name));
+    // Owning the shown suit keeps its preview eligible across dates. This
+    // is an isolated save fixture, not a Shop purchase or equipment change.
+    e.save.purchased.push(...C.idGrants(priorSuit),...C.PALS.filter(p=>C.isIap(p.id)&&p.id!==priorPal).map(p=>p.id));
+    const beforeRollover=JSON.stringify(e.save);
+    day=dateWith(cycle=>cycle.pals.length===0&&!cycle.held.has(priorPal),e.save);e.open('shop');await tick();
+    assert.equal(rail().querySelectorAll('button[data-shop-item-kind="pal"]').length,0,'a zero-PAL day has no companion card');
+    assert.equal(app.querySelector('.ac-casesub'),null,'the previous unowned PAL is not silently retained in the stage');
+    assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===priorSuit).name),'the still-eligible suit remains selected through rollover');
+    assert.equal(JSON.stringify(e.save),beforeRollover,'roster rollover does not change player state');
+    for(const streakPackClaimed of [false,true]){
+      e.save.lastDaily=new Date().toISOString().slice(0,10);e.save.dailyStreak=7;e.save.streakPackClaimed=streakPackClaimed;e.open('shop');
+      assert.match(app.querySelector('.ac-daily .ac-sub').textContent,/^Day 7 of 7\. Come back tomorrow\.?$/,'both seventh-day reward variants keep compact copy');
+      assert.equal(app.querySelectorAll('.ac-daily .ac-pip').length,7,'the streak indicator remains complete');
+      assert(app.querySelector('.ac-dailygot').textContent.includes(`+${e.dailyState().amount}`),'compact daily receipt still shows the real granted amount');
+    }
+    reset();await tick();
     // Every actual rotating pack is reached through its day on the real
     // shelf. This includes standalone companions/visors and mixed packs.
-    const rotation=C.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable),seenKinds=new Set();let reviews=0;
+    const rotation=C.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable&&!C.SHOP_CYCLE.excludedBundleIds.includes(b.id)),seenKinds=new Set();let reviews=0;
     assert.deepEqual(reviewItems(trio).filter(item=>item.kind==='trail').map(item=>item.id).sort(),['nacrewake','origamistwake','porcelainwake'],'all three signature wakes are shown with the trio');
     const circuit=C.BUNDLES.find(b=>b.id==='bundle-circuit');
     assert.deepEqual(reviewItems(circuit).filter(item=>!circuit.items.includes(item)),[{kind:'trail',id:'clockwork'}],'Circuit adds the free Cyber wake once');
     for(const bundle of [...rotation,trio]){
       trace(bundle.id);
-      day=bundle.alwaysAvailable?20000:rotation.indexOf(bundle);reset();await tick();
+      day=bundle.alwaysAvailable?20000:dateWith(cycle=>cycle.feature?.id===bundle.id);reset();await tick();
+      assertCompactStructure();
       const offer=card(bundle.id);assert(offer,bundle.id+' reaches the shelf');
       assert(!offer.querySelector('.ac-sub'),bundle.id+' card keeps long copy in its detail view');
       assertShopImage(offer.querySelector('img'),bundle.kit.banner.slice(5));
       assertQuote(offer,bundle,id=>S.ownsPremium(e.save,id));
       for(const tile of app.querySelectorAll('.ac-shoptile'))assertItemArtwork(tile.querySelector('canvas'),{kind:tile.dataset.shopItemKind,id:tile.dataset.shopItemId});
       // Keep a selected single in the cart while reviewing pack contents.
-      const single=[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===C.SUITS.find(s=>s.id==='porcelain').name);
-      single?.click();const before=JSON.stringify(e.save),cartBefore=cartState();card(bundle.id).click();await tick();
+      const single=rail().querySelector('button[data-shop-item-kind="suit"]');assert(single,'a live single is available alongside bundle review');
+      single.click();const before=JSON.stringify(e.save),cartBefore=cartState();card(bundle.id).click();await tick();
       assert.equal(JSON.stringify(e.save),before,bundle.id+' opening does not change currency, ownership or equipment');
       const contents=reviewItems(bundle);
       assert.equal(sheet().querySelector('.ac-bundlesummary')?.textContent,summaryOf(bundle),bundle.id+' summary gives accurate item and bonus wake counts');
@@ -267,7 +395,7 @@ try{
     // Partially owned mixed packs keep their credited checkout while a
     // remaining product is being reviewed. The first press only confirms.
     trace('partial checkout');const partial=C.BUNDLES.find(b=>b.id==='bundle-aurora');
-    day=rotation.indexOf(partial);reset();e.save.purchased.push(...C.idGrants('cryostar'));e.open('shop');
+    reset();e.save.purchased.push(...C.idGrants('cryostar'));day=dateWith(cycle=>cycle.feature?.id===partial.id,e.save);e.open('shop');
     const due=C.featurePrice(partial,id=>S.ownsPremium(e.save,id));assert(due<C.featurePrice(partial,()=>false));
     const partialQuote=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(partialQuote.credit,360);assert.equal(due,360);
     e.save.starDust=due;card(partial.id).click();
@@ -282,8 +410,8 @@ try{
 
     // Full individual credit can cover the offer before every item is
     // owned. Its remaining contents are claimable, with no currency refund.
-    trace('zero-price completion');day=rotation.indexOf(partial);reset();
-    e.save.purchased.push(...C.idGrants('cryostar'),...C.idGrants('verdant'));e.save.starDust=123;e.open('shop');
+    trace('zero-price completion');reset();
+    e.save.purchased.push(...C.idGrants('cryostar'),...C.idGrants('verdant'));e.save.starDust=123;day=dateWith(cycle=>cycle.feature?.id===partial.id,e.save);e.open('shop');
     const zero=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(zero.due,0);
     assert(!C.bundleIds(partial).every(id=>S.ownsPremium(e.save,id)));
     card(partial.id).click();const freeBefore=JSON.stringify(e.save),free=sheet().querySelector('.ac-featurebuy');
@@ -310,6 +438,59 @@ try{
     // The Star Chart owns very tall canvases; allocating native copies here
     // wastes gigabytes without adding evidence about the Shop boundary.
     rasterMode=false;trace('non-Shop DOM isolation');
+    Object.assign(e.save,structuredClone(baseline));const menuBefore=JSON.stringify(e.save);
+    const unlockCounts={};
+    for(const [tab,kind,gates,revealed] of [
+      ['suits','suit',STAR_UNLOCKS.suits,S.suitRevealed],
+      ['helmets','helm',STAR_UNLOCKS.helmets,S.helmetRevealed],
+      ['trails','trail',STAR_UNLOCKS.trails,S.trailUnlocked],
+      ['pals','pal',STAR_UNLOCKS.pals,S.palUnlocked],
+    ]){
+      e.open('hangar');e.setShopTab(tab);let count=0;
+      for(const tile of app.querySelectorAll(`.ac-loadout .ac-card[data-focus^="${kind}:"]`)){
+        const id=tile.dataset.focus.slice(kind.length+1),threshold=gates[id],pill=tile.querySelector('.ac-unlocktag');
+        if(!C.isIap(id)&&threshold!==undefined&&!revealed(e.save,id)){
+          assert(pill,`${kind}:${id} has a graphic Unlock pill`);assert.equal(pill.textContent,`${threshold.toLocaleString()} to Unlock`);
+          const art=pill.querySelector('img');assert(art,`${kind}:${id} uses the existing star artwork`);
+          assert.equal(new URL(art.src).pathname,'/art/'+C.BOOSTS.starunlock.art);
+          assert(!pill.textContent.includes('★'),`${kind}:${id} does not substitute a font star`);count++;
+        }else assert(!pill,`${kind}:${id} does not show an obsolete unlock requirement`);
+      }
+      unlockCounts[tab]=count;
+    }
+    if(mode==='production')assert(Object.values(unlockCounts).every(n=>n>0),'locked examples cover suits, helmets, trails and PALs');
+    assert.equal(STAR_UNLOCKS.suits.vanguard,570,'AcorNut still requires its real campaign threshold');
+    assert.equal(STAR_UNLOCKS.suits.ghost,80,'Ghost still requires its real campaign threshold');
+    e.open('hangar');
+    const loadoutHelp=[...app.querySelectorAll('.ac-loadout button')].find(b=>b.querySelector('img')?.src.includes('/ui/help.png'));
+    assert(loadoutHelp?.classList.contains('ac-hub-sq'),'Loadout Help uses the same painted square button as the menu');
+    loadoutHelp.click();assert.equal(e.world.screen,'help','Loadout Help retains its real navigation');
+    const help=app.querySelector('.ac-helpdeck');assert(help);
+    assert.deepEqual([...help.querySelectorAll('[data-help-mode]')].map(section=>[section.dataset.helpMode,section.querySelector('h3')?.textContent]),[
+      ['normal','Normal Mode'],['spill','Debris Field Mode'],['hyper','Hyper Run Mode'],
+    ],'each control scheme has its own named Help section');
+    assert.deepEqual([...help.querySelectorAll('[data-help-mode="hyper"] .ac-helpcontrol b')].map(n=>n.textContent),['HOLD TO RISE','DIVE'],'Hyper Run explains its real held input and dive');
+    assert(help.querySelector('[data-help-mode="hyper"]').textContent.includes('Double-tap + hold: boost'));
+    assert(help.querySelector('[data-help-mode="hyper"]').textContent.includes('Tunnel: drag to steer'));
+    assert.equal(help.querySelector('.ac-helpitemsheading')?.textContent,'Game Items');
+    const helpRows=[...help.querySelectorAll('.ac-helprow')];
+    assert.deepEqual(helpRows.map(row=>row.querySelector('p')?.textContent),['ACORN','STAR DUST','ACORN COINS','FREEZE ACORN','SHIELD ACORN','GOLDEN ACORN','BLACK HOLE','WORMHOLE'],'all original game item entries remain');
+    assert(helpRows.every(row=>row.querySelector('canvas')),'all Game Items retain their drawn artwork');
+    assert.equal((help.textContent.match(/resets each run/g)??[]).length,1,'Acorn Coins reset information is shown once');
+    assert.equal(help.querySelectorAll('[data-help-mode] p.ac-sub').length,0,'mode controls do not regain the removed explanatory paragraphs');
+    const briefing=help.querySelector('[data-help-mode="spill"] [data-spill-briefing]');assert(briefing);briefing.click();
+    assert(app.querySelector('.ac-spillhelpwrap'),'Debris briefing still opens from Help');
+    app.querySelector('.ac-spillhelpwrap [data-spill-control="enter-depot"]').click();
+    assert(!app.querySelector('.ac-spillhelpwrap'));assert.equal(e.world.screen,'help','briefing Back returns to Help');
+    e.open('title');
+    const homeHelp=app.querySelector('button[aria-label="Help and controls"]');
+    assert(homeHelp?.classList.contains('ac-hub-sq'));assert.equal(new URL(homeHelp.querySelector('img').src).pathname,'/art/ui/help.png');
+    const modes=app.querySelector('button.t-modes');assert(modes);modes.click();
+    const modeSheet=app.querySelector('.ac-modecard'),modeBack=modeSheet?.querySelector('.ac-backbtn');
+    assert(modeBack,'Modes has its standard top Back action');assert(!modeSheet.querySelector('.ac-modeback'),'the old footer Back action is removed');
+    assert(modeBack.compareDocumentPosition(modeSheet.querySelector('.ac-moderow'))&win.Node.DOCUMENT_POSITION_FOLLOWING,'Modes Back precedes its mode choices');
+    modeBack.click();assert(!app.querySelector('.ac-modecard'));assert.equal(e.world.screen,'title','Modes Back closes locally onto the existing main menu');
+    assert.equal(JSON.stringify(e.save),menuBefore,'Loadout pills and menu navigation do not change equipment, currency or progress');
     for(const screen of ['hangar','title','log','help']){
       e.open(screen);await tick();assert(!app.querySelector('.ac-shopvisual'),screen+' is outside the Shop treatment');
       assert(![...app.querySelectorAll('img')].some(img=>img.src.includes('/art/shop/')),screen+' uses no Shop marketing image');
@@ -317,7 +498,7 @@ try{
     reset();const dustBefore=e.save.starDust,pack=C.DUST_PACKS[0];
     const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);assert.equal(row.querySelector('.ac-cashprice').textContent,pack.price);row.click();
     assert.equal(e.save.starDust,dustBefore+(mode==='beta'?pack.dust+pack.bonus:0),'web and beta retain their existing dust purchase behavior');
-    console.log(`PASS Shop visuals ${mode}: ${C.BUNDLES.length} distinct kit banners, actual product art, ${rotation.length+1} offers, ${reviews} animated item/wake reviews, accurate summaries/discount/ownership credit, paid and zero-price two-step checkout, keyboard/date rollover and Shop-only scope.`);
+    console.log(`PASS Shop visuals ${mode}: one four-item mixed row with independent preview/cart, zero/nonzero scroll and focus preservation, zero-PAL rollover; ${C.BUNDLES.length} distinct kit banners, actual product art, ${rotation.length+1} offers, ${reviews} animated item/wake reviews, accurate summaries/discount/ownership credit, paid and zero-price two-step checkout, keyboard/date rollover and Shop-only scope.`);
   }else{
     // Exercise the actual native bridge, not hardcoded cash labels or a
     // replaced buy handler. Every scenario uses a deferred fake store.
