@@ -6,9 +6,9 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=262";
 // Survive the wave; the next one is harder.
 //
 // This module is the RULES of the mode and nothing else — no canvas, no DOM,
-// no art, no save. It is fed a dt and a handful of semantic inputs (hold,
-// release, a burst, a lunge, a Depot purchase) and it answers with state and
-// a list of cues for the frame. The sim mirrors its ship into the world so
+// no art, no save. It is fed a dt and a handful of semantic inputs (a tap,
+// a burst, a lunge, a Depot purchase) and it answers with state and a list
+// of cues for the frame. The sim mirrors its ship into the world so
 // the shared draw path can paint it; draw.ts paints the field; standalone.ts
 // builds the Depot sheet. That split is the same one Hyper Run made
 // (race.ts), and for the same reason: everything in here can be driven from
@@ -28,6 +28,13 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=262";
 // SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
 // longer a button the thumb has to find: unlocking it makes it fire on its
 // own at the next impact, and charged coins are what charge it.
+//
+// THIRD PASS (owner, 2026-09-10: "tap to fly instead of hold to rise ...
+// feel should be similar to other modes"). The Hyper Run hand above is
+// history: the field now flies on the same tap as normal flight and the
+// Wormhole - a kick per tap, gravity between - with the numbers and the
+// sweep that chose them documented at SPILL below. Hyper Run alone keeps
+// hold-to-rise. Everything else the second pass set still stands.
 import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=262";
 import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=262";
 // ---------------------------------------------------------------- tuning
@@ -256,7 +263,7 @@ export const SPILL_SHOP = {
         levels: ["Revive once with full health."],
     },
 };
-/** how hard a burst kicks at each THRUSTERS level. The hold is never
+/** how hard a burst kicks at each THRUSTERS level. The tap is never
  *  scaled: the owner asked for a hand that gets steadier, not twitchier */
 const THRUST_MUL = [1, 1.15, 1.3, 1.45];
 function rand(s) {

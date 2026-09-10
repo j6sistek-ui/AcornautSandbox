@@ -323,7 +323,7 @@ const dock = (seed) => {
   const deadCues = S.stepSpill(s, DT);
   ok(s.phase === "over" && s.cause === "STRUCK", `the third hit ends the run (${s.phase} ${s.cause})`);
   ok(deadCues.includes("dead"), "and says so");
-  ok(!s.held, "the dead hand is off the thrust");
+  ok(S.spillTap(s) === false, "a tap on the dead ship does nothing");
 }
 {
   // a shield eats the piece; shields come from the Depot, never the field
@@ -427,7 +427,7 @@ const dock = (seed) => {
   ok(cleared1 && S.spillCleared(s) === 1, `draining the field clears the wave and counts the next (${s.phase}, cleared ${S.spillCleared(s)})`);
   ok(s.lastCues.includes("clear") && s.lastCues.includes("wave"), "the clear and the next wave are announced");
   ok(s.wave === 2, `the next wave follows (wave ${s.wave})`);
-  ok(!s.held, "the hand comes off at the clear");
+  ok(!s.manual, "the count opens on autopilot; the stick comes back on the GO");
   const docking = until(s, (x) => x.phase === "docking", 400, immune);
   ok(docking && s.wave === 5, `the fifth wave docks (${s.phase} at wave ${s.wave})`);
   ok(s.lastCues.includes("dock") && s.rocks.length === 0, "the dock is announced over an empty field");
