@@ -16,6 +16,19 @@ bundle savings. Put included products and concise bonus counts in the
 contents popup. Individual item cards and item previews use actual game
 art and painters; generated marketing artwork belongs to bundle banners.
 
+Daily individual stock is selected by `game/shop-cycle.ts`: two suits
+(one available fixed-price premium and one cheaper suit, or up to two
+cheaper suits when premiums are exhausted), plus two gear slots: a helmet
+and PAL, or two helmets. When suit stock is scarce, up to two helmets and
+one PAL can fill spare slots; exhausted stock can leave fewer than four.
+Use one horizontal row without category filters or a vertical gear rail.
+Prefer compatible/coordinated accessories, and never
+duplicate a shared suit/helmet ownership ID across cards. The login suits
+`raccoon`, `ferret` and `hedgehog`, and their Critter Pack, are excluded from
+paid daily offers; their catalog entries and login grants remain intact.
+Use date/ownership fixtures in tests rather than assuming all premium
+singles are pinned every day. Run `test-shop-cycle.mjs` with the Shop gates.
+
 Use `bundleQuote` for both display and checkout. Credit the full individual
 retail already owned, count shared IDs and free wakes once, and clamp the
 remaining charge at zero. A zero-cost remainder still requires an explicit

@@ -1,0 +1,2 @@
+PASS premium pricing production: daily 1,000 singles and permanent 2,500 trio, independent daily feature, date rollover, actual cart/pack checkouts, all ownership subsets, included wakes, reload and repeat-purchase protection.
+PASS premium pricing beta: daily 1,000 singles and permanent 2,500 trio, independent daily feature, date rollover, actual cart/pack checkouts, all ownership subsets, included wakes, reload and repeat-purchase protection.

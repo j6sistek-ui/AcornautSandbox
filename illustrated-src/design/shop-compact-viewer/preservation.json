@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-09-10T09:21:39.578Z",
+  "baselineRevision": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+  "workingHead": "944578e8223883352bac168cb8a843caa1b70194",
+  "build": "270",
+  "baselineSha256": "63263393a042d43a91d3269e277bb0ed2f29bed559b0a90c7e9df7a6862895b0",
+  "shippingArtChecked": 1617,
+  "shippingArtChanged": [],
+  "missing": [],
+  "gameSourcesChecked": 51,
+  "changedSources": [
+    "illustrated-src/game/catalog.ts",
+    "illustrated-src/game/standalone.ts"
+  ],
+  "newGameSources": [
+    "illustrated-src/game/shop-cycle.ts"
+  ],
+  "unexpectedSourceChanges": [],
+  "catalogOnlyStampAndAuthorizedCycleChanged": true,
+  "authorizedCycleMatches": true,
+  "economy": {
+    "bundlesUnchanged": true,
+    "ownershipIdsUnchanged": true,
+    "individualsUnchanged": true,
+    "fixedSuitIdsUnchanged": true,
+    "stardustOffersUnchanged": true,
+    "boostsUnchanged": true,
+    "quoteCases": 440,
+    "quoteMismatches": []
+  },
+  "finalHashes": [
+    {
+      "path": "illustrated-src/game/standalone.ts",
+      "sha256": "c783b7114790d1cddb7781b57249d0a2a994a101175a80a31d9dc42e9f4c26e2"
+    },
+    {
+      "path": "illustrated-src/game/catalog.ts",
+      "sha256": "ec877efbc240d740556ba48042dfd19331f72bc4fed064da74f233407af4fc15"
+    },
+    {
+      "path": "illustrated-src/game/shop-cycle.ts",
+      "sha256": "42a9d286c49475b7bedc7470ceae7de55c8d0d279002805e879192bf59fd64d8"
+    },
+    {
+      "path": "illustrated-src/shop-layout.css",
+      "sha256": "6b5b7ffdad3fb1c6125e451b0f0458b1af86d06ea231e3a899283f4c6aa767e8"
+    },
+    {
+      "path": "illustrated-src/loadout.css",
+      "sha256": "150f833ba4a63df9b9600e114359874e0e9d557075638f478755746715f80418"
+    },
+    {
+      "path": "illustrated-src/export-sandbox.mjs",
+      "sha256": "1e4a17630fcdc57a66f7aec9e0adb915ea688ddc6bf651e2ede69071f05418a6"
+    },
+    {
+      "path": "docs/index.html",
+      "sha256": "efa81ddc558585dd06f025fe2f1fc91a095866b3f00d08a94620b21c8f612ae8"
+    },
+    {
+      "path": "docs/beta/index.html",
+      "sha256": "7ab622317a9f104c2cf34746d78336d0061addf2140031d542c4b6f466db0f63"
+    }
+  ],
+  "result": "PASS"
+}

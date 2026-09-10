@@ -123,15 +123,14 @@ for (const b of BUNDLES) {
   ok(DUST_STICKER.arcflash === 1850 && idDust("arcflash") === 1850,
     `Arcflash is priced by hand at 1850, got ${idDust("arcflash")}`);
 
-  // Fixed pilots use the current storefront's daily pinned singles row.
-  // Their entitlement and full sticker must be available independently of
-  // whether their bundle happens to appear in the legacy hashed sample.
+  // Fixed-price pilots share the daily premium slot. Their individual
+  // entitlement and sticker remain independent of the featured bundle.
   ok(JSON.stringify(FIXED_SHOP_SUIT_IDS) === JSON.stringify(["arcflash", "porcelain", "nacre", "origamist"]),
     "the fixed-price pilots remain explicit individual offers");
   for (const id of FIXED_SHOP_SUIT_IDS) {
     const sticker = id === "arcflash" ? 1850 : 1000;
     ok(C.SUITS.some((suit) => suit.id === id && !suit.beta) && IAP_ITEMS.includes(id), `${id} must be a production premium suit`);
-    ok(DUST_STICKER[id] === sticker && idDust(id) === sticker, `${id} must carry its pinned single-item sticker`);
+    ok(DUST_STICKER[id] === sticker && idDust(id) === sticker, `${id} must carry its fixed single-item sticker`);
     ok(!byId(`bundle-${id}`), `${id} is a single item, never a pretend bundle`);
     ok(idGrants(id).includes(id), `${id} must grant its pilot entitlement`);
     ok(C.SUIT_SHELF.some((shelf) => shelf.shop && shelf.ids.includes(id)), `${id} must have a Hangar shop entry`);

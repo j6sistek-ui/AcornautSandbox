@@ -57,7 +57,7 @@ if(mode==='production'){
  // Nothing is missing now; the gate moved from EXISTENCE to OWNERSHIP. An
  // unbought premium suit is 'locked' - on the shelf, not obtainable for free -
  // and its wake is locked with it.
- assert(Cat.FIXED_SHOP_SUIT_IDS.includes('arcflash'),'a permanent individual pilot: never dependent on bundle rotation');
+ assert(Cat.FIXED_SHOP_SUIT_IDS.includes('arcflash'),'a fixed-price individual pilot, independent of bundle contents');
  const price=Cat.idDust('arcflash');
  assert.equal(price,1850,'the owner set this sticker by hand, not by weight');
  assert(Cat.IAP_ITEMS.includes('arcflash'),'production sells it');

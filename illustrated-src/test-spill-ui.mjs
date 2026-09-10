@@ -28,13 +28,13 @@ assert.deepEqual([...app.querySelectorAll('.ac-helprow')].slice(0,3).map(r=>r.qu
 // TAP TO FLY in Settings & Help: the same three cards as the instructions sheet, and no hold left anywhere.
 const TAP_CARDS=['TAP','SWIPE DOWN','LUNGE'],HOLD_WORDS=['HOLD','RELEASE','Throttle','throttle','hold to','Let go'];
 function cardsOf(root){return [...root.querySelectorAll('.ac-spillhelp-controls > div')].map(c=>c.querySelector('b').textContent);}
-const helpFlight=app.querySelector('.ac-spillflighthelp');assert(helpFlight);assert.deepEqual(cardsOf(helpFlight),TAP_CARDS);
+const helpFlight=app.querySelector('[data-help-mode="spill"]');assert(helpFlight);assert.deepEqual(cardsOf(helpFlight),TAP_CARDS);
 assert(helpFlight.textContent.includes('Tap · Space'));assert(helpFlight.textContent.includes('Swipe down'));assert(helpFlight.textContent.includes('Swipe right'));
 assert(helpFlight.querySelector('small.ac-sub').textContent.includes('Space'));
-assert(helpFlight.textContent.includes('Swipe up · harder kick · W'));assert(helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'));
+assert(helpFlight.textContent.includes('Swipe up · harder kick · W'));assert(!helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'),'long loop explanation stays in the briefing, not the compact Help controls');
 for(const word of HOLD_WORDS) assert(!helpFlight.textContent.includes(word),`Help never says ${word} about the Debris Field`);
 const beforeHelp=JSON.stringify(engine.save);
-button('DEBRIS FIELD BRIEFING').click();assert(app.querySelector('.ac-spillhelpwrap'));
+const helpBriefing=helpFlight.querySelector('[data-spill-briefing]');assert(helpBriefing);helpBriefing.click();assert(app.querySelector('.ac-spillhelpwrap'));
 assert(app.textContent.includes('HOW TO FLY · DEBRIS FIELD'));assert.deepEqual(cardsOf(app.querySelector('.ac-spillhelpwrap')),TAP_CARDS);
 for(const word of HOLD_WORDS) assert(!app.querySelector('.ac-spillhelpwrap').textContent.includes(word),`the briefing never says ${word}`);
 assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,4,'the briefing lists the four utilities in one compact row');

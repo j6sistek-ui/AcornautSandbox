@@ -1,0 +1,183 @@
+{
+  "checkedAt": "2026-09-10T09:21:43.000Z",
+  "build": "270",
+  "baselineRevision": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+  "workingHead": "944578e8223883352bac168cb8a843caa1b70194",
+  "sourceHashes": [
+    {
+      "path": "illustrated-src/game/standalone.ts",
+      "sha256": "c783b7114790d1cddb7781b57249d0a2a994a101175a80a31d9dc42e9f4c26e2"
+    },
+    {
+      "path": "illustrated-src/game/catalog.ts",
+      "sha256": "ec877efbc240d740556ba48042dfd19331f72bc4fed064da74f233407af4fc15"
+    },
+    {
+      "path": "illustrated-src/game/shop-cycle.ts",
+      "sha256": "42a9d286c49475b7bedc7470ceae7de55c8d0d279002805e879192bf59fd64d8"
+    },
+    {
+      "path": "illustrated-src/shop-layout.css",
+      "sha256": "6b5b7ffdad3fb1c6125e451b0f0458b1af86d06ea231e3a899283f4c6aa767e8"
+    },
+    {
+      "path": "illustrated-src/loadout.css",
+      "sha256": "150f833ba4a63df9b9600e114359874e0e9d557075638f478755746715f80418"
+    },
+    {
+      "path": "illustrated-src/export-sandbox.mjs",
+      "sha256": "1e4a17630fcdc57a66f7aec9e0adb915ea688ddc6bf651e2ede69071f05418a6"
+    },
+    {
+      "path": "docs/index.html",
+      "sha256": "efa81ddc558585dd06f025fe2f1fc91a095866b3f00d08a94620b21c8f612ae8"
+    },
+    {
+      "path": "docs/beta/index.html",
+      "sha256": "7ab622317a9f104c2cf34746d78336d0061addf2140031d542c4b6f466db0f63"
+    }
+  ],
+  "tests": [
+    {
+      "path": "illustrated-src/test-shop-cycle.mjs",
+      "sha256": "66cca361c405f1baf09bb70d5478f4ec49a49df2ddccd2c7f568cdac7dbb82cb"
+    },
+    {
+      "path": "illustrated-src/test-shop-visuals.mjs",
+      "sha256": "8266a6608ff4b09ccdad5db675f991cf4ac722133c9646c0ab06fa5c203bea87"
+    },
+    {
+      "path": "illustrated-src/test-shop.mjs",
+      "sha256": "019b8f6f00dc09b7bbaae8df0a11a90ee702bafd0a1f8ae6af92660097380f5a"
+    },
+    {
+      "path": "illustrated-src/test-bundle-kits.mjs",
+      "sha256": "abd306201a97cf75390b7209273a4cee644cb53d5480bcd0f9b62d2a22f271c6"
+    },
+    {
+      "path": "illustrated-src/test-premium-pricing.mjs",
+      "sha256": "d6208f70eb7f9c0e490ba503cc27f5d21e4add8130f385519bc7216726d93113"
+    },
+    {
+      "path": "illustrated-src/test-premium-pilots.mjs",
+      "sha256": "b6ad1840b8b266a694b8117427c2888fa888acec555c0314097e69b2c65ce008"
+    },
+    {
+      "path": "illustrated-src/test-switchback.mjs",
+      "sha256": "b982c5c4c3b128cc4c67db0cdae743f5342a270f7890dee07e13032e195dc180"
+    },
+    {
+      "path": "illustrated-src/test-arcflash-integration.mjs",
+      "sha256": "fe6e4ec0dd49d2a9c992374d84e157f344208ceed394307cac6db11a8b3c66dd"
+    },
+    {
+      "path": "illustrated-src/test-star-map-ui.mjs",
+      "sha256": "a7027914912af6ff2fffd3c65ad5b2ff4661628dd65e3b0d0b2bd9721c2650a0"
+    },
+    {
+      "path": "illustrated-src/test-spill-ui.mjs",
+      "sha256": "4c5f0a09f1c2110b75cd3468dab4232a471b015d45db5f3e0549316fd0352822"
+    }
+  ],
+  "toolchain": {
+    "image": "acornaut-own001-checks:latest",
+    "node": "22.23.2",
+    "network": "none",
+    "sourceMount": "read-only",
+    "happyDom": "/app/node_modules/happy-dom/lib/index.js",
+    "canvas": "/app/node_modules/@napi-rs/canvas/index.js"
+  },
+  "results": [
+    {
+      "command": "node illustrated-src/test-shop-cycle.mjs",
+      "exitCode": 0,
+      "cases": 2111
+    },
+    {
+      "command": "node illustrated-src/test-shop-visuals.mjs",
+      "exitCode": 0,
+      "modes": [
+        "production",
+        "beta",
+        "native"
+      ],
+      "liveOffers": 7,
+      "animatedReviewsPerWebMode": 42
+    },
+    {
+      "command": "node illustrated-src/test-shop.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node illustrated-src/test-bundle-kits.mjs",
+      "exitCode": 0,
+      "quoteCases": 440,
+      "enginePurchaseCases": 880,
+      "zeroCompletions": 282,
+      "betaGrantScenarios": 5
+    },
+    {
+      "command": "node illustrated-src/test-premium-pricing.mjs",
+      "exitCode": 0,
+      "modes": [
+        "production",
+        "beta"
+      ],
+      "note": "Passing targeted rerun supersedes the stale all-singles-visible assertion in related-tests-initial.txt."
+    },
+    {
+      "command": "node illustrated-src/test-premium-pilots.mjs production",
+      "exitCode": 0
+    },
+    {
+      "command": "node illustrated-src/test-premium-pilots.mjs beta",
+      "exitCode": 0
+    },
+    {
+      "command": "node illustrated-src/test-switchback.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node illustrated-src/test-arcflash-integration.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node illustrated-src/test-star-map-ui.mjs",
+      "exitCode": 0,
+      "modes": [
+        "production",
+        "beta",
+        "sample"
+      ]
+    },
+    {
+      "command": "node illustrated-src/test-spill-ui.mjs",
+      "exitCode": 0
+    }
+  ],
+  "logs": [
+    {
+      "path": "focused-tests.txt",
+      "sha256": "992f9dfec4ac00b1ec9ea118a39f1a13dc3b60cad3323e9ba9b132dd293ed53c"
+    },
+    {
+      "path": "roster-tests.txt",
+      "sha256": "243cb413191ba446b67cfe5358575f922f370142dc866253b1d3b8f38ba6ca7a"
+    },
+    {
+      "path": "related-tests-initial.txt",
+      "sha256": "a804f92ea3fc50573ac29c4ecf1a2c63deb1172fa4f83e80a499e8deca0f457c"
+    },
+    {
+      "path": "premium-pricing-final.txt",
+      "sha256": "2f39014d94c2771562532686abba613d406d84e86f9c4082635c0f8eb29ba252"
+    }
+  ],
+  "limitations": [
+    "Happy-dom does not verify CSS placement or clipping; real-browser receipts are separate.",
+    "The complete harness initially read the old premium-pricing assertion. Its result is retained separately; the targeted corrected test passes.",
+    "The complete Linux harness retains the independently reproduced baseline High Orbit fallback discrepancy."
+  ],
+  "preservationResult": "PASS",
+  "preservationSha256": "846427b76a6bd800d98d562fbda5a07973b3f995950075a8e808087997552f1c"
+}
