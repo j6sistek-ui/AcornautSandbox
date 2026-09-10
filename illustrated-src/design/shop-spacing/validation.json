@@ -1,7 +1,7 @@
 {
-  "date": "2026-09-10T05:55:13.656Z",
-  "base_commit": "11a1b88df55ab0664fc413cb07a384ae15e3e704",
-  "stamp": 264,
+  "date": "2026-09-10T06:25:52.128Z",
+  "base_commit": "daad832642b7af5cda4358fb60f4ce40026c638d",
+  "stamp": 266,
   "builds": "Docker production/beta/lab/Flight Studio pass",
   "typecheck": "pass",
   "art": "32 QA groups pass",
@@ -35,10 +35,16 @@
     "total_bytes": 262144,
     "max_channel_delta": 28,
     "first_byte": 64900,
-    "unchanged_base_reproduction": "Prior identical-base Docker reproduction retained in local test evidence",
+    "unchanged_base_reproduction": "Independently reproduced at daad832642b7af5cda4358fb60f4ce40026c638d in the same Docker image; exact 22-byte, delta28, first64900 result. See baseline-high-orbit.txt.",
     "dependency": "Linux @napi-rs/canvas0.1.100"
   },
-  "tested_commit": "53cdbca4606013a1509607dae9360a52122274cd",
-  "publication": "Draft publication authorized with the unchanged-base failure disclosed; subsequent review and continuity edits are documentation only. Not merge or release approval.",
-  "scope": "Two Shop-only CSS rules and cache stamp; no price, artwork, save, purchase or gameplay changes"
+  "tested_commit": "5943d7011da109bc21f39675ca89043d7e7e0042",
+  "publication": "Draft for owner review with the independently reproduced baseline failure disclosed. Subsequent changes affect review files only; game source and build outputs match the tested commit. No merge or release approval.",
+  "scope": "Two Shop-only CSS rules and cache stamp; no price, artwork, save, purchase or gameplay changes",
+  "original_reproduction_commit": "11a1b88df55ab0664fc413cb07a384ae15e3e704",
+  "source_scope": {
+    "generated_modules_compared": 51,
+    "modules_differ_only_in_build_stamp_and_time": true,
+    "shipping_art_unchanged": true
+  }
 }

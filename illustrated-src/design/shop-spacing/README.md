@@ -2,7 +2,7 @@
 
 Issue #265 covers the shared Shop spacing reports. The section headings inherited a -2px lower margin and adjacent Stardust purchase cards had no separation. Text already contained the space in Star Dust.
 
-Two Shop-only CSS rules now give headings 8px clearance and purchase cards a 10px lower margin. Prices, text, handlers, ownership and artwork are unchanged. Source export generated production/beta/lab/Studio at stamp 264; pending visor work uses 263 on a separate branch.
+Two Shop-only CSS rules now give headings 8px clearance and purchase cards a 10px lower margin. Prices, text, handlers, ownership and artwork are unchanged. Current main daad832642b7af5cda4358fb60f4ce40026c638d is integrated. Source export generated production/beta/lab/Studio at stamp 266.
 
 ## Evidence
 
@@ -30,6 +30,6 @@ The check serves only this checkout on a temporary loopback port, opens isolated
 
 Container builds/typecheck/art/harness/bridge have been attempted. Final gate results and any blocker are recorded in validation.json. Do not interpret visual success as release approval.
 
-The complete Docker harness finished with 55/56 passing, one failure and no skips. The failure matches the previously reproduced unchanged-base High Orbit raster difference exactly. Production and beta layout assertions pass at both widths. The runtime and visual evidence were tested at commit 53cdbca4606013a1509607dae9360a52122274cd; the follow-up changes only this review documentation and continuity record.
+The complete Docker harness finished with 55/56 passing, one failure and no skips. The failure was independently reproduced on unchanged current main daad832642b7af5cda4358fb60f4ce40026c638d in the same Docker image: 22 differing bytes, maximum channel delta 28, first byte 64900. See [baseline result](baseline-high-orbit.txt). Production and beta layout assertions pass at both widths. After integrating current main, all checks and production/beta browser measurements were repeated at runtime commit 5943d7011da109bc21f39675ca89043d7e7e0042. The final receipt changes review files only; game source and build outputs match that tested commit. All 51 generated game modules differ from main only in stamp/build-time values; shipping art is unchanged.
 
 This candidate is being published as a draft for review with the existing baseline failure disclosed. Draft publication is authorized; this does not establish green release gates or approval to merge or deploy. Native iPhone validation remains outstanding.
