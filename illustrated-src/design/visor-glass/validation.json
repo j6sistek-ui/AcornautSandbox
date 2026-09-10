@@ -1,0 +1,67 @@
+{
+  "date": "2026-09-10",
+  "base_commit": "11a1b88df55ab0664fc413cb07a384ae15e3e704",
+  "art_stamp": 263,
+  "docker": {
+    "engine": "29.7.2",
+    "node": "22.23.2",
+    "canvas": "0.1.100",
+    "source_lab_studio_builds": "pass",
+    "typecheck": "pass",
+    "art_groups": {
+      "pass": 32,
+      "fail": 0
+    },
+    "harness": {
+      "pass": 56,
+      "fail": 1,
+      "skip": 0,
+      "total": 57
+    },
+    "bridge": "pass - 51 files clean",
+    "failure": {
+      "test": "test-high-orbit.mjs",
+      "assertion": "cinderforge fallback equals rig pixels at canonical size",
+      "different_bytes": 22,
+      "total_bytes": 262144,
+      "max_channel_delta": 28,
+      "first_byte": 64900,
+      "reproduced_on_unchanged_base": true
+    }
+  },
+  "supplementary_windows": {
+    "canvas": "0.1.100",
+    "test_high_orbit": "pass"
+  },
+  "targeted": {
+    "regenerated_artwork": "10 pass",
+    "game_and_studio": "30 identical composites",
+    "lower_panes": "10 translucent and nonempty",
+    "rose_chin": "closed and opaque",
+    "decorations": "color and alpha probes pass"
+  },
+  "browser": {
+    "engine": "fresh headless Edge",
+    "viewport": [
+      390,
+      844
+    ],
+    "device_scale_factor": 2,
+    "helmets": [
+      "royal",
+      "chronarch",
+      "princess",
+      "cryostar",
+      "verdant",
+      "eclipse"
+    ],
+    "page_errors": 0,
+    "storage": "disposable synthetic ownership"
+  },
+  "limitations": [
+    "Not tested on iPhone or App Store build",
+    "Existing suit/frame registration retained; Rose/Ember ear protrusion remains visible",
+    "Artwork requires owner visual acceptance",
+    "Full Docker gate remains nonzero due to verified baseline High Orbit failure"
+  ]
+}

@@ -1,5 +1,5 @@
 import { spillDockTravelDuration } from "./spill";
-import { clearHelmetRearCollar } from "./helmet-openings";
+import { clipHelmetGlass } from "./helmet-openings";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
@@ -3911,24 +3911,12 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "leviathan-desc-8": [206, 114, 36, 0],
 };
 
-// Where the GLASS circle sits inside each helmet-only render (x, y, r).
-// All twelve helmets have a solo render; the tinted-ring path below
-// stays as the fallback for any helmet added later.
-//
-// An optional FOURTH number is a rotation in degrees about the glass
-// centre, for the asymmetric shells — a crown, a halo, a horn — that sit
-// level in their own render but want a tilt once they are on a head. No
-// helmet uses it yet, so every entry below is three numbers and draws
-// exactly as it did before the field existed. The rig editor writes it.
-// A LESSON FROM 31 Aug 2026 STANDS GUARD HERE: the owner's hand-fitted
-// Lunar numbers were briefly replicated across this whole table, and the
-// correction was scoped wrong - the fit had been made ON SERAPH's frames,
-// where the ANCHORS were off, not the glass. "everything else fit just
-// fine." A HELM_GLASS row is a measured property of one helmet's ART;
-// a helmet sitting wrong on one suit is that suit's dome anchor's problem.
-// Fix fit problems in DOME, per suit, per frame - never here.
+// Measured head registration in each shipped helmet sprite. The ten
+// regenerated paintings share [128,136,80]; their source export applies the
+// inverse scale/translation so existing suit sockets keep the same fit.
+// Ornament bounds do not determine head size. Per-design tilt is retained.
 const HELM_GLASS: Record<string, [number, number, number] | [number, number, number, number]> = {
-  comet: [129, 129, 125],
+  "comet": [129, 129, 125],
   "clear": [129, 128, 125],
   "ion": [129, 128, 125],
   "solar": [128, 128, 125],
@@ -3936,40 +3924,20 @@ const HELM_GLASS: Record<string, [number, number, number] | [number, number, num
   "lunar": [129, 126, 125, -4],
   "void": [125, 128, 125],
   "cherry": [126, 128, 125],
-  // Royal wears a crown, so its sphere is scaled down inside the frame
-  // and never measured 125 like the bare bubbles. Measured off the art.
-  "royal": [124, 156, 98],
+  "royal": [128, 136, 80],
   "aurora": [128, 127, 127.5],
   "meteor": [128, 127, 127.5],
   "chrono": [132, 126, 127.5],
-  // measured off the corrected art. These renders are three-quarter
-  // views, so the visor sits right of frame centre — that offset is real
-  // and paintDome relies on it to seat the helmet on the head.
   "gemmie": [128, 128, 131.9],
-  "phoenix": [130, 116, 129.2, -2],
-  "seraph": [125, 151, 110],
-  "chronarch": [127.1, 120.5, 125.6],
-  // Princess is a shell with a face opening, not a bubble, so the head does
-  // not sit at the shell's centre — it sits behind the opening, back from it
-  // by about a fifth of its own radius, because the squirrel's face is
-  // forward of its head centre. Centred on the shell it put the whole face
-  // behind cream lacquer.
-  "princess": [127.3, 96.8, 126],
-  // Sammie is the plain lacquer dome now, not the horned samurai. Measuring
-  // its visor field gave 78, which drew the helmet half again too big — the
-  // shell hides most of the sphere's edge, so the visible visor is nothing
-  // like the glass radius. Like princess it is a shell with an opening, so
-  // its centre sits behind that opening rather than in the middle of the
-  // frame; centred, the muzzle hung over the rim on every suit.
-  "sammie": [138, 103, 108.2],
-  // Leviathan's glass was fitted BY HAND in the rig editor, on its own
-  // suit, with a 12-degree tilt -- and the helmet is exclusive to that
-  // suit (suitOnly in catalog.ts), so this number never has to sit right
-  // on anyone else.
-  "leviathan": [129.8, 110.6, 103.6, 12],
-  "verdant": [141, 116, 126.6],
-  "cryostar": [126, 121, 134.6],
-  "eclipse": [127, 129, 138.4],
+  "phoenix": [128, 136, 80, -2],
+  "seraph": [128, 136, 80],
+  "chronarch": [128, 136, 80],
+  "princess": [128, 136, 80],
+  "sammie": [128, 136, 80],
+  "leviathan": [128, 136, 80, 12],
+  "verdant": [128, 136, 80],
+  "cryostar": [128, 136, 80],
+  "eclipse": [128, 136, 80],
   "cinderforge": [128, 125, 115.9],
   "groveguard": [130, 124, 106],
   "cosmic": [134, 119, 124.2],
@@ -3986,6 +3954,7 @@ const punchedCache = new Map<string, HTMLCanvasElement>();
 const LIGHT_OPAQUE_VISORS = new Set([
   "gemmie", "phoenix", "sammie", "seraph",
   "chronarch", "princess",
+  "cryostar", "verdant", "eclipse",
 ]);
 function punchedHelm(spr: Sprite, id: string, opaqueVisor = false) {
   const hit = punchedCache.get(id);
@@ -4009,11 +3978,13 @@ function punchedHelm(spr: Sprite, id: string, opaqueVisor = false) {
   grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
   grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
   grad.addColorStop(1, "rgba(0,0,0,0)");
+  cc.save();
+  clipHelmetGlass(cc, id);
   cc.globalCompositeOperation = "destination-out";
   cc.fillStyle = grad;
   cc.fillRect(0, 0, c.width, c.height);
+  cc.restore();
   cc.globalCompositeOperation = "source-over";
-  clearHelmetRearCollar(cc, id);
   punchedCache.set(id, c);
   return c;
 }
