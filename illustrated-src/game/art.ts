@@ -1,5 +1,5 @@
 import { VANGUARD_FRAMES } from "./vanguard";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog";
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 import { SPILL_UTILITY_IDS } from "./spill-content";
 import {ORBIT_PILOT_IDS,PREMIUM_SUIT_IDS,isPremiumSuit,isHighOrbitRig,type HighOrbitRigId,type PremiumSuitId} from "./high-orbit-config";
@@ -751,7 +751,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
       many(`${base}/acorn/`, 16),
       many(`${base}/golden/`, 16),
       many(`${base}/shield/`, 4),
-      indexedSprites("planets", ENVS[0].planetBias, PLANET_COUNT),
+      // The hub tile needs its planet at boot, not when its zone is entered.
+      indexedSprites("planets", [...ENVS[0].planetBias, HUB_PLANET], PLANET_COUNT),
       indexedSprites("debris", Array.from({ length: LEGACY_DEBRIS_COUNT }, (_, i) => i), DEBRIS_COUNT),
       optional(`${base}/sky.jpg`),
       named(palIds, "solo"),

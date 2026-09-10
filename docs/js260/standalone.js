@@ -1,27 +1,28 @@
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=256";
-import { suitPitchFor } from "./save.js?v=256";
-import { platform } from "./platform.js?v=256";
-import { spillAppearance } from "./spill-appearance.js?v=256";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=256";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=256";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=256";
-import { addChartScenery } from "./star-map-view.js?v=256";
-import { mapDebrisIndex } from "./zone-visuals.js?v=256";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=256";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=256";
-import { suitLean } from "./control-constants.js?v=256";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=256";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=256";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=256";
-import { drawSprite as drawSpriteOn } from "./art.js?v=256";
-import { createEngine } from "./engine.js?v=256";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=256";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=256";
-import { formatRaceTicks } from "./race.js?v=256";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=256";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=256";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=256";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=256";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=260";
+import { suitPitchFor } from "./save.js?v=260";
+import { platform } from "./platform.js?v=260";
+import { spillAppearance } from "./spill-appearance.js?v=260";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=260";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=260";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=260";
+import { addChartScenery } from "./star-map-view.js?v=260";
+import { mapDebrisIndex } from "./zone-visuals.js?v=260";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=260";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=260";
+import { suitLean } from "./control-constants.js?v=260";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=260";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=260";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=260";
+import { bundleQuote } from "./catalog.js?v=260";
+import { drawSprite as drawSpriteOn } from "./art.js?v=260";
+import { createEngine } from "./engine.js?v=260";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=260";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=260";
+import { formatRaceTicks } from "./race.js?v=260";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=260";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=260";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=260";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=260";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -409,6 +410,7 @@ export async function bootStandalone(root) {
         // drawShop's unconditional `return drawShopBeta()` and cannot be opened)
         if (snap.screen !== "shop") {
             featureOpen = null;
+            featureReview = null;
             confirmBuy = false;
         }
         if (snap.screen === "play") {
@@ -1459,7 +1461,7 @@ export async function bootStandalone(root) {
         }
         const planet = miniCanvas(50, 50);
         if (planet.ctx)
-            drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+            drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
         // no dot: a badge should mean something NEW is inside, and nothing
         // in the mode sheet changes on its own
         tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
@@ -1775,6 +1777,53 @@ export async function bootStandalone(root) {
         else if (ctx)
             drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
         return c;
+    }
+    /** Kit banners never replace the actual individual product artwork. */
+    function shopBundleBanner(bundle) {
+        const img = el("img", "ac-bundlebanner");
+        img.src = `${artRootUrl()}/${bundle.kit.banner}?v=${ART_VER}`;
+        img.alt = "";
+        img.width = 1024;
+        img.height = 512;
+        img.decoding = "async";
+        return img;
+    }
+    function shopItemName(item) {
+        const list = item.kind === "suit" ? SUITS : item.kind === "helm" ? HELMETS : item.kind === "pal" ? PALS : TRAILS;
+        return list.find(x => x.id === item.id)?.name ?? item.id;
+    }
+    /** All offers show the actual included products, including single visors and pals. */
+    function shopItemArt(item, px = 96) {
+        const frame = el("div", "ac-shopitemart");
+        frame.dataset.shopItemId = item.id;
+        frame.dataset.shopItemKind = item.kind;
+        frame.setAttribute("aria-hidden", "true");
+        if (item.kind === "suit") {
+            const suit = SUITS.find(u => u.id === item.id);
+            if (suit)
+                frame.append(suitCardOf(suit, px));
+        }
+        else if (item.kind === "helm") {
+            const helm = HELMETS.find(h => h.id === item.id);
+            if (helm)
+                frame.append(helmCardOf(helm, px));
+        }
+        else {
+            const { c, ctx } = miniCanvas(px, px);
+            if (ctx && item.kind === "pal")
+                paintPalPreview(ctx, engine.art, item.id, px / 2, px / 2, px * .72);
+            else if (ctx) {
+                const trail = TRAILS.find(t => t.id === item.id);
+                if (trail) {
+                    ctx.save();
+                    ctx.scale(px / 96, px / 96);
+                    paintTrailPreview(ctx, trail, 64, 48, 1);
+                    ctx.restore();
+                }
+            }
+            frame.append(c);
+        }
+        return frame;
     }
     function portraitOf(helmet, suit, px = 56) {
         const { c, ctx } = miniCanvas(px, px);
@@ -3524,6 +3573,7 @@ export async function bootStandalone(root) {
     // below as the bulk alternative.
     let devRollOpen = false;
     let featureOpen = null; // the featured or always-available pack, opened
+    let featureReview = null; // an included product being reviewed
     // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
     // chart: a held Level Skip lands on a mission from its sheet, a held Star
     // Unlock on a reward from the rail. Both are hold-to-confirm.
@@ -3624,7 +3674,8 @@ export async function bootStandalone(root) {
         // the daily is banked at boot and SHOWN on the main menu (drawHome);
         // the shop only carries the streak tracker
         const cy = shopCycle();
-        const box = el("div", "ac-menu ac-shopbeta");
+        const box = el("div", "ac-menu ac-shopbeta ac-shopvisual");
+        box.style.setProperty("--shop-nebula", `url("${artRootUrl()}/shop/shop-nebula.png?v=${ART_VER}")`);
         box.append(header("Premium", "Shop", headAside(s.acorns)));
         denyEl = el("p", "ac-deny");
         denyEl.setAttribute("role", "status");
@@ -3687,7 +3738,13 @@ export async function bootStandalone(root) {
             const t = el("span", "ac-caseheldtxt");
             t.append(el("b", "", "IN THE FEATURED PACK"), el("span", "", `${cy.feature?.name ?? "The pack"} — not sold separately today.`));
             const go = el("button", "ac-caseheldgo", "SEE THE PACK");
-            go.onclick = () => { featureOpen = cy.feature?.id ?? null; confirmBuy = false; render(); };
+            go.onclick = () => {
+                featureOpen = cy.feature?.id ?? null;
+                featureReview = null;
+                confirmBuy = false;
+                render();
+                overlay.querySelector(".ac-shopincluded button")?.focus({ preventScroll: true });
+            };
             note.append(t, go);
             stage.append(note);
         }
@@ -3787,33 +3844,29 @@ export async function bootStandalone(root) {
             for (const id of ids) {
                 const on = kind === "pal" ? tryOn.pal === id : (kind === "suit" ? tryOn.suit === id : tryOn.helm === id);
                 const b = el("button", on ? "ac-card ac-tocard ac-shoptile on" : "ac-card ac-tocard ac-shoptile");
+                b.dataset.shopItemId = id;
+                b.dataset.shopItemKind = kind;
+                b.append(shopItemArt({ kind, id }));
                 if (kind === "suit") {
                     const u = SUITS.find((x) => x.id === id);
                     if (u) {
-                        b.append(suitCardOf(u, 60));
                         markPremium(b, u.glow);
                     }
                 }
                 else if (kind === "helm") {
                     const h = HELMETS.find((x) => x.id === id);
-                    if (h) {
-                        b.append(helmCardOf(h, 60));
+                    if (h)
                         markPremium(b, h.glow);
-                    }
                 }
-                else {
-                    const { c: pc, ctx: pctx } = miniCanvas(60, 60);
-                    if (pctx)
-                        paintPalPreview(pctx, engine.art, id, 30, 30, 54);
-                    b.append(pc);
+                else
                     markPremium(b);
-                }
                 const name = kind === "suit"
                     ? (SUITS.find((x) => x.id === id)?.name ?? id)
                     : kind === "helm"
                         ? (HELMETS.find((x) => x.id === id)?.name ?? id)
                         : (PALS.find((x) => x.id === id)?.name ?? id);
-                b.append(el("span", "ac-tilename", name));
+                const title = el("span", "ac-tilename", name);
+                b.prepend(title);
                 const owned = cy.owns(id);
                 const price = el("span", owned ? "ac-tileprice owned" : "ac-tileprice");
                 if (owned)
@@ -3906,41 +3959,29 @@ export async function bootStandalone(root) {
         scroll.append(el("p", "ac-fine", "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
         // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
         for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
-            const full = alaCarteTotal(bundleIds(bn), cy.owns);
-            const due = featurePrice(bn, cy.owns);
-            const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
+            const quote = bundleQuote(bn, cy.owns), due = quote.due;
             scroll.append(el("p", "ac-shelfhead ac-featurehead", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"));
-            const card = el("button", "ac-card ac-featurecard");
-            if (bn.id === "bundle-premium-trio")
-                card.classList.add("ac-premiumtrio");
+            const card = el("button", "ac-card ac-featurecard ac-shopoffer");
             card.dataset.bundleId = bn.id;
-            const strip = el("div", "ac-bundlestrip");
-            const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);
-            for (const it of faces) {
-                const u = SUITS.find((x) => x.id === it.id);
-                if (u)
-                    strip.append(suitCardOf(u, 46));
-            }
-            if (bn.items.length > faces.length) {
-                strip.append(el("span", "ac-bundlemore", `+${bn.items.length - faces.length}`));
-            }
-            card.append(strip);
-            const txt = el("div", "ac-modtxt");
-            txt.append(el("p", "ac-modname", bn.name), el("p", "ac-sub", bn.blurb));
-            card.append(txt);
+            card.dataset.focus = `offer:${bn.id}`;
+            card.setAttribute("aria-label", [bn.name, `${due.toLocaleString()} Star Dust`,
+                quote.savings > 0 ? `${quote.discountPercent}% off` : "",
+                quote.credit > 0 ? `${quote.credit.toLocaleString()} owned-item credit` : "", "Review included items"].filter(Boolean).join(". "));
+            card.append(shopBundleBanner(bn));
+            card.append(el("span", "ac-modname", bn.id === "bundle-premium-trio" ? "Premium Trio" : bn.name));
             const pr = el("span", "ac-modprice ac-dustprice");
             pr.append(icon(I_DUST, 13, true), el("span", "", due.toLocaleString()));
-            if (off > 0)
-                pr.append(el("s", "ac-wasprice", full.toLocaleString()));
             card.append(pr);
-            if (off > 0)
-                card.append(el("span", "ac-featureoff", `${off}% OFF`));
-            card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
-            card.onclick = () => { featureOpen = bn.id; confirmBuy = false; render(); };
+            if (quote.savings > 0)
+                card.append(el("span", "ac-offersavings", `${quote.discountPercent}% OFF`));
+            card.onclick = () => {
+                featureOpen = bn.id;
+                featureReview = null;
+                confirmBuy = false;
+                render();
+                overlay.querySelector(".ac-shopincluded button")?.focus({ preventScroll: true });
+            };
             scroll.append(card);
-            scroll.append(el("p", "ac-fine", bn.keepSingles
-                ? "These pilots are also available individually on the single shelf."
-                : "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
         }
         // ---- TOP UP.
         scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
@@ -3949,8 +3990,14 @@ export async function bootStandalone(root) {
         const inFlight = engine.dustPending();
         for (const dp of DUST_PACKS) {
             const row = el("button", "ac-card ac-modcard ac-dustrow");
+            row.dataset.dustPackId = dp.id;
             const face = el("span", "ac-dustface");
-            face.append(icon(I_DUST, 30, true));
+            const emblem = el("img", "ac-stardust-emblem");
+            emblem.src = `${artRootUrl()}/shop/stardust-emblem.png?v=${ART_VER}`;
+            emblem.alt = "";
+            emblem.width = 128;
+            emblem.height = 128;
+            face.append(emblem);
             row.append(face);
             const t = el("div", "ac-modtxt");
             t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`), el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
@@ -4029,90 +4076,124 @@ export async function bootStandalone(root) {
             return wrap;
         const s = engine.save;
         const owns = (i) => ownsPremium(s, i);
-        const sheet = el("div", "ac-lvlcard ac-featuresheet");
-        const full = alaCarteTotal(bundleIds(bn), owns);
-        const due = featurePrice(bn, owns);
-        const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
+        const sheet = el("div", "ac-lvlcard ac-featuresheet ac-shopreviewsheet");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-modal", "true");
+        sheet.setAttribute("aria-label", bn.name);
+        const premiumTrio = bn.id === "bundle-premium-trio";
+        const quote = bundleQuote(bn, owns), due = quote.due;
+        const fullyOwned = bundleIds(bn).every(owns);
+        const reviewItems = [...bn.items];
+        const bonusWakes = new Map();
+        for (const item of bn.items.filter(it => it.kind === "suit")) {
+            const builtIn = trailWornBy("sparks", item.id);
+            const wake = SET_TRAIL[item.id] ?? (builtInTrailSuit(builtIn) ? builtIn : undefined);
+            if (wake && !reviewItems.some(it => it.kind === "trail" && it.id === wake)) {
+                reviewItems.push({ kind: "trail", id: wake });
+                bonusWakes.set(wake, item.id);
+            }
+        }
         sheet.append(el("p", "ac-kicker", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
-        sheet.append(el("p", "ac-sub", bn.blurb));
-        const group = (title, kind) => {
-            const items = bn.items.filter((it) => it.kind === kind);
-            if (!items.length)
-                return;
-            sheet.append(el("p", "ac-shelfhead", `${title} · ${items.length}`));
-            const row = el("div", "ac-shelfrow");
-            for (const it of items) {
-                const wearable = kind === "suit" || kind === "helm" || kind === "pal";
-                const on = kind === "suit" ? tryOn.suit === it.id
-                    : kind === "helm" ? tryOn.helm === it.id
-                        : kind === "pal" ? tryOn.pal === it.id : false;
-                const b = el("button", on ? "ac-card ac-tocard ac-shoptile on" : "ac-card ac-tocard ac-shoptile");
-                let name = it.id;
-                if (kind === "suit") {
-                    const u = SUITS.find((x) => x.id === it.id);
-                    if (u) {
-                        b.append(suitCardOf(u, 56));
-                        name = u.name;
-                        markPremium(b, u.glow);
+        const counts = ["suit", "helm", "trail", "pal"].map(kind => ({ kind, count: bn.items.filter(it => it.kind === kind).length }));
+        const labels = { suit: "suit", helm: "helmet", trail: "wake", pal: "companion" };
+        const summary = counts.filter(x => x.count).map(x => `${x.count} ${labels[x.kind]}${x.count === 1 ? "" : "s"}`).join(" · ")
+            + (bonusWakes.size ? ` + ${bonusWakes.size} bonus wake${bonusWakes.size === 1 ? "" : "s"}` : "");
+        sheet.append(el("p", "ac-bundlesummary", summary));
+        if (quote.credit > 0)
+            sheet.append(el("p", "ac-offercredit", `${quote.credit.toLocaleString()} Star Dust credit for owned items`));
+        const reviewing = featureReview && reviewItems.find(it => it.kind === featureReview.kind && it.id === featureReview.id);
+        if (reviewing) {
+            const preview = el("div", "ac-featurepreview");
+            const name = shopItemName(reviewing);
+            preview.append(el("h3", "ac-featurepreviewname", name));
+            const W = 304, H = 206;
+            const { c, ctx } = miniCanvas(W, H);
+            c.setAttribute("role", "img");
+            c.setAttribute("aria-label", `${name} animated preview`);
+            c.dataset.featurePreviewId = reviewing.id;
+            c.dataset.featurePreviewKind = reviewing.kind;
+            preview.append(c);
+            // Helmet reviews use a compatible pilot; fixed-head suits keep their authored head.
+            const helm = reviewing.kind === "helm" ? HELMETS.find(h => h.id === reviewing.id) : undefined;
+            const boundSuit = reviewing.kind === "trail" ? builtInTrailSuit(reviewing.id) : undefined;
+            const suit = reviewing.kind === "suit" ? SUITS.find(u => u.id === reviewing.id)
+                : helm ? SUITS.find(u => u.id === (helm.suitOnly ?? helm.id) && !wearsOwnHead(u))
+                    ?? SUITS.find(u => u.id === "flight" && !wearsOwnHead(u)) ?? SUITS.find(u => !wearsOwnHead(u))
+                    : boundSuit ? SUITS.find(u => u.id === boundSuit) : undefined;
+            const previewHelm = helm ?? (suit && bn.items.some(it => it.kind === "helm" && it.id === suit.id)
+                ? HELMETS.find(h => h.id === suit.id) : undefined) ?? (suit ? helmetWornBy(tryOn.helm, suit.id) : HELMETS[0]);
+            if (suit && wearsOwnHead(suit))
+                preview.append(el("p", "ac-fine", fixedHeadTag(suit)));
+            if (bonusWakes.has(reviewing.id))
+                preview.append(el("p", "ac-fine", `Included with ${SUITS.find(u => u.id === bonusWakes.get(reviewing.id))?.name ?? "its suit"}`));
+            if (reviewing.kind === "pal")
+                preview.append(el("p", "ac-fine", PALS.find(p => p.id === reviewing.id)?.desc));
+            sheet.append(preview);
+            if (suit)
+                engine.wantSuitArt(suit.id);
+            if (reviewing.kind === "pal")
+                engine.wantPalArt(reviewing.id);
+            if (ctx) {
+                const t0 = performance.now();
+                const reduced = engine.save.motionOff || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+                const tick = () => {
+                    if (!c.isConnected)
+                        return;
+                    const t = reduced ? 0 : (performance.now() - t0) / 1000;
+                    ctx.clearRect(0, 0, W, H);
+                    if (suit)
+                        paintFlightPreview(ctx, engine.art, suit, previewHelm, W / 2, H / 2, 158, t, undefined, false, (suitPitchFor(engine.save, suit.id) * Math.PI) / 180);
+                    else if (reviewing.kind === "pal")
+                        paintPalPreview(ctx, engine.art, reviewing.id, W / 2, H / 2, 124);
+                    else {
+                        const trail = TRAILS.find(x => x.id === reviewing.id);
+                        if (trail)
+                            paintTrailPreview(ctx, trail, W / 2 + 40, H / 2, t);
                     }
-                }
-                else if (kind === "helm") {
-                    const h = HELMETS.find((x) => x.id === it.id);
-                    if (h) {
-                        b.append(helmCardOf(h, 56));
-                        name = h.name;
-                        markPremium(b, h.glow);
-                    }
-                }
-                else if (kind === "pal") {
-                    const { c: pc, ctx: pctx } = miniCanvas(56, 56);
-                    if (pctx)
-                        paintPalPreview(pctx, engine.art, it.id, 28, 28, 50);
-                    b.append(pc);
-                    name = PALS.find((x) => x.id === it.id)?.name ?? it.id;
-                    markPremium(b);
-                }
-                else {
-                    const t = TRAILS.find((x) => x.id === it.id);
-                    const { c: tc, ctx: tctx } = miniCanvas(56, 48);
-                    if (tctx && t)
-                        paintTrailPreview(tctx, t, 28, 24, performance.now() / 1000);
-                    b.append(tc);
-                    name = t?.name ?? it.id;
-                }
-                b.append(el("span", "ac-tilename", name));
-                b.append(el("span", owns(it.id) ? "ac-tileprice owned" : "ac-tileprice locked", owns(it.id) ? "OWNED" : "IN THE PACK"));
-                if (wearable) {
-                    b.onclick = () => {
-                        if (kind === "suit") {
-                            const matched = bn.items.some((x) => x.kind === "helm" && x.id === it.id);
-                            tryOn = { ...tryOn, suit: it.id, helm: matched ? it.id : tryOn.helm };
-                        }
-                        else if (kind === "helm") {
-                            const worn = SUITS.find((u) => u.id === tryOn.suit);
-                            const needsHead = !worn || wearsOwnHead(worn);
-                            const ownSuit = SUITS.some((u) => u.id === it.id);
-                            tryOn = { ...tryOn, helm: it.id, suit: needsHead && ownSuit ? it.id : tryOn.suit };
-                        }
-                        else
-                            tryOn = { ...tryOn, pal: it.id };
-                        render();
-                    };
-                }
-                else {
-                    b.classList.add("ac-cardoff");
-                }
+                    if (!reduced)
+                        requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            }
+            const items = el("button", "ac-ghost ac-feature-reviewback", premiumTrio ? "BACK TO PILOTS" : "BACK TO ITEMS");
+            items.onclick = () => {
+                featureReview = null;
+                confirmBuy = false;
+                render();
+                overlay.querySelector(`[data-focus="review:${reviewing.kind}:${reviewing.id}"]`)?.focus({ preventScroll: true });
+            };
+            sheet.append(items);
+        }
+        else {
+            const row = el("div", "ac-shopincluded");
+            for (const item of reviewItems) {
+                const name = shopItemName(item);
+                const status = owns(item.id) ? "OWNED" : item.kind === "trail" && bonusWakes.has(item.id) ? "BONUS WAKE" : "INCLUDED";
+                const b = el("button", "ac-card ac-tocard ac-shoptile");
+                b.dataset.shopItemId = item.id;
+                b.dataset.shopItemKind = item.kind;
+                if (item.kind === "trail" && bonusWakes.has(item.id))
+                    b.dataset.bonusWake = "true";
+                b.dataset.focus = `review:${item.kind}:${item.id}`;
+                b.setAttribute("aria-label", `Preview ${name} ${item.kind === "helm" ? "helmet" : item.kind}. ${status.toLowerCase()}`);
+                const glow = item.kind === "suit" ? SUITS.find(u => u.id === item.id)?.glow
+                    : item.kind === "helm" ? HELMETS.find(h => h.id === item.id)?.glow : undefined;
+                markPremium(b, glow);
+                b.append(el("span", "ac-tilename", name), shopItemArt(item), el("span", owns(item.id) ? "ac-tileprice owned" : "ac-tileprice", status));
+                b.onclick = () => {
+                    // Reviewing never equips, spends, or changes the separate single-item cart.
+                    featureReview = item;
+                    confirmBuy = false;
+                    render();
+                    overlay.querySelector(".ac-feature-reviewback")?.focus({ preventScroll: true });
+                };
                 row.append(b);
             }
-            sheet.append(row);
-        };
-        group("SUITS", "suit");
-        group("HELMETS", "helm");
-        group("TRAILS", "trail");
-        group("PALS", "pal");
-        sheet.append(el("p", "ac-fine", bn.keepSingles
-            ? "Tap any pilot to preview it. Each is also available individually on the single shelf."
-            : "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
+            sheet.append(el("p", "ac-fine", "Select an item to preview"), row);
+        }
+        sheet.append(el("p", "ac-fine", premiumTrio ? "Signature wakes included · Also available individually"
+            : bn.keepSingles ? "Also available individually"
+                : "Included items return to the single shelf after this feature."));
         // the sheet covers the page, so it carries its own status line - the
         // one up in the menu would be announced to nobody
         const sheetDeny = el("p", "ac-deny");
@@ -4121,18 +4202,20 @@ export async function bootStandalone(root) {
         sheet.append(sheetDeny);
         denyEl = sheetDeny;
         const buy = el("button", "ac-primary ac-featurebuy");
-        if (due <= 0) {
+        buy.dataset.focus = "feature-buy";
+        if (fullyOwned) {
             buy.textContent = "ALREADY YOURS";
             buy.classList.add("ac-cardoff");
+            buy.disabled = true;
         }
         else {
-            buy.append(el("span", "", confirmBuy ? "CONFIRM · SPEND " : "BUY THE PACK · "), icon(I_DUST, 14, true), el("span", "", due.toLocaleString()));
-            if (off > 0)
-                buy.append(el("s", "ac-wasprice", full.toLocaleString()));
+            buy.append(el("span", "", due === 0 ? (confirmBuy ? "CONFIRM · COMPLETE BUNDLE · " : "COMPLETE BUNDLE · ")
+                : confirmBuy ? "CONFIRM · SPEND " : premiumTrio ? "BUY TRIO · " : "BUY THE PACK · "), icon(I_DUST, 14, true), el("span", "", due.toLocaleString()));
             buy.onclick = () => {
                 if (!confirmBuy) {
                     confirmBuy = true;
                     render();
+                    overlay.querySelector(".ac-featurebuy")?.focus({ preventScroll: true });
                     return;
                 }
                 // only re-render on success: a re-render rebuilds the status line,
@@ -4145,15 +4228,34 @@ export async function bootStandalone(root) {
             };
         }
         sheet.append(buy);
-        const back = el("button", "ac-ghost", "BACK");
-        back.onclick = () => { featureOpen = null; confirmBuy = false; render(); };
-        sheet.append(back);
-        wrap.append(sheet);
-        wrap.onclick = (e) => { if (e.target === wrap) {
+        const close = () => {
             featureOpen = null;
+            featureReview = null;
             confirmBuy = false;
             render();
-        } };
+            overlay.querySelector(`[data-focus="offer:${bn.id}"]`)?.focus({ preventScroll: true });
+        };
+        const back = el("button", "ac-ghost", "BACK");
+        back.dataset.featureClose = "";
+        back.onclick = close;
+        sheet.append(back);
+        wrap.append(sheet);
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        wrap.onkeydown = (e) => {
+            if (e.key === "Tab") {
+                const buttons = [...sheet.querySelectorAll("button:not(:disabled)")];
+                const first = buttons[0], last = buttons[buttons.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last?.focus();
+                }
+                else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first?.focus();
+                }
+            }
+        };
         return wrap;
     }
     /** THE CYCLE INSPECTOR. Preproduction only: everything the shop is
@@ -4741,7 +4843,13 @@ export async function bootStandalone(root) {
         else if (dailyToast)
             dailyToast = null;
         else if (featureOpen) {
+            const back = overlay.querySelector(featureReview ? ".ac-feature-reviewback" : "[data-feature-close]");
+            if (back) {
+                back.click();
+                return true;
+            }
             featureOpen = null;
+            featureReview = null;
             confirmBuy = false;
         }
         else if (hyperRunOpen) {
