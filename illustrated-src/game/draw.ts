@@ -4,6 +4,8 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
+import { paintLiveStarTrail } from "./star-trails";
+import { trailWornBy } from "./catalog";
 import {isHighOrbit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
 import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
 import {highOrbitPreview,type HighOrbitMotion} from "./high-orbit-motion";
@@ -3134,6 +3136,11 @@ function drawRetroWorld(
   const wornId = pilotSuitId(w, save);
   const helm = helmetWornBy(save.equipped, wornId);
   const suit = SUITS.find((u) => u.id === wornId) ?? SUITS[0];
+  paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+    time: w.time, x: W * PHYS.squirrelX - 25, y: w.squirrel.y + 8,
+    travel: w.distance, scale: 1, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+    active: !w.ready && w.screen === "play",
+  }, w.screen === "pause" || w.screen === "lvldone");
   drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
     flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
     seed: 0,
@@ -5123,6 +5130,13 @@ function drawPilot(
   const wornId = pilotSuitId(w, save);
   const suit = SUITS.find((s) => s.id === wornId) ?? SUITS[0];
   const helm = helmetWornBy(save.equipped, wornId);
+  // Paint before the body transform so old stream samples stay in the
+  // world when the pilot banks. Attach the stream at the pilot's rear edge.
+  paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+    time: w.time, x: x - 25 * localScale, y: y + 8 * localScale,
+    travel: w.distance, scale: localScale, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+    active: !w.ready && w.screen === "play",
+  }, w.screen === "pause" || w.screen === "lvldone");
   // The repainted flap frames are one coherent character, so the tap
   // cycles them again — plus a soft nose-up kick and scale pop for punch.
   const flapping = w.flapBoost > 0;

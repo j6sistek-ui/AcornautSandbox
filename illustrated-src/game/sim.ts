@@ -2,7 +2,7 @@ import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguard
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
 import { createHighOrbitMotion, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config";
-import { trailWornBy } from "./catalog";
+import { trailWornBy, STAR_CHART_TRAILS } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
@@ -2595,6 +2595,9 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   // painter. Do not add the generic tail-origin particles or consume RNG.
   if (trail === "arcflashwake") return;
   if (highOrbitTrailSuit(trail)) return;
+  // Continuous Star Chart streams are presentation history, like the
+  // exclusive wakes above. Do not stack random particle bursts over them.
+  if (STAR_CHART_TRAILS.has(trail)) return;
   // the painted pilot's tail sweeps far to the left — emit behind it or
   // the whole plume is swallowed by the sprite
   const sx = pilotX(w) - 34;
