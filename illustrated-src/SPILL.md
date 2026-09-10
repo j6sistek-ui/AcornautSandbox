@@ -29,6 +29,12 @@ remain stable. Missions use the standard starting ship and a fixed seed.
 
 ## Controls and damage
 
+The run opens on one instructions sheet (controls, the loop, the ship) with
+a `?` that replays the Depot guide read-only; START RUN docks straight at the
+opening Depot, which offers exactly one free system upgrade and nothing else.
+The Depot guide never opens on its own; its `?` replays it, with utilities as
+one compact row labelled for the wave 5 Depot, where they are first sold.
+
 - Tap to fly, like every other mode except Hyper Run: a tap is an instant
   kick skyward (400 px/s against 1,000 px/s² of gravity, an 80 px hop that
   peaks in 0.4 s) and taps never stack. Swipe down to dive, swipe up for a
@@ -36,7 +42,7 @@ remain stable. Missions use the standard starting ship and a fixed seed.
   carries past the cap and decays back to it.
 - A swipe still works after a long rest on the field, and only the owning
   pointer can end it. Nothing has to be released: blur, visibility loss and
-  resize pause the run rather than cancel a hold.
+  resize simply pause the run.
 - Space / Up tap; a held key is one tap, never a stream. Down dives; W is the
   harder kick; Right / D lunges.
 - Optional on-screen Thrust (tap), Dive (downward burst) and Lunge (forward

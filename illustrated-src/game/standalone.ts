@@ -1637,7 +1637,7 @@ export async function bootStandalone(root: HTMLElement) {
     overlay.querySelector<HTMLElement>('[data-spill-control="setup-guide"], [data-spill-briefing]')?.focus({ preventScroll: true });
   }
   function spillHelpSheet() {
-    return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO SHIP");
+    return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO LAUNCH");
   }
   function drawSpillPrep() { return drawSpillLaunchSetup(engine, openSpillHelp); }
   function drawDepot(_sp: SpillState) { return drawDepotWorkshop(engine, depotView, render); }
